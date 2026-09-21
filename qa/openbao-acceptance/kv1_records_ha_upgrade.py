@@ -30,8 +30,14 @@ from raft_record_snapshot_observation import compact_bytes, encoded_size, strict
 from raft_snapshot_observation import MAGIC, MAX_ARTIFACT_BYTES
 
 COUNT = 70
+LEGACY_SNAPSHOT_OBSERVATION_SECONDS = 60
+
+
+class LegacySnapshotPending(FixtureError):
+    pass
+
 REQUIRED = frozenset({'legacy_pin_admitted', 'old_mount', 'old_rounds_complete',
-    'old_near_limit', 'old_full_read', 'old_authenticated_slots', 'old_peak_exceeds_unfixed_budget',
+    'old_near_limit', 'old_full_read', 'old_compact_observed', 'old_reopen_compact_observed', 'old_authenticated_slots', 'old_peak_exceeds_unfixed_budget',
     'old_reopen_complete', 'old_reopen_full_read', 'old_reopen_same_authority',
     'candidate_read_only_v4', 'candidate_full_read_before_write', 'candidate_same_old_authority',
     'first_write', 'published_v5', 'migration_full_read', 'typed_snapshot',
@@ -112,7 +118,7 @@ def inspect_legacy_state(state, cluster_id, replication_key):
         'logical_state_sha256':digest.hex(), 'authenticated_active_closure':True}
 
 
-def inspect_legacy_bundle(node, cluster):
+def inspect_legacy_bundle(node, cluster, *, minimum_index=None):
     path = node.root/'raft'/'state-machine'/'state-bundle.bin'; metadata = path.lstat()
     require(stat.S_ISREG(metadata.st_mode) and 20 <= metadata.st_size <= MAX_ARTIFACT_BYTES,'old_bundle_bound')
     with path.open('rb') as stream: data = stream.read(MAX_ARTIFACT_BYTES+1)
@@ -125,12 +131,60 @@ def inspect_legacy_bundle(node, cluster):
     snapstate = strict_json(decoded)
     require(snapstate.get('last_applied_log') == snapshot.get('meta',{}).get('last_log_id')
             and snapstate.get('last_membership') == snapshot.get('meta',{}).get('last_membership'), 'old_snapshot_metadata')
+    frontier = snapshot['meta']['last_log_id'].get('index')
+    require(type(frontier) is int and frontier >= 0, 'old_snapshot_frontier_invalid')
     current = inspect_legacy_state(bundle['state'],cluster.cluster_id,cluster.replication_key)
     snap = inspect_legacy_state(snapstate,cluster.cluster_id,cluster.replication_key)
-    require(current['manifest_status_sha256'] == snap['manifest_status_sha256'],'old_snapshot_not_current_authority')
+    same_authority = (current['manifest_status_sha256'] == snap['manifest_status_sha256']
+        and bundle['state'].get('last_applied_log') == snapshot.get('meta',{}).get('last_log_id')
+        and bundle['state'].get('last_membership') == snapshot.get('meta',{}).get('last_membership'))
+    if not same_authority and minimum_index is not None:
+        # Both graphs above were fully authenticated. A checkpoint may contain
+        # a newer current state alongside an older, still valid snapshot.
+        raise LegacySnapshotPending('old_snapshot_not_current_authority')
+    require(same_authority, 'old_snapshot_not_current_authority')
     current.update(artifact_bytes=len(data),artifact_sha256=hashlib.sha256(data).hexdigest(),
                    snapshot_bytes=len(decoded),snapshot_index=snapshot['meta']['last_log_id']['index'])
+    if minimum_index is not None:
+        require(type(minimum_index) is int and minimum_index >= 0, 'old_requested_frontier_invalid')
+        if frontier < minimum_index:
+            raise LegacySnapshotPending('old_snapshot_frontier_pending')
     return current
+
+
+def wait_legacy_snapshot(node, cluster, minimum_index):
+    # A 503 reply remains an API failure. This independent bounded read-only
+    # observation can prove the asynchronous snapshot eventually became durable.
+    deadline = time.monotonic() + LEGACY_SNAPSHOT_OBSERVATION_SECONDS
+    while True:
+        try:
+            observed = inspect_legacy_bundle(node, cluster, minimum_index=minimum_index)
+        except (FileNotFoundError, LegacySnapshotPending):
+            if time.monotonic() >= deadline:
+                raise FixtureError('old_snapshot_completion_not_observed') from None
+            time.sleep(min(1.0, max(0.0, deadline-time.monotonic())))
+            continue
+        # Do not accept a late full-file authentication result as in-budget.
+        require(time.monotonic() < deadline, 'old_snapshot_observation_deadline')
+        return observed
+
+
+def observe_legacy_compact(cluster, node, check, phase, observations):
+    status, body = node.call('GET', 'sys/storage/raft/snapshot-status', token=cluster.root_token, timeout=60)
+    requested = body.get('data',{}).get('applied_index')
+    require(status == 200 and type(requested) is int and requested >= 0, 'old_snapshot_request_frontier')
+    # Exactly one maintenance request. Never repeat it after an uncertain reply.
+    status, body = compact_for_snapshot(node, cluster.root_token)
+    classified = status == 200 or (status == 503 and isinstance(body,dict)
+        and body.get('errors') == ['HA snapshot trigger failed'])
+    observations[phase+'_compact_reply'] = {'http_status':status, 'http_success':status == 200,
+        'completion_unobserved_reply':status == 503 and classified,
+        'requested_index':requested, 'observation_budget_seconds':LEGACY_SNAPSHOT_OBSERVATION_SECONDS}
+    require(classified, 'old_compact_unexpected_reply')
+    observed = wait_legacy_snapshot(node, cluster, requested)
+    observations[phase+'_compact_reply']['durable_completion_observed'] = True
+    check(phase+'_compact_observed', True)
+    return observed
 
 
 def migration_staging_would_exceed_unchanged_budget(observation, logical_value_bytes):
@@ -217,14 +271,12 @@ def run(candidate,legacy,work,checks,observations):
                 read_exact(node,cluster.root_token,dataset,key,recover=recover)
                 check(phase+'_'+key.rsplit('/',1)[-1],True)
         all_values(leader,'old_read');check('old_full_read',True)
-        compact(cluster,leader,check,'old')
-        old=inspect_legacy_bundle(leader,cluster);observations['old']=old
+        old=observe_legacy_compact(cluster,leader,check,'old',observations);observations['old']=old
         check('old_authenticated_slots',old['authenticated_active_closure'] is True and old['inactive_chunk_count']>0)
         check('old_peak_exceeds_unfixed_budget',migration_staging_would_exceed_unchanged_budget(old,dataset.logical_bytes))
         leader=start_all(cluster,legacy,check,'old_reopen');check('old_reopen_complete',True)
         all_values(leader,'old_reopen_read',True);check('old_reopen_full_read',True)
-        compact(cluster,leader,check,'old_reopen')
-        reopened=inspect_legacy_bundle(leader,cluster);observations['old_reopened']=reopened
+        reopened=observe_legacy_compact(cluster,leader,check,'old_reopen',observations);observations['old_reopened']=reopened
         check('old_reopen_same_authority',reopened['manifest_status_sha256']==old['manifest_status_sha256'])
         leader=start_all(cluster,candidate,check,'candidate')
         capacity(cluster,leader,LEGACY_FORMAT,check,'candidate_read_only_v4')
@@ -304,6 +356,8 @@ def main():
         'checks':checks,'observations':observations,'work_directory_retained':True,'work_directory':str(work),
         'legacy_state_created_by_real_binary':any(r['case']=='old_rounds_complete' and r['passed'] is True for r in checks),
         'legacy_manifest_and_active_chunks_aead_verified':any(r['case']=='old_authenticated_slots' and r['passed'] is True for r in checks),
+        'legacy_compact_http_success_required':False,'legacy_compact_durable_observation_required':True,
+        'legacy_snapshot_observation_budget_seconds':LEGACY_SNAPSHOT_OBSERVATION_SECONDS,
         'typed_snapshot_observer_verifies_crypto':False,'dense_small_record_migration_covered':False,
         'rolling_mixed_version_covered':False,'exact_migration_crash_point_injected':False,
         'synthetic_only':True,'full_openbao_compatibility':False,'independent_qualification':False,'production_authority':False}

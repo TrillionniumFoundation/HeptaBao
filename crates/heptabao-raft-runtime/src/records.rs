@@ -31,6 +31,7 @@ pub enum RecordObjectKind {
     Leaf,
     Branch,
     OwnerChunk,
+    PackedLeaf,
 }
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -135,14 +136,39 @@ impl SealedRecordObject {
                     && records == self.reference.record_count
                     && payload == self.reference.payload_bytes
             }
+            PackedLeaf => {
+                // This validates visible aggregate bounds only. The application
+                // authenticates/decrypts the page and verifies its actual entries.
+                // Repeated Value refs are repeated edges, not deduplicated here.
+                let inline_count = self.reference.record_count.checked_sub(records);
+                let inline_payload = self.reference.payload_bytes.checked_sub(payload);
+                (27..=32 * 1024).contains(&self.reference.encoded_bytes)
+                    && (1..=256).contains(&self.reference.record_count)
+                    && self
+                        .children
+                        .iter()
+                        .all(|c| c.kind == Value && c.record_count == 1)
+                    && inline_count.is_some_and(|count| count > 0 && count <= 256)
+                    && inline_count
+                        .zip(inline_payload)
+                        .is_some_and(|(count, bytes)| {
+                            bytes <= count * 1024
+                                && bytes
+                                    <= u64::from(self.reference.encoded_bytes.saturating_sub(27))
+                        })
+            }
             Branch => {
                 !self.children.is_empty()
                     && self.reference.encoded_bytes <= 32 * 1024
                     && self
                         .children
                         .iter()
-                        .all(|c| matches!(c.kind, Leaf | Branch))
-                    && self.children.windows(2).all(|c| c[0].kind == c[1].kind)
+                        .all(|c| matches!(c.kind, Leaf | PackedLeaf | Branch))
+                    && (self.children.iter().all(|c| c.kind == Branch)
+                        || self
+                            .children
+                            .iter()
+                            .all(|c| matches!(c.kind, Leaf | PackedLeaf)))
                     && records == self.reference.record_count
                     && payload == self.reference.payload_bytes
             }
@@ -241,6 +267,7 @@ impl PublishedRecordRoot {
                     r.kind,
                     RecordObjectKind::OwnerChunk
                         | RecordObjectKind::Leaf
+                        | RecordObjectKind::PackedLeaf
                         | RecordObjectKind::Branch
                 )
             })

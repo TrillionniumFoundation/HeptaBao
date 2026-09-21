@@ -163,7 +163,11 @@ impl RecordStateRoot {
                     && reference.encoded_bytes > 0
                     && reference.record_count > 0
                     && reference.payload_bytes > 0
-                    && ((self.kv1.height == 1 && reference.kind == ObjectKind::Leaf)
+                    && ((self.kv1.height == 1
+                        && matches!(
+                            reference.kind,
+                            ObjectKind::Leaf | ObjectKind::PackedLeaf
+                        ))
                         || (self.kv1.height > 1 && reference.kind == ObjectKind::Branch)) => {}
             _ => return Err(RootError::Invalid),
         }
@@ -223,4 +227,94 @@ pub(crate) fn digest_owner(
     let domain = format!("state-owner-v5/{name}");
     key.digest(domain.as_bytes(), bytes)
         .map_err(|_| RootError::Authentication)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::state_records::{ObjectId, StagedObject};
+    type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+    fn fixture(kind: ObjectKind, height: u8) -> TestResult<RecordStateRoot> {
+        let key = AddressKey::from_bytes([7; 32]);
+        let chunk = StagedObject::owner_chunk(&key, b"{}")?;
+        let owners = OWNER_NAMES
+            .into_iter()
+            .map(|name| {
+                Ok(OpaqueOwnerRef {
+                    name: name.into(),
+                    total_bytes: 2,
+                    chunks: vec![chunk.reference().clone()],
+                    digest: digest_owner(&key, name, b"{}").map_err(|_| "owner digest")?,
+                })
+            })
+            .collect::<TestResult<Vec<_>>>()?
+            .try_into()
+            .map_err(|_| "owners")?;
+        RecordStateRoot::new(
+            37,
+            "packed-root-test".into(),
+            0,
+            owners,
+            Kv1Root {
+                reference: Some(ObjectRef {
+                    id: ObjectId::from_bytes([8; 32]),
+                    kind,
+                    encoded_bytes: 100,
+                    record_count: 1,
+                    payload_bytes: 4,
+                }),
+                height,
+            },
+            [7; 32],
+        )
+        .map_err(|_| "invalid fixture root".into())
+    }
+
+    #[test]
+    fn direct_packed_leaf_root_roundtrips_without_changing_old_leaf_or_branch_shapes() -> TestResult
+    {
+        for (kind, height) in [
+            (ObjectKind::Leaf, 1),
+            (ObjectKind::PackedLeaf, 1),
+            (ObjectKind::Branch, 2),
+        ] {
+            let root = fixture(kind, height)?;
+            let bytes = root.encode().map_err(|_| "encode")?;
+            let decoded = RecordStateRoot::decode(&bytes).map_err(|_| "decode")?;
+            assert_eq!(decoded.kv1, root.kv1);
+            assert_eq!(
+                decoded.identity().map_err(|_| "identity")?,
+                root.identity().map_err(|_| "identity")?
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn packed_root_rejects_wrong_levels_owner_roles_and_unknown_kind() -> TestResult {
+        for (kind, height) in [
+            (ObjectKind::PackedLeaf, 2),
+            (ObjectKind::Leaf, 2),
+            (ObjectKind::Branch, 1),
+            (ObjectKind::Block, 1),
+            (ObjectKind::Value, 1),
+            (ObjectKind::OwnerChunk, 1),
+            (ObjectKind::PackedLeaf, 0),
+        ] {
+            let mut root = fixture(ObjectKind::PackedLeaf, 1)?;
+            root.kv1.height = height;
+            root.kv1.reference.as_mut().ok_or("reference")?.kind = kind;
+            assert!(root.validate().is_err());
+            assert!(root.encode().is_err());
+        }
+        let mut root = fixture(ObjectKind::PackedLeaf, 1)?;
+        root.owners[0].chunks[0].kind = ObjectKind::PackedLeaf;
+        assert!(root.validate().is_err());
+        let root = fixture(ObjectKind::PackedLeaf, 1)?;
+        let bytes = root.encode().map_err(|_| "encode")?;
+        let text = std::str::from_utf8(&bytes)?.replace("PackedLeaf", "UnknownPage");
+        assert!(RecordStateRoot::decode(text.as_bytes()).is_err());
+        Ok(())
+    }
 }

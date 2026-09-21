@@ -207,4 +207,52 @@ class RecordSnapshotGuards(unittest.TestCase):
             with self.assertRaises(ValueError): fixture.strict_json(invalid)
 
 
+    def packed_state(self, *, inline_payload=7, references=2):
+        state = deepcopy(self.state)
+        children = [deepcopy(self.refs[1]) for _ in range(references)]
+        leaf = descriptor(7, 'PackedLeaf', 4096, references + 1, 16 * references + inline_payload)
+        state['records_v5']['objects']['07' * 32] = object_value(leaf, children)
+        state['records_v5']['published']['direct_refs'] = [leaf, deepcopy(self.refs[4])]
+        return state
+
+    def test_packed_inline_and_duplicate_value_edges_have_exact_logical_aggregates(self):
+        for references, inline_payload in [(0, 0), (0, 1024), (1, 7), (2, 7)]:
+            state = self.packed_state(inline_payload=inline_payload, references=references)
+            self.write(self.bundle(state)); report = self.inspect()
+            self.assertEqual(report['snapshot_state']['published_record_count'], references + 1)
+            self.assertEqual(report['snapshot_state']['published_payload_bytes'], 16 * references + inline_payload)
+            self.assertFalse(report['cryptographic_authenticity_verified'])
+            self.assertFalse(report['plaintext_key_order_verified'])
+
+    def test_packed_count_inline_bytes_page_bounds_and_wrong_children_are_rejected(self):
+        mutations = (
+            lambda item: item['reference'].update(record_count=0),
+            lambda item: item['reference'].update(record_count=257),
+            lambda item: item['reference'].update(record_count=2),
+            lambda item: item['reference'].update(payload_bytes=31),
+            lambda item: item['reference'].update(payload_bytes=32 + 1025),
+            lambda item: item['reference'].update(encoded_bytes=32769),
+            lambda item: item.update(reference={**item['reference'], 'encoded_bytes': 30}, sealed='AQ'),
+            lambda item: item['children'][0].update(kind='Block'),
+            lambda item: item['children'][0].update(record_count=0),
+        )
+        for mutation in mutations:
+            state = self.packed_state(); mutation(state['records_v5']['objects']['07' * 32]); self.reject(state)
+        state = self.packed_state(); del state['records_v5']['objects']['02' * 32]
+        self.reject(state)
+
+    def test_branches_accept_mixed_leaf_formats_but_reject_mixed_tree_levels(self):
+        state = self.packed_state()
+        packed = state['records_v5']['objects']['07' * 32]['reference']
+        branch = descriptor(8, 'Branch', 300, 4, 55)
+        state['records_v5']['objects']['08' * 32] = object_value(branch, [deepcopy(self.refs[2]), packed])
+        state['records_v5']['published']['direct_refs'] = [branch, deepcopy(self.refs[4])]
+        self.write(self.bundle(state)); report = self.inspect()
+        self.assertEqual(report['snapshot_state']['published_record_count'], 4)
+        self.assertEqual(report['snapshot_state']['published_payload_bytes'], 55)
+        # Same aggregate counts, but a Branch and PackedLeaf are different levels.
+        state['records_v5']['objects']['08' * 32]['children'][0] = deepcopy(self.refs[3])
+        self.reject(state)
+
+
 if __name__ == '__main__': unittest.main()

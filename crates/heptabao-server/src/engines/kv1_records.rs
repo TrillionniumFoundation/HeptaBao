@@ -136,6 +136,14 @@ impl Runtime {
 }
 
 impl EngineState {
+    /// The authenticated graph caches this property across every branch level.
+    /// Checking only the root kind would miss packed leaves below a Branch.
+    pub(crate) fn has_packed_kv1_records(&self) -> bool {
+        self.records
+            .as_ref()
+            .is_some_and(|runtime| runtime.index.has_packed_leaves())
+    }
+
     pub(crate) fn record_root(&self) -> Option<Kv1Root> {
         self.records.as_ref().map(|runtime| runtime.index.root())
     }

@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **36**. Its source constant is
+The current Service state schema is **37**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -75,7 +75,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 33 | Persisted system lease defaults and the last granted Token API lease duration; zero AppRole token TTL/max and SecretID issuance metadata must be absent. |
 | 34 | Native AppRole token TTL inheritance and SecretID issuance facts; native userpass limits, configured policy semantics and direct issuer provenance must be absent. |
 | 35 | Userpass TTL/max inheritance, period/explicit maximum, configured policies without implicit default, and direct issuing-account provenance; KV1 record roots must be absent. |
-| 36 | Adds authenticated KV1 record graphs and the V5 publication root. Legacy inline KV1/V4 state remains admitted until its explicit write-side transition. |
+| 36 | Adds authenticated KV1 record graphs and the V5 publication root. Legacy inline KV1/V4 state remains admitted until its explicit write-side transition. PackedLeaf pages must be absent throughout the graph. |
+| 37 | Adds PackedLeaf object kind6: small KV1 values can reside directly in authenticated leaf pages. Prior kind1–5 encodings remain unchanged. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -291,7 +292,7 @@ uses without fabricated timestamps or TTL. Finite successful uses update the
 record, and exhaustion removes it atomically with token issuance.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 36. An authenticated
+it. Initialization and committed mutations use schema 37. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -304,7 +305,12 @@ regressions; it does not replace native execution or prove all prose complete.
 ## Rollback and storage envelopes
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
-HA framing. An old binary must refuse unsupported state, not deserialize only
+HA framing. Schema36 pure reads, exact no-op writes and rejected writes retain
+their existing references and schema. The first successful mutation promotes37;
+schema36 binaries reject it. PackedLeaf detection includes every descendant,
+so a Branch root cannot conceal a packed page under an older discriminator.
+Local reopen, HA materialization, JSON/native prepared restore and publication
+share this complete authenticated-graph check. An old binary must refuse unsupported state, not deserialize only
 fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-35 binary cannot read schema-36 state or its V5 root.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth

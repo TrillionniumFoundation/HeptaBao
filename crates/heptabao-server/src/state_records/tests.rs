@@ -89,7 +89,10 @@ fn byte_bounded_splits_form_multiple_levels_and_reopen_in_tuple_order() {
             object
                 .reference
                 .verify(&index.address_key, object.bytes())?;
-            if matches!(object.reference.kind, ObjectKind::Leaf | ObjectKind::Branch) {
+            if matches!(
+                object.reference.kind,
+                ObjectKind::Leaf | ObjectKind::Branch | ObjectKind::PackedLeaf
+            ) {
                 assert!(object.bytes().len() <= PAGE_BYTES);
             }
             Ok(())
@@ -118,11 +121,15 @@ fn point_update_is_only_value_and_path_and_old_reader_survives_deleted_disk_obje
         edited
             .objects
             .iter()
-            .filter(|o| matches!(o.reference.kind, ObjectKind::Leaf | ObjectKind::Branch))
+            .filter(|o| matches!(
+                o.reference.kind,
+                ObjectKind::Leaf | ObjectKind::Branch | ObjectKind::PackedLeaf
+            ))
             .count(),
         index.height as usize
     );
-    assert_eq!(edited.objects.len(), index.height as usize + 2);
+    // The replacement is inline: only its packed leaf and ancestor path change.
+    assert_eq!(edited.objects.len(), index.height as usize);
     assert!(
         edited
             .objects
@@ -163,7 +170,12 @@ fn shallow_cursor_skips_entire_subtrees_and_scope_incarnation_never_bleeds() {
         "b/ё",
         "c",
     ] {
-        put(&mut index, &mut store, key(path), b"{}");
+        let bytes = if path == "a/deep/leaf" {
+            vec![b'x'; INLINE_VALUE_BYTES + 1]
+        } else {
+            b"{}".to_vec()
+        };
+        put(&mut index, &mut store, key(path), &bytes);
     }
     put(
         &mut index,
@@ -355,4 +367,387 @@ fn failed_candidate_does_not_publish_new_root_and_staging_alone_is_invisible() {
     let reopened = Kv1Index::open(address(), published, &store).unwrap();
     assert_eq!(reopened.get(&key("selected")), Some(b"original".as_slice()));
     assert_eq!(index.get(&key("selected")), Some(b"original".as_slice()));
+}
+
+fn unhex(text: &str) -> Vec<u8> {
+    assert_eq!(text.len() % 2, 0);
+    text.as_bytes()
+        .as_chunks::<2>()
+        .0
+        .iter()
+        .map(|pair| u8::from_str_radix(std::str::from_utf8(pair).unwrap(), 16).unwrap())
+        .collect()
+}
+
+// Fixed schema-36 bytes, computed from the documented binary layout and HMAC
+// domain. This fixture does not call the current encoder to create its input.
+fn legacy_small_values() -> (Kv1Index, MemoryObjects) {
+    const BLOCK: &str = "48424b56314f303101000000000000000000000000000000027b7d";
+    const VALUE: &str = "48424b56314f303102000000000000000100000000000000020001a62b4344e157cf9f5b70b1e2c3fa97e2900c163a48e645df36f5f0a3b8fafd70010000001b00000000000000000000000000000002";
+    const LEAF: &str = "48424b56314f3031030000000000000002000000000000000400020004726f6f7400077365637265742f0000000000000001000161fd3df7db93b8a2efda45febcbd07f48fe7fc67935172f2a2a34d98f2d3f550470200000050000000000000000100000000000000020004726f6f7400077365637265742f0000000000000001000162fd3df7db93b8a2efda45febcbd07f48fe7fc67935172f2a2a34d98f2d3f55047020000005000000000000000010000000000000002";
+    let mut store = MemoryObjects::default();
+    for (digest, bytes) in [
+        (
+            "a62b4344e157cf9f5b70b1e2c3fa97e2900c163a48e645df36f5f0a3b8fafd70",
+            BLOCK,
+        ),
+        (
+            "fd3df7db93b8a2efda45febcbd07f48fe7fc67935172f2a2a34d98f2d3f55047",
+            VALUE,
+        ),
+        (
+            "1b832d3b60bc8d61858866ee8a2b6533434bafec26e8114913924c3cc398e034",
+            LEAF,
+        ),
+    ] {
+        store.0.insert(
+            ObjectId::from_bytes(unhex(digest).try_into().unwrap()),
+            Zeroizing::new(unhex(bytes)),
+        );
+    }
+    let root = Kv1Root {
+        reference: Some(ObjectRef {
+            id: ObjectId::from_bytes(
+                unhex("1b832d3b60bc8d61858866ee8a2b6533434bafec26e8114913924c3cc398e034")
+                    .try_into()
+                    .unwrap(),
+            ),
+            kind: ObjectKind::Leaf,
+            encoded_bytes: 185,
+            record_count: 2,
+            payload_bytes: 4,
+        }),
+        height: 1,
+    };
+    (Kv1Index::open(address(), root, &store).unwrap(), store)
+}
+
+#[test]
+fn fixed_legacy_bytes_reopen_without_conversion_and_changed_page_preserves_references() {
+    let (legacy, mut store) = legacy_small_values();
+    let root = legacy.root();
+    assert!(!legacy.has_packed_leaves());
+    assert_eq!(legacy.get(&key("a")), Some(b"{}".as_slice()));
+    let mut exported = MemoryObjects::default();
+    legacy
+        .visit_objects(|object| {
+            exported.stage(std::slice::from_ref(object));
+            Ok(())
+        })
+        .unwrap();
+    assert_eq!(exported.0, store.0);
+    let noop = legacy.edit(key("a"), Some(b"{}")).unwrap();
+    assert!(!noop.changed);
+    assert!(noop.objects.is_empty());
+    assert_eq!(noop.next.root(), root);
+    let edit = legacy.edit(key("a"), Some(b"{\"v\":1}")).unwrap();
+    assert_eq!(edit.objects.len(), 1);
+    let page = &edit.objects[0];
+    assert_eq!(page.reference.kind, ObjectKind::PackedLeaf);
+    assert_eq!(page.children.len(), 1);
+    assert_eq!(
+        page.children[0].id,
+        ObjectId::from_bytes(
+            unhex("fd3df7db93b8a2efda45febcbd07f48fe7fc67935172f2a2a34d98f2d3f55047")
+                .try_into()
+                .unwrap()
+        )
+    );
+    store.stage(&edit.objects);
+    let reopened = Kv1Index::open(address(), edit.next.root(), &store).unwrap();
+    assert!(reopened.has_packed_leaves());
+    assert_eq!(reopened.get(&key("b")), Some(b"{}".as_slice()));
+    assert_eq!(legacy.root(), root);
+    assert_eq!(legacy.get(&key("a")), Some(b"{}".as_slice()));
+    // Removing the last inline entry returns to the old Leaf encoding and
+    // keeps the surviving referenced value untouched.
+    let deleted = reopened.edit(key("a"), None).unwrap();
+    assert_eq!(deleted.objects.len(), 1);
+    assert_eq!(deleted.objects[0].reference.kind, ObjectKind::Leaf);
+    assert!(!deleted.next.has_packed_leaves());
+    assert_eq!(deleted.next.get(&key("b")), Some(b"{}".as_slice()));
+}
+
+#[test]
+fn packed_leaf_has_fixed_binary_encoding_and_hmac_and_no_external_value_objects() {
+    let edit = Kv1Index::empty(address())
+        .edit(key("a"), Some(b"{}"))
+        .unwrap();
+    assert_eq!(edit.objects.len(), 1);
+    let page = &edit.objects[0];
+    assert_eq!(
+        page.bytes(),
+        unhex(
+            "48424b56314f3031060000000000000001000000000000000200010004726f6f7400077365637265742f00000000000000010001610000027b7d"
+        )
+    );
+    assert_eq!(
+        page.reference.id.bytes().as_slice(),
+        unhex("5c82157ab844808b0a61f47b1f680402fc6f2caa8bf512728b70a9861656e665")
+    );
+    assert!(page.children.is_empty());
+    assert_eq!(page.reference.record_count, 1);
+    assert_eq!(page.reference.payload_bytes, 2);
+}
+
+#[test]
+fn inline_threshold_empty_bytes_and_mixed_reference_edges_roundtrip() {
+    let mut index = Kv1Index::empty(address());
+    let mut store = MemoryObjects::default();
+    for (path, len) in [("empty", 0), ("inline", 1024), ("external", 1025)] {
+        put(&mut index, &mut store, key(path), &vec![b'x'; len]);
+    }
+    let page = index.root.as_ref().unwrap();
+    assert_eq!(page.object.reference.kind, ObjectKind::PackedLeaf);
+    assert_eq!(page.object.children.len(), 1);
+    assert_eq!(page.object.reference.record_count, 3);
+    assert_eq!(page.object.reference.payload_bytes, 2049);
+    let mut count = 0;
+    index
+        .visit_objects(|_| {
+            count += 1;
+            Ok(())
+        })
+        .unwrap();
+    assert_eq!(count, 3); // one Block, one Value, one PackedLeaf
+    let pin = index.clone();
+    let reopened = Kv1Index::open(address(), index.root(), &store).unwrap();
+    assert_eq!(reopened.get(&key("empty")), Some(b"".as_slice()));
+    assert_eq!(reopened.get(&key("inline")).unwrap().len(), 1024);
+    assert_eq!(reopened.get(&key("external")).unwrap().len(), 1025);
+    store.0.clear();
+    assert_eq!(pin.get(&key("inline")).unwrap(), &[b'x'; 1024]);
+
+    let (legacy, mut store) = legacy_small_values();
+    let appended = legacy.edit(key("c"), Some(b"inline")).unwrap();
+    assert_eq!(appended.objects.len(), 1);
+    assert_eq!(appended.objects[0].children.len(), 2);
+    assert_eq!(
+        appended.objects[0].children[0],
+        appended.objects[0].children[1]
+    );
+    store.stage(&appended.objects);
+    let reopened = Kv1Index::open(address(), appended.next.root(), &store).unwrap();
+    let mut kinds = Vec::new();
+    reopened
+        .visit_objects(|o| {
+            kinds.push(o.reference.kind);
+            Ok(())
+        })
+        .unwrap();
+    assert_eq!(
+        kinds,
+        [ObjectKind::Block, ObjectKind::Value, ObjectKind::PackedLeaf]
+    );
+    assert_eq!(reopened.root().reference.unwrap().payload_bytes, 10);
+}
+
+#[test]
+fn dense_inline_values_split_by_page_bytes_and_export_only_reachable_pages() {
+    let mut index = Kv1Index::empty(address());
+    let mut store = MemoryObjects::default();
+    for number in 0..800 {
+        let value = format!("{number:08}{}", "x".repeat(592));
+        put(
+            &mut index,
+            &mut store,
+            key(&format!("item-{number:04}")),
+            value.as_bytes(),
+        );
+    }
+    assert!(index.height > 1);
+    let mut exported = MemoryObjects::default();
+    let mut bytes = 0;
+    index
+        .visit_objects(|object| {
+            assert!(matches!(
+                object.reference.kind,
+                ObjectKind::PackedLeaf | ObjectKind::Branch
+            ));
+            assert!(object.bytes().len() <= PAGE_BYTES);
+            assert!(
+                object
+                    .children
+                    .iter()
+                    .all(|child| exported.0.contains_key(&child.id))
+            );
+            bytes += object.bytes().len();
+            exported.stage(std::slice::from_ref(object));
+            Ok(())
+        })
+        .unwrap();
+    assert!(exported.0.len() < 64);
+    // Actual encoded immutable bytes, not an allocation or latency claim.
+    assert!(bytes < 800 * 650 + 2 * PAGE_BYTES);
+    assert_eq!(index.root().reference.as_ref().unwrap().record_count, 800);
+    assert_eq!(
+        index.root().reference.as_ref().unwrap().payload_bytes,
+        800 * 600
+    );
+    let reopened = Kv1Index::open(address(), index.root(), &exported).unwrap();
+    assert_eq!(
+        reopened
+            .scan(&scope(), "", None, 4096, true)
+            .unwrap()
+            .keys
+            .len(),
+        800
+    );
+    for number in [0, 127, 399, 799] {
+        assert_eq!(
+            reopened.get(&key(&format!("item-{number:04}"))).unwrap(),
+            format!("{number:08}{}", "x".repeat(592)).as_bytes()
+        );
+    }
+}
+
+#[test]
+fn regular_and_packed_leaf_siblings_share_height_and_cursor_but_branch_cannot_be_leaf() {
+    let (legacy, mut store) = legacy_small_values();
+    let mut objects = Vec::new();
+    let packed_value = codec::value(&address(), b"z-value", &mut objects).unwrap();
+    let packed = codec::page(
+        &address(),
+        PageData::Leaf(vec![(key("z"), packed_value)]),
+        &mut objects,
+    )
+    .unwrap();
+    let branch = codec::page(
+        &address(),
+        PageData::Branch(vec![legacy.root.clone().unwrap(), packed]),
+        &mut objects,
+    )
+    .unwrap();
+    store.stage(&objects);
+    let mixed = Kv1Index::open(
+        address(),
+        Kv1Root {
+            reference: Some(branch.object.reference.clone()),
+            height: 2,
+        },
+        &store,
+    )
+    .unwrap();
+    assert!(mixed.has_packed_leaves());
+    assert_eq!(
+        mixed.scan(&scope(), "", Some("a"), 10, true).unwrap().keys,
+        ["b", "z"]
+    );
+    assert_eq!(mixed.get(&key("b")), Some(b"{}".as_slice()));
+    assert_eq!(mixed.get(&key("z")), Some(b"z-value".as_slice()));
+    let edit = mixed.edit(key("z"), None).unwrap();
+    assert_eq!(edit.next.root(), legacy.root());
+    assert!(!edit.next.has_packed_leaves());
+    assert!(edit.objects.is_empty());
+    let smaller_value = codec::value(&address(), b"x", &mut objects).unwrap();
+    let smaller = codec::page(
+        &address(),
+        PageData::Leaf(vec![(key("0"), smaller_value)]),
+        &mut objects,
+    )
+    .unwrap();
+    assert!(matches!(
+        codec::page(
+            &address(),
+            PageData::Branch(vec![smaller, branch]),
+            &mut objects
+        ),
+        Err(RecordError::Corrupt)
+    ));
+}
+
+fn reopen_authenticated_page(bytes: Vec<u8>, height: u8) -> Result<Kv1Index> {
+    let reference = ObjectRef {
+        id: ObjectId(address().digest(b"object", &bytes).unwrap()),
+        kind: ObjectKind::PackedLeaf,
+        encoded_bytes: bytes.len() as u32,
+        record_count: u64::from_be_bytes(bytes[9..17].try_into().unwrap()),
+        payload_bytes: u64::from_be_bytes(bytes[17..25].try_into().unwrap()),
+    };
+    let mut store = MemoryObjects::default();
+    store.0.insert(reference.id, Zeroizing::new(bytes));
+    Kv1Index::open(
+        address(),
+        Kv1Root {
+            reference: Some(reference),
+            height,
+        },
+        &store,
+    )
+}
+
+#[test]
+fn authenticated_packed_page_rejects_invalid_tags_lengths_counts_order_and_height() {
+    let edit = Kv1Index::empty(address())
+        .edit(key("a"), Some(b"{}"))
+        .unwrap();
+    let golden = edit.objects[0].bytes().to_vec();
+    assert!(reopen_authenticated_page(golden.clone(), 1).is_ok());
+    assert!(matches!(
+        reopen_authenticated_page(golden.clone(), 2),
+        Err(RecordError::Corrupt)
+    ));
+    // Fixed key ends at byte 53 in the independent golden fixture above.
+    let mut bad = golden.clone();
+    bad[53] = 2;
+    assert!(matches!(
+        reopen_authenticated_page(bad, 1),
+        Err(RecordError::Corrupt)
+    ));
+    let mut bad = golden.clone();
+    bad[54..56].copy_from_slice(&1025_u16.to_be_bytes());
+    bad.resize(56 + 1025, b'x');
+    bad[17..25].copy_from_slice(&1025_u64.to_be_bytes());
+    assert!(matches!(
+        reopen_authenticated_page(bad, 1),
+        Err(RecordError::Corrupt)
+    ));
+    let mut bad = golden.clone();
+    bad[17..25].copy_from_slice(&3_u64.to_be_bytes());
+    assert!(matches!(
+        reopen_authenticated_page(bad, 1),
+        Err(RecordError::Corrupt)
+    ));
+    let mut bad = golden.clone();
+    bad[9..17].copy_from_slice(&2_u64.to_be_bytes());
+    assert!(matches!(
+        reopen_authenticated_page(bad, 1),
+        Err(RecordError::Corrupt)
+    ));
+    let mut bad = golden.clone();
+    bad.push(0);
+    assert!(matches!(
+        reopen_authenticated_page(bad, 1),
+        Err(RecordError::Corrupt)
+    ));
+    let mut bad = golden.clone();
+    bad[25..27].copy_from_slice(&0_u16.to_be_bytes());
+    assert!(matches!(
+        reopen_authenticated_page(bad, 1),
+        Err(RecordError::Corrupt)
+    ));
+    let mut duplicate = golden.clone();
+    duplicate.extend_from_slice(&golden[27..]);
+    duplicate[9..17].copy_from_slice(&2_u64.to_be_bytes());
+    duplicate[17..25].copy_from_slice(&4_u64.to_be_bytes());
+    duplicate[25..27].copy_from_slice(&2_u16.to_be_bytes());
+    assert!(matches!(
+        reopen_authenticated_page(duplicate, 1),
+        Err(RecordError::Corrupt)
+    ));
+    // A packed page with only external references is not canonical: it must
+    // remain the byte-identical legacy Leaf representation.
+    let (legacy, _) = legacy_small_values();
+    let old = legacy.root.as_ref().unwrap().object.bytes();
+    let mut no_inline = old[..27].to_vec();
+    no_inline[8] = 6;
+    for entry in old[27..].as_chunks::<79>().0 {
+        no_inline.extend_from_slice(&entry[..26]);
+        no_inline.push(1);
+        no_inline.extend_from_slice(&entry[26..]);
+    }
+    assert!(matches!(
+        reopen_authenticated_page(no_inline, 1),
+        Err(RecordError::Corrupt)
+    ));
 }

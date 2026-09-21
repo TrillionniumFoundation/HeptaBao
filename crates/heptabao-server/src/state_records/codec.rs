@@ -7,6 +7,7 @@ fn kind(byte: u8) -> Result<ObjectKind> {
         3 => Ok(ObjectKind::Leaf),
         4 => Ok(ObjectKind::Branch),
         5 => Ok(ObjectKind::OwnerChunk),
+        6 => Ok(ObjectKind::PackedLeaf),
         _ => Err(RecordError::Corrupt),
     }
 }
@@ -17,7 +18,7 @@ fn maximum(kind: ObjectKind) -> usize {
     match kind {
         ObjectKind::Block | ObjectKind::OwnerChunk => BLOCK_BYTES + HEADER_BYTES,
         ObjectKind::Value => HEADER_BYTES + 2 + 64 * REF_BYTES,
-        ObjectKind::Leaf | ObjectKind::Branch => PAGE_BYTES,
+        ObjectKind::Leaf | ObjectKind::Branch | ObjectKind::PackedLeaf => PAGE_BYTES,
     }
 }
 struct Writer {
@@ -121,6 +122,16 @@ impl<'a> Decoder<'a> {
             self.take(2)?.try_into().map_err(|_| RecordError::Corrupt)?,
         )))
     }
+    fn tag(&mut self) -> Result<u8> {
+        Ok(self.take(1)?[0])
+    }
+    fn inline(&mut self) -> Result<&'a [u8]> {
+        let length = self.u16()?;
+        if length > INLINE_VALUE_BYTES {
+            return Err(RecordError::Corrupt);
+        }
+        self.take(length)
+    }
     fn u64(&mut self) -> Result<u64> {
         Ok(u64::from_be_bytes(
             self.take(8)?.try_into().map_err(|_| RecordError::Corrupt)?,
@@ -200,7 +211,7 @@ pub(super) fn verify_object(reference: &ObjectRef, key: &AddressKey, bytes: &[u8
                 return Err(RecordError::Corrupt);
             }
         }
-        ObjectKind::Leaf | ObjectKind::Branch => {
+        ObjectKind::Leaf | ObjectKind::Branch | ObjectKind::PackedLeaf => {
             if reference.record_count == 0 {
                 return Err(RecordError::Corrupt);
             }
@@ -219,6 +230,19 @@ pub(super) fn block(key: &AddressKey, kind: ObjectKind, bytes: &[u8]) -> Result<
 }
 
 pub(super) fn value(
+    key: &AddressKey,
+    bytes: &[u8],
+    staged: &mut Vec<Arc<StagedObject>>,
+) -> Result<Arc<StoredValue>> {
+    if bytes.len() <= INLINE_VALUE_BYTES {
+        return Ok(Arc::new(StoredValue::Inline(Zeroizing::new(
+            bytes.to_vec(),
+        ))));
+    }
+    referenced_value(key, bytes, staged)
+}
+
+pub(super) fn referenced_value(
     key: &AddressKey,
     bytes: &[u8],
     staged: &mut Vec<Arc<StagedObject>>,
@@ -245,21 +269,31 @@ pub(super) fn value(
     }
     let object = writer.finish(key, ObjectKind::Value, 1, bytes.len() as u64, refs)?;
     staged.push(object.clone());
-    Ok(Arc::new(StoredValue {
+    Ok(Arc::new(StoredValue::Referenced(ReferencedValue {
         object,
         blocks,
         encoded: Zeroizing::new(bytes.to_vec()),
-    }))
+    })))
 }
 fn key_length(key: &Kv1Key) -> usize {
     14 + key.namespace.len() + key.mount.len() + key.path.len()
 }
 pub(super) fn leaf_length(entries: &[(Kv1Key, Arc<StoredValue>)]) -> usize {
+    let packed = entries.iter().any(|(_, value)| value.reference().is_none());
     HEADER_BYTES
         + 2
         + entries
             .iter()
-            .map(|(key, _)| key_length(key) + REF_BYTES)
+            .map(|(key, value)| {
+                key_length(key)
+                    + if packed {
+                        1 + value
+                            .reference()
+                            .map_or(2 + value.encoded().len(), |_| REF_BYTES)
+                    } else {
+                        REF_BYTES
+                    }
+            })
             .sum::<usize>()
 }
 pub(super) fn branch_length(children: &[Arc<Page>]) -> usize {
@@ -285,16 +319,26 @@ pub(super) fn page(
             }
             let bytes = entries
                 .iter()
-                .try_fold(0, |sum, (_, v)| add(sum, v.object.reference.payload_bytes))?;
+                .try_fold(0, |sum, (_, v)| add(sum, v.encoded().len() as u64))?;
+            if entries.iter().any(|(_, value)| {
+                value.reference().is_none() && value.encoded().len() > INLINE_VALUE_BYTES
+            }) {
+                return Err(RecordError::TooLarge);
+            }
+            let packed = entries.iter().any(|(_, value)| value.reference().is_none());
             (
-                ObjectKind::Leaf,
+                if packed {
+                    ObjectKind::PackedLeaf
+                } else {
+                    ObjectKind::Leaf
+                },
                 entries.len(),
                 leaf_length(entries),
                 entries.len() as u64,
                 bytes,
                 entries
                     .iter()
-                    .map(|(_, v)| v.object.reference.clone())
+                    .filter_map(|(_, v)| v.reference().cloned())
                     .collect::<Vec<_>>(),
             )
         }
@@ -332,7 +376,19 @@ pub(super) fn page(
         PageData::Leaf(entries) => {
             for (key, value) in entries {
                 writer.key(key)?;
-                writer.reference(&value.object.reference)?;
+                match value.as_ref() {
+                    StoredValue::Inline(bytes) => {
+                        writer.raw(&[0])?;
+                        writer.u16(bytes.len())?;
+                        writer.raw(bytes)?;
+                    }
+                    StoredValue::Referenced(value) => {
+                        if kind == ObjectKind::PackedLeaf {
+                            writer.raw(&[1])?;
+                        }
+                        writer.reference(&value.object.reference)?;
+                    }
+                }
             }
         }
         PageData::Branch(children) => {
@@ -383,7 +439,7 @@ impl<R: RecordReader> Loader<'_, R> {
         let mut children = Vec::new();
         if matches!(
             reference.kind,
-            ObjectKind::Value | ObjectKind::Leaf | ObjectKind::Branch
+            ObjectKind::Value | ObjectKind::Leaf | ObjectKind::Branch | ObjectKind::PackedLeaf
         ) {
             let count = decoder.u16()?;
             let maximum = if reference.kind == ObjectKind::Value {
@@ -395,13 +451,28 @@ impl<R: RecordReader> Loader<'_, R> {
                 return Err(RecordError::Corrupt);
             }
             children.reserve_exact(count);
+            let mut inline = false;
             for _ in 0..count {
                 if reference.kind != ObjectKind::Value {
                     drop(decoder.key()?);
                 }
-                children.push(decoder.reference()?);
+                if reference.kind == ObjectKind::PackedLeaf {
+                    match decoder.tag()? {
+                        0 => {
+                            decoder.inline()?;
+                            inline = true;
+                        }
+                        1 => children.push(decoder.reference()?),
+                        _ => return Err(RecordError::Corrupt),
+                    }
+                } else {
+                    children.push(decoder.reference()?);
+                }
             }
             decoder.done()?;
+            if reference.kind == ObjectKind::PackedLeaf && !inline {
+                return Err(RecordError::Corrupt);
+            }
         }
         let object = Arc::new(StagedObject {
             reference: reference.clone(),
@@ -416,7 +487,7 @@ impl<R: RecordReader> Loader<'_, R> {
             return Err(RecordError::Corrupt);
         }
         if let Some(value) = self.values.get(&reference.id) {
-            if value.object.reference != *reference {
+            if value.reference() != Some(reference) {
                 return Err(RecordError::Corrupt);
             }
             return Ok(value.clone());
@@ -444,23 +515,19 @@ impl<R: RecordReader> Loader<'_, R> {
         if encoded.len() != length {
             return Err(RecordError::Corrupt);
         }
-        let value = Arc::new(StoredValue {
+        let value = Arc::new(StoredValue::Referenced(ReferencedValue {
             object,
             blocks,
             encoded,
-        });
+        }));
         self.values.insert(reference.id, value.clone());
         Ok(value)
     }
     fn page(&mut self, reference: &ObjectRef, height: u8) -> Result<Arc<Page>> {
         if height == 0
             || height > MAX_HEIGHT
-            || reference.kind
-                != (if height == 1 {
-                    ObjectKind::Leaf
-                } else {
-                    ObjectKind::Branch
-                })
+            || (height == 1 && !matches!(reference.kind, ObjectKind::Leaf | ObjectKind::PackedLeaf))
+            || (height > 1 && reference.kind != ObjectKind::Branch)
         {
             return Err(RecordError::Corrupt);
         }
@@ -485,13 +552,22 @@ impl<R: RecordReader> Loader<'_, R> {
             let mut entries: Vec<(Kv1Key, Arc<StoredValue>)> = Vec::with_capacity(count);
             for _ in 0..count {
                 let key = decoder.key()?;
-                let child = decoder.reference()?;
                 if entries.last().is_some_and(|(prior, _)| prior >= &key) {
                     return Err(RecordError::Corrupt);
                 }
-                let value = self.value(&child)?;
+                let value = if reference.kind == ObjectKind::PackedLeaf {
+                    match decoder.tag()? {
+                        0 => Arc::new(StoredValue::Inline(Zeroizing::new(
+                            decoder.inline()?.to_vec(),
+                        ))),
+                        1 => self.value(&decoder.reference()?)?,
+                        _ => return Err(RecordError::Corrupt),
+                    }
+                } else {
+                    self.value(&decoder.reference()?)?
+                };
                 records = add(records, 1)?;
-                payload = add(payload, child.payload_bytes)?;
+                payload = add(payload, value.encoded().len() as u64)?;
                 entries.push((key, value));
             }
             PageData::Leaf(entries)

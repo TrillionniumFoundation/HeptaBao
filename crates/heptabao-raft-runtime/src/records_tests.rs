@@ -762,3 +762,207 @@ fn oversized_legacy_slots_can_shrink_without_relaxing_typed_stage_budget() {
         0
     );
 }
+
+fn packed(
+    id: u8,
+    count: u64,
+    inline_bytes: u64,
+    children: Vec<RecordObjectRef>,
+) -> SealedRecordObject {
+    let payload_bytes = inline_bytes
+        + children
+            .iter()
+            .map(|child| child.payload_bytes)
+            .sum::<u64>();
+    SealedRecordObject::new(
+        RecordObjectRef {
+            id: [id; 32],
+            kind: RecordObjectKind::PackedLeaf,
+            encoded_bytes: 4096,
+            record_count: count,
+            payload_bytes,
+        },
+        children,
+        vec![id; 4129],
+    )
+    .expect("synthetic bounded packed page metadata")
+}
+
+#[test]
+fn packed_leaf_stage_publish_and_snapshot_preserve_inline_and_repeated_reference_counts() {
+    let b = block(71);
+    let v = value(72, &b);
+    let leaf = packed(73, 3, 7, vec![v.reference().clone(), v.reference().clone()]);
+    let mut state = StateMachine::default();
+    assert_eq!(
+        apply(
+            &mut state,
+            RecordCommand::Stage {
+                object: leaf.clone()
+            }
+        ),
+        Err(RecordRejection::MissingDependency)
+    );
+    for object in [b, v, leaf.clone()] {
+        apply(&mut state, RecordCommand::Stage { object }).expect("child-first staging");
+    }
+    let published = root(RecordRootBase::Empty, 74, vec![leaf.reference().clone()]);
+    apply(
+        &mut state,
+        RecordCommand::Publish {
+            root: published.clone(),
+        },
+    )
+    .expect("packed root publication");
+    let encoded = state.snapshot_bytes().expect("typed snapshot");
+    let reopened =
+        StateMachine::from_snapshot(&encoded).expect("full graph decoder accepts PackedLeaf");
+    assert_eq!(
+        reopened.records_v5.as_ref().expect("records").published(),
+        Some(published)
+    );
+    assert_eq!(
+        reopened
+            .records_v5
+            .as_ref()
+            .expect("records")
+            .object(leaf.reference())
+            .expect("object"),
+        Some(leaf)
+    );
+    let empty_inline = packed(75, 1, 0, vec![]);
+    apply(
+        &mut state,
+        RecordCommand::Stage {
+            object: empty_inline,
+        },
+    )
+    .expect("generic core empty byte value remains legal");
+    let boundary = SealedRecordObject::new(
+        RecordObjectRef {
+            id: [76; 32],
+            kind: RecordObjectKind::PackedLeaf,
+            encoded_bytes: 32768,
+            record_count: 256,
+            payload_bytes: 1024,
+        },
+        vec![],
+        vec![76; 32801],
+    )
+    .expect("inclusive page and entry limits");
+    apply(&mut state, RecordCommand::Stage { object: boundary }).expect("bounded maximum page");
+}
+
+#[test]
+fn packed_leaf_invalid_aggregate_and_size_commands_reject_without_changing_application() {
+    let valid = packed(81, 1, 4, vec![]);
+    let mut state = StateMachine::default();
+    let before = bytes(&state);
+    for (field, value) in [
+        ("record_count", 0_u64),
+        ("record_count", 257),
+        ("encoded_bytes", 26),
+        ("encoded_bytes", 32769),
+        ("payload_bytes", 1025),
+    ] {
+        let mut wire = serde_json::to_value(&valid).expect("wire");
+        wire["reference"][field] = value.into();
+        let invalid: SealedRecordObject =
+            serde_json::from_value(wire).expect("decode untrusted descriptor");
+        assert_eq!(
+            apply(&mut state, RecordCommand::Stage { object: invalid }),
+            Err(RecordRejection::Invalid)
+        );
+        assert_eq!(bytes(&state), before);
+    }
+    let b = block(82);
+    let v = value(83, &b);
+    let mixed = packed(84, 2, 4, vec![v.reference().clone()]);
+    for mode in [
+        "no-inline",
+        "underflow",
+        "wrong-kind",
+        "wrong-count",
+        "page-payload",
+    ] {
+        let mut wire = serde_json::to_value(&mixed).expect("wire");
+        match mode {
+            "no-inline" => wire["reference"]["record_count"] = 1.into(),
+            "underflow" => wire["reference"]["payload_bytes"] = 3.into(),
+            "wrong-kind" => wire["children"][0]["kind"] = "Block".into(),
+            "wrong-count" => wire["children"][0]["record_count"] = 0.into(),
+            _ => {
+                wire["reference"]["encoded_bytes"] = 30.into();
+                wire["sealed"] = "AQ".into();
+            }
+        }
+        let invalid: SealedRecordObject =
+            serde_json::from_value(wire).expect("decode untrusted descriptor");
+        assert_eq!(
+            apply(&mut state, RecordCommand::Stage { object: invalid }),
+            Err(RecordRejection::Invalid),
+            "{mode}"
+        );
+        assert_eq!(bytes(&state), before);
+    }
+}
+
+#[test]
+fn branch_accepts_mixed_legacy_and_packed_leaves_but_never_mixed_tree_levels() {
+    let b = block(91);
+    let v = value(92, &b);
+    let legacy = SealedRecordObject::new(
+        RecordObjectRef {
+            id: [93; 32],
+            kind: RecordObjectKind::Leaf,
+            encoded_bytes: 100,
+            record_count: 1,
+            payload_bytes: 4,
+        },
+        vec![v.reference().clone()],
+        vec![93; 133],
+    )
+    .expect("legacy leaf");
+    let small = packed(94, 1, 3, vec![]);
+    let branch_ref = RecordObjectRef {
+        id: [95; 32],
+        kind: RecordObjectKind::Branch,
+        encoded_bytes: 300,
+        record_count: 2,
+        payload_bytes: 7,
+    };
+    let branch = SealedRecordObject::new(
+        branch_ref.clone(),
+        vec![legacy.reference().clone(), small.reference().clone()],
+        vec![95; 333],
+    )
+    .expect("same-level mixed leaves");
+    let mut state = StateMachine::default();
+    for object in [b, v, legacy, small.clone(), branch.clone()] {
+        apply(&mut state, RecordCommand::Stage { object }).expect("valid graph");
+    }
+    apply(
+        &mut state,
+        RecordCommand::Publish {
+            root: root(RecordRootBase::Empty, 96, vec![branch_ref]),
+        },
+    )
+    .expect("publish mixed leaf graph");
+    StateMachine::from_snapshot(&state.snapshot_bytes().expect("snapshot"))
+        .expect("restore mixed graph");
+    let invalid = RecordObjectRef {
+        id: [97; 32],
+        kind: RecordObjectKind::Branch,
+        encoded_bytes: 300,
+        record_count: 3,
+        payload_bytes: 10,
+    };
+    assert!(
+        SealedRecordObject::new(
+            invalid,
+            vec![branch.reference().clone(), small.reference().clone()],
+            vec![97; 333]
+        )
+        .is_err()
+    );
+}

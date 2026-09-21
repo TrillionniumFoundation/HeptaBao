@@ -70,6 +70,14 @@ class NearLimitUpgradeGuards(unittest.TestCase):
             write(bundle)
             report=fixture.inspect_legacy_bundle(SimpleNamespace(root=root),SimpleNamespace(cluster_id=cluster,replication_key=key))
             self.assertEqual(report['snapshot_index'],3)
+            with self.assertRaises(fixture.LegacySnapshotPending):
+                fixture.inspect_legacy_bundle(SimpleNamespace(root=root),SimpleNamespace(cluster_id=cluster,replication_key=key),minimum_index=4)
+            self.assertEqual(fixture.inspect_legacy_bundle(SimpleNamespace(root=root),SimpleNamespace(cluster_id=cluster,replication_key=key),minimum_index=3)['snapshot_index'],3)
+            mismatched=deepcopy(bundle);mismatched['state']['last_applied_log']=dict(mismatched['state']['last_applied_log'],index=4);write(mismatched)
+            with self.assertRaises(fixture.LegacySnapshotPending):
+                fixture.inspect_legacy_bundle(SimpleNamespace(root=root),SimpleNamespace(cluster_id=cluster,replication_key=key),minimum_index=4)
+            with self.assertRaises(fixture.FixtureError):
+                fixture.inspect_legacy_bundle(SimpleNamespace(root=root),SimpleNamespace(cluster_id=cluster,replication_key=key))
             broken=deepcopy(bundle);broken['current_snapshot']['meta']['last_log_id']['index']=4;write(broken)
             with self.assertRaises(fixture.FixtureError):fixture.inspect_legacy_bundle(SimpleNamespace(root=root),SimpleNamespace(cluster_id=cluster,replication_key=key))
 
@@ -94,6 +102,57 @@ class NearLimitUpgradeGuards(unittest.TestCase):
         for broken in ([],rows+[rows[0]],rows[:-1]+[{'case':'complete','passed':False}],
                        rows[:-1]+[{'case':'complete','passed':1}],rows[:-1]+[{'case':'complete','passed':True,'secret':'sensitive'}]):
             self.assertFalse(fixture.complete(broken))
+
+
+    def test_legacy503_remains_a_failed_reply_but_can_observe_actual_later_completion(self):
+        calls=[];checks=[];observations={}
+        def call(method,path,*args,**kwargs):
+            calls.append((method,path))
+            if method=='GET':return 200,{'data':{'applied_index':17}}
+            return 503,{'errors':['HA snapshot trigger failed']}
+        node=SimpleNamespace(call=call);cluster=SimpleNamespace(root_token='synthetic')
+        with patch.object(fixture,'wait_legacy_snapshot',return_value={'snapshot_index':17}) as wait:
+            result=fixture.observe_legacy_compact(cluster,node,lambda n,c:checks.append((n,c)), 'old',observations)
+        self.assertEqual(result['snapshot_index'],17)
+        self.assertEqual(sum(method=='POST' for method,_ in calls),1)
+        wait.assert_called_once_with(node,cluster,17)
+        self.assertEqual(checks,[('old_compact_observed',True)])
+        self.assertFalse(observations['old_compact_reply']['http_success'])
+        self.assertTrue(observations['old_compact_reply']['completion_unobserved_reply'])
+        self.assertEqual(observations['old_compact_reply']['http_status'],503)
+
+    def test_both200_and503_require_durable_proof_and_neither_retries(self):
+        for status in (200,503):
+            calls=[];checks=[]
+            def call(method,path,*args,**kwargs):
+                calls.append(method)
+                return (200,{'data':{'applied_index':17}}) if method=='GET' else (status,{'errors':['HA snapshot trigger failed']})
+            with patch.object(fixture,'wait_legacy_snapshot',side_effect=fixture.FixtureError('old_snapshot_completion_not_observed')):
+                with self.assertRaises(fixture.FixtureError):
+                    fixture.observe_legacy_compact(SimpleNamespace(root_token='synthetic'),SimpleNamespace(call=call),
+                        lambda n,c:checks.append((n,c)),'old',{})
+            self.assertEqual(calls,['GET','POST']);self.assertEqual(checks,[])
+        with patch.object(fixture,'wait_legacy_snapshot') as wait:
+            node=SimpleNamespace(call=lambda method,*a,**k:(200,{'data':{'applied_index':17}})
+                if method=='GET' else (503,{'errors':['storage compaction failed; inspect durable state']}))
+            with self.assertRaises(fixture.FixtureError):
+                fixture.observe_legacy_compact(SimpleNamespace(root_token='synthetic'),node,lambda *a:None,'old',{})
+            wait.assert_not_called()
+
+    def test_only_valid_old_frontiers_can_wait_corruption_is_not_retried(self):
+        node,cluster=object(),object()
+        with patch.object(fixture,'inspect_legacy_bundle',side_effect=[fixture.LegacySnapshotPending('old'),{'snapshot_index':20}]) as inspect, \
+             patch.object(fixture.time,'monotonic',side_effect=[0,0,0,1]),patch.object(fixture.time,'sleep'):
+            self.assertEqual(fixture.wait_legacy_snapshot(node,cluster,20)['snapshot_index'],20)
+            self.assertEqual(inspect.call_count,2)
+        with patch.object(fixture,'inspect_legacy_bundle',side_effect=fixture.FixtureError('old_bundle_frame')) as inspect:
+            with self.assertRaises(fixture.FixtureError):fixture.wait_legacy_snapshot(node,cluster,20)
+            self.assertEqual(inspect.call_count,1)
+        with patch.object(fixture,'inspect_legacy_bundle',side_effect=fixture.LegacySnapshotPending('old')) as inspect, \
+             patch.object(fixture.time,'monotonic',side_effect=[0,61]):
+            with self.assertRaisesRegex(fixture.FixtureError,'completion_not_observed'):
+                fixture.wait_legacy_snapshot(node,cluster,20)
+            self.assertEqual(inspect.call_count,1)
 
     def test_old_launch_does_not_introduce_new_ha_config_fields(self):
         with tempfile.TemporaryDirectory() as temporary:

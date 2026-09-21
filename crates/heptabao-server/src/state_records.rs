@@ -19,6 +19,7 @@ mod tree;
 
 pub(crate) const BLOCK_BYTES: usize = 256 * 1024;
 pub(crate) const PAGE_BYTES: usize = 32 * 1024;
+pub(crate) const INLINE_VALUE_BYTES: usize = 1024;
 pub(crate) const MAX_VALUE_BYTES: usize = 16 * 1024 * 1024;
 const MAX_CHILDREN: usize = 256;
 const MAX_HEIGHT: u8 = 16;
@@ -92,6 +93,7 @@ pub(crate) enum ObjectKind {
     Leaf = 3,
     Branch = 4,
     OwnerChunk = 5,
+    PackedLeaf = 6,
 }
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -237,16 +239,38 @@ pub(crate) trait RecordReader {
     fn read_object(&self, reference: &ObjectRef) -> Result<Zeroizing<Vec<u8>>>;
 }
 
-struct StoredValue {
+struct ReferencedValue {
     object: Arc<StagedObject>,
     blocks: Vec<Arc<StagedObject>>,
     encoded: Zeroizing<Vec<u8>>,
+}
+enum StoredValue {
+    Referenced(ReferencedValue),
+    // Private byte storage remains zeroizing even before its containing page
+    // is encoded. An existing referenced small value is never eagerly expanded.
+    Inline(Zeroizing<Vec<u8>>),
+}
+impl StoredValue {
+    fn encoded(&self) -> &[u8] {
+        match self {
+            Self::Referenced(value) => &value.encoded,
+            Self::Inline(bytes) => bytes,
+        }
+    }
+    fn reference(&self) -> Option<&ObjectRef> {
+        match self {
+            Self::Referenced(value) => Some(&value.object.reference),
+            Self::Inline(_) => None,
+        }
+    }
 }
 struct Page {
     object: Arc<StagedObject>,
     data: PageData,
     graph_bytes: usize,
     object_count: usize,
+    height: u8,
+    has_packed_leaves: bool,
 }
 enum PageData {
     Leaf(Vec<(Kv1Key, Arc<StoredValue>)>),
@@ -271,9 +295,11 @@ impl Page {
         match &data {
             PageData::Leaf(entries) => {
                 for (_, value) in entries {
-                    include(value.object.bytes.len(), 1)?;
-                    for block in &value.blocks {
-                        include(block.bytes.len(), 1)?;
+                    if let StoredValue::Referenced(value) = value.as_ref() {
+                        include(value.object.bytes.len(), 1)?;
+                        for block in &value.blocks {
+                            include(block.bytes.len(), 1)?;
+                        }
                     }
                 }
             }
@@ -283,11 +309,30 @@ impl Page {
                 }
             }
         }
+        let (height, has_packed_leaves) = match &data {
+            PageData::Leaf(entries) if !entries.is_empty() => {
+                (1, object.reference.kind == ObjectKind::PackedLeaf)
+            }
+            PageData::Branch(children) if !children.is_empty() => {
+                let child_height = children[0].height;
+                if children.iter().any(|child| child.height != child_height) {
+                    return Err(RecordError::Corrupt);
+                }
+                let height = child_height.checked_add(1).ok_or(RecordError::TooLarge)?;
+                if height > MAX_HEIGHT {
+                    return Err(RecordError::TooLarge);
+                }
+                (height, children.iter().any(|child| child.has_packed_leaves))
+            }
+            _ => return Err(RecordError::Corrupt),
+        };
         Ok(Self {
             object,
             data,
             graph_bytes,
             object_count,
+            height,
+            has_packed_leaves,
         })
     }
     fn first(&self) -> &Kv1Key {
@@ -335,7 +380,12 @@ impl Kv1Index {
         }
     }
     pub(crate) fn get(&self, key: &Kv1Key) -> Option<&[u8]> {
-        tree::get(self.root.as_deref()?, key).map(|v| v.encoded.as_slice())
+        tree::get(self.root.as_deref()?, key).map(StoredValue::encoded)
+    }
+    pub(crate) fn has_packed_leaves(&self) -> bool {
+        self.root
+            .as_ref()
+            .is_some_and(|page| page.has_packed_leaves)
     }
     pub(crate) fn open(
         address_key: Arc<AddressKey>,

@@ -364,6 +364,9 @@ pub(super) fn visit(
     match &page.data {
         PageData::Leaf(entries) => {
             for (_, value) in entries {
+                let StoredValue::Referenced(value) = value.as_ref() else {
+                    continue;
+                };
                 if !seen.insert(value.object.reference.id) {
                     continue;
                 }

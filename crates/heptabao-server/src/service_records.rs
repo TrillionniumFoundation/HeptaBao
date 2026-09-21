@@ -1060,7 +1060,9 @@ mod tests {
                 "",
                 "PUT",
                 &format!("records/item-{index:03}"),
-                &json!({"unique":index}),
+                // Keep this fault fixture larger than the inline threshold so
+                // it still interrupts a real multi-batch object publication.
+                &json!({"unique":index,"payload":"x".repeat(1025)}),
                 100,
             )?;
         }
@@ -1201,3 +1203,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "service_record_schema_tests.rs"]
+mod schema_tests;

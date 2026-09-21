@@ -28,6 +28,7 @@ pub(crate) fn runtime_reference(reference: &ObjectRef) -> RecordObjectRef {
             ObjectKind::Leaf => RecordObjectKind::Leaf,
             ObjectKind::Branch => RecordObjectKind::Branch,
             ObjectKind::OwnerChunk => RecordObjectKind::OwnerChunk,
+            ObjectKind::PackedLeaf => RecordObjectKind::PackedLeaf,
         },
         encoded_bytes: reference.encoded_bytes,
         record_count: reference.record_count,
@@ -44,6 +45,7 @@ pub(crate) fn core_reference(reference: &RecordObjectRef) -> ObjectRef {
             RecordObjectKind::Leaf => ObjectKind::Leaf,
             RecordObjectKind::Branch => ObjectKind::Branch,
             RecordObjectKind::OwnerChunk => ObjectKind::OwnerChunk,
+            RecordObjectKind::PackedLeaf => ObjectKind::PackedLeaf,
         },
         encoded_bytes: reference.encoded_bytes,
         record_count: reference.record_count,
@@ -90,6 +92,7 @@ fn append_reference(aad: &mut Vec<u8>, reference: &RecordObjectRef) {
         RecordObjectKind::Leaf => 3,
         RecordObjectKind::Branch => 4,
         RecordObjectKind::OwnerChunk => 5,
+        RecordObjectKind::PackedLeaf => 6,
     });
     aad.extend_from_slice(&reference.encoded_bytes.to_be_bytes());
     aad.extend_from_slice(&reference.record_count.to_be_bytes());
@@ -448,9 +451,10 @@ mod tests {
         // Keep the descriptor structurally valid, then alter a child address.
         // This reaches AEAD verification instead of only constructor validation.
         let index = crate::state_records::Kv1Index::empty(std::sync::Arc::clone(&key));
+        let external_value = format!("\"{}\"", "x".repeat(1024));
         let edit = index.edit(
             crate::state_records::Kv1Key::new("root", "secret/", 1, "key")?,
-            Some(b"value"),
+            Some(external_value.as_bytes()),
         )?;
         let parent = edit
             .objects
@@ -485,6 +489,110 @@ mod tests {
         assert!(
             codec
                 .open_record_object(&key, objects[1].reference(), &sealed)
+                .is_err()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn record_kind_aad_keeps_existing_tags_and_adds_packed_leaf_six() -> Result {
+        for (kind, tag) in [
+            (RecordObjectKind::Block, 1),
+            (RecordObjectKind::Value, 2),
+            (RecordObjectKind::Leaf, 3),
+            (RecordObjectKind::Branch, 4),
+            (RecordObjectKind::OwnerChunk, 5),
+            (RecordObjectKind::PackedLeaf, 6),
+        ] {
+            let reference = RecordObjectRef {
+                id: [11; 32],
+                kind,
+                encoded_bytes: 123,
+                record_count: 2,
+                payload_bytes: 17,
+            };
+            assert_eq!(runtime_reference(&core_reference(&reference)), reference);
+            let mut aad = Vec::new();
+            append_reference(&mut aad, &reference);
+            let mut expected = vec![11; 32];
+            expected.push(tag);
+            expected.extend_from_slice(&123_u32.to_be_bytes());
+            expected.extend_from_slice(&2_u64.to_be_bytes());
+            expected.extend_from_slice(&17_u64.to_be_bytes());
+            assert_eq!(aad, expected);
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn packed_leaf_ciphertext_authenticates_inline_aggregate_and_external_value_edge() -> Result {
+        let key = AddressKey::from_bytes([17; 32]);
+        let codec = ClusterStateCodec::new("packed-records", [18; 32])?;
+        let index = crate::state_records::Kv1Index::empty(std::sync::Arc::clone(&key));
+        let first = index.edit(
+            crate::state_records::Kv1Key::new("root", "secret/", 1, "a")?,
+            Some(b"{\"ok\":true}"),
+        )?;
+        let inline = first
+            .objects
+            .iter()
+            .find(|object| object.reference().kind == ObjectKind::PackedLeaf)
+            .ok_or("packed inline page")?;
+        let sealed = codec.seal_record_object(&key, inline)?;
+        assert_eq!(
+            codec
+                .open_record_object(&key, inline.reference(), &sealed)?
+                .as_slice(),
+            inline.bytes()
+        );
+        let mut changed = sealed.reference().clone();
+        changed.record_count += 1;
+        let forged = SealedRecordObject::new(changed.clone(), vec![], sealed.sealed().to_vec())?;
+        assert!(
+            codec
+                .open_record_object(&key, &core_reference(&changed), &forged)
+                .is_err()
+        );
+        let value = format!("\"{}\"", "x".repeat(1024));
+        let second = first.next.edit(
+            crate::state_records::Kv1Key::new("root", "secret/", 1, "b")?,
+            Some(value.as_bytes()),
+        )?;
+        let mixed = second
+            .objects
+            .iter()
+            .find(|object| object.reference().kind == ObjectKind::PackedLeaf)
+            .ok_or("packed mixed page")?;
+        let sealed = codec.seal_record_object(&key, mixed)?;
+        assert_eq!(sealed.children().len(), 1);
+        assert_eq!(
+            codec
+                .open_record_object(&key, mixed.reference(), &sealed)?
+                .as_slice(),
+            mixed.bytes()
+        );
+        let mut children = sealed.children().to_vec();
+        children[0].id[0] ^= 1;
+        let forged = SealedRecordObject::new(
+            sealed.reference().clone(),
+            children,
+            sealed.sealed().to_vec(),
+        )?;
+        assert!(
+            codec
+                .open_record_object(&key, mixed.reference(), &forged)
+                .is_err()
+        );
+        let mut damaged = sealed.sealed().to_vec();
+        damaged[OBJECT_HEADER_BYTES] ^= 1;
+        let forged = SealedRecordObject::new(
+            sealed.reference().clone(),
+            sealed.children().to_vec(),
+            damaged,
+        )?;
+        assert!(
+            codec
+                .open_record_object(&key, mixed.reference(), &forged)
                 .is_err()
         );
         Ok(())

@@ -21,7 +21,7 @@ MAX_APPLICATION_BYTES = 47 * MIB
 MAX_OBJECTS = 131072
 MAX_CHILDREN = 256
 MAX_DEPTH = 18
-KINDS = frozenset({'Block', 'Value', 'Leaf', 'Branch', 'OwnerChunk'})
+KINDS = frozenset({'Block', 'Value', 'Leaf', 'Branch', 'OwnerChunk', 'PackedLeaf'})
 REF_FIELDS = frozenset({'id', 'kind', 'encoded_bytes', 'record_count', 'payload_bytes'})
 STATE_FIELDS = frozenset({'last_applied_log', 'last_membership', 'client_status', 'records_v5'})
 
@@ -181,7 +181,7 @@ def inspect_state(state):
                 and encoded_size(published) + 128 <= MIB, 'record_publication_bound_exceeded')
         for child in direct:
             reference(child)
-            require(child['kind'] in ('OwnerChunk', 'Leaf', 'Branch'), 'record_invalid_direct_kind')
+            require(child['kind'] in ('OwnerChunk', 'Leaf', 'PackedLeaf', 'Branch'), 'record_invalid_direct_kind')
     charged = 128 + encoded_size(published) + encoded_size(prepared) + legacy_bytes
     sealed_total = 0
     for key, item in objects.items():
@@ -206,12 +206,23 @@ def inspect_state(state):
             valid = (len(children) <= 64 and ref['record_count'] == 1 and ref['payload_bytes'] <= 16 * MIB
                      and all(c['kind'] == 'Block' for c in children) and child_payload == ref['payload_bytes']
                      and ref['encoded_bytes'] == 27 + 53 * len(children))
+        elif kind == 'PackedLeaf':
+            # Structural metadata only: ciphertext does not prove plaintext
+            # entry order, value bytes or application authentication.
+            inline_count = ref['record_count'] - child_records
+            inline_payload = ref['payload_bytes'] - child_payload
+            valid = (27 <= ref['encoded_bytes'] <= 32 * 1024
+                     and 1 <= ref['record_count'] <= 256
+                     and all(c['kind'] == 'Value' and c['record_count'] == 1 for c in children)
+                     and 1 <= inline_count <= 256
+                     and 0 <= inline_payload <= inline_count * 1024
+                     and inline_payload <= ref['encoded_bytes'] - 27)
         else:
             valid = (bool(children) and ref['encoded_bytes'] <= 32 * 1024
                      and child_records == ref['record_count'] and child_payload == ref['payload_bytes']
                      and (all(c['kind'] == 'Value' for c in children) if kind == 'Leaf' else
-                          all(c['kind'] in ('Leaf', 'Branch') for c in children)
-                          and len({c['kind'] for c in children}) == 1))
+                          (all(c['kind'] == 'Branch' for c in children)
+                           or all(c['kind'] in ('Leaf', 'PackedLeaf') for c in children))))
         require(valid, 'record_kind_or_aggregate_mismatch')
         item_bytes = encoded_size(item)
         require(item_bytes + 128 <= MIB, 'record_proposal_budget_exceeded')

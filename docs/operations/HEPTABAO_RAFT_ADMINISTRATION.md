@@ -72,6 +72,14 @@ mutex or starting a second authority check does not reset the budget. Request
 scope is restored on return or unwind and is not inherited by Raft background
 tasks. This bounds read admission; it does not cancel a filesystem operation,
 provider side effect or write whose commit outcome still needs reconciliation.
+The [29-check listener deadline receipt](../../qa/openbao-acceptance/evidence/ha-request-deadline-248e9bd.json)
+stops both follower processes while leaving the leader running. A direct read
+returns503; twelve delayed-body concurrent reads yield nine actual503 responses
+and three separately recorded pre-response EOFs, with a maximum elapsed5003.4ms.
+The healthy delayed-body control succeeds, and recovery checks one CAS write
+and the exact new value through every voter. The original listener budget is5s;
+the observer allows750ms of scheduling slack. This loaded same-host run does
+not claim that EOF is an HTTP503 or that writes can be canceled at the deadline.
 
 The `0adfc0d` release binary (`40eacb3fdc897cca44df381dac49d2273c66548ba440f50c6a7e07c602a23dfa`)
 passes the [913-check 32 MiB KV1 HA profile](../../qa/openbao-acceptance/evidence/kv1-record-ha32-0adfc0d.json).

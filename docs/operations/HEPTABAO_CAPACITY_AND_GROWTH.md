@@ -15,6 +15,14 @@ maintenance can pay that cost. Raft snapshots currently trigger every 128 log en
 not every 128 KV writes. KV2, Auth/provider state, Identity, Transit, PKI, SSH,
 wrappers, leases and database/Raft administration remain in opaque JSON owners.
 
+Schema37 adds authenticated PackedLeaf pages for canonical KV1 values up to
+1024 bytes, including empty byte values in the core codec. A page is bounded by
+32KiB and256 entries; larger values keep the existing referenced block layout.
+Mixed referenced/inline entries are supported, and a page with no inline values
+uses the existing Leaf encoding. Old referenced small values are retained until
+actually changed. This reduces per-record overhead without raising graph,
+durable, replay or HA limits; 20,000-record density is a separate live target.
+
 The budgets are independent:
 
 | Boundary | Enforced limit and meaning |
@@ -44,10 +52,18 @@ leader/ReadIndex verification precede typed staging. Reads alone do not start
 this transition. Once preparation commits, recovery/retry requires the current
 binary; mixed old/new writers and rollback to schema35 are unsupported.
 
-Real near-limit old-binary migration still requires its dedicated live receipt;
-a small upgrade profile cannot qualify that boundary. Dense small-record states
-can exceed 47MiB even with only the active old slots and need a separate bounded
-migration design. No existing limit is raised to hide this staging peak.
+The [668-check historical near-limit HA receipt](../../qa/openbao-acceptance/evidence/kv1-near-limit-ha-0adfc0d.json)
+uses the actual pinned schema35 binary to create and twice replace70 large values.
+The authenticated old state is16,060,419 bytes with50 active and52 inactive slots;
+legacy charged bytes are45,697,793. The candidate publishes146 typed objects
+charged21,515,223 bytes, then verifies every value after restart and leader loss.
+The first old compact returns503: the receipt preserves that failed HTTP reply
+and separately proves the requested snapshot later became durable. The first
+migration write takes7437ms within this profile's original60-second budget;
+it does not establish a5-second migration bound. Dense small-record states
+can exceed 47MiB even with only the active old slots. Packed pages reduce new
+graph staging overhead, but the historical dense migration still requires its
+own real-binary receipt. No existing limit is raised to hide this staging peak.
 
 The source-bound limits below distinguish legacy layout constraints from V5
 component constraints. They do not replace the tighter durable/HA admission
@@ -313,6 +329,14 @@ reservation; whole-component authentication still needs bounded component memory
 The real official-CLI qualification command is
 `native_snapshot_cli_live.py --binary <server> --build-source-commit <commit> --work-parent <private-SSD-directory> --output <new-private-json>`;
 the source/binary-bound receipt, not these limits, determines measured capacity.
+The [707-check official CLI receipt](../../qa/openbao-acceptance/evidence/native-snapshot-cli-248e9bd.json)
+pins candidate248e9bd and OpenBao2.6.2. It saves a25,685,734-byte native archive
+containing110 distinct values, restores every value and the KV2 owner, and checks
+full restart, rollback rejection, sealed-checksum tampering, truncation,
+oversize/pre-body authorization, chunked upload and interrupted transfer cleanup.
+Both source and binaries remain unchanged. This qualifies local native archive
+transport with a60-second listener profile, not OpenBao state interchange,
+cross-seal force restore, HA or a5-second large-transfer guarantee.
 
 The schema36 `a6d4664` build (binary SHA256
 `ccc2e1809f397a652864eccbe90fd4020c9149e3c57d0dcbe50c74a6cc34ad80`)
@@ -327,5 +351,5 @@ passed on `e554136` with the same binary: 33,722,278 logical payload bytes,
 Its three small writes at each size are descriptive observations, not a sustained
 performance result. The later [913-check 32MiB HA run](../../qa/openbao-acceptance/evidence/kv1-record-ha32-0adfc0d.json)
 qualifies same-version three-process catch-up, failover and restart at that size.
-Near-limit historical HA migration, dense small-record growth and independent
+Dense historical small-record migration, sustained growth and independent
 host/fault qualification remain separate open work.
