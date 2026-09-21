@@ -58,6 +58,29 @@ SHA-256 of the stored data. Triggering Raft work alone is not a completion resul
 A learner joined after prior logs are purged must catch up through Raft's snapshot
 installation mechanism; the five-process suite exercises this path.
 
+The local `state-bundle.bin` format now distinguishes legacy version 1 byte-array
+snapshots from version 2 canonical, unpadded base64 snapshots. Opening version 1
+does not rewrite it; a successful snapshot build or installation publishes version
+2. Application schema and Raft snapshot wire payloads are unchanged. Earlier
+binaries cannot read version 2, so this is an explicit local rollback boundary.
+
+Both serialization and file reads enforce the same 128 MiB whole-artifact bound,
+including the 20-byte checksum/header envelope. Oversized serialization fails
+before a temporary file is opened or the previous bundle is replaced. Snapshot
+build/install tests verify that rejection preserves the prior bundle, journal,
+generation and in-memory state, and that reopening still succeeds. Compact encoding
+reduces the nested JSON byte-array expansion; the runtime still materializes the
+whole state and snapshot. This does not establish record-oriented storage or prove
+that 32 MiB of application data fits the artifact budget.
+
+`raft_membership_live.py --require-compact-snapshots` observes actual version 2
+files during learner catch-up after log purge and former-leader restart.
+`raft_snapshot_upgrade.py` creates version 1 with a pinned, qualified old binary,
+checks unchanged bundle bytes on candidate read-only reopen, explicitly creates
+version 2, and tests refused old-binary open without changes anywhere in the Raft
+directory. Candidate recovery, writes on every voter, failover and restart follow.
+These are actual local process checks, not mixed-version rolling qualification.
+
 The existing Service HTTP snapshot body remains the repository's encrypted backup
 format, **not an OpenBao `raft.snap` binary**. Native persisted snapshot status
 and learner catch-up do not implement cross-product snapshot restore, forced

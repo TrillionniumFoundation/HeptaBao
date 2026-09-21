@@ -613,7 +613,7 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "The scoped real OpenLDAP 2.6.10 LDAPS bind, group search/policy projection, outage/restart recovery and membership revocation receipt is qa/openbao-acceptance/evidence/ldap-openldap-live-079e2cb.json. Privileged bind-account search, nested groups, arbitrary filters, StartTLS/SASL/referrals, full OpenBao field/error parity, HA/multi-host provider faults and independent admission remain open."
+      "remaining_scope": "Native manager-search configuration, optional policy mappings and provider-checked renewal are implemented alongside the legacy bounded profile; see `docs/engines/HEPTABAO_LDAP_RUNTIME.md` and `qa/openbao-acceptance/ldap_native_live.py`. The earlier bounded receipt is `qa/openbao-acceptance/evidence/ldap-openldap-live-079e2cb.json`. Arbitrary filters, nested groups, StartTLS/SASL/referrals, full OpenBao field/error parity, multi-host provider faults and independent admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-AUTH-RADIUS",
@@ -625,11 +625,13 @@
       "public_baseline_reference": "public-source-surface://builtin/credential/radius",
       "api_families": [
         "auth/{mount}/config",
-        "auth/{mount}/login"
+        "auth/{mount}/login",
+        "auth/{mount}/login/{username}",
+        "auth/{mount}/users/*"
       ],
       "positive": "A real local UDP responder accepts bounded PAP and returns a token only after strict request/response Message-Authenticator and Response Authenticator checks",
       "hostile": "Bad Message-Authenticator, bad Response Authenticator, provider rejection and packet loss fail closed without issuing a token",
-      "lifecycle": "The one-shot three-second exchange never retries an unknown provider outcome; route and token policy survive the schema-12 persistence fence",
+      "lifecycle": "The legacy three-second exchange and native configured-timeout exchange both use one request. Current config/user policy authority is rechecked after PAP; lease, metadata and wrapper changes commit together. Native secret/user state requires schema 24 and older URL profiles retain their issuer semantics",
       "implementation": "PARTIAL_RUNTIME",
       "runtime_sources": [
         "crates/heptabao-server/src/auth.rs",
@@ -645,7 +647,7 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "This is IPv4 UDP PAP only. CHAP, EAP, Access-Challenge workflows, IPv6, host/port/secret OpenBao API parity, full field/error parity, independent qualification, HA provider faults and production operation remain open. The bounded receipt is qa/openbao-acceptance/evidence/radius-bounded-41cfe44.json."
+      "remaining_scope": "Native host/port/secret, user policies and NAS fields are implemented alongside the legacy profile. CHAP, EAP, Access-Challenge workflows, IPv6 literal host configuration, arbitrary timeout ranges, complete TokenParams and weak-type coercions, full field/error parity, independent qualification and multi-host faults remain open. See `qa/openbao-acceptance/radius_native_live.py`; the earlier bounded receipt is `qa/openbao-acceptance/evidence/radius-bounded-41cfe44.json`."
     },
     {
       "surface_id": "HB-SURFACE-AUTH-KERBEROS",

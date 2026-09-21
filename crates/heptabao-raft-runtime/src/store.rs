@@ -7,6 +7,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
 
+use base64::{Engine as _, engine::general_purpose::STANDARD_NO_PAD};
 use futures::{Stream, TryStreamExt};
 use openraft::alias::{EntryOf, LogIdOf, SnapshotMetaOf, SnapshotOf, StoredMembershipOf, VoteOf};
 use openraft::entry::RaftEntry;
@@ -18,6 +19,10 @@ use openraft::{EntryPayload, OptionalSend};
 use openraft_memstore::{ClientResponse, MemStoreStateMachine, TypeConfig};
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
+
+const MAX_DURABLE_ARTIFACT_BYTES: usize = 128 * 1024 * 1024;
+const ENVELOPE_OVERHEAD_BYTES: usize = 20;
+const COMPACT_STATE_BUNDLE_FORMAT: u16 = 2;
 
 const LOG_MAGIC: [u8; 8] = *b"HBRLOG01";
 const LOG_JOURNAL_MAGIC: [u8; 8] = *b"HBRLJ001";
@@ -224,13 +229,17 @@ fn ensure_create_location_is_fresh(root: &Path, data_path: &Path) -> io::Result<
 
 fn read_payload(path: &Path, magic: [u8; 8]) -> io::Result<Vec<u8>> {
     recover_interrupted_replace(path)?;
-    let mut file = File::open(path)?;
+    let file = File::open(path)?;
     let metadata = file.metadata()?;
-    if metadata.len() > 128 * 1024 * 1024 {
+    if metadata.len() > MAX_DURABLE_ARTIFACT_BYTES as u64 {
         return Err(invalid("durable artifact exceeds 128 MiB safety bound"));
     }
     let mut bytes = Vec::with_capacity(usize::try_from(metadata.len()).unwrap_or(0));
-    file.read_to_end(&mut bytes)?;
+    file.take((MAX_DURABLE_ARTIFACT_BYTES + 1) as u64)
+        .read_to_end(&mut bytes)?;
+    if bytes.len() > MAX_DURABLE_ARTIFACT_BYTES {
+        return Err(invalid("durable artifact exceeds 128 MiB safety bound"));
+    }
     decode_envelope(magic, &bytes)
 }
 
@@ -250,6 +259,7 @@ fn sync_parent(path: &Path) -> io::Result<()> {
 }
 
 fn atomic_write(path: &Path, magic: [u8; 8], payload: &[u8]) -> io::Result<()> {
+    validate_artifact_payload_len(payload.len(), MAX_DURABLE_ARTIFACT_BYTES)?;
     let parent = path
         .parent()
         .ok_or_else(|| invalid(format!("{} has no parent directory", path.display())))?;
@@ -376,8 +386,58 @@ fn write_json<T>(path: &Path, magic: [u8; 8], value: &T) -> io::Result<()>
 where
     T: Serialize,
 {
-    let payload = serde_json::to_vec(value).map_err(|error| invalid(error.to_string()))?;
-    atomic_write(path, magic, &payload)
+    write_json_with_bound(path, magic, value, MAX_DURABLE_ARTIFACT_BYTES)
+}
+
+fn validate_artifact_payload_len(payload_len: usize, artifact_bound: usize) -> io::Result<()> {
+    if payload_len
+        .checked_add(ENVELOPE_OVERHEAD_BYTES)
+        .is_none_or(|size| size > artifact_bound)
+    {
+        return Err(invalid("durable artifact exceeds serialized safety bound"));
+    }
+    Ok(())
+}
+
+/// Count actual JSON bytes during serialization, including base64 and string
+/// escaping. Reject before opening a temporary file or replacing a good bundle.
+fn write_json_with_bound<T: Serialize>(
+    path: &Path,
+    magic: [u8; 8],
+    value: &T,
+    artifact_bound: usize,
+) -> io::Result<()> {
+    struct BoundedJson {
+        bytes: Vec<u8>,
+        maximum: usize,
+    }
+    impl Write for BoundedJson {
+        fn write(&mut self, input: &[u8]) -> io::Result<usize> {
+            if self
+                .bytes
+                .len()
+                .checked_add(input.len())
+                .is_none_or(|size| size > self.maximum)
+            {
+                return Err(invalid("durable artifact exceeds serialized safety bound"));
+            }
+            self.bytes.extend_from_slice(input);
+            Ok(input.len())
+        }
+        fn flush(&mut self) -> io::Result<()> {
+            Ok(())
+        }
+    }
+    let maximum = artifact_bound
+        .checked_sub(ENVELOPE_OVERHEAD_BYTES)
+        .ok_or_else(|| invalid("durable artifact bound cannot contain envelope"))?;
+    let mut writer = BoundedJson {
+        bytes: Vec::new(),
+        maximum,
+    };
+    serde_json::to_writer(&mut writer, value).map_err(|error| invalid(error.to_string()))?;
+    validate_artifact_payload_len(writer.bytes.len(), artifact_bound)?;
+    atomic_write(path, magic, &writer.bytes)
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -979,10 +1039,74 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum SnapshotEncoding {
+    LegacyBytes,
+    CompactBase64,
+}
+
+#[derive(Clone, Debug)]
 struct PersistentSnapshot {
     meta: SnapshotMetaOf<TypeConfig>,
     data: Vec<u8>,
+    encoding: SnapshotEncoding,
+}
+
+impl Serialize for PersistentSnapshot {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        use serde::ser::SerializeStruct as _;
+        let mut fields = serializer.serialize_struct("PersistentSnapshot", 2)?;
+        fields.serialize_field("meta", &self.meta)?;
+        match self.encoding {
+            SnapshotEncoding::LegacyBytes => fields.serialize_field("data", &self.data)?,
+            SnapshotEncoding::CompactBase64 => {
+                fields.serialize_field("data", &STANDARD_NO_PAD.encode(&self.data))?
+            }
+        }
+        fields.end()
+    }
+}
+
+impl<'de> Deserialize<'de> for PersistentSnapshot {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum Data {
+            Legacy(Vec<u8>),
+            Compact(String),
+        }
+        #[derive(Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct Wire {
+            meta: SnapshotMetaOf<TypeConfig>,
+            data: Data,
+        }
+        let wire = Wire::deserialize(deserializer)?;
+        let (data, encoding) = match wire.data {
+            Data::Legacy(data) => (data, SnapshotEncoding::LegacyBytes),
+            Data::Compact(encoded) => {
+                let data = STANDARD_NO_PAD
+                    .decode(&encoded)
+                    .map_err(|_| serde::de::Error::custom("invalid compact snapshot base64"))?;
+                if STANDARD_NO_PAD.encode(&data) != encoded {
+                    return Err(serde::de::Error::custom(
+                        "noncanonical compact snapshot base64",
+                    ));
+                }
+                (data, SnapshotEncoding::CompactBase64)
+            }
+        };
+        if data.len() > MAX_DURABLE_ARTIFACT_BYTES {
+            return Err(serde::de::Error::custom(
+                "decoded snapshot exceeds safety bound",
+            ));
+        }
+        Ok(Self {
+            meta: wire.meta,
+            data,
+            encoding,
+        })
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -1171,10 +1295,23 @@ impl PersistentStateBundle {
     }
 
     fn validate(&self) -> io::Result<()> {
-        if self.format_version != 1 || self.journal_format > 1 || self.generation == 0 {
+        if !matches!(self.format_version, 1 | COMPACT_STATE_BUNDLE_FORMAT)
+            || self.journal_format > 1
+            || self.generation == 0
+        {
             return Err(invalid("unsupported or zero state bundle generation"));
         }
         if let Some(snapshot) = &self.current_snapshot {
+            let expected = if self.format_version == 1 {
+                SnapshotEncoding::LegacyBytes
+            } else {
+                SnapshotEncoding::CompactBase64
+            };
+            if snapshot.encoding != expected {
+                return Err(invalid(
+                    "state bundle snapshot encoding does not match format",
+                ));
+            }
             let snapshot_state: MemStoreStateMachine = serde_json::from_slice(&snapshot.data)
                 .map_err(|error| invalid(error.to_string()))?;
             if snapshot_state.last_applied_log != snapshot.meta.last_log_id {
@@ -1196,6 +1333,8 @@ impl PersistentStateBundle {
 pub struct DurableStateMachine {
     bundle_path: PathBuf,
     bundle: Arc<Mutex<PersistentStateBundle>>,
+    #[cfg(test)]
+    artifact_bound: usize,
 }
 
 impl DurableStateMachine {
@@ -1214,6 +1353,8 @@ impl DurableStateMachine {
         Ok(Self {
             bundle_path,
             bundle: Arc::new(Mutex::new(bundle)),
+            #[cfg(test)]
+            artifact_bound: MAX_DURABLE_ARTIFACT_BYTES,
         })
     }
 
@@ -1258,6 +1399,8 @@ impl DurableStateMachine {
         Ok(Self {
             bundle_path,
             bundle: Arc::new(Mutex::new(bundle)),
+            #[cfg(test)]
+            artifact_bound: MAX_DURABLE_ARTIFACT_BYTES,
         })
     }
 
@@ -1300,12 +1443,18 @@ impl DurableStateMachine {
         Ok(Self {
             bundle_path,
             bundle: Arc::new(Mutex::new(bundle)),
+            #[cfg(test)]
+            artifact_bound: MAX_DURABLE_ARTIFACT_BYTES,
         })
     }
 
     fn persist_bundle(&self, bundle: &PersistentStateBundle) -> io::Result<()> {
         bundle.validate()?;
-        write_json(&self.bundle_path, STATE_BUNDLE_MAGIC, bundle)
+        #[cfg(test)]
+        let bound = self.artifact_bound;
+        #[cfg(not(test))]
+        let bound = MAX_DURABLE_ARTIFACT_BYTES;
+        write_json_with_bound(&self.bundle_path, STATE_BUNDLE_MAGIC, bundle, bound)
     }
 
     pub async fn get_state_machine(&self) -> MemStoreStateMachine {
@@ -1378,9 +1527,10 @@ impl RaftSnapshotBuilder<TypeConfig> for DurableStateMachine {
         let snapshot = PersistentSnapshot {
             meta: meta.clone(),
             data: data.clone(),
+            encoding: SnapshotEncoding::CompactBase64,
         };
         let candidate = PersistentStateBundle {
-            format_version: bundle.format_version,
+            format_version: COMPACT_STATE_BUNDLE_FORMAT,
             journal_format: 1,
             generation: bundle.next_generation()?,
             state,
@@ -1464,10 +1614,11 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
         let persisted = PersistentSnapshot {
             meta: meta.clone(),
             data,
+            encoding: SnapshotEncoding::CompactBase64,
         };
         let mut bundle = self.bundle.lock().await;
         let candidate = PersistentStateBundle {
-            format_version: bundle.format_version,
+            format_version: COMPACT_STATE_BUNDLE_FORMAT,
             journal_format: 1,
             generation: bundle.next_generation()?,
             state,
@@ -1841,6 +1992,7 @@ mod tests {
         let mut state_machine = DurableStateMachine {
             bundle_path: blocking_parent.join("state-bundle.bin"),
             bundle: Arc::new(Mutex::new(initial)),
+            artifact_bound: super::MAX_DURABLE_ARTIFACT_BYTES,
         };
 
         let result = state_machine.build_snapshot().await;
@@ -2308,3 +2460,7 @@ mod tests {
         let _ = fs::remove_dir_all(root);
     }
 }
+
+#[cfg(test)]
+#[path = "snapshot_encoding_tests.rs"]
+mod snapshot_encoding_tests;
