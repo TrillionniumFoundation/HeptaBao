@@ -141,6 +141,15 @@ renewal overrun after rounded remote issuance. Native expiry now bounds both
 the granted duration and the absolute issue-time deadline; the conservative
 post-I/O authorization clock is unchanged. This profile tunes its mounts and
 does not establish untuned system-default parity.
+A real schema-31 binary creates the roles, tokens and store used in the
+[323-check schema-32 upgrade](../qa/openbao-acceptance/evidence/jwt-native-ttl-upgrade-43e6353.json).
+Read-only reopen preserves application artifacts; explicit role changes adopt
+inheritance, issued caps survive renewal/restart, and the old binary refuses
+the committed new format without altering application artifacts. Earlier
+failed receipts remain in the external-SSD workspace: one caught duplicate
+observation labels, another incorrectly required an active lease to reach its
+absolute cap. The corrected checks preserve exact captured limits and reject
+any grant or expiry beyond them.
 The strengthened forged-origin tests pass [49 RADIUS HA checks](../qa/openbao-acceptance/evidence/radius-cidrs-ha-d2c669d.json)
 and [49 LDAP HA checks](../qa/openbao-acceptance/evidence/ldap-cidrs-ha-d2c669d.json):
 the forged headers now carry the allowed address while the actual socket uses a
