@@ -14,6 +14,7 @@ mod cluster;
 mod network;
 mod process;
 mod records;
+mod replication_bounds;
 mod state_machine;
 
 pub use records::{

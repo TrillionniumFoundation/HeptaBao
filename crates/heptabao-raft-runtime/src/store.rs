@@ -865,6 +865,50 @@ impl RaftLogReader<TypeConfig> for DurableLogStore {
             .collect()
     }
 
+    async fn limited_get_log_entries(
+        &mut self,
+        start: u64,
+        end: u64,
+    ) -> Result<Vec<EntryOf<TypeConfig>>, io::Error> {
+        if start >= end {
+            return Ok(Vec::new());
+        }
+        let budget = crate::replication_bounds::entry_payload_budget()?;
+        let state = self.state.lock().await;
+        let mut entries = Vec::new();
+        let mut encoded_bytes = 0_usize;
+        let mut expected = start;
+        for (&index, serialized) in state.log.range(start..end) {
+            if index != expected {
+                return Err(invalid("replication log range has a hole"));
+            }
+            let next = encoded_bytes
+                .checked_add(serialized.len())
+                .and_then(|n| n.checked_add(usize::from(!entries.is_empty())))
+                .ok_or_else(|| invalid("replication payload size overflow"))?;
+            if next > budget {
+                if entries.is_empty() {
+                    return Err(invalid("single Raft entry exceeds remote wire budget"));
+                }
+                break;
+            }
+            let entry: EntryOf<TypeConfig> =
+                serde_json::from_str(serialized).map_err(|error| invalid(error.to_string()))?;
+            if entry.index() != index {
+                return Err(invalid("replication entry index mismatch"));
+            }
+            entries.push(entry);
+            encoded_bytes = next;
+            expected = index
+                .checked_add(1)
+                .ok_or_else(|| invalid("replication index overflow"))?;
+        }
+        if entries.is_empty() {
+            return Err(invalid("replication log range is absent"));
+        }
+        Ok(entries)
+    }
+
     async fn read_vote(&mut self) -> Result<Option<VoteOf<TypeConfig>>, io::Error> {
         Ok(self.state.lock().await.vote)
     }
@@ -1841,6 +1885,87 @@ mod tests {
     use tokio::sync::Mutex;
 
     static TEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+    #[tokio::test]
+    async fn replication_prefixes_respect_real_wire_budget_and_do_not_skip_entries()
+    -> io::Result<()> {
+        use openraft::alias::EntryOf;
+        use openraft::storage::RaftLogReader;
+        let path = root("bounded-replication-prefix");
+        let mut store = DurableLogStore::create(&path)?;
+        {
+            let mut state = store.state.lock().await;
+            for index in 0..7 {
+                let entry = EntryOf::<TypeConfig> {
+                    log_id: openraft::LogId {
+                        leader_id: openraft::impls::leader_id_adv::LeaderId {
+                            term: 1,
+                            node_id: 1,
+                        },
+                        index,
+                    },
+                    payload: openraft::EntryPayload::Normal(
+                        openraft_memstore::ClientRequest {
+                            client: "synthetic".into(),
+                            serial: index,
+                            status: "x".repeat(280 * 1024),
+                        }
+                        .into(),
+                    ),
+                };
+                state.log.insert(
+                    index,
+                    serde_json::to_string(&entry).map_err(io::Error::other)?,
+                );
+            }
+        }
+        let mut next = 0;
+        let mut batches = 0;
+        while next < 7 {
+            let entries = store.limited_get_log_entries(next, 7).await?;
+            assert!(!entries.is_empty());
+            for entry in &entries {
+                assert_eq!(entry.log_id.index, next);
+                next += 1;
+            }
+            let request = openraft::raft::AppendEntriesRequest::<TypeConfig> {
+                vote: openraft::Vote::new_committed(u64::MAX, u64::MAX),
+                prev_log_id: entries.first().map(|e| e.log_id),
+                leader_commit: entries.last().map(|e| e.log_id),
+                entries,
+            };
+            assert!(
+                serde_json::to_vec(&request)
+                    .map_err(io::Error::other)?
+                    .len()
+                    <= crate::replication_bounds::MAX_REMOTE_RPC_BYTES
+            );
+            batches += 1;
+        }
+        assert!(batches > 1 && batches < 7);
+        assert_eq!(store.try_get_log_entries(0..7).await?.len(), 7);
+        store.state.lock().await.log.remove(&0);
+        assert!(store.limited_get_log_entries(0, 7).await.is_err());
+        let mut entry = store.try_get_log_entries(1..2).await?.remove(0);
+        entry.payload = openraft::EntryPayload::Normal(
+            openraft_memstore::ClientRequest {
+                client: "synthetic".into(),
+                serial: 1,
+                status: "x".repeat(crate::replication_bounds::MAX_REMOTE_RPC_BYTES),
+            }
+            .into(),
+        );
+        store
+            .state
+            .lock()
+            .await
+            .log
+            .insert(1, serde_json::to_string(&entry).map_err(io::Error::other)?);
+        assert!(store.limited_get_log_entries(1, 2).await.is_err());
+        drop(store);
+        fs::remove_dir_all(path)?;
+        Ok(())
+    }
 
     #[test]
     fn durable_crc_matches_independent_ieee_vectors_and_legacy_frames() {

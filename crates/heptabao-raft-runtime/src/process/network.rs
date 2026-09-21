@@ -12,7 +12,8 @@ use openraft::errors::{
 use openraft::network::v2::RaftNetworkV2;
 use openraft::network::{RPCOption, RaftNetworkFactory};
 use openraft::raft::{
-    AppendEntriesRequest, AppendEntriesResponse, SnapshotResponse, VoteRequest, VoteResponse,
+    AppendEntriesRequest, AppendEntriesResponse, SnapshotResponse, TransferLeaderRequest,
+    TransferLeaderResponse, VoteRequest, VoteResponse,
 };
 use openraft::type_config::alias::{SnapshotOf, VoteOf};
 use openraft::{OptionalSend, Snapshot};
@@ -32,6 +33,7 @@ pub enum RaftRpcKind {
     Vote,
     PreVote,
     SnapshotChunk,
+    TransferLeader,
 }
 
 #[derive(Debug)]
@@ -300,6 +302,15 @@ impl RaftNetworkV2<TypeConfig> for RemoteNetwork {
         self.rpc(RaftRpcKind::PreVote, &request, &option).await
     }
 
+    async fn transfer_leader(
+        &mut self,
+        request: TransferLeaderRequest<TypeConfig>,
+        option: RPCOption,
+    ) -> Result<TransferLeaderResponse<TypeConfig>, RPCError<TypeConfig>> {
+        self.rpc(RaftRpcKind::TransferLeader, &request, &option)
+            .await
+    }
+
     async fn full_snapshot(
         &mut self,
         vote: VoteOf<TypeConfig>,
@@ -374,6 +385,23 @@ impl RaftRpcService {
                     .map_err(|_| RemoteRaftError::InvalidSnapshot)?;
                 let ack = self.handle_snapshot_chunk(source, request).await?;
                 serde_json::to_vec(&ack).map_err(|_| RemoteRaftError::InvalidSnapshot)
+            }
+            RaftRpcKind::TransferLeader => {
+                let request: TransferLeaderRequest<TypeConfig> =
+                    serde_json::from_slice(&payload).map_err(|_| RemoteRaftError::InvalidRpc)?;
+                // Bind the claimed leader and recipient to the authenticated
+                // transport direction before asking OpenRaft to check vote/log progress.
+                if request.from_leader().leader_id.node_id != source
+                    || *request.to_node_id() != self.local_id
+                {
+                    return Err(RemoteRaftError::InvalidRpc);
+                }
+                let result = self
+                    .raft
+                    .handle_transfer_leader(request)
+                    .await
+                    .map_err(RaftError::<TypeConfig>::Fatal);
+                serde_json::to_vec(&result).map_err(|_| RemoteRaftError::InvalidRpc)
             }
         }
     }

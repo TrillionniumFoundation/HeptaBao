@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
+use std::time::Duration;
 
 use crate::state_machine::StateMachine as MemStoreStateMachine;
 use openraft::{Config, Instant, ReadPolicy, SnapshotPolicy};
@@ -16,6 +17,12 @@ use crate::{CommitReceipt, RaftRuntimeError, ReplicatedEnvelope};
 const PRODUCTION_CLIENT_ID: &str = "heptabao-production-ha";
 const PRODUCTION_CHUNK_CLIENT_PREFIX: &str = "heptabao-production-ha-chunk";
 const MAX_APPLICATION_CHUNK_INDEX: u16 = 127;
+// Bound both the quorum probe and the subsequent applied-log wait. In
+// particular, OpenRaft can otherwise wait indefinitely for a new leader's
+// blank entry. This allows the current 5s peer ceiling plus the 2s election
+// ceiling and 1s scheduling margin; it is not an HTTP end-to-end deadline.
+const MAX_READ_INDEX_WAIT: Duration = Duration::from_secs(8);
+const READ_INDEX_TIMEOUT: &str = "linearizable read deadline exceeded";
 
 pub struct ProcessRaftNode {
     pub(super) id: u64,
@@ -243,16 +250,17 @@ impl ProcessRaftNode {
         if client_serial == 0 {
             return Err(RaftRuntimeError::InvalidSerial);
         }
+        let request = ClientRequest {
+            client: client.to_owned(),
+            serial: client_serial,
+            status: envelope.encoded_status(),
+        }
+        .into();
+        crate::replication_bounds::validate_proposal(&request)
+            .map_err(|_| RaftRuntimeError::InvalidEnvelope)?;
         let response = self
             .raft
-            .client_write(
-                ClientRequest {
-                    client: client.to_owned(),
-                    serial: client_serial,
-                    status: envelope.encoded_status(),
-                }
-                .into(),
-            )
+            .client_write(request)
             .await
             .map_err(|error| RaftRuntimeError::Consensus(error.to_string()))?;
         response
@@ -274,6 +282,8 @@ impl ProcessRaftNode {
     ) -> Result<CommitReceipt, RaftRuntimeError> {
         let request = crate::state_machine::ApplicationRequest::records(serial, command)
             .map_err(RaftRuntimeError::RecordRejected)?;
+        crate::replication_bounds::validate_proposal(&request)
+            .map_err(|_| RaftRuntimeError::InvalidEnvelope)?;
         let response = self
             .raft
             .client_write(request)
@@ -442,9 +452,34 @@ impl ProcessRaftNode {
     }
 
     pub async fn ensure_linearizable(&self) -> Result<(), RemoteRaftError> {
-        self.raft
-            .ensure_linearizable(ReadPolicy::ReadIndex)
+        self.ensure_linearizable_with_timeout(MAX_READ_INDEX_WAIT)
             .await
+    }
+
+    /// Confirm ReadIndex leadership and apply its required log within the
+    /// smaller of the caller's remaining budget and the runtime's bound.
+    /// Timeout authorizes no read and does not retry or submit a write.
+    pub async fn ensure_linearizable_with_timeout(
+        &self,
+        remaining: Duration,
+    ) -> Result<(), RemoteRaftError> {
+        let budget = remaining.min(MAX_READ_INDEX_WAIT);
+        if budget.is_zero() {
+            return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
+        }
+        let deadline = tokio::time::Instant::now() + budget;
+        let result = tokio::time::timeout_at(
+            deadline,
+            self.raft.ensure_linearizable(ReadPolicy::ReadIndex),
+        )
+        .await;
+        // A ready future can win Tokio's timeout poll even after the clock has
+        // advanced. Do not turn an already elapsed caller budget into success.
+        if tokio::time::Instant::now() >= deadline {
+            return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
+        }
+        result
+            .map_err(|_| RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()))?
             .map(|_| ())
             .map_err(|error| RemoteRaftError::Consensus(error.to_string()))
     }
@@ -566,3 +601,7 @@ mod timing_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "read_index_tests.rs"]
+mod read_index_tests;

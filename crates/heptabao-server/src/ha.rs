@@ -1530,6 +1530,7 @@ fn kind_tag(kind: RaftRpcKind) -> u8 {
         RaftRpcKind::Vote => 2,
         RaftRpcKind::PreVote => 3,
         RaftRpcKind::SnapshotChunk => 4,
+        RaftRpcKind::TransferLeader => 5,
     }
 }
 
@@ -1539,6 +1540,7 @@ fn decode_kind(value: u8) -> Result<RaftRpcKind, RemoteRaftError> {
         2 => Ok(RaftRpcKind::Vote),
         3 => Ok(RaftRpcKind::PreVote),
         4 => Ok(RaftRpcKind::SnapshotChunk),
+        5 => Ok(RaftRpcKind::TransferLeader),
         _ => Err(RemoteRaftError::InvalidRpc),
     }
 }
@@ -1869,21 +1871,30 @@ mod tests {
     #[test]
     fn raft_wire_frame_binds_direction_kind_and_payload() -> Result<(), Box<dyn std::error::Error>>
     {
-        let encoded = encode_raft_frame(RaftWireFrame {
-            cluster_id: "cluster-a".into(),
-            role: RAFT_FRAME_REQUEST,
-            source: 1,
-            target: 2,
-            kind: RaftRpcKind::AppendEntries,
-            payload: b"bounded-raft-rpc".to_vec(),
-        })?;
-        let decoded = decode_raft_frame(&encoded)?;
-        assert_eq!(decoded.cluster_id, "cluster-a");
-        assert_eq!(decoded.role, RAFT_FRAME_REQUEST);
-        assert_eq!(decoded.source, 1);
-        assert_eq!(decoded.target, 2);
-        assert_eq!(decoded.kind, RaftRpcKind::AppendEntries);
-        assert_eq!(decoded.payload, b"bounded-raft-rpc");
+        for kind in [
+            RaftRpcKind::AppendEntries,
+            RaftRpcKind::Vote,
+            RaftRpcKind::PreVote,
+            RaftRpcKind::SnapshotChunk,
+            RaftRpcKind::TransferLeader,
+        ] {
+            let encoded = encode_raft_frame(RaftWireFrame {
+                cluster_id: "cluster-a".into(),
+                role: RAFT_FRAME_REQUEST,
+                source: 1,
+                target: 2,
+                kind,
+                payload: b"bounded-raft-rpc".to_vec(),
+            })?;
+            let decoded = decode_raft_frame(&encoded)?;
+            assert_eq!(decoded.cluster_id, "cluster-a");
+            assert_eq!(decoded.role, RAFT_FRAME_REQUEST);
+            assert_eq!(decoded.source, 1);
+            assert_eq!(decoded.target, 2);
+            assert_eq!(decoded.kind, kind);
+            assert_eq!(decoded.payload, b"bounded-raft-rpc");
+        }
+        assert!(decode_kind(6).is_err());
         Ok(())
     }
 

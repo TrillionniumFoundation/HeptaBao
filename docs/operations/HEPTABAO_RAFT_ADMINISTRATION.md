@@ -50,6 +50,23 @@ demoting a voter retains a learner. Removal or demotion may never leave fewer th
 three voters. The policy min_quorum may impose a stricter limit. The original
 step-down path now selects actual voters rather than any configured peer.
 
+Leadership transfer uses an explicit authenticated peer RPC (wire kind 5).
+The receiver binds the request's former leader and recipient to the transport
+source and local node before OpenRaft checks its vote and flushed-log frontier.
+Without this RPC, the upstream network trait's default only reports unreachable;
+waiting for a subsequent election is not evidence that the requested target took
+over. A completed transfer still requires a fresh leader/application observation.
+
+Replication batches are bounded by encoded bytes as well as entry count.
+`DurableLogStore::limited_get_log_entries` returns a contiguous prefix that fits
+the unchanged 768 KiB complete RPC limit, reserving the maximum serialized vote
+and log-ID metadata. Proposal admission rejects a single unsendable entry before
+appending it. This prevents a newly elected leader from repeatedly rejecting its
+own large catch-up batch before it can replicate the new-term blank entry.
+ReadIndex covers both quorum confirmation and application of its required log;
+the runtime bounds that complete wait at eight seconds and accepts a shorter
+caller budget. Timeout grants no read and does not retry a write.
+
 ## Snapshots: durable completion, not queue acceptance
 
 A requested native snapshot waits for an appropriate persisted snapshot frontier,
@@ -97,8 +114,11 @@ without replacing that state. Record snapshots use bundle and wire version 3,
 while legacy state keeps the version 1/2 read paths. Record payloads have a 47 MiB
 combined encoded budget and retain the 128 MiB complete-artifact bound. Runtime
 tests cover journal replay, rejection, snapshot install/reopen and legacy-data
-retirement. These APIs are not yet connected to server record publication, so
-their presence does not increase the server's current logical-state limit.
+retirement. Schema 36 connects these APIs to server KV1 record publication;
+see the [current runtime architecture](../architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md)
+and [current capacity contract](HEPTABAO_CAPACITY_AND_GROWTH.md) for its actual
+graph, staging and backup limits. Historical receipts below retain their original
+scope and do not qualify the newer record path.
 
 The `7baeddb` runtime build (SHA256
 `882d8bccf4b25190d3fd36d781ccb5b58d7694bfdb84d853ef1156394114d989`)
@@ -106,9 +126,12 @@ passed the same [45-check membership profile](../../qa/openbao-acceptance/eviden
 and [13-check actual legacy snapshot upgrade](../../qa/openbao-acceptance/evidence/raft-compact-upgrade-7baeddb.json).
 These verify the unchanged legacy application path with the new runtime, not
 server publication or capacity of the record format. A separate userpass HA run
-exposed an existing forwarding timeout: password processing exceeded the 500 ms
+exposed a forwarding timeout: password processing exceeded the 500 ms
 peer deadline and returned 503 after the mutation committed. The same failure
-was reproduced with the preserved schema-35 binary; that profile is not passed.
+was reproduced with the preserved schema-35 binary; that historical profile is
+not passed. Subsequent forwarding-budget and userpass HA evidence is recorded
+with the corresponding newer source/binary identities, not retroactively applied
+to this receipt.
 
 The existing Service HTTP snapshot body remains the repository's encrypted backup
 format, **not an OpenBao `raft.snap` binary**. Native persisted snapshot status
