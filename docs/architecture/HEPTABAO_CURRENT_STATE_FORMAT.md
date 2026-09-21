@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **44**. Its source constant is
+The current Service state schema is **45**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -84,6 +84,7 @@ custody, rotation and parent/sibling key separation remain open.
 | 42 | Explicit AppRole role/mount token-type configuration and Kubernetes typed lease ownership with separate Bao/provider expiry. Absent fields retain historical behavior and serialization. |
 | 43 | AppRole role token CIDR presence, including an explicit empty list, and constrained direct AppRole service-token snapshots. Historical absent role fields remain absent. |
 | 44 | Explicit ordinary JWT role/mount token types and trusted login alias metadata. Historical absent role types and empty backend metadata remain absent in stored bytes; user-maintained alias metadata keeps its own meaning. |
+| 45 | Optional AppRole role-level SecretID login source CIDRs, including an explicit empty list. The restriction is separate from issued-token CIDRs; older absent fields retain their bytes and meaning. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Schema 41 is required if any batch key authority, explicit token-type field, or
@@ -126,6 +127,16 @@ of subsequent Identity/wrapping denial: the failed login can commit only that
 one checked credential transition, without publishing its rejected token,
 Identity, batch-key or wrapper candidate. This transient transition is not a new
 serialized state owner or a second token registry.
+
+Role `secret_id_bound_cidrs` presence independently requires schema45. `None`
+remains absent in storage and projects as null; whole-role explicit empty input
+stores an empty list. Native dedicated deletion removes the field. Numeric CIDR
+syntax and live AppRole mount association are checked on every state admission.
+This field is a login restriction, not a retroactive bearer constraint or issued
+token snapshot. Failed source admission may publish only the existing checked
+finite-SecretID consumption capsule. It cannot publish its rejected Auth/Identity
+candidate; known publication failure preserves the previous count, while an
+unknown journal outcome fences service until recovery.
 
 Ordinary JWT role `token_type` is optional in storage. Absence preserves old
 bytes while API reads report `default`; an explicit value, including `default`,
@@ -383,7 +394,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 44. An authenticated
+it. Initialization and committed mutations use schema 45. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.

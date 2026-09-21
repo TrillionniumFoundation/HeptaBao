@@ -1,9 +1,15 @@
 //! AppRole token CIDRs constrain issued credentials, not RoleID/SecretID login.
-//! SecretID login-source constraints are a separate, unsupported API family.
+//! Role SecretID login-source constraints are validated independently.
 use super::*;
 
 pub(super) fn validate_constraints(role: &Role) -> Result<(), AuthError> {
-    if !role.bind_secret_id && role.token_bound_cidrs.as_ref().is_none_or(Vec::is_empty) {
+    if !role.bind_secret_id
+        && role.token_bound_cidrs.as_ref().is_none_or(Vec::is_empty)
+        && role
+            .secret_id_bound_cidrs
+            .as_ref()
+            .is_none_or(Vec::is_empty)
+    {
         return Err(err(
             500,
             "at least one constraint should be enabled on the role",
@@ -87,6 +93,7 @@ impl AuthState {
     }
 
     pub(crate) fn validate_approle_token_bound_cidrs(&self) -> Result<(), AuthError> {
+        self.validate_approle_secret_bound_cidrs()?;
         for (namespace, roles) in &self.roles {
             self.validate_approle_role_cidrs(namespace, "approle", roles)?;
         }

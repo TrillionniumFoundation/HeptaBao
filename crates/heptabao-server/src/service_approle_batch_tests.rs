@@ -397,3 +397,160 @@ fn approle_batch_unknown_journal_outcome_fences_success_and_denied_consumption_w
     }
     Ok(())
 }
+
+fn source_login(
+    service: &mut Service,
+    credentials: &Value,
+    peer: Option<&str>,
+    wrap: Option<u64>,
+) -> Response {
+    service.handle_at_mode(RequestDispatch {
+        method: "POST",
+        path: "auth/approle/login",
+        namespace: "",
+        token: "",
+        body: credentials.clone(),
+        now: 100,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: wrap,
+        origin_peer: peer.and_then(|value| value.parse().ok()),
+        client_certificates: None,
+    })
+}
+fn configure_source(service: &mut Service, admin: &str) {
+    assert_eq!(
+        call(
+            service,
+            "POST",
+            "auth/approle/role/example",
+            admin,
+            json!({"secret_id_bound_cidrs":["127.0.0.1/32"]})
+        )
+        .status,
+        204
+    );
+}
+#[test]
+fn approle_role_source_denial_commits_only_finite_sid_consumption_and_survives_reopen() -> TestResult
+{
+    for kind in ["service", "batch"] {
+        for uses in [0, 1, 2] {
+            let root = Root::new();
+            let mut service = root.service()?;
+            let (key, admin) = bootstrap(&mut service)?;
+            let credentials = credentials(&mut service, &admin, kind, uses)?;
+            configure_source(&mut service, &admin);
+            let auth = without_secret_ids(&service.state.as_ref().ok_or("state")?.auth)?;
+            let engines =
+                owner_store::serialize_owner(&service.state.as_ref().ok_or("state")?.engines)
+                    .map_err(|_| "engines")?;
+            service.record_writes_since_gc = 0;
+            let denied = source_login(&mut service, &credentials, Some("127.0.0.2"), Some(60));
+            assert_eq!(denied.status, 400);
+            no_credentials(&denied);
+            assert_eq!(
+                service.record_writes_since_gc,
+                if uses == 0 { 0 } else { 1 }
+            );
+            assert!(
+                auth.as_slice()
+                    == without_secret_ids(&service.state.as_ref().ok_or("state")?.auth)?.as_slice()
+            );
+            assert!(
+                engines.as_slice()
+                    == owner_store::serialize_owner(
+                        &service.state.as_ref().ok_or("state")?.engines
+                    )
+                    .map_err(|_| "engines")?
+                    .as_slice()
+            );
+            drop(service);
+            let mut service = root.service()?;
+            assert_eq!(
+                call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+                200
+            );
+            let info = secret_info(&mut service, &admin, &credentials);
+            if uses == 1 {
+                assert_eq!(info.status, 204);
+            } else {
+                assert_eq!(info.status, 200);
+                assert_eq!(
+                    info.body["data"]["secret_id_num_uses"],
+                    if uses == 0 { 0 } else { 1 }
+                );
+            }
+            let allowed = source_login(&mut service, &credentials, Some("127.0.0.1"), None);
+            if uses == 1 {
+                assert_eq!(allowed.status, 400);
+                no_credentials(&allowed);
+            } else {
+                assert_eq!(allowed.status, 200);
+                assert_eq!(allowed.body["auth"]["token_type"], kind);
+                // Role login restrictions never become issued-token constraints.
+                let token = allowed.body["auth"]["client_token"]
+                    .as_str()
+                    .ok_or("token")?;
+                assert!(
+                    service
+                        .state
+                        .as_ref()
+                        .ok_or("state")?
+                        .auth
+                        .authenticate_read_only_from(token, 100, Some("127.0.0.2".parse()?))?
+                        .is_some()
+                );
+            }
+        }
+    }
+    Ok(())
+}
+#[test]
+fn approle_source_rejection_storage_failure_rolls_back_and_invalid_sid_does_not_consume()
+-> TestResult {
+    for kind in ["service", "batch"] {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, admin) = bootstrap(&mut service)?;
+        let credentials = credentials(&mut service, &admin, kind, 2)?;
+        configure_source(&mut service, &admin);
+        let before = service.current_state_digest().map_err(|_| "digest")?;
+        let mut invalid = credentials.clone();
+        invalid["secret_id"] = json!("not-the-secret");
+        let denied = source_login(&mut service, &invalid, Some("127.0.0.2"), Some(60));
+        assert_eq!(denied.status, 400);
+        no_credentials(&denied);
+        assert_eq!(
+            service.current_state_digest().map_err(|_| "digest")?,
+            before
+        );
+        let capacity = service.state_capacity;
+        service.state_capacity = 1;
+        let failed = source_login(&mut service, &credentials, Some("127.0.0.2"), Some(60));
+        assert_eq!(failed.status, 507);
+        no_credentials(&failed);
+        assert_eq!(
+            service.current_state_digest().map_err(|_| "digest")?,
+            before
+        );
+        service.state_capacity = capacity;
+        assert_eq!(
+            secret_info(&mut service, &admin, &credentials).body["data"]["secret_id_num_uses"],
+            2
+        );
+        let missing_peer = source_login(&mut service, &credentials, None, Some(60));
+        assert_eq!(missing_peer.status, 500);
+        no_credentials(&missing_peer);
+        assert_eq!(
+            secret_info(&mut service, &admin, &credentials).body["data"]["secret_id_num_uses"],
+            1
+        );
+        assert_eq!(
+            source_login(&mut service, &credentials, Some("127.0.0.1"), None).status,
+            200
+        );
+        assert_eq!(secret_info(&mut service, &admin, &credentials).status, 204);
+    }
+    Ok(())
+}

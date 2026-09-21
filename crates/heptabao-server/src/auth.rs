@@ -1253,6 +1253,8 @@ impl Drop for User {
 #[derive(Clone, Serialize, Deserialize)]
 struct Role {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    secret_id_bound_cidrs: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     token_bound_cidrs: Option<Vec<String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     token_type: Option<batch_issuance::UserTokenType>,
@@ -2914,7 +2916,9 @@ impl AuthState {
                 "ldap" if suffix == "groups" || suffix.starts_with("groups/") => {
                     self.ldap_group_route(principal, scope, method, path, body, now)
                 }
-                "approle" if suffix == "login" => self.login_approle(scope, method, body, now),
+                "approle" if suffix == "login" => {
+                    self.login_approle(scope, method, body, now, origin_peer)
+                }
                 "approle" if suffix == "tidy/secret-id" => {
                     self.tidy_secret_ids(principal, scope, method, path, body, now)
                 }
@@ -6066,6 +6070,16 @@ impl AuthState {
         if operation == "token-bound-cidrs" {
             return self.approle_token_cidrs_route(scope, name, capability, body, existing);
         }
+        if matches!(operation, "secret-id-bound-cidrs" | "bound-cidr-list") {
+            return self.approle_secret_cidrs_route(
+                scope,
+                name,
+                capability,
+                body,
+                existing,
+                operation == "bound-cidr-list",
+            );
+        }
         if operation.is_empty() {
             if capability == "read" {
                 let Some(role) = existing else {
@@ -6076,7 +6090,7 @@ impl AuthState {
                     });
                 };
                 return Ok(response(
-                    json!({"token_bound_cidrs":role.token_bound_cidrs.as_deref().unwrap_or_default(), "token_type": role.token_type.unwrap_or_default().name(), "bind_secret_id": role.bind_secret_id, "token_policies": role.policies, "token_ttl": role.token_ttl,
+                    json!({"secret_id_bound_cidrs":role.secret_id_bound_cidrs, "token_bound_cidrs":role.token_bound_cidrs.as_deref().unwrap_or_default(), "token_type": role.token_type.unwrap_or_default().name(), "bind_secret_id": role.bind_secret_id, "token_policies": role.policies, "token_ttl": role.token_ttl,
                     "token_max_ttl": role.token_max_ttl, "token_period": role.token_period,
                     "token_explicit_max_ttl": role.token_explicit_max_ttl,
                     "token_num_uses": role.token_num_uses, "secret_id_ttl": role.secret_id_ttl, "secret_id_num_uses": role.secret_id_num_uses}),
@@ -6095,6 +6109,8 @@ impl AuthState {
                 &[
                     "token_type",
                     "token_bound_cidrs",
+                    "secret_id_bound_cidrs",
+                    "bound_cidr_list",
                     "bind_secret_id",
                     "policies",
                     "token_policies",
@@ -6109,6 +6125,7 @@ impl AuthState {
             )?;
             reject_alias_pair(body, "policies", "token_policies")?;
             let mut role = existing.unwrap_or(Role {
+                secret_id_bound_cidrs: None,
                 token_bound_cidrs: None,
                 token_type: None,
                 role_id: random_id("role.")?,
@@ -6153,6 +6170,7 @@ impl AuthState {
                 approle_renewal::role_count(body, "secret_id_num_uses", role.secret_id_num_uses)?;
             approle_renewal::validate_role_limits(&role)?;
             let type_warning = approle_batch::update_role_type(&mut role, body)?;
+            approle_secret_cidrs::update(&mut role, body)?;
             approle_cidrs::update(&mut role, body)?;
             self.roles_at_mut(scope).insert(name.into(), role);
             return Ok(match type_warning {
@@ -6198,6 +6216,9 @@ impl AuthState {
                 Ok(response(json!({"keys": keys}), false))
             }
             ("secret-id", "update") | ("custom-secret-id", "update") => {
+                if !role.bind_secret_id {
+                    return Err(bad("bind_secret_id is not set on the role"));
+                }
                 let custom = operation == "custom-secret-id";
                 if custom {
                     reject_unknown(body, &["secret_id", "ttl", "num_uses"])?;
@@ -6311,6 +6332,7 @@ impl AuthState {
         method: &str,
         body: &Value,
         now: u64,
+        origin_peer: Option<std::net::IpAddr>,
     ) -> Result<AuthResponse, AuthError> {
         let AuthScope { namespace, mount } = scope;
         if !matches!(method, "POST" | "PUT") {
@@ -6369,6 +6391,17 @@ impl AuthState {
                     now,
                 )?);
             }
+        }
+        if let Err(error) = approle_secret_cidrs::check(&role, origin_peer) {
+            // Backend CIDR rejection consumes an authenticated finite SecretID,
+            // but never publishes this failed auth candidate or a credential.
+            // Service applies only the checked capsule to its admitted state.
+            return Ok(AuthResponse {
+                status: error.status,
+                body: json!({"errors":[error.message]}),
+                approle_secret_consumption: credential_consumption.map(Box::new),
+                ..empty(false)
+            });
         }
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
@@ -7003,3 +7036,9 @@ mod approle_cidrs;
 #[cfg(test)]
 #[path = "auth_approle_cidrs_tests.rs"]
 mod approle_cidrs_tests;
+
+#[path = "auth_approle_secret_cidrs.rs"]
+mod approle_secret_cidrs;
+#[cfg(test)]
+#[path = "auth_approle_secret_cidrs_tests.rs"]
+mod approle_secret_cidrs_tests;

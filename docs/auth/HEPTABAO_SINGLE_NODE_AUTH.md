@@ -481,10 +481,10 @@ Custom SecretIDs are supported through `role/:name/custom-secret-id` with an
 operator-supplied 1–256-byte value plus the role-bounded `ttl` and `num_uses`
 limits. The value is returned only in the successful creation response and is
 stored as a SHA-256 digest; duplicate active values are rejected rather than
-replacing an existing SecretID's uses or expiry. This is a bounded subset: CIDR binding
-on authentication methods, LDAP directory search/group-policy synchronization,
-batch issuance from methods other than userpass/Token API, cloud IAM, Kerberos auth, WebAuthn/push/external MFA,
-auth-plugin execution, complete OpenBao browser/UI semantics, and full
+replacing an existing SecretID's uses or expiry. This is a bounded subset:
+per-SecretID CIDR overrides, batch issuance from the remaining authentication
+methods, cloud IAM, Kerberos auth, WebAuthn/push/external MFA,
+complete OpenBao browser/UI semantics, and full
 per-method field parity remain unsupported. AppRole roles support both the
 default SecretID-bound login and OpenBao's `bind_secret_id=false` role-ID-only
 login; the latter intentionally ignores an optional `secret_id` field. Unknown
@@ -1194,7 +1194,7 @@ observations match the pinned calibration and each other; the three null-input
 observations separately verify the deliberate safe rejection. Source, binary
 and helpers remained unchanged and both secret scans passed. The pinned official handler
 panics on a null role `token_type`; HeptaBao deliberately returns bounded HTTP400
-instead. Role SecretID login CIDRs, per-SecretID CIDR overrides, arbitrary
+instead. Per-SecretID CIDR overrides, arbitrary
 SecretID/alias metadata, other dedicated role subroutes and remaining configuration remain
 open. Existing SecretIDs and roles with absent type metadata retain their old
 serialized shape; explicit type metadata requires schema42.
@@ -1242,11 +1242,11 @@ or configuring nonempty token CIDRs. SecretID consumption/storage does not
 accidentally apply this management-only validation.
 
 This increment is calibrated against [16 official scenarios and 194 observations](../../qa/openbao-acceptance/evidence/approle-token-cidrs-official-c2df6af.json).
-All 46 AppRole tests, 38 format-focused tests and strict Clippy passed; candidate
-live qualification is pending. The dedicated POST ignores
+The initial 46 AppRole tests, 38 format-focused tests and strict Clippy passed;
+the corrected candidate's live results follow below. The dedicated POST ignores
 unrelated inputs while updating only its own field, based on official source
 and a behavior regression; that extra-input case was not in the live probe.
-SecretID login CIDRs, SecretID token-CIDR overrides and nonnumeric SockAddr
+SecretID login CIDRs are a separate schema45 feature below; per-SecretID token-CIDR overrides and nonnumeric SockAddr
 variants remain outside this profile.
 
 The first candidate dual run completed all 194 observations on each side. Its
@@ -1280,6 +1280,46 @@ The receipt is `approle-token-cidrs-ha-128c123.json` (SHA256
 This establishes the stated origin-forwarding and token-snapshot behavior
 through every public voter, leader change and full restart; it does not qualify
 physical media failure or native OpenBao archive interchange.
+
+## AppRole role login source constraints in schema45
+
+Whole-role `secret_id_bound_cidrs` and the native dedicated
+`role/:name/secret-id-bound-cidrs` route restrict the authenticated transport peer
+at login. IPv4/IPv6 networks require a numeric prefix; stored host bits are
+preserved. Forwarded requests use the verified HA transport origin, not client
+forwarding headers. At most 128 ASCII CIDRs of 64 bytes each are accepted.
+Whole-role null, empty string and empty list store an explicit empty list;
+omission preserves the value. Dedicated writes reject an empty value with 400,
+while native DELETE removes the field and restores null readback. Final role
+management still requires SecretID binding or nonempty login/token CIDRs.
+
+The deprecated `bound_cidr_list` whole-role alias is used only if the native
+field is absent. Its dedicated write updates native constraints, but its read
+returns its separate historical null field with a deprecation warning and its
+DELETE does not clear native constraints. Dedicated writes ignore unrelated
+fields rather than allowing them to modify the whole role. Invalid writes are
+atomic; malformed network strings return whole-role 500 versus dedicated 400,
+matching the observed backend.
+
+A verified finite SecretID is consumed before source rejection. Therefore a
+wrong-source login returns 400 with no credential but consumes one use, including
+the last use. Unlimited SecretIDs and RoleID-only logins have no use transition;
+an invalid SecretID never consumes the valid credential. Service applies only
+the existing checked consumption capsule to the admitted state. It discards the
+failed token, Identity and wrapper candidate. Known storage refusal preserves
+the previous count; an unknown journal outcome fences service until recovery.
+Existing service/batch tokens and renewal remain independent of later role login
+CIDR changes. Issued `token_bound_cidrs` continue to constrain bearer use separately.
+
+The [official calibration](../../qa/openbao-acceptance/evidence/approle-secret-cidrs-official-2df0658.json)
+contains 18 scenarios and 380 observations, of which two explicitly did not run
+because a rejected one-use SecretID produced no token. Those two are not passing
+assertions. `approle_secret_cidrs_live.py` compares the 378 executed observations
+and retains those explicit omissions. The actual schema44-to-45 upgrade runner
+uses two old-binary stores, independent first-write reader gates and a real
+owned-journal permission fault followed by recovery. Candidate live results
+remain pending. Per-SecretID `cidr_list` and `token_bound_cidrs` overrides,
+arbitrary SecretID metadata and other dedicated AppRole fields remain open.
 
 ## Kubernetes batch lease ownership in schema42
 
