@@ -81,6 +81,12 @@ impl State {
         self.auth
             .validate_approle_metadata()
             .map_err(|_| Response::error(503, "invalid AppRole credential metadata"))?;
+        if self.schema < 47 && self.engines.has_nullable_identity_metadata_state() {
+            return Err(Response::error(
+                503,
+                "nullable Identity metadata requires schema 47",
+            ));
+        }
         self.auth
             .validate_approle_native_defaults()
             .map_err(|_| Response::error(503, "invalid native AppRole state"))?;

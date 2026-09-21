@@ -172,6 +172,7 @@ fn userpass_empty_policy_shape_and_same_token_nil_to_explicit_empty_survive_rest
         403
     );
     let mut disguised = service.state.clone().ok_or("state")?;
+    disguised.engines.restore_pre47_identity_metadata_for_test();
     let mut auth = serde_json::to_value(&disguised.auth)?;
     auth["users"][""]["nd"]
         .as_object_mut()
@@ -184,6 +185,11 @@ fn userpass_empty_policy_shape_and_same_token_nil_to_explicit_empty_survive_rest
         disguised.auth.has_userpass_no_default_policy(),
         "issued no-default token still fences even after account metadata is removed"
     );
-    assert!(disguised.validate_format().is_err());
+    let rejected = disguised.validate_format().err().ok_or("no-default gate")?;
+    assert_eq!(rejected.status, 503);
+    assert_eq!(
+        rejected.body["errors"][0],
+        "userpass default-policy semantics require schema 39"
+    );
     Ok(())
 }

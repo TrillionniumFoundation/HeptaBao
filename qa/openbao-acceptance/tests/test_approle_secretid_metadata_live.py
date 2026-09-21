@@ -63,7 +63,7 @@ class MetadataComparisonTests(unittest.TestCase):
 
 class SupplementaryProfileTests(unittest.TestCase):
     def test_all_profiles_are_exact_immutable_receipts(self):
-        self.assertEqual(set(f.PROFILES), {'primary','supplementary','partial_json','denial'})
+        self.assertEqual(set(f.PROFILES), {'primary','supplementary','partial_json','denial','unicode'})
         for profile,(module,path,digest,runner_digest,_) in f.PROFILES.items():
             with self.subTest(profile=profile):
                 rows=f.calibrated_rows(profile);phases=json.loads(path.read_text())['completed_scenarios']
@@ -126,7 +126,8 @@ class SupplementaryProfileTests(unittest.TestCase):
                   patch.object(f.contract,'run',side_effect=trace_run('primary')),
                   patch.object(f.supplementary,'run',side_effect=trace_run('supplementary')),
                   patch.object(f.partial_json,'run',side_effect=trace_run('partial_json')),
-                  patch.object(f.denial,'run',side_effect=trace_run('denial'))):
+                  patch.object(f.denial,'run',side_effect=trace_run('denial')),
+                  patch.object(f.unicode_replacement,'run',side_effect=trace_run('unicode'))):
                 self.assertEqual(f.main(),0)
             report=json.loads(output.read_text())
             self.assertEqual(set(report['cases']),{name+'.'+side for name in f.PROFILES for side in ('oracle','candidate')})
@@ -228,5 +229,46 @@ class DenialProfileTests(unittest.TestCase):
         for key in ('permission_denied','no_credential','no_wrapper'):
             missing=dict(row);del missing[key]
             self.assertFalse(f.safe_rows([missing]),key)
+
+
+
+class UnicodeProfileTests(unittest.TestCase):
+    def calibration(self):
+        rows=f.calibrated_rows('unicode')
+        phases=json.loads(f.PROFILES['unicode'][1].read_text())['completed_scenarios']
+        return rows,phases
+
+    def test_unicode_acceptance_and_rejection_cannot_be_replaced_with_equal_failures(self):
+        rows,phases=self.calibration()
+        for name in ('json_lone_high','json_lone_low','json_valid_pair','json_high_ascii',
+                     'json_duplicate_good_last','json_duplicate_high_last','csv_literal',
+                     'base64_invalid_json_string','base64_invalid_csv_key','base64_invalid_csv_value'):
+            for phase in ('issue','login','bearer','lookup'):
+                case='parser.'+name+'.'+phase
+                wrong=copy.deepcopy(rows);next(row for row in wrong if row['case']==case)['status']=400
+                self.assertFalse(f.complete(wrong,phases,rows,'unicode'),case)
+        for name in ('json_type_error','base64_invalid_before_json'):
+            wrong=copy.deepcopy(rows)
+            next(row for row in wrong if row['case']=='parser.'+name+'.issue')['status']=200
+            self.assertFalse(f.complete(wrong,phases,rows,'unicode'),name)
+        self.assertFalse(f.complete(rows,[phase for phase in phases if phase!='parser.json_type_error'],rows,'unicode'))
+
+    def test_replacement_pairs_csv_literal_and_duplicate_order_remain_exact_hashes(self):
+        rows,phases=self.calibration()
+        expected={
+            'json_lone_high':{'env':'\ufffd'},'json_valid_pair':{'env':'😀'},
+            'json_high_ascii':{'env':'\ufffdx'},'json_duplicate_good_last':{'env':'good'},
+            'json_duplicate_high_last':{'env':'\ufffd'},'csv_literal':{'env':r'\ud800'},
+            'base64_invalid_csv_key':{'\ufffdenv':'good'},
+        }
+        for name,metadata in expected.items():
+            case='parser.'+name+'.stored.raw'
+            row=next(row for row in rows if row['case']==case)
+            self.assertEqual(row['data_metadata'],f.contract.metadata_projection(metadata))
+            wrong=copy.deepcopy(rows)
+            next(row for row in wrong if row['case']==case)['data_metadata']=f.contract.metadata_projection({'env':'other'})
+            self.assertFalse(f.complete(wrong,phases,rows,'unicode'),case)
+        self.assertFalse(f.safe_metadata({'shape':'map','value':{'env':'\ufffd'}}), 'non-allowlisted values must stay hashed')
+        self.assertFalse(f.complete(rows,json.loads(f.PROFILES['supplementary'][1].read_text())['completed_scenarios'],rows,'unicode'))
 
 if __name__=='__main__':unittest.main()

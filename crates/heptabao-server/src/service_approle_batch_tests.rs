@@ -793,6 +793,7 @@ fn legacy_jwt_backend_and_admin_role_name_custom_metadata_remain_schema46_readab
         alias["custom_metadata"] = json!({"role_name":"administrator"});
     }
     fixture.engines = serde_json::from_value(wire)?;
+    fixture.engines.restore_pre47_identity_metadata_for_test();
     assert!(fixture.engines.has_login_alias_metadata_state());
     assert!(!fixture.engines.has_approle_login_alias_metadata_state());
     assert!(!fixture.engines.has_extended_login_alias_metadata_state());

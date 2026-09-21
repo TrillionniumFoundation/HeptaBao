@@ -11,6 +11,7 @@ type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 // pre-schema44 alias shape as a legacy reader would, without retaining the v5
 // runtime or newer backend metadata and masking the auth schema fence.
 fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    state.engines.restore_pre47_identity_metadata_for_test();
     assert!(
         !state.engines.has_record_kv1(),
         "legacy auth fixture cannot discard record-backed KV1 data"

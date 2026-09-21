@@ -58,6 +58,81 @@ fn bootstrap(s: &mut Service) -> Result<(String, String), Box<dyn std::error::Er
     );
     Ok((admin, key))
 }
+
+#[test]
+fn each_nullable_identity_metadata_owner_independently_requires_schema47() -> TestResult {
+    let root = Fixture::new()?;
+    let mut service = root.service()?;
+    let (admin, _) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "POST",
+            "identity/group",
+            json!({"name":"group"})
+        )
+        .status,
+        200
+    );
+    let mut state = service.state.clone().ok_or("state")?;
+    state
+        .engines
+        .bind_login_identity("", "auth_fixture", "subject", 100)?;
+    assert!(!state.auth.has_approle_metadata());
+    assert!(!state.engines.has_login_alias_metadata_state());
+    let mut legacy = serde_json::to_value(&state.engines)?;
+    // Reconstruct the maps actually written by old binaries, then isolate
+    // exactly one null owner so the other two cannot mask its format gate.
+    for (collection, field) in [
+        ("entities", "metadata"),
+        ("groups", "metadata"),
+        ("aliases", "custom_metadata"),
+    ] {
+        let records = legacy["namespaces"][""]["identity"][collection]
+            .as_object_mut()
+            .ok_or("records")?;
+        assert!(!records.is_empty());
+        for record in records.values_mut() {
+            record[field] = json!({});
+        }
+    }
+    state.engines = serde_json::from_value(legacy.clone())?;
+    assert!(!state.engines.has_nullable_identity_metadata_state());
+    state.schema = 46;
+    state
+        .validate_format()
+        .map_err(|_| "legacy maps rejected")?;
+    for (collection, field) in [
+        ("entities", "metadata"),
+        ("groups", "metadata"),
+        ("aliases", "custom_metadata"),
+    ] {
+        let mut wire = legacy.clone();
+        let record = wire["namespaces"][""]["identity"][collection]
+            .as_object_mut()
+            .ok_or("records")?
+            .values_mut()
+            .next()
+            .ok_or("record")?;
+        record[field] = Value::Null;
+        state.engines = serde_json::from_value(wire)?;
+        assert!(state.engines.has_nullable_identity_metadata_state());
+        state.schema = 47;
+        state
+            .validate_format()
+            .map_err(|_| "current maps rejected")?;
+        state.schema = 46;
+        let rejected = state.validate_format().err().ok_or("missing gate")?;
+        assert_eq!(rejected.status, 503);
+        assert_eq!(
+            rejected.body["errors"][0], "nullable Identity metadata requires schema 47",
+            "{collection}"
+        );
+    }
+    Ok(())
+}
 fn policy(s: &mut Service, ns: &str, admin: &str, name: &str, rules: &str) {
     assert_eq!(
         call(

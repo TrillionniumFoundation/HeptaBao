@@ -82,8 +82,15 @@ pub(super) fn parse(body: &Value) -> Result<Option<BTreeMap<String, String>>, Au
     // decode_slice can have written plaintext before failing. Its entire output
     // allocation is zeroized on both branches, not wrapped only after success.
     let mut decoded = Zeroizing::new(vec![0; encoded.len() / 4 * 3 + 3]);
+    let replacement;
     let input = match engine.decode_slice(encoded.as_bytes(), decoded.as_mut_slice()) {
-        Ok(length) => std::str::from_utf8(&decoded[..length]).map_err(|_| invalid())?,
+        Ok(length) => match std::str::from_utf8(&decoded[..length]) {
+            Ok(input) => input,
+            Err(_) => {
+                replacement = parser::replace_invalid_utf8(&decoded[..length])?;
+                &replacement
+            }
+        },
         Err(_) => input,
     };
     let mut metadata = Metadata::default();

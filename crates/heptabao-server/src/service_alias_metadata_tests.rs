@@ -146,13 +146,16 @@ fn jwt_backend_alias_metadata_persists_and_is_gated_after_mount_removal() -> Tes
     let state = service.state.as_ref().ok_or("state")?;
     assert!(state.engines.has_login_alias_metadata_state());
     let mut old = state.clone();
+    old.engines.restore_pre47_identity_metadata_for_test();
     old.schema = 43;
+    let rejected = old
+        .validate_format()
+        .err()
+        .ok_or("old reader must reject")?;
+    assert_eq!(rejected.status, 503);
     assert_eq!(
-        old.validate_format()
-            .err()
-            .ok_or("old reader must reject")?
-            .status,
-        503
+        rejected.body["errors"][0],
+        "JWT token type or login alias metadata requires schema 44"
     );
     drop(service);
     let mut reopened = root.service()?;

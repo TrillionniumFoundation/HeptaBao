@@ -22,6 +22,14 @@ impl EngineState {
             .any(|state| state.identity.has_opaque_aliases())
     }
 
+    pub(crate) fn has_nullable_identity_metadata_state(&self) -> bool {
+        // Null is new persisted authority even when all backend login metadata
+        // has been cleared or the issuing auth mount no longer exists.
+        self.namespaces
+            .values()
+            .any(|state| state.identity.has_nullable_metadata())
+    }
+
     pub(crate) fn has_login_alias_metadata_state(&self) -> bool {
         // Alias records can outlive the auth mount that originally created them.
         self.namespaces

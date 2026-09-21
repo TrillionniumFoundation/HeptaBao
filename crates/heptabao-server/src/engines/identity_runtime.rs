@@ -42,6 +42,17 @@ impl IdentityState {
         Ok(())
     }
 
+    pub(crate) fn has_nullable_metadata(&self) -> bool {
+        self.entities
+            .values()
+            .any(|entity| entity.metadata.is_none())
+            || self.groups.values().any(|group| group.metadata.is_none())
+            || self
+                .aliases
+                .values()
+                .any(|alias| alias.custom_metadata.is_none())
+    }
+
     pub(crate) fn has_login_metadata(&self) -> bool {
         self.aliases
             .values()
@@ -243,7 +254,7 @@ impl IdentityState {
                 id: entity_id.clone(),
                 name: entity_name,
                 disabled: false,
-                metadata: BTreeMap::new(),
+                metadata: None,
                 policies: BTreeSet::new(),
                 aliases: BTreeSet::from([alias_id.clone()]),
                 group_ids: BTreeSet::new(),
@@ -259,7 +270,7 @@ impl IdentityState {
                 canonical_id: entity_id.clone(),
                 name: name.to_owned(),
                 mount_accessor: accessor.to_owned(),
-                custom_metadata: BTreeMap::new(),
+                custom_metadata: None,
                 login_metadata: BTreeMap::new(),
                 created_at: now,
                 updated_at: now,

@@ -84,11 +84,16 @@ fn bcrypt_import_alone_requires38_and_survives_authenticated_reopen_and_backup()
         200
     );
     let mut downgraded = service.state.clone().ok_or("state")?;
+    downgraded
+        .engines
+        .restore_pre47_identity_metadata_for_test();
     downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 37;
+    let rejected = downgraded.validate_format().err().ok_or("gate")?;
+    assert_eq!(rejected.status, 503);
     assert_eq!(
-        downgraded.validate_format().err().ok_or("gate")?.status,
-        503
+        rejected.body["errors"][0],
+        "userpass password comparison semantics require schema 38"
     );
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
     assert_eq!(

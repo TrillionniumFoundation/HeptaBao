@@ -246,6 +246,7 @@ fn userpass_cidr_schema39_covers_config_and_token_after_clear_without_rejecting_
         204
     );
     let mut issued = service.state.clone().ok_or("state")?;
+    issued.engines.restore_pre47_identity_metadata_for_test();
     issued.auth.remove_name_modes_for_legacy_format_test();
     issued.schema = 38;
     assert!(issued.auth.has_userpass_token_bound_cidrs());

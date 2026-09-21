@@ -181,6 +181,14 @@ their SID, token or auth mount. The older schema44 nonempty-map gate remains.
 Batch metadata uses the existing claims map and complete 8 KiB claims bound;
 there is no new per-batch storage record or larger bearer/header allowance.
 
+Entity/group administrative `metadata` and alias `custom_metadata` now admit
+stored null. Each owner independently requires schema47 across every namespace,
+including after auth mount removal. Old empty objects still deserialize and
+serialize as empty objects; the legacy missing-alias-field default remains an
+empty object. Reads do not normalize these historical bytes. Automatic login
+identities now start with null administrative metadata. This does not reproduce
+every native protobuf clone/restart normalization of explicitly empty maps.
+
 Ordinary JWT role `token_type` is optional in storage. Absence preserves old
 bytes while API reads report `default`; an explicit value, including `default`,
 requires schema44. JWT mount token-type presence independently requires schema44.

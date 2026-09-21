@@ -43,7 +43,7 @@ struct Entity {
     id: String,
     name: String,
     disabled: bool,
-    metadata: BTreeMap<String, String>,
+    metadata: Option<BTreeMap<String, String>>,
     policies: BTreeSet<String>,
     aliases: BTreeSet<String>,
     group_ids: BTreeSet<String>,
@@ -60,8 +60,8 @@ struct Alias {
     canonical_id: String,
     name: String,
     mount_accessor: String,
-    #[serde(default, alias = "metadata")]
-    custom_metadata: BTreeMap<String, String>,
+    #[serde(default = "legacy_custom_metadata", alias = "metadata")]
+    custom_metadata: Option<BTreeMap<String, String>>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     login_metadata: BTreeMap<String, String>,
     created_at: u64,
@@ -74,7 +74,7 @@ struct Group {
     id: String,
     name: String,
     kind: String,
-    metadata: BTreeMap<String, String>,
+    metadata: Option<BTreeMap<String, String>>,
     policies: BTreeSet<String>,
     member_entity_ids: BTreeSet<String>,
     member_group_ids: BTreeSet<String>,
@@ -678,7 +678,28 @@ fn upsert_alias(
         .and_then(Value::as_str)
         .ok_or_else(|| bad("mount_accessor is required"))?;
     valid_name(mount_accessor, "mount accessor")?;
-    let custom_metadata = optional_metadata(body, "custom_metadata")?;
+    let previous = id.and_then(|id| state.aliases.get(id));
+    let requested_metadata = if body.get("custom_metadata").is_some() {
+        optional_metadata(body, "custom_metadata")?
+    } else {
+        previous.and_then(|alias| alias.custom_metadata.clone())
+    };
+    let custom_metadata = match previous {
+        Some(alias)
+            if alias.name == name
+                && alias.mount_accessor == mount_accessor
+                && equal_custom_metadata(&alias.custom_metadata, &requested_metadata) =>
+        {
+            // Native EqualStringMaps considers nil and an empty map equal.
+            // A metadata-only no-op must preserve the old representation and
+            // timestamp. A canonical-only move likewise retains the old map.
+            if alias.canonical_id == canonical_id {
+                return Ok(empty(false));
+            }
+            alias.custom_metadata.clone()
+        }
+        _ => requested_metadata,
+    };
     let id = match id {
         Some(id) => {
             valid_identifier(id, "alias id")?;
@@ -1371,9 +1392,26 @@ fn group_cycle(state: &IdentityState, start: &str) -> Result<bool> {
     visit(state, start, &mut BTreeSet::new(), &mut BTreeSet::new(), 0)
 }
 
-fn optional_metadata(body: &Value, field: &str) -> Result<BTreeMap<String, String>> {
-    let Some(value) = body.get(field) else {
-        return Ok(BTreeMap::new());
+// Missing custom metadata was accepted by old readers as an empty map. Keep
+// that legacy default; new producers explicitly store None for native null.
+fn legacy_custom_metadata() -> Option<BTreeMap<String, String>> {
+    Some(BTreeMap::new())
+}
+
+fn equal_custom_metadata(
+    left: &Option<BTreeMap<String, String>>,
+    right: &Option<BTreeMap<String, String>>,
+) -> bool {
+    match (left, right) {
+        (Some(left), Some(right)) => left == right,
+        (None, None) => true,
+        (Some(map), None) | (None, Some(map)) => map.is_empty(),
+    }
+}
+
+fn optional_metadata(body: &Value, field: &str) -> Result<Option<BTreeMap<String, String>>> {
+    let Some(value) = body.get(field).filter(|value| !value.is_null()) else {
+        return Ok(None);
     };
     let object = value
         .as_object()
@@ -1395,7 +1433,8 @@ fn optional_metadata(body: &Value, field: &str) -> Result<BTreeMap<String, Strin
             }
             Ok((key.clone(), value.into()))
         })
-        .collect()
+        .collect::<Result<BTreeMap<_, _>>>()
+        .map(Some)
 }
 
 fn required_set(body: &Value, field: &str, max: usize, label: &str) -> Result<BTreeSet<String>> {
@@ -1715,3 +1754,7 @@ mod alias_tests;
 #[cfg(test)]
 #[path = "identity_login_metadata_tests.rs"]
 mod login_metadata_tests;
+
+#[cfg(test)]
+#[path = "identity_nullable_metadata_tests.rs"]
+mod nullable_metadata_tests;

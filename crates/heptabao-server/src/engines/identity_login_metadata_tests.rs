@@ -19,7 +19,7 @@ fn metadata(role: &str) -> BTreeMap<String, String> {
 #[test]
 fn legacy_alias_metadata_remains_custom_and_absent_backend_bytes_roundtrip() -> TestResult {
     let (mut state, _, id) = fixture()?;
-    state.aliases.get_mut(&id).ok_or("alias")?.custom_metadata = metadata("user-maintained");
+    state.aliases.get_mut(&id).ok_or("alias")?.custom_metadata = Some(metadata("user-maintained"));
     let bytes = serde_json::to_vec(&state)?;
     let mut value: Value = serde_json::from_slice(&bytes)?;
     assert!(value["aliases"][&id].get("login_metadata").is_none());
@@ -34,7 +34,7 @@ fn legacy_alias_metadata_remains_custom_and_absent_backend_bytes_roundtrip() -> 
     let legacy: IdentityState = serde_json::from_value(value)?;
     legacy.validate_aliases()?;
     let alias = legacy.aliases.get(&id).ok_or("alias")?;
-    assert_eq!(alias.custom_metadata, metadata("user-maintained"));
+    assert_eq!(alias.custom_metadata, Some(metadata("user-maintained")));
     assert!(alias.login_metadata.is_empty());
     assert_eq!(alias_data(alias)["metadata"], json!({}));
     assert!(!legacy.has_login_metadata());
@@ -102,7 +102,7 @@ fn provider_refresh_and_admin_custom_edit_preserve_separate_alias_metadata() -> 
     assert_eq!(alias.login_metadata, metadata("second"));
     assert_eq!(
         alias.custom_metadata,
-        BTreeMap::from([("note".into(), "changed".into())])
+        Some(BTreeMap::from([("note".into(), "changed".into())]))
     );
     Ok(())
 }
@@ -286,7 +286,7 @@ fn fresh_backend_metadata_rules_do_not_restrict_existing_empty_alias_updates() -
             .aliases
             .get_mut(&id)
             .ok_or("alias")?
-            .custom_metadata = self::metadata("admin");
+            .custom_metadata = Some(self::metadata("admin"));
         existing.validate_login_metadata_for_alias("auth_a", "subject", &metadata)?;
         existing.update_login_metadata("auth_a", "subject", &metadata, 101)?;
         assert_eq!(
@@ -295,7 +295,7 @@ fn fresh_backend_metadata_rules_do_not_restrict_existing_empty_alias_updates() -
         );
         assert_eq!(
             existing.aliases.get(&id).ok_or("alias")?.custom_metadata,
-            self::metadata("admin")
+            Some(self::metadata("admin"))
         );
         // Existence is keyed by both accessor and name, never by metadata size.
         assert_eq!(

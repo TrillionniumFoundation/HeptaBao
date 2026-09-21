@@ -20,6 +20,7 @@ import approle_secretid_metadata_probe as contract
 import approle_secretid_metadata_supplement as supplementary
 import approle_metadata_partial_probe as partial_json
 import approle_metadata_denial_probe as denial
+import approle_metadata_unicode_probe as unicode_replacement
 
 CALIBRATION_PATH = Path(__file__).parent/'evidence/approle-secretid-metadata-official-b56954e.json'
 CALIBRATION_SHA256 = '7292a2c8f5ada19543b2536c1cbfc0648f515a2684aa3c12fe8d9145c6942023'
@@ -42,6 +43,11 @@ PROFILES = {
         '777a71da5df321e7945ca250ccd09de0021f1ff7b12ff2014853b251b9d36fbc',
         '1bf4364019c85620ff9c81530af45ec406c5b48750beabf13be225f14f0a4668',
         'heptabao.approle-metadata-denial-probe.v1'),
+    'unicode': (unicode_replacement,
+        Path(__file__).parent/'evidence/approle-metadata-unicode-official-9d079ca.json',
+        '44cc62f02af3be221cb7e08e3ddf23995eb7faf303e243e9f4d6b0ca66fe987d',
+        'ed71f2de9d394174ff29bfbc601bb4bc48c404451ddb8a27f86ac93ae4a73518',
+        'heptabao.approle-metadata-unicode-probe.v1'),
 }
 
 
@@ -223,7 +229,7 @@ def main():
         'SecretID_metadata_covered': passed, 'metadata_issuance_snapshots_covered': passed,
         'HA_covered': False, 'historical_upgrade_covered': False, 'full_openbao_compatibility': False,
         'not_covered': ['local-only SecretIDs', 'MFA', 'HA',
-                        'token child delegation', 'maximum metadata size limits', 'supplementary/partial_json custom/batch repetition',
+                        'token child delegation', 'maximum metadata size limits', 'supplementary/partial_json/unicode custom/batch repetition',
                         'fresh-alias boundary permutations beyond malformed JSON fallback'],
         'independent_qualification': False, 'production_authority': False}
     if any(secret in json.dumps(report) for values in all_sensitive for secret in values): raise ValueError('sensitive_report')

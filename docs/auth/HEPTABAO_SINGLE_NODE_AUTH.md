@@ -1506,10 +1506,22 @@ Raw SID, issued service and backend alias maps are bounded by **256 KiB of
 canonical JSON**, counted without a serialized copy. Administrative custom
 metadata retains its previous limits. The complete batch claims still have an
 **8 KiB** ceiling; large metadata may work with a service token but prevent batch
-issuance. Neither truncation nor larger token/header limits are used. Invalid
-UTF-8 produced by base64 and lone UTF-16 surrogate escapes inside the metadata
-JSON string remain rejected rather than reproducing Go's replacement-character
-behavior. These are remaining compatibility boundaries.
+issuance. Neither truncation nor larger token/header limits are used. These
+resource limits remain compatibility boundaries. Invalid UTF-8 produced by
+base64 becomes one replacement character per invalid byte. In syntactically
+valid metadata JSON, isolated UTF-16 surrogate escapes become replacement
+characters, while valid pairs and escaped backslashes retain their meaning.
+CSV literal surrogate escapes remain literal text. The ordinary JSON decoder
+still handles the rest of the string grammar.
+
+Automatically created Entity metadata and alias custom metadata now return
+native `null`; entity/group updates distinguish explicit null from an empty
+object. Omission preserves the current value. Same-binding alias updates treat
+null and an empty map as equal and preserve the existing representation on a
+no-op. Historical stored empty objects retain their bytes, and each nullable
+Identity owner independently requires schema47. Native protobuf clone/repack
+and restart can normalize explicitly empty maps to null; that behavior and
+empty administrative alias backend metadata remain unimplemented boundaries.
 
 The [primary official exploration](../../qa/openbao-acceptance/evidence/approle-secretid-metadata-official-b56954e.json)
 contains 588 observations across random/custom and service/batch paths. The
@@ -1524,6 +1536,12 @@ whose first alias login fails with 500. The
 [41-observation disabled-Identity exploration](../../qa/openbao-acceptance/evidence/approle-metadata-denial-official-fe49395.json)
 confirms both token kinds return 403 while updating the existing alias, consuming
 one finite SID use and preserving custom metadata across restart.
+The [68-observation Unicode exploration](../../qa/openbao-acceptance/evidence/approle-metadata-unicode-official-9d079ca.json)
+checks surrogate replacement, duplicate keys, literal CSV escapes and invalid
+base64-decoded bytes. Truncated multi-byte suffixes have separate unit coverage.
+The [62-observation Identity exploration](../../qa/openbao-acceptance/evidence/identity-empty-metadata-official-9d079ca.json)
+records immediate and cold-restart empty-map behavior, including the remaining
+normalization differences described above.
 Candidate dual comparison, real schema46-to-47 upgrade
 and HA qualification remain pending. These official explorations alone do not
 qualify the candidate implementation.
