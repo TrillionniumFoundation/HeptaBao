@@ -253,3 +253,111 @@ fn artifact_budget_includes_checksum_and_header_and_never_opens_a_temp_file() {
     );
     fs::remove_dir_all(root).expect("cleanup");
 }
+
+fn missing_dependency_state() -> MemStoreStateMachine {
+    let object = crate::records_tests::owner(11);
+    let publication = crate::records_tests::root(
+        crate::RecordRootBase::Empty,
+        12,
+        vec![object.reference().clone()],
+    );
+    let mut state = MemStoreStateMachine::default();
+    state.records_v5 = Some(
+        serde_json::from_value(serde_json::json!({
+            "objects": {}, "published": publication,
+        }))
+        .expect("syntactically valid graph with missing dependency"),
+    );
+    state
+}
+
+#[tokio::test]
+async fn generated_checkpoint_still_rejects_invalid_current_graph_before_any_publication() {
+    let root = root("generated-invalid-graph");
+    let mut store = DurableStateMachine::create(&root).expect("create");
+    apply_value(&mut store, "last-good-state".into()).await;
+    store.build_snapshot().await.expect("known good checkpoint");
+    let files = disk_view(&root);
+    let generation = store.generation().await;
+    {
+        let mut bundle = store.bundle.lock().await;
+        bundle.state = missing_dependency_state();
+        bundle.format_version = 3;
+    }
+    assert!(store.build_snapshot().await.is_err());
+    assert_eq!(store.generation().await, generation);
+    assert_eq!(disk_view(&root), files);
+    drop(store);
+    let reopened = DurableStateMachine::open_existing(&root).expect("last good checkpoint reopens");
+    assert_eq!(
+        reopened.client_status("selected").await.as_deref(),
+        Some("last-good-state")
+    );
+    drop(reopened);
+    fs::remove_dir_all(root).expect("cleanup");
+}
+
+#[tokio::test]
+async fn generated_checkpoint_preserves_header_and_generation_rejection() {
+    let root = root("generated-invalid-header");
+    let mut store = DurableStateMachine::create(&root).expect("create");
+    apply_value(&mut store, "journal-state".into()).await;
+    let files = disk_view(&root);
+    for (format, generation) in [(3, 1), (2, 0), (2, u64::MAX)] {
+        {
+            let mut bundle = store.bundle.lock().await;
+            bundle.format_version = format;
+            bundle.generation = generation;
+        }
+        assert!(store.build_snapshot().await.is_err());
+        assert_eq!(store.generation().await, generation);
+        assert_eq!(disk_view(&root), files);
+    }
+    drop(store);
+    let reopened = DurableStateMachine::open_existing(&root).expect("unchanged journal reopens");
+    assert_eq!(
+        reopened.client_status("selected").await.as_deref(),
+        Some("journal-state")
+    );
+    drop(reopened);
+    fs::remove_dir_all(root).expect("cleanup");
+}
+
+#[tokio::test]
+async fn externally_supplied_and_reopened_snapshots_keep_complete_graph_validation() {
+    let root = root("untrusted-graph");
+    let mut store = DurableStateMachine::create(&root).expect("create");
+    apply_value(&mut store, "retained".into()).await;
+    let snapshot = store.build_snapshot().await.expect("good checkpoint");
+    let files = disk_view(&root);
+    let generation = store.generation().await;
+    let mut forged = missing_dependency_state();
+    forged.last_applied_log = snapshot.meta.last_log_id;
+    forged.last_membership = snapshot.meta.last_membership.clone();
+    let data = forged
+        .snapshot_bytes()
+        .expect("well formed but invalid graph");
+    assert!(
+        RaftStateMachine::install_snapshot(&mut store, &snapshot.meta, Cursor::new(data.clone()))
+            .await
+            .is_err()
+    );
+    assert_eq!(store.generation().await, generation);
+    assert_eq!(disk_view(&root), files);
+    // A valid frame/checksum cannot turn this untrusted graph into an internally
+    // generated checkpoint. Full reopen validation must still reject it.
+    let mut persisted: PersistentStateBundle =
+        read_json(store.snapshot_path(), STATE_BUNDLE_MAGIC).expect("good bundle");
+    persisted.format_version = 3;
+    // Keep the current state graph valid, so failure must be detected while
+    // validating the separately supplied historical snapshot payload.
+    persisted.state.records_v5 = Some(Default::default());
+    persisted.current_snapshot.as_mut().expect("snapshot").data = data;
+    write_json(store.snapshot_path(), STATE_BUNDLE_MAGIC, &persisted)
+        .expect("synthetic corrupt but checksummed artifact");
+    drop(store);
+    let corrupt_files = disk_view(&root);
+    assert!(DurableStateMachine::open_existing(&root).is_err());
+    assert_eq!(disk_view(&root), corrupt_files);
+    fs::remove_dir_all(root).expect("cleanup");
+}

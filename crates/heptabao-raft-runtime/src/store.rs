@@ -1293,7 +1293,7 @@ impl PersistentStateBundle {
             .ok_or_else(|| invalid("state bundle generation overflow"))
     }
 
-    fn validate(&self) -> io::Result<()> {
+    fn validate_header(&self) -> io::Result<()> {
         if !matches!(self.format_version, 1 | COMPACT_STATE_BUNDLE_FORMAT | 3)
             || self.journal_format > 1
             || self.generation == 0
@@ -1303,6 +1303,11 @@ impl PersistentStateBundle {
         if (self.format_version == 3) != self.state.records_v5.is_some() {
             return Err(invalid("state bundle records/version mismatch"));
         }
+        Ok(())
+    }
+
+    fn validate(&self) -> io::Result<()> {
+        self.validate_header()?;
         self.state
             .validate()
             .map_err(|_| invalid("invalid state object graph"))?;
@@ -1338,6 +1343,55 @@ impl PersistentStateBundle {
             }
         }
         Ok(())
+    }
+}
+
+/// A checkpoint whose bytes and metadata are constructed from the same locked,
+/// validated state. Unlike received or reopened snapshots, its payload cannot
+/// be supplied independently of that state. Keep this constructor private;
+/// there is deliberately no caller-controlled "trusted" validation flag.
+#[derive(Serialize)]
+struct GeneratedSnapshotCheckpoint<'a> {
+    format_version: u16,
+    journal_format: u16,
+    generation: u64,
+    state: &'a MemStoreStateMachine,
+    // An always-present object serializes exactly like the durable bundle's
+    // Some(snapshot), without needing a second owned state-machine candidate.
+    current_snapshot: PersistentSnapshot,
+}
+
+impl<'a> GeneratedSnapshotCheckpoint<'a> {
+    fn new(bundle: &'a PersistentStateBundle) -> io::Result<Self> {
+        bundle.validate_header()?;
+        bundle
+            .state
+            .validate()
+            .map_err(|_| invalid("invalid state object graph"))?;
+        let generation = bundle.next_generation()?;
+        let state = &bundle.state;
+        let data = state
+            .snapshot_bytes()
+            .map_err(|error| invalid(error.to_string()))?;
+        let meta = SnapshotMetaOf::<TypeConfig> {
+            last_log_id: state.last_applied_log,
+            last_membership: state.last_membership.clone(),
+        };
+        Ok(Self {
+            format_version: if state.records_v5.is_some() {
+                3
+            } else {
+                COMPACT_STATE_BUNDLE_FORMAT
+            },
+            journal_format: 1,
+            generation,
+            state,
+            current_snapshot: PersistentSnapshot {
+                meta,
+                data,
+                encoding: SnapshotEncoding::CompactBase64,
+            },
+        })
     }
 }
 
@@ -1460,13 +1514,25 @@ impl DurableStateMachine {
         })
     }
 
+    fn artifact_bound(&self) -> usize {
+        #[cfg(test)]
+        {
+            self.artifact_bound
+        }
+        #[cfg(not(test))]
+        {
+            MAX_DURABLE_ARTIFACT_BYTES
+        }
+    }
+
     fn persist_bundle(&self, bundle: &PersistentStateBundle) -> io::Result<()> {
         bundle.validate()?;
-        #[cfg(test)]
-        let bound = self.artifact_bound;
-        #[cfg(not(test))]
-        let bound = MAX_DURABLE_ARTIFACT_BYTES;
-        write_json_with_bound(&self.bundle_path, STATE_BUNDLE_MAGIC, bundle, bound)
+        write_json_with_bound(
+            &self.bundle_path,
+            STATE_BUNDLE_MAGIC,
+            bundle,
+            self.artifact_bound(),
+        )
     }
 
     pub async fn get_state_machine(&self) -> MemStoreStateMachine {
@@ -1609,33 +1675,33 @@ impl RaftSnapshotBuilder<TypeConfig> for DurableStateMachine {
         &mut self,
     ) -> Result<SnapshotOf<TypeConfig, Self::SnapshotData>, io::Error> {
         let mut bundle = self.bundle.lock().await;
-        let state = bundle.state.clone();
-        let data = state
-            .snapshot_bytes()
-            .map_err(|error| invalid(error.to_string()))?;
-        let meta = SnapshotMetaOf::<TypeConfig> {
-            last_log_id: state.last_applied_log,
-            last_membership: state.last_membership.clone(),
-        };
-        let snapshot = PersistentSnapshot {
-            meta: meta.clone(),
-            data: data.clone(),
-            encoding: SnapshotEncoding::CompactBase64,
-        };
-        let candidate = PersistentStateBundle {
-            format_version: if state.records_v5.is_some() {
-                3
-            } else {
-                COMPACT_STATE_BUNDLE_FORMAT
-            },
-            journal_format: 1,
-            generation: bundle.next_generation()?,
-            state,
-            current_snapshot: Some(snapshot),
-        };
-        self.persist_bundle(&candidate)?;
+        let checkpoint = GeneratedSnapshotCheckpoint::new(&bundle)?;
+        // Preserve the actual encoded artifact bound, including the current
+        // state, base64 snapshot and frame. No disk or in-memory publication
+        // occurs if serialization/preflight fails.
+        write_json_with_bound(
+            &self.bundle_path,
+            STATE_BUNDLE_MAGIC,
+            &checkpoint,
+            self.artifact_bound(),
+        )?;
         initialize_state_journal(&state_journal_path(&self.bundle_path))?;
-        *bundle = candidate;
+        let GeneratedSnapshotCheckpoint {
+            format_version,
+            journal_format,
+            generation,
+            current_snapshot,
+            ..
+        } = checkpoint;
+        let meta = current_snapshot.meta.clone();
+        // OpenRaft needs an owned Cursor while the durable store retains its
+        // snapshot. Delay that unavoidable byte copy until after persistence;
+        // the full state itself was borrowed throughout, never cloned.
+        let data = current_snapshot.data.clone();
+        bundle.format_version = format_version;
+        bundle.journal_format = journal_format;
+        bundle.generation = generation;
+        bundle.current_snapshot = Some(current_snapshot);
         Ok(SnapshotOf::<TypeConfig, Cursor<Vec<u8>>> {
             meta,
             snapshot: Cursor::new(data),
