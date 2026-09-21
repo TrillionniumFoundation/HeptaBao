@@ -784,6 +784,8 @@ Default userpass/AppRole paths below also project onto the corresponding configu
 | `auth/approle/role` | LIST/GET list |
 | `auth/approle/role/:name` | GET, POST/PUT, DELETE |
 | `auth/approle/role/:name/role-id` | GET, POST/PUT |
+| `auth/approle/role/:name/token-bound-cidrs` | GET, POST/PUT, DELETE issued-token source configuration |
+| `auth/approle/role/:name/secret-id-bound-cidrs`, `.../bound-cidr-list` | GET, POST/PUT, DELETE login source configuration; deprecated alias semantics described below |
 | `auth/approle/role/:name/secret-id` | POST/PUT issue, LIST accessors |
 | `auth/approle/role/:name/custom-secret-id` | POST/PUT issue an operator-supplied bounded SecretID |
 | `.../secret-id/lookup`, `.../secret-id/destroy` | POST/PUT |
@@ -1317,8 +1319,7 @@ because a rejected one-use SecretID produced no token. Those two are not passing
 assertions. `approle_secret_cidrs_live.py` compares the 378 executed observations
 and retains those explicit omissions. The actual schema44-to-45 upgrade runner
 uses two old-binary stores, independent first-write reader gates and a real
-owned-journal permission fault followed by recovery. Candidate live results
-remain pending. Per-SecretID `cidr_list` and `token_bound_cidrs` overrides,
+owned-journal permission fault followed by recovery. Per-SecretID `cidr_list` and `token_bound_cidrs` overrides,
 arbitrary SecretID metadata and other dedicated AppRole fields remain open.
 
 The first schema45 `dc259f8` dual run completed all 380 observations on each
@@ -1327,6 +1328,33 @@ was an empty list, while the candidate returned null. Readback now returns an
 empty list for the existing unrestricted SecretIDs without changing their
 serialized record, use count or expiry. The failed receipt remains on the SSD
 (SHA256 `1217d0ad3717e9bd701226d8a0a0ed43b4ac71d2c156b1a784302d5c7a588ea3`).
+
+The corrected `e39fe66` binary (SHA256
+`89c41282eeaed00e6836752d37033865c559886fdd083395b4225ea86b4bfd30`)
+passes the [full selected dual comparison](../../qa/openbao-acceptance/evidence/approle-secret-cidrs-live-e39fe66.json):
+378 executed observations per side agree exactly, and the same two unexecuted
+bearer branches remain explicitly unexecuted. The
+[448-check real schema44-to-45 upgrade](../../qa/openbao-acceptance/evidence/approle-secret-cidrs-upgrade-e39fe66.json)
+uses two actual old stores. Pure reads/reopens preserve application bytes; only
+the `cidr_list` null-to-empty API correction is allowed on the old SID projection.
+Each first new field write immediately fences the old reader. Finite SID counts
+survive restart, and four real journal permission failures produce no credential,
+enter the unknown-outcome fence and recover with the old count intact before any
+new login. These receipts bind clean unchanged source, both binaries and helpers.
+The same fixed binary passes [1,269 three-voter TLS checks](../../qa/openbao-acceptance/evidence/approle-secret-cidrs-ha-e39fe66.json)
+plus nine bootstrap milestones. Service and batch SID counts agree through all
+three public voters after source denial, leader change and full restart; source
+clearing does not change old bearer constraints. Real bound client sockets and
+spoofed forwarding headers test the trusted origin path. All owned processes
+stop and secret scans pass. These are one-host logical HA observations, not
+physical-host failure or full OpenBao interoperability.
+
+The first upgrade attempt stopped at its fault-setup guard after 144 successful
+checks because its runner shell omitted `umask 077`; no fault login was sent.
+Its receipt is retained on the SSD (SHA256
+`ec0d20fbcdcf1704286be70c47089f93c80eef05225a276133a767ddf9baf90f`).
+The successful rerun used a fresh private store and explicit restrictive umask;
+it did not alter that failed store, relax the guard or retry an uncertain mutation.
 
 ## Kubernetes batch lease ownership in schema42
 
