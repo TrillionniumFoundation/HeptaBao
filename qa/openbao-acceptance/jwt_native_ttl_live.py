@@ -45,9 +45,10 @@ def creation_matrix():
 
 
 class Trace:
-    def __init__(self, client, issuer, mode, rows):
+    def __init__(self, client, issuer, mode, rows, diagnostics=None):
         self.client, self.issuer, self.mode, self.rows = client, issuer, mode, rows
         self.sensitive = []
+        self.diagnostics = diagnostics if diagnostics is not None else []
 
     def check(self, label, passed, **observed):
         if (not isinstance(label, str) or re.fullmatch(r'[a-z0-9_.]{1,150}', label) is None
@@ -86,14 +87,22 @@ class Trace:
             result = self.call(label + '.' + via, 'auth/token/' + path, body, bearer=bearer)
             renewed = result.get('auth', {})
             actual = renewed.get('lease_duration')
+            diagnostic = {'case': 'jwt_native_ttl.' + self.mode + '.' + label + '.' + via,
+                          'lease_is_integer': type(actual) is int}
+            if type(actual) is int:
+                diagnostic['lease_duration'] = actual
+            for name, value in [('expected_ttl', ttl), ('maximum_ttl', maximum), ('increment', increment)]:
+                if type(value) is int:
+                    diagnostic[name] = value
+            self.diagnostics.append(diagnostic)
             self.check(label + '.' + via + '.lease', type(actual) is int and actual > 0
                        and (ttl is None or actual == ttl) and (maximum is None or actual <= maximum))
             self.check(label + '.' + via + '.shape', renewed.get('renewable') is True
                        and renewal_token_shape(renewed, auth['client_token'], via_accessor=via == 'accessor'))
 
 
-def run_mode(client, side, issuer, ca, private, jwk, mode, restart, rows):
-    t = Trace(client, issuer, mode, rows)
+def run_mode(client, side, issuer, ca, private, jwk, mode, restart, rows, diagnostics=None):
+    t = Trace(client, issuer, mode, rows, diagnostics)
     base = 'auth/jwt-native-ttl-' + mode
     tune_path = 'sys/auth/jwt-native-ttl-' + mode + '/tune'
     issuer.mode = 'normal'
@@ -222,7 +231,7 @@ def main():
     root = Path(tempfile.mkdtemp(prefix='heptabao-jwt-native-ttl-'))
     root.chmod(0o700)
     oracle = instance = issuer = None
-    cases, failures = {}, {}
+    cases, failures, diagnostics = {}, {}, {}
     unenrolled = False
     try:
         oracle = start_oracle(free_port())
@@ -257,16 +266,16 @@ def main():
             targets.append(('candidate', Client(instance.address, str(instance.root / 'ca.crt'), instance.token),
                             restart_candidate, instance.root, [instance.token, key]))
         for side, client, restart, data_root, sensitive in targets:
-            cases[side] = []
+            cases[side], diagnostics[side] = [], []
             try:
                 for mode in MODES:
                     private, jwk = signing_key('ES256', 'synthetic-native-ttl-' + mode)
                     issuer.documents['/keys'] = {'keys': [jwk]}
-                    sensitive += run_mode(client, side, issuer, ca, private, jwk, mode, restart, cases[side])
+                    sensitive += run_mode(client, side, issuer, ca, private, jwk, mode, restart, cases[side], diagnostics[side])
                 files = [p for p in (data_root / 'data').rglob('*') if p.is_file()]
                 files += [data_root / 'server.log', data_root / 'audit.jsonl']
                 safe = (all(secret.encode() not in p.read_bytes() for p in files if p.exists() for secret in sensitive)
-                        and not any(secret in json.dumps(cases[side]) for secret in sensitive))
+                        and not any(secret in json.dumps({'cases': cases[side], 'diagnostics': diagnostics[side]}) for secret in sensitive))
                 cases[side].append({'case': 'jwt_native_ttl.secrets_absent', 'passed': safe is True})
                 if safe is not True:
                     raise ScenarioFailure('secret_scan_failed')
@@ -298,7 +307,7 @@ def main():
               'source_and_binary_unchanged': unchanged, 'runner_sha256': runner_hash, 'runner_unchanged': runner_unchanged,
               'oracle_binary_sha256': BINARY_SHA256, 'oracle_only': args.oracle_only, 'target_version': '2.6.2',
               'candidate_startup_enrollment_empty': unenrolled, 'cases': cases, 'cases_match': equal, 'failures': failures,
-              'configuration_adaptation': ADAPTATION, 'synthetic_only': True, 'oidc_covered': False,
+              'lease_diagnostics': diagnostics, 'configuration_adaptation': ADAPTATION, 'synthetic_only': True, 'oidc_covered': False,
               'global_system_default_parity': False, 'full_openbao_compatibility': False,
               'independent_qualification': False, 'production_authority': False}
     if admit_output(output) != admitted:

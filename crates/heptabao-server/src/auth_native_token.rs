@@ -43,7 +43,11 @@ impl AuthState {
             increment
         } else {
             default_ttl
-        };
+        }
+        .min(maximum_ttl);
+        // Remote authorization rounds elapsed time up. Its issue timestamp can
+        // therefore be ahead of the next request's integer clock by one second;
+        // bound the lease duration as well as the absolute issue-time deadline.
         let mut expires_at = checked_expiry(now, ttl)?;
         if limits.period == 0 {
             expires_at = expires_at.min(checked_expiry(issued_at, maximum_ttl)?);

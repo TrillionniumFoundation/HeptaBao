@@ -57,6 +57,28 @@ class NativeJwtTtlGuards(unittest.TestCase):
         with self.assertRaises(fixture.ScenarioFailure):
             t.renew('unexpected_io', {'client_token': 'synthetic-token', 'accessor': 'synthetic-accessor'}, ttl=75)
 
+    def test_lease_diagnostics_are_numeric_separate_and_survive_a_cap_failure(self):
+        def client(lease):
+            return SimpleNamespace(request=lambda *a, **k: SimpleNamespace(status=200, body={
+                'auth': {'lease_duration': lease, 'renewable': True, 'client_token': 'sensitive-token',
+                         'metadata': {'password': 'sensitive-password'}}}))
+        rows, diagnostics = [], []
+        t = fixture.Trace(client(121), SimpleNamespace(calls=[]), 'remote', rows, diagnostics)
+        with self.assertRaises(fixture.ScenarioFailure):
+            t.renew('cap', {'client_token': 'sensitive-token', 'accessor': 'sensitive-accessor'}, maximum=120, increment=700)
+        self.assertEqual(diagnostics, [{'case': 'jwt_native_ttl.remote.cap.self', 'lease_is_integer': True,
+                                       'lease_duration': 121, 'maximum_ttl': 120, 'increment': 700}])
+        self.assertFalse(rows[-1]['passed'])
+        self.assertNotIn('lease_duration', rows[-1])
+        self.assertNotIn('sensitive-', str(diagnostics))
+        diagnostics.clear()
+        t = fixture.Trace(client('sensitive-malformed-lease'), SimpleNamespace(calls=[]), 'remote', [], diagnostics)
+        with self.assertRaises(fixture.ScenarioFailure):
+            t.renew('cap', {'client_token': 'sensitive-token', 'accessor': 'sensitive-accessor'}, maximum=120)
+        self.assertFalse(diagnostics[0]['lease_is_integer'])
+        self.assertNotIn('lease_duration', diagnostics[0])
+        self.assertNotIn('sensitive-', str(diagnostics))
+
     def test_lookup_does_not_coerce_boolean_duration_or_hide_wrong_defaults(self):
         for fields in [(True, 0, 0, 0), (3600, 3600, 0, 0)]:
             result = {'role_type': 'jwt', **dict(zip(fixture.TTL_FIELDS, fields))}

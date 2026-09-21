@@ -1,5 +1,60 @@
 use super::*;
 
+#[test]
+fn rounded_remote_issue_time_cannot_extend_native_renewal_limits() {
+    let (state, _, _) = setup();
+    let scope = AuthScope {
+        namespace: "",
+        mount: "token",
+    };
+    // A remote authorization finishing within this wall-clock second stores
+    // its conservative ceil timestamp. The next request still sees floor(100).
+    for (issued_at, now, maximum, explicit, period, expected) in [
+        (101, 100, 900, Some(221), 0, 220),
+        (101, 100, 90, None, 0, 190),
+        (100, 101, 900, Some(220), 0, 220),
+        (100, 101, 90, None, 0, 190),
+        (101, 100, 900, Some(221), 180, 220),
+        (100, 150, 900, Some(220), 180, 220),
+    ] {
+        let expires = state
+            .native_token_expiry(
+                scope,
+                NativeTokenLimits {
+                    ttl: 75,
+                    max_ttl: maximum,
+                    period,
+                },
+                issued_at,
+                explicit,
+                700,
+                now,
+            )
+            .unwrap();
+        assert_eq!(expires, expected);
+    }
+    assert_eq!(
+        state
+            .native_token_expiry(
+                scope,
+                NativeTokenLimits {
+                    ttl: 75,
+                    max_ttl: 900,
+                    period: 180,
+                },
+                100,
+                Some(220),
+                700,
+                220,
+            )
+            .err()
+            .unwrap()
+            .status,
+        500,
+        "an exhausted captured deadline remains authoritative"
+    );
+}
+
 fn issuer_state() -> (AuthState, Principal) {
     let (mut state, _, root) = setup();
     put_policy(
