@@ -231,6 +231,9 @@ renewal rules. Removed accounts produce 204 without auth on bearer renewal and
 extend the lease. Schema 35 fences the new persisted semantics from old binaries.
 CIDR constraints, `token_no_default_policy`, batch tokens, case normalization and
 complete password/alias error parity remain outside this profile.
+The qualified `0fc7925` candidate records
+[279 matching observations per side](../../qa/openbao-acceptance/evidence/userpass-native-0fc7925.json)
+and [369 checks using an actual schema-34 binary](../../qa/openbao-acceptance/evidence/userpass-native-upgrade-0fc7925.json).
 
 ## Userpass TOTP MFA
 

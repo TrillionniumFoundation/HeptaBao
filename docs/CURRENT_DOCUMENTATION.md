@@ -173,6 +173,15 @@ refused downgrade and recovery. The existing
 [154-observation AppRole renewal comparison](../qa/openbao-acceptance/evidence/approle-renewal-d26ed9d.json)
 also passes. Source constraints, batch tokens and other unimplemented AppRole
 parameters remain outside these profiles.
+Userpass native account defaults and current-account renewal pass
+[279 observations per side](../qa/openbao-acceptance/evidence/userpass-native-0fc7925.json).
+The [369-check actual schema-34 upgrade](../qa/openbao-acceptance/evidence/userpass-native-upgrade-0fc7925.json)
+preserves old account fields and application bytes on read-only restart, requires
+relogin for ambiguous old direct tokens, and tests new issuer metadata, API
+children, account deletion/recreation, unchanged expiry on denied renewal,
+rejected downgrade and recovery. Candidate `0fc7925` also passes 712 server Rust
+tests, 473 acceptance guards and strict Clippy. CIDRs, no-default policies, batch
+tokens and complete password/case/alias parity remain outside this userpass slice.
 The strengthened forged-origin tests pass [49 RADIUS HA checks](../qa/openbao-acceptance/evidence/radius-cidrs-ha-d2c669d.json)
 and [49 LDAP HA checks](../qa/openbao-acceptance/evidence/ldap-cidrs-ha-d2c669d.json):
 the forged headers now carry the allowed address while the actual socket uses a
