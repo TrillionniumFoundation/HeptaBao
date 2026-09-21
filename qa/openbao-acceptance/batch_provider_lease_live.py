@@ -249,7 +249,8 @@ DECLARE observed jsonb;
 BEGIN
   observed := heptabao_provider.fixture_original_observe(p_id);
   IF (SELECT enabled FROM heptabao_provider.fixture_completion_gate)
-     AND observed->>'found'='true' AND observed->>'action'='issue' THEN
+     AND observed->>'found'='true' AND observed->>'action'='issue'
+     AND current_query() LIKE 'SELECT heptabao_provider.observe%' THEN
     PERFORM pg_sleep(1.2);
   END IF;
   RETURN observed;
