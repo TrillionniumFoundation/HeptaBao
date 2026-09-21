@@ -6,6 +6,12 @@ import approle_cidrs_ha as fixture
 
 
 class AppRoleHaGuards(unittest.TestCase):
+    def test_public_scan_accepts_binary_replication_keys_and_rejects_either_secret_type(self):
+        rows = [{'case': 'synthetic_case', 'passed': True}]
+        self.assertTrue(fixture.rows_secret_free(rows, ['synthetic-token', b'private-replication-key']))
+        self.assertFalse(fixture.rows_secret_free(rows, ['synthetic_case']))
+        self.assertFalse(fixture.rows_secret_free(rows, [b'synthetic_case']))
+
     def test_service_login_and_secret_id_accessors_join_private_secret_samples(self):
         class Client:
             last_family = 4

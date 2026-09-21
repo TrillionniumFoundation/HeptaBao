@@ -1196,6 +1196,26 @@ tokens were orphans; all other observed fields matched. Renewal now reports
 the stored parent relation on all three renewal routes. The failed receipt is
 retained (SHA256 `8e5639c7add12f71b10e3ee25a74611e9d2c38e3ba6aa4d35ef0899a3629bb4b`).
 
+The corrected `3588f54f038d2c35ac145d2410ae497777db2201` binary (SHA256
+`8f95452e7e06b0dc97de2b2f67deeac88a16a292e3255813c7de1eb947965147`)
+passed all 194 observations on both endpoints, with exact projection equality.
+The same binary passed 466 checks against the actual schema42 `cdf3b98` binary:
+old reads do not migrate bytes, the first CIDR write independently prevents old
+readers, historical unconstrained roles can be repaired, and existing token
+constraints survive field clearing and restart. Receipts are
+`approle-token-cidrs-live-3588f54.json` and
+`approle-token-cidrs-upgrade-3588f54.json` in `qa/openbao-acceptance/evidence`.
+Their SHA256 values are `8e3da4de8ae19888ffdf121ce3d20ae6de2cb4390dcf779e94cd84cc2caa6caf`
+and `0231c98e31d734e3c352add61da33a70cf4777681dc0b9b6e08d6a5b780ad818`.
+
+The first HA attempt completed 602 functional checks, including all three
+public voters, leader change, restart and process shutdown, but its final
+receipt scan called a string method on the fixture's binary replication key.
+That fixture failure is retained (SHA256
+`5c076e16e49c65564bd6fc7c70ac21b78e94b1d6b452172aa8d80bf2f5207e81`).
+The scanner now handles both private strings and bytes; HA qualification still
+requires a complete rerun, not reuse of those partial checks.
+
 ## Kubernetes batch lease ownership in schema42
 
 Kubernetes secrets issued for an existing ServiceAccount now carry typed Bao

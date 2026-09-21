@@ -38,6 +38,11 @@ def complete(rows):
     return complete_checks(rows, required_cases=REQUIRED) and rows[-1]['case'] == 'complete'
 
 
+def rows_secret_free(rows, sensitive):
+    encoded = json.dumps(rows).encode()
+    return not any((value.encode() if isinstance(value, str) else value) in encoded for value in sensitive)
+
+
 def helpers():
     names = ('bao_http', 'heptabao.transport', 'core_isolation', 'online_evidence',
         'ha_destructive', 'ha_network_partition', 'native_snapshot_ha_live',
@@ -195,8 +200,7 @@ def run(binary, work, rows, bootstrap, diagnostics):
         for node in cluster.nodes:
             paths.extend(p for folder in (node.data_dir, node.root / 'raft') for p in folder.rglob('*'))
             paths.extend([node.root / 'process.log', node.root / 'audit.jsonl'])
-        encoded = json.dumps(rows).encode()
-        t.check('secrets_absent', secret_free(paths, sensitive) and not any(value.encode() in encoded for value in sensitive))
+        t.check('secrets_absent', secret_free(paths, sensitive) and rows_secret_free(rows, sensitive))
         t.check('complete', True)
     except Exception:
         if cluster is not None:
