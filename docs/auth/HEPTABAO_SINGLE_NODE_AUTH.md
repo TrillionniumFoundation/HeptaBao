@@ -1039,6 +1039,49 @@ and completion-test changes passed 43 targeted batch tests, 20 provider completi
 tests, and strict all-target Clippy with and without restore fault instrumentation.
 The 693 Python QA tests check the harnesses, not live replacement capability.
 
+The clean `eeab30a66cccc1443635e0405c7549c76cede0db` default build
+(`0240c15a27d7f0e6fb1472eb0630f8730ad773c5832809b0977810a3ff8f56b5`)
+passed both real TLS comparisons against the pinned official OpenBao 2.6.2
+binary: [158 issuance observations per side](../../qa/openbao-acceptance/evidence/userpass-batch-live-eeab30a.json)
+and [201 lifecycle observations per side](../../qa/openbao-acceptance/evidence/batch-lifecycle-live-eeab30a.json).
+Both receipts confirm equal scoped projections, unchanged source/binaries/helpers,
+and no known plaintext credentials in inspected candidate/oracle durable files
+and logs. The lifecycle run includes real SSH OTP leases, dependent-parent
+revocation and expiration, orphan expiration, issuer deletion, restart, current
+Identity policy/disabled state and actual socket CIDR origins. SSH OTP renewal
+is a negative nonrenewable test; it does not establish renewable database or
+LDAP lease completion behavior. Historical upgrade, HA, provider completion and
+key rotation are separate acceptance scopes.
+
+The earlier `c7ebae4` candidate completed all 158 issuance observations but
+differed on seven error classifications. Its failed receipt is retained in the
+external SSD qualification data (SHA256
+`c8ed9f1016c4a296e576fa3be50bcf1acebdff3803ee568b56f6bfe909bd2aa6`).
+The corrected build changes operation/configuration errors and pins them in
+Rust assertions; the comparison contract was not relaxed. This fix passed all
+43 targeted batch tests, three token-lookup tests and strict all-target Clippy.
+
+The same build passed [171 historical upgrade checks](../../qa/openbao-acceptance/evidence/userpass-batch-upgrade-eeab30a.json)
+using the actual receipt-pinned schema40 `6f641ff` executable and its encrypted
+stores. The fixture checks pure read/reopen preservation, first batch issuance
+and old-reader rejection, old service credentials and SSH OTP leases, and a
+fresh JSON backup made before the first batch grant. Existing SSH lease-clock
+maintenance is explicitly permitted to write; it is not counted as a pure read.
+
+It also passed [311 three-voter HA checks](../../qa/openbao-acceptance/evidence/userpass-batch-ha-eeab30a.json)
+using the clean `c6f016d` harness. The official 2.6.2 CLI saves one candidate
+native archive; one raw restore advances the live publication and replay epoch.
+Userpass grants and same-key Token API orphans issued after the archive remain
+usable, while a batch child whose parent is absent from the restored archive is
+denied. Revoking a restored parent removes only its dependent children. All
+three voter HTTP endpoints are checked across restore, step-down and two full
+process restarts. This is same-cluster/seal, single-host process evidence; it
+does not cover key rotation, OpenBao state.bin ingestion, dynamic HA leases or
+physical-host failure. The first HA attempt stopped before batch login/snapshot
+because the observer incorrectly required an explicit false `is_self`; its
+failed receipt is retained (SHA256
+`4cc8ef202a1b72a0d8a4c3c382986b9bfd154599114dfb95e84f117081c3122b`).
+
 ## Bounded authentication mount migration input contract
 
 `qa/openbao-acceptance/migrate_auth_mount.py` is a separate metadata/re-enrollment
