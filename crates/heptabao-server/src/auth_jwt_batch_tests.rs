@@ -206,6 +206,36 @@ fn jwt_batch_null_empty_and_partial_updates_follow_generic_types_and_rejections_
 }
 
 #[test]
+fn jwt_rejected_role_creation_reads_as_empty_not_found_without_mutation() {
+    let (mut state, admin, _) = fixture();
+    let path = "auth/nested/jwt/role/rejected";
+    for body in [
+        json!({"token_type":"invalid"}),
+        json!({"token_type":"default-service"}),
+        json!({"token_type":"default-batch"}),
+        json!({"token_type":"batch","token_period":30}),
+        json!({"token_type":"batch","token_num_uses":2}),
+    ] {
+        let before = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+        assert_eq!(
+            write(&mut state, &admin, path, body).err().unwrap().status,
+            400
+        );
+        let read = state
+            .handle(Some(&admin), "", "GET", path, &json!({}), 100)
+            .unwrap()
+            .unwrap();
+        assert_eq!(read.status, 404);
+        assert_eq!(read.body, json!({"errors": []}));
+        assert!(!read.mutated);
+        assert_eq!(
+            serde_json::to_vec(&state).unwrap().as_slice(),
+            before.as_slice()
+        );
+    }
+}
+
+#[test]
 fn jwt_mount_forced_batch_calculates_ttl_before_discarding_service_period_and_uses() {
     for (fields, ttl, warned) in [
         (json!({"token_period":30}), 30, false),

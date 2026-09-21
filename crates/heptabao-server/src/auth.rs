@@ -4614,11 +4614,17 @@ impl AuthState {
             "GET" => {
                 self.permission(principal, namespace, &path, "read", now)?;
                 reject_unknown(body, &[])?;
-                let role = self
+                let Some(role) = self
                     .jwt_at(scope)
                     .map(|state| &state.roles)
                     .and_then(|roles| roles.get(name))
-                    .ok_or_else(|| err(404, "JWT role not found"))?;
+                else {
+                    return Ok(AuthResponse {
+                        status: 404,
+                        body: json!({"errors": []}),
+                        ..empty(false)
+                    });
+                };
                 Ok(response(
                     json!({
                         "role_type": "jwt",

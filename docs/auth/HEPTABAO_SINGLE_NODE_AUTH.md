@@ -734,6 +734,13 @@ and 204 observations (SHA256
 static PEM-to-inline-JWKS configuration adaptation. `jwt_batch_upgrade.py`
 uses three actual schema43 stores to separate role-type, mount-type and alias
 metadata reader gates. Their presence alone is not a qualification result.
+The first schema44 candidate (`e4fe91c`) completed all 204 observations per
+side but differed in five missing-role reads: OpenBao returns HTTP 404 with an
+empty `errors` list. The candidate incorrectly added an error message. The
+corrected read keeps authorization and invalid-write rejection unchanged; its
+new binary still requires the full comparison and upgrade/HA runs. The failed
+receipt remains on the external SSD (SHA256
+`b817d0d07c76821a44b3c7291ef890aad22b4689ca99d94ccaf4117f4af393cb`).
 OIDC browser roles, arbitrary user-claim/claim mappings, MFA and batch key
 rotation remain outside this ordinary JWT slice.
 
