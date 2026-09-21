@@ -113,7 +113,7 @@ class Trace:
             raise ScenarioFailure(name)
 
     def call(self, name, method, path, body=None, *, status=200, token=None):
-        result = self.client.request(method, path, body, token=token)
+        result = self.client.request(method, '/v1/' + path, body, token=token)
         for owner, field in (('auth', 'client_token'), ('auth', 'accessor'),
                              ('data', 'service_account_token'), ('wrap_info', 'token')):
             value = (result.body.get(owner) or {}).get(field)
@@ -131,7 +131,7 @@ class Trace:
             raise ValueError('only_lookup_may_poll')
         until = time.monotonic() + 15
         while True:
-            response = self.client.request('POST' if expected == 403 else 'PUT', path, body)
+            response = self.client.request('POST' if expected == 403 else 'PUT', '/v1/' + path, body)
             if response.status == expected:
                 self.check(name, not any(response.body.get(key) for key in ('auth', 'data', 'wrap_info')),
                            status=response.status)
