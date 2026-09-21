@@ -42,7 +42,7 @@ def record_upload_result(check, denied, before, after, values_unchanged):
 
 
 def run(binary, bao, work, checks, observations):
-    from smoke import Instance
+    from remote_jwks_live import Instance
     instance=None
     def check(name, value):
         checks.append({'case':name,'passed':value is True})
