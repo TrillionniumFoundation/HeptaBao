@@ -61,49 +61,45 @@ impl ImportedBcrypt {
         })
     }
 
-    fn verifier_input(&self) -> Option<Zeroizing<[u8; 60]>> {
-        let (cost, salt_start) = go_cost(&self.hash).ok()?;
+    pub(super) fn verify(&self, password: &[u8]) -> bool {
+        let Ok((cost, salt_start)) = go_cost(&self.hash) else {
+            return false;
+        };
         let raw = self.hash.as_bytes();
-        let salt_text = raw.get(salt_start..salt_start + 22)?;
-        // Go Hash compares only the first31 hash bytes and ignores an extra
-        // suffix. A short/malformed hash may be admitted but cannot verify.
-        let hash_text = raw.get(salt_start + 22..salt_start + 53)?;
+        let Some(salt_text) = raw.get(salt_start..salt_start + 22) else {
+            return false;
+        };
+        let Some(hash_text) = raw.get(salt_start + 22..salt_start + 53) else {
+            return false;
+        };
+        // Go appends exactly two '=' bytes to the original 22-byte salt text,
+        // then base64 ignores only CR/LF. Removing them before choosing padding
+        // would accept encodings that Go rejects, so retain this order.
+        let mut padded = Zeroizing::new([0u8; 24]);
+        let mut length = 0;
+        for byte in salt_text {
+            if !matches!(*byte, b'\r' | b'\n') {
+                padded[length] = *byte;
+                length += 1;
+            }
+        }
+        padded[length..length + 2].copy_from_slice(b"==");
+        length += 2;
         let engine = base64::engine::general_purpose::GeneralPurpose::new(
             &base64::alphabet::BCRYPT,
             base64::engine::general_purpose::GeneralPurposeConfig::new()
-                .with_encode_padding(false)
-                .with_decode_padding_mode(base64::engine::DecodePaddingMode::RequireNone)
+                .with_decode_padding_mode(base64::engine::DecodePaddingMode::RequireCanonical)
                 .with_decode_allow_trailing_bits(true),
         );
         let mut salt = Zeroizing::new([0u8; 16]);
-        if engine.decode_slice(salt_text, &mut salt[..]).ok()? != 16 {
-            return None;
-        }
-        let mut normalized = Zeroizing::new([0u8; 60]);
-        normalized[..7].copy_from_slice(b"$2b$00$");
-        normalized[4] = b'0' + u8::try_from(cost / 10).ok()?;
-        normalized[5] = b'0' + u8::try_from(cost % 10).ok()?;
-        // The Go parser's version label does not alter its bcrypt algorithm.
-        // Normalize format only; the library performs the actual computation.
-        if engine
-            .encode_slice(&salt[..], &mut normalized[7..29])
-            .ok()?
-            != 22
-        {
-            return None;
-        }
-        normalized[29..].copy_from_slice(hash_text);
-        Some(normalized)
-    }
-
-    pub(super) fn verify(&self, password: &[u8]) -> bool {
-        let Some(normalized) = self.verifier_input() else {
+        let Ok(decoded) = engine.decode_slice(&padded[..length], &mut salt[..]) else {
             return false;
         };
-        let Ok(hash) = std::str::from_utf8(&normalized[..]) else {
-            return false;
-        };
-        bcrypt::verify(password, hash).unwrap_or(false)
+        // The vendored maintained library performs the same raw bcrypt kernel
+        // for both ordinary and Go variable-salt verification. Bounds precede
+        // any rounds; expected encoded hash is compared in constant time.
+        bcrypt::verify_with_decoded_salt(password, cost, &salt[..decoded], hash_text)
+            .unwrap_or(false)
     }
 }
 

@@ -126,6 +126,26 @@ class CurrentSourceInventoryTests(unittest.TestCase):
                 (root / "Cargo.toml").write_text(f'[workspace]\nmembers={patterns}\n')
                 self.assertTrue(INV.validate(root))
 
+    def test_vendor_exclusion_preserves_product_inventory_and_cannot_hide_members(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.fixture(root)
+            vendor = root / "vendor/upstream-1.0"
+            vendor.mkdir(parents=True)
+            (vendor / "Cargo.toml").write_text('[package]\nname="upstream"\nversion="1.0.0"\n')
+            (root / "Cargo.toml").write_text(
+                '[workspace]\nmembers=["crates/*"]\nexclude=["vendor/upstream-1.0"]\n')
+            self.assertEqual(INV.members(root), ["crates/heptabao-probe"])
+            self.assertEqual(INV.validate(root), [])
+            for excluded in ["crates/heptabao-probe", "vendor/*", "vendor/../crates", "vendor/missing"]:
+                (root / "Cargo.toml").write_text(
+                    f'[workspace]\nmembers=["crates/*"]\nexclude=["{excluded}"]\n')
+                self.assertTrue(INV.validate(root), excluded)
+            (root / "Cargo.toml").write_text(
+                '[workspace]\nmembers=["crates/*", "vendor/*"]\nexclude=["vendor/upstream-1.0"]\n')
+            with self.assertRaisesRegex(ValueError, "hides a declared member"):
+                INV.members(root)
+
 
 if __name__ == "__main__":
     unittest.main()

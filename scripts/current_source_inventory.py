@@ -53,8 +53,17 @@ def read(root: Path, relative: str) -> bytes:
 
 def members(root: Path) -> list[str]:
     workspace = tomllib.loads(read(root, "Cargo.toml").decode())["workspace"]
-    if workspace.get("exclude"):
-        raise ValueError("workspace.exclude requires an explicit inventory policy update")
+    # Vendored dependencies can own their upstream build/test policy without
+    # becoming first-party modules. Never let an exclusion hide a declared
+    # product member or an unchecked path outside the vendor directory.
+    excluded = workspace.get("exclude", [])
+    if not isinstance(excluded, list):
+        raise ValueError("invalid workspace exclusions")
+    for entry in excluded:
+        if (not isinstance(entry, str) or not re.fullmatch(r"vendor/[A-Za-z0-9_.-]+", entry)
+                or Path(entry).name in {".", ".."}):
+            raise ValueError("workspace exclusions must name explicit vendored dependencies")
+        read(root, f"{entry}/Cargo.toml")
     result: list[str] = []
     for pattern in workspace["members"]:
         if not isinstance(pattern, str) or Path(pattern).is_absolute() or ".." in Path(pattern).parts:
@@ -65,6 +74,8 @@ def members(root: Path) -> list[str]:
         result.extend(p.relative_to(root).as_posix() for p in matches)
     if len(result) != len(set(result)):
         raise ValueError("duplicate workspace member")
+    if set(result).intersection(excluded):
+        raise ValueError("workspace exclusion hides a declared member")
     return sorted(result)
 
 

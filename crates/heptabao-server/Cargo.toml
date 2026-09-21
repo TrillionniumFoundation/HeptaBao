@@ -6,7 +6,7 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
-bcrypt = { version = "=0.19.3", default-features = false, features = ["std", "zeroize"] }
+bcrypt = { path = "../../vendor/bcrypt-0.19.3", version = "=0.19.3", default-features = false, features = ["std", "zeroize"] }
 # Feature-unify bcrypt's cipher so its expanded key schedule is cleared on Drop.
 blowfish = { version = "=0.10.0", default-features = false, features = ["zeroize"] }
 flate2 = { version = "=1.1.8", default-features = false, features = ["rust_backend"] }

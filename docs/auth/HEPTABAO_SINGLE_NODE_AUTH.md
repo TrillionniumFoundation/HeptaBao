@@ -237,14 +237,18 @@ New accounts and the password-reset subroute require a nonempty `password` or
 of an unknown account returns 500; missing/empty login passwords return 500,
 and wrong passwords or unknown login accounts return 400. These input and status
 rules have dedicated tests. Hash import accepts Go-compatible cost admission
-from 5 through 12 and verifies through rust-bcrypt 0.19.3. Version-label and
+from 5 through 12 and verifies through the fixed vendored rust-bcrypt0.19.3.
+Its bounded decoded-salt adapter shares the existing computation kernel;
+password and cipher zeroization remain enabled. Version-label and
 separator normalization, ignored suffixes and noncanonical salt padding bits
 match the independently observed OpenBao cases. As in Go, a cost-valid malformed
 hash can be stored but cannot authenticate. Explicit password reset can switch
 between plaintext enrollment and hash import without changing issued tokens;
-neither credential representation is returned by user readback. Nonstandard Go
-hashes whose salt decodes to a length other than 16 bytes still cannot
-authenticate, and upstream username case folding remains a compatibility gap.
+neither credential representation is returned by user readback. Go's salt
+decoder ignores CR/LF in the fixed22-byte field; the adapter preserves its
+padding rules and accepts nonempty decoded salts up to16 bytes. This adds no
+state field and never rewrites stored hashes. Its full candidate live comparison
+is pending; upstream username case folding remains a compatibility gap.
 
 Fresh userpass accounts use zero TTL/max for mount/system inheritance and an empty
 configured policy set. Login adds the implicit default policy unless
