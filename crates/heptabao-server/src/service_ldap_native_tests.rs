@@ -211,6 +211,7 @@ fn opaque_identity_alias_requires_schema23_without_native_ldap_configuration() -
     assert!(state.engines.has_opaque_identity_aliases());
     let mut older = state.clone();
     older.schema = 22;
+    older.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(older.validate_format().is_err());
     drop(service);
     let mut service = root.service()?;
@@ -245,8 +246,10 @@ fn native_ldap_service_restart_schema_and_all_renewal_entries() -> TestResult {
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let mut downgraded = state.clone();
     downgraded.schema = 24;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
     downgraded.schema = 22;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
     assert_eq!(
         call(
@@ -836,6 +839,7 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
     config.remove("token_no_default_policy");
     historical.auth = serde_json::from_value(old_auth)?;
     historical.schema = 28;
+    historical.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(historical.validate_format().is_ok());
     assert_eq!(
         call(
@@ -861,6 +865,7 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
     );
     let mut configured = service.state.clone().ok_or("state")?;
     configured.schema = 28;
+    configured.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         configured.validate_format().is_err(),
         "old readers cannot drop LDAP source constraints"
@@ -918,6 +923,7 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
     );
     let mut issued = service.state.clone().ok_or("state")?;
     issued.schema = 28;
+    issued.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         issued.validate_format().is_err(),
         "clearing configuration cannot remove the issued-token fence"
@@ -1031,6 +1037,7 @@ fn native_ldap_no_default_wrap_identity_restart_and_three_renewals_keep_issued_p
     } = fixture(&root)?;
     let mut configured = service.state.clone().ok_or("state")?;
     configured.schema = 29;
+    configured.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         configured.validate_format().is_err(),
         "new policy-list presence must not be discarded by old readers"
@@ -1132,6 +1139,7 @@ fn native_ldap_no_default_wrap_identity_restart_and_three_renewals_keep_issued_p
     old_config.remove("token_no_default_policy");
     issued.auth = serde_json::from_value(auth)?;
     issued.schema = 29;
+    issued.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         issued.validate_format().is_err(),
         "issued non-default LDAP tokens preserve the format fence"

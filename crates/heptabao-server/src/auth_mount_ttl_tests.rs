@@ -2,6 +2,59 @@ use super::tests::{Root, bootstrap, call};
 use serde_json::json;
 
 #[test]
+fn system_defaults_and_token_grants_each_require_schema_thirty_three()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    let mut state = service.state.clone().ok_or("state")?;
+    state.schema = 32;
+    assert_eq!(
+        state
+            .validate_format()
+            .err()
+            .ok_or("system metadata admitted")?
+            .status,
+        503
+    );
+    state.auth.omit_lease_metadata_for_legacy_fixture();
+    assert!(state.validate_format().is_ok());
+
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &admin,
+            json!({"policies":["default"], "ttl":75})
+        )
+        .status,
+        200
+    );
+    let mut value = serde_json::to_value(service.state.as_ref().ok_or("state")?)?;
+    value["schema"] = json!(32);
+    value["auth"]
+        .as_object_mut()
+        .ok_or("auth")?
+        .remove("system_lease_defaults");
+    let mut grant_only: super::State = serde_json::from_value(value)?;
+    assert_eq!(
+        grant_only
+            .validate_format()
+            .err()
+            .ok_or("grant metadata admitted")?
+            .status,
+        503
+    );
+    grant_only.schema = super::CURRENT_STATE_SCHEMA;
+    assert!(grant_only.validate_format().is_ok());
+    grant_only.auth.omit_lease_metadata_for_legacy_fixture();
+    grant_only.schema = 32;
+    assert!(grant_only.validate_format().is_ok());
+    Ok(())
+}
+
+#[test]
 fn auth_mount_ttl_limits_drive_issue_and_survive_restart() -> Result<(), Box<dyn std::error::Error>>
 {
     let root = Root::new();

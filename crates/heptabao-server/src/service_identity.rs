@@ -6,6 +6,9 @@ use crate::auth::{AuthError, AuthResponse};
 
 impl State {
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        self.auth
+            .validate_system_lease_defaults()
+            .map_err(|_| Response::error(503, "invalid system or Token API lease state"))?;
         self.engines
             .validate_identity_alias_state()
             .map_err(|e| Response::error(503, &e.message))?;
@@ -233,6 +236,12 @@ impl State {
                 "JWT role TTL inheritance requires schema 32",
             ));
         }
+        if self.schema < 33 && self.auth.has_system_lease_defaults() {
+            return Err(Response::error(
+                503,
+                "system lease defaults and Token API grant metadata require schema 33",
+            ));
+        }
         self.auth
             .validate_jwt_api_https_state()
             .map_err(|_| Response::error(503, "invalid JWT HTTPS authority"))?;
@@ -257,7 +266,7 @@ impl State {
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
-            | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | CURRENT_STATE_SCHEMA => Ok(()),
+            | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

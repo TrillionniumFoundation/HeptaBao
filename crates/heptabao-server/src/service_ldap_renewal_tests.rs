@@ -514,8 +514,10 @@ fn ldap_schema_fence_and_auth_mount_disable_revoke_external_evidence() -> TestRe
     assert!(state.engines.has_external_group_membership());
     let mut downgraded = state.clone();
     downgraded.schema = 16;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
     downgraded.auth = AuthState::bootstrap(100)?.0.into();
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         downgraded.validate_format().is_err(),
         "external evidence independently needs schema 17"

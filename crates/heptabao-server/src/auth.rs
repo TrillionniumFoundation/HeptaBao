@@ -74,6 +74,8 @@ mod radius_native;
 use radius_native::RadiusNativeConfig;
 #[path = "auth_token_cidrs.rs"]
 mod token_cidrs;
+#[path = "auth_token_ttl.rs"]
+mod token_ttl;
 #[path = "auth_wrapping.rs"]
 mod wrapping;
 pub(crate) use capabilities::InspectionTarget;
@@ -83,7 +85,8 @@ use provider_renewal::ProviderCredential;
 pub(crate) use provider_renewal::{ProviderRenewalObservation, ProviderRenewalPlan};
 pub(crate) use radius::{RadiusRenewalObservation, RadiusRenewalPlan};
 
-const DEFAULT_TTL: u64 = 3600;
+const LEGACY_DEFAULT_TTL: u64 = 3600;
+const DEFAULT_SECRET_ID_TTL: u64 = 3600;
 const MAX_TTL: u64 = 32 * 24 * 3600;
 const PASSWORD_ROUNDS: u32 = 600_000;
 const MFA_SEED_BYTES: usize = 32;
@@ -103,6 +106,10 @@ fn default_bind_secret_id() -> bool {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct AuthState {
+    /// None preserves the historical one-hour inherited default. Fresh state
+    /// records native defaults so every namespace and HA peer uses the same policy.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    system_lease_defaults: Option<token_ttl::SystemLeaseDefaults>,
     #[serde(default, skip_serializing_if = "is_zero")]
     wrapping_clock: u64,
     tokens: BTreeMap<String, Token>,
@@ -1029,6 +1036,10 @@ impl Drop for AuthState {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Token {
+    /// The prior granted lease, used by native Token API renewal when no
+    /// increment is requested. None preserves historical one-hour renewal.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_api_lease_ttl: Option<u64>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     bound_cidrs: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1756,6 +1767,7 @@ impl AuthState {
 
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
         let mut state = Self {
+            system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),
             wrapping_clock: 0,
             tokens: BTreeMap::new(),
             policies: BTreeMap::new(),
@@ -1776,6 +1788,7 @@ impl AuthState {
             cert_roles: BTreeMap::new(),
         };
         let token = Token {
+            token_api_lease_ttl: None,
             bound_cidrs: Vec::new(),
             wrapping: None,
             entity_id: None,
@@ -2484,12 +2497,14 @@ impl AuthState {
                         .get(mount)
                         .cloned()
                         .ok_or_else(|| err(404, "auth mount not found"))?;
+                    let (default_ttl, max_ttl) =
+                        self.auth_mount_lease_defaults(AuthScope { namespace, mount })?;
                     Ok(response(
                         json!({
-                            "default_lease_ttl":entry.default_lease_ttl,
+                            "default_lease_ttl":default_ttl,
                             "description":entry.description,
                             "force_no_cache":false,
-                            "max_lease_ttl":entry.max_lease_ttl,
+                            "max_lease_ttl":max_ttl,
                             "token_type":"default-service",
                             "revision":entry.revision,
                             "accessor":entry.accessor.as_deref().unwrap_or("")
@@ -4064,7 +4079,12 @@ impl AuthState {
                     token_max_ttl,
                     token_num_uses: number(body, "token_num_uses", 0)?,
                 };
-                normalize_ttl(&mut role.token_ttl, &mut role.token_max_ttl)?;
+                normalize_ttl(
+                    &mut role.token_ttl,
+                    &mut role.token_max_ttl,
+                    mount_default_ttl,
+                    mount_max_ttl,
+                )?;
                 self.cert_roles
                     .entry(namespace.into())
                     .or_default()
@@ -4168,6 +4188,7 @@ impl AuthState {
             let display_hash = hash(&verified.subject);
             let display_suffix = display_hash.get(..16).unwrap_or(display_hash.as_str());
             let token = Token {
+                token_api_lease_ttl: None,
                 bound_cidrs: Vec::new(),
                 wrapping: None,
                 entity_id: None,
@@ -4808,6 +4829,9 @@ impl AuthState {
                 if let Some(response) = self.renew_oidc_token(namespace, &id, body, now)? {
                     return Ok(response);
                 }
+                if let Some(response) = self.renew_token_api_token(namespace, &id, body, now)? {
+                    return Ok(response);
+                }
                 let cert_role_limits = self.cert_renewal_limits(&id, peer_certificates)?;
                 let cert_role_limits = cert_role_limits
                     .map(|(mount, token_ttl, token_max_ttl)| {
@@ -4827,7 +4851,7 @@ impl AuthState {
                     if cert_role_limits.is_some() {
                         0
                     } else {
-                        DEFAULT_TTL
+                        LEGACY_DEFAULT_TTL
                     },
                 )?;
                 let issued_at = self.tokens.get(&id).ok_or_else(denied)?.created_at;
@@ -4838,7 +4862,7 @@ impl AuthState {
                 let ttl = if token.period > 0 {
                     token.period
                 } else if increment == 0 {
-                    cert_role_limits.map_or(DEFAULT_TTL, |(token_ttl, _)| token_ttl)
+                    cert_role_limits.map_or(LEGACY_DEFAULT_TTL, |(token_ttl, _)| token_ttl)
                 } else {
                     increment
                         .min(cert_role_limits.map_or(MAX_TTL, |(_, token_max_ttl)| token_max_ttl))
@@ -5006,36 +5030,44 @@ impl AuthState {
         if period > MAX_TTL {
             return Err(bad("period exceeds maximum TTL"));
         }
-        let ttl = duration(body, "ttl", DEFAULT_TTL)?;
-        let ttl = if period > 0 {
-            period
-        } else if ttl == 0 && !root {
-            DEFAULT_TTL
-        } else {
-            ttl
-        };
-        if ttl > MAX_TTL {
+        let requested_ttl = duration(body, "ttl", 0)?;
+        if requested_ttl > MAX_TTL {
             return Err(bad("TTL exceeds maximum"));
         }
         let explicit_max = duration(body, "explicit_max_ttl", 0)?;
         if explicit_max > MAX_TTL {
             return Err(bad("explicit maximum TTL exceeds service maximum"));
         }
-        let max_expires_at = if explicit_max > 0 {
-            Some(checked_expiry(now, explicit_max)?)
-        } else if period == 0 && !(root && ttl == 0) {
-            Some(checked_expiry(now, MAX_TTL)?)
+        let max_expires_at = (explicit_max > 0)
+            .then(|| checked_expiry(now, explicit_max))
+            .transpose()?;
+        let expires_at = if root && period == 0 && requested_ttl == 0 {
+            if parent.expires_at.is_some() && explicit_max == 0 {
+                return Err(bad(
+                    "expiring root tokens cannot create non-expiring root tokens",
+                ));
+            }
+            max_expires_at
         } else {
-            None
+            Some(self.native_token_expiry(
+                AuthScope {
+                    namespace,
+                    mount: "token",
+                },
+                NativeTokenLimits {
+                    ttl: requested_ttl,
+                    max_ttl: 0,
+                    period,
+                },
+                now,
+                max_expires_at,
+                0,
+                now,
+            )?)
         };
-        let mut expires_at = if root && ttl == 0 {
-            None
-        } else {
-            Some(checked_expiry(now, ttl)?)
-        };
-        if let (Some(expiry), Some(max)) = (expires_at, max_expires_at) {
-            expires_at = Some(expiry.min(max));
-        }
+        // A successful publication pins the legacy inherited default without
+        // rewriting old issued caps or changing read-only state.
+        let system_defaults = self.system_lease_defaults()?;
         let display_name = body
             .get("display_name")
             .map(|v| {
@@ -5047,8 +5079,9 @@ impl AuthState {
         if display_name.len() > 128 {
             return Err(bad("display name too long"));
         }
-        self.issue(
+        let response = self.issue(
             Token {
+                token_api_lease_ttl: expires_at.map(|expiry| expiry - now),
                 bound_cidrs: if no_parent || expires_at.is_none() {
                     Vec::new()
                 } else {
@@ -5086,7 +5119,9 @@ impl AuthState {
                 auth_provenance: Some(TokenAuthProvenance::TokenApi),
             },
             now,
-        )
+        )?;
+        self.system_lease_defaults.get_or_insert(system_defaults);
+        Ok(response)
     }
 
     fn policy_route(
@@ -5371,7 +5406,12 @@ impl AuthState {
             },
             user.token_max_ttl,
         )?;
-        normalize_ttl(&mut user.token_ttl, &mut user.token_max_ttl)?;
+        normalize_ttl(
+            &mut user.token_ttl,
+            &mut user.token_max_ttl,
+            mount_default_ttl,
+            mount_max_ttl,
+        )?;
         user.token_num_uses = number(body, "token_num_uses", user.token_num_uses)?;
         self.users_at_mut(scope).insert(name.into(), user);
         Ok(empty(true))
@@ -5383,24 +5423,7 @@ impl AuthState {
         ttl: u64,
         max_ttl: u64,
     ) -> Result<(u64, u64), AuthError> {
-        let mount = self
-            .effective_auth_mounts(scope.namespace)
-            .get(scope.mount)
-            .cloned()
-            .ok_or_else(|| err(404, "auth mount not found"))?;
-        let mount_default = if mount.default_lease_ttl == 0 {
-            DEFAULT_TTL
-        } else {
-            mount.default_lease_ttl
-        };
-        let mount_max = if mount.max_lease_ttl == 0 {
-            MAX_TTL
-        } else {
-            mount.max_lease_ttl
-        };
-        if mount_default == 0 || mount_default > mount_max || mount_max > MAX_TTL {
-            return Err(bad("invalid persisted auth mount TTL limits"));
-        }
+        let (mount_default, mount_max) = self.auth_mount_lease_defaults(scope)?;
         let mut effective_ttl = if ttl == 0 { mount_default } else { ttl };
         let mut effective_max = if max_ttl == 0 { mount_max } else { max_ttl };
         effective_max = effective_max.min(mount_max);
@@ -5587,7 +5610,7 @@ impl AuthState {
                 token_period: 0,
                 token_explicit_max_ttl: 0,
                 token_num_uses: 0,
-                secret_id_ttl: DEFAULT_TTL,
+                secret_id_ttl: DEFAULT_SECRET_ID_TTL,
                 secret_id_num_uses: 1,
                 secret_ids: BTreeMap::new(),
             });
@@ -5605,7 +5628,12 @@ impl AuthState {
             self.validate_assignment(actor, &role.policies)?;
             role.token_ttl = duration(body, "token_ttl", role.token_ttl)?;
             role.token_max_ttl = duration(body, "token_max_ttl", role.token_max_ttl)?;
-            normalize_ttl(&mut role.token_ttl, &mut role.token_max_ttl)?;
+            normalize_ttl(
+                &mut role.token_ttl,
+                &mut role.token_max_ttl,
+                mount_default_ttl,
+                mount_max_ttl,
+            )?;
             role.token_period = duration(body, "token_period", role.token_period)?;
             if role.token_period > MAX_TTL {
                 return Err(bad("token_period exceeds maximum TTL"));
@@ -5901,12 +5929,17 @@ fn reject_alias_pair(body: &Value, a: &str, b: &str) -> Result<(), AuthError> {
     }
     Ok(())
 }
-fn normalize_ttl(ttl: &mut u64, max_ttl: &mut u64) -> Result<(), AuthError> {
+fn normalize_ttl(
+    ttl: &mut u64,
+    max_ttl: &mut u64,
+    default: u64,
+    maximum: u64,
+) -> Result<(), AuthError> {
     if *ttl == 0 {
-        *ttl = DEFAULT_TTL;
+        *ttl = default;
     }
     if *max_ttl == 0 {
-        *max_ttl = MAX_TTL;
+        *max_ttl = maximum;
     }
     if *ttl > *max_ttl || *max_ttl > MAX_TTL {
         return Err(bad("invalid token TTL limits"));
@@ -5926,6 +5959,7 @@ fn login_token(
         return Err(denied());
     }
     Ok(Token {
+        token_api_lease_ttl: None,
         bound_cidrs: Vec::new(),
         wrapping: None,
         entity_id: None,

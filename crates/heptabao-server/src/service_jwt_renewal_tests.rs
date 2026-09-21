@@ -184,6 +184,7 @@ fn jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_record
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     state.schema = 17;
+    state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_err());
     let mut auth = serde_json::to_value(&state.auth)?;
     for entry in auth["tokens"].as_object_mut().ok_or("tokens")?.values_mut() {
@@ -242,8 +243,10 @@ fn jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_record
     restore_v18_jwt_config(&mut auth)?;
     roles_only.auth = serde_json::from_value::<AuthState>(auth)?.into();
     roles_only.schema = 17;
+    roles_only.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(roles_only.validate_format().is_err());
     roles_only.schema = 18;
+    roles_only.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(roles_only.validate_format().is_ok());
     Ok(())
 }
@@ -257,6 +260,7 @@ fn native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways(
     restore_v18_jwt_config(&mut legacy)?;
     state.auth = serde_json::from_value::<AuthState>(legacy.clone())?.into();
     state.schema = 18;
+    state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_ok());
     for variant in ["default", "leeway", "native"] {
         let mut value = legacy.clone();
@@ -273,6 +277,7 @@ fn native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways(
         }
         state.auth = serde_json::from_value::<AuthState>(value)?.into();
         state.schema = 18;
+        state.auth.omit_lease_metadata_for_legacy_fixture();
         assert!(state.validate_format().is_err(), "{variant}");
         state.schema = CURRENT_STATE_SCHEMA;
         assert!(state.validate_format().is_ok(), "{variant}");

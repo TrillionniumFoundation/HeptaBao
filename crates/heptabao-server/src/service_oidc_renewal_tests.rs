@@ -15,6 +15,7 @@ fn prepared(root: &Root) -> TestResult<(Service, String, String, Value)> {
     let mut state = service.state.clone().ok_or("state")?;
     state.auth = auth.into();
     state.schema = 20;
+    state.auth.omit_lease_metadata_for_legacy_fixture();
     state
         .validate_format()
         .map_err(|_| "legacy pending state")?;
@@ -342,6 +343,7 @@ fn oidc_schema_twenty_one_keeps_old_pending_session_and_old_token_authority() ->
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     state.schema = 20;
+    state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_err());
     let mut auth = serde_json::to_value(&state.auth)?;
     for entry in auth["tokens"].as_object_mut().ok_or("tokens")?.values_mut() {

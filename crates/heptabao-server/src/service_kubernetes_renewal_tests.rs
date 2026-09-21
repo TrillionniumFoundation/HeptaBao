@@ -300,6 +300,7 @@ fn kubernetes_schema_twenty_fences_new_authority_and_preserves_legacy_tokens() -
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     state.schema = 19;
+    state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_err());
     let mut auth = serde_json::to_value(&state.auth)?;
     // This historical format test removes the later API-transport authority
@@ -522,6 +523,7 @@ fn native_kubernetes_config_needs_no_endpoint_and_redacts_optional_reviewer() ->
     assert!(state.auth.has_kubernetes_api_https_state());
     let mut downgraded = state.clone();
     downgraded.schema = 28;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
     downgraded.schema = CURRENT_STATE_SCHEMA;
     assert!(downgraded.validate_format().is_ok());
@@ -577,6 +579,7 @@ fn schema_twenty_eight_admits_legacy_kubernetes_enrollment_without_api_authority
         .remove("transport");
     state.auth = serde_json::from_value::<AuthState>(auth)?.into();
     state.schema = 28;
+    state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(!state.auth.has_kubernetes_api_https_state());
     assert!(state.auth.validate_online_auth().is_ok());
     assert!(state.validate_format().is_ok());
@@ -705,6 +708,7 @@ fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_
     let (mut service, key, admin, old) = fixture(&root)?;
     let mut admission = service.state.as_ref().ok_or("state")?.clone();
     admission.schema = 30;
+    admission.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(admission.validate_format().is_ok());
     let good = Some("127.0.0.1".parse()?);
     let other = Some("127.0.0.2".parse()?);
@@ -721,6 +725,7 @@ fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_
     );
     let mut admission = service.state.as_ref().ok_or("state")?.clone();
     admission.schema = 30;
+    admission.auth.omit_lease_metadata_for_legacy_fixture();
     assert_eq!(
         admission
             .validate_format()
@@ -810,6 +815,7 @@ fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_
     );
     let mut admission = service.state.as_ref().ok_or("state")?.clone();
     admission.schema = 30;
+    admission.auth.omit_lease_metadata_for_legacy_fixture();
     assert_eq!(
         admission
             .validate_format()

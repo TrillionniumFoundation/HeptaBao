@@ -156,11 +156,13 @@ fn native_radius_partial_profile_schema_restart_and_unenrolled_config() -> TestR
     assert!(state.auth.has_native_radius_state());
     let mut downgraded = state.clone();
     downgraded.schema = 24;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         downgraded.validate_format().is_ok(),
         "an empty native mapping entry has no schema-25 semantics"
     );
     downgraded.schema = 23;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
     drop(service);
     let mut service = root.service()?;
@@ -193,11 +195,13 @@ fn native_radius_partial_profile_schema_restart_and_unenrolled_config() -> TestR
     let state = service.state.as_ref().ok_or("missing configured state")?;
     let mut downgraded = state.clone();
     downgraded.schema = 25;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         downgraded.validate_format().is_err(),
         "API-authorized targets need schema 26"
     );
     downgraded.schema = 24;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         downgraded.validate_format().is_err(),
         "new policy-presence semantics need schema 25"
@@ -485,6 +489,7 @@ fn native_radius_cidr_enforces_both_immutable_and_mutating_service_admission_aft
     );
     let mut downgraded = service.state.clone().ok_or("missing state")?;
     downgraded.schema = 26;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         downgraded.validate_format().is_err(),
         "configured CIDRs require schema 27"
@@ -532,6 +537,7 @@ fn native_radius_cidr_enforces_both_immutable_and_mutating_service_admission_aft
     );
     let mut downgraded = service.state.clone().ok_or("missing state")?;
     downgraded.schema = 26;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         downgraded.validate_format().is_err(),
         "issued token retains schema 27 fence after config clear"

@@ -243,9 +243,11 @@ fn radius_renewal_schema_fence_rejects_downgrade_and_token_api_provenance_is_dis
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let mut downgraded = state.clone();
     downgraded.schema = 15;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
     let (plain_auth, root_token) = AuthState::bootstrap(100)?;
     downgraded.auth = plain_auth.into();
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_ok());
     let actor = downgraded.auth.authenticate(&root_token, 100)?;
     downgraded
@@ -259,8 +261,10 @@ fn radius_renewal_schema_fence_rejects_downgrade_and_token_api_provenance_is_dis
             100,
         )?
         .ok_or("missing route")?;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
     downgraded.schema = 16;
+    downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_ok());
     Ok(())
 }
@@ -619,6 +623,7 @@ fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shap
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     state.schema = 21;
+    state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         state.validate_format().is_err(),
         "new empty configured policy list requires schema 22"
@@ -638,6 +643,7 @@ fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shap
     );
     state = service.state.clone().ok_or("state")?;
     state.schema = 21;
+    state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_ok());
     let encoded = serde_json::to_value(&state.auth)?;
     for field in ["token_period", "token_explicit_max_ttl"] {
@@ -696,6 +702,7 @@ fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shap
     );
     let mut state = service.state.clone().ok_or("state")?;
     state.schema = 21;
+    state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
         state.validate_format().is_err(),
         "issued periodic provenance must remain fenced after config resets"

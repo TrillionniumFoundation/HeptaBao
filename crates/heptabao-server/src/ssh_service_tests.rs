@@ -481,6 +481,7 @@ fn ssh_state_rejects_downgrade_and_malformed_lease_bindings() -> TestResult {
         .map_err(|_| "invalid current state")?;
     let mut legacy = state.clone();
     legacy.schema = 2;
+    legacy.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(legacy.validate_format().is_err());
     let mut value = serde_json::to_value(state)?;
     value["engines"]["lease_clock"] = json!(0);

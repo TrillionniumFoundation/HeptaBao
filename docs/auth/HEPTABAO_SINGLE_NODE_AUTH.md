@@ -93,9 +93,23 @@ administrative lookup or revocation without knowing the bearer.
 Bootstrap creates an immortal root token in the root namespace. The `root`
 policy is immutable and exclusive. Only an existing root can issue another root
 token; userpass and AppRole cannot ever assign `root`. Ordinary token creation
-defaults to a one-hour TTL; the service maximum is 32 days. Integer seconds and
+uses the token mount default: 32 days in fresh stores, or the preserved one-hour
+system default in older stores. The service maximum is 32 days. Integer seconds and
 integer `s`, `m`, `h`, `d` duration strings are accepted. Compound or fractional
 durations are rejected rather than silently rounded.
+
+A token mount's tune endpoint reports inherited effective defaults. Issuance
+clips the requested or default TTL to the current mount maximum. Ordinary Token
+API renewal without a positive increment retains the previous granted TTL;
+changing the mount default affects new tokens. Current mount maxima still
+constrain renewal from issue time, and captured explicit caps remain absolute.
+Historical tokens lack the prior-grant field and retain the old one-hour renewal
+request until a successful renewal records a grant. Their stored absolute caps
+are preserved because old automatic and explicit caps cannot be distinguished.
+New tokens capture an absolute cap only when explicit_max_ttl is supplied.
+Root tokens with no requested TTL/period remain non-expiring unless explicitly
+capped; an expiring root cannot create a non-expiring root. AppRole SecretID
+defaults remain separate from service-token defaults.
 
 Tokens support bounded TTL, an explicit maximum lifetime, renewal, periodic
 renewal, limited uses, parent/child revocation, orphan creation and accessors.
@@ -476,7 +490,7 @@ Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; 
 | key `algorithm` | Exactly `EdDSA` (Ed25519) or `ES256` (P-256); algorithm confusion is rejected |
 | key `key_base64` | Unpadded base64url raw public bytes: 32-byte Ed25519 or 65-byte uncompressed P-256 point; this is not PEM |
 
-A role at `auth/<mount>/role/<name>` supports GET, POST/PUT and DELETE. `bound_groups` requires every listed group in the verified `groups` claim; `bound_subject` requires exact `sub`; a nonempty `bound_audiences` requires at least one matching JWT audience. Configured trust independently requires an audience intersection. Role POST/PUT and DELETE require `update` plus `sudo` in this profile. `policies` and `token_policies` are aliases but cannot be supplied together. `token_ttl`, `token_max_ttl` and `token_num_uses` configure the issued service token: new roles default both TTL and maximum to zero, independently inheriting the current mount settings. Explicit zero restores inheritance; omitted or null duration fields preserve existing values. Nonzero values are bounded by the service maximum of 32 days, and a nonzero maximum cannot be below TTL. Older stored positive defaults remain unchanged. The current process-wide default remains one hour, which differs from an untuned OpenBao deployment. Roles cannot issue `root` or policies beyond the managing actor's authority, and login must satisfy both configured trust and role restrictions. Readback returns configuration, never an issued bearer.
+A role at `auth/<mount>/role/<name>` supports GET, POST/PUT and DELETE. `bound_groups` requires every listed group in the verified `groups` claim; `bound_subject` requires exact `sub`; a nonempty `bound_audiences` requires at least one matching JWT audience. Configured trust independently requires an audience intersection. Role POST/PUT and DELETE require `update` plus `sudo` in this profile. `policies` and `token_policies` are aliases but cannot be supplied together. `token_ttl`, `token_max_ttl` and `token_num_uses` configure the issued service token: new roles default both TTL and maximum to zero, independently inheriting the current mount settings. Explicit zero restores inheritance; omitted or null duration fields preserve existing values. Nonzero values are bounded by the service maximum of 32 days, and a nonzero maximum cannot be below TTL. Older stored positive defaults remain unchanged. Fresh stores inherit a 32-day system default and maximum; historical stores preserve the one-hour inherited default. Roles cannot issue `root` or policies beyond the managing actor's authority, and login must satisfy both configured trust and role restrictions. Readback returns configuration, never an issued bearer.
 
 Static and remote JWT roles also support `bound_claims` and `bound_claims_type`
 (`string` or `glob`). Every configured selector must match the original

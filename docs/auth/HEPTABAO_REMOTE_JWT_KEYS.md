@@ -158,9 +158,9 @@ preserve existing role values; a nonzero maximum must not be smaller than a
 nonzero TTL. Older stored positive values keep their exact meaning until an
 administrator changes them. Schema 32 fences zero role limits. Renewal keeps
 issued policies, period lookup snapshots and absolute explicit caps, while
-ordinary limits use current role/mount values. The process-wide default remains
-one hour; full OpenBao system-default and token-mount tuning parity are separate
-work, so this does not imply a matching untuned deployment default.
+ordinary limits use current role/mount values. Fresh installations inherit a
+32-day system default and maximum; historical stores preserve their one-hour
+inherited default. Explicit mount settings override the corresponding value.
 
 New configurations use native role time defaults, with no implicit one-hour JWT
 lifetime limit. Explicit legacy `clock_skew_seconds` and
