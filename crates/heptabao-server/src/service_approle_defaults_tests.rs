@@ -37,6 +37,7 @@ fn approle_zero_token_limits_and_secret_issuance_each_require_schema_thirty_four
     );
     let mut state = service.state.clone().ok_or("state")?;
     restore_legacy_engine_owner(&mut state)?;
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 33;
     assert!(
         state.validate_format().is_ok(),
@@ -49,6 +50,7 @@ fn approle_zero_token_limits_and_secret_issuance_each_require_schema_thirty_four
         assert_eq!(call(&mut service, "POST", path, &admin, body).status, 204);
         let mut state = service.state.clone().ok_or("state")?;
         restore_legacy_engine_owner(&mut state)?;
+        state.auth.remove_name_modes_for_legacy_format_test();
         state.schema = 33;
         assert_eq!(
             state.validate_format().err().ok_or("role fence")?.status,
@@ -63,6 +65,7 @@ fn approle_zero_token_limits_and_secret_issuance_each_require_schema_thirty_four
     );
     let mut state = service.state.clone().ok_or("state")?;
     restore_legacy_engine_owner(&mut state)?;
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 33;
     assert!(state.validate_format().is_ok());
     assert_eq!(
@@ -78,6 +81,7 @@ fn approle_zero_token_limits_and_secret_issuance_each_require_schema_thirty_four
     );
     let mut state = service.state.clone().ok_or("state")?;
     restore_legacy_engine_owner(&mut state)?;
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 33;
     assert_eq!(
         state

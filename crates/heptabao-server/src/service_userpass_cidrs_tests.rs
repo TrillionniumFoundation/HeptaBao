@@ -162,6 +162,7 @@ fn userpass_cidr_schema39_covers_config_and_token_after_clear_without_rejecting_
         .ok_or("user")?
         .remove("token_policies_configured");
     old.auth = serde_json::from_value::<AuthState>(auth)?.into();
+    old.auth.remove_name_modes_for_legacy_format_test();
     old.schema = 38;
     assert!(old.validate_format().is_ok());
     let before = service.current_state_digest().map_err(|_| "digest")?;
@@ -192,6 +193,7 @@ fn userpass_cidr_schema39_covers_config_and_token_after_clear_without_rejecting_
         204
     );
     let mut config = service.state.clone().ok_or("state")?;
+    config.auth.remove_name_modes_for_legacy_format_test();
     config.schema = 38;
     assert!(config.validate_format().is_err());
     let login = from_peer(
@@ -244,6 +246,7 @@ fn userpass_cidr_schema39_covers_config_and_token_after_clear_without_rejecting_
         204
     );
     let mut issued = service.state.clone().ok_or("state")?;
+    issued.auth.remove_name_modes_for_legacy_format_test();
     issued.schema = 38;
     assert!(issued.auth.has_userpass_token_bound_cidrs());
     assert!(issued.validate_format().is_err());

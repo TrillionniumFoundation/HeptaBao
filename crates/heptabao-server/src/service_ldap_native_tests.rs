@@ -232,6 +232,7 @@ fn opaque_identity_alias_requires_schema23_without_native_ldap_configuration() -
     assert!(state.engines.has_opaque_identity_aliases());
     let mut older = state.clone();
     restore_legacy_engine_owner(&mut older)?;
+    older.auth.remove_name_modes_for_legacy_format_test();
     older.schema = 22;
     older.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(older.validate_format().is_err());
@@ -268,10 +269,12 @@ fn native_ldap_service_restart_schema_and_all_renewal_entries() -> TestResult {
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let mut downgraded = state.clone();
     restore_legacy_engine_owner(&mut downgraded)?;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 24;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
     restore_legacy_engine_owner(&mut downgraded)?;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 22;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
@@ -863,6 +866,7 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
     config.remove("token_no_default_policy");
     historical.auth = serde_json::from_value(old_auth)?;
     restore_legacy_engine_owner(&mut historical)?;
+    historical.auth.remove_name_modes_for_legacy_format_test();
     historical.schema = 28;
     historical.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(historical.validate_format().is_ok());
@@ -890,6 +894,7 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
     );
     let mut configured = service.state.clone().ok_or("state")?;
     restore_legacy_engine_owner(&mut configured)?;
+    configured.auth.remove_name_modes_for_legacy_format_test();
     configured.schema = 28;
     configured.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -949,6 +954,7 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
     );
     let mut issued = service.state.clone().ok_or("state")?;
     restore_legacy_engine_owner(&mut issued)?;
+    issued.auth.remove_name_modes_for_legacy_format_test();
     issued.schema = 28;
     issued.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -1064,6 +1070,7 @@ fn native_ldap_no_default_wrap_identity_restart_and_three_renewals_keep_issued_p
     } = fixture(&root)?;
     let mut configured = service.state.clone().ok_or("state")?;
     restore_legacy_engine_owner(&mut configured)?;
+    configured.auth.remove_name_modes_for_legacy_format_test();
     configured.schema = 29;
     configured.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -1167,6 +1174,7 @@ fn native_ldap_no_default_wrap_identity_restart_and_three_renewals_keep_issued_p
     old_config.remove("token_no_default_policy");
     issued.auth = serde_json::from_value(auth)?;
     restore_legacy_engine_owner(&mut issued)?;
+    issued.auth.remove_name_modes_for_legacy_format_test();
     issued.schema = 29;
     issued.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(

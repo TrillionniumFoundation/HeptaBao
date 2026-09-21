@@ -66,6 +66,21 @@ source identity before making a scoped claim. No live HA pass is bundled.
 
 ## Additional selected runtime profiles
 
+`userpass_names_live.py` compares fresh userpass CRUD, login, canonical Identity
+aliases, raw ACL paths and restart with pinned OpenBao 2.6.2. Uppercase password
+and policy subroutes have separate observations: OpenBao can leave shadow
+records, whereas the candidate changes the canonical account. Those observations
+are explicit differences and never counted as matching behavior.
+`userpass_names_upgrade.py` requires a qualified old schema39 binary and its
+committed no-default-policy receipt; the old executable creates distinct
+Alice/alice accounts and tokens, and the new executable must preserve their
+exact renewal sources through reads, mutations, restart and rejected downgrade.
+Only a newly created mount adopts canonical names. `userpass_names_ha.py` uses
+three local TLS voters for standby forwarding, raw ACL checks, leadership
+transfer, restart and all-voter token readback. It does not cover MFA over HTTP,
+PostgreSQL or physical host failures. These profiles create only private fresh
+fixtures and do not qualify a full OpenBao instance migration.
+
 `response_wrapping.py`, `capabilities_live.py`, `ssh_otp_live.py` reuse the strict
 nonempty/all-passed comparison harness with the pinned official binary. They do
 not self-advance `complete_surface_corpus_v1.json`. `client_live.py` exercises the

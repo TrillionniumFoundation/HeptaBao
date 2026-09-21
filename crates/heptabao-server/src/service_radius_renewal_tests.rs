@@ -264,11 +264,13 @@ fn radius_renewal_schema_fence_rejects_downgrade_and_token_api_provenance_is_dis
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let mut downgraded = state.clone();
     restore_legacy_engine_owner(&mut downgraded)?;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 15;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
     let (plain_auth, root_token) = AuthState::bootstrap(100)?;
     downgraded.auth = plain_auth.into();
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_ok());
     let actor = downgraded.auth.authenticate(&root_token, 100)?;
@@ -286,6 +288,7 @@ fn radius_renewal_schema_fence_rejects_downgrade_and_token_api_provenance_is_dis
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
     restore_legacy_engine_owner(&mut downgraded)?;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 16;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_ok());
@@ -646,6 +649,7 @@ fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shap
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     restore_legacy_engine_owner(&mut state)?;
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 21;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -667,6 +671,7 @@ fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shap
     );
     state = service.state.clone().ok_or("state")?;
     restore_legacy_engine_owner(&mut state)?;
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 21;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_ok());
@@ -727,6 +732,7 @@ fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shap
     );
     let mut state = service.state.clone().ok_or("state")?;
     restore_legacy_engine_owner(&mut state)?;
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 21;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(

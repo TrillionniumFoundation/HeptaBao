@@ -45,6 +45,7 @@ fn schema36_read_reopen_noop_and_rejection_do_not_upgrade_but_mutation_does() ->
     );
     let mut old = service.state.clone().ok_or("state")?;
     assert!(!old.engines.has_packed_kv1_records());
+    old.auth.remove_name_modes_for_legacy_format_test();
     old.schema = 36;
     let plan = service.prepare_record_plan(&old).map_err(|_| "old plan")?;
     service
@@ -157,6 +158,7 @@ fn authenticated_deep_packed_graph_cannot_hide_under_schema36_on_any_load_path()
     service.state = Some(next.clone());
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
     let mut downgraded = next;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 36;
     assert!(downgraded.validate_format().is_err());
     let bad = service

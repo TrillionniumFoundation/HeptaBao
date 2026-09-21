@@ -631,6 +631,9 @@ impl Service {
                 {
                     return error;
                 }
+                if let Err(error) = state.auth.initialize_fresh_namespace_auth(&target) {
+                    return Response::error(error.status, &error.message);
+                }
                 state.schema = CURRENT_STATE_SCHEMA;
                 if let Err(error) = state.validate_format() {
                     return error;
@@ -674,6 +677,7 @@ impl Service {
                 if let Err(error) = state.namespaces.remove(&target) {
                     return error;
                 }
+                state.auth.remove_fresh_namespace_auth_defaults(&target);
                 state.schema = CURRENT_STATE_SCHEMA;
                 if let Err(error) = state.validate_format() {
                     return error;

@@ -8,6 +8,7 @@ fn system_defaults_and_token_grants_each_require_schema_thirty_three()
     let mut service = root.service()?;
     let (_, admin) = bootstrap(&mut service)?;
     let mut state = service.state.clone().ok_or("state")?;
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 32;
     assert_eq!(
         state
@@ -38,6 +39,7 @@ fn system_defaults_and_token_grants_each_require_schema_thirty_three()
         .ok_or("auth")?
         .remove("system_lease_defaults");
     let mut grant_only: super::State = serde_json::from_value(value)?;
+    grant_only.auth.remove_name_modes_for_legacy_format_test();
     assert_eq!(
         grant_only
             .validate_format()

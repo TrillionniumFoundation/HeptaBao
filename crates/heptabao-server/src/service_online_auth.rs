@@ -1112,6 +1112,7 @@ mod tests {
         let (service, _, _) = prepared(&root)?;
         let mut state = service.state.as_ref().ok_or("missing state")?.clone();
         state.schema = 4;
+        state.auth.remove_name_modes_for_legacy_format_test();
         state.auth.omit_lease_metadata_for_legacy_fixture();
         assert!(state.validate_format().is_err());
         state.schema = CURRENT_STATE_SCHEMA;
@@ -1120,6 +1121,7 @@ mod tests {
         assert!(state.validate_format().is_err());
         let (auth, _) = AuthState::bootstrap(100)?;
         state.auth = auth.into();
+        state.auth.remove_name_modes_for_legacy_format_test();
         state.auth.omit_lease_metadata_for_legacy_fixture();
         state.schema = 4;
         assert!(state.validate_format().is_ok());

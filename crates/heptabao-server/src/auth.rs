@@ -78,6 +78,8 @@ mod token_cidrs;
 mod token_ttl;
 #[path = "auth_userpass_cidrs.rs"]
 mod userpass_cidrs;
+#[path = "auth_userpass_names.rs"]
+mod userpass_names;
 #[path = "auth_userpass_no_default.rs"]
 mod userpass_no_default;
 #[path = "auth_userpass_renewal.rs"]
@@ -962,6 +964,8 @@ impl Drop for JwtMountState {
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct AuthMount {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    userpass_name_mode: Option<userpass_names::UserpassNameMode>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     accessor: Option<String>,
     #[serde(default = "auth_mount_revision_one")]
     revision: u64,
@@ -986,6 +990,7 @@ const fn auth_mount_revision_one() -> u64 {
 impl AuthMount {
     fn new(kind: &str, description: &str) -> Self {
         Self {
+            userpass_name_mode: None,
             accessor: None,
             revision: 1,
             kind: kind.into(),
@@ -1756,10 +1761,9 @@ impl AuthState {
                 .mounted_roles
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
-            && self
-                .auth_mounts
-                .get(namespace)
-                .is_none_or(|entries| entries.is_empty())
+            && self.auth_mounts.get(namespace).is_none_or(|entries| {
+                entries.is_empty() || *entries == userpass_names::fresh_default_auth_mounts()
+            })
             && self
                 .jwt_mounts
                 .get(namespace)
@@ -1824,6 +1828,7 @@ impl AuthState {
             plugin_auth_mounts: BTreeMap::new(),
             cert_roles: BTreeMap::new(),
         };
+        state.initialize_fresh_namespace_auth("")?;
         let token = Token {
             token_api_lease_ttl: None,
             bound_cidrs: Vec::new(),
@@ -2674,6 +2679,7 @@ impl AuthState {
                 }
                 let mut next = AuthMount::new(kind, description);
                 if let Some(old) = existing.as_ref() {
+                    next.userpass_name_mode = old.userpass_name_mode;
                     next.accessor = old.accessor.clone();
                     next.revision = old.revision;
                     if old.description != description {
@@ -2681,6 +2687,10 @@ impl AuthState {
                     }
                 } else {
                     next.accessor = Some(random_id("auth_")?);
+                    if kind == "userpass" {
+                        next.userpass_name_mode =
+                            Some(userpass_names::UserpassNameMode::AsciiLowerV1);
+                    }
                 }
                 let mutated = existing.as_ref() != Some(&next);
                 entries.insert(mount.into(), next);
@@ -5312,6 +5322,8 @@ impl AuthState {
         if !valid_name(name) || !["", "password", "policies", "mfa"].contains(&subpath) {
             return Err(bad("invalid user route"));
         }
+        let account_key = self.userpass_account_key(scope, name);
+        let name = account_key.as_ref();
         let existing = self
             .users_at(scope)
             .and_then(|users| users.get(name))
@@ -5658,6 +5670,8 @@ impl AuthState {
         if !valid_name(name) {
             return Err(denied());
         }
+        let account_key = self.userpass_account_key(scope, name);
+        let name = account_key.as_ref();
         reject_unknown(body, &["password", "totp_code", "username"])?;
         let password = match body.get("password") {
             None | Some(Value::Null) => "",

@@ -81,11 +81,13 @@ fn userpass_native_limits_policies_and_issuer_each_require_schema_thirty_five()
         );
         let mut state = service.state.clone().ok_or("state")?;
         restore_legacy_engine_owner(&mut state)?;
+        state.auth.remove_name_modes_for_legacy_format_test();
         state.schema = 34;
         assert!(state.validate_format().is_ok());
         assert_eq!(call(&mut service, "POST", path, &admin, native).status, 204);
         let mut state = service.state.clone().ok_or("state")?;
         restore_legacy_engine_owner(&mut state)?;
+        state.auth.remove_name_modes_for_legacy_format_test();
         state.schema = 34;
         assert_eq!(state.validate_format().err().ok_or("fence")?.status, 503);
         state.schema = CURRENT_STATE_SCHEMA;
@@ -105,6 +107,7 @@ fn userpass_native_limits_policies_and_issuer_each_require_schema_thirty_five()
     );
     let mut state = service.state.clone().ok_or("state")?;
     restore_legacy_engine_owner(&mut state)?;
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 34;
     assert_eq!(
         state.validate_format().err().ok_or("issuer fence")?.status,

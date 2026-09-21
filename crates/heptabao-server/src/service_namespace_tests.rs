@@ -250,6 +250,7 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
     let state = service.state.as_ref().ok_or("missing state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let mut downgraded = state.clone();
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 8;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());

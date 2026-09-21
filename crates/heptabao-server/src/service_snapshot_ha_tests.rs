@@ -341,7 +341,10 @@ fn native_ha_restore_publishes_new_epoch_not_local_rewind_and_fences_old_provide
     assert!(file.is_none());
     let response = service.finish_external_request(*restore, result);
     assert_eq!(response.status, 200);
-    assert_eq!(service.state.as_ref().ok_or("state")?.schema, 39);
+    assert_eq!(
+        service.state.as_ref().ok_or("state")?.schema,
+        CURRENT_STATE_SCHEMA
+    );
     assert_eq!(
         service.state.as_ref().ok_or("state")?.replay_epoch,
         epoch + 1

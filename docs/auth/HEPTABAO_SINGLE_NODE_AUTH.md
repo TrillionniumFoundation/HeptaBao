@@ -314,6 +314,33 @@ uses the preserved c3c5d14 executable to create72-byte and900-byte passwords,
 then verifies pure-read byte preservation, legacy exact comparison, explicit
 adoption of the new72-byte input rule, restart and actual old-reader rejection.
 
+## Fresh userpass account names and schema40
+
+New systems, new namespaces and newly enabled userpass mounts persist
+`userpass_name_mode: ascii_lower_v1`. CRUD, password, policies, MFA and login
+resolve ASCII case variants to one account only after the original request path
+passes ACL checks. Login metadata, Identity alias and new token provenance use
+that canonical name; aliases elsewhere are not globally renamed or merged.
+Tune, metadata updates and remount preserve the mount's mode and accessor.
+
+An absent mode retains historical exact matching. Schema38/39 stores remain
+readable without adopting a mode or rewriting application records; old Alice
+and alice credentials, Identity bindings and issued-token renewal sources stay
+distinct. An unrelated successful mutation may raise the global schema while
+leaving those mounts exact. There is no implicit old-mount adoption or account
+rename operation. Unknown modes, a mode on another auth kind, noncanonical
+accounts/provenance under a native mount, and modes below schema40 are rejected.
+Untouched factory auth metadata alone does not prevent deletion of a new empty
+namespace; credentials, changed mount metadata and other runtime payload still do.
+
+OpenBao2.6.2's uppercase password/policies subroutes can create a raw-case shadow
+record while login still reads the lower-case account. HeptaBao deliberately
+updates the canonical account. This difference is recorded separately from
+matching behavior in `userpass_names_live.py`; it is not a compatibility pass.
+Real schema39 upgrade and three-voter profiles are `userpass_names_upgrade.py`
+and `userpass_names_ha.py`. Release-binary qualification of this new mode is pending;
+Unicode name expansion and old-mount adoption are outside this slice.
+
 ## Userpass TOTP MFA
 
 `auth/userpass/users/:name/mfa` owns a bounded user-specific TOTP enrollment.

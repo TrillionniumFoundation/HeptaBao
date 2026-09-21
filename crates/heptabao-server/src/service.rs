@@ -31,7 +31,7 @@ use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 use crate::state_record_root::RecordStateRoot;
 
-const CURRENT_STATE_SCHEMA: u32 = 39;
+const CURRENT_STATE_SCHEMA: u32 = 40;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -6640,3 +6640,7 @@ mod userpass_cidrs_tests;
 #[cfg(test)]
 #[path = "service_userpass_no_default_tests.rs"]
 mod userpass_no_default_tests;
+
+#[cfg(test)]
+#[path = "service_userpass_names_tests.rs"]
+mod userpass_names_tests;

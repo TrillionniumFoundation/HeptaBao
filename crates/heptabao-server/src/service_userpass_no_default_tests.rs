@@ -19,6 +19,7 @@ fn userpass_no_default_presence_requires39_and_legacy_unknown_survives_read_and_
         204
     );
     let mut old = service.state.clone().ok_or("state")?;
+    old.auth.remove_name_modes_for_legacy_format_test();
     old.schema = 38;
     assert!(old.validate_format().is_err());
     let mut wire = serde_json::to_value(&old.auth)?;
@@ -177,6 +178,7 @@ fn userpass_empty_policy_shape_and_same_token_nil_to_explicit_empty_survive_rest
         .ok_or("user")?
         .remove("token_policies_configured");
     disguised.auth = serde_json::from_value::<AuthState>(auth)?.into();
+    disguised.auth.remove_name_modes_for_legacy_format_test();
     disguised.schema = 38;
     assert!(
         disguised.auth.has_userpass_no_default_policy(),

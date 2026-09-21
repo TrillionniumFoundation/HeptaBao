@@ -550,6 +550,7 @@ fn identity_live_failed_login_commit_publishes_neither_token_nor_entity() -> Tes
 #[test]
 fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> TestResult {
     let (mut auth, _) = AuthState::bootstrap(100)?;
+    auth.remove_name_modes_for_legacy_format_test();
     auth.omit_lease_metadata_for_legacy_fixture();
     let state = State {
         schema: 1,
@@ -647,6 +648,7 @@ fn identity_schema_fences_persisted_radius_state_for_old_readers() -> TestResult
     // reader that must reject it. Keep this historical boundary explicit as
     // the current schema advances with new external-provider fences.
     state.schema = 11;
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_err());
     Ok(())
@@ -665,6 +667,7 @@ fn identity_schema_promotes_before_a_mutating_response_and_survives_reopen() -> 
     // on-disk format; no runtime API permits downgrading this discriminator.
     let mut legacy = s.state.clone().ok_or("state")?;
     legacy.schema = 1;
+    legacy.auth.remove_name_modes_for_legacy_format_test();
     legacy.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(legacy.validate_format().is_ok());
     s.commit_state(&legacy).map_err(|_| "fixture persistence")?;
@@ -762,6 +765,7 @@ fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestR
     }
     legacy.auth = serde_json::from_value::<AuthState>(encoded_auth)?.into();
     legacy.schema = 1;
+    legacy.auth.remove_name_modes_for_legacy_format_test();
     legacy.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(legacy.validate_format().is_ok());
     s.commit_state(&legacy).map_err(|_| "fixture persistence")?;
@@ -821,6 +825,7 @@ fn metadata_cas_schema_rejects_downgrade_from_version_or_requirement() -> TestRe
         ),
     ] {
         let (mut auth, _) = AuthState::bootstrap(100)?;
+        auth.remove_name_modes_for_legacy_format_test();
         auth.omit_lease_metadata_for_legacy_fixture();
         let mut engines = EngineState::default();
         engines
@@ -838,6 +843,7 @@ fn metadata_cas_schema_rejects_downgrade_from_version_or_requirement() -> TestRe
         };
         assert!(state.validate_format().is_ok());
         state.schema = 14;
+        state.auth.remove_name_modes_for_legacy_format_test();
         state.auth.omit_lease_metadata_for_legacy_fixture();
         assert!(state.validate_format().is_err());
     }

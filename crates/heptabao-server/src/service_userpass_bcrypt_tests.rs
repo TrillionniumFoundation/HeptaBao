@@ -84,6 +84,7 @@ fn bcrypt_import_alone_requires38_and_survives_authenticated_reopen_and_backup()
         200
     );
     let mut downgraded = service.state.clone().ok_or("state")?;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 37;
     assert_eq!(
         downgraded.validate_format().err().ok_or("gate")?.status,

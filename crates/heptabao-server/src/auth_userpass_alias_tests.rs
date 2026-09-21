@@ -252,8 +252,9 @@ fn userpass_alias_errors_do_not_change_password_policy_or_issue_tokens() {
 }
 
 #[test]
-fn userpass_alias_compatibility_does_not_change_bounded_ldap_or_account_case() {
+fn userpass_alias_compatibility_preserves_bounded_ldap_and_legacy_account_case() {
     let (mut state, root) = configured();
+    state.remove_name_modes_for_legacy_format_test();
     mount_auth(&mut state, &root, "", "directory", "ldap");
     for body in [
         json!({"password":"bounded credential", "username":"other"}),
@@ -278,7 +279,7 @@ fn userpass_alias_compatibility_does_not_change_bounded_ldap_or_account_case() {
         );
         assert_eq!(provider_renewal::state_revision(&state).unwrap(), before);
     }
-    // Existing mixed-case accounts must not be silently merged by this input-only change.
+    // An absent mode represents the old exact-name mount, not a fresh native mount.
     write(
         &mut state,
         &root,

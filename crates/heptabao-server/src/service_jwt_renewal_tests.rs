@@ -205,6 +205,7 @@ fn jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_record
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     restore_legacy_engine_owner(&mut state)?;
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 17;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_err());
@@ -265,10 +266,12 @@ fn jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_record
     restore_v18_jwt_config(&mut auth)?;
     roles_only.auth = serde_json::from_value::<AuthState>(auth)?.into();
     restore_legacy_engine_owner(&mut roles_only)?;
+    roles_only.auth.remove_name_modes_for_legacy_format_test();
     roles_only.schema = 17;
     roles_only.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(roles_only.validate_format().is_err());
     restore_legacy_engine_owner(&mut roles_only)?;
+    roles_only.auth.remove_name_modes_for_legacy_format_test();
     roles_only.schema = 18;
     roles_only.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(roles_only.validate_format().is_ok());
@@ -284,6 +287,7 @@ fn native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways(
     restore_v18_jwt_config(&mut legacy)?;
     state.auth = serde_json::from_value::<AuthState>(legacy.clone())?.into();
     restore_legacy_engine_owner(&mut state)?;
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 18;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_ok());
@@ -302,6 +306,7 @@ fn native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways(
         }
         state.auth = serde_json::from_value::<AuthState>(value)?.into();
         restore_legacy_engine_owner(&mut state)?;
+        state.auth.remove_name_modes_for_legacy_format_test();
         state.schema = 18;
         state.auth.omit_lease_metadata_for_legacy_fixture();
         assert!(state.validate_format().is_err(), "{variant}");

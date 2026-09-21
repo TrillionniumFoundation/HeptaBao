@@ -14,6 +14,7 @@ fn prepared(root: &Root) -> TestResult<(Service, String, String, Value)> {
     let (auth, admin, body) = AuthState::oidc_test_fixture();
     let mut state = service.state.clone().ok_or("state")?;
     state.auth = auth.into();
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 20;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     state
@@ -342,6 +343,7 @@ fn oidc_schema_twenty_one_keeps_old_pending_session_and_old_token_authority() ->
         .to_owned();
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
+    state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 20;
     state.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(state.validate_format().is_err());

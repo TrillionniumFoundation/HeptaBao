@@ -3816,3 +3816,6 @@ mod userpass_cidrs_tests;
 
 #[path = "auth_userpass_no_default_tests.rs"]
 mod userpass_no_default_tests;
+
+#[path = "auth_userpass_names_tests.rs"]
+mod userpass_names_tests;

@@ -177,6 +177,7 @@ fn native_radius_partial_profile_schema_restart_and_unenrolled_config() -> TestR
     assert!(state.auth.has_native_radius_state());
     let mut downgraded = state.clone();
     restore_legacy_engine_owner(&mut downgraded)?;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 24;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -184,6 +185,7 @@ fn native_radius_partial_profile_schema_restart_and_unenrolled_config() -> TestR
         "an empty native mapping entry has no schema-25 semantics"
     );
     restore_legacy_engine_owner(&mut downgraded)?;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 23;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(downgraded.validate_format().is_err());
@@ -218,6 +220,7 @@ fn native_radius_partial_profile_schema_restart_and_unenrolled_config() -> TestR
     let state = service.state.as_ref().ok_or("missing configured state")?;
     let mut downgraded = state.clone();
     restore_legacy_engine_owner(&mut downgraded)?;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 25;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -225,6 +228,7 @@ fn native_radius_partial_profile_schema_restart_and_unenrolled_config() -> TestR
         "API-authorized targets need schema 26"
     );
     restore_legacy_engine_owner(&mut downgraded)?;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 24;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -514,6 +518,7 @@ fn native_radius_cidr_enforces_both_immutable_and_mutating_service_admission_aft
     );
     let mut downgraded = service.state.clone().ok_or("missing state")?;
     restore_legacy_engine_owner(&mut downgraded)?;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 26;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(
@@ -563,6 +568,7 @@ fn native_radius_cidr_enforces_both_immutable_and_mutating_service_admission_aft
     );
     let mut downgraded = service.state.clone().ok_or("missing state")?;
     restore_legacy_engine_owner(&mut downgraded)?;
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 26;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(

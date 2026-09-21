@@ -51,6 +51,7 @@ fn schema37_credentials_keep_absent_marker_on_read_reopen_and_successful_login()
         .ok_or("user")?
         .remove("token_no_default_policy");
     old.auth = serde_json::from_value::<AuthState>(auth)?.into();
+    old.auth.remove_name_modes_for_legacy_format_test();
     old.schema = 37;
     assert!(!old.auth.has_userpass_password_semantics());
     assert!(old.validate_format().is_ok());
@@ -157,6 +158,7 @@ fn marked_credentials_cannot_hide_under_schema37_at_commit_restore_or_reopen() -
     create(&mut service, &admin);
     let mut downgraded = service.state.clone().ok_or("state")?;
     assert!(downgraded.auth.has_userpass_password_semantics());
+    downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 37;
     assert_eq!(
         downgraded
