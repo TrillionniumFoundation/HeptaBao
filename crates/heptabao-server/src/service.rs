@@ -834,6 +834,8 @@ pub struct Service {
     audit_sequence: u64,
     audit_previous: [u8; 32],
     audit_failed: bool,
+    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+    pub(crate) native_restore_fault: Option<crate::fixture_native_restore::NativeRestoreFaultGate>,
     audit_http_url: Option<String>,
     audit_socket: Option<AuditSocketConfig>,
     audit_socket_failures: u64,
@@ -1094,6 +1096,8 @@ impl Service {
             audit_sequence,
             audit_previous,
             audit_failed: false,
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            native_restore_fault: None,
             audit_http_url: None,
             audit_socket: None,
             audit_socket_failures: 0,

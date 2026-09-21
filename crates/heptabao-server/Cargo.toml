@@ -5,6 +5,10 @@ edition.workspace = true
 rust-version.workspace = true
 publish = false
 
+[features]
+default = []
+fixture-native-restore-faults = ["dep:rustix"]
+
 [dependencies]
 bcrypt = { path = "../../vendor/bcrypt-0.19.3", version = "=0.19.3", default-features = false, features = ["std", "zeroize"] }
 # Feature-unify bcrypt's cipher so its expanded key schedule is cleared on Drop.
@@ -35,6 +39,9 @@ x509-parser = { version = "=0.18.1", default-features = false }
 zeroize = "=1.8.1"
 futures = "=0.3.34"
 tokio = { version = "=1.53.1", default-features = false, features = ["rt-multi-thread", "sync", "time"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+rustix = { version = "=1.1.4", optional = true, features = ["net", "process"] }
 
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.189"

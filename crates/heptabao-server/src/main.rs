@@ -18,6 +18,12 @@ fn main() -> std::process::ExitCode {
 
 fn run() -> Result<(), String> {
     let arguments: Vec<_> = std::env::args().skip(1).collect();
+    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+    let (arguments, fixture) = {
+        let mut arguments = arguments;
+        let fixture = heptabao_server::fixture_native_restore::take_arguments(&mut arguments)?;
+        (arguments, fixture)
+    };
     if !matches!(arguments.as_slice(), [flag, _] if flag == "--config")
         && !matches!(arguments.as_slice(), [flag, _, ha_flag, _] if flag == "--config" && ha_flag == "--ha-config")
     {
@@ -42,6 +48,10 @@ fn run() -> Result<(), String> {
     let ha = Arc::new(Mutex::new(heptabao_server::ha::HaProcess::start(
         ha_config,
     )?));
+    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+    if let Some(fixture) = fixture {
+        return heptabao_server::http::serve_with_ha_fixture(config, ha, fixture);
+    }
     heptabao_server::http::serve_with_ha(config, ha)
 }
 

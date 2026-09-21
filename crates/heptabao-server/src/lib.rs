@@ -21,6 +21,8 @@ mod crypto;
 pub mod engines;
 #[allow(clippy::expect_used, clippy::unwrap_used)]
 pub mod federated_auth;
+#[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+pub mod fixture_native_restore;
 pub mod ha;
 mod ha_forward;
 pub mod ha_state;

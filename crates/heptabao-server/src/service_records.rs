@@ -399,7 +399,13 @@ impl Service {
         state: &State,
         plan: RecordPlan,
     ) -> Result<(), Response> {
-        self.commit_record_plan_checked(state, plan, None::<fn(&AuthState) -> Result<(), Response>>)
+        self.commit_record_plan_checked(
+            state,
+            plan,
+            None::<fn(&AuthState) -> Result<(), Response>>,
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
+        )
     }
 
     pub(super) fn commit_record_plan_with_before_publish(
@@ -407,8 +413,16 @@ impl Service {
         state: &State,
         plan: RecordPlan,
         before_publish: impl FnOnce(&AuthState) -> Result<(), Response>,
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        restore_fault: Option<crate::fixture_native_restore::NativeRestoreFaultContext>,
     ) -> Result<(), Response> {
-        self.commit_record_plan_checked(state, plan, Some(before_publish))
+        self.commit_record_plan_checked(
+            state,
+            plan,
+            Some(before_publish),
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            restore_fault,
+        )
     }
 
     fn commit_record_plan_checked(
@@ -416,6 +430,8 @@ impl Service {
         state: &State,
         plan: RecordPlan,
         before_publish: Option<impl FnOnce(&AuthState) -> Result<(), Response>>,
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        mut restore_fault: Option<crate::fixture_native_restore::NativeRestoreFaultContext>,
     ) -> Result<(), Response> {
         state.validate_format()?;
         if state.schema != plan.root.state_schema
@@ -503,6 +519,8 @@ impl Service {
                     &base,
                     &plan.bytes,
                     &plan.objects,
+                    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                    restore_fault.as_mut(),
                     || {
                         before_publish(live_auth).map_err(|response| {
                             authority_rejection = Some(response);
@@ -513,6 +531,13 @@ impl Service {
             } else {
                 process.commit_record_state(&operation, &base, &plan.bytes, &plan.objects)
             };
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            if let Some(error) = restore_fault
+                .as_mut()
+                .and_then(|context| context.take_prepublication_error())
+            {
+                return Err(Response::error(503, error));
+            }
             if let Some(response) = authority_rejection {
                 // Staging/GC may already be replicated, but the guard proves
                 // Publish was never submitted. Preserve the old root and the
@@ -528,6 +553,22 @@ impl Service {
                     503,
                     "HA record publication failed; no response released",
                 ));
+            }
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            if let Some(context) = restore_fault.as_mut() {
+                let receipt = result.map_err(|_| unavailable())?;
+                let gated = self
+                    .durable
+                    .as_ref()
+                    .ok_or("fixture committed local generation unavailable")
+                    .and_then(|durable| context.after_commit(&receipt, durable.generation()));
+                if let Err(error) = gated {
+                    self.recovery_required = true;
+                    self.ha_read_cache = None;
+                    return Err(Self::ha_committed_local_failure(Response::error(
+                        503, error,
+                    )));
+                }
             }
         } else if let Some(before_publish) = before_publish {
             before_publish(&self.state.as_ref().ok_or_else(unavailable)?.auth)?;

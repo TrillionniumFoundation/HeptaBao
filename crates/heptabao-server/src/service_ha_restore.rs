@@ -110,6 +110,8 @@ impl Service {
             .ok_or_else(|| Response::error(507, "replay epoch exhausted"))?;
         let previous_generation = self.durable.as_ref().ok_or_else(invalid)?.generation();
         let imported_generation = prepared.generation();
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        let fixture_base = prepared.base;
         let (state, plan) = self.prepare_ha_restore_records(prepared, next_epoch)?;
         deadline()?;
         let now = clock.0.saturating_add(clock.1.elapsed()).as_secs();
@@ -122,14 +124,27 @@ impl Service {
         // This performs local full-closure admission and HA full replacement
         // admission before staging, then exact CAS. Unknown epoch publication
         // errors and postcommit local failures fence in commit_record_plan.
-        if let Err(mut response) =
-            self.commit_record_plan_with_before_publish(&state, plan, |auth| {
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        let fixture = self.native_restore_fault.take().map(|gate| {
+            crate::fixture_native_restore::NativeRestoreFaultContext::new(
+                gate,
+                fixture_base,
+                plan.identity,
+                previous_generation,
+            )
+        });
+        if let Err(mut response) = self.commit_record_plan_with_before_publish(
+            &state,
+            plan,
+            |auth| {
                 deadline()?;
                 let now = clock.0.saturating_add(clock.1.elapsed()).as_secs();
                 auth.authorize_request(actor, request.namespace, request.path, "update", now)
                     .map_err(|error| Response::error(error.status, &error.message))
-            })
-        {
+            },
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            fixture,
+        ) {
             if self.recovery_required
                 && let Some(body) = response.body.as_object_mut()
             {

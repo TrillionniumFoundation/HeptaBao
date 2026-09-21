@@ -175,14 +175,39 @@ impl RateLimiter {
 }
 
 pub fn serve(config: Config) -> Result<(), String> {
-    serve_inner(config, None)
+    serve_inner(
+        config,
+        None,
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        None,
+    )
 }
 
 pub fn serve_with_ha(config: Config, ha: Arc<Mutex<HaProcess>>) -> Result<(), String> {
-    serve_inner(config, Some(ha))
+    serve_inner(
+        config,
+        Some(ha),
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        None,
+    )
 }
 
-fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), String> {
+#[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+pub fn serve_with_ha_fixture(
+    config: Config,
+    ha: Arc<Mutex<HaProcess>>,
+    fixture: crate::fixture_native_restore::NativeRestoreFaultGate,
+) -> Result<(), String> {
+    serve_inner(config, Some(ha), Some(fixture))
+}
+
+fn serve_inner(
+    config: Config,
+    ha: Option<Arc<Mutex<HaProcess>>>,
+    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))] fixture: Option<
+        crate::fixture_native_restore::NativeRestoreFaultGate,
+    >,
+) -> Result<(), String> {
     if !(1..=128).contains(&config.max_connections) || !(1..=60).contains(&config.timeout_seconds) {
         return Err("invalid bounded connection policy".into());
     }
@@ -260,6 +285,10 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     ));
     {
         let mut service = service.lock().map_err(|_| "service lock unavailable")?;
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        {
+            service.native_restore_fault = fixture;
+        }
         service.install_outbound_endpoints(config.outbound_endpoints)?;
         service.install_auth_plugins(config.plugin_auth)?;
         service.install_secret_plugins(config.plugin_secrets)?;

@@ -81,6 +81,16 @@ transfer, restart and all-voter token readback. It does not cover MFA over HTTP,
 PostgreSQL or physical host failures. These profiles create only private fresh
 fixtures and do not qualify a full OpenBao instance migration.
 
+`native_snapshot_ha_restore_gated_live.py` tests exact pre-Publish and
+post-commit/pre-local-persist crashes using the Linux-only
+`fixture-native-restore-faults` feature. It requires a separately built,
+default-feature recovery executable from the same source commit and the hashes
+of both binaries. Each phase creates a fresh three-voter TLS cluster; an owned
+socketpair carries a bounded, nonce-bound event before the controller kills its
+child. Recovery must preserve the expected full KV/ACL state at every voter and
+after complete restart. Its receipt distinguishes instrumented crash evidence
+from ordinary recovery and does not cover power loss or physical hosts.
+
 `response_wrapping.py`, `capabilities_live.py`, `ssh_otp_live.py` reuse the strict
 nonempty/all-passed comparison harness with the pinned official binary. They do
 not self-advance `complete_surface_corpus_v1.json`. `client_live.py` exercises the

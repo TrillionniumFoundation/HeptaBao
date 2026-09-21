@@ -247,6 +247,8 @@ impl HaProcess {
             expected,
             root_bytes,
             objects,
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
             || Ok(()),
         )
     }
@@ -257,6 +259,10 @@ impl HaProcess {
         expected: &StateIdentity,
         root_bytes: &[u8],
         objects: &[Arc<StagedObject>],
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        restore_fault: Option<
+            &mut crate::fixture_native_restore::NativeRestoreFaultContext,
+        >,
         before_publish: impl FnOnce() -> Result<(), String>,
     ) -> Result<CommitReceipt, String> {
         let root =
@@ -394,6 +400,8 @@ impl HaProcess {
                 }
             }
         }
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        let mut last_stage_receipt = None;
         for object in &staged {
             record_publication_deadline()?;
             let serial = self
@@ -406,6 +414,10 @@ impl HaProcess {
                 .map_err(|error| error.to_string())?;
             if receipt.leader_id != node.id() || receipt.envelope_digest != object.reference().id {
                 return Err("staged application object receipt differs from payload".into());
+            }
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            {
+                last_stage_receipt = Some(receipt);
             }
         }
         record_publication_deadline()?;
@@ -432,6 +444,31 @@ impl HaProcess {
         // Root sealing and all Stage commands are complete. Recheck the
         // request capability immediately before the irreversible root CAS.
         record_publication_deadline()?;
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        if let Some(context) = restore_fault {
+            // Only the armed native restore performs this extra observation.
+            // The already-authenticated expected root must still be exact.
+            self.block_on_read(node.ensure_linearizable())
+                .map_err(|_| {
+                    context.reject_before_publish("fixture pre-Publish authority unavailable")
+                })?;
+            let (_, current) = self
+                .runtime
+                .block_on(node.record_root_at_generation())
+                .map_err(|_| {
+                    context.reject_before_publish("fixture pre-Publish root unavailable")
+                })?;
+            if current != published {
+                return Err(context.reject_before_publish("fixture pre-Publish root changed"));
+            }
+            context.before_publish(
+                *expected,
+                identity,
+                node.id(),
+                staged.len(),
+                last_stage_receipt,
+            )?;
+        }
         before_publish()?;
         record_publication_deadline()?;
         let receipt = self

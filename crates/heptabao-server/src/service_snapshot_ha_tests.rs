@@ -560,13 +560,19 @@ fn epoch_publication_expired_actor_after_real_stage_keeps_old_root() -> TestResu
         .map_err(|_| "initial authorization")?;
     let called = std::cell::Cell::new(false);
     let response = service
-        .commit_record_plan_with_before_publish(&candidate, plan, |auth| {
-            called.set(true);
-            // Controlled logical time advances only at the final callback, after
-            // actual consensus Stage. No wall-clock sleeps or fake successful writes.
-            auth.authorize_request(&actor, "", "sys/storage/raft/snapshot", "update", 101)
-                .map_err(|error| Response::error(error.status, &error.message))
-        })
+        .commit_record_plan_with_before_publish(
+            &candidate,
+            plan,
+            |auth| {
+                called.set(true);
+                // Controlled logical time advances only at the final callback, after
+                // actual consensus Stage. No wall-clock sleeps or fake successful writes.
+                auth.authorize_request(&actor, "", "sys/storage/raft/snapshot", "update", 101)
+                    .map_err(|error| Response::error(error.status, &error.message))
+            },
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
+        )
         .err()
         .ok_or("expired actor unexpectedly published")?;
     assert!(called.get());
@@ -607,3 +613,7 @@ fn epoch_publication_expired_actor_after_real_stage_keeps_old_root() -> TestResu
     );
     Ok(())
 }
+
+#[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+#[path = "service_snapshot_fault_tests.rs"]
+mod fault_tests;

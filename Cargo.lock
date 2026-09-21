@@ -1091,6 +1091,7 @@ dependencies = [
  "md5",
  "qrcode",
  "ring",
+ "rustix",
  "rustls",
  "rustls-native-certs",
  "rustls-pemfile",

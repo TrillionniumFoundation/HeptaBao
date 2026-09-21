@@ -101,6 +101,19 @@ and a new write/save, without retrying a mutation. These are incomplete-upload
 and client-uncertainty tests, not exact post-Stage or commit-before-local-persist
 crash windows, physical power loss or separate hosts.
 
+The Linux-only `fixture-native-restore-faults` Cargo feature adds a one-shot
+controller socket for exact crash-window testing. It is disabled by default;
+ordinary executables reject its arguments before reading configuration. Only an
+authenticated native restore can reach the gate after actual accepted Stage
+receipts or after Publish commit but before local durable publication. The
+controller uses an inherited unnamed socketpair, parent credentials and a nonce;
+the existing request deadline remains authoritative. No HTTP, environment or
+persisted switch enables this instrumentation. The gated QA uses two fresh
+three-voter groups, kills the owned process at the received event and checks
+recovery with a separate default-feature executable built from the same source.
+This exact-window qualification is pending; instrumentation is not ordinary
+release-binary evidence or a physical-power-loss test.
+
 A terminal native-upload admission rejection now drains valid remaining body
 framing outside the Service writer before sending its response. The decoder's
 size/chunk limits and original connection deadline still apply; no archive is
@@ -147,8 +160,10 @@ and the candidate file server, followed by the three-process HA lifecycle.
 The exact leader route now admits every nonempty ASCII HTTP-token method so its
 dedicated handler can return405 for valid extensions such as OPTIONS and TRACE.
 Malformed methods still return400, and other API routes keep their existing
-method allowlist. The two omitted fields remain separate compatibility work;
-the expanded method matrix awaits its next release-binary live run.
+method allowlist. The [234-check comparison](../../qa/openbao-acceptance/evidence/sys-leader-fec4f05.json)
+passes on `fec4f05`, adding the valid-extension and malformed-method matrix to
+the official file/Raft, candidate file and three-voter lifecycle coverage.
+The two omitted fields remain separate compatibility work.
 The schema38 [three-process TLS native SAVE receipt](../../qa/openbao-acceptance/evidence/native-snapshot-ha-fa61fa7.json)
 passes269 checks with the official2.6.2 CLI and unchanged5-second listeners,
 including quorum loss, leadership transfer, HEAD/ACL/finite-use behavior and
