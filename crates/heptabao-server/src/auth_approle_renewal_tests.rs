@@ -131,6 +131,7 @@ fn approle_live_ordinary_limits_missing_increment_and_errors_on_all_renewal_path
         )
         .unwrap();
         assert_eq!(response.body["auth"]["lease_duration"], 500);
+        assert_eq!(response.body["auth"]["orphan"], true);
         assert_eq!(state.tokens[&hash(&raw)].expires_at, Some(610));
         for body in [json!({}), json!({"increment": 0})] {
             let mut attempt = state.clone();

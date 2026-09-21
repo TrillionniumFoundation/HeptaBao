@@ -1190,6 +1190,12 @@ and a behavior regression; that extra-input case was not in the live probe.
 SecretID login CIDRs, SecretID token-CIDR overrides and nonnumeric SockAddr
 variants remain outside this profile.
 
+The first candidate dual run completed all 194 observations on each side. Its
+four renewal responses omitted `auth.orphan`, even though the stored AppRole
+tokens were orphans; all other observed fields matched. Renewal now reports
+the stored parent relation on all three renewal routes. The failed receipt is
+retained (SHA256 `8e5639c7add12f71b10e3ee25a74611e9d2c38e3ba6aa4d35ef0899a3629bb4b`).
+
 ## Kubernetes batch lease ownership in schema42
 
 Kubernetes secrets issued for an existing ServiceAccount now carry typed Bao

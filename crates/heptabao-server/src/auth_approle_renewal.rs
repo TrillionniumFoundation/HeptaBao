@@ -168,7 +168,8 @@ impl AuthState {
             body: json!({"auth": {
                 "accessor": token.accessor, "policies": token.policies, "token_policies": token.policies,
                 "entity_id": token.entity_id.as_deref().unwrap_or(""),
-                "lease_duration": expires_at - now, "renewable": true, "token_type": "service"
+                "lease_duration": expires_at - now, "renewable": true, "token_type": "service",
+                "orphan": token.parent.is_none()
             }}),
         }))
     }
