@@ -29,7 +29,9 @@ use std::path::Path;
 use std::path::PathBuf;
 
 mod capacity;
+mod immutable_publication;
 pub use capacity::CapacityStatus;
+pub use immutable_publication::{ImmutablePublication, ImmutablePublicationCapacity};
 mod backend;
 pub use backend::{BackendBundle, BackendError, DurableBackend, FileBackend};
 
@@ -487,6 +489,7 @@ pub struct DurableService<B: Barrier, P: DurableBackend = Box<dyn DurableBackend
     barrier: B,
     snapshot: Snapshot,
     snapshot_plaintext_bytes: usize,
+    ledger_plaintext_bytes: usize,
     ledger: BTreeMap<RequestKey, LedgerRecord>,
     replay_epoch: u64,
     retired_through_generation: u64,
@@ -577,6 +580,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             barrier,
             snapshot,
             snapshot_plaintext_bytes,
+            ledger_plaintext_bytes: ledger_plaintext_len(&ledger)?,
             ledger,
             replay_epoch: 0,
             retired_through_generation: 0,
@@ -611,6 +615,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             barrier,
             snapshot,
             snapshot_plaintext_bytes,
+            ledger_plaintext_bytes: ledger_plaintext_len(&ledger)?,
             ledger,
             replay_epoch,
             retired_through_generation,
@@ -888,6 +893,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             )
             .map_err(map_backend_error)?;
         self.ledger.clear();
+        self.ledger_plaintext_bytes = 24;
         self.replay_epoch = current_epoch;
         self.retired_through_generation = retired_through_generation;
         self.journal_sequence = 1;
@@ -1117,6 +1123,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         self.snapshot = restored.snapshot;
         self.snapshot_plaintext_bytes = snapshot_plaintext_len(&self.snapshot)?;
         self.ledger = restored.ledger;
+        self.ledger_plaintext_bytes = ledger_plaintext_len(&self.ledger)?;
         self.replay_epoch = restored.replay_epoch;
         self.retired_through_generation = restored.retired_through_generation;
         self.journal_sequence = restored.journal_sequence;
@@ -1218,6 +1225,10 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             &marker,
             &mutations,
         )?;
+        let next_ledger_plaintext_bytes = self
+            .ledger_plaintext_bytes
+            .checked_add(encoded_marker_len(&marker)?)
+            .ok_or(ServiceError::RequestCapacityExhausted)?;
         let ledger_record = LedgerRecord {
             binding_digest,
             recovery_reference: recovery_reference.clone(),
@@ -1291,6 +1302,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 return Err(ServiceError::RecoveryRequired);
             }
             self.ledger.insert(binding.key.clone(), ledger_record);
+            self.ledger_plaintext_bytes = next_ledger_plaintext_bytes;
             Ok(())
         })();
         if result.is_err() {
@@ -1558,6 +1570,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             )
             .map_err(map_backend_error)?;
         self.snapshot_plaintext_bytes = snapshot_plaintext_len(&self.snapshot)?;
+        self.ledger_plaintext_bytes = ledger_plaintext_len(&self.ledger)?;
         self.unresolved = false;
         Ok(())
     }
@@ -2288,6 +2301,22 @@ fn snapshot_entry_len(
     .into_iter()
     .try_fold(0_usize, |total, length| {
         total.checked_add(length).ok_or(ServiceError::CorruptState)
+    })
+}
+
+fn ledger_plaintext_len(
+    ledger: &BTreeMap<RequestKey, LedgerRecord>,
+) -> Result<usize, ServiceError> {
+    ledger.iter().try_fold(24_usize, |total, (key, record)| {
+        let marker = CommitMarker {
+            key: key.clone(),
+            binding_digest: record.binding_digest,
+            recovery_reference: record.recovery_reference.clone(),
+            generation: record.generation,
+        };
+        total
+            .checked_add(encoded_marker_len(&marker)?)
+            .ok_or(ServiceError::RequestCapacityExhausted)
     })
 }
 

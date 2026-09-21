@@ -22,6 +22,19 @@ This crate owns the restart-safe single-node mutation boundary: durable intent, 
 
 `capacity_status()` returns the current `CapacityStatus` metadata (generation, summed value bytes, journal usage/limit, retained request count/limit and recovery fence), never values or operation IDs. `put_with_maintenance(request)` consumes the same authorized envelope as `put`; only a proven pre-entry `JournalCapacityExhausted` invokes one authenticated `compact()` and one same-request retry. A full replay ledger, unknown effect or failed maintenance never triggers replay-ID eviction or an automatic retry. All callers must inspect `recovery_required()` on any error to fence their own caches. Tests in `src/capacity.rs` cover small-budget repeated checkpoints, preserved old bindings/references through reopen, retained-ID exhaustion, unresolved publication and real checkpoint publication failure.
 
+`preflight_immutable_publication()` admits all immutable object batches and the
+final root replacement before a caller starts a remote publication. It checks
+the existing snapshot, ledger, replay epoch and every intermediate journal and
+snapshot budget, using cached encoded lengths and the proposed delta. It accepts
+only byte-identical reuse of existing immutable objects and reserves the terminal
+record for each batch. It writes nothing and does not reserve capacity against
+another writer: the caller must hold its authority fence and repeat the check
+after any local durable mutation. A Barrier without a ciphertext-size bound is
+rejected. This API cannot predict disk exhaustion or future I/O failure; unknown
+outcomes still require recovery. Tests include real near-64-MiB publication,
+one-byte-over rejection without changed artifacts, multi-batch staging, replay
+retirement, recovery and backup restoration of the cached ledger length.
+
 `compact()` replaces the journal with an authenticated checkpoint while retaining the full replay ledger and generation; it recovers journal space, not request capacity. `export_backup()` returns the committed snapshot, full ledger and checkpoint in an encrypted bundle with no barrier key. `restore_backup(bytes, allow_rollback)` authenticates and checks the bundle before replacement; an older generation requires explicit `allow_rollback=true`. Replacement is atomic per file, not across all three files: interruption can leave a mixed set that is rejected on reopen. An I/O error from maintenance may leave `recovery_required()` true even when it is not the mutation-specific `OutcomeUnknown` variant. Operators must preserve the original coherent backup and fence traffic through restore and recovery.
 
 This crate **is directly integrated** into `heptabao-server`: `service.rs` owns `Option<DurableService<AeadBarrier>>`, creates/reopens it during lifecycle operations and invokes its storage/maintenance methods. `/v1/sys/storage/raft/compact` calls `compact`; snapshot GET calls `export_backup`; snapshot/snapshot-force POST/PUT call `restore_backup` with rollback enabled only for force. The server rejects direct local restore while HA is enabled. The bundle is HeptaBao's format, not OpenBao Raft snapshot compatibility; native authentication, audit and HA ordering remain the server's responsibility.

@@ -256,6 +256,10 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             &marker,
             &mutations,
         )?;
+        let next_ledger_plaintext_bytes = self
+            .ledger_plaintext_bytes
+            .checked_add(encoded_marker_len(&marker)?)
+            .ok_or(ServiceError::RequestCapacityExhausted)?;
         let ledger_record = LedgerRecord {
             binding_digest,
             recovery_reference: recovery_reference.clone(),
@@ -315,6 +319,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 return Err(ServiceError::RecoveryRequired);
             }
             self.ledger.insert(key, ledger_record);
+            self.ledger_plaintext_bytes = next_ledger_plaintext_bytes;
             Ok(())
         })();
         // Ensure caller-owned plaintext is released promptly on both success
