@@ -202,13 +202,39 @@ def cli_environment(instance, work):
     return env
 
 
-def cli(binary, instance, work, command, path, force=False, expected_error=None, expected_message=None):
+def cli_diagnostics(exit_code, stderr, *, timed_out=False):
+    """Fixed, bounded classifications only; never return any provider/CLI text."""
+    bounded = stderr[:65536].lower()
+    categories = [name for name, patterns in (
+        ('unexpected_eof', (b'unexpected eof',)),
+        ('eof', (b': eof',)),
+        ('connection_reset', (b'connection reset',)),
+        ('broken_pipe', (b'broken pipe',)),
+        ('timeout', (b'timed out', b'timeout', b'deadline exceeded')),
+        ('tls', (b'tls:', b'x509:')),
+    ) if any(pattern in bounded for pattern in patterns)]
+    if timed_out and 'timeout' not in categories: categories.append('timeout')
+    statuses = re.findall(rb'Code: ([0-9]{3})(?:[.\s]|$)', stderr[:65536])
+    return {'exit_code': exit_code, 'http_status_codes': [int(code) for code in statuses[:16]],
+            'stderr_bytes': len(stderr), 'stderr_within_bound': len(stderr) <= 65536,
+            'transport_classes': categories, 'subprocess_timeout': timed_out}
+
+
+def cli(binary, instance, work, command, path, force=False, expected_error=None, expected_message=None,
+        diagnostics=None):
     args = [str(binary), 'operator', 'raft', 'snapshot', command]
     if force: args.append('-force')
     args.append(str(path))
     # Never expose stdout/stderr, token environment, request bodies or paths in receipts.
-    result = subprocess.run(args, env=cli_environment(instance, work), cwd=work,
-                            stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=90)
+    try:
+        result = subprocess.run(args, env=cli_environment(instance, work), cwd=work,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=90)
+    except subprocess.TimeoutExpired as error:
+        if diagnostics is not None:
+            diagnostics.update(cli_diagnostics(None, error.stderr or b'', timed_out=True))
+        raise
+    if diagnostics is not None:
+        diagnostics.update(cli_diagnostics(result.returncode, result.stderr))
     if expected_error is not None:
         # Inspect only the CLI's HTTP status diagnostic; never publish stderr.
         statuses = re.findall(rb'Code: ([0-9]{3})(?:[.\s]|$)', result.stderr)

@@ -236,7 +236,9 @@ def run(binary, legacy, bao, work, checks, observations):
         check('expiring_actor_created',status == 200 and bool(body.get('auth',{}).get('client_token')))
         expiring = body['auth']['client_token']; samples.append(expiring.encode()); time.sleep(2.1)
         before = capacity_data(leader,token)['generation']
-        check('expired_actor_denied',cli(bao,client_view(cluster,leader,expiring),work,'restore',archive,expected_error=403))
+        observations['expired_actor_cli'] = {}
+        check('expired_actor_denied',cli(bao,client_view(cluster,leader,expiring),work,'restore',archive,
+              expected_error=403,diagnostics=observations['expired_actor_cli']))
         check('expired_actor_unchanged',capacity_data(leader,token)['generation'] == before)
         check('expired_upload_denied',expired_denied(restore_http(leader,token,archive,expire=True)))
         check('expired_upload_unchanged',capacity_data(leader,token)['generation'] == before)
