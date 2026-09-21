@@ -1542,9 +1542,20 @@ base64-decoded bytes. Truncated multi-byte suffixes have separate unit coverage.
 The [62-observation Identity exploration](../../qa/openbao-acceptance/evidence/identity-empty-metadata-official-9d079ca.json)
 records immediate and cold-restart empty-map behavior, including the remaining
 normalization differences described above.
-Candidate dual comparison, real schema46-to-47 upgrade
-and HA qualification remain pending. These official explorations alone do not
-qualify the candidate implementation.
+Candidate source `0855a5718aab775092ce5528155cf81fba3574ab`, binary SHA-256
+`61ea302dd89700ab9645dfdda772822c25a98c9c26b3a72c7523585a982358c5`, passed
+the [five-profile dual comparison](../../qa/openbao-acceptance/evidence/approle-secretid-metadata-live-0855a57.json):
+855 observations on each side, all equal to their fixed official calibrations.
+The [real schema46-to-47 upgrade](../../qa/openbao-acceptance/evidence/approle-secretid-metadata-upgrade-0855a57.json)
+passed 433 checks across three genuine old stores, including pure-read byte
+preservation, actual old-reader rejection after the first write, and retained
+issued metadata after deletion and restart. Its legacy-login first write is
+composite; isolated format predicates are tested separately in Rust.
+The same binary passed [485 three-voter HA checks](../../qa/openbao-acceptance/evidence/approle-secretid-metadata-ha-0855a57.json)
+plus nine bootstrap checks, including stopped-lagger snapshot installation,
+leadership transfer, and full restart/readback. Source, binary and helper
+identities stayed unchanged. This covers the named profiles, not physical
+multi-host failures, every metadata limit, or full OpenBao replacement.
 
 ## Kubernetes batch lease ownership in schema42
 
