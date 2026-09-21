@@ -69,7 +69,8 @@ fn legal_extension_methods_reach_the_dedicated_leader_405() -> Result<(), Box<dy
 }
 
 #[test]
-fn leader_rejects_malformed_methods_and_keeps_other_api_method_boundaries() {
+fn leader_rejects_malformed_methods_and_keeps_other_api_method_boundaries()
+-> Result<(), Box<dyn std::error::Error>> {
     for method in [
         "BAD/METHOD",
         "BAD:METHOD",
@@ -80,7 +81,9 @@ fn leader_rejects_malformed_methods_and_keeps_other_api_method_boundaries() {
         "",
         "BAD METHOD",
     ] {
-        let error = parse(method, "", "", "").err().unwrap();
+        let error = parse(method, "", "", "")
+            .err()
+            .ok_or("malformed method was admitted")?;
         assert_eq!(error.status, 400);
     }
     for path in [
@@ -93,7 +96,7 @@ fn leader_rejects_malformed_methods_and_keeps_other_api_method_boundaries() {
             let wire = format!("{method} /v1/{path} HTTP/1.1\r\nHost: local\r\n\r\n");
             let error = read_request_mode(&mut wire.as_bytes(), Duration::from_secs(1), true)
                 .err()
-                .unwrap();
+                .ok_or("ordinary route admitted an extension method")?;
             assert_eq!(error.status, 400);
         }
     }
@@ -104,6 +107,7 @@ fn leader_rejects_malformed_methods_and_keeps_other_api_method_boundaries() {
     ] {
         assert!(read_request_mode(&mut wire.as_bytes(), Duration::from_secs(1), true).is_err());
     }
+    Ok(())
 }
 
 #[test]
