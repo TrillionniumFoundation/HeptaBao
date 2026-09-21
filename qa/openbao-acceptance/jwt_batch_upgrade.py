@@ -198,6 +198,7 @@ def renewable_old(t, old, mode):
         auth = result.get('auth') or {}
         t.check(mode+'_'+via+'_renew_old_shape', auth.get('token_type') == 'service'
             and auth.get('renewable') is True and type(auth.get('lease_duration')) is int
+            and auth.get('metadata') == {'role': ROLE} and auth.get('orphan') is True
             and 0 < auth['lease_duration'] <= 600
             and (auth.get('client_token') == old['auth']['client_token'] if via != 'accessor'
                  else auth.get('client_token') in ('', None)))

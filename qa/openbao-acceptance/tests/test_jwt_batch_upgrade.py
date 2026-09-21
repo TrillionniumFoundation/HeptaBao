@@ -54,6 +54,23 @@ class JwtBatchUpgradeGuards(unittest.TestCase):
                 self.assertEqual((route, body), (f.LOGIN_PATH, {'role': f.ROLE, 'jwt': 'private-assertion'}))
                 self.assertEqual(kwargs.get('token'), '')
 
+    def test_actual_renewal_verifier_requires_metadata_and_orphan_on_all_three_routes(self):
+        for changed_route in ('renew-self', 'renew', 'renew-accessor'):
+            for mutation in ({'metadata': {}}, {'metadata': {'role': 'other'}}, {'orphan': False}):
+                t = Model(SimpleNamespace(binary='candidate'), [])
+                old = {'auth': {'client_token': 'hvs.old', 'accessor': 'old-accessor'},
+                    'token': {'creation_time': 1000, 'display_name': 'jwt-historical-hash'}}
+                t.tokens['hvs.old'] = {'accessor': 'old-accessor'}
+                original = t.call
+                def call(name, method, route, body=None, **kwargs):
+                    result = original(name, method, route, body, **kwargs)
+                    if route == 'auth/token/'+changed_route: result['auth'].update(mutation)
+                    return result
+                t.call = call
+                with self.assertRaises(f.ScenarioFailure): f.renewable_old(t, old, 'role')
+                self.assertEqual(t.rows[-1]['case'], 'role_'+{'renew-self': 'self', 'renew': 'token', 'renew-accessor': 'accessor'}[changed_route]+'_renew_old_shape')
+                self.assertFalse(t.rows[-1]['passed'])
+
     def test_real_store_phases_keep_reader_fence_immediate_and_names_unique(self):
         rows = []
         for mode in f.MODES:
@@ -134,7 +151,8 @@ class Model(f.Trace):
             if raw is None:
                 raw = next(raw for raw, info in self.tokens.items() if info['accessor'] == body['accessor'])
             auth = {'client_token': None if route.endswith('renew-accessor') else raw,
-                    'token_type': 'service', 'renewable': True, 'lease_duration': 600}
+                    'token_type': 'service', 'renewable': True, 'lease_duration': 600,
+                    'metadata': {'role': f.ROLE}, 'orphan': True}
             return {'auth': auth}
         elif route == 'secret/data/upgrade':
             return {'data': {'data': {'value': 'synthetic-upgrade-value'}}}
