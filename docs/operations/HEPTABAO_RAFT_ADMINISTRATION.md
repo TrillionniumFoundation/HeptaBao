@@ -137,9 +137,11 @@ or invalid booleans return400 with an empty errors list; framing and deadline
 limits remain. The [186-check expanded comparison](../../qa/openbao-acceptance/evidence/sys-leader-http-0b31fb2.json)
 passes on `0b31fb2`, including all35 HTTP edge cases on official file/Raft servers
 and the candidate file server, followed by the three-process HA lifecycle.
-Unsupported HTTP methods
-outside the parser's existing method set and the two omitted fields remain
-separate compatibility work.
+The exact leader route now admits every nonempty ASCII HTTP-token method so its
+dedicated handler can return405 for valid extensions such as OPTIONS and TRACE.
+Malformed methods still return400, and other API routes keep their existing
+method allowlist. The two omitted fields remain separate compatibility work;
+the expanded method matrix awaits its next release-binary live run.
 The schema38 [three-process TLS native SAVE receipt](../../qa/openbao-acceptance/evidence/native-snapshot-ha-fa61fa7.json)
 passes269 checks with the official2.6.2 CLI and unchanged5-second listeners,
 including quorum loss, leadership transfer, HEAD/ACL/finite-use behavior and
