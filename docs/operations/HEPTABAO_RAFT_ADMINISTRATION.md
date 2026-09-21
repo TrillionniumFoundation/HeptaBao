@@ -100,6 +100,16 @@ tests cover journal replay, rejection, snapshot install/reopen and legacy-data
 retirement. These APIs are not yet connected to server record publication, so
 their presence does not increase the server's current logical-state limit.
 
+The `7baeddb` runtime build (SHA256
+`882d8bccf4b25190d3fd36d781ccb5b58d7694bfdb84d853ef1156394114d989`)
+passed the same [45-check membership profile](../../qa/openbao-acceptance/evidence/raft-compact-membership-7baeddb.json)
+and [13-check actual legacy snapshot upgrade](../../qa/openbao-acceptance/evidence/raft-compact-upgrade-7baeddb.json).
+These verify the unchanged legacy application path with the new runtime, not
+server publication or capacity of the record format. A separate userpass HA run
+exposed an existing forwarding timeout: password processing exceeded the 500 ms
+peer deadline and returned 503 after the mutation committed. The same failure
+was reproduced with the preserved schema-35 binary; that profile is not passed.
+
 The existing Service HTTP snapshot body remains the repository's encrypted backup
 format, **not an OpenBao `raft.snap` binary**. Native persisted snapshot status
 and learner catch-up do not implement cross-product snapshot restore, forced
