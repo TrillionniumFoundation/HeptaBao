@@ -1424,9 +1424,35 @@ on the external SSD (SHA256
 `7751fb8bfa57f3a1420ef90843040290dda34c67f2a61666eaa084de63959734`).
 The lookup projection is corrected without changing permissions, consumption
 or stored credentials. That initial binary separately passed 1078 three-voter
-HA checks, but the corrected binary still requires fresh dual/upgrade/HA
-qualification. The schema45 role-level receipts above do not qualify this
-new slice. Arbitrary
+HA checks. Its failure remains distinct from the corrected qualification below.
+
+The corrected `fe49395` binary (SHA256
+`d243fef5c7a0066ef227a40a725fd93b2f298a94149f41247fa6ac3e28fc2608`)
+passes [812 observations per side](../../qa/openbao-acceptance/evidence/approle-secretid-overrides-live-fe49395.json),
+[440 real schema45-to-46 upgrade checks](../../qa/openbao-acceptance/evidence/approle-secretid-overrides-upgrade-fe49395.json)
+and [1078 checks across three TLS voters](../../qa/openbao-acceptance/evidence/approle-secretid-overrides-ha-3fa3abc.json).
+The upgrade uses four independent actual old-process stores; explicit empty
+and nonempty source/token fields are each the first candidate mutation, followed
+immediately by an actual old-reader rejection. Pure reads/reopens preserve the
+old application bytes and SID snapshots. HA verifies finite source/subset
+rejection consumes once through standby, survives leadership change and restart,
+and preserves nonempty overrides, current-role fallback and existing bearer
+constraints through all three listeners. Inputs stayed clean/unchanged, secret
+scans passed, and all owned processes were stopped.
+
+The first HA run of the corrected binary stopped after 86 checks because its
+old fixture required top-level errors for every rejection. The official accessor
+404 requires `data.error`; a route-specific check now verifies that exact shape
+and requested accessor without relaxing other rejection assertions. The failed
+receipt remains on the SSD (SHA256
+`00a1389a26379ab26318ef6f3e1e55d4fe73d855aad9bd637fe1785722a93e52`).
+The passing HA receipt binds the same binary to the corrected clean `3fa3abc`
+QA tree. No failed receipt or uncertain request was reused. The implementation
+passed 1001 server tests and one documentation test before this narrow readback
+fix; its 66 AppRole tests and strict Clippy passed again after the fix.
+These are local process/loopback observations; physical failure and real IPv6
+source sockets are not established by this qualification. The schema45
+role-level receipts above remain a separate feature slice. Arbitrary
 SecretID/alias metadata, local-only SecretIDs, MFA and actual IPv6 source-socket
 coverage remain open for this profile.
 
