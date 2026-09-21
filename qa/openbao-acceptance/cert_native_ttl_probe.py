@@ -54,8 +54,17 @@ def tune(t,case,default=75,maximum=600):
 
 def create(t,case,certificate,**fields):
     name=case.replace('.','-')
-    t.require(case+'.create','POST',base.role_path(name),
-        {'certificate':certificate,'token_policies':[POLICY],**fields},status=204)
+    status,body=t.call(case+'.create','POST',base.role_path(name),
+        {'certificate':certificate,'token_policies':[POLICY],**fields})
+    warnings=body.get('warnings')
+    valid_warnings=(isinstance(warnings,list) and bool(warnings)
+        and all(isinstance(value,str) and bool(value.strip()) for value in warnings))
+    empty_result=(all(body.get(field) in (None,{}) for field in ('auth','data','wrap_info'))
+        and body.get('errors') in (None,[]))
+    t.observe(case+'.create.response_shape',warnings_present=bool(warnings),
+        warnings_valid=valid_warnings,empty_result=empty_result)
+    if not (empty_result and (status==204 or (status==200 and valid_warnings))):
+        raise ScenarioFailure(case+'.create')
     return name
 
 
@@ -189,6 +198,15 @@ def run(t,certificate,restart,plain):
         mutate_observe(t,'aliases.precedence.'+label,name,fields)
     saved['precedence']=(name,issue(t,'aliases.precedence.login',name));t.finish('aliases.precedence')
 
+    # Explicitly isolate this group from earlier max3/default95 tunes. The
+    # intended TTL300 still exceeds default75, so a native warning is expected
+    # to remain observable rather than avoided by increasing the mount default.
+    tune(t,'aliases.validation_order.tune')
+    mount=t.require('aliases.validation_order.tune_read','GET','sys/auth/'+MOUNT+'/tune')
+    default_matches=(mount.get('data') or {}).get('default_lease_ttl')==75
+    max_matches=(mount.get('data') or {}).get('max_lease_ttl')==600
+    t.observe('aliases.validation_order.tune_values',default_matches=default_matches,max_matches=max_matches)
+    if not (default_matches and max_matches):raise ScenarioFailure('validation_mount_not_reset')
     name=create(t,'aliases.validation_order',certificate,token_ttl=300,token_max_ttl=600)
     mutate_observe(t,'aliases.validation_order.mixed',name,{'ttl':30,'token_max_ttl':60})
     other='aliases-batch-order'

@@ -7,6 +7,32 @@ import cert_native_ttl_probe as f
 
 
 class CertNativeTtlProbeTests(unittest.TestCase):
+    def test_create_accepts_only_empty_204_or_valid_warning_200(self):
+        private_warning='synthetic-secret-warning-text'
+        for status,body in ((204,{}),(200,{'warnings':[private_warning], 'auth':None,'data':None,'wrap_info':None})):
+            client=Mock();client.request.return_value=SimpleNamespace(status=status,body=body)
+            trace=f.Trace(client)
+            self.assertEqual(f.create(trace,'new.role','private-certificate'),'new-role')
+            self.assertEqual(client.request.call_count,1)
+            self.assertEqual(trace.rows[-1]['warnings_present'],status==200)
+            self.assertNotIn(private_warning,json.dumps(trace.rows))
+            self.assertNotIn('private-certificate',json.dumps(trace.rows))
+
+    def test_create_rejects_missing_malformed_warning_payload_and_http_failure(self):
+        invalid=[(200,{}),(200,{'warnings':[]}),(200,{'warnings':'warning'}),
+            (200,{'warnings':['']}),(200,{'warnings':['   ']}),(200,{'warnings':[1]}),
+            (200,{'warnings':['valid',None]}),(400,{'warnings':['valid']}),
+            (503,{'warnings':['valid']}),
+            *[(200,{'warnings':['valid'],field:value}) for field,value in (
+                ('auth',{'client_token':'private'}),('data',{'value':'private'}),
+                ('wrap_info',{'token':'private'}),('errors',['private']))]]
+        for status,body in invalid:
+            with self.subTest(status=status,fields=sorted(body)):
+                client=Mock();client.request.return_value=SimpleNamespace(status=status,body=body)
+                trace=f.Trace(client)
+                with self.assertRaises(f.ScenarioFailure):f.create(trace,'new.role','private-certificate')
+                self.assertEqual(client.request.call_count,1)
+
     def test_projection_preserves_unexpected_status_without_secrets(self):
         secret='synthetic-private-do-not-publish-abcdef'
         client=Mock()
