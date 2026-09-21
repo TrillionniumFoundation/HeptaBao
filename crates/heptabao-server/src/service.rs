@@ -1,3 +1,4 @@
+use crate::request_deadline::HaLock;
 use crate::{
     auth::{AuthState, Principal},
     crypto::{self, AeadBarrier, SecretShare},
@@ -793,8 +794,6 @@ fn classify_request_effect(
 }
 
 pub struct Service {
-    // HTTP-local scope only: never part of State, replication, or persistence.
-    request_deadline: Option<std::time::Instant>,
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
     database_in_flight: database::DatabaseFlights,
@@ -1051,7 +1050,6 @@ impl Service {
         let unseal_nonce = hex(&crypto::random::<16>()?);
         let recovery_required = postgres_pending_exists(&data_dir)?;
         Ok(Self {
-            request_deadline: None,
             outbound: crate::outbound::Outbound::default(),
             database_cursor: None,
             database_in_flight: database::DatabaseFlights::default(),
@@ -1211,21 +1209,21 @@ impl Service {
         deadline: std::time::Instant,
         forwarded: bool,
     ) -> RequestExecution {
-        if std::time::Instant::now() >= deadline {
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+        if crate::request_deadline::current()
+            .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+        {
             erase_json(&mut request.body);
             return RequestExecution::Complete(Response::error(
                 503,
                 "service request deadline exceeded",
             ));
         }
-        let previous = self.request_deadline.replace(deadline);
-        let result = if forwarded {
+        if forwarded {
             self.begin_forwarded(request)
         } else {
             self.begin_request(request)
-        };
-        self.request_deadline = previous;
-        result
+        }
     }
 
     /// Start a network request while holding the Service writer. A database
@@ -1649,7 +1647,7 @@ impl Service {
             return Response::error(503, "server is sealed");
         }
         if let Some(ha) = self.ha.as_ref().cloned() {
-            let (leader, local) = match ha.lock() {
+            let (leader, local) = match ha.lock_for_request() {
                 Ok(ha) => {
                     let leader = match ha.leader() {
                         Ok(value) => value,
@@ -1670,7 +1668,7 @@ impl Service {
                 if !allow_forward {
                     return Response::error(503, "forwarded request reached a standby node");
                 }
-                return match ha.lock() {
+                return match ha.lock_for_request() {
                     Ok(ha) => ha
                         .forward_request(
                             method,
@@ -1681,7 +1679,7 @@ impl Service {
                             wrap_ttl_seconds,
                             origin_peer,
                             client_certificates,
-                            self.request_deadline,
+                            crate::request_deadline::current(),
                         )
                         .unwrap_or_else(|_| Response::error(503, "HA leader forwarding failed")),
                     Err(_) => Response::error(503, "HA process lock is unavailable"),
@@ -1903,7 +1901,7 @@ impl Service {
             let Some(ha) = self.ha.as_ref() else {
                 return Response::error(400, "HA is not enabled");
             };
-            return match ha.lock() {
+            return match ha.lock_for_request() {
                 Ok(ha) => match ha.step_down() {
                     Ok(_) => Response {
                         status: 204,
@@ -3713,7 +3711,7 @@ impl Service {
         // Bind durable identity before any local state is admitted into an HA epoch.
         if let Some(ha) = self.ha.as_ref() {
             let ha = ha
-                .lock()
+                .lock_for_request()
                 .map_err(|_| Response::error(503, "HA identity is unavailable during unseal"))?;
             if state.cluster_id != ha.cluster_id() {
                 return Err(Response::error(
@@ -3790,7 +3788,7 @@ impl Service {
         self.barrier_key = Some(Zeroizing::new(*key));
         self.recovery_required = false;
         let sync_as_leader = if let Some(ha) = self.ha.as_ref() {
-            match ha.lock() {
+            match ha.lock_for_request() {
                 Ok(ha) => match ha.is_leader() {
                     Ok(value) => value,
                     Err(_) => {
@@ -4362,7 +4360,7 @@ impl Service {
             }
             if let Some(ha) = self.ha.as_ref() {
                 let result = ha
-                    .lock()
+                    .lock_for_request()
                     .map_err(|_| ())
                     .and_then(|ha| ha.trigger_snapshot().map_err(|_| ()));
                 if result.is_err() {
@@ -4395,7 +4393,7 @@ impl Service {
         if path == "sys/storage/raft/snapshot" && method == "GET" {
             if let Some(ha) = self.ha.as_ref() {
                 let result = ha
-                    .lock()
+                    .lock_for_request()
                     .map_err(|_| ())
                     .and_then(|ha| ha.trigger_snapshot().map_err(|_| ()));
                 if result.is_err() {
@@ -4595,7 +4593,7 @@ impl Service {
             let owner_binding = owner_binding
                 .ok_or_else(|| Response::error(503, "owner publication binding is unavailable"))?;
             let ha = ha
-                .lock()
+                .lock_for_request()
                 .map_err(|_| Response::error(503, "HA control state is unavailable"))?;
             let commit = if allow_legacy_migration {
                 ha.commit_legacy_owner_migration_with_binding(
@@ -4773,7 +4771,7 @@ impl Service {
         let known = self.reusable_ha_cursor().cloned();
         let previous_cache = self.ha_read_cache.take();
         let observed = ha
-            .lock()
+            .lock_for_request()
             .map_err(|_| Response::error(503, "HA control state is unavailable"))?
             .latest_committed_state_if_changed(known.as_ref())
             .map_err(|_| Response::error(503, "HA linearizable state is unavailable"))?;
@@ -4803,7 +4801,7 @@ impl Service {
             // application-ready authority; followers remain standby until
             // this bootstrap publication is committed.
             let is_leader = ha
-                .lock()
+                .lock_for_request()
                 .map_err(|_| Response::error(503, "HA control state is unavailable"))?
                 .is_leader()
                 .map_err(|_| Response::error(503, "HA role is unavailable"))?;
@@ -4835,7 +4833,7 @@ impl Service {
             .map_err(|_| Response::error(503, "HA committed state schema is invalid"))?;
         state.validate_format()?;
         let expected_cluster = ha
-            .lock()
+            .lock_for_request()
             .map_err(|_| Response::error(503, "HA control state is unavailable"))?
             .cluster_id()
             .to_owned();
@@ -4937,7 +4935,7 @@ impl Service {
         let Some(ha) = self.ha.as_ref() else {
             return (false, false, true, true, None, None);
         };
-        let Ok(ha) = ha.lock() else {
+        let Ok(ha) = ha.lock_for_request() else {
             return (true, false, false, false, None, None);
         };
         let local = match ha.local_id() {

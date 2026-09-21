@@ -160,7 +160,7 @@ impl Service {
             .as_ref()
             .ok_or_else(|| Response::error(503, "HA is unavailable"))?;
         if !ha
-            .lock()
+            .lock_for_request()
             .map_err(|_| Response::error(503, "HA control state is unavailable"))?
             .record_cursor_current(cursor)
         {

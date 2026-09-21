@@ -636,7 +636,7 @@ impl Service {
         };
         if let Some(ha) = &self.ha {
             let ok = ha
-                .lock()
+                .lock_for_request()
                 .ok()
                 .and_then(|ha| ha.ensure_linearizable().ok())
                 .is_some();

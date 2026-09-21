@@ -152,6 +152,29 @@ async fn uncommitted_blank_and_lost_quorum_reads_time_out_then_recover()
         assert!(router.blocked_entries.load(Ordering::SeqCst) > 0);
         assert!(node.latest_envelope().await?.is_none());
 
+        // The same absolute caller deadline covers multiple internal checks,
+        // including administration's nested ReadIndex. It cannot restart an
+        // eight-second budget when one check or earlier work consumed it.
+        let absolute = std::time::Instant::now() + Duration::from_millis(110);
+        let snapshot_before = node.raft.metrics().borrow_watched().snapshot;
+        tokio::time::timeout(
+            Duration::from_secs(2),
+            crate::with_read_index_deadline(absolute, async {
+                let first = node
+                    .ensure_linearizable_with_timeout(Duration::from_millis(40))
+                    .await;
+                assert!(first.is_err());
+                let second = node.snapshot_observed().await;
+                assert!(matches!(second, Err(RemoteRaftError::Consensus(ref reason)) if reason == READ_INDEX_TIMEOUT));
+                let third = node.change_membership_guarded(0, 2, "remove").await;
+                assert!(matches!(third, Err(RemoteRaftError::Consensus(ref reason)) if reason == READ_INDEX_TIMEOUT));
+            }),
+        )
+        .await?;
+        assert!(std::time::Instant::now() >= absolute);
+        assert_eq!(node.raft.metrics().borrow_watched().snapshot, snapshot_before);
+        assert_eq!(node.state_machine.last_applied_log_index().await, before_applied);
+
         router.mode.store(PASS, Ordering::SeqCst);
         node.ensure_linearizable().await?;
         assert!(node.state_machine.last_applied_log_index().await >= Some(required));

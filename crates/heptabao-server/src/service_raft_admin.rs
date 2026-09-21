@@ -181,7 +181,7 @@ impl Service {
                 .clone()
                 .ok_or_else(|| Response::error(400, "HA is not enabled"))?;
             let ha = ha
-                .lock()
+                .lock_for_request()
                 .map_err(|_| Response::error(503, "HA lock unavailable"))?;
             let o = ha
                 .membership()
@@ -391,7 +391,7 @@ impl Service {
                 .ha
                 .as_ref()
                 .ok_or_else(|| Response::error(503, "HA disappeared"))?
-                .lock()
+                .lock_for_request()
                 .map_err(|_| Response::error(503, "HA lock unavailable"))?;
             let observed=ha.modify_membership(index,target,operation).map_err(|_|Response{status:503,body:json!({"errors":["membership completion unknown; re-read configuration before retry"],"reconcile_required":true,"server_id":target.to_string()})})?;
             Ok(Response::ok(
@@ -441,14 +441,14 @@ impl Service {
             // The route has already authorized the root actor/current leader,
             // and sync_from_ha above authenticated the committed publication.
             let identity = self.current_state_identity()?;
-            ha.lock()
+            ha.lock_for_request()
                 .map_err(|_| Response::error(503, "HA control state is unavailable"))?
                 .ensure_application_identity(identity)
                 .map_err(|_| Response::error(503, "HA record authority is unavailable"))?;
             return Ok(response);
         }
         let committed = ha
-            .lock()
+            .lock_for_request()
             .map_err(|_| Response::error(503, "HA control state is unavailable"))?
             .latest_committed_state()
             .map_err(|_| Response::error(503, "HA linearizable state is unavailable"))?
@@ -517,7 +517,7 @@ impl Service {
         let Some(ha) = self.ha.clone() else {
             return Ok(false);
         };
-        let ha = ha.lock().map_err(|_| "HA lock unavailable")?;
+        let ha = ha.lock_for_request().map_err(|_| "HA lock unavailable")?;
         if !ha.is_leader().map_err(|_| "HA leader unavailable")? {
             return Ok(false);
         }
@@ -568,7 +568,7 @@ impl Service {
             .ha
             .as_ref()
             .ok_or("HA disappeared")?
-            .lock()
+            .lock_for_request()
             .map_err(|_| "HA lock unavailable")?
             .modify_membership(
                 o.membership_index.ok_or("membership absent")?,

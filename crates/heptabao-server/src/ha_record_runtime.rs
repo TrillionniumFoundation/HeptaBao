@@ -46,8 +46,7 @@ impl HaProcess {
         if self.runtime.block_on(node.current_leader()) != Some(node.id()) {
             return Err("legacy record migration requires current leader".into());
         }
-        self.runtime
-            .block_on(node.ensure_linearizable())
+        self.block_on_read(node.ensure_linearizable())
             .map_err(|error| error.to_string())?;
         let verified = authenticate_legacy_record_migration(
             &self.codec,
@@ -85,8 +84,7 @@ impl HaProcess {
             },
             |cleanup_index| {
                 let snapshot = self
-                    .runtime
-                    .block_on(node.snapshot_observed())
+                    .block_on_read(node.snapshot_observed())
                     .map_err(|error| error.to_string())?;
                 if snapshot.persisted_index < cleanup_index {
                     return Err("legacy slot cleanup checkpoint is not durable".into());
@@ -94,8 +92,7 @@ impl HaProcess {
                 Ok(())
             },
             |identity| {
-                self.runtime
-                    .block_on(node.ensure_linearizable())
+                self.block_on_read(node.ensure_linearizable())
                     .map_err(|error| error.to_string())?;
                 if self.runtime.block_on(node.current_leader()) != Some(node.id()) {
                     return Err("legacy slot cleanup lost leader authority".into());
@@ -139,8 +136,7 @@ impl HaProcess {
         if self.runtime.block_on(node.current_leader()) != Some(node.id()) {
             return Err("record publication requires current leader".into());
         }
-        self.runtime
-            .block_on(node.ensure_linearizable())
+        self.block_on_read(node.ensure_linearizable())
             .map_err(|error| error.to_string())?;
         let (_, published) = self
             .runtime
@@ -334,8 +330,7 @@ impl HaProcess {
             &self.codec,
             known,
             || {
-                self.runtime
-                    .block_on(node.ensure_linearizable())
+                self.block_on_read(node.ensure_linearizable())
                     .map_err(|error| error.to_string())
             },
             || {

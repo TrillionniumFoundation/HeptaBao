@@ -2,6 +2,8 @@ mod admin;
 pub use admin::{MembershipObservation, SnapshotObservation};
 mod network;
 mod node;
+mod read_deadline;
+pub use read_deadline::with_read_index_deadline;
 mod snapshot;
 
 pub use network::{

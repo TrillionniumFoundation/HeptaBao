@@ -36,6 +36,7 @@ use std::path::Path;
 
 use cluster::DurableCluster;
 
+pub use process::with_read_index_deadline;
 pub use process::{
     MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RaftRpcService,
     RemoteNetworkFactory, RemoteRaftError, SnapshotObservation,

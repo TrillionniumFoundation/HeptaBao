@@ -29,6 +29,7 @@ pub mod outbound;
 pub mod postgres_durable;
 pub mod postgres_storage;
 mod postgres_wire;
+mod request_deadline;
 mod service;
 mod valkey_wire;
 pub use service::ServiceRequest;

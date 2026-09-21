@@ -270,7 +270,7 @@ impl DatabaseEffectPlan {
             }),
         };
         if let Some(ha) = &self.ha {
-            ha.lock()
+            ha.lock_for_request()
                 .map_err(|_| failure("HA provider fence unavailable"))?
                 .ensure_linearizable()
                 .map_err(|_| failure("HA provider fence unavailable"))?;
@@ -1607,7 +1607,7 @@ impl Service {
         // after the unlocked I/O window before publishing local completion.
         if let Some(ha) = &self.ha
             && ha
-                .lock()
+                .lock_for_request()
                 .map_err(|_| failure("HA provider finalize fence unavailable"))
                 .and_then(|ha| {
                     ha.ensure_linearizable()
@@ -1988,7 +1988,9 @@ impl Service {
             return Ok(None);
         }
         if let Some(ha) = &self.ha {
-            let ha = ha.lock().map_err(|_| "provider HA lock unavailable")?;
+            let ha = ha
+                .lock_for_request()
+                .map_err(|_| "provider HA lock unavailable")?;
             if !ha.is_leader().map_err(|_| "provider leader unavailable")? {
                 return Ok(None);
             }

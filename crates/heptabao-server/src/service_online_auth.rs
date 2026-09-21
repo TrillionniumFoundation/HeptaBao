@@ -593,7 +593,7 @@ impl Service {
             ));
         }
         if let Some(ha) = self.ha.as_ref() {
-            match ha.lock() {
+            match ha.lock_for_request() {
                 Ok(ha) if ha.is_leader().unwrap_or(false) => {}
                 _ => return Err(Response::error(503, "online authentication leader changed")),
             }

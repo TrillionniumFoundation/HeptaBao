@@ -96,7 +96,7 @@ impl OpenLdapEffectPlan {
         result?;
         if let Some(ha) = &self.ha
             && ha
-                .lock()
+                .lock_for_request()
                 .map_err(|_| openldap_outcome_unknown(&self.inner.lease_id))
                 .and_then(|ha| {
                     ha.ensure_linearizable()
@@ -134,7 +134,9 @@ impl Service {
             return Ok(None);
         }
         if let Some(ha) = &self.ha {
-            let ha = ha.lock().map_err(|_| "OpenLDAP HA lock unavailable")?;
+            let ha = ha
+                .lock_for_request()
+                .map_err(|_| "OpenLDAP HA lock unavailable")?;
             if !ha.is_leader().map_err(|_| "OpenLDAP leader unavailable")? {
                 return Ok(None);
             }
@@ -465,7 +467,7 @@ impl Service {
             return error;
         }
         if let Some(ha) = &self.ha {
-            let Ok(ha) = ha.lock() else {
+            let Ok(ha) = ha.lock_for_request() else {
                 return openldap_outcome_unknown(&plan.inner.lease_id);
             };
             if ha.ensure_linearizable().is_err() {

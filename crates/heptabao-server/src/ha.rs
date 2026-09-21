@@ -699,15 +699,28 @@ impl HaProcess {
             return Err("peer is not host-enrolled".into());
         }
         let node = self.node.as_ref().ok_or("HA stopped")?;
-        self.runtime
-            .block_on(node.change_membership_guarded(index, id, operation))
+        self.block_on_read(node.change_membership_guarded(index, id, operation))
             .map_err(|_| "membership operation requires reconciliation".into())
     }
     pub fn observed_snapshot(&self) -> Result<heptabao_raft_runtime::SnapshotObservation, String> {
         let node = self.node.as_ref().ok_or("HA stopped")?;
-        self.runtime
-            .block_on(node.snapshot_observed())
+        self.block_on_read(node.snapshot_observed())
             .map_err(|_| "snapshot completion unobserved".into())
+    }
+
+    // Capture the synchronous request scope before entering Tokio. A task-local
+    // copy reaches nested admin ReadIndex calls and cannot leak to Raft workers.
+    // This does not timeout or cancel the surrounding mutation/maintenance.
+    fn block_on_read<F: std::future::Future>(&self, operation: F) -> F::Output {
+        match crate::request_deadline::current() {
+            Some(deadline) => {
+                self.runtime
+                    .block_on(heptabao_raft_runtime::with_read_index_deadline(
+                        deadline, operation,
+                    ))
+            }
+            None => self.runtime.block_on(operation),
+        }
     }
 
     pub fn ensure_linearizable(&self) -> Result<(), String> {
@@ -715,8 +728,7 @@ impl HaProcess {
             .node
             .as_ref()
             .ok_or_else(|| "HA process is shut down".to_owned())?;
-        self.runtime
-            .block_on(node.ensure_linearizable())
+        self.block_on_read(node.ensure_linearizable())
             .map_err(|error| error.to_string())
     }
 
@@ -775,8 +787,7 @@ impl HaProcess {
             .node
             .as_ref()
             .ok_or_else(|| "HA process is shut down".to_owned())?;
-        self.runtime
-            .block_on(node.snapshot_observed())
+        self.block_on_read(node.snapshot_observed())
             .map(|_| ())
             .map_err(|error| error.to_string())
     }
@@ -866,8 +877,7 @@ impl HaProcess {
         if leader != local_id {
             return Err(format!("HA write requires current leader node {leader}"));
         }
-        self.runtime
-            .block_on(node.ensure_linearizable())
+        self.block_on_read(node.ensure_linearizable())
             .map_err(|error| error.to_string())?;
         let latest = self
             .runtime
@@ -1053,8 +1063,7 @@ impl HaProcess {
             &self.codec,
             known,
             || {
-                self.runtime
-                    .block_on(node.ensure_linearizable())
+                self.block_on_read(node.ensure_linearizable())
                     .map_err(|error| error.to_string())
             },
             || {
@@ -2088,3 +2097,7 @@ mod tests {
         assert!(decode_hex_32(&"gg".repeat(32)).is_err());
     }
 }
+
+#[cfg(test)]
+#[path = "ha_request_deadline_tests.rs"]
+pub(crate) mod request_deadline_tests;

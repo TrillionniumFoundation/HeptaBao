@@ -35,7 +35,7 @@ impl KubernetesTokenEffectPlan {
 
     pub(crate) fn execute(&self) -> Result<TokenMetadata, Response> {
         if let Some(ha) = &self.ha {
-            ha.lock()
+            ha.lock_for_request()
                 .map_err(|_| failure("Kubernetes provider HA fence unavailable"))?
                 .ensure_linearizable()
                 .map_err(|_| failure("Kubernetes provider HA fence unavailable"))?;
@@ -288,7 +288,7 @@ impl Service {
         };
         if let Some(ha) = &self.ha
             && ha
-                .lock()
+                .lock_for_request()
                 .map_err(|_| failure("Kubernetes provider finalize fence unavailable"))
                 .and_then(|ha| {
                     ha.ensure_linearizable()

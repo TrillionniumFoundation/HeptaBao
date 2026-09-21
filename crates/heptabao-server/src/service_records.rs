@@ -465,7 +465,7 @@ impl Service {
             })
             .map_err(|error| self.record_storage_error(error))?;
         if let Some(ha) = &self.ha {
-            ha.lock()
+            ha.lock_for_request()
                 .map_err(|_| unavailable())?
                 .commit_record_state(&operation, &base, &plan.bytes, &plan.objects)
                 .map_err(|_| {
@@ -639,7 +639,7 @@ impl Service {
             }
         }
         let (state, objects) = {
-            let process = ha.lock().map_err(|_| unavailable())?;
+            let process = ha.lock_for_request().map_err(|_| unavailable())?;
             if committed.root.cluster_id != process.cluster_id() {
                 return Err(unavailable());
             }

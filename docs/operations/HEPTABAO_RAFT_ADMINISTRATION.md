@@ -66,6 +66,12 @@ own large catch-up batch before it can replicate the new-term blank entry.
 ReadIndex covers both quorum confirmation and application of its required log;
 the runtime bounds that complete wait at eight seconds and accepts a shorter
 caller budget. Timeout grants no read and does not retry a write.
+The HTTP listener now propagates its original absolute deadline through Service
+HA lock acquisition, forwarding and nested ReadIndex checks. Waiting for an HA
+mutex or starting a second authority check does not reset the budget. Request
+scope is restored on return or unwind and is not inherited by Raft background
+tasks. This bounds read admission; it does not cancel a filesystem operation,
+provider side effect or write whose commit outcome still needs reconciliation.
 
 The `0adfc0d` release binary (`40eacb3fdc897cca44df381dac49d2273c66548ba440f50c6a7e07c602a23dfa`)
 passes the [913-check 32 MiB KV1 HA profile](../../qa/openbao-acceptance/evidence/kv1-record-ha32-0adfc0d.json).
@@ -79,6 +85,11 @@ three-process evidence, not a cross-host power-loss or mixed-version qualificati
 The same binary passes the [57-check native JSON backup restore profile](../../qa/openbao-acceptance/evidence/kv1-record-backup-0adfc0d.json),
 including complete value/other-owner checks after restore and restart. That
 receipt does not test the large-transfer limit or physically interrupt restore.
+Its [61-check PostgreSQL backup profile](../../qa/openbao-acceptance/evidence/kv1-record-backup-pg-0adfc0d.json)
+repeats those checks against PostgreSQL 17 with an unprivileged storage role,
+verifies one remote manifest and encrypted remote chunks, and confirms that no
+local storage fallback was used. It retains the same JSON transfer and local
+server scope; it does not qualify PostgreSQL outages or native gzip transfer.
 
 ## Snapshots: durable completion, not queue acceptance
 

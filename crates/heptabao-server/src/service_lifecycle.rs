@@ -17,7 +17,9 @@ impl Service {
             return Err("lifecycle maintenance requires recovery");
         }
         if let Some(ha) = &self.ha {
-            let ha = ha.lock().map_err(|_| "lifecycle HA lock unavailable")?;
+            let ha = ha
+                .lock_for_request()
+                .map_err(|_| "lifecycle HA lock unavailable")?;
             let local = ha
                 .local_id()
                 .map_err(|_| "lifecycle HA identity unavailable")?;

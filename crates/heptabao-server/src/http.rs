@@ -1,5 +1,6 @@
 //! Bounded HTTP/1.1 over verified Rustls TLS. One request per connection avoids
 //! ambiguous reuse, smuggling and unbounded streaming in this single-node profile.
+use crate::request_deadline::{LockWaitError, RequestDeadlineScope, lock_until};
 use crate::{
     Response, Service, ServiceRequest, crypto,
     ha::HaProcess,
@@ -17,7 +18,7 @@ use std::{
     net::{IpAddr, SocketAddr, TcpListener, TcpStream},
     path::PathBuf,
     sync::{
-        Arc, Mutex, MutexGuard, TryLockError,
+        Arc, Mutex,
         atomic::{AtomicUsize, Ordering},
     },
     time::{Duration, Instant},
@@ -415,45 +416,6 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     Ok(())
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum LockWaitError {
-    Busy,
-    Poisoned,
-}
-
-fn lock_until<'a, T>(
-    mutex: &'a Mutex<T>,
-    deadline: Instant,
-) -> Result<MutexGuard<'a, T>, LockWaitError> {
-    loop {
-        // An available mutex is not permission to publish a late external
-        // result. Check both sides of acquisition, including uncontended locks.
-        if Instant::now() >= deadline {
-            return Err(LockWaitError::Busy);
-        }
-        match mutex.try_lock() {
-            Ok(guard) => {
-                if Instant::now() >= deadline {
-                    return Err(LockWaitError::Busy);
-                }
-                return Ok(guard);
-            }
-            Err(TryLockError::Poisoned(_)) => return Err(LockWaitError::Poisoned),
-            Err(TryLockError::WouldBlock) => {
-                let now = Instant::now();
-                if now >= deadline {
-                    return Err(LockWaitError::Busy);
-                }
-                std::thread::sleep(
-                    deadline
-                        .saturating_duration_since(now)
-                        .min(Duration::from_millis(2)),
-                );
-            }
-        }
-    }
-}
-
 fn execute_external_without_writer<T, P, R, E, F>(
     state: &Arc<Mutex<T>>,
     pending: P,
@@ -465,6 +427,7 @@ where
     E: FnOnce(&P) -> R,
     F: FnOnce(&mut T, P, R) -> Response,
 {
+    let _scope = RequestDeadlineScope::enter(deadline);
     // Deliberately execute before acquiring the state writer. This helper is the
     // production boundary that prevents slow enrolled providers from monopolizing
     // unrelated service state while their external effect/readback is in flight.
@@ -1282,17 +1245,20 @@ mod service_lock_deadline_tests {
         let worker_state = Arc::clone(&state);
         let worker_entered = Arc::clone(&entered);
         let worker_release = Arc::clone(&release);
+        let deadline = Instant::now() + Duration::from_secs(2);
         let worker = std::thread::spawn(move || {
             execute_external_without_writer(
                 &worker_state,
                 (),
-                Instant::now() + Duration::from_secs(2),
+                deadline,
                 |_| {
+                    assert_eq!(crate::request_deadline::current(), Some(deadline));
                     worker_entered.wait();
                     worker_release.wait();
                     41_u64
                 },
                 |value, (), result| {
+                    assert_eq!(crate::request_deadline::current(), Some(deadline));
                     *value = result + 1;
                     Response {
                         status: 200,

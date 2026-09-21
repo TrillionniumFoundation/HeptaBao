@@ -464,10 +464,13 @@ impl ProcessRaftNode {
         remaining: Duration,
     ) -> Result<(), RemoteRaftError> {
         let budget = remaining.min(MAX_READ_INDEX_WAIT);
-        if budget.is_zero() {
+        let deadline = tokio::time::Instant::now() + budget;
+        let deadline = super::read_deadline::current().map_or(deadline, |outer| {
+            deadline.min(tokio::time::Instant::from_std(outer))
+        });
+        if budget.is_zero() || tokio::time::Instant::now() >= deadline {
             return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
         }
-        let deadline = tokio::time::Instant::now() + budget;
         let result = tokio::time::timeout_at(
             deadline,
             self.raft.ensure_linearizable(ReadPolicy::ReadIndex),

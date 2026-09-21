@@ -3101,7 +3101,7 @@ fn http_request_deadline_scope_restores_and_expired_request_cannot_initialize()
     let root = Root::new();
     let mut service = root.service()?;
     let previous = std::time::Instant::now() + std::time::Duration::from_secs(30);
-    service.request_deadline = Some(previous);
+    let previous_scope = crate::request_deadline::RequestDeadlineScope::enter(previous);
     for forwarded in [false, true] {
         let response = service.begin_request_before(
             ServiceRequest::new("GET", "sys/health", "", "", Value::Null),
@@ -3109,7 +3109,7 @@ fn http_request_deadline_scope_restores_and_expired_request_cannot_initialize()
             forwarded,
         );
         assert!(matches!(response, RequestExecution::Complete(_)));
-        assert_eq!(service.request_deadline, Some(previous));
+        assert_eq!(crate::request_deadline::current(), Some(previous));
         let response = service.begin_request_before(
             ServiceRequest::new(
                 "POST",
@@ -3125,16 +3125,66 @@ fn http_request_deadline_scope_restores_and_expired_request_cannot_initialize()
             response,
             RequestExecution::Complete(Response { status: 503, .. })
         ));
-        assert_eq!(service.request_deadline, Some(previous));
+        assert_eq!(crate::request_deadline::current(), Some(previous));
         assert!(service.seal.is_none());
         assert!(service.state.is_none());
     }
-    service.request_deadline = None;
+    drop(previous_scope);
     let _ = service.begin_request_before(
         ServiceRequest::new("GET", "sys/health", "", "", Value::Null),
         std::time::Instant::now() + std::time::Duration::from_secs(1),
         false,
     );
-    assert!(service.request_deadline.is_none());
+    assert!(crate::request_deadline::current().is_none());
+    Ok(())
+}
+
+#[test]
+fn original_http_deadline_bounds_a_contended_ha_lock_without_poisoning_next_request()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let process = crate::ha::request_deadline_tests::process(&root.path.join("raft"))?;
+    let ha = Arc::new(Mutex::new(process));
+    service.ha = Some(Arc::clone(&ha));
+    let digest_before = service.state_digest;
+    let held = ha.lock().map_err(|_| "test HA poisoned")?;
+    let (send, receive) = std::sync::mpsc::channel();
+    let worker = std::thread::spawn(move || {
+        let execution = service.begin_request_before(
+            ServiceRequest::new("GET", "secret/data/missing", "", &token, Value::Null),
+            std::time::Instant::now() + Duration::from_millis(60),
+            false,
+        );
+        let status = match execution {
+            RequestExecution::Complete(response) => response.status,
+            RequestExecution::External(_) => 0,
+        };
+        let cleared = crate::request_deadline::current().is_none();
+        let _ = send.send(status);
+        (service, cleared)
+    });
+    // The production Service dispatch must finish while the HA lock is still
+    // held. Release it even on failure, so this regression cannot hang Cargo.
+    let status = receive.recv_timeout(Duration::from_secs(2));
+    drop(held);
+    let (mut service, cleared) = worker.join().map_err(|_| "request thread panicked")?;
+    assert_eq!(status?, 503);
+    assert!(cleared);
+    assert_eq!(service.state_digest, digest_before);
+    ha.lock_for_request()
+        .map_err(|_| "HA did not recover")?
+        .ensure_linearizable()?;
+    service.ha = None;
+    assert!(matches!(
+        service.begin_request_before(
+            ServiceRequest::new("GET", "sys/health", "", "", Value::Null),
+            std::time::Instant::now() + Duration::from_secs(1),
+            false,
+        ),
+        RequestExecution::Complete(Response { status: 200, .. })
+    ));
+    assert!(crate::request_deadline::current().is_none());
     Ok(())
 }
