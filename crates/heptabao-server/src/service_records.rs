@@ -17,6 +17,43 @@ pub(super) struct RecordPlan {
     pub objects: Vec<Arc<StagedObject>>,
 }
 
+/// Keep the first occurrence in child-first order, but reject an ID that hides
+/// conflicting authenticated metadata or bytes. A pending batch is not yet in
+/// durable.get, so admission and execution must consume the same unique set.
+fn unique_object_positions<'a>(
+    objects: impl IntoIterator<Item = (&'a ObjectRef, &'a [u8])>,
+) -> Result<Vec<usize>, ServiceError> {
+    let mut seen = BTreeMap::<ObjectId, (&ObjectRef, &[u8])>::new();
+    let mut positions = Vec::new();
+    for (position, (reference, bytes)) in objects.into_iter().enumerate() {
+        if let Some((prior_reference, prior_bytes)) = seen.get(&reference.id) {
+            if *prior_reference != reference || *prior_bytes != bytes {
+                return Err(ServiceError::CorruptState);
+            }
+        } else {
+            seen.insert(reference.id, (reference, bytes));
+            positions.push(position);
+        }
+    }
+    Ok(positions)
+}
+
+fn unique_record_objects(
+    objects: &[Arc<StagedObject>],
+) -> Result<Vec<Arc<StagedObject>>, ServiceError> {
+    unique_object_positions(
+        objects
+            .iter()
+            .map(|object| (object.reference(), object.bytes())),
+    )
+    .map(|positions| {
+        positions
+            .into_iter()
+            .map(|i| Arc::clone(&objects[i]))
+            .collect()
+    })
+}
+
 fn unavailable() -> Response {
     Response::error(503, "record state failed authenticated validation")
 }
@@ -518,8 +555,8 @@ impl Service {
         if target < durable.replay_epoch() {
             return Err(ServiceError::ReplayEpochMismatch);
         }
-        let objects = plan
-            .objects
+        let unique_objects = unique_record_objects(&plan.objects)?;
+        let objects = unique_objects
             .iter()
             .map(|object| (object.reference().resource(), object.bytes()))
             .collect::<Vec<_>>();
@@ -542,7 +579,7 @@ impl Service {
         let key = plan.root.address_key();
         let mut mutations = Vec::new();
         let mut batch = 0_usize;
-        for object in &plan.objects {
+        for object in &unique_objects {
             let reference = object.reference();
             reference
                 .verify(&key, object.bytes())
@@ -634,6 +671,7 @@ impl Service {
                     objects.push(object);
                 }
             }
+            let objects = unique_record_objects(&objects).map_err(|_| unavailable())?;
             (state, objects)
         };
         let plan = RecordPlan {
@@ -788,6 +826,71 @@ mod tests {
             204
         );
     }
+    #[test]
+    fn object_dedup_preserves_order_and_rejects_reference_or_byte_conflicts() -> TestResult {
+        let key = crate::state_records::AddressKey::from_bytes([71; 32]);
+        let first = StagedObject::owner_chunk(&key, b"first")?;
+        let second = StagedObject::owner_chunk(&key, b"second")?;
+        let input = vec![Arc::clone(&first), Arc::clone(&second), Arc::clone(&first)];
+        let unique = unique_record_objects(&input)?;
+        assert_eq!(unique.len(), 2);
+        assert!(Arc::ptr_eq(&unique[0], &first));
+        assert!(Arc::ptr_eq(&unique[1], &second));
+        let mut changed_reference = first.reference().clone();
+        changed_reference.payload_bytes += 1;
+        assert!(matches!(
+            unique_object_positions([
+                (first.reference(), first.bytes()),
+                (&changed_reference, first.bytes()),
+            ]),
+            Err(ServiceError::CorruptState)
+        ));
+        let mut changed_bytes = Zeroizing::new(first.bytes().to_vec());
+        *changed_bytes.last_mut().ok_or("empty object")? ^= 1;
+        assert!(matches!(
+            unique_object_positions([
+                (first.reference(), first.bytes()),
+                (first.reference(), changed_bytes.as_slice()),
+            ]),
+            Err(ServiceError::CorruptState)
+        ));
+        Ok(())
+    }
+
+    #[test]
+    fn duplicate_unpersisted_objects_publish_once_and_reopen_the_same_graph() -> TestResult {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (key, token) = bootstrap(&mut service)?;
+        mount(&mut service, &token);
+        let mut next = service.state.clone().ok_or("state")?;
+        next.engines
+            .handle("", "PUT", "records/shared", &json!({"value":"kept"}), 100)?;
+        let mut plan = service.prepare_record_plan(&next).map_err(|_| "plan")?;
+        assert!(!plan.objects.is_empty());
+        assert!(plan.objects.len() < heptabao_durable_service::MAX_ATOMIC_MUTATIONS / 2);
+        let duplicates = plan.objects.clone();
+        plan.objects.extend(duplicates);
+        let durable = service.durable.as_mut().ok_or("durable")?;
+        let generation = durable.generation();
+        Service::persist_record_batch(durable, &plan, "duplicate-object-sync")?;
+        assert_eq!(durable.generation(), generation + 1);
+        let restored = Service::materialize_record_state(&plan.root, &DurableReader(durable))
+            .map_err(|_| "published graph")?;
+        assert_eq!(restored.engines.record_root(), next.engines.record_root());
+        drop(service);
+        let mut reopened = directory.service()?;
+        assert_eq!(
+            call(&mut reopened, "PUT", "sys/unseal", "", json!({"key":key})).status,
+            200
+        );
+        assert_eq!(
+            call(&mut reopened, "GET", "records/shared", &token, json!({})).body["data"]["value"],
+            "kept"
+        );
+        Ok(())
+    }
+
     #[test]
     fn first_dispatch_mutation_publishes_one_atomic_root_and_reopens() -> TestResult {
         let directory = Root::new();
