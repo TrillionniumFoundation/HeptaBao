@@ -291,8 +291,9 @@ secret ID within the exact namespace, checks expiry and use limits, decrements
 the secret ID and issues an orphan service token in one durable transaction.
 
 `bind_secret_id` defaults to true; setting it to false enables the bounded
-role-ID-only login path and rejects an unnecessary SecretID. The default
-secret ID is valid for one hour and one login. Requested secret-ID TTL/use
+role-ID-only login path and ignores an optional SecretID. New roles default
+SecretID lifetime and use count to zero (unlimited); existing positive values
+remain unchanged. Requested secret-ID TTL/use
 overrides may reduce the role's limits but cannot increase or remove a positive
 limit. Role configuration may explicitly select zero for an unlimited secret-ID
 lifetime or use count. `token_period` can be set up to the service maximum to
@@ -308,11 +309,27 @@ by bearer or accessor. Role IDs can be changed, but duplicate role IDs within a
 namespace and mount are rejected. No secret-ID bearer can be recovered after
 its initial successful creation response.
 
+New role token TTL and maximum default independently to zero, resolving the
+current auth mount at login and renewal. Omitted or null duration updates
+preserve values; explicit zero restores inheritance or removes that configured
+duration. Null count fields select zero. A positive SecretID TTL is clipped to
+its own AppRole mount maximum only at issuance; later role/tune changes leave
+issued expiry and remaining uses intact. A zero SecretID TTL stays unlimited.
+
+New SecretID lookup includes its original requested TTL, creation time and last
+update time, separately from its actual clipped expiration. Finite successful
+uses update that time; unlimited uses do not. Exhaustion removes the record:
+raw SecretID lookup then returns 204, accessor lookup 404, and login 400.
+Historical records lack the new issuance facts; lookup never invents them.
+The candidate immediately rejects an expired SecretID. OpenBao 2.6.2 instead
+may accept it until periodic tidy runs, so this stricter boundary is tested
+separately and is not claimed as identical expiry behavior.
+
 Custom SecretIDs are supported through `role/:name/custom-secret-id` with an
 operator-supplied 1–256-byte value plus the role-bounded `ttl` and `num_uses`
 limits. The value is returned only in the successful creation response and is
-stored as a SHA-256 digest; duplicate values are rejected rather than replacing
-an existing SecretID's uses or expiry. This is a bounded subset: CIDR binding
+stored as a SHA-256 digest; duplicate active values are rejected rather than
+replacing an existing SecretID's uses or expiry. This is a bounded subset: CIDR binding
 on authentication methods, LDAP directory search/group-policy synchronization,
 batch tokens, cloud IAM, Kerberos auth, WebAuthn/push/external MFA,
 auth-plugin execution, complete OpenBao browser/UI semantics, and full

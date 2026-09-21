@@ -1,6 +1,8 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 use super::*;
 
+#[path = "auth_approle_defaults_tests.rs"]
+mod approle_defaults_tests;
 #[path = "auth_approle_renewal_tests.rs"]
 mod approle_renewal_tests;
 #[path = "auth_cert_renewal_tests.rs"]
@@ -855,6 +857,21 @@ fn approle_custom_secret_id_is_bounded_hashed_and_consumable() {
     let serialized = serde_json::to_string(&state).unwrap();
     assert!(!serialized.contains(secret_id));
 
+    let duplicate = state.handle(
+        Some(&root),
+        "team",
+        "POST",
+        "auth/approle/role/custom/custom-secret-id",
+        &json!({"secret_id": secret_id}),
+        100,
+    );
+    assert_eq!(
+        duplicate
+            .err()
+            .expect("duplicate custom secret ID must fail")
+            .status,
+        400
+    );
     let login_body = json!({"role_id": role_id, "secret_id": secret_id});
     assert!(
         state
@@ -872,21 +889,6 @@ fn approle_custom_secret_id_is_bounded_hashed_and_consumable() {
             .is_err()
     );
 
-    let duplicate = state.handle(
-        Some(&root),
-        "team",
-        "POST",
-        "auth/approle/role/custom/custom-secret-id",
-        &json!({"secret_id": secret_id}),
-        104,
-    );
-    assert_eq!(
-        duplicate
-            .err()
-            .expect("duplicate custom secret ID must fail")
-            .status,
-        400
-    );
     let invalid = state.handle(
         Some(&root),
         "team",
@@ -1459,7 +1461,7 @@ fn approle_destroy_and_policy_assignment_fail_closed() {
         "",
         "POST",
         "auth/approle/role/hepta",
-        json!({}),
+        json!({"secret_id_num_uses":1}),
         100,
     );
     let role_id = call(
@@ -2639,7 +2641,7 @@ fn custom_approle_mounts_isolate_role_ids_secret_ids_and_tidy() {
             "team",
             "POST",
             &format!("auth/{mount}/role/service"),
-            json!({}),
+            json!({"secret_id_num_uses":1}),
             100,
         );
         call(
@@ -2667,6 +2669,17 @@ fn custom_approle_mounts_isolate_role_ids_secret_ids_and_tidy() {
                 .to_owned(),
         );
     }
+    // Final-use login now removes its record immediately. Keep a separate
+    // expired credential so tidy still exercises the custom-mount boundary.
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/build/role/service/secret-id",
+        json!({"ttl":1}),
+        100,
+    );
     assert!(
         state
             .handle(

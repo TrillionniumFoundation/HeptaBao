@@ -296,7 +296,7 @@ fn token_api_period_is_snapshot_but_current_mount_caps_each_renewal() {
 }
 
 #[test]
-fn state_default_reaches_new_auth_mounts_without_extending_secret_id_defaults() {
+fn state_default_reaches_new_auth_mounts_without_rewriting_explicit_secret_limits() {
     for (legacy, expected) in [(false, MAX_TTL), (true, LEGACY_DEFAULT_TTL)] {
         let (mut state, _, root) = setup();
         if legacy {
@@ -310,7 +310,7 @@ fn state_default_reaches_new_auth_mounts_without_extending_secret_id_defaults() 
                 namespace,
                 "POST",
                 "auth/new-approle/role/app",
-                json!({}),
+                json!({"secret_id_ttl":3600}),
                 100,
             );
             let read = call(
@@ -322,9 +322,47 @@ fn state_default_reaches_new_auth_mounts_without_extending_secret_id_defaults() 
                 json!({}),
                 100,
             );
-            assert_eq!(read.body["data"]["token_ttl"], expected);
-            assert_eq!(read.body["data"]["token_max_ttl"], MAX_TTL);
+            assert_eq!(read.body["data"]["token_ttl"], 0);
+            assert_eq!(read.body["data"]["token_max_ttl"], 0);
             assert_eq!(read.body["data"]["secret_id_ttl"], 3600);
+            let role_id = call(
+                &mut state,
+                &root,
+                namespace,
+                "GET",
+                "auth/new-approle/role/app/role-id",
+                json!({}),
+                100,
+            )
+            .body["data"]["role_id"]
+                .as_str()
+                .unwrap()
+                .to_owned();
+            let secret = call(
+                &mut state,
+                &root,
+                namespace,
+                "POST",
+                "auth/new-approle/role/app/secret-id",
+                json!({}),
+                100,
+            )
+            .body["data"]["secret_id"]
+                .as_str()
+                .unwrap()
+                .to_owned();
+            let issued = state
+                .handle(
+                    None,
+                    namespace,
+                    "POST",
+                    "auth/new-approle/login",
+                    &json!({"role_id":role_id,"secret_id":secret}),
+                    100,
+                )
+                .unwrap()
+                .unwrap();
+            assert_eq!(issued.body["auth"]["lease_duration"], expected);
             call(
                 &mut state,
                 &root,
@@ -343,7 +381,7 @@ fn state_default_reaches_new_auth_mounts_without_extending_secret_id_defaults() 
                 json!({}),
                 100,
             );
-            assert_eq!(read.body["data"]["token_ttl"], expected);
+            assert_eq!(read.body["data"]["token_ttl"], 0);
             assert_eq!(read.body["data"]["secret_id_ttl"], 3600);
         }
     }

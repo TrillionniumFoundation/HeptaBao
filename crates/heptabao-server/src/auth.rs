@@ -86,7 +86,6 @@ pub(crate) use provider_renewal::{ProviderRenewalObservation, ProviderRenewalPla
 pub(crate) use radius::{RadiusRenewalObservation, RadiusRenewalPlan};
 
 const LEGACY_DEFAULT_TTL: u64 = 3600;
-const DEFAULT_SECRET_ID_TTL: u64 = 3600;
 const MAX_TTL: u64 = 32 * 24 * 3600;
 const PASSWORD_ROUNDS: u32 = 600_000;
 const MFA_SEED_BYTES: usize = 32;
@@ -1210,8 +1209,8 @@ struct Role {
     token_max_ttl: u64,
     #[serde(default, skip_serializing_if = "is_zero")]
     token_period: u64,
-    /// A hard lifetime cap for tokens issued by this role.  Zero preserves
-    /// the legacy behavior and means that the role's token_max_ttl is used.
+    /// A hard lifetime cap captured at token issue. Zero leaves only the live
+    /// role and mount ordinary maximum; historical issued caps stay intact.
     #[serde(default, skip_serializing_if = "is_zero")]
     token_explicit_max_ttl: u64,
     token_num_uses: u64,
@@ -1230,6 +1229,10 @@ impl Drop for Role {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct SecretId {
+    /// Native issuance facts are absent from legacy records and cannot be
+    /// reconstructed from a mutable role or an absolute expiration timestamp.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    issuance: Option<approle_renewal::SecretIdIssuance>,
     accessor: String,
     expires_at: Option<u64>,
     uses_remaining: Option<u64>,
@@ -5600,18 +5603,17 @@ impl AuthState {
                 ],
             )?;
             reject_alias_pair(body, "policies", "token_policies")?;
-            let (mount_default_ttl, mount_max_ttl) = self.auth_mount_token_limits(scope, 0, 0)?;
             let mut role = existing.unwrap_or(Role {
                 role_id: random_id("role.")?,
                 bind_secret_id: true,
                 policies: BTreeSet::from(["default".into()]),
-                token_ttl: mount_default_ttl,
-                token_max_ttl: mount_max_ttl,
+                token_ttl: 0,
+                token_max_ttl: 0,
                 token_period: 0,
                 token_explicit_max_ttl: 0,
                 token_num_uses: 0,
-                secret_id_ttl: DEFAULT_SECRET_ID_TTL,
-                secret_id_num_uses: 1,
+                secret_id_ttl: 0,
+                secret_id_num_uses: 0,
                 secret_ids: BTreeMap::new(),
             });
             role.bind_secret_id = boolean(body, "bind_secret_id", role.bind_secret_id)?;
@@ -5626,29 +5628,23 @@ impl AuthState {
                 true,
             )?;
             self.validate_assignment(actor, &role.policies)?;
-            role.token_ttl = duration(body, "token_ttl", role.token_ttl)?;
-            role.token_max_ttl = duration(body, "token_max_ttl", role.token_max_ttl)?;
-            normalize_ttl(
-                &mut role.token_ttl,
-                &mut role.token_max_ttl,
-                mount_default_ttl,
-                mount_max_ttl,
+            role.token_ttl = approle_renewal::role_duration(body, "token_ttl", role.token_ttl)?;
+            role.token_max_ttl =
+                approle_renewal::role_duration(body, "token_max_ttl", role.token_max_ttl)?;
+            role.token_period =
+                approle_renewal::role_duration(body, "token_period", role.token_period)?;
+            role.token_explicit_max_ttl = approle_renewal::role_duration(
+                body,
+                "token_explicit_max_ttl",
+                role.token_explicit_max_ttl,
             )?;
-            role.token_period = duration(body, "token_period", role.token_period)?;
-            if role.token_period > MAX_TTL {
-                return Err(bad("token_period exceeds maximum TTL"));
-            }
-            role.token_explicit_max_ttl =
-                duration(body, "token_explicit_max_ttl", role.token_explicit_max_ttl)?;
-            if role.token_explicit_max_ttl > MAX_TTL {
-                return Err(bad("token_explicit_max_ttl exceeds maximum TTL"));
-            }
-            role.token_num_uses = number(body, "token_num_uses", role.token_num_uses)?;
-            role.secret_id_ttl = duration(body, "secret_id_ttl", role.secret_id_ttl)?;
-            if role.secret_id_ttl > MAX_TTL {
-                return Err(bad("secret_id TTL exceeds maximum"));
-            }
-            role.secret_id_num_uses = number(body, "secret_id_num_uses", role.secret_id_num_uses)?;
+            role.token_num_uses =
+                approle_renewal::role_count(body, "token_num_uses", role.token_num_uses)?;
+            role.secret_id_ttl =
+                approle_renewal::role_duration(body, "secret_id_ttl", role.secret_id_ttl)?;
+            role.secret_id_num_uses =
+                approle_renewal::role_count(body, "secret_id_num_uses", role.secret_id_num_uses)?;
+            approle_renewal::validate_role_limits(&role)?;
             self.roles_at_mut(scope).insert(name.into(), role);
             return Ok(empty(true));
         }
@@ -5691,8 +5687,9 @@ impl AuthState {
                 } else {
                     reject_unknown(body, &["ttl", "num_uses"])?;
                 }
-                let ttl = duration(body, "ttl", role.secret_id_ttl)?;
-                let num_uses = number(body, "num_uses", role.secret_id_num_uses)?;
+                let ttl = approle_renewal::role_duration(body, "ttl", role.secret_id_ttl)?;
+                let num_uses =
+                    approle_renewal::role_count(body, "num_uses", role.secret_id_num_uses)?;
                 if ttl > MAX_TTL
                     || role.secret_id_ttl > 0 && (ttl == 0 || ttl > role.secret_id_ttl)
                     || role.secret_id_num_uses > 0
@@ -5700,6 +5697,15 @@ impl AuthState {
                 {
                     return Err(bad("secret_id constraints exceed role limits"));
                 }
+                // Zero explicitly means no expiration, including when the
+                // mount has a finite maximum. Positive credentials are capped
+                // once at issue; future role/tune changes never rewrite them.
+                let requested_ttl = ttl;
+                let ttl = if ttl == 0 {
+                    0
+                } else {
+                    ttl.min(self.auth_mount_lease_defaults(scope)?.1)
+                };
                 let raw = if custom {
                     let value = string_field(body, "secret_id")?;
                     if value.is_empty() || value.len() > 256 {
@@ -5722,6 +5728,7 @@ impl AuthState {
                 role.secret_ids.insert(
                     secret_hash,
                     SecretId {
+                        issuance: Some(approle_renewal::SecretIdIssuance::new(requested_ttl, now)),
                         accessor: accessor.clone(),
                         expires_at,
                         uses_remaining: unlimited_zero(num_uses),
@@ -5756,15 +5763,20 @@ impl AuthState {
                 } else {
                     hash(string_field(body, "secret_id")?)
                 };
-                let secret = role
-                    .secret_ids
-                    .get(&id)
-                    .ok_or_else(|| err(404, "secret_id not found"))?;
+                let secret = match role.secret_ids.get(&id) {
+                    Some(secret) => secret,
+                    None if operation == "secret-id/lookup" => return Ok(empty(false)),
+                    None => return Err(err(404, "secret_id not found")),
+                };
                 if operation.ends_with("/lookup") {
-                    return Ok(response(
-                        json!({"secret_id_accessor": secret.accessor, "secret_id_num_uses": secret.uses_remaining.unwrap_or(0), "expiration_time_unix": secret.expires_at}),
-                        false,
-                    ));
+                    if secret.uses_remaining == Some(0) {
+                        return if by_accessor {
+                            Err(err(404, "secret_id not found"))
+                        } else {
+                            Ok(empty(false))
+                        };
+                    }
+                    return Ok(response(approle_renewal::secret_id_info(secret), false));
                 }
                 if let Some((mut stored_id, _)) = role.secret_ids.remove_entry(&id) {
                     stored_id.zeroize();
@@ -5791,24 +5803,41 @@ impl AuthState {
         let role_id = string_field(body, "role_id")?;
         let secret_id = body.get("secret_id").and_then(Value::as_str);
         if role_id.len() > 256 || secret_id.is_some_and(|value| value.len() > 256) {
-            return Err(denied());
+            return Err(bad("invalid role or secret ID"));
         }
         let (name, mut role) = self
             .roles_at(scope)
             .and_then(|roles| roles.iter().find(|(_, role)| role.role_id == role_id))
             .map(|(name, role)| (name.clone(), role.clone()))
-            .ok_or_else(denied)?;
+            .ok_or_else(|| bad("invalid role or secret ID"))?;
         if role.bind_secret_id {
-            let secret_id = secret_id.ok_or_else(denied)?;
+            let secret_id = secret_id.ok_or_else(|| bad("invalid role or secret ID"))?;
             let id = hash(secret_id);
-            let secret = role.secret_ids.get_mut(&id).ok_or_else(denied)?;
-            if secret.expires_at.is_some_and(|expiry| now >= expiry)
-                || secret.uses_remaining == Some(0)
-            {
+            let secret = role
+                .secret_ids
+                .get_mut(&id)
+                .ok_or_else(|| bad("invalid role or secret ID"))?;
+            if secret.expires_at.is_some_and(|expiry| now >= expiry) {
+                // OpenBao removes expired SecretIDs asynchronously. This
+                // implementation retains its immediate expiry boundary.
                 return Err(denied());
             }
-            if let Some(remaining) = &mut secret.uses_remaining {
+            if secret.uses_remaining == Some(0) {
+                return Err(bad("invalid role or secret ID"));
+            }
+            let exhausted = if let Some(remaining) = &mut secret.uses_remaining {
                 *remaining -= 1;
+                if *remaining > 0
+                    && let Some(issuance) = secret.issuance.as_mut()
+                {
+                    issuance.record_use(now);
+                }
+                *remaining == 0
+            } else {
+                false
+            };
+            if exhausted && let Some((mut stored_id, _)) = role.secret_ids.remove_entry(&id) {
+                stored_id.zeroize();
             }
         }
         let (token_ttl, token_max_ttl) =

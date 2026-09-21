@@ -29,7 +29,7 @@ use zeroize::{Zeroize, Zeroizing};
 use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 
-const CURRENT_STATE_SCHEMA: u32 = 33;
+const CURRENT_STATE_SCHEMA: u32 = 34;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -6617,6 +6617,10 @@ mod openapi_service_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "auth_mount_ttl_tests.rs"]
 mod auth_mount_ttl_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_approle_defaults_tests.rs"]
+mod approle_defaults_tests;
 
 #[cfg(all(test, target_os = "linux"))]
 #[path = "service_radius_renewal_tests.rs"]

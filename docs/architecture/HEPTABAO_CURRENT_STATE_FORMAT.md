@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **33**. Its source constant is
+The current Service state schema is **34**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -72,7 +72,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 30 | Native JWT bound-claim rules and native LDAP default-policy and policy-list-presence semantics; Kubernetes role and direct-token source constraints must be absent. |
 | 31 | Kubernetes role source constraints and their issued-token snapshots; zero JWT role TTL or maximum must be absent. |
 | 32 | JWT role zero-value TTL and maximum inheritance; system default and Token API grant metadata must be absent. |
-| 33 | Current format, adding persisted system lease defaults and the last granted Token API lease duration. |
+| 33 | Persisted system lease defaults and the last granted Token API lease duration; zero AppRole token TTL/max and SecretID issuance metadata must be absent. |
+| 34 | Current format, adding native AppRole token TTL inheritance and SecretID issuance facts. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Every schema 1–4 record additionally rejects online authentication state or a
@@ -270,8 +271,18 @@ retain the conservative historical one-hour renewal request until their next
 successful grant is recorded. Ambiguous old absolute caps remain unchanged.
 An old record's missing metadata is not evidence of native historical defaults.
 
+Schema 34 is required for an AppRole token TTL or maximum of zero, or any
+SecretID issuance metadata. New roles inherit token limits dynamically and
+default SecretID lifetime and uses to zero. Historical positive values are
+preserved. SecretID zero lifetime/uses alone never imply schema 34: older
+versions already supported explicit zero. New issuance stores the original
+requested TTL and creation/update times separately from the mount-clipped
+expiry. Old records with missing facts retain their known expiry and remaining
+uses without fabricated timestamps or TTL. Finite successful uses update the
+record, and exhaustion removes it atomically with token issuance.
+
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 33. An authenticated
+it. Initialization and committed mutations use schema 34. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -285,7 +296,7 @@ regressions; it does not replace native execution or prove all prose complete.
 
 The application discriminator is separate from HBS2/HBJ2/HBL2/HBA1 storage and
 HA framing. An old binary must refuse unsupported state, not deserialize only
-fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-32 binary cannot read schema-33 state.
+fields it happens to know. Keep a rollback binary compatible with the actual committed schema, HA and provider formats; a schema-33 binary cannot read schema-34 state.
 
 Direct RADIUS and LDAP tokens retain bounded provider credentials inside encrypted Auth
 state for provider-checked renewal. Credentials are zeroized on drop and are not

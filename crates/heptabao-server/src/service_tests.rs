@@ -2935,7 +2935,7 @@ fn public_approle_login_ignores_unrelated_bearer_without_bypassing_credentials()
             json!({"role_id":role.body["data"]["role_id"],"secret_id":"incorrect"})
         )
         .status,
-        403
+        400
     );
     assert_eq!(
         call(
