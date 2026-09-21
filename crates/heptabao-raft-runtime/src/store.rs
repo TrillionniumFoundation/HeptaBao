@@ -43,15 +43,9 @@ fn invalid(message: impl Into<String>) -> io::Error {
 }
 
 fn crc32(bytes: &[u8]) -> u32 {
-    let mut crc = 0xffff_ffff_u32;
-    for byte in bytes {
-        crc ^= u32::from(*byte);
-        for _ in 0..8 {
-            let mask = 0_u32.wrapping_sub(crc & 1);
-            crc = (crc >> 1) ^ (0xedb8_8320 & mask);
-        }
-    }
-    !crc
+    // IEEE CRC32, identical to the persisted frame format. Avoid eight scalar
+    // polynomial rounds per byte while holding the state-machine writer.
+    crc32fast::hash(bytes)
 }
 
 fn encode_envelope(magic: [u8; 8], payload: &[u8]) -> io::Result<Vec<u8>> {
@@ -276,7 +270,9 @@ fn atomic_write(path: &Path, magic: [u8; 8], payload: &[u8]) -> io::Result<()> {
         std::process::id(),
         sequence
     ));
-    let encoded = encode_envelope(magic, payload)?;
+    // Keep the existing frame bytes without allocating another full artifact.
+    let length = u64::try_from(payload.len()).map_err(|_| invalid("payload length overflow"))?;
+    let checksum = crc32(payload).to_le_bytes();
     let current_exists = regular_file_status(path, "durable current generation")?;
 
     let result = (|| -> io::Result<()> {
@@ -284,7 +280,10 @@ fn atomic_write(path: &Path, magic: [u8; 8], payload: &[u8]) -> io::Result<()> {
             .create_new(true)
             .write(true)
             .open(&temporary)?;
-        file.write_all(&encoded)?;
+        file.write_all(&magic)?;
+        file.write_all(&length.to_le_bytes())?;
+        file.write_all(payload)?;
+        file.write_all(&checksum)?;
         file.flush()?;
         file.sync_all()?;
         drop(file);
@@ -1776,6 +1775,54 @@ mod tests {
     use tokio::sync::Mutex;
 
     static TEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+    #[test]
+    fn durable_crc_matches_independent_ieee_vectors_and_legacy_frames() {
+        assert_eq!(super::crc32(b"123456789"), 0xcbf4_3926);
+        for (length, expected) in [
+            (0, 0x00000000),
+            (1, 0xd202ef8d),
+            (31, 0x4d786d77),
+            (32, 0x91267e8a),
+            (63, 0xdbdea683),
+            (64, 0x100ece8c),
+            (255, 0xd32f9ba0),
+            (256, 0x29058c73),
+            (4096, 0xa2912082),
+            (65539, 0xbbcc862a),
+        ] {
+            let bytes: Vec<u8> = (0..length).map(|n| (n % 256) as u8).collect();
+            assert_eq!(super::crc32(&bytes), expected);
+            // Construct a historical frame with its independent checksum.
+            let mut frame = Vec::new();
+            frame.extend_from_slice(&super::STATE_BUNDLE_MAGIC);
+            frame.extend_from_slice(&(length as u64).to_le_bytes());
+            frame.extend_from_slice(&bytes);
+            frame.extend_from_slice(&expected.to_le_bytes());
+            assert_eq!(
+                super::decode_envelope(super::STATE_BUNDLE_MAGIC, &frame).expect("legacy CRC"),
+                bytes
+            );
+        }
+    }
+
+    #[test]
+    fn atomic_artifact_writer_preserves_exact_historical_frame_bytes() {
+        let root = root("segmented-artifact-frame");
+        fs::create_dir_all(&root).expect("create fixture");
+        let path = root.join("artifact.bin");
+        for size in [0, 31, 4096, 65539] {
+            let payload: Vec<u8> = (0..size).map(|n| (n % 256) as u8).collect();
+            super::atomic_write(&path, super::STATE_BUNDLE_MAGIC, &payload)
+                .expect("write artifact");
+            assert_eq!(
+                fs::read(&path).expect("read frame"),
+                super::encode_envelope(super::STATE_BUNDLE_MAGIC, &payload)
+                    .expect("old frame shape")
+            );
+        }
+        fs::remove_dir_all(root).expect("cleanup");
+    }
 
     #[test]
     fn payload_corruption_helper_produces_rejected_envelope() {
