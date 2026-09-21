@@ -32,7 +32,8 @@ pub(super) fn secret_id_info(secret: &SecretId) -> Value {
         "expiration_time_unix": secret.expires_at,
         "expiration_time": secret.expires_at.map(crate::engines::timestamp)
             .unwrap_or_else(|| "0001-01-01T00:00:00Z".into()),
-        "metadata": {}, "cidr_list": [], "token_bound_cidrs": []
+        "metadata": {}, "cidr_list": secret.cidr_list.as_deref().unwrap_or_default(),
+        "token_bound_cidrs": secret.token_bound_cidrs.as_deref().unwrap_or_default()
     });
     if let Some(issued) = &secret.issuance {
         info["secret_id_ttl"] = json!(issued.ttl);

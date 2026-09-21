@@ -554,3 +554,193 @@ fn approle_source_rejection_storage_failure_rolls_back_and_invalid_sid_does_not_
     }
     Ok(())
 }
+
+fn restricted_secret_credentials(
+    service: &mut Service,
+    admin: &str,
+    kind: &str,
+    uses: u64,
+) -> Result<Value, Box<dyn std::error::Error>> {
+    let mut credentials = credentials(service, admin, kind, uses)?;
+    let sid = call(
+        service,
+        "POST",
+        "auth/approle/role/example/secret-id",
+        admin,
+        json!({"cidr_list":["127.0.0.1/32"],"token_bound_cidrs":["127.0.0.2/32"]}),
+    );
+    assert_eq!(sid.status, 200);
+    credentials["secret_id"] = sid.body["data"]["secret_id"].clone();
+    Ok(credentials)
+}
+
+#[test]
+fn approle_sid_source_and_subset_denials_persist_only_consumption_and_reopen() -> TestResult {
+    for kind in ["service", "batch"] {
+        for uses in [0, 1, 2] {
+            for subset_denied in [false, true] {
+                let root = Root::new();
+                let mut service = root.service()?;
+                let (key, admin) = bootstrap(&mut service)?;
+                let credentials = restricted_secret_credentials(&mut service, &admin, kind, uses)?;
+                if subset_denied {
+                    assert_eq!(
+                        call(
+                            &mut service,
+                            "POST",
+                            "auth/approle/role/example",
+                            &admin,
+                            json!({"secret_id_bound_cidrs":["127.0.0.2/32"]})
+                        )
+                        .status,
+                        204
+                    );
+                }
+                let auth_before = without_secret_ids(&service.state.as_ref().ok_or("state")?.auth)?;
+                let engine_before =
+                    owner_store::serialize_owner(&service.state.as_ref().ok_or("state")?.engines)
+                        .map_err(|_| "engine")?;
+                service.record_writes_since_gc = 0;
+                let rejected =
+                    source_login(&mut service, &credentials, Some("127.0.0.2"), Some(60));
+                assert_eq!(rejected.status, if subset_denied { 500 } else { 400 });
+                no_credentials(&rejected);
+                assert_eq!(
+                    service.record_writes_since_gc,
+                    if uses == 0 { 0 } else { 1 }
+                );
+                assert!(
+                    auth_before.as_slice()
+                        == without_secret_ids(&service.state.as_ref().ok_or("state")?.auth)?
+                            .as_slice()
+                );
+                assert!(
+                    engine_before.as_slice()
+                        == owner_store::serialize_owner(
+                            &service.state.as_ref().ok_or("state")?.engines
+                        )
+                        .map_err(|_| "engine")?
+                        .as_slice()
+                );
+                drop(service);
+                let mut reopened = root.service()?;
+                assert_eq!(
+                    call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+                    200
+                );
+                let info = secret_info(&mut reopened, &admin, &credentials);
+                if uses == 1 {
+                    assert_eq!(info.status, 204);
+                } else {
+                    assert_eq!(
+                        info.body["data"]["secret_id_num_uses"],
+                        if uses == 0 { 0 } else { 1 }
+                    );
+                    assert_eq!(info.body["data"]["cidr_list"], json!(["127.0.0.1/32"]));
+                    assert_eq!(
+                        info.body["data"]["token_bound_cidrs"],
+                        json!(["127.0.0.2/32"])
+                    );
+                    assert_eq!(
+                        call(
+                            &mut reopened,
+                            "POST",
+                            "auth/approle/role/example",
+                            &admin,
+                            json!({"secret_id_bound_cidrs":[]})
+                        )
+                        .status,
+                        204
+                    );
+                    let accepted =
+                        source_login(&mut reopened, &credentials, Some("127.0.0.1"), None);
+                    assert_eq!(accepted.status, 200);
+                    assert_eq!(accepted.body["auth"]["token_type"], kind);
+                    let raw = accepted.body["auth"]["client_token"]
+                        .as_str()
+                        .ok_or("token")?;
+                    let auth = &reopened.state.as_ref().ok_or("state")?.auth;
+                    assert!(
+                        auth.authenticate_read_only_from(raw, 100, Some("127.0.0.1".parse()?))
+                            .is_err()
+                    );
+                    assert!(
+                        auth.authenticate_read_only_from(raw, 100, Some("127.0.0.2".parse()?))?
+                            .is_some()
+                    );
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn approle_sid_rejection_capacity_and_unknown_storage_outcomes_never_publish_credentials()
+-> TestResult {
+    for kind in ["service", "batch"] {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (key, admin) = bootstrap(&mut service)?;
+        let credentials = restricted_secret_credentials(&mut service, &admin, kind, 2)?;
+        let before = service.current_state_digest().map_err(|_| "digest")?;
+        let mut invalid = credentials.clone();
+        invalid["secret_id"] = json!("wrong-secret");
+        assert_eq!(
+            source_login(&mut service, &invalid, Some("127.0.0.2"), None).status,
+            400
+        );
+        assert_eq!(
+            service.current_state_digest().map_err(|_| "digest")?,
+            before
+        );
+        let capacity = service.state_capacity;
+        service.state_capacity = 1;
+        let rejected = source_login(&mut service, &credentials, Some("127.0.0.2"), Some(60));
+        assert_eq!(rejected.status, 507);
+        no_credentials(&rejected);
+        assert_eq!(
+            service.current_state_digest().map_err(|_| "digest")?,
+            before
+        );
+        service.state_capacity = capacity;
+        assert_eq!(
+            secret_info(&mut service, &admin, &credentials).body["data"]["secret_id_num_uses"],
+            2
+        );
+        service.record_writes_since_gc = 0;
+        fs::rename(
+            root.path.join("data/journal.hbj"),
+            root.path.join("data/journal.saved"),
+        )?;
+        fs::create_dir(root.path.join("data/journal.hbj"))?;
+        let failed = source_login(&mut service, &credentials, Some("127.0.0.2"), Some(60));
+        assert_eq!(failed.status, 503);
+        no_credentials(&failed);
+        assert!(service.recovery_required);
+        assert_eq!(
+            service.current_state_digest().map_err(|_| "digest")?,
+            before
+        );
+        assert_eq!(
+            source_login(&mut service, &credentials, Some("127.0.0.1"), None).status,
+            503
+        );
+        drop(service);
+        fs::remove_dir(root.path.join("data/journal.hbj"))?;
+        fs::rename(
+            root.path.join("data/journal.saved"),
+            root.path.join("data/journal.hbj"),
+        )?;
+        let mut reopened = root.service()?;
+        assert_eq!(
+            call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+            200
+        );
+        assert_eq!(
+            secret_info(&mut reopened, &admin, &credentials).body["data"]["secret_id_num_uses"],
+            2
+        );
+    }
+    Ok(())
+}

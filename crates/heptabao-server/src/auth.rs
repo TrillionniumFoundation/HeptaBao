@@ -1286,6 +1286,10 @@ impl Drop for Role {
 
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 struct SecretId {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    cidr_list: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_bound_cidrs: Option<Vec<String>>,
     /// Native issuance facts are absent from legacy records and cannot be
     /// reconstructed from a mutable role or an absolute expiration timestamp.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6221,10 +6225,20 @@ impl AuthState {
                 }
                 let custom = operation == "custom-secret-id";
                 if custom {
-                    reject_unknown(body, &["secret_id", "ttl", "num_uses"])?;
+                    reject_unknown(
+                        body,
+                        &[
+                            "secret_id",
+                            "ttl",
+                            "num_uses",
+                            "cidr_list",
+                            "token_bound_cidrs",
+                        ],
+                    )?;
                 } else {
-                    reject_unknown(body, &["ttl", "num_uses"])?;
+                    reject_unknown(body, &["ttl", "num_uses", "cidr_list", "token_bound_cidrs"])?;
                 }
+                let constraints = approle_secret_id_cidrs::issue(&role, body)?;
                 let ttl = approle_renewal::role_duration(body, "ttl", role.secret_id_ttl)?;
                 let num_uses =
                     approle_renewal::role_count(body, "num_uses", role.secret_id_num_uses)?;
@@ -6266,6 +6280,8 @@ impl AuthState {
                 role.secret_ids.insert(
                     secret_hash,
                     SecretId {
+                        cidr_list: constraints.source,
+                        token_bound_cidrs: constraints.token,
                         issuance: Some(approle_renewal::SecretIdIssuance::new(requested_ttl, now)),
                         accessor: accessor.clone(),
                         expires_at,
@@ -6350,6 +6366,7 @@ impl AuthState {
             .map(|(name, role)| (name.clone(), role.clone()))
             .ok_or_else(|| bad("invalid role or secret ID"))?;
         let mut credential_consumption = None;
+        let mut secret_constraints = None;
         if role.bind_secret_id {
             let secret_id = secret_id.ok_or_else(|| bad("invalid role or secret ID"))?;
             let id = hash(secret_id);
@@ -6366,6 +6383,7 @@ impl AuthState {
                 return Err(bad("invalid role or secret ID"));
             }
             let previous_secret = secret.clone();
+            secret_constraints = Some(approle_secret_id_cidrs::Constraints::from_secret(secret));
             let exhausted = if let Some(remaining) = &mut secret.uses_remaining {
                 *remaining -= 1;
                 if *remaining > 0
@@ -6392,17 +6410,24 @@ impl AuthState {
                 )?);
             }
         }
-        if let Err(error) = approle_secret_cidrs::check(&role, origin_peer) {
-            // Backend CIDR rejection consumes an authenticated finite SecretID,
-            // but never publishes this failed auth candidate or a credential.
-            // Service applies only the checked capsule to its admitted state.
-            return Ok(AuthResponse {
-                status: error.status,
-                body: json!({"errors":[error.message]}),
-                approle_secret_consumption: credential_consumption.map(Box::new),
-                ..empty(false)
-            });
-        }
+        // Finite SID consumption is authenticated before source/subset checks.
+        // A failed check carries only the existing affine consumption capsule.
+        let constraints =
+            approle_secret_id_cidrs::login(&role, secret_constraints.as_ref(), origin_peer);
+        let bound_cidrs = match constraints {
+            Ok(cidrs) => cidrs,
+            Err(error) => {
+                // Backend CIDR rejection consumes an authenticated finite SecretID,
+                // but never publishes this failed auth candidate or a credential.
+                // Service applies only the checked capsule to its admitted state.
+                return Ok(AuthResponse {
+                    status: error.status,
+                    body: json!({"errors":[error.message]}),
+                    approle_secret_consumption: credential_consumption.map(Box::new),
+                    ..empty(false)
+                });
+            }
+        };
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
         let explicit = (role.token_explicit_max_ttl > 0)
@@ -6417,7 +6442,7 @@ impl AuthState {
                     metadata: BTreeMap::from([("role_name".into(), name.clone())]),
                     display_name: format!("approle-{name}"),
                     path: format!("auth/{mount}/login"),
-                    bound_cidrs: role.token_bound_cidrs.clone().unwrap_or_default(),
+                    bound_cidrs: bound_cidrs.clone(),
                     issued_at: now,
                     expires_at: expiry,
                     parent: None,
@@ -6435,7 +6460,7 @@ impl AuthState {
                 format!("approle-{name}"),
                 now,
             )?;
-            token.bound_cidrs = role.token_bound_cidrs.clone().unwrap_or_default();
+            token.bound_cidrs = bound_cidrs;
             token.period = role.token_period;
             token.max_expires_at = explicit;
             token.expires_at = Some(expiry);
@@ -7042,3 +7067,9 @@ mod approle_secret_cidrs;
 #[cfg(test)]
 #[path = "auth_approle_secret_cidrs_tests.rs"]
 mod approle_secret_cidrs_tests;
+
+#[path = "auth_approle_secret_id_cidrs.rs"]
+mod approle_secret_id_cidrs;
+#[cfg(test)]
+#[path = "auth_approle_secret_id_cidrs_tests.rs"]
+mod approle_secret_id_cidrs_tests;

@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **45**. Its source constant is
+The current Service state schema is **46**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -84,7 +84,8 @@ custody, rotation and parent/sibling key separation remain open.
 | 42 | Explicit AppRole role/mount token-type configuration and Kubernetes typed lease ownership with separate Bao/provider expiry. Absent fields retain historical behavior and serialization. |
 | 43 | AppRole role token CIDR presence, including an explicit empty list, and constrained direct AppRole service-token snapshots. Historical absent role fields remain absent. |
 | 44 | Explicit ordinary JWT role/mount token types and trusted login alias metadata. Historical absent role types and empty backend metadata remain absent in stored bytes; user-maintained alias metadata keeps its own meaning. |
-| 45 | Optional AppRole role-level SecretID login source CIDRs, including an explicit empty list. The restriction is separate from issued-token CIDRs; older absent fields retain their bytes and meaning. |
+| 45 | Optional AppRole role-level SecretID login source CIDRs, including an explicit empty list. Per-SecretID source/token CIDR fields must remain absent; existing role constraints and issued tokens retain their meaning. |
+| 46 | Independent optional `cidr_list` and `token_bound_cidrs` fields on each AppRole SecretID. Presence of either field, including an empty list, requires this schema. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Schema 41 is required if any batch key authority, explicit token-type field, or
@@ -137,6 +138,23 @@ token snapshot. Failed source admission may publish only the existing checked
 finite-SecretID consumption capsule. It cannot publish its rejected Auth/Identity
 candidate; known publication failure preserves the previous count, while an
 unknown journal outcome fences service until recovery.
+
+Each SecretID's `cidr_list` and `token_bound_cidrs` independently require schema46
+when present. `AuthState::has_approle_secret_id_cidrs()` includes empty lists and
+all retained credentials in every namespace and AppRole mount, not only active
+ones. Schema45 remains explicitly admitted when both fields are absent. The
+older role-level schema43/45 gates remain independent.
+
+Absent SID fields retain `None` and are omitted from serialization. Explicit
+issuance fields, including null, empty string or empty list, store `Some([])`;
+omitting one field does not populate it from the other or from the current role.
+Lookup presents both absent and empty fields as `[]`, without rewriting old
+credentials, counts or expiry. Pure reads and reopen do not migrate them.
+Admission validates the stored numeric prefixes and mount association, but does
+not require them to remain subsets of a mutable role: administrators must be
+able to load and repair a changed role. Login rechecks the SID source subset;
+nonempty SID token overrides keep their issuance value and are not revalidated
+against later role token CIDRs.
 
 Ordinary JWT role `token_type` is optional in storage. Absence preserves old
 bytes while API reads report `default`; an explicit value, including `default`,
@@ -397,7 +415,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 45. An authenticated
+it. Initialization and committed mutations use schema 46. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.

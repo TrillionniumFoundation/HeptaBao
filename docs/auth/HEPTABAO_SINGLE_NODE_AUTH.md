@@ -481,9 +481,10 @@ Custom SecretIDs are supported through `role/:name/custom-secret-id` with an
 operator-supplied 1–256-byte value plus the role-bounded `ttl` and `num_uses`
 limits. The value is returned only in the successful creation response and is
 stored as a SHA-256 digest; duplicate active values are rejected rather than
-replacing an existing SecretID's uses or expiry. This is a bounded subset:
-per-SecretID CIDR overrides, batch issuance from the remaining authentication
-methods, cloud IAM, Kerberos auth, WebAuthn/push/external MFA,
+replacing an existing SecretID's uses or expiry. Random and custom issuance also
+accept the per-SecretID CIDR restrictions described under schema46 below. Batch
+issuance from the remaining authentication methods, cloud IAM, Kerberos auth,
+WebAuthn/push/external MFA,
 complete OpenBao browser/UI semantics, and full
 per-method field parity remain unsupported. AppRole roles support both the
 default SecretID-bound login and OpenBao's `bind_secret_id=false` role-ID-only
@@ -1219,9 +1220,9 @@ observations match the pinned calibration and each other; the three null-input
 observations separately verify the deliberate safe rejection. Source, binary
 and helpers remained unchanged and both secret scans passed. The pinned official handler
 panics on a null role `token_type`; HeptaBao deliberately returns bounded HTTP400
-instead. Per-SecretID CIDR overrides, arbitrary
-SecretID/alias metadata, other dedicated role subroutes and remaining configuration remain
-open. Existing SecretIDs and roles with absent type metadata retain their old
+instead. Per-SecretID CIDR overrides are implemented separately in schema46 below.
+Arbitrary SecretID/alias metadata, other dedicated role subroutes and remaining
+configuration remain open. Existing SecretIDs and roles with absent type metadata retain their old
 serialized shape; explicit type metadata requires schema42.
 
 The first dual run completed all 187 observations on each side, but found 23
@@ -1271,8 +1272,8 @@ The initial 46 AppRole tests, 38 format-focused tests and strict Clippy passed;
 the corrected candidate's live results follow below. The dedicated POST ignores
 unrelated inputs while updating only its own field, based on official source
 and a behavior regression; that extra-input case was not in the live probe.
-SecretID login CIDRs are a separate schema45 feature below; per-SecretID token-CIDR overrides and nonnumeric SockAddr
-variants remain outside this profile.
+Role login CIDRs and per-SecretID overrides are separate schema45/46 features
+below. Nonnumeric SockAddr variants remain outside this numeric profile.
 
 The first candidate dual run completed all 194 observations on each side. Its
 four renewal responses omitted `auth.orphan`, even though the stored AppRole
@@ -1342,8 +1343,9 @@ because a rejected one-use SecretID produced no token. Those two are not passing
 assertions. `approle_secret_cidrs_live.py` compares the 378 executed observations
 and retains those explicit omissions. The actual schema44-to-45 upgrade runner
 uses two old-binary stores, independent first-write reader gates and a real
-owned-journal permission fault followed by recovery. Per-SecretID `cidr_list` and `token_bound_cidrs` overrides,
-arbitrary SecretID metadata and other dedicated AppRole fields remain open.
+owned-journal permission fault followed by recovery. Per-SecretID overrides are
+a separate schema46 feature below; arbitrary SecretID metadata and other
+dedicated AppRole fields remain open.
 
 The first schema45 `dc259f8` dual run completed all 380 observations on each
 side. Fourteen SecretID reads differed only in `cidr_list`: the official result
@@ -1378,6 +1380,47 @@ Its receipt is retained on the SSD (SHA256
 `ec0d20fbcdcf1704286be70c47089f93c80eef05225a276133a767ddf9baf90f`).
 The successful rerun used a fresh private store and explicit restrictive umask;
 it did not alter that failed store, relax the guard or retry an uncertain mutation.
+
+## AppRole per-SecretID CIDR restrictions in schema46
+
+Random `secret-id` and `custom-secret-id` issuance accept `cidr_list` for login
+sources and `token_bound_cidrs` for the eventual bearer. Both accept numeric
+prefix lists or CSV; null, empty string and empty list mean an explicit empty
+list. Lookup by SecretID or accessor preserves prefix spelling and host bits.
+Bare IPs and malformed prefixes are rejected with 500; invalid field types with
+400. The existing bound of 128 ASCII entries, each at most 64 bytes, applies.
+
+At issuance, each SID network must fit a single current role network when that
+role list is nonempty; adjacent role networks cannot be combined to admit a
+larger SID range. Login rechecks SID source containment against the current role,
+then checks the trusted socket/HA origin against SID and role source constraints.
+A source mismatch returns 400; a failed subset check returns 500. Both happen
+after a valid finite SecretID is consumed, including its last use. Only that
+checked consumption may publish on failure, with no token, Identity or wrapper;
+invalid credentials and unlimited SID source failures have no use transition.
+
+A nonempty SID token list overrides the current role token list and is not
+rechecked against later role token changes. Empty or absent SID token lists use
+the current role at login. Service and batch grants retain the resulting issued
+snapshot; later role/SID changes do not rebind existing bearers or renewal.
+Source constraints alone do not become bearer constraints.
+
+Each stored field is independently optional. Historical absence remains absent;
+explicit presence, even `[]`, requires schema46. Reads return `[]` for both
+without filling old records. A changed role that makes a retained SID source
+incompatible remains loadable so the administrator can repair it.
+
+The [fixed OpenBao 2.6.2 probe](../../qa/openbao-acceptance/evidence/approle-secretid-overrides-official-c54e9b0.json)
+contains 31 scenarios and 812 observations: 666 HTTP projections and 146 paired
+read/snapshot comparisons. Four observations explicitly record no issued token
+after consuming a one-use SID; these are not successful bearer requests.
+`approle_secretid_overrides_live.py` requires both endpoints to match that exact
+calibration. The true schema45-to-46 upgrader uses four independent old stores
+to separate source-empty/source-bound/token-empty/token-bound first-write gates.
+Candidate dual, real upgrade and per-SID HA acceptance are still pending; the
+schema45 role-level receipts above do not qualify this new slice. Arbitrary
+SecretID/alias metadata, local-only SecretIDs, MFA and actual IPv6 source-socket
+coverage remain open for this profile.
 
 ## Kubernetes batch lease ownership in schema42
 

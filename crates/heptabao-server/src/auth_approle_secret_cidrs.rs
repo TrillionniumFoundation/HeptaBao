@@ -6,7 +6,7 @@ const FIELD: &str = "secret_id_bound_cidrs";
 const ALIAS: &str = "bound_cidr_list";
 const DEPRECATED: &str = "The \"bound_cidr_list\" field is deprecated and will be removed. Please use \"secret_id_bound_cidrs\" instead.";
 
-fn network(value: &str) -> Result<(IpAddr, u8), AuthError> {
+pub(super) fn network(value: &str) -> Result<(IpAddr, u8), AuthError> {
     if value.len() > 64 || !value.is_ascii() {
         return Err(bad("invalid SecretID source CIDR"));
     }
@@ -27,7 +27,7 @@ fn network(value: &str) -> Result<(IpAddr, u8), AuthError> {
     }
     Ok((ip, prefix))
 }
-fn parse(value: &Value, invalid_status: u16) -> Result<Vec<String>, AuthError> {
+pub(super) fn parse(value: &Value, invalid_status: u16) -> Result<Vec<String>, AuthError> {
     let values: Vec<&str> = match value {
         Value::Null => Vec::new(),
         Value::String(value) => value
@@ -74,6 +74,42 @@ fn ipv4_in(network: Ipv4Addr, prefix: u8, peer: Ipv4Addr) -> bool {
     u32::from(network) & mask == u32::from(peer) & mask
 }
 
+pub(super) fn contains(ip: IpAddr, prefix: u8, peer: IpAddr) -> bool {
+    let peer_v4 = match peer {
+        IpAddr::V4(ip) => Some(ip),
+        IpAddr::V6(ip) => ip.to_ipv4_mapped(),
+    };
+    match ip {
+        IpAddr::V4(ip) => peer_v4.is_some_and(|peer| ipv4_in(ip, prefix, peer)),
+        IpAddr::V6(ip) => {
+            let mask = if prefix == 0 {
+                0
+            } else {
+                u128::MAX << (128 - prefix)
+            };
+            // ParseCIDR masks the network before IPNet.Contains applies To4.
+            let ip = std::net::Ipv6Addr::from(u128::from(ip) & mask);
+            match ip.to_ipv4_mapped() {
+                // net.IPNet uses the last four mask bytes for mapped networks.
+                Some(ip) => {
+                    peer_v4.is_some_and(|peer| ipv4_in(ip, prefix.saturating_sub(96), peer))
+                }
+                None => match peer {
+                    IpAddr::V6(peer) if peer.to_ipv4_mapped().is_none() => {
+                        let mask = if prefix == 0 {
+                            0
+                        } else {
+                            u128::MAX << (128 - prefix)
+                        };
+                        u128::from(ip) & mask == u128::from(peer) & mask
+                    }
+                    _ => false,
+                },
+            }
+        }
+    }
+}
+
 pub(super) fn check(role: &Role, peer: Option<IpAddr>) -> Result<(), AuthError> {
     let Some(values) = role
         .secret_id_bound_cidrs
@@ -85,39 +121,7 @@ pub(super) fn check(role: &Role, peer: Option<IpAddr>) -> Result<(), AuthError> 
     let peer = peer.ok_or_else(|| err(500, "failed to get connection information"))?;
     for value in values {
         let (ip, prefix) = network(value)?;
-        let peer_v4 = match peer {
-            IpAddr::V4(ip) => Some(ip),
-            IpAddr::V6(ip) => ip.to_ipv4_mapped(),
-        };
-        let allowed = match ip {
-            IpAddr::V4(ip) => peer_v4.is_some_and(|peer| ipv4_in(ip, prefix, peer)),
-            IpAddr::V6(ip) => {
-                let mask = if prefix == 0 {
-                    0
-                } else {
-                    u128::MAX << (128 - prefix)
-                };
-                // ParseCIDR masks the network before IPNet.Contains applies To4.
-                let ip = std::net::Ipv6Addr::from(u128::from(ip) & mask);
-                match ip.to_ipv4_mapped() {
-                    // net.IPNet uses the last four mask bytes for mapped networks.
-                    Some(ip) => {
-                        peer_v4.is_some_and(|peer| ipv4_in(ip, prefix.saturating_sub(96), peer))
-                    }
-                    None => match peer {
-                        IpAddr::V6(peer) if peer.to_ipv4_mapped().is_none() => {
-                            let mask = if prefix == 0 {
-                                0
-                            } else {
-                                u128::MAX << (128 - prefix)
-                            };
-                            u128::from(ip) & mask == u128::from(peer) & mask
-                        }
-                        _ => false,
-                    },
-                }
-            }
-        };
+        let allowed = contains(ip, prefix, peer);
         if allowed {
             return Ok(());
         }

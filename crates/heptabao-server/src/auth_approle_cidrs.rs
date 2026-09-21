@@ -94,6 +94,7 @@ impl AuthState {
 
     pub(crate) fn validate_approle_token_bound_cidrs(&self) -> Result<(), AuthError> {
         self.validate_approle_secret_bound_cidrs()?;
+        self.validate_approle_secret_id_cidrs()?;
         for (namespace, roles) in &self.roles {
             self.validate_approle_role_cidrs(namespace, "approle", roles)?;
         }
