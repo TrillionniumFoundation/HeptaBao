@@ -45,6 +45,15 @@ def retained_role(current, old):
     return FIELD in current and current.pop(FIELD) is None and current == old
 
 
+def retained_secret(current, old):
+    """Only the corrected empty CIDR response may differ; no owner migration."""
+    if not isinstance(current, dict) or not isinstance(old, dict): return False
+    expected = dict(old)
+    if 'cidr_list' in expected and expected['cidr_list'] is None:
+        expected['cidr_list'] = []
+    return current == expected
+
+
 def old_reader_observed(rows):
     return any(row.get('case') in {mode+'_downgrade_unseal_status' for mode in MODES}
                and type(row.get('status')) is int for row in rows)

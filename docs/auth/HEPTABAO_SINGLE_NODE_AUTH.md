@@ -1321,6 +1321,13 @@ owned-journal permission fault followed by recovery. Candidate live results
 remain pending. Per-SecretID `cidr_list` and `token_bound_cidrs` overrides,
 arbitrary SecretID metadata and other dedicated AppRole fields remain open.
 
+The first schema45 `dc259f8` dual run completed all 380 observations on each
+side. Fourteen SecretID reads differed only in `cidr_list`: the official result
+was an empty list, while the candidate returned null. Readback now returns an
+empty list for the existing unrestricted SecretIDs without changing their
+serialized record, use count or expiry. The failed receipt remains on the SSD
+(SHA256 `1217d0ad3717e9bd701226d8a0a0ed43b4ac71d2c156b1a784302d5c7a588ea3`).
+
 ## Kubernetes batch lease ownership in schema42
 
 Kubernetes secrets issued for an existing ServiceAccount now carry typed Bao

@@ -19,7 +19,7 @@ from userpass_password_live import private_parent, safe_files
 from userpass_batch_upgrade import Trace as BaseTrace, initialize, make_instance, restart
 from jwt_batch_live import complete as legacy_complete, calibrated_rows as legacy_calibration
 from approle_secret_cidrs_upgrade_contract import (
-    FIELD, MODES, KINDS, complete, retained_role, admit_legacy, old_reader_observed, denied_journal_append)
+    FIELD, MODES, KINDS, complete, retained_role, retained_secret, admit_legacy, old_reader_observed, denied_journal_append)
 
 BOUND = ['127.0.0.1/32']
 VALUE = {'value': 'synthetic-upgrade-value'}
@@ -137,7 +137,7 @@ def run_store(instance, candidate, legacy, rows, mode, sensitive):
             data = t.call(prefix+'_field', 'GET', role_path(kind)+'/secret-id-bound-cidrs')['data']
             t.check(prefix+'_field_nil', FIELD in data and data[FIELD] is None)
             data = t.call(prefix+'_sid', 'POST', role_path(kind)+'/secret-id/lookup', {'secret_id': old['creds']['secret_id']})['data']
-            t.check(prefix+'_sid_preserved', data == old['sid'])
+            t.check(prefix+'_sid_preserved', retained_secret(data, old['sid']))
             t.lookup(prefix+'_lookup', old['auth'], kind); t.bearer(prefix, old['auth'])
         t.check(mode+'_'+phase+'_reads_unchanged', durable_manifest(store) == before)
     restart(instance, legacy, t, key, mode+'_old_control')

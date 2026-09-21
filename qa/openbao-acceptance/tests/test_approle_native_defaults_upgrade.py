@@ -40,7 +40,7 @@ class AppRoleDefaultsUpgradeGuards(unittest.TestCase):
 
     def extended_old_secret(self):
         return self.old_secret() | {"expiration_time":"1970-01-01T01:00:00Z", "metadata":{},
-                                   "cidr_list":None, "token_bound_cidrs":[]}
+                                   "cidr_list":[], "token_bound_cidrs":[]}
 
     def test_legacy_metadata_cannot_be_invented_and_original_expiry_and_use_limit_are_exact(self):
         old, current = self.old_secret(), self.extended_old_secret()
@@ -48,7 +48,7 @@ class AppRoleDefaultsUpgradeGuards(unittest.TestCase):
         for field, value in (("secret_id_ttl",3600), ("creation_time","1970-01-01T00:00:00Z"),
                              ("last_updated_time","1970-01-01T00:00:00Z"), ("secret_id_num_uses",0),
                              ("expiration_time_unix",None), ("expiration_time","1970-01-01T01:00:01Z"),
-                             ("extra",True)):
+                             ("cidr_list",None), ("cidr_list",["127.0.0.1/32"]), ("extra",True)):
             self.assertFalse(upgrade.retained_secret(current | {field:value}, old))
 
     def test_native_requested_ttl_and_actual_clamped_expiry_are_independent(self):

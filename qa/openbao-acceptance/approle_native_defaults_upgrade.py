@@ -70,7 +70,7 @@ def retained_secret(current, old):
     retained = {k:v for k,v in current.items() if k not in expected_extra}
     return (retained == old and not ISSUANCE.intersection(current)
             and unix_time(current.get("expiration_time")) == old.get("expiration_time_unix")
-            and current.get("metadata") == {} and current.get("cidr_list") is None
+            and current.get("metadata") == {} and current.get("cidr_list") == []
             and current.get("token_bound_cidrs") == [])
 
 

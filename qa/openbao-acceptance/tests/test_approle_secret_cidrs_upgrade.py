@@ -53,6 +53,29 @@ class SecretSourceUpgradeGuards(unittest.TestCase):
             self.assertFalse(f.retained_role(current,old))
         self.assertFalse(f.retained_role({**old,f.FIELD:None},{**old,f.FIELD:None}))
 
+    def test_secret_readback_only_normalizes_present_null_cidrs_without_mutating_inputs(self):
+        old = {'secret_id_accessor': 'synthetic', 'secret_id_num_uses': 2,
+               'cidr_list': None, 'token_bound_cidrs': [], 'secret_id_ttl': 1800,
+               'creation_time': '2026-01-01T00:00:00Z', 'expiration_time_unix': 1800}
+        original = copy.deepcopy(old)
+        current = {**old, 'cidr_list': []}
+        self.assertTrue(f.retained_secret(current, old))
+        self.assertTrue(f.retained_secret(current, current))
+        self.assertEqual(old, original)
+        self.assertEqual(current, {**original, 'cidr_list': []})
+        self.assertFalse(f.retained_secret(old, old))
+        for field, value in [('cidr_list', ['127.0.0.1/32']), ('secret_id_num_uses', 1),
+                             ('secret_id_accessor', 'different'), ('secret_id_ttl', 1799),
+                             ('token_bound_cidrs', ['127.0.0.1']), ('expiration_time_unix', 1799),
+                             ('creation_time', None), ('invented', True)]:
+            self.assertFalse(f.retained_secret({**current, field: value}, old), field)
+        for field in current:
+            self.assertFalse(f.retained_secret({k:v for k,v in current.items() if k != field}, old), field)
+        missing = {k:v for k,v in old.items() if k != 'cidr_list'}
+        self.assertTrue(f.retained_secret(missing, missing))
+        self.assertFalse(f.retained_secret({**missing, 'cidr_list': []}, missing))
+        self.assertFalse(f.retained_secret(current, None))
+
     def test_completion_requires_real_milestones_not_count_and_allows_additional_success(self):
         rows=[{'case':name,'passed':True} for name in sorted(f.REQUIRED-{'complete'})]
         rows.append({'case':'complete','passed':True})

@@ -560,6 +560,8 @@ fn approle_secret_lookup_preserves_requested_ttl_and_tracks_only_finite_successf
         .body["data"]
             .clone();
         assert_eq!(data["secret_id_ttl"], 120);
+        assert_eq!(data["cidr_list"], json!([]));
+        assert_eq!(data["token_bound_cidrs"], json!([]));
         assert_eq!(data["creation_time"], crate::engines::timestamp(100));
         assert_eq!(data["expiration_time"], crate::engines::timestamp(160));
         assert_eq!(data["last_updated_time"], crate::engines::timestamp(100));
