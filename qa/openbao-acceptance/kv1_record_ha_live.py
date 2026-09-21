@@ -78,6 +78,30 @@ def wait_record_snapshot(node, minimum_index):
             time.sleep(.25)
 
 
+
+def transition_leader(cluster, observations, phase):
+    try:
+        return cluster.leader()
+    except FixtureError:
+        # Preserve safe health/authority facts from the actual failure. These
+        # diagnostic reads do not retry or repair an ambiguous write.
+        rows=[]
+        for node in cluster.running():
+            row={'node':node.node_id}
+            for label,path,token in [('health','sys/health',''),('leader','sys/leader',cluster.root_token),
+                                     ('health_after','sys/health','')]:
+                try:
+                    status,body=node.call('GET',path,token=token,timeout=15)
+                    row[label]={'status':status,**{k:v for k,v in body.items()
+                        if k in {'initialized','sealed','standby','ha_enabled','ha_active',
+                                 'ha_application_ready','recovery_required','is_self','leader_id','local_id'}
+                        and type(v) in (bool,int)}}
+                except Exception as error:
+                    row[label]={'exception_type':type(error).__name__}
+            rows.append(row)
+        observations[phase+'_failed_leader_observation']=rows
+        raise
+
 def run(binary, root, target_mib, checks, observations, inherited):
     cluster = None
     def check(name, condition):
@@ -141,7 +165,7 @@ def run(binary, root, target_mib, checks, observations, inherited):
         check('lagger_unsealed',lagger.call('POST','sys/unseal',{'key':cluster.unseal_key},timeout=60)[0]==200)
         check('same_leader_for_snapshot_catchup',cluster.leader() is leader)
         check('step_down_acknowledged',leader.call('POST','sys/step-down',{},token=cluster.root_token,timeout=15)[0]==204)
-        recovered_leader=cluster.leader()
+        recovered_leader=transition_leader(cluster,observations,'after_step_down')
         check('lagger_became_leader',recovered_leader is lagger)
         all_records(lagger,'lagger_leader_read')
         check('lagger_all_records',True)
@@ -151,7 +175,7 @@ def run(binary, root, target_mib, checks, observations, inherited):
         check('post_snapshot_delete',lagger.call('DELETE',MOUNT+'/bulk/0001',token=cluster.root_token,timeout=30)[0]==204)
         dataset.forget('bulk/0001')
         lagger.stop()
-        leader=cluster.leader()
+        leader=transition_leader(cluster,observations,'after_crash')
         check('new_leader_after_crash',leader is not lagger)
         all_records(leader,'failover_read',recover=True)
         check('failover_all_records',True)

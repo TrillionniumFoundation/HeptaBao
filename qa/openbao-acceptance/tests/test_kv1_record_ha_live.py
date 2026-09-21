@@ -89,5 +89,16 @@ class Kv1RecordHaGuards(unittest.TestCase):
                 self.assertEqual(report['source_identity_after'],after)
                 self.assertEqual(report['source_changed_fields'],['source_dirty'] if changed else [])
 
+    def test_failed_leader_diagnostics_keep_only_safe_fields_and_do_not_turn_failure_into_success(self):
+        node=SimpleNamespace(node_id=2,call=lambda *a,**k:(503,{'ha_active':True,
+            'recovery_required':True,'errors':['private'],'token':'secret','leader_id':2}))
+        cluster=SimpleNamespace(leader=lambda:(_ for _ in ()).throw(fixture.FixtureError('private')),
+                                running=lambda:[node],root_token='secret')
+        observed={}
+        with self.assertRaises(fixture.FixtureError):fixture.transition_leader(cluster,observed,'handoff')
+        rows=observed['handoff_failed_leader_observation']
+        self.assertEqual(rows[0]['health'],{'status':503,'ha_active':True,'recovery_required':True,'leader_id':2})
+        self.assertNotIn('secret',str(observed));self.assertNotIn('private',str(observed))
+
 
 if __name__=='__main__':unittest.main()
