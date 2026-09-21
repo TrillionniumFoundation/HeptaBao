@@ -10,6 +10,20 @@ use crate::{
 use sha2::{Digest, Sha256};
 use std::time::Instant;
 
+// A routing hint is deliberately not an application read/write capability.
+// Only this module can construct one, from a configured HA peer API origin.
+pub(crate) struct TrustedSnapshotOrigin(String);
+impl TrustedSnapshotOrigin {
+    pub(crate) fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+pub(crate) enum NativeSnapshotAdmission {
+    Execute(RequestExecution),
+    Redirect(TrustedSnapshotOrigin),
+}
+
 pub(super) struct SnapshotTransferPlan {
     actor: Principal,
     path: String,
@@ -148,17 +162,67 @@ impl Service {
 
     pub(crate) fn begin_native_snapshot_before(
         &mut self,
-        request: ServiceRequest<'_>,
+        mut request: ServiceRequest<'_>,
         deadline: Instant,
-    ) -> RequestExecution {
+    ) -> NativeSnapshotAdmission {
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+        if crate::request_deadline::current().is_none_or(|limit| Instant::now() >= limit) {
+            erase_json(&mut request.body);
+            return NativeSnapshotAdmission::Execute(RequestExecution::Complete(Response::error(
+                503,
+                "snapshot admission deadline exceeded",
+            )));
+        }
         if !matches!(
             request.path,
             "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
         ) {
-            return RequestExecution::Complete(Response::error(
+            erase_json(&mut request.body);
+            return NativeSnapshotAdmission::Execute(RequestExecution::Complete(Response::error(
                 400,
                 "invalid native snapshot route",
-            ));
+            )));
+        }
+        // This is before authentication/finite-use persistence, staging and
+        // JSON HA forwarding. The receiving leader independently authorizes
+        // the original request; observing a leader never grants authority.
+        match self.native_snapshot_destination() {
+            Ok(Some(origin)) => {
+                let now = SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or(Duration::ZERO)
+                    .as_secs();
+                let fingerprint = self.request_fingerprint(
+                    request.method,
+                    request.path,
+                    request.namespace,
+                    request.token,
+                );
+                erase_json(&mut request.body);
+                if self
+                    .audit_event("request", &fingerprint, now, None)
+                    .is_err()
+                {
+                    return NativeSnapshotAdmission::Execute(RequestExecution::Complete(
+                        Response::error(503, "snapshot redirect audit unavailable"),
+                    ));
+                }
+                if self
+                    .audit_event("response", &fingerprint, now, Some(307))
+                    .is_err()
+                {
+                    self.recovery_required = true;
+                    return NativeSnapshotAdmission::Execute(RequestExecution::Complete(
+                        Response::error(503, "snapshot redirect response audit unavailable"),
+                    ));
+                }
+                return NativeSnapshotAdmission::Redirect(origin);
+            }
+            Err(response) => {
+                erase_json(&mut request.body);
+                return NativeSnapshotAdmission::Execute(RequestExecution::Complete(response));
+            }
+            Ok(None) => {}
         }
         // Pair wall time and the monotonic anchor before reconciliation, audit,
         // authentication and finite-use persistence can spend admission time.
@@ -172,7 +236,32 @@ impl Service {
         let result = self.begin_request_before(request, deadline, false);
         self.native_snapshot_transport = previous;
         self.native_snapshot_clock = previous_clock;
-        result
+        NativeSnapshotAdmission::Execute(result)
+    }
+
+    fn native_snapshot_destination(&self) -> Result<Option<TrustedSnapshotOrigin>, Response> {
+        let Some(process) = self.ha.as_ref() else {
+            return Ok(None);
+        };
+        if self.state.is_none() {
+            return Err(Response::error(503, "server is sealed"));
+        }
+        let process = process
+            .lock_for_request()
+            .map_err(|_| Response::error(503, "HA process lock is unavailable"))?;
+        let observation = process
+            .leader_status()
+            .map_err(|_| Response::error(503, "HA leader state is unavailable"))?;
+        let leader = observation
+            .leader
+            .ok_or_else(|| Response::error(503, "HA cluster has no elected leader"))?;
+        if leader == observation.local_id {
+            return Ok(None);
+        }
+        process
+            .api_address(leader)
+            .map(|origin| Some(TrustedSnapshotOrigin(origin.to_owned())))
+            .ok_or_else(|| Response::error(503, "HA leader API address is unavailable"))
     }
 
     pub(super) fn stage_snapshot_transfer(
@@ -492,3 +581,7 @@ mod tests;
 #[cfg(test)]
 #[path = "service_snapshot_ha_tests.rs"]
 mod ha_tests;
+
+#[cfg(test)]
+#[path = "service_snapshot_redirect_tests.rs"]
+mod redirect_tests;

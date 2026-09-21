@@ -62,9 +62,13 @@ that node's HTTP listener, such as `https://bao-1.example:8200`. Paths, query
 strings, credentials and fragments are rejected. `sys/leader.leader_address`
 reports only this explicit address for the locally observed leader; missing
 configuration or an unknown leader omits the field. Raft transport addresses are never
-substituted for HTTP addresses. This metadata does not yet implement snapshot
-redirects: native snapshot GET/HEAD on a standby returns503, while a leader must
-pass ReadIndex again before releasing its staged archive. Schema39 native HA
+substituted for HTTP addresses. Native snapshot requests on an unsealed standby
+now return307 with this configured origin and the validated original path/query.
+They do not consume token uses, read the upload or allocate a spool. Missing API
+address, unknown leader, sealed state or an elapsed admission deadline returns503.
+The receiving leader still authorizes the request and passes ReadIndex before
+releasing its staged archive. Real-process redirect qualification is pending.
+Schema39 native HA
 restore publishes a new same-cluster/same-seal record root at the live epoch plus
 one; it does not rewind the local ledger, Raft log or membership. Complete
 closure/capacity preflight precedes Stage, and uncertain publication outcomes
@@ -72,6 +76,15 @@ require recovery. The first profile requires a root actor and unchanged Raft
 administration state, discards imported OIDC pending sessions and rejects external
 database/OpenLDAP secret state. Its separate real-process qualification is pending.
 JSON backup keeps its separate behavior.
+
+The pinned OpenBao2.6.2 CLI has an independently reproduced redirect limitation:
+its snapshot client discards the second response, and restore does not rewind
+the original file body. A [small TLS transport observation](../../qa/openbao-acceptance/evidence/official-snapshot-cli-redirect-observation.json)
+records successful direct SAVE/RESTORE and failed transfers after a single307.
+This uses a synthetic175-byte archive and does not qualify server restore or
+archive authentication. Resolve the anonymous `sys/leader` address first and
+submit the CLI command directly to that leader once; do not blindly retry an
+uncertain restore. Server307 support does not claim transparent CLI replay.
 
 `sys/leader` now follows the dedicated public GET diagnostic path. It answers
 locally on a standby without authentication, token-use consumption, wrapping,

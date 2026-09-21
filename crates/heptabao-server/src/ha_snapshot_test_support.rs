@@ -57,6 +57,19 @@ pub(crate) struct Cluster {
 }
 impl Cluster {
     pub(crate) fn new(path: &Path, cluster_id: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        Self::build(path, cluster_id, true)
+    }
+    pub(crate) fn uninitialized(
+        path: &Path,
+        cluster_id: &str,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
+        Self::build(path, cluster_id, false)
+    }
+    fn build(
+        path: &Path,
+        cluster_id: &str,
+        initialize: bool,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let router = Arc::new(Router::default());
         let mut processes = Vec::new();
         let peers: BTreeMap<u64, NodeId> = (1..=3)
@@ -121,7 +134,7 @@ impl Cluster {
             })));
         }
         let cluster = Self { processes, router };
-        {
+        if initialize {
             let first = cluster.processes[0].lock().map_err(|_| "HA poisoned")?;
             let node = first.node.as_ref().ok_or("node")?;
             first.runtime.block_on(async {
@@ -139,6 +152,17 @@ impl Cluster {
             })??;
         }
         Ok(cluster)
+    }
+    pub(crate) fn configure_api_address(&self, node: u64, origin: &str) -> Result<(), String> {
+        let origin = parse_api_address(origin)?;
+        for process in &self.processes {
+            process
+                .lock()
+                .map_err(|_| "HA poisoned")?
+                .api_addresses
+                .insert(node, origin.clone());
+        }
+        Ok(())
     }
     pub(crate) fn block_quorum(&self, blocked: bool) {
         self.router

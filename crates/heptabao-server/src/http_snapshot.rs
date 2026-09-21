@@ -1,6 +1,57 @@
 //! Binary snapshot transport only. Other routes retain bounded JSON framing.
 use super::*;
+use crate::service::{NativeSnapshotAdmission, TrustedSnapshotOrigin};
 use crate::snapshot_file::{MAX_NATIVE_ARCHIVE, SnapshotFile};
+
+// Constructed only after the ordinary HTTP target/query checks. It retains
+// raw escaping and ordering without allowing request bytes into an authority.
+pub(super) struct NativeTarget(Zeroizing<String>);
+impl NativeTarget {
+    pub(super) fn checked(target: &str) -> Result<Self, ParseError> {
+        if target.len() > 8192
+            || !target.bytes().all(|byte| (33..=126).contains(&byte))
+            || target.contains('#')
+            || !matches!(
+                target.split('?').next(),
+                Some("/v1/sys/storage/raft/snapshot" | "/v1/sys/storage/raft/snapshot-force")
+            )
+        {
+            return Err(bad("invalid native snapshot target"));
+        }
+        Ok(Self(Zeroizing::new(target.to_owned())))
+    }
+}
+
+pub(super) struct NativeRequest {
+    pub body: NativeBody,
+    pub target: NativeTarget,
+}
+
+pub(super) enum NativeReply {
+    Json(Response),
+    File(SnapshotFile),
+    Redirect {
+        origin: TrustedSnapshotOrigin,
+        target: NativeTarget,
+    },
+}
+impl NativeReply {
+    pub(super) fn write(self, writer: &mut impl Write, head: bool) -> io::Result<()> {
+        match self {
+            Self::Json(response) => write_response(writer, response, head),
+            Self::File(file) => write_file_response(writer, file, head),
+            Self::Redirect { origin, target } => {
+                write!(
+                    writer,
+                    "HTTP/1.1 307 Temporary Redirect\r\nLocation: {}{}\r\nContent-Length: 0\r\nConnection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
+                    origin.as_str(),
+                    target.0.as_str(),
+                )?;
+                writer.flush()
+            }
+        }
+    }
+}
 
 pub(super) enum Framing {
     Download,
@@ -164,20 +215,31 @@ impl<R: Read> Read for BodyReader<'_, R> {
 pub(super) fn execute(
     service: &Arc<Mutex<Service>>,
     request: ServiceRequest<'_>,
-    body: NativeBody,
+    native: NativeRequest,
     reader: &mut impl Read,
     deadline: Instant,
-) -> (Response, Option<SnapshotFile>) {
+) -> NativeReply {
     let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
     let execution = match lock_until(service, deadline) {
         Ok(mut writer) => writer.begin_native_snapshot_before(request, deadline),
-        Err(_) => return (Response::error(503, "snapshot admission unavailable"), None),
+        Err(_) => return NativeReply::Json(Response::error(503, "snapshot admission unavailable")),
+    };
+    let execution = match execution {
+        NativeSnapshotAdmission::Execute(execution) => execution,
+        NativeSnapshotAdmission::Redirect(origin) => {
+            // Do not read/replay the upload, allocate a spool or transport any
+            // archive in the ordinary bounded HA forwarding frame.
+            return NativeReply::Redirect {
+                origin,
+                target: native.target,
+            };
+        }
     };
     let mut pending = match execution {
-        RequestExecution::Complete(response) => return (response, None),
+        RequestExecution::Complete(response) => return NativeReply::Json(response),
         RequestExecution::External(pending) => pending,
     };
-    let (observation, file) = match BodyReader::new(reader, body, deadline) {
+    let (observation, file) = match BodyReader::new(reader, native.body, deadline) {
         Ok(mut reader) => pending.execute_snapshot_transfer(&mut reader),
         Err(_) => (
             crate::service::ExternalEffectResult::SnapshotTransfer(Err(Response::error(
@@ -191,12 +253,14 @@ pub(super) fn execute(
     // audit must succeed before this file capability can reach the socket.
     let response = match lock_until(service, deadline) {
         Ok(mut writer) => writer.finish_external_request(*pending, observation),
-        Err(_) => return (Response::error(503, "snapshot finalize unavailable"), None),
+        Err(_) => return NativeReply::Json(Response::error(503, "snapshot finalize unavailable")),
     };
-    if response.status == 200 {
-        (response, file)
+    if response.status == 200
+        && let Some(file) = file
+    {
+        NativeReply::File(file)
     } else {
-        (response, None)
+        NativeReply::Json(response)
     }
 }
 
@@ -222,6 +286,10 @@ pub(super) fn write_file_response(
     }
     writer.flush()
 }
+
+#[cfg(test)]
+#[path = "http_snapshot_redirect_tests.rs"]
+mod redirect_tests;
 
 #[cfg(test)]
 mod tests {

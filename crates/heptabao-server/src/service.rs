@@ -66,6 +66,7 @@ mod plugin;
 #[path = "service_snapshot_transfer.rs"]
 mod snapshot_transfer;
 pub use plugin::{PluginAuthConfig, PluginSecretConfig};
+pub(crate) use snapshot_transfer::{NativeSnapshotAdmission, TrustedSnapshotOrigin};
 #[path = "service_openapi.rs"]
 mod openapi;
 #[path = "service_owner_store.rs"]

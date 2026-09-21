@@ -367,7 +367,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                     return;
                 }
                 let parsed = read_request_mode(&mut stream, timeout, true);
-                let (response, head, snapshot_file) = match parsed {
+                let (reply, head) = match parsed {
                     Ok(mut request) => {
                         request.client_certificates =
                             stream.conn.peer_certificates().map(|certificates| {
@@ -395,7 +395,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                             origin_peer: Some(peer),
                             client_certificates: request.client_certificates.take(),
                         };
-                        let (response, file) = if let Some(native) = native_snapshot {
+                        let reply = if let Some(native) = native_snapshot {
                             snapshot::execute(
                                 &service,
                                 service_request,
@@ -404,31 +404,28 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                                 deadline,
                             )
                         } else {
-                            (
-                                execute_service_request(&service, service_request, deadline, false),
-                                None,
-                            )
+                            snapshot::NativeReply::Json(execute_service_request(
+                                &service,
+                                service_request,
+                                deadline,
+                                false,
+                            ))
                         };
-                        (response, is_head, file)
+                        (reply, is_head)
                     }
                     Err(error) => (
-                        audited_wire_rejection(
+                        snapshot::NativeReply::Json(audited_wire_rejection(
                             &service,
                             &attempt_id,
                             WireRejection::ParseRejected,
                             error.status,
                             error.message,
                             deadline,
-                        ),
+                        )),
                         false,
-                        None,
                     ),
                 };
-                if let Some(file) = snapshot_file.filter(|_| response.status == 200) {
-                    let _ = snapshot::write_file_response(&mut stream, file, head);
-                } else {
-                    let _ = write_response(&mut stream, response, head);
-                }
+                let _ = reply.write(&mut stream, head);
             });
         if spawn.is_err() {
             return Err("cannot create bounded request worker".into());
@@ -624,7 +621,7 @@ impl Drop for SecretJson {
     }
 }
 struct Request {
-    native_snapshot: Option<snapshot::NativeBody>,
+    native_snapshot: Option<snapshot::NativeRequest>,
     method: String,
     path: String,
     namespace: String,
@@ -964,15 +961,18 @@ fn read_request_mode(
         if download && (length != 0 || bytes.len() != header_end) {
             return Err(bad("snapshot download does not accept a body"));
         }
-        Some(snapshot::NativeBody {
-            framing: if download {
-                snapshot::Framing::Download
-            } else if chunked {
-                snapshot::Framing::Chunked
-            } else {
-                snapshot::Framing::Length(length as u64)
+        Some(snapshot::NativeRequest {
+            target: snapshot::NativeTarget::checked(&target)?,
+            body: snapshot::NativeBody {
+                framing: if download {
+                    snapshot::Framing::Download
+                } else if chunked {
+                    snapshot::Framing::Chunked
+                } else {
+                    snapshot::Framing::Length(length as u64)
+                },
+                prefix: Zeroizing::new(bytes[header_end..].to_vec()),
             },
-            prefix: Zeroizing::new(bytes[header_end..].to_vec()),
         })
     } else {
         None
