@@ -256,14 +256,17 @@ def main():
                        'fixture_' + type(error).__name__)
     finally:
         shutil.rmtree(root)
-    unchanged = before == source_identity(ROOT, binary)
+    after = source_identity(ROOT, binary)
+    unchanged = before == after
     runner_unchanged = runner_hash == file_hash(Path(__file__))
     if not unchanged or not runner_unchanged:
         failure = 'source_binary_or_runner_changed'
     if not complete(checks, args.target_mib, points):
         failure = failure or 'incomplete_observations'
     report = {'schema':'heptabao.kv1-record-scale.v1', 'status':'passed' if failure is None else 'failed',
-        'failure':failure, 'source_identity':before, 'source_and_binary_unchanged':unchanged,
+        'failure':failure, 'source_identity':before, 'source_identity_after':after,
+        'source_changed_fields':sorted(key for key in before.keys() | after.keys() if before.get(key) != after.get(key)),
+        'source_and_binary_unchanged':unchanged,
         'build_source_commit':args.build_source_commit, 'runner_sha256':runner_hash, 'runner_unchanged':runner_unchanged,
         'target_payload_mib':args.target_mib, 'checks':checks, 'points':points, 'observations':observations,
         'storage':'local', 'internal_object_counts_observed':False, 'speedup_or_amplification_gate':False,

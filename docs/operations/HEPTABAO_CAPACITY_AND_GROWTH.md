@@ -7,9 +7,12 @@ and unresolved scalability exit, not a new plan or a production-capacity claim.
 
 The Service remains the sole application authority. Schema36 adds a KV1 record
 path: `state_records` holds immutable value blocks and ordered index pages, while
-`heptabao-state-records-v5` binds that graph and five opaque owners. A point write
-encodes the changed value/index path and any changed opaque owner; it does not
-serialize all KV1 payloads. KV2, Auth/provider state, Identity, Transit, PKI, SSH,
+`heptabao-state-records-v5` binds that graph and five opaque owners. Constructing and applying an ordinary KV1 delta
+encodes the changed value/index path and any changed opaque owner. Raft snapshots,
+local durable checkpoints, initial migration, cold HA catch-up and periodic garbage
+collection still perform whole-state or whole-graph work; a public write that triggers
+maintenance can pay that cost. Raft snapshots currently trigger every 128 log entries,
+not every 128 KV writes. KV2, Auth/provider state, Identity, Transit, PKI, SSH,
 wrappers, leases and database/Raft administration remain in opaque JSON owners.
 
 The budgets are independent:
@@ -280,5 +283,12 @@ or the remaining long-horizon HA/fault exits.
 
 The existing decoded manual backup transfer limit is still 20MiB. Record-layout
 read/write capacity and HA snapshot replication do not remove this export/restore
-limit. No new schema-36 capacity/performance or upgrade result is asserted here; exact
-binary receipts must be recorded after the relevant live profiles execute.
+limit. The schema36 `a6d4664` build (binary SHA256
+`ccc2e1809f397a652864eccbe90fd4020c9149e3c57d0dcbe50c74a6cc34ad80`)
+passed the [76-check actual schema35 local upgrade](../../qa/openbao-acceptance/evidence/kv1-records-upgrade-a6d4664.json)
+and [20-cluster/75-API-check userpass HA profile](../../qa/openbao-acceptance/evidence/userpass-native-ha-a6d4664.json).
+These qualify only the named paths. The initial 32MiB local run passed its 618
+business checks but failed the end-of-run source identity check; it is not accepted
+as capacity evidence. A repeat now retains both source observations and their
+exact differing fields. Near-limit HA migration, capacity and performance remain
+unqualified until clean, exact-binary profiles pass.

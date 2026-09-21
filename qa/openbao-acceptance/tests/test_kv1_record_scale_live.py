@@ -1,4 +1,7 @@
 import unittest
+import tempfile
+from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 import kv1_record_scale_live as scale
 
@@ -59,6 +62,29 @@ class Kv1RecordScaleGuards(unittest.TestCase):
         for broken in ({},dict(after,write_bytes=0),dict(after,cpu_ticks=True)):
             with self.assertRaises(scale.ScenarioFailure):
                 scale.measurement_delta(before,broken)
+
+    def test_receipt_retains_both_source_observations_and_refuses_any_changed_field(self):
+        # Preserve the actual end-of-run observation even if the source changes
+        # back later. A post-hoc clean checkout cannot repair this run's proof.
+        for changed in (False, True):
+            with self.subTest(changed=changed), tempfile.TemporaryDirectory() as folder:
+                root=Path(folder); binary=root/'server'; binary.write_bytes(b'synthetic binary')
+                args=SimpleNamespace(binary=binary,output=root/'receipt.json',target_mib=32,
+                                     build_source_commit='a'*40)
+                before={'source_commit':'a'*40,'source_dirty':False,'source_content_sha256':'b'*64}
+                after=dict(before,source_dirty=changed)
+                with patch.object(scale.SafeArgumentParser,'parse_args',return_value=args), \
+                     patch.object(scale,'source_identity',side_effect=[before,after]), \
+                     patch.object(scale,'run'),patch.object(scale,'complete',return_value=True), \
+                     patch.object(scale,'private_write') as write,patch('builtins.print'):
+                    result=scale.main()
+                report=write.call_args.args[1]
+                self.assertEqual(report['source_identity'],before)
+                self.assertEqual(report['source_identity_after'],after)
+                self.assertEqual(report['source_changed_fields'],['source_dirty'] if changed else [])
+                self.assertEqual(report['source_and_binary_unchanged'],not changed)
+                self.assertEqual(result,1 if changed else 0)
+                self.assertEqual(report['failure'],'source_binary_or_runner_changed' if changed else None)
 
 
 if __name__=='__main__':unittest.main()

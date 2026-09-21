@@ -137,8 +137,11 @@ These transparent wrappers remain the legacy/V4 and KV2 representation. After
 the schema 36 transition, KV1 values use `state_records` immutable blocks and
 ordered pages; `engines/kv1_records.rs` keeps the runtime graph outside serialized
 mount metadata. `service_records.rs` publishes the encrypted V5 root and reuses
-unchanged opaque owner descriptors. A KV1 point write encodes its new value and
-changed index path, without serializing all KV1 values or the full State.
+unchanged opaque owner descriptors. Constructing and applying an ordinary KV1 delta encodes its new value and
+changed index path. Raft snapshots, local checkpoints, initial migration, cold HA
+catch-up and periodic GC still perform whole-state or whole-graph work; a public
+write that triggers maintenance may pay that cost. The current Raft snapshot
+interval is 128 log entries, not 128 KV writes.
 KV2 and provider/authentication owners remain opaque and bounded.
 
 After HA ReadIndex/synchronization and recovery fencing, `immutable_kv_response`
