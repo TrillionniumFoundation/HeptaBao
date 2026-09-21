@@ -67,6 +67,19 @@ ReadIndex covers both quorum confirmation and application of its required log;
 the runtime bounds that complete wait at eight seconds and accepts a shorter
 caller budget. Timeout grants no read and does not retry a write.
 
+The `0adfc0d` release binary (`40eacb3fdc897cca44df381dac49d2273c66548ba440f50c6a7e07c602a23dfa`)
+passes the [913-check 32 MiB KV1 HA profile](../../qa/openbao-acceptance/evidence/kv1-record-ha32-0adfc0d.json).
+It writes 147 distinct large values, purges logs beyond an offline voter's
+frontier, observes the installed record snapshot, transfers authority to that
+voter, and verifies every value by authenticated HTTP. It also covers edits,
+deletion, leader crash, complete process restart, quorum loss and recovery with
+the original five-second listener deadline. The unchanged clean source and
+binary are recorded before and after execution. This is same-version local
+three-process evidence, not a cross-host power-loss or mixed-version qualification.
+The same binary passes the [57-check native JSON backup restore profile](../../qa/openbao-acceptance/evidence/kv1-record-backup-0adfc0d.json),
+including complete value/other-owner checks after restore and restart. That
+receipt does not test the large-transfer limit or physically interrupt restore.
+
 ## Snapshots: durable completion, not queue acceptance
 
 A requested native snapshot waits for an appropriate persisted snapshot frontier,

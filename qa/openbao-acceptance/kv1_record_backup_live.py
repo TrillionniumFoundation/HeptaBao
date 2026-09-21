@@ -10,7 +10,9 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import secrets
 import shutil
+import subprocess
 import tempfile
 
 from bao_http import Client, SafeArgumentParser, private_write
@@ -27,7 +29,11 @@ REQUIRED = frozenset({'record_format', 'export_authenticated', 'changed_state',
     'plaintext_absent', 'complete'})
 
 
-def complete(checks):
+POSTGRES_REQUIRED = frozenset({'fresh_postgresql_owner', 'postgres_no_local_artifact_fallback',
+    'postgres_single_authoritative_manifest', 'postgres_plaintext_absent'})
+
+
+def complete(checks, *, postgres=False):
     if not isinstance(checks, list) or not checks:
         return False
     if any(not isinstance(row, dict) or set(row) != {'case', 'passed'}
@@ -35,11 +41,12 @@ def complete(checks):
            or re.fullmatch(r'[a-z0-9_]{1,100}', row['case']) is None for row in checks):
         return False
     names = [row['case'] for row in checks]
-    return len(names) == len(set(names)) and names[-1] == 'complete' and REQUIRED.issubset(names)
+    required = REQUIRED | POSTGRES_REQUIRED if postgres else REQUIRED
+    return len(names) == len(set(names)) and names[-1] == 'complete' and required.issubset(names)
 
 
-def run(binary, work, checks, observations):
-    instance = None
+def run(binary, work, checks, observations, postgres_bin=None):
+    instance = pg = None
     def check(name, condition):
         checks.append({'case': name, 'passed': condition is True})
         if condition is not True:
@@ -48,9 +55,24 @@ def run(binary, work, checks, observations):
         instance = Instance(binary, work / 'instance')
         config_path = instance.root / 'server.json'
         config = json.loads(config_path.read_text()); config['lifecycle_interval_seconds'] = 0
+        if postgres_bin is not None:
+            from postgres_live import Postgres
+            pg = Postgres(postgres_bin, work/'postgres', instance.root/'tls.crt',
+                          instance.root/'tls.key', instance.root/'ca.crt')
+            pg.start()
+            created = pg.sql("CREATE ROLE hb_storage LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE "
+                "NOREPLICATION NOBYPASSRLS PASSWORD '" + pg.manager_password + "'; "
+                "CREATE DATABASE app OWNER hb_storage;", database='postgres')
+            check('fresh_postgresql_owner', created.returncode == 0)
+            config['postgres_durable'] = dict(endpoint=dict(origin=pg.origin,
+                address=f'127.0.0.1:{pg.port}', server_name='localhost',
+                ca_pem=(instance.root/'ca.crt').read_text()), connection_url=pg.origin+'/app',
+                username='hb_storage', password=pg.manager_password, scope='record-backup-fixture')
         private_write(config_path, config, replace=True)
         instance.start()
-        status, initialized = instance.call('POST', 'sys/init', {'secret_shares':1,'secret_threshold':1})
+        params = {'secret_shares':1,'secret_threshold':1}
+        if pg is not None: params['recovery_nonce'] = secrets.token_hex(32)
+        status, initialized = instance.call('POST', 'sys/init', params)
         check('initialized', status == 200)
         instance.token, unseal = initialized['root_token'], initialized['keys_base64'][0]
         check('unsealed', instance.call('POST', 'sys/unseal', {'key':unseal})[0] == 200)
@@ -104,14 +126,30 @@ def run(binary, work, checks, observations):
         verify(original,'reopened');check('reopened_all_values',True)
         check('reopened_other_owner',call('GET','secret/data/backup-control')[1].get('data',{}).get('data') == {'value':'before'})
         check('reopened_later_key_absent',call('GET',MOUNT+'/later')[0] == 404)
+        if pg is not None:
+            check('postgres_no_local_artifact_fallback',
+                (instance.root/'data'/'durable-backend.json').is_file()
+                and all(not (instance.root/'data'/leaf).exists()
+                        for leaf in ('state.hbs','ledger.hbl','journal.hbj')))
+            rows = pg.sql("SELECT count(*) FROM heptabao_durable_v1.manifest_v1 "
+                          "WHERE scope='record-backup-fixture'")
+            check('postgres_single_authoritative_manifest',
+                  rows.returncode == 0 and rows.stdout.strip() == '1')
         instance.stop()
         samples=[instance.token.encode(),unseal.encode(),*[s.encode() for s in original.sample_prefixes+changed.sample_prefixes]]
         files=[p for p in (instance.root/'data').rglob('*') if p.is_file()]
         files += [instance.root/'audit.jsonl',instance.root/'server.log']
         check('plaintext_absent',all(not any(sample in p.read_bytes() for sample in samples) for p in files if p.exists()))
+        if pg is not None:
+            rows = pg.sql("SELECT encode(bytes,'hex') FROM heptabao_durable_v1.chunks_v1 "
+                          "WHERE scope='record-backup-fixture'")
+            check('postgres_plaintext_absent', rows.returncode == 0 and bool(rows.stdout.strip())
+                  and all(not any(sample in bytes.fromhex(row) for sample in samples)
+                          for row in rows.stdout.splitlines()))
         check('complete',True)
     finally:
         if instance is not None: instance.stop()
+        if pg is not None: pg.stop()
 
 
 def main():
@@ -119,23 +157,31 @@ def main():
     parser.add_argument('--binary',required=True,type=Path)
     parser.add_argument('--build-source-commit',required=True)
     parser.add_argument('--output',required=True,type=Path)
+    parser.add_argument('--postgres-bin',type=Path,
+                        help='Use a fresh PostgreSQL 17 durable backend instead of files')
     args=parser.parse_args()
     if re.fullmatch(r'[0-9a-f]{40}',args.build_source_commit) is None: parser.error('full source commit required')
+    if args.postgres_bin is not None:
+        if not all((args.postgres_bin/name).is_file() for name in ('postgres','initdb','psql')):
+            parser.error('complete PostgreSQL 17 binaries required')
+        version = subprocess.check_output([str(args.postgres_bin/'postgres'),'--version'], text=True)
+        if not version.startswith('postgres (PostgreSQL) 17.'): parser.error('PostgreSQL 17 required')
     binary,output=args.binary.resolve(strict=True),args.output.absolute()
     admitted=admit_output(output);before=source_identity(ROOT,binary);runner_hash=file_hash(Path(__file__))
     work=Path(tempfile.mkdtemp(prefix='heptabao-record-backup-'));work.chmod(0o700)
     checks,observations,failure=[],{},None
-    try: run(binary,work,checks,observations)
+    try: run(binary,work,checks,observations,args.postgres_bin)
     except Exception as error:
         failure=next((r['case'] for r in reversed(checks) if r['passed'] is not True),'fixture_'+type(error).__name__)
     after=source_identity(ROOT,binary);runner_unchanged=runner_hash==file_hash(Path(__file__))
     if before!=after or not runner_unchanged:failure='source_binary_or_runner_changed'
-    if not complete(checks):failure=failure or 'incomplete_observations'
+    if not complete(checks,postgres=args.postgres_bin is not None):failure=failure or 'incomplete_observations'
     report={'schema':'heptabao.kv1-record-backup.v1','status':'passed' if failure is None else 'failed',
         'failure':failure,'checks':checks,'observations':observations,'source_identity':before,'source_identity_after':after,
         'source_and_binary_unchanged':before==after,'build_source_commit':args.build_source_commit,
         'runner_sha256':runner_hash,'runner_unchanged':runner_unchanged,
         'retained_failure_work_dir':str(work) if failure else None,'native_backup_profile_only':True,
+        'durable_backend':'postgresql_17' if args.postgres_bin is not None else 'files',
         'ha_restore_covered':False,'physical_restore_interruption_covered':False,'transfer_boundary_covered':False,
         'full_openbao_compatibility':False,'independent_qualification':False,'production_authority':False,'synthetic_only':True}
     if admit_output(output)!=admitted:raise ValueError('report_parent_changed')
