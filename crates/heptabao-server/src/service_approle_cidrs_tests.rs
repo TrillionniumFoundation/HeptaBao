@@ -52,8 +52,12 @@ fn approle_cidr_presence_requires43_but_absent42_role_reads_do_not_migrate() -> 
             204
         );
         let mut changed = service.state.clone().ok_or("state")?;
-        assert_eq!(changed.schema, 43);
+        assert_eq!(changed.schema, CURRENT_STATE_SCHEMA);
         changed.validate_format().map_err(|_| "new format")?;
+        changed.schema = 43;
+        changed
+            .validate_format()
+            .map_err(|_| "minimum CIDR format")?;
         changed.schema = 42;
         assert_eq!(
             changed

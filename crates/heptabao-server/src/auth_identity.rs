@@ -5,6 +5,8 @@ use super::*;
 pub(crate) struct LoginIdentity {
     pub(crate) mount: String,
     pub(crate) alias: String,
+    // Backend-owned data; never inferred from caller-controlled response JSON.
+    pub(crate) metadata: Option<BTreeMap<String, String>>,
 }
 
 pub(crate) struct ExternalGroups {

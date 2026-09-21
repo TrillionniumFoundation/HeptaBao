@@ -142,6 +142,7 @@ impl AuthState {
                 .values()
                 .flat_map(|users| users.values())
                 .any(|user| user.token_type.is_some())
+            || self.has_jwt_batch_state()
             || self
                 .mounted_users
                 .values()
@@ -154,10 +155,10 @@ impl AuthState {
         for mounts in self.auth_mounts.values() {
             for mount in mounts.values() {
                 if mount.token_type.is_some()
-                    && !matches!(mount.kind.as_str(), "userpass" | "approle")
+                    && !matches!(mount.kind.as_str(), "userpass" | "approle" | "jwt")
                 {
                     return Err(bad(
-                        "token_type requires a native userpass or AppRole mount",
+                        "token_type requires a native userpass, AppRole or JWT mount",
                     ));
                 }
             }

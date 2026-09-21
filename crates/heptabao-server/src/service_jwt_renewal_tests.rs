@@ -8,13 +8,33 @@ use ring::signature::{Ed25519KeyPair, KeyPair};
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 // These auth format fixtures have no record-backed KV1 mounts. Decode their
-// unchanged owner bytes as a legacy reader would, without retaining the v5
-// runtime installed by current HTTP writes and masking the auth schema fence.
+// pre-schema44 alias shape as a legacy reader would, without retaining the v5
+// runtime or newer backend metadata and masking the auth schema fence.
 fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
     assert!(
         !state.engines.has_record_kv1(),
         "legacy auth fixture cannot discard record-backed KV1 data"
     );
+    let before = owner_store::serialize_owner(&state.engines)
+        .map_err(|_| "legacy engine fixture serialization")?;
+    let mut legacy: Value = serde_json::from_slice(&before)?;
+    for namespace in legacy["namespaces"]
+        .as_object_mut()
+        .ok_or("engine namespaces")?
+        .values_mut()
+    {
+        if let Some(aliases) = namespace["identity"]["aliases"].as_object_mut() {
+            for alias in aliases.values_mut() {
+                alias
+                    .as_object_mut()
+                    .ok_or("legacy alias")?
+                    .remove("login_metadata");
+            }
+        }
+    }
+    let legacy_json = zeroize::Zeroizing::new(serde_json::to_vec(&legacy)?);
+    erase_json(&mut legacy);
+    state.engines = serde_json::from_slice::<EngineState>(&legacy_json)?.into();
     let before = owner_store::serialize_owner(&state.engines)
         .map_err(|_| "legacy engine fixture serialization")?;
     state.engines = serde_json::from_slice::<EngineState>(&before)?.into();

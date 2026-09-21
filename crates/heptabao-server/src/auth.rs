@@ -53,6 +53,8 @@ mod capabilities;
 mod cubbyhole;
 #[path = "auth_identity.rs"]
 mod identity;
+#[path = "auth_jwt_batch.rs"]
+mod jwt_batch;
 #[path = "auth_jwt_login.rs"]
 mod jwt_login;
 #[path = "auth_jwt_renewal.rs"]
@@ -910,6 +912,8 @@ impl JwtConfig {
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct JwtRole {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_type: Option<batch_issuance::UserTokenType>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     bound_claims: Option<NativeJwtBoundClaims>,
     bound_groups: BTreeSet<String>,
@@ -2619,9 +2623,9 @@ impl AuthState {
                     require_auth_revision(optional_auth_revision(body)?, entry.revision)?;
                     let mut changed = false;
                     if let Some(value) = body.get("token_type") {
-                        if !matches!(entry.kind.as_str(), "userpass" | "approle") {
+                        if !matches!(entry.kind.as_str(), "userpass" | "approle" | "jwt") {
                             return Err(bad(
-                                "token_type tune requires a native userpass or AppRole mount",
+                                "token_type tune requires a native userpass, AppRole or JWT mount",
                             ));
                         }
                         let token_type = batch_issuance::MountTokenType::parse(value)?;
@@ -3091,6 +3095,7 @@ impl AuthState {
         token.auth_mount = Some(plan.mount.clone());
         let (token_id, token, mut response) = Self::prepare_issue(token, plan.now)?;
         response.login_identity = Some(LoginIdentity {
+            metadata: None,
             mount: plan.mount,
             alias: alias.into(),
         });
@@ -3600,6 +3605,7 @@ impl AuthState {
         });
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
+            metadata: None,
             mount: plan.mount.clone(),
             alias: plan.name.clone(),
         });
@@ -3926,6 +3932,7 @@ impl AuthState {
         });
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
+            metadata: None,
             mount: plan.mount,
             alias: plan.username,
         });
@@ -4022,6 +4029,7 @@ impl AuthState {
             token.max_expires_at = None;
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
             response.login_identity = Some(LoginIdentity {
+                metadata: None,
                 mount: mount.into(),
                 alias: certificate_identity_alias(attributes.as_ref(), role_name),
             });
@@ -4314,36 +4322,68 @@ impl AuthState {
                 groups: verified.groups.clone(),
                 last_seen: now,
             };
-            let display_hash = hash(&verified.subject);
-            let display_suffix = display_hash.get(..16).unwrap_or(display_hash.as_str());
-            let token = Token {
-                token_api_lease_ttl: None,
-                bound_cidrs: Vec::new(),
-                wrapping: None,
-                entity_id: None,
-                cubbyhole: cubbyhole::TokenCubbyhole::default(),
-                accessor: random_id("a.")?,
-                namespace: namespace.into(),
-                policies: role.policies,
-                root: false,
-                parent: None,
-                created_at: now,
-                expires_at: Some(expires_at),
-                max_expires_at: explicit_max_expires_at,
-                period: role.token_period,
-                renewable: true,
-                uses_remaining: unlimited_zero(role.token_num_uses),
-                display_name: format!("jwt-{display_suffix}"),
-                auth_mount: Some(mount.into()),
-                auth_origin_known: true,
-                auth_cert_role: None,
-                auth_cert_sha256: None,
-                auth_provenance: Some(TokenAuthProvenance::Jwt {
-                    role_name: role_name.into(),
-                }),
+            let mut display_name = format!("{}-{}", mount.replace('/', "-"), verified.subject);
+            if display_name.ends_with('-') {
+                display_name.pop();
+            }
+            let issuance_warning = self.native_issuance_warning(
+                scope,
+                role.token_ttl,
+                role.token_period,
+                expires_at - now,
+            )?;
+            let metadata = BTreeMap::from([("role".into(), role_name.to_owned())]);
+            let mut response = if self.jwt_uses_batch(scope, &role) {
+                batch_issuance::PendingBatchGrant::response(
+                    batch::BatchClaims {
+                        namespace: namespace.into(),
+                        policies: role.policies.clone(),
+                        metadata: metadata.clone(),
+                        display_name,
+                        path: format!("auth/{mount}/login"),
+                        bound_cidrs: Vec::new(),
+                        issued_at: now,
+                        expires_at,
+                        parent: None,
+                        entity_id: None,
+                    },
+                    Some(mount.into()),
+                )
+            } else {
+                let token = Token {
+                    token_api_lease_ttl: None,
+                    bound_cidrs: Vec::new(),
+                    wrapping: None,
+                    entity_id: None,
+                    cubbyhole: cubbyhole::TokenCubbyhole::default(),
+                    accessor: random_id("a.")?,
+                    namespace: namespace.into(),
+                    policies: role.policies,
+                    root: false,
+                    parent: None,
+                    created_at: now,
+                    expires_at: Some(expires_at),
+                    max_expires_at: explicit_max_expires_at,
+                    period: role.token_period,
+                    renewable: true,
+                    uses_remaining: unlimited_zero(role.token_num_uses),
+                    display_name,
+                    auth_mount: Some(mount.into()),
+                    auth_origin_known: true,
+                    auth_cert_role: None,
+                    auth_cert_sha256: None,
+                    auth_provenance: Some(TokenAuthProvenance::Jwt {
+                        role_name: role_name.into(),
+                    }),
+                };
+                self.issue(token, now)?
             };
-            let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+            response.body["auth"]["metadata"] = json!(metadata);
+            if let Some(warning) = issuance_warning {
+                response.body["warnings"] = json!([warning]);
+            }
             response.login_identity = Some(LoginIdentity {
+                metadata: Some(metadata),
                 mount: mount.into(),
                 alias: verified.subject.clone(),
             });
@@ -4351,7 +4391,6 @@ impl AuthState {
             self.jwt_at_mut(scope)
                 .identities
                 .insert(identity_key, identity);
-            self.tokens.insert(token_id, token);
             return Ok(response);
         }
         if path == format!("auth/{mount}/role") {
@@ -4583,6 +4622,7 @@ impl AuthState {
                 Ok(response(
                     json!({
                         "role_type": "jwt",
+                        "token_type": role.token_type.unwrap_or_default().name(),
                         "user_claim": "sub",
                         "bound_claims_type": role.bound_claims.as_ref().map_or("string", |bounds| bounds.kind.as_str()),
                         "bound_claims": role.bound_claims.as_ref().map(|bounds| &bounds.claims),
@@ -4621,6 +4661,7 @@ impl AuthState {
                         "token_ttl",
                         "token_max_ttl",
                         "token_num_uses",
+                        "token_type",
                         "token_period",
                         "token_explicit_max_ttl",
                         "clock_skew_leeway",
@@ -4751,6 +4792,11 @@ impl AuthState {
                     return Err(bad("JWT role token TTL is outside bounds"));
                 }
                 let role = JwtRole {
+                    token_type: body
+                        .get("token_type")
+                        .map(batch_issuance::UserTokenType::parse)
+                        .transpose()?
+                        .or_else(|| previous.as_ref().and_then(|role| role.token_type)),
                     bound_claims,
                     bound_groups,
                     bound_subject,
@@ -4765,6 +4811,7 @@ impl AuthState {
                     expiration_leeway,
                     not_before_leeway,
                 };
+                jwt_batch::validate_role_type(&role)?;
                 let roles = &mut self.jwt_at_mut(scope).roles;
                 let mutated = roles.get(name) != Some(&role);
                 roles.insert(name.into(), role);
@@ -5958,6 +6005,7 @@ impl AuthState {
         userpass_no_default::omit_empty_token_policies(&mut response);
         response.body["auth"]["metadata"] = json!({"username":name});
         response.login_identity = Some(LoginIdentity {
+            metadata: None,
             mount: mount.into(),
             alias: name.into(),
         });
@@ -6358,12 +6406,15 @@ impl AuthState {
             });
             self.issue(token, now)?
         };
-        if let Some(warning) = self.approle_issuance_warning(scope, &role, expiry - now)? {
+        if let Some(warning) =
+            self.native_issuance_warning(scope, role.token_ttl, role.token_period, expiry - now)?
+        {
             issued.body["warnings"] = json!([warning]);
         }
         issued.body["auth"]["metadata"] = json!({"role_name":name});
         issued.approle_secret_consumption = credential_consumption.map(Box::new);
         issued.login_identity = Some(LoginIdentity {
+            metadata: None,
             mount: mount.into(),
             alias: role_id.into(),
         });
@@ -6527,6 +6578,9 @@ fn token_info(token: &Token, now: u64) -> Value {
     }
     if let Some(TokenAuthProvenance::AppRole { role_name }) = &token.auth_provenance {
         info["meta"] = json!({"role_name":role_name});
+    }
+    if let Some(TokenAuthProvenance::Jwt { role_name }) = &token.auth_provenance {
+        info["meta"] = json!({"role":role_name});
     }
     if let Some(TokenAuthProvenance::Userpass { username }) = &token.auth_provenance {
         info["meta"] = json!({"username":username});
@@ -6933,6 +6987,10 @@ pub(crate) use approle_batch::AppRoleSecretIdConsumption;
 #[cfg(test)]
 #[path = "auth_approle_batch_tests.rs"]
 mod approle_batch_tests;
+
+#[cfg(test)]
+#[path = "auth_jwt_batch_tests.rs"]
+mod jwt_batch_tests;
 
 #[path = "auth_approle_cidrs.rs"]
 mod approle_cidrs;

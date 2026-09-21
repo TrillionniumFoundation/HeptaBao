@@ -244,20 +244,21 @@ fn duration_warning_uses_go_integer_second_format() {
 }
 
 impl AuthState {
-    pub(super) fn approle_issuance_warning(
+    pub(super) fn native_issuance_warning(
         &self,
         scope: AuthScope<'_>,
-        role: &Role,
+        token_ttl: u64,
+        token_period: u64,
         granted: u64,
     ) -> Result<Option<String>, AuthError> {
         let (mount_default, _) = self.auth_mount_lease_defaults(scope)?;
-        let (label, proposed) = if role.token_period > 0 {
-            ("period", role.token_period)
+        let (label, proposed) = if token_period > 0 {
+            ("period", token_period)
         } else {
             (
                 "TTL",
-                if role.token_ttl > 0 {
-                    role.token_ttl
+                if token_ttl > 0 {
+                    token_ttl
                 } else {
                     mount_default
                 },

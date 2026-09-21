@@ -22,6 +22,28 @@ impl EngineState {
             .any(|state| state.identity.has_opaque_aliases())
     }
 
+    pub(crate) fn has_login_alias_metadata_state(&self) -> bool {
+        // Alias records can outlive the auth mount that originally created them.
+        self.namespaces
+            .values()
+            .any(|state| state.identity.has_login_metadata())
+    }
+
+    pub(crate) fn update_login_alias_metadata(
+        &mut self,
+        namespace: &str,
+        accessor: &str,
+        alias: &str,
+        metadata: &BTreeMap<String, String>,
+        now: u64,
+    ) -> Result<()> {
+        self.namespaces
+            .get_mut(namespace)
+            .ok_or_else(|| error(403, "identity unavailable"))?
+            .identity
+            .update_login_metadata(accessor, alias, metadata, now)
+    }
+
     pub(crate) fn bind_login_identity(
         &mut self,
         namespace: &str,

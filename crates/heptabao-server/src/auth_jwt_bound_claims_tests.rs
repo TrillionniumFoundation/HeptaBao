@@ -257,6 +257,7 @@ fn remote_login_uses_common_bound_rules_and_fences_inflight_role_changes() {
         let result = state.finish_remote_jwt_login(
             plan,
             RemoteJwtLoginObservation::from_test_jwks(&jwks).unwrap(),
+            1051,
         );
         if accepted {
             assert_eq!(result.unwrap().status, 200);
@@ -277,7 +278,8 @@ fn remote_login_uses_common_bound_rules_and_fences_inflight_role_changes() {
         state
             .finish_remote_jwt_login(
                 plan,
-                RemoteJwtLoginObservation::from_test_jwks(&jwks).unwrap()
+                RemoteJwtLoginObservation::from_test_jwks(&jwks).unwrap(),
+                1051,
             )
             .err()
             .unwrap()

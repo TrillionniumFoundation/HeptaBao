@@ -122,6 +122,7 @@ impl AuthState {
             increment,
             now,
         )?;
+        let metadata = json!({"role":role_name});
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expires_at);
         Ok(Some(AuthResponse {
@@ -134,6 +135,7 @@ impl AuthState {
             body: json!({"auth": {
                 "accessor":token.accessor,"policies":token.policies,"token_policies":token.policies,
                 "entity_id":token.entity_id.as_deref().unwrap_or(""),
+                "metadata":metadata,"orphan":token.parent.is_none(),
                 "lease_duration":expires_at-now,"renewable":true,"token_type":"service"
             }}),
         }))

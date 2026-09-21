@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **43**. Its source constant is
+The current Service state schema is **44**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -83,6 +83,7 @@ custody, rotation and parent/sibling key separation remain open.
 | 41 | Encrypted batch-token key authority, explicit userpass/mount token-type configuration, and typed batch lease ownership. Historical service owners remain the same JSON strings. |
 | 42 | Explicit AppRole role/mount token-type configuration and Kubernetes typed lease ownership with separate Bao/provider expiry. Absent fields retain historical behavior and serialization. |
 | 43 | AppRole role token CIDR presence, including an explicit empty list, and constrained direct AppRole service-token snapshots. Historical absent role fields remain absent. |
+| 44 | Explicit ordinary JWT role/mount token types and trusted login alias metadata. Historical absent role types and empty backend metadata remain absent in stored bytes; user-maintained alias metadata keeps its own meaning. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Schema 41 is required if any batch key authority, explicit token-type field, or
@@ -125,6 +126,21 @@ of subsequent Identity/wrapping denial: the failed login can commit only that
 one checked credential transition, without publishing its rejected token,
 Identity, batch-key or wrapper candidate. This transient transition is not a new
 serialized state owner or a second token registry.
+
+Ordinary JWT role `token_type` is optional in storage. Absence preserves old
+bytes while API reads report `default`; an explicit value, including `default`,
+requires schema44. JWT mount token-type presence independently requires schema44.
+Batch issuance shares the existing key authority and Identity/wrapping publication.
+Remote JWT completion uses one Service-sampled timestamp for assertion validation,
+claims issuance, Identity binding, sealing and wrapping.
+
+Identity aliases retain backend `login_metadata` separately from
+`custom_metadata`. Empty backend maps are omitted. Historical serialized
+`metadata` remains the old alias of `custom_metadata`; it is never reinterpreted
+as provider authority. Nonempty backend metadata independently requires schema44,
+including aliases retained after their mount is removed. Administrative alias
+edits preserve backend metadata; successful login refreshes it on the same
+candidate state as token issuance. Pure reads do not fill it retroactively.
 
 New Kubernetes TokenRequest intents and observed leases also require schema42
 whenever typed ownership is present, including service owners and retired
@@ -367,7 +383,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 43. An authenticated
+it. Initialization and committed mutations use schema 44. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.

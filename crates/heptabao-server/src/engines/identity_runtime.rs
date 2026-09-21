@@ -16,6 +16,7 @@ impl IdentityState {
         }
         for (id, alias) in &self.aliases {
             valid_alias_name(&alias.name, "alias name")?;
+            validate_login_metadata(&alias.login_metadata)?;
             valid_identifier(&alias.mount_accessor, "mount accessor")?;
             if id != &alias.id
                 || self
@@ -37,6 +38,49 @@ impl IdentityState {
             {
                 return Err(error(503, "inconsistent identity group alias index"));
             }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn has_login_metadata(&self) -> bool {
+        self.aliases
+            .values()
+            .any(|alias| !alias.login_metadata.is_empty())
+    }
+
+    /// Auth supplies trusted backend metadata after successful login binding.
+    /// An administrative alias edit cannot write this field.
+    pub(crate) fn update_login_metadata(
+        &mut self,
+        accessor: &str,
+        name: &str,
+        metadata: &BTreeMap<String, String>,
+        now: u64,
+    ) -> Result<()> {
+        validate_login_metadata(metadata)?;
+        valid_identifier(accessor, "mount accessor")?;
+        valid_alias_name(name, "login alias")?;
+        let id = self
+            .alias_keys
+            .get(&alias_key(accessor, name))
+            .ok_or_else(|| error(403, "login identity alias unavailable"))?;
+        let alias = self
+            .aliases
+            .get(id)
+            .ok_or_else(|| error(503, "login identity alias missing"))?;
+        if alias.mount_accessor != accessor || alias.name != name {
+            return Err(error(503, "inconsistent login identity alias binding"));
+        }
+        if self.project(&alias.canonical_id)?.disabled {
+            return Err(error(403, "identity unavailable"));
+        }
+        let alias = self
+            .aliases
+            .get_mut(id)
+            .ok_or_else(|| error(503, "login identity alias missing"))?;
+        if &alias.login_metadata != metadata {
+            alias.login_metadata.clone_from(metadata);
+            alias.updated_at = now;
         }
         Ok(())
     }
@@ -116,6 +160,7 @@ impl IdentityState {
                 name: name.to_owned(),
                 mount_accessor: accessor.to_owned(),
                 custom_metadata: BTreeMap::new(),
+                login_metadata: BTreeMap::new(),
                 created_at: now,
                 updated_at: now,
             },
@@ -469,6 +514,22 @@ impl<'a> Expansion<'a> {
         self.visited.insert(id);
         Ok(())
     }
+}
+
+fn validate_login_metadata(metadata: &BTreeMap<String, String>) -> Result<()> {
+    if metadata.len() > MAX_METADATA_ENTRIES {
+        return Err(bad("login identity metadata exceeds entry bound"));
+    }
+    for (key, value) in metadata {
+        if key.is_empty()
+            || key.len() > MAX_METADATA_KEY_BYTES
+            || value.len() > MAX_METADATA_VALUE_BYTES
+            || value.chars().any(char::is_control)
+        {
+            return Err(bad("invalid login identity metadata"));
+        }
+    }
+    Ok(())
 }
 
 #[cfg(test)]

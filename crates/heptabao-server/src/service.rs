@@ -31,7 +31,7 @@ use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 use crate::state_record_root::RecordStateRoot;
 
-const CURRENT_STATE_SCHEMA: u32 = 43;
+const CURRENT_STATE_SCHEMA: u32 = 44;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;

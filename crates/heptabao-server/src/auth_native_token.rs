@@ -112,6 +112,7 @@ impl AuthState {
         issued.login_identity = Some(LoginIdentity {
             mount: scope.mount.into(),
             alias: alias.into(),
+            metadata: None,
         });
         self.tokens.insert(id, token);
         Ok(issued)

@@ -98,6 +98,8 @@ fn jwt_all_renewal_routes_require_the_live_role_without_rechecking_the_assertion
         role.bound_groups = BTreeSet::from(["other-group".into()]);
         let response = renew(&mut state, &root, &raw, operation, 500, 1100).unwrap();
         assert_eq!(response.body["auth"]["lease_duration"], 500);
+        assert_eq!(response.body["auth"]["metadata"], json!({"role":"app"}));
+        assert_eq!(response.body["auth"]["orphan"], true);
         assert!(state.tokens[&id].policies.contains("reader"));
         assert!(!state.tokens[&id].policies.contains("new-policy"));
         let removed = state.jwt_at_mut(scope).roles.remove("app").unwrap();

@@ -19,6 +19,9 @@ pub(crate) const MAX_BATCH_CLAIMS_BYTES: usize = 8 * 1024;
 pub(crate) const MAX_BATCH_TOKEN_BYTES: usize = 16 * 1024;
 pub(crate) const MAX_BATCH_KEYS: usize = 8;
 const MAX_BATCH_TTL: u64 = super::MAX_TTL;
+// A native JWT display name contains a bounded auth mount, '-' and subject.
+// Keep the full identity; the total authenticated claims still fit the 8 KiB cap.
+const MAX_BATCH_DISPLAY_NAME_BYTES: usize = 256 + 1 + 1024;
 const PREFIX: &str = "hvb.";
 const MAGIC: &[u8; 4] = b"HBB1";
 const DOMAIN: &[u8] = b"heptabao.batch.claims.v1\0";
@@ -303,7 +306,7 @@ impl BatchClaims {
             self.entity_id.as_deref(),
         )?;
         if self.display_name.is_empty()
-            || self.display_name.len() > 1024
+            || self.display_name.len() > MAX_BATCH_DISPLAY_NAME_BYTES
             || self.display_name.chars().any(char::is_control)
             || self.path.is_empty()
             || self.path.len() > 2048

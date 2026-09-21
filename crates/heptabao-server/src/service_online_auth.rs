@@ -722,7 +722,9 @@ impl Service {
             (
                 OnlineAuthEffect::RemoteJwt(auth_plan),
                 OnlineAuthObservation::RemoteJwt(observed),
-            ) => state.auth.finish_remote_jwt_login(auth_plan.plan, observed),
+            ) => state
+                .auth
+                .finish_remote_jwt_login(auth_plan.plan, observed, request_now),
             (
                 OnlineAuthEffect::Kubernetes(auth_plan),
                 OnlineAuthObservation::Kubernetes(observed),

@@ -659,7 +659,7 @@ Trust configuration at `auth/<mount>/config` supports read and POST/PUT update; 
 | key `algorithm` | Exactly `EdDSA` (Ed25519) or `ES256` (P-256); algorithm confusion is rejected |
 | key `key_base64` | Unpadded base64url raw public bytes: 32-byte Ed25519 or 65-byte uncompressed P-256 point; this is not PEM |
 
-A role at `auth/<mount>/role/<name>` supports GET, POST/PUT and DELETE. `bound_groups` requires every listed group in the verified `groups` claim; `bound_subject` requires exact `sub`; a nonempty `bound_audiences` requires at least one matching JWT audience. Configured trust independently requires an audience intersection. Role POST/PUT and DELETE require `update` plus `sudo` in this profile. `policies` and `token_policies` are aliases but cannot be supplied together. `token_ttl`, `token_max_ttl` and `token_num_uses` configure the issued service token: new roles default both TTL and maximum to zero, independently inheriting the current mount settings. Explicit zero restores inheritance; omitted or null duration fields preserve existing values. Nonzero values are bounded by the service maximum of 32 days, and a nonzero maximum cannot be below TTL. Older stored positive defaults remain unchanged. Fresh stores inherit a 32-day system default and maximum; historical stores preserve the one-hour inherited default. Roles cannot issue `root` or policies beyond the managing actor's authority, and login must satisfy both configured trust and role restrictions. Readback returns configuration, never an issued bearer.
+A role at `auth/<mount>/role/<name>` supports GET, POST/PUT and DELETE. `bound_groups` requires every listed group in the verified `groups` claim; `bound_subject` requires exact `sub`; a nonempty `bound_audiences` requires at least one matching JWT audience. Configured trust independently requires an audience intersection. Role POST/PUT and DELETE require `update` plus `sudo` in this profile. `policies` and `token_policies` are aliases but cannot be supplied together. `token_ttl` and `token_max_ttl` configure the issued token, while `token_num_uses` applies to service tokens: new roles default both TTL and maximum to zero, independently inheriting the current mount settings. Explicit zero restores inheritance; omitted or null duration fields preserve existing values. Nonzero values are bounded by the service maximum of 32 days, and a nonzero maximum cannot be below TTL. Older stored positive defaults remain unchanged. Fresh stores inherit a 32-day system default and maximum; historical stores preserve the one-hour inherited default. Roles cannot issue `root` or policies beyond the managing actor's authority, and login must satisfy both configured trust and role restrictions. Readback returns configuration, never an issued bearer.
 
 Static and remote JWT roles also support `bound_claims` and `bound_claims_type`
 (`string` or `glob`). Every configured selector must match the original
@@ -676,12 +676,11 @@ pair is the same persisted value and does not create a second authorization path
 
 Login checks header algorithm/key identity/signature, `iss`, `sub`, `aud`, time claims, optional `heptabao_namespace` and `groups`, plus role restrictions. `jti` is optional and does not make an assertion single-use. At least one nonzero `iat`, `nbf` or `exp` is required. NumericDate fractions truncate toward zero; null and zero act as absent dates. Missing `exp` is derived from the later of `iat`/`nbf` plus expiration leeway. Missing `nbf` uses `iat` when nonzero, otherwise `exp` minus not-before leeway. The role's `clock_skew_leeway` applies to all three time comparisons; zero or unset selects 60 seconds and negative disables it. `expiration_leeway` and `not_before_leeway` zero/unset select 150 seconds, negative disables the respective derivation offset. They do not add grace to an existing signed date. These role fields accept signed seconds or durations and are preserved on partial role updates.
 
-A nonroot namespace requires an exactly matching `heptabao_namespace`; an absent claim maps to the root namespace. The issued service token has its own role/mount lifetime and can outlive the JWT. Missing trust returns 503 on login (404 on absent config read); signature, time and claim failures return 400, while core ACL/live-identity rejection remains 403. Config extensions stored by older binaries remain active until a config replacement explicitly omits them; they do not silently become native defaults on upgrade.
+A nonroot namespace requires an exactly matching `heptabao_namespace`; an absent claim maps to the root namespace. The issued token has its own role/mount lifetime and can outlive the JWT. Missing trust returns 503 on login (404 on absent config read); signature, time and claim failures return 400, while core ACL/live-identity rejection remains 403. Config extensions stored by older binaries remain active until a config replacement explicitly omits them; they do not silently become native defaults on upgrade.
 
-Each successful use of a valid JWT issues a distinct service token with the same subject's identity binding, including after restart. Service commits issuance and identity together. On the first successful native login it also retires that mount's legacy assertion replay map and watermark, with schema 19 preventing an older reader from restoring the former behavior. Failed verification leaves the store unchanged. OIDC one-use state/nonce and strict public proof replay checks remain independent. This does not establish a trusted host clock or full identity API support.
+Each successful use of a valid JWT issues a distinct token with the same subject's identity binding, including after restart. Service commits issuance and identity together. On the first successful native login it also retires that mount's legacy assertion replay map and watermark, with schema 19 preventing an older reader from restoring the former behavior. Failed verification leaves the store unchanged. OIDC one-use state/nonce and strict public proof replay checks remain independent. This does not establish a trusted host clock or full identity API support.
 
-Successful JWT login creates a bounded service token carrying its issuing role
-name in schema-18 Auth state. `renew-self`, `renew` and `renew-accessor` reread that
+JWT service-token login carries its issuing role name in schema-18 Auth state. `renew-self`, `renew` and `renew-accessor` reread that
 role: deletion returns 500 without changing expiry. They do not revalidate the
 JWT, fetch JWKS, compare current claim bindings or replace issued token policies.
 Live identity, caller ACL, revocation and expiry checks still apply. A finite
@@ -695,9 +694,48 @@ Renewal, identity projection and optional response wrapping commit together.
 Token-API children do not inherit the JWT role. Legacy parentless JWT tokens
 without role provenance keep their existing permissions and expiry but must log
 in again to renew. Mount disable removes JWT trust/replay state and revokes its
-direct tokens and ordinary children; independent token-API orphans retain their
-own lifetime. Selected static/remote differential cases do not establish full
+direct service tokens and ordinary children; JWT batch tokens and independent
+token-API orphans retain their own lifetime. Selected static/remote differential cases do not establish full
 JWT claim-mapping or configuration parity.
+
+Ordinary JWT roles now accept `token_type` values `default`, `service` and
+`batch`. Empty/null resets to `default`; omission preserves an existing value.
+AppRole's `default-service`/`default-batch` role aliases are rejected here.
+Mount `service`/`batch` forces the issue type; default mount modes defer to an
+explicit role type. Explicit batch roles reject a period or limited use count.
+A mount-forced batch still calculates its initial lifetime from the service
+role's TTL, period and explicit maximum, then issues a nonrenewable orphan with
+no accessor, use count or stored service-token row.
+
+JWT login and lookup expose `metadata.role`/`meta.role`; service renewal preserves
+that issuing-role metadata and the stored orphan relation. Display names use
+the mount and signed subject, including one trailing-hyphen removal as in
+OpenBao. The Identity alias keeps backend role metadata separately from
+administrator `custom_metadata`. Successful login refreshes it in the same
+publication as Identity binding, batch sealing and response wrapping; denied
+Identity, wrapper exhaustion and failed publication leave that candidate private.
+Existing aliases and tokens are not rewritten by reads.
+
+These explicit JWT types and backend alias metadata require schema44. A remote
+JWT completion samples one time for validation, issuance, Identity and wrapping.
+It counts completed integer seconds without anticipating a future batch issue
+time or advancing the shared batch-key watermark into the next second.
+The existing future-bearer and clock-rollback checks remain strict. This does
+not qualify an operating system's wall clock against rollback. The request
+anchor still contains integer seconds: a concurrent later issuance can advance
+the watermark beyond an earlier remote request's conservative estimate and
+make that remote login fail closed. Precise concurrent wall-clock admission
+remains a separate runtime gap.
+
+The official `jwt-batch-official-3588f54.json` calibration records 33 scenarios
+and 204 observations (SHA256
+`bd02ae048f2a56b338f4130beef02f94778e154b3402f6063ff22dc09d1274de`).
+`jwt_batch_live.py` compares those observations with an explicitly disclosed
+static PEM-to-inline-JWKS configuration adaptation. `jwt_batch_upgrade.py`
+uses three actual schema43 stores to separate role-type, mount-type and alias
+metadata reader gates. Their presence alone is not a qualification result.
+OIDC browser roles, arbitrary user-claim/claim mappings, MFA and batch key
+rotation remain outside this ordinary JWT slice.
 
 ## Route inventory
 

@@ -62,6 +62,8 @@ struct Alias {
     mount_accessor: String,
     #[serde(default, alias = "metadata")]
     custom_metadata: BTreeMap<String, String>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    login_metadata: BTreeMap<String, String>,
     created_at: u64,
     updated_at: u64,
 }
@@ -712,12 +714,18 @@ fn upsert_alias(
         }
     }
     let created_at = state.aliases.get(&id).map_or(now, |alias| alias.created_at);
+    let login_metadata = state
+        .aliases
+        .get(&id)
+        .map(|alias| alias.login_metadata.clone())
+        .unwrap_or_default();
     let alias = Alias {
         id: id.clone(),
         canonical_id: canonical_id.into(),
         name: name.into(),
         mount_accessor: mount_accessor.into(),
         custom_metadata,
+        login_metadata,
         created_at,
         updated_at: now,
     };
@@ -745,7 +753,7 @@ fn alias_data(alias: &Alias) -> Value {
         "name":alias.name,
         "mount_accessor":alias.mount_accessor,
         "custom_metadata":alias.custom_metadata,
-        "metadata":{},
+        "metadata":alias.login_metadata,
         "creation_time":timestamp(alias.created_at),
         "last_update_time":timestamp(alias.updated_at),
         "local":false,
@@ -1703,3 +1711,7 @@ mod external_tests;
 #[cfg(test)]
 #[path = "identity_alias_tests.rs"]
 mod alias_tests;
+
+#[cfg(test)]
+#[path = "identity_login_metadata_tests.rs"]
+mod login_metadata_tests;

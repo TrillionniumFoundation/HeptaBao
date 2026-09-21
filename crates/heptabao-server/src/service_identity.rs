@@ -60,6 +60,17 @@ impl State {
             .validate_approle_native_defaults()
             .map_err(|_| Response::error(503, "invalid native AppRole state"))?;
         self.auth
+            .validate_jwt_batch_state()
+            .map_err(|_| Response::error(503, "invalid JWT batch configuration"))?;
+        if self.schema < 44
+            && (self.auth.has_jwt_batch_state() || self.engines.has_login_alias_metadata_state())
+        {
+            return Err(Response::error(
+                503,
+                "JWT token type or login alias metadata requires schema 44",
+            ));
+        }
+        self.auth
             .validate_userpass_name_modes()
             .map_err(|_| Response::error(503, "invalid userpass name mode"))?;
         if self.schema < 40 && self.auth.has_userpass_name_modes() {
@@ -389,7 +400,7 @@ impl State {
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
             | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37
-            | 38 | 39 | 40 | 41 | 42 | CURRENT_STATE_SCHEMA => Ok(()),
+            | 38 | 39 | 40 | 41 | 42 | 43 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
@@ -438,6 +449,11 @@ impl Service {
             }
             auth.bind_issued_entity(response, namespace, &login.mount, &projection.entity_id)
                 .map_err(auth_error)?;
+            if let Some(metadata) = login.metadata.as_ref() {
+                engines
+                    .update_login_alias_metadata(namespace, &accessor, &login.alias, metadata, now)
+                    .map_err(|error| Response::error(error.status, &error.message))?;
+            }
         }
         let is_auth = response.body.get("auth").is_some();
         let envelope = if is_auth { "auth" } else { "data" };
@@ -517,3 +533,7 @@ impl Service {
 #[cfg(test)]
 #[path = "identity_service_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "service_alias_metadata_tests.rs"]
+mod alias_metadata_tests;

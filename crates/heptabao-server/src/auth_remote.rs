@@ -127,7 +127,7 @@ impl RemoteJwtLoginObservation {
 
 impl RemoteJwtLoginPlan {
     pub(crate) fn observed_now(&self) -> u64 {
-        elapsed_now(self.now, self.started)
+        login_elapsed_now(self.now, self.started.elapsed())
     }
 
     pub(crate) fn execute(
@@ -144,6 +144,12 @@ impl RemoteJwtLoginPlan {
             keys: remote.load_at(outbound, &self.config.issuer, deadline)?,
         })
     }
+}
+
+fn login_elapsed_now(now: u64, elapsed: std::time::Duration) -> u64 {
+    // Issuance must not anticipate the next integer second: a batch authority
+    // rejects future bearers and rejects later issuance below its watermark.
+    now.saturating_add(elapsed.as_secs())
 }
 
 fn same_remote_binding(left: &JwtConfig, right: &JwtConfig) -> bool {
@@ -363,6 +369,7 @@ impl AuthState {
         &mut self,
         plan: RemoteJwtLoginPlan,
         observation: RemoteJwtLoginObservation,
+        now: u64,
     ) -> Result<AuthResponse, AuthError> {
         let scope = AuthScope {
             namespace: &plan.namespace,
@@ -398,7 +405,6 @@ impl AuthState {
                 .insert("configuration-shape-only".into());
         }
         validation.verifier()?;
-        let now = plan.observed_now();
         let path = format!("auth/{}/login", plan.mount);
         self.handle(
             None,
@@ -646,10 +652,11 @@ mod tests {
         plan.started = std::time::Instant::now()
             .checked_sub(std::time::Duration::from_secs(11))
             .unwrap();
+        let completed_now = plan.observed_now();
         let before = state.tokens.len();
         assert_eq!(
             state
-                .finish_remote_jwt_login(plan, observed)
+                .finish_remote_jwt_login(plan, observed, completed_now)
                 .err()
                 .unwrap()
                 .status,
@@ -657,7 +664,7 @@ mod tests {
         );
         assert_eq!(state.tokens.len(), before);
         let (mut state, _, plan, observed) = login_fixture();
-        let response = state.finish_remote_jwt_login(plan, observed).unwrap();
+        let response = state.finish_remote_jwt_login(plan, observed, 1001).unwrap();
         assert_eq!(response.body["auth"]["lease_duration"], 60);
         let token = &state.tokens[&hash(response.body["auth"]["client_token"].as_str().unwrap())];
         assert!(
@@ -697,7 +704,7 @@ mod tests {
         let before = state.tokens.len();
         assert_eq!(
             state
-                .finish_remote_jwt_login(plan, observed)
+                .finish_remote_jwt_login(plan, observed, 1001)
                 .err()
                 .unwrap()
                 .status,
@@ -729,8 +736,83 @@ mod tests {
         );
     }
     #[test]
+    fn remote_jwt_batch_subsecond_completion_does_not_poison_same_second_issuance() {
+        let (mut state, admin, mut plan, observed) = login_fixture();
+        let role = state
+            .jwt_at_mut(AuthScope {
+                namespace: "",
+                mount: "nested/jwt",
+            })
+            .roles
+            .get_mut("app")
+            .unwrap();
+        role.token_type = Some(batch_issuance::UserTokenType::Batch);
+        plan.role = role.clone();
+        let now = login_elapsed_now(plan.now, std::time::Duration::from_millis(1));
+        assert_eq!(now, 1000);
+        assert_eq!(
+            login_elapsed_now(1000, std::time::Duration::from_millis(1999)),
+            1001
+        );
+        let mut response = state.finish_remote_jwt_login(plan, observed, now).unwrap();
+        state
+            .bind_issued_entity(&mut response, "", "nested/jwt", "fixture-entity")
+            .unwrap();
+        state.finish_pending_batch(&mut response, "", now).unwrap();
+        let raw = response.body["auth"]["client_token"].as_str().unwrap();
+        assert!(state.authenticate(raw, 1000).is_ok());
+        assert!(state.authenticate(raw, 999).is_err());
+        let mut local = state
+            .handle(
+                Some(&admin),
+                "",
+                "POST",
+                "auth/token/create",
+                &json!({"type":"batch","policies":["default"],"ttl":60}),
+                1000,
+            )
+            .unwrap()
+            .unwrap();
+        state.finish_pending_batch(&mut local, "", 1000).unwrap();
+        assert!(
+            state
+                .authenticate(local.body["auth"]["client_token"].as_str().unwrap(), 1000)
+                .is_ok()
+        );
+    }
+
+    #[test]
+    fn remote_jwt_batch_uses_the_service_completion_time_for_issuance_and_sealing() {
+        let (mut state, _, mut plan, observed) = login_fixture();
+        let scope = AuthScope {
+            namespace: "",
+            mount: "nested/jwt",
+        };
+        let role = state.jwt_at_mut(scope).roles.get_mut("app").unwrap();
+        role.token_type = Some(batch_issuance::UserTokenType::Batch);
+        plan.role = role.clone();
+        // Simulate time advancing after Service has chosen its completed-time
+        // anchor. A second sample inside the finalizer would issue at >=1006,
+        // causing the strict batch seal below to reject the valid 1003 grant.
+        plan.started = std::time::Instant::now()
+            .checked_sub(std::time::Duration::from_secs(5))
+            .unwrap();
+        assert!(plan.observed_now() >= 1005);
+        let before = state.tokens.len();
+        let mut response = state.finish_remote_jwt_login(plan, observed, 1003).unwrap();
+        state
+            .bind_issued_entity(&mut response, "", "nested/jwt", "fixture-entity")
+            .unwrap();
+        state.finish_pending_batch(&mut response, "", 1003).unwrap();
+        let raw = response.body["auth"]["client_token"].as_str().unwrap();
+        assert!(state.authenticate(raw, 1003).is_ok());
+        assert_eq!(state.tokens.len(), before);
+        assert_eq!(response.body["auth"]["lease_duration"], 60);
+    }
+
+    #[test]
     fn remote_login_fences_every_role_field_before_key_cache_or_token_mutation() {
-        for change in 0..4 {
+        for change in 0..5 {
             let (mut state, _, plan, observed) = login_fixture();
             let role = state
                 .jwt_at_mut(AuthScope {
@@ -750,14 +832,17 @@ mod tests {
                 2 => {
                     role.bound_subject = Some("other".into());
                 }
-                _ => {
+                3 => {
                     role.clock_skew_leeway = Some(-1);
+                }
+                _ => {
+                    role.token_type = Some(batch_issuance::UserTokenType::Batch);
                 }
             }
             let before = serde_json::to_vec(&state).unwrap();
             assert_eq!(
                 state
-                    .finish_remote_jwt_login(plan, observed)
+                    .finish_remote_jwt_login(plan, observed, 1001)
                     .err()
                     .unwrap()
                     .status,
@@ -902,7 +987,7 @@ mod tests {
         let before = serde_json::to_vec(&state).unwrap();
         assert_eq!(
             state
-                .finish_remote_jwt_login(plan, observed)
+                .finish_remote_jwt_login(plan, observed, 1001)
                 .err()
                 .unwrap()
                 .status,
