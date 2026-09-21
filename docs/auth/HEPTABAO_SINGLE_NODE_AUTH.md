@@ -267,6 +267,14 @@ complete password/alias error parity remain outside this profile.
 The qualified `0fc7925` candidate records
 [279 matching observations per side](../../qa/openbao-acceptance/evidence/userpass-native-0fc7925.json)
 and [369 checks using an actual schema-34 binary](../../qa/openbao-acceptance/evidence/userpass-native-upgrade-0fc7925.json).
+The schema38 `b4942e9` release (SHA256
+`413cc1a58192f57b992fcb04ee94df601347e9e7630b468d627e9155ef3f74b1`)
+matches OpenBao2.6.2 for [214 password observations per side](../../qa/openbao-acceptance/evidence/userpass-password-b4942e9.json),
+[75 alias observations per side](../../qa/openbao-acceptance/evidence/userpass-alias-b4942e9.json)
+and [168 imported-hash observations per side](../../qa/openbao-acceptance/evidence/userpass-hash-b4942e9.json).
+These include actual restart and held-token checks; their source/binary identities
+remain unchanged. They do not cover username case folding, weak scalar conversion
+or variable-length decoded bcrypt salts.
 
 ## Userpass TOTP MFA
 

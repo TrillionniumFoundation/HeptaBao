@@ -122,8 +122,8 @@ def run(instance, candidate, legacy, rows):
     t.login('current.long_suffix','long',long+'x',400)
     t.login('current.exact_suffix','exact',exact+'x',400)
     for label,fields in [('missing',{}),('null',{'password':None}),('empty',{'password':''})]:
-        t.write('current.preserve_'+label,'long',fields)
-        t.login('current.preserve_'+label,'long',long)
+        t.write('current.preserve_'+label+'.write','long',fields)
+        t.login('current.preserve_'+label+'.login','long',long)
     t.write('current.new_write','new',{'password':exact})
     t.login('current.new_suffix','new',exact+'x'*953)
     t.write('current.explicit_reset','exact/password',{'password':exact})
