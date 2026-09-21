@@ -542,6 +542,7 @@ impl EngineState {
         method: &str,
         body: &Value,
         now: u64,
+        issuer: Option<&crate::auth::ResolvedLeaseOwner>,
     ) -> Result<Option<kubernetes::Dispatch>> {
         let mount = self.kubernetes_mount(namespace, path);
         let Some(mount_path) = mount else {
@@ -559,7 +560,7 @@ impl EngineState {
             return Ok(None);
         };
         engine
-            .dispatch(namespace, &mount_path, method, relative, body, now)
+            .dispatch(namespace, &mount_path, method, relative, body, now, issuer)
             .map(Some)
     }
 
@@ -569,6 +570,8 @@ impl EngineState {
         mount: &str,
         plan: &kubernetes::TokenRequestPlan,
         metadata: kubernetes::TokenMetadata,
+        now: u64,
+        owner_live: bool,
     ) -> Result<EngineResponse> {
         let state = self
             .namespaces
@@ -578,18 +581,42 @@ impl EngineState {
         let Backend::Kubernetes(engine) = &mut state.backend else {
             return Err(error(503, "Kubernetes mount changed after provider entry"));
         };
-        engine.finalize(plan, metadata)
+        engine.finalize(plan, metadata, now, owner_live)
     }
 
     pub(crate) fn validate_kubernetes_state(&self) -> Result<()> {
-        for namespace in self.namespaces.values() {
+        for (scope, namespace) in &self.namespaces {
             for mount in namespace.mounts.values() {
                 if let Backend::Kubernetes(engine) = &mount.backend {
-                    engine.validate()?;
+                    engine.validate_scope(scope)?;
                 }
             }
         }
         Ok(())
+    }
+
+    pub(crate) fn has_kubernetes_typed_lease_owners(&self) -> bool {
+        self.namespaces.values().any(|ns| {
+            ns.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Kubernetes(engine) if engine.has_typed_owners()))
+        })
+    }
+
+    pub(crate) fn kubernetes_retire_lease(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        id: &str,
+    ) -> Result<bool> {
+        let current = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|ns| ns.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut current.backend else {
+            return Err(not_found());
+        };
+        Ok(engine.retire_lease(id))
     }
 
     pub(crate) fn openldap_mount(&self, namespace: &str, path: &str) -> Option<String> {

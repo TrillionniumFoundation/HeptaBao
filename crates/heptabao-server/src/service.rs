@@ -31,7 +31,7 @@ use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 use crate::state_record_root::RecordStateRoot;
 
-const CURRENT_STATE_SCHEMA: u32 = 41;
+const CURRENT_STATE_SCHEMA: u32 = 42;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -687,6 +687,7 @@ struct RequestView<'a> {
     token: &'a str,
     body: &'a Value,
     now: u64,
+    admission_started: std::time::Instant,
     allow_forward: bool,
     enforce_namespace: bool,
     wrap_ttl_seconds: Option<u64>,
@@ -1391,6 +1392,16 @@ impl Service {
     }
 
     fn begin_at_mode(&mut self, request: RequestDispatch<'_>) -> RequestExecution {
+        self.begin_at_mode_started(request, std::time::Instant::now())
+    }
+
+    // The integer request clock and monotonic anchor enter together, before
+    // audit, HA catch-up or finite-use admission can block. No wall-clock reread.
+    fn begin_at_mode_started(
+        &mut self,
+        request: RequestDispatch<'_>,
+        admission_started: std::time::Instant,
+    ) -> RequestExecution {
         let RequestDispatch {
             method,
             path,
@@ -1521,6 +1532,7 @@ impl Service {
             token,
             body: &body,
             now,
+            admission_started,
             allow_forward,
             enforce_namespace,
             wrap_ttl_seconds,
@@ -1589,6 +1601,7 @@ impl Service {
             wrap_ttl_seconds,
             origin_peer,
             client_certificates,
+            admission_started: _,
         } = request;
         if !valid_namespace(namespace) || !valid_path(path) {
             return Response::error(400, "invalid canonical namespace or path");
@@ -2052,6 +2065,7 @@ impl Service {
         // wrapping was explicitly requested.
         let wrapping_rollback = wrap_ttl_seconds.map(|_| admitted.clone());
         let mut transaction = admitted;
+        let mut approle_secret_consumption = None;
         let mut response = if path == "sys/wrapping/lookup" {
             match transaction
                 .auth
@@ -2076,6 +2090,7 @@ impl Service {
                 now,
                 client_certificates,
                 origin_peer,
+                &mut approle_secret_consumption,
             )
         };
         if response.status < 300
@@ -2155,6 +2170,16 @@ impl Service {
             }
         } else {
             admitted = transaction;
+        }
+        // The AppRole backend authenticates/consumes a finite SecretID before
+        // Core Identity and wrapping. On a denied issuance publish only that
+        // affine, checked credential delta on the original admission state.
+        // Never install the failed auth/Identity/key/wrapper candidate.
+        if response.status >= 400
+            && let Some(consumption) = approle_secret_consumption
+            && let Err(error) = consumption.apply(&mut admitted.auth)
+        {
+            return Response::error(error.status, &error.message);
         }
         if admitted.engines.record_root().is_some() {
             let mut plan = match self.prepare_record_plan(&admitted) {
@@ -2288,6 +2313,7 @@ impl Service {
         now: u64,
         client_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
+        approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
     ) -> Response {
         let principal = principal.as_ref();
         if path == "sys/remount" {
@@ -2396,6 +2422,7 @@ impl Service {
             origin_peer,
         ) {
             Ok(Some(mut response)) => {
+                *approle_secret_consumption = response.approle_secret_consumption.take();
                 let mut engines = state.engines.clone();
                 if response.mutated
                     && method == "DELETE"
@@ -6653,3 +6680,7 @@ mod userpass_names_tests;
 #[cfg(test)]
 #[path = "service_batch_schema_tests.rs"]
 mod batch_schema_tests;
+
+#[cfg(test)]
+#[path = "service_approle_batch_tests.rs"]
+mod approle_batch_tests;

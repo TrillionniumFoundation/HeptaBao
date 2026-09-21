@@ -72,7 +72,7 @@ impl EngineState {
                 match &mount.backend {
                     Backend::Ssh(engine) => engine.validate(namespace, name, self.lease_clock)?,
                     Backend::Pki(engine) => engine.validate(namespace, name, self.lease_clock)?,
-                    Backend::Kubernetes(engine) => engine.validate()?,
+                    Backend::Kubernetes(engine) => engine.validate_scope(namespace)?,
                     Backend::OpenLdap(engine) => engine.validate_scope(namespace)?,
                     _ => {}
                 }
@@ -96,6 +96,11 @@ impl EngineState {
                         Backend::Pki(engine) => owners.extend(
                             engine
                                 .active_owners(self.lease_clock)
+                                .map(|owner| (namespace.clone(), owner.clone())),
+                        ),
+                        Backend::Kubernetes(engine) => owners.extend(
+                            engine
+                                .all_owners()
                                 .map(|owner| (namespace.clone(), owner.clone())),
                         ),
                         Backend::OpenLdap(engine) => owners.extend(
@@ -128,6 +133,11 @@ impl EngineState {
                             .all_owners()
                             .map(|owner| (namespace.clone(), owner.clone())),
                     ),
+                    Backend::Kubernetes(engine) => owners.extend(
+                        engine
+                            .all_owners()
+                            .map(|owner| (namespace.clone(), owner.clone())),
+                    ),
                     Backend::OpenLdap(engine) => owners.extend(
                         engine
                             .lease_owners()
@@ -149,6 +159,7 @@ impl EngineState {
             state.mounts.values().any(|mount| match &mount.backend {
                 Backend::Ssh(engine) => !engine.leases.is_empty(),
                 Backend::Pki(engine) => engine.has_live_leases(self.lease_clock),
+                Backend::Kubernetes(engine) => engine.has_typed_observations(),
                 _ => false,
             })
         });
@@ -170,6 +181,9 @@ impl EngineState {
                     }
                     Backend::Pki(engine) => {
                         changed |= engine.reconcile(self.lease_clock, namespace, live);
+                    }
+                    Backend::Kubernetes(engine) => {
+                        changed |= engine.reconcile_owners(self.lease_clock, namespace, live);
                     }
                     _ => {}
                 }
@@ -300,6 +314,7 @@ impl EngineState {
                         .map(|lease| lease.id.as_str())
                         .collect(),
                     Backend::Pki(engine) => engine.lease_ids().collect(),
+                    Backend::Kubernetes(engine) => engine.lease_ids().collect(),
                     _ => Vec::new(),
                 };
                 for id in ids {
@@ -328,7 +343,7 @@ impl EngineState {
                     .mounts
                     .iter()
                     .any(|(name, mount)| match &mount.backend {
-                        Backend::Ssh(_) => {
+                        Backend::Ssh(_) | Backend::Kubernetes(_) => {
                             prefix == name.trim_end_matches('/')
                                 || prefix == format!("{name}creds")
                                 || prefix.starts_with(&format!("{name}creds/"))
@@ -359,6 +374,7 @@ impl EngineState {
                         changed |= old != engine.leases.len();
                     }
                     Backend::Pki(engine) => changed |= engine.revoke_prefix(prefix, clock),
+                    Backend::Kubernetes(engine) => changed |= engine.revoke_prefix(prefix),
                     _ => {}
                 }
             }
@@ -412,6 +428,7 @@ impl EngineState {
         enum LeaseLocation {
             Ssh { mount: String, digest: String },
             Pki { mount: String, serial: String },
+            Kubernetes { mount: String },
         }
         let location =
             candidate
@@ -426,6 +443,11 @@ impl EngineState {
                             mount: name.clone(),
                             digest: digest.clone(),
                         }),
+                    Backend::Kubernetes(engine) if engine.contains_lease(id) => {
+                        Some(LeaseLocation::Kubernetes {
+                            mount: name.clone(),
+                        })
+                    }
                     Backend::Pki(engine) => {
                         engine.lease_location(id).map(|serial| LeaseLocation::Pki {
                             mount: name.clone(),
@@ -443,6 +465,28 @@ impl EngineState {
         };
         let clock = now.max(self.lease_clock);
         match location {
+            LeaseLocation::Kubernetes { mount } => {
+                let Backend::Kubernetes(engine) = &mut candidate
+                    .mounts
+                    .get_mut(&mount)
+                    .ok_or_else(not_found)?
+                    .backend
+                else {
+                    return Err(not_found());
+                };
+                match action {
+                    "lookup" => Ok(ok(engine.lease_lookup(id, clock)?, false)),
+                    "renew" => Err(bad("Kubernetes token leases are not renewable")),
+                    _ => {
+                        let changed = engine.retire_lease(id);
+                        if changed {
+                            self.namespaces.insert(namespace.into(), candidate);
+                            self.lease_clock = clock;
+                        }
+                        Ok(empty(changed))
+                    }
+                }
+            }
             LeaseLocation::Ssh { mount, digest } => {
                 let Backend::Ssh(engine) = &mut candidate
                     .mounts

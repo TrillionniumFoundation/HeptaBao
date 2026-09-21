@@ -153,6 +153,7 @@ impl AuthState {
         token.expires_at = Some(expires_at);
         token.token_api_lease_ttl = Some(expires_at - now);
         let response = AuthResponse {
+            approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
             external_groups: None,

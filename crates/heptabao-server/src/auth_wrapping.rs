@@ -178,6 +178,7 @@ impl AuthState {
             info["wrapped_accessor"] = json!(accessor);
         }
         let result = AuthResponse {
+            approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
             external_groups: None,
@@ -310,6 +311,7 @@ impl AuthState {
             );
         }
         Ok(AuthResponse {
+            approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
             external_groups: None,

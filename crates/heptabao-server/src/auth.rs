@@ -1248,6 +1248,8 @@ impl Drop for User {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Role {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_type: Option<batch_issuance::UserTokenType>,
     role_id: String,
     #[serde(default = "default_bind_secret_id")]
     bind_secret_id: bool,
@@ -1274,7 +1276,7 @@ impl Drop for Role {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 struct SecretId {
     /// Native issuance facts are absent from legacy records and cannot be
     /// reconstructed from a mutable role or an absolute expiration timestamp.
@@ -1286,6 +1288,7 @@ struct SecretId {
 }
 
 pub struct AuthResponse {
+    pub(super) approle_secret_consumption: Option<Box<approle_batch::AppRoleSecretIdConsumption>>,
     pub(super) pending_batch: Option<batch_issuance::PendingBatchGrant>,
     pub(super) login_identity: Option<LoginIdentity>,
     pub(super) external_groups: Option<identity::ExternalGroups>,
@@ -1321,6 +1324,7 @@ fn denied() -> AuthError {
 }
 fn response(data: Value, mutated: bool) -> AuthResponse {
     AuthResponse {
+        approle_secret_consumption: None,
         pending_batch: None,
         login_identity: None,
         external_groups: None,
@@ -1331,6 +1335,7 @@ fn response(data: Value, mutated: bool) -> AuthResponse {
 }
 fn empty(mutated: bool) -> AuthResponse {
     AuthResponse {
+        approle_secret_consumption: None,
         pending_batch: None,
         login_identity: None,
         external_groups: None,
@@ -2137,6 +2142,7 @@ impl AuthState {
         let raw = Zeroizing::new(random_id("hvs.")?);
         let token_id = hash(&raw);
         let result = AuthResponse {
+            approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
             external_groups: None,
@@ -2611,8 +2617,10 @@ impl AuthState {
                     require_auth_revision(optional_auth_revision(body)?, entry.revision)?;
                     let mut changed = false;
                     if let Some(value) = body.get("token_type") {
-                        if entry.kind != "userpass" {
-                            return Err(bad("token_type tune requires a native userpass mount"));
+                        if !matches!(entry.kind.as_str(), "userpass" | "approle") {
+                            return Err(bad(
+                                "token_type tune requires a native userpass or AppRole mount",
+                            ));
                         }
                         let token_type = batch_issuance::MountTokenType::parse(value)?;
                         changed |= entry.token_type != Some(token_type);
@@ -5065,6 +5073,7 @@ impl AuthState {
                 }
                 token.expires_at = Some(expires_at);
                 Ok(AuthResponse {
+                    approle_secret_consumption: None,
                     pending_batch: None,
                     login_identity: None,
                     external_groups: None,
@@ -6000,9 +6009,15 @@ impl AuthState {
             .cloned();
         if operation.is_empty() {
             if capability == "read" {
-                let role = existing.ok_or_else(|| err(404, "role not found"))?;
+                let Some(role) = existing else {
+                    return Ok(AuthResponse {
+                        status: 404,
+                        body: json!({"errors": []}),
+                        ..empty(false)
+                    });
+                };
                 return Ok(response(
-                    json!({"bind_secret_id": role.bind_secret_id, "token_policies": role.policies, "token_ttl": role.token_ttl,
+                    json!({"token_type": role.token_type.unwrap_or_default().name(), "bind_secret_id": role.bind_secret_id, "token_policies": role.policies, "token_ttl": role.token_ttl,
                     "token_max_ttl": role.token_max_ttl, "token_period": role.token_period,
                     "period": role.token_period,
                     "token_explicit_max_ttl": role.token_explicit_max_ttl,
@@ -6020,6 +6035,7 @@ impl AuthState {
             reject_unknown(
                 body,
                 &[
+                    "token_type",
                     "bind_secret_id",
                     "policies",
                     "token_policies",
@@ -6034,6 +6050,7 @@ impl AuthState {
             )?;
             reject_alias_pair(body, "policies", "token_policies")?;
             let mut role = existing.unwrap_or(Role {
+                token_type: None,
                 role_id: random_id("role.")?,
                 bind_secret_id: true,
                 policies: BTreeSet::from(["default".into()]),
@@ -6075,8 +6092,16 @@ impl AuthState {
             role.secret_id_num_uses =
                 approle_renewal::role_count(body, "secret_id_num_uses", role.secret_id_num_uses)?;
             approle_renewal::validate_role_limits(&role)?;
+            let type_warning = approle_batch::update_role_type(&mut role, body)?;
             self.roles_at_mut(scope).insert(name.into(), role);
-            return Ok(empty(true));
+            return Ok(match type_warning {
+                Some(warning) => AuthResponse {
+                    status: 200,
+                    body: json!({"warnings":[warning]}),
+                    ..empty(true)
+                },
+                None => empty(true),
+            });
         }
         let mut role = existing.ok_or_else(|| err(404, "role not found"))?;
         match (operation, capability) {
@@ -6240,6 +6265,7 @@ impl AuthState {
             .and_then(|roles| roles.iter().find(|(_, role)| role.role_id == role_id))
             .map(|(name, role)| (name.clone(), role.clone()))
             .ok_or_else(|| bad("invalid role or secret ID"))?;
+        let mut credential_consumption = None;
         if role.bind_secret_id {
             let secret_id = secret_id.ok_or_else(|| bad("invalid role or secret ID"))?;
             let id = hash(secret_id);
@@ -6255,6 +6281,7 @@ impl AuthState {
             if secret.uses_remaining == Some(0) {
                 return Err(bad("invalid role or secret ID"));
             }
+            let previous_secret = secret.clone();
             let exhausted = if let Some(remaining) = &mut secret.uses_remaining {
                 *remaining -= 1;
                 if *remaining > 0
@@ -6269,31 +6296,64 @@ impl AuthState {
             if exhausted && let Some((mut stored_id, _)) = role.secret_ids.remove_entry(&id) {
                 stored_id.zeroize();
             }
+            if previous_secret.uses_remaining.is_some() {
+                credential_consumption = Some(self.approle_secret_id_consumption(
+                    scope,
+                    &name,
+                    &role.role_id,
+                    &id,
+                    previous_secret,
+                    role.secret_ids.get(&id).cloned(),
+                    now,
+                )?);
+            }
         }
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
-        let mut token = login_token(
-            namespace,
-            role.policies.clone(),
-            token_ttl,
-            token_max_ttl,
-            role.token_num_uses,
-            format!("approle-{name}"),
-            now,
-        )?;
-        token.period = role.token_period;
-        // Only an explicit hard cap is fixed at login. Ordinary role/mount
-        // maxima are recalculated from issue time during finite renewal.
-        token.max_expires_at = (role.token_explicit_max_ttl > 0)
+        let explicit = (role.token_explicit_max_ttl > 0)
             .then(|| checked_expiry(now, role.token_explicit_max_ttl))
             .transpose()?;
-        token.expires_at =
-            Some(self.approle_token_expiry(scope, &role, now, token.max_expires_at, 0, now)?);
-        token.auth_mount = Some(mount.into());
-        token.auth_provenance = Some(TokenAuthProvenance::AppRole {
-            role_name: name.clone(),
-        });
-        let mut issued = self.issue(token, now)?;
+        let expiry = self.approle_token_expiry(scope, &role, now, explicit, 0, now)?;
+        let mut issued = if self.approle_uses_batch(scope, &role) {
+            batch_issuance::PendingBatchGrant::response(
+                batch::BatchClaims {
+                    namespace: namespace.into(),
+                    policies: role.policies.clone(),
+                    metadata: BTreeMap::from([("role_name".into(), name.clone())]),
+                    display_name: format!("approle-{name}"),
+                    path: format!("auth/{mount}/login"),
+                    bound_cidrs: Vec::new(),
+                    issued_at: now,
+                    expires_at: expiry,
+                    parent: None,
+                    entity_id: None,
+                },
+                Some(mount.into()),
+            )
+        } else {
+            let mut token = login_token(
+                namespace,
+                role.policies.clone(),
+                token_ttl,
+                token_max_ttl,
+                role.token_num_uses,
+                format!("approle-{name}"),
+                now,
+            )?;
+            token.period = role.token_period;
+            token.max_expires_at = explicit;
+            token.expires_at = Some(expiry);
+            token.auth_mount = Some(mount.into());
+            token.auth_provenance = Some(TokenAuthProvenance::AppRole {
+                role_name: name.clone(),
+            });
+            self.issue(token, now)?
+        };
+        if let Some(warning) = self.approle_issuance_warning(scope, &role, expiry - now)? {
+            issued.body["warnings"] = json!([warning]);
+        }
+        issued.body["auth"]["metadata"] = json!({"role_name":name});
+        issued.approle_secret_consumption = credential_consumption.map(Box::new);
         issued.login_identity = Some(LoginIdentity {
             mount: mount.into(),
             alias: role_id.into(),
@@ -6455,6 +6515,9 @@ fn token_info(token: &Token, now: u64) -> Value {
     }
     if token.period > 0 {
         info["period"] = json!(token.period);
+    }
+    if let Some(TokenAuthProvenance::AppRole { role_name }) = &token.auth_provenance {
+        info["meta"] = json!({"role_name":role_name});
     }
     if let Some(TokenAuthProvenance::Userpass { username }) = &token.auth_provenance {
         info["meta"] = json!({"username":username});
@@ -6854,3 +6917,10 @@ mod batch_principal_tests;
 #[cfg(test)]
 #[path = "auth_batch_issuance_tests.rs"]
 mod batch_issuance_tests;
+
+#[path = "auth_approle_batch.rs"]
+mod approle_batch;
+pub(crate) use approle_batch::AppRoleSecretIdConsumption;
+#[cfg(test)]
+#[path = "auth_approle_batch_tests.rs"]
+mod approle_batch_tests;

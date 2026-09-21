@@ -3,7 +3,7 @@
 //! conservative because finite legacy state cannot distinguish cap sources.
 use super::*;
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct SecretIdIssuance {
     ttl: u64,
@@ -159,6 +159,7 @@ impl AuthState {
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expires_at);
         Ok(Some(AuthResponse {
+            approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
             external_groups: None,

@@ -554,6 +554,7 @@ impl Service {
                     token: "",
                     body: &body,
                     now,
+                    admission_started: Instant::now(),
                     allow_forward: false,
                     enforce_namespace: true,
                     wrap_ttl_seconds: None,

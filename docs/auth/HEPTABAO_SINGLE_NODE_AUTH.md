@@ -1020,14 +1020,14 @@ operations retain normal ACL denial order. Service response wrappers remain
 one-use and may contain a batch login response.
 
 The implementation uses a bounded HeptaBao encrypted token format, not OpenBao
-bearer bytes. It does not migrate existing OpenBao batch credentials. Other
-authentication methods' batch issuance, token-role parity, key rotation, complete
+bearer bytes. It does not migrate existing OpenBao batch credentials. Batch
+issuance outside userpass and AppRole, token-role parity, key rotation, complete
 HA/snapshot qualification and the remaining OpenBao token surface are still
-open. Kubernetes secrets still lack typed batch lease ownership and completion
-checks. Its OpenBao existing-service-account profile has a nonrenewable Bao
-lease; expiration/revocation removes that lease but cannot revoke the independent
-TokenRequest JWT. Closing that gap must cap the Bao lease without inventing a
-Kubernetes token-revocation guarantee. The shared `userpass_batch_live.py` contract provides the selected
+open. Schema42 adds Kubernetes typed lease ownership and completion checks;
+qualification for that increment is separate from the schema41 evidence below.
+Its existing-service-account profile has a nonrenewable Bao lease;
+expiration/revocation removes that lease but cannot revoke the independent
+TokenRequest JWT. The shared `userpass_batch_live.py` contract provides the selected
 OpenBao 2.6.2 comparison; a code implementation alone is not a passed receipt.
 
 The committed [issuance oracle receipt](../../qa/openbao-acceptance/evidence/userpass-batch-oracle-2.6.2.json)
@@ -1081,6 +1081,91 @@ physical-host failure. The first HA attempt stopped before batch login/snapshot
 because the observer incorrectly required an explicit false `is_self`; its
 failed receipt is retained (SHA256
 `4cc8ef202a1b72a0d8a4c3c382986b9bfd154599114dfb95e84f117081c3122b`).
+
+The same `eeab30a` binary passed [46 real PostgreSQL lease checks](../../qa/openbao-acceptance/evidence/batch-postgres-lease-eeab30a.json)
+with the clean `ec1d403` harness. Real database login verifies issued credentials;
+parent revocation, orphan restart/renewal and batch expiry verify provider cleanup.
+The completion phase observes a committed remote role while its independent
+readback is held, lets the batch owner expire, checks a credential-free failure
+and durable `PendingRevoke`, then restarts and verifies removal of that role.
+This candidate provider profile is not a stock OpenBao database-plugin comparison.
+The first run's delay also affected an internal, uncommitted observation, so its
+readback gate could not be observed; that failed receipt is retained (SHA256
+`c43f71c62fa922adb680b0e437c256969055181fc3d7e56d30a93e665814c8a7`).
+The fix restricts the delay to the independent readback without changing the
+timing budgets or completion assertions.
+
+The same binary passed [50 real OpenLDAP batch lease checks](../../qa/openbao-acceptance/evidence/batch-openldap-lease-eeab30a.json)
+with clean harness `89a11f9`. Actual binds, parent revocation, orphan restart and
+expiry verify the provider lifecycle. The delayed-completion phase observes the
+committed LDAP entry, withholds the readback until authority is lost, returns no
+credential and checks restart cleanup against real slapd. The relay accepts the
+candidate's bounded BER length encoding without changing the frame bytes,
+timeouts or completion assertions. Earlier failures remain recorded; the final
+diagnostic failure was a DER-only length check in that test relay (SHA256
+`a0fac96201f0a52aa9409265f29cdd2b550cc32b9fa570ff391d107d42f4551b`).
+
+## AppRole batch issuance and schema42
+
+AppRole reuses the shared batch grants and four mount token-type modes. A role
+accepts `default`, `service` or `batch`; its `default-service` and `default-batch`
+compatibility spellings normalize to service/batch and return a warning. Explicit
+batch roles reject nonzero token period/use counts. Forced batch mounts may
+discard those fields after calculating the role's issuance lifetime. A batch
+login binds the RoleID Identity alias and role-name metadata before sealing,
+creates no service-token row, and has no parent or accessor.
+
+Finite SecretID use belongs to successful credential authentication. An outer
+Identity or response-wrapping rejection still consumes that use, while discarding
+the failed token/Identity/wrapper candidate. A checked single-SecretID transition
+is applied to the original admission state and follows ordinary durable commit
+and uncertain-write recovery rules. Invalid credentials create no transition;
+successful login and wrapping still publish one application candidate. This
+does not establish unimplemented Core MFA enforcement or the ordering of every
+possible backend failure.
+
+The [official-only AppRole probe](../../qa/openbao-acceptance/evidence/approle-batch-official-probe-v2-20260922.json)
+records 33 scenarios and 187 observations, including all 12 role/mount type
+combinations and SecretID exhaustion after Identity denial. The integrated
+candidate passed all 948 server tests and its compile-fail doctest; live
+qualification for this increment is pending. The pinned official handler
+panics on a null role `token_type`; HeptaBao deliberately returns bounded HTTP400
+instead. Native role/SecretID CIDRs, arbitrary SecretID/alias metadata, dedicated
+per-field role subroutes and the remaining AppRole configuration surface remain
+open. Existing SecretIDs and roles with absent type metadata retain their old
+serialized shape; explicit type metadata requires schema42.
+
+## Kubernetes batch lease ownership in schema42
+
+Kubernetes secrets issued for an existing ServiceAccount now carry typed Bao
+lease ownership, independent of the upstream TokenRequest lifetime. A short
+batch grant caps the local response/lease expiry; it does not shorten the
+provider's requested TTL or pretend to revoke that JWT when the Bao lease is
+retired. Lookup/list/revoke/revoke-prefix operate on the local lease; renewal is
+unsupported. Old ownerless leases retain their known expiry without invented
+issuers or issue times, and old unresolved TokenRequests are not retried.
+
+Completion installs the latest HA application state, verifies the exact pending
+owner/configuration and activation, checks current parent/Identity authority,
+and checks elapsed time from request admission again before releasing credentials.
+The last admitted use of a finite service token executes TokenRequest but
+retires the local lease and returns HTTP400 without credentials, as the official
+Core does. It does not claim to revoke the existing ServiceAccount's JWT.
+Known successful
+late responses leave bounded retired metadata without a JWT. Unknown provider
+outcomes retain their intent. This completion check is an explicit candidate
+security boundary; no equivalent official concurrency race is claimed.
+
+The [official Kubernetes batch receipt](../../qa/openbao-acceptance/evidence/kubernetes-batch-lease-oracle-2.6.2.json)
+contains 66 observations against OpenBao 2.6.2 and actual Kubernetes v1.35.0 in a
+fresh pinned KIND cluster. It checks Bao lease expiry separately from the
+provider JWT expiry and actual TokenReview, parent revocation/expiration, orphan
+expiration, restart and explicit local revocation, while preserving the existing
+ServiceAccount UID. This is official-only calibration; candidate verification
+is pending. The candidate comparison explicitly adapts process CA enrollment
+and manager-token field names. Generated ServiceAccounts/role bindings, full
+Kubernetes engine API compatibility and physical-host failure remain outside
+this profile.
 
 ## Bounded authentication mount migration input contract
 

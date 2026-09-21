@@ -16,6 +16,9 @@ pub(crate) struct KubernetesTokenEffectPlan {
     outbound: crate::outbound::Outbound,
     ha: Option<Arc<Mutex<HaProcess>>>,
     now: u64,
+    started: std::time::Instant,
+    activation_nonce: String,
+    last_use: bool,
 }
 
 impl KubernetesTokenEffectPlan {
@@ -24,13 +27,29 @@ impl KubernetesTokenEffectPlan {
         outbound: crate::outbound::Outbound,
         ha: Option<Arc<Mutex<HaProcess>>>,
         now: u64,
+        started: std::time::Instant,
+        activation_nonce: String,
+        last_use: bool,
     ) -> Self {
         Self {
             inner,
             outbound,
             ha,
             now,
+            started,
+            activation_nonce,
+            last_use,
         }
+    }
+
+    fn completed_now(&self) -> u64 {
+        self.completed_at(std::time::Instant::now())
+    }
+
+    fn completed_at(&self, observed: std::time::Instant) -> u64 {
+        std::time::Duration::from_secs(self.now)
+            .saturating_add(observed.saturating_duration_since(self.started))
+            .as_secs()
     }
 
     pub(crate) fn execute(&self) -> Result<TokenMetadata, Response> {
@@ -228,12 +247,38 @@ impl Service {
                 );
             }
         }
+        let issuer = if relative.starts_with("creds/") {
+            match state.auth.admitted_kubernetes_lease_issuer(
+                principal,
+                request.namespace,
+                request.now,
+            ) {
+                Ok(owner) => {
+                    if owner.entity_id.as_deref().is_some_and(|id| {
+                        !state
+                            .engines
+                            .identity_projection(request.namespace, id)
+                            .is_ok_and(|projection| !projection.disabled)
+                    }) {
+                        return Response::error(
+                            403,
+                            "Kubernetes lease owner identity is unavailable",
+                        );
+                    }
+                    Some(owner)
+                }
+                Err(error) => return Response::error(error.status, &error.message),
+            }
+        } else {
+            None
+        };
         let dispatch = match state.engines.kubernetes_dispatch(
             request.namespace,
             request.path,
             request.method,
             request.body,
             request.now,
+            issuer.as_ref(),
         ) {
             Ok(Some(value)) => value,
             Ok(None) => return Response::error(404, "Kubernetes mount not found"),
@@ -271,6 +316,9 @@ impl Service {
                     self.outbound.clone(),
                     self.ha.clone(),
                     request.now,
+                    request.admission_started,
+                    self.unseal_nonce.clone(),
+                    principal.consumed_last_use(),
                 ));
                 Response::error(500, "Kubernetes TokenRequest was not dispatched")
             }
@@ -282,30 +330,43 @@ impl Service {
         plan: &KubernetesTokenEffectPlan,
         result: Result<TokenMetadata, Response>,
     ) -> Response {
+        self.finalize_kubernetes_token_with_clock(plan, result, || plan.completed_now())
+    }
+
+    fn finalize_kubernetes_token_with_clock(
+        &mut self,
+        plan: &KubernetesTokenEffectPlan,
+        result: Result<TokenMetadata, Response>,
+        mut completed_now: impl FnMut() -> u64,
+    ) -> Response {
         let metadata = match result {
             Ok(metadata) => metadata,
             Err(error) => return error,
         };
-        if let Some(ha) = &self.ha
-            && ha
-                .lock_for_request()
-                .map_err(|_| failure("Kubernetes provider finalize fence unavailable"))
-                .and_then(|ha| {
-                    ha.ensure_linearizable()
-                        .map_err(|_| failure("Kubernetes provider finalize fence unavailable"))
-                })
-                .is_err()
+        // Install the latest HA application graph, not only its ReadIndex.
+        // A restore/reseal invalidates the observation even if config is equal.
+        if self
+            .revalidate_online_authority_with_sync(
+                &plan.inner.namespace,
+                &plan.activation_nonce,
+                |service| service.sync_from_ha_with_anchor(false),
+            )
+            .is_err()
         {
             return post_provider_completion_failure(&plan.inner.lease_id);
         }
         let Some(mut state) = self.state.clone() else {
             return post_provider_completion_failure(&plan.inner.lease_id);
         };
+        let now = completed_now().max(state.engines.lease_clock());
+        let live = Self::kubernetes_completion_owner_live(&state, plan, now);
         let mut response = match state.engines.kubernetes_finalize(
             &plan.inner.namespace,
             &plan.inner.mount,
             &plan.inner,
             metadata,
+            now,
+            live,
         ) {
             Ok(response) => response,
             Err(_) => return post_provider_completion_failure(&plan.inner.lease_id),
@@ -315,10 +376,64 @@ impl Service {
             return post_provider_completion_failure(&plan.inner.lease_id);
         }
         self.state = Some(state);
+        if plan.last_use && response.body["local_lease_retired"] == true {
+            return Response::error(
+                400,
+                "Secret cannot be returned; token had one use left, so leased credentials were immediately revoked.",
+            );
+        }
+        if response.status == 200 {
+            let published_now = now;
+            let now = completed_now().max(now);
+            let Some(current) = self.state.as_ref() else {
+                return post_provider_completion_failure(&plan.inner.lease_id);
+            };
+            // Persisted provider expiry may be shorter than the admitted cap.
+            let original_ttl = response.body["lease_duration"].as_u64().unwrap_or(0);
+            let remaining = original_ttl.saturating_sub(now.saturating_sub(published_now));
+            if !Self::kubernetes_completion_owner_live(current, plan, now) || remaining == 0 {
+                let mut retired = current.clone();
+                if retired
+                    .engines
+                    .kubernetes_retire_lease(
+                        &plan.inner.namespace,
+                        &plan.inner.mount,
+                        &plan.inner.lease_id,
+                    )
+                    .is_err()
+                    || retired.validate_format().is_err()
+                    || self.commit_state(&retired).is_err()
+                {
+                    return post_provider_completion_failure(&plan.inner.lease_id);
+                }
+                self.state = Some(retired);
+                return retired_kubernetes_response(&plan.inner.lease_id);
+            }
+            response.body["lease_duration"] = json!(remaining);
+        }
         Response {
             status: response.status,
             body: std::mem::take(&mut response.body),
         }
+    }
+
+    fn kubernetes_completion_owner_live(
+        state: &State,
+        plan: &KubernetesTokenEffectPlan,
+        now: u64,
+    ) -> bool {
+        plan.inner.authority.expires_at > now
+            && state
+                .auth
+                .resolve_lease_owner(&plan.inner.authority.owner, &plan.inner.namespace, now)
+                .is_some_and(|owner| {
+                    owner.entity_id.as_deref().is_none_or(|id| {
+                        state
+                            .engines
+                            .identity_projection(&plan.inner.namespace, id)
+                            .is_ok_and(|projection| !projection.disabled)
+                    })
+                })
     }
 }
 
@@ -326,10 +441,25 @@ fn post_provider_completion_failure(lease_id: &str) -> Response {
     Response {
         status: 503,
         body: json!({
-            "errors":["Kubernetes token was observed but local completion was not established; durable intent retained"],
+            "errors":["Kubernetes token was observed but local lease completion was not established; durable reconciliation state retained"],
             "lease_id":lease_id,
             "reconcile_required":true,
             "retry_allowed":false
         }),
     }
 }
+
+fn retired_kubernetes_response(lease_id: &str) -> Response {
+    Response {
+        status: 503,
+        body: json!({
+            "errors":["Kubernetes token observed after lease authority expired or was revoked; credential withheld"],
+            "lease_id":lease_id, "retry_allowed":false,
+            "provider_token_revoked":false, "local_lease_retired":true
+        }),
+    }
+}
+
+#[cfg(test)]
+#[path = "service_kubernetes_lease_tests.rs"]
+mod lease_tests;

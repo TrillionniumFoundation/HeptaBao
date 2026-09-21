@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **41**. Its source constant is
+The current Service state schema is **42**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -81,6 +81,7 @@ custody, rotation and parent/sibling key separation remain open.
 | 39 | Native userpass CIDR constraints, default-policy/list-presence semantics, and HA native restore as a new publication. Restore advances the live replay epoch and does not rewind local or Raft durability. Userpass name modes must be absent. |
 | 40 | Fresh native userpass mounts persist ASCII-lower account-name mode. Absent modes preserve historical exact accounts and issued-token provenance; old mounts and Identity aliases are never silently folded. |
 | 41 | Encrypted batch-token key authority, explicit userpass/mount token-type configuration, and typed batch lease ownership. Historical service owners remain the same JSON strings. |
+| 42 | Explicit AppRole role/mount token-type configuration and Kubernetes typed lease ownership with separate Bao/provider expiry. Absent fields retain historical behavior and serialization. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Schema 41 is required if any batch key authority, explicit token-type field, or
@@ -105,6 +106,25 @@ rechecks current parent and Identity authority. Key issue watermarks are
 observations, not revocation cutoffs: a same-key orphan issued after a restored
 snapshot remains cryptographically valid until its own expiry. Key rotation and
 complete OpenBao snapshot interoperability are not established by this format.
+
+Explicit AppRole role token types or AppRole mount token types require schema42,
+including explicit `default` and `service`. Schema41 remains readable when those
+fields are absent. A finite SecretID's authenticated consumption is independent
+of subsequent Identity/wrapping denial: the failed login can commit only that
+one checked credential transition, without publishing its rejected token,
+Identity, batch-key or wrapper candidate. This transient transition is not a new
+serialized state owner or a second token registry.
+
+New Kubernetes TokenRequest intents and observed leases also require schema42
+whenever typed ownership is present, including service owners and retired
+observations. The admission binds the exact owner and Bao lease ceiling; terminal
+metadata records provider expiry separately. A batch ceiling limits the Bao
+lease without changing the provider request's TTL. With the existing-ServiceAccount
+profile, a revoked/expired owner retires local lease metadata but cannot revoke
+the provider JWT. A known successful response arriving too late is recorded as
+retired without retaining or returning that JWT; an unresolved POST remains a
+pending intent and is never automatically retried. Old missing-owner intents and
+leases preserve their serialized shape and are not assigned guessed owners.
 
 Every schema 1–4 record additionally rejects online authentication state or a
 new online method registry entry. Schemas below 5 reject a nonzero replay epoch;
@@ -336,7 +356,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 41. An authenticated
+it. Initialization and committed mutations use schema 42. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.

@@ -292,6 +292,7 @@ impl AuthState {
             .ok_or_else(denied)?;
         token.expires_at = Some(expires_at);
         Ok(AuthResponse {
+            approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
             external_groups: None,

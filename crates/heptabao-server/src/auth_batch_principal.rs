@@ -120,6 +120,10 @@ impl Principal {
     pub(super) fn require_service(&self, message: &str) -> Result<&Token, AuthError> {
         self.service_token().ok_or_else(|| bad(message))
     }
+    pub(crate) fn consumed_last_use(&self) -> bool {
+        self.service_token()
+            .is_some_and(|token| token.uses_remaining == Some(0))
+    }
 }
 
 pub(crate) struct ResolvedLeaseOwner {
@@ -253,6 +257,24 @@ impl AuthState {
         };
         self.resolve_lease_owner(&owner, namespace, now)
             .ok_or_else(denied)
+    }
+    /// The admitted final use may execute Kubernetes TokenRequest, but cannot
+    /// release its leased credential. Persistent owner resolution stays strict;
+    /// completion retires the observation after that one authorized execution.
+    pub(crate) fn admitted_kubernetes_lease_issuer(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        now: u64,
+    ) -> Result<ResolvedLeaseOwner, AuthError> {
+        match self.check_principal(actor, namespace, now)? {
+            CheckedCredential::Service(token) => Ok(ResolvedLeaseOwner {
+                owner: LeaseOwner::service(&actor.digest).map_err(|_| denied())?,
+                expires_at: token.expires_at,
+                entity_id: token.entity_id.clone(),
+            }),
+            CheckedCredential::Batch(_) => self.typed_lease_issuer(actor, namespace, now),
+        }
     }
     pub(crate) fn resolve_lease_owner(
         &self,

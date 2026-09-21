@@ -27,7 +27,7 @@ impl UserTokenType {
             Self::Batch => "batch",
         }
     }
-    fn parse(value: &Value) -> Result<Self, AuthError> {
+    pub(super) fn parse(value: &Value) -> Result<Self, AuthError> {
         match value.as_str().or_else(|| value.is_null().then_some("")) {
             Some("" | "default") => Ok(Self::Default),
             Some("service") => Ok(Self::Service),
@@ -54,7 +54,7 @@ impl MountTokenType {
             _ => Err(bad("invalid mount token_type")),
         }
     }
-    fn resolves_batch(self, user: UserTokenType) -> bool {
+    pub(super) fn resolves_batch(self, user: UserTokenType) -> bool {
         match self {
             Self::Batch => true,
             Self::Service => false,
@@ -85,6 +85,7 @@ impl PendingBatchGrant {
             "token_type":"batch", "orphan":claims.parent.is_none(), "num_uses":0
         }});
         AuthResponse {
+            approle_secret_consumption: None,
             pending_batch: Some(Self {
                 claims,
                 login_mount,
@@ -152,8 +153,12 @@ impl AuthState {
         self.validate_batch_authority()?;
         for mounts in self.auth_mounts.values() {
             for mount in mounts.values() {
-                if mount.token_type.is_some() && mount.kind != "userpass" {
-                    return Err(bad("token_type requires a native userpass mount"));
+                if mount.token_type.is_some()
+                    && !matches!(mount.kind.as_str(), "userpass" | "approle")
+                {
+                    return Err(bad(
+                        "token_type requires a native userpass or AppRole mount",
+                    ));
                 }
             }
         }

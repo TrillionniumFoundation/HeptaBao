@@ -29,10 +29,16 @@ import kubernetes_cluster_live as kube
 
 MOUNT = 'batch-kubernetes'
 POLICY = 'batch-kubernetes-policy'
+LAST_USE_ERROR = ('Secret cannot be returned; token had one use left, '
+                  'so leased credentials were immediately revoked.')
 REQUIRED = frozenset({'complete', 'revoke.child.jwt_survives', 'revoke.orphan.jwt_survives',
     'revoke.orphan.after_restart', 'revoke.orphan.explicit_revoke.jwt_survives',
     'parent_expiry.child.jwt_survives', 'batch_expiry.orphan.jwt_survives',
-    'existing_serviceaccount_preserved'}) | frozenset(
+    'existing_serviceaccount_preserved',
+    'last_use.one.error_exact', 'last_use.one.spent', 'last_use.one.retired',
+    'last_use.two.first', 'last_use.two.remaining_one', 'last_use.two.error_exact',
+    'last_use.two.spent', 'last_use.two.retired', 'last_use.two.lease_retired',
+    'last_use.two.jwt_survives'}) | frozenset(
     f'{phase}.{kind}.two_expiries' for phase, kinds in (
         ('revoke', ('child', 'orphan')), ('parent_expiry', ('child',)),
         ('batch_expiry', ('orphan',))) for kind in kinds)
@@ -145,6 +151,33 @@ class Trace:
         self.check(name, True)
 
 
+def last_use_scenarios(t):
+    """Observe public last-use outcomes; this does not count provider POSTs."""
+    credential = {'kubernetes_namespace': 'hb-work', 'ttl': 600, 'audiences': [kube.AUDIENCE]}
+    for uses in (1, 2):
+        name = 'last_use.' + ('one' if uses == 1 else 'two')
+        actor = t.call(name + '.issue', 'POST', 'auth/token/create', {
+            'type': 'service', 'policies': [POLICY], 'ttl': 120, 'num_uses': uses})['auth']['client_token']
+        first = None
+        if uses == 2:
+            first = t.call(name + '.first', 'POST', MOUNT + '/creds/worker', credential, token=actor)
+            t.check(name + '.first_shape', isinstance(first.get('lease_id'), str)
+                    and bool(first['lease_id']) and first.get('renewable') is False
+                    and isinstance((first.get('data') or {}).get('service_account_token'), str)
+                    and bool(first['data']['service_account_token']))
+            observed = t.call(name + '.remaining', 'POST', 'auth/token/lookup', {'token': actor})
+            t.check(name + '.remaining_one', type(observed.get('data', {}).get('num_uses')) is int
+                    and observed['data']['num_uses'] == 1)
+        rejected = t.call(name + '.final', 'POST', MOUNT + '/creds/worker', credential,
+                          token=actor, status=400)
+        t.check(name + '.error_exact', rejected.get('errors') == [LAST_USE_ERROR])
+        t.call(name + '.spent', 'POST', MOUNT + '/creds/worker', credential, token=actor, status=403)
+        t.absent(name + '.retired', 'auth/token/lookup', {'token': actor})
+        if first is not None:
+            t.absent(name + '.lease_retired', 'sys/leases/lookup', {'lease_id': first['lease_id']})
+            t.jwt_alive(name + '.jwt_survives', first['data']['service_account_token'])
+
+
 def scenarios(t, side, manager, restart, worker_uid):
     t.call('mount', 'POST', 'sys/mounts/' + MOUNT, {'type': 'kubernetes'}, status=204)
     config = {'kubernetes_host': t.cluster.origin}
@@ -201,6 +234,7 @@ def scenarios(t, side, manager, restart, worker_uid):
                 t.absent(name + '.token_expired', 'auth/token/lookup', {'token': token})
                 t.absent(name + '.retired', 'sys/leases/lookup', {'lease_id': lease})
                 t.jwt_alive(name + '.jwt_survives', jwt)
+    last_use_scenarios(t)
     status, account = t.cluster.call('GET', '/api/v1/namespaces/hb-work/serviceaccounts/worker')
     t.check('existing_serviceaccount_preserved', status == 200 and account.get('metadata', {}).get('uid') == worker_uid)
     t.check('complete', True)
@@ -360,6 +394,8 @@ def main():
         'configuration_adaptation': 'candidate process CA enrollment and service_account_token; oracle API CA and service_account_jwt',
         'secret_scan_excludes': ['private Kubernetes credential/control-plane stores'],
         'existing_serviceaccount_only': True, 'jwt_revocation_claim': False, 'mutating_requests_retried': False,
+        'last_use_provider_post_count_measured': False,
+        'last_use_scope': 'public400/no-credential, spent-token rejection and known earlier lease retirement; provider-call ordering is not directly observed',
         'HA_covered': False, 'historical_upgrade_covered': False, 'provider_completion_race_covered': False,
         'full_openbao_compatibility': False, 'independent_qualification': False, 'production_authority': False,
         'retained_failure_work_dir': None if passed else str(work)}
