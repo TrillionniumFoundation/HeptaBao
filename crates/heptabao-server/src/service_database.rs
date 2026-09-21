@@ -3,7 +3,7 @@
 //! Provider-side monotonically sequenced tombstones fence delayed old leaders.
 use super::*;
 use crate::{
-    auth::LeaseIssuer,
+    auth::{LeaseOwner, ResolvedLeaseOwner, ServiceOwnerProfile},
     outbound::Target,
     postgres_wire::PgSession,
     valkey_wire::{RespValue, ValkeySession},
@@ -99,7 +99,7 @@ struct DatabaseLease {
     username: String,
     db_name: String,
     provider_role: String,
-    owner: String,
+    owner: LeaseOwner,
     issued: u64,
     expires: u64,
     max_expires: u64,
@@ -114,6 +114,7 @@ pub(super) struct DatabaseEffectPlan {
     namespace: String,
     mount: String,
     now: u64,
+    started: std::time::Instant,
     outbound: crate::outbound::Outbound,
     ha: Option<Arc<Mutex<HaProcess>>>,
     connection: Connection,
@@ -257,6 +258,12 @@ impl DatabaseBatchEffectPlan {
 }
 
 impl DatabaseEffectPlan {
+    fn completed_now(&self) -> u64 {
+        std::time::Duration::from_secs(self.now)
+            .saturating_add(self.started.elapsed())
+            .as_secs()
+    }
+
     /// Execute only the remote provider side effect and readback. This value is
     /// fully owned so callers may drop the global Service writer while the
     /// bounded network operation is in flight.
@@ -564,7 +571,7 @@ impl DatabaseEffectPlan {
         Ok(())
     }
 
-    fn success_response(&self) -> Result<Response, Response> {
+    fn success_response(&self, now: u64) -> Result<Response, Response> {
         match self.lease.phase {
             Phase::PendingIssue => {
                 let password = self
@@ -581,14 +588,14 @@ impl DatabaseEffectPlan {
                 }
                 Ok(Response::ok(json!({
                     "lease_id":self.lease.id,
-                    "lease_duration":self.lease.expires.saturating_sub(self.now),
+                    "lease_duration":self.lease.expires.saturating_sub(now),
                     "renewable":true,
                     "data":data
                 })))
             }
             Phase::PendingRenew => Ok(Response::ok(json!({
                 "lease_id":self.lease.id,
-                "lease_duration":self.lease.expires.saturating_sub(self.now),
+                "lease_duration":self.lease.expires.saturating_sub(now),
                 "renewable":true
             }))),
             Phase::PendingRevoke => Ok(Response {
@@ -722,9 +729,12 @@ impl DatabaseState {
                         || !l.provider_id.starts_with("hb1:")
                         || !l.provider_id[4..].bytes().all(|b| b.is_ascii_hexdigit())
                         || !name(&l.provider_role)
-                        || base64::engine::general_purpose::URL_SAFE_NO_PAD
-                            .decode(&l.owner)
-                            .map_or(true, |v| v.len() != 32)
+                        || l.owner
+                            .validate_scope(ns, ServiceOwnerProfile::CanonicalDigest)
+                            .is_err()
+                        || l.owner.batch_claims().is_some_and(|claims| {
+                            l.issued < claims.issued_at() || l.expires > claims.expires_at()
+                        })
                         || l.max_expires > i64::MAX as u64
                         || l.max_expires.saturating_sub(l.issued) > 86400
                         || !l.request_digest.bytes().all(|b| b.is_ascii_hexdigit())
@@ -777,6 +787,22 @@ impl DatabaseState {
         }
         Ok(())
     }
+    /// Complete retained ownership, not just Active leases; Pending/Revoke and
+    /// quarantined records must participate in format/key validation.
+    pub(super) fn all_lease_owners(&self) -> BTreeSet<(String, LeaseOwner)> {
+        self.mounts
+            .iter()
+            .flat_map(|(namespace, mounts)| {
+                mounts.values().flat_map(move |mount| {
+                    mount
+                        .leases
+                        .values()
+                        .map(move |lease| (namespace.clone(), lease.owner.clone()))
+                })
+            })
+            .collect()
+    }
+
     fn mount_mut(&mut self, ns: &str, mount: &str) -> &mut DatabaseMount {
         self.mounts
             .entry(ns.into())
@@ -1092,6 +1118,7 @@ impl Service {
         principal: Option<&Principal>,
         request: &RequestView<'_>,
     ) -> Response {
+        let started = std::time::Instant::now();
         let RequestView {
             namespace: ns,
             method,
@@ -1389,7 +1416,7 @@ impl Service {
                         fields(body, &[])?;
                         let owner = state
                             .auth
-                            .lease_issuer(p, ns, now)
+                            .typed_lease_issuer(p, ns, now)
                             .map_err(|e| Response::error(e.status, &e.message))?;
                         let role = state
                             .database
@@ -1442,7 +1469,7 @@ impl Service {
                             username: username.clone(),
                             db_name: role.db_name,
                             provider_role: role.provider_role,
-                            owner: owner.digest,
+                            owner: owner.owner.clone(),
                             issued: now,
                             expires,
                             max_expires,
@@ -1470,6 +1497,15 @@ impl Service {
                 self.database_admin(state, p, request, now)
             }
         })();
+        // Include intent publication time as well as unlocked provider I/O.
+        if let Some(plan) = &mut self.pending_database_effect {
+            plan.started = started;
+        }
+        if let Some(batch) = &mut self.pending_database_batch_effect {
+            for plan in &mut batch.plans {
+                plan.started = started;
+            }
+        }
         execute.unwrap_or_else(|e| e)
     }
     fn publish_database(&mut self, mut state: State) -> Result<(), Response> {
@@ -1561,6 +1597,7 @@ impl Service {
             namespace: ns.to_owned(),
             mount: mount.to_owned(),
             now,
+            started: std::time::Instant::now(),
             outbound: self.outbound.clone(),
             ha: self.ha.clone(),
             connection,
@@ -1600,21 +1637,21 @@ impl Service {
         plan: &DatabaseEffectPlan,
         provider_result: Result<(), Response>,
     ) -> Response {
+        self.finalize_database_effect_with_clock(plan, provider_result, || plan.completed_now())
+    }
+
+    fn finalize_database_effect_with_clock(
+        &mut self,
+        plan: &DatabaseEffectPlan,
+        provider_result: Result<(), Response>,
+        mut completed_now: impl FnMut() -> u64,
+    ) -> Response {
         if let Err(error) = provider_result {
             return error;
         }
-        // Provider completion has been observed. Revalidate cluster authority
-        // after the unlocked I/O window before publishing local completion.
-        if let Some(ha) = &self.ha
-            && ha
-                .lock_for_request()
-                .map_err(|_| failure("HA provider finalize fence unavailable"))
-                .and_then(|ha| {
-                    ha.ensure_linearizable()
-                        .map_err(|_| failure("HA provider finalize fence unavailable"))
-                })
-                .is_err()
-        {
+        // A ReadIndex alone does not install revocations made while I/O was
+        // unlocked. Install the latest application state before resolving owner.
+        if self.ha.is_some() && self.sync_from_ha_with_anchor(false).is_err() {
             return post_provider_publication_failure(
                 failure("HA provider finalize fence unavailable"),
                 &plan.lease.id,
@@ -1640,12 +1677,21 @@ impl Service {
         if current.seq != plan.lease.seq
             || current.request_digest != plan.lease.request_digest
             || current.phase != plan.lease.phase
+            || current.owner != plan.lease.owner
+            || current.expires != plan.lease.expires
         {
             return post_provider_publication_failure(
                 failure("lease fence changed after provider entry"),
                 &plan.lease.id,
             );
         }
+        let now = completed_now().max(next.database.clock);
+        if current.phase != Phase::PendingRevoke
+            && !Self::database_completion_owner_live(&next, plan, now)
+        {
+            return self.reject_database_completion(next, plan, now);
+        }
+        next.database.clock = now;
         if plan.lease.phase == Phase::PendingRevoke {
             let removed = next
                 .database
@@ -1673,13 +1719,55 @@ impl Service {
             current.password = None;
             current.phase = Phase::Active;
             if plan.lease.phase == Phase::PendingRenew {
-                current.last_renewal = Some(plan.now);
+                current.last_renewal = Some(now);
             }
         }
         if let Err(error) = self.publish_database(next) {
             return post_provider_publication_failure(error, &plan.lease.id);
         }
-        plan.success_response().unwrap_or_else(|error| error)
+        // Publication itself may take time. Never release a secret after its
+        // authority expired while persisting the terminal state.
+        let now = completed_now().max(now);
+        if plan.lease.phase != Phase::PendingRevoke {
+            let Some(current) = self.state.as_ref() else {
+                return post_provider_publication_failure(
+                    failure("server sealed after publication"),
+                    &plan.lease.id,
+                );
+            };
+            if !Self::database_completion_owner_live(current, plan, now) {
+                return self.reject_database_completion(current.clone(), plan, now);
+            }
+        }
+        plan.success_response(now).unwrap_or_else(|error| error)
+    }
+
+    fn database_completion_owner_live(state: &State, plan: &DatabaseEffectPlan, now: u64) -> bool {
+        plan.lease.expires > now
+            && state
+                .auth
+                .resolve_lease_owner(&plan.lease.owner, &plan.namespace, now)
+                .is_some_and(|owner| Self::database_owner_active(state, &owner, &plan.namespace))
+    }
+
+    fn reject_database_completion(
+        &mut self,
+        mut state: State,
+        plan: &DatabaseEffectPlan,
+        now: u64,
+    ) -> Response {
+        // The remote effect succeeded. Keep cleanup durable instead of returning
+        // its secret or erasing the provider-side obligation. On commit failure
+        // the original pending/active record remains available to maintenance.
+        state.database.clock = now;
+        let staged = Self::stage_revoke(&mut state, &plan.namespace, &plan.mount, &plan.lease.id)
+            .and_then(|()| self.publish_database(state));
+        post_provider_publication_failure(
+            staged.err().unwrap_or_else(|| {
+                failure("database lease owner expired or was revoked during provider entry")
+            }),
+            &plan.lease.id,
+        )
     }
 
     pub(super) fn finalize_database_batch_effect(
@@ -1905,7 +1993,7 @@ impl Service {
                 && l.expires < l.max_expires
                 && state
                     .auth
-                    .lease_issuer_by_digest(&l.owner, ns, now)
+                    .resolve_lease_owner(&l.owner, ns, now)
                     .is_some_and(|owner| Self::database_owner_active(&state, &owner, ns));
             return Ok(Response::ok(
                 json!({"data":{"id":l.id,"ttl":l.expires.saturating_sub(now),"renewable":renewable,"issue_time":l.issued,"expire_time":l.expires,"last_renewal":l.last_renewal,"phase":l.phase}}),
@@ -1917,7 +2005,7 @@ impl Service {
         if operation == "renew" {
             let owner = state
                 .auth
-                .lease_issuer_by_digest(&l.owner, ns, now)
+                .resolve_lease_owner(&l.owner, ns, now)
                 .ok_or_else(|| Response::error(403, "lease owner expired or revoked"))?;
             if !Self::database_owner_active(&state, &owner, ns)
                 || l.phase != Phase::Active
@@ -1958,7 +2046,7 @@ impl Service {
         self.publish_database(state)?;
         self.defer_database_effect(ns, &mount, id, now)
     }
-    fn database_owner_active(state: &State, owner: &LeaseIssuer, ns: &str) -> bool {
+    fn database_owner_active(state: &State, owner: &ResolvedLeaseOwner, ns: &str) -> bool {
         owner.entity_id.as_deref().is_none_or(|id| {
             state
                 .engines
@@ -1984,6 +2072,7 @@ impl Service {
         &mut self,
         now: u64,
     ) -> Result<Option<DatabaseMaintenance>, &'static str> {
+        let started = std::time::Instant::now();
         if self.state.is_none() || self.recovery_required || self.audit_failed {
             return Ok(None);
         }
@@ -2005,7 +2094,7 @@ impl Service {
         for (ns, mounts) in &state.database.mounts {
             for (mount, m) in mounts {
                 for (id, l) in &m.leases {
-                    let owner = state.auth.lease_issuer_by_digest(&l.owner, ns, now);
+                    let owner = state.auth.resolve_lease_owner(&l.owner, ns, now);
                     let live = owner
                         .as_ref()
                         .is_some_and(|o| Self::database_owner_active(state, o, ns));
@@ -2048,10 +2137,11 @@ impl Service {
             .map_err(|_| "provider intent not committed")?;
         self.defer_database_effect(&ns, &mount, &id, now)
             .map_err(|_| "provider plan unavailable")?;
-        let plan = self
+        let mut plan = self
             .pending_database_effect
             .take()
             .ok_or("provider plan unavailable")?;
+        plan.started = started;
         Ok(Some(DatabaseMaintenance {
             fingerprint,
             now,
@@ -2209,7 +2299,10 @@ mod tests {
             username: format!("hbp_{}", "ab".repeat(16)),
             db_name: "local".into(),
             provider_role: "app_reader".into(),
-            owner: base64::engine::general_purpose::URL_SAFE_NO_PAD.encode([1u8; 32]),
+            owner: LeaseOwner::service(
+                &base64::engine::general_purpose::URL_SAFE_NO_PAD.encode([1u8; 32]),
+            )
+            .map_err(|_| failure("fixture lease owner"))?,
             issued: 1000,
             expires: 1100,
             max_expires: 1200,
@@ -2329,7 +2422,10 @@ mod tests {
                 username: format!("hbp_{:032x}", index + 1),
                 db_name: "local".into(),
                 provider_role: "app_reader".into(),
-                owner: base64::engine::general_purpose::URL_SAFE_NO_PAD.encode([1u8; 32]),
+                owner: LeaseOwner::service(
+                    &base64::engine::general_purpose::URL_SAFE_NO_PAD.encode([1u8; 32]),
+                )
+                .map_err(|_| failure("fixture lease owner"))?,
                 issued: 1000 + index,
                 expires: 1100 + index,
                 max_expires: 1200 + index,
@@ -2472,6 +2568,716 @@ mod tests {
             valkey_fence_readback(&acl_value(&["on"], "-@all", &format!("~10:{digest}"), &[]))
                 .is_none()
         );
+        Ok(())
+    }
+
+    #[test]
+    fn legacy_database_owner_and_intent_match_fixed_pre_typed_bytes() -> Result<(), TestFailure> {
+        const OLD_LEASE: &str = r#"{"id":"database/creds/reader/001122","provider_id":"hb1:a46dc356b4f33603e447e6367d32851521a6a6754ac4aa1895a03046716a47f4","username":"hbp_abababababababababababababababab","db_name":"local","provider_role":"app_reader","owner":"AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE","issued":1000,"expires":1100,"max_expires":1200,"last_renewal":null,"seq":1,"phase":"PendingIssue","password":"abababababababababababababababababababababababababababababababab","request_digest":"dd686f4f2c376995c54e836972574036fd8d0762177c49d94358ed27c0f6c879"}"#;
+        const OLD_INTENT_DIGEST: &str =
+            "dd686f4f2c376995c54e836972574036fd8d0762177c49d94358ed27c0f6c879";
+        let legacy: DatabaseLease =
+            serde_json::from_str(OLD_LEASE).map_err(|_| failure("legacy fixture decode"))?;
+        assert_eq!(
+            serde_json::to_string(&legacy).map_err(|_| failure("legacy fixture encode"))?,
+            OLD_LEASE
+        );
+        assert_eq!(digest_lease(&legacy)?, OLD_INTENT_DIGEST);
+        let (state, id) = sample()?;
+        let actual = state
+            .mount("", "database/")
+            .and_then(|mount| mount.leases.get(&id))
+            .ok_or(TestFailure)?;
+        assert_eq!(
+            serde_json::to_string(actual).map_err(|_| failure("sample encode"))?,
+            OLD_LEASE
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn pending_and_revoked_database_batch_owners_remain_scoped_and_enumerated()
+    -> Result<(), TestFailure> {
+        use crate::auth::{BatchClaims, BatchKeyAuthority};
+        let mut authority = BatchKeyAuthority::new(1000).map_err(|_| failure("authority"))?;
+        let token = authority
+            .seal(
+                BatchClaims {
+                    namespace: String::new(),
+                    policies: BTreeSet::new(),
+                    metadata: BTreeMap::new(),
+                    display_name: "fixture".into(),
+                    path: "auth/userpass/login/fixture".into(),
+                    bound_cidrs: Vec::new(),
+                    issued_at: 1000,
+                    expires_at: 1200,
+                    parent: None,
+                    entity_id: None,
+                },
+                1000,
+            )
+            .map_err(|_| failure("seal"))?;
+        let verified = authority
+            .open(token.as_str(), "", 1000)
+            .map_err(|_| failure("open"))?;
+        let owner = LeaseOwner::from_batch(&verified);
+        let (mut state, id) = sample()?;
+        state
+            .mount_mut("", "database/")
+            .leases
+            .get_mut(&id)
+            .ok_or(TestFailure)?
+            .owner = owner.clone();
+        state.validate_scope("cluster")?;
+        assert!(
+            state
+                .all_lease_owners()
+                .contains(&(String::new(), owner.clone()))
+        );
+        let pending = serde_json::to_vec(&state).map_err(|_| failure("encode"))?;
+        for phase in [Phase::PendingRevoke, Phase::Revoked] {
+            let lease = state
+                .mount_mut("", "database/")
+                .leases
+                .get_mut(&id)
+                .ok_or(TestFailure)?;
+            lease.phase = phase;
+            lease.expires = 0;
+            lease.password = None;
+            lease.request_digest = digest_lease(lease)?;
+            state.validate_scope("cluster")?;
+            assert!(
+                state
+                    .all_lease_owners()
+                    .contains(&(String::new(), owner.clone()))
+            );
+        }
+        let restored: DatabaseState =
+            serde_json::from_slice(&serde_json::to_vec(&state).map_err(|_| failure("encode"))?)
+                .map_err(|_| failure("decode"))?;
+        restored.validate_scope("cluster")?;
+        assert_eq!(
+            restored
+                .mount("", "database/")
+                .and_then(|mount| mount.leases.get(&id))
+                .map(|lease| lease.expires),
+            Some(0)
+        );
+        let mut inflated: DatabaseState =
+            serde_json::from_slice(&pending).map_err(|_| failure("decode"))?;
+        let lease = inflated
+            .mount_mut("", "database/")
+            .leases
+            .get_mut(&id)
+            .ok_or(TestFailure)?;
+        lease.max_expires = 1600;
+        lease.expires = 1300;
+        lease.request_digest = digest_lease(lease)?;
+        assert!(inflated.validate_scope("cluster").is_err());
+        let mut crossed: DatabaseState =
+            serde_json::from_slice(&pending).map_err(|_| failure("decode"))?;
+        let mounts = crossed.mounts.remove("").ok_or(TestFailure)?;
+        crossed.mounts.insert("other".into(), mounts);
+        let lease = crossed
+            .mount_mut("other", "database/")
+            .leases
+            .get_mut(&id)
+            .ok_or(TestFailure)?;
+        lease.provider_id = provider_identity("cluster", "other", &id)?;
+        lease.request_digest = digest_lease(lease)?;
+        assert!(crossed.validate_scope("cluster").is_err());
+        Ok(())
+    }
+
+    type CompletionResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+    type CompletionFixture = (
+        super::super::tests::Root,
+        Service,
+        String,
+        String,
+        DatabaseEffectPlan,
+    );
+
+    fn completion_fixture(phase: Phase) -> CompletionResult<CompletionFixture> {
+        completion_fixture_with_ttl(phase, 120)
+    }
+
+    fn completion_fixture_with_ttl(phase: Phase, ttl: u64) -> CompletionResult<CompletionFixture> {
+        use super::super::tests::{Root, bootstrap, call};
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (key, root_token) = bootstrap(&mut service)?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/mounts/database",
+                &root_token,
+                json!({"type":"database"})
+            )
+            .status,
+            204
+        );
+        let token = call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &root_token,
+            json!({"policies":["default"], "ttl":ttl}),
+        );
+        assert_eq!(token.status, 200);
+        let token = token.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("token")?
+            .to_owned();
+        let mut state = service.state.clone().ok_or("state")?;
+        let actor = state.auth.authenticate(&token, 100).map_err(|_| "actor")?;
+        let owner = state
+            .auth
+            .typed_lease_issuer(&actor, "", 100)
+            .map_err(|_| "owner")?;
+        let (mut database, id) = sample().map_err(|_| "sample")?;
+        database.clock = 100;
+        let lease = database
+            .mount_mut("", "database/")
+            .leases
+            .get_mut(&id)
+            .ok_or("lease")?;
+        lease.provider_id = provider_identity(&state.cluster_id, "", &id).map_err(|_| "id")?;
+        lease.owner = owner.owner;
+        lease.issued = 100;
+        lease.expires = if phase == Phase::PendingRevoke {
+            0
+        } else {
+            100 + ttl.min(100)
+        };
+        lease.max_expires = 220;
+        lease.phase = phase;
+        if lease.phase != Phase::PendingIssue {
+            lease.password = None;
+        }
+        lease.request_digest = digest_lease(lease).map_err(|_| "digest")?;
+        state.database = database.into();
+        service.publish_database(state).map_err(|_| "publish")?;
+        let plan = service
+            .database_effect_plan("", "database/", &id, 100)
+            .map_err(|_| "plan")?;
+        Ok((root, service, key, root_token, plan))
+    }
+
+    #[test]
+    fn completion_database_expired_issue_and_renew_keep_durable_cleanup_without_secret()
+    -> CompletionResult {
+        for phase in [Phase::PendingIssue, Phase::PendingRenew] {
+            let (root, mut service, key, _, mut plan) = completion_fixture(phase)?;
+            plan.started = std::time::Instant::now()
+                .checked_sub(std::time::Duration::from_secs(121))
+                .ok_or("clock")?;
+            let response = service.finalize_database_effect(&plan, Ok(()));
+            assert_eq!(response.status, 503);
+            assert_eq!(response.body["retry_allowed"], false);
+            assert_eq!(response.body["reconcile_required"], true);
+            assert!(response.body.get("data").is_none());
+            let lease = service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .database
+                .mount("", "database/")
+                .ok_or("mount")?
+                .leases
+                .get(&plan.lease.id)
+                .ok_or("lease")?;
+            assert!(lease.phase == Phase::PendingRevoke);
+            assert!(lease.password.is_none());
+            assert!(lease.seq > plan.lease.seq);
+            drop(plan);
+            drop(service);
+            let mut service = root.service()?;
+            assert_eq!(
+                super::super::tests::call(
+                    &mut service,
+                    "PUT",
+                    "sys/unseal",
+                    "",
+                    json!({"key":key})
+                )
+                .status,
+                200
+            );
+            let pending = service
+                .prepare_database_maintenance(222)?
+                .ok_or("cleanup")?;
+            assert!(pending.plan.lease.phase == Phase::PendingRevoke);
+            // Revocation completion must work even though its original owner is dead.
+            assert_eq!(
+                service
+                    .finalize_database_effect(&pending.plan, Ok(()))
+                    .status,
+                204
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn completion_database_owner_change_with_identical_digest_is_rejected_without_mutation()
+    -> CompletionResult {
+        let (_root, mut service, _, _, mut plan) = completion_fixture(Phase::PendingIssue)?;
+        plan.lease.owner = LeaseOwner::service(
+            &base64::engine::general_purpose::URL_SAFE_NO_PAD.encode([7u8; 32]),
+        )
+        .map_err(|_| "owner")?;
+        let durable = service.durable.as_ref().ok_or("durable")?;
+        let generation = durable.generation();
+        let saved = durable.get("system", "state")?;
+        assert_eq!(service.finalize_database_effect(&plan, Ok(())).status, 503);
+        let durable = service.durable.as_ref().ok_or("durable")?;
+        assert_eq!(durable.generation(), generation);
+        assert_eq!(durable.get("system", "state")?, saved);
+        Ok(())
+    }
+
+    #[test]
+    fn completion_database_live_owner_is_published_and_remaining_ttl_uses_completion_clock()
+    -> CompletionResult {
+        let (_root, mut service, _, _, mut plan) = completion_fixture(Phase::PendingIssue)?;
+        plan.started = std::time::Instant::now()
+            .checked_sub(std::time::Duration::from_secs(2))
+            .ok_or("clock")?;
+        let response = service.finalize_database_effect(&plan, Ok(()));
+        assert_eq!(response.status, 200);
+        assert!(response.body["data"]["password"].is_string());
+        assert!(
+            response.body["lease_duration"]
+                .as_u64()
+                .is_some_and(|ttl| ttl <= 98 && ttl > 0)
+        );
+        let lease = service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .database
+            .mount("", "database/")
+            .ok_or("mount")?
+            .leases
+            .get(&plan.lease.id)
+            .ok_or("lease")?;
+        assert!(lease.phase == Phase::Active);
+        assert!(lease.password.is_none());
+        Ok(())
+    }
+
+    #[test]
+    fn completion_database_revoke_succeeds_after_owner_expires() -> CompletionResult {
+        let (_root, mut service, _, _, mut plan) = completion_fixture(Phase::PendingRevoke)?;
+        plan.started = std::time::Instant::now()
+            .checked_sub(std::time::Duration::from_secs(121))
+            .ok_or("clock")?;
+        assert_eq!(service.finalize_database_effect(&plan, Ok(())).status, 204);
+        assert!(
+            service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .database
+                .mount("", "database/")
+                .ok_or("mount")?
+                .leases
+                .is_empty()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn completion_database_one_second_owner_uses_integer_second_domain() -> CompletionResult {
+        for delayed in [false, true] {
+            let (_root, mut service, _, _, mut plan) =
+                completion_fixture_with_ttl(Phase::PendingIssue, 1)?;
+            if delayed {
+                plan.started = std::time::Instant::now()
+                    .checked_sub(std::time::Duration::from_secs(1))
+                    .ok_or("clock")?;
+            }
+            let response = service.finalize_database_effect(&plan, Ok(()));
+            assert_eq!(response.status, if delayed { 503 } else { 200 });
+            if delayed {
+                assert!(response.body.get("data").is_none());
+            } else {
+                assert_eq!(response.body["lease_duration"], 1);
+            }
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn completion_database_parent_revocation_during_provider_io_stages_cleanup() -> CompletionResult
+    {
+        let (_root, mut service, _, root_token, plan) = completion_fixture(Phase::PendingIssue)?;
+        let mut state = service.state.clone().ok_or("state")?;
+        let actor = state
+            .auth
+            .authenticate(&root_token, 100)
+            .map_err(|_| "actor")?;
+        state
+            .auth
+            .handle(
+                Some(&actor),
+                "",
+                "POST",
+                "auth/token/revoke-self",
+                &json!({}),
+                100,
+            )
+            .map_err(|_| "revoke parent")?
+            .ok_or("route")?;
+        service
+            .publish_database(state)
+            .map_err(|_| "publish revocation")?;
+        let response = service.finalize_database_effect(&plan, Ok(()));
+        assert_eq!(response.status, 503);
+        assert!(response.body.get("data").is_none());
+        let lease = service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .database
+            .mount("", "database/")
+            .ok_or("mount")?
+            .leases
+            .get(&plan.lease.id)
+            .ok_or("lease")?;
+        assert!(lease.phase == Phase::PendingRevoke);
+        Ok(())
+    }
+
+    #[test]
+    fn completion_database_owner_expires_during_terminal_commit_no_secret_is_released()
+    -> CompletionResult {
+        let (_root, mut service, _, _, plan) = completion_fixture(Phase::PendingIssue)?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let mut reads = 0;
+        let response = service.finalize_database_effect_with_clock(&plan, Ok(()), || {
+            reads += 1;
+            if reads == 1 { 100 } else { 221 }
+        });
+        assert_eq!(reads, 2);
+        assert_eq!(response.status, 503);
+        assert_eq!(response.body["retry_allowed"], false);
+        assert!(response.body.get("data").is_none());
+        assert!(service.durable.as_ref().ok_or("durable")?.generation() > generation);
+        let lease = service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .database
+            .mount("", "database/")
+            .ok_or("mount")?
+            .leases
+            .get(&plan.lease.id)
+            .ok_or("lease")?;
+        assert!(lease.phase == Phase::PendingRevoke);
+        Ok(())
+    }
+
+    #[test]
+    fn completion_database_verified_batch_expiry_and_parent_revoke_never_publish_secret()
+    -> CompletionResult {
+        use crate::auth::{BatchClaims, BatchKeyAuthority};
+        for parent_revoked in [false, true] {
+            let (_root, mut service, _, root_token, mut plan) =
+                completion_fixture(Phase::PendingIssue)?;
+            let mut state = service.state.clone().ok_or("state")?;
+            let mut authority = BatchKeyAuthority::new(100)?;
+            let parent = parent_revoked.then(|| {
+                base64::engine::general_purpose::URL_SAFE_NO_PAD
+                    .encode(crate::crypto::digest(root_token.as_bytes()))
+            });
+            let raw = authority.seal(
+                BatchClaims {
+                    namespace: String::new(),
+                    policies: BTreeSet::from(["default".into()]),
+                    metadata: BTreeMap::new(),
+                    display_name: "batch-test".into(),
+                    path: "auth/userpass/login/test".into(),
+                    bound_cidrs: Vec::new(),
+                    issued_at: 100,
+                    expires_at: 200,
+                    parent,
+                    entity_id: None,
+                },
+                100,
+            )?;
+            let owner = LeaseOwner::from_batch(&authority.open(raw.as_str(), "", 100)?);
+            let mut serialized = serde_json::to_value(&state.auth)?;
+            let service_count = serialized["tokens"].as_object().ok_or("tokens")?.len();
+            serialized["batch_authority"] = serde_json::to_value(&authority)?;
+            state.auth = serde_json::from_value(serialized)?;
+            assert!(state.auth.resolve_lease_owner(&owner, "", 100).is_some());
+            assert_eq!(
+                serde_json::to_value(&state.auth)?["tokens"]
+                    .as_object()
+                    .ok_or("tokens")?
+                    .len(),
+                service_count
+            );
+            state
+                .database
+                .mount_mut("", "database/")
+                .leases
+                .get_mut(&plan.lease.id)
+                .ok_or("lease")?
+                .owner = owner.clone();
+            plan.lease.owner = owner;
+            if parent_revoked {
+                let actor = state
+                    .auth
+                    .authenticate(&root_token, 100)
+                    .map_err(|_| "actor")?;
+                state
+                    .auth
+                    .handle(
+                        Some(&actor),
+                        "",
+                        "POST",
+                        "auth/token/revoke-self",
+                        &json!({}),
+                        100,
+                    )
+                    .map_err(|_| "revoke")?
+                    .ok_or("route")?;
+            } else {
+                plan.started = std::time::Instant::now()
+                    .checked_sub(std::time::Duration::from_secs(101))
+                    .ok_or("clock")?;
+            }
+            service.publish_database(state).map_err(|_| "publish")?;
+            let response = service.finalize_database_effect(&plan, Ok(()));
+            assert_eq!(response.status, 503);
+            assert_eq!(response.body["retry_allowed"], false);
+            assert!(response.body.get("data").is_none());
+            assert!(
+                service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .database
+                    .mount("", "database/")
+                    .ok_or("mount")?
+                    .leases
+                    .get(&plan.lease.id)
+                    .ok_or("lease")?
+                    .phase
+                    == Phase::PendingRevoke
+            );
+        }
+        Ok(())
+    }
+    #[test]
+    fn completion_database_batch_parent_shortened_but_live_is_not_a_ttl_cap() -> CompletionResult {
+        use crate::auth::{BatchClaims, BatchKeyAuthority};
+        for completed_now in [100, 106] {
+            let (_root, mut service, _, root_token, mut plan) =
+                completion_fixture(Phase::PendingIssue)?;
+            let parent = plan
+                .lease
+                .owner
+                .service_digest()
+                .ok_or("parent")?
+                .to_owned();
+            let mut state = service.state.clone().ok_or("state")?;
+            let mut serialized = serde_json::to_value(&state.auth)?;
+            let accessor = serialized["tokens"][&parent]["accessor"]
+                .as_str()
+                .ok_or("accessor")?
+                .to_owned();
+            let mut authority = BatchKeyAuthority::new(100)?;
+            let raw = authority.seal(
+                BatchClaims {
+                    namespace: String::new(),
+                    policies: BTreeSet::from(["default".into()]),
+                    metadata: BTreeMap::new(),
+                    display_name: "batch-test".into(),
+                    path: "auth/userpass/login/test".into(),
+                    bound_cidrs: Vec::new(),
+                    issued_at: 100,
+                    expires_at: 200,
+                    parent: Some(parent),
+                    entity_id: None,
+                },
+                100,
+            )?;
+            let owner = LeaseOwner::from_batch(&authority.open(raw.as_str(), "", 100)?);
+            serialized["batch_authority"] = serde_json::to_value(&authority)?;
+            state.auth = serde_json::from_value(serialized)?;
+            state
+                .database
+                .mount_mut("", "database/")
+                .leases
+                .get_mut(&plan.lease.id)
+                .ok_or("lease")?
+                .owner = owner.clone();
+            plan.lease.owner = owner;
+            service.publish_database(state).map_err(|_| "publish")?;
+            // The original parent stays live; only its remaining lifetime changes.
+            let renewed = super::super::tests::call(
+                &mut service,
+                "POST",
+                "auth/token/renew-accessor",
+                &root_token,
+                json!({"accessor":accessor,"increment":5}),
+            );
+            assert_eq!(renewed.status, 200);
+            let resolved = service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .auth
+                .resolve_lease_owner(&plan.lease.owner, "", 100)
+                .ok_or("live parent")?;
+            assert_eq!(resolved.expires_at, Some(200));
+            let response =
+                service.finalize_database_effect_with_clock(&plan, Ok(()), || completed_now);
+            assert_eq!(
+                response.status,
+                if completed_now == 100 { 200 } else { 503 }
+            );
+            let lease = service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .database
+                .mount("", "database/")
+                .ok_or("mount")?
+                .leases
+                .get(&plan.lease.id)
+                .ok_or("lease")?;
+            if completed_now == 100 {
+                assert!(lease.phase == Phase::Active);
+                assert_eq!(response.body["lease_duration"], 100);
+                assert!(response.body["data"]["password"].is_string());
+            } else {
+                assert!(lease.phase == Phase::PendingRevoke);
+                assert_eq!(response.body["retry_allowed"], false);
+                assert!(response.body.get("data").is_none());
+            }
+        }
+        Ok(())
+    }
+    #[test]
+    fn completion_database_uses_live_identity_in_lease_namespace() -> CompletionResult {
+        use crate::auth::{BatchClaims, BatchKeyAuthority};
+        for same_namespace in [false, true] {
+            let (_root, mut service, _, _, mut plan) = completion_fixture(Phase::PendingIssue)?;
+            let mut state = service.state.clone().ok_or("state")?;
+            let entity = state
+                .engines
+                .handle(
+                    "",
+                    "POST",
+                    "identity/entity",
+                    &json!({"name":"completion-owner"}),
+                    100,
+                )
+                .map_err(|_| "entity")?
+                .ok_or("entity route")?;
+            let entity_id = entity.body["data"]["id"]
+                .as_str()
+                .ok_or("entity id")?
+                .to_owned();
+            let other = state
+                .engines
+                .handle(
+                    "other",
+                    "POST",
+                    "identity/entity",
+                    &json!({"name":"completion-owner"}),
+                    100,
+                )
+                .map_err(|_| "other entity")?
+                .ok_or("other entity route")?;
+            assert_eq!(other.body["data"]["id"], entity_id);
+            let mut authority = BatchKeyAuthority::new(100)?;
+            let raw = authority.seal(
+                BatchClaims {
+                    namespace: String::new(),
+                    policies: BTreeSet::from(["default".into()]),
+                    metadata: BTreeMap::new(),
+                    display_name: "batch-test".into(),
+                    path: "auth/userpass/login/test".into(),
+                    bound_cidrs: Vec::new(),
+                    issued_at: 100,
+                    expires_at: 200,
+                    parent: None,
+                    entity_id: Some(entity_id.clone()),
+                },
+                100,
+            )?;
+            let owner = LeaseOwner::from_batch(&authority.open(raw.as_str(), "", 100)?);
+            let mut serialized = serde_json::to_value(&state.auth)?;
+            serialized["batch_authority"] = serde_json::to_value(&authority)?;
+            state.auth = serde_json::from_value(serialized)?;
+            state
+                .database
+                .mount_mut("", "database/")
+                .leases
+                .get_mut(&plan.lease.id)
+                .ok_or("lease")?
+                .owner = owner.clone();
+            plan.lease.owner = owner;
+            service
+                .publish_database(state)
+                .map_err(|_| "publish admitted batch")?;
+            let mut state = service.state.clone().ok_or("state")?;
+            let ns = if same_namespace { "" } else { "other" };
+            state
+                .engines
+                .handle(
+                    ns,
+                    "POST",
+                    &format!("identity/entity/id/{entity_id}"),
+                    &json!({"disabled":true}),
+                    100,
+                )
+                .map_err(|_| "disable entity")?
+                .ok_or("disable route")?;
+            assert_eq!(
+                state
+                    .engines
+                    .identity_projection("", &entity_id)
+                    .map_err(|_| "projection")?
+                    .disabled,
+                same_namespace
+            );
+            service
+                .publish_database(state)
+                .map_err(|_| "publish identity")?;
+            // Real durable pending intent and typed batch; provider success is simulated.
+            let response = service.finalize_database_effect_with_clock(&plan, Ok(()), || 100);
+            if same_namespace {
+                assert_eq!(response.status, 503);
+                assert_eq!(response.body["retry_allowed"], false);
+                assert!(response.body.get("data").is_none());
+                assert!(
+                    service
+                        .state
+                        .as_ref()
+                        .ok_or("state")?
+                        .database
+                        .mount("", "database/")
+                        .ok_or("mount")?
+                        .leases
+                        .get(&plan.lease.id)
+                        .ok_or("lease")?
+                        .phase
+                        == Phase::PendingRevoke
+                );
+            } else {
+                assert_eq!(response.status, 200);
+                assert!(response.body["data"]["password"].is_string());
+            }
+        }
         Ok(())
     }
 }

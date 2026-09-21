@@ -10,6 +10,14 @@ pub(crate) struct InspectionTarget {
 }
 
 impl InspectionTarget {
+    fn from_checked(token: &batch_principal::CheckedCredential<'_>) -> Self {
+        Self {
+            entity_id: token.entity_id().map(str::to_owned),
+            root: token.is_root(),
+            wrapping: token.is_wrapping(),
+            policies: token.policies().clone(),
+        }
+    }
     fn from_token(token: &Token) -> Self {
         Self {
             entity_id: token.entity_id.clone(),
@@ -33,10 +41,16 @@ impl AuthState {
             // The authenticated request owns its final-use view. Inspecting it
             // neither mints a second Principal nor consumes a second token use.
             let token = self.check_principal(actor, namespace, now)?;
-            return Ok(InspectionTarget::from_token(token));
+            return Ok(InspectionTarget::from_checked(&token));
         }
         let id = if route == "sys/capabilities" {
             let raw = string_field(body, "token")?;
+            if raw.starts_with("hvb.") {
+                let target = self
+                    .inspect_raw_target(raw, namespace, now)
+                    .map_err(|_| bad("invalid inspection target"))?;
+                return Ok(InspectionTarget::from_checked(&target.view(self, now)?));
+            }
             if raw.len() > 256 || !raw.starts_with("hvs.") {
                 return Err(bad("invalid token"));
             }

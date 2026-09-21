@@ -31,7 +31,7 @@ use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 use crate::state_record_root::RecordStateRoot;
 
-const CURRENT_STATE_SCHEMA: u32 = 40;
+const CURRENT_STATE_SCHEMA: u32 = 41;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -1820,10 +1820,11 @@ impl Service {
         let public_otp_verify = admitted
             .engines
             .is_ssh_verification(namespace, method, path);
+        // A request to CREATE a wrapper has not observed an existing wrapper's
+        // expiry. Its clock and payload are published together by wrap_response.
+        // Access to an existing wrapper still fences time before admission below.
         if !owner_manifest_migration
-            && (wrap_ttl_seconds.is_some()
-                || path.starts_with("sys/wrapping/")
-                || admitted.auth.is_wrapping_token(token))
+            && (path.starts_with("sys/wrapping/") || admitted.auth.is_wrapping_token(token))
             && admitted.auth.advance_wrapping_clock(now)
         {
             admitted.schema = CURRENT_STATE_SCHEMA;
@@ -6648,3 +6649,7 @@ mod userpass_no_default_tests;
 #[cfg(test)]
 #[path = "service_userpass_names_tests.rs"]
 mod userpass_names_tests;
+
+#[cfg(test)]
+#[path = "service_batch_schema_tests.rs"]
+mod batch_schema_tests;

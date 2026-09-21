@@ -749,6 +749,7 @@ impl AuthState {
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expiry);
         let mut response = AuthResponse {
+            pending_batch: None,
             login_identity: None,
             external_groups: Some(identity::ExternalGroups {
                 mount: scope.mount.into(),

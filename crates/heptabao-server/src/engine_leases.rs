@@ -1,7 +1,7 @@
 //! Online dynamic-secret lifetime and administration for local SSH OTP and PKI
 //! issuance. External-provider renewal callbacks remain outside this module.
 use super::*;
-use crate::auth::LeaseIssuer;
+use crate::auth::{LeaseOwner, ResolvedLeaseOwner, ServiceOwnerProfile};
 
 impl EngineState {
     fn ssh_mount(&self, namespace: &str, path: &str) -> Option<&str> {
@@ -67,20 +67,20 @@ impl EngineState {
             })
     }
     pub(crate) fn validate_lease_state(&self) -> Result<()> {
-        for state in self.namespaces.values() {
+        for (namespace, state) in &self.namespaces {
             for (name, mount) in &state.mounts {
                 match &mount.backend {
-                    Backend::Ssh(engine) => engine.validate(name, self.lease_clock)?,
-                    Backend::Pki(engine) => engine.validate(name, self.lease_clock)?,
+                    Backend::Ssh(engine) => engine.validate(namespace, name, self.lease_clock)?,
+                    Backend::Pki(engine) => engine.validate(namespace, name, self.lease_clock)?,
                     Backend::Kubernetes(engine) => engine.validate()?,
-                    Backend::OpenLdap(engine) => engine.validate()?,
+                    Backend::OpenLdap(engine) => engine.validate_scope(namespace)?,
                     _ => {}
                 }
             }
         }
         Ok(())
     }
-    pub(crate) fn lease_owners(&self) -> BTreeSet<(String, String)> {
+    pub(crate) fn lease_owners(&self) -> BTreeSet<(String, LeaseOwner)> {
         self.namespaces
             .iter()
             .flat_map(|(namespace, state)| {
@@ -110,10 +110,40 @@ impl EngineState {
             })
             .collect()
     }
+    /// Every retained owner, including revoked/non-leased certificates and
+    /// pending external intents. Format validation must not depend on liveness.
+    pub(crate) fn all_lease_owners(&self) -> BTreeSet<(String, LeaseOwner)> {
+        let mut owners = BTreeSet::new();
+        for (namespace, state) in &self.namespaces {
+            for mount in state.mounts.values() {
+                match &mount.backend {
+                    Backend::Ssh(engine) => owners.extend(
+                        engine
+                            .leases
+                            .values()
+                            .map(|lease| (namespace.clone(), lease.owner.clone())),
+                    ),
+                    Backend::Pki(engine) => owners.extend(
+                        engine
+                            .all_owners()
+                            .map(|owner| (namespace.clone(), owner.clone())),
+                    ),
+                    Backend::OpenLdap(engine) => owners.extend(
+                        engine
+                            .lease_owners()
+                            .map(|owner| (namespace.clone(), owner.clone())),
+                    ),
+                    _ => {}
+                }
+            }
+        }
+        owners
+    }
+
     pub(crate) fn reconcile_lease_state(
         &mut self,
         now: u64,
-        live: &BTreeSet<(String, String)>,
+        live: &BTreeSet<(String, LeaseOwner)>,
     ) -> bool {
         let any = self.namespaces.values().any(|state| {
             state.mounts.values().any(|mount| match &mount.backend {
@@ -153,7 +183,7 @@ impl EngineState {
         method: &str,
         path: &str,
         body: &Value,
-        owner: Option<&LeaseIssuer>,
+        owner: Option<&ResolvedLeaseOwner>,
         now: u64,
     ) -> Result<EngineResponse> {
         if !write_method(method) {
@@ -183,7 +213,11 @@ impl EngineState {
         } else {
             let name = relative.strip_prefix("creds/").ok_or_else(not_found)?;
             let owner = owner.ok_or_else(|| error(403, "credential issuer is required"))?;
-            engine.issue(&mount, name, body, &owner.digest, owner.expires_at, now)?
+            owner
+                .owner
+                .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
+                .map_err(|_| error(403, "credential owner scope mismatch"))?;
+            engine.issue(&mount, name, body, &owner.owner, owner.expires_at, now)?
         };
         if response.mutated {
             self.namespaces.insert(namespace.into(), candidate);
@@ -197,7 +231,7 @@ impl EngineState {
         method: &str,
         path: &str,
         body: &Value,
-        owner: &LeaseIssuer,
+        owner: &ResolvedLeaseOwner,
         now: u64,
     ) -> Result<EngineResponse> {
         if !write_method(method) {
@@ -226,7 +260,11 @@ impl EngineState {
             return Err(not_found());
         };
         let now = now.max(self.lease_clock);
-        let response = engine.issue(&mount, role, body, &owner.digest, owner.expires_at, now)?;
+        owner
+            .owner
+            .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
+            .map_err(|_| error(403, "credential owner scope mismatch"))?;
+        let response = engine.issue(&mount, role, body, &owner.owner, owner.expires_at, now)?;
         if response.mutated {
             self.namespaces.insert(namespace.into(), candidate);
             self.lease_clock = now;

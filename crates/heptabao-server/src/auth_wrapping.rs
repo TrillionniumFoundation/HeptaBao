@@ -178,6 +178,7 @@ impl AuthState {
             info["wrapped_accessor"] = json!(accessor);
         }
         let result = AuthResponse {
+            pending_batch: None,
             login_identity: None,
             external_groups: None,
             status: 200,
@@ -280,7 +281,10 @@ impl AuthState {
             return Ok(response(body.clone(), false));
         }
         reject_unknown(body, &["token"])?;
-        let wrapped = if let Some(wrapped) = actor.token.wrapping.as_ref() {
+        let wrapped = if let Some(wrapped) = actor
+            .service_token()
+            .and_then(|token| token.wrapping.as_ref())
+        {
             // A wrapping token may only unwrap itself, never consume a second token.
             if body.get("token").is_some() {
                 return Err(bad("wrapping token cannot also be supplied in the body"));
@@ -306,6 +310,7 @@ impl AuthState {
             );
         }
         Ok(AuthResponse {
+            pending_batch: None,
             login_identity: None,
             external_groups: None,
             status: 200,

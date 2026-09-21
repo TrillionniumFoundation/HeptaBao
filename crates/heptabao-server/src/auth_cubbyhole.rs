@@ -64,11 +64,38 @@ impl AuthState {
         } else {
             method
         };
+        // Writes run the backend existence check before ACL classification.
+        // OpenBao rejects batch there; reads still pass through the ACL first.
+        if principal.service_token().is_none() {
+            if matches!(method, "POST" | "PUT") {
+                return Err(bad(
+                    "cubbyhole operations are only supported by service tokens",
+                ));
+            }
+            let capability = match method {
+                "GET" | "HEAD" => "read",
+                "LIST" => "list",
+                "POST" | "PUT" => "update",
+                "DELETE" => "delete",
+                _ => return Err(err(405, "method not allowed")),
+            };
+            let acl_path = if path == "cubbyhole" || method == "LIST" && !path.ends_with('/') {
+                format!("{path}/")
+            } else {
+                path.to_owned()
+            };
+            self.authorize_request(principal, namespace, &acl_path, capability, now)?;
+            return Err(bad(
+                "cubbyhole operations are only supported by service tokens",
+            ));
+        }
+        let request_token = principal
+            .require_service("cubbyhole operations are only supported by service tokens")?;
         // Only the request-local view may still contain values on a final use.
         // authenticate() already durably clears the live copy at admission.
-        let final_use = principal.token.uses_remaining == Some(0);
+        let final_use = request_token.uses_remaining == Some(0);
         let view = if final_use {
-            &principal.token.cubbyhole
+            &request_token.cubbyhole
         } else {
             &self
                 .tokens

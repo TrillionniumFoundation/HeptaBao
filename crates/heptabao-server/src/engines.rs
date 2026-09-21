@@ -631,7 +631,7 @@ impl EngineState {
         method: &str,
         body: &Value,
         now: u64,
-        issuer: Option<&crate::auth::LeaseIssuer>,
+        issuer: Option<&crate::auth::ResolvedLeaseOwner>,
     ) -> Result<Option<openldap::Dispatch>> {
         let Some(mount_path) = self.openldap_mount(namespace, path) else {
             return Ok(None);
@@ -669,12 +669,25 @@ impl EngineState {
         engine.stage_revoke(namespace, mount, lease_id)
     }
 
+    pub(crate) fn openldap_lease_authority(
+        &self,
+        namespace: &str,
+        mount: &str,
+        lease_id: &str,
+    ) -> Option<(&crate::auth::LeaseOwner, u64)> {
+        let Backend::OpenLdap(engine) = &self.namespaces.get(namespace)?.mounts.get(mount)?.backend
+        else {
+            return None;
+        };
+        engine.lease_authority(lease_id)
+    }
+
     pub(crate) fn openldap_renew(
         &mut self,
         namespace: &str,
         mount: &str,
         lease_id: &str,
-        owner: Option<&str>,
+        issuer: &crate::auth::ResolvedLeaseOwner,
         increment: u64,
         now: u64,
     ) -> Result<EngineResponse> {
@@ -686,7 +699,31 @@ impl EngineState {
         let Backend::OpenLdap(engine) = &mut state.backend else {
             return Err(error(503, "OpenLDAP mount changed before renewal"));
         };
-        engine.renew(lease_id, owner, increment, now)
+        engine.validate_scope(namespace)?;
+        issuer
+            .owner
+            .validate_scope(namespace, crate::auth::ServiceOwnerProfile::Graphic)
+            .map_err(|_| error(403, "OpenLDAP issuer scope mismatch"))?;
+        engine.renew(lease_id, issuer, increment, now)
+    }
+
+    pub(crate) fn openldap_effect_authority(
+        &self,
+        namespace: &str,
+        mount: &str,
+        plan: &openldap::EffectPlan,
+    ) -> Result<(&crate::auth::LeaseOwner, u64)> {
+        let backend = &self
+            .namespaces
+            .get(namespace)
+            .and_then(|namespace| namespace.mounts.get(mount))
+            .ok_or_else(not_found)?
+            .backend;
+        let Backend::OpenLdap(engine) = backend else {
+            return Err(error(503, "OpenLDAP mount changed after provider entry"));
+        };
+        engine.validate_scope(namespace)?;
+        engine.effect_authority(plan)
     }
 
     pub(crate) fn openldap_finalize(
@@ -709,7 +746,7 @@ impl EngineState {
     pub(crate) fn openldap_reconcile_candidates(
         &self,
         now: u64,
-        live: &BTreeSet<(String, String)>,
+        live: &BTreeSet<(String, crate::auth::LeaseOwner)>,
     ) -> Vec<(String, String, String, bool)> {
         let mut candidates = Vec::new();
         for (namespace, state) in &self.namespaces {
@@ -718,7 +755,7 @@ impl EngineState {
                     let owners = engine
                         .lease_owners()
                         .filter(|owner| live.contains(&(namespace.clone(), (*owner).to_owned())))
-                        .map(str::to_owned)
+                        .cloned()
                         .collect();
                     candidates.extend(
                         engine
@@ -1593,3 +1630,7 @@ fn listing(keys: Vec<String>) -> Result<EngineResponse> {
         Ok(ok(json!({"keys":keys}), false))
     }
 }
+
+#[cfg(test)]
+#[path = "engine_batch_lease_tests.rs"]
+mod batch_lease_tests;

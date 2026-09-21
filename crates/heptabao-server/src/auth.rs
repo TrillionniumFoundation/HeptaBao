@@ -113,6 +113,8 @@ fn default_bind_secret_id() -> bool {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct AuthState {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    batch_authority: Option<batch::BatchKeyAuthority>,
     /// None preserves the historical one-hour inherited default. Fresh state
     /// records native defaults so every namespace and HA peer uses the same policy.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -964,6 +966,8 @@ impl Drop for JwtMountState {
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct AuthMount {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_type: Option<batch_issuance::MountTokenType>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     userpass_name_mode: Option<userpass_names::UserpassNameMode>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     accessor: Option<String>,
@@ -990,6 +994,7 @@ const fn auth_mount_revision_one() -> u64 {
 impl AuthMount {
     fn new(kind: &str, description: &str) -> Self {
         Self {
+            token_type: None,
             userpass_name_mode: None,
             accessor: None,
             revision: 1,
@@ -1143,7 +1148,7 @@ pub(super) struct Principal {
     identity_policies: BTreeSet<String>,
     identity_checked: bool,
     digest: String,
-    token: Token,
+    credential: batch_principal::VerifiedCredential,
     #[cfg(test)]
     request_time: u64,
 }
@@ -1156,13 +1161,14 @@ impl Drop for Principal {
 
 impl Principal {
     pub(super) fn is_root(&self) -> bool {
-        self.token.root
+        self.service_token().is_some_and(|token| token.root)
     }
     fn policies(&self) -> &BTreeSet<String> {
-        &self.token.policies
+        self.credential.policies()
     }
     pub(super) fn consumed_use(&self) -> bool {
-        self.token.uses_remaining.is_some()
+        self.service_token()
+            .is_some_and(|token| token.uses_remaining.is_some())
     }
 }
 
@@ -1188,6 +1194,8 @@ enum PasswordSemantics {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct User {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_type: Option<batch_issuance::UserTokenType>,
     salt: Vec<u8>,
     verifier: Vec<u8>,
     rounds: u32,
@@ -1278,6 +1286,7 @@ struct SecretId {
 }
 
 pub struct AuthResponse {
+    pub(super) pending_batch: Option<batch_issuance::PendingBatchGrant>,
     pub(super) login_identity: Option<LoginIdentity>,
     pub(super) external_groups: Option<identity::ExternalGroups>,
     pub status: u16,
@@ -1312,6 +1321,7 @@ fn denied() -> AuthError {
 }
 fn response(data: Value, mutated: bool) -> AuthResponse {
     AuthResponse {
+        pending_batch: None,
         login_identity: None,
         external_groups: None,
         status: 200,
@@ -1321,6 +1331,7 @@ fn response(data: Value, mutated: bool) -> AuthResponse {
 }
 fn empty(mutated: bool) -> AuthResponse {
     AuthResponse {
+        pending_batch: None,
         login_identity: None,
         external_groups: None,
         status: 204,
@@ -1808,6 +1819,10 @@ impl AuthState {
 
     pub(super) fn bootstrap(now: u64) -> Result<(Self, String), AuthError> {
         let mut state = Self {
+            batch_authority: Some(
+                batch::BatchKeyAuthority::new(now)
+                    .map_err(|_| err(503, "batch authority unavailable"))?,
+            ),
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),
             wrapping_clock: 0,
             tokens: BTreeMap::new(),
@@ -1903,6 +1918,9 @@ impl AuthState {
         now: u64,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Option<Principal>, AuthError> {
+        if raw.starts_with("hvb.") {
+            return self.batch_principal(raw, now, origin_peer).map(Some);
+        }
         if raw.len() > 256 || !raw.starts_with("hvs.") {
             return Err(denied());
         }
@@ -1931,7 +1949,7 @@ impl AuthState {
             identity_policies: BTreeSet::new(),
             identity_checked: false,
             digest: id,
-            token,
+            credential: batch_principal::VerifiedCredential::Service(Box::new(token)),
             #[cfg(test)]
             request_time: _now,
         }
@@ -1948,6 +1966,9 @@ impl AuthState {
         now: u64,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Principal, AuthError> {
+        if raw.starts_with("hvb.") {
+            return self.batch_principal(raw, now, origin_peer);
+        }
         if raw.len() > 256 || !raw.starts_with("hvs.") {
             return Err(denied());
         }
@@ -1971,21 +1992,32 @@ impl AuthState {
 
     fn check_principal<'a>(
         &'a self,
-        principal: &Principal,
+        principal: &'a Principal,
         namespace: &str,
         now: u64,
-    ) -> Result<&'a Token, AuthError> {
+    ) -> Result<batch_principal::CheckedCredential<'a>, AuthError> {
         validate_namespace(namespace)?;
-        let token = self.active_token(&principal.digest, now, false)?;
-        token_cidrs::check(&token.bound_cidrs, principal.origin_peer)?;
-        if token.accessor != principal.token.accessor
-            || token.entity_id != principal.token.entity_id
-            || token.entity_id.is_some() && !principal.identity_checked
-            || !token.root && token.namespace != namespace
+        let view = match &principal.credential {
+            batch_principal::VerifiedCredential::Service(snapshot) => {
+                let token = self.active_token(&principal.digest, now, false)?;
+                token_cidrs::check(&token.bound_cidrs, principal.origin_peer)?;
+                if token.accessor != snapshot.accessor || token.entity_id != snapshot.entity_id {
+                    return Err(denied());
+                }
+                batch_principal::CheckedCredential::Service(token)
+            }
+            batch_principal::VerifiedCredential::Batch(claims) => {
+                self.check_batch_claims(claims, namespace, now)?;
+                token_cidrs::check(claims.bound_cidrs(), principal.origin_peer)?;
+                batch_principal::CheckedCredential::Batch(claims)
+            }
+        };
+        if view.entity_id().is_some() && !principal.identity_checked
+            || !view.is_root() && view.namespace() != namespace
         {
             return Err(denied());
         }
-        Ok(token)
+        Ok(view)
     }
 
     pub(super) fn authorize_request(
@@ -2001,21 +2033,24 @@ impl AuthState {
             return Err(denied());
         }
         let token = self.check_principal(principal, namespace, now)?;
-        if principal.token.wrapping.is_some() {
+        if principal
+            .service_token()
+            .is_some_and(|token| token.wrapping.is_some())
+        {
             return if path == "sys/wrapping/unwrap" && capability == "update" {
                 Ok(())
             } else {
                 Err(denied())
             };
         }
-        if token.root {
+        if token.is_root() {
             return Ok(());
         }
         if self.policy_allows(
             namespace,
             path,
             capability,
-            &token.policies,
+            token.policies(),
             &principal.identity_policies,
         ) {
             Ok(())
@@ -2102,6 +2137,7 @@ impl AuthState {
         let raw = Zeroizing::new(random_id("hvs.")?);
         let token_id = hash(&raw);
         let result = AuthResponse {
+            pending_batch: None,
             login_identity: None,
             external_groups: None,
             status: 200,
@@ -2547,7 +2583,7 @@ impl AuthState {
                             "description":entry.description,
                             "force_no_cache":false,
                             "max_lease_ttl":max_ttl,
-                            "token_type":"default-service",
+                            "token_type":entry.token_type.unwrap_or_default().name(),
                             "revision":entry.revision,
                             "accessor":entry.accessor.as_deref().unwrap_or("")
                         }),
@@ -2564,6 +2600,7 @@ impl AuthState {
                             "default_lease_ttl",
                             "max_lease_ttl",
                             "cas_revision",
+                            "token_type",
                         ],
                     )?;
                     let mut entries = self.effective_auth_mounts(namespace);
@@ -2573,6 +2610,14 @@ impl AuthState {
                         .ok_or_else(|| err(404, "auth mount not found"))?;
                     require_auth_revision(optional_auth_revision(body)?, entry.revision)?;
                     let mut changed = false;
+                    if let Some(value) = body.get("token_type") {
+                        if entry.kind != "userpass" {
+                            return Err(bad("token_type tune requires a native userpass mount"));
+                        }
+                        let token_type = batch_issuance::MountTokenType::parse(value)?;
+                        changed |= entry.token_type != Some(token_type);
+                        entry.token_type = Some(token_type);
+                    }
                     if let Some(description) = body.get("description") {
                         let description = description
                             .as_str()
@@ -2679,6 +2724,7 @@ impl AuthState {
                 }
                 let mut next = AuthMount::new(kind, description);
                 if let Some(old) = existing.as_ref() {
+                    next.token_type = old.token_type;
                     next.userpass_name_mode = old.userpass_name_mode;
                     next.accessor = old.accessor.clone();
                     next.revision = old.revision;
@@ -4809,8 +4855,8 @@ impl AuthState {
             ),
             "lookup-self" => {
                 reject_unknown(body, &[])?;
-                let token = self.tokens.get(&actor.digest).ok_or_else(denied)?;
-                Ok(response(token_info(token, now), false))
+                let token = self.check_principal(actor, namespace, now)?;
+                Ok(response(token.info(now), false))
             }
             "lookup" | "lookup-accessor" => {
                 reject_unknown(
@@ -4826,10 +4872,15 @@ impl AuthState {
                         .get("token")
                         .is_none_or(|value| value.is_null() || value.as_str() == Some(""))
                 {
-                    let token = self.tokens.get(&actor.digest).ok_or_else(denied)?;
-                    return Ok(response(token_info(token, now), false));
+                    let token = self.check_principal(actor, namespace, now)?;
+                    return Ok(response(token.info(now), false));
                 }
-                let id = self.target_token(namespace, body, operation.ends_with("accessor"))?;
+                if operation == "lookup" {
+                    let target =
+                        self.inspect_raw_target(string_field(body, "token")?, namespace, now)?;
+                    return Ok(response(target.view(self, now)?.info(now), false));
+                }
+                let id = self.target_token(namespace, body, true, now)?;
                 let token = self.active_token(&id, now, true)?;
                 Ok(response(token_info(token, now), false))
             }
@@ -4865,8 +4916,27 @@ impl AuthState {
             }
             "revoke-self" => {
                 reject_unknown(body, &[])?;
+                actor.require_service("batch tokens cannot be revoked")?;
                 self.revoke(&actor.digest);
                 Ok(empty(true))
+            }
+            "revoke-orphan" => {
+                reject_unknown(body, &["token"])?;
+                let raw = string_field(body, "token")?;
+                if raw.is_empty() {
+                    return Err(bad("missing token"));
+                }
+                if self
+                    .authorize_request(actor, namespace, path, "sudo", now)
+                    .is_err()
+                {
+                    return Err(bad("root or sudo privileges required to revoke and orphan"));
+                }
+                let target = self.inspect_raw_target(raw, namespace, now)?;
+                if matches!(target, batch_principal::InspectionCredential::Batch(_)) {
+                    return Err(bad("batch tokens cannot be revoked"));
+                }
+                Err(err(404, "unsupported token operation"))
             }
             "revoke" | "revoke-accessor" => {
                 reject_unknown(
@@ -4877,13 +4947,15 @@ impl AuthState {
                         &["accessor"]
                     },
                 )?;
-                let id = self.target_token(namespace, body, operation.ends_with("accessor"))?;
+                let id =
+                    self.target_token(namespace, body, operation.ends_with("accessor"), now)?;
                 self.revoke(&id);
                 Ok(empty(true))
             }
             "renew-self" | "renew" | "renew-accessor" => {
                 let id = if operation == "renew-self" {
                     reject_unknown(body, &["increment"])?;
+                    actor.require_service("batch tokens cannot be renewed")?;
                     actor.digest.clone()
                 } else {
                     reject_unknown(
@@ -4894,7 +4966,7 @@ impl AuthState {
                             &["accessor", "increment"]
                         },
                     )?;
-                    self.target_token(namespace, body, operation.ends_with("accessor"))?
+                    self.target_token(namespace, body, operation.ends_with("accessor"), now)?
                 };
                 self.active_token(&id, now, false)?;
                 self.require_offline_renewal_origin(&id)?;
@@ -4979,6 +5051,7 @@ impl AuthState {
                 }
                 token.expires_at = Some(expires_at);
                 Ok(AuthResponse {
+                    pending_batch: None,
                     login_identity: None,
                     external_groups: None,
                     status: 200,
@@ -4999,16 +5072,25 @@ impl AuthState {
         namespace: &str,
         body: &Value,
         accessor: bool,
+        now: u64,
     ) -> Result<String, AuthError> {
         let id = if accessor {
             let wanted = string_field(body, "accessor")?;
+            if wanted.is_empty() {
+                return Err(bad("missing accessor"));
+            }
             self.tokens
                 .iter()
                 .find(|(_, t)| t.namespace == namespace && t.accessor == wanted)
                 .map(|(id, _)| id.clone())
                 .ok_or_else(denied)?
         } else {
-            hash(string_field(body, "token")?)
+            let raw = string_field(body, "token")?;
+            if raw.starts_with("hvb.") {
+                self.inspect_raw_target(raw, namespace, now)?;
+                return Err(bad("batch tokens cannot be renewed or revoked"));
+            }
+            hash(raw)
         };
         if self
             .tokens
@@ -5089,13 +5171,17 @@ impl AuthState {
                 "type",
             ],
         )?;
-        if body
-            .get("type")
-            .is_some_and(|value| value.as_str() != Some("service"))
-        {
-            return Err(bad("only service tokens are supported"));
-        }
-        let parent = self.check_principal(actor, namespace, now)?.clone();
+        let batch = match body.get("type") {
+            None | Some(Value::Null) => false,
+            Some(Value::String(value)) if value.is_empty() || value == "service" => false,
+            Some(Value::String(value)) if value == "batch" => true,
+            _ => return Err(bad("invalid token type")),
+        };
+        actor.require_service("batch tokens cannot create more tokens")?;
+        let parent = self
+            .check_principal(actor, namespace, now)?
+            .service()?
+            .clone();
         if parent.uses_remaining.is_some() {
             return Err(bad("limited-use tokens cannot create child tokens"));
         }
@@ -5110,7 +5196,7 @@ impl AuthState {
         }
         let no_parent = force_orphan || boolean(body, "no_parent", false)?;
         let period = duration(body, "period", 0)?;
-        if no_parent || period > 0 {
+        if (no_parent && (!batch || !force_orphan)) || period > 0 {
             self.authorize_request(actor, namespace, path, "sudo", now)?;
         }
         if period > MAX_TTL {
@@ -5123,6 +5209,15 @@ impl AuthState {
         let explicit_max = duration(body, "explicit_max_ttl", 0)?;
         if explicit_max > MAX_TTL {
             return Err(bad("explicit maximum TTL exceeds service maximum"));
+        }
+        let num_uses = number(body, "num_uses", 0)?;
+        if batch && (explicit_max != 0 || period != 0 || num_uses != 0) {
+            return Err(bad(
+                "batch tokens cannot have explicit_max_ttl, period, or num_uses",
+            ));
+        }
+        if batch && root {
+            return Err(bad("batch tokens cannot have root policy"));
         }
         let max_expires_at = (explicit_max > 0)
             .then(|| checked_expiry(now, explicit_max))
@@ -5164,6 +5259,30 @@ impl AuthState {
             .unwrap_or("token");
         if display_name.len() > 128 {
             return Err(bad("display name too long"));
+        }
+        if batch {
+            let claims = batch::BatchClaims {
+                namespace: namespace.into(),
+                policies: requested,
+                metadata: BTreeMap::new(),
+                display_name: display_name.into(),
+                path: path.into(),
+                bound_cidrs: if no_parent {
+                    Vec::new()
+                } else {
+                    parent.bound_cidrs.clone()
+                },
+                issued_at: now,
+                expires_at: expires_at.ok_or_else(|| bad("batch token requires TTL"))?,
+                parent: (!no_parent).then(|| actor.digest.clone()),
+                entity_id: if no_parent {
+                    None
+                } else {
+                    parent.entity_id.clone()
+                },
+            };
+            self.system_lease_defaults.get_or_insert(system_defaults);
+            return Ok(batch_issuance::PendingBatchGrant::response(claims, None));
         }
         let response = self.issue(
             Token {
@@ -5401,6 +5520,7 @@ impl AuthState {
             let user = existing.ok_or_else(|| err(404, "user not found"))?;
             let mut data = json!({"policies": user.policies, "token_policies": user.policies, "token_ttl": user.token_ttl, "token_max_ttl": user.token_max_ttl, "token_num_uses": user.token_num_uses});
             if native_userpass {
+                data["token_type"] = json!(user.token_type.unwrap_or_default().name());
                 data["token_bound_cidrs"] = json!(user.token_bound_cidrs);
                 if !user.bound_cidrs.is_empty() {
                     data["bound_cidrs"] = json!(user.bound_cidrs);
@@ -5434,10 +5554,14 @@ impl AuthState {
                 "token_period",
                 "token_explicit_max_ttl",
                 "token_no_default_policy",
+                "token_type",
                 "token_bound_cidrs",
                 "bound_cidrs",
             ],
         )?;
+        if !native_userpass && body.get("token_type").is_some() {
+            return Err(bad("token_type requires a userpass mount"));
+        }
         if !native_userpass && body.get("token_no_default_policy").is_some() {
             return Err(bad("default policy option requires a userpass mount"));
         }
@@ -5488,6 +5612,7 @@ impl AuthState {
         }
         let (mount_default_ttl, mount_max_ttl) = self.auth_mount_token_limits(scope, 0, 0)?;
         let mut user = existing.clone().unwrap_or(User {
+            token_type: None,
             salt: vec![],
             verifier: vec![],
             rounds: PASSWORD_ROUNDS,
@@ -5632,6 +5757,9 @@ impl AuthState {
             )?;
             user.token_num_uses = number(body, "token_num_uses", user.token_num_uses)?;
         }
+        if native_userpass {
+            batch_issuance::update_user_type(&mut user, body)?;
+        }
         self.users_at_mut(scope).insert(name.into(), user);
         Ok(empty(true))
     }
@@ -5752,27 +5880,56 @@ impl AuthState {
         if !user.token_no_default_policy {
             token_policies.insert("default".into());
         }
-        let mut token = login_token(
-            namespace,
-            token_policies,
-            token_ttl,
-            token_max_ttl,
-            user.token_num_uses,
-            format!("userpass-{name}"),
-            now,
-        )?;
-        token.bound_cidrs = user.token_bound_cidrs.clone();
-        token.auth_mount = Some(mount.into());
-        token.auth_provenance = Some(TokenAuthProvenance::Userpass {
-            username: name.into(),
-        });
-        token.period = user.token_period;
-        token.max_expires_at = (user.token_explicit_max_ttl > 0)
-            .then(|| checked_expiry(now, user.token_explicit_max_ttl))
-            .transpose()?;
-        token.expires_at =
-            Some(self.userpass_token_expiry(scope, &user, now, token.max_expires_at, 0, now)?);
-        let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
+        let (issued_service, mut response) = if self.userpass_uses_batch(scope, &user) {
+            let explicit = (user.token_explicit_max_ttl > 0)
+                .then(|| checked_expiry(now, user.token_explicit_max_ttl))
+                .transpose()?;
+            let claims = batch::BatchClaims {
+                namespace: namespace.into(),
+                policies: token_policies,
+                metadata: BTreeMap::from([("username".into(), name.into())]),
+                display_name: format!("userpass-{name}"),
+                path: format!("auth/{mount}/login/{name}"),
+                bound_cidrs: user.token_bound_cidrs.clone(),
+                issued_at: now,
+                expires_at: self.userpass_token_expiry(scope, &user, now, explicit, 0, now)?,
+                parent: None,
+                entity_id: None,
+            };
+            (
+                None,
+                batch_issuance::PendingBatchGrant::response(claims, Some(mount.into())),
+            )
+        } else {
+            let mut token = login_token(
+                namespace,
+                token_policies,
+                token_ttl,
+                token_max_ttl,
+                user.token_num_uses,
+                format!("userpass-{name}"),
+                now,
+            )?;
+            token.bound_cidrs = user.token_bound_cidrs.clone();
+            token.auth_mount = Some(mount.into());
+            token.auth_provenance = Some(TokenAuthProvenance::Userpass {
+                username: name.into(),
+            });
+            token.period = user.token_period;
+            token.max_expires_at = (user.token_explicit_max_ttl > 0)
+                .then(|| checked_expiry(now, user.token_explicit_max_ttl))
+                .transpose()?;
+            token.expires_at = Some(self.userpass_token_expiry(
+                scope,
+                &user,
+                now,
+                token.max_expires_at,
+                0,
+                now,
+            )?);
+            let (token_id, token, response) = Self::prepare_issue(token, now)?;
+            (Some((token_id, token)), response)
+        };
         userpass_no_default::omit_empty_token_policies(&mut response);
         response.body["auth"]["metadata"] = json!({"username":name});
         response.login_identity = Some(LoginIdentity {
@@ -5787,7 +5944,9 @@ impl AuthState {
             enrollment.last_accepted_counter = Some(counter);
         }
         self.users_at_mut(scope).insert(name.into(), user);
-        self.tokens.insert(token_id, token);
+        if let Some((token_id, token)) = issued_service {
+            self.tokens.insert(token_id, token);
+        }
         Ok(response)
     }
 
@@ -6625,21 +6784,10 @@ mod tests;
 
 // A bounded issuer reference is metadata, not a reusable execution Principal.
 pub(crate) struct LeaseIssuer {
-    pub(crate) digest: String,
     pub(crate) expires_at: Option<u64>,
     pub(crate) entity_id: Option<String>,
 }
 impl AuthState {
-    pub(crate) fn lease_issuer(
-        &self,
-        actor: &Principal,
-        namespace: &str,
-        now: u64,
-    ) -> Result<LeaseIssuer, AuthError> {
-        self.check_principal(actor, namespace, now)?;
-        self.lease_issuer_by_digest(&actor.digest, namespace, now)
-            .ok_or_else(denied)
-    }
     pub(crate) fn lease_issuer_by_digest(
         &self,
         id: &str,
@@ -6661,7 +6809,6 @@ impl AuthState {
             parent = ancestor.parent.as_deref();
         }
         Some(LeaseIssuer {
-            digest: id.into(),
             expires_at: expires,
             entity_id: token.entity_id.clone(),
         })
@@ -6673,3 +6820,23 @@ mod userpass_password_semantics;
 
 #[path = "auth_userpass_bcrypt.rs"]
 mod userpass_bcrypt;
+
+#[path = "auth_batch.rs"]
+mod batch;
+#[cfg(test)]
+pub(crate) use batch::{BatchClaims, BatchKeyAuthority};
+#[path = "auth_batch_issuance.rs"]
+mod batch_issuance;
+#[path = "auth_batch_principal.rs"]
+mod batch_principal;
+#[path = "auth_lease_owner.rs"]
+mod lease_owner;
+pub(crate) use batch_principal::ResolvedLeaseOwner;
+pub(crate) use lease_owner::{BatchLeaseClaims, LeaseOwner, ServiceOwnerProfile};
+#[cfg(test)]
+#[path = "auth_batch_principal_tests.rs"]
+mod batch_principal_tests;
+
+#[cfg(test)]
+#[path = "auth_batch_issuance_tests.rs"]
+mod batch_issuance_tests;

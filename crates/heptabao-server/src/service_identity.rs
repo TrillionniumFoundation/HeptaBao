@@ -21,6 +21,17 @@ impl State {
             .validate_system_lease_defaults()
             .map_err(|_| Response::error(503, "invalid system or Token API lease state"))?;
         self.auth
+            .validate_batch_issuance_state()
+            .map_err(|_| Response::error(503, "invalid batch token key authority"))?;
+        if self.schema < 41
+            && (self.auth.has_batch_authority() || self.auth.has_batch_issuance_state())
+        {
+            return Err(Response::error(
+                503,
+                "batch token authority requires schema 41",
+            ));
+        }
+        self.auth
             .validate_approle_native_defaults()
             .map_err(|_| Response::error(503, "invalid native AppRole state"))?;
         self.auth
@@ -72,6 +83,27 @@ impl State {
             .validate_wrapping_state()
             .map_err(|_| Response::error(503, "invalid wrapping state"))?;
         self.database.validate_scope(&self.cluster_id)?;
+        // Retained, expired and pending owners must also be admitted. Liveness
+        // belongs to reconciliation; a missing key or foreign namespace is a
+        // state-integrity error even when no lease is currently active.
+        for (namespace, owner) in self
+            .engines
+            .all_lease_owners()
+            .into_iter()
+            .chain(self.database.all_lease_owners())
+        {
+            if let Some(claims) = owner.batch_claims() {
+                if self.schema < 41 {
+                    return Err(Response::error(
+                        503,
+                        "batch lease ownership requires schema 41",
+                    ));
+                }
+                self.auth
+                    .validate_batch_lease_owner(claims, &namespace)
+                    .map_err(|_| Response::error(503, "invalid batch lease authority"))?;
+            }
+        }
         self.raft_admin.validate()?;
         self.auth
             .validate_online_auth()
@@ -332,7 +364,7 @@ impl State {
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
             | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37
-            | 38 | 39 | CURRENT_STATE_SCHEMA => Ok(()),
+            | 38 | 39 | 40 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
@@ -394,7 +426,9 @@ impl Service {
                     "provider identity binding is unavailable",
                 ));
             }
-            return Ok(());
+            return auth
+                .finish_pending_batch(response, namespace, now)
+                .map_err(auth_error);
         };
         if let Some(groups) = response.external_groups.take() {
             let accessor = auth
@@ -429,7 +463,8 @@ impl Service {
             }
             response.body["auth"]["policies"] = json!(all);
         }
-        Ok(())
+        auth.finish_pending_batch(response, namespace, now)
+            .map_err(auth_error)
     }
 
     pub(super) fn validate_identity_alias_mount(

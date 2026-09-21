@@ -70,6 +70,7 @@ impl AuthState {
 
     #[cfg(test)]
     pub(crate) fn remove_name_modes_for_legacy_format_test(&mut self) {
+        self.remove_unused_batch_authority_for_legacy_format_test();
         // Historical bootstrap used implicit factory mounts. Preserve changed
         // registries, but do not introduce an explicit one into schema-1 fixtures.
         let factory = fresh_default_auth_mounts();

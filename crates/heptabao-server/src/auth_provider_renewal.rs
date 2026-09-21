@@ -98,15 +98,16 @@ impl AuthState {
         let target = match path {
             "auth/token/renew-self" => {
                 reject_unknown(body, &["increment"])?;
+                actor.require_service("batch tokens cannot be renewed")?;
                 actor.digest.clone()
             }
             "auth/token/renew" => {
                 reject_unknown(body, &["token", "increment"])?;
-                self.target_token(namespace, body, false)?
+                self.target_token(namespace, body, false, now)?
             }
             _ => {
                 reject_unknown(body, &["accessor", "increment"])?;
-                self.target_token(namespace, body, true)?
+                self.target_token(namespace, body, true, now)?
             }
         };
         let target = Zeroizing::new(target);

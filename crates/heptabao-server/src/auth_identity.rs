@@ -15,7 +15,7 @@ pub(crate) struct ExternalGroups {
 
 impl Principal {
     pub(crate) fn entity_id(&self) -> Option<&str> {
-        self.token.entity_id.as_deref()
+        self.credential.entity_id()
     }
 
     pub(crate) fn bind_identity_policies(&mut self, policies: BTreeSet<String>) {
@@ -54,6 +54,9 @@ impl AuthState {
         mount: &str,
         entity_id: &str,
     ) -> Result<(), AuthError> {
+        if Self::bind_pending_batch_entity(response, namespace, mount, entity_id)? {
+            return Ok(());
+        }
         let raw = response.body["auth"]["client_token"]
             .as_str()
             .ok_or_else(denied)?;

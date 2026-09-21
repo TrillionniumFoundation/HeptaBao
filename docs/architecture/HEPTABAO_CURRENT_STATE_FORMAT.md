@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **40**. Its source constant is
+The current Service state schema is **41**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -80,7 +80,31 @@ custody, rotation and parent/sibling key separation remain open.
 | 38 | Explicit native userpass password input semantics and imported bcrypt credentials. An absent marker retains historical exact-byte PBKDF credentials; newly written plaintext credentials use the first 72 bytes at login. Imported bcrypt uses a mutually exclusive credential representation. |
 | 39 | Native userpass CIDR constraints, default-policy/list-presence semantics, and HA native restore as a new publication. Restore advances the live replay epoch and does not rewind local or Raft durability. Userpass name modes must be absent. |
 | 40 | Fresh native userpass mounts persist ASCII-lower account-name mode. Absent modes preserve historical exact accounts and issued-token provenance; old mounts and Identity aliases are never silently folded. |
+| 41 | Encrypted batch-token key authority, explicit userpass/mount token-type configuration, and typed batch lease ownership. Historical service owners remain the same JSON strings. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
+
+Schema 41 is required if any batch key authority, explicit token-type field, or
+retained batch lease owner exists. The owner check includes pending/revoked
+database intents and retained PKI certificates, not just active leases. It checks
+the enclosing namespace, key authority and key identifier without requiring a
+currently live parent: expired external credentials must remain loadable for
+reconciliation. Missing/foreign authority is rejected, not repaired.
+
+New initialization creates the batch key before its first snapshot. Historical
+schema-40 state with no authority remains readable without generating a key or
+rewriting bytes; its first successful batch issuance creates the authority in the
+same transaction as Identity and any response wrapper. Configuration alone may
+require schema 41 while its authority remains absent. Ordinary maintenance of
+existing leases may already be a mutation; this is separate from read admission.
+
+Batch bearers are bounded authenticated encrypted claims, not service-token rows.
+They carry no accessor or renewable grant. Dynamic leases persist a typed verified
+projection with key, namespace, expiry, parent and entity references; legacy string
+serialization and database intent digests remain unchanged. Request admission
+rechecks current parent and Identity authority. Key issue watermarks are
+observations, not revocation cutoffs: a same-key orphan issued after a restored
+snapshot remains cryptographically valid until its own expiry. Key rotation and
+complete OpenBao snapshot interoperability are not established by this format.
 
 Every schema 1–4 record additionally rejects online authentication state or a
 new online method registry entry. Schemas below 5 reject a nonzero replay epoch;
@@ -312,7 +336,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 40. An authenticated
+it. Initialization and committed mutations use schema 41. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.

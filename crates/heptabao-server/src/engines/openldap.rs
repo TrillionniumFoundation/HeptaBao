@@ -5,7 +5,11 @@
 //! the pending intent has been committed and the global writer is released.
 
 use super::*;
-use crate::{auth::LeaseIssuer, crypto, outbound::Target};
+use crate::{
+    auth::{LeaseOwner, ResolvedLeaseOwner, ServiceOwnerProfile},
+    crypto,
+    outbound::Target,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -67,7 +71,7 @@ struct Lease {
     username: String,
     dn: String,
     password: SecretString,
-    owner: String,
+    owner: LeaseOwner,
     issued_at: u64,
     expires_at: u64,
     max_expires_at: u64,
@@ -101,6 +105,8 @@ pub(crate) struct LdapEntry {
 
 #[derive(Clone)]
 pub(crate) struct EffectPlan {
+    pub(crate) owner: LeaseOwner,
+    pub(crate) expires_at: u64,
     pub namespace: String,
     pub mount: String,
     pub lease_id: String,
@@ -363,14 +369,30 @@ impl OpenLdap {
         !self.leases.is_empty()
     }
 
-    pub(crate) fn lease_owners(&self) -> impl Iterator<Item = &str> {
-        self.leases.values().map(|lease| lease.owner.as_str())
+    pub(crate) fn lease_owners(&self) -> impl Iterator<Item = &LeaseOwner> {
+        self.leases.values().map(|lease| &lease.owner)
+    }
+
+    pub(crate) fn lease_authority(&self, lease_id: &str) -> Option<(&LeaseOwner, u64)> {
+        self.leases
+            .get(lease_id)
+            .map(|lease| (&lease.owner, lease.expires_at))
+    }
+
+    pub(crate) fn validate_scope(&self, namespace: &str) -> std::result::Result<(), EngineError> {
+        self.validate()?;
+        for owner in self.lease_owners() {
+            owner
+                .validate_scope(namespace, ServiceOwnerProfile::Graphic)
+                .map_err(|_| err(503, "invalid OpenLDAP lease owner scope"))?;
+        }
+        Ok(())
     }
 
     pub(crate) fn reconcile_candidates(
         &self,
         now: u64,
-        live_owners: &std::collections::BTreeSet<String>,
+        live_owners: &std::collections::BTreeSet<LeaseOwner>,
     ) -> Vec<(String, bool)> {
         self.leases
             .iter()
@@ -487,6 +509,8 @@ impl OpenLdap {
         };
         self.validate()?;
         Ok(EffectPlan {
+            owner: lease.owner.clone(),
+            expires_at: lease.expires_at,
             namespace: service_namespace.to_owned(),
             mount: mount.to_owned(),
             lease_id: lease_id.to_owned(),
@@ -552,9 +576,18 @@ impl OpenLdap {
                 || !valid_dn(&lease.dn)
                 || lease.password.expose().is_empty()
                 || lease.password.expose().len() > 256
-                || lease.owner.is_empty()
-                || lease.owner.len() > 128
-                || !lease.owner.bytes().all(|byte| byte.is_ascii_graphic())
+                || lease.owner.service_digest().is_some_and(|owner| {
+                    owner.is_empty()
+                        || owner.len() > 128
+                        || !owner.bytes().all(|byte| byte.is_ascii_graphic())
+                })
+                || lease
+                    .owner
+                    .batch_claims()
+                    .is_some_and(|claims| claims.validate().is_err())
+                || lease.owner.batch_claims().is_some_and(|claims| {
+                    lease.issued_at < claims.issued_at() || lease.expires_at > claims.expires_at()
+                })
                 || lease.config_digest.len() != 64
                 || lease.request_digest.len() != 64
                 || lease.issued_at == 0
@@ -576,8 +609,15 @@ impl OpenLdap {
         relative: &str,
         body: &Value,
         now: u64,
-        issuer: Option<&LeaseIssuer>,
+        issuer: Option<&ResolvedLeaseOwner>,
     ) -> std::result::Result<Dispatch, EngineError> {
+        self.validate_scope(service_namespace)?;
+        if let Some(issuer) = issuer {
+            issuer
+                .owner
+                .validate_scope(service_namespace, ServiceOwnerProfile::Graphic)
+                .map_err(|_| err(403, "OpenLDAP issuer scope mismatch"))?;
+        }
         let object = body
             .as_object()
             .ok_or_else(|| err(400, "OpenLDAP request body must be an object"))?;
@@ -887,7 +927,7 @@ impl OpenLdap {
                     username: username.clone(),
                     dn: entry.dn.clone(),
                     password: SecretString(password.clone()),
-                    owner: issuer.digest.clone(),
+                    owner: issuer.owner.clone(),
                     issued_at: now,
                     expires_at,
                     max_expires_at,
@@ -899,6 +939,8 @@ impl OpenLdap {
             self.validate()?;
             let original_attributes = entry.attributes.clone();
             return Ok(Dispatch::External(Box::new(EffectPlan {
+                owner: issuer.owner.clone(),
+                expires_at,
                 namespace: service_namespace.to_owned(),
                 mount: mount.to_owned(),
                 lease_id,
@@ -940,6 +982,8 @@ impl OpenLdap {
             .ok_or_else(|| err(404, "OpenLDAP lease not found"))?
             .phase = Phase::PendingRevoke;
         let plan = EffectPlan {
+            owner: lease.owner.clone(),
+            expires_at: lease.expires_at,
             namespace: service_namespace.to_owned(),
             mount: mount.to_owned(),
             lease_id: lease_id.to_owned(),
@@ -985,7 +1029,7 @@ impl OpenLdap {
     pub(crate) fn renew(
         &mut self,
         lease_id: &str,
-        owner: Option<&str>,
+        issuer: &ResolvedLeaseOwner,
         increment: u64,
         now: u64,
     ) -> std::result::Result<EngineResponse, EngineError> {
@@ -993,22 +1037,22 @@ impl OpenLdap {
             .leases
             .get_mut(lease_id)
             .ok_or_else(|| err(404, "OpenLDAP lease not found"))?;
-        if lease.phase != Phase::Active
-            || lease.expires_at <= now
-            || owner.is_some_and(|owner| lease.owner != owner)
-        {
+        if lease.phase != Phase::Active || lease.expires_at <= now || lease.owner != issuer.owner {
             return Err(err(409, "OpenLDAP lease is not active"));
         }
         let requested = now
             .checked_add(increment)
             .ok_or_else(|| err(400, "OpenLDAP renewal overflow"))?;
-        lease.expires_at = requested.min(lease.max_expires_at);
-        if lease.expires_at <= now {
+        let expires_at = requested
+            .min(lease.max_expires_at)
+            .min(issuer.expires_at.unwrap_or(u64::MAX));
+        if expires_at <= now {
             return Err(err(
                 400,
                 "OpenLDAP lease cannot be renewed beyond its maximum TTL",
             ));
         }
+        lease.expires_at = expires_at;
         Ok(ok(
             json!({
                 "lease_id":lease_id,
@@ -1019,24 +1063,27 @@ impl OpenLdap {
         ))
     }
 
-    pub(crate) fn finalize(
-        &mut self,
+    pub(crate) fn effect_authority(
+        &self,
         plan: &EffectPlan,
-    ) -> std::result::Result<EngineResponse, EngineError> {
-        let lease = self
-            .leases
-            .get(&plan.lease_id)
-            .ok_or_else(|| {
-                err(
-                    503,
-                    "OpenLDAP durable intent disappeared after provider entry",
-                )
-            })?
-            .clone();
+    ) -> std::result::Result<(&LeaseOwner, u64), EngineError> {
+        let lease = self.leases.get(&plan.lease_id).ok_or_else(|| {
+            err(
+                503,
+                "OpenLDAP durable intent disappeared after provider entry",
+            )
+        })?;
         if lease.request_digest != plan.request_digest
             || lease.config_digest != plan.config_digest
             || lease.dn != plan.dn
             || lease.username != plan.username
+            || lease.owner != plan.owner
+            || lease.expires_at != plan.expires_at
+            || !matches!(
+                (&plan.action, &lease.phase),
+                (EffectAction::Issue, Phase::PendingIssue)
+                    | (EffectAction::Revoke, Phase::PendingRevoke)
+            )
         {
             return Err(err(
                 503,
@@ -1053,6 +1100,24 @@ impl OpenLdap {
                 "OpenLDAP provider configuration changed after provider entry",
             ));
         }
+        Ok((&lease.owner, lease.expires_at))
+    }
+
+    pub(crate) fn finalize(
+        &mut self,
+        plan: &EffectPlan,
+    ) -> std::result::Result<EngineResponse, EngineError> {
+        self.effect_authority(plan)?;
+        let lease = self
+            .leases
+            .get(&plan.lease_id)
+            .ok_or_else(|| {
+                err(
+                    503,
+                    "OpenLDAP durable intent disappeared after provider entry",
+                )
+            })?
+            .clone();
         match plan.action {
             EffectAction::Issue => {
                 if lease.phase != Phase::PendingIssue {

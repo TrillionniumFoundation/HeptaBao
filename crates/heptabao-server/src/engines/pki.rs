@@ -3,6 +3,7 @@
 //! private keys are released once in the successful response and are not kept.
 //! Revocation is represented durably and published through a signed CRL.
 use super::*;
+use crate::auth::{LeaseOwner, ServiceOwnerProfile};
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 use ring::{
     rand::SystemRandom,
@@ -60,7 +61,7 @@ pub(super) struct IssuedCertificate {
     #[serde(default)]
     pub(super) leased: bool,
     pub(super) lease_id: String,
-    pub(super) owner: String,
+    pub(super) owner: LeaseOwner,
     pub(super) path: String,
     pub(super) issued: u64,
     pub(super) expires: u64,
@@ -114,7 +115,7 @@ impl Pki {
         Ok(())
     }
 
-    pub(super) fn validate(&self, mount: &str, clock: u64) -> Result<()> {
+    pub(super) fn validate(&self, namespace: &str, mount: &str, clock: u64) -> Result<()> {
         if self.default_ttl == 0
             || self.default_ttl > self.max_ttl
             || self.max_ttl > MAX_TTL
@@ -146,11 +147,13 @@ impl Pki {
         for (serial, issued) in &self.issued {
             if serial_bytes(serial).is_err()
                 || !valid_common_name(&issued.common_name)
-                || issued.owner.len() != 43
-                || !issued
+                || issued
                     .owner
-                    .bytes()
-                    .all(|c| c.is_ascii_alphanumeric() || b"_-".contains(&c))
+                    .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
+                    .is_err()
+                || issued.owner.batch_claims().is_some_and(|claims| {
+                    issued.issued < claims.issued_at() || issued.expires > claims.expires_at()
+                })
                 || !issued.path.starts_with(&prefix)
                 || issued.path[prefix.len()..].contains('/')
                 || issued.lease_id != format!("{}/{}", issued.path, serial)
@@ -176,18 +179,22 @@ impl Pki {
             .any(|v| v.leased && v.revoked_at.is_none() && v.expires > clock)
     }
 
-    pub(super) fn active_owners(&self, clock: u64) -> impl Iterator<Item = &String> {
+    pub(super) fn active_owners(&self, clock: u64) -> impl Iterator<Item = &LeaseOwner> {
         self.issued
             .values()
             .filter(move |v| v.leased && v.revoked_at.is_none() && v.expires > clock)
             .map(|v| &v.owner)
     }
 
+    pub(super) fn all_owners(&self) -> impl Iterator<Item = &LeaseOwner> {
+        self.issued.values().map(|issued| &issued.owner)
+    }
+
     pub(super) fn reconcile(
         &mut self,
         clock: u64,
         namespace: &str,
-        live: &BTreeSet<(String, String)>,
+        live: &BTreeSet<(String, LeaseOwner)>,
     ) -> bool {
         let mut changed = false;
         for issued in self.issued.values_mut() {
@@ -455,7 +462,7 @@ impl Pki {
         mount: &str,
         role_name: &str,
         body: &Value,
-        owner: &str,
+        owner: &LeaseOwner,
         owner_expires: Option<u64>,
         now: u64,
     ) -> Result<EngineResponse> {
@@ -545,7 +552,7 @@ impl Pki {
             IssuedCertificate {
                 leased: role.generate_lease,
                 lease_id: lease_id.clone(),
-                owner: owner.into(),
+                owner: owner.clone(),
                 path,
                 issued: now,
                 expires,
@@ -992,7 +999,7 @@ mod tests {
             "pki/",
             "web",
             &json!({"common_name":"api.example.test","alt_names":["www.example.test"],"ttl":"1h"}),
-            &"a".repeat(43),
+            &serde_json::from_value::<LeaseOwner>(json!("a".repeat(43)))?,
             Some(1_700_010_000),
             1_700_000_002,
         )?;
@@ -1044,7 +1051,7 @@ mod tests {
             "pki/",
             "web",
             &json!({"common_name":"api.example.test","ip_sans":["127.0.0.1"]}),
-            &"a".repeat(43),
+            &serde_json::from_value::<LeaseOwner>(json!("a".repeat(43)))?,
             None,
             1_700_000_002,
         );
@@ -1065,7 +1072,7 @@ mod tests {
             "pki/",
             "web-ip",
             &json!({"common_name":"api.example.test","ip_sans":["127.0.0.1","2001:db8::1"]}),
-            &"a".repeat(43),
+            &serde_json::from_value::<LeaseOwner>(json!("a".repeat(43)))?,
             None,
             1_700_000_004,
         )?;

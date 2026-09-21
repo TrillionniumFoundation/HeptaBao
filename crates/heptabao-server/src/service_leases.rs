@@ -8,8 +8,11 @@ impl Service {
     pub(super) fn reconcile_lease_owners(state: &mut State, now: u64) -> bool {
         let owners = state.engines.lease_owners();
         let mut live = BTreeSet::new();
-        for (namespace, digest) in owners {
-            if let Some(owner) = state.auth.lease_issuer_by_digest(&digest, &namespace, now) {
+        for (namespace, stored_owner) in owners {
+            if let Some(owner) = state
+                .auth
+                .resolve_lease_owner(&stored_owner, &namespace, now)
+            {
                 let active = match owner.entity_id.as_deref() {
                     None => true,
                     Some(id) => state
@@ -18,7 +21,7 @@ impl Service {
                         .is_ok_and(|projection| !projection.disabled),
                 };
                 if active {
-                    live.insert((namespace, digest));
+                    live.insert((namespace, stored_owner));
                 }
             }
         }
@@ -56,7 +59,7 @@ impl Service {
                     owner = Some(
                         state
                             .auth
-                            .lease_issuer(principal, namespace, now)
+                            .typed_lease_issuer(principal, namespace, now)
                             .map_err(|e| Response::error(e.status, &e.message))?,
                     );
                 }

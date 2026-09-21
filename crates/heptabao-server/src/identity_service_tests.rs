@@ -849,3 +849,210 @@ fn metadata_cas_schema_rejects_downgrade_from_version_or_requirement() -> TestRe
     }
     Ok(())
 }
+
+fn batch_userpass_login(s: &mut Service, wrap: Option<u64>) -> Response {
+    s.handle_at_mode(RequestDispatch {
+        method: "POST",
+        path: "auth/userpass/login/alice",
+        namespace: "",
+        token: "",
+        body: json!({"password":"batch fixture password"}),
+        now: 100,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: wrap,
+        origin_peer: None,
+        client_certificates: None,
+    })
+}
+fn create_batch_user(s: &mut Service, admin: &str) {
+    assert_eq!(
+        call(
+            s,
+            "",
+            admin,
+            "POST",
+            "auth/userpass/users/alice",
+            json!({"password":"batch fixture password","token_type":"batch","token_ttl":300})
+        )
+        .status,
+        204
+    );
+}
+
+#[test]
+fn batch_login_identity_wrapping_and_reopen_publish_one_transaction_without_service_backing()
+-> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (admin, key) = bootstrap(&mut s)?;
+    create_batch_user(&mut s, &admin);
+    // Unseal schedules GC. V4->V5 publication leaves its first collection due.
+    // Physical generations include GC; this counter counts published roots and
+    // resets only when GC completes, so two AuthState publications would yield 2.
+    assert!(s.record_writes_since_gc >= 64);
+    let before = s.durable.as_ref().ok_or("durable")?.generation();
+    let wrapped = batch_userpass_login(&mut s, Some(60));
+    assert_eq!(wrapped.status, 200);
+    assert_eq!(s.record_writes_since_gc, 1);
+    assert!(s.durable.as_ref().ok_or("durable")?.generation() > before);
+    assert!(wrapped.body.get("auth").is_none_or(Value::is_null));
+    let wrapper = text(&wrapped.body, "/wrap_info/token")?;
+    let unwrapped = call(
+        &mut s,
+        "",
+        &wrapper,
+        "POST",
+        "sys/wrapping/unwrap",
+        json!({}),
+    );
+    assert_eq!(unwrapped.status, 200);
+    let raw = text(&unwrapped.body, "/auth/client_token")?;
+    assert!(raw.starts_with("hvb."));
+    let entity = text(&unwrapped.body, "/auth/entity_id")?;
+    assert!(!entity.is_empty());
+    assert_eq!(
+        unwrapped.body["auth"]["metadata"],
+        json!({"username":"alice"})
+    );
+    assert_ne!(
+        call(
+            &mut s,
+            "",
+            &wrapper,
+            "POST",
+            "sys/wrapping/unwrap",
+            json!({})
+        )
+        .status,
+        200
+    );
+    let lookup = call(&mut s, "", &raw, "GET", "auth/token/lookup-self", json!({}));
+    assert_eq!(lookup.status, 200);
+    assert_eq!(lookup.body["data"]["entity_id"], entity);
+    // Batch grants have no backing row. A consumed wrapper may remain as a tombstone.
+    let serialized =
+        zeroize::Zeroizing::new(serde_json::to_vec(&s.state.as_ref().ok_or("state")?.auth)?);
+    let auth: Value = serde_json::from_slice(&serialized)?;
+    assert!(
+        auth["tokens"]
+            .as_object()
+            .ok_or("tokens")?
+            .values()
+            .all(|t| t["root"] == true || t["display_name"] == "response-wrapping")
+    );
+    drop(s);
+    let mut s = f.service()?;
+    assert_eq!(
+        call(&mut s, "", "", "POST", "sys/unseal", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(&mut s, "", &raw, "GET", "auth/token/lookup-self", json!({})).status,
+        200
+    );
+    update_entity(&mut s, "", &admin, &entity, json!({"disabled":true}));
+    let digest = s.current_state_digest().map_err(|_| "digest")?;
+    assert_eq!(batch_userpass_login(&mut s, None).status, 403);
+    assert_eq!(s.current_state_digest().map_err(|_| "digest")?, digest);
+    assert_eq!(
+        call(&mut s, "", &raw, "GET", "auth/token/lookup-self", json!({})).status,
+        403
+    );
+    Ok(())
+}
+
+#[test]
+fn batch_login_wrapping_capacity_failure_discards_identity_and_key_watermark_together() -> TestResult
+{
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (admin, _) = bootstrap(&mut s)?;
+    create_batch_user(&mut s, &admin);
+    let mut candidate = s.state.as_ref().ok_or("state")?.clone();
+    for _ in 0..256 {
+        candidate
+            .auth
+            .wrap_response("", "fixture", 60, &json!({"data":{"ok":true}}), 100)?;
+    }
+    s.commit_state(&candidate).map_err(|_| "fixture commit")?;
+    s.state = Some(candidate);
+    let before = s.current_state_digest().map_err(|_| "digest")?;
+    let generation = s.durable.as_ref().ok_or("durable")?.generation();
+    let response = batch_userpass_login(&mut s, Some(60));
+    assert_eq!(response.status, 503);
+    assert!(response.body.get("auth").is_none_or(Value::is_null));
+    assert!(response.body.get("wrap_info").is_none_or(Value::is_null));
+    assert_eq!(s.current_state_digest().map_err(|_| "digest")?, before);
+    assert_eq!(
+        s.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    Ok(())
+}
+
+#[test]
+fn failed_new_batch_wrapper_does_not_publish_a_clock_only_state() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (admin, _) = bootstrap(&mut s)?;
+    let before = s.current_state_digest().map_err(|_| "digest")?;
+    let generation = s.durable.as_ref().ok_or("durable")?.generation();
+    let response = s.handle_at_mode(RequestDispatch {
+        method: "POST",
+        path: "auth/token/create",
+        namespace: "",
+        token: &admin,
+        body: json!({"type":"batch","policies":["root"]}),
+        now: 100,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: Some(60),
+        origin_peer: None,
+        client_certificates: None,
+    });
+    assert_eq!(response.status, 400);
+    assert!(response.body.get("auth").is_none_or(Value::is_null));
+    assert!(response.body.get("wrap_info").is_none_or(Value::is_null));
+    assert_eq!(s.current_state_digest().map_err(|_| "digest")?, before);
+    assert_eq!(
+        s.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    Ok(())
+}
+
+#[test]
+fn existing_wrapper_expiry_observation_remains_durable_across_clock_rollback() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (admin, key) = bootstrap(&mut s)?;
+    create_batch_user(&mut s, &admin);
+    let wrapped = batch_userpass_login(&mut s, Some(1));
+    assert_eq!(wrapped.status, 200);
+    let wrapper = text(&wrapped.body, "/wrap_info/token")?;
+    assert_eq!(
+        s.handle_at("POST", "sys/wrapping/unwrap", "", &wrapper, json!({}), 102)
+            .status,
+        400
+    );
+    // The rejected access at 102 must fence the old wrapper even when the
+    // following request (or a restarted process) observes the earlier time.
+    assert_eq!(
+        s.handle_at("POST", "sys/wrapping/unwrap", "", &wrapper, json!({}), 100)
+            .status,
+        400
+    );
+    drop(s);
+    let mut s = f.service()?;
+    assert_eq!(
+        call(&mut s, "", "", "POST", "sys/unseal", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        s.handle_at("POST", "sys/wrapping/unwrap", "", &wrapper, json!({}), 100)
+            .status,
+        400
+    );
+    Ok(())
+}

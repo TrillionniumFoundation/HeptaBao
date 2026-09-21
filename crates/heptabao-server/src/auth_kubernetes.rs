@@ -416,6 +416,7 @@ impl AuthState {
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expires_at);
         Ok(Some(AuthResponse {
+            pending_batch: None,
             login_identity: None,
             external_groups: None,
             status: 200,

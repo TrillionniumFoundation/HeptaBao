@@ -2,6 +2,7 @@
 //! Verification is online and single-use; the Service owns authorization,
 //! issuer revocation checks and durable commit before delivery.
 use super::*;
+use crate::auth::{LeaseOwner, ServiceOwnerProfile};
 use crate::crypto;
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD as BASE64};
 use zeroize::Zeroizing;
@@ -56,7 +57,7 @@ pub(super) struct Role {
 #[serde(deny_unknown_fields)]
 pub(super) struct Lease {
     pub(super) id: String,
-    pub(super) owner: String,
+    pub(super) owner: LeaseOwner,
     pub(super) path: String,
     pub(super) issued: u64,
     pub(super) expires: u64,
@@ -205,7 +206,7 @@ impl SshOtp {
         self.max_ttl = max;
         Ok(())
     }
-    pub(super) fn validate(&self, mount: &str, clock: u64) -> Result<()> {
+    pub(super) fn validate(&self, namespace: &str, mount: &str, clock: u64) -> Result<()> {
         if self.default_ttl == 0
             || self.default_ttl > self.max_ttl
             || self.max_ttl > MAX_LEASE_TTL
@@ -223,11 +224,13 @@ impl SshOtp {
             let prefix = format!("{mount}creds/");
             if digest.len() != 64
                 || !digest.bytes().all(|c| c.is_ascii_hexdigit())
-                || lease.owner.len() != 43
-                || !lease
+                || lease
                     .owner
-                    .bytes()
-                    .all(|c| c.is_ascii_alphanumeric() || b"_-".contains(&c))
+                    .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
+                    .is_err()
+                || lease.owner.batch_claims().is_some_and(|claims| {
+                    lease.issued < claims.issued_at() || lease.expires > claims.expires_at()
+                })
                 || !lease.path.starts_with(&prefix)
                 || lease.path[prefix.len()..].contains('/')
                 || lease
@@ -356,7 +359,7 @@ impl SshOtp {
         mount: &str,
         name: &str,
         body: &Value,
-        owner: &str,
+        owner: &LeaseOwner,
         owner_expiry: Option<u64>,
         now: u64,
     ) -> Result<EngineResponse> {
@@ -410,7 +413,7 @@ impl SshOtp {
             digest,
             Lease {
                 id,
-                owner: owner.into(),
+                owner: owner.clone(),
                 path,
                 issued: now,
                 expires,

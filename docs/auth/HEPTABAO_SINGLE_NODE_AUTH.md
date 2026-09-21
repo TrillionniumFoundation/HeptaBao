@@ -483,7 +483,7 @@ limits. The value is returned only in the successful creation response and is
 stored as a SHA-256 digest; duplicate active values are rejected rather than
 replacing an existing SecretID's uses or expiry. This is a bounded subset: CIDR binding
 on authentication methods, LDAP directory search/group-policy synchronization,
-batch tokens, cloud IAM, Kerberos auth, WebAuthn/push/external MFA,
+batch issuance from methods other than userpass/Token API, cloud IAM, Kerberos auth, WebAuthn/push/external MFA,
 auth-plugin execution, complete OpenBao browser/UI semantics, and full
 per-method field parity remain unsupported. AppRole roles support both the
 default SecretID-bound login and OpenBao's `bind_secret_id=false` role-ID-only
@@ -986,6 +986,58 @@ bearers. The same audited durable issuance, MFA and provider checks remain.
 The public-login regressions include nested mounts, restart, finite-use
 non-consumption, wrong-namespace and protected-route denial.
 
+
+## Batch issuance and schema 41
+
+Native userpass and Token API `type=batch` now have a bounded batch path. A
+userpass user's `token_type` is `default`, `service` or `batch`; mount tune
+selects `default-service`, `default-batch`, `service` or `batch`. The two fixed
+mount types override the user's choice. Default mount types honor an explicit
+user type. Omitted user updates preserve the existing setting; null or empty
+selects `default`.
+
+An explicit batch user cannot configure a nonzero period or use count. A fixed
+batch mount can issue a nonrenewable batch from a default/service user while
+discarding those service-only fields. Batch grants have an empty accessor, zero
+use count, finite own expiry and no backing service-token row. Userpass login
+binds Identity before sealing claims; failed Identity or wrapping publication
+cannot release the grant. Token API batch children retain their service parent;
+an orphan has no parent dependency. Current namespace, trusted peer CIDRs, ACL
+documents, Identity and parent liveness still govern requests.
+
+SSH OTP, PKI, database and OpenLDAP batch leases use the batch's own expiry as their issuance bound. A
+shorter still-live parent does not shorten that lease. Parent expiry/revocation
+invalidates the dependent batch and triggers credential cleanup; orphan grants
+are unaffected. Database/OpenLDAP provider completion rechecks current owners
+after installing current HA state and before returning credentials. An expired
+owner leaves a durable revoke obligation rather than releasing a secret or
+forgetting the external effect.
+
+Batch tokens cannot create tokens, renew, be explicitly revoked, or own
+cubbyhole data. OpenBao's cubbyhole existence check precedes write authorization:
+POST/PUT with a valid batch returns 400 even without a granting policy; other
+operations retain normal ACL denial order. Service response wrappers remain
+one-use and may contain a batch login response.
+
+The implementation uses a bounded HeptaBao encrypted token format, not OpenBao
+bearer bytes. It does not migrate existing OpenBao batch credentials. Other
+authentication methods' batch issuance, token-role parity, key rotation, complete
+HA/snapshot qualification and the remaining OpenBao token surface are still
+open. Kubernetes secrets still lack typed batch lease ownership and completion
+checks. Its OpenBao existing-service-account profile has a nonrenewable Bao
+lease; expiration/revocation removes that lease but cannot revoke the independent
+TokenRequest JWT. Closing that gap must cap the Bao lease without inventing a
+Kubernetes token-revocation guarantee. The shared `userpass_batch_live.py` contract provides the selected
+OpenBao 2.6.2 comparison; a code implementation alone is not a passed receipt.
+
+The committed [issuance oracle receipt](../../qa/openbao-acceptance/evidence/userpass-batch-oracle-2.6.2.json)
+contains 158 official observations; the [lifecycle oracle receipt](../../qa/openbao-acceptance/evidence/batch-lifecycle-oracle-2.6.2.json)
+contains 201, including Identity and real socket-origin cases. These are official
+single-target calibration runs, not candidate parity results. The Rust integration
+passed 918 server regressions and one doctest; subsequent final credential-layout
+and completion-test changes passed 43 targeted batch tests, 20 provider completion
+tests, and strict all-target Clippy with and without restore fault instrumentation.
+The 693 Python QA tests check the harnesses, not live replacement capability.
 
 ## Bounded authentication mount migration input contract
 

@@ -90,7 +90,10 @@ fn fresh_userpass_case_variants_share_identity_and_survive_reopen() -> TestResul
         response.body["auth"]["entity_id"].as_str(),
         entity.as_deref()
     );
-    assert_eq!(service.state.as_ref().ok_or("state")?.schema, 40);
+    assert_eq!(
+        service.state.as_ref().ok_or("state")?.schema,
+        CURRENT_STATE_SCHEMA
+    );
     Ok(())
 }
 
@@ -184,6 +187,8 @@ fn schema38_and39_accept_absent_name_modes_without_adopting_legacy_accounts() ->
     let mut service = directory.service()?;
     let (_, admin) = bootstrap(&mut service)?;
     let mut old = service.state.clone().ok_or("state")?;
+    old.auth
+        .remove_unused_batch_authority_for_legacy_format_test();
     old.schema = 39;
     assert!(old.validate_format().is_err());
     // Historical shape unit, not an actual migration: true previous-program
