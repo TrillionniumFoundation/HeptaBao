@@ -344,12 +344,29 @@ reservation; whole-component authentication still needs bounded component memory
 Concurrent application publication invalidates a staged download with409, and
 whole-state export still holds the Service writer before gzip construction. These
 are availability constraints; the implementation does not promise large exports
-under sustained writes or a five-second large-transfer guarantee. HA leader-save
-code has a separate three-process official-CLI qualification target; the local
-historical receipts below do not qualify it.
+under sustained writes or a five-second large-transfer guarantee.
 The real official-CLI qualification command is
 `native_snapshot_cli_live.py --binary <server> --build-source-commit <commit> --work-parent <private-SSD-directory> --output <new-private-json>`;
 the source/binary-bound receipt, not these limits, determines measured capacity.
+
+The schema38 `fa61fa7` release (SHA256
+`b289dd0b88652e174c8ea917b6d23605e7f770b43dfca93e8e708ef706bb14ef`)
+passes the v2 [1057-check file profile](../../qa/openbao-acceptance/evidence/native-snapshot-file-v2-fa61fa7.json)
+and [1183-check PostgreSQL profile](../../qa/openbao-acceptance/evidence/native-snapshot-pg-v2-fa61fa7.json).
+Both use the official OpenBao2.6.2 CLI with a60-second large-transfer listener,
+110 distinct values totaling25,234,330 logical bytes, complete value hashes,
+ordinary same-seal rollback, actual rekey rejection of old archives and
+new-archive restore/restart. PostgreSQL17.11 additionally verifies35 bounded
+chunks, provider-outage recovery and interrupted-init nonce handling.
+The same binary passes a separate [269-check three-process TLS HA SAVE profile](../../qa/openbao-acceptance/evidence/native-snapshot-ha-fa61fa7.json)
+at the unchanged5-second listener limit:37 values totaling8,487,901 bytes,
+actual official-CLI saves before/after leader transfer, HEAD wire framing,
+ACL/finite uses, quorum-loss503, explicit API addresses and all-voter value hashes.
+Initial and successor CLI saves take263.412ms and299.012ms in this same-host run.
+HA restore and standby streaming remain explicit refusals. These fixed-source
+receipts preserve unchanged binaries and do not establish multi-host behavior,
+cross-product state interchange or export availability under concurrent writes.
+
 The [PostgreSQL native CLI baseline](../../qa/openbao-acceptance/evidence/native-snapshot-cli-pg-c3c5d14.json)
 records 833 checks on c3c5d14, PostgreSQL17.11 and the official OpenBao2.6.2 CLI:
 110 values, complete readback/restart, bounded remote chunks, interrupted-init

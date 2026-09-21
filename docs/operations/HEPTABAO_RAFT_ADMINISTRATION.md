@@ -66,6 +66,11 @@ substituted for HTTP addresses. This metadata does not yet implement snapshot
 redirects: native snapshot GET/HEAD on a standby returns503, while a leader must
 pass ReadIndex again before releasing its staged archive. Native HA restore
 remains409 and JSON backup keeps its separate behavior.
+The schema38 [three-process TLS native SAVE receipt](../../qa/openbao-acceptance/evidence/native-snapshot-ha-fa61fa7.json)
+passes269 checks with the official2.6.2 CLI and unchanged5-second listeners,
+including quorum loss, leadership transfer, HEAD/ACL/finite-use behavior and
+full value hashes at every voter. This profile does not qualify HA restore,
+anonymous/standby `sys/leader` compatibility, or separate physical hosts.
 
 Replication batches are bounded by encoded bytes as well as entry count.
 `DurableLogStore::limited_get_log_entries` returns a contiguous prefix that fits

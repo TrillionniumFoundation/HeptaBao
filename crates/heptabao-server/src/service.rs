@@ -2109,6 +2109,28 @@ impl Service {
                 auth.insert("client_token".into(), json!(renewed));
             }
         }
+        // Lookup can echo a bearer only after the auth route has admitted that
+        // exact target. Accessor lookup never reconstructs a bearer. Keep this
+        // response-only value outside AuthState and inside optional wrapping.
+        if response.status == 200 {
+            let looked_up = match path {
+                "auth/token/lookup-self" => Some(token),
+                "auth/token/lookup" => Some(
+                    body.get("token")
+                        .and_then(Value::as_str)
+                        .filter(|value| !value.is_empty())
+                        .unwrap_or(token),
+                ),
+                "auth/token/lookup-accessor" => Some(""),
+                _ => None,
+            };
+            if let (Some(bearer), Some(data)) = (
+                looked_up,
+                response.body.get_mut("data").and_then(Value::as_object_mut),
+            ) {
+                data.insert("id".into(), json!(bearer));
+            }
+        }
         if let Some(ttl) = wrap_ttl_seconds
             && (200..300).contains(&response.status)
             && response.status != 204
@@ -6646,3 +6668,7 @@ mod userpass_compare_tests;
 #[cfg(test)]
 #[path = "service_userpass_bcrypt_tests.rs"]
 mod userpass_bcrypt_tests;
+
+#[cfg(test)]
+#[path = "service_token_lookup_tests.rs"]
+mod token_lookup_tests;

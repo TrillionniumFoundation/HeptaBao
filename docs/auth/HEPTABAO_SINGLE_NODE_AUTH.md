@@ -138,8 +138,13 @@ tokens; those must be explicitly revoked or allowed to expire.
 The last permitted use can authorize its current request. Further
 authentication fails. `num_uses = 0` represents unlimited use in request and
 response formats; internal `Option<u64>` distinguishes unlimited from exhausted.
-Token lookups and renewals never return the bearer token because it is not
-stored. This is an intentional compatibility boundary.
+Token lookups and renewals never reconstruct a bearer token because it is not
+stored. After authorization, the Service echoes only the exact bearer already
+supplied by the caller: `lookup-self` returns it as `data.id`, explicit `lookup`
+returns the validated target, and `lookup` with an absent/null/empty target uses
+the caller. Accessor lookup returns an empty `id`. Renewal similarly echoes the
+presented bearer as `auth.client_token`. This response-only work happens before
+optional wrapping, so wrapped lookup keeps the bearer inside the one-use payload.
 
 ## ACL dialect
 

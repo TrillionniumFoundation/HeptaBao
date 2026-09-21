@@ -4772,6 +4772,14 @@ impl AuthState {
                         &["accessor"]
                     },
                 )?;
+                if operation == "lookup"
+                    && body
+                        .get("token")
+                        .is_none_or(|value| value.is_null() || value.as_str() == Some(""))
+                {
+                    let token = self.tokens.get(&actor.digest).ok_or_else(denied)?;
+                    return Ok(response(token_info(token, now), false));
+                }
                 let id = self.target_token(namespace, body, operation.ends_with("accessor"))?;
                 let token = self.active_token(&id, now, true)?;
                 Ok(response(token_info(token, now), false))
