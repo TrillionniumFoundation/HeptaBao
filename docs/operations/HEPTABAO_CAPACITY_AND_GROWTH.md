@@ -329,7 +329,11 @@ unsupported cross-seal restore. Native v1 archives lack this binding and are
 explicitly rejected; the JSON profile keeps its prior generation/force policy.
 This is not OpenBao's state or seal encoding. Native HA GET/HEAD requires the
 current leader and a fresh ReadIndex; finalization repeats both authority checks.
-A standby returns503 without forwarding a large archive through JSON peer RPC.
+A standby returns307 to the observed leader's configured HTTPS API origin,
+without reading the upload or forwarding it through JSON peer RPC. An unknown
+leader, missing configured API origin or sealed node returns503. The official
+2.6.2 CLI must resolve `sys/leader` first and send its command directly to that
+leader because its automatic snapshot redirect handling loses the response/body.
 HA native restore now has a schema39 leader-only profile: the same seal and
 cluster, record-v5 roots, a root actor and unchanged Raft administration owner
 are required. The authenticated archive becomes a new CAS publication at the

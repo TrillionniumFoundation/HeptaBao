@@ -67,7 +67,14 @@ now return307 with this configured origin and the validated original path/query.
 They do not consume token uses, read the upload or allocate a spool. Missing API
 address, unknown leader, sealed state or an elapsed admission deadline returns503.
 The receiving leader still authorizes the request and passes ReadIndex before
-releasing its staged archive. Real-process redirect qualification is pending.
+releasing its staged archive. The `0b31fb2` release passes the
+[162-check redirect profile](../../qa/openbao-acceptance/evidence/native-redirect-0b31fb2.json):
+three TLS voters return empty307 replies for GET/HEAD and upload headers, retain
+the raw validated query and token uses, and change the destination after leadership
+transfer. Resolving the configured leader first permits one official CLI SAVE
+and one RESTORE; complete value hashes survive every voter and restart. A separate
+deliberate mutation/restore observes the next replay epoch. This does not claim
+automatic CLI redirect replay, missing-address behavior or separate physical hosts.
 Schema39 native HA
 restore publishes a new same-cluster/same-seal record root at the live epoch plus
 one; it does not rewind the local ledger, Raft log or membership. Complete
@@ -117,7 +124,10 @@ read fails. The HTTP parser now retains the dedicated handler's original method,
 ignores logical body/header fields and checks only the global GET list/scan
 selectors using Go's first-valid-query-value behavior. Conflicting true selectors
 or invalid booleans return400 with an empty errors list; framing and deadline
-limits remain. Its expanded live comparison is pending. Unsupported HTTP methods
+limits remain. The [186-check expanded comparison](../../qa/openbao-acceptance/evidence/sys-leader-http-0b31fb2.json)
+passes on `0b31fb2`, including all35 HTTP edge cases on official file/Raft servers
+and the candidate file server, followed by the three-process HA lifecycle.
+Unsupported HTTP methods
 outside the parser's existing method set and the two omitted fields remain
 separate compatibility work.
 The schema38 [three-process TLS native SAVE receipt](../../qa/openbao-acceptance/evidence/native-snapshot-ha-fa61fa7.json)
