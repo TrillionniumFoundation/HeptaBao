@@ -1213,8 +1213,14 @@ public voters, leader change, restart and process shutdown, but its final
 receipt scan called a string method on the fixture's binary replication key.
 That fixture failure is retained (SHA256
 `5c076e16e49c65564bd6fc7c70ac21b78e94b1d6b452172aa8d80bf2f5207e81`).
-The scanner now handles both private strings and bytes; HA qualification still
-requires a complete rerun, not reuse of those partial checks.
+The scanner now handles both private strings and bytes. A complete rerun under
+clean QA `128c123338835832de59902e3d6a726da1bf79f6`, using the same `3588f54`
+binary, passed 604 checks and 9 bootstrap checks, including both secret scans.
+The receipt is `approle-token-cidrs-ha-128c123.json` (SHA256
+`c1459173b810e679bdcfcb0741b1a6690f107c53cdde9dc8a4ffc0bfe2e1e19c`).
+This establishes the stated origin-forwarding and token-snapshot behavior
+through every public voter, leader change and full restart; it does not qualify
+physical media failure or native OpenBao archive interchange.
 
 ## Kubernetes batch lease ownership in schema42
 
