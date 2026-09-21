@@ -1,0 +1,270 @@
+use super::*;
+use crate::records::RecordCommand;
+use crate::records_tests::{owner, root as publication};
+use crate::state_machine::ApplicationRequest;
+use crate::{RecordRejection, RecordRootBase};
+use std::sync::atomic::{AtomicU64, Ordering};
+static SEQUENCE: AtomicU64 = AtomicU64::new(1);
+fn root() -> PathBuf {
+    std::env::temp_dir().join(format!(
+        "heptabao-record-runtime-{}-{}",
+        std::process::id(),
+        SEQUENCE.fetch_add(1, Ordering::Relaxed)
+    ))
+}
+async fn apply(store: &mut DurableStateMachine, request: ApplicationRequest) {
+    let entry = EntryOf::<TypeConfig> {
+        log_id: openraft::LogId {
+            leader_id: openraft::impls::leader_id_adv::LeaderId {
+                term: 1,
+                node_id: 1,
+            },
+            index: store.last_applied_log_index().await.unwrap_or(0) + 1,
+        },
+        payload: EntryPayload::Normal(request),
+    };
+    RaftStateMachine::apply(
+        store,
+        futures::stream::iter([Ok::<_, io::Error>((entry, None))]),
+    )
+    .await
+    .expect("actual durable journal apply");
+}
+fn request(command: RecordCommand) -> ApplicationRequest {
+    ApplicationRequest::records(1, command).expect("bounded request")
+}
+
+#[tokio::test]
+async fn staged_objects_survive_replay_without_publication_rejections_advance_and_snapshot_three_restores()
+ {
+    let path = root();
+    let mut store = DurableStateMachine::create(&path).expect("create");
+    let object = owner(1);
+    apply(
+        &mut store,
+        request(RecordCommand::Stage {
+            object: object.clone(),
+        }),
+    )
+    .await;
+    let generation = store.generation().await;
+    assert_eq!(store.record_root_at_generation().await, (generation, None));
+    drop(store);
+    let mut store = DurableStateMachine::open_existing(&path).expect("replay staged object");
+    assert_eq!(
+        store
+            .record_object(object.reference())
+            .await
+            .expect("read object"),
+        Some(object.clone())
+    );
+    assert_eq!(store.record_root_at_generation().await, (generation, None));
+    let bad = publication(
+        RecordRootBase::RecordsV5([9; 32]),
+        2,
+        vec![object.reference().clone()],
+    );
+    apply(&mut store, request(RecordCommand::Publish { root: bad })).await;
+    assert_eq!(store.generation().await, generation + 1);
+    assert_eq!(store.last_applied_log_index().await, Some(2));
+    assert!(store.record_root_at_generation().await.1.is_none());
+    let root = publication(RecordRootBase::Empty, 2, vec![object.reference().clone()]);
+    apply(
+        &mut store,
+        request(RecordCommand::Publish { root: root.clone() }),
+    )
+    .await;
+    let snapshot = RaftSnapshotBuilder::build_snapshot(&mut store)
+        .await
+        .expect("format3 checkpoint");
+    assert_eq!(store.bundle.lock().await.format_version, 3);
+    let bytes = snapshot.snapshot.into_inner();
+    assert!(serde_json::from_slice::<openraft_memstore::MemStoreStateMachine>(&bytes).is_err());
+    let follower_path = path.with_extension("follower");
+    let mut follower = DurableStateMachine::create(&follower_path).expect("follower");
+    RaftStateMachine::install_snapshot(&mut follower, &snapshot.meta, Cursor::new(bytes))
+        .await
+        .expect("install same typed decoder");
+    assert_eq!(
+        follower.record_root_at_generation().await.1,
+        Some(root.clone())
+    );
+    drop(follower);
+    let follower =
+        DurableStateMachine::open_existing(&follower_path).expect("follower durable reopen");
+    assert_eq!(
+        follower.record_root_at_generation().await.1,
+        Some(root.clone())
+    );
+    drop(follower);
+    drop(store);
+    let reopened = DurableStateMachine::open_existing(&path).expect("checkpoint reopen");
+    assert_eq!(reopened.record_root_at_generation().await.1, Some(root));
+    assert_eq!(
+        reopened
+            .record_inventory(None, 256)
+            .await
+            .expect("inventory")
+            .1,
+        vec![object.reference().clone()]
+    );
+    drop(reopened);
+    fs::remove_dir_all(path).expect("cleanup");
+    fs::remove_dir_all(follower_path).expect("cleanup follower");
+}
+
+#[tokio::test]
+async fn first_publication_reclaims_only_fixed_legacy_clients_atomically_and_replays() {
+    let path = root();
+    let mut store = DurableStateMachine::create(&path).expect("create");
+    let legacy = crate::ReplicatedEnvelope::new("legacy", [8; 32], vec![4; 100]).expect("legacy");
+    for (client, status) in [
+        (crate::records::PRODUCTION_CLIENT, legacy.encoded_status()),
+        (
+            "heptabao-production-ha-chunk:000:0",
+            "staged legacy chunk".into(),
+        ),
+        ("qualification", "retained test state".into()),
+        (
+            "heptabao-production-ha-chunk:999:9",
+            "not a fixed production chunk".into(),
+        ),
+    ] {
+        apply(
+            &mut store,
+            openraft_memstore::ClientRequest {
+                client: client.into(),
+                serial: 1,
+                status,
+            }
+            .into(),
+        )
+        .await;
+    }
+    // The retained snapshot intentionally remains old until a new checkpoint.
+    RaftSnapshotBuilder::build_snapshot(&mut store)
+        .await
+        .expect("legacy snapshot2");
+    let a = owner(1);
+    let missing = owner(2);
+    apply(
+        &mut store,
+        request(RecordCommand::Stage { object: a.clone() }),
+    )
+    .await;
+    let before = store.get_state_machine().await.client_status;
+    apply(
+        &mut store,
+        request(RecordCommand::Publish {
+            root: publication(
+                RecordRootBase::Legacy([8; 32]),
+                3,
+                vec![missing.reference().clone()],
+            ),
+        }),
+    )
+    .await;
+    assert_eq!(store.get_state_machine().await.client_status, before);
+    let pubroot = publication(
+        RecordRootBase::Legacy([8; 32]),
+        3,
+        vec![a.reference().clone()],
+    );
+    apply(
+        &mut store,
+        request(RecordCommand::Publish {
+            root: pubroot.clone(),
+        }),
+    )
+    .await;
+    let state = store.get_state_machine().await;
+    assert!(
+        !state
+            .client_status
+            .contains_key(crate::records::PRODUCTION_CLIENT)
+    );
+    assert!(
+        !state
+            .client_status
+            .contains_key("heptabao-production-ha-chunk:000:0")
+    );
+    assert_eq!(state.client_status.len(), 2);
+    drop(store);
+    let mut store =
+        DurableStateMachine::open_existing(&path).expect("journal replay across old snapshot");
+    assert_eq!(
+        store.get_state_machine().await.client_status,
+        state.client_status
+    );
+    assert_eq!(store.record_root_at_generation().await.1, Some(pubroot));
+    RaftSnapshotBuilder::build_snapshot(&mut store)
+        .await
+        .expect("new compact record snapshot");
+    drop(store);
+    let reopened = DurableStateMachine::open_existing(&path).expect("format3 reopen");
+    assert_eq!(reopened.get_state_machine().await.client_status.len(), 2);
+    drop(reopened);
+    fs::remove_dir_all(path).expect("cleanup");
+}
+
+#[tokio::test]
+async fn malformed_snapshot_or_low_disk_budget_cannot_replace_published_state() {
+    let path = root();
+    let mut store = DurableStateMachine::create(&path).expect("create");
+    let object = owner(1);
+    apply(
+        &mut store,
+        request(RecordCommand::Stage {
+            object: object.clone(),
+        }),
+    )
+    .await;
+    apply(
+        &mut store,
+        request(RecordCommand::Publish {
+            root: publication(RecordRootBase::Empty, 2, vec![object.reference().clone()]),
+        }),
+    )
+    .await;
+    let before = store.record_root_at_generation().await;
+    let bundle_bytes = fs::read(store.state_path()).expect("bundle");
+    let journal_bytes = fs::read(state_journal_path(store.state_path())).expect("journal");
+    store.artifact_bound = 64;
+    assert!(
+        RaftSnapshotBuilder::build_snapshot(&mut store)
+            .await
+            .is_err()
+    );
+    assert_eq!(store.record_root_at_generation().await, before);
+    assert_eq!(fs::read(store.state_path()).expect("bundle"), bundle_bytes);
+    assert_eq!(
+        fs::read(state_journal_path(store.state_path())).expect("journal"),
+        journal_bytes
+    );
+    store.artifact_bound = MAX_DURABLE_ARTIFACT_BYTES;
+    let state = store.get_state_machine().await;
+    let meta = SnapshotMetaOf::<TypeConfig> {
+        last_log_id: state.last_applied_log,
+        last_membership: state.last_membership.clone(),
+    };
+    let mut damaged: serde_json::Value =
+        serde_json::from_slice(&state.snapshot_bytes().expect("snapshot")).expect("json");
+    damaged["state"]["records_v5"]["objects"] = serde_json::json!({});
+    assert!(
+        RaftStateMachine::install_snapshot(
+            &mut store,
+            &meta,
+            Cursor::new(serde_json::to_vec(&damaged).expect("damaged"))
+        )
+        .await
+        .is_err()
+    );
+    assert_eq!(store.record_root_at_generation().await, before);
+    assert_eq!(fs::read(store.state_path()).expect("bundle"), bundle_bytes);
+    assert_eq!(
+        store.prunable_records([0; 32], 1).await,
+        Err(RecordRejection::StaleRoot)
+    );
+    drop(store);
+    fs::remove_dir_all(path).expect("cleanup");
+}

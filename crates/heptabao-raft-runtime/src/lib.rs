@@ -13,6 +13,14 @@
 mod cluster;
 mod network;
 mod process;
+mod records;
+mod state_machine;
+
+pub use records::{
+    PublishedRecordRoot, RecordObjectId, RecordObjectKind, RecordObjectRef, RecordRejection,
+    RecordRootBase, RecordUsage, SealedRecordObject,
+};
+pub use state_machine::{ApplicationRequest, ApplicationResponse, StateMachine, TypeConfig};
 // Historical hostile store tests use `expect` for fixture construction only;
 // production store code remains under the workspace lint policy.
 #[allow(clippy::expect_used)]
@@ -215,6 +223,7 @@ pub struct CommitReceipt {
 pub enum RaftRuntimeError {
     InvalidEnvelope,
     InvalidSerial,
+    RecordRejected(RecordRejection),
     Shutdown,
     Consensus(String),
 }
@@ -226,6 +235,9 @@ impl fmt::Display for RaftRuntimeError {
                 formatter.write_str("replicated envelope is invalid or unbounded")
             }
             Self::InvalidSerial => formatter.write_str("client serial must be nonzero"),
+            Self::RecordRejected(reason) => {
+                write!(formatter, "record operation rejected: {reason:?}")
+            }
             Self::Shutdown => formatter.write_str("Raft runtime is shut down"),
             Self::Consensus(message) => write!(formatter, "Raft consensus failed: {message}"),
         }
@@ -492,3 +504,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[allow(clippy::expect_used, clippy::unwrap_used)]
+mod records_tests;

@@ -89,6 +89,17 @@ to the unchanged clean source observed during the run. The old binary pin is
 `d26ed9d5c3bfd1cac6c669f7b767c753adc2f823`; no old snapshot was fabricated by
 editing a new program's output. These runs do not measure large-state capacity.
 
+The runtime also accepts typed immutable record staging, root publication and
+garbage collection commands. A published root fences legacy application writes;
+publication checks its prior root and the complete bounded reference graph before
+changing application state. Rejected commands advance the applied Raft frontier
+without replacing that state. Record snapshots use bundle and wire version 3,
+while legacy state keeps the version 1/2 read paths. Record payloads have a 47 MiB
+combined encoded budget and retain the 128 MiB complete-artifact bound. Runtime
+tests cover journal replay, rejection, snapshot install/reopen and legacy-data
+retirement. These APIs are not yet connected to server record publication, so
+their presence does not increase the server's current logical-state limit.
+
 The existing Service HTTP snapshot body remains the repository's encrypted backup
 format, **not an OpenBao `raft.snap` binary**. Native persisted snapshot status
 and learner catch-up do not implement cross-product snapshot restore, forced

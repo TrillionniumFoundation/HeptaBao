@@ -4,6 +4,7 @@ use std::io::Cursor;
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::state_machine::TypeConfig;
 use futures::future::BoxFuture;
 use openraft::errors::{
     NetworkError, RPCError, RaftError, ReplicationClosed, StreamingError, Unreachable,
@@ -15,7 +16,6 @@ use openraft::raft::{
 };
 use openraft::type_config::alias::{SnapshotOf, VoteOf};
 use openraft::{OptionalSend, Snapshot};
-use openraft_memstore::TypeConfig;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use tokio::sync::Mutex;

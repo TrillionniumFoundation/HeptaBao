@@ -20,11 +20,14 @@ async fn apply_value(store: &mut DurableStateMachine, value: String) {
             },
             index: store.last_applied_log_index().await.unwrap_or(0) + 1,
         },
-        payload: EntryPayload::Normal(openraft_memstore::ClientRequest {
-            client: "selected".into(),
-            serial: 1,
-            status: value,
-        }),
+        payload: EntryPayload::Normal(
+            openraft_memstore::ClientRequest {
+                client: "selected".into(),
+                serial: 1,
+                status: value,
+            }
+            .into(),
+        ),
     };
     RaftStateMachine::apply(
         store,

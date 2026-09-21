@@ -3,6 +3,7 @@ use std::future::Future;
 use std::io::{self, Cursor};
 use std::sync::Arc;
 
+use crate::state_machine::TypeConfig;
 use openraft::OptionalSend;
 use openraft::Raft;
 use openraft::errors::{NetworkError, RPCError, ReplicationClosed, StreamingError, Unreachable};
@@ -12,7 +13,6 @@ use openraft::raft::{
     AppendEntriesRequest, AppendEntriesResponse, SnapshotResponse, VoteRequest, VoteResponse,
 };
 use openraft::type_config::alias::{SnapshotOf, VoteOf};
-use openraft_memstore::TypeConfig;
 use tokio::sync::RwLock;
 
 use super::store::DurableStateMachine;

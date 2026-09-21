@@ -7,6 +7,9 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
 
+use crate::state_machine::{
+    ApplicationResponse as ClientResponse, StateMachine as MemStoreStateMachine, TypeConfig,
+};
 use base64::{Engine as _, engine::general_purpose::STANDARD_NO_PAD};
 use futures::{Stream, TryStreamExt};
 use openraft::alias::{EntryOf, LogIdOf, SnapshotMetaOf, SnapshotOf, StoredMembershipOf, VoteOf};
@@ -16,7 +19,6 @@ use openraft::storage::{
     RaftStateMachine,
 };
 use openraft::{EntryPayload, OptionalSend};
-use openraft_memstore::{ClientResponse, MemStoreStateMachine, TypeConfig};
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 
@@ -1165,17 +1167,12 @@ fn apply_state_entry(
 ) -> ClientResponse {
     state.last_applied_log = Some(entry.log_id);
     match &entry.payload {
-        EntryPayload::Blank => ClientResponse(None),
-        EntryPayload::Normal(data) => {
-            let previous = state
-                .client_status
-                .insert(data.client.clone(), data.status.clone());
-            ClientResponse(previous)
-        }
+        EntryPayload::Blank => ClientResponse::blank(),
+        EntryPayload::Normal(data) => state.apply(data),
         EntryPayload::Membership(membership) => {
             state.last_membership =
                 StoredMembershipOf::<TypeConfig>::new(Some(entry.log_id), membership.clone());
-            ClientResponse(None)
+            ClientResponse::blank()
         }
     }
 }
@@ -1221,6 +1218,9 @@ fn apply_state_journal_event(
             }
             let response = apply_state_entry(&mut bundle.state, &entry);
             bundle.generation = generation;
+            if bundle.state.records_v5.is_some() {
+                bundle.format_version = 3;
+            }
             Ok(Some(response))
         }
     }
@@ -1295,25 +1295,38 @@ impl PersistentStateBundle {
     }
 
     fn validate(&self) -> io::Result<()> {
-        if !matches!(self.format_version, 1 | COMPACT_STATE_BUNDLE_FORMAT)
+        if !matches!(self.format_version, 1 | COMPACT_STATE_BUNDLE_FORMAT | 3)
             || self.journal_format > 1
             || self.generation == 0
         {
             return Err(invalid("unsupported or zero state bundle generation"));
         }
+        if (self.format_version == 3) != self.state.records_v5.is_some() {
+            return Err(invalid("state bundle records/version mismatch"));
+        }
+        self.state
+            .validate()
+            .map_err(|_| invalid("invalid state object graph"))?;
         if let Some(snapshot) = &self.current_snapshot {
             let expected = if self.format_version == 1 {
                 SnapshotEncoding::LegacyBytes
             } else {
                 SnapshotEncoding::CompactBase64
             };
-            if snapshot.encoding != expected {
+            if self.format_version != 3 && snapshot.encoding != expected {
                 return Err(invalid(
                     "state bundle snapshot encoding does not match format",
                 ));
             }
-            let snapshot_state: MemStoreStateMachine = serde_json::from_slice(&snapshot.data)
-                .map_err(|error| invalid(error.to_string()))?;
+            let snapshot_state = MemStoreStateMachine::from_snapshot(&snapshot.data)?;
+            if snapshot_state.records_v5.is_some()
+                && (self.format_version != 3
+                    || snapshot.encoding != SnapshotEncoding::CompactBase64)
+            {
+                return Err(invalid(
+                    "records snapshot lacks compact bundle version fence",
+                ));
+            }
             if snapshot_state.last_applied_log != snapshot.meta.last_log_id {
                 return Err(invalid("snapshot state and metadata last-applied mismatch"));
             }
@@ -1493,6 +1506,85 @@ impl DurableStateMachine {
         )
     }
 
+    pub(crate) async fn record_object(
+        &self,
+        reference: &crate::RecordObjectRef,
+    ) -> Result<Option<crate::SealedRecordObject>, crate::RecordRejection> {
+        self.bundle
+            .lock()
+            .await
+            .state
+            .records_v5
+            .as_ref()
+            .map(|records| records.object(reference))
+            .transpose()
+            .map(Option::flatten)
+    }
+    pub(crate) async fn record_root_at_generation(
+        &self,
+    ) -> (u64, Option<crate::PublishedRecordRoot>) {
+        let bundle = self.bundle.lock().await;
+        (
+            bundle.generation,
+            bundle
+                .state
+                .records_v5
+                .as_ref()
+                .and_then(crate::records::RecordState::published),
+        )
+    }
+    pub(crate) async fn record_inventory(
+        &self,
+        after: Option<crate::RecordObjectId>,
+        limit: usize,
+    ) -> Result<(u64, Vec<crate::RecordObjectRef>), crate::RecordRejection> {
+        if limit == 0 || limit > 256 {
+            return Err(crate::RecordRejection::Invalid);
+        }
+        let bundle = self.bundle.lock().await;
+        let refs = bundle
+            .state
+            .records_v5
+            .as_ref()
+            .map(|records| records.inventory(after, limit))
+            .transpose()?
+            .unwrap_or_default();
+        Ok((bundle.generation, refs))
+    }
+    pub(crate) async fn record_usage(
+        &self,
+    ) -> Result<(u64, crate::RecordUsage), crate::RecordRejection> {
+        let mut bundle = self.bundle.lock().await;
+        let usage = bundle.state.record_usage()?;
+        Ok((bundle.generation, usage))
+    }
+    pub(crate) async fn prunable_records(
+        &self,
+        expected_root: [u8; 32],
+        limit: usize,
+    ) -> Result<Vec<crate::RecordObjectId>, crate::RecordRejection> {
+        if limit == 0 || limit > 256 {
+            return Err(crate::RecordRejection::Invalid);
+        }
+        let bundle = self.bundle.lock().await;
+        let current = bundle
+            .state
+            .records_v5
+            .as_ref()
+            .and_then(crate::records::RecordState::published_digest)
+            .unwrap_or([0; 32]);
+        if current != expected_root {
+            return Err(crate::RecordRejection::StaleRoot);
+        }
+        bundle
+            .state
+            .records_v5
+            .as_ref()
+            .map(|records| records.prunable(limit))
+            .transpose()
+            .map(Option::unwrap_or_default)
+    }
+
     pub async fn has_current_snapshot(&self) -> bool {
         self.bundle.lock().await.current_snapshot.is_some()
     }
@@ -1519,7 +1611,9 @@ impl RaftSnapshotBuilder<TypeConfig> for DurableStateMachine {
     ) -> Result<SnapshotOf<TypeConfig, Self::SnapshotData>, io::Error> {
         let mut bundle = self.bundle.lock().await;
         let state = bundle.state.clone();
-        let data = serde_json::to_vec(&state).map_err(|error| invalid(error.to_string()))?;
+        let data = state
+            .snapshot_bytes()
+            .map_err(|error| invalid(error.to_string()))?;
         let meta = SnapshotMetaOf::<TypeConfig> {
             last_log_id: state.last_applied_log,
             last_membership: state.last_membership.clone(),
@@ -1530,7 +1624,11 @@ impl RaftSnapshotBuilder<TypeConfig> for DurableStateMachine {
             encoding: SnapshotEncoding::CompactBase64,
         };
         let candidate = PersistentStateBundle {
-            format_version: COMPACT_STATE_BUNDLE_FORMAT,
+            format_version: if state.records_v5.is_some() {
+                3
+            } else {
+                COMPACT_STATE_BUNDLE_FORMAT
+            },
             journal_format: 1,
             generation: bundle.next_generation()?,
             state,
@@ -1599,8 +1697,7 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
         snapshot: Self::SnapshotData,
     ) -> Result<(), io::Error> {
         let data = snapshot.into_inner();
-        let state: MemStoreStateMachine =
-            serde_json::from_slice(&data).map_err(|error| invalid(error.to_string()))?;
+        let state = MemStoreStateMachine::from_snapshot(&data)?;
         if state.last_applied_log != meta.last_log_id {
             return Err(invalid("snapshot last-applied log does not match metadata"));
         }
@@ -1618,7 +1715,11 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
         };
         let mut bundle = self.bundle.lock().await;
         let candidate = PersistentStateBundle {
-            format_version: COMPACT_STATE_BUNDLE_FORMAT,
+            format_version: if state.records_v5.is_some() {
+                3
+            } else {
+                COMPACT_STATE_BUNDLE_FORMAT
+            },
             journal_format: 1,
             generation: bundle.next_generation()?,
             state,
@@ -1666,6 +1767,7 @@ mod tests {
         PersistentStateBundle, RaftLogStorage, RaftSnapshotBuilder, STATE_BUNDLE_MAGIC,
         flip_first_payload_byte, read_json, write_json,
     };
+    use crate::TypeConfig;
     use std::collections::BTreeMap;
     use std::fs;
     use std::io::{self, Write};
@@ -1704,11 +1806,14 @@ mod tests {
         );
         let payloads = [
             openraft::EntryPayload::Blank,
-            openraft::EntryPayload::Normal(openraft_memstore::ClientRequest {
-                client: "selected".into(),
-                serial: 1,
-                status: "same-manifest".into(),
-            }),
+            openraft::EntryPayload::Normal(
+                openraft_memstore::ClientRequest {
+                    client: "selected".into(),
+                    serial: 1,
+                    status: "same-manifest".into(),
+                }
+                .into(),
+            ),
             openraft::EntryPayload::Membership(
                 openraft::Membership::new(
                     vec![std::collections::BTreeSet::from([1_u64])],
@@ -1719,7 +1824,7 @@ mod tests {
         ];
         for (offset, payload) in payloads.into_iter().enumerate() {
             let index = offset as u64 + 1;
-            let entry = openraft::alias::EntryOf::<openraft_memstore::TypeConfig> {
+            let entry = openraft::alias::EntryOf::<TypeConfig> {
                 log_id: openraft::LogId {
                     leader_id: openraft::impls::leader_id_adv::LeaderId {
                         term: 1_u64,
@@ -1764,7 +1869,7 @@ mod tests {
         let mut store = DurableStateMachine::create(&root).expect("create state machine");
         store.bundle.lock().await.generation = u64::MAX;
         let before = fs::read(root.join("state-machine.journal")).expect("journal before");
-        let entry = openraft::alias::EntryOf::<openraft_memstore::TypeConfig> {
+        let entry = openraft::alias::EntryOf::<TypeConfig> {
             log_id: openraft::LogId {
                 leader_id: openraft::impls::leader_id_adv::LeaderId {
                     term: 1_u64,
@@ -2464,3 +2569,8 @@ mod tests {
 #[cfg(test)]
 #[path = "snapshot_encoding_tests.rs"]
 mod snapshot_encoding_tests;
+
+#[cfg(test)]
+#[path = "record_store_tests.rs"]
+#[allow(clippy::expect_used, clippy::unwrap_used)]
+mod record_store_tests;

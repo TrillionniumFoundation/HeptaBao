@@ -3,8 +3,9 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use crate::state_machine::StateMachine as MemStoreStateMachine;
 use openraft::{Config, Instant, ReadPolicy, SnapshotPolicy};
-use openraft_memstore::{ClientRequest, MemStoreStateMachine};
+use openraft_memstore::ClientRequest;
 use tokio::task::spawn_blocking;
 
 use super::network::{RaftRpcService, RemoteNetworkFactory, RemoteRaftError};
@@ -244,18 +245,142 @@ impl ProcessRaftNode {
         }
         let response = self
             .raft
-            .client_write(ClientRequest {
-                client: client.to_owned(),
-                serial: client_serial,
-                status: envelope.encoded_status(),
-            })
+            .client_write(
+                ClientRequest {
+                    client: client.to_owned(),
+                    serial: client_serial,
+                    status: envelope.encoded_status(),
+                }
+                .into(),
+            )
             .await
             .map_err(|error| RaftRuntimeError::Consensus(error.to_string()))?;
+        response
+            .data
+            .result()
+            .map_err(RaftRuntimeError::RecordRejected)?;
         Ok(CommitReceipt {
             leader_id: self.id,
             log_index: response.log_id.index,
             envelope_digest: envelope.digest(),
         })
+    }
+
+    async fn replicate_record_command(
+        &self,
+        serial: u64,
+        command: crate::records::RecordCommand,
+        digest: [u8; 32],
+    ) -> Result<CommitReceipt, RaftRuntimeError> {
+        let request = crate::state_machine::ApplicationRequest::records(serial, command)
+            .map_err(RaftRuntimeError::RecordRejected)?;
+        let response = self
+            .raft
+            .client_write(request)
+            .await
+            .map_err(|error| RaftRuntimeError::Consensus(error.to_string()))?;
+        response
+            .data
+            .result()
+            .map_err(RaftRuntimeError::RecordRejected)?;
+        Ok(CommitReceipt {
+            leader_id: self.id,
+            log_index: response.log_id.index,
+            envelope_digest: digest,
+        })
+    }
+    /// Staging never changes the published application root. No legacy client
+    /// identities are allocated for object IDs.
+    pub async fn stage_application_object(
+        &self,
+        serial: u64,
+        object: &crate::SealedRecordObject,
+    ) -> Result<CommitReceipt, RaftRuntimeError> {
+        self.replicate_record_command(
+            serial,
+            crate::records::RecordCommand::Stage {
+                object: object.clone(),
+            },
+            object.reference().id,
+        )
+        .await
+    }
+    pub async fn application_object(
+        &self,
+        reference: &crate::RecordObjectRef,
+    ) -> Result<Option<crate::SealedRecordObject>, RaftRuntimeError> {
+        self.state_machine
+            .record_object(reference)
+            .await
+            .map_err(RaftRuntimeError::RecordRejected)
+    }
+    pub async fn publish_application_root(
+        &self,
+        serial: u64,
+        root: &crate::PublishedRecordRoot,
+    ) -> Result<CommitReceipt, RaftRuntimeError> {
+        self.replicate_record_command(
+            serial,
+            crate::records::RecordCommand::Publish { root: root.clone() },
+            root.envelope().digest(),
+        )
+        .await
+    }
+    pub async fn prune_application_objects(
+        &self,
+        serial: u64,
+        expected_root: [u8; 32],
+        ids: &[crate::RecordObjectId],
+    ) -> Result<CommitReceipt, RaftRuntimeError> {
+        if ids.is_empty() || ids.len() > 256 {
+            return Err(RaftRuntimeError::RecordRejected(
+                crate::RecordRejection::Invalid,
+            ));
+        }
+        self.replicate_record_command(
+            serial,
+            crate::records::RecordCommand::Prune {
+                expected_root,
+                ids: ids.to_vec(),
+            },
+            expected_root,
+        )
+        .await
+    }
+    /// Caller establishes ReadIndex/authority before using these observations;
+    /// generation must still match after assembling a multi-object read.
+    pub async fn record_root_at_generation(
+        &self,
+    ) -> Result<(u64, Option<crate::PublishedRecordRoot>), RaftRuntimeError> {
+        Ok(self.state_machine.record_root_at_generation().await)
+    }
+    pub async fn application_object_inventory(
+        &self,
+        after: Option<crate::RecordObjectId>,
+        limit: usize,
+    ) -> Result<(u64, Vec<crate::RecordObjectRef>), RaftRuntimeError> {
+        self.state_machine
+            .record_inventory(after, limit)
+            .await
+            .map_err(RaftRuntimeError::RecordRejected)
+    }
+    pub async fn application_record_usage(
+        &self,
+    ) -> Result<(u64, crate::RecordUsage), RaftRuntimeError> {
+        self.state_machine
+            .record_usage()
+            .await
+            .map_err(RaftRuntimeError::RecordRejected)
+    }
+    pub async fn prunable_application_objects(
+        &self,
+        expected_root: [u8; 32],
+        limit: usize,
+    ) -> Result<Vec<crate::RecordObjectId>, RaftRuntimeError> {
+        self.state_machine
+            .prunable_records(expected_root, limit)
+            .await
+            .map_err(RaftRuntimeError::RecordRejected)
     }
 
     pub async fn ensure_linearizable(&self) -> Result<(), RemoteRaftError> {
