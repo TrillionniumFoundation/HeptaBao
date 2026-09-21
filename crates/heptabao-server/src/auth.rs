@@ -5317,6 +5317,13 @@ impl AuthState {
                 .users_at(scope)
                 .map(|users| users.keys().map(String::as_str).collect())
                 .unwrap_or_default();
+            if native_userpass && keys.is_empty() {
+                return Ok(AuthResponse {
+                    status: 404,
+                    body: json!({"errors": []}),
+                    ..empty(false)
+                });
+            }
             return Ok(response(json!({"keys": keys}), false));
         }
         if !valid_name(name) || !["", "password", "policies", "mfa"].contains(&subpath) {

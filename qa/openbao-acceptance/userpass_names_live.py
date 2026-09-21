@@ -24,6 +24,7 @@ from userpass_password_live import private_parent, free_port, safe_files
 PREFIX='userpass_names.'
 MOUNT='native-names'
 REQUIRED=frozenset({'mounted.status','created.status','read_lower.canonical','read_upper.canonical',
+    'empty_initial.status','empty_initial.shape','empty_deleted.status','empty_deleted.shape',
     'initial_list.canonical','login_lower.credentials','login_upper.credentials','login_mixed.credentials',
     'same_entity','canonical_alias','general_replace.status','old_password.status','replacement.credentials',
     'general_list.canonical','held_token.valid','renew.canonical','reset_lower.status','reset_lower_login.credentials',
@@ -80,6 +81,8 @@ def complete_deviations(rows):
 def run_scenarios(client,restart,rows):
     t=Trace(client,rows)
     t.call('mounted','sys/auth/'+MOUNT,{'type':'userpass'},status=204)
+    empty=t.call('empty_initial',f'auth/{MOUNT}/users',method='LIST',status=404)
+    t.check('empty_initial.shape',empty.get('errors')==[] and not empty.get('data'))
     t.call('tuned','sys/auth/'+MOUNT+'/tune',{'default_lease_ttl':120,'max_lease_ttl':600},status=204)
     password,replacement,reset=[secrets.token_urlsafe(24) for _ in range(3)];t.sensitive.extend([password,replacement,reset])
     t.write('created','MiXeD',{'password':password,'token_ttl':120})
@@ -124,6 +127,8 @@ def run_scenarios(client,restart,rows):
     t.call('deleted',f'auth/{MOUNT}/users/MIXED',method='DELETE',status=204)
     t.login('deleted_login','mixed',reset,status=400)
     t.call('deleted_read',f'auth/{MOUNT}/users/mixed',method='GET',status=404)
+    empty=t.call('empty_deleted',f'auth/{MOUNT}/users',method='LIST',status=404)
+    t.check('empty_deleted.shape',empty.get('errors')==[] and not empty.get('data'))
     return t.sensitive
 
 def run_divergences(client,side,rows):

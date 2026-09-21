@@ -329,6 +329,8 @@ administrator's own token does not hold, including when changing only a TTL or
 password. Configuring `root` is permitted, but a correct-password login returns400
 before issuing credentials or changing authentication state. Bounded LDAP and
 Token API assignment restrictions keep their existing behavior.
+An authorized list of an empty userpass collection returns404 with `errors:[]`,
+including immediately after mount creation and deletion of the final account.
 
 An absent mode retains historical exact matching. Schema38/39 stores remain
 readable without adopting a mode or rewriting application records; old Alice
@@ -351,8 +353,12 @@ including separate old Alice/alice entities and renewal sources, two pure-read
 reopens, a new canonical mount and an actual old-reader refusal. Its first
 differential run exposed a configuration-ACL restriction; its first HA run
 completed the business checks but failed because observation IDs collided.
-Those failed receipts remain retained; corrected differential and HA qualification
-is pending. Unicode name expansion and old-mount adoption are outside this slice.
+Those failed receipts remain retained. The ACL-corrected `fec4f05` release passes
+the [141-check three-voter profile](../../qa/openbao-acceptance/evidence/userpass-names-ha-fec4f05.json)
+and a repeated [110-check real schema39 upgrade](../../qa/openbao-acceptance/evidence/userpass-names-upgrade-fec4f05.json).
+Its differential run passed the ACL cases but exposed the empty-list status
+difference, now corrected in source and awaiting a new release comparison.
+Unicode name expansion and old-mount adoption are outside this slice.
 
 ## Userpass TOTP MFA
 

@@ -27,6 +27,20 @@ fn login(state: &mut AuthState, name: &str, password: &str) -> Result<AuthRespon
 fn fresh_userpass_has_one_canonical_account_for_crud_reset_policy_and_login() {
     let (mut state, _, root) = setup();
     assert!(state.has_userpass_name_modes());
+    let before = serde_json::to_vec(&state).unwrap();
+    let missing = request(
+        &mut state,
+        Some(&root),
+        "LIST",
+        "auth/userpass/users",
+        json!({}),
+        100,
+    )
+    .unwrap();
+    assert_eq!(missing.status, 404);
+    assert_eq!(missing.body, json!({"errors": []}));
+    assert!(!missing.mutated);
+    assert_eq!(serde_json::to_vec(&state).unwrap(), before);
     request(
         &mut state,
         Some(&root),
@@ -95,6 +109,18 @@ fn fresh_userpass_has_one_canonical_account_for_crud_reset_policy_and_login() {
     )
     .unwrap();
     assert!(state.users[""].is_empty());
+    let missing = request(
+        &mut state,
+        Some(&root),
+        "LIST",
+        "auth/userpass/users",
+        json!({}),
+        100,
+    )
+    .unwrap();
+    assert_eq!(missing.status, 404);
+    assert_eq!(missing.body, json!({"errors": []}));
+    assert!(!missing.mutated);
     assert_eq!(
         login(&mut state, "mixed", "replacement")
             .err()
