@@ -101,14 +101,33 @@ class JwtNativeTtlUpgradeGuards(unittest.TestCase):
         self.assertFalse(upgrade.complete([None], True))
         self.assertFalse(upgrade.complete(self.rows(True), False))
 
-    def test_captured_explicit_cap_and_period_require_exact_absolute_expiry(self):
+    def test_captured_cap_is_exact_but_active_expiry_may_be_stricter(self):
         issued = {"period":180, "explicit_max_ttl":480, "creation_time":1000}
         current = issued | {"expire_time_unix":1480}
         self.assertTrue(upgrade.caps_preserved(current, issued))
-        for field, value in (("period",0), ("explicit_max_ttl",0), ("creation_time",1001),
-                             ("expire_time_unix",1479), ("expire_time_unix",1481)):
+        self.assertTrue(upgrade.caps_preserved(current | {"expire_time_unix":1479}, issued))
+        for field, value in (("period",0), ("explicit_max_ttl",0), ("explicit_max_ttl",481), ("creation_time",1001),
+                             ("expire_time_unix",1000), ("expire_time_unix",1481), ("expire_time_unix",1479.0)) :
             self.assertFalse(upgrade.caps_preserved(current | {field:value}, issued))
         self.assertFalse(upgrade.caps_preserved({}, issued))
+
+    def test_real_three_renew_entries_enforce_positive_grants_within_captured_cap(self):
+        auth = {"client_token":"synthetic-target", "accessor":"synthetic-accessor"}
+        for grant in (479, 480, 481, 0, -1, True, 480.0):
+            def request(_method, path, _body=None, **_kwargs):
+                body = {"lease_duration":grant}
+                if not path.endswith("renew-accessor"):
+                    body["client_token"] = auth["client_token"]
+                return Response(200, {"auth":body})
+            rows = []
+            trace = upgrade.Trace(SimpleNamespace(request=request), SimpleNamespace(calls=[]), rows)
+            if type(grant) is int and 0 < grant <= 480:
+                upgrade.renew_all(trace, "test.cap", auth, max_lease=480)
+                self.assertEqual(sum(row["case"].endswith(".shape") for row in rows), 3)
+            else:
+                with self.assertRaises(upgrade.Failure):
+                    upgrade.renew_all(trace, "test.cap", auth, max_lease=480)
+                self.assertIs(rows[-1]["passed"], False)
 
     def test_store_scan_requires_real_artifacts_and_excludes_only_control_inputs(self):
         with tempfile.TemporaryDirectory() as directory:

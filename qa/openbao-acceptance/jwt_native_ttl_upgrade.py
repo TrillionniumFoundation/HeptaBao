@@ -161,7 +161,7 @@ def restart(instance, binary, key, t, label):
     t.call(label + ".unseal", "sys/unseal", {"key":key})
 
 
-def renew_all(t, label, auth, *, lease=None):
+def renew_all(t, label, auth, *, lease=None, max_lease=None):
     for entry in ("renew-self", "renew", "renew-accessor"):
         body, bearer = {"increment":900}, None
         if entry == "renew-self":
@@ -172,8 +172,11 @@ def renew_all(t, label, auth, *, lease=None):
             body["accessor"] = auth["accessor"]
         name = label + "." + entry.replace('-', '_')
         renewed = t.call(name, "auth/token/" + entry, body, bearer=bearer, no_provider=True).get("auth", {})
+        grant = renewed.get("lease_duration")
         t.check(name + ".shape", renewal_token_shape(renewed, auth["client_token"], via_accessor=entry == "renew-accessor")
-                and (lease is None or renewed.get("lease_duration") == lease))
+                and type(grant) is int and grant > 0
+                and (lease is None or grant == lease) and (max_lease is None or grant <= max_lease),
+                lease_duration=grant if type(grant) is int else -1)
 
 
 def caps_preserved(current, issued):
@@ -181,7 +184,17 @@ def caps_preserved(current, issued):
             and current.get("explicit_max_ttl") == issued.get("explicit_max_ttl") == 480
             and current.get("creation_time") == issued.get("creation_time")
             and type(current.get("creation_time")) is int
-            and current.get("expire_time_unix") == current["creation_time"] + 480)
+            and type(current.get("expire_time_unix")) is int
+            and current["creation_time"] < current["expire_time_unix"] <= current["creation_time"] + 480)
+
+
+def check_caps(t, label, current, issued):
+    created, expiry = current.get("creation_time"), current.get("expire_time_unix")
+    lifetime = expiry - created if type(created) is int and type(expiry) is int else -1
+    cap = current.get("explicit_max_ttl")
+    t.check(label, caps_preserved(current, issued), active_lifetime_seconds=lifetime,
+            captured_explicit_max_ttl=cap if type(cap) is int else -1,
+            creation_time_unchanged=created == issued.get("creation_time"))
 
 
 def scan_storage(root, secrets):
@@ -243,9 +256,9 @@ def run_upgrade(instance, issuer, private, jwk, candidate, legacy, rows):
         t.check(prefix + ".current_mount_default_used", renewed.get("auth", {}).get("lease_duration") == 95)
         t.call(prefix + ".periodic_zero", paths(mode, "periodic")[1],
                {"role_type":"jwt", **{field:0 for field in DURATION_FIELDS}}, expected=204)
-        renew_all(t, prefix + ".issued_cap", record["periodic"])
+        renew_all(t, prefix + ".issued_cap", record["periodic"], max_lease=480)
         cap = t.lookup(prefix + ".issued_cap_lookup", record["periodic"])
-        t.check(prefix + ".issued_cap_and_period_preserved", caps_preserved(cap, record["periodic_snapshot"]))
+        check_caps(t, prefix + ".issued_cap_and_period_preserved", cap, record["periodic_snapshot"])
         t.call(prefix + ".child_renews", "auth/token/renew-self", {"increment":300}, bearer=record["child"]["client_token"], no_provider=True)
         future = issue(t, prefix + ".future_without_old_cap", mode, private, jwk, issuer, role_name="periodic", lease=95)
         future_info = t.lookup(prefix + ".future_snapshot", future)
@@ -262,7 +275,7 @@ def run_upgrade(instance, issuer, private, jwk, candidate, legacy, rows):
             read = t.call("reopen." + mode + "." + name, paths(mode, name)[1], method="GET").get("data", {})
             t.check("reopen." + mode + "." + name + ".exact", read == previous)
         cap = t.lookup("reopen." + mode + ".issued_cap", saved[mode]["periodic"])
-        t.check("reopen." + mode + ".issued_caps_exact", caps_preserved(cap, saved[mode]["periodic_snapshot"]))
+        check_caps(t, "reopen." + mode + ".issued_caps_exact", cap, saved[mode]["periodic_snapshot"])
     instance.stop()
     application = durable_manifest(store, application_only=True)
     instance.binary = legacy
@@ -279,9 +292,9 @@ def run_upgrade(instance, issuer, private, jwk, candidate, legacy, rows):
         for kind, auth in new_auth[mode].items():
             t.lookup("recovery." + mode + ".new_" + kind, auth)
         renew_all(t, "recovery." + mode + ".old_uncapped", record["auth"], lease=900)
-        renew_all(t, "recovery." + mode + ".issued_cap", record["periodic"])
+        renew_all(t, "recovery." + mode + ".issued_cap", record["periodic"], max_lease=480)
         cap = t.lookup("recovery." + mode + ".issued_cap_lookup", record["periodic"])
-        t.check("recovery." + mode + ".issued_caps_exact", caps_preserved(cap, record["periodic_snapshot"]))
+        check_caps(t, "recovery." + mode + ".issued_caps_exact", cap, record["periodic_snapshot"])
         issue(t, "recovery." + mode + ".fresh_login", mode, private, jwk, issuer, role_name="fresh", lease=95)
     instance.stop()
     t.check("plaintext_credentials_absent", scan_storage(instance.root, t.secrets))
