@@ -36,6 +36,8 @@ const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
 #[path = "audit_rotation.rs"]
 mod audit_rotation;
+#[path = "service_backup_restore.rs"]
+mod backup_restore;
 #[path = "service_capabilities.rs"]
 mod capabilities;
 #[path = "service_database.rs"]
@@ -1945,10 +1947,10 @@ impl Service {
                     | "sys/storage/raft/snapshot-force"
             )
         {
-            if !principal.as_ref().is_some_and(Principal::is_root) {
+            let Some(principal) = principal.as_ref().filter(|actor| actor.is_root()) else {
                 return Response::error(403, "permission denied");
-            }
-            return self.maintenance_route(method, path, body);
+            };
+            return self.maintenance_route(principal, &request);
         }
         if path == "sys/seal" && matches!(method, "PUT" | "POST") {
             if !principal.as_ref().is_some_and(Principal::is_root) {
@@ -2428,155 +2430,10 @@ impl Service {
         }
     }
 
-    fn load_owner_bytes(
-        durable: &DurableService<AeadBarrier>,
-        manifest: &owner_store::OwnerStateManifest,
-        owner: &str,
-    ) -> Result<Zeroizing<Vec<u8>>, Response> {
-        let count = manifest
-            .chunk_count(owner)
-            .map_err(|_| Response::error(503, "owner-state manifest is invalid"))?;
-        let mut values = Vec::with_capacity(count);
-        for index in 0..count {
-            let resource = manifest
-                .chunk_resource(owner, index)
-                .map_err(|_| Response::error(503, "owner-state manifest is invalid"))?;
-            let chunk = durable
-                .get("system", &resource)
-                .map_err(|_| Response::error(503, "owner-state chunk is unavailable"))?
-                .ok_or_else(|| Response::error(503, "owner-state chunk is absent"))?;
-            values.push(chunk);
-        }
-        let refs = values.iter().map(Secret::expose).collect::<Vec<_>>();
-        let bytes = manifest
-            .assemble_owner(owner, &refs)
-            .map_err(|_| Response::error(503, "owner-state chunk set is invalid"))?;
-        Ok(bytes)
-    }
-
     fn load_state_from_durable(
         durable: &DurableService<AeadBarrier>,
     ) -> Result<(State, Zeroizing<Vec<u8>>, bool), Response> {
-        let record = durable
-            .get("system", "state")
-            .map_err(|_| Response::error(503, "server state is unavailable"))?
-            .ok_or_else(|| Response::error(503, "server state is absent; recovery required"))?;
-
-        if let Some(mut root) = records::decode_root(record.expose())? {
-            let mut state =
-                Self::materialize_record_state(&root, &records::DurableReader(durable))?;
-            if state.replay_epoch > durable.replay_epoch() {
-                return Err(Response::error(
-                    503,
-                    "record replay epoch is ahead of durable authority",
-                ));
-            }
-            let rewrite = state.replay_epoch < durable.replay_epoch();
-            if rewrite {
-                state.replay_epoch = durable.replay_epoch();
-                root.replay_epoch = state.replay_epoch;
-                state.schema = CURRENT_STATE_SCHEMA;
-                root.state_schema = state.schema;
-            }
-            let bytes = root
-                .encode()
-                .map_err(|_| Response::error(503, "record root encoding failed"))?;
-            return Ok((state, bytes, rewrite));
-        }
-        let owner_manifest = owner_store::decode_manifest(record.expose())
-            .map_err(|_| Response::error(503, "owner-state manifest is invalid"))?;
-        let (mut state, mut bytes, mut needs_rewrite) = if let Some(manifest) = owner_manifest {
-            let namespaces = Self::load_owner_bytes(durable, &manifest, "namespaces")?;
-            let auth = Self::load_owner_bytes(durable, &manifest, "auth")?;
-            let engines = Self::load_owner_bytes(durable, &manifest, "engines")?;
-            let database = Self::load_owner_bytes(durable, &manifest, "database")?;
-            let raft_admin = Self::load_owner_bytes(durable, &manifest, "raft_admin")?;
-            let state = State {
-                schema: manifest.state_schema(),
-                cluster_id: manifest.cluster_id().to_owned(),
-                replay_epoch: manifest.replay_epoch(),
-                namespaces: serde_json::from_slice::<namespaces::NamespaceRegistry>(&namespaces)
-                    .map(CowOwner::from)
-                    .map_err(|_| Response::error(503, "namespace owner state is invalid"))?,
-                auth: serde_json::from_slice(&auth)
-                    .map_err(|_| Response::error(503, "auth owner state is invalid"))?,
-                engines: serde_json::from_slice(&engines)
-                    .map_err(|_| Response::error(503, "engine owner state is invalid"))?,
-                database: serde_json::from_slice(&database)
-                    .map_err(|_| Response::error(503, "database owner state is invalid"))?,
-                raft_admin: serde_json::from_slice(&raft_admin)
-                    .map_err(|_| Response::error(503, "raft-admin owner state is invalid"))?,
-            };
-            state.validate_format()?;
-            let bytes = owner_store::serialize_owner(&state).map_err(state_serialization_error)?;
-            manifest
-                .verify_logical(&bytes)
-                .map_err(|_| Response::error(503, "owner-state logical digest is invalid"))?;
-            (state, bytes, false)
-        } else {
-            let manifest = state_store::decode_manifest(record.expose())
-                .map_err(|_| Response::error(503, "server state manifest is invalid"))?;
-            let (bytes, needs_rewrite) = if let Some(manifest) = manifest.as_ref() {
-                let mut chunk_values = Vec::with_capacity(manifest.chunk_count());
-                for index in 0..manifest.chunk_count() {
-                    let resource = manifest
-                        .chunk_resource(index)
-                        .map_err(|_| Response::error(503, "server state manifest is invalid"))?;
-                    let chunk = durable
-                        .get("system", &resource)
-                        .map_err(|_| Response::error(503, "server state chunk is unavailable"))?
-                        .ok_or_else(|| Response::error(503, "server state chunk is absent"))?;
-                    chunk_values.push(chunk);
-                }
-                let chunk_refs = chunk_values.iter().map(Secret::expose).collect::<Vec<_>>();
-                let assembled = state_store::assemble_state(manifest, &chunk_refs)
-                    .map_err(|_| Response::error(503, "server state chunk set is invalid"))?;
-                (assembled, false)
-            } else {
-                if record.expose().len() > MAX_STATE_BYTES {
-                    return Err(Response::error(
-                        507,
-                        "legacy server state exceeds migration bound",
-                    ));
-                }
-                (Zeroizing::new(record.expose().to_vec()), true)
-            };
-            let state: State = serde_json::from_slice(&bytes)
-                .map_err(|_| Response::error(503, "server state schema is invalid"))?;
-            state.validate_format()?;
-            if let Some(manifest) = manifest
-                && manifest.state_schema() != state.schema
-            {
-                return Err(Response::error(
-                    503,
-                    "server state manifest schema binding is inconsistent",
-                ));
-            }
-            (state, bytes, needs_rewrite)
-        };
-
-        let durable_epoch = durable.replay_epoch();
-        if state.replay_epoch > durable_epoch {
-            return Err(Response::error(
-                503,
-                "server state replay epoch is ahead of durable replay authority",
-            ));
-        }
-        let mut logical_rewrite = false;
-        if state.replay_epoch < durable_epoch {
-            state.replay_epoch = durable_epoch;
-            logical_rewrite = true;
-        }
-        if state.adopt_legacy_namespaces()? {
-            logical_rewrite = true;
-        }
-        if logical_rewrite {
-            state.schema = CURRENT_STATE_SCHEMA;
-            state.validate_format()?;
-            bytes = owner_store::serialize_owner(&state).map_err(state_serialization_error)?;
-            needs_rewrite = true;
-        }
-        Ok((state, bytes, needs_rewrite))
+        Self::load_state_from_resources(durable)
     }
 
     fn prepare_owner_state_plan(
@@ -4408,7 +4265,8 @@ impl Service {
         }}))
     }
 
-    fn maintenance_route(&mut self, method: &str, path: &str, body: &Value) -> Response {
+    fn maintenance_route(&mut self, principal: &Principal, request: &RequestView<'_>) -> Response {
+        let (method, path, body) = (request.method, request.path, request.body);
         if let Some(reference) = path.strip_prefix("sys/internal/recovery/") {
             if method != "GET" {
                 return Response::error(405, "recovery lookup requires GET");
@@ -4616,149 +4474,14 @@ impl Service {
                 Ok(_) => return Response::error(413, "snapshot exceeds transfer limit"),
                 Err(_) => return Response::error(400, "invalid snapshot encoding"),
             };
-            let incoming_external_effects = {
-                let Some(durable) = self.durable.as_ref() else {
-                    return Response::error(503, "server is sealed");
-                };
-                match Self::backup_contains_external_effects(durable, &backup) {
-                    Ok(value) => value,
-                    Err(response) => return response,
-                }
+            let prepared = match self.prepare_snapshot_restore(&backup) {
+                Ok(value) => value,
+                Err(response) => return response,
             };
-            if incoming_external_effects {
-                return Response::error(
-                    409,
-                    "snapshot contains external provider identities; reconcile them before restore",
-                );
-            }
-            let allow_rollback = path == "sys/storage/raft/snapshot-force";
-            let outcome = {
-                let Some(durable) = self.durable.as_mut() else {
-                    return Response::error(503, "server is sealed");
-                };
-                match durable.restore_backup(&backup, allow_rollback) {
-                    Ok(value) => value,
-                    Err(ServiceError::BackupRollbackRejected) => {
-                        return Response::error(
-                            400,
-                            "snapshot is older than live state; use snapshot-force only after review",
-                        );
-                    }
-                    Err(ServiceError::CorruptState | ServiceError::BarrierFailure) => {
-                        return Response::error(400, "snapshot authentication or structure failed");
-                    }
-                    Err(_) => {
-                        if durable.recovery_required() {
-                            self.recovery_required = true;
-                        }
-                        return Response::error(
-                            503,
-                            "snapshot restore failed; authoritative recovery required",
-                        );
-                    }
-                }
-            };
-            if let Err(response) = self.refresh_state_from_durable() {
-                self.recovery_required = true;
-                return response;
-            }
-            return Response::ok(json!({
-                "data": {
-                    "previous_generation": outcome.previous_generation,
-                    "restored_generation": outcome.restored_generation,
-                    "retained_requests": outcome.retained_requests,
-                    "rollback": outcome.restored_generation < outcome.previous_generation,
-                }
-            }));
+            return self.commit_snapshot_restore(prepared, principal, request);
         }
 
         Response::error(404, "unsupported maintenance path")
-    }
-
-    fn refresh_state_from_durable(&mut self) -> Result<(), Response> {
-        let durable = self
-            .durable
-            .as_ref()
-            .ok_or_else(|| Response::error(503, "server is sealed"))?;
-        let (state, bytes, _) = Self::load_state_from_durable(durable)?;
-        self.state = Some(state);
-        self.record_root = records::decode_root(&bytes)?;
-        self.state_digest = Some(match &self.record_root {
-            Some(root) => root
-                .identity()
-                .map_err(|_| Response::error(503, "record identity failed"))?
-                .digest(),
-            None => crypto::digest(&bytes),
-        });
-        self.record_writes_since_gc = 64;
-        self.recovery_required = false;
-        Ok(())
-    }
-
-    fn backup_contains_external_effects(
-        durable: &DurableService<AeadBarrier>,
-        backup: &[u8],
-    ) -> Result<bool, Response> {
-        let mut records: BTreeMap<String, Zeroizing<Vec<u8>>> = BTreeMap::new();
-        durable
-            .inspect_backup(backup, |namespace, resource, value| {
-                if namespace == "system" {
-                    records.insert(resource.to_owned(), Zeroizing::new(value.to_vec()));
-                }
-            })
-            .map_err(|_| Response::error(400, "snapshot authentication or structure failed"))?;
-        let state_record = records
-            .get("state")
-            .ok_or_else(|| Response::error(400, "snapshot does not contain server state"))?;
-        if let Some(root) = records::decode_root(state_record.as_slice())? {
-            struct BackupReader<'a>(&'a BTreeMap<String, Zeroizing<Vec<u8>>>);
-            impl crate::state_records::RecordReader for BackupReader<'_> {
-                fn read_object(
-                    &self,
-                    reference: &crate::state_records::ObjectRef,
-                ) -> Result<Zeroizing<Vec<u8>>, crate::state_records::RecordError> {
-                    self.0
-                        .get(&reference.resource())
-                        .cloned()
-                        .ok_or(crate::state_records::RecordError::Missing)
-                }
-            }
-            let state = Self::materialize_record_state(&root, &BackupReader(&records))?;
-            return Ok(state.engines.has_openldap_mount() || !state.database.is_empty());
-        }
-        if let Some(manifest) = owner_store::decode_manifest(state_record.as_slice())
-            .map_err(|_| Response::error(400, "snapshot owner-state manifest is invalid"))?
-        {
-            let load_owner = |owner: &str| -> Result<Zeroizing<Vec<u8>>, Response> {
-                let count = manifest.chunk_count(owner).map_err(|_| {
-                    Response::error(400, "snapshot owner-state manifest is invalid")
-                })?;
-                let mut chunks = Vec::with_capacity(count);
-                for index in 0..count {
-                    let resource = manifest.chunk_resource(owner, index).map_err(|_| {
-                        Response::error(400, "snapshot owner-state manifest is invalid")
-                    })?;
-                    let bytes = records.get(&resource).ok_or_else(|| {
-                        Response::error(400, "snapshot owner-state chunk is absent")
-                    })?;
-                    chunks.push(bytes.as_slice());
-                }
-                manifest
-                    .assemble_owner(owner, &chunks)
-                    .map_err(|_| Response::error(400, "snapshot owner-state chunks are invalid"))
-            };
-            let engines = load_owner("engines")?;
-            let database = load_owner("database")?;
-            let engines: EngineState = serde_json::from_slice(&engines)
-                .map_err(|_| Response::error(400, "snapshot engine state is invalid"))?;
-            let database: database::DatabaseState = serde_json::from_slice(&database)
-                .map_err(|_| Response::error(400, "snapshot database state is invalid"))?;
-            Ok(engines.has_openldap_mount() || !database.is_empty())
-        } else {
-            let state: State = serde_json::from_slice(state_record.as_slice())
-                .map_err(|_| Response::error(400, "snapshot server state is invalid"))?;
-            Ok(state.engines.has_openldap_mount() || !state.database.is_empty())
-        }
     }
 
     fn verify_active_barrier(&self, candidate: &[u8; 32]) -> Result<(), Response> {

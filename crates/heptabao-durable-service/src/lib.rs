@@ -28,6 +28,8 @@ use std::path::Path;
 #[cfg(test)]
 use std::path::PathBuf;
 
+mod prepared_restore;
+pub use prepared_restore::{PreparedRestore, PreparedRestoreMetadata};
 mod capacity;
 mod immutable_publication;
 pub use capacity::CapacityStatus;
@@ -499,6 +501,7 @@ pub struct DurableService<B: Barrier, P: DurableBackend = Box<dyn DurableBackend
     journal_limit: usize,
     max_retained_requests: usize,
     unresolved: bool,
+    restore_instance: std::sync::Arc<()>,
 }
 
 struct BackupComponents {
@@ -590,6 +593,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             journal_limit: MAX_FILE_BYTES,
             max_retained_requests,
             unresolved: false,
+            restore_instance: std::sync::Arc::new(()),
         })
     }
 
@@ -625,6 +629,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             journal_limit: MAX_FILE_BYTES,
             max_retained_requests,
             unresolved: false,
+            restore_instance: std::sync::Arc::new(()),
         };
         service.recover(
             events,
@@ -1078,13 +1083,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     where
         F: FnMut(&str, &str, &[u8]),
     {
-        if self.unresolved {
-            return Err(ServiceError::RecoveryRequired);
-        }
-        let restored = decode_backup(&self.barrier, backup, self.max_retained_requests)?;
-        for ((namespace, resource), value) in &restored.snapshot.entries {
-            visit(namespace, resource, value.expose());
-        }
+        self.prepare_restore(backup)?.inspect(&mut visit);
         Ok(())
     }
 
@@ -1099,42 +1098,8 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         backup: &[u8],
         allow_rollback: bool,
     ) -> Result<RestoreOutcome, ServiceError> {
-        if self.unresolved {
-            return Err(ServiceError::RecoveryRequired);
-        }
-        self.backend.verify().map_err(map_backend_error)?;
-        let restored = decode_backup(&self.barrier, backup, self.max_retained_requests)?;
-        if restored.snapshot.generation < self.snapshot.generation && !allow_rollback {
-            return Err(ServiceError::BackupRollbackRejected);
-        }
-        let previous_generation = self.snapshot.generation;
-        self.unresolved = true;
-        let expected = self.backend.load().map_err(map_backend_error)?;
-        self.backend
-            .publish_checkpoint(
-                &expected,
-                &BackendBundle {
-                    snapshot: restored.snapshot_bytes.clone(),
-                    ledger: restored.ledger_bytes.clone(),
-                    journal: restored.journal_bytes.clone(),
-                },
-            )
-            .map_err(map_backend_error)?;
-        self.snapshot = restored.snapshot;
-        self.snapshot_plaintext_bytes = snapshot_plaintext_len(&self.snapshot)?;
-        self.ledger = restored.ledger;
-        self.ledger_plaintext_bytes = ledger_plaintext_len(&self.ledger)?;
-        self.replay_epoch = restored.replay_epoch;
-        self.retired_through_generation = restored.retired_through_generation;
-        self.journal_sequence = restored.journal_sequence;
-        self.journal_bytes = restored.journal_bytes.len();
-        self.rebuild_reconciliation()?;
-        self.unresolved = false;
-        Ok(RestoreOutcome {
-            previous_generation,
-            restored_generation: self.snapshot.generation,
-            retained_requests: self.ledger.len(),
-        })
+        let prepared = self.prepare_restore(backup)?;
+        self.restore_prepared(prepared, allow_rollback)
     }
 
     fn rebuild_reconciliation(&mut self) -> Result<(), ServiceError> {
