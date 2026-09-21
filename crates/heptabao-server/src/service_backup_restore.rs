@@ -64,6 +64,12 @@ pub(super) struct PreparedSnapshotRestore {
     base: crate::state_record_root::StateIdentity,
 }
 
+impl PreparedSnapshotRestore {
+    pub(super) fn generation(&self) -> u64 {
+        self.durable.metadata().generation
+    }
+}
+
 impl Service {
     fn load_owner_bytes(
         resources: &impl StateResources,
@@ -235,6 +241,33 @@ impl Service {
                 }
                 _ => Response::error(503, "snapshot preparation is unavailable"),
             })?;
+        self.validate_prepared_snapshot_restore(prepared)
+    }
+
+    pub(super) fn prepare_snapshot_restore_from_reader(
+        &self,
+        reader: &mut impl Read,
+        length: u64,
+    ) -> Result<PreparedSnapshotRestore, Response> {
+        let durable = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let prepared = durable
+            .prepare_restore_from_reader(reader, length)
+            .map_err(|error| match error {
+                ServiceError::CorruptState | ServiceError::BarrierFailure => {
+                    Response::error(400, "snapshot authentication or structure failed")
+                }
+                _ => Response::error(503, "snapshot preparation is unavailable"),
+            })?;
+        self.validate_prepared_snapshot_restore(prepared)
+    }
+
+    fn validate_prepared_snapshot_restore(
+        &self,
+        prepared: heptabao_durable_service::PreparedRestore,
+    ) -> Result<PreparedSnapshotRestore, Response> {
         let (state, bytes, _) = Self::load_state_from_resources(&prepared)
             .map_err(|_| Response::error(400, "snapshot application state is invalid"))?;
         if state.engines.has_openldap_mount() || !state.database.is_empty() {

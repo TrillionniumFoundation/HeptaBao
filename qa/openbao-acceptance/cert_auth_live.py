@@ -186,7 +186,7 @@ class Fixture:
 
     def call(self, method: str, path: str, body=None, *, token: str | None = None, client=None):
         opener = client or self.good_client
-        headers = {"Content-Type": "application/json", "X-Vault-Token": self.token if token is None else token}
+        headers = {"Accept": "application/json", "Content-Type": "application/json", "X-Vault-Token": self.token if token is None else token}
         request = urllib.request.Request(self.address + "/v1/" + path,
                                           data=None if body is None else json.dumps(body).encode(),
                                           headers=headers, method=method)

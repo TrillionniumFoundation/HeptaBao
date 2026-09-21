@@ -28,6 +28,7 @@ use std::path::Path;
 #[cfg(test)]
 use std::path::PathBuf;
 
+mod backup_stream;
 mod prepared_restore;
 mod restore_transaction;
 pub use prepared_restore::{PreparedRestore, PreparedRestoreMetadata};
@@ -1053,6 +1054,14 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     /// exact committed snapshot and request ledger. The bundle contains no
     /// barrier key and can be opened only with the original barrier provider.
     pub fn export_backup(&self) -> Result<Vec<u8>, ServiceError> {
+        let mut output = Vec::new();
+        self.export_backup_to(&mut output)?;
+        Ok(output)
+    }
+
+    /// Emit the existing HBB2 container without allocating another whole
+    /// encoded backup. Component sealing remains bounded whole-component AEAD.
+    pub fn export_backup_to(&self, output: &mut impl std::io::Write) -> Result<u64, ServiceError> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
@@ -1083,7 +1092,13 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         let mut journal = Vec::with_capacity(JOURNAL_MAGIC.len() + checkpoint.len());
         journal.extend_from_slice(JOURNAL_MAGIC);
         journal.extend_from_slice(&checkpoint);
-        encode_backup(self.snapshot.generation, &snapshot, &journal, &ledger)
+        backup_stream::encode_to(
+            output,
+            self.snapshot.generation,
+            &snapshot,
+            &journal,
+            &ledger,
+        )
     }
 
     /// Inspect the authenticated contents of an exported backup without
@@ -2098,6 +2113,7 @@ fn decode_ledger_frame<B: Barrier>(
     Ok((generation, replay_epoch, retired_through_generation, ledger))
 }
 
+#[cfg(test)]
 fn encode_backup(
     generation: u64,
     snapshot: &[u8],

@@ -288,9 +288,33 @@ Owner-level sharing and immutable reads are distinct from the V5 KV1 write path.
 Neither removes component/local/HA admission bounds, opaque-owner write costs,
 or the remaining long-horizon HA/fault exits.
 
-The existing decoded manual backup transfer limit is still 20MiB. Record-layout
-read/write capacity and HA snapshot replication do not remove this export/restore
-limit. The schema36 `a6d4664` build (binary SHA256
+The explicit JSON/base64 manual backup profile retains its 20MiB decoded limit.
+Local Linux servers also support native gzip/tar transfer: GET/HEAD defaults to
+`application/gzip`; `Accept: application/json` selects the JSON profile. POST/PUT
+with a JSON content type retain JSON restore; other snapshot uploads accept the
+native archive with a fixed length or strictly bounded chunked framing. Native
+archives are limited to 131MiB compressed, containing at most 130MiB of HBB2
+state. Authentication and finite-use admission precede reading the large body.
+
+The archive explicitly identifies HeptaBao's encrypted HBB2 state. Its four
+canonical tar members include independently authenticated sealed checksums;
+this is not OpenBao's state or seal encoding. Native HA transfer returns409,
+and force restore still requires the same barrier. OpenBao archive migration,
+cross-seal restore and non-Linux native transfer remain unimplemented.
+Explicit JSON HA export and Raft's internal snapshot replication are separate.
+
+Each Service admits one native transfer. Upload and gzip construction run outside
+the Service writer, using immediately unlinked descriptor-backed files below
+the configured data directory. Finalization rechecks the original deadline,
+live actor, activation and exact state identity before publishing or releasing a
+download. The staged archive and extracted state can use up to261MiB of disk,
+plus the existing restore transaction's old/new copies. There is no disk-space
+reservation; whole-component authentication still needs bounded component memory.
+The real official-CLI qualification command is
+`native_snapshot_cli_live.py --binary <server> --build-source-commit <commit> --work-parent <private-SSD-directory> --output <new-private-json>`;
+the source/binary-bound receipt, not these limits, determines measured capacity.
+
+The schema36 `a6d4664` build (binary SHA256
 `ccc2e1809f397a652864eccbe90fd4020c9149e3c57d0dcbe50c74a6cc34ad80`)
 passed the [76-check actual schema35 local upgrade](../../qa/openbao-acceptance/evidence/kv1-records-upgrade-a6d4664.json)
 and [20-cluster/75-API-check userpass HA profile](../../qa/openbao-acceptance/evidence/userpass-native-ha-a6d4664.json).
@@ -301,4 +325,7 @@ exact differing fields. The [clean 618-check repeat](../../qa/openbao-acceptance
 passed on `e554136` with the same binary: 33,722,278 logical payload bytes,
 147 distinct large values, replacement/deletion and full restart hash checks.
 Its three small writes at each size are descriptive observations, not a sustained
-performance result. Near-limit HA migration and HA capacity remain unqualified.
+performance result. The later [913-check 32MiB HA run](../../qa/openbao-acceptance/evidence/kv1-record-ha32-0adfc0d.json)
+qualifies same-version three-process catch-up, failover and restart at that size.
+Near-limit historical HA migration, dense small-record growth and independent
+host/fault qualification remain separate open work.

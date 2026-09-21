@@ -25,6 +25,9 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "http_snapshot.rs"]
+mod snapshot;
+
 const MAX_HEADERS: usize = 16 * 1024;
 const MAX_BODY: usize = 256 * 1024;
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
@@ -363,8 +366,8 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                     let _ = write_response(&mut stream, response, false);
                     return;
                 }
-                let parsed = read_request(&mut stream, timeout);
-                let (response, head) = match parsed {
+                let parsed = read_request_mode(&mut stream, timeout, true);
+                let (response, head, snapshot_file) = match parsed {
                     Ok(mut request) => {
                         request.client_certificates =
                             stream.conn.peer_certificates().map(|certificates| {
@@ -374,26 +377,36 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                                     .collect()
                             });
                         let is_head = request.method == "HEAD";
-                        let response = execute_service_request(
-                            &service,
-                            ServiceRequest {
-                                method: if is_head && request.wrap_ttl_seconds.is_none() {
-                                    "GET"
-                                } else {
-                                    &request.method
-                                },
-                                path: &request.path,
-                                namespace: &request.namespace,
-                                token: &request.token,
-                                body: std::mem::take(&mut request.body.0),
-                                wrap_ttl_seconds: request.wrap_ttl_seconds,
-                                origin_peer: Some(peer),
-                                client_certificates: request.client_certificates.take(),
+                        let native_snapshot = request.native_snapshot.take();
+                        let service_request = ServiceRequest {
+                            method: if is_head && request.wrap_ttl_seconds.is_none() {
+                                "GET"
+                            } else {
+                                &request.method
                             },
-                            deadline,
-                            false,
-                        );
-                        (response, is_head)
+                            path: &request.path,
+                            namespace: &request.namespace,
+                            token: &request.token,
+                            body: std::mem::take(&mut request.body.0),
+                            wrap_ttl_seconds: request.wrap_ttl_seconds,
+                            origin_peer: Some(peer),
+                            client_certificates: request.client_certificates.take(),
+                        };
+                        let (response, file) = if let Some(native) = native_snapshot {
+                            snapshot::execute(
+                                &service,
+                                service_request,
+                                native,
+                                &mut stream,
+                                deadline,
+                            )
+                        } else {
+                            (
+                                execute_service_request(&service, service_request, deadline, false),
+                                None,
+                            )
+                        };
+                        (response, is_head, file)
                     }
                     Err(error) => (
                         audited_wire_rejection(
@@ -405,9 +418,14 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                             deadline,
                         ),
                         false,
+                        None,
                     ),
                 };
-                let _ = write_response(&mut stream, response, head);
+                if let Some(file) = snapshot_file.filter(|_| response.status == 200) {
+                    let _ = snapshot::write_file_response(&mut stream, file, head);
+                } else {
+                    let _ = write_response(&mut stream, response, head);
+                }
             });
         if spawn.is_err() {
             return Err("cannot create bounded request worker".into());
@@ -603,6 +621,7 @@ impl Drop for SecretJson {
     }
 }
 struct Request {
+    native_snapshot: Option<snapshot::NativeBody>,
     method: String,
     path: String,
     namespace: String,
@@ -630,7 +649,16 @@ fn bad(message: &'static str) -> ParseError {
     }
 }
 
+#[cfg(test)]
 fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, ParseError> {
+    read_request_mode(reader, timeout, false)
+}
+
+fn read_request_mode(
+    reader: &mut impl Read,
+    timeout: Duration,
+    native_wire: bool,
+) -> Result<Request, ParseError> {
     let start = Instant::now();
     let mut bytes = Zeroizing::new(Vec::new());
     let mut buffer = Zeroizing::new([0; 4096]);
@@ -728,8 +756,37 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         .map(|value| parse_wrap_ttl(value))
         .transpose()?
         .flatten();
-    if map.contains_key("transfer-encoding") || map.contains_key("expect") {
-        return Err(bad("streamed request bodies are not supported"));
+    let route = target[4..].split('?').next().unwrap_or_default();
+    let snapshot_route = matches!(
+        route,
+        "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+    );
+    let download =
+        matches!(method.as_str(), "GET" | "HEAD") && route == "sys/storage/raft/snapshot";
+    let json_body = map
+        .get("content-type")
+        .is_some_and(|value| value.split(';').next() == Some("application/json"));
+    let native_snapshot = native_wire
+        && snapshot_route
+        && ((download
+            && !map
+                .get("accept")
+                .is_some_and(|value| value.as_str() == "application/json"))
+            || (matches!(method.as_str(), "POST" | "PUT") && !json_body));
+    let chunked = match map.get("transfer-encoding") {
+        Some(value)
+            if native_snapshot
+                && !download
+                && value.eq_ignore_ascii_case("chunked")
+                && !map.contains_key("content-length") =>
+        {
+            true
+        }
+        Some(_) => return Err(bad("unsupported or ambiguous transfer framing")),
+        None => false,
+    };
+    if map.contains_key("expect") {
+        return Err(bad("Expect framing is not supported"));
     }
     let length = match map.get("content-length") {
         Some(v) if !v.is_empty() && v.bytes().all(|b| b.is_ascii_digit()) => v
@@ -738,7 +795,9 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         None => 0,
         _ => return Err(bad("invalid content length")),
     };
-    let maximum_body = if target.starts_with("/v1/sys/storage/raft/snapshot") {
+    let maximum_body = if native_snapshot {
+        crate::snapshot_file::MAX_NATIVE_ARCHIVE as usize
+    } else if snapshot_route {
         MAX_SNAPSHOT_BODY
     } else {
         MAX_BODY
@@ -763,6 +822,7 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     }
     let query_only = matches!(method.as_str(), "GET" | "HEAD" | "DELETE" | "LIST" | "SCAN");
     if length > 0
+        && !native_snapshot
         && !query_only
         && map.get("content-type").is_some_and(|v| {
             !matches!(
@@ -773,7 +833,7 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     {
         return Err(bad("JSON content type required"));
     }
-    while bytes.len() < header_end + length {
+    while !native_snapshot && bytes.len() < header_end + length {
         if start.elapsed() > timeout {
             return Err(bad("request deadline exceeded"));
         }
@@ -784,13 +844,13 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         }
         bytes.extend_from_slice(&buffer[..count]);
     }
-    if bytes.len() != header_end + length {
+    if !native_snapshot && bytes.len() != header_end + length {
         return Err(bad("pipelining and trailing bytes are not supported"));
     }
     // OpenBao reads fields for these operations from the query string only.
     // Still consume and bound the complete body above so ignored bytes cannot
     // become a second request or evade the framing and deadline checks.
-    let mut body = SecretJson(if length == 0 || query_only {
+    let mut body = SecretJson(if native_snapshot || length == 0 || query_only {
         json!({})
     } else {
         crate::auth::parse_strict_json(&bytes[header_end..])
@@ -897,7 +957,25 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     } else {
         method
     };
+    let native_snapshot = if native_snapshot {
+        if download && (length != 0 || bytes.len() != header_end) {
+            return Err(bad("snapshot download does not accept a body"));
+        }
+        Some(snapshot::NativeBody {
+            framing: if download {
+                snapshot::Framing::Download
+            } else if chunked {
+                snapshot::Framing::Chunked
+            } else {
+                snapshot::Framing::Length(length as u64)
+            },
+            prefix: Zeroizing::new(bytes[header_end..].to_vec()),
+        })
+    } else {
+        None
+    };
     Ok(Request {
+        native_snapshot,
         method,
         path: path.to_owned(),
         namespace,

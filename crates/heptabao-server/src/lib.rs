@@ -31,6 +31,8 @@ pub mod postgres_storage;
 mod postgres_wire;
 mod request_deadline;
 mod service;
+mod snapshot_archive;
+mod snapshot_file;
 mod valkey_wire;
 pub use service::ServiceRequest;
 pub use service::{AuditConfig, AuditSocketConfig, AuditSyslogConfig};

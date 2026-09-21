@@ -1009,6 +1009,7 @@ dependencies = [
 name = "heptabao-server"
 version = "0.1.0"
 dependencies = [
+ "flate2",
  "base64",
  "chacha20poly1305",
  "futures",

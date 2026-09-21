@@ -59,6 +59,8 @@ mod online_auth;
 mod openldap_secret;
 #[path = "service_plugin.rs"]
 mod plugin;
+#[path = "service_snapshot_transfer.rs"]
+mod snapshot_transfer;
 pub use plugin::{PluginAuthConfig, PluginSecretConfig};
 #[path = "service_openapi.rs"]
 mod openapi;
@@ -701,6 +703,7 @@ enum ExternalEffectPlan {
     PluginRead(plugin::PluginReadPlan),
     KubernetesToken(kubernetes_secret::KubernetesTokenEffectPlan),
     OpenLdap(openldap_secret::OpenLdapEffectPlan),
+    SnapshotTransfer(Box<snapshot_transfer::SnapshotTransferPlan>),
 }
 
 pub(crate) enum ExternalEffectResult {
@@ -712,6 +715,7 @@ pub(crate) enum ExternalEffectResult {
     PluginRead(Result<Value, Response>),
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
     OpenLdap(Result<(), Response>),
+    SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
 }
 
 pub(crate) struct PendingExternalRequest {
@@ -756,6 +760,9 @@ impl PendingExternalRequest {
                 ExternalEffectResult::KubernetesToken(plan.execute())
             }
             ExternalEffectPlan::OpenLdap(plan) => ExternalEffectResult::OpenLdap(plan.execute()),
+            ExternalEffectPlan::SnapshotTransfer(_) => ExternalEffectResult::SnapshotTransfer(Err(
+                Response::error(501, "native snapshot requires typed HTTP transport"),
+            )),
         }
     }
 }
@@ -805,6 +812,10 @@ pub struct Service {
     pending_plugin_read: Option<plugin::PluginReadPlan>,
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
+    pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
+    native_snapshot_transport: bool,
+    native_snapshot_clock: Option<(std::time::Instant, Duration)>,
+    snapshot_spool: Option<Arc<crate::snapshot_file::SnapshotSpool>>,
     openldap_in_flight: openldap_secret::OpenLdapFlights,
     openldap_cursor: Option<(String, String, String)>,
     lifecycle_provider_cursor: bool,
@@ -1061,6 +1072,10 @@ impl Service {
             pending_plugin_read: None,
             pending_kubernetes_token: None,
             pending_openldap_effect: None,
+            pending_snapshot_transfer: None,
+            native_snapshot_transport: false,
+            native_snapshot_clock: None,
+            snapshot_spool: None,
             openldap_in_flight: openldap_secret::OpenLdapFlights::default(),
             openldap_cursor: None,
             lifecycle_provider_cursor: false,
@@ -1230,9 +1245,14 @@ impl Service {
     /// provider effect may be returned as an owned external plan after its
     /// intent has been durably committed.
     pub(crate) fn begin_request(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_or(0, |duration| duration.as_secs());
+        let now = self.native_snapshot_clock.map_or_else(
+            || {
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .map_or(0, |duration| duration.as_secs())
+            },
+            |(_, observed)| observed.as_secs(),
+        );
         let ServiceRequest {
             method,
             path,
@@ -1330,6 +1350,10 @@ impl Service {
             (ExternalEffectPlan::OpenLdap(plan), ExternalEffectResult::OpenLdap(result)) => {
                 self.finalize_openldap_effect(&plan, result)
             }
+            (
+                ExternalEffectPlan::SnapshotTransfer(plan),
+                ExternalEffectResult::SnapshotTransfer(result),
+            ) => self.finalize_snapshot_transfer(*plan, result),
             _ => {
                 self.recovery_required = true;
                 Response::error(503, "external request observation type mismatch")
@@ -1379,6 +1403,7 @@ impl Service {
             || self.pending_plugin_read.is_some()
             || self.pending_kubernetes_token.is_some()
             || self.pending_openldap_effect.is_some()
+            || self.pending_snapshot_transfer.is_some()
         {
             erase_json(&mut body);
             return RequestExecution::Complete(Response::error(
@@ -1495,6 +1520,7 @@ impl Service {
         let plugin_read = self.pending_plugin_read.take();
         let kubernetes_token = self.pending_kubernetes_token.take();
         let openldap = self.pending_openldap_effect.take();
+        let snapshot_transfer = self.pending_snapshot_transfer.take();
         let staged = usize::from(database.is_some())
             + usize::from(database_config.is_some())
             + usize::from(database_batch.is_some())
@@ -1502,7 +1528,8 @@ impl Service {
             + usize::from(plugin_auth.is_some())
             + usize::from(plugin_read.is_some())
             + usize::from(kubernetes_token.is_some())
-            + usize::from(openldap.is_some());
+            + usize::from(openldap.is_some())
+            + usize::from(snapshot_transfer.is_some());
         if staged > 1 {
             self.recovery_required = true;
             return RequestExecution::Complete(self.audit_completed_response(
@@ -1519,7 +1546,10 @@ impl Service {
             .or_else(|| plugin_auth.map(ExternalEffectPlan::PluginAuth))
             .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead))
             .or_else(|| kubernetes_token.map(ExternalEffectPlan::KubernetesToken))
-            .or_else(|| openldap.map(ExternalEffectPlan::OpenLdap));
+            .or_else(|| openldap.map(ExternalEffectPlan::OpenLdap))
+            .or_else(|| {
+                snapshot_transfer.map(|plan| ExternalEffectPlan::SnapshotTransfer(Box::new(plan)))
+            });
         if let Some(effect) = effect {
             return RequestExecution::External(Box::new(PendingExternalRequest {
                 fingerprint,
@@ -1645,6 +1675,12 @@ impl Service {
         }
         if self.state.is_none() {
             return Response::error(503, "server is sealed");
+        }
+        if self.native_snapshot_transport && self.ha.is_some() {
+            return Response::error(
+                409,
+                "native snapshot transfer requires the local storage profile",
+            );
         }
         if let Some(ha) = self.ha.as_ref().cloned() {
             let (leader, local) = match ha.lock_for_request() {
@@ -1945,6 +1981,12 @@ impl Service {
                     | "sys/storage/raft/snapshot-force"
             )
         {
+            if self.native_snapshot_transport {
+                let Some(principal) = principal.take().filter(Principal::is_root) else {
+                    return Response::error(403, "permission denied");
+                };
+                return self.stage_snapshot_transfer(principal, &request);
+            }
             let Some(principal) = principal.as_ref().filter(|actor| actor.is_root()) else {
                 return Response::error(403, "permission denied");
             };

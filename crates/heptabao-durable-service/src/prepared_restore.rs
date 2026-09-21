@@ -119,6 +119,27 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         })
     }
 
+    /// Authenticate a precisely bounded HBB2 file/stream without first copying
+    /// its complete container. `length` is the complete input length, not a
+    /// caller-controlled allocation hint: exact EOF and checksum are checked.
+    pub fn prepare_restore_from_reader(
+        &self,
+        reader: &mut impl std::io::Read,
+        length: u64,
+    ) -> Result<PreparedRestore, ServiceError> {
+        if self.unresolved {
+            return Err(ServiceError::RecoveryRequired);
+        }
+        self.backend.verify().map_err(map_backend_error)?;
+        let components =
+            backup_stream::decode_from(&self.barrier, reader, length, self.max_retained_requests)?;
+        Ok(PreparedRestore {
+            instance: Arc::clone(&self.restore_instance),
+            frontier: self.restore_frontier(),
+            components,
+        })
+    }
+
     /// Consume a prepared backup after owner validation. No barrier open is
     /// performed here. A plan for another instance, a reopened service, or a
     /// changed frontier is rejected with `RequestBindingConflict` before any

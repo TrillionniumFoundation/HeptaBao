@@ -97,7 +97,7 @@ class Instance:
         return int(first[1])
 
     def call(self, method, path, body=None, *, token=None, namespace="", extra_headers=None):
-        headers = {"Content-Type": "application/json", "X-Vault-Token": self.token if token is None else token}
+        headers = {"Accept": "application/json", "Content-Type": "application/json", "X-Vault-Token": self.token if token is None else token}
         if namespace:
             headers["X-Vault-Namespace"] = namespace
         headers.update(extra_headers or {})
