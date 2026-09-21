@@ -157,7 +157,20 @@ All auth and engine state shares the durable transaction boundary. KV data, pass
 
 `GET sys/internal/capacity` is a root-token, root-namespace-only service endpoint. It reports the serving leader's serialized logical state bytes, active replay-operation count, journal budget and generation. It accepts no mutation/reset fields and does not reserve headroom. The retained `GET sys/internal/storage/capacity` view additionally reports the serving node's `replay_epoch`, `retired_through_generation`, and whether replay retirement is `raft-coordinated` in HA. Standby requests can forward to the leader, so this HTTP view alone is not follower-local convergence evidence. Ordinary request/result audit and sealed/recovery rejection still apply. See `docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md`, `docs/architecture/HEPTABAO_REPLAY_EPOCH_PROTOCOL.md`, and `crates/heptabao-server/src/service_capacity.rs` for the source-bound contracts. These are HeptaBao extensions, not newly completed OpenBao compatibility surfaces.
 
-The process logs only listener readiness and safe errors. `sys/health`, `sys/seal-status` and `sys/leader` report seal/recovery and single-node state; in HA, active success also requires `ha_application_ready`, meaning the local logical-state digest matches the committed Raft application envelope after a successful ReadIndex. Audit writes request and response events with timestamp, keyed route/principal fingerprint, sequence, previous MAC and current HMAC. Framing rejections entering `handle_wire_rejection` produce redacted service audit records. Failures before that hook, such as TLS handshake failure, do not carry a parsed service request. Audit capacity, verification, sync and lock failures stop admission. Operators must preserve data, journal, ledger, audit and audit-key files together for analysis, keeping keys outside ordinary logs.
+The process logs only listener readiness and safe errors. `sys/health` and
+`sys/seal-status` report seal/recovery state. In HA, active health success also
+requires `ha_application_ready`: the local logical-state digest must match the
+committed Raft application envelope after a successful ReadIndex. `sys/leader`
+is a separate anonymous local diagnostic; it samples Raft metrics without
+ReadIndex, forwarding, token consumption or audit writes and remains available
+during quorum loss. Its response does not grant authority for protected reads.
+Audit writes request and response events with timestamp, keyed route/principal
+fingerprint, sequence, previous MAC and current HMAC. Framing rejections entering
+`handle_wire_rejection` produce redacted service audit records. Failures before
+that hook, such as TLS handshake failure, do not carry a parsed service request.
+Audit capacity, verification, sync and lock failures stop admission. Operators
+must preserve data, journal, ledger, audit and audit-key files together for
+analysis, keeping keys outside ordinary logs.
 
 ## Operations
 
