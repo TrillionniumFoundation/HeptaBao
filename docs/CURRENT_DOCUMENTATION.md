@@ -161,6 +161,18 @@ The [202-observation child-token comparison](../qa/openbao-acceptance/evidence/t
 also passes on this candidate. AppRole credential defaults and missing legacy
 SecretID metadata remain separate work; these results do not close full auth
 compatibility or production qualification.
+AppRole native zero defaults and SecretID issuance facts pass
+[161 observations per side](../qa/openbao-acceptance/evidence/approle-native-defaults-d26ed9d.json),
+with six separate candidate checks for immediate expiry rejection. OpenBao's
+periodic SecretID tidy permits a different expiry window; that difference is
+explicit and is excluded from the matching observations. The
+[231-check real schema-33 upgrade](../qa/openbao-acceptance/evidence/approle-native-defaults-upgrade-d26ed9d.json)
+retains old positive roles and issued credentials, preserves missing historical
+metadata honestly, tests new clipped issuance and unlimited defaults, and checks
+refused downgrade and recovery. The existing
+[154-observation AppRole renewal comparison](../qa/openbao-acceptance/evidence/approle-renewal-d26ed9d.json)
+also passes. Source constraints, batch tokens and other unimplemented AppRole
+parameters remain outside these profiles.
 The strengthened forged-origin tests pass [49 RADIUS HA checks](../qa/openbao-acceptance/evidence/radius-cidrs-ha-d2c669d.json)
 and [49 LDAP HA checks](../qa/openbao-acceptance/evidence/ldap-cidrs-ha-d2c669d.json):
 the forged headers now carry the allowed address while the actual socket uses a
