@@ -8,7 +8,7 @@ import hashlib
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from radius_renewal_ha import authority_denied, profile_configuration, native_nas_valid
-from radius_renewal_live import SECRET, USERNAME, PASSWORD, md5, pap_packet_response
+from radius_renewal_live import SECRET, USERNAME, PASSWORD, md5, radius_md5, pap_packet_response
 
 
 class RenewalFaultClassification(unittest.TestCase):
@@ -34,7 +34,7 @@ class RenewalFaultClassification(unittest.TestCase):
         attrs=bytes([1,len(USERNAME)+2])+USERNAME+bytes([2,len(encrypted)+2])+encrypted
         attrs+=bytes([5,6])+struct.pack("!I",10)+bytes([80,18])+b"\0"*16
         packet=bytearray([1,7])+struct.pack("!H",20+len(attrs))+authenticator+attrs
-        packet[-16:]=hmac.new(SECRET,packet,hashlib.md5).digest()
+        packet[-16:]=hmac.new(SECRET,packet,radius_md5).digest()
         reply, observation=pap_packet_response(packet,require_ma=True,allow=True)
         self.assertEqual(observation,{"credentials_valid":True,"message_authenticator_present":True,"accepted":True})
         self.assertEqual(reply[0],2);self.assertTrue(native_nas_valid(packet))
