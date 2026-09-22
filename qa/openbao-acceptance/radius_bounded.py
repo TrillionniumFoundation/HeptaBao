@@ -28,11 +28,13 @@ USERNAME = b"alice"
 PASSWORD = b"radius-password"
 
 
+def radius_md5(data=b""):
+    # RFC-compatible fixture primitive only; never use this as a password hash.
+    return hashlib.md5(data, usedforsecurity=False)
+
+
 def md5(*parts: bytes) -> bytes:
-    digest = hashlib.md5()
-    for part in parts:
-        digest.update(part)
-    return digest.digest()
+    return radius_md5(b"".join(parts)).digest()
 
 
 def hide_password(password: bytes, request_authenticator: bytes) -> bytes:
@@ -47,7 +49,7 @@ def hide_password(password: bytes, request_authenticator: bytes) -> bytes:
 
 
 def hmac_md5(message: bytes) -> bytes:
-    return hmac.new(SECRET, message, hashlib.md5).digest()
+    return hmac.new(SECRET, message, radius_md5).digest()
 
 
 def attributes(packet: bytes) -> list[tuple[int, bytes]]:
