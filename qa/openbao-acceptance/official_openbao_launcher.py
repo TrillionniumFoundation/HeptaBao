@@ -116,14 +116,15 @@ def certificates(root):
         ["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
          "-keyout", str(root / "ca.key"), "-out", str(root / "ca.crt"),
          "-subj", "/CN=Official OpenBao Synthetic Oracle CA",
-         "-addext", "basicConstraints=critical,CA:TRUE", "-addext", "keyUsage=critical,keyCertSign,cRLSign"],
+         "-addext", "basicConstraints=critical,CA:TRUE", "-addext", "keyUsage=critical,keyCertSign,cRLSign",
+         "-addext", "subjectKeyIdentifier=hash"],
         ["openssl", "req", "-new", "-newkey", "rsa:2048", "-nodes",
          "-keyout", str(root / "tls.key"), "-out", str(root / "tls.csr"), "-subj", "/CN=localhost"],
         ["openssl", "x509", "-req", "-in", str(root / "tls.csr"), "-CA", str(root / "ca.crt"),
          "-CAkey", str(root / "ca.key"), "-CAcreateserial", "-out", str(root / "tls.crt"),
          "-days", "2", "-sha256", "-extfile", str(root / "leaf.ext")],
     ]
-    private_text(root / "leaf.ext", "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n")
+    private_text(root / "leaf.ext", "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid,issuer\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n")
     for command in commands:
         subprocess.run(command, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     for path in (root / "ca.key", root / "tls.key"):
