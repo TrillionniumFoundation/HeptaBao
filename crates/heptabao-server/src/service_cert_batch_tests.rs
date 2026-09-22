@@ -1,6 +1,8 @@
 use super::tests::{Root, bootstrap, call};
 use super::*;
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+type OwnerBytes = zeroize::Zeroizing<Vec<u8>>;
+type OwnerPair = (OwnerBytes, OwnerBytes);
 fn setup(service: &mut Service, admin: &str) -> TestResult<Vec<Vec<u8>>> {
     let leaf = include_bytes!("../testdata/cert-selector.der").to_vec();
     let digest: String = ring::digest::digest(&ring::digest::SHA256, &leaf)
@@ -49,9 +51,7 @@ fn login(service: &mut Service, chain: &[Vec<u8>], wrap: Option<u64>) -> Respons
         client_certificates: Some(chain.to_vec()),
     })
 }
-fn owners(
-    service: &Service,
-) -> TestResult<(zeroize::Zeroizing<Vec<u8>>, zeroize::Zeroizing<Vec<u8>>)> {
+fn owners(service: &Service) -> TestResult<OwnerPair> {
     let state = service.state.as_ref().ok_or("state")?;
     Ok((
         owner_store::serialize_owner(&state.auth).map_err(|_| "auth")?,
