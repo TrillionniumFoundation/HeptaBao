@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
 """Run bounded LDAPS login against an actual host-installed OpenLDAP slapd."""
 from __future__ import annotations
-import argparse, base64, grp, hashlib, json, os, pwd, secrets, shutil, socket, subprocess, sys, tempfile, time
+import argparse, grp, json, os, pwd, re, secrets, shutil, socket, subprocess, sys, tempfile, time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT/"qa/single-node"))
 from smoke import Instance
 
 def port():
     with socket.socket() as s:s.bind(("127.0.0.1",0));return s.getsockname()[1]
-def ssha(secret):
-    salt=secrets.token_bytes(16)
-    return "{SSHA}"+base64.b64encode(hashlib.sha1(secret.encode()+salt).digest()+salt).decode()
+def password_hash(secret):
+    # Use the platform crypt(3) SHA-512 format supported by OpenLDAP's {CRYPT}
+    # verifier. The clear secret crosses only the child's stdin.
+    salt=secrets.token_hex(8)
+    result=subprocess.run(["openssl","passwd","-6","-salt",salt,"-stdin"],input=secret+"\n",
+        text=True,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,check=True,timeout=5)
+    value=result.stdout.strip()
+    if not re.fullmatch(r"\$6\$[A-Za-z0-9./]{1,16}\$[A-Za-z0-9./]{86}",value):
+        raise RuntimeError("ldap_password_hash_failed")
+    return "{CRYPT}"+value
 def private(path,text):
     path.write_text(text);path.chmod(0o600)
 
@@ -25,9 +32,8 @@ class Directory:
         self.port=port();self.origin=f"ldaps://127.0.0.1:{self.port}"
         self.admin_dn="cn=admin,dc=example,dc=test";self.admin_password=secrets.token_urlsafe(30)
         self.user_password=secrets.token_urlsafe(30)
-        # ldap-utils `-y` consumes the file bytes verbatim (including a final
-        # newline), so keep the bind secret newline-free.
-        pw=root/"admin.pass";private(pw,self.admin_password);self.password_file=pw
+        # ldap-utils receives the bind secret through an inherited anonymous
+        # pipe for each invocation; no clear-text credential file is created.
         self.ldap_env={**os.environ,"LDAPTLS_CACERT":str(ca),"LDAPTLS_REQCERT":"demand"}
         conf=root/"slapd.conf";private(conf,f"""include /etc/ldap/schema/core.schema
 include /etc/ldap/schema/cosine.schema
@@ -44,7 +50,7 @@ database mdb
 maxsize 67108864
 suffix "dc=example,dc=test"
 rootdn "{self.admin_dn}"
-rootpw {ssha(self.admin_password)}
+rootpw {password_hash(self.admin_password)}
 directory {root/"db"}
 """)
         self.conf=conf;self.proc=None;self.start()
@@ -68,7 +74,7 @@ objectClass: inetOrgPerson
 cn: Alice Example
 sn: Example
 uid: alice
-userPassword: {ssha(self.user_password)}
+userPassword: {password_hash(self.user_password)}
 
 dn: ou=groups,dc=example,dc=test
 objectClass: top
@@ -81,8 +87,18 @@ objectClass: groupOfNames
 cn: engineering
 member: uid=alice,ou=people,dc=example,dc=test
 """)
-        subprocess.run(["ldapadd","-x","-H",self.origin,"-D",self.admin_dn,"-y",str(pw),"-f",str(ldif)],
-            env=self.ldap_env,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=15)
+        self._ldap_run("ldapadd","-f",str(ldif))
+    def _ldap_run(self,tool,*args):
+        read_fd,write_fd=os.pipe()
+        try:
+            os.write(write_fd,self.admin_password.encode());os.close(write_fd);write_fd=-1
+            subprocess.run([tool,"-x","-H",self.origin,"-D",self.admin_dn,
+                "-y","/dev/fd/"+str(read_fd),*args],env=self.ldap_env,check=True,
+                stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=15,pass_fds=(read_fd,))
+        finally:
+            if write_fd>=0:os.close(write_fd)
+            os.close(read_fd)
+
     def start(self):
         if self.proc is not None and self.proc.poll() is None:return
         log=open(self.root/"slapd.log","ab",buffering=0)
@@ -118,9 +134,7 @@ changetype: modify
 replace: member
 member: {member_dn}
 """)
-        subprocess.run(["ldapmodify","-x","-H",self.origin,"-D",self.admin_dn,
-            "-y",str(self.password_file),"-f",str(change)],env=self.ldap_env,check=True,
-            stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=15)
+        self._ldap_run("ldapmodify","-f",str(change))
 
     def stop(self):
         if self.proc is not None and self.proc.poll() is None:
