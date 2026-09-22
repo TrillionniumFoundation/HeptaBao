@@ -110,14 +110,16 @@ class CertTokenComparisonTests(unittest.TestCase):
             client=SimpleNamespace(request=lambda *a,**k:SimpleNamespace(status=200)))
         plain=SimpleNamespace(request=lambda *a,**k:SimpleNamespace(status=400))
         wrong=SimpleNamespace(request=lambda *a,**k:SimpleNamespace(status=403))
-        bad_chain=SimpleNamespace(request=lambda *a,**k:(_ for _ in ()).throw(OSError('TLS rejected')))
-        with patch.object(f,'tls_client',side_effect=[plain,wrong,bad_chain]):
-            self.assertTrue(f.verify_optional_tls(fixture,trace)['untrusted_chain_tls_rejected'])
+        with patch.object(f,'tls_client',side_effect=[plain,wrong]):
+            with patch.object(f,'peer_rejected_client_chain',return_value=True):
+                self.assertTrue(f.verify_optional_tls(fixture,trace)['untrusted_chain_tls_rejected'])
+        with patch.object(f,'tls_client',side_effect=[plain,wrong]):
+            with patch.object(f,'peer_rejected_client_chain',return_value=False):
+                with self.assertRaises(f.ScenarioFailure):f.verify_optional_tls(fixture,trace)
         accepted=SimpleNamespace(request=lambda *a,**k:SimpleNamespace(status=200))
-        with patch.object(f,'tls_client',side_effect=[plain,wrong,accepted]):
-            with self.assertRaises(f.ScenarioFailure):f.verify_optional_tls(fixture,trace)
-        with patch.object(f,'tls_client',side_effect=[accepted,wrong,bad_chain]):
-            with self.assertRaises(f.ScenarioFailure):f.verify_optional_tls(fixture,trace)
+        with patch.object(f,'tls_client',side_effect=[accepted,wrong]):
+            with patch.object(f,'peer_rejected_client_chain',return_value=True):
+                with self.assertRaises(f.ScenarioFailure):f.verify_optional_tls(fixture,trace)
 
     def test_oracle_only_never_starts_candidate_and_failure_is_retained(self):
         import tempfile

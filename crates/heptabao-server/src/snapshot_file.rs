@@ -5,10 +5,12 @@ use std::os::{
     fd::AsRawFd,
     unix::fs::{MetadataExt, OpenOptionsExt},
 };
+#[cfg(target_os = "linux")]
+use std::path::PathBuf;
 use std::{
     fs::{self, File, OpenOptions},
     io::{self, Read, Seek, SeekFrom, Write},
-    path::{Path, PathBuf},
+    path::Path,
     sync::{
         Arc,
         atomic::{AtomicBool, Ordering},
@@ -18,10 +20,13 @@ use std::{
 
 pub(crate) const MAX_NATIVE_STATE: u64 = 130 * 1024 * 1024;
 pub(crate) const MAX_NATIVE_ARCHIVE: u64 = MAX_NATIVE_STATE + 1024 * 1024;
+#[cfg(target_os = "linux")]
 const DIRECTORY: &str = ".snapshot-transfer";
 
 pub(crate) struct SnapshotSpool {
+    #[cfg(target_os = "linux")]
     parent: File,
+    #[cfg(target_os = "linux")]
     original: PathBuf,
     directory: ExclusiveDirectory,
     busy: AtomicBool,

@@ -619,6 +619,7 @@ pub(crate) struct LdapLoginObservation {
 
 #[cfg(test)]
 impl LdapLoginObservation {
+    #[cfg(target_os = "linux")]
     pub(crate) fn observed(groups: BTreeSet<String>) -> Self {
         Self {
             groups,
