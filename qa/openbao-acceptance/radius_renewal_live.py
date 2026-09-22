@@ -38,15 +38,18 @@ ADAPTATION = {
 }
 
 
+def radius_md5(data=b""):
+    # RADIUS packet authentication is specified in terms of MD5. Mark the
+    # constructor non-security so it cannot be mistaken for a password hash.
+    return hashlib.md5(data, usedforsecurity=False)
+
+
 def md5(*parts):
-    digest = hashlib.md5()
-    for part in parts:
-        digest.update(part)
-    return digest.digest()
+    return radius_md5(b"".join(parts)).digest()
 
 
 def message_authenticator(packet):
-    return hmac.new(SECRET, packet, hashlib.md5).digest()
+    return hmac.new(SECRET, packet, radius_md5).digest()
 
 
 def pap_packet_response(packet: bytes, *, require_ma: bool, allow: bool):
