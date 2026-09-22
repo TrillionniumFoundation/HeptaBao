@@ -226,7 +226,8 @@ class TokenProvider:
                     owner.valid = False
         self.server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), Handler)
         self.server.daemon_threads = True
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER); context.load_cert_chain(cert, key)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER); context.minimum_version = ssl.TLSVersion.TLSv1_2
+        context.load_cert_chain(cert, key)
         self.server.socket = context.wrap_socket(self.server.socket, server_side=True)
         self.origin = 'https://localhost:'+str(self.server.server_port)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True); self.thread.start()
