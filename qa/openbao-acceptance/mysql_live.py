@@ -274,7 +274,12 @@ if not isinstance(username,str) or not re.fullmatch(r"hbp_[0-9a-f]+",username):
     raise SystemExit(68)
 if not isinstance(seq,int) or seq<=0 or not isinstance(digest,str) or not re.fullmatch(r"[0-9a-f]{{64}}",digest):
     raise SystemExit(68)
-if not isinstance(expires,int) or expires<=0 or role not in ("readonly","readwrite"):
+if not isinstance(expires,int) or expires<0 or role not in ("readonly","readwrite"):
+    raise SystemExit(68)
+if action=="revoke":
+    if expires!=0:
+        raise SystemExit(68)
+elif expires<=0:
     raise SystemExit(68)
 if action=="issue" and (not isinstance(password,str) or not re.fullmatch(r"[0-9a-f]{{64}}",password)):
     raise SystemExit(68)
