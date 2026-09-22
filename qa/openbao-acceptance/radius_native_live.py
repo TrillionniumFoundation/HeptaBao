@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import re
+import select
 import shutil
 import socket
 import struct
@@ -74,19 +75,33 @@ class NativeRadius:
     def __init__(self, *, require_ma, dual_stack=False):
         self.require_ma=require_ma;self.secret=SECRET;self.username=b'alice';self.nas_port=10;self.nas_identifier=None;self.allow=True
         self.requests=[];self.peers=[];self.lock=threading.Lock();self.stopped=threading.Event()
-        self.socket=socket.socket(socket.AF_INET6 if dual_stack else socket.AF_INET,socket.SOCK_DGRAM)
-        if dual_stack:self.socket.setsockopt(socket.IPPROTO_IPV6,socket.IPV6_V6ONLY,0)
-        self.socket.bind(('::' if dual_stack else '127.0.0.1',0));self.socket.settimeout(.2)
-        self.port=self.socket.getsockname()[1];self.thread=threading.Thread(target=self.run,daemon=True);self.thread.start()
+        self.sockets=[]
+        try:
+            if dual_stack:
+                ipv6=socket.socket(socket.AF_INET6,socket.SOCK_DGRAM)
+                ipv6.setsockopt(socket.IPPROTO_IPV6,socket.IPV6_V6ONLY,1)
+                ipv6.bind(('::1',0));self.port=ipv6.getsockname()[1];self.sockets.append(ipv6)
+                ipv4=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+                ipv4.bind(('127.0.0.1',self.port));self.sockets.append(ipv4)
+            else:
+                ipv4=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+                ipv4.bind(('127.0.0.1',0));self.port=ipv4.getsockname()[1];self.sockets.append(ipv4)
+            for provider_socket in self.sockets:provider_socket.settimeout(.2)
+        except BaseException:
+            for provider_socket in self.sockets:provider_socket.close()
+            raise
+        self.thread=threading.Thread(target=self.run,daemon=True);self.thread.start()
     def run(self):
         while not self.stopped.is_set():
             try:
-                packet,source=self.socket.recvfrom(4097)
-                response,observed=pap_response(packet,require_ma=self.require_ma,secret=self.secret,username=self.username,password=PASSWORD,allow=self.allow,nas_port=self.nas_port,nas_identifier=self.nas_identifier)
-                peer=ipaddress.ip_address(source[0]);peer=peer.ipv4_mapped if isinstance(peer,ipaddress.IPv6Address) and peer.ipv4_mapped else peer
-                with self.lock:
-                    self.requests.append(observed);self.peers.append({'family':peer.version,'loopback':peer.is_loopback})
-                self.socket.sendto(response,source)
+                ready,_,_=select.select(self.sockets,[],[],.2)
+                for provider_socket in ready:
+                    packet,source=provider_socket.recvfrom(4097)
+                    response,observed=pap_response(packet,require_ma=self.require_ma,secret=self.secret,username=self.username,password=PASSWORD,allow=self.allow,nas_port=self.nas_port,nas_identifier=self.nas_identifier)
+                    peer=ipaddress.ip_address(source[0]);peer=peer.ipv4_mapped if isinstance(peer,ipaddress.IPv6Address) and peer.ipv4_mapped else peer
+                    with self.lock:
+                        self.requests.append(observed);self.peers.append({'family':peer.version,'loopback':peer.is_loopback})
+                    provider_socket.sendto(response,source)
             except TimeoutError:continue
             except ValueError:continue
             except OSError:break
@@ -102,7 +117,9 @@ class NativeRadius:
             return {'request_count':len(peers),'peer_family':peers[0]['family'] if len(peers)==1 else 0,
                     'peer_loopback':len(peers)==1 and peers[0]['loopback']}
     def close(self):
-        self.stopped.set();self.socket.close();self.thread.join(timeout=5)
+        self.stopped.set()
+        for provider_socket in self.sockets:provider_socket.close()
+        self.thread.join(timeout=5)
         if self.thread.is_alive():raise ScenarioFailure('radius_native.provider_shutdown')
 
 
