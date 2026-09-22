@@ -128,6 +128,7 @@ def shape(status, body, *, ha, sealed=False, is_self=None, address=None, officia
 class Endpoint:
     def __init__(self,port,ca):
         self.port=port;self.context=ssl.create_default_context(cafile=str(ca))
+        self.context.minimum_version=ssl.TLSVersion.TLSv1_2
     @property
     def address(self):return f'https://127.0.0.1:{self.port}'
     def call(self,method,path='sys/leader',body=None,*,token='',headers=None):
