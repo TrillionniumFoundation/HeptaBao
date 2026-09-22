@@ -890,9 +890,7 @@ impl DatabaseState {
                         || l.seq > i64::MAX as u64
                         || l.max_expires <= l.issued
                         || l.expires > l.max_expires
-                        || l.username.len() != 36
-                        || !l.username.starts_with("hbp_")
-                        || !l.username[4..].bytes().all(|b| b.is_ascii_hexdigit())
+                        || !valid_database_username(&l.username)
                         || !state.connections.contains_key(&l.db_name)
                         || l.request_digest.len() != 64
                         || l.phase == Phase::Active && l.password.is_some()
@@ -1054,6 +1052,13 @@ fn name(s: &str) -> bool {
         && s.bytes()
             .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
 }
+
+fn valid_database_username(s: &str) -> bool {
+    s.starts_with("hbp_")
+        && matches!(s.len(), 32 | 36)
+        && s[4..].bytes().all(|b| b.is_ascii_hexdigit())
+}
+
 fn ttl(body: &Value, key: &str, default: u64) -> Result<u64, Response> {
     let v = match body.get(key) {
         None => default,
@@ -1636,7 +1641,11 @@ impl Service {
                             return Err(Response::error(403, "database role is no longer allowed"));
                         }
                         let entropy = hex(&crypto::random::<16>().map_err(failure)?);
-                        let username = format!("hbp_{entropy}");
+                        // MySQL 8.x caps account names at 32 characters. Keep the
+                        // full 128-bit entropy in the durable lease identity while
+                        // using a 112-bit provider-side username. Historical 36-byte
+                        // usernames remain valid on reopen for upgrade compatibility.
+                        let username = format!("hbp_{}", &entropy[..28]);
                         let id = format!("{mount}creds/{key}/{entropy}");
                         if id.len() > 512 {
                             return Err(invalid("database lease identity exceeds bound"));
@@ -2389,6 +2398,24 @@ mod tests {
         fn from(_: Response) -> Self {
             Self
         }
+    }
+
+    #[test]
+    fn database_username_accepts_mysql_bound_and_historical_shape() {
+        assert!(valid_database_username(&format!("hbp_{}", "ab".repeat(14))));
+        assert!(valid_database_username(&format!("hbp_{}", "ab".repeat(16))));
+        assert!(!valid_database_username(&format!(
+            "hbp_{}",
+            "ab".repeat(13)
+        )));
+        assert!(!valid_database_username(&format!(
+            "hbp_{}",
+            "ab".repeat(15)
+        )));
+        assert!(!valid_database_username(&format!(
+            "hbp_{}",
+            "zz".repeat(14)
+        )));
     }
 
     #[test]
