@@ -31,6 +31,7 @@ class SourceClient:
     def __init__(self,address,ca,root_token,*,spoof_source='127.0.0.1'):
         self.spoof_source=str(ipaddress.ip_address(spoof_source))
         self.port=urlsplit(address).port;self.context=ssl.create_default_context(cafile=str(ca));self.root_token=root_token
+        self.context.minimum_version=ssl.TLSVersion.TLSv1_2
         self.last_family=None
     def request(self,method,path,body=None,*,token=None,source='127.0.0.1',wrap_ttl=None,spoof=False):
         family=ipaddress.ip_address(source).version;destination='::1' if family==6 else '127.0.0.1'
