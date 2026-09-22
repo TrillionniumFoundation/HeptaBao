@@ -96,6 +96,7 @@ class JsonIssuer:
                     pass
         self.server = HTTPServer(("127.0.0.1", 0), Handler)
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
         context.load_cert_chain(cert, key)
         self.server.socket = context.wrap_socket(self.server.socket, server_side=True)
         self.port = self.server.server_port
@@ -129,6 +130,7 @@ class PgWireFixture:
 
     def __init__(self, cert: Path, key: Path):
         self.context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        self.context.minimum_version = ssl.TLSVersion.TLSv1_2
         self.context.load_cert_chain(cert, key)
         self.listener = socket.socket()
         self.listener.bind(("127.0.0.1", 0))
