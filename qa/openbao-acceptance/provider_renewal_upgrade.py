@@ -224,8 +224,11 @@ def main():
         if not secret_free:
             raise ScenarioFailure("provider_upgrade.secret_in_server_storage_or_log")
         result["status"] = "passed"
-    except ScenarioFailure as error:
-        result["status"], result["failure"] = "failed", str(error)
+    except ScenarioFailure:
+        # The per-case trace already identifies the failed scenario. Keep the
+        # process log independent of exception text so credentials can never
+        # cross the reporting boundary through an unexpected message.
+        result["status"], result["failure"] = "failed", "scenario_failed"
     except Exception as error:
         result["status"], result["failure"] = "failed", "unexpected_" + type(error).__name__
     finally:
