@@ -68,10 +68,15 @@ class Postgres:
         for source,dest in [(certificate,'tls.crt'),(key,'tls.key')]:
             p=root/dest;shutil.copyfile(source,p);p.chmod(0o600)
             if self.identity:os.chown(p,self.identity['user'],self.identity['group'])
-        secret=root/'init-password';secret.write_text(self.password);secret.chmod(0o600)
-        if self.identity:os.chown(secret,self.identity['user'],self.identity['group'])
-        r=subprocess.run([str(bin_dir/'initdb'),'-D',str(root/'data'),'-U','hb_bootstrap','--pwfile='+str(secret),'--auth=scram-sha-256','--encoding=UTF8','--locale=C'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=45,**self.identity)
-        secret.unlink()
+        read_fd,write_fd=os.pipe()
+        try:
+            os.write(write_fd,(self.password+'\n').encode());os.close(write_fd);write_fd=-1
+            r=subprocess.run([str(bin_dir/'initdb'),'-D',str(root/'data'),'-U','hb_bootstrap',
+                '--pwfile=/dev/fd/'+str(read_fd),'--auth=scram-sha-256','--encoding=UTF8','--locale=C'],
+                stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=45,pass_fds=(read_fd,),**self.identity)
+        finally:
+            if write_fd>=0:os.close(write_fd)
+            os.close(read_fd)
         if r.returncode:raise RuntimeError('postgres_initdb_failed')
         p=root/'data'/'postgresql.conf'
         with p.open('a') as f:
