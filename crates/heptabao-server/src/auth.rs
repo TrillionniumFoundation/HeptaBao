@@ -49,6 +49,12 @@ mod acl;
 mod approle_renewal;
 #[path = "auth_capabilities.rs"]
 mod capabilities;
+#[path = "auth_cert_batch.rs"]
+mod cert_batch;
+#[path = "auth_cert_metadata.rs"]
+mod cert_metadata;
+#[path = "auth_cert_ttl.rs"]
+mod cert_ttl;
 #[path = "auth_cubbyhole.rs"]
 mod cubbyhole;
 #[path = "auth_identity.rs"]
@@ -76,6 +82,8 @@ mod radius_native;
 use radius_native::RadiusNativeConfig;
 #[path = "auth_token_cidrs.rs"]
 mod token_cidrs;
+#[path = "auth_token_creation_ttl.rs"]
+mod token_creation_ttl;
 #[path = "auth_token_ttl.rs"]
 mod token_ttl;
 #[path = "auth_userpass_cidrs.rs"]
@@ -189,10 +197,22 @@ struct CertRole {
     required_extensions: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     allowed_metadata_extensions: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_type: Option<batch_issuance::UserTokenType>,
     policies: BTreeSet<String>,
     token_ttl: u64,
     token_max_ttl: u64,
     token_num_uses: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_period: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    token_explicit_max_ttl: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    legacy_ttl: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    legacy_max_ttl: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    legacy_period: u64,
 }
 
 #[derive(Debug)]
@@ -1101,6 +1121,11 @@ struct Token {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 enum TokenAuthProvenance {
+    Cert {
+        issued_metadata: BTreeMap<String, String>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        issued_creation_ttl: Option<u64>,
+    },
     Userpass {
         username: String,
     },
@@ -1136,7 +1161,12 @@ enum TokenAuthProvenance {
     Oidc {
         role_name: String,
     },
-    TokenApi,
+    TokenApi {
+        /// The initial granted TTL is immutable across renewal. Historical
+        /// markers omit it rather than guessing from a later expiry or grant.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        issued_creation_ttl: Option<u64>,
+    },
 }
 
 impl Drop for Token {
@@ -1147,6 +1177,12 @@ impl Drop for Token {
         }) = &mut self.auth_provenance
         {
             approle_metadata::erase(metadata);
+        }
+        if let Some(TokenAuthProvenance::Cert {
+            issued_metadata, ..
+        }) = &mut self.auth_provenance
+        {
+            approle_metadata::erase(issued_metadata);
         }
         if let Some(parent) = &mut self.parent {
             parent.zeroize();
@@ -2329,7 +2365,7 @@ impl AuthState {
                     // of the parent's login mount. Recognize older snapshots
                     // that incorrectly inherited that mount as well.
                     && !(token.parent.is_none()
-                        && matches!(token.auth_provenance, Some(TokenAuthProvenance::TokenApi)))
+                        && matches!(token.auth_provenance, Some(TokenAuthProvenance::TokenApi { .. })))
                     && (token.auth_mount.as_deref() == Some(scope.mount)
                         || (!token.auth_origin_known
                             && matches!(scope.mount, "userpass" | "approle")))
@@ -2640,9 +2676,9 @@ impl AuthState {
                     require_auth_revision(optional_auth_revision(body)?, entry.revision)?;
                     let mut changed = false;
                     if let Some(value) = body.get("token_type") {
-                        if !matches!(entry.kind.as_str(), "userpass" | "approle" | "jwt") {
+                        if !matches!(entry.kind.as_str(), "userpass" | "approle" | "jwt" | "cert") {
                             return Err(bad(
-                                "token_type tune requires a native userpass, AppRole or JWT mount",
+                                "token_type tune requires a native userpass, AppRole, JWT or cert mount",
                             ));
                         }
                         let token_type = batch_issuance::MountTokenType::parse(value)?;
@@ -4026,14 +4062,62 @@ impl AuthState {
                     .map(|(name, role)| (name.as_str(), role))
                     .ok_or_else(denied)?,
             };
-            let (token_ttl, token_max_ttl) =
-                self.auth_mount_token_limits(scope, role.token_ttl, role.token_max_ttl)?;
+            let explicit_max_expires_at = if role.token_explicit_max_ttl == 0 {
+                None
+            } else {
+                Some(checked_expiry(now, role.token_explicit_max_ttl)?)
+            };
+            let expires_at = self.native_token_expiry(
+                scope,
+                native_token::NativeTokenLimits {
+                    ttl: role.token_ttl,
+                    max_ttl: role.token_max_ttl,
+                    period: role.token_period,
+                },
+                now,
+                explicit_max_expires_at,
+                0,
+                now,
+            )?;
+            let token_ttl = expires_at - now;
+            let mut metadata = approle_metadata::Metadata::new(certificate_metadata(
+                attributes.as_ref(),
+                role_name,
+                role,
+            ));
+            cert_metadata::validate(&metadata.0, role_name)?;
             let display_suffix = presented.sha256.get(..16).unwrap_or(&presented.sha256);
+            if self.cert_uses_batch(scope, role) {
+                let mut response = batch_issuance::PendingBatchGrant::response(
+                    batch::BatchClaims {
+                        namespace: namespace.into(),
+                        policies: role.policies.clone(),
+                        metadata: metadata.take(),
+                        display_name: format!("cert-{display_suffix}"),
+                        path: format!("auth/{mount}/login"),
+                        bound_cidrs: Vec::new(),
+                        issued_at: now,
+                        expires_at,
+                        parent: None,
+                        entity_id: None,
+                    },
+                    Some(mount.into()),
+                );
+                // A forced batch mount preserves the backend response's use
+                // count, while the self-contained batch has no use counter.
+                response.body["auth"]["num_uses"] = json!(role.token_num_uses);
+                response.login_identity = Some(LoginIdentity {
+                    metadata: None,
+                    mount: mount.into(),
+                    alias: certificate_identity_alias(attributes.as_ref(), role_name),
+                });
+                return Ok(response);
+            }
             let mut token = login_token(
                 namespace,
                 role.policies.clone(),
                 token_ttl,
-                token_max_ttl,
+                token_ttl,
                 role.token_num_uses,
                 format!("cert-{display_suffix}"),
                 now,
@@ -4041,19 +4125,21 @@ impl AuthState {
             token.auth_mount = Some(mount.into());
             token.auth_cert_role = Some(role_name.to_owned());
             token.auth_cert_sha256 = Some(presented.sha256.clone());
-            // Certificate roles do not accept explicit_max_ttl in this
-            // profile. Their ordinary maximum is reread at renewal, not
-            // frozen as an absolute cap at login. Legacy persisted caps
-            // remain conservative because old orphan origins are ambiguous.
-            token.max_expires_at = None;
+            // Only the issue-time explicit cap is frozen. Legacy Some caps are
+            // left intact by renewal because their historical source is ambiguous.
+            token.max_expires_at = explicit_max_expires_at;
+            token.period = role.token_period;
+            token.auth_provenance = Some(TokenAuthProvenance::Cert {
+                issued_metadata: metadata.take(),
+                issued_creation_ttl: Some(token_ttl),
+            });
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
             response.login_identity = Some(LoginIdentity {
                 metadata: None,
                 mount: mount.into(),
                 alias: certificate_identity_alias(attributes.as_ref(), role_name),
             });
-            let metadata = certificate_metadata(attributes.as_ref(), role_name, role);
-            if !metadata.is_empty() {
+            if let Some(metadata) = cert_metadata::snapshot(&token) {
                 response.body["auth"]["metadata"] = json!(metadata);
             }
             self.tokens.insert(token_id, token);
@@ -4081,30 +4167,36 @@ impl AuthState {
             "GET" => {
                 self.permission(principal, namespace, &role_path, "read", now)?;
                 reject_unknown(body, &[])?;
-                let role = self
+                let Some(role) = self
                     .cert_roles
                     .get(namespace)
                     .and_then(|mounts| mounts.get(mount))
                     .and_then(|roles| roles.get(name))
-                    .ok_or_else(|| err(404, "certificate role not found"))?;
-                Ok(response(
-                    json!({
-                        "certificate_sha256": role.certificate_sha256,
-                        "token_policies": role.policies,
-                        "token_ttl": role.token_ttl,
-                        "token_max_ttl": role.token_max_ttl,
-                        "token_num_uses": role.token_num_uses,
-                        "allowed_names": role.allowed_names,
-                        "allowed_common_names": role.allowed_common_names,
-                        "allowed_dns_sans": role.allowed_dns_sans,
-                        "allowed_email_sans": role.allowed_email_sans,
-                        "allowed_uri_sans": role.allowed_uri_sans,
-                        "allowed_organizational_units": role.allowed_organizational_units,
-                        "required_extensions": role.required_extensions,
-                        "allowed_metadata_extensions": role.allowed_metadata_extensions,
-                    }),
-                    false,
-                ))
+                else {
+                    return Ok(AuthResponse {
+                        status: 404,
+                        body: json!({}),
+                        ..empty(false)
+                    });
+                };
+                let mut data = json!({
+                    "certificate_sha256": role.certificate_sha256,
+                    "token_policies": role.policies,
+                    "token_ttl": role.token_ttl,
+                    "token_max_ttl": role.token_max_ttl,
+                    "token_num_uses": role.token_num_uses,
+                    "token_type": role.token_type.unwrap_or_default().name(),
+                    "allowed_names": role.allowed_names,
+                    "allowed_common_names": role.allowed_common_names,
+                    "allowed_dns_sans": role.allowed_dns_sans,
+                    "allowed_email_sans": role.allowed_email_sans,
+                    "allowed_uri_sans": role.allowed_uri_sans,
+                    "allowed_organizational_units": role.allowed_organizational_units,
+                    "required_extensions": role.required_extensions,
+                    "allowed_metadata_extensions": role.allowed_metadata_extensions,
+                });
+                cert_ttl::extend_read(&mut data, role);
+                Ok(response(data, false))
             }
             "POST" | "PUT" => {
                 let actor = self.permission(principal, namespace, &role_path, "update", now)?;
@@ -4118,7 +4210,14 @@ impl AuthState {
                         "policies",
                         "token_ttl",
                         "token_max_ttl",
+                        "token_period",
+                        "token_explicit_max_ttl",
+                        "ttl",
+                        "max_ttl",
+                        "period",
+                        "lease",
                         "token_num_uses",
+                        "token_type",
                         "allowed_names",
                         "allowed_common_names",
                         "allowed_dns_sans",
@@ -4129,6 +4228,12 @@ impl AuthState {
                         "allowed_metadata_extensions",
                     ],
                 )?;
+                let previous = self
+                    .cert_roles
+                    .get(namespace)
+                    .and_then(|mounts| mounts.get(mount))
+                    .and_then(|roles| roles.get(name))
+                    .cloned();
                 let certificate_sha256 =
                     match (body.get("certificate"), body.get("certificate_sha256")) {
                         (Some(_), Some(_)) => {
@@ -4160,9 +4265,10 @@ impl AuthState {
                                 .ok_or_else(|| bad("certificate_sha256 must be a hex string"))?,
                         )
                         .ok_or_else(|| bad("certificate_sha256 must be 64 hex characters"))?,
-                        (None, None) => {
-                            return Err(bad("certificate or certificate_sha256 is required"));
-                        }
+                        (None, None) => previous
+                            .as_ref()
+                            .map(|role| role.certificate_sha256.clone())
+                            .ok_or_else(|| bad("certificate or certificate_sha256 is required"))?,
                     };
                 let mut policies = policies(
                     body,
@@ -4171,57 +4277,119 @@ impl AuthState {
                     } else {
                         "policies"
                     },
-                    &BTreeSet::from(["default".into()]),
+                    &previous
+                        .as_ref()
+                        .map(|role| role.policies.clone())
+                        .unwrap_or_else(|| BTreeSet::from(["default".into()])),
                     true,
                 )?;
                 self.validate_assignment(actor, &policies)?;
                 policies.remove("root");
-                let (mount_default_ttl, mount_max_ttl) =
-                    self.auth_mount_token_limits(scope, 0, 0)?;
-                let token_ttl = duration(body, "token_ttl", mount_default_ttl)?;
-                let token_max_ttl = duration(body, "token_max_ttl", mount_max_ttl)?;
-                let allowed_names = bounded_string_list(
-                    body,
-                    "allowed_names",
-                    MAX_CERT_ROLE_MATCH_VALUES,
-                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
-                )?;
-                let allowed_common_names = bounded_string_list(
-                    body,
-                    "allowed_common_names",
-                    MAX_CERT_ROLE_MATCH_VALUES,
-                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
-                )?;
-                let allowed_dns_sans = bounded_string_list(
-                    body,
-                    "allowed_dns_sans",
-                    MAX_CERT_ROLE_MATCH_VALUES,
-                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
-                )?;
-                let allowed_email_sans = bounded_string_list(
-                    body,
-                    "allowed_email_sans",
-                    MAX_CERT_ROLE_MATCH_VALUES,
-                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
-                )?;
-                let allowed_uri_sans = bounded_string_list(
-                    body,
-                    "allowed_uri_sans",
-                    MAX_CERT_ROLE_MATCH_VALUES,
-                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
-                )?;
-                let allowed_organizational_units = bounded_string_list(
-                    body,
-                    "allowed_organizational_units",
-                    MAX_CERT_ROLE_MATCH_VALUES,
-                    MAX_CERT_ROLE_MATCH_VALUE_BYTES,
-                )?;
-                let required_extensions =
-                    certificate_extension_requirements(body, "required_extensions")?;
+                let token_ttl = previous.as_ref().map_or(0, |role| role.token_ttl);
+                let token_max_ttl = previous.as_ref().map_or(0, |role| role.token_max_ttl);
+                let allowed_names = if body.get("allowed_names").is_some() {
+                    bounded_string_list(
+                        body,
+                        "allowed_names",
+                        MAX_CERT_ROLE_MATCH_VALUES,
+                        MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                    )?
+                } else {
+                    previous
+                        .as_ref()
+                        .map(|role| role.allowed_names.clone())
+                        .unwrap_or_default()
+                };
+                let allowed_common_names = if body.get("allowed_common_names").is_some() {
+                    bounded_string_list(
+                        body,
+                        "allowed_common_names",
+                        MAX_CERT_ROLE_MATCH_VALUES,
+                        MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                    )?
+                } else {
+                    previous
+                        .as_ref()
+                        .map(|role| role.allowed_common_names.clone())
+                        .unwrap_or_default()
+                };
+                let allowed_dns_sans = if body.get("allowed_dns_sans").is_some() {
+                    bounded_string_list(
+                        body,
+                        "allowed_dns_sans",
+                        MAX_CERT_ROLE_MATCH_VALUES,
+                        MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                    )?
+                } else {
+                    previous
+                        .as_ref()
+                        .map(|role| role.allowed_dns_sans.clone())
+                        .unwrap_or_default()
+                };
+                let allowed_email_sans = if body.get("allowed_email_sans").is_some() {
+                    bounded_string_list(
+                        body,
+                        "allowed_email_sans",
+                        MAX_CERT_ROLE_MATCH_VALUES,
+                        MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                    )?
+                } else {
+                    previous
+                        .as_ref()
+                        .map(|role| role.allowed_email_sans.clone())
+                        .unwrap_or_default()
+                };
+                let allowed_uri_sans = if body.get("allowed_uri_sans").is_some() {
+                    bounded_string_list(
+                        body,
+                        "allowed_uri_sans",
+                        MAX_CERT_ROLE_MATCH_VALUES,
+                        MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                    )?
+                } else {
+                    previous
+                        .as_ref()
+                        .map(|role| role.allowed_uri_sans.clone())
+                        .unwrap_or_default()
+                };
+                let allowed_organizational_units =
+                    if body.get("allowed_organizational_units").is_some() {
+                        bounded_string_list(
+                            body,
+                            "allowed_organizational_units",
+                            MAX_CERT_ROLE_MATCH_VALUES,
+                            MAX_CERT_ROLE_MATCH_VALUE_BYTES,
+                        )?
+                    } else {
+                        previous
+                            .as_ref()
+                            .map(|role| role.allowed_organizational_units.clone())
+                            .unwrap_or_default()
+                    };
+                let required_extensions = if body.get("required_extensions").is_some() {
+                    certificate_extension_requirements(body, "required_extensions")?
+                } else {
+                    previous
+                        .as_ref()
+                        .map(|role| role.required_extensions.clone())
+                        .unwrap_or_default()
+                };
                 let allowed_metadata_extensions =
-                    certificate_metadata_extensions(body, "allowed_metadata_extensions")?;
+                    if body.get("allowed_metadata_extensions").is_some() {
+                        certificate_metadata_extensions(body, "allowed_metadata_extensions")?
+                    } else {
+                        previous
+                            .as_ref()
+                            .map(|role| role.allowed_metadata_extensions.clone())
+                            .unwrap_or_default()
+                    };
                 let mut role = CertRole {
                     certificate_sha256,
+                    token_type: body
+                        .get("token_type")
+                        .map(batch_issuance::UserTokenType::parse)
+                        .transpose()?
+                        .or_else(|| previous.as_ref().and_then(|role| role.token_type)),
                     allowed_names,
                     allowed_common_names,
                     allowed_dns_sans,
@@ -4233,21 +4401,29 @@ impl AuthState {
                     policies,
                     token_ttl,
                     token_max_ttl,
-                    token_num_uses: number(body, "token_num_uses", 0)?,
+                    token_period: previous.as_ref().map_or(0, |role| role.token_period),
+                    token_explicit_max_ttl: previous
+                        .as_ref()
+                        .map_or(0, |role| role.token_explicit_max_ttl),
+                    legacy_ttl: previous.as_ref().map_or(0, |role| role.legacy_ttl),
+                    legacy_max_ttl: previous.as_ref().map_or(0, |role| role.legacy_max_ttl),
+                    legacy_period: previous.as_ref().map_or(0, |role| role.legacy_period),
+                    token_num_uses: approle_renewal::role_count(
+                        body,
+                        "token_num_uses",
+                        previous.as_ref().map_or(0, |role| role.token_num_uses),
+                    )?,
                 };
-                normalize_ttl(
-                    &mut role.token_ttl,
-                    &mut role.token_max_ttl,
-                    mount_default_ttl,
-                    mount_max_ttl,
-                )?;
+                cert_ttl::apply(&mut role, body)?;
+                let (mount_default, mount_max) = self.auth_mount_lease_defaults(scope)?;
+                let response = cert_ttl::write_response(&role, mount_default, mount_max);
                 self.cert_roles
                     .entry(namespace.into())
                     .or_default()
                     .entry(mount.into())
                     .or_default()
                     .insert(name.into(), role);
-                Ok(empty(true))
+                Ok(response)
             }
             "DELETE" => {
                 let actor = self.permission(principal, namespace, &role_path, "delete", now)?;
@@ -5086,29 +5262,12 @@ impl AuthState {
                 if let Some(response) = self.renew_token_api_token(namespace, &id, body, now)? {
                     return Ok(response);
                 }
-                let cert_role_limits = self.cert_renewal_limits(&id, peer_certificates)?;
-                let cert_role_limits = cert_role_limits
-                    .map(|(mount, token_ttl, token_max_ttl)| {
-                        self.auth_mount_token_limits(
-                            AuthScope {
-                                namespace,
-                                mount: &mount,
-                            },
-                            token_ttl,
-                            token_max_ttl,
-                        )
-                    })
-                    .transpose()?;
-                let increment = duration(
-                    body,
-                    "increment",
-                    if cert_role_limits.is_some() {
-                        0
-                    } else {
-                        LEGACY_DEFAULT_TTL
-                    },
-                )?;
-                let issued_at = self.tokens.get(&id).ok_or_else(denied)?.created_at;
+                if let Some(response) =
+                    self.renew_cert_token(namespace, &id, body, now, peer_certificates)?
+                {
+                    return Ok(response);
+                }
+                let increment = duration(body, "increment", LEGACY_DEFAULT_TTL)?;
                 let token = self.tokens.get_mut(&id).ok_or_else(denied)?;
                 if !token.renewable {
                     return Err(bad("token is not renewable"));
@@ -5116,10 +5275,9 @@ impl AuthState {
                 let ttl = if token.period > 0 {
                     token.period
                 } else if increment == 0 {
-                    cert_role_limits.map_or(LEGACY_DEFAULT_TTL, |(token_ttl, _)| token_ttl)
+                    LEGACY_DEFAULT_TTL
                 } else {
-                    increment
-                        .min(cert_role_limits.map_or(MAX_TTL, |(_, token_max_ttl)| token_max_ttl))
+                    increment.min(MAX_TTL)
                 };
                 if ttl == 0 {
                     return Err(denied());
@@ -5129,20 +5287,7 @@ impl AuthState {
                     .max_expires_at
                     .map(|max| proposed.min(max))
                     .unwrap_or(proposed);
-                let cert_max_expiry = cert_role_limits
-                    .map(|(_, token_max_ttl)| checked_expiry(issued_at, token_max_ttl))
-                    .transpose()?;
-                let expires_at = cert_max_expiry
-                    .map(|max| expires_at.min(max))
-                    .unwrap_or(expires_at);
                 if expires_at <= now {
-                    if cert_max_expiry.is_some_and(|max| max <= now) {
-                        // OpenBao's certificate renewal propagates the
-                        // CalculateTTL past-current-maximum error as 500.
-                        // Already expired tokens were rejected above before
-                        // issuer limits are consulted and remain 403.
-                        return Err(err(500, "past the certificate token maximum TTL"));
-                    }
                     return Err(denied());
                 }
                 token.expires_at = Some(expires_at);
@@ -5203,15 +5348,17 @@ impl AuthState {
         &self,
         id: &str,
         peer_certificates: Option<&[Vec<u8>]>,
-    ) -> Result<Option<(String, u64, u64)>, AuthError> {
+    ) -> Result<Option<(String, u64, u64, u64)>, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
         // Token-API children have their own renewal authority. Older snapshots
         // incorrectly copied certificate fields into children; a persisted
         // TokenApi marker (including orphans), or an unmarked non-orphan child,
         // distinguishes those from direct certificate logins. An unmarked
         // parentless token remains ambiguous and retains the binding.
-        if matches!(token.auth_provenance, Some(TokenAuthProvenance::TokenApi))
-            || (token.auth_provenance.is_none() && token.parent.is_some())
+        if matches!(
+            token.auth_provenance,
+            Some(TokenAuthProvenance::TokenApi { .. })
+        ) || (token.auth_provenance.is_none() && token.parent.is_some())
         {
             return Ok(None);
         }
@@ -5241,7 +5388,12 @@ impl AuthState {
         {
             return Err(denied());
         }
-        Ok(Some((mount.into(), role.token_ttl, role.token_max_ttl)))
+        Ok(Some((
+            mount.into(),
+            role.token_ttl,
+            role.token_max_ttl,
+            role.token_period,
+        )))
     }
 
     fn create_token(
@@ -5418,7 +5570,9 @@ impl AuthState {
                 auth_cert_sha256: None,
                 // Children, including orphans, have their own issuer and do
                 // not inherit a direct login's provider credential.
-                auth_provenance: Some(TokenAuthProvenance::TokenApi),
+                auth_provenance: Some(TokenAuthProvenance::TokenApi {
+                    issued_creation_ttl: Some(expires_at.map_or(0, |expiry| expiry - now)),
+                }),
             },
             now,
         )?;
@@ -6677,11 +6831,23 @@ fn token_info(token: &Token, now: u64) -> Value {
         "num_uses": token.uses_remaining.unwrap_or(0), "renewable": token.renewable,
         "orphan": token.parent.is_none(), "type": "service", "namespace": token.namespace,
         "entity_id": token.entity_id.as_deref().unwrap_or("")});
+    if let Some(TokenAuthProvenance::TokenApi {
+        issued_creation_ttl: Some(ttl),
+    }) = &token.auth_provenance
+    {
+        info["creation_ttl"] = json!(ttl);
+    }
     if !token.bound_cidrs.is_empty() {
         info["bound_cidrs"] = json!(token.bound_cidrs);
     }
     if token.period > 0 {
         info["period"] = json!(token.period);
+    }
+    if let Some(metadata) = cert_metadata::snapshot(token) {
+        info["meta"] = json!(metadata);
+    }
+    if let Some(ttl) = cert_metadata::creation_ttl(token) {
+        info["creation_ttl"] = json!(ttl);
     }
     if let Some(metadata) = approle_metadata::token_metadata(token) {
         info["meta"] = json!(metadata);
@@ -7122,3 +7288,15 @@ mod approle_metadata;
 #[cfg(test)]
 #[path = "auth_approle_metadata_tests.rs"]
 mod approle_metadata_tests;
+
+#[cfg(test)]
+#[path = "auth_cert_batch_tests.rs"]
+mod cert_batch_tests;
+
+#[cfg(test)]
+#[path = "auth_cert_ttl_tests.rs"]
+mod cert_ttl_tests;
+
+#[cfg(test)]
+#[path = "auth_cert_metadata_tests.rs"]
+mod cert_metadata_tests;

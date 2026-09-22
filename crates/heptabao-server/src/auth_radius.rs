@@ -80,7 +80,7 @@ impl AuthState {
         self.tokens.values().any(|token| {
             matches!(
                 token.auth_provenance,
-                Some(TokenAuthProvenance::Radius { .. } | TokenAuthProvenance::TokenApi)
+                Some(TokenAuthProvenance::Radius { .. } | TokenAuthProvenance::TokenApi { .. })
             )
         })
     }
@@ -117,7 +117,7 @@ impl AuthState {
                         return Err(bad("invalid RADIUS renewal provenance"));
                     }
                 }
-                Some(TokenAuthProvenance::TokenApi) if token.wrapping.is_some() => {
+                Some(TokenAuthProvenance::TokenApi { .. }) if token.wrapping.is_some() => {
                     return Err(bad("invalid token API provenance"));
                 }
                 _ => {}

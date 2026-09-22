@@ -7,7 +7,12 @@ ROOT=Path(__file__).resolve().parents[2]
 SERVER=ROOT/'crates/heptabao-server/src'
 class OnlineAuthenticationTests(unittest.TestCase):
     def test_callback_consumption_commit_precedes_code_exchange(self):
-        text=(SERVER/'service_online_auth.rs').read_text().split('#[cfg(test)]')[0]
+        # Field-level cfg(test) attributes are not the start of the test module.
+        # Keep the durable callback ordering checks on the complete runtime path.
+        source=(SERVER/'service_online_auth.rs').read_text()
+        boundary=re.search(r'(?m)^#\[cfg\(test\)\]\nmod tests \{', source)
+        self.assertIsNotNone(boundary)
+        text=source[:boundary.start()]
         consume=text.index('.consume_oidc(');commit=text.index('self.commit_state(&state)',consume)
         publish=text.index('self.state = Some(state)',commit)
         plan=text.index('OnlineAuthEffect::OidcCallback {',publish)

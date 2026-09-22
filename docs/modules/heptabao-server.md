@@ -6,6 +6,14 @@ Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`, single-node service increment. Sh
 
 This package provides the runnable Linux HTTPS secrets service. It joins persistent token/userpass/AppRole and bounded JWT/JWKS authentication, default-deny ACL, namespace-qualified KV/Transit/TOTP, SSH OTP and internal PKI engines, real AES-GCM storage encryption and authenticated audit to the repaired durable journal. The mandatory file audit owner may be paired with a process-configured, host-enrolled HTTPS collector and/or one bounded TCP socket collector. HTTPS delivery is TLS pinned, redirect-free, deadline bounded and fail-closed after the local audit record is fsynced. TCP socket delivery is also deadline bounded but remains nonblocking for application admission because the mandatory authenticated file record is already durable; failed socket writes are counted and exposed through `sys/audit/socket`. It includes per-process networked Raft composition and authenticated explicit leadership transfer. This remains a bounded development candidate: it does not establish production HA qualification, qualified KMS auto-unseal, fully qualified dynamic database/cloud credentials, the complete PKI/JWT/OIDC surfaces, an external rollback anchor or full OpenBao compatibility.
 
+The schema-48 certificate increment reuses the existing Auth/Identity/Service
+transaction, batch authority and native token-limit implementation. It adds
+certificate batch issuance, immutable issued metadata/creation TTL, an independent
+Token API creation-TTL reader fence, and optional transport client authentication
+with explicit CA verification. The current contract and bounded comparison
+profile are in `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`; none of these source
+changes asserts whole-surface OpenBao, HA or historical-upgrade qualification.
+
 ## Public API and ownership
 
 The developing `postgres_storage` library component provides physical records

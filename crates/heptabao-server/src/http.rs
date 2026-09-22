@@ -46,10 +46,14 @@ pub struct Config {
     pub audit: crate::AuditConfig,
     pub tls_cert_file: PathBuf,
     pub tls_key_file: PathBuf,
-    /// Optional deployment-owned client trust roots. When configured, every
-    /// TLS connection must present a valid client-auth certificate chain.
+    /// Deployment-owned client trust roots. A configured bundle requires a
+    /// valid client certificate unless optional client authentication is set.
     #[serde(default)]
     pub tls_client_ca_file: Option<PathBuf>,
+    /// Allow connections without a certificate while still verifying every
+    /// presented chain. Requires explicit trust roots; defaults to mandatory.
+    #[serde(default)]
+    pub tls_client_auth_optional: bool,
     /// Optional CRL bundle applied to the client certificate chain. A CRL is
     /// never accepted without an explicit client CA bundle.
     #[serde(default)]
@@ -214,6 +218,9 @@ fn serve_inner(
     if config.lifecycle_interval_seconds > 60 {
         return Err("lifecycle interval must be zero or 1..=60 seconds".into());
     }
+    if config.tls_client_auth_optional && config.tls_client_ca_file.is_none() {
+        return Err("optional TLS client authentication requires a client CA bundle".into());
+    }
     let limiter = Arc::new(Mutex::new(RateLimiter::new(
         config.rate_limit_per_second,
         config.rate_limit_burst,
@@ -247,6 +254,7 @@ fn serve_inner(
         Some(path) => Some(load_client_verifier(
             path,
             config.tls_client_crl_file.as_ref(),
+            config.tls_client_auth_optional,
             &config.data_dir,
             Arc::clone(&provider),
         )?),
@@ -611,6 +619,7 @@ fn bounded_file(path: &PathBuf, private: bool) -> Result<Zeroizing<Vec<u8>>, Str
 fn load_client_verifier(
     ca_path: &PathBuf,
     crl_path: Option<&PathBuf>,
+    optional: bool,
     data_dir: &PathBuf,
     provider: Arc<rustls::crypto::CryptoProvider>,
 ) -> Result<Arc<dyn rustls::server::danger::ClientCertVerifier>, String> {
@@ -634,6 +643,9 @@ fn load_client_verifier(
             .map_err(|_| "invalid TLS client CA certificate")?;
     }
     let mut builder = WebPkiClientVerifier::builder_with_provider(Arc::new(roots), provider);
+    if optional {
+        builder = builder.allow_unauthenticated();
+    }
     if let Some(crl_path) = crl_path {
         let crl_bytes = bounded_file(crl_path, false)?;
         let crls = rustls_pemfile::crls(&mut BufReader::new(crl_bytes.as_slice()))
@@ -1175,6 +1187,59 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn optional_client_auth_requires_explicit_roots_and_keeps_mandatory_default()
+    -> Result<(), String> {
+        let mut value = json!({
+            "listen":"127.0.0.1:0", "data_dir":"/unused-data", "audit_file":"/unused-audit",
+            "tls_cert_file":"/unused-cert", "tls_key_file":"/unused-key"
+        });
+        let config: Config = serde_json::from_value(value.clone()).map_err(|e| e.to_string())?;
+        assert!(!config.tls_client_auth_optional);
+        value["tls_client_auth_optional"] = json!(true);
+        let config: Config = serde_json::from_value(value.clone()).map_err(|e| e.to_string())?;
+        assert_eq!(
+            serve(config),
+            Err("optional TLS client authentication requires a client CA bundle".into())
+        );
+        value["tls_client_auth_optional"] = Value::Null;
+        assert!(serde_json::from_value::<Config>(value).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn optional_client_verifier_still_requests_and_checks_presented_certificates()
+    -> Result<(), String> {
+        use rustls::pki_types::{CertificateDer, UnixTime};
+        let ca =
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src/testdata/kubernetes-api-ca.pem");
+        let data = PathBuf::from("/unused-data");
+        for optional in [false, true] {
+            let verifier = load_client_verifier(
+                &ca,
+                None,
+                optional,
+                &data,
+                Arc::new(rustls::crypto::ring::default_provider()),
+            )?;
+            assert!(verifier.offer_client_auth());
+            assert_eq!(verifier.client_auth_mandatory(), !optional);
+            assert!(!verifier.root_hint_subjects().is_empty());
+            // Optional authentication must never turn a supplied invalid chain
+            // into an anonymous connection. Real chain/EKU cases run over TLS.
+            assert!(
+                verifier
+                    .verify_client_cert(
+                        &CertificateDer::from(vec![0_u8; 32]),
+                        &[],
+                        UnixTime::since_unix_epoch(Duration::from_secs(1_790_000_000))
+                    )
+                    .is_err()
+            );
+        }
+        Ok(())
+    }
 
     #[test]
     fn rate_limiter_enforces_burst_refill_and_bounded_peer_table() -> Result<(), String> {

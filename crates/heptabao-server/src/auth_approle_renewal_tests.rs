@@ -332,7 +332,7 @@ fn approle_token_api_children_keep_their_own_issuer_and_explicit_cap() {
             );
             assert!(matches!(
                 state.tokens[&hash(&child)].auth_provenance,
-                Some(TokenAuthProvenance::TokenApi)
+                Some(TokenAuthProvenance::TokenApi { .. })
             ));
             (child, orphan)
         })

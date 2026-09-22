@@ -7,6 +7,8 @@ mod approle_defaults_tests;
 mod approle_renewal_tests;
 #[path = "auth_cert_renewal_tests.rs"]
 mod certificate_renewal_tests;
+#[path = "auth_token_creation_ttl_tests.rs"]
+mod token_creation_ttl_tests;
 #[path = "auth_token_lifetime_tests.rs"]
 mod token_lifetime_tests;
 #[path = "auth_token_ttl_tests.rs"]
@@ -1354,7 +1356,7 @@ fn approle_periodic_renewal_uses_current_mount_bound_and_children_are_ordinary()
     );
     assert!(matches!(
         state.tokens[&hash(&child)].auth_provenance,
-        Some(TokenAuthProvenance::TokenApi)
+        Some(TokenAuthProvenance::TokenApi { .. })
     ));
 
     // The role's period is 50, but tuning the issuing mount to 20 clamps the

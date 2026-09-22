@@ -45,6 +45,12 @@ impl AuthState {
         self.system_lease_defaults = None;
         for token in self.tokens.values_mut() {
             token.token_api_lease_ttl = None;
+            if let Some(TokenAuthProvenance::TokenApi {
+                issued_creation_ttl,
+            }) = &mut token.auth_provenance
+            {
+                *issued_creation_ttl = None;
+            }
         }
     }
 
@@ -58,11 +64,15 @@ impl AuthState {
 
     pub(crate) fn validate_system_lease_defaults(&self) -> Result<(), AuthError> {
         self.system_lease_defaults()?;
+        self.validate_token_api_creation_ttl()?;
         for token in self.tokens.values() {
             if let Some(ttl) = token.token_api_lease_ttl
                 && (ttl == 0
                     || ttl > MAX_TTL
-                    || !matches!(token.auth_provenance, Some(TokenAuthProvenance::TokenApi))
+                    || !matches!(
+                        token.auth_provenance,
+                        Some(TokenAuthProvenance::TokenApi { .. })
+                    )
                     || token.expires_at.is_none()
                     || token.wrapping.is_some())
             {
@@ -120,7 +130,10 @@ impl AuthState {
         now: u64,
     ) -> Result<Option<AuthResponse>, AuthError> {
         let token = self.tokens.get(target).ok_or_else(denied)?;
-        if !matches!(token.auth_provenance, Some(TokenAuthProvenance::TokenApi)) {
+        if !matches!(
+            token.auth_provenance,
+            Some(TokenAuthProvenance::TokenApi { .. })
+        ) {
             return Ok(None);
         }
         if token.namespace != namespace {

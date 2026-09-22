@@ -576,7 +576,7 @@ fn native_ldap_issue_explicit_cap_persisted_and_token_api_children_have_no_crede
     let token = &state.tokens[&hash(&bearer(&child))];
     assert!(matches!(
         token.auth_provenance,
-        Some(TokenAuthProvenance::TokenApi)
+        Some(TokenAuthProvenance::TokenApi { .. })
     ));
     assert!(
         !serde_json::to_string(token)
@@ -913,7 +913,7 @@ fn native_ldap_child_inherits_cidr_but_orphan_does_not() {
         assert_eq!(state.tokens[&hash(&child)].bound_cidrs.is_empty(), !bound);
         assert!(matches!(
             state.tokens[&hash(&child)].auth_provenance,
-            Some(TokenAuthProvenance::TokenApi)
+            Some(TokenAuthProvenance::TokenApi { .. })
         ));
     }
 }

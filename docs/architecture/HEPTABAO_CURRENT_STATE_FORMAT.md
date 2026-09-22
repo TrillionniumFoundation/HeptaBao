@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **47**. Its source constant is
+The current Service state schema is **48**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -87,7 +87,18 @@ custody, rotation and parent/sibling key separation remain open.
 | 45 | Optional AppRole role-level SecretID login source CIDRs, including an explicit empty list. Per-SecretID source/token CIDR fields must remain absent; existing role constraints and issued tokens retain their meaning. |
 | 46 | Independent optional `cidr_list` and `token_bound_cidrs` fields on each AppRole SecretID, including explicit empty lists. SID metadata, AppRole issued-metadata snapshots, AppRole backend alias metadata and extended backend alias maps must remain absent. |
 | 47 | Optional raw AppRole SID metadata and service-token issued-metadata snapshots; either field's presence, including an empty map, requires this schema. Backend aliases containing the AppRole `role_name` key, or maps outside the previous metadata shape, independently require schema47 even after credential and mount cleanup. Older producers emitted only JWT `role` backend metadata; administrative custom metadata stays separate. |
+| 48 | Native certificate role/mount token type and TTL state, direct certificate issued metadata and immutable initial TTL, plus an independently gated Token API initial-TTL marker. Legacy absent fields remain absent; retained and expired tokens cannot hide new state under an older schema. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
+
+Schema 48 independently gates `AuthState::has_cert_batch_state()` and
+`AuthState::has_token_api_creation_ttl()`. Certificate role or mount configuration
+alone, including explicit default/service type, requires the new reader even
+before issuance. Issued certificate snapshots and Token API initial grants remain
+immutable across renewal; missing historical values are never reconstructed.
+The old `TokenApi` unit variant may ignore additional map entries, so the higher
+application schema is required to make the old reader refuse publication. The
+new reader also rejects new fields hidden inside a schema-47 declaration. Schema
+47 without these fields remains explicitly admitted by the current reader.
 
 Schema 41 is required if any batch key authority, explicit token-type field, or
 retained batch lease owner exists. The owner check includes pending/revoked

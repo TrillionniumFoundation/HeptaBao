@@ -359,7 +359,7 @@ fn kubernetes_tokenapi_children_never_inherit_role_authority_and_legacy_fails_cl
             .to_owned();
         assert!(matches!(
             state.tokens[&hash(&child)].auth_provenance,
-            Some(TokenAuthProvenance::TokenApi)
+            Some(TokenAuthProvenance::TokenApi { .. })
         ));
         children.push(child);
     }

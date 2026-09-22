@@ -268,7 +268,7 @@ fn ldap_children_are_credential_free_and_only_ambiguous_legacy_orphans_require_r
             .to_owned();
         assert!(matches!(
             state.tokens[&hash(&child)].auth_provenance,
-            Some(TokenAuthProvenance::TokenApi)
+            Some(TokenAuthProvenance::TokenApi { .. })
         ));
         assert!(
             !serde_json::to_string(&state.tokens[&hash(&child)])

@@ -40,6 +40,8 @@ class WrongSanProbe:
                      "basicConstraints=critical,CA:FALSE\n"
                      "keyUsage=critical,digitalSignature,keyEncipherment\n"
                      "extendedKeyUsage=serverAuth\n"
+                     "subjectKeyIdentifier=hash\n"
+                     "authorityKeyIdentifier=keyid,issuer\n"
                      "subjectAltName=DNS:" + WRONG_DNS_NAME + "\n")
         # Reuse the fixture's CSR/key but do not mutate its CA serial file: the
         # oracle and candidate probes may be set up independently.

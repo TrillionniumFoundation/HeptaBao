@@ -372,7 +372,7 @@ fn userpass_legacy_identity_is_not_guessed_and_explicit_token_api_children_stay_
     for target in [&child, &orphan] {
         assert!(matches!(
             state.tokens[&hash(target)].auth_provenance,
-            Some(TokenAuthProvenance::TokenApi)
+            Some(TokenAuthProvenance::TokenApi { .. })
         ));
         assert!(
             token_info(&state.tokens[&hash(target)], 101)

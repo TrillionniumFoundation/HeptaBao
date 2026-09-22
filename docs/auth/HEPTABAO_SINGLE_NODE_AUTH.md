@@ -111,6 +111,13 @@ Root tokens with no requested TTL/period remain non-expiring unless explicitly
 capped; an expiring root cannot create a non-expiring root. AppRole SecretID
 defaults remain separate from service-token defaults.
 
+New service Token API children and orphans capture their own actual initial
+`creation_ttl`, independently of the parent's remaining lease, the configured
+TTL and later renewals. Self, explicit-token and accessor lookup expose that
+immutable value when present. Only a genuinely permanent root grant records
+zero. Historical absent values are not backfilled; this marker has its own
+schema-48 format gate, separate from certificate and Identity state.
+
 Tokens support bounded TTL, an explicit maximum lifetime, renewal, periodic
 renewal, limited uses, parent/child revocation, orphan creation and accessors.
 Periodic renewal resets expiry to the configured period, subject to an explicit
@@ -394,7 +401,12 @@ push, WebAuthn or external MFA-provider implementation in this bounded profile.
 
 The server has a bounded certificate-authentication path. Configure an absolute,
 deployment-owned `tls_client_ca_file` outside the encrypted data directory to
-turn on mandatory client-certificate verification. An optional
+turn on mandatory client-certificate verification. The explicit listener option
+`tls_client_auth_optional: true` permits connections without a certificate while
+still requesting and verifying any presented chain; it requires the CA bundle
+and defaults to false. An invalid presented chain never becomes an anonymous
+connection. Certificate login and certificate-token renewal continue to require
+the verified leaf at the application boundary. An optional
 `tls_client_crl_file` is accepted only together with that CA bundle. Rustls's
 WebPKI verifier validates the presented chain and client-auth usage before the
 request reaches the service; the CRL bundle is checked when configured. A
@@ -433,6 +445,46 @@ token. The certificate-auth surface remains outside whole-surface replacement
 admission. OpenBao's reference login path performs the
 corresponding connection-certificate selection and role validation in
 [`path_login.go`](https://raw.githubusercontent.com/openbao/openbao/v2.6.2/builtin/credential/cert/path_login.go).
+
+### Certificate token issuance and reader format 48
+
+Certificate roles now use the existing native token-limit calculation and mount
+`token_type` precedence for service and batch issuance. Native `token_ttl`,
+`token_max_ttl`, `token_period`, and `token_explicit_max_ttl` remain distinct from
+legacy `ttl`, `max_ttl`, `period`, and integer `lease` aliases. Partial writes retain
+omitted fields; explicit native reset and alias precedence are checked against the
+pinned OpenBao 2.6.2 observations rather than normalized into a different contract.
+An explicit batch role rejects limited uses. A mount that forces batch issuance
+retains the backend response's use count, but the self-contained batch credential
+has no mutable use counter or service-token row. Service completes the existing
+Identity binding before sealing the pending batch grant in its transaction;
+disabled Identity and wrapper-publication failure cannot publish half a grant.
+
+New certificate service tokens retain the authenticated issuance metadata and the
+actual initial `creation_ttl`. Lookup and renewal do not reconstruct these facts
+from the current role or active expiry. Renewal still revalidates the presented
+leaf and current role; the current period can change the renewal grant, but it
+cannot rewrite the issued period, initial TTL or captured explicit maximum.
+Token API descendants do not inherit certificate provenance. Legacy absent
+metadata and creation-TTL fields remain absent through read, renewal and reopen.
+
+The service publishes state schema 48 for these new persistent representations.
+Independent format gates reject certificate role/mount/provenance state and
+Token API creation-TTL state under a false schema-47-or-older declaration.
+Schema 47 remains readable when no new representation is present. A higher
+schema, not an assumption about an old serde unit-variant parser rejecting extra
+fields, is the old-reader fence. All retained tokens are checked, not only live
+ones. Failed validation never authorizes reinterpretation or rollback.
+
+`qa/openbao-acceptance/cert_token_live.py` runs the original batch and TTL probes
+against fresh official and candidate stores with the same certificate bytes. It
+retains all named scenes and raw age polls, compares static fields to immutable
+official receipts, and checks changing timestamps/remaining TTL against observed
+issuance and renewal windows. It additionally tests the optional listener's
+same-leaf, missing-leaf, different-trusted-leaf and invalid-chain behavior. This
+profile does not qualify CA-role semantics, full OCSP/CRL behavior, certificate
+CIDRs/MFA, historical upgrade or HA, and does not grant whole-surface replacement
+or production authority.
 
 ## AppRole
 

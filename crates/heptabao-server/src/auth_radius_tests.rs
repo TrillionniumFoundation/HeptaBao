@@ -371,7 +371,7 @@ fn token_api_children_never_copy_radius_password_and_legacy_orphans_fail_closed(
         assert!(!encoded.contains("credential"));
         assert!(matches!(
             state.tokens[&hash(&child)].auth_provenance,
-            Some(TokenAuthProvenance::TokenApi)
+            Some(TokenAuthProvenance::TokenApi { .. })
         ));
         let child_actor = state.authenticate(&child, 102).unwrap();
         assert!(

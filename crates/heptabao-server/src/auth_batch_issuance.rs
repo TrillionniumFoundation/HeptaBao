@@ -143,6 +143,7 @@ impl AuthState {
                 .flat_map(|users| users.values())
                 .any(|user| user.token_type.is_some())
             || self.has_jwt_batch_state()
+            || self.has_cert_batch_state()
             || self
                 .mounted_users
                 .values()
@@ -152,13 +153,14 @@ impl AuthState {
     }
     pub(crate) fn validate_batch_issuance_state(&self) -> Result<(), AuthError> {
         self.validate_batch_authority()?;
+        self.validate_cert_batch_state()?;
         for mounts in self.auth_mounts.values() {
             for mount in mounts.values() {
                 if mount.token_type.is_some()
-                    && !matches!(mount.kind.as_str(), "userpass" | "approle" | "jwt")
+                    && !matches!(mount.kind.as_str(), "userpass" | "approle" | "jwt" | "cert")
                 {
                     return Err(bad(
-                        "token_type requires a native userpass, AppRole or JWT mount",
+                        "token_type requires a native userpass, AppRole, JWT or cert mount",
                     ));
                 }
             }

@@ -24,6 +24,19 @@ impl State {
             ));
         }
 
+        if self.schema < 48 && self.auth.has_cert_batch_state() {
+            return Err(Response::error(
+                503,
+                "native certificate token state requires schema 48",
+            ));
+        }
+        if self.schema < 48 && self.auth.has_token_api_creation_ttl() {
+            return Err(Response::error(
+                503,
+                "Token API creation TTL requires schema 48",
+            ));
+        }
+
         self.auth
             .validate_system_lease_defaults()
             .map_err(|_| Response::error(503, "invalid system or Token API lease state"))?;
@@ -431,7 +444,7 @@ impl State {
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
             | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37
-            | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | CURRENT_STATE_SCHEMA => Ok(()),
+            | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

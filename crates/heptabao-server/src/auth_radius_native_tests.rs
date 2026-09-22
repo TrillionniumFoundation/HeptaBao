@@ -571,7 +571,7 @@ fn native_radius_profile_boundaries_provenance_and_issued_cap_survive_restart() 
     assert_eq!(child_token.parent.as_deref(), Some(hash(&raw).as_str()));
     assert!(matches!(
         child_token.auth_provenance,
-        Some(TokenAuthProvenance::TokenApi)
+        Some(TokenAuthProvenance::TokenApi { .. })
     ));
     let (a, p) = renew(&mut s, &r, &raw, "renew", issued + 20);
     assert_eq!(
@@ -1234,7 +1234,7 @@ fn native_radius_child_inherits_cidr_but_orphan_does_not() {
         assert_eq!(s.tokens[&hash(&child)].bound_cidrs.is_empty(), !bound);
         assert!(matches!(
             s.tokens[&hash(&child)].auth_provenance,
-            Some(TokenAuthProvenance::TokenApi)
+            Some(TokenAuthProvenance::TokenApi { .. })
         ));
         assert_eq!(
             token_info(&s.tokens[&hash(&child)], 101)

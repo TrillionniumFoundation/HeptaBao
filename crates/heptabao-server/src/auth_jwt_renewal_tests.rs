@@ -325,7 +325,7 @@ fn jwt_token_api_descendants_do_not_inherit_role_and_ambiguous_legacy_orphans_fa
         let child_id = hash(child_raw);
         assert!(matches!(
             state.tokens[&child_id].auth_provenance,
-            Some(TokenAuthProvenance::TokenApi)
+            Some(TokenAuthProvenance::TokenApi { .. })
         ));
         state
             .jwt_at_mut(AuthScope {

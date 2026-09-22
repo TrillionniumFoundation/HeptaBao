@@ -379,7 +379,7 @@ fn oidc_tokenapi_children_are_independent_of_role_and_legacy_direct_tokens_stay_
             .to_owned();
         assert!(matches!(
             state.tokens[&hash(&child)].auth_provenance,
-            Some(TokenAuthProvenance::TokenApi)
+            Some(TokenAuthProvenance::TokenApi { .. })
         ));
         children.push(child);
     }

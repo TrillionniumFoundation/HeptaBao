@@ -248,7 +248,7 @@ fn certificate_token_api_children_renew_without_certificate_or_current_parent_ro
         assert!(child_token.auth_cert_sha256.is_none());
         assert!(matches!(
             child_token.auth_provenance,
-            Some(TokenAuthProvenance::TokenApi)
+            Some(TokenAuthProvenance::TokenApi { .. })
         ));
         assert_eq!(child_token.parent.is_none(), orphan);
         call(
