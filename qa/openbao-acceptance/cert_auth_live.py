@@ -97,7 +97,8 @@ class Fixture:
              "-keyout", str(root / "root.key"), "-out", str(root / "root.crt"),
              "-subj", "/CN=HeptaBao mTLS fixture root",
              "-addext", "basicConstraints=critical,CA:TRUE,pathlen:1",
-             "-addext", "keyUsage=critical,keyCertSign,cRLSign"])
+             "-addext", "keyUsage=critical,keyCertSign,cRLSign",
+             "-addext", "subjectKeyIdentifier=hash"])
         (root / "root.key").chmod(0o600)
         intermediate, intermediate_key = issue_leaf(
             root, "intermediate", "/CN=HeptaBao mTLS fixture intermediate",
@@ -109,7 +110,8 @@ class Fixture:
             root, "server", "/CN=localhost",
             root / "root.crt", root / "root.key",
             "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\n"
-            "extendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n",
+            "extendedKeyUsage=serverAuth\nsubjectKeyIdentifier=hash\n"
+            "authorityKeyIdentifier=keyid,issuer\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n",
         )
         client_ext = (
             "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\n"
@@ -122,11 +124,15 @@ class Fixture:
         wrong, wrong_key = issue_leaf(root, "wrong-client", "/CN=intruder.example.test/OU=Other",
                                       intermediate, intermediate_key,
                                       "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\n"
-                                      "extendedKeyUsage=clientAuth\nsubjectAltName=DNS:intruder.example.test\n")
+                                      "extendedKeyUsage=clientAuth\nsubjectKeyIdentifier=hash\n"
+                                      "authorityKeyIdentifier=keyid,issuer\n"
+                                      "subjectAltName=DNS:intruder.example.test\n")
         bad_eku, bad_eku_key = issue_leaf(
             root, "bad-eku", "/CN=server-only.example.test/OU=Other", intermediate, intermediate_key,
             "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\n"
-            "extendedKeyUsage=serverAuth\nsubjectAltName=DNS:server-only.example.test\n",
+            "extendedKeyUsage=serverAuth\nsubjectKeyIdentifier=hash\n"
+            "authorityKeyIdentifier=keyid,issuer\n"
+            "subjectAltName=DNS:server-only.example.test\n",
         )
         untrusted_ca = root / "untrusted-root.crt"
         untrusted_ca_key = root / "untrusted-root.key"
@@ -134,13 +140,16 @@ class Fixture:
              "-keyout", str(untrusted_ca_key), "-out", str(untrusted_ca),
              "-subj", "/CN=HeptaBao unrelated fixture root",
              "-addext", "basicConstraints=critical,CA:TRUE,pathlen:0",
-             "-addext", "keyUsage=critical,keyCertSign,cRLSign"])
+             "-addext", "keyUsage=critical,keyCertSign,cRLSign",
+             "-addext", "subjectKeyIdentifier=hash"])
         untrusted_ca_key.chmod(0o600)
         untrusted, untrusted_key = issue_leaf(
             root, "untrusted-client", "/CN=untrusted.example.test",
             untrusted_ca, untrusted_ca_key,
             "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\n"
-            "extendedKeyUsage=clientAuth\nsubjectAltName=DNS:untrusted.example.test\n",
+            "extendedKeyUsage=clientAuth\nsubjectKeyIdentifier=hash\n"
+            "authorityKeyIdentifier=keyid,issuer\n"
+            "subjectAltName=DNS:untrusted.example.test\n",
         )
         # The issuer helper already wrote the leaf/key files.  The server only
         # needs its leaf; clients present leaf + intermediate as a chain.
