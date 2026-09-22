@@ -8,6 +8,8 @@ from pathlib import Path
 import re
 import shutil
 import signal
+import socket
+import ssl
 import tempfile
 import time
 
@@ -199,10 +201,44 @@ def measured_trace(module,client):
     return Measured(client)
 
 
+_PEER_CERTIFICATE_ALERTS = {
+    'SSLV3_ALERT_BAD_CERTIFICATE',
+    'SSLV3_ALERT_CERTIFICATE_UNKNOWN',
+    'SSLV3_ALERT_UNSUPPORTED_CERTIFICATE',
+    'TLSV1_ALERT_CERTIFICATE_REQUIRED',
+    'TLSV1_ALERT_UNKNOWN_CA',
+}
+
+
+def peer_rejected_client_chain(fixture):
+    """Return true only for an explicit TLS peer alert rejecting the presented chain."""
+    context=ssl.create_default_context(cafile=str(fixture.root/'root.crt'))
+    context.minimum_version=ssl.TLSVersion.TLSv1_2
+    context.load_cert_chain(str(fixture.root/'untrusted-client-chain.pem'),
+        str(fixture.root/'untrusted-client.key'))
+    request=(b'GET /v1/sys/health HTTP/1.1\r\nHost: 127.0.0.1\r\n'
+        b'Connection: close\r\n\r\n')
+    try:
+        with socket.create_connection(('127.0.0.1',fixture.port),timeout=3) as raw:
+            with context.wrap_socket(raw,server_hostname='127.0.0.1') as channel:
+                channel.settimeout(3)
+                channel.sendall(request)
+                channel.recv(1)
+    except ssl.SSLCertVerificationError:
+        # Local server-certificate trust failure proves nothing about peer
+        # rejection of the client certificate.
+        return False
+    except ssl.SSLError as error:
+        return getattr(error,'reason',None) in _PEER_CERTIFICATE_ALERTS
+    except (OSError,ConnectionError):
+        # Timeout, EOF, reset, refusal and other transport failures are never
+        # accepted as certificate-rejection evidence.
+        return False
+    return False
+
+
 def verify_optional_tls(fixture,trace):
     """Exercise absence, valid chain, wrong trusted leaf, and invalid chain independently."""
-    import ssl
-    import urllib.error
     direct=next((raw for raw,item in trace.timing.tokens.items() if item.get('binding_probe')),None)
     if direct is None:raise ScenarioFailure('optional_tls_direct_token_missing')
     path='/v1/auth/token/renew-self';payload={'increment':75}
@@ -212,11 +248,7 @@ def verify_optional_tls(fixture,trace):
     wrong=tls_client(fixture.address,fixture.root/'root.crt',fixture.token,
         (fixture.root/'wrong-client-chain.pem',fixture.root/'wrong-client.key'))
     wrong_result=wrong.request('POST',path,payload,token=direct)
-    untrusted=tls_client(fixture.address,fixture.root/'root.crt',fixture.token,
-        (fixture.root/'untrusted-client-chain.pem',fixture.root/'untrusted-client.key'))
-    rejected=False
-    try:untrusted.request('GET','/v1/sys/health',token='')
-    except (ssl.SSLError,urllib.error.URLError,ConnectionError,OSError):rejected=True
+    rejected=peer_rejected_client_chain(fixture)
     result={'real_leaf_renew_status':good.status,'absent_leaf_renew_status':absent.status,
         'wrong_trusted_leaf_renew_status':wrong_result.status,'untrusted_chain_tls_rejected':rejected}
     if result!={'real_leaf_renew_status':200,'absent_leaf_renew_status':400,
