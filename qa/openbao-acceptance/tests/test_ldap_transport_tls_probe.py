@@ -31,7 +31,9 @@ class LdapTlsProbeTests(unittest.TestCase):
         return wrong_san_probe(self.root / name, self.authority / "ca.crt", self.authority / "ca.key")
 
     def context(self):
-        return ssl.create_default_context(cafile=str(self.authority / "ca.crt"))
+        context = ssl.create_default_context(cafile=str(self.authority / "ca.crt"))
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        return context
 
     def connect(self, probe, name):
         port = int(probe.origin.rsplit(":", 1)[1])
