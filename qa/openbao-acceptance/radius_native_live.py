@@ -24,7 +24,7 @@ from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from official_openbao_launcher import start_oracle, stop_oracle, restart_oracle, BINARY_SHA256
 from online_evidence import admit_output, source_identity
-from radius_renewal_live import SECRET, PASSWORD, md5, renewal_token_shape, wrapped_renewal_shape
+from radius_renewal_live import SECRET, PASSWORD, md5, radius_md5, renewal_token_shape, wrapped_renewal_shape
 from remote_jwks_live import Instance
 
 ADAPTATION = {
@@ -54,7 +54,7 @@ def pap_response(packet, *, require_ma, secret, username, password, allow, nas_p
             signed[offset+2:offset+length]=b'\0'*16
         offset+=length
     ma=80 in values
-    if (require_ma and not ma) or (ma and not hmac.compare_digest(values[80],hmac.new(secret,signed,hashlib.md5).digest())):
+    if (require_ma and not ma) or (ma and not hmac.compare_digest(values[80],hmac.new(secret,signed,radius_md5).digest())):
         raise ValueError('invalid_radius_authenticator')
     encrypted=values.get(2,b'')
     if not encrypted or len(encrypted)>128 or len(encrypted)%16:raise ValueError('invalid_pap_shape')
@@ -66,7 +66,7 @@ def pap_response(packet, *, require_ma, secret, username, password, allow, nas_p
     accepted=valid and allow
     nas_ok=(values.get(5)==struct.pack('!I',nas_port & 0xffffffff) and values.get(32)==nas_identifier)
     response=bytearray([2 if accepted else 3,packet[1],0,38]);response.extend(packet[4:20]);response.extend([80,18]);response.extend(b'\0'*16)
-    response[22:]=hmac.new(secret,response,hashlib.md5).digest()
+    response[22:]=hmac.new(secret,response,radius_md5).digest()
     response[4:20]=md5(response[:4],packet[4:20],response[20:],secret)
     return bytes(response),{'credentials_valid':valid,'message_authenticator_present':ma,'accepted':accepted,'nas_valid':nas_ok}
 
