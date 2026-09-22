@@ -210,6 +210,21 @@
       ],
       "script": "qa/openbao-acceptance/postgres_pipeline_simulated.py"
     },
+    "postgres_storage_live": {
+      "script": "qa/openbao-acceptance/postgres_storage_live.py",
+      "case_ids": [
+        "fresh_postgresql_17_cluster_and_unprivileged_storage_owner",
+        "opaque_binary_value_roundtrip",
+        "shallow_ordered_hierarchical_listing",
+        "multi_record_commit_publishes_together",
+        "repeatable_read_retains_snapshot",
+        "lost_commit/lost_commit_reply_reports_unknown_outcome",
+        "lost_commit_effect_is_durable_at_postgresql",
+        "wrong_password/untrusted_tls_or_credentials_rejected",
+        "missing_primary_key/altered_storage_constraints_rejected",
+        "committed_storage_survives_postgresql_sigkill_restart"
+      ]
+    },
     "raft_membership_live": {
       "script": "qa/openbao-acceptance/raft_membership_live.py",
       "case_ids": [
@@ -340,6 +355,22 @@
         "restart_login",
         "digest_fence",
         "issued_token_revoked_on_disable"
+      ]
+    },
+    "plugin_database_live": {
+      "script": "qa/openbao-acceptance/plugin_database_live.py",
+      "case_ids": [
+        "catalog_lists_admitted_database_plugin",
+        "unknown_database_plugin_config_fails_closed",
+        "database_plugin_configuration_readback",
+        "dynamic_credential_issue_reaches_plugin",
+        "issued_secret_matches_plugin_digest",
+        "dynamic_credential_renew_reaches_plugin",
+        "database_plugin_binding_survives_service_restart",
+        "changed_plugin_executable_is_fenced_before_revoke",
+        "digest_fence_does_not_claim_external_revoke",
+        "restored_plugin_completes_pending_revoke",
+        "revoked_plugin_credential_is_inactive"
       ]
     },
     "radius_bounded": {

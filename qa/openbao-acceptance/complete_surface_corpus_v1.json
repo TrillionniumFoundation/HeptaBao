@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 50,
-    "defined_not_implemented_surface_count": 10,
-    "fixture_case_count": 308,
+    "implemented_surface_count": 52,
+    "defined_not_implemented_surface_count": 8,
+    "fixture_case_count": 329,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -570,9 +570,20 @@
       "surface_id": "HB-SURFACE-STORAGE-POSTGRESQL",
       "category": "storage_backends",
       "criticality": "DATA_DURABILITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 10,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "postgres_storage_live.fresh_postgresql_17_cluster_and_unprivileged_storage_owner",
+        "postgres_storage_live.opaque_binary_value_roundtrip",
+        "postgres_storage_live.shallow_ordered_hierarchical_listing",
+        "postgres_storage_live.multi_record_commit_publishes_together",
+        "postgres_storage_live.repeatable_read_retains_snapshot",
+        "postgres_storage_live.lost_commit/lost_commit_reply_reports_unknown_outcome",
+        "postgres_storage_live.lost_commit_effect_is_durable_at_postgresql",
+        "postgres_storage_live.wrong_password/untrusted_tls_or_credentials_rejected",
+        "postgres_storage_live.missing_primary_key/altered_storage_constraints_rejected",
+        "postgres_storage_live.committed_storage_survives_postgresql_sigkill_restart"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
@@ -625,9 +636,21 @@
       "surface_id": "HB-SURFACE-PLUGIN-DATABASE",
       "category": "plugin_classes",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 11,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "plugin_database_live.catalog_lists_admitted_database_plugin",
+        "plugin_database_live.unknown_database_plugin_config_fails_closed",
+        "plugin_database_live.database_plugin_configuration_readback",
+        "plugin_database_live.dynamic_credential_issue_reaches_plugin",
+        "plugin_database_live.issued_secret_matches_plugin_digest",
+        "plugin_database_live.dynamic_credential_renew_reaches_plugin",
+        "plugin_database_live.database_plugin_binding_survives_service_restart",
+        "plugin_database_live.changed_plugin_executable_is_fenced_before_revoke",
+        "plugin_database_live.digest_fence_does_not_claim_external_revoke",
+        "plugin_database_live.restored_plugin_completes_pending_revoke",
+        "plugin_database_live.revoked_plugin_credential_is_inactive"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

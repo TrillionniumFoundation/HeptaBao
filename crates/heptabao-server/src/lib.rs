@@ -38,7 +38,7 @@ mod snapshot_file;
 mod valkey_wire;
 pub use service::ServiceRequest;
 pub use service::{AuditConfig, AuditSocketConfig, AuditSyslogConfig};
-pub use service::{PluginAuthConfig, PluginSecretConfig};
+pub use service::{PluginAuthConfig, PluginDatabaseConfig, PluginSecretConfig};
 pub use service::{Response, Service};
 
 #[cfg(test)]

@@ -65,7 +65,7 @@ mod openldap_secret;
 mod plugin;
 #[path = "service_snapshot_transfer.rs"]
 mod snapshot_transfer;
-pub use plugin::{PluginAuthConfig, PluginSecretConfig};
+pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginSecretConfig};
 pub(crate) use snapshot_transfer::{NativeSnapshotAdmission, TrustedSnapshotOrigin};
 #[path = "service_openapi.rs"]
 mod openapi;
@@ -839,6 +839,7 @@ pub struct Service {
     openldap_cursor: Option<(String, String, String)>,
     lifecycle_provider_cursor: bool,
     auth_plugins: BTreeMap<String, plugin::SharedAuthPlugin>,
+    database_plugins: BTreeMap<String, plugin::SharedDatabasePlugin>,
     plugins: BTreeMap<String, plugin::SharedSecretPlugin>,
     raft_stabilization: raft_admin::Stabilization,
     data_dir: PathBuf,
@@ -895,6 +896,17 @@ impl Service {
             return Err("plugin runtime configuration is immutable while unsealed".into());
         }
         self.auth_plugins = plugin::admit_auth_plugins(configs)?;
+        Ok(())
+    }
+
+    pub fn install_database_plugins(
+        &mut self,
+        configs: Vec<PluginDatabaseConfig>,
+    ) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("plugin runtime configuration is immutable while unsealed".into());
+        }
+        self.database_plugins = plugin::admit_database_plugins(configs)?;
         Ok(())
     }
 
@@ -1101,6 +1113,7 @@ impl Service {
             openldap_cursor: None,
             lifecycle_provider_cursor: false,
             auth_plugins: BTreeMap::new(),
+            database_plugins: BTreeMap::new(),
             plugins: BTreeMap::new(),
             raft_stabilization: raft_admin::Stabilization::default(),
             data_dir,

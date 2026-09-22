@@ -22,6 +22,20 @@ import time
 from postgres_live import Postgres, Instance, ROOT
 
 
+CORPUS_CASE_IDS = (
+    "fresh_postgresql_17_cluster_and_unprivileged_storage_owner",
+    "opaque_binary_value_roundtrip",
+    "shallow_ordered_hierarchical_listing",
+    "multi_record_commit_publishes_together",
+    "repeatable_read_retains_snapshot",
+    "lost_commit/lost_commit_reply_reports_unknown_outcome",
+    "lost_commit_effect_is_durable_at_postgresql",
+    "wrong_password/untrusted_tls_or_credentials_rejected",
+    "missing_primary_key/altered_storage_constraints_rejected",
+    "committed_storage_survives_postgresql_sigkill_restart",
+)
+
+
 class DropServerReplyProxy:
     """One-client transparent TCP forwarder used to lose a commit reply.
 
@@ -324,6 +338,10 @@ def main():
     try:
         report["postgresql_version"] = run(args.probe.resolve(), args.postgres_bin.resolve(),
                                            args.work_dir, report["checks"])
+        observed_cases = {entry["case"] for entry in report["checks"] if entry.get("passed") is True}
+        missing_cases = sorted(set(CORPUS_CASE_IDS) - observed_cases)
+        if missing_cases:
+            raise RuntimeError("corpus_case_missing:" + ",".join(missing_cases))
         report["status"] = "passed_scoped_adapter"
     except Exception as error:
         report["reason"] = "fixture_" + type(error).__name__

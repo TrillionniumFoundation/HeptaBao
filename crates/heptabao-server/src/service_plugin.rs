@@ -55,8 +55,27 @@ pub struct PluginAuthConfig {
     pub timeout_ms: u64,
 }
 
+#[derive(Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PluginDatabaseConfig {
+    pub id: String,
+    pub command: String,
+    pub command_sha256: String,
+    pub sandbox_provider_id: String,
+    pub sandbox_command: String,
+    pub sandbox_command_sha256: String,
+    pub sandbox_profile_id: String,
+    #[serde(default = "req_bytes")]
+    pub maximum_request_bytes: usize,
+    #[serde(default = "resp_bytes")]
+    pub maximum_response_bytes: usize,
+    #[serde(default = "timeout_ms")]
+    pub timeout_ms: u64,
+}
+
 pub(super) type SharedSecretPlugin = Arc<Mutex<PluginHost<CommandSandboxRunner>>>;
 pub(super) type SharedAuthPlugin = Arc<Mutex<PluginHost<CommandSandboxRunner>>>;
+pub(super) type SharedDatabasePlugin = Arc<Mutex<PluginHost<CommandSandboxRunner>>>;
 
 pub(super) struct PluginReadPlan {
     pub namespace: String,
@@ -153,6 +172,70 @@ pub(super) fn admit_auth_plugins(
         .map_err(|_| "invalid authentication plugin manifest")?;
         let host = PluginHost::admit(manifest, CommandSandboxRunner)
             .map_err(|_| "plugin or sandbox admission failed")?;
+        out.insert(id.to_string(), Arc::new(Mutex::new(host)));
+    }
+    Ok(out)
+}
+
+pub(super) fn admit_database_plugins(
+    configs: Vec<PluginDatabaseConfig>,
+) -> Result<BTreeMap<String, SharedDatabasePlugin>, String> {
+    if configs.len() > 32 {
+        return Err("database plugin runtime count exceeds bound".into());
+    }
+    let mut out = BTreeMap::new();
+    for c in configs {
+        let id = Id::parse(c.id.clone()).map_err(|_| "invalid database plugin identifier")?;
+        if out.contains_key(id.as_str()) {
+            return Err("duplicate database plugin identifier".into());
+        }
+        let descriptor = PluginDescriptor::new(
+            id.clone(),
+            PluginKind::Database,
+            CanonicalPath::parse(c.command)
+                .map_err(|_| "invalid database plugin executable path")?,
+            digest(&c.command_sha256)?,
+            1,
+        )
+        .map_err(|_| "invalid database plugin descriptor")?;
+        let mut registry = PluginRegistry::default();
+        registry
+            .register(descriptor)
+            .map_err(|_| "cannot register database plugin")?;
+        registry
+            .enable(&id)
+            .map_err(|_| "cannot enable database plugin")?;
+        let descriptor = registry
+            .get(&id)
+            .map_err(|_| "database plugin disappeared")?
+            .clone();
+        let sandbox = SandboxBinding::new(
+            Id::parse(c.sandbox_provider_id).map_err(|_| "invalid sandbox provider identifier")?,
+            CanonicalPath::parse(c.sandbox_command)
+                .map_err(|_| "invalid sandbox executable path")?,
+            digest(&c.sandbox_command_sha256)?,
+            Id::parse(c.sandbox_profile_id).map_err(|_| "invalid sandbox profile identifier")?,
+        )
+        .map_err(|_| "invalid sandbox binding")?;
+        let manifest = PluginManifest::new(
+            descriptor,
+            sandbox,
+            PluginLimits {
+                maximum_request_bytes: c.maximum_request_bytes,
+                maximum_response_bytes: c.maximum_response_bytes,
+                timeout_ms: c.timeout_ms,
+            },
+            BTreeSet::from([
+                PluginOperation::Read,
+                PluginOperation::Issue,
+                PluginOperation::Renew,
+                PluginOperation::Revoke,
+            ]),
+            BTreeSet::new(),
+        )
+        .map_err(|_| "invalid database plugin manifest")?;
+        let host = PluginHost::admit(manifest, CommandSandboxRunner)
+            .map_err(|_| "database plugin or sandbox admission failed")?;
         out.insert(id.to_string(), Arc::new(Mutex::new(host)));
     }
     Ok(out)
@@ -303,6 +386,8 @@ impl Service {
             || path.starts_with("sys/plugins/catalog/secret/")
             || path == "sys/plugins/catalog/auth"
             || path.starts_with("sys/plugins/catalog/auth/")
+            || path == "sys/plugins/catalog/database"
+            || path.starts_with("sys/plugins/catalog/database/")
     }
 
     pub(super) fn validate_plugin_mount_request(
@@ -377,6 +462,8 @@ impl Service {
                 ("secret", suffix, &self.plugins)
             } else if let Some(suffix) = path.strip_prefix("sys/plugins/catalog/auth") {
                 ("auth", suffix, &self.auth_plugins)
+            } else if let Some(suffix) = path.strip_prefix("sys/plugins/catalog/database") {
+                ("database", suffix, &self.database_plugins)
             } else {
                 return Response::error(404, "plugin catalog not found");
             };

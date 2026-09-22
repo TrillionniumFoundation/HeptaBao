@@ -764,9 +764,9 @@ Existing bounded profiles: `qa/openbao-acceptance/plugin_secret_live.py`.
 
 ### HB-SURFACE-PLUGIN-DATABASE
 
-Implementation: `CONTRACT_ONLY`. Original work packages: `H13-WP01`, `H13-WP02`, `H13-WP03`, `H13-WP04`, `H13-WP11`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H13-WP01`, `H13-WP02`, `H13-WP03`, `H13-WP04`, `H13-WP11`.
 API families: `sys/plugins/catalog/database/*`; `database/config/*`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service_database.rs`, `crates/heptabao-server/src/service_plugin.rs`.
 Separate contracts: `crates/heptabao-plugin-host/src/lib.rs`.
 Guides: `docs/modules/heptabao-plugin-host.md`.
 
@@ -776,9 +776,9 @@ Guides: `docs/modules/heptabao-plugin-host.md`.
 
 **Lifecycle:** Restart plugin across uncertain SQL effect and reconcile exactly one lease.
 
-**Remaining scope:** Connection lifecycle, static/dynamic users and root rotation.
+**Remaining scope:** Static-role lifecycle, root credential rotation, full OpenBao database-plugin RPC compatibility, migration/HA fault qualification and independent provider admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/plugin_database_live.py`.
 
 ### HB-SURFACE-PLUGIN-KMS
 

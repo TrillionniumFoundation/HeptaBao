@@ -8,6 +8,8 @@ use crate::{
     postgres_wire::PgSession,
     valkey_wire::{RespValue, ValkeySession},
 };
+use heptabao_domain::SecretValue;
+use heptabao_plugin_host::{PluginHostError, PluginOperation, SecretEnvironment};
 use std::collections::BTreeSet;
 use std::sync::Weak;
 
@@ -52,6 +54,7 @@ enum DatabaseProvider {
     #[default]
     Postgresql,
     Valkey,
+    Plugin,
 }
 fn is_postgresql_provider(provider: &DatabaseProvider) -> bool {
     *provider == DatabaseProvider::Postgresql
@@ -61,6 +64,8 @@ fn is_postgresql_provider(provider: &DatabaseProvider) -> bool {
 struct Connection {
     #[serde(default, skip_serializing_if = "is_postgresql_provider")]
     provider: DatabaseProvider,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    plugin_id: Option<String>,
     connection_url: String,
     username: String,
     password: PrivateString,
@@ -117,6 +122,7 @@ pub(super) struct DatabaseEffectPlan {
     started: std::time::Instant,
     outbound: crate::outbound::Outbound,
     ha: Option<Arc<Mutex<HaProcess>>>,
+    plugin: Option<plugin::SharedDatabasePlugin>,
     connection: Connection,
     fence_id: String,
     lease: DatabaseLease,
@@ -185,9 +191,29 @@ pub(super) struct DatabaseConfigPlan {
     mount: String,
     key: String,
     connection: Connection,
+    plugin: Option<plugin::SharedDatabasePlugin>,
     expected_mount_digest: [u8; 32],
     outbound: crate::outbound::Outbound,
     now: u64,
+}
+
+#[derive(Serialize)]
+struct PluginDatabaseRequest<'a> {
+    action: &'a str,
+    namespace: &'a str,
+    mount: &'a str,
+    connection: &'a str,
+    connection_url: &'a str,
+    manager_username: &'a str,
+    manager_password: &'a str,
+    lease_id: Option<&'a str>,
+    provider_id: Option<&'a str>,
+    username: Option<&'a str>,
+    password: Option<&'a str>,
+    provider_role: Option<&'a str>,
+    seq: Option<u64>,
+    request_digest: Option<&'a str>,
+    expires: Option<u64>,
 }
 
 impl DatabaseConfigPlan {
@@ -222,6 +248,49 @@ impl DatabaseConfigPlan {
                 let whoami = valkey.command(&["ACL", "WHOAMI"]).map_err(failure)?;
                 if !resp_text_equals(&whoami, &self.connection.username) {
                     return Err(failure("Valkey manager identity mismatch"));
+                }
+            }
+            DatabaseProvider::Plugin => {
+                let host = self
+                    .plugin
+                    .as_ref()
+                    .ok_or_else(|| failure("database plugin is not admitted by this deployment"))?;
+                let request = PluginDatabaseRequest {
+                    action: "configure",
+                    namespace: &self.namespace,
+                    mount: self.mount.trim_end_matches('/'),
+                    connection: &self.key,
+                    connection_url: &self.connection.connection_url,
+                    manager_username: &self.connection.username,
+                    manager_password: &self.connection.password.0,
+                    lease_id: None,
+                    provider_id: None,
+                    username: None,
+                    password: None,
+                    provider_role: None,
+                    seq: None,
+                    request_digest: None,
+                    expires: None,
+                };
+                let encoded = serde_json::to_vec(&request)
+                    .map_err(|_| failure("database plugin request encoding failed"))?;
+                let request = SecretValue::new(encoded)
+                    .map_err(|_| failure("database plugin request exceeds runtime bound"))?;
+                let response = host
+                    .lock()
+                    .map_err(|_| failure("database plugin host lock unavailable"))?
+                    .invoke(PluginOperation::Read, &request, &SecretEnvironment::new())
+                    .map_err(database_plugin_config_failure)?;
+                let observed = crate::auth::parse_strict_json(response.expose())
+                    .map_err(|_| failure("database plugin returned invalid JSON"))?;
+                let object = observed
+                    .as_object()
+                    .ok_or_else(|| failure("database plugin response must be an object"))?;
+                if object.len() != 2
+                    || object.get("configured") != Some(&json!(true))
+                    || object.get("manager_identity") != Some(&json!(self.connection.username))
+                {
+                    return Err(failure("database plugin configuration readback mismatch"));
                 }
             }
         }
@@ -281,6 +350,9 @@ impl DatabaseEffectPlan {
                 .map_err(|_| failure("HA provider fence unavailable"))?
                 .ensure_linearizable()
                 .map_err(|_| failure("HA provider fence unavailable"))?;
+        }
+        if self.connection.provider == DatabaseProvider::Plugin {
+            return self.execute_plugin();
         }
         if self.connection.provider == DatabaseProvider::Valkey {
             return self.execute_valkey();
@@ -399,6 +471,62 @@ impl DatabaseEffectPlan {
             if readback != "true" {
                 return Err(indeterminate());
             }
+        }
+        Ok(())
+    }
+
+    fn execute_plugin(&self) -> Result<(), Response> {
+        let host = self
+            .plugin
+            .as_ref()
+            .ok_or_else(|| failure("database plugin is not admitted by this deployment"))?;
+        let (operation, action, expected_active) = match self.lease.phase {
+            Phase::PendingIssue => (PluginOperation::Issue, "issue", true),
+            Phase::PendingRenew => (PluginOperation::Renew, "renew", true),
+            Phase::PendingRevoke => (PluginOperation::Revoke, "revoke", false),
+            _ => return Err(failure("database plugin effect is not pending")),
+        };
+        let request = PluginDatabaseRequest {
+            action,
+            namespace: &self.namespace,
+            mount: self.mount.trim_end_matches('/'),
+            connection: &self.lease.db_name,
+            connection_url: &self.connection.connection_url,
+            manager_username: &self.connection.username,
+            manager_password: &self.connection.password.0,
+            lease_id: Some(&self.lease.id),
+            provider_id: Some(&self.lease.provider_id),
+            username: Some(&self.lease.username),
+            password: self.lease.password.as_ref().map(|value| value.0.as_str()),
+            provider_role: Some(&self.lease.provider_role),
+            seq: Some(self.lease.seq),
+            request_digest: Some(&self.lease.request_digest),
+            expires: Some(self.lease.expires),
+        };
+        let encoded = serde_json::to_vec(&request)
+            .map_err(|_| failure("database plugin request encoding failed"))?;
+        let request = SecretValue::new(encoded)
+            .map_err(|_| failure("database plugin request exceeds runtime bound"))?;
+        let response = host
+            .lock()
+            .map_err(|_| failure("database plugin host lock unavailable"))?
+            .invoke(operation, &request, &SecretEnvironment::new())
+            .map_err(|error| database_plugin_effect_failure(error, &self.lease.id))?;
+        let observed = crate::auth::parse_strict_json(response.expose())
+            .map_err(|_| database_plugin_indeterminate(&self.lease.id))?;
+        let object = observed
+            .as_object()
+            .ok_or_else(|| database_plugin_indeterminate(&self.lease.id))?;
+        if object.len() != 7
+            || object.get("applied") != Some(&json!(true))
+            || object.get("provider_id") != Some(&json!(self.lease.provider_id))
+            || object.get("seq").and_then(Value::as_u64) != Some(self.lease.seq)
+            || object.get("request_digest") != Some(&json!(self.lease.request_digest))
+            || object.get("username") != Some(&json!(self.lease.username))
+            || object.get("active").and_then(Value::as_bool) != Some(expected_active)
+            || object.get("expires").and_then(Value::as_u64) != Some(self.lease.expires)
+        {
+            return Err(database_plugin_indeterminate(&self.lease.id));
         }
         Ok(())
     }
@@ -689,15 +817,27 @@ impl DatabaseState {
                         || connection.allowed_roles.iter().any(|s| !name(s))
                         || match connection.provider {
                             DatabaseProvider::Postgresql => {
-                                Target::parse(&connection.connection_url, "postgresql").is_err()
+                                connection.plugin_id.is_some()
+                                    || Target::parse(&connection.connection_url, "postgresql")
+                                        .is_err()
                             }
                             DatabaseProvider::Valkey => {
-                                Target::parse(&connection.connection_url, "valkeys").is_err()
+                                connection.plugin_id.is_some()
+                                    || Target::parse(&connection.connection_url, "valkeys").is_err()
                                     || connection
                                         .connection_url
                                         .rsplit_once('/')
                                         .and_then(|(_, value)| value.parse::<u8>().ok())
                                         .is_none_or(|db| db != 0)
+                            }
+                            DatabaseProvider::Plugin => {
+                                connection
+                                    .plugin_id
+                                    .as_deref()
+                                    .is_none_or(|value| !name(value))
+                                    || connection.connection_url.is_empty()
+                                    || connection.connection_url.len() > 2048
+                                    || connection.connection_url.chars().any(char::is_control)
                             }
                         }
                     {
@@ -827,6 +967,14 @@ impl DatabaseState {
     }
 }
 impl Connection {
+    fn plugin_name(&self) -> &str {
+        match self.provider {
+            DatabaseProvider::Postgresql => "postgresql-database-plugin",
+            DatabaseProvider::Valkey => "valkey-database-plugin",
+            DatabaseProvider::Plugin => self.plugin_id.as_deref().unwrap_or(""),
+        }
+    }
+
     fn session(&self, outbound: &crate::outbound::Outbound) -> Result<PgSession, &'static str> {
         let (endpoint, target) = outbound.endpoint(&self.connection_url, "postgresql")?;
         let database = target
@@ -847,6 +995,40 @@ impl Connection {
         ValkeySession::connect(&endpoint, &target, &self.username, &self.password.0)
     }
 }
+fn database_plugin_config_failure(error: PluginHostError) -> Response {
+    match error {
+        PluginHostError::ProcessBeforeEntry | PluginHostError::SandboxUnavailable => {
+            failure("database plugin unavailable before entry")
+        }
+        _ => failure("database plugin configuration readback unavailable"),
+    }
+}
+
+fn database_plugin_indeterminate(lease_id: &str) -> Response {
+    Response {
+        status: 503,
+        body: json!({
+            "errors":["database plugin outcome indeterminate; durable intent retained"],
+            "lease_id":lease_id,
+            "reconcile_required":true
+        }),
+    }
+}
+
+fn database_plugin_effect_failure(error: PluginHostError, lease_id: &str) -> Response {
+    match error {
+        PluginHostError::ProcessBeforeEntry | PluginHostError::SandboxUnavailable => Response {
+            status: 503,
+            body: json!({
+                "errors":["database plugin unavailable before entry; durable intent retained"],
+                "lease_id":lease_id,
+                "reconcile_required":true
+            }),
+        },
+        _ => database_plugin_indeterminate(lease_id),
+    }
+}
+
 fn failure(message: &str) -> Response {
     Response::error(503, message)
 }
@@ -1183,12 +1365,15 @@ impl Service {
                             ],
                         )?;
                         let plugin_name = text(body, "plugin_name")?;
-                        let provider = match plugin_name {
-                            "postgresql-database-plugin" => DatabaseProvider::Postgresql,
-                            "valkey-database-plugin" => DatabaseProvider::Valkey,
+                        let (provider, plugin_id) = match plugin_name {
+                            "postgresql-database-plugin" => (DatabaseProvider::Postgresql, None),
+                            "valkey-database-plugin" => (DatabaseProvider::Valkey, None),
+                            value if name(value) && self.database_plugins.contains_key(value) => {
+                                (DatabaseProvider::Plugin, Some(value.to_owned()))
+                            }
                             _ => {
                                 return Err(invalid(
-                                    "only verified PostgreSQL or Valkey provider configuration is supported",
+                                    "database provider is not admitted by this deployment",
                                 ));
                             }
                         };
@@ -1199,21 +1384,24 @@ impl Service {
                             return Err(invalid("provider configuration verification is required"));
                         }
                         let url = text(body, "connection_url")?.to_owned();
-                        let target = Target::parse(
-                            &url,
-                            match provider {
-                                DatabaseProvider::Postgresql => "postgresql",
-                                DatabaseProvider::Valkey => "valkeys",
-                            },
-                        )
-                        .map_err(invalid)?;
-                        if !name(target.path.trim_start_matches('/'))
-                            || (provider == DatabaseProvider::Valkey
-                                && target.path.trim_start_matches('/').parse::<u8>() != Ok(0))
-                        {
-                            return Err(invalid(
-                                "single explicit bounded provider database required",
-                            ));
+                        if provider != DatabaseProvider::Plugin {
+                            let target = Target::parse(
+                                &url,
+                                match provider {
+                                    DatabaseProvider::Postgresql => "postgresql",
+                                    DatabaseProvider::Valkey => "valkeys",
+                                    DatabaseProvider::Plugin => unreachable!(),
+                                },
+                            )
+                            .map_err(invalid)?;
+                            if !name(target.path.trim_start_matches('/'))
+                                || (provider == DatabaseProvider::Valkey
+                                    && target.path.trim_start_matches('/').parse::<u8>() != Ok(0))
+                            {
+                                return Err(invalid(
+                                    "single explicit bounded provider database required",
+                                ));
+                            }
                         }
                         let username = text(body, "username")?.to_owned();
                         if !name(&username) {
@@ -1253,6 +1441,7 @@ impl Service {
                         }
                         let connection = Connection {
                             provider,
+                            plugin_id: plugin_id.clone(),
                             connection_url: url,
                             username,
                             password: PrivateString(password),
@@ -1265,11 +1454,16 @@ impl Service {
                                 "database configuration validation is already pending",
                             ));
                         }
+                        let plugin = plugin_id
+                            .as_ref()
+                            .and_then(|id| self.database_plugins.get(id))
+                            .cloned();
                         self.pending_database_config_effect = Some(DatabaseConfigPlan {
                             namespace: (*ns).into(),
                             mount,
                             key: key.into(),
                             connection,
+                            plugin,
                             expected_mount_digest,
                             outbound: self.outbound.clone(),
                             now,
@@ -1289,7 +1483,7 @@ impl Service {
                                 Response::error(404, "database configuration not found")
                             })?;
                         Ok(Response::ok(
-                            json!({"data":{"plugin_name":match c.provider { DatabaseProvider::Postgresql => "postgresql-database-plugin", DatabaseProvider::Valkey => "valkey-database-plugin" },"connection_url":c.connection_url,"username":c.username,"allowed_roles":c.allowed_roles,"verify_connection":true}}),
+                            json!({"data":{"plugin_name":c.plugin_name(),"connection_url":c.connection_url,"username":c.username,"allowed_roles":c.allowed_roles,"verify_connection":true}}),
                         ))
                     }
                     ("config", "LIST") => {
@@ -1593,6 +1787,16 @@ impl Service {
             .get(&lease.db_name)
             .cloned()
             .ok_or_else(|| failure("provider configuration disappeared"))?;
+        let plugin = connection
+            .plugin_id
+            .as_ref()
+            .and_then(|id| self.database_plugins.get(id))
+            .cloned();
+        if connection.provider == DatabaseProvider::Plugin && plugin.is_none() {
+            return Err(failure(
+                "database plugin is not admitted by this deployment",
+            ));
+        }
         Ok(DatabaseEffectPlan {
             namespace: ns.to_owned(),
             mount: mount.to_owned(),
@@ -1600,6 +1804,7 @@ impl Service {
             started: std::time::Instant::now(),
             outbound: self.outbound.clone(),
             ha: self.ha.clone(),
+            plugin,
             connection,
             fence_id: provider_fence_identity(&state.cluster_id)?,
             lease,
@@ -2287,6 +2492,7 @@ mod tests {
             "local".into(),
             Connection {
                 provider: DatabaseProvider::Postgresql,
+                plugin_id: None,
                 connection_url: "postgresql://localhost:5432/app".into(),
                 username: "hb_manager".into(),
                 password: PrivateString("synthetic-password".into()),

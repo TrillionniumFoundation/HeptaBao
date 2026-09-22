@@ -1469,18 +1469,23 @@
       "positive": "Load actual external database plugin and drive static/dynamic/root lifecycle",
       "hostile": "Reject interface/version mismatch, changed executable and foreign credential ownership",
       "lifecycle": "Restart plugin across uncertain SQL effect and reconcile exactly one lease",
-      "implementation": "CONTRACT_ONLY",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_database.rs",
+        "crates/heptabao-server/src/service_plugin.rs"
+      ],
       "contract_sources": [
         "crates/heptabao-plugin-host/src/lib.rs"
       ],
       "guides": [
         "docs/modules/heptabao-plugin-host.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/plugin_database_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Connection lifecycle, static/dynamic users and root rotation."
+      "remaining_scope": "Static-role lifecycle, root credential rotation, full OpenBao database-plugin RPC compatibility, migration/HA fault qualification and independent provider admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-PLUGIN-KMS",

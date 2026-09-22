@@ -92,6 +92,8 @@ pub struct Config {
     #[serde(default)]
     pub plugin_auth: Vec<crate::PluginAuthConfig>,
     #[serde(default)]
+    pub plugin_database: Vec<crate::PluginDatabaseConfig>,
+    #[serde(default)]
     pub plugin_secrets: Vec<crate::PluginSecretConfig>,
 }
 fn default_lifecycle_interval() -> u64 {
@@ -299,6 +301,7 @@ fn serve_inner(
         }
         service.install_outbound_endpoints(config.outbound_endpoints)?;
         service.install_auth_plugins(config.plugin_auth)?;
+        service.install_database_plugins(config.plugin_database)?;
         service.install_secret_plugins(config.plugin_secrets)?;
         service.install_audit_http_endpoint(config.audit_http_url)?;
         service.install_audit_socket(config.audit_socket)?;

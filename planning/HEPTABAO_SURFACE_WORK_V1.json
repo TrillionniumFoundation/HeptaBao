@@ -438,6 +438,34 @@
         "actual_openldap_2_6"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "postgres_storage_live": {
+      "script": "qa/openbao-acceptance/postgres_storage_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--postgres-bin",
+        "{postgres_bin}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "actual_postgresql_17"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "plugin_database_live": {
+      "script": "qa/openbao-acceptance/plugin_database_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1406,8 +1434,8 @@
     {
       "surface_id": "HB-SURFACE-STORAGE-POSTGRESQL",
       "category": "storage_backends",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/postgres_storage.rs",
       "technical_contract": {
         "api_or_protocol": "PostgreSQL storage backend, distinct from database secrets provider",
         "required_positive_and_hostile_behavior": "Opaque encrypted records, transaction isolation, HA lock/leadership and crash-consistent recovery",
@@ -1416,8 +1444,21 @@
         "isolation": "For HB-SURFACE-STORAGE-POSTGRESQL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "postgres_storage_live.fresh_postgresql_17_cluster_and_unprivileged_storage_owner",
+        "postgres_storage_live.opaque_binary_value_roundtrip",
+        "postgres_storage_live.shallow_ordered_hierarchical_listing",
+        "postgres_storage_live.multi_record_commit_publishes_together",
+        "postgres_storage_live.repeatable_read_retains_snapshot",
+        "postgres_storage_live.lost_commit/lost_commit_reply_reports_unknown_outcome",
+        "postgres_storage_live.lost_commit_effect_is_durable_at_postgresql",
+        "postgres_storage_live.wrong_password/untrusted_tls_or_credentials_rejected",
+        "postgres_storage_live.missing_primary_key/altered_storage_constraints_rejected",
+        "postgres_storage_live.committed_storage_survives_postgresql_sigkill_restart"
+      ],
+      "available_scoped_profiles": [
+        "postgres_storage_live"
+      ],
       "whole_surface_admitted": false
     },
     {
@@ -1500,8 +1541,8 @@
     {
       "surface_id": "HB-SURFACE-PLUGIN-DATABASE",
       "category": "plugin_classes",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
       "technical_contract": {
         "api_or_protocol": "database plugin catalog and provider invocation",
         "required_positive_and_hostile_behavior": "Credential issue/renew/revoke intents, readback, plugin crash and version transition",
@@ -1510,8 +1551,22 @@
         "isolation": "For HB-SURFACE-PLUGIN-DATABASE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "plugin_database_live.catalog_lists_admitted_database_plugin",
+        "plugin_database_live.unknown_database_plugin_config_fails_closed",
+        "plugin_database_live.database_plugin_configuration_readback",
+        "plugin_database_live.dynamic_credential_issue_reaches_plugin",
+        "plugin_database_live.issued_secret_matches_plugin_digest",
+        "plugin_database_live.dynamic_credential_renew_reaches_plugin",
+        "plugin_database_live.database_plugin_binding_survives_service_restart",
+        "plugin_database_live.changed_plugin_executable_is_fenced_before_revoke",
+        "plugin_database_live.digest_fence_does_not_claim_external_revoke",
+        "plugin_database_live.restored_plugin_completes_pending_revoke",
+        "plugin_database_live.revoked_plugin_credential_is_inactive"
+      ],
+      "available_scoped_profiles": [
+        "plugin_database_live"
+      ],
       "whole_surface_admitted": false
     },
     {
