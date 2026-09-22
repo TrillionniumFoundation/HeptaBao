@@ -61,6 +61,7 @@ class Valkey:
     @contextmanager
     def session(self, user, password):
         context = ssl.create_default_context(cafile=str(self.ca))
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
         with socket.create_connection(("127.0.0.1", self.port), timeout=3) as raw:
             with context.wrap_socket(raw, server_hostname="localhost") as tls:
                 with tls.makefile("rwb", buffering=0) as stream:
