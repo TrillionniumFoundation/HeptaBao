@@ -273,36 +273,47 @@ if action=="issue" and (not isinstance(password,str) or not re.fullmatch(r"[0-9a
 if action=="revoke" and expires!=0: raise SystemExit(68)
 if action!="revoke" and expires<=0: raise SystemExit(68)
 
-probe=run_cql(manager,manager_password,"SELECT release_version FROM system.local;")
+probe=run_cql(
+    manager,
+    manager_password,
+    "SELECT release_version FROM system.local;"
+    "SELECT seq FROM heptabao_provider.fences WHERE provider_id="+q(provider_id)+";"
+    "SELECT role FROM system_auth.roles WHERE role="+q(username)+";",
+)
 if probe.returncode:
     emit({{"applied":False,"provider_id":provider_id,"seq":seq,"request_digest":digest,
           "username":username,"active":action!="revoke","expires":expires}})
     raise SystemExit(0)
 
-old=cql(manager,manager_password,
-    "SELECT seq FROM heptabao_provider.fences WHERE provider_id="+q(provider_id)+";")
-numbers=[int(v) for v in re.findall(r"(?m)^\\s*(\\d+)\\s*$",old)]
+numbers=[int(v) for v in re.findall(r"(?m)^\\s*(\\d+)\\s*$",probe.stdout)]
 if numbers and seq<numbers[-1]: raise SystemExit(69)
+if action=="renew" and username not in probe.stdout: raise SystemExit(69)
 
-if action=="issue":
-    cql(manager,manager_password,
-        "CREATE ROLE IF NOT EXISTS "+q(username)+" WITH PASSWORD = "+q(password)+" AND LOGIN = true;")
-    permission="SELECT" if role=="readonly" else "SELECT, MODIFY"
-    cql(manager,manager_password,"GRANT "+permission+" ON KEYSPACE app TO "+q(username)+";")
-    active=True
-elif action=="renew":
-    roles=cql(manager,manager_password,"SELECT role FROM system_auth.roles WHERE role="+q(username)+";")
-    if username not in roles: raise SystemExit(69)
-    active=True
-else:
-    cql(manager,manager_password,"DROP ROLE IF EXISTS "+q(username)+";")
-    active=False
-
-cql(manager,manager_password,
+fence=(
     "INSERT INTO heptabao_provider.fences(provider_id,seq,request_digest,username,active,expires) VALUES("+
     q(provider_id)+","+str(seq)+","+q(digest)+","+q(username)+","+
-    ("true" if active else "false")+","+str(expires)+");")
-roles=cql(manager,manager_password,"SELECT role FROM system_auth.roles WHERE role="+q(username)+";")
+    ("false" if action=="revoke" else "true")+","+str(expires)+");"
+)
+if action=="issue":
+    permission="SELECT" if role=="readonly" else "SELECT, MODIFY"
+    mutation=(
+        "CREATE ROLE IF NOT EXISTS "+q(username)+" WITH PASSWORD = "+q(password)+" AND LOGIN = true;"
+        "GRANT "+permission+" ON KEYSPACE app TO "+q(username)+";"+
+        fence
+    )
+    active=True
+elif action=="renew":
+    mutation=fence
+    active=True
+else:
+    mutation="DROP ROLE IF EXISTS "+q(username)+";"+fence
+    active=False
+
+roles=cql(
+    manager,
+    manager_password,
+    mutation+"SELECT role FROM system_auth.roles WHERE role="+q(username)+";",
+)
 if (active and username not in roles) or ((not active) and username in roles): raise SystemExit(69)
 emit({{"applied":True,"provider_id":provider_id,"seq":seq,"request_digest":digest,
       "username":username,"active":active,"expires":expires}})
