@@ -548,9 +548,9 @@ Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`.
 
 ### HB-SURFACE-DB-MYSQL
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H19-WP06`, `H19-WP13`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP06`, `H19-WP13`.
 API families: `database/config/*`; `database/roles/*`; `database/static-roles/*`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service_database.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
@@ -560,9 +560,9 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Recover DDL partial effects and prove host/user revocation after restart.
 
-**Remaining scope:** Real service and statement/rollback matrix required.
+**Remaining scope:** A checksum-pinned MySQL 8.4 provider profile exercises dynamic readonly/readwrite issuance, provider readback, rollback, renewal, provider and HeptaBao restart, revoke, outage retention and restart reconciliation. Static roles, root credential rotation, full OpenBao statement/template/error parity, multi-host faults, migration and independent qualification remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/mysql_live.py`.
 
 ### HB-SURFACE-DB-CASSANDRA
 

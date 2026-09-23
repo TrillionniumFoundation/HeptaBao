@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "qa" / "single-node"))
 import smoke
 
-IMAGE = "mysql:8.4"
+IMAGE = "mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d"
 CORPUS_CASE_IDS = (
     "real_mysql_8_4_ready",
     "mysql_plugin_configuration_readback",
@@ -287,6 +287,27 @@ if action=="issue" and (not isinstance(password,str) or not re.fullmatch(r"[0-9a
 def q(value):
     return "'" + value.replace("'","''") + "'"
 
+# Prove a provider outage before any mutating statement. A bounded no-effect
+# receipt keeps the plugin host active while the durable lease intent remains
+# pending, so an explicit reconcile can safely re-enter after provider recovery.
+probe_script='IFS= read -r HB_USER; IFS= read -r HB_PASSWORD; MYSQL_PWD="$HB_PASSWORD" exec mysql --protocol=socket --batch --raw --skip-column-names -u"$HB_USER"'
+probe=subprocess.run(
+    [DOCKER,"exec","-i",CONTAINER,"sh","-lc",probe_script],
+    input=manager+"\\n"+manager_password+"\\nSELECT 1;\\n",
+    text=True,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=8,
+)
+if probe.returncode:
+    emit({{
+        "applied":False,
+        "provider_id":provider_id,
+        "seq":seq,
+        "request_digest":digest,
+        "username":username,
+        "active":action!="revoke",
+        "expires":expires,
+    }})
+    raise SystemExit(0)
+
 previous=sql(manager,manager_password,
     "SELECT CONCAT(seq,'|',request_digest,'|',username,'|',active,'|',expires) "
     "FROM heptabao_provider.fences WHERE provider_id="+q(provider_id)+";")
@@ -523,9 +544,23 @@ def run(binary: Path, root: Path, output: Path) -> int:
             and "data" not in body,
         )
         provider.restart()
-        status, _ = instance.call("POST", "sys/leases/reconcile/" + outage_lease, {})
-        if status != 204:
-            status, _ = instance.call("POST", "sys/leases/revoke", {"lease_id": outage_lease})
+        reconcile_deadline = time.monotonic() + 12
+        status = 503
+        while time.monotonic() < reconcile_deadline:
+            status, body = instance.call(
+                "POST", "sys/leases/reconcile/" + outage_lease, {}
+            )
+            if status == 204:
+                break
+            errors = body.get("errors", [])
+            in_flight = (
+                status == 503
+                and body.get("reconcile_required") is True
+                and any("already in flight" in str(error) for error in errors)
+            )
+            if not in_flight:
+                break
+            time.sleep(0.1)
         check(
             "mysql_restart_reconciles_pending_revoke",
             status == 204
@@ -592,7 +627,7 @@ def main() -> int:
         print("BLOCKED: docker is required for real MySQL provider qualification", file=sys.stderr)
         return 77
     if not MySqlContainer.image_present():
-        print("BLOCKED: pinned mysql:8.4 image is not present; pull it explicitly", file=sys.stderr)
+        print("BLOCKED: pinned MySQL 8.4 image is not present; pull it explicitly", file=sys.stderr)
         return 77
     try:
         return run(args.binary.resolve(), args.work_dir.resolve(), args.output.resolve())

@@ -1076,16 +1076,20 @@
       "positive": "Run real MySQL/MariaDB static/dynamic user and root-rotation profiles",
       "hostile": "Reject wrong server identity and privilege-escalating template substitution",
       "lifecycle": "Recover DDL partial effects and prove host/user revocation after restart",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_database.rs"
+      ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/mysql_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Real service and statement/rollback matrix required."
+      "remaining_scope": "A checksum-pinned MySQL 8.4 provider profile exercises dynamic readonly/readwrite issuance, provider readback, rollback, renewal, provider and HeptaBao restart, revoke, outage retention and restart reconciliation. Static roles, root credential rotation, full OpenBao statement/template/error parity, multi-host faults, migration and independent qualification remain open."
     },
     {
       "surface_id": "HB-SURFACE-DB-CASSANDRA",

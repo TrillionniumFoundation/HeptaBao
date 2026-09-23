@@ -427,6 +427,24 @@
         "idle_expiry_reconciles",
         "no_plaintext_secret_persistence"
       ]
+    },
+    "mysql_live": {
+      "case_ids": [
+        "real_mysql_8_4_ready",
+        "mysql_plugin_configuration_readback",
+        "mysql_readonly_issue_reaches_provider",
+        "mysql_readonly_select_succeeds",
+        "mysql_readonly_write_denied",
+        "mysql_readwrite_statement_matrix",
+        "mysql_transaction_rollback_is_observed",
+        "mysql_dynamic_credential_renew_reaches_provider",
+        "mysql_provider_state_survives_restart",
+        "mysql_service_state_survives_restart",
+        "mysql_revoke_removes_provider_login",
+        "mysql_outage_retains_revoke_intent",
+        "mysql_restart_reconciles_pending_revoke"
+      ],
+      "script": "qa/openbao-acceptance/mysql_live.py"
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

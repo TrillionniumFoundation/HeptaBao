@@ -1241,18 +1241,34 @@
     {
       "surface_id": "HB-SURFACE-DB-MYSQL",
       "category": "database_providers",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
       "technical_contract": {
         "api_or_protocol": "MySQL/MariaDB database provider",
         "required_positive_and_hostile_behavior": "TLS/auth plugins, SQL template escaping, host-qualified user identity and password/root rotation",
-        "remaining_semantics_and_effect_checks": "Verify committed SQL, existing sessions, delayed renewal after revoke and idempotent restart recovery",
+        "remaining_semantics_and_effect_checks": "Scoped MySQL 8.4 dynamic readonly/readwrite issue, provider readback, rollback, renew, revoke, service/provider restart and outage reconciliation are executable; static roles, root rotation, full OpenBao SQL/template/error parity and multi-host faults remain open.",
         "crash_reopen": "Interrupt MySQL/MariaDB database provider before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-DB-MYSQL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "mysql_live.real_mysql_8_4_ready",
+        "mysql_live.mysql_plugin_configuration_readback",
+        "mysql_live.mysql_readonly_issue_reaches_provider",
+        "mysql_live.mysql_readonly_select_succeeds",
+        "mysql_live.mysql_readonly_write_denied",
+        "mysql_live.mysql_readwrite_statement_matrix",
+        "mysql_live.mysql_transaction_rollback_is_observed",
+        "mysql_live.mysql_dynamic_credential_renew_reaches_provider",
+        "mysql_live.mysql_provider_state_survives_restart",
+        "mysql_live.mysql_service_state_survives_restart",
+        "mysql_live.mysql_revoke_removes_provider_login",
+        "mysql_live.mysql_outage_retains_revoke_intent",
+        "mysql_live.mysql_restart_reconciles_pending_revoke"
+      ],
+      "available_scoped_profiles": [
+        "mysql_8_4_checksum_plugin"
+      ],
       "whole_surface_admitted": false
     },
     {

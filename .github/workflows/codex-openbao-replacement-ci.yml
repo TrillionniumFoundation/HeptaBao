@@ -128,6 +128,18 @@ jobs:
           timeout 180 python qa/openbao-acceptance/plugin_database_live.py             --binary "$PWD/target/debug/heptabao-server"             --work-dir "$RUNNER_TEMP/heptabao-plugin-database"
 
 
+      - name: Exercise checksum-pinned MySQL 8.4 provider lifecycle
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull mysql@sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d
+          timeout 360 python qa/openbao-acceptance/mysql_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --work-dir "$RUNNER_TEMP/heptabao-mysql" \
+            --output "$RUNNER_TEMP/heptabao-mysql-evidence.json"
+
+
+
       - name: Exercise mandatory host-enrolled HTTPS audit delivery
         shell: bash
         run: |
