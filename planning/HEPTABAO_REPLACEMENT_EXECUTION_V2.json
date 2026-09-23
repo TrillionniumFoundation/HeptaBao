@@ -825,21 +825,26 @@
       ],
       "public_baseline_reference": "public-source-surface://builtin/logical/pkiext",
       "api_families": [
-        "{mount}/(versioned pkiext protocol inventory)"
+        "{mount}/config/cluster",
+        "{mount}/config/acme"
       ],
-      "positive": "Define the separate extension protocol and prove a positive public operation",
-      "hostile": "Reject unsupported extension fields and cross-issuer credential access",
-      "lifecycle": "Version extension state and test interrupted conversion without modifying source",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "positive": "Persist and read the bounded PKI cluster and ACME configuration used by OpenBao's test-only pkiext package",
+      "hostile": "Reject unknown fields, malformed URLs and unsupported issuer selection before changing the existing PKI state",
+      "lifecycle": "Preserve the configuration across encrypted service restart while leaving ACME account/order/challenge/revocation protocol routes open",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/engines/pki.rs"
+      ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/pkiext_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Separate compatibility and protocol inventory required."
+      "remaining_scope": "OpenBao's builtin/logical/pkiext has no runtime targets; ACME directory, nonce, account, order, authorization, challenge, certificate and revoke protocol behavior remains open, as do full PKI issuer/rotation semantics."
     },
     {
       "surface_id": "HB-SURFACE-SECRET-SSH",

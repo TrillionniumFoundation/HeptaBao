@@ -399,8 +399,25 @@ The selected `qa/openbao-acceptance/pki_live.py` profile compares the same
 internal Ed25519 root/role/lease-backed issue/revoke/CRL observations with the
 pinned OpenBao 2.6.2 binary. That finite profile is not the full PKI surface.
 Intermediates, imported/KMS keys, CSR signing/sign-verbatim, issuer/key rotation,
-OCSP, ACME, EST, PKIext, raw CRL endpoints, all role parameters and high-volume
+OCSP, ACME issuance, EST, raw CRL endpoints, all role parameters and high-volume
 revocation/tidy behavior remain outside the current implementation.
+
+### Bounded PKI extension configuration
+
+OpenBao 2.6.2's `builtin/logical/pkiext` directory is a test-only package with
+no runtime targets. Its tests configure the existing PKI engine for ACME, so
+HeptaBao keeps that state on the existing encrypted PKI mount rather than
+creating a second engine. The bounded slice supports authenticated
+`config/cluster` and `config/acme` writes/reads with fixed-size URL, resolver,
+role and policy inputs. Unknown fields, malformed URLs, unsupported issuer
+selection and invalid role/policy combinations fail before state mutation.
+
+The configuration is covered by `qa/openbao-acceptance/pkiext_live.py` over the
+real TLS server and by the PKI service persistence test across reopen. ACME
+directory, nonce, account, order, authorization, challenge, certificate and
+revocation protocol routes remain explicit unsupported PKI paths; this slice
+does not claim ACME issuance, external CA identity, issuer rotation or full
+OpenBao PKI compatibility.
 
 ## Current SSH OTP increment
 

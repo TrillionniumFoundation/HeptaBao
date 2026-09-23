@@ -174,6 +174,21 @@
         "openapi_restart_stable"
       ]
     },
+    "pkiext_live": {
+      "script": "qa/openbao-acceptance/pkiext_live.py",
+      "case_ids": [
+        "pkiext.mount",
+        "pkiext.unauthorized_denied",
+        "pkiext.cluster_config",
+        "pkiext.acme_config",
+        "pkiext.acme_config_read",
+        "pkiext.invalid_cluster_rejected",
+        "pkiext.unknown_field_rejected",
+        "pkiext.rejected_writes_preserve_state",
+        "pkiext.cluster_persists_after_restart",
+        "pkiext.acme_persists_after_restart"
+      ]
+    },
     "plugin_secret_live": {
       "script": "qa/openbao-acceptance/plugin_secret_live.py",
       "case_ids": [

@@ -9,7 +9,7 @@ use ring::{
     rand::SystemRandom,
     signature::{Ed25519KeyPair, KeyPair},
 };
-use std::net::IpAddr;
+use std::net::{IpAddr, SocketAddr};
 use zeroize::{Zeroize, Zeroizing};
 
 const MAX_ROLES: usize = 256;
@@ -17,6 +17,52 @@ const MAX_ISSUED: usize = 4096;
 const MAX_TTL: u64 = 10 * 365 * 24 * 3600;
 const DEFAULT_ROOT_TTL: u64 = 365 * 24 * 3600;
 const DEFAULT_LEAF_TTL: u64 = 24 * 3600;
+const MAX_ACME_LIST: usize = 64;
+const MAX_ACME_CONFIG_STRING: usize = 2048;
+
+#[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
+struct AcmeConfig {
+    #[serde(default)]
+    enabled: bool,
+    #[serde(default = "default_acme_wildcard")]
+    allowed_issuers: Vec<String>,
+    #[serde(default = "default_acme_wildcard")]
+    allowed_roles: Vec<String>,
+    #[serde(default)]
+    allow_role_ext_key_usage: bool,
+    #[serde(default = "default_acme_directory_policy")]
+    default_directory_policy: String,
+    #[serde(default)]
+    dns_resolver: String,
+    #[serde(default = "default_acme_eab_policy")]
+    eab_policy: String,
+}
+
+fn default_acme_wildcard() -> Vec<String> {
+    vec!["*".into()]
+}
+
+fn default_acme_directory_policy() -> String {
+    "sign-verbatim".into()
+}
+
+fn default_acme_eab_policy() -> String {
+    "not-required".into()
+}
+
+impl Default for AcmeConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            allowed_issuers: default_acme_wildcard(),
+            allowed_roles: default_acme_wildcard(),
+            allow_role_ext_key_usage: false,
+            default_directory_policy: default_acme_directory_policy(),
+            dns_resolver: String::new(),
+            eab_policy: default_acme_eab_policy(),
+        }
+    }
+}
 
 #[derive(Clone, Serialize, Deserialize)]
 pub(super) struct Pki {
@@ -24,6 +70,12 @@ pub(super) struct Pki {
     pub(super) default_ttl: u64,
     #[serde(default = "max_pki_ttl")]
     pub(super) max_ttl: u64,
+    #[serde(default)]
+    cluster_path: String,
+    #[serde(default)]
+    aia_path: String,
+    #[serde(default)]
+    acme: Box<AcmeConfig>,
     root: Option<RootCa>,
     roles: BTreeMap<String, Role>,
     pub(super) issued: BTreeMap<String, IssuedCertificate>,
@@ -88,6 +140,9 @@ impl Default for Pki {
         Self {
             default_ttl: DEFAULT_LEAF_TTL,
             max_ttl: MAX_TTL,
+            cluster_path: String::new(),
+            aia_path: String::new(),
+            acme: Box::new(AcmeConfig::default()),
             root: None,
             roles: BTreeMap::new(),
             issued: BTreeMap::new(),
@@ -123,6 +178,12 @@ impl Pki {
             || self.issued.len() > MAX_ISSUED
         {
             return Err(bad("invalid PKI state bounds"));
+        }
+        validate_uri(&self.cluster_path, "PKI cluster path")?;
+        validate_uri(&self.aia_path, "PKI AIA path")?;
+        validate_acme_config(&self.acme, &self.roles)?;
+        if self.acme.enabled && self.cluster_path.is_empty() {
+            return Err(bad("enabled PKI ACME requires a configured cluster path"));
         }
         if let Some(root) = &self.root {
             if !valid_common_name(&root.common_name)
@@ -274,6 +335,12 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        if path == "config/cluster" {
+            return self.handle_cluster_config(method, body);
+        }
+        if path == "config/acme" {
+            return self.handle_acme_config(method, body);
+        }
         if path == "root/generate/internal" {
             if !write_method(method) {
                 return Err(unsupported());
@@ -455,6 +522,111 @@ impl Pki {
             return Ok(empty(before != self.issued.len()));
         }
         Err(error(404, "PKI path is not implemented"))
+    }
+
+    fn handle_cluster_config(&mut self, method: &str, body: &Value) -> Result<EngineResponse> {
+        match method {
+            "GET" => {
+                reject_unknown(body, &[])?;
+                return Ok(ok(
+                    json!({"path": self.cluster_path, "aia_path": self.aia_path}),
+                    false,
+                ));
+            }
+            "POST" | "PUT" => {}
+            _ => return Err(unsupported()),
+        }
+        reject_unknown(body, &["path", "aia_path"])?;
+        let mut cluster_path = self.cluster_path.clone();
+        let mut aia_path = self.aia_path.clone();
+        if let Some(value) = body.get("path") {
+            cluster_path = value
+                .as_str()
+                .ok_or_else(|| bad("PKI cluster path must be a string"))?
+                .to_owned();
+        }
+        if let Some(value) = body.get("aia_path") {
+            aia_path = value
+                .as_str()
+                .ok_or_else(|| bad("PKI AIA path must be a string"))?
+                .to_owned();
+        }
+        validate_uri(&cluster_path, "PKI cluster path")?;
+        validate_uri(&aia_path, "PKI AIA path")?;
+        if self.acme.enabled && cluster_path.is_empty() {
+            return Err(bad("enabled PKI ACME requires a configured cluster path"));
+        }
+        let changed = self.cluster_path != cluster_path || self.aia_path != aia_path;
+        self.cluster_path = cluster_path;
+        self.aia_path = aia_path;
+        Ok(ok(
+            json!({"path": self.cluster_path, "aia_path": self.aia_path}),
+            changed,
+        ))
+    }
+
+    fn handle_acme_config(&mut self, method: &str, body: &Value) -> Result<EngineResponse> {
+        if method == "GET" {
+            reject_unknown(body, &[])?;
+            return Ok(ok(self.acme.descriptor(), false));
+        }
+        if !write_method(method) {
+            return Err(unsupported());
+        }
+        reject_unknown(
+            body,
+            &[
+                "enabled",
+                "allowed_issuers",
+                "allowed_roles",
+                "allow_role_ext_key_usage",
+                "default_directory_policy",
+                "dns_resolver",
+                "eab_policy",
+            ],
+        )?;
+        let mut config = (*self.acme).clone();
+        if let Some(value) = body.get("enabled") {
+            config.enabled = value
+                .as_bool()
+                .ok_or_else(|| bad("ACME enabled must be a boolean"))?;
+        }
+        if let Some(value) = body.get("allowed_issuers") {
+            config.allowed_issuers = string_list(Some(value))?;
+        }
+        if let Some(value) = body.get("allowed_roles") {
+            config.allowed_roles = string_list(Some(value))?;
+        }
+        if let Some(value) = body.get("allow_role_ext_key_usage") {
+            config.allow_role_ext_key_usage = value
+                .as_bool()
+                .ok_or_else(|| bad("ACME allow_role_ext_key_usage must be a boolean"))?;
+        }
+        if let Some(value) = body.get("default_directory_policy") {
+            config.default_directory_policy = value
+                .as_str()
+                .ok_or_else(|| bad("ACME default_directory_policy must be a string"))?
+                .to_owned();
+        }
+        if let Some(value) = body.get("dns_resolver") {
+            config.dns_resolver = value
+                .as_str()
+                .ok_or_else(|| bad("ACME dns_resolver must be a string"))?
+                .to_owned();
+        }
+        if let Some(value) = body.get("eab_policy") {
+            config.eab_policy = value
+                .as_str()
+                .ok_or_else(|| bad("ACME eab_policy must be a string"))?
+                .to_owned();
+        }
+        validate_acme_config(&config, &self.roles)?;
+        if config.enabled && self.cluster_path.is_empty() {
+            return Err(bad("enabled PKI ACME requires a configured cluster path"));
+        }
+        let changed = self.acme.as_ref() != &config;
+        *self.acme = config;
+        Ok(ok(self.acme.descriptor(), changed))
     }
 
     pub(super) fn issue(
@@ -661,6 +833,102 @@ impl Role {
     }
 }
 
+impl AcmeConfig {
+    fn descriptor(&self) -> Value {
+        json!({
+            "allowed_roles": self.allowed_roles,
+            "allow_role_ext_key_usage": self.allow_role_ext_key_usage,
+            "allowed_issuers": self.allowed_issuers,
+            "default_directory_policy": self.default_directory_policy,
+            "enabled": self.enabled,
+            "dns_resolver": self.dns_resolver,
+            "eab_policy": self.eab_policy,
+        })
+    }
+}
+
+fn validate_acme_config(config: &AcmeConfig, roles: &BTreeMap<String, Role>) -> Result<()> {
+    validate_acme_names(&config.allowed_roles, "allowed_roles")?;
+    if config.allowed_issuers.is_empty()
+        || config.allowed_issuers.len() > MAX_ACME_LIST
+        || config
+            .allowed_issuers
+            .iter()
+            .any(|issuer| issuer.is_empty() || issuer.len() > 128)
+    {
+        return Err(bad("invalid ACME allowed_issuers"));
+    }
+    if config.allowed_issuers.len() != 1 || config.allowed_issuers[0] != "*" {
+        return Err(error(
+            501,
+            "PKI ACME issuer selection is not implemented; allowed_issuers must remain ['*']",
+        ));
+    }
+    for role in config
+        .allowed_roles
+        .iter()
+        .filter(|role| role.as_str() != "*")
+    {
+        if !roles.contains_key(role) {
+            return Err(bad("ACME allowed role does not exist"));
+        }
+    }
+    match config.default_directory_policy.as_str() {
+        "forbid" | "sign-verbatim" => {}
+        value
+            if value.strip_prefix("role:").is_some_and(|name| {
+                !name.is_empty()
+                    && roles.contains_key(name)
+                    && (config.allowed_roles.len() == 1 && config.allowed_roles[0] == "*"
+                        || config.allowed_roles.iter().any(|role| role == name))
+            }) => {}
+        _ => return Err(bad("invalid ACME default_directory_policy")),
+    }
+    if config.dns_resolver.len() > MAX_ACME_CONFIG_STRING {
+        return Err(bad("ACME dns_resolver is too long"));
+    }
+    if !config.dns_resolver.is_empty() {
+        let address = config
+            .dns_resolver
+            .parse::<SocketAddr>()
+            .map_err(|_| bad("ACME dns_resolver must be an IP address and port"))?;
+        if address.port() == 0 {
+            return Err(bad("ACME dns_resolver port must be nonzero"));
+        }
+    }
+    if config.default_directory_policy.len() > MAX_ACME_CONFIG_STRING
+        || config.eab_policy.len() > MAX_ACME_CONFIG_STRING
+    {
+        return Err(bad("ACME configuration string is too long"));
+    }
+    if !matches!(
+        config.eab_policy.as_str(),
+        "not-required" | "new-account-required" | "always-required"
+    ) {
+        return Err(bad("invalid ACME eab_policy"));
+    }
+    if config.enabled && config.allowed_roles.is_empty() {
+        return Err(bad("ACME allowed_roles must not be empty"));
+    }
+    Ok(())
+}
+
+fn validate_acme_names(values: &[String], field: &str) -> Result<()> {
+    if values.is_empty() || values.len() > MAX_ACME_LIST {
+        return Err(bad("ACME name list is outside bounds"));
+    }
+    if values.iter().any(|value| {
+        value == "*" && values.len() != 1 || value != "*" && valid_name(value).is_err()
+    }) {
+        return Err(bad(if field == "allowed_roles" {
+            "invalid ACME allowed_roles"
+        } else {
+            "invalid ACME name list"
+        }));
+    }
+    Ok(())
+}
+
 fn ttl_value(value: &Value, default: u64) -> Result<u64> {
     let ttl = match value {
         Value::Number(_) => value.as_u64().ok_or_else(|| bad("invalid PKI TTL"))?,
@@ -741,6 +1009,30 @@ fn valid_domain(name: &str) -> bool {
 }
 fn valid_common_name(name: &str) -> bool {
     valid_domain(name)
+}
+
+fn validate_uri(value: &str, field: &str) -> Result<()> {
+    if value.is_empty() {
+        return Ok(());
+    }
+    if value.len() > MAX_ACME_CONFIG_STRING
+        || value
+            .chars()
+            .any(|character| character.is_control() || character.is_whitespace())
+    {
+        return Err(bad("PKI URL is outside bounds"));
+    }
+    let Some((scheme, rest)) = value.split_once("://") else {
+        return Err(bad(field));
+    };
+    if !matches!(scheme, "http" | "https") {
+        return Err(bad(field));
+    }
+    let authority = rest.split(['/', '?', '#']).next().unwrap_or("");
+    if authority.is_empty() || authority.contains('@') {
+        return Err(bad(field));
+    }
+    Ok(())
 }
 
 fn random_serial() -> Result<String> {
@@ -1089,6 +1381,78 @@ mod tests {
         )?;
         assert!(der.windows(6).any(|v| v == [0x87, 0x04, 127, 0, 0, 1]));
         assert!(der.windows(18).any(|v| v[0] == 0x87 && v[1] == 0x10));
+        Ok(())
+    }
+
+    #[test]
+    fn acme_configuration_is_bounded_and_serde_stable()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let mut pki = Pki::default();
+        let cluster = pki.handle_admin(
+            "POST",
+            "config/cluster",
+            &json!({
+                "path":"https://acme.example.test/v1/pki",
+                "aia_path":"http://cdn.example.test/pki"
+            }),
+            1_700_000_000,
+        )?;
+        assert_eq!(
+            cluster.body["data"]["path"],
+            "https://acme.example.test/v1/pki"
+        );
+        let acme = pki.handle_admin(
+            "POST",
+            "config/acme",
+            &json!({"enabled":true,"eab_policy":"new-account-required"}),
+            1_700_000_000,
+        )?;
+        assert_eq!(acme.body["data"]["enabled"], true);
+        assert_eq!(acme.body["data"]["eab_policy"], "new-account-required");
+        let before = pki.handle_admin("GET", "config/acme", &json!({}), 1_700_000_000)?;
+        for (path, body, status) in [
+            (
+                "config/acme",
+                json!({"enabled":false,"unknown":"must-not-persist"}),
+                400,
+            ),
+            (
+                "config/cluster",
+                json!({"path":"file:///secret-location"}),
+                400,
+            ),
+            ("config/acme", json!({"allowed_issuers":["issuer-a"]}), 501),
+        ] {
+            let rejected = pki.handle_admin("POST", path, &body, 1_700_000_000);
+            assert_eq!(
+                rejected
+                    .as_ref()
+                    .map(|v| v.status)
+                    .unwrap_or_else(|v| v.status),
+                status
+            );
+            if let Ok(response) = rejected {
+                assert!(response.body.get("data").is_none());
+            }
+        }
+        assert_eq!(
+            pki.handle_admin("GET", "config/acme", &json!({}), 1_700_000_000)?
+                .body,
+            before.body
+        );
+        let mut restored: Pki = serde_json::from_slice(&serde_json::to_vec(&pki)?)?;
+        assert_eq!(
+            restored
+                .handle_admin("GET", "config/cluster", &json!({}), 1_700_000_000)?
+                .body["data"],
+            cluster.body["data"]
+        );
+        assert_eq!(
+            restored
+                .handle_admin("GET", "config/acme", &json!({}), 1_700_000_000)?
+                .body["data"],
+            before.body["data"]
+        );
         Ok(())
     }
 }
