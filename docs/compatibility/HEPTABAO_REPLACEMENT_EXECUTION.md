@@ -566,9 +566,9 @@ Existing bounded profiles: `qa/openbao-acceptance/mysql_live.py`.
 
 ### HB-SURFACE-DB-CASSANDRA
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H19-WP07`, `H19-WP13`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP07`, `H19-WP13`.
 API families: `database/config/*`; `database/roles/*`; `database/creds/*`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service_database.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
@@ -578,9 +578,9 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Reconcile partial cluster visibility and revoke under network partition.
 
-**Remaining scope:** Real service, network-partition and revoke matrix required.
+**Remaining scope:** A checksum-pinned Cassandra 5.0 provider profile exercises dynamic readonly/readwrite issuance, provider authorization readback, renewal, provider and HeptaBao restart, revoke, outage retention and restart reconciliation. TLS-native transport, multi-node consistency/partition, static roles, root credential rotation, full OpenBao statement/error parity, migration and independent qualification remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/cassandra_live.py`.
 
 ### HB-SURFACE-DB-INFLUXDB
 

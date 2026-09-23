@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 54,
-    "defined_not_implemented_surface_count": 6,
-    "fixture_case_count": 356,
+    "implemented_surface_count": 55,
+    "defined_not_implemented_surface_count": 5,
+    "fixture_case_count": 368,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -472,9 +472,22 @@
       "surface_id": "HB-SURFACE-DB-CASSANDRA",
       "category": "database_providers",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 12,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "cassandra_live.real_cassandra_5_ready",
+        "cassandra_live.cassandra_plugin_configuration_readback",
+        "cassandra_live.cassandra_readonly_issue_reaches_provider",
+        "cassandra_live.cassandra_readonly_select_succeeds",
+        "cassandra_live.cassandra_readonly_write_denied",
+        "cassandra_live.cassandra_readwrite_mutation_succeeds",
+        "cassandra_live.cassandra_dynamic_credential_renew_reaches_provider",
+        "cassandra_live.cassandra_provider_state_survives_restart",
+        "cassandra_live.cassandra_service_state_survives_restart",
+        "cassandra_live.cassandra_revoke_removes_provider_login",
+        "cassandra_live.cassandra_outage_retains_revoke_intent",
+        "cassandra_live.cassandra_restart_reconciles_pending_revoke"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

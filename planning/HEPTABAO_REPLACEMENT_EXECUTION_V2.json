@@ -1107,16 +1107,20 @@
       "positive": "Run actual role creation, renewal and revocation on declared Cassandra versions",
       "hostile": "Reject unauthorized roles and unverified TLS",
       "lifecycle": "Reconcile partial cluster visibility and revoke under network partition",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_database.rs"
+      ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/cassandra_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Real service, network-partition and revoke matrix required."
+      "remaining_scope": "A checksum-pinned Cassandra 5.0 provider profile exercises dynamic readonly/readwrite issuance, authorization readback, renewal, provider and HeptaBao restart, revoke, outage retention and restart reconciliation. TLS-native transport, multi-node consistency/partition, static roles, root credential rotation, full OpenBao statement/error parity, migration and independent qualification remain open."
     },
     {
       "surface_id": "HB-SURFACE-DB-INFLUXDB",

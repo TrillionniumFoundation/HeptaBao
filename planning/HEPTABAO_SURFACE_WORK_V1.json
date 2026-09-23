@@ -1274,18 +1274,33 @@
     {
       "surface_id": "HB-SURFACE-DB-CASSANDRA",
       "category": "database_providers",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
       "technical_contract": {
         "api_or_protocol": "Cassandra database provider",
         "required_positive_and_hostile_behavior": "TLS/native authentication, role grants, consistency, TTL and delayed cluster propagation",
-        "remaining_semantics_and_effect_checks": "Never claim revoked until readback and new authentication prove provider-side denial",
+        "remaining_semantics_and_effect_checks": "A checksum-pinned Cassandra 5.0 profile exercises dynamic readonly/readwrite role creation, provider authorization readback, renewal, provider and HeptaBao restart, revoke, provider outage retention and restart reconciliation. TLS-native transport, multi-node consistency/partition, static roles, root credential rotation, full OpenBao statement/error parity and independent qualification remain open.",
         "crash_reopen": "Interrupt Cassandra database provider before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-DB-CASSANDRA, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "cassandra_live.real_cassandra_5_ready",
+        "cassandra_live.cassandra_plugin_configuration_readback",
+        "cassandra_live.cassandra_readonly_issue_reaches_provider",
+        "cassandra_live.cassandra_readonly_select_succeeds",
+        "cassandra_live.cassandra_readonly_write_denied",
+        "cassandra_live.cassandra_readwrite_mutation_succeeds",
+        "cassandra_live.cassandra_dynamic_credential_renew_reaches_provider",
+        "cassandra_live.cassandra_provider_state_survives_restart",
+        "cassandra_live.cassandra_service_state_survives_restart",
+        "cassandra_live.cassandra_revoke_removes_provider_login",
+        "cassandra_live.cassandra_outage_retains_revoke_intent",
+        "cassandra_live.cassandra_restart_reconciles_pending_revoke"
+      ],
+      "available_scoped_profiles": [
+        "cassandra_5_checksum_plugin"
+      ],
       "whole_surface_admitted": false
     },
     {
