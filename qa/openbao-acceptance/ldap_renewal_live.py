@@ -18,7 +18,7 @@ import time
 from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash, successful_comparison
 from online_evidence import source_identity
-from ldap_openldap_live import Directory, private, ssha, Instance
+from ldap_openldap_live import Directory, private, password_hash, Instance
 from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle
 from radius_renewal_live import renewal_token_shape, wrapped_renewal_shape
 
@@ -49,12 +49,9 @@ class RenewalDirectory(Directory):
     def password(self, value):
         change = self.root / "password-change.ldif"
         operation = ("delete: userPassword\n" if value is None else
-                     "replace: userPassword\nuserPassword: " + ssha(value) + "\n")
+                     "replace: userPassword\nuserPassword: " + password_hash(value) + "\n")
         private(change, "dn: " + USER_DN + "\nchangetype: modify\n" + operation)
-        subprocess.run(["ldapmodify", "-x", "-H", self.origin, "-D", self.admin_dn,
-                        "-y", str(self.password_file), "-f", str(change)],
-                       env=self.ldap_env, check=True, stdout=subprocess.DEVNULL,
-                       stderr=subprocess.DEVNULL, timeout=15)
+        self._ldap_run("ldapmodify", "-f", str(change))
 
 
 def configuration(side, directory, ca):

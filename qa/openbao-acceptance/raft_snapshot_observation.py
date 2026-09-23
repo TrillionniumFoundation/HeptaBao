@@ -12,8 +12,8 @@ MAX_ARTIFACT_BYTES = 128 * 1024 * 1024
 MAGIC = b"HBRSB001"
 
 
-def inspect_bundle(path: Path, expected_format: int = 2) -> dict:
-    if expected_format not in (1, 2):
+def inspect_bundle(path: Path, expected_format: int | None = None) -> dict:
+    if expected_format is not None and expected_format not in (1, 2, 3):
         raise ValueError("unsupported_expected_snapshot_format")
     metadata = path.lstat()
     if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > MAX_ARTIFACT_BYTES:
@@ -31,9 +31,12 @@ def inspect_bundle(path: Path, expected_format: int = 2) -> dict:
         bundle = json.loads(payload)
         snapshot = bundle["current_snapshot"]
         data = snapshot["data"]
-        if type(bundle["format_version"]) is not int or bundle["format_version"] != expected_format:
+        actual_format = bundle["format_version"]
+        if type(actual_format) is not int or actual_format not in (1, 2, 3):
             raise ValueError("snapshot_artifact_wrong_format")
-        if expected_format == 1:
+        if expected_format is not None and actual_format != expected_format:
+            raise ValueError("snapshot_artifact_wrong_format")
+        if actual_format == 1:
             if not isinstance(data, list) or any(type(v) is not int or not 0 <= v <= 255 for v in data):
                 raise ValueError("snapshot_legacy_representation_mismatch")
             decoded = bytes(data)
@@ -46,13 +49,18 @@ def inspect_bundle(path: Path, expected_format: int = 2) -> dict:
         state = json.loads(decoded)
         if not isinstance(state, dict) or not isinstance(bundle["state"], dict):
             raise ValueError("snapshot_state_not_object")
+        if actual_format == 3:
+            if state.get("records_v5") is None or bundle["state"].get("records_v5") is None:
+                raise ValueError("snapshot_records_v5_missing")
+        elif state.get("records_v5") is not None or bundle["state"].get("records_v5") is not None:
+            raise ValueError("snapshot_records_v5_without_format_fence")
         if state.get("last_applied_log") != snapshot["meta"].get("last_log_id"):
             raise ValueError("snapshot_metadata_mismatch")
         if state.get("last_membership") != snapshot["meta"].get("last_membership"):
             raise ValueError("snapshot_membership_mismatch")
     except (KeyError, TypeError, UnicodeError, json.JSONDecodeError, binascii.Error):
         raise ValueError("snapshot_artifact_invalid_content") from None
-    return {"format_version": expected_format, "artifact_bytes": len(encoded),
+    return {"format_version": actual_format, "artifact_bytes": len(encoded),
             "artifact_sha256": hashlib.sha256(encoded).hexdigest(),
             "snapshot_bytes": len(decoded), "canonical_representation": True,
             "checksum_verified": True, "metadata_matches_snapshot": True}
