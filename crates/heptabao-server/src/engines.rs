@@ -54,16 +54,18 @@ impl EngineState {
             .into_iter()
             .flat_map(|state| state.mounts.iter())
             .filter(|(mount_path, _)| {
-                path == mount_path.as_str()
+                let prefix = mount_path.trim_end_matches('/');
+                path == prefix
                     || path
-                        .strip_prefix(mount_path.as_str())
+                        .strip_prefix(prefix)
                         .is_some_and(|suffix| suffix.starts_with('/'))
             })
-            .max_by_key(|(mount_path, _)| mount_path.len())
+            .max_by_key(|(mount_path, _)| mount_path.trim_end_matches('/').len())
         else {
             return false;
         };
-        let relative = path[mount_path.len()..].trim_start_matches('/');
+        let prefix = mount_path.trim_end_matches('/');
+        let relative = path[prefix.len()..].trim_start_matches('/');
         matches!(
             &mount.backend,
             Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
