@@ -19,7 +19,7 @@ from urllib.parse import quote
 from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from ldap_renewal_live import RenewalDirectory, USER_DN, renewal_token_shape, wrapped_renewal_shape
-from ldap_openldap_live import Instance, private, ssha
+from ldap_openldap_live import Instance, private, password_hash
 from official_openbao_launcher import start_oracle, stop_oracle, restart_oracle, BINARY_SHA256, certificates
 from online_evidence import admit_output, source_identity
 from ldap_transport_tls_probe import wrong_san_probe, san_rejection_observed
@@ -41,10 +41,8 @@ class NativeDirectory(RenewalDirectory):
         dn = "cn=" + cn + ",ou=people,dc=example,dc=test"
         path = self.root / "native-add.ldif"
         private(path, "dn: " + dn + "\nobjectClass: inetOrgPerson\ncn: " + cn +
-                "\nsn: Example\nuid: " + uid + "\nuserPassword: " + ssha(self.user_password) + "\n")
-        subprocess.run(["ldapadd", "-x", "-H", self.origin, "-D", self.admin_dn,
-                        "-y", str(self.password_file), "-f", str(path)], env=self.ldap_env,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, timeout=15)
+                "\nsn: Example\nuid: " + uid + "\nuserPassword: " + password_hash(self.user_password) + "\n")
+        self._ldap_run("ldapadd", "-f", str(path))
         return dn
 
     def alias_attribute(self, values):
@@ -52,14 +50,10 @@ class NativeDirectory(RenewalDirectory):
         change = ("replace: description\n" + "".join("description: " + value + "\n" for value in values)
                   if values else "delete: description\n")
         private(path, "dn: " + USER_DN + "\nchangetype: modify\n" + change)
-        subprocess.run(["ldapmodify", "-x", "-H", self.origin, "-D", self.admin_dn,
-                        "-y", str(self.password_file), "-f", str(path)], env=self.ldap_env,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, timeout=15)
+        self._ldap_run("ldapmodify", "-f", str(path))
 
     def delete_user(self, dn):
-        subprocess.run(["ldapdelete", "-x", "-H", self.origin, "-D", self.admin_dn,
-                        "-y", str(self.password_file), dn], env=self.ldap_env,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, timeout=15)
+        self._ldap_run("ldapdelete", dn)
 
 
 def configuration(side, directory, ca, **options):

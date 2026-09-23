@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run bounded LDAPS login against an actual host-installed OpenLDAP slapd."""
 from __future__ import annotations
-import argparse, grp, json, os, pwd, re, secrets, shutil, socket, subprocess, sys, tempfile, time
+import argparse, grp, hashlib, json, os, pwd, re, secrets, shutil, socket, subprocess, sys, tempfile, time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT/"qa/single-node"))
 from smoke import Instance
