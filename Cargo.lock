@@ -1083,6 +1083,7 @@ dependencies = [
  "heptabao-durable-service",
  "heptabao-filesystem-guard",
  "heptabao-ha-service",
+ "heptabao-kms-contracts",
  "heptabao-plugin-contracts",
  "heptabao-plugin-host",
  "heptabao-raft-runtime",

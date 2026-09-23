@@ -445,6 +445,25 @@
         "mysql_restart_reconciles_pending_revoke"
       ],
       "script": "qa/openbao-acceptance/mysql_live.py"
+    },
+    "plugin_kms_live": {
+      "script": "qa/openbao-acceptance/plugin_kms_live.py",
+      "case_ids": [
+        "catalog_lists_kms",
+        "catalog_checksum_bound",
+        "wrong_version_no_entry",
+        "disabled_key_no_entry",
+        "wrap",
+        "unwrap",
+        "generate_data_key",
+        "provider_custody_survives_service_restart",
+        "provider_key_outside_service_state",
+        "changed_plugin_fails_before_entry",
+        "post_entry_timeout_fences_host",
+        "catalog_reports_reconciliation_required",
+        "fenced_host_rejects_blind_retry",
+        "restart_readmits_without_replaying_unknown"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

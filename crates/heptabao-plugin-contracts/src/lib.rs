@@ -14,6 +14,7 @@ pub enum PluginKind {
     Secrets,
     Authentication,
     Database,
+    Kms,
     Audit,
 }
 

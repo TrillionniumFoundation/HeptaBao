@@ -1588,8 +1588,8 @@
     {
       "surface_id": "HB-SURFACE-PLUGIN-KMS",
       "category": "plugin_classes",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_plugin.rs",
       "technical_contract": {
         "api_or_protocol": "KMS plugin catalog and seal provider invocation",
         "required_positive_and_hostile_behavior": "Versioned wrap/unwrap, key epoch/custody, context binding and provider outage",
@@ -1598,8 +1598,25 @@
         "isolation": "For HB-SURFACE-PLUGIN-KMS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "plugin_kms_live.catalog_lists_kms",
+        "plugin_kms_live.catalog_checksum_bound",
+        "plugin_kms_live.wrong_version_no_entry",
+        "plugin_kms_live.disabled_key_no_entry",
+        "plugin_kms_live.wrap",
+        "plugin_kms_live.unwrap",
+        "plugin_kms_live.generate_data_key",
+        "plugin_kms_live.provider_custody_survives_service_restart",
+        "plugin_kms_live.provider_key_outside_service_state",
+        "plugin_kms_live.changed_plugin_fails_before_entry",
+        "plugin_kms_live.post_entry_timeout_fences_host",
+        "plugin_kms_live.catalog_reports_reconciliation_required",
+        "plugin_kms_live.fenced_host_rejects_blind_retry",
+        "plugin_kms_live.restart_readmits_without_replaying_unknown"
+      ],
+      "available_scoped_profiles": [
+        "plugin_kms_live"
+      ],
       "whole_surface_admitted": false
     },
     {

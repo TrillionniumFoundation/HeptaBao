@@ -782,10 +782,10 @@ Existing bounded profiles: `qa/openbao-acceptance/plugin_database_live.py`.
 
 ### HB-SURFACE-PLUGIN-KMS
 
-Implementation: `CONTRACT_ONLY`. Original work packages: `H13-WP01`, `H13-WP02`, `H13-WP03`, `H13-WP04`, `H13-WP12`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H13-WP01`, `H13-WP02`, `H13-WP03`, `H13-WP04`, `H13-WP12`.
 API families: `seal configuration`; `KMS plugin lifecycle`.
-Runtime source: none claimed.
-Separate contracts: `crates/heptabao-kms-contracts/src/lib.rs`.
+Runtime source: `crates/heptabao-server/src/service_plugin.rs`, `crates/heptabao-server/src/service.rs`.
+Separate contracts: `crates/heptabao-kms-contracts/src/lib.rs`, `crates/heptabao-plugin-host/src/lib.rs`.
 Guides: `docs/modules/heptabao-kms-contracts.md`.
 
 **Positive:** Auto-unseal with actual provider and bound key identity/version/context.
@@ -794,9 +794,9 @@ Guides: `docs/modules/heptabao-kms-contracts.md`.
 
 **Lifecycle:** Exercise provider outage, key rotation and disaster recovery with isolated custody.
 
-**Remaining scope:** Key identity, version, outage and recovery behavior.
+**Remaining scope:** Bounded checksum-pinned KMS wrap/unwrap/data-key runtime, exact key identity/version/capability admission, external custody, restart, executable-digest fencing and post-entry timeout fencing are executable. Auto-unseal composition, durable unknown-effect reconciliation, provider key rotation/disaster recovery, HA/multi-host faults, full OpenBao KMS plugin RPC compatibility and independent HSM/provider admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/plugin_kms_live.py`.
 
 ### HB-SURFACE-CLUSTER-MTLS
 

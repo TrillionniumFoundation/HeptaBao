@@ -179,6 +179,9 @@ fn operations_are_valid_for_kind(kind: PluginKind, operations: &BTreeSet<PluginO
         PluginKind::Authentication => operations
             .iter()
             .all(|operation| matches!(operation, PluginOperation::Read | PluginOperation::Write)),
+        PluginKind::Kms => operations
+            .iter()
+            .all(|operation| matches!(operation, PluginOperation::Read)),
         PluginKind::Audit => operations
             .iter()
             .all(|operation| matches!(operation, PluginOperation::Write)),

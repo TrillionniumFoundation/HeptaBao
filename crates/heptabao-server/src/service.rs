@@ -65,7 +65,7 @@ mod openldap_secret;
 mod plugin;
 #[path = "service_snapshot_transfer.rs"]
 mod snapshot_transfer;
-pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginSecretConfig};
+pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, PluginSecretConfig};
 pub(crate) use snapshot_transfer::{NativeSnapshotAdmission, TrustedSnapshotOrigin};
 #[path = "service_openapi.rs"]
 mod openapi;
@@ -720,6 +720,7 @@ enum ExternalEffectPlan {
     OnlineAuth(online_auth::OnlineAuthEffectPlan),
     PluginAuth(plugin::PluginAuthPlan),
     PluginRead(plugin::PluginReadPlan),
+    PluginKms(plugin::PluginKmsPlan),
     KubernetesToken(kubernetes_secret::KubernetesTokenEffectPlan),
     OpenLdap(openldap_secret::OpenLdapEffectPlan),
     SnapshotTransfer(Box<snapshot_transfer::SnapshotTransferPlan>),
@@ -732,6 +733,7 @@ pub(crate) enum ExternalEffectResult {
     OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
     PluginAuth(Result<plugin::PluginAuthObservation, Response>),
     PluginRead(Result<Value, Response>),
+    PluginKms(Result<plugin::PluginKmsObservation, Response>),
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
     OpenLdap(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
@@ -775,6 +777,7 @@ impl PendingExternalRequest {
             ExternalEffectPlan::PluginRead(plan) => {
                 ExternalEffectResult::PluginRead(plan.execute())
             }
+            ExternalEffectPlan::PluginKms(plan) => ExternalEffectResult::PluginKms(plan.execute()),
             ExternalEffectPlan::KubernetesToken(plan) => {
                 ExternalEffectResult::KubernetesToken(plan.execute())
             }
@@ -829,6 +832,7 @@ pub struct Service {
     pending_online_auth_effect: Option<online_auth::OnlineAuthEffectPlan>,
     pending_plugin_auth: Option<plugin::PluginAuthPlan>,
     pending_plugin_read: Option<plugin::PluginReadPlan>,
+    pending_plugin_kms: Option<plugin::PluginKmsPlan>,
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
@@ -840,6 +844,8 @@ pub struct Service {
     lifecycle_provider_cursor: bool,
     auth_plugins: BTreeMap<String, plugin::SharedAuthPlugin>,
     database_plugins: BTreeMap<String, plugin::SharedDatabasePlugin>,
+    kms_plugins: BTreeMap<String, plugin::SharedKmsPlugin>,
+    kms_keys: BTreeMap<String, plugin::KmsKeyBinding>,
     plugins: BTreeMap<String, plugin::SharedSecretPlugin>,
     raft_stabilization: raft_admin::Stabilization,
     data_dir: PathBuf,
@@ -907,6 +913,16 @@ impl Service {
             return Err("plugin runtime configuration is immutable while unsealed".into());
         }
         self.database_plugins = plugin::admit_database_plugins(configs)?;
+        Ok(())
+    }
+
+    pub fn install_kms_plugins(&mut self, configs: Vec<PluginKmsConfig>) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("plugin runtime configuration is immutable while unsealed".into());
+        }
+        let (plugins, keys) = plugin::admit_kms_plugins(configs)?;
+        self.kms_plugins = plugins;
+        self.kms_keys = keys;
         Ok(())
     }
 
@@ -1103,6 +1119,7 @@ impl Service {
             pending_online_auth_effect: None,
             pending_plugin_auth: None,
             pending_plugin_read: None,
+            pending_plugin_kms: None,
             pending_kubernetes_token: None,
             pending_openldap_effect: None,
             pending_snapshot_transfer: None,
@@ -1114,6 +1131,8 @@ impl Service {
             lifecycle_provider_cursor: false,
             auth_plugins: BTreeMap::new(),
             database_plugins: BTreeMap::new(),
+            kms_plugins: BTreeMap::new(),
+            kms_keys: BTreeMap::new(),
             plugins: BTreeMap::new(),
             raft_stabilization: raft_admin::Stabilization::default(),
             data_dir,
@@ -1402,6 +1421,9 @@ impl Service {
             (ExternalEffectPlan::PluginRead(plan), ExternalEffectResult::PluginRead(result)) => {
                 self.finalize_plugin_read(&plan, result)
             }
+            (ExternalEffectPlan::PluginKms(plan), ExternalEffectResult::PluginKms(result)) => {
+                self.finalize_plugin_kms(plan, result)
+            }
             (
                 ExternalEffectPlan::KubernetesToken(plan),
                 ExternalEffectResult::KubernetesToken(result),
@@ -1478,6 +1500,7 @@ impl Service {
             || self.pending_online_auth_effect.is_some()
             || self.pending_plugin_auth.is_some()
             || self.pending_plugin_read.is_some()
+            || self.pending_plugin_kms.is_some()
             || self.pending_kubernetes_token.is_some()
             || self.pending_openldap_effect.is_some()
             || self.pending_snapshot_transfer.is_some()
@@ -1596,6 +1619,7 @@ impl Service {
         let online_auth = self.pending_online_auth_effect.take();
         let plugin_auth = self.pending_plugin_auth.take();
         let plugin_read = self.pending_plugin_read.take();
+        let plugin_kms = self.pending_plugin_kms.take();
         let kubernetes_token = self.pending_kubernetes_token.take();
         let openldap = self.pending_openldap_effect.take();
         let snapshot_transfer = self.pending_snapshot_transfer.take();
@@ -1605,6 +1629,7 @@ impl Service {
             + usize::from(online_auth.is_some())
             + usize::from(plugin_auth.is_some())
             + usize::from(plugin_read.is_some())
+            + usize::from(plugin_kms.is_some())
             + usize::from(kubernetes_token.is_some())
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
@@ -1623,6 +1648,7 @@ impl Service {
             .or_else(|| online_auth.map(ExternalEffectPlan::OnlineAuth))
             .or_else(|| plugin_auth.map(ExternalEffectPlan::PluginAuth))
             .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead))
+            .or_else(|| plugin_kms.map(ExternalEffectPlan::PluginKms))
             .or_else(|| kubernetes_token.map(ExternalEffectPlan::KubernetesToken))
             .or_else(|| openldap.map(ExternalEffectPlan::OpenLdap))
             .or_else(|| {
@@ -1984,6 +2010,9 @@ impl Service {
         }
         if Self::kubernetes_secret_handles(&admitted, namespace, path) {
             return self.kubernetes_secret_route(admitted, principal.as_ref(), &request);
+        }
+        if Self::plugin_kms_handles(path) {
+            return self.plugin_kms_route(&admitted, principal.as_ref(), &request);
         }
         if self.plugin_secret_handles(&admitted, namespace, path) {
             return self.plugin_secret_route(admitted, principal.as_ref(), &request);

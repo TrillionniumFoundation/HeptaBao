@@ -1509,18 +1509,24 @@
       "positive": "Auto-unseal with actual provider and bound key identity/version/context",
       "hostile": "Reject wrong key, disabled version and invented custody evidence",
       "lifecycle": "Exercise provider outage, key rotation and disaster recovery with isolated custody",
-      "implementation": "CONTRACT_ONLY",
-      "runtime_sources": [],
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_plugin.rs",
+        "crates/heptabao-server/src/service.rs"
+      ],
       "contract_sources": [
-        "crates/heptabao-kms-contracts/src/lib.rs"
+        "crates/heptabao-kms-contracts/src/lib.rs",
+        "crates/heptabao-plugin-host/src/lib.rs"
       ],
       "guides": [
         "docs/modules/heptabao-kms-contracts.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/plugin_kms_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Key identity, version, outage and recovery behavior."
+      "remaining_scope": "Bounded checksum-pinned KMS wrap/unwrap/data-key runtime, exact key identity/version/capability admission, external custody, restart, executable-digest fencing and post-entry timeout fencing are executable. Auto-unseal composition, durable unknown-effect reconciliation, provider key rotation/disaster recovery, HA/multi-host faults, full OpenBao KMS plugin RPC compatibility and independent HSM/provider admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-CLUSTER-MTLS",

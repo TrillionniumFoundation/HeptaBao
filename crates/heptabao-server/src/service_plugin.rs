@@ -1,5 +1,6 @@
 use super::*;
 use heptabao_domain::{CanonicalPath, Id, SecretValue};
+use heptabao_kms_contracts::{KeyCatalog, KeyRegistration, KeyVersion, KmsCapability};
 use heptabao_plugin_contracts::{PluginDescriptor, PluginKind, PluginRegistry};
 use heptabao_plugin_host::{
     CommandSandboxRunner, PluginHost, PluginHostError, PluginHostState, PluginLimits,
@@ -8,6 +9,11 @@ use heptabao_plugin_host::{
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::{Arc, Mutex};
+
+type KmsPluginMaps = (
+    BTreeMap<String, SharedKmsPlugin>,
+    BTreeMap<String, KmsKeyBinding>,
+);
 
 fn req_bytes() -> usize {
     256 * 1024
@@ -73,9 +79,63 @@ pub struct PluginDatabaseConfig {
     pub timeout_ms: u64,
 }
 
+fn kms_caps() -> Vec<String> {
+    vec!["wrap".into(), "unwrap".into(), "generate_data_key".into()]
+}
+
+fn kms_enabled() -> bool {
+    true
+}
+
+#[derive(Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PluginKmsConfig {
+    pub id: String,
+    pub command: String,
+    pub command_sha256: String,
+    pub sandbox_provider_id: String,
+    pub sandbox_command: String,
+    pub sandbox_command_sha256: String,
+    pub sandbox_profile_id: String,
+    pub key_id: String,
+    pub key_version: u64,
+    #[serde(default = "kms_caps")]
+    pub capabilities: Vec<String>,
+    #[serde(default = "kms_enabled")]
+    pub enabled: bool,
+    #[serde(default = "req_bytes")]
+    pub maximum_request_bytes: usize,
+    #[serde(default = "resp_bytes")]
+    pub maximum_response_bytes: usize,
+    #[serde(default = "timeout_ms")]
+    pub timeout_ms: u64,
+}
+
 pub(super) type SharedSecretPlugin = Arc<Mutex<PluginHost<CommandSandboxRunner>>>;
 pub(super) type SharedAuthPlugin = Arc<Mutex<PluginHost<CommandSandboxRunner>>>;
 pub(super) type SharedDatabasePlugin = Arc<Mutex<PluginHost<CommandSandboxRunner>>>;
+
+pub(super) type SharedKmsPlugin = Arc<Mutex<PluginHost<CommandSandboxRunner>>>;
+
+#[derive(Clone, Debug)]
+pub(super) struct KmsKeyBinding {
+    pub key_id: Id,
+    pub key_version: KeyVersion,
+    pub capabilities: BTreeSet<KmsCapability>,
+    pub enabled: bool,
+}
+
+pub(super) struct PluginKmsPlan {
+    pub plugin_id: String,
+    pub key_binding: KmsKeyBinding,
+    host: SharedKmsPlugin,
+    request: SecretValue,
+    action: &'static str,
+}
+
+pub(crate) struct PluginKmsObservation {
+    value: Value,
+}
 
 pub(super) struct PluginReadPlan {
     pub namespace: String,
@@ -241,6 +301,98 @@ pub(super) fn admit_database_plugins(
     Ok(out)
 }
 
+pub(super) fn admit_kms_plugins(configs: Vec<PluginKmsConfig>) -> Result<KmsPluginMaps, String> {
+    if configs.len() > 16 {
+        return Err("KMS plugin runtime count exceeds bound".into());
+    }
+    let mut hosts = BTreeMap::new();
+    let mut keys = BTreeMap::new();
+    for c in configs {
+        let id = Id::parse(c.id.clone()).map_err(|_| "invalid KMS plugin identifier")?;
+        if hosts.contains_key(id.as_str()) {
+            return Err("duplicate KMS plugin identifier".into());
+        }
+        let key_id = Id::parse(c.key_id.clone()).map_err(|_| "invalid KMS key identifier")?;
+        let key_version = KeyVersion::new(c.key_version).map_err(|_| "invalid KMS key version")?;
+        let mut capabilities = BTreeSet::new();
+        for capability in c.capabilities {
+            let capability = match capability.as_str() {
+                "wrap" => KmsCapability::Wrap,
+                "unwrap" => KmsCapability::Unwrap,
+                "generate_data_key" => KmsCapability::GenerateDataKey,
+                _ => return Err("unsupported KMS capability".into()),
+            };
+            capabilities.insert(capability);
+        }
+        if capabilities.is_empty() {
+            return Err("KMS plugin requires at least one capability".into());
+        }
+        let mut catalog = KeyCatalog::default();
+        catalog
+            .register(KeyRegistration {
+                key_id: key_id.clone(),
+                version: key_version,
+                capabilities: capabilities.clone(),
+            })
+            .map_err(|_| "invalid KMS key registration")?;
+
+        let descriptor = PluginDescriptor::new(
+            id.clone(),
+            PluginKind::Kms,
+            CanonicalPath::parse(c.command).map_err(|_| "invalid KMS plugin executable path")?,
+            digest(&c.command_sha256)?,
+            1,
+        )
+        .map_err(|_| "invalid KMS plugin descriptor")?;
+        let mut registry = PluginRegistry::default();
+        registry
+            .register(descriptor)
+            .map_err(|_| "cannot register KMS plugin")?;
+        registry
+            .enable(&id)
+            .map_err(|_| "cannot enable KMS plugin")?;
+        let descriptor = registry
+            .get(&id)
+            .map_err(|_| "KMS plugin disappeared")?
+            .clone();
+        let sandbox = SandboxBinding::new(
+            Id::parse(c.sandbox_provider_id)
+                .map_err(|_| "invalid KMS sandbox provider identifier")?,
+            CanonicalPath::parse(c.sandbox_command)
+                .map_err(|_| "invalid KMS sandbox executable path")?,
+            digest(&c.sandbox_command_sha256)?,
+            Id::parse(c.sandbox_profile_id)
+                .map_err(|_| "invalid KMS sandbox profile identifier")?,
+        )
+        .map_err(|_| "invalid KMS sandbox binding")?;
+        let manifest = PluginManifest::new(
+            descriptor,
+            sandbox,
+            PluginLimits {
+                maximum_request_bytes: c.maximum_request_bytes,
+                maximum_response_bytes: c.maximum_response_bytes,
+                timeout_ms: c.timeout_ms,
+            },
+            BTreeSet::from([PluginOperation::Read]),
+            BTreeSet::new(),
+        )
+        .map_err(|_| "invalid KMS plugin manifest")?;
+        let host = PluginHost::admit(manifest, CommandSandboxRunner)
+            .map_err(|_| "KMS plugin or sandbox admission failed")?;
+        hosts.insert(id.to_string(), Arc::new(Mutex::new(host)));
+        keys.insert(
+            id.to_string(),
+            KmsKeyBinding {
+                key_id,
+                key_version,
+                capabilities,
+                enabled: c.enabled,
+            },
+        );
+    }
+    Ok((hosts, keys))
+}
+
 pub(super) fn admit_secret_plugins(
     configs: Vec<PluginSecretConfig>,
 ) -> Result<BTreeMap<String, SharedSecretPlugin>, String> {
@@ -341,6 +493,56 @@ impl PluginAuthPlan {
     }
 }
 
+impl PluginKmsPlan {
+    pub(super) fn execute(&self) -> Result<PluginKmsObservation, Response> {
+        let mut host = self
+            .host
+            .lock()
+            .map_err(|_| Response::error(503, "KMS plugin host lock unavailable"))?;
+        let response = host
+            .invoke(
+                PluginOperation::Read,
+                &self.request,
+                &SecretEnvironment::new(),
+            )
+            .map_err(kms_failure)?;
+        let value = crate::auth::parse_strict_json(response.expose())
+            .map_err(|_| Response::error(503, "KMS plugin returned invalid JSON"))?;
+        let object = value
+            .as_object()
+            .ok_or_else(|| Response::error(503, "KMS plugin response must be an object"))?;
+        if object.get("action").and_then(Value::as_str) != Some(self.action)
+            || object.get("key_id").and_then(Value::as_str)
+                != Some(self.key_binding.key_id.as_str())
+            || object.get("key_version").and_then(Value::as_u64)
+                != Some(self.key_binding.key_version.as_u64())
+        {
+            return Err(Response::error(
+                503,
+                "KMS plugin response key binding mismatch",
+            ));
+        }
+        Ok(PluginKmsObservation { value })
+    }
+}
+
+fn kms_failure(error: PluginHostError) -> Response {
+    let (status, message) = match error {
+        PluginHostError::ProcessBeforeEntry | PluginHostError::SandboxUnavailable => {
+            (503, "KMS provider unavailable before entry")
+        }
+        PluginHostError::ProcessOutcomeUnknown
+        | PluginHostError::ReconciliationRequired
+        | PluginHostError::ResponseTooLarge
+        | PluginHostError::MalformedResponse => (
+            503,
+            "KMS provider outcome unknown; host fenced pending reconciliation",
+        ),
+        _ => (503, "KMS provider invocation rejected"),
+    };
+    Response::error(status, message)
+}
+
 impl PluginReadPlan {
     pub(super) fn execute(&self) -> Result<Value, Response> {
         let mut host = self
@@ -384,6 +586,8 @@ impl Service {
     pub(super) fn plugin_catalog_handles(path: &str) -> bool {
         path == "sys/plugins/catalog/secret"
             || path.starts_with("sys/plugins/catalog/secret/")
+            || path == "sys/plugins/catalog/kms"
+            || path.starts_with("sys/plugins/catalog/kms/")
             || path == "sys/plugins/catalog/auth"
             || path.starts_with("sys/plugins/catalog/auth/")
             || path == "sys/plugins/catalog/database"
@@ -464,6 +668,8 @@ impl Service {
                 ("auth", suffix, &self.auth_plugins)
             } else if let Some(suffix) = path.strip_prefix("sys/plugins/catalog/database") {
                 ("database", suffix, &self.database_plugins)
+            } else if let Some(suffix) = path.strip_prefix("sys/plugins/catalog/kms") {
+                ("kms", suffix, &self.kms_plugins)
             } else {
                 return Response::error(404, "plugin catalog not found");
             };
@@ -514,6 +720,186 @@ impl Service {
                 "timeout_ms": limits.timeout_ms
             }
         }))
+    }
+
+    pub(super) fn plugin_kms_handles(path: &str) -> bool {
+        path.starts_with("sys/plugins/kms/")
+    }
+
+    pub(super) fn plugin_kms_route(
+        &mut self,
+        state: &State,
+        principal: Option<&Principal>,
+        request: &RequestView<'_>,
+    ) -> Response {
+        let RequestView {
+            namespace,
+            method,
+            path,
+            body,
+            now,
+            wrap_ttl_seconds,
+            ..
+        } = request;
+        if !namespace.is_empty() {
+            return Response::error(403, "KMS plugin runtime is root-namespace only");
+        }
+        if !matches!(*method, "POST" | "PUT") {
+            return Response::error(405, "KMS plugin operation requires POST or PUT");
+        }
+        if wrap_ttl_seconds.is_some() {
+            return Response::error(501, "KMS plugin responses cannot be wrapped");
+        }
+        let Some(principal) = principal else {
+            return Response::error(403, "missing client token");
+        };
+        if let Err(error) = state
+            .auth
+            .authorize_sudo_request(principal, namespace, path, "update", *now)
+        {
+            return Response::error(error.status, &error.message);
+        }
+        let Some(rest) = path.strip_prefix("sys/plugins/kms/") else {
+            return Response::error(404, "KMS plugin route not found");
+        };
+        let Some((plugin_id, action_path)) = rest.split_once('/') else {
+            return Response::error(404, "KMS plugin route not found");
+        };
+        if plugin_id.is_empty() || action_path.contains('/') {
+            return Response::error(404, "KMS plugin route not found");
+        }
+        let (action, capability) = match action_path {
+            "wrap" => ("wrap", KmsCapability::Wrap),
+            "unwrap" => ("unwrap", KmsCapability::Unwrap),
+            "generate-data-key" => ("generate_data_key", KmsCapability::GenerateDataKey),
+            _ => return Response::error(404, "KMS plugin operation not found"),
+        };
+        let Some(binding) = self.kms_keys.get(plugin_id).cloned() else {
+            return Response::error(404, "KMS plugin key binding not found");
+        };
+        if !binding.enabled {
+            return Response::error(403, "KMS key is disabled");
+        }
+        if !binding.capabilities.contains(&capability) {
+            return Response::error(403, "KMS key capability is denied");
+        }
+        let Some(object) = body.as_object() else {
+            return Response::error(400, "KMS request body must be an object");
+        };
+        if object.keys().any(|key| {
+            !matches!(
+                key.as_str(),
+                "key_id"
+                    | "key_version"
+                    | "purpose"
+                    | "associated_data_digest"
+                    | "plaintext"
+                    | "ciphertext"
+                    | "bytes"
+            )
+        }) {
+            return Response::error(400, "KMS request contains unsupported fields");
+        }
+        if object.get("key_id").and_then(Value::as_str) != Some(binding.key_id.as_str())
+            || object.get("key_version").and_then(Value::as_u64)
+                != Some(binding.key_version.as_u64())
+        {
+            return Response::error(400, "KMS request key binding mismatch");
+        }
+        let purpose = object.get("purpose").and_then(Value::as_str).unwrap_or("");
+        if Id::parse(purpose.to_owned()).is_err() {
+            return Response::error(400, "KMS purpose is invalid");
+        }
+        let aad = object
+            .get("associated_data_digest")
+            .and_then(Value::as_str)
+            .unwrap_or("");
+        if aad.len() != 64
+            || !aad.bytes().all(|byte| byte.is_ascii_hexdigit())
+            || aad.bytes().all(|byte| byte == b'0')
+        {
+            return Response::error(400, "KMS associated-data digest is invalid");
+        }
+        match action {
+            "wrap" => {
+                let Some(value) = object.get("plaintext").and_then(Value::as_str) else {
+                    return Response::error(400, "KMS wrap requires plaintext");
+                };
+                if value.is_empty() || value.len() > 256 * 1024 || object.contains_key("ciphertext")
+                {
+                    return Response::error(400, "KMS wrap payload is invalid");
+                }
+            }
+            "unwrap" => {
+                let Some(value) = object.get("ciphertext").and_then(Value::as_str) else {
+                    return Response::error(400, "KMS unwrap requires ciphertext");
+                };
+                if value.is_empty() || value.len() > 512 * 1024 || object.contains_key("plaintext")
+                {
+                    return Response::error(400, "KMS unwrap payload is invalid");
+                }
+            }
+            "generate_data_key" => {
+                let Some(bytes) = object.get("bytes").and_then(Value::as_u64) else {
+                    return Response::error(400, "KMS data-key request requires bytes");
+                };
+                if !(1..=65_536).contains(&bytes)
+                    || object.contains_key("plaintext")
+                    || object.contains_key("ciphertext")
+                {
+                    return Response::error(400, "KMS data-key request is invalid");
+                }
+            }
+            _ => unreachable!(),
+        }
+        if self.pending_plugin_kms.is_some() {
+            return Response::error(503, "another KMS plugin invocation is pending");
+        }
+        let Some(host) = self.kms_plugins.get(plugin_id).cloned() else {
+            return Response::error(503, "KMS plugin is not admitted by this deployment");
+        };
+        let mut provider_body = object.clone();
+        provider_body.insert("action".into(), Value::String(action.into()));
+        provider_body.insert("namespace".into(), Value::String((*namespace).into()));
+        let encoded = match serde_json::to_vec(&provider_body) {
+            Ok(value) => value,
+            Err(_) => return Response::error(500, "KMS plugin request encoding failed"),
+        };
+        let request = match SecretValue::new(encoded) {
+            Ok(value) => value,
+            Err(_) => return Response::error(413, "KMS plugin request exceeds runtime bound"),
+        };
+        self.pending_plugin_kms = Some(PluginKmsPlan {
+            plugin_id: plugin_id.to_owned(),
+            key_binding: binding,
+            host,
+            request,
+            action,
+        });
+        Response::error(500, "KMS plugin was not dispatched")
+    }
+
+    pub(super) fn finalize_plugin_kms(
+        &mut self,
+        plan: PluginKmsPlan,
+        result: Result<PluginKmsObservation, Response>,
+    ) -> Response {
+        let observation = match result {
+            Ok(value) => value,
+            Err(error) => return error,
+        };
+        let Some(current) = self.kms_keys.get(&plan.plugin_id) else {
+            return Response::error(503, "KMS result withheld because key binding disappeared");
+        };
+        if !current.enabled
+            || current.key_id != plan.key_binding.key_id
+            || current.key_version != plan.key_binding.key_version
+            || current.capabilities != plan.key_binding.capabilities
+            || !self.kms_plugins.contains_key(&plan.plugin_id)
+        {
+            return Response::error(503, "KMS result withheld because key binding changed");
+        }
+        Response::ok(json!({"data": observation.value}))
     }
 
     pub(super) fn plugin_auth_login(

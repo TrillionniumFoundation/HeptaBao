@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 53,
-    "defined_not_implemented_surface_count": 7,
-    "fixture_case_count": 342,
+    "implemented_surface_count": 54,
+    "defined_not_implemented_surface_count": 6,
+    "fixture_case_count": 356,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -671,9 +671,24 @@
       "surface_id": "HB-SURFACE-PLUGIN-KMS",
       "category": "plugin_classes",
       "criticality": "CRYPTO_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 14,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "plugin_kms_live.catalog_lists_kms",
+        "plugin_kms_live.catalog_checksum_bound",
+        "plugin_kms_live.wrong_version_no_entry",
+        "plugin_kms_live.disabled_key_no_entry",
+        "plugin_kms_live.wrap",
+        "plugin_kms_live.unwrap",
+        "plugin_kms_live.generate_data_key",
+        "plugin_kms_live.provider_custody_survives_service_restart",
+        "plugin_kms_live.provider_key_outside_service_state",
+        "plugin_kms_live.changed_plugin_fails_before_entry",
+        "plugin_kms_live.post_entry_timeout_fences_host",
+        "plugin_kms_live.catalog_reports_reconciliation_required",
+        "plugin_kms_live.fenced_host_rejects_blind_retry",
+        "plugin_kms_live.restart_readmits_without_replaying_unknown"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {
