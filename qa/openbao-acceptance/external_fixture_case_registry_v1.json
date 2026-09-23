@@ -393,7 +393,10 @@
         "wrong_service_identity_denied",
         "expired_ticket_denied",
         "clock_skew_denied",
-        "restart_replay_denied"
+        "restart_replay_denied",
+        "restart_native_cache_is_fresh",
+        "cross_namespace_replay_denied",
+        "restart_fresh_ticket_still_works"
       ]
     },
     "namespace_seal_live": {

@@ -179,67 +179,201 @@ fn kerberos_binds_namespace_and_mount_incarnation() {
 
 #[test]
 fn kerberos_replay_expiry_clock_and_restart_are_fail_closed() {
-    let (mut state, _raw, root) = configured();
-    let plan = login_plan(&state, 100);
-    let response = state.finish_kerberos_login(plan, observation(160)).unwrap();
+    let (mut state, _raw, _root) = configured();
+    let first = login_plan(&state, 100);
+    let duplicate_in_flight = login_plan(&state, 100);
+    let before_clock_advance = login_plan(&state, 99);
+    let response = state
+        .finish_kerberos_login(first, observation(160))
+        .unwrap();
     assert!(response.body["auth"]["client_token"].is_string());
-
-    let replay = state.finish_kerberos_login(login_plan(&state, 101), observation(160));
-    assert_eq!(replay.err().unwrap().status, 403);
-
-    let expired = state.finish_kerberos_login(login_plan(&state, 101), observation(101));
-    assert_eq!(expired.err().unwrap().status, 403);
-
-    let wrong_realm = KerberosLoginObservation::for_test(
-        "alice@OTHER.TEST",
-        "OTHER.TEST",
-        "HTTP/heptabao.test@HBKRB.TEST",
-        200,
-    );
     assert_eq!(
         state
-            .finish_kerberos_login(login_plan(&state, 101), wrong_realm)
-            .err()
-            .unwrap()
-            .status,
-        403
-    );
-    let wrong_service = KerberosLoginObservation::for_test(
-        "alice@HBKRB.TEST",
-        "HBKRB.TEST",
-        "HTTP/other.test@HBKRB.TEST",
-        200,
-    );
-    assert_eq!(
-        state
-            .finish_kerberos_login(login_plan(&state, 101), wrong_service)
-            .err()
-            .unwrap()
-            .status,
-        403
-    );
-
-    let rollback = state.finish_kerberos_login(login_plan(&state, 99), observation(200));
-    assert_eq!(rollback.err().unwrap().status, 400);
-
-    let saved = serde_json::to_vec(&state).unwrap();
-    let mut restarted: AuthState = serde_json::from_slice(&saved).unwrap();
-    restarted.validate_online_auth().unwrap();
-    let replay_after_restart = restarted.finish_kerberos_login(
-        restarted
             .prepare_kerberos_login(
                 "",
                 "kerberos",
                 "POST",
-                &json!({"kerberos_authorization": AUTHORIZATION}),
-                102,
+                &json!({"kerberos_authorization":AUTHORIZATION}),
+                101
             )
-            .unwrap(),
-        observation(200),
+            .err()
+            .unwrap()
+            .status,
+        403
     );
-    assert_eq!(replay_after_restart.err().unwrap().status, 403);
+    assert_eq!(
+        state
+            .finish_kerberos_login(duplicate_in_flight, observation(160))
+            .err()
+            .unwrap()
+            .status,
+        403
+    );
+    assert_eq!(
+        state
+            .finish_kerberos_login(before_clock_advance, observation(200))
+            .err()
+            .unwrap()
+            .status,
+        400
+    );
 
-    let serialized = String::from_utf8(saved).unwrap();
-    assert!(!serialized.contains(AUTHORIZATION));
-    let _ = root;
+    let fresh = "Negotiate ZnJlc2hAYm91bmRhcnk=";
+    let plan = |state: &AuthState| {
+        state
+            .prepare_kerberos_login(
+                "",
+                "kerberos",
+                "POST",
+                &json!({"kerberos_authorization":fresh}),
+                101,
+            )
+            .unwrap()
+    };
+    assert_eq!(
+        state
+            .finish_kerberos_login(plan(&state), observation(101))
+            .err()
+            .unwrap()
+            .status,
+        403
+    );
+    for wrong in [
+        KerberosLoginObservation::for_test(
+            "alice@OTHER.TEST",
+            "OTHER.TEST",
+            "HTTP/heptabao.test@HBKRB.TEST",
+            200,
+        ),
+        KerberosLoginObservation::for_test(
+            "alice@HBKRB.TEST",
+            "HBKRB.TEST",
+            "HTTP/other.test@HBKRB.TEST",
+            200,
+        ),
+    ] {
+        assert_eq!(
+            state
+                .finish_kerberos_login(plan(&state), wrong)
+                .err()
+                .unwrap()
+                .status,
+            403
+        );
+    }
+    // Failed observations must neither consume a ticket nor allocate a token.
+    assert!(
+        state
+            .finish_kerberos_login(plan(&state), observation(200))
+            .is_ok()
+    );
+    let saved = serde_json::to_vec(&state).unwrap();
+    let restarted: AuthState = serde_json::from_slice(&saved).unwrap();
+    restarted.validate_online_auth().unwrap();
+    for authorization in [AUTHORIZATION, fresh] {
+        assert_eq!(
+            restarted
+                .prepare_kerberos_login(
+                    "",
+                    "kerberos",
+                    "POST",
+                    &json!({"kerberos_authorization":authorization}),
+                    103
+                )
+                .err()
+                .unwrap()
+                .status,
+            403
+        );
+        assert!(!String::from_utf8_lossy(&saved).contains(authorization));
+    }
+}
+
+#[test]
+fn kerberos_distinct_inflight_logins_preserve_both_durable_replay_entries() {
+    let (mut state, _raw, _root) = configured();
+    let other = "Negotiate ZGlzdGluY3RAYm91bmRhcnk=";
+    let first = login_plan(&state, 100);
+    let second = state
+        .prepare_kerberos_login(
+            "",
+            "kerberos",
+            "POST",
+            &json!({"kerberos_authorization":other}),
+            100,
+        )
+        .unwrap();
+    assert!(state.finish_kerberos_login(first, observation(200)).is_ok());
+    assert!(
+        state
+            .finish_kerberos_login(second, observation(200))
+            .is_ok()
+    );
+    state.validate_online_auth().unwrap();
+    for authorization in [AUTHORIZATION, other] {
+        assert_eq!(
+            state
+                .prepare_kerberos_login(
+                    "",
+                    "kerberos",
+                    "POST",
+                    &json!({"kerberos_authorization":authorization}),
+                    102
+                )
+                .err()
+                .unwrap()
+                .status,
+            403
+        );
+    }
+}
+
+#[test]
+fn kerberos_committed_ap_req_cannot_replay_across_namespace_or_mount() {
+    let (mut state, _raw, root) = configured();
+    mount_auth(&mut state, &root, "team", "kerberos", "kerberos");
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/kerberos/config",
+        config(),
+        100,
+    );
+    let first = login_plan(&state, 100);
+    let other_namespace = state
+        .prepare_kerberos_login(
+            "team",
+            "kerberos",
+            "POST",
+            &json!({"kerberos_authorization":AUTHORIZATION}),
+            100,
+        )
+        .unwrap();
+    assert!(state.finish_kerberos_login(first, observation(200)).is_ok());
+    assert_eq!(
+        state
+            .finish_kerberos_login(other_namespace, observation(200))
+            .err()
+            .unwrap()
+            .status,
+        403
+    );
+    let saved = serde_json::to_vec(&state).unwrap();
+    let restored: AuthState = serde_json::from_slice(&saved).unwrap();
+    assert_eq!(
+        restored
+            .prepare_kerberos_login(
+                "team",
+                "kerberos",
+                "POST",
+                &json!({"kerberos_authorization":AUTHORIZATION}),
+                102
+            )
+            .err()
+            .unwrap()
+            .status,
+        403
+    );
 }

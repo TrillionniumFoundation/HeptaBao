@@ -163,6 +163,36 @@ fn valid_client_principal(principal: &str, realm: &str) -> bool {
 }
 
 impl KerberosMount {
+    // Replay and admission-clock progress are mutable observations, not a
+    // policy revision. Exhaustive destructuring forces future fields to be
+    // classified rather than accidentally dropping them from this comparison.
+    fn same_authority(&self, other: &Self) -> bool {
+        let Self {
+            service_account,
+            realm,
+            service,
+            keytab_path,
+            policies,
+            token_ttl,
+            token_max_ttl,
+            token_explicit_max_ttl,
+            token_num_uses,
+            clock_skew_seconds,
+            replay: _,
+            last_admission_time: _,
+        } = self;
+        service_account == &other.service_account
+            && realm == &other.realm
+            && service == &other.service
+            && keytab_path == &other.keytab_path
+            && policies == &other.policies
+            && token_ttl == &other.token_ttl
+            && token_max_ttl == &other.token_max_ttl
+            && token_explicit_max_ttl == &other.token_explicit_max_ttl
+            && token_num_uses == &other.token_num_uses
+            && clock_skew_seconds == &other.clock_skew_seconds
+    }
+
     pub(super) fn validate(&self) -> Result<(), AuthError> {
         if !valid_realm(&self.realm)
             || !valid_service_component(&self.service)
@@ -230,6 +260,21 @@ impl KerberosMount {
 }
 
 impl AuthState {
+    // A captured AP-REQ must not become reusable on another namespace/mount
+    // after HA failover to a different process-local GSS replay cache. The
+    // existing durable maps remain the sole owner; no second replay store.
+    fn kerberos_replayed(&self, digest: &str, now: u64) -> bool {
+        self.kerberos_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .any(|mount| {
+                mount
+                    .replay
+                    .get(digest)
+                    .is_some_and(|expires| *expires > now)
+            })
+    }
+
     /// Mount-only enrollment and retained configuration/replay state each need
     /// the Kerberos reader, independently of successful login or live tickets.
     pub(crate) fn has_kerberos_state(&self) -> bool {
@@ -475,12 +520,31 @@ impl AuthState {
         {
             return Err(bad("invalid Kerberos authorization"));
         }
+        let replay_digest = hash(authorization);
+        if now < config.last_admission_time {
+            return Err(err(400, "Kerberos clock moved backwards"));
+        }
+        // Check committed replay evidence before invoking GSS. Otherwise a
+        // previously accepted ticket is classified by the local native cache,
+        // which may be missing after restart or live on a different HA host.
+        if self.kerberos_replayed(&replay_digest, now) {
+            return Err(denied());
+        }
+        if config
+            .replay
+            .values()
+            .filter(|expires| **expires > now)
+            .count()
+            >= MAX_KERBEROS_REPLAY_ENTRIES
+        {
+            return Err(err(503, "Kerberos replay fence is at capacity"));
+        }
         Ok(KerberosLoginPlan {
             namespace: namespace.into(),
             mount: mount.into(),
             mount_revision,
             config,
-            replay_digest: hash(authorization),
+            replay_digest,
             authorization: Zeroizing::new(authorization.to_owned()),
             now,
             started: std::time::Instant::now(),
@@ -498,12 +562,16 @@ impl AuthState {
         };
         if self.effective_auth_mounts(&plan.namespace).get(&plan.mount)
             != Some(&plan.mount_revision)
-            || self.kerberos_at(scope) != Some(&plan.config)
         {
             return Err(err(409, "Kerberos configuration changed during login"));
         }
+        let mut config = self
+            .kerberos_at(scope)
+            .filter(|current| current.same_authority(&plan.config))
+            .cloned()
+            .ok_or_else(|| err(409, "Kerberos configuration changed during login"))?;
         let now = plan.observed_now();
-        if now < plan.config.last_admission_time {
+        if now < config.last_admission_time {
             return Err(err(400, "Kerberos clock moved backwards"));
         }
         if observation.service != plan.config.service_principal()
@@ -517,9 +585,8 @@ impl AuthState {
         {
             return Err(denied());
         }
-        let mut config = plan.config;
         config.replay.retain(|_, expiry| *expiry > now);
-        if config.replay.contains_key(&plan.replay_digest) {
+        if self.kerberos_replayed(&plan.replay_digest, now) {
             return Err(denied());
         }
         if config.replay.len() >= MAX_KERBEROS_REPLAY_ENTRIES {
@@ -585,12 +652,7 @@ impl AuthState {
 
 impl KerberosLoginPlan {
     pub(crate) fn observed_now(&self) -> u64 {
-        let elapsed = self.started.elapsed();
-        self.now.saturating_add(
-            elapsed
-                .as_secs()
-                .saturating_add(u64::from(elapsed.subsec_nanos() > 0)),
-        )
+        observed_admission_second(self.now, self.started.elapsed())
     }
 
     pub(crate) fn execute(
@@ -624,5 +686,36 @@ impl From<KerberosObservation> for KerberosLoginObservation {
             service: observation.service,
             expires_at: observation.expires_at,
         }
+    }
+}
+
+// Admission clocks have whole-second resolution. Rounding every subsecond
+// exchange upward manufactures a future watermark and rejects the next
+// legitimate login in the same second. Native ticket expiry is independently
+// checked by GSS and remains an upper bound on every issued token.
+fn observed_admission_second(now: u64, elapsed: std::time::Duration) -> u64 {
+    now.saturating_add(elapsed.as_secs())
+}
+
+#[cfg(test)]
+mod kerberos_clock_tests {
+    use super::observed_admission_second;
+    use std::time::Duration;
+
+    #[test]
+    fn kerberos_admission_clock_does_not_invent_a_future_second() {
+        assert_eq!(observed_admission_second(100, Duration::from_nanos(1)), 100);
+        assert_eq!(
+            observed_admission_second(100, Duration::from_millis(999)),
+            100
+        );
+        assert_eq!(
+            observed_admission_second(100, Duration::from_millis(2900)),
+            102
+        );
+        assert_eq!(
+            observed_admission_second(u64::MAX, Duration::from_secs(1)),
+            u64::MAX
+        );
     }
 }

@@ -15,6 +15,7 @@ import ctypes
 import ctypes.util
 import json
 import os
+import re
 from pathlib import Path
 import secrets
 import shutil
@@ -32,6 +33,23 @@ REALM = "HBKERB.TEST"
 SERVICE = "HTTP"
 SERVICE_ACCOUNT = f"{SERVICE}/127.0.0.1@{REALM}"
 CLIENT = f"alice@{REALM}"
+
+CORPUS_CASE_IDS = (
+    "config_roundtrip", "real_mit_ap_req_login", "replayed_negotiation_denied",
+    "wrong_realm_denied", "wrong_service_identity_denied", "expired_ticket_denied",
+    "clock_skew_denied", "restart_replay_denied", "restart_native_cache_is_fresh",
+    "cross_namespace_replay_denied", "restart_fresh_ticket_still_works",
+)
+
+
+class FixtureFailure(RuntimeError):
+    """An allowlisted structural stage, never provider stderr or a credential."""
+    def __init__(self, stage: str):
+        if not re.fullmatch(r"[a-z][a-z0-9_]{0,95}", stage):
+            stage = "unclassified_failure"
+        super().__init__(stage)
+        self.stage = stage
+
 
 
 def free_port() -> int:
@@ -60,7 +78,7 @@ def checked(command: list[str], env: dict[str, str], *, input_text: str | None =
     if result.returncode != 0:
         # Provider output can contain principals, paths, or other sensitive
         # deployment details. Keep failure evidence intentionally generic.
-        raise RuntimeError("MIT Kerberos command failed: " + command[0])
+        raise FixtureFailure("mit_command_failed")
     return result.stdout
 
 
@@ -98,8 +116,8 @@ def kerberos_files(root: Path, port: int) -> tuple[Path, Path, Path, Path]:
     private_write(
         kdc_conf,
         f"""[kdcdefaults]
- kdc_ports = {port}
- kdc_tcp_ports = {port}
+ kdc_listen = 127.0.0.1:{port}
+ kdc_tcp_listen = 127.0.0.1:{port}
 
 [realms]
  {REALM} = {{
@@ -148,7 +166,7 @@ def start_kdc(
     )
     for _ in range(100):
         if process.poll() is not None:
-            raise RuntimeError("MIT KDC exited during startup")
+            raise FixtureFailure("kdc_startup_exit")
         try:
             with socket.create_connection(("127.0.0.1", port), timeout=0.1):
                 return process
@@ -160,7 +178,7 @@ def start_kdc(
     except subprocess.TimeoutExpired:
         process.kill()
         process.wait(timeout=5)
-    raise RuntimeError("MIT KDC did not become ready")
+    raise FixtureFailure("kdc_readiness_timeout")
 
 
 class GssOid(ctypes.Structure):
@@ -172,105 +190,75 @@ class GssBuffer(ctypes.Structure):
 
 
 def negotiate_header(_instance: smoke.Instance, env: dict[str, str]) -> str:
-    # This is the MIT GSS initiator path, not a token-shaped test value. The
-    # ccache is selected through the process environment and the AP-REQ bytes
-    # are retained only in memory until the HTTP request is sent.
-    os.environ["KRB5CCNAME"] = env["KRB5CCNAME"]
-    library = next(
-        (
-            candidate
-            for candidate in (
-                ctypes.util.find_library("gssapi_krb5"),
-                "libgssapi_krb5.so.2",
-                "/usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2",
-                "/usr/lib/aarch64-linux-gnu/libgssapi_krb5.so.2",
-            )
-            if candidate and (Path(candidate).exists() or "/" not in candidate)
-        ),
-        None,
-    )
-    if library is None:
-        raise RuntimeError("MIT GSS-API library unavailable")
+    """Create a real MIT AP-REQ, releasing every native context/name/buffer."""
+    library = ctypes.util.find_library("gssapi_krb5")
+    if not library:
+        raise FixtureFailure("gss_library_missing")
     gss = ctypes.CDLL(library)
     major_type = ctypes.c_uint32
-    gss_name = ctypes.c_void_p
-    gss_context = ctypes.c_void_p
-    gss.import_name = gss.gss_import_name
-    gss.import_name.argtypes = [
-        ctypes.POINTER(major_type),
-        ctypes.POINTER(GssBuffer),
-        ctypes.POINTER(GssOid),
-        ctypes.POINTER(gss_name),
-    ]
-    gss.import_name.restype = major_type
-    gss.init_context = gss.gss_init_sec_context
-    gss.init_context.argtypes = [
-        ctypes.POINTER(major_type),
-        ctypes.c_void_p,
-        ctypes.POINTER(gss_context),
-        gss_name,
-        ctypes.c_void_p,
-        major_type,
-        major_type,
-        ctypes.c_void_p,
-        ctypes.POINTER(GssBuffer),
-        ctypes.c_void_p,
-        ctypes.POINTER(GssBuffer),
-        ctypes.POINTER(major_type),
-        ctypes.POINTER(major_type),
-    ]
-    gss.init_context.restype = major_type
-    gss.release_buffer = gss.gss_release_buffer
-    gss.release_buffer.argtypes = [ctypes.POINTER(major_type), ctypes.POINTER(GssBuffer)]
-    gss.release_buffer.restype = major_type
+    pointer = ctypes.c_void_p
 
+    def bind(name, argtypes):
+        function = getattr(gss, name)
+        function.argtypes = argtypes
+        function.restype = major_type
+        return function
+
+    import_name = bind("gss_import_name", [ctypes.POINTER(major_type),
+        ctypes.POINTER(GssBuffer), ctypes.POINTER(GssOid), ctypes.POINTER(pointer)])
+    init_context = bind("gss_init_sec_context", [ctypes.POINTER(major_type), pointer,
+        ctypes.POINTER(pointer), pointer, pointer, major_type, major_type, pointer,
+        ctypes.POINTER(GssBuffer), pointer, ctypes.POINTER(GssBuffer),
+        ctypes.POINTER(major_type), ctypes.POINTER(major_type)])
+    release_buffer = bind("gss_release_buffer", [ctypes.POINTER(major_type), ctypes.POINTER(GssBuffer)])
+    release_name = bind("gss_release_name", [ctypes.POINTER(major_type), ctypes.POINTER(pointer)])
+    delete_context = bind("gss_delete_sec_context", [ctypes.POINTER(major_type),
+        ctypes.POINTER(pointer), ctypes.POINTER(GssBuffer)])
     name_bytes = SERVICE_ACCOUNT.encode("ascii")
     name_storage = ctypes.create_string_buffer(name_bytes)
-    name_buffer = GssBuffer(len(name_bytes), ctypes.cast(name_storage, ctypes.c_void_p))
-    # GSS_NT_KRB5_PRINCIPAL: preserve the exact service/host@realm binding.
+    name_buffer = GssBuffer(len(name_bytes), ctypes.cast(name_storage, pointer))
+    # GSS_NT_KRB5_PRINCIPAL preserves service/host@realm rather than DNS inference.
     oid_bytes = (ctypes.c_ubyte * 10)(42, 134, 72, 134, 247, 18, 1, 2, 2, 1)
-    oid = GssOid(10, ctypes.cast(oid_bytes, ctypes.c_void_p))
+    oid = GssOid(10, ctypes.cast(oid_bytes, pointer))
     minor = major_type(0)
-    target = gss_name()
-    if gss.import_name(ctypes.byref(minor), ctypes.byref(name_buffer), ctypes.byref(oid), ctypes.byref(target)) != 0:
-        raise RuntimeError("MIT GSS target import failed")
-    context = gss_context()
-    output = GssBuffer()
-    major = gss.init_context(
-        ctypes.byref(minor),
-        None,
-        ctypes.byref(context),
-        target,
-        None,
-        0,
-        0,
-        None,
-        None,
-        None,
-        ctypes.byref(output),
-        None,
-        None,
-    )
-    if major != 0 or not output.value or output.length == 0:
-        raise RuntimeError("MIT GSS initiator did not produce an AP-REQ")
+    target, context, output = pointer(), pointer(), GssBuffer()
+    original_cache = os.environ.get("KRB5CCNAME")
+    os.environ["KRB5CCNAME"] = env["KRB5CCNAME"]
     try:
+        if import_name(ctypes.byref(minor), ctypes.byref(name_buffer), ctypes.byref(oid),
+                       ctypes.byref(target)) != 0:
+            raise FixtureFailure("gss_target_import")
+        major = init_context(ctypes.byref(minor), None, ctypes.byref(context), target,
+            None, 0, 0, None, None, None, ctypes.byref(output), None, None)
+        if major != 0 or not output.value or not 0 < output.length <= 128 * 1024:
+            raise FixtureFailure("gss_ap_req_creation")
         token = ctypes.string_at(output.value, output.length)
+        return "Negotiate " + base64.b64encode(token).decode("ascii")
     finally:
-        gss.release_buffer(ctypes.byref(minor), ctypes.byref(output))
-    return "Negotiate " + base64.b64encode(token).decode("ascii")
+        if output.value:
+            release_buffer(ctypes.byref(minor), ctypes.byref(output))
+        if context.value:
+            delete_context(ctypes.byref(minor), ctypes.byref(context), None)
+        if target.value:
+            release_name(ctypes.byref(minor), ctypes.byref(target))
+        if original_cache is None:
+            os.environ.pop("KRB5CCNAME", None)
+        else:
+            os.environ["KRB5CCNAME"] = original_cache
 
 
 def run(binary: Path, work_dir: Path) -> dict[str, object]:
     if sys.platform != "linux":
         return {"status": "not_run", "reason": "MIT Kerberos acceptance is Linux-only"}
     if not have_mit_tools():
-        raise RuntimeError("MIT Kerberos tools or GSS-API library unavailable")
+        raise FixtureFailure("mit_prerequisites_missing")
 
     work_dir.mkdir(mode=0o700, parents=True, exist_ok=False)
     environment = os.environ.copy()
     kdc = None
     instance = None
     ccache = work_dir / "client.ccache"
+    passed = []
     try:
         port = free_port()
         master_password = secrets.token_urlsafe(24)
@@ -279,14 +267,18 @@ def run(binary: Path, work_dir: Path) -> dict[str, object]:
         keytab = work_dir / "service.keytab"
         environment["KRB5_KTNAME"] = f"FILE:{keytab}"
         environment["KRB5CCNAME"] = f"FILE:{ccache}"
+        environment["KRB5RCACHENAME"] = "file2:" + str(work_dir / "server-generation-0.replay")
         instance = smoke.Instance(binary, work_dir / "server")
-        original = {name: os.environ.get(name) for name in ("KRB5_CONFIG", "KRB5_KTNAME", "KRB5CCNAME")}
-        os.environ.update({name: environment[name] for name in ("KRB5_CONFIG", "KRB5_KTNAME", "KRB5CCNAME")})
+        original = {name: os.environ.get(name) for name in ("KRB5_CONFIG", "KRB5_KTNAME", "KRB5CCNAME", "KRB5RCACHENAME")}
+        os.environ.update({name: environment[name] for name in ("KRB5_CONFIG", "KRB5_KTNAME", "KRB5CCNAME", "KRB5RCACHENAME")})
         try:
             instance.start()
             def check(condition: bool, name: str) -> None:
                 if not condition:
-                    raise RuntimeError("scenario failed: " + name)
+                    raise FixtureFailure(name)
+                if name in passed:
+                    raise FixtureFailure("duplicate_observation")
+                passed.append(name)
 
             status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
             check(status == 200, "initialize")
@@ -312,32 +304,42 @@ def run(binary: Path, work_dir: Path) -> dict[str, object]:
             checked(["kinit", "-c", str(ccache), CLIENT], environment, input_text=f"{client_password}\n")
             first_header = negotiate_header(instance, environment)
             first_status = instance.call(
-                "POST", "auth/kerberos/login", {}, extra_headers={"Authorization": first_header}
+                "POST", "auth/kerberos/login", {}, token="", extra_headers={"Authorization": first_header}
             )[0]
             check(first_status == 200, "real_mit_ap_req_login")
             replay_status = instance.call(
-                "POST", "auth/kerberos/login", {}, extra_headers={"Authorization": first_header}
+                "POST", "auth/kerberos/login", {}, token="", extra_headers={"Authorization": first_header}
             )[0]
             check(replay_status == 403, "replayed_negotiation_denied")
 
+            # Never reuse a consumed AP-REQ for realm/service negative cases:
+            # a replay rejection would mask a broken target-identity check.
+            wrong_realm_header = negotiate_header(instance, environment)
             bad_config = dict(config)
             bad_config["realm"] = "OTHER.TEST"
             bad_config["service_account"] = "HTTP/127.0.0.1@OTHER.TEST"
             check(instance.call("PUT", "auth/kerberos/config", bad_config)[0] == 204, "wrong_realm_configured")
             wrong_realm_status = instance.call(
-                "POST", "auth/kerberos/login", {}, extra_headers={"Authorization": first_header}
+                "POST", "auth/kerberos/login", {}, token="", extra_headers={"Authorization": wrong_realm_header}
             )[0]
             check(wrong_realm_status >= 400, "wrong_realm_denied")
             check(instance.call("PUT", "auth/kerberos/config", config)[0] == 204, "config_restored")
+            check(instance.call("POST", "auth/kerberos/login", {}, token="",
+                  extra_headers={"Authorization": wrong_realm_header})[0] == 200,
+                  "wrong_realm_control_login")
 
+            wrong_service_header = negotiate_header(instance, environment)
             wrong_service = dict(config)
             wrong_service["service_account"] = "HTTP/other.test@HBKERB.TEST"
             check(instance.call("PUT", "auth/kerberos/config", wrong_service)[0] == 204, "wrong_service_configured")
             wrong_service_status = instance.call(
-                "POST", "auth/kerberos/login", {}, extra_headers={"Authorization": first_header}
+                "POST", "auth/kerberos/login", {}, token="", extra_headers={"Authorization": wrong_service_header}
             )[0]
             check(wrong_service_status >= 400, "wrong_service_identity_denied")
             check(instance.call("PUT", "auth/kerberos/config", config)[0] == 204, "service_config_restored")
+            check(instance.call("POST", "auth/kerberos/login", {}, token="",
+                  extra_headers={"Authorization": wrong_service_header})[0] == 200,
+                  "wrong_service_control_login")
             check(instance.call("PUT", "auth/kerberos/config", {**config, "clock_skew_seconds": 301})[0] >= 400, "clock_skew_denied")
 
             checked(["kdestroy", "-c", str(ccache)], environment)
@@ -346,25 +348,46 @@ def run(binary: Path, work_dir: Path) -> dict[str, object]:
             checked(["kinit", "-l", "5s", "-c", str(short_cache), CLIENT], environment, input_text=f"{client_password}\n")
             expired_header = negotiate_header(instance, environment)
             time.sleep(6)
-            expired_status = instance.call("POST", "auth/kerberos/login", {}, extra_headers={"Authorization": expired_header})[0]
+            expired_status = instance.call("POST", "auth/kerberos/login", {}, token="", extra_headers={"Authorization": expired_header})[0]
             check(expired_status >= 400, "expired_ticket_denied")
 
             environment["KRB5CCNAME"] = f"FILE:{ccache}"
             checked(["kinit", "-c", str(ccache), CLIENT], environment, input_text=f"{client_password}\n")
             second_header = negotiate_header(instance, environment)
-            check(instance.call("POST", "auth/kerberos/login", {}, extra_headers={"Authorization": second_header})[0] == 200, "second_login")
+            check(instance.call("POST", "auth/kerberos/login", {}, token="", extra_headers={"Authorization": second_header})[0] == 200, "second_login")
+            check(instance.call("POST", "sys/namespaces/kerberos-peer", {})[0] == 204, "peer_namespace")
+            check(instance.call("POST", "sys/auth/kerberos", {"type":"kerberos"},
+                  namespace="kerberos-peer")[0] == 204, "peer_mount")
+            check(instance.call("POST", "auth/kerberos/config", config,
+                  namespace="kerberos-peer")[0] == 204, "peer_configuration")
             instance.stop()
+            # A new, still-enabled MIT replay cache models another host. No
+            # cache is disabled, and no old cache is copied into this process.
+            fresh_native_cache = work_dir / "server-generation-1.replay"
+            check(not fresh_native_cache.exists(), "restart_native_cache_is_fresh")
+            environment["KRB5RCACHENAME"] = "file2:" + str(fresh_native_cache)
+            os.environ["KRB5RCACHENAME"] = environment["KRB5RCACHENAME"]
             instance.start()
             check(instance.call("POST", "sys/unseal", {"key": unseal})[0] == 200, "restart_unseal")
+            # Check the other namespace FIRST: trying the original namespace
+            # through GSS could populate the cold native cache and mask a
+            # missing cross-namespace application-level replay fence.
+            cross_status = instance.call("POST", "auth/kerberos/login", {}, token="",
+                namespace="kerberos-peer", extra_headers={"Authorization":second_header})[0]
+            check(cross_status == 403, "cross_namespace_replay_denied")
+            check(not fresh_native_cache.exists(), "durable_replay_rejects_before_gss_entry")
             restart_status = instance.call(
-                "POST", "auth/kerberos/login", {}, extra_headers={"Authorization": second_header}
+                "POST", "auth/kerberos/login", {}, token="", extra_headers={"Authorization": second_header}
             )[0]
             check(restart_status == 403, "restart_replay_denied")
-            return {"status": "passed", "checks": [
-                "config_roundtrip", "real_mit_ap_req_login", "replayed_negotiation_denied",
-                "wrong_realm_denied", "wrong_service_identity_denied", "expired_ticket_denied",
-                "clock_skew_denied", "restart_replay_denied",
-            ]}
+            fresh_header = negotiate_header(instance, environment)
+            check(instance.call("POST", "auth/kerberos/login", {}, token="",
+                  extra_headers={"Authorization":fresh_header})[0] == 200
+                  and fresh_native_cache.exists(), "restart_fresh_ticket_still_works")
+            check(set(CORPUS_CASE_IDS).issubset(passed), "corpus_complete")
+            return {"status": "passed", "checks": [name for name in passed if name in CORPUS_CASE_IDS],
+                    "native_replay_cache_enabled": True, "independent_qualification": False,
+                    "openbao_api_parity": False}
         finally:
             for name, value in original.items():
                 if value is None:
@@ -392,7 +415,11 @@ if __name__ == "__main__":
     if not args.binary.is_absolute() or not args.work_dir.is_absolute():
         parser.error("paths must be absolute")
     try:
-        print(json.dumps(run(args.binary.resolve(strict=True), args.work_dir)))
+        result = run(args.binary.resolve(strict=True), args.work_dir)
+        print(json.dumps(result))
+        if result.get("status") != "passed":
+            raise SystemExit(77 if result.get("status") == "not_run" else 1)
     except Exception as error:
-        print(json.dumps({"status": "failed", "reason": type(error).__name__}))
+        print(json.dumps({"status": "failed", "reason": type(error).__name__,
+                          "stage": error.stage if isinstance(error, FixtureFailure) else "unclassified_failure"}))
         raise SystemExit(1) from None
