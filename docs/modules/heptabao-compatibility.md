@@ -91,7 +91,7 @@ Required/observed surface counts, matching observation counts, missing surface i
 
 ## Operations
 
-Operators first validate the frozen 60-surface corpus, then collect the required cases against one exact Oracle/candidate pair. They publish a claim only after independent evidence admission. Revocation takes precedence when a regression, inventory drift or provenance defect appears.
+Operators first validate the current frozen surface corpus, then collect the required cases against one exact Oracle/candidate pair. They publish a claim only after independent evidence admission. Revocation takes precedence when a regression, inventory drift or provenance defect appears.
 
 ## Tests and executable evidence
 
@@ -108,9 +108,9 @@ Current executable anchors (source assertions, not a claim that tests were rerun
 | Source-derived coverage metric | Count |
 |---|---:|
 | Inventoried surfaces | 59 |
-| Surfaces with scoped fixtures | 57 |
-| Surfaces without implemented fixtures | 2 |
-| Scoped fixture cases | 396 |
+| Surfaces with scoped fixtures | 58 |
+| Surfaces without implemented fixtures | 1 |
+| Scoped fixture cases | 407 |
 
 Scoped fixtures are not full behavior coverage or independent compatibility admission.
 The counts above are regenerated from corpus rows; they are not test-pass receipts.

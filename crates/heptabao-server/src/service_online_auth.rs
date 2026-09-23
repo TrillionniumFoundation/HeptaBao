@@ -2,11 +2,11 @@
 //! durable publication. Neither TokenReview nor an ID token is a Principal.
 use super::*;
 use crate::auth::{
-    AuthError, KubernetesLoginObservation, KubernetesLoginPlan, LdapLoginObservation,
-    LdapLoginPlan, OidcBeginObservation, OidcBeginPlan, OidcConfigObservation, OidcConfigPlan,
-    OidcExchange, OidcLoginObservation, ProviderRenewalObservation, ProviderRenewalPlan,
-    RadiusLoginObservation, RadiusLoginPlan, RemoteJwtConfigPlan, RemoteJwtLoginObservation,
-    RemoteJwtLoginPlan,
+    AuthError, KerberosLoginObservation, KerberosLoginPlan, KubernetesLoginObservation,
+    KubernetesLoginPlan, LdapLoginObservation, LdapLoginPlan, OidcBeginObservation, OidcBeginPlan,
+    OidcConfigObservation, OidcConfigPlan, OidcExchange, OidcLoginObservation,
+    ProviderRenewalObservation, ProviderRenewalPlan, RadiusLoginObservation, RadiusLoginPlan,
+    RemoteJwtConfigPlan, RemoteJwtLoginObservation, RemoteJwtLoginPlan,
 };
 
 fn consumed_oidc_error(mut response: Response) -> Response {
@@ -31,6 +31,7 @@ pub(super) enum OnlineAuthEffect {
     Kubernetes(KubernetesLoginPlan),
     Ldap(LdapLoginPlan),
     Radius(RadiusLoginPlan),
+    Kerberos(KerberosLoginPlan),
     ProviderRenewal(Box<ProviderRenewalEffect>),
     OidcBegin(OidcBeginPlan),
     OidcCallback {
@@ -117,6 +118,7 @@ pub(crate) enum OnlineAuthObservation {
     Kubernetes(KubernetesLoginObservation),
     Ldap(LdapLoginObservation),
     Radius(RadiusLoginObservation),
+    Kerberos(KerberosLoginObservation),
     ProviderRenewal(ProviderRenewalObservation),
     OidcBegin(OidcBeginObservation),
     OidcCallback(OidcLoginObservation),
@@ -159,6 +161,10 @@ impl OnlineAuthEffectPlan {
             OnlineAuthEffect::Radius(plan) => plan
                 .execute(&self.outbound)
                 .map(OnlineAuthObservation::Radius)
+                .map_err(auth_error),
+            OnlineAuthEffect::Kerberos(plan) => plan
+                .execute(&self.outbound)
+                .map(OnlineAuthObservation::Kerberos)
                 .map_err(auth_error),
             OnlineAuthEffect::ProviderRenewal(plan) => plan
                 .plan
@@ -492,6 +498,7 @@ impl Service {
         let handled = kind == "kubernetes" && suffix == "login"
             || kind == "ldap" && suffix.starts_with("login/")
             || kind == "radius" && (suffix == "login" || suffix.starts_with("login/"))
+            || kind == "kerberos" && suffix == "login"
             || kind == "oidc" && matches!(suffix.as_str(), "oidc/auth_url" | "oidc/callback");
         if !handled {
             return None;
@@ -551,6 +558,17 @@ impl Service {
             );
             match plan {
                 Ok(plan) => OnlineAuthEffect::Radius(plan),
+                Err(error) => return Some(auth_error(error)),
+            }
+        } else if kind == "kerberos" {
+            match admitted.auth.prepare_kerberos_login(
+                request.namespace,
+                &mount,
+                request.method,
+                request.body,
+                request.now,
+            ) {
+                Ok(plan) => OnlineAuthEffect::Kerberos(plan),
                 Err(error) => return Some(auth_error(error)),
             }
         } else if suffix == "oidc/auth_url" {
@@ -693,6 +711,7 @@ impl Service {
             OnlineAuthEffect::Kubernetes(effect) => effect.observed_now(),
             OnlineAuthEffect::Ldap(effect) => effect.observed_now(),
             OnlineAuthEffect::Radius(effect) => effect.observed_now(),
+            OnlineAuthEffect::Kerberos(effect) => effect.observed_now(),
             _ => plan.request_now,
         };
         let wrapping = match &plan.effect {
@@ -771,6 +790,9 @@ impl Service {
             }
             (OnlineAuthEffect::Radius(auth_plan), OnlineAuthObservation::Radius(observed)) => {
                 state.auth.finish_radius_login(auth_plan, observed)
+            }
+            (OnlineAuthEffect::Kerberos(auth_plan), OnlineAuthObservation::Kerberos(observed)) => {
+                state.auth.finish_kerberos_login(auth_plan, observed)
             }
             (
                 OnlineAuthEffect::OidcBegin(auth_plan),

@@ -31,7 +31,9 @@ use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 use crate::state_record_root::RecordStateRoot;
 
-const CURRENT_STATE_SCHEMA: u32 = 48;
+// 49 is reserved by the separately developing workflow state. This candidate
+// has no workflow reader, so it deliberately does not admit that format yet.
+const CURRENT_STATE_SCHEMA: u32 = 50;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -6810,3 +6812,7 @@ mod approle_cidrs_tests;
 #[cfg(test)]
 #[path = "service_cert_batch_tests.rs"]
 mod cert_batch_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_kerberos_schema_tests.rs"]
+mod kerberos_schema_tests;
