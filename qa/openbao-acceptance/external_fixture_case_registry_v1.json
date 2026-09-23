@@ -446,6 +446,24 @@
       ],
       "script": "qa/openbao-acceptance/mysql_live.py"
     },
+    "influxdb_live": {
+      "case_ids": [
+        "real_influxdb_1_8_ready",
+        "influxdb_unbound_database_rejected",
+        "influxdb_plugin_configuration_readback",
+        "influxdb_readonly_issue_reaches_provider",
+        "influxdb_readonly_query_succeeds",
+        "influxdb_ungranted_database_denied",
+        "influxdb_readonly_write_denied",
+        "influxdb_dynamic_credential_renew_reaches_provider",
+        "influxdb_provider_state_survives_restart",
+        "influxdb_service_state_survives_restart",
+        "influxdb_revoke_removes_provider_login",
+        "influxdb_outage_retains_revoke_intent",
+        "influxdb_restart_reconciles_pending_revoke"
+      ],
+      "script": "qa/openbao-acceptance/influxdb_live.py"
+    },
     "plugin_kms_live": {
       "script": "qa/openbao-acceptance/plugin_kms_live.py",
       "case_ids": [

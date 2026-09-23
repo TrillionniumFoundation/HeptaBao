@@ -1135,19 +1135,23 @@
         "database/roles/*",
         "database/creds/*"
       ],
-      "positive": "Issue real bounded database user/token credentials for declared versions",
-      "hostile": "Reject unbound organization/database and excessive permissions",
-      "lifecycle": "Revoke issued credentials and reconcile lost responses without duplicate users",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "positive": "Use a real pinned InfluxDB 1.8 service to issue a bounded readonly database user through the admitted database plugin",
+      "hostile": "Reject an unbound database URL, deny queries to an ungranted database, deny writes by the issued readonly principal and reject revoked credentials",
+      "lifecycle": "Renew through HeptaBao, survive provider and service restart, retain a revoke intent during provider outage and reconcile it after recovery",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_database.rs"
+      ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/influxdb_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Real service and token lifecycle matrix required."
+      "remaining_scope": "The scoped InfluxDB 1.8 legacy-user profile does not claim InfluxDB 2.x organization/bucket token compatibility, static roles, root rotation, full OpenBao statement/error parity, HA, migration or independent qualification."
     },
     {
       "surface_id": "HB-SURFACE-DB-VALKEY",

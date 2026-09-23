@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 55,
-    "defined_not_implemented_surface_count": 5,
-    "fixture_case_count": 368,
+    "implemented_surface_count": 56,
+    "defined_not_implemented_surface_count": 4,
+    "fixture_case_count": 381,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -494,9 +494,23 @@
       "surface_id": "HB-SURFACE-DB-INFLUXDB",
       "category": "database_providers",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 13,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "influxdb_live.real_influxdb_1_8_ready",
+        "influxdb_live.influxdb_unbound_database_rejected",
+        "influxdb_live.influxdb_plugin_configuration_readback",
+        "influxdb_live.influxdb_readonly_issue_reaches_provider",
+        "influxdb_live.influxdb_readonly_query_succeeds",
+        "influxdb_live.influxdb_ungranted_database_denied",
+        "influxdb_live.influxdb_readonly_write_denied",
+        "influxdb_live.influxdb_dynamic_credential_renew_reaches_provider",
+        "influxdb_live.influxdb_provider_state_survives_restart",
+        "influxdb_live.influxdb_service_state_survives_restart",
+        "influxdb_live.influxdb_revoke_removes_provider_login",
+        "influxdb_live.influxdb_outage_retains_revoke_intent",
+        "influxdb_live.influxdb_restart_reconciles_pending_revoke"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

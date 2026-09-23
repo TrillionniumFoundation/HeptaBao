@@ -578,27 +578,27 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Reconcile partial cluster visibility and revoke under network partition.
 
-**Remaining scope:** A checksum-pinned Cassandra 5.0 provider profile exercises dynamic readonly/readwrite issuance, provider authorization readback, renewal, provider and HeptaBao restart, revoke, outage retention and restart reconciliation. TLS-native transport, multi-node consistency/partition, static roles, root credential rotation, full OpenBao statement/error parity, migration and independent qualification remain open.
+**Remaining scope:** A checksum-pinned Cassandra 5.0 provider profile exercises dynamic readonly/readwrite issuance, authorization readback, renewal, provider and HeptaBao restart, revoke, outage retention and restart reconciliation. TLS-native transport, multi-node consistency/partition, static roles, root credential rotation, full OpenBao statement/error parity, migration and independent qualification remain open.
 
 Existing bounded profiles: `qa/openbao-acceptance/cassandra_live.py`.
 
 ### HB-SURFACE-DB-INFLUXDB
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H19-WP08`, `H19-WP13`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP08`, `H19-WP13`.
 API families: `database/config/*`; `database/roles/*`; `database/creds/*`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service_database.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
-**Positive:** Issue real bounded database user/token credentials for declared versions.
+**Positive:** Use a real pinned InfluxDB 1.8 service to issue a bounded readonly database user through the admitted database plugin.
 
-**Hostile:** Reject unbound organization/database and excessive permissions.
+**Hostile:** Reject an unbound database URL, deny queries to an ungranted database, deny writes by the issued readonly principal and reject revoked credentials.
 
-**Lifecycle:** Revoke issued credentials and reconcile lost responses without duplicate users.
+**Lifecycle:** Renew through HeptaBao, survive provider and service restart, retain a revoke intent during provider outage and reconcile it after recovery.
 
-**Remaining scope:** Real service and token lifecycle matrix required.
+**Remaining scope:** The scoped InfluxDB 1.8 legacy-user profile does not claim InfluxDB 2.x organization/bucket token compatibility, static roles, root rotation, full OpenBao statement/error parity, HA, migration or independent qualification.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/influxdb_live.py`.
 
 ### HB-SURFACE-DB-VALKEY
 

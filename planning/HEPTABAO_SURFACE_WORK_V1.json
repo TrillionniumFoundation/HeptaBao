@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "35ca80b24f0cef84dfdf1231bf1f0cb33e78e78054674d3513b9fea7d677255c",
+  "corpus_sha256": "95e30fb76ad02280f4a20fb7795f4190c6b3df0446530fcafa8d045fe3a61648",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -451,6 +451,70 @@
       ],
       "prerequisites": [
         "actual_postgresql_17"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "mysql_8_4_checksum_plugin": {
+      "script": "qa/openbao-acceptance/mysql_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime",
+        "Docker",
+        "pinned MySQL 8.4 image"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "cassandra_5_checksum_plugin": {
+      "script": "qa/openbao-acceptance/cassandra_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime",
+        "Docker",
+        "pinned Cassandra 5.0 image"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "influxdb_1_8_checksum_plugin": {
+      "script": "qa/openbao-acceptance/influxdb_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime",
+        "Docker",
+        "pinned InfluxDB 1.8 image"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "plugin_kms_live": {
+      "script": "qa/openbao-acceptance/plugin_kms_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
     },
@@ -1306,18 +1370,34 @@
     {
       "surface_id": "HB-SURFACE-DB-INFLUXDB",
       "category": "database_providers",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_database.rs",
       "technical_contract": {
         "api_or_protocol": "InfluxDB database provider",
-        "required_positive_and_hostile_behavior": "Pin provider/API version, map users/tokens, databases/buckets and privileges",
-        "remaining_semantics_and_effect_checks": "Distinguish legacy user API from token API; create/revoke/readback require actual supported server",
-        "crash_reopen": "Interrupt InfluxDB database provider before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-DB-INFLUXDB, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
-        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+        "required_positive_and_hostile_behavior": "Pin InfluxDB 1.8 and use its legacy user/database privilege API with bounded readonly access",
+        "remaining_semantics_and_effect_checks": "The real profile verifies manager configuration, bounded user creation/readback, readonly query authorization, denied writes, renewal, revoke and provider-side state",
+        "crash_reopen": "Interrupt InfluxDB before effect, retain a durable HeptaBao revoke intent, restore the provider and reconcile with exact provider readback.",
+        "isolation": "The profile exercises an ungranted database and revoked principal; namespace/mount-incarnation isolation and other provider forms remain outside this scoped profile.",
+        "migration_upgrade": "Migration, upgrade and downgrade behavior are not exercised by this profile; no cross-version or source-format claim is made."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "influxdb_live.real_influxdb_1_8_ready",
+        "influxdb_live.influxdb_unbound_database_rejected",
+        "influxdb_live.influxdb_plugin_configuration_readback",
+        "influxdb_live.influxdb_readonly_issue_reaches_provider",
+        "influxdb_live.influxdb_readonly_query_succeeds",
+        "influxdb_live.influxdb_ungranted_database_denied",
+        "influxdb_live.influxdb_readonly_write_denied",
+        "influxdb_live.influxdb_dynamic_credential_renew_reaches_provider",
+        "influxdb_live.influxdb_provider_state_survives_restart",
+        "influxdb_live.influxdb_service_state_survives_restart",
+        "influxdb_live.influxdb_revoke_removes_provider_login",
+        "influxdb_live.influxdb_outage_retains_revoke_intent",
+        "influxdb_live.influxdb_restart_reconciles_pending_revoke"
+      ],
+      "available_scoped_profiles": [
+        "influxdb_1_8_checksum_plugin"
+      ],
       "whole_surface_admitted": false
     },
     {

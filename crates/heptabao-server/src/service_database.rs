@@ -286,6 +286,21 @@ impl DatabaseConfigPlan {
                 let object = observed
                     .as_object()
                     .ok_or_else(|| failure("database plugin response must be an object"))?;
+                if object.len() == 2
+                    && object.get("configured") == Some(&json!(false))
+                    && object
+                        .get("error")
+                        .and_then(Value::as_str)
+                        .is_some_and(|value| {
+                            !value.is_empty()
+                                && value.len() <= 64
+                                && value
+                                    .bytes()
+                                    .all(|byte| byte.is_ascii_lowercase() || byte == b'_')
+                        })
+                {
+                    return Err(invalid("database plugin rejected configuration"));
+                }
                 if object.len() != 2
                     || object.get("configured") != Some(&json!(true))
                     || object.get("manager_identity") != Some(&json!(self.connection.username))
@@ -997,6 +1012,18 @@ fn database_plugin_config_failure(error: PluginHostError) -> Response {
     match error {
         PluginHostError::ProcessBeforeEntry | PluginHostError::SandboxUnavailable => {
             failure("database plugin unavailable before entry")
+        }
+        PluginHostError::ProcessOutcomeUnknown => {
+            failure("database plugin configuration outcome unknown after entry")
+        }
+        PluginHostError::ReconciliationRequired => {
+            failure("database plugin host requires reconciliation")
+        }
+        PluginHostError::ResponseTooLarge => {
+            failure("database plugin configuration response exceeds bound")
+        }
+        PluginHostError::MalformedResponse => {
+            failure("database plugin configuration response malformed")
         }
         _ => failure("database plugin configuration readback unavailable"),
     }
