@@ -573,18 +573,23 @@ impl Pki {
         if !write_method(method) {
             return Err(unsupported());
         }
-        reject_unknown(
-            body,
-            &[
-                "enabled",
-                "allowed_issuers",
-                "allowed_roles",
-                "allow_role_ext_key_usage",
-                "default_directory_policy",
-                "dns_resolver",
-                "eab_policy",
-            ],
-        )?;
+        let allowed = [
+            "enabled",
+            "allowed_issuers",
+            "allowed_roles",
+            "allow_role_ext_key_usage",
+            "default_directory_policy",
+            "dns_resolver",
+            "eab_policy",
+        ];
+        let object = body
+            .as_object()
+            .ok_or_else(|| bad("request body must be an object"))?;
+        let unknown = object
+            .keys()
+            .filter(|key| !allowed.contains(&key.as_str()))
+            .cloned()
+            .collect::<Vec<_>>();
         let mut config = (*self.acme).clone();
         if let Some(value) = body.get("enabled") {
             config.enabled = value
@@ -626,7 +631,21 @@ impl Pki {
         }
         let changed = self.acme.as_ref() != &config;
         *self.acme = config;
-        Ok(ok(self.acme.descriptor(), changed))
+        if unknown.is_empty() {
+            Ok(ok(self.acme.descriptor(), changed))
+        } else {
+            Ok(EngineResponse {
+                status: 200,
+                body: json!({
+                    "data": self.acme.descriptor(),
+                    "warnings": [format!(
+                        "Endpoint ignored these unrecognized parameters: [{}]",
+                        unknown.join(", ")
+                    )],
+                }),
+                mutated: changed,
+            })
+        }
     }
 
     pub(super) fn issue(
@@ -1022,15 +1041,23 @@ fn validate_uri(value: &str, field: &str) -> Result<()> {
     {
         return Err(bad("PKI URL is outside bounds"));
     }
+    let invalid_url = || {
+        let message = if field == "PKI cluster path" {
+            format!("invalid, non-URL path given to cluster: {value}")
+        } else {
+            format!("invalid, non-URL path given to AIA: {value}")
+        };
+        error(500, &message)
+    };
     let Some((scheme, rest)) = value.split_once("://") else {
-        return Err(bad(field));
+        return Err(invalid_url());
     };
     if !matches!(scheme, "http" | "https") {
-        return Err(bad(field));
+        return Err(invalid_url());
     }
     let authority = rest.split(['/', '?', '#']).next().unwrap_or("");
     if authority.is_empty() || authority.contains('@') {
-        return Err(bad(field));
+        return Err(invalid_url());
     }
     Ok(())
 }
@@ -1409,17 +1436,26 @@ mod tests {
         )?;
         assert_eq!(acme.body["data"]["enabled"], true);
         assert_eq!(acme.body["data"]["eab_policy"], "new-account-required");
-        let before = pki.handle_admin("GET", "config/acme", &json!({}), 1_700_000_000)?;
+        let unknown = pki.handle_admin(
+            "POST",
+            "config/acme",
+            &json!({"enabled":false,"unknown":"must-not-persist"}),
+            1_700_000_000,
+        )?;
+        assert_eq!(unknown.status, 200);
+        assert_eq!(unknown.body["data"]["enabled"], false);
+        assert_eq!(
+            unknown.body["warnings"],
+            json!(["Endpoint ignored these unrecognized parameters: [unknown]"])
+        );
+        assert!(!unknown.body.to_string().contains("must-not-persist"));
+        let after_unknown = pki.handle_admin("GET", "config/acme", &json!({}), 1_700_000_000)?;
+        assert_eq!(after_unknown.body["data"]["enabled"], false);
         for (path, body, status) in [
-            (
-                "config/acme",
-                json!({"enabled":false,"unknown":"must-not-persist"}),
-                400,
-            ),
             (
                 "config/cluster",
                 json!({"path":"file:///secret-location"}),
-                400,
+                500,
             ),
             ("config/acme", json!({"allowed_issuers":["issuer-a"]}), 501),
         ] {
@@ -1431,14 +1467,11 @@ mod tests {
                     .unwrap_or_else(|v| v.status),
                 status
             );
-            if let Ok(response) = rejected {
-                assert!(response.body.get("data").is_none());
-            }
         }
         assert_eq!(
             pki.handle_admin("GET", "config/acme", &json!({}), 1_700_000_000)?
                 .body,
-            before.body
+            after_unknown.body
         );
         let mut restored: Pki = serde_json::from_slice(&serde_json::to_vec(&pki)?)?;
         assert_eq!(
@@ -1451,7 +1484,7 @@ mod tests {
             restored
                 .handle_admin("GET", "config/acme", &json!({}), 1_700_000_000)?
                 .body["data"],
-            before.body["data"]
+            after_unknown.body["data"]
         );
         Ok(())
     }

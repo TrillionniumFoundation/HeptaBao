@@ -183,8 +183,8 @@
         "pkiext.acme_config",
         "pkiext.acme_config_read",
         "pkiext.invalid_cluster_rejected",
-        "pkiext.unknown_field_rejected",
-        "pkiext.rejected_writes_preserve_state",
+        "pkiext.unknown_field_ignored_with_warning",
+        "pkiext.known_field_persists_after_unknown",
         "pkiext.cluster_persists_after_restart",
         "pkiext.acme_persists_after_restart"
       ]

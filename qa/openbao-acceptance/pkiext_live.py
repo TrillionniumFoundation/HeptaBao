@@ -74,7 +74,7 @@ def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dic
         "allow_role_ext_key_usage": False,
         "allowed_issuers": ["*"],
         "default_directory_policy": "sign-verbatim",
-        "enabled": True,
+        "enabled": False,
         "dns_resolver": "",
         "eab_policy": "new-account-required",
     }
@@ -99,31 +99,41 @@ def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dic
         "pkiext.invalid_cluster_rejected",
         call("pkiext.invalid_cluster_rejected", "POST", mount + "/config/cluster",
              {"path": "not-a-url"}),
-        400,
+        500,
     )
     if invalid_cluster.get("data") is not None:
         raise ScenarioFailure("pkiext.invalid_cluster_no_data")
 
+    expected_after_unknown = dict(expected)
+    expected_after_unknown["enabled"] = False
     unknown = expect(
-        "pkiext.unknown_field_rejected",
-        call("pkiext.unknown_field_rejected", "POST", mount + "/config/acme",
+        "pkiext.unknown_field_ignored_with_warning",
+        call("pkiext.unknown_field_ignored_with_warning", "POST", mount + "/config/acme",
              {"enabled": False, "private_key": "must-not-be-accepted"}),
-        400,
-    )
-    if (unknown.get("data") is not None or "must-not-be-accepted" in str(unknown)
-            or "private_key" in str(unknown)):
-        raise ScenarioFailure("pkiext.unknown_field_no_data")
-
-    final = expect(
-        "pkiext.rejected_writes_preserve_state",
-        call("pkiext.rejected_writes_preserve_state", "GET", mount + "/config/acme"),
         200,
     )
     row = results[-1]
-    row["data_matches"] = final.get("data") == expected
+    row["data_matches"] = unknown.get("data") == expected_after_unknown
+    row["warning_matches"] = unknown.get("warnings") == [
+        "Endpoint ignored these unrecognized parameters: [private_key]"
+    ]
+    row["passed"] = (
+        row["passed"] and row["data_matches"] and row["warning_matches"]
+        and "must-not-be-accepted" not in str(unknown)
+    )
+    if not row["passed"]:
+        raise ScenarioFailure("pkiext.unknown_field_ignored_with_warning")
+
+    final = expect(
+        "pkiext.known_field_persists_after_unknown",
+        call("pkiext.known_field_persists_after_unknown", "GET", mount + "/config/acme"),
+        200,
+    )
+    row = results[-1]
+    row["data_matches"] = final.get("data") == expected_after_unknown
     row["passed"] = row["passed"] and row["data_matches"]
     if not row["passed"]:
-        raise ScenarioFailure("pkiext.rejected_writes_preserve_state")
+        raise ScenarioFailure("pkiext.known_field_persists_after_unknown")
     return results
 
 

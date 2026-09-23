@@ -1218,8 +1218,8 @@
         "pkiext_live.pkiext.acme_config",
         "pkiext_live.pkiext.acme_config_read",
         "pkiext_live.pkiext.invalid_cluster_rejected",
-        "pkiext_live.pkiext.unknown_field_rejected",
-        "pkiext_live.pkiext.rejected_writes_preserve_state",
+        "pkiext_live.pkiext.unknown_field_ignored_with_warning",
+        "pkiext_live.pkiext.known_field_persists_after_unknown",
         "pkiext_live.pkiext.cluster_persists_after_restart",
         "pkiext_live.pkiext.acme_persists_after_restart"
       ],
