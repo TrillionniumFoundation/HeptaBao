@@ -287,7 +287,7 @@ planned_modules:
 - networked-raft-ha-service-integration
 - interruption-safe-format-migration
 - qualified-sandbox-provider-and-durable-plugin-service-integration
-- remaining-compatibility-fixtures-and-independent-exact-head-observation
+- independent-exact-head-compatibility-observation
 - destructive-platform-qualification
 claims:
   qualification: false

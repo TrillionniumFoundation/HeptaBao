@@ -29,8 +29,10 @@ class ExecutionTruthTests(unittest.TestCase):
 
     def test_old_fixed_count_rejected(self):
         p=self.root/'planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml'
-        p.write_text(p.read_text().replace('exact compatibility denominator is enforced but remaining surface fixtures are incomplete',
-                                         'exact compatibility denominator is enforced but 47 surface fixtures remain incomplete'))
+        p.write_text(p.read_text().replace(
+            'exact compatibility denominator and all inventoried scoped fixtures are implemented; independent exact-head differential admission is pending',
+            'exact compatibility denominator and 47 surface fixtures are implemented; independent exact-head differential admission is pending',
+        ))
         self.assertTrue(module.validate(self.root))
 
     def test_source_binding_cannot_be_removed(self):

@@ -118,7 +118,7 @@ The counts above are regenerated from corpus rows; they are not test-pass receip
 
 ## Evolution and open boundaries
 
-The surfaces without implemented fixtures are counted in the current projection above. No surface has independent observation bound to the current exact head. Endpoint/error precedence, external auth, additional engines, streaming, HA, upgrade trains and full OpenBao observation remain repository and external evidence work tracked by `HB-V2-REP-016` and `HB-BLK-EXT-005`.
+No inventoried surface lacks a scoped executable fixture in the current projection. No surface has independent observation bound to the current exact head. Scoped fixture implementation therefore no longer blocks repository source completion, while full per-surface behavior parity, complete exact-head Oracle/candidate differential execution, independent-origin evidence admission, HA/upgrade qualification and external review remain admission work. No compatibility or production authority is implied.
 
 ## Machine-verified source truth
 

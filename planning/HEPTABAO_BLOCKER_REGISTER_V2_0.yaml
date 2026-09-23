@@ -267,8 +267,8 @@ repository_blockers:
 - id: HB-V2-REP-016
   class: REPOSITORY_CONTROLLED
   severity: HIGH
-  title: exact compatibility denominator is enforced but remaining surface fixtures are incomplete
-  state: IMPLEMENTATION_IN_PROGRESS
+  title: exact compatibility denominator and all inventoried scoped fixtures are implemented; independent exact-head differential admission is pending
+  state: IMPLEMENTED_REVIEW_REQUIRED
   evidence:
   - crates/heptabao-compatibility/src/lib.rs
   - qa/openbao-acceptance/acceptance.py
