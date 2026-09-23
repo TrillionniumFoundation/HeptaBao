@@ -1034,21 +1034,21 @@ Existing bounded profiles: `qa/openbao-acceptance/namespace_seal_live.py`.
 
 ### HB-SURFACE-PROFILES-WORKFLOWS
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H15-WP01`, `H15-WP02`, `H15-WP03`, `H15-WP04`, `H15-WP05`, `H15-WP06`, `H15-WP10`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H15-WP01`, `H15-WP02`, `H15-WP03`, `H15-WP04`, `H15-WP05`, `H15-WP06`, `H15-WP10`.
 API families: `profiles/workflow configuration and execution`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service.rs`, `crates/heptabao-server/src/service_workflow.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
-**Positive:** Execute declared CEL/template workflows with explicit internal request authority.
+**Positive:** Execute a bounded namespace-owned profile of registered internal KV read/write operations through the authenticated server pipeline.
 
-**Hostile:** Reject SSRF, unbounded evaluation, secret echo and caller-forged internal operations.
+**Hostile:** Reject SSRF, path escape, shell/plugin action names, unbounded payloads, secret echo, caller-forged identity and cross-namespace replay.
 
 **Lifecycle:** Persist workflow progress and reconcile partial effects without replaying completed steps.
 
-**Remaining scope:** Internal operation construction, SSRF, secret echo and resource limits.
+**Remaining scope:** Only internal KV read/write actions are registered. CEL/template evaluation, external outbound actions, generic scripting, plugin execution, arbitrary result routing, complete OpenBao workflow compatibility, HA multi-node qualification and independent admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/workflow_profile_live.py`.
 
 ### HB-SURFACE-SELF-INIT
 

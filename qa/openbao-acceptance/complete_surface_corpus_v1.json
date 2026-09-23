@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-"implemented_surface_count": 58,
-    "defined_not_implemented_surface_count": 2,
-    "fixture_case_count": 406,
+    "implemented_surface_count": 59,
+    "defined_not_implemented_surface_count": 1,
+    "fixture_case_count": 429,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -936,9 +936,33 @@
       "surface_id": "HB-SURFACE-PROFILES-WORKFLOWS",
       "category": "namespace_workflow",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 23,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "workflow_profile_live.tls_initialize",
+        "workflow_profile_live.tls_unseal",
+        "workflow_profile_live.input_write",
+        "workflow_profile_live.profile_create",
+        "workflow_profile_live.profile_read",
+        "workflow_profile_live.run_succeeds",
+        "workflow_profile_live.run_response_redacted",
+        "workflow_profile_live.duplicate_replay_same_run",
+        "workflow_profile_live.duplicate_replay_no_new_version",
+        "workflow_profile_live.output_write_exact",
+        "workflow_profile_live.run_status_readback",
+        "workflow_profile_live.ssrf_profile_rejected",
+        "workflow_profile_live.path_escape_rejected",
+        "workflow_profile_live.unknown_action_rejected",
+        "workflow_profile_live.secret_output_rejected",
+        "workflow_profile_live.caller_identity_rejected",
+        "workflow_profile_live.payload_bound",
+        "workflow_profile_live.cross_namespace_rejected",
+        "workflow_profile_live.reconcile_is_inspect_only",
+        "workflow_profile_live.restart_sealed",
+        "workflow_profile_live.restart_unseal",
+        "workflow_profile_live.restart_run_readback",
+        "workflow_profile_live.restart_output_readback"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

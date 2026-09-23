@@ -6,8 +6,12 @@ Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`, single-node service increment. Sh
 
 This package provides the runnable Linux HTTPS secrets service. It joins persistent token/userpass/AppRole and bounded JWT/JWKS authentication, default-deny ACL, namespace-qualified KV/Transit/TOTP, SSH OTP and internal PKI engines, real AES-GCM storage encryption and authenticated audit to the repaired durable journal. The mandatory file audit owner may be paired with a process-configured, host-enrolled HTTPS collector and/or one bounded TCP socket collector. HTTPS delivery is TLS pinned, redirect-free, deadline bounded and fail-closed after the local audit record is fsynced. TCP socket delivery is also deadline bounded but remains nonblocking for application admission because the mandatory authenticated file record is already durable; failed socket writes are counted and exposed through `sys/audit/socket`. It includes per-process networked Raft composition and authenticated explicit leadership transfer. This remains a bounded development candidate: it does not establish production HA qualification, qualified KMS auto-unseal, fully qualified dynamic database/cloud credentials, the complete PKI/JWT/OIDC surfaces, an external rollback anchor or full OpenBao compatibility.
 
-The schema-48 certificate increment reuses the existing Auth/Identity/Service
+The schema-49 workflow increment and schema-48 certificate increment reuse the existing Auth/Identity/Service
 transaction, batch authority and native token-limit implementation. It adds
+namespace-owned workflow profiles with bounded internal KV read/write actions,
+exact operation-digest idempotency, durable pending/running step markers and
+inspect-only reconciliation after restart; it does not add CEL, scripting,
+arbitrary URL, shell or plugin execution. It also adds
 certificate batch issuance, immutable issued metadata/creation TTL, an independent
 Token API creation-TTL reader fence, and optional transport client authentication
 with explicit CA verification. The current contract and bounded comparison
@@ -439,6 +443,23 @@ No separate public Principal or authentication bypass is exposed. Online login
 wrapping is rejected before any issuer request or session consumption.
 
 The current schema is defined in `HEPTABAO_CURRENT_STATE_FORMAT.md`; schema 1–4 cannot carry online method state, schema 5 cannot carry the durable PostgreSQL provider fence, schema 6 cannot carry LDAP group synchronization, and schema 7 cannot carry Kubernetes secrets-engine state.
+
+### Bounded workflow/profile surface
+
+The public HTTPS service exposes `/sys/workflows/profiles/{name}` and its
+`/runs` subroute, plus namespace-owned run status and inspect-only
+`/reconcile` routes. Profile writes contain only a revision and a bounded DAG
+of typed `KvRead`/`KvWrite` steps targeting an existing KV mount; the service
+constructs the internal request and performs the ordinary ACL check before each
+effect. The caller cannot provide an authenticated identity, capability,
+namespace, URL or executable action. Payloads, steps, profiles, runs and
+runtime are bounded. A request ID is bound to the authenticated principal,
+namespace, profile revision and exact operation digest, so duplicate replay is
+read-only. Pending intent and the active step are durably committed before a
+KV effect; if the outcome is uncertain, restart recovery marks the run
+`ReconcileRequired` and never automatically replays it. The real TLS profile is
+`qa/openbao-acceptance/workflow_profile_live.py`; it is scoped evidence, not
+whole OpenBao workflow compatibility.
 New Kubernetes tokens renew locally against their current issuing role; online
 TokenReview is per login, not continuous revocation of issued service tokens.
 Legacy tokens without role provenance remain nonrenewable. OIDC sessions are at most 128 per mount and

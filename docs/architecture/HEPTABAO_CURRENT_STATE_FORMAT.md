@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **48**. Its source constant is
+The current Service state schema is **49**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -88,7 +88,14 @@ custody, rotation and parent/sibling key separation remain open.
 | 46 | Independent optional `cidr_list` and `token_bound_cidrs` fields on each AppRole SecretID, including explicit empty lists. SID metadata, AppRole issued-metadata snapshots, AppRole backend alias metadata and extended backend alias maps must remain absent. |
 | 47 | Optional raw AppRole SID metadata and service-token issued-metadata snapshots; either field's presence, including an empty map, requires this schema. Backend aliases containing the AppRole `role_name` key, or maps outside the previous metadata shape, independently require schema47 even after credential and mount cleanup. Older producers emitted only JWT `role` backend metadata; administrative custom metadata stays separate. |
 | 48 | Native certificate role/mount token type and TTL state, direct certificate issued metadata and immutable initial TTL, plus an independently gated Token API initial-TTL marker. Legacy absent fields remain absent; retained and expired tokens cannot hide new state under an older schema. |
+| 49 | Bounded, namespace-owned workflow profiles and durable workflow run intent/progress in the encrypted engine owner. Only registered internal KV read/write actions are admitted; in-flight runs reopen as reconciliation-required rather than being replayed. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
+
+Schema 49 independently gates the workflow/profile owner state in
+`EngineState::workflow`; a nonempty workflow owner is rejected by older
+readers. The workflow API is a bounded HeptaBao product profile, not the full
+OpenBao CEL/template surface: no URL, shell, plugin or generic evaluator is
+executed, and reconciliation is inspect-only after post-entry uncertainty.
 
 Schema 48 independently gates `AuthState::has_cert_batch_state()` and
 `AuthState::has_token_api_creation_ttl()`. Certificate role or mount configuration

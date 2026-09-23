@@ -40,6 +40,7 @@ fn fixed_legacy_mounts_and_payloads_keep_identical_serialized_bytes() -> TestRes
             records: None,
             lease_clock: 0,
             namespaces: BTreeMap::from([("".into(), CowNamespace(Arc::new(namespace)))]),
+            workflow: crate::service_workflow::WorkflowState::default(),
         };
         let path = if bytes == LEGACY_KV1 {
             "legacy/a"

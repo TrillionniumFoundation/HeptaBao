@@ -218,6 +218,9 @@ impl Service {
         if state.adopt_legacy_namespaces()? {
             logical_rewrite = true;
         }
+        if state.engines.workflow.recover_inflight() {
+            logical_rewrite = true;
+        }
         if logical_rewrite {
             state.schema = CURRENT_STATE_SCHEMA;
             state.validate_format()?;

@@ -33,6 +33,7 @@ pub mod postgres_storage;
 mod postgres_wire;
 mod request_deadline;
 mod service;
+mod service_workflow;
 mod snapshot_archive;
 mod snapshot_file;
 mod valkey_wire;

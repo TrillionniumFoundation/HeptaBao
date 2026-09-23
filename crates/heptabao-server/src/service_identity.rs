@@ -156,6 +156,16 @@ impl State {
         self.engines
             .validate_identity_alias_state()
             .map_err(|e| Response::error(503, &e.message))?;
+        if self.schema < 49 && !self.engines.workflow.is_empty() {
+            return Err(Response::error(
+                503,
+                "workflow/profile state requires schema 49",
+            ));
+        }
+        self.engines
+            .workflow
+            .validate()
+            .map_err(|_| Response::error(503, "invalid workflow/profile state"))?;
         self.engines
             .validate_lease_state()
             .map_err(|e| Response::error(503, &e.message))?;
