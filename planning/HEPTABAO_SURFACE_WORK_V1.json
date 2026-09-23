@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "35ca80b24f0cef84dfdf1231bf1f0cb33e78e78054674d3513b9fea7d677255c",
+  "corpus_sha256": "8e2197503dd4b289999c5ffa204229ada88278fa35fa34053de6e42a7b8df48c",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -464,6 +464,62 @@
       ],
       "prerequisites": [
         "Linux candidate runtime"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "mysql_8_4_checksum_plugin": {
+      "script": "qa/openbao-acceptance/mysql_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "checksum_pinned_mysql_8_4"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "cassandra_5_checksum_plugin": {
+      "script": "qa/openbao-acceptance/cassandra_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "checksum_pinned_cassandra_5"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "plugin_kms_live": {
+      "script": "qa/openbao-acceptance/plugin_kms_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "linux_checksum_pinned_sandbox_wrapper"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "workflow_profile": {
+      "script": "qa/openbao-acceptance/workflow_profile_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "real_tls_service"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
@@ -1950,18 +2006,42 @@
     {
       "surface_id": "HB-SURFACE-PROFILES-WORKFLOWS",
       "category": "namespace_workflow",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service.rs",
       "technical_contract": {
-        "api_or_protocol": "OpenBao 2.6 workflow/profile API and executor targets",
-        "required_positive_and_hostile_behavior": "Pin each target route, caller, state transition, retry and effect boundary from upstream specification",
-        "remaining_semantics_and_effect_checks": "Workflow receipt/plan types cannot stand in for an executable authorized workflow",
-        "crash_reopen": "Interrupt OpenBao 2.6 workflow/profile API and executor targets before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "api_or_protocol": "Bounded namespace-owned workflow profile routes and durable KV operation runs",
+        "required_positive_and_hostile_behavior": "Accept only registered internal KV read/write actions; reject SSRF, path escape, shell/plugin action names, caller identity and oversized payloads",
+        "remaining_semantics_and_effect_checks": "This is a bounded HeptaBao product profile, not the complete OpenBao CEL/template workflow surface; external actions, templating, per-step result mapping and independent differential qualification remain open",
+        "crash_reopen": "Persist pending/running intent and the active step before an effect; on restart convert in-flight work to ReconcileRequired and expose inspect-only reconciliation without replay.",
         "isolation": "For HB-SURFACE-PROFILES-WORKFLOWS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "workflow_profile_live.tls_initialize",
+        "workflow_profile_live.tls_unseal",
+        "workflow_profile_live.input_write",
+        "workflow_profile_live.profile_create",
+        "workflow_profile_live.profile_read",
+        "workflow_profile_live.run_succeeds",
+        "workflow_profile_live.run_response_redacted",
+        "workflow_profile_live.duplicate_replay_same_run",
+        "workflow_profile_live.duplicate_replay_no_new_version",
+        "workflow_profile_live.output_write_exact",
+        "workflow_profile_live.run_status_readback",
+        "workflow_profile_live.ssrf_profile_rejected",
+        "workflow_profile_live.path_escape_rejected",
+        "workflow_profile_live.unknown_action_rejected",
+        "workflow_profile_live.secret_output_rejected",
+        "workflow_profile_live.caller_identity_rejected",
+        "workflow_profile_live.payload_bound",
+        "workflow_profile_live.cross_namespace_rejected",
+        "workflow_profile_live.reconcile_is_inspect_only",
+        "workflow_profile_live.restart_sealed",
+        "workflow_profile_live.restart_unseal",
+        "workflow_profile_live.restart_run_readback",
+        "workflow_profile_live.restart_output_readback"
+      ],
+      "available_scoped_profiles": ["workflow_profile"],
       "whole_surface_admitted": false
     },
     {

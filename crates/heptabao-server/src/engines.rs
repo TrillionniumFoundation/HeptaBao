@@ -36,6 +36,40 @@ pub struct EngineState {
     #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
     lease_clock: u64,
     namespaces: BTreeMap<String, CowNamespace>,
+    /// Workflow/profile state shares the encrypted engine owner publication.
+    /// It is not a second persistence or authorization boundary.
+    #[serde(
+        default,
+        skip_serializing_if = "crate::service_workflow::WorkflowState::is_empty"
+    )]
+    pub(crate) workflow: crate::service_workflow::WorkflowState,
+}
+
+impl EngineState {
+    pub(crate) fn workflow_target_is_kv(&self, namespace: &str, path: &str) -> bool {
+        let path = path.trim_start_matches('/');
+        let Some((mount_path, mount)) = self
+            .namespaces
+            .get(namespace)
+            .into_iter()
+            .flat_map(|state| state.mounts.iter())
+            .filter(|(mount_path, _)| {
+                path == mount_path.as_str()
+                    || path
+                        .strip_prefix(mount_path.as_str())
+                        .is_some_and(|suffix| suffix.starts_with('/'))
+            })
+            .max_by_key(|(mount_path, _)| mount_path.len())
+        else {
+            return false;
+        };
+        let relative = path[mount_path.len()..].trim_start_matches('/');
+        matches!(
+            &mount.backend,
+            Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
+        ) && relative.starts_with("data/")
+            && !relative[5..].is_empty()
+    }
 }
 
 impl std::fmt::Debug for EngineState {

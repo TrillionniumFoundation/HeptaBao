@@ -23,15 +23,19 @@ use std::{
     net::{SocketAddr, TcpStream},
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
-    time::{Duration, SystemTime, UNIX_EPOCH},
+    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 use zeroize::{Zeroize, Zeroizing};
 
 use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
+use crate::service_workflow::{
+    self, RunBinding, RunPhase, WorkflowError, WorkflowOperation, WorkflowProfile, WorkflowRun,
+    WorkflowStep,
+};
 use crate::state_record_root::RecordStateRoot;
 
-const CURRENT_STATE_SCHEMA: u32 = 48;
+const CURRENT_STATE_SCHEMA: u32 = 49;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -693,6 +697,21 @@ struct RequestView<'a> {
     wrap_ttl_seconds: Option<u64>,
     origin_peer: Option<std::net::IpAddr>,
     client_certificates: Option<&'a [Vec<u8>]>,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct WorkflowProfileRequest {
+    revision: u64,
+    steps: Vec<WorkflowStep>,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct WorkflowRunRequest {
+    request_id: String,
+    #[serde(default)]
+    values: BTreeMap<String, Value>,
 }
 
 pub(crate) enum RequestExecution {
@@ -1959,6 +1978,9 @@ impl Service {
         {
             return error;
         }
+        if Self::workflow_handles(path) {
+            return self.workflow_route(admitted, principal.as_ref(), &request);
+        }
         if namespaces::owns(path) {
             return self.namespace_route(admitted, principal.as_ref(), &request);
         }
@@ -2320,6 +2342,739 @@ impl Service {
             }
         }
         response
+    }
+
+    fn workflow_handles(path: &str) -> bool {
+        let path = path.trim_end_matches('/');
+        path == "sys/workflows"
+            || path == "sys/workflows/profiles"
+            || path.starts_with("sys/workflows/profiles/")
+            || path == "sys/workflows/runs"
+            || path.starts_with("sys/workflows/runs/")
+    }
+
+    fn workflow_authorize(
+        state: &State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        path: &str,
+        capability: &str,
+        now: u64,
+    ) -> Result<(), Response> {
+        let Some(principal) = principal else {
+            return Err(Response::error(403, "missing client token"));
+        };
+        state
+            .auth
+            .authorize_request(principal, namespace, path, capability, now)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        Ok(())
+    }
+
+    fn workflow_error(error: WorkflowError) -> Response {
+        let status = match error {
+            WorkflowError::TooManyProfiles
+            | WorkflowError::TooManyRuns
+            | WorkflowError::TooManySteps
+            | WorkflowError::PayloadTooLarge => 413,
+            WorkflowError::DuplicateProfile
+            | WorkflowError::DuplicateRun
+            | WorkflowError::InvalidRevision => 409,
+            _ => 400,
+        };
+        Response::error(status, "invalid bounded workflow/profile request")
+    }
+
+    fn workflow_commit(&mut self, state: &mut State) -> Result<(), Response> {
+        state.schema = CURRENT_STATE_SCHEMA;
+        state
+            .engines
+            .workflow
+            .validate()
+            .map_err(Self::workflow_error)?;
+        self.commit_state(state)?;
+        self.state = Some(state.clone());
+        Ok(())
+    }
+
+    fn workflow_commit_or_reconcile(&mut self, state: &mut State) -> Result<(), Response> {
+        if self.workflow_commit(state).is_err() {
+            self.recovery_required = true;
+            return Err(Response::error(
+                503,
+                "workflow outcome requires reconciliation",
+            ));
+        }
+        Ok(())
+    }
+
+    fn workflow_profile_value(profile: &WorkflowProfile) -> Value {
+        json!({
+            "name": profile.name,
+            "revision": profile.revision,
+            "steps": profile.steps,
+        })
+    }
+
+    fn workflow_run_value(run: &WorkflowRun) -> Value {
+        let summary = service_workflow::RunSummary {
+            id: run.id.clone(),
+            binding_digest: run.binding_digest,
+            operation_digest: run.operation_digest,
+            phase: run.phase.clone(),
+            completed_steps: run.completed_steps.clone(),
+        };
+        serde_json::to_value(summary).unwrap_or_else(|_| json!({}))
+    }
+
+    fn workflow_profile_admission(
+        state: &State,
+        namespace: &str,
+        name: &str,
+        revision: u64,
+        steps: Vec<WorkflowStep>,
+    ) -> Result<WorkflowProfile, Response> {
+        if revision == 0 {
+            return Err(Response::error(400, "workflow revision must be positive"));
+        }
+        let profile = WorkflowProfile {
+            namespace: namespace.to_owned(),
+            name: name.to_owned(),
+            revision,
+            steps,
+        };
+        profile.validate().map_err(Self::workflow_error)?;
+        for step in &profile.steps {
+            if step.secret_output {
+                return Err(Response::error(400, "workflow secret output is disabled"));
+            }
+            if matches!(step.operation, WorkflowOperation::OutboundNamed) {
+                return Err(Response::error(
+                    501,
+                    "workflow action type is not registered",
+                ));
+            }
+            if !state.engines.workflow_target_is_kv(namespace, &step.target) {
+                return Err(Response::error(
+                    400,
+                    "workflow target is not an existing internal KV operation",
+                ));
+            }
+        }
+        Ok(profile)
+    }
+
+    fn workflow_write_payload(value: Option<&Value>) -> Result<Value, Response> {
+        let Some(value) = value else {
+            return Err(Response::error(400, "workflow write payload is required"));
+        };
+        let Some(object) = value.as_object() else {
+            return Err(Response::error(400, "workflow write payload is invalid"));
+        };
+        if object
+            .keys()
+            .any(|key| !matches!(key.as_str(), "data" | "options"))
+        {
+            return Err(Response::error(400, "workflow write payload is invalid"));
+        }
+        if !object.get("data").is_some_and(Value::is_object) {
+            return Err(Response::error(400, "workflow write payload is invalid"));
+        }
+        if let Some(options) = object.get("options") {
+            let Some(options) = options.as_object() else {
+                return Err(Response::error(400, "workflow write payload is invalid"));
+            };
+            if options
+                .keys()
+                .any(|key| key != "cas" || !options.get(key).is_some_and(Value::is_u64))
+            {
+                return Err(Response::error(400, "workflow write payload is invalid"));
+            }
+        }
+        let encoded = serde_json::to_vec(value)
+            .map_err(|_| Response::error(400, "workflow write payload is invalid"))?;
+        if encoded.len() > service_workflow::MAX_STEP_PAYLOAD_BYTES {
+            return Err(Response::error(413, "workflow write payload is too large"));
+        }
+        Ok(value.clone())
+    }
+
+    fn workflow_execute_step(
+        state: &mut State,
+        principal: &Principal,
+        namespace: &str,
+        step: &WorkflowStep,
+        value: Option<&Value>,
+        now: u64,
+    ) -> Result<(), Response> {
+        let (method, body) = match step.operation {
+            WorkflowOperation::KvRead => ("GET", json!({})),
+            WorkflowOperation::KvWrite => ("POST", Self::workflow_write_payload(value)?),
+            WorkflowOperation::OutboundNamed => {
+                return Err(Response::error(
+                    501,
+                    "workflow action type is not registered",
+                ));
+            }
+        };
+        if !state.engines.workflow_target_is_kv(namespace, &step.target) {
+            return Err(Response::error(
+                400,
+                "workflow target is not an existing internal KV operation",
+            ));
+        }
+        let capability = state
+            .engines
+            .required_capability(namespace, method, &step.target)
+            .unwrap_or(match method {
+                "GET" => "read",
+                _ => "update",
+            });
+        state
+            .auth
+            .authorize_request(principal, namespace, &step.target, capability, now)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+
+        let mut engines = state.engines.clone();
+        let mut effect_body = body;
+        let result = engines.handle(namespace, method, &step.target, &effect_body, now);
+        erase_json(&mut effect_body);
+        match result {
+            Ok(Some(mut response)) => {
+                let status = response.status;
+                erase_json(&mut response.body);
+                if !(200..300).contains(&status) {
+                    return Err(Response::error(status, "workflow step failed"));
+                }
+                if response.mutated {
+                    state.engines = engines;
+                }
+                Ok(())
+            }
+            Ok(None) => Err(Response::error(404, "workflow step failed")),
+            Err(error) => Err(Response::error(error.status, "workflow step failed")),
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn workflow_run_steps(
+        &mut self,
+        mut state: State,
+        principal: &Principal,
+        namespace: &str,
+        profile: WorkflowProfile,
+        values: BTreeMap<String, Value>,
+        run_id: &str,
+        now: u64,
+    ) -> Response {
+        if let Some(run) = state.engines.workflow.run_mut(run_id) {
+            if run.transition(RunPhase::Running).is_err() {
+                return Self::workflow_error(WorkflowError::InvalidTransition);
+            }
+        } else {
+            return Response::error(404, "workflow run not found");
+        }
+        if let Err(error) = self.workflow_commit_or_reconcile(&mut state) {
+            return error;
+        }
+
+        let started = Instant::now();
+        loop {
+            let completed = state
+                .engines
+                .workflow
+                .run(run_id)
+                .map(|run| {
+                    run.completed_steps
+                        .iter()
+                        .cloned()
+                        .collect::<std::collections::BTreeSet<_>>()
+                })
+                .unwrap_or_default();
+            if completed.len() == profile.steps.len() {
+                if let Some(run) = state.engines.workflow.run_mut(run_id) {
+                    run.active_step = None;
+                    if run.transition(RunPhase::Succeeded).is_err() {
+                        return Self::workflow_error(WorkflowError::InvalidTransition);
+                    }
+                }
+                if let Err(error) = self.workflow_commit_or_reconcile(&mut state) {
+                    return error;
+                }
+                let Some(run) = state.engines.workflow.run(run_id) else {
+                    return Response::error(503, "workflow run state disappeared");
+                };
+                return Response::ok(json!({"data": Self::workflow_run_value(run)}));
+            }
+            if started.elapsed().as_millis() > service_workflow::MAX_RUNTIME_MILLIS {
+                if let Some(run) = state.engines.workflow.run_mut(run_id) {
+                    run.active_step = None;
+                    let _ = run.transition(RunPhase::Failed);
+                }
+                if let Err(error) = self.workflow_commit_or_reconcile(&mut state) {
+                    return error;
+                }
+                return Response::error(408, "workflow runtime limit exceeded");
+            }
+            let Some(step) = profile
+                .steps
+                .iter()
+                .find(|step| {
+                    !completed.contains(&step.id)
+                        && step
+                            .depends_on
+                            .iter()
+                            .all(|dependency| completed.contains(dependency))
+                })
+                .cloned()
+            else {
+                if let Some(run) = state.engines.workflow.run_mut(run_id) {
+                    let _ = run.transition(RunPhase::Failed);
+                }
+                if let Err(error) = self.workflow_commit_or_reconcile(&mut state) {
+                    return error;
+                }
+                return Response::error(400, "workflow dependency state is invalid");
+            };
+
+            if let Some(run) = state.engines.workflow.run_mut(run_id) {
+                run.active_step = Some(step.id.clone());
+            }
+            if let Err(error) = self.workflow_commit_or_reconcile(&mut state) {
+                return error;
+            }
+            if let Err(error) = Self::workflow_execute_step(
+                &mut state,
+                principal,
+                namespace,
+                &step,
+                values.get(&step.id),
+                now,
+            ) {
+                if let Some(run) = state.engines.workflow.run_mut(run_id) {
+                    run.active_step = None;
+                    let _ = run.transition(RunPhase::Failed);
+                }
+                if let Err(commit_error) = self.workflow_commit_or_reconcile(&mut state) {
+                    return commit_error;
+                }
+                return error;
+            }
+            if let Some(run) = state.engines.workflow.run_mut(run_id) {
+                run.active_step = None;
+                run.completed_steps.push(step.id);
+            }
+            if let Err(error) = self.workflow_commit_or_reconcile(&mut state) {
+                return error;
+            }
+        }
+    }
+
+    fn workflow_route(
+        &mut self,
+        mut state: State,
+        principal: Option<&Principal>,
+        request: &RequestView<'_>,
+    ) -> Response {
+        let path = request.path.trim_end_matches('/');
+        let parts = path.split('/').collect::<Vec<_>>();
+        if parts.as_slice() == ["sys", "workflows", "profiles"] {
+            if !matches!(request.method, "GET" | "LIST") {
+                return Response::error(405, "workflow profile listing is read-only");
+            }
+            if let Err(error) = Self::workflow_authorize(
+                &state,
+                principal,
+                request.namespace,
+                request.path,
+                if request.method == "LIST" {
+                    "list"
+                } else {
+                    "read"
+                },
+                request.now,
+            ) {
+                return error;
+            }
+            let keys = state
+                .engines
+                .workflow
+                .profiles
+                .iter()
+                .filter(|profile| profile.namespace == request.namespace)
+                .map(|profile| profile.name.clone())
+                .collect::<std::collections::BTreeSet<_>>();
+            return Response::ok(json!({"data": {"keys": keys.into_iter().collect::<Vec<_>>()}}));
+        }
+        if parts.len() == 4 && parts[0..3] == ["sys", "workflows", "profiles"] {
+            let name = parts[3];
+            if request.method == "GET" {
+                if let Err(error) = Self::workflow_authorize(
+                    &state,
+                    principal,
+                    request.namespace,
+                    request.path,
+                    "read",
+                    request.now,
+                ) {
+                    return error;
+                }
+                let Some(profile) = state.engines.workflow.profile(request.namespace, name) else {
+                    return Response::error(404, "workflow profile not found");
+                };
+                return Response::ok(json!({"data": Self::workflow_profile_value(profile)}));
+            }
+            if request.method == "DELETE" {
+                if let Err(error) = Self::workflow_authorize(
+                    &state,
+                    principal,
+                    request.namespace,
+                    request.path,
+                    "delete",
+                    request.now,
+                ) {
+                    return error;
+                }
+                if state
+                    .engines
+                    .workflow
+                    .runs
+                    .iter()
+                    .any(|run| run.namespace == request.namespace && run.profile_name == name)
+                {
+                    return Response::error(409, "workflow profile has durable run history");
+                }
+                let Some(index) = state.engines.workflow.profiles.iter().position(|profile| {
+                    profile.namespace == request.namespace && profile.name == name
+                }) else {
+                    return Response::error(404, "workflow profile not found");
+                };
+                state.engines.workflow.profiles.remove(index);
+                if let Err(error) = self.workflow_commit(&mut state) {
+                    return error;
+                }
+                return Response {
+                    status: 204,
+                    body: Value::Null,
+                };
+            }
+            if !matches!(request.method, "POST" | "PUT") {
+                return Response::error(405, "workflow profile method is not supported");
+            }
+            if let Err(error) = Self::workflow_authorize(
+                &state,
+                principal,
+                request.namespace,
+                request.path,
+                "update",
+                request.now,
+            ) {
+                return error;
+            }
+            let payload =
+                match serde_json::from_value::<WorkflowProfileRequest>(request.body.clone()) {
+                    Ok(payload) => payload,
+                    Err(_) => return Response::error(400, "invalid workflow profile request"),
+                };
+            let existing = state.engines.workflow.profile(request.namespace, name);
+            if request.method == "POST" && existing.is_some() {
+                return Response::error(409, "workflow profile already exists");
+            }
+            if request.method == "PUT" && existing.is_none() {
+                return Response::error(404, "workflow profile not found");
+            }
+            let expected_revision = match existing {
+                None => 1,
+                Some(profile) => match profile.revision.checked_add(1) {
+                    Some(revision) => revision,
+                    None => return Response::error(409, "workflow profile revision conflict"),
+                },
+            };
+            if payload.revision != expected_revision {
+                return Response::error(409, "workflow profile revision conflict");
+            }
+            let profile = match Self::workflow_profile_admission(
+                &state,
+                request.namespace,
+                name,
+                payload.revision,
+                payload.steps,
+            ) {
+                Ok(profile) => profile,
+                Err(error) => return error,
+            };
+            if let Some(existing) = state.engines.workflow.profile_mut(request.namespace, name) {
+                *existing = profile;
+            } else if state.engines.workflow.profiles.len() >= service_workflow::MAX_PROFILES {
+                return Self::workflow_error(WorkflowError::TooManyProfiles);
+            } else {
+                state.engines.workflow.profiles.push(profile);
+            }
+            if let Err(error) = self.workflow_commit(&mut state) {
+                return error;
+            }
+            return Response {
+                status: 204,
+                body: Value::Null,
+            };
+        }
+        if parts.len() == 5
+            && parts[0..3] == ["sys", "workflows", "profiles"]
+            && matches!(parts[4], "run" | "runs")
+        {
+            let name = parts[3];
+            if request.method == "GET" {
+                if let Err(error) = Self::workflow_authorize(
+                    &state,
+                    principal,
+                    request.namespace,
+                    request.path,
+                    "read",
+                    request.now,
+                ) {
+                    return error;
+                }
+                let root = principal.is_some_and(Principal::is_root);
+                let digest = principal.map(Principal::workflow_digest);
+                let runs = state
+                    .engines
+                    .workflow
+                    .runs
+                    .iter()
+                    .filter(|run| {
+                        run.namespace == request.namespace
+                            && run.profile_name == name
+                            && (root
+                                || digest.is_some_and(|digest| {
+                                    run.owner_matches(digest, request.namespace)
+                                }))
+                    })
+                    .map(Self::workflow_run_value)
+                    .collect::<Vec<_>>();
+                return Response::ok(json!({"data": {"runs": runs}}));
+            }
+            if request.method != "POST" {
+                return Response::error(405, "workflow run requires POST");
+            }
+            if let Err(error) = Self::workflow_authorize(
+                &state,
+                principal,
+                request.namespace,
+                request.path,
+                "update",
+                request.now,
+            ) {
+                return error;
+            }
+            let Some(principal) = principal else {
+                return Response::error(403, "missing client token");
+            };
+            let Some(profile) = state
+                .engines
+                .workflow
+                .profile(request.namespace, name)
+                .cloned()
+            else {
+                return Response::error(404, "workflow profile not found");
+            };
+            let payload = match serde_json::from_value::<WorkflowRunRequest>(request.body.clone()) {
+                Ok(payload) => payload,
+                Err(_) => return Response::error(400, "invalid workflow run request"),
+            };
+            if let Err(error) = service_workflow::validate_payloads(&payload.values) {
+                return Self::workflow_error(error);
+            }
+            let step_ids = profile
+                .steps
+                .iter()
+                .map(|step| step.id.as_str())
+                .collect::<std::collections::BTreeSet<_>>();
+            if payload
+                .values
+                .keys()
+                .any(|key| !step_ids.contains(key.as_str()))
+            {
+                return Response::error(400, "workflow values contain an unknown step");
+            }
+            for step in &profile.steps {
+                if matches!(step.operation, WorkflowOperation::KvWrite)
+                    && !payload.values.contains_key(&step.id)
+                {
+                    return Response::error(400, "workflow write payload is required");
+                }
+                if matches!(step.operation, WorkflowOperation::KvRead)
+                    && payload.values.contains_key(&step.id)
+                {
+                    return Response::error(400, "workflow read steps do not accept payloads");
+                }
+            }
+            let operation_digest = match service_workflow::operation_digest(
+                request.namespace,
+                &profile,
+                &payload.values,
+            ) {
+                Ok(digest) => digest,
+                Err(error) => return Self::workflow_error(error),
+            };
+            let principal_digest = principal.workflow_digest();
+            let existing = state
+                .engines
+                .workflow
+                .runs
+                .iter()
+                .find(|run| {
+                    run.namespace == request.namespace
+                        && run.profile_name == name
+                        && run.request_id == payload.request_id
+                })
+                .map(|run| {
+                    (
+                        run.id.clone(),
+                        run.owner_matches(principal_digest, request.namespace),
+                        run.operation_digest,
+                        run.phase.clone(),
+                    )
+                });
+            if let Some((existing_id, owner_matches, existing_digest, existing_phase)) = existing {
+                if !owner_matches {
+                    return Response::error(409, "workflow request id is already owned");
+                }
+                if existing_digest != operation_digest {
+                    return Response::error(
+                        409,
+                        "workflow request id is bound to another operation",
+                    );
+                }
+                if existing_phase == RunPhase::Pending {
+                    return self.workflow_run_steps(
+                        state,
+                        principal,
+                        request.namespace,
+                        profile,
+                        payload.values,
+                        &existing_id,
+                        request.now,
+                    );
+                }
+                let Some(existing) = state.engines.workflow.run(&existing_id) else {
+                    return Response::error(503, "workflow run state disappeared");
+                };
+                return Response::ok(json!({"data": Self::workflow_run_value(existing)}));
+            }
+            if state.engines.workflow.runs.len() >= service_workflow::MAX_RUNS {
+                return Self::workflow_error(WorkflowError::TooManyRuns);
+            }
+            let binding = match RunBinding::new_with_operation(
+                principal_digest,
+                request.namespace,
+                name,
+                profile.revision,
+                payload.request_id,
+                operation_digest,
+            ) {
+                Ok(binding) => binding,
+                Err(error) => return Self::workflow_error(error),
+            };
+            let run_id = hex(&binding.digest());
+            let run = match WorkflowRun::new_with_operation(&run_id, &binding, operation_digest) {
+                Ok(run) => run,
+                Err(error) => return Self::workflow_error(error),
+            };
+            state.engines.workflow.runs.push(run);
+            if let Err(error) = self.workflow_commit_or_reconcile(&mut state) {
+                return error;
+            }
+            return self.workflow_run_steps(
+                state,
+                principal,
+                request.namespace,
+                profile,
+                payload.values,
+                &run_id,
+                request.now,
+            );
+        }
+        if parts.len() == 4 && parts[0..3] == ["sys", "workflows", "runs"] {
+            let id = parts[3];
+            if request.method != "GET" {
+                return Response::error(405, "workflow run status is read-only");
+            }
+            if let Err(error) = Self::workflow_authorize(
+                &state,
+                principal,
+                request.namespace,
+                request.path,
+                "read",
+                request.now,
+            ) {
+                return error;
+            }
+            let Some(principal) = principal else {
+                return Response::error(403, "missing client token");
+            };
+            let Some(run) = state.engines.workflow.run(id) else {
+                return Response::error(404, "workflow run not found");
+            };
+            if run.namespace != request.namespace
+                || (!principal.is_root()
+                    && !run.owner_matches(principal.workflow_digest(), request.namespace))
+            {
+                return Response::error(404, "workflow run not found");
+            }
+            return Response::ok(json!({"data": Self::workflow_run_value(run)}));
+        }
+        if parts.len() == 5
+            && parts[0..3] == ["sys", "workflows", "runs"]
+            && parts[4] == "reconcile"
+        {
+            if !matches!(request.method, "GET" | "POST") {
+                return Response::error(405, "workflow reconciliation is inspect-only");
+            }
+            let capability = if request.method == "POST" {
+                "update"
+            } else {
+                "read"
+            };
+            if let Err(error) = Self::workflow_authorize(
+                &state,
+                principal,
+                request.namespace,
+                request.path,
+                capability,
+                request.now,
+            ) {
+                return error;
+            }
+            let Some(principal) = principal else {
+                return Response::error(403, "missing client token");
+            };
+            if request.method == "POST"
+                && request
+                    .body
+                    .as_object()
+                    .is_some_and(|object| !object.is_empty())
+            {
+                return Response::error(400, "workflow reconciliation accepts no outcome claim");
+            }
+            let Some(run) = state.engines.workflow.run(parts[3]) else {
+                return Response::error(404, "workflow run not found");
+            };
+            if run.namespace != request.namespace
+                || (!principal.is_root()
+                    && !run.owner_matches(principal.workflow_digest(), request.namespace))
+            {
+                return Response::error(404, "workflow run not found");
+            }
+            return Response::ok(json!({
+                "data": Self::workflow_run_value(run),
+                "reconciliation": {
+                    "required": run.phase == RunPhase::ReconcileRequired,
+                    "automatic_retry": false,
+                    "mode": "inspect-only"
+                }
+            }));
+        }
+        Response::error(404, "unsupported workflow/profile path")
     }
 
     fn immutable_kv_response(&self, request: &RequestView<'_>) -> Option<Response> {

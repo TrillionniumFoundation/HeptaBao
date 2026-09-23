@@ -481,6 +481,34 @@
         "cassandra_restart_reconciles_pending_revoke"
       ],
       "script": "qa/openbao-acceptance/cassandra_live.py"
+    },
+    "workflow_profile_live": {
+      "script": "qa/openbao-acceptance/workflow_profile_live.py",
+      "case_ids": [
+        "tls_initialize",
+        "tls_unseal",
+        "input_write",
+        "profile_create",
+        "profile_read",
+        "run_succeeds",
+        "run_response_redacted",
+        "duplicate_replay_same_run",
+        "duplicate_replay_no_new_version",
+        "output_write_exact",
+        "run_status_readback",
+        "ssrf_profile_rejected",
+        "path_escape_rejected",
+        "unknown_action_rejected",
+        "secret_output_rejected",
+        "caller_identity_rejected",
+        "payload_bound",
+        "cross_namespace_rejected",
+        "reconcile_is_inspect_only",
+        "restart_sealed",
+        "restart_unseal",
+        "restart_run_readback",
+        "restart_output_readback"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

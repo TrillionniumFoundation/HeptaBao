@@ -1220,6 +1220,12 @@ impl Principal {
         self.service_token()
             .is_some_and(|token| token.uses_remaining.is_some())
     }
+
+    /// Stable opaque identity material for server-owned idempotency bindings.
+    /// The bearer itself and the internal digest string never cross the API.
+    pub(crate) fn workflow_digest(&self) -> [u8; 32] {
+        crate::crypto::digest(self.digest.as_bytes())
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
