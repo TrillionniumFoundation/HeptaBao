@@ -396,6 +396,37 @@
         "post_restart_fence"
       ]
     },
+    "workflow_live": {
+      "script": "qa/openbao-acceptance/workflow_live.py",
+      "case_ids": [
+        "initialize",
+        "unseal",
+        "mount_local_kv",
+        "manage_create_cas_zero",
+        "manage_list_root",
+        "manage_list_prefix",
+        "manage_get_versioned_definition",
+        "execute_sequential_local_steps",
+        "cas_create_only_rejects_overwrite",
+        "external_url_rejected",
+        "allow_unauthenticated_rejected",
+        "recursive_workflow_rejected",
+        "unauthenticated_execution_denied",
+        "manage_stop_definition",
+        "stop_on_failed_step",
+        "failed_step_has_no_following_effect",
+        "manage_allow_failure_definition",
+        "allow_failure_continues",
+        "namespace_create",
+        "namespace_scoped_management",
+        "namespace_scoped_isolation",
+        "restart_starts_sealed",
+        "restart_unseal",
+        "workflow_survives_restart",
+        "delete_cas",
+        "delete_readback"
+      ]
+    },
     "valkey_live": {
       "script": "qa/openbao-acceptance/valkey_live.py",
       "case_ids": [

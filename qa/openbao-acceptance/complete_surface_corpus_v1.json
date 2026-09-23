@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 57,
-    "defined_not_implemented_surface_count": 2,
-    "fixture_case_count": 396,
+    "implemented_surface_count": 58,
+    "defined_not_implemented_surface_count": 1,
+    "fixture_case_count": 422,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -916,9 +916,36 @@
       "surface_id": "HB-SURFACE-PROFILES-WORKFLOWS",
       "category": "namespace_workflow",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 26,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "workflow_live.initialize",
+        "workflow_live.unseal",
+        "workflow_live.mount_local_kv",
+        "workflow_live.manage_create_cas_zero",
+        "workflow_live.manage_list_root",
+        "workflow_live.manage_list_prefix",
+        "workflow_live.manage_get_versioned_definition",
+        "workflow_live.execute_sequential_local_steps",
+        "workflow_live.cas_create_only_rejects_overwrite",
+        "workflow_live.external_url_rejected",
+        "workflow_live.allow_unauthenticated_rejected",
+        "workflow_live.recursive_workflow_rejected",
+        "workflow_live.unauthenticated_execution_denied",
+        "workflow_live.manage_stop_definition",
+        "workflow_live.stop_on_failed_step",
+        "workflow_live.failed_step_has_no_following_effect",
+        "workflow_live.manage_allow_failure_definition",
+        "workflow_live.allow_failure_continues",
+        "workflow_live.namespace_create",
+        "workflow_live.namespace_scoped_management",
+        "workflow_live.namespace_scoped_isolation",
+        "workflow_live.restart_starts_sealed",
+        "workflow_live.restart_unseal",
+        "workflow_live.workflow_survives_restart",
+        "workflow_live.delete_cas",
+        "workflow_live.delete_readback"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

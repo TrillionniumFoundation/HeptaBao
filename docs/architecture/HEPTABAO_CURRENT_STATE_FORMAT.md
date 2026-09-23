@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **48**. Its source constant is
+The current Service state schema is **49**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -35,6 +35,11 @@ schema 1; the application schema must never be inferred from that number. Schema
 13 adds bounded namespace seal flags and ancestor request-routing fences. The flag
 is encrypted by the existing global barrier; independent per-namespace key
 custody, rotation and parent/sibling key separation remain open.
+
+Schema 49 adds bounded, authenticated namespace-scoped workflow definitions under
+the existing namespace owner. Older binaries reject workflow-bearing state rather
+than silently dropping definitions. Workflow execution remains synchronous and
+transactional within one request; crash-resumable step journals are not claimed.
 
 ## Read admission and mutation promotion
 

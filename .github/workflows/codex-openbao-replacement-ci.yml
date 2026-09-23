@@ -104,6 +104,16 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" \
             --work-dir "$RUNNER_TEMP/heptabao-openbao-replacement-smoke"
 
+      - name: Exercise scoped authenticated workflow runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-workflow-evidence"
+          mkdir -m 700 "$reports"
+          timeout 240 python qa/openbao-acceptance/workflow_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --output "$reports/workflow.json"
+
       - name: Exercise bounded server-integrated read-only secret plugin
         shell: bash
         run: |

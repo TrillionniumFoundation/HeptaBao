@@ -202,6 +202,20 @@
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
     },
+    "workflow_live": {
+      "script": "qa/openbao-acceptance/workflow_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime",
+        "OpenSSL"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
     "agent": {
       "script": "qa/openbao-acceptance/agent_proxy_helper_live.py",
       "arguments": [
@@ -2048,18 +2062,47 @@
     {
       "surface_id": "HB-SURFACE-PROFILES-WORKFLOWS",
       "category": "namespace_workflow",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_workflows.rs",
       "technical_contract": {
-        "api_or_protocol": "OpenBao 2.6 workflow/profile API and executor targets",
-        "required_positive_and_hostile_behavior": "Pin each target route, caller, state transition, retry and effect boundary from upstream specification",
-        "remaining_semantics_and_effect_checks": "Workflow receipt/plan types cannot stand in for an executable authorized workflow",
-        "crash_reopen": "Interrupt OpenBao 2.6 workflow/profile API and executor targets before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-PROFILES-WORKFLOWS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
-        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+        "api_or_protocol": "Authenticated LIST/GET/POST/DELETE workflow management and POST execution under sys/workflows with JSON definitions",
+        "required_positive_and_hostile_behavior": "Persist namespace-scoped sequential local API steps, version/CAS updates and explicit output mappings while rejecting unauthenticated execution, external URLs, traversal, recursion, unknown shapes and bounded-resource violations",
+        "remaining_semantics_and_effect_checks": "Literal request bodies and normal requester dispatch are executable; CEL/template/input/header sources, unauthenticated execution, trace/history, external provider steps and complete OpenBao profile compatibility remain open",
+        "crash_reopen": "Workflow definitions survive durable restart and failed steps stop or continue according to allow_failure; crash-resumable step journals and post-effect ambiguous execution recovery are explicitly not claimed",
+        "isolation": "For HB-SURFACE-PROFILES-WORKFLOWS, exercise authenticated management and execution in separate namespaces, deny an empty-token execution, and preserve the caller principal and namespace for every dispatched step.",
+        "migration_upgrade": "Schema 49 older-state admission is fail-closed for workflow-bearing state; exact OpenBao profile migration, rolling upgrade qualification and cross-version workflow history remain open."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "workflow_live.initialize",
+        "workflow_live.unseal",
+        "workflow_live.mount_local_kv",
+        "workflow_live.manage_create_cas_zero",
+        "workflow_live.manage_list_root",
+        "workflow_live.manage_list_prefix",
+        "workflow_live.manage_get_versioned_definition",
+        "workflow_live.execute_sequential_local_steps",
+        "workflow_live.cas_create_only_rejects_overwrite",
+        "workflow_live.external_url_rejected",
+        "workflow_live.allow_unauthenticated_rejected",
+        "workflow_live.recursive_workflow_rejected",
+        "workflow_live.unauthenticated_execution_denied",
+        "workflow_live.manage_stop_definition",
+        "workflow_live.stop_on_failed_step",
+        "workflow_live.failed_step_has_no_following_effect",
+        "workflow_live.manage_allow_failure_definition",
+        "workflow_live.allow_failure_continues",
+        "workflow_live.namespace_create",
+        "workflow_live.namespace_scoped_management",
+        "workflow_live.namespace_scoped_isolation",
+        "workflow_live.restart_starts_sealed",
+        "workflow_live.restart_unseal",
+        "workflow_live.workflow_survives_restart",
+        "workflow_live.delete_cas",
+        "workflow_live.delete_readback"
+      ],
+      "available_scoped_profiles": [
+        "workflow_live"
+      ],
       "whole_surface_admitted": false
     },
     {

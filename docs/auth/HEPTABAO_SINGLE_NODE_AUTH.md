@@ -468,7 +468,8 @@ cannot rewrite the issued period, initial TTL or captured explicit maximum.
 Token API descendants do not inherit certificate provenance. Legacy absent
 metadata and creation-TTL fields remain absent through read, renewal and reopen.
 
-The service publishes state schema 48 for these new persistent representations.
+The service publishes state schema 48 for these certificate/token representations;
+schema 49 additionally carries bounded authenticated namespace-scoped workflows.
 Independent format gates reject certificate role/mount/provenance state and
 Token API creation-TTL state under a false schema-47-or-older declaration.
 Schema 47 remains readable when no new representation is present. A higher

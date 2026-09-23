@@ -1948,19 +1948,25 @@
       "api_families": [
         "profiles/workflow configuration and execution"
       ],
-      "positive": "Execute declared CEL/template workflows with explicit internal request authority",
-      "hostile": "Reject SSRF, unbounded evaluation, secret echo and caller-forged internal operations",
-      "lifecycle": "Persist workflow progress and reconcile partial effects without replaying completed steps",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "positive": "Manage authenticated namespace-scoped JSON workflows and execute sequential local API steps with explicit response output mappings",
+      "hostile": "Reject unauthenticated execution, allow_unauthenticated=true, external URLs, traversal-like paths, recursive calls, unknown shapes, excessive data and secret fields not explicitly mapped",
+      "lifecycle": "Persist definitions and monotonically version them with CAS semantics; stop at the first failed step unless allow_failure=true and document that crash-resumable step execution remains open",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service.rs",
+        "crates/heptabao-server/src/service_namespaces.rs",
+        "crates/heptabao-server/src/service_workflows.rs"
+      ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/workflow_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Internal operation construction, SSRF, secret echo and resource limits."
+      "remaining_scope": "CEL/template/input/header sources, unauthenticated execution, trace/history, external provider steps, crash-resumable step journals, complete OpenBao 2.6.2 profile compatibility, rolling upgrade qualification and independent admission."
     },
     {
       "surface_id": "HB-SURFACE-SELF-INIT",

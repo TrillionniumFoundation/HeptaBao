@@ -1016,21 +1016,21 @@ Existing bounded profiles: `qa/openbao-acceptance/namespace_seal_live.py`.
 
 ### HB-SURFACE-PROFILES-WORKFLOWS
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H15-WP01`, `H15-WP02`, `H15-WP03`, `H15-WP04`, `H15-WP05`, `H15-WP06`, `H15-WP10`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H15-WP01`, `H15-WP02`, `H15-WP03`, `H15-WP04`, `H15-WP05`, `H15-WP06`, `H15-WP10`.
 API families: `profiles/workflow configuration and execution`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/service.rs`, `crates/heptabao-server/src/service_namespaces.rs`, `crates/heptabao-server/src/service_workflows.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
-**Positive:** Execute declared CEL/template workflows with explicit internal request authority.
+**Positive:** Manage authenticated namespace-scoped JSON workflows and execute sequential local API steps with explicit response output mappings.
 
-**Hostile:** Reject SSRF, unbounded evaluation, secret echo and caller-forged internal operations.
+**Hostile:** Reject unauthenticated execution, allow_unauthenticated=true, external URLs, traversal-like paths, recursive calls, unknown shapes, excessive data and secret fields not explicitly mapped.
 
-**Lifecycle:** Persist workflow progress and reconcile partial effects without replaying completed steps.
+**Lifecycle:** Persist definitions and monotonically version them with CAS semantics; stop at the first failed step unless allow_failure=true and document that crash-resumable step execution remains open.
 
-**Remaining scope:** Internal operation construction, SSRF, secret echo and resource limits.
+**Remaining scope:** CEL/template/input/header sources, unauthenticated execution, trace/history, external provider steps, crash-resumable step journals, complete OpenBao 2.6.2 profile compatibility, rolling upgrade qualification and independent admission.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/workflow_live.py`.
 
 ### HB-SURFACE-SELF-INIT
 

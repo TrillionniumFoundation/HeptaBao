@@ -13,6 +13,8 @@ pub(super) struct NamespaceRegistry {
     entries: BTreeMap<String, NamespaceEntry>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     next_incarnation: BTreeMap<String, u64>,
+    #[serde(default, skip_serializing_if = "workflows::WorkflowState::is_empty")]
+    pub(super) workflows: workflows::WorkflowState,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -181,7 +183,7 @@ fn patch_metadata(current: &mut BTreeMap<String, String>, body: &Value) -> Resul
 
 impl NamespaceRegistry {
     pub(super) fn is_empty(&self) -> bool {
-        self.entries.is_empty() && self.next_incarnation.is_empty()
+        self.entries.is_empty() && self.next_incarnation.is_empty() && self.workflows.is_empty()
     }
 
     pub(super) fn contains(&self, path: &str) -> bool {
@@ -252,6 +254,7 @@ impl NamespaceRegistry {
                 ));
             }
         }
+        self.workflows.validate()?;
         Ok(())
     }
 
@@ -478,6 +481,7 @@ impl State {
         self.auth.namespace_is_empty(path)
             && self.engines.namespace_is_empty(path)
             && self.database.namespace_is_empty(path)
+            && self.namespaces.workflows.namespace_is_empty(path)
     }
 }
 

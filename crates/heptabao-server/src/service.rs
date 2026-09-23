@@ -31,7 +31,7 @@ use crate::postgres_durable::PostgresDurableBackend;
 use crate::postgres_storage::PgStorageConfig;
 use crate::state_record_root::RecordStateRoot;
 
-const CURRENT_STATE_SCHEMA: u32 = 48;
+const CURRENT_STATE_SCHEMA: u32 = 49;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -65,6 +65,8 @@ mod openldap_secret;
 mod plugin;
 #[path = "service_snapshot_transfer.rs"]
 mod snapshot_transfer;
+#[path = "service_workflows.rs"]
+mod workflows;
 pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, PluginSecretConfig};
 pub(crate) use snapshot_transfer::{NativeSnapshotAdmission, TrustedSnapshotOrigin};
 #[path = "service_openapi.rs"]
@@ -1962,6 +1964,9 @@ impl Service {
         if namespaces::owns(path) {
             return self.namespace_route(admitted, principal.as_ref(), &request);
         }
+        if Self::workflows_handles(path) {
+            return self.workflow_route(admitted, principal.as_ref(), &request);
+        }
         if path == "sys/audit"
             || path.starts_with("sys/audit/")
             || path == "sys/internal/audit/file"
@@ -2161,7 +2166,7 @@ impl Service {
         } else {
             Self::dispatch(
                 &mut transaction,
-                principal,
+                principal.as_ref(),
                 namespace,
                 method,
                 path,
@@ -2385,7 +2390,7 @@ impl Service {
     #[allow(clippy::too_many_arguments)]
     fn dispatch(
         state: &mut State,
-        principal: Option<Principal>,
+        principal: Option<&Principal>,
         namespace: &str,
         method: &str,
         path: &str,
@@ -2395,7 +2400,6 @@ impl Service {
         origin_peer: Option<std::net::IpAddr>,
         approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
     ) -> Response {
-        let principal = principal.as_ref();
         if path == "sys/remount" {
             if !matches!(method, "POST" | "PUT") {
                 return Response::error(405, "remount requires POST or PUT");
