@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "e8f519b604a9f97c4313442b0a66bc6c6fba030e9995ddc6a4d3d4b7d7e5c69c",
+  "corpus_sha256": "5f297c6815655e12e9a789c749d7f4cb64e2d581db4475f9b46d035813bb4e84",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -561,6 +561,21 @@
         "pinned RabbitMQ 4.1 management image"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "kerberos_mit_live": {
+      "script": "qa/openbao-acceptance/kerberos_mit_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime",
+        "disposable MIT Kerberos KDC",
+        "system GSS-API library"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1022,18 +1037,32 @@
     {
       "surface_id": "HB-SURFACE-AUTH-KERBEROS",
       "category": "auth_methods",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/auth_kerberos.rs",
       "technical_contract": {
-        "api_or_protocol": "auth/:mount/config, role/* and SPNEGO login",
-        "required_positive_and_hostile_behavior": "Service principal/keytab custody, real ticket validation, replay cache and channel binding",
-        "remaining_semantics_and_effect_checks": "Clock skew, wrong service principal and duplicate authenticator fail across restart",
-        "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "api_or_protocol": "auth/{mount}/config and one complete HTTP Authorization: Negotiate login",
+        "required_positive_and_hostile_behavior": "Real MIT AP-REQ validation through the process keytab, exact realm/service binding, ticket-bounded token issuance and replay rejection",
+        "remaining_semantics_and_effect_checks": "AD PAC/group mapping, multi-realm trust, channel binding, continuation rounds and full protocol/error parity remain open",
+        "crash_reopen": "Interrupt auth/{mount}/login before effect, after durable replay admission and before response; classify exact outcome and prove replay rejection after restart.",
         "isolation": "For HB-SURFACE-AUTH-KERBEROS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "kerberos_mit_live.config_roundtrip",
+        "kerberos_mit_live.real_mit_ap_req_login",
+        "kerberos_mit_live.replayed_negotiation_denied",
+        "kerberos_mit_live.wrong_realm_denied",
+        "kerberos_mit_live.wrong_service_identity_denied",
+        "kerberos_mit_live.expired_ticket_denied",
+        "kerberos_mit_live.clock_skew_denied",
+        "kerberos_mit_live.restart_replay_denied",
+        "kerberos_mit_live.restart_native_cache_is_fresh",
+        "kerberos_mit_live.cross_namespace_replay_denied",
+        "kerberos_mit_live.restart_fresh_ticket_still_works"
+      ],
+      "available_scoped_profiles": [
+        "kerberos_mit_live"
+      ],
       "whole_surface_admitted": false
     },
     {

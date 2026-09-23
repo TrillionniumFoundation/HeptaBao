@@ -446,7 +446,7 @@ impl AuthState {
             .find_map(|(mount, entry)| {
                 if !matches!(
                     entry.kind.as_str(),
-                    "kubernetes" | "oidc" | "ldap" | "radius"
+                    "kubernetes" | "oidc" | "ldap" | "radius" | "kerberos"
                 ) {
                     return None;
                 }
@@ -469,9 +469,14 @@ impl AuthState {
             || self.kubernetes_mounts.values().any(|m| !m.is_empty())
             || self.ldap_mounts.values().any(|m| !m.is_empty())
             || self.radius_mounts.values().any(|m| !m.is_empty())
+            || self.kerberos_mounts.values().any(|m| !m.is_empty())
             || self.auth_mounts.values().any(|m| {
-                m.values()
-                    .any(|v| matches!(v.kind.as_str(), "kubernetes" | "oidc" | "ldap" | "radius"))
+                m.values().any(|v| {
+                    matches!(
+                        v.kind.as_str(),
+                        "kubernetes" | "oidc" | "ldap" | "radius" | "kerberos"
+                    )
+                })
             })
     }
     pub(crate) fn validate_online_auth(&self) -> Result<(), AuthError> {
@@ -479,6 +484,7 @@ impl AuthState {
         self.validate_oidc_state()?;
         self.validate_native_ldap_state()?;
         self.validate_native_radius_state()?;
+        self.validate_kerberos_state()?;
         for (namespace, mounts) in &self.kubernetes_mounts {
             validate_namespace(namespace)?;
             for (mount, state) in mounts {
@@ -626,6 +632,15 @@ impl AuthState {
             outbound
                 .radius_endpoint(&config.url)
                 .map_err(|_| err(503, "RADIUS target is not host-enrolled"))?;
+            return Ok(());
+        }
+        if kind == "kerberos" {
+            self.kerberos_at(AuthScope {
+                namespace,
+                mount: &mount,
+            })
+            .ok_or_else(|| err(503, "Kerberos authentication is not configured"))?
+            .validate()?;
             return Ok(());
         }
         if let Some(config) = self

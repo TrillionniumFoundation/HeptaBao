@@ -32,6 +32,10 @@ mod oidc;
 #[path = "auth_kubernetes.rs"]
 mod kubernetes;
 
+#[path = "auth_kerberos.rs"]
+mod kerberos;
+
+pub(crate) use kerberos::{KerberosLoginObservation, KerberosLoginPlan};
 pub(crate) use kubernetes::{KubernetesLoginObservation, KubernetesLoginPlan};
 pub(crate) use oidc::{
     OidcBeginObservation, OidcBeginPlan, OidcConfigObservation, OidcConfigPlan, OidcExchange,
@@ -165,6 +169,11 @@ pub struct AuthState {
     radius_mounts: BTreeMap<String, BTreeMap<String, RadiusMount>>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     radius_native_users: BTreeMap<String, BTreeMap<String, BTreeMap<String, BTreeSet<String>>>>,
+    /// Bounded HTTP Negotiate Kerberos login. The provider owns keytab and
+    /// ticket validation; durable state keeps only mount policy and replay
+    /// digests, never a password, ticket, session key, or credential cache.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    kerberos_mounts: BTreeMap<String, BTreeMap<String, kerberos::KerberosMount>>,
     /// Deployment-enrolled authentication plugins never choose token authority.
     /// This durable map binds a mount to one admitted plugin id and server-owned
     /// policy/TTL limits. The plugin returns only an authentication decision and
@@ -1162,6 +1171,14 @@ enum TokenAuthProvenance {
     Oidc {
         role_name: String,
     },
+    Kerberos {
+        provider: String,
+        service_account: String,
+        realm: String,
+        service: String,
+        mount_revision: u64,
+        config_revision: String,
+    },
     TokenApi {
         /// The initial granted TTL is immutable across renewal. Historical
         /// markers omit it rather than guessing from a later expiry or grant.
@@ -1798,6 +1815,12 @@ impl AuthState {
                 .cloned(),
         );
         namespaces.extend(
+            self.kerberos_mounts
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
+        namespaces.extend(
             self.plugin_auth_mounts
                 .keys()
                 .filter(|value| !value.is_empty())
@@ -1873,6 +1896,10 @@ impl AuthState {
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
             && self
+                .kerberos_mounts
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
                 .plugin_auth_mounts
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
@@ -1905,6 +1932,7 @@ impl AuthState {
             ldap_native_users: BTreeMap::new(),
             radius_mounts: BTreeMap::new(),
             radius_native_users: BTreeMap::new(),
+            kerberos_mounts: BTreeMap::new(),
             plugin_auth_mounts: BTreeMap::new(),
             cert_roles: BTreeMap::new(),
         };
@@ -2350,6 +2378,9 @@ impl AuthState {
         if let Some(mounts) = self.radius_native_users.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
+        if let Some(mounts) = self.kerberos_mounts.get_mut(scope.namespace) {
+            mounts.remove(scope.mount);
+        }
         if let Some(mounts) = self.plugin_auth_mounts.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
@@ -2562,6 +2593,16 @@ impl AuthState {
                 .insert(to.into(), value);
         }
         if let Some(value) = self
+            .kerberos_mounts
+            .get_mut(namespace)
+            .and_then(|mounts| mounts.remove(from))
+        {
+            self.kerberos_mounts
+                .entry(namespace.into())
+                .or_default()
+                .insert(to.into(), value);
+        }
+        if let Some(value) = self
             .plugin_auth_mounts
             .get_mut(namespace)
             .and_then(|mounts| mounts.remove(from))
@@ -2755,6 +2796,7 @@ impl AuthState {
                         | "oidc"
                         | "ldap"
                         | "radius"
+                        | "kerberos"
                         | "plugin"
                         | "cert"
                 ) {
@@ -2851,7 +2893,7 @@ impl AuthState {
                 };
                 match entry.kind.as_str() {
                     "userpass" | "ldap" => suffix.strip_prefix("login/").is_some_and(valid_name),
-                    "approle" | "jwt" | "kubernetes" | "radius" => suffix == "login",
+                    "approle" | "jwt" | "kubernetes" | "radius" | "kerberos" => suffix == "login",
                     "oidc" => matches!(suffix, "oidc/auth_url" | "oidc/callback"),
                     "cert" => suffix == "login",
                     "plugin" => suffix == "login",
@@ -2999,6 +3041,13 @@ impl AuthState {
                 "radius" if suffix == "login" || suffix.starts_with("login/") => Err(err(
                     503,
                     "RADIUS login requires the Service online-auth dispatcher",
+                )),
+                "kerberos" if suffix == "config" => {
+                    self.kerberos_route(principal, scope, method, body, now)
+                }
+                "kerberos" if suffix == "login" => Err(err(
+                    503,
+                    "Kerberos login requires the Service online-auth dispatcher",
                 )),
                 "plugin" if suffix == "config" => {
                     self.plugin_auth_route(principal, scope, method, body, now)
@@ -6858,6 +6907,24 @@ fn token_info(token: &Token, now: u64) -> Value {
     }
     if let Some(TokenAuthProvenance::Userpass { username }) = &token.auth_provenance {
         info["meta"] = json!({"username":username});
+    }
+    if let Some(TokenAuthProvenance::Kerberos {
+        provider,
+        service_account,
+        realm,
+        service,
+        mount_revision,
+        config_revision,
+    }) = &token.auth_provenance
+    {
+        info["meta"] = json!({
+            "provider": provider,
+            "service_account": service_account,
+            "realm": realm,
+            "service": service,
+            "mount_revision": mount_revision,
+            "config_revision": config_revision,
+        });
     }
     if let Some(TokenAuthProvenance::RadiusNative {
         username,

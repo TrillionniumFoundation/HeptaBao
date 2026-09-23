@@ -148,8 +148,12 @@ class RuntimeDocumentationTests(unittest.TestCase):
         path.write_text('\n'.join(lines)+'\n')
         self.assertIn('replacement execution map differs from fixed corpus rows', module.validate(self.root))
 
-    def test_replacement_map_cannot_promote_fixture_state(self):
-        self.change(module.ACCEPTANCE, '`DEFINED_NOT_IMPLEMENTED` | None', '`IMPLEMENTED_SCOPED` | None')
+    def test_replacement_map_cannot_drift_fixture_state(self):
+        self.change(
+            module.ACCEPTANCE,
+            '| `HB-SURFACE-AUTH-KERBEROS` | `auth_methods` | `IMPLEMENTED_SCOPED` |',
+            '| `HB-SURFACE-AUTH-KERBEROS` | `auth_methods` | `DEFINED_NOT_IMPLEMENTED` |',
+        )
         self.assertIn('replacement execution map differs from fixed corpus rows', module.validate(self.root))
 
     def test_replacement_map_cannot_duplicate_its_denominator(self):

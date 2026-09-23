@@ -33,6 +33,12 @@ mod radius_native;
 pub(crate) use radius_native::{
     RadiusNativeOptions, validate_radius_native_host, validate_radius_target,
 };
+#[path = "outbound_kerberos.rs"]
+mod kerberos;
+pub(crate) use kerberos::{
+    KERBEROS_PROVIDER_IDENTITY, KerberosObservation, MAX_KERBEROS_PRINCIPAL,
+    MAX_KERBEROS_TICKET_LIFETIME, MAX_KERBEROS_TOKEN,
+};
 
 pub(crate) const MAX_DOCUMENT: usize = 128 * 1024;
 #[derive(Clone, Deserialize)]
