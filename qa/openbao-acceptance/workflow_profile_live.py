@@ -93,7 +93,7 @@ def main() -> int:
                 },
             ],
         }
-        status, body = request("PUT", "sys/workflows/profiles/safe-copy", profile)
+        status, body = request("POST", "sys/workflows/profiles/safe-copy", profile)
         check("profile_create", status == 204 and not body)
         status, fetched = request("GET", "sys/workflows/profiles/safe-copy")
         check("profile_read", status == 200 and fetched["data"]["revision"] == 1)
@@ -111,23 +111,23 @@ def main() -> int:
         status, run_status = request("GET", f"sys/workflows/runs/{run_id}")
         check("run_status_readback", status == 200 and run_status["data"]["phase"] == "Succeeded")
 
-        check("ssrf_profile_rejected", request("PUT", "sys/workflows/profiles/ssrf", {
+        check("ssrf_profile_rejected", request("POST", "sys/workflows/profiles/ssrf", {
             "revision": 1,
             "steps": [{"id": "egress", "depends_on": [], "operation": "KvRead", "target": "https://127.0.0.1", "secret_output": False}],
         })[0] == 400)
-        check("path_escape_rejected", request("PUT", "sys/workflows/profiles/escape", {
+        check("path_escape_rejected", request("POST", "sys/workflows/profiles/escape", {
             "revision": 1,
             "steps": [{"id": "escape", "depends_on": [], "operation": "KvRead", "target": "secret/data/../../outside", "secret_output": False}],
         })[0] == 400)
-        check("unknown_action_rejected", request("PUT", "sys/workflows/profiles/shell", {
+        check("unknown_action_rejected", request("POST", "sys/workflows/profiles/shell", {
             "revision": 1,
             "steps": [{"id": "shell", "depends_on": [], "operation": "Shell", "target": "secret/data/x", "secret_output": False}],
         })[0] == 400)
-        check("secret_output_rejected", request("PUT", "sys/workflows/profiles/echo", {
+        check("secret_output_rejected", request("POST", "sys/workflows/profiles/echo", {
             "revision": 1,
             "steps": [{"id": "echo", "depends_on": [], "operation": "KvRead", "target": "secret/data/workflow-input", "secret_output": True}],
         })[0] == 400)
-        check("caller_identity_rejected", request("PUT", "sys/workflows/profiles/identity", {
+        check("caller_identity_rejected", request("POST", "sys/workflows/profiles/identity", {
             "revision": 1,
             "principal": "root",
             "steps": [],
