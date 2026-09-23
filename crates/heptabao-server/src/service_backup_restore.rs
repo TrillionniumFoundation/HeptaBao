@@ -135,6 +135,14 @@ impl Service {
             let auth = Self::load_owner_bytes(resources, &manifest, "auth")?;
             let engines = Self::load_owner_bytes(resources, &manifest, "engines")?;
             let database = Self::load_owner_bytes(resources, &manifest, "database")?;
+            let rabbitmq = match Self::load_owner_bytes(resources, &manifest, "rabbitmq") {
+                Ok(bytes) => bytes,
+                Err(error) if manifest.chunk_count("rabbitmq").is_err() && error.status == 503 => {
+                    owner_store::serialize_owner(&rabbitmq::RabbitmqState::default())
+                        .map_err(state_serialization_error)?
+                }
+                Err(error) => return Err(error),
+            };
             let raft_admin = Self::load_owner_bytes(resources, &manifest, "raft_admin")?;
             let state = State {
                 schema: manifest.state_schema(),
@@ -149,6 +157,8 @@ impl Service {
                     .map_err(|_| Response::error(503, "engine owner state is invalid"))?,
                 database: serde_json::from_slice(&database)
                     .map_err(|_| Response::error(503, "database owner state is invalid"))?,
+                rabbitmq: serde_json::from_slice(&rabbitmq)
+                    .map_err(|_| Response::error(503, "RabbitMQ owner state is invalid"))?,
                 raft_admin: serde_json::from_slice(&raft_admin)
                     .map_err(|_| Response::error(503, "raft-admin owner state is invalid"))?,
             };

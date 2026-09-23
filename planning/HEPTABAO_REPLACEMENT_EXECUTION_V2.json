@@ -1009,23 +1009,35 @@
       ],
       "public_baseline_reference": "public-source-surface://builtin/logical/rabbitmq",
       "api_families": [
-        "{mount}/config/*",
-        "{mount}/roles/*",
-        "{mount}/creds/*"
+        "{mount}/config/connection",
+        "{mount}/roles",
+        "{mount}/roles/{name}",
+        "{mount}/creds/{role}",
+        "sys/leases/lookup",
+        "sys/leases/renew",
+        "sys/leases/revoke",
+        "sys/leases/reconcile"
       ],
-      "positive": "Create real broker users with exact vhost permissions and lease metadata",
-      "hostile": "Reject admin tag escalation, bad TLS and foreign user ownership",
-      "lifecycle": "Remove issued users/permissions after expiry, restart and lost provider reply",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "positive": "Configure a verified private management endpoint, create a real RabbitMQ user with exact vhost permissions, read back provider state, and return a secret only after durable issue intent and provider success",
+      "hostile": "Require sudo authorization for administration, deny foreign namespaces and invalid tokens before provider effect, reject non-private endpoints and admin tags, and prove real AMQP vhost and permission denial",
+      "lifecycle": "Persist issue and revoke intent before bounded management API calls, close visible sessions, delete users with 404 readback, retain outage state, and reconcile after HeptaBao or RabbitMQ restart",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/service_rabbitmq.rs",
+        "crates/heptabao-server/src/outbound.rs",
+        "crates/heptabao-server/src/engines.rs"
+      ],
       "contract_sources": [],
       "guides": [
-        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md",
+        "docs/engines/HEPTABAO_RABBITMQ_RUNTIME.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/rabbitmq_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Users, vhosts, permissions, lease and revocation lifecycle."
+      "remaining_scope": "RabbitMQ users have no native expiry or renewal field, so renewal is explicitly unsupported. Full OpenBao role/config parity, TLS management transport, vhost creation, HA or lost-reply faults, and independent admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-DB-POSTGRESQL",

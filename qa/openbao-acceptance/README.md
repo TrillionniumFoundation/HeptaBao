@@ -306,3 +306,12 @@ rejected downgrade and recovery, generic child/orphan renewal without PAP, and
 credential absence from encrypted state and diagnostics. Reopen comparisons
 exclude only the rebuilt root replay ledger. Only fresh fixture stores are
 accepted; this is not full-instance or rolling-upgrade qualification.
+
+`rabbitmq_live.py` is a Linux-only, real-provider profile for the immutable
+RabbitMQ 4.1 management image digest recorded in the script. It configures a
+private loopback endpoint, issues an actual AMQP user, verifies vhost and
+permission denial, rejects unsupported renewal, restarts both services,
+revokes the user, and reconciles a durable pending revoke across a provider
+outage. Missing Docker or the pinned image returns 77; macOS execution is
+blocked and is never evidence of a Linux pass. Its receipt contains only case
+IDs and image identity, never credentials.

@@ -82,6 +82,7 @@ pub(crate) struct LifecycleWorker {
 enum ProviderMaintenance {
     Database(database::DatabaseMaintenance),
     OpenLdap(openldap_secret::OpenLdapMaintenance),
+    Rabbitmq(rabbitmq::RabbitmqMaintenance),
 }
 impl Drop for LifecycleWorker {
     fn drop(&mut self) {
@@ -129,7 +130,11 @@ pub(crate) fn start_lifecycle_worker(
                             Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(value)),
                             Ok(None) | Err(_) => match writer.prepare_database_maintenance(now) {
                                 Ok(Some(value)) => Some(ProviderMaintenance::Database(value)),
-                                Ok(None) | Err(_) => None,
+                                Ok(None) | Err(_) => writer
+                                    .prepare_rabbitmq_maintenance(now)
+                                    .ok()
+                                    .flatten()
+                                    .map(ProviderMaintenance::Rabbitmq),
                             },
                         }
                     } else {
@@ -137,7 +142,11 @@ pub(crate) fn start_lifecycle_worker(
                             Ok(Some(value)) => Some(ProviderMaintenance::Database(value)),
                             Ok(None) | Err(_) => match writer.prepare_openldap_maintenance(now) {
                                 Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(value)),
-                                Ok(None) | Err(_) => None,
+                                Ok(None) | Err(_) => writer
+                                    .prepare_rabbitmq_maintenance(now)
+                                    .ok()
+                                    .flatten()
+                                    .map(ProviderMaintenance::Rabbitmq),
                             },
                         }
                     };
@@ -171,6 +180,16 @@ pub(crate) fn start_lifecycle_worker(
                         };
                         if writer.finish_openldap_maintenance(pending, result).is_err() {
                             eprintln!("heptabao-lifecycle: OpenLDAP reconciliation pending");
+                        }
+                    }
+                    ProviderMaintenance::Rabbitmq(pending) => {
+                        let result = pending.plan.execute();
+                        let Ok(mut writer) = service.try_lock() else {
+                            eprintln!("heptabao-lifecycle: RabbitMQ finalize deferred");
+                            continue;
+                        };
+                        if writer.finish_rabbitmq_maintenance(pending, result).is_err() {
+                            eprintln!("heptabao-lifecycle: RabbitMQ reconciliation pending");
                         }
                     }
                 }

@@ -205,11 +205,24 @@ impl Service {
         reader: &impl RecordReader,
     ) -> Result<State, Response> {
         root.validate().map_err(root_error)?;
-        let owners = root
-            .owners
-            .iter()
-            .map(|owner| owner_bytes(root, owner, reader))
-            .collect::<Result<Vec<_>, _>>()?;
+        let owners = if root.has_legacy_owner_layout() {
+            let mut owners = Vec::with_capacity(6);
+            for index in [0, 1, 2, 3, 5] {
+                owners.push(owner_bytes(root, &root.owners[index], reader)?);
+                if index == 3 {
+                    owners.push(
+                        owner_store::serialize_owner(&rabbitmq::RabbitmqState::default())
+                            .map_err(state_serialization_error)?,
+                    );
+                }
+            }
+            owners
+        } else {
+            root.owners
+                .iter()
+                .map(|owner| owner_bytes(root, owner, reader))
+                .collect::<Result<Vec<_>, _>>()?
+        };
         let mut state = State {
             schema: root.state_schema,
             cluster_id: root.cluster_id.clone(),
@@ -218,7 +231,8 @@ impl Service {
             auth: serde_json::from_slice(&owners[1]).map_err(|_| unavailable())?,
             engines: serde_json::from_slice(&owners[2]).map_err(|_| unavailable())?,
             database: serde_json::from_slice(&owners[3]).map_err(|_| unavailable())?,
-            raft_admin: serde_json::from_slice(&owners[4]).map_err(|_| unavailable())?,
+            rabbitmq: serde_json::from_slice(&owners[4]).map_err(|_| unavailable())?,
+            raft_admin: serde_json::from_slice(&owners[5]).map_err(|_| unavailable())?,
         };
         for (index, expected) in owners.iter().enumerate() {
             let canonical = match index {
@@ -226,6 +240,7 @@ impl Service {
                 1 => owner_store::serialize_owner(&state.auth),
                 2 => owner_store::serialize_owner(&state.engines),
                 3 => owner_store::serialize_owner(&state.database),
+                4 => owner_store::serialize_owner(&state.rabbitmq),
                 _ => owner_store::serialize_owner(&state.raft_admin),
             }
             .map_err(state_serialization_error)?;
@@ -253,13 +268,15 @@ impl Service {
             reuse.auth,
             reuse.engines,
             reuse.database,
+            reuse.rabbitmq,
             reuse.raft_admin,
         ];
         let mut objects = state.engines.record_objects().map_err(engine_error)?;
-        let mut owners = Vec::with_capacity(5);
+        let mut owners = Vec::with_capacity(6);
         for (index, name) in OWNER_NAMES.into_iter().enumerate() {
             if reuse[index]
                 && let Some(previous) = &self.record_root
+                && !(index == 4 && previous.has_legacy_owner_layout())
             {
                 if previous.address_key().expose() != key.expose() {
                     return Err(unavailable());
@@ -272,6 +289,7 @@ impl Service {
                 1 => owner_store::serialize_owner(&state.auth),
                 2 => owner_store::serialize_owner(&state.engines),
                 3 => owner_store::serialize_owner(&state.database),
+                4 => owner_store::serialize_owner(&state.rabbitmq),
                 _ => owner_store::serialize_owner(&state.raft_admin),
             }
             .map_err(state_serialization_error)?;

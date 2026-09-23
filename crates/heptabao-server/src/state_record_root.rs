@@ -8,8 +8,14 @@ use zeroize::{Zeroize, Zeroizing};
 pub(crate) const STORAGE_FORMAT: &str = "heptabao-state-records-v5";
 pub(crate) const MAX_ROOT_BYTES: usize = 64 * 1024;
 pub(crate) const OWNER_CHUNK_BYTES: usize = 256 * 1024;
-pub(crate) const OWNER_NAMES: [&str; 5] =
-    ["namespaces", "auth", "engines", "database", "raft_admin"];
+pub(crate) const OWNER_NAMES: [&str; 6] = [
+    "namespaces",
+    "auth",
+    "engines",
+    "database",
+    "rabbitmq",
+    "raft_admin",
+];
 const MAX_OWNER_BYTES: u64 = crate::MAX_APPLICATION_STATE_BYTES as u64;
 const MAX_OWNER_CHUNKS: usize = crate::MAX_APPLICATION_STATE_BYTES.div_ceil(OWNER_CHUNK_BYTES);
 
@@ -53,17 +59,100 @@ impl Drop for PersistedAddressKey {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Clone)]
 pub(crate) struct RecordStateRoot {
     storage_format: String,
     pub(crate) state_schema: u32,
     pub(crate) cluster_id: String,
     pub(crate) replay_epoch: u64,
-    pub(crate) owners: [OpaqueOwnerRef; 5],
+    pub(crate) owners: [OpaqueOwnerRef; 6],
     pub(crate) kv1: Kv1Root,
     object_address_key: PersistedAddressKey,
+    legacy_owner_layout: bool,
 }
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct WireRecordStateRoot {
+    storage_format: String,
+    state_schema: u32,
+    cluster_id: String,
+    replay_epoch: u64,
+    owners: Vec<OpaqueOwnerRef>,
+    kv1: Kv1Root,
+    object_address_key: PersistedAddressKey,
+}
+
+impl Serialize for RecordStateRoot {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let owners = if self.legacy_owner_layout {
+            vec![
+                self.owners[0].clone(),
+                self.owners[1].clone(),
+                self.owners[2].clone(),
+                self.owners[3].clone(),
+                self.owners[5].clone(),
+            ]
+        } else {
+            self.owners.to_vec()
+        };
+        WireRecordStateRoot {
+            storage_format: self.storage_format.clone(),
+            state_schema: self.state_schema,
+            cluster_id: self.cluster_id.clone(),
+            replay_epoch: self.replay_epoch,
+            owners,
+            kv1: self.kv1.clone(),
+            object_address_key: self.object_address_key.clone(),
+        }
+        .serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for RecordStateRoot {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let wire = WireRecordStateRoot::deserialize(deserializer)?;
+        let legacy_owner_layout = wire.owners.len() == LEGACY_OWNER_NAMES.len();
+        if !legacy_owner_layout && wire.owners.len() != OWNER_NAMES.len() {
+            return Err(serde::de::Error::custom("invalid record owner count"));
+        }
+        let mut owners = wire.owners;
+        if legacy_owner_layout {
+            let raft_admin = owners
+                .pop()
+                .ok_or_else(|| serde::de::Error::custom("missing legacy raft-admin owner"))?;
+            let rabbitmq = OpaqueOwnerRef {
+                name: "rabbitmq".into(),
+                total_bytes: 0,
+                chunks: Vec::new(),
+                digest: [0; 32],
+            };
+            owners.push(rabbitmq);
+            owners.push(raft_admin);
+        }
+        let owners = owners
+            .try_into()
+            .map_err(|_| serde::de::Error::custom("invalid record owner count"))?;
+        Ok(Self {
+            storage_format: wire.storage_format,
+            state_schema: wire.state_schema,
+            cluster_id: wire.cluster_id,
+            replay_epoch: wire.replay_epoch,
+            owners,
+            kv1: wire.kv1,
+            object_address_key: wire.object_address_key,
+            legacy_owner_layout,
+        })
+    }
+}
+
+const LEGACY_OWNER_NAMES: [&str; 5] = ["namespaces", "auth", "engines", "database", "raft_admin"];
 
 impl std::fmt::Debug for RecordStateRoot {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -89,7 +178,7 @@ impl RecordStateRoot {
         state_schema: u32,
         cluster_id: String,
         replay_epoch: u64,
-        owners: [OpaqueOwnerRef; 5],
+        owners: [OpaqueOwnerRef; 6],
         kv1: Kv1Root,
         address_key: [u8; 32],
     ) -> Result<Self, RootError> {
@@ -101,6 +190,7 @@ impl RecordStateRoot {
             owners,
             kv1,
             object_address_key: PersistedAddressKey(address_key),
+            legacy_owner_layout: false,
         };
         root.validate()?;
         Ok(root)
@@ -121,8 +211,19 @@ impl RecordStateRoot {
             return Err(RootError::Invalid);
         }
         let mut owner_total = 0_u64;
-        for (owner, expected) in self.owners.iter().zip(OWNER_NAMES) {
-            if owner.name != expected
+        let expected: &[&str] = if self.legacy_owner_layout {
+            &LEGACY_OWNER_NAMES
+        } else {
+            &OWNER_NAMES
+        };
+        let owner_indexes: &[usize] = if self.legacy_owner_layout {
+            &[0, 1, 2, 3, 5]
+        } else {
+            &[0, 1, 2, 3, 4, 5]
+        };
+        for (&index, expected) in owner_indexes.iter().zip(expected.iter()) {
+            let owner = &self.owners[index];
+            if owner.name != *expected
                 || owner.total_bytes == 0
                 || owner.total_bytes > MAX_OWNER_BYTES
                 || owner.chunks.is_empty()
@@ -207,8 +308,15 @@ impl RecordStateRoot {
     pub(crate) fn references(&self) -> impl Iterator<Item = &ObjectRef> {
         self.owners
             .iter()
+            .enumerate()
+            .filter(|(index, _)| !self.legacy_owner_layout || *index != 4)
+            .map(|(_, owner)| owner)
             .flat_map(|owner| owner.chunks.iter())
             .chain(self.kv1.reference.iter())
+    }
+
+    pub(crate) fn has_legacy_owner_layout(&self) -> bool {
+        self.legacy_owner_layout
     }
 
     pub(crate) fn owner_digest(&self, name: &str, bytes: &[u8]) -> Result<[u8; 32], RootError> {

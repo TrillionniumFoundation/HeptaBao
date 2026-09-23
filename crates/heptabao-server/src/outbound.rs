@@ -1,5 +1,6 @@
 //! Deployment-enrolled, address-pinned egress and a separate administrator-owned
 //! LDAP/RADIUS transports. Remote metadata never widens transport authority.
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use md5::Context;
 use ring::rand::{SecureRandom, SystemRandom};
 use rustls::pki_types::ServerName;
@@ -69,7 +70,7 @@ pub(crate) struct Endpoint {
     address: SocketAddr,
     server_name: String,
     path_prefix: String,
-    tls: Arc<ClientConfig>,
+    tls: Option<Arc<ClientConfig>>,
 }
 #[derive(Clone, Default)]
 pub(crate) struct Outbound {
@@ -134,6 +135,27 @@ impl Target {
         })
     }
 }
+
+fn rabbitmq_private_target(target: &Target, address: SocketAddr) -> bool {
+    let Some((host, port)) = target.authority.rsplit_once(':') else {
+        return false;
+    };
+    let Ok(ip) = host.parse::<std::net::IpAddr>() else {
+        return false;
+    };
+    if ip != address.ip() || port.parse::<u16>().ok() != Some(address.port()) {
+        return false;
+    }
+    match ip {
+        std::net::IpAddr::V4(value) => {
+            value.is_loopback()
+                || value.is_private()
+                || value.is_link_local()
+                || (value.octets()[0] == 100 && (64..=127).contains(&value.octets()[1]))
+        }
+        std::net::IpAddr::V6(value) => value.is_loopback() || value.is_unique_local(),
+    }
+}
 impl Outbound {
     pub fn new(configs: Vec<EndpointConfig>) -> Result<Self, &'static str> {
         if configs.len() > 16 {
@@ -150,13 +172,17 @@ impl Outbound {
                 "valkeys"
             } else if config.origin.starts_with("radius://") {
                 "radius"
+            } else if config.origin.starts_with("rabbitmq://") {
+                "rabbitmq"
             } else {
                 "https"
             };
             let target = Target::parse(&config.origin, scheme)?;
             let is_radius = scheme == "radius";
+            let is_rabbitmq = scheme == "rabbitmq";
             if target.origin != config.origin
-                || config.server_name != target.authority.split(':').next().unwrap_or("")
+                || (!is_rabbitmq
+                    && config.server_name != target.authority.split(':').next().unwrap_or(""))
                 || config.address.port() == 0
                 || config.address.port()
                     != target
@@ -166,10 +192,14 @@ impl Outbound {
                         .unwrap_or("")
                         .parse::<u16>()
                         .unwrap_or(0)
-                || (!is_radius && config.ca_pem.is_empty())
+                || (!is_radius && !is_rabbitmq && config.ca_pem.is_empty())
                 || config.ca_pem.len() > 64 * 1024
                 || !config.path_prefix.starts_with('/')
                 || !config.path_prefix.ends_with('/')
+                || (is_rabbitmq
+                    && (config.path_prefix != "/"
+                        || target.path != "/"
+                        || !rabbitmq_private_target(&target, config.address)))
                 || (is_radius
                     && (config.path_prefix != "/"
                         || config.shared_secret.len() > 256
@@ -196,6 +226,18 @@ impl Outbound {
                 }
                 continue;
             }
+            if is_rabbitmq {
+                let endpoint = Endpoint {
+                    address: config.address,
+                    server_name: config.server_name,
+                    path_prefix: config.path_prefix,
+                    tls: None,
+                };
+                if endpoints.insert(target.origin, endpoint).is_some() {
+                    return Err("duplicate outbound origin");
+                }
+                continue;
+            }
             let mut roots = RootCertStore::empty();
             for cert in rustls_pemfile::certs(&mut config.ca_pem.as_bytes()) {
                 roots
@@ -217,7 +259,7 @@ impl Outbound {
                 address: config.address,
                 server_name: config.server_name,
                 path_prefix: config.path_prefix,
-                tls: Arc::new(tls),
+                tls: Some(Arc::new(tls)),
             };
             if endpoints.insert(target.origin, endpoint).is_some() {
                 return Err("duplicate outbound origin");
@@ -270,6 +312,71 @@ impl Outbound {
             .and_then(|()| stream.flush())
             .map_err(|_| "outbound audit POST failed; no retry")?;
         read_discard_response_status(&mut stream, &[200, 201, 202, 204])
+    }
+
+    /// One bounded RabbitMQ management request. This transport is restricted
+    /// at enrollment to an explicit loopback/private IP fixture and never
+    /// resolves a caller-selected hostname.
+    pub(crate) fn rabbitmq_json(
+        &self,
+        url: &str,
+        method: &str,
+        api_path: &str,
+        username: &str,
+        password: &str,
+        value: Option<&Value>,
+    ) -> Result<(u16, Value), &'static str> {
+        if !matches!(method, "GET" | "PUT" | "DELETE")
+            || api_path.len() > 1024
+            || !api_path.starts_with("/api/")
+            || api_path.contains(['?', '#', '\\'])
+            || api_path.bytes().any(|byte| byte <= 0x20 || byte == 0x7f)
+            || username.is_empty()
+            || username.len() > 256
+            || password.len() > 1024
+            || username.bytes().any(|byte| byte <= 0x20 || byte == 0x7f)
+            || password.bytes().any(|byte| byte == 0 || byte == 0x7f)
+        {
+            return Err("invalid RabbitMQ management request");
+        }
+        let (endpoint, target) = self.endpoint(url, "rabbitmq")?;
+        let mut stream = endpoint.connect()?;
+        let body = if let Some(value) = value {
+            let body = Zeroizing::new(
+                serde_json::to_vec(value).map_err(|_| "invalid RabbitMQ JSON request")?,
+            );
+            if body.len() > 16 * 1024 {
+                return Err("RabbitMQ management request exceeds bound");
+            }
+            body
+        } else {
+            Zeroizing::new(Vec::new())
+        };
+        let credentials = Zeroizing::new(STANDARD.encode(format!("{username}:{password}")));
+        let mut head = Zeroizing::new(String::with_capacity(
+            256 + api_path.len() + credentials.len(),
+        ));
+        head.push_str(method);
+        head.push(' ');
+        head.push_str(api_path);
+        head.push_str(" HTTP/1.1\r\nHost: ");
+        head.push_str(&target.authority);
+        head.push_str("\r\nAccept: application/json\r\nAuthorization: Basic ");
+        head.push_str(&credentials);
+        head.push_str("\r\nConnection: close\r\n");
+        if body.is_empty() {
+            head.push_str("Content-Length: 0\r\n\r\n");
+        } else {
+            head.push_str("Content-Type: application/json\r\nContent-Length: ");
+            head.push_str(&body.len().to_string());
+            head.push_str("\r\n\r\n");
+        }
+        stream
+            .write_all(head.as_bytes())
+            .and_then(|()| stream.write_all(&body))
+            .and_then(|()| stream.flush())
+            .map_err(|_| "RabbitMQ management request failed")?;
+        read_json_response_any(&mut stream)
     }
 
     /// Bind as the authenticating user and, on that same TLS session, optionally
@@ -670,9 +777,12 @@ impl Endpoint {
         Ok(DeadlineSocket { stream, deadline })
     }
     pub fn tls(&self, socket: DeadlineSocket) -> Result<TlsStream, &'static str> {
+        let Some(tls) = self.tls.as_ref() else {
+            return Err("outbound endpoint does not provide TLS");
+        };
         let name =
             ServerName::try_from(self.server_name.clone()).map_err(|_| "invalid TLS name")?;
-        let connection = ClientConnection::new(self.tls.clone(), name)
+        let connection = ClientConnection::new(tls.clone(), name)
             .map_err(|_| "cannot create outbound TLS session")?;
         let mut stream = StreamOwned::new(connection, socket);
         while stream.conn.is_handshaking() {
@@ -1690,6 +1800,88 @@ fn read_json_response_status(
     }
     // The same duplicate-key rejecting parser used by the public HTTP boundary.
     crate::auth::parse_strict_json(&body).map_err(|_| "invalid or ambiguous outbound JSON")
+}
+
+fn read_json_response_any(stream: &mut impl Read) -> Result<(u16, Value), &'static str> {
+    let mut budget = 16 * 1024;
+    let status = line(stream, &mut budget)?;
+    let status = std::str::from_utf8(&status).map_err(|_| "invalid outbound HTTP status")?;
+    let mut parts = status.splitn(3, ' ');
+    let version = parts.next().unwrap_or("");
+    let code = parts.next().unwrap_or("");
+    let code = if matches!(version, "HTTP/1.1" | "HTTP/1.0")
+        && code.len() == 3
+        && code.bytes().all(|byte| byte.is_ascii_digit())
+        && parts.next().is_some()
+    {
+        code.parse::<u16>()
+            .map_err(|_| "invalid outbound HTTP status")?
+    } else {
+        return Err("outbound HTTP status rejected; redirects forbidden");
+    };
+    let mut headers = BTreeMap::new();
+    loop {
+        let raw = line(stream, &mut budget)?;
+        if raw.is_empty() {
+            break;
+        }
+        let raw = std::str::from_utf8(&raw).map_err(|_| "invalid outbound HTTP header")?;
+        let (name, value) = raw.split_once(':').ok_or("invalid outbound HTTP header")?;
+        if name.is_empty()
+            || !name
+                .bytes()
+                .all(|byte| byte.is_ascii_alphanumeric() || byte == b'-')
+            || value
+                .bytes()
+                .any(|byte| byte < 32 && byte != 9 || byte == 127)
+            || headers
+                .insert(name.to_ascii_lowercase(), value.trim().to_owned())
+                .is_some()
+        {
+            return Err("invalid outbound HTTP header");
+        }
+    }
+    if headers
+        .get("content-encoding")
+        .is_some_and(|value| value != "identity")
+    {
+        return Err("RabbitMQ management response encoding rejected");
+    }
+    let mut body = Zeroizing::new(Vec::new());
+    match (
+        headers.get("content-length"),
+        headers.get("transfer-encoding"),
+    ) {
+        (Some(_), Some(_)) => return Err("ambiguous outbound body length"),
+        (Some(length), None) => {
+            let n: usize = length.parse().map_err(|_| "invalid outbound body length")?;
+            if n > 16 * 1024 {
+                return Err("RabbitMQ management response exceeds bound");
+            }
+            body.resize(n, 0);
+            stream
+                .read_exact(&mut body)
+                .map_err(|_| "truncated outbound HTTP response")?;
+        }
+        (None, None) => {}
+        _ => return Err("unsupported outbound HTTP transfer encoding"),
+    }
+    if body.is_empty() {
+        return Ok((code, Value::Null));
+    }
+    let content_type = headers
+        .get("content-type")
+        .map(String::as_str)
+        .unwrap_or("")
+        .split(';')
+        .next()
+        .unwrap_or("");
+    if content_type != "application/json" {
+        return Err("RabbitMQ management response is not JSON");
+    }
+    let value = crate::auth::parse_strict_json(&body)
+        .map_err(|_| "invalid RabbitMQ management JSON response")?;
+    Ok((code, value))
 }
 
 impl Outbound {

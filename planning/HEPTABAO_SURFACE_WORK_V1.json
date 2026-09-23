@@ -439,6 +439,64 @@
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
     },
+    "actual_rabbitmq_secret": {
+      "script": "qa/openbao-acceptance/rabbitmq_live.py",
+      "arguments": [
+        "--binary",
+        "<candidate>",
+        "--work-dir",
+        "<private-work-dir>",
+        "--output",
+        "<private-new-output>"
+      ],
+      "prerequisites": [
+        "linux_docker_rabbitmq_4_1_management_digest"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "mysql_8_4_checksum_plugin": {
+      "script": "qa/openbao-acceptance/mysql_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "linux_docker_mysql_8_4_digest"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "cassandra_5_checksum_plugin": {
+      "script": "qa/openbao-acceptance/cassandra_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "linux_docker_cassandra_5_digest"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "plugin_kms_live": {
+      "script": "qa/openbao-acceptance/plugin_kms_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
     "postgres_storage_live": {
       "script": "qa/openbao-acceptance/postgres_storage_live.py",
       "arguments": [
@@ -1196,18 +1254,49 @@
     {
       "surface_id": "HB-SURFACE-SECRET-RABBITMQ",
       "category": "secret_engines",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/service_rabbitmq.rs",
       "technical_contract": {
-        "api_or_protocol": "rabbitmq/config/connection, roles/* and creds/*",
-        "required_positive_and_hostile_behavior": "Real broker user creation, vhost/topic permissions, TTL and user revocation",
-        "remaining_semantics_and_effect_checks": "Verify old connections and new logins after revoke, using provider readback not local metadata",
-        "crash_reopen": "Interrupt rabbitmq/config/connection before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
+        "api_or_protocol": "rabbitmq/config/connection, roles/*, creds/* and sys/leases/* through the pinned RabbitMQ management API",
+        "required_positive_and_hostile_behavior": "Create real RabbitMQ users, apply exact vhost permissions, deny foreign namespaces and unsupported renewal, and read back provider state",
+        "remaining_semantics_and_effect_checks": "This scoped profile omits full OpenBao role/config parity, TLS management API, vhost creation, HA provider faults and native lease renewal because RabbitMQ users have no expiry field",
+        "crash_reopen": "Persist issue/revoke intent before bounded provider I/O, retain pending state across HeptaBao/provider restart and reconcile a provider outage without releasing an unknown secret.",
         "isolation": "For HB-SURFACE-SECRET-RABBITMQ, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "rabbitmq_live.real_rabbitmq_4_1_ready",
+        "rabbitmq_live.initialize",
+        "rabbitmq_live.unseal",
+        "rabbitmq_live.mount",
+        "rabbitmq_live.configuration",
+        "rabbitmq_live.configuration_readback",
+        "rabbitmq_live.manager_probe_queue",
+        "rabbitmq_live.role",
+        "rabbitmq_live.role_vhost_permission_enforcement",
+        "rabbitmq_live.role_readback",
+        "rabbitmq_live.default_deny_namespace_and_unauthorized",
+        "rabbitmq_live.real_user_issuance",
+        "rabbitmq_live.lease_lookup_readback",
+        "rabbitmq_live.issued_user_opens_configured_vhost",
+        "rabbitmq_live.issued_user_permission_denied",
+        "rabbitmq_live.issued_user_denied_unconfigured_vhost",
+        "rabbitmq_live.renewal_rejected_without_provider_semantics",
+        "rabbitmq_live.restart_is_sealed",
+        "rabbitmq_live.user_survives_heptabao_restart",
+        "rabbitmq_live.user_survives_rabbitmq_restart",
+        "rabbitmq_live.revoke_denies_new_connection",
+        "rabbitmq_live.revoke_closes_existing_connection",
+        "rabbitmq_live.outage_seed",
+        "rabbitmq_live.outage_seed_provider_login",
+        "rabbitmq_live.provider_outage_retains_pending_revoke",
+        "rabbitmq_live.restart_unseal_before_reconcile",
+        "rabbitmq_live.restart_reconciles_pending_revoke",
+        "rabbitmq_live.no_plaintext_secret_persistence"
+      ],
+      "available_scoped_profiles": [
+        "actual_rabbitmq_secret"
+      ],
       "whole_surface_admitted": false
     },
     {

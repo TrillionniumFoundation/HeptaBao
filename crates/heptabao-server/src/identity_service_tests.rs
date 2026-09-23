@@ -635,6 +635,7 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
         auth: auth.into(),
         engines: EngineState::default().into(),
         database: database::DatabaseState::default().into(),
+        rabbitmq: rabbitmq::RabbitmqState::default().into(),
         raft_admin: raft_admin::RaftAdminState::default().into(),
     };
     let bytes = serde_json::to_vec(&state)?;
@@ -716,6 +717,7 @@ fn identity_schema_fences_persisted_radius_state_for_old_readers() -> TestResult
         auth: auth.into(),
         engines: EngineState::default().into(),
         database: database::DatabaseState::default().into(),
+        rabbitmq: rabbitmq::RabbitmqState::default().into(),
         raft_admin: raft_admin::RaftAdminState::default().into(),
     };
     assert!(state.validate_format().is_ok());
@@ -914,6 +916,7 @@ fn metadata_cas_schema_rejects_downgrade_from_version_or_requirement() -> TestRe
             auth: auth.into(),
             engines: engines.into(),
             database: database::DatabaseState::default().into(),
+            rabbitmq: rabbitmq::RabbitmqState::default().into(),
             raft_admin: raft_admin::RaftAdminState::default().into(),
         };
         assert!(state.validate_format().is_ok());

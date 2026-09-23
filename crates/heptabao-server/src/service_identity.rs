@@ -163,6 +163,7 @@ impl State {
             .validate_wrapping_state()
             .map_err(|_| Response::error(503, "invalid wrapping state"))?;
         self.database.validate_scope(&self.cluster_id)?;
+        self.rabbitmq.validate_scope(&self.cluster_id)?;
         // Retained, expired and pending owners must also be admitted. Liveness
         // belongs to reconciliation; a missing key or foreign namespace is a
         // state-integrity error even when no lease is currently active.
@@ -171,6 +172,7 @@ impl State {
             .all_lease_owners()
             .into_iter()
             .chain(self.database.all_lease_owners())
+            .chain(self.rabbitmq.all_lease_owners())
         {
             if let Some(claims) = owner.batch_claims() {
                 if self.schema < 41 {
@@ -423,6 +425,7 @@ impl State {
             .validate_jwt_api_https_state()
             .map_err(|_| Response::error(503, "invalid JWT HTTPS authority"))?;
         let pre_database = self.database.is_empty()
+            && self.rabbitmq.is_empty()
             && !self.engines.has_database_mount()
             && self.raft_admin.is_default();
         match self.schema {

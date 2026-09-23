@@ -197,6 +197,9 @@ struct MountState {
 enum Backend {
     // Runtime provider state and effects belong to the audited Service writer.
     Database,
+    /// RabbitMQ is a Service-owned secret-engine route marker; its lease and
+    /// provider effect state are separate from the database provider state.
+    Rabbitmq,
     /// External Kubernetes TokenRequest provider state is owned by Service.
     Kubernetes(kubernetes::Kubernetes),
     /// Durable binding to a deployment-enrolled read-only secret plugin.
@@ -286,6 +289,7 @@ impl Mount {
     fn descriptor(&self) -> Value {
         let (kind, options) = match &self.backend {
             Backend::Database => ("database", json!({})),
+            Backend::Rabbitmq => ("rabbitmq", json!({})),
             Backend::Kubernetes(_) => ("kubernetes", json!({})),
             Backend::PluginSecret(plugin_id) => ("plugin", json!({"plugin_id":plugin_id})),
             Backend::OpenLdap(_) => ("ldap", json!({"schema":"openldap"})),
@@ -495,6 +499,18 @@ impl EngineState {
             .max_by_key(|(mount, _)| mount.len())
             .and_then(|(mount, value)| {
                 matches!(value.backend, Backend::Database).then_some(mount.as_str())
+            })
+    }
+
+    pub(crate) fn rabbitmq_mount(&self, namespace: &str, path: &str) -> Option<&str> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .max_by_key(|(mount, _)| mount.len())
+            .and_then(|(mount, value)| {
+                matches!(value.backend, Backend::Rabbitmq).then_some(mount.as_str())
             })
     }
 
@@ -1059,6 +1075,7 @@ impl EngineState {
                     .filter(|name| !name.contains('/'))
                     .map(|name| engine.contains(name)),
                 Backend::Database
+                | Backend::Rabbitmq
                 | Backend::Kubernetes(_)
                 | Backend::PluginSecret(_)
                 | Backend::OpenLdap(_)
@@ -1196,6 +1213,12 @@ impl EngineState {
                 return Err(error(
                     501,
                     "database operations require the audited external-effect dispatcher",
+                ));
+            }
+            Backend::Rabbitmq => {
+                return Err(error(
+                    501,
+                    "RabbitMQ operations require the audited external-effect dispatcher",
                 ));
             }
             Backend::Kubernetes(_) => {
@@ -1475,6 +1498,15 @@ fn handle_mounts(
                 return Err(bad("database mount options are not supported"));
             }
             Backend::Database
+        }
+        "rabbitmq" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("rabbitmq mount options are not supported"));
+            }
+            Backend::Rabbitmq
         }
         "ldap" => {
             if body

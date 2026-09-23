@@ -127,7 +127,7 @@ pub(super) fn connect_verified_tls(
             address,
             server_name: target.host.clone(),
             path_prefix: "/".into(),
-            tls: tls.clone(),
+            tls: Some(tls.clone()),
         };
         let socket = DeadlineSocket {
             stream,

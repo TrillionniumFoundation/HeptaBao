@@ -428,6 +428,39 @@
         "no_plaintext_secret_persistence"
       ]
     },
+    "rabbitmq_live": {
+      "script": "qa/openbao-acceptance/rabbitmq_live.py",
+      "case_ids": [
+        "real_rabbitmq_4_1_ready",
+        "initialize",
+        "unseal",
+        "mount",
+        "configuration",
+        "configuration_readback",
+        "manager_probe_queue",
+        "role",
+        "role_vhost_permission_enforcement",
+        "role_readback",
+        "default_deny_namespace_and_unauthorized",
+        "real_user_issuance",
+        "lease_lookup_readback",
+        "issued_user_opens_configured_vhost",
+        "issued_user_permission_denied",
+        "issued_user_denied_unconfigured_vhost",
+        "renewal_rejected_without_provider_semantics",
+        "restart_is_sealed",
+        "user_survives_heptabao_restart",
+        "user_survives_rabbitmq_restart",
+        "revoke_denies_new_connection",
+        "revoke_closes_existing_connection",
+        "outage_seed",
+        "outage_seed_provider_login",
+        "provider_outage_retains_pending_revoke",
+        "restart_unseal_before_reconcile",
+        "restart_reconciles_pending_revoke",
+        "no_plaintext_secret_persistence"
+      ]
+    },
     "mysql_live": {
       "case_ids": [
         "real_mysql_8_4_ready",

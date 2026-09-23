@@ -384,7 +384,7 @@ impl ClusterStateCodec {
         owner_manifest_digest: [u8; 32],
         changed_owner_mask: u8,
     ) -> Result<ReplicatedStateProposal, ReplicatedStateError> {
-        if owner_manifest_digest == [0; 32] || changed_owner_mask & !0x1f != 0 {
+        if owner_manifest_digest == [0; 32] || changed_owner_mask & !0x3f != 0 {
             return Err(ReplicatedStateError::InvalidEnvelope);
         }
         self.seal_manifest_with_magic(
@@ -783,7 +783,7 @@ fn encode_manifest_body(
             .to_be_bytes(),
     );
     if let Some((owner_manifest_digest, changed_owner_mask)) = owner_binding {
-        if owner_manifest_digest == [0; 32] || changed_owner_mask & !0x1f != 0 {
+        if owner_manifest_digest == [0; 32] || changed_owner_mask & !0x3f != 0 {
             return Err(ReplicatedStateError::InvalidEnvelope);
         }
         body.push(changed_owner_mask);
@@ -835,7 +835,7 @@ fn decode_manifest_body(
     }
     let (changed_owner_mask, owner_manifest_digest, mut offset) = if require_owner_binding {
         let changed_owner_mask = bytes[10];
-        if changed_owner_mask & !0x1f != 0 {
+        if changed_owner_mask & !0x3f != 0 {
             return Err(ReplicatedStateError::InvalidEnvelope);
         }
         let owner_manifest_digest = bytes[11..11 + DIGEST_BYTES]

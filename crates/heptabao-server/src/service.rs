@@ -63,6 +63,8 @@ mod online_auth;
 mod openldap_secret;
 #[path = "service_plugin.rs"]
 mod plugin;
+#[path = "service_rabbitmq.rs"]
+mod rabbitmq;
 #[path = "service_snapshot_transfer.rs"]
 mod snapshot_transfer;
 pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, PluginSecretConfig};
@@ -350,6 +352,8 @@ struct State {
     engines: CowOwner<EngineState>,
     #[serde(default, skip_serializing_if = "database::DatabaseState::is_empty")]
     database: CowOwner<database::DatabaseState>,
+    #[serde(default, skip_serializing_if = "rabbitmq::RabbitmqState::is_empty")]
+    rabbitmq: CowOwner<rabbitmq::RabbitmqState>,
     #[serde(
         default,
         skip_serializing_if = "raft_admin::RaftAdminState::is_default"
@@ -363,6 +367,7 @@ struct OwnerReuseHint {
     auth: bool,
     engines: bool,
     database: bool,
+    rabbitmq: bool,
     raft_admin: bool,
 }
 
@@ -377,6 +382,7 @@ impl OwnerReuseHint {
             engines: next.engines.ptr_eq(&previous.engines)
                 || next.engines.owner_metadata_shared_with(&previous.engines),
             database: next.database.ptr_eq(&previous.database),
+            rabbitmq: next.rabbitmq.ptr_eq(&previous.rabbitmq),
             raft_admin: next.raft_admin.ptr_eq(&previous.raft_admin),
         }
     }
@@ -723,6 +729,8 @@ enum ExternalEffectPlan {
     PluginKms(plugin::PluginKmsPlan),
     KubernetesToken(kubernetes_secret::KubernetesTokenEffectPlan),
     OpenLdap(openldap_secret::OpenLdapEffectPlan),
+    Rabbitmq(rabbitmq::RabbitmqEffectPlan),
+    RabbitmqConfig(rabbitmq::RabbitmqConfigPlan),
     SnapshotTransfer(Box<snapshot_transfer::SnapshotTransferPlan>),
 }
 
@@ -736,6 +744,8 @@ pub(crate) enum ExternalEffectResult {
     PluginKms(Result<plugin::PluginKmsObservation, Response>),
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
     OpenLdap(Result<(), Response>),
+    Rabbitmq(Result<(), Response>),
+    RabbitmqConfig(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
 }
 
@@ -782,6 +792,10 @@ impl PendingExternalRequest {
                 ExternalEffectResult::KubernetesToken(plan.execute())
             }
             ExternalEffectPlan::OpenLdap(plan) => ExternalEffectResult::OpenLdap(plan.execute()),
+            ExternalEffectPlan::Rabbitmq(plan) => ExternalEffectResult::Rabbitmq(plan.execute()),
+            ExternalEffectPlan::RabbitmqConfig(plan) => {
+                ExternalEffectResult::RabbitmqConfig(plan.execute())
+            }
             ExternalEffectPlan::SnapshotTransfer(_) => ExternalEffectResult::SnapshotTransfer(Err(
                 Response::error(501, "native snapshot requires typed HTTP transport"),
             )),
@@ -835,6 +849,9 @@ pub struct Service {
     pending_plugin_kms: Option<plugin::PluginKmsPlan>,
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
+    pending_rabbitmq_effect: Option<rabbitmq::RabbitmqEffectPlan>,
+    pending_rabbitmq_config_effect: Option<rabbitmq::RabbitmqConfigPlan>,
+    rabbitmq_in_flight: rabbitmq::RabbitmqFlights,
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
     native_snapshot_transport: bool,
     native_snapshot_clock: Option<(std::time::Instant, Duration)>,
@@ -1122,6 +1139,9 @@ impl Service {
             pending_plugin_kms: None,
             pending_kubernetes_token: None,
             pending_openldap_effect: None,
+            pending_rabbitmq_effect: None,
+            pending_rabbitmq_config_effect: None,
+            rabbitmq_in_flight: rabbitmq::RabbitmqFlights::default(),
             pending_snapshot_transfer: None,
             native_snapshot_transport: false,
             native_snapshot_clock: None,
@@ -1431,6 +1451,13 @@ impl Service {
             (ExternalEffectPlan::OpenLdap(plan), ExternalEffectResult::OpenLdap(result)) => {
                 self.finalize_openldap_effect(&plan, result)
             }
+            (ExternalEffectPlan::Rabbitmq(plan), ExternalEffectResult::Rabbitmq(result)) => {
+                self.finalize_rabbitmq_effect(&plan, result)
+            }
+            (
+                ExternalEffectPlan::RabbitmqConfig(plan),
+                ExternalEffectResult::RabbitmqConfig(result),
+            ) => self.finalize_rabbitmq_config(plan, result),
             (
                 ExternalEffectPlan::SnapshotTransfer(plan),
                 ExternalEffectResult::SnapshotTransfer(result),
@@ -1503,6 +1530,8 @@ impl Service {
             || self.pending_plugin_kms.is_some()
             || self.pending_kubernetes_token.is_some()
             || self.pending_openldap_effect.is_some()
+            || self.pending_rabbitmq_effect.is_some()
+            || self.pending_rabbitmq_config_effect.is_some()
             || self.pending_snapshot_transfer.is_some()
         {
             erase_json(&mut body);
@@ -1622,6 +1651,8 @@ impl Service {
         let plugin_kms = self.pending_plugin_kms.take();
         let kubernetes_token = self.pending_kubernetes_token.take();
         let openldap = self.pending_openldap_effect.take();
+        let rabbitmq = self.pending_rabbitmq_effect.take();
+        let rabbitmq_config = self.pending_rabbitmq_config_effect.take();
         let snapshot_transfer = self.pending_snapshot_transfer.take();
         let staged = usize::from(database.is_some())
             + usize::from(database_config.is_some())
@@ -1632,6 +1663,8 @@ impl Service {
             + usize::from(plugin_kms.is_some())
             + usize::from(kubernetes_token.is_some())
             + usize::from(openldap.is_some())
+            + usize::from(rabbitmq.is_some())
+            + usize::from(rabbitmq_config.is_some())
             + usize::from(snapshot_transfer.is_some());
         if staged > 1 {
             self.recovery_required = true;
@@ -1651,6 +1684,8 @@ impl Service {
             .or_else(|| plugin_kms.map(ExternalEffectPlan::PluginKms))
             .or_else(|| kubernetes_token.map(ExternalEffectPlan::KubernetesToken))
             .or_else(|| openldap.map(ExternalEffectPlan::OpenLdap))
+            .or_else(|| rabbitmq.map(ExternalEffectPlan::Rabbitmq))
+            .or_else(|| rabbitmq_config.map(ExternalEffectPlan::RabbitmqConfig))
             .or_else(|| {
                 snapshot_transfer.map(|plan| ExternalEffectPlan::SnapshotTransfer(Box::new(plan)))
             });
@@ -2001,6 +2036,9 @@ impl Service {
             if let Err(error) = self.validate_plugin_mount_request(method, path, body) {
                 return error;
             }
+        }
+        if self.rabbitmq_handles(&admitted, namespace, path, body) {
+            return self.rabbitmq_route(admitted, principal.as_ref(), &request);
         }
         if self.database_handles(&admitted, namespace, path, body) {
             return self.database_route(admitted, principal.as_ref(), &request);
@@ -2746,6 +2784,19 @@ impl Service {
                 },
             ),
             (
+                "rabbitmq",
+                if may_reuse
+                    && options.reuse.rabbitmq
+                    && previous_owner
+                        .as_ref()
+                        .is_some_and(|manifest| manifest.chunk_count("rabbitmq").is_ok())
+                {
+                    None
+                } else {
+                    Some(serialize_owner(&state.rabbitmq)?)
+                },
+            ),
+            (
                 "raft_admin",
                 if may_reuse && options.reuse.raft_admin {
                     None
@@ -3226,6 +3277,7 @@ impl Service {
             auth: auth.into(),
             engines: EngineState::default().into(),
             database: database::DatabaseState::default().into(),
+            rabbitmq: rabbitmq::RabbitmqState::default().into(),
             raft_admin: raft_admin::RaftAdminState::default().into(),
         };
         let mut stage = match InitializationStage::create(&self.data_dir) {
@@ -4666,6 +4718,16 @@ impl Service {
             if self
                 .state
                 .as_ref()
+                .is_some_and(|state| !state.rabbitmq.is_empty())
+            {
+                return Response::error(
+                    409,
+                    "RabbitMQ provider epochs cannot be rolled back with a local snapshot",
+                );
+            }
+            if self
+                .state
+                .as_ref()
                 .is_some_and(|state| state.engines.has_openldap_mount())
             {
                 return Response::error(
@@ -5087,7 +5149,7 @@ impl Service {
             committed.changed_owner_mask,
         ) {
             (Some(expected_digest), Some(expected_mask)) => {
-                if expected_mask & !0x1f != 0 {
+                if expected_mask & !0x3f != 0 {
                     return Err(Response::error(
                         503,
                         "HA owner publication changed-owner mask is invalid",

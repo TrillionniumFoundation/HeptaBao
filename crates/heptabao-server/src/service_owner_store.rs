@@ -31,7 +31,15 @@ const STATE_CHUNK_MAX_BYTES: usize = 768 * 1024;
 const STATE_CHUNK_WINDOW_BYTES: usize = 64;
 const STATE_CHUNK_MASK: u64 = (1_u64 << 19) - 1;
 const MAX_SERIALIZED_STATE_BYTES: usize = crate::MAX_APPLICATION_STATE_BYTES;
-const OWNER_NAMES: [&str; 5] = ["namespaces", "auth", "engines", "database", "raft_admin"];
+const OWNER_NAMES: [&str; 6] = [
+    "namespaces",
+    "auth",
+    "engines",
+    "database",
+    "rabbitmq",
+    "raft_admin",
+];
+const LEGACY_OWNER_NAMES: [&str; 5] = ["namespaces", "auth", "engines", "database", "raft_admin"];
 const MAX_OWNER_CHUNKS: usize =
     MAX_SERIALIZED_STATE_BYTES.div_ceil(STATE_CHUNK_MIN_BYTES) + OWNER_NAMES.len();
 
@@ -185,7 +193,7 @@ impl OwnerPublicationBinding {
             || self.operation_digest != crypto::digest(operation_id.as_bytes())
             || self.logical_digest != crypto::digest(logical_bytes)
             || self.owner_manifest_digest == [0; 32]
-            || self.changed_owner_mask & !0x1f != 0
+            || self.changed_owner_mask & !0x3f != 0
         {
             return Err(OwnerStoreError::DigestMismatch);
         }
@@ -240,14 +248,20 @@ impl OwnerStateManifest {
             || self.cluster_id.bytes().any(|byte| byte.is_ascii_control())
             || !is_lower_hex(&self.revision, 64)
             || !is_lower_hex(&self.logical_sha256, 64)
-            || self.owners.len() != OWNER_NAMES.len()
+            || (self.owners.len() != LEGACY_OWNER_NAMES.len()
+                && self.owners.len() != OWNER_NAMES.len())
         {
             return Err(OwnerStoreError::InvalidManifest);
         }
+        let expected_names: &[&str] = if self.owners.len() == LEGACY_OWNER_NAMES.len() {
+            &LEGACY_OWNER_NAMES
+        } else {
+            &OWNER_NAMES
+        };
         let mut total = 0_usize;
         let mut chunks = 0_usize;
-        for (descriptor, expected_name) in self.owners.iter().zip(OWNER_NAMES) {
-            if descriptor.name != expected_name
+        for (descriptor, expected_name) in self.owners.iter().zip(expected_names.iter()) {
+            if descriptor.name != *expected_name
                 || descriptor.total_bytes == 0
                 || !is_lower_hex(&descriptor.sha256, 64)
                 || descriptor.chunks.len()
@@ -353,9 +367,9 @@ impl OwnerStateManifest {
 
     pub(crate) fn unique_chunk_resources(&self) -> Result<BTreeSet<String>, OwnerStoreError> {
         let mut resources = BTreeSet::new();
-        for name in OWNER_NAMES {
-            for index in 0..self.chunk_count(name)? {
-                resources.insert(self.chunk_resource(name, index)?);
+        for owner in &self.owners {
+            for index in 0..self.chunk_count(&owner.name)? {
+                resources.insert(self.chunk_resource(&owner.name, index)?);
             }
         }
         Ok(resources)
@@ -663,7 +677,7 @@ pub(crate) fn validate_content_addressed_chunk(
     let (owner, digest) = suffix
         .split_once("/by-digest/")
         .ok_or(OwnerStoreError::InvalidChunk)?;
-    if !OWNER_NAMES.contains(&owner)
+    if !LEGACY_OWNER_NAMES.contains(&owner) && !OWNER_NAMES.contains(&owner)
         || !is_lower_hex(digest, 64)
         || hex(&crypto::digest(bytes)) != digest
     {
@@ -695,7 +709,8 @@ fn owner_mask(owner: &str) -> u8 {
         "auth" => 1 << 1,
         "engines" => 1 << 2,
         "database" => 1 << 3,
-        "raft_admin" => 1 << 4,
+        "rabbitmq" => 1 << 4,
+        "raft_admin" => 1 << 5,
         _ => 0,
     }
 }
@@ -758,6 +773,7 @@ mod tests {
             ("auth", br#"{"tokens":[]}"#.to_vec()),
             ("engines", engine),
             ("database", br#"{"connections":[]}"#.to_vec()),
+            ("rabbitmq", br#"{"mounts":{}}"#.to_vec()),
             ("raft_admin", br#"{"policy":null}"#.to_vec()),
         ]
     }
@@ -859,6 +875,7 @@ mod tests {
                 ("auth", None),
                 ("engines", Some(Zeroizing::new(vec![b'f'; 900 * 1024]))),
                 ("database", None),
+                ("rabbitmq", None),
                 (
                     "raft_admin",
                     Some(Zeroizing::new(br#"{"policy":null}"#.to_vec())),
@@ -915,7 +932,7 @@ mod tests {
         );
         assert_eq!(second.write_set().staged_chunks, second.chunks.len());
         assert_eq!(second.write_set().retired_chunks, second.deletes.len());
-        assert_eq!(second.write_set().reused_owners.len(), 4);
+        assert_eq!(second.write_set().reused_owners.len(), 5);
         Ok(())
     }
 
@@ -1049,7 +1066,7 @@ mod tests {
             second_binding.owner_manifest_digest(),
             "follower operation identity must not change owner-delta binding"
         );
-        assert_eq!(first_binding.changed_owner_mask(), 0x1f);
+        assert_eq!(first_binding.changed_owner_mask(), 0x3f);
         assert_eq!(second_binding.changed_owner_mask(), 0);
         Ok(())
     }

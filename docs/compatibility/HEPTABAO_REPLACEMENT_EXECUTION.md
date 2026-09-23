@@ -512,21 +512,21 @@ Existing bounded profiles: `qa/openbao-acceptance/openldap_secret_live.py`.
 
 ### HB-SURFACE-SECRET-RABBITMQ
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H19-WP12`, `H19-WP13`.
-API families: `{mount}/config/*`; `{mount}/roles/*`; `{mount}/creds/*`.
-Runtime source: none claimed.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP12`, `H19-WP13`.
+API families: `{mount}/config/connection`; `{mount}/roles`; `{mount}/roles/{name}`; `{mount}/creds/{role}`; `sys/leases/lookup`; `sys/leases/renew`; `sys/leases/revoke`; `sys/leases/reconcile`.
+Runtime source: `crates/heptabao-server/src/service_rabbitmq.rs`, `crates/heptabao-server/src/outbound.rs`, `crates/heptabao-server/src/engines.rs`.
 Separate contracts: none claimed.
-Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
+Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`, `docs/engines/HEPTABAO_RABBITMQ_RUNTIME.md`.
 
-**Positive:** Create real broker users with exact vhost permissions and lease metadata.
+**Positive:** Configure a verified private management endpoint, create a real RabbitMQ user with exact vhost permissions, read back provider state, and return a secret only after durable issue intent and provider success.
 
-**Hostile:** Reject admin tag escalation, bad TLS and foreign user ownership.
+**Hostile:** Require sudo authorization for administration, deny foreign namespaces and invalid tokens before provider effect, reject non-private endpoints and admin tags, and prove real AMQP vhost and permission denial.
 
-**Lifecycle:** Remove issued users/permissions after expiry, restart and lost provider reply.
+**Lifecycle:** Persist issue and revoke intent before bounded management API calls, close visible sessions, delete users with 404 readback, retain outage state, and reconcile after HeptaBao or RabbitMQ restart.
 
-**Remaining scope:** Users, vhosts, permissions, lease and revocation lifecycle.
+**Remaining scope:** RabbitMQ users have no native expiry or renewal field, so renewal is explicitly unsupported. Full OpenBao role/config parity, TLS management transport, vhost creation, HA or lost-reply faults, and independent admission remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/rabbitmq_live.py`.
 
 ### HB-SURFACE-DB-POSTGRESQL
 
@@ -578,7 +578,7 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Reconcile partial cluster visibility and revoke under network partition.
 
-**Remaining scope:** A checksum-pinned Cassandra 5.0 provider profile exercises dynamic readonly/readwrite issuance, provider authorization readback, renewal, provider and HeptaBao restart, revoke, outage retention and restart reconciliation. TLS-native transport, multi-node consistency/partition, static roles, root credential rotation, full OpenBao statement/error parity, migration and independent qualification remain open.
+**Remaining scope:** A checksum-pinned Cassandra 5.0 provider profile exercises dynamic readonly/readwrite issuance, authorization readback, renewal, provider and HeptaBao restart, revoke, outage retention and restart reconciliation. TLS-native transport, multi-node consistency/partition, static roles, root credential rotation, full OpenBao statement/error parity, migration and independent qualification remain open.
 
 Existing bounded profiles: `qa/openbao-acceptance/cassandra_live.py`.
 
