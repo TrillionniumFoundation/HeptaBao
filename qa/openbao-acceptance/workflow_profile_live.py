@@ -106,8 +106,8 @@ def main() -> int:
         status, duplicate = request("POST", "sys/workflows/profiles/safe-copy/runs", run_body)
         check("duplicate_replay_same_run", status == 200 and duplicate["data"]["id"] == run_id)
         check("duplicate_replay_no_new_version", request("GET", "secret/data/workflow-output")[1]["data"]["metadata"]["version"] == 1)
-        status, output = request("GET", "secret/data/workflow-output")
-        check("output_write_exact", status == 200 and output["data"]["data"]["value"] == marker)
+        status, output_body = request("GET", "secret/data/workflow-output")
+        check("output_write_exact", status == 200 and output_body["data"]["data"]["value"] == marker)
         status, run_status = request("GET", f"sys/workflows/runs/{run_id}")
         check("run_status_readback", status == 200 and run_status["data"]["phase"] == "Succeeded")
 
