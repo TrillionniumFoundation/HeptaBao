@@ -312,7 +312,9 @@ fn pki_extension_configuration_is_hostile_bounded_and_persists_after_restart() -
     assert_eq!(enabled.status, 200);
     assert_eq!(enabled.body["data"]["enabled"], true);
     assert_eq!(enabled.body["data"]["eab_policy"], "new-account-required");
-    let before = call(&mut s, &root, "GET", "pki/config/acme", json!({}), 101).body.clone();
+    let before = call(&mut s, &root, "GET", "pki/config/acme", json!({}), 101)
+        .body
+        .clone();
     for (path, body) in [
         (
             "pki/config/acme",
