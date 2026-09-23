@@ -264,7 +264,7 @@ categories:
         inventory_status: IDENTIFIED
         fixture_status: PLANNED
         support_profiles: [HB-P7-PKI-SSH, HB-P12-FULL-C5]
-        notes: Separate compatibility and protocol inventory required.
+        notes: OpenBao 2.6.2's builtin/logical/pkiext is test-only and has no runtime targets; its tests exercise the PKI engine ACME extension. The scoped runtime slice is the persisted PKI cluster/ACME configuration boundary; ACME account, order, challenge, certificate and revocation protocol routes remain open.
       - id: HB-SURFACE-SECRET-SSH
         name: SSH secret engine
         kind: SECRET_ENGINE

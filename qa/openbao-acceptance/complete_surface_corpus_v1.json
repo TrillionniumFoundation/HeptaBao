@@ -8,14 +8,14 @@
   },
   "inventory": {
     "path": "oracle/inventory/openbao-v2.6.2/surface-catalog.yaml",
-    "sha256": "50ee59140ba9f69a69dd1e1f965c0b7cad63e47455cac6e50def0659bff40869",
+    "sha256": "e25af7d2f662220f64a6a9532c514dd476f63b6f7a7015198ef6a23638b9f2ee",
     "surface_count": 60,
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 57,
-    "defined_not_implemented_surface_count": 3,
-    "fixture_case_count": 396,
+"implemented_surface_count": 58,
+    "defined_not_implemented_surface_count": 2,
+    "fixture_case_count": 406,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -338,9 +338,20 @@
       "surface_id": "HB-SURFACE-SECRET-PKIEXT",
       "category": "secret_engines",
       "criticality": "CRYPTO_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 10,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "pkiext_live.pkiext.mount",
+        "pkiext_live.pkiext.unauthorized_denied",
+        "pkiext_live.pkiext.cluster_config",
+        "pkiext_live.pkiext.acme_config",
+        "pkiext_live.pkiext.acme_config_read",
+        "pkiext_live.pkiext.invalid_cluster_rejected",
+        "pkiext_live.pkiext.unknown_field_rejected",
+        "pkiext_live.pkiext.rejected_writes_preserve_state",
+        "pkiext_live.pkiext.cluster_persists_after_restart",
+        "pkiext_live.pkiext.acme_persists_after_restart"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

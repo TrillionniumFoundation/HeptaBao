@@ -422,21 +422,21 @@ Existing bounded profiles: `qa/openbao-acceptance/pki_live.py`.
 
 ### HB-SURFACE-SECRET-PKIEXT
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H18-WP06`.
-API families: `{mount}/(versioned pkiext protocol inventory)`.
-Runtime source: none claimed.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H18-WP06`.
+API families: `{mount}/config/cluster`; `{mount}/config/acme`.
+Runtime source: `crates/heptabao-server/src/engines/pki.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
-**Positive:** Define the separate extension protocol and prove a positive public operation.
+**Positive:** Persist and read the bounded PKI cluster and ACME configuration used by OpenBao's test-only pkiext package.
 
-**Hostile:** Reject unsupported extension fields and cross-issuer credential access.
+**Hostile:** Reject unknown fields, malformed URLs and unsupported issuer selection before changing the existing PKI state.
 
-**Lifecycle:** Version extension state and test interrupted conversion without modifying source.
+**Lifecycle:** Preserve the configuration across encrypted service restart while leaving ACME account/order/challenge/revocation protocol routes open.
 
-**Remaining scope:** Separate compatibility and protocol inventory required.
+**Remaining scope:** OpenBao's builtin/logical/pkiext has no runtime targets; ACME directory, nonce, account, order, authorization, challenge, certificate and revoke protocol behavior remains open, as do full PKI issuer/rotation semantics.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/pkiext_live.py`.
 
 ### HB-SURFACE-SECRET-SSH
 

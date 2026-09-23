@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "744ddd4af91b5242b426d148b02e4fff3d5b69c810cc0d0ea97b530f218f8093",
+"corpus_sha256": "49e31bb8d5fe7fb9f63d1b94b9da9c8201e4bd0924c656ab1687fb5fd72a9f2e",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -85,6 +85,19 @@
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
     },
+    "pkiext": {
+      "script": "qa/openbao-acceptance/pkiext_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
     "postgres": {
       "script": "qa/openbao-acceptance/postgres_live.py",
       "arguments": [
@@ -97,6 +110,51 @@
       ],
       "prerequisites": [
         "actual_postgresql_17"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "mysql_8_4_checksum_plugin": {
+      "script": "qa/openbao-acceptance/mysql_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "Docker",
+        "pinned MySQL 8.4 image"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "cassandra_5_checksum_plugin": {
+      "script": "qa/openbao-acceptance/cassandra_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "Docker",
+        "pinned Cassandra 5.0 image"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "plugin_kms_live": {
+      "script": "qa/openbao-acceptance/plugin_kms_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
     },
@@ -1143,18 +1201,29 @@
     {
       "surface_id": "HB-SURFACE-SECRET-PKIEXT",
       "category": "secret_engines",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
+      "implementation_status": "runtime_partial",
+      "runtime_source": "crates/heptabao-server/src/engines/pki.rs",
       "technical_contract": {
-        "api_or_protocol": "PKIext provider enrollment and CA request/response boundary",
-        "required_positive_and_hostile_behavior": "Pin supported upstream PKIext version/API before implementation; map external CA identity and revocation protocol",
-        "remaining_semantics_and_effect_checks": "A generic HTTP wrapper cannot count as CA issuance or revocation; unknown issuance needs provider reconciliation",
-        "crash_reopen": "Interrupt PKIext provider enrollment and CA request/response boundary before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-SECRET-PKIEXT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "api_or_protocol": "OpenBao 2.6.2 PKI ACME configuration boundary: config/cluster and config/acme",
+        "required_positive_and_hostile_behavior": "Persist bounded cluster/ACME configuration through the existing PKI mount, reject unknown fields and invalid URLs before mutation, and retain ordinary ACL and namespace checks",
+        "remaining_semantics_and_effect_checks": "OpenBao's builtin/logical/pkiext package is test-only; ACME account, order, challenge, certificate, nonce and revocation protocol behavior remains unsupported",
+        "crash_reopen": "Write cluster/ACME configuration, stop and reopen the TLS service, then read the exact encrypted state back; rejected updates must leave the prior state unchanged.",
+        "isolation": "For HB-SURFACE-SECRET-PKIEXT, exercise the same mount through a denied principal and a second namespace; no configuration or certificate material may cross the ACL boundary.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
+      "fixture_case_ids": [
+        "pkiext_live.pkiext.mount",
+        "pkiext_live.pkiext.unauthorized_denied",
+        "pkiext_live.pkiext.cluster_config",
+        "pkiext_live.pkiext.acme_config",
+        "pkiext_live.pkiext.acme_config_read",
+        "pkiext_live.pkiext.invalid_cluster_rejected",
+        "pkiext_live.pkiext.unknown_field_rejected",
+        "pkiext_live.pkiext.rejected_writes_preserve_state",
+        "pkiext_live.pkiext.cluster_persists_after_restart",
+        "pkiext_live.pkiext.acme_persists_after_restart"
+      ],
+      "available_scoped_profiles": ["pkiext"],
       "whole_surface_admitted": false
     },
     {

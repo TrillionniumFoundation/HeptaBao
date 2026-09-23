@@ -20,7 +20,7 @@ import tempfile
 import time
 
 from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
-from official_openbao_launcher import start_oracle, stop_oracle, BINARY_SHA256
+from official_openbao_launcher import BINARY_SHA256, restart_oracle, start_oracle, stop_oracle
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -142,10 +142,10 @@ def successful_comparison(cases: dict, side_failures: dict) -> bool:
             seen.add(name)
     return True
 
-def main(*, scenario_runner=run_scenarios, profile="core-isolation",
+def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-isolation",
          scope="selected_cubbyhole_and_acl_behavior_only", runner_path=None) -> int:
     if profile not in ("core-isolation", "identity-live", "response-wrapping", "capabilities-live",
-                        "ssh-otp-live", "pki-live", "audit-file-management", "namespace-tree", "kv-metadata-cas-live",
+                        "ssh-otp-live", "pki-live", "pkiext-live", "audit-file-management", "namespace-tree", "kv-metadata-cas-live",
                         "kv-enumeration-live"):
         raise ValueError("unknown local comparison profile")
     runner_path = Path(__file__) if runner_path is None else Path(runner_path)
@@ -167,6 +167,7 @@ def main(*, scenario_runner=run_scenarios, profile="core-isolation",
     spec.loader.exec_module(smoke)
     instance = smoke.Instance(binary, private_root / "candidate")
     oracle = None
+    candidate_unseal_key = None
     result = {"schema": "heptabao." + profile + "-comparison.v1", "synthetic_only": True,
               "target_version": "2.6.2", "full_openbao_compatibility": False,
               "independent_qualification": False, "production_authority": False,
@@ -187,7 +188,8 @@ def main(*, scenario_runner=run_scenarios, profile="core-isolation",
         if status != 200:
             raise ScenarioFailure("candidate.init")
         instance.token = init["root_token"]
-        if instance.call("POST", "sys/unseal", {"key": init["keys_base64"][0]})[0] != 200:
+        candidate_unseal_key = init["keys_base64"][0]
+        if instance.call("POST", "sys/unseal", {"key": candidate_unseal_key})[0] != 200:
             raise ScenarioFailure("candidate.unseal")
         candidate = Client(instance.address, str(instance.root / "ca.crt"), instance.token)
         with socket.socket() as sock:
@@ -208,6 +210,28 @@ def main(*, scenario_runner=run_scenarios, profile="core-isolation",
                 result["side_failures"][name] = str(error)
             except Exception as error:
                 result["side_failures"][name] = "unexpected_" + type(error).__name__
+        if restart_runner is not None and not result["side_failures"]:
+            for name in ("candidate", "oracle"):
+                try:
+                    if name == "candidate":
+                        instance.stop()
+                        instance.start()
+                        if instance.call("POST", "sys/unseal", {"key": candidate_unseal_key})[0] != 200:
+                            raise ScenarioFailure("candidate.restart_unseal")
+                        restarted = Client(instance.address, str(instance.root / "ca.crt"), instance.token)
+                    else:
+                        stop_oracle(oracle)
+                        restart_oracle(oracle)
+                        restarted = Client(
+                            oracle["address"],
+                            oracle["ca_file"],
+                            private_read(oracle["token_file"], 8192).decode().strip(),
+                        )
+                    restart_runner(restarted, result["cases"][name])
+                except (ScenarioFailure, BaoError) as error:
+                    result["side_failures"][name] = str(error)
+                except Exception as error:
+                    result["side_failures"][name] = "unexpected_" + type(error).__name__
         result["cases_match"] = result["cases"]["candidate"] == result["cases"]["oracle"]
         result["case_count_per_side"] = len(result["cases"]["candidate"])
         complete = successful_comparison(result["cases"], result["side_failures"])
