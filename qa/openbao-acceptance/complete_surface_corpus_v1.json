@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 55,
-    "defined_not_implemented_surface_count": 5,
-    "fixture_case_count": 368,
+    "implemented_surface_count": 56,
+    "defined_not_implemented_surface_count": 4,
+    "fixture_case_count": 376,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -252,9 +252,18 @@
       "surface_id": "HB-SURFACE-AUTH-KERBEROS",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 8,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "kerberos_mit_live.config_roundtrip",
+        "kerberos_mit_live.real_mit_ap_req_login",
+        "kerberos_mit_live.replayed_negotiation_denied",
+        "kerberos_mit_live.wrong_realm_denied",
+        "kerberos_mit_live.wrong_service_identity_denied",
+        "kerberos_mit_live.expired_ticket_denied",
+        "kerberos_mit_live.clock_skew_denied",
+        "kerberos_mit_live.restart_replay_denied"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

@@ -332,21 +332,21 @@ Existing bounded profiles: `qa/openbao-acceptance/radius_bounded.py`.
 
 ### HB-SURFACE-AUTH-KERBEROS
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H16-WP09`, `H16-WP10`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H16-WP09`, `H16-WP10`.
 API families: `auth/{mount}/config`; `auth/{mount}/login`.
-Runtime source: none claimed.
-Separate contracts: none claimed.
+Runtime source: `crates/heptabao-server/src/auth.rs`, `crates/heptabao-server/src/auth_kerberos.rs`, `crates/heptabao-server/src/auth_kubernetes.rs`, `crates/heptabao-server/src/http.rs`, `crates/heptabao-server/src/outbound.rs`, `crates/heptabao-server/src/outbound_kerberos.rs`, `crates/heptabao-server/src/service_online_auth.rs`.
+Separate contracts: `qa/openbao-acceptance/kerberos_mit_live.py`, `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
-**Positive:** Validate real SPNEGO/PAC and constrained realm/service identity.
+**Positive:** Validate one complete real MIT AP-REQ through the process keytab and issue a ticket-bounded auth-mount token with exact realm/service identity.
 
-**Hostile:** Reject replayed tickets, untrusted realm and excessive clock skew.
+**Hostile:** Reject replayed negotiation, wrong realm or service, expired tickets, excessive clock skew, malformed or oversized tokens and non-enrolled keytabs.
 
-**Lifecycle:** Rotate keytab and recover replay state across server restart.
+**Lifecycle:** Keep keytab bytes and credential caches ephemeral while replay admission and mount binding survive server restart.
 
-**Remaining scope:** SPNEGO/PAC, realm and clock behavior; may be feature-gated but remains v2.6.2 target.
+**Remaining scope:** AD PAC/group mapping, multi-realm trust, channel binding, continuation response headers, provider-backed renewal, keytab rotation and full OpenBao protocol/error parity remain open; this is not whole-surface admission.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/kerberos_mit_live.py`.
 
 ### HB-SURFACE-SECRET-KV
 
@@ -578,7 +578,7 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Reconcile partial cluster visibility and revoke under network partition.
 
-**Remaining scope:** A checksum-pinned Cassandra 5.0 provider profile exercises dynamic readonly/readwrite issuance, provider authorization readback, renewal, provider and HeptaBao restart, revoke, outage retention and restart reconciliation. TLS-native transport, multi-node consistency/partition, static roles, root credential rotation, full OpenBao statement/error parity, migration and independent qualification remain open.
+**Remaining scope:** A checksum-pinned Cassandra 5.0 provider profile exercises dynamic readonly/readwrite issuance, authorization readback, renewal, provider and HeptaBao restart, revoke, outage retention and restart reconciliation. TLS-native transport, multi-node consistency/partition, static roles, root credential rotation, full OpenBao statement/error parity, migration and independent qualification remain open.
 
 Existing bounded profiles: `qa/openbao-acceptance/cassandra_live.py`.
 
