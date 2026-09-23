@@ -954,6 +954,27 @@ fn read_request_mode(
     if path.contains('%') || path.contains('#') {
         return Err(bad("ambiguous encoded paths are not supported"));
     }
+    // Kerberos uses the standard HTTP Negotiate carrier rather than a JSON
+    // credential. Keep the provider token request-local and let the auth
+    // route's strict body schema reject it everywhere else.
+    if path.starts_with("auth/")
+        && path.ends_with("/login")
+        && let Some(authorization) = map.remove("authorization")
+    {
+        if !authorization.starts_with("Negotiate ")
+            || authorization.len() > crate::outbound::MAX_KERBEROS_TOKEN * 2 + 16
+            || !authorization.is_ascii()
+        {
+            return Err(bad("invalid Kerberos authorization header"));
+        }
+        if object.contains_key("kerberos_authorization") {
+            return Err(bad("duplicate Kerberos authorization"));
+        }
+        object.insert(
+            "kerberos_authorization".into(),
+            Value::String(authorization.to_string()),
+        );
+    }
     for pair in query.split('&').filter(|v| !v.is_empty()) {
         let (key, value) = pair
             .split_once('=')

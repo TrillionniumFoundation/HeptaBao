@@ -383,6 +383,19 @@
         "timeout_fails_closed"
       ]
     },
+    "kerberos_mit_live": {
+      "script": "qa/openbao-acceptance/kerberos_mit_live.py",
+      "case_ids": [
+        "config_roundtrip",
+        "real_mit_ap_req_login",
+        "replayed_negotiation_denied",
+        "wrong_realm_denied",
+        "wrong_service_identity_denied",
+        "expired_ticket_denied",
+        "clock_skew_denied",
+        "restart_replay_denied"
+      ]
+    },
     "namespace_seal_live": {
       "script": "qa/openbao-acceptance/namespace_seal_live.py",
       "case_ids": [
