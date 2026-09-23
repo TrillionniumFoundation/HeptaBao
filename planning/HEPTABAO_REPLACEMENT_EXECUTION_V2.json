@@ -1013,19 +1013,24 @@
         "{mount}/roles/*",
         "{mount}/creds/*"
       ],
-      "positive": "Create real broker users with exact vhost permissions and lease metadata",
-      "hostile": "Reject admin tag escalation, bad TLS and foreign user ownership",
-      "lifecycle": "Remove issued users/permissions after expiry, restart and lost provider reply",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
+      "positive": "Use a real pinned RabbitMQ 4.1 broker to issue a bounded dynamic management user with exact vhost read permission through the admitted database-plugin lifecycle",
+      "hostile": "Reject a foreign vhost binding, prevent administrator-tag escalation, deny permissions on an ungranted vhost and reject the revoked principal",
+      "lifecycle": "Renew through HeptaBao, survive broker and HeptaBao restart, retain revoke intent during broker outage and reconcile provider deletion after recovery",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/engines.rs",
+        "crates/heptabao-server/src/service_database.rs"
+      ],
       "contract_sources": [],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/rabbitmq_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Users, vhosts, permissions, lease and revocation lifecycle."
+      "remaining_scope": "The scoped RabbitMQ 4.1 Management HTTP profile covers dynamic users and one bound vhost. Topic permissions, TLS/provider certificate policy, static roles, lease-expiry cleanup, root credential rotation, full OpenBao field/error parity, HA, migration and independent qualification remain open."
     },
     {
       "surface_id": "HB-SURFACE-DB-POSTGRESQL",

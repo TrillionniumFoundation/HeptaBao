@@ -13,9 +13,9 @@
     "category_count": 11
   },
   "coverage_summary": {
-    "implemented_surface_count": 56,
-    "defined_not_implemented_surface_count": 4,
-    "fixture_case_count": 381,
+    "implemented_surface_count": 57,
+    "defined_not_implemented_surface_count": 3,
+    "fixture_case_count": 396,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -422,9 +422,25 @@
       "surface_id": "HB-SURFACE-SECRET-RABBITMQ",
       "category": "secret_engines",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
-      "fixture_state": "DEFINED_NOT_IMPLEMENTED",
-      "fixture_case_ids": [],
+      "minimum_observations": 15,
+      "fixture_state": "IMPLEMENTED_SCOPED",
+      "fixture_case_ids": [
+        "rabbitmq_live.real_rabbitmq_4_1_ready",
+        "rabbitmq_live.rabbitmq_public_mount_type",
+        "rabbitmq_live.rabbitmq_unbound_vhost_rejected",
+        "rabbitmq_live.rabbitmq_plugin_configuration_readback",
+        "rabbitmq_live.rabbitmq_dynamic_user_reaches_provider",
+        "rabbitmq_live.rabbitmq_issued_user_is_not_administrator",
+        "rabbitmq_live.rabbitmq_exact_vhost_permissions",
+        "rabbitmq_live.rabbitmq_foreign_vhost_denied",
+        "rabbitmq_live.rabbitmq_issued_login_is_real",
+        "rabbitmq_live.rabbitmq_dynamic_credential_renew_reaches_provider",
+        "rabbitmq_live.rabbitmq_provider_state_survives_restart",
+        "rabbitmq_live.rabbitmq_service_state_survives_restart",
+        "rabbitmq_live.rabbitmq_revoke_removes_provider_user",
+        "rabbitmq_live.rabbitmq_outage_retains_revoke_intent",
+        "rabbitmq_live.rabbitmq_restart_reconciles_pending_revoke"
+      ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
     {

@@ -512,21 +512,21 @@ Existing bounded profiles: `qa/openbao-acceptance/openldap_secret_live.py`.
 
 ### HB-SURFACE-SECRET-RABBITMQ
 
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H19-WP12`, `H19-WP13`.
+Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP12`, `H19-WP13`.
 API families: `{mount}/config/*`; `{mount}/roles/*`; `{mount}/creds/*`.
-Runtime source: none claimed.
+Runtime source: `crates/heptabao-server/src/engines.rs`, `crates/heptabao-server/src/service_database.rs`.
 Separate contracts: none claimed.
 Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
-**Positive:** Create real broker users with exact vhost permissions and lease metadata.
+**Positive:** Use a real pinned RabbitMQ 4.1 broker to issue a bounded dynamic management user with exact vhost read permission through the admitted database-plugin lifecycle.
 
-**Hostile:** Reject admin tag escalation, bad TLS and foreign user ownership.
+**Hostile:** Reject a foreign vhost binding, prevent administrator-tag escalation, deny permissions on an ungranted vhost and reject the revoked principal.
 
-**Lifecycle:** Remove issued users/permissions after expiry, restart and lost provider reply.
+**Lifecycle:** Renew through HeptaBao, survive broker and HeptaBao restart, retain revoke intent during broker outage and reconcile provider deletion after recovery.
 
-**Remaining scope:** Users, vhosts, permissions, lease and revocation lifecycle.
+**Remaining scope:** The scoped RabbitMQ 4.1 Management HTTP profile covers dynamic users and one bound vhost. Topic permissions, TLS/provider certificate policy, static roles, lease-expiry cleanup, root credential rotation, full OpenBao field/error parity, HA, migration and independent qualification remain open.
 
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
+Existing bounded profiles: `qa/openbao-acceptance/rabbitmq_live.py`.
 
 ### HB-SURFACE-DB-POSTGRESQL
 

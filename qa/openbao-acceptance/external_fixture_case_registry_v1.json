@@ -499,6 +499,26 @@
         "cassandra_restart_reconciles_pending_revoke"
       ],
       "script": "qa/openbao-acceptance/cassandra_live.py"
+    },
+    "rabbitmq_live": {
+      "script": "qa/openbao-acceptance/rabbitmq_live.py",
+      "case_ids": [
+        "real_rabbitmq_4_1_ready",
+        "rabbitmq_public_mount_type",
+        "rabbitmq_unbound_vhost_rejected",
+        "rabbitmq_plugin_configuration_readback",
+        "rabbitmq_dynamic_user_reaches_provider",
+        "rabbitmq_issued_user_is_not_administrator",
+        "rabbitmq_exact_vhost_permissions",
+        "rabbitmq_foreign_vhost_denied",
+        "rabbitmq_issued_login_is_real",
+        "rabbitmq_dynamic_credential_renew_reaches_provider",
+        "rabbitmq_provider_state_survives_restart",
+        "rabbitmq_service_state_survives_restart",
+        "rabbitmq_revoke_removes_provider_user",
+        "rabbitmq_outage_retains_revoke_intent",
+        "rabbitmq_restart_reconciles_pending_revoke"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

@@ -73,7 +73,7 @@ The identity hierarchy is represented by nested maps:
 ```text
 EngineState.namespaces[namespace]
   .mounts[mount_path_with_trailing_slash]
-  .backend.{Database | Kubernetes | PluginSecret | OpenLdap | Kv1 | Kv1Records | Kv2 | Transit | Pki | Ssh | Totp}
+  .backend.{Database | RabbitMq | Kubernetes | PluginSecret | OpenLdap | Kv1 | Kv1Records | Kv2 | Transit | Pki | Ssh | Totp}
   .entries[resource] or .keys[key_name]  (opaque-owner backends)
   Kv1Records -> authenticated KV1 graph scoped by namespace/mount/incarnation
 ```

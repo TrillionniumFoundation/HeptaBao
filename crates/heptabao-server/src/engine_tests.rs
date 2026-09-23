@@ -1822,6 +1822,40 @@ fn mount_registry_revision_cas_remount_and_incarnation_are_persisted() -> TestRe
 }
 
 #[test]
+fn rabbitmq_mount_is_database_owned_but_preserves_its_public_type() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "sys/mounts/rabbitmq",
+        json!({"type":"rabbitmq"}),
+        100,
+    )?;
+    let descriptor = request(&mut state, "", "GET", "sys/mounts/rabbitmq", json!({}), 100)?;
+    assert_eq!(descriptor.body["data"]["type"], "rabbitmq");
+    assert_eq!(
+        state.database_mount("", "rabbitmq/config/local"),
+        Some("rabbitmq/")
+    );
+    assert!(state.has_database_mount());
+
+    let mut restored: EngineState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
+    assert_eq!(
+        restored.database_mount("", "rabbitmq/creds/reader"),
+        Some("rabbitmq/")
+    );
+    assert!(matches!(
+        restored
+            .handle("", "GET", "rabbitmq/config/local", &json!({}), 101)
+            .err()
+            .map(|error| error.status),
+        Some(501)
+    ));
+    Ok(())
+}
+
+#[test]
 fn kv_metadata_cas_is_independent_of_data_versions_and_survives_reopen() -> TestResult {
     let mut state = EngineState::default();
     request(
