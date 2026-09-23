@@ -230,6 +230,18 @@ impl KerberosMount {
 }
 
 impl AuthState {
+    /// Mount-only enrollment and retained configuration/replay state each need
+    /// the Kerberos reader, independently of successful login or live tickets.
+    pub(crate) fn has_kerberos_state(&self) -> bool {
+        self.kerberos_mounts
+            .values()
+            .any(|mounts| !mounts.is_empty())
+            || self
+                .auth_mounts
+                .values()
+                .any(|mounts| mounts.values().any(|mount| mount.kind == "kerberos"))
+    }
+
     pub(super) fn kerberos_at(&self, scope: AuthScope<'_>) -> Option<&KerberosMount> {
         self.kerberos_mounts.get(scope.namespace)?.get(scope.mount)
     }
