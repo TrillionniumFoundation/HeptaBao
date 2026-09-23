@@ -211,6 +211,7 @@ impl EngineState {
 
     pub(crate) fn owner_metadata_shared_with(&self, previous: &Self) -> bool {
         self.lease_clock == previous.lease_clock
+            && self.workflow == previous.workflow
             && self.namespaces.len() == previous.namespaces.len()
             && self.namespaces.iter().all(|(name, state)| {
                 previous
@@ -594,6 +595,17 @@ mod tests {
         );
         assert_eq!(serde_json::to_vec(&candidate).unwrap(), metadata);
         assert!(candidate.owner_metadata_shared_with(&records));
+        candidate
+            .workflow
+            .profiles
+            .push(crate::service_workflow::WorkflowProfile {
+                namespace: String::new(),
+                name: "workflow".into(),
+                revision: 1,
+                steps: Vec::new(),
+            });
+        assert!(!candidate.owner_metadata_shared_with(&records));
+        candidate.workflow.profiles.clear();
         assert!(records.record_objects().unwrap().is_empty());
         assert!(!candidate.record_objects().unwrap().is_empty());
         assert!(candidate.clear_published_record_objects(&root).is_err());
