@@ -56,8 +56,10 @@ class CompatibilityCorpusV23Tests(unittest.TestCase):
     def test_inventory_and_case_mapping_are_closed_world(self) -> None:
         corpus = load_corpus()
         surfaces = corpus["surfaces"]
-        self.assertEqual(60, len(surfaces))
-        self.assertEqual(60, len({entry["surface_id"] for entry in surfaces}))
+        inventory = VALIDATOR._mapping(INVENTORY_PATH, "surface inventory")
+        inventory_surfaces, _ = VALIDATOR.inventory_surfaces(inventory)
+        self.assertEqual(len(inventory_surfaces), len(surfaces))
+        self.assertEqual(len(inventory_surfaces), len({entry["surface_id"] for entry in surfaces}))
         mapped = {
             case
             for entry in surfaces

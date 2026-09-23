@@ -107,9 +107,9 @@ Current executable anchors (source assertions, not a claim that tests were rerun
 <!-- BEGIN CURRENT COMPATIBILITY COVERAGE -->
 | Source-derived coverage metric | Count |
 |---|---:|
-| Inventoried surfaces | 60 |
+| Inventoried surfaces | 59 |
 | Surfaces with scoped fixtures | 57 |
-| Surfaces without implemented fixtures | 3 |
+| Surfaces without implemented fixtures | 2 |
 | Scoped fixture cases | 396 |
 
 Scoped fixtures are not full behavior coverage or independent compatibility admission.

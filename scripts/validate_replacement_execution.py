@@ -186,7 +186,7 @@ def main() -> int:
     for problem in problems:
         print('replacement-execution: ' + problem)
     if not problems:
-        print('replacement-execution: PASS (60 requirement rows, not execution or admission)')
+        print(f"replacement-execution: PASS ({len(load(ROOT/MATRIX)['surfaces'])} requirement rows, not execution or admission)")
     return int(bool(problems))
 
 

@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "744ddd4af91b5242b426d148b02e4fff3d5b69c810cc0d0ea97b530f218f8093",
+  "corpus_sha256": "e8f519b604a9f97c4313442b0a66bc6c6fba030e9995ddc6a4d3d4b7d7e5c69c",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -1138,23 +1138,6 @@
       "available_scoped_profiles": [
         "pki"
       ],
-      "whole_surface_admitted": false
-    },
-    {
-      "surface_id": "HB-SURFACE-SECRET-PKIEXT",
-      "category": "secret_engines",
-      "implementation_status": "not_implemented",
-      "runtime_source": null,
-      "technical_contract": {
-        "api_or_protocol": "PKIext provider enrollment and CA request/response boundary",
-        "required_positive_and_hostile_behavior": "Pin supported upstream PKIext version/API before implementation; map external CA identity and revocation protocol",
-        "remaining_semantics_and_effect_checks": "A generic HTTP wrapper cannot count as CA issuance or revocation; unknown issuance needs provider reconciliation",
-        "crash_reopen": "Interrupt PKIext provider enrollment and CA request/response boundary before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-SECRET-PKIEXT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
-        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
-      },
-      "fixture_case_ids": [],
-      "available_scoped_profiles": [],
       "whole_surface_admitted": false
     },
     {

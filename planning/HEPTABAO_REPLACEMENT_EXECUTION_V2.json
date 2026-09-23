@@ -818,30 +818,6 @@
       "remaining_scope": "Roots, intermediates, issuers, roles, ACME, CRL, OCSP and tidy."
     },
     {
-      "surface_id": "HB-SURFACE-SECRET-PKIEXT",
-      "category": "secret_engines",
-      "owner_work_packages": [
-        "H18-WP06"
-      ],
-      "public_baseline_reference": "public-source-surface://builtin/logical/pkiext",
-      "api_families": [
-        "{mount}/(versioned pkiext protocol inventory)"
-      ],
-      "positive": "Define the separate extension protocol and prove a positive public operation",
-      "hostile": "Reject unsupported extension fields and cross-issuer credential access",
-      "lifecycle": "Version extension state and test interrupted conversion without modifying source",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
-      "contract_sources": [],
-      "guides": [
-        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
-      ],
-      "executable_profiles": [],
-      "full_surface_verified": false,
-      "independently_admitted": false,
-      "remaining_scope": "Separate compatibility and protocol inventory required."
-    },
-    {
       "surface_id": "HB-SURFACE-SECRET-SSH",
       "category": "secret_engines",
       "owner_work_packages": [

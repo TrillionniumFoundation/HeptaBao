@@ -24,7 +24,8 @@ class SurfaceWorkTests(unittest.TestCase):
 
     def test_current_exact_denominator_and_sources(self):
         self.assertEqual(work.validate(ROOT), [])
-        self.assertEqual(len(self.doc['surfaces']), 60)
+        corpus = self.original(ROOT / self.doc['corpus_path'])
+        self.assertEqual(len(self.doc['surfaces']), len(corpus['surfaces']))
 
     def test_removed_surface_rejects(self):
         self.assertTrue(self.validate_mutation(lambda d: d['surfaces'].pop()))

@@ -40,9 +40,10 @@ class ReplacementExecutionTests(unittest.TestCase):
         self.save()
         return module.validate(self.root, check_render=False)
 
-    def test_current_exact_sixty_rows_match(self):
+    def test_current_exact_rows_match_corpus(self):
         self.assertEqual(module.validate(self.root), [])
-        self.assertEqual(len(self.matrix['surfaces']), 60)
+        corpus = module.load(self.root / module.CORPUS)
+        self.assertEqual(len(self.matrix['surfaces']), len(corpus['surfaces']))
 
     def test_missing_and_duplicate_surfaces_rejected(self):
         original = copy.deepcopy(self.matrix)

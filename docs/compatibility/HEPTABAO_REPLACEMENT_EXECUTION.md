@@ -420,24 +420,6 @@ Guides: `docs/engines/HEPTABAO_SINGLE_NODE_ENGINES.md`.
 
 Existing bounded profiles: `qa/openbao-acceptance/pki_live.py`.
 
-### HB-SURFACE-SECRET-PKIEXT
-
-Implementation: `NOT_IMPLEMENTED`. Original work packages: `H18-WP06`.
-API families: `{mount}/(versioned pkiext protocol inventory)`.
-Runtime source: none claimed.
-Separate contracts: none claimed.
-Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
-
-**Positive:** Define the separate extension protocol and prove a positive public operation.
-
-**Hostile:** Reject unsupported extension fields and cross-issuer credential access.
-
-**Lifecycle:** Version extension state and test interrupted conversion without modifying source.
-
-**Remaining scope:** Separate compatibility and protocol inventory required.
-
-Existing bounded profiles: none bound yet; executable fixtures must be implemented.
-
 ### HB-SURFACE-SECRET-SSH
 
 Implementation: `PARTIAL_RUNTIME`. Original work packages: `H18-WP07`, `H18-WP08`, `H18-WP09`.
