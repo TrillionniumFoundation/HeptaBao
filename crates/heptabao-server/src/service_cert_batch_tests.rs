@@ -225,7 +225,7 @@ fn schema48_cert_role_and_mount_each_reject_false_legacy_schema() -> TestResult 
             setup(&mut service, &admin)?;
         }
         let mut state = service.state.clone().ok_or("state")?;
-        assert_eq!(state.schema, 48);
+        assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
         assert!(state.auth.has_cert_batch_state());
         assert!(!state.auth.has_token_api_creation_ttl());
         assert!(state.validate_format().is_ok());
@@ -257,7 +257,7 @@ fn schema48_token_api_creation_ttl_has_an_independent_reader_fence() -> TestResu
     );
     assert_eq!(issued.status, 200);
     let mut state = service.state.clone().ok_or("state")?;
-    assert_eq!(state.schema, 48);
+    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     assert!(state.auth.has_token_api_creation_ttl());
     assert!(!state.auth.has_cert_batch_state());
     assert!(state.validate_format().is_ok());
