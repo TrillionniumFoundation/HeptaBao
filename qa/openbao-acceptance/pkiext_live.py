@@ -74,7 +74,7 @@ def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dic
         "allow_role_ext_key_usage": False,
         "allowed_issuers": ["*"],
         "default_directory_policy": "sign-verbatim",
-        "enabled": False,
+        "enabled": True,
         "dns_resolver": "",
         "eab_policy": "new-account-required",
     }
@@ -147,7 +147,7 @@ def run_restart_scenarios(client: Client, results: list[dict]) -> None:
         "allow_role_ext_key_usage": False,
         "allowed_issuers": ["*"],
         "default_directory_policy": "sign-verbatim",
-        "enabled": True,
+        "enabled": False,
         "dns_resolver": "",
         "eab_policy": "new-account-required",
     }
