@@ -11,6 +11,7 @@ SERVER = ROOT / "crates" / "heptabao-server" / "src"
 LIB_RS = SERVER / "lib.rs"
 AUTH_RS = SERVER / "auth.rs"
 SERVICE_RS = SERVER / "service.rs"
+WORKFLOWS_RS = SERVER / "service_workflows.rs"
 BOUNDARY_DOC = ROOT / "docs" / "security" / "HEPTABAO_REQUEST_CAPABILITY_BOUNDARY_V1.md"
 
 
@@ -69,6 +70,24 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
         dispatch_block = compact[dispatch_start:dispatch_end]
         self.assertEqual(1, dispatch_block.count("admitted.clone()"))
         self.assertEqual(1, len(re.findall(r"Self::dispatch\(", text)))
+        workflows = WORKFLOWS_RS.read_text(encoding="utf-8")
+        self.assertRegex(
+            text,
+            r"fn dispatch_authorized_subrequest\(\s*state:\s*&mut State,\s*principal:\s*Option<&Principal>",
+        )
+        self.assertEqual(
+            2,
+            len(
+                re.findall(
+                    r"Self::dispatch_authorized_subrequest\(",
+                    text + "\n" + workflows,
+                )
+            ),
+        )
+        self.assertEqual(
+            1,
+            len(re.findall(r"Self::dispatch_authorized_subrequest\(", workflows)),
+        )
         self.assertGreaterEqual(compact.count(".authorize_request("), 3)
         self.assertIn(",now)", compact)
 

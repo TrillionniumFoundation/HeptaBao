@@ -2167,7 +2167,7 @@ impl Service {
         } else {
             Self::dispatch(
                 &mut transaction,
-                principal.as_ref(),
+                principal,
                 namespace,
                 method,
                 path,
@@ -2390,6 +2390,38 @@ impl Service {
 
     #[allow(clippy::too_many_arguments)]
     fn dispatch(
+        state: &mut State,
+        principal: Option<Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        client_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+        approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
+    ) -> Response {
+        Self::dispatch_authorized_subrequest(
+            state,
+            principal.as_ref(),
+            namespace,
+            method,
+            path,
+            body,
+            now,
+            client_certificates,
+            origin_peer,
+            approle_secret_consumption,
+        )
+    }
+
+    /// Execute one already-authenticated in-transaction subrequest.
+    ///
+    /// The top-level request boundary consumes `Principal` by value in
+    /// `dispatch`. This borrowed form exists only so a workflow can evaluate
+    /// multiple bounded local steps under that single affine capability.
+    #[allow(clippy::too_many_arguments)]
+    fn dispatch_authorized_subrequest(
         state: &mut State,
         principal: Option<&Principal>,
         namespace: &str,
