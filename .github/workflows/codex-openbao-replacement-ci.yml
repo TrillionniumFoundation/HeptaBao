@@ -68,6 +68,14 @@ jobs:
         shell: bash
         run: cargo +1.98.0 fmt --all -- --check
 
+      - name: Install MIT Kerberos build and acceptance prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTIONS" = true
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends krb5-kdc krb5-admin-server krb5-user libkrb5-dev pkg-config clang
+
       - name: Validate current repository truth and acceptance fixtures
         shell: bash
         run: |
@@ -467,6 +475,7 @@ jobs:
           timeout 240 python qa/openbao-acceptance/ldap_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ldap-renewal.json"
           timeout 300 python qa/openbao-acceptance/ldap_native_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ldap-native.json"
           timeout 300 python qa/openbao-acceptance/ldap_native_renewal_ha.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/ldap-native-ha.json"
+          timeout 300 python qa/openbao-acceptance/kerberos_mit_live.py --binary "$PWD/target/debug/heptabao-server" --work-dir "$RUNNER_TEMP/heptabao-kerberos-mit"
           timeout 240 python qa/openbao-acceptance/jwt_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --build-source-commit "$EXPECTED_SOURCE" --output "$reports/jwt-renewal.json"
           timeout 240 python qa/openbao-acceptance/jwt_login_claims_live.py --binary "$PWD/target/debug/heptabao-server" --build-source-commit "$EXPECTED_SOURCE" --output "$reports/jwt-login-claims.json"
           timeout 240 python qa/openbao-acceptance/cert_renewal_live.py --binary "$PWD/target/debug/heptabao-server" --output "$reports/cert-renewal.json"

@@ -661,19 +661,32 @@
         "auth/{mount}/config",
         "auth/{mount}/login"
       ],
-      "positive": "Validate real SPNEGO/PAC and constrained realm/service identity",
-      "hostile": "Reject replayed tickets, untrusted realm and excessive clock skew",
-      "lifecycle": "Rotate keytab and recover replay state across server restart",
-      "implementation": "NOT_IMPLEMENTED",
-      "runtime_sources": [],
-      "contract_sources": [],
+      "positive": "Validate one complete real MIT AP-REQ through the process keytab and issue a ticket-bounded auth-mount token with exact realm/service identity",
+      "hostile": "Reject replayed negotiation, wrong realm or service, expired tickets, excessive clock skew, malformed or oversized tokens and non-enrolled keytabs",
+      "lifecycle": "Keep keytab bytes and credential caches ephemeral while replay admission and mount binding survive server restart",
+      "implementation": "PARTIAL_RUNTIME",
+      "runtime_sources": [
+        "crates/heptabao-server/src/auth.rs",
+        "crates/heptabao-server/src/auth_kerberos.rs",
+        "crates/heptabao-server/src/auth_kubernetes.rs",
+        "crates/heptabao-server/src/http.rs",
+        "crates/heptabao-server/src/outbound.rs",
+        "crates/heptabao-server/src/outbound_kerberos.rs",
+        "crates/heptabao-server/src/service_online_auth.rs"
+      ],
+      "contract_sources": [
+        "qa/openbao-acceptance/kerberos_mit_live.py",
+        "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
+      ],
       "guides": [
         "docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md"
       ],
-      "executable_profiles": [],
+      "executable_profiles": [
+        "qa/openbao-acceptance/kerberos_mit_live.py"
+      ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "SPNEGO/PAC, realm and clock behavior; may be feature-gated but remains v2.6.2 target."
+      "remaining_scope": "AD PAC/group mapping, multi-realm trust, channel binding, continuation response headers, provider-backed renewal, keytab rotation and full OpenBao protocol/error parity remain open; this is not whole-surface admission."
     },
     {
       "surface_id": "HB-SURFACE-SECRET-KV",
