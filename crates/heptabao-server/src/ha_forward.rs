@@ -36,6 +36,10 @@ pub(crate) struct ForwardRequest {
     pub client_certificates: Option<Vec<Vec<u8>>>,
     #[serde(default)]
     pub origin_peer: Option<std::net::IpAddr>,
+    /// True only when an explicitly enabled one-step rolling transition
+    /// admitted the pre-cluster-bound HBFQ1 wire after mTLS peer identity.
+    #[serde(skip)]
+    pub legacy_v1: bool,
 }
 
 impl fmt::Debug for ForwardRequest {
@@ -59,6 +63,51 @@ impl Drop for ForwardRequest {
         if let Some(certificates) = &mut self.client_certificates {
             certificates.iter_mut().for_each(Vec::zeroize);
         }
+        erase_json(&mut self.body);
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct LegacyForwardRequest {
+    source: u64,
+    target: u64,
+    method: String,
+    path: String,
+    namespace: String,
+    token: String,
+    body: Value,
+}
+
+impl Drop for LegacyForwardRequest {
+    fn drop(&mut self) {
+        self.token.zeroize();
+        erase_json(&mut self.body);
+    }
+}
+
+#[derive(Serialize)]
+struct LegacyForwardRequestRef<'a> {
+    source: u64,
+    target: u64,
+    method: &'a str,
+    path: &'a str,
+    namespace: &'a str,
+    token: &'a str,
+    body: &'a Value,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct LegacyForwardResponse {
+    source: u64,
+    target: u64,
+    status: u16,
+    body: Value,
+}
+
+impl Drop for LegacyForwardResponse {
+    fn drop(&mut self) {
         erase_json(&mut self.body);
     }
 }
@@ -350,6 +399,72 @@ pub(crate) fn decode_request_for_cluster(
     Ok(request)
 }
 
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn encode_legacy_request_for_transition(
+    source: u64,
+    target: u64,
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+) -> Result<Vec<u8>, String> {
+    validate_direction(source, target)?;
+    validate_request_fields(method, path, namespace, token)?;
+    encode(
+        REQUEST_MAGIC,
+        &LegacyForwardRequestRef {
+            source,
+            target,
+            method,
+            path,
+            namespace,
+            token,
+            body,
+        },
+    )
+}
+
+/// Accept the pre-cluster-bound HBFQ1 shape only when the deployment has
+/// explicitly enabled the one-step rolling transition. The caller must have
+/// already authenticated the transport peer with the pinned mTLS identity.
+pub(crate) fn decode_request_for_cluster_compatible(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+    allow_legacy_v1: bool,
+) -> Result<ForwardRequest, String> {
+    match decode_request_for_cluster(encoded, expected_cluster_id) {
+        Ok(request) => Ok(request),
+        Err(strict_error) if allow_legacy_v1 && encoded.starts_with(REQUEST_MAGIC) => {
+            validate_cluster_id(expected_cluster_id)?;
+            let mut legacy: LegacyForwardRequest =
+                decode(REQUEST_MAGIC, encoded).map_err(|_| strict_error)?;
+            validate_direction(legacy.source, legacy.target)?;
+            validate_request_fields(
+                &legacy.method,
+                &legacy.path,
+                &legacy.namespace,
+                &legacy.token,
+            )?;
+            Ok(ForwardRequest {
+                cluster_id: expected_cluster_id.to_owned(),
+                source: legacy.source,
+                target: legacy.target,
+                method: std::mem::take(&mut legacy.method),
+                path: std::mem::take(&mut legacy.path),
+                namespace: std::mem::take(&mut legacy.namespace),
+                token: std::mem::take(&mut legacy.token),
+                body: std::mem::take(&mut legacy.body),
+                wrap_ttl_seconds: None,
+                client_certificates: None,
+                origin_peer: None,
+                legacy_v1: true,
+            })
+        }
+        Err(error) => Err(error),
+    }
+}
+
 #[cfg(test)]
 pub(crate) fn encode_response(
     source: u64,
@@ -404,6 +519,46 @@ pub(crate) fn decode_response_for_cluster(
         return Err("HA forward response cluster identity is invalid".into());
     }
     Ok(response)
+}
+
+pub(crate) fn encode_legacy_response_for_transition(
+    source: u64,
+    target: u64,
+    status: u16,
+    body: &Value,
+) -> Result<Vec<u8>, String> {
+    validate_direction(source, target)?;
+    if !(100..=599).contains(&status) {
+        return Err("HA forward response status is invalid".into());
+    }
+    encode(
+        RESPONSE_MAGIC,
+        &LegacyForwardResponse {
+            source,
+            target,
+            status,
+            body: body.clone(),
+        },
+    )
+}
+
+pub(crate) fn decode_legacy_response_for_transition(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<ForwardResponse, String> {
+    validate_cluster_id(expected_cluster_id)?;
+    let mut response: LegacyForwardResponse = decode(RESPONSE_MAGIC, encoded)?;
+    validate_direction(response.source, response.target)?;
+    if !(100..=599).contains(&response.status) {
+        return Err("HA forward response status is invalid".into());
+    }
+    Ok(ForwardResponse {
+        cluster_id: expected_cluster_id.to_owned(),
+        source: response.source,
+        target: response.target,
+        status: response.status,
+        body: std::mem::take(&mut response.body),
+    })
 }
 
 fn validate_direction(source: u64, target: u64) -> Result<(), String> {
@@ -559,6 +714,45 @@ mod tests {
         let response = encode_response_for_cluster("cluster-a", 2, 1, 200, &json!({}))?;
         assert!(decode_response_for_cluster(&response, "cluster-a").is_ok());
         assert!(decode_response_for_cluster(&response, "cluster-b").is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn legacy_v1_transition_is_explicit_and_cannot_bypass_cluster_binding() -> Result<(), String> {
+        let legacy = encode_legacy_request_for_transition(
+            1,
+            2,
+            "GET",
+            "secret/data/demo",
+            "",
+            "synthetic-token",
+            &json!({}),
+        )?;
+        assert!(decode_request_for_cluster(&legacy, "cluster-a").is_err());
+        assert!(decode_request_for_cluster_compatible(&legacy, "cluster-a", false).is_err());
+        let admitted = decode_request_for_cluster_compatible(&legacy, "cluster-a", true)?;
+        assert!(admitted.legacy_v1);
+        assert_eq!(admitted.cluster_id, "cluster-a");
+
+        let foreign = encode_request_for_cluster(
+            "cluster-b",
+            1,
+            2,
+            "GET",
+            "secret/data/demo",
+            "",
+            "synthetic-token",
+            &json!({}),
+            None,
+        )?;
+        assert!(decode_request_for_cluster_compatible(&foreign, "cluster-a", true).is_err());
+
+        let legacy_response =
+            encode_legacy_response_for_transition(2, 1, 200, &json!({"ok":true}))?;
+        assert!(decode_response_for_cluster(&legacy_response, "cluster-a").is_err());
+        let response = decode_legacy_response_for_transition(&legacy_response, "cluster-a")?;
+        assert_eq!(response.cluster_id, "cluster-a");
+        assert_eq!(response.status, 200);
         Ok(())
     }
 

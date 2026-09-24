@@ -6,8 +6,10 @@ compatibility.  OpenSSL creates a root/intermediate/client chain and a real
 server process is driven over HTTPS.  The fixture covers TLS chain and EKU
 validation, exact certificate/subject selectors, metadata, renewal
 re-authentication, and restart persistence.  OpenBao features outside this
-profile (CRL/OCSP/distribution, forwarded client-cert headers, multi-role
-cert semantics, and operational rotation) remain external qualification.
+profile (OCSP/distribution, forwarded client-cert headers, multi-role cert
+semantics, and operational rotation) remain external qualification. The live
+profile also proves listener-level CRL rejection of one revoked leaf without
+rejecting a distinct client from the same issuing CA.
 """
 from __future__ import annotations
 
@@ -160,6 +162,53 @@ class Fixture:
         for name in ("server.key", "client.key", "wrong-client.key", "untrusted-client.key"):
             (root / name).chmod(0o600)
 
+    def revoke_good_client(self) -> Path:
+        ca_dir = self.root / "crl-ca"
+        (ca_dir / 'newcerts').mkdir(parents=True, exist_ok=False)
+        (ca_dir / 'index.txt').write_text("")
+        (ca_dir / 'serial').write_text("1000\n")
+        (ca_dir / 'crlnumber').write_text("1000\n")
+        config = ca_dir / "openssl.cnf"
+        write_private(
+            config,
+            "\n".join(
+                [
+                    "[ ca ]",
+                    "default_ca = CA_default",
+                    "[ CA_default ]",
+                    f"database = {ca_dir / 'index.txt'}",
+                    f"new_certs_dir = {ca_dir / 'newcerts'}",
+                    f"certificate = {self.root / 'intermediate.crt'}",
+                    f"private_key = {self.root / 'intermediate.key'}",
+                    f"serial = {ca_dir / 'serial'}",
+                    f"crlnumber = {ca_dir / 'crlnumber'}",
+                    "default_md = sha256",
+                    "default_days = 2",
+                    "default_crl_days = 2",
+                    "policy = policy_any",
+                    "unique_subject = no",
+                    "[ policy_any ]",
+                    "commonName = supplied",
+                    "organizationalUnitName = optional",
+                    "countryName = optional",
+                    "stateOrProvinceName = optional",
+                    "localityName = optional",
+                    "organizationName = optional",
+                    "emailAddress = optional",
+                    "",
+                ]
+            ),
+        )
+        run(["openssl", "ca", "-config", str(config), "-revoke", str(self.root / "client.crt"), "-batch"])
+        crl = self.root / "intermediate.crl"
+        run(["openssl", "ca", "-config", str(config), "-gencrl", "-out", str(crl), "-batch"])
+        server_config = self.root / "server.json"
+        value = json.loads(server_config.read_text())
+        value["tls_client_crl_file"] = str(crl)
+        server_config.write_text(json.dumps(value))
+        server_config.chmod(0o600)
+        return crl
+
     def _client_context(self, cert: Path, key: Path, *, cafile: Path | None = None) -> ssl.SSLContext:
         context = ssl.create_default_context(cafile=str(cafile or self.root / "root.crt"))
         context.load_cert_chain(str(cert), str(key))
@@ -168,7 +217,7 @@ class Fixture:
     def _opener(self, context: ssl.SSLContext):
         return urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=context))
 
-    def start(self) -> None:
+    def start(self, *, readiness_client=None) -> None:
         self.log = open(self.root / "server.log", "ab")
         self.process = subprocess.Popen([str(self.binary), "--config", str(self.root / "server.json")],
                                         stdout=self.log, stderr=self.log)
@@ -176,7 +225,7 @@ class Fixture:
             if self.process.poll() is not None:
                 raise RuntimeError("server exited during cert fixture startup")
             try:
-                status, _ = self.call("GET", "sys/health")
+                status, _ = self.call("GET", "sys/health", client=readiness_client)
                 if status in (200, 501, 503):
                     return
             except (OSError, urllib.error.URLError):
@@ -282,6 +331,20 @@ def run_fixture(binary: Path, root: Path) -> dict:
                                                     client=fixture.good_client)
         check("cert_renewal_reauthenticates_after_restart", status == 200
               and renewed_after_restart.get("auth", {}).get("renewable") is True)
+
+        fixture.stop()
+        fixture.revoke_good_client()
+        fixture.start(readiness_client=fixture.wrong_client)
+        check(
+            "CRL_preserves_unrevoked_same_CA_client_chain",
+            fixture.call("GET", "sys/health", client=fixture.wrong_client)[0] == 503,
+        )
+        try:
+            fixture.call("GET", "sys/health", client=fixture.good_client)
+            revoked_failed = False
+        except (ssl.SSLError, urllib.error.URLError, ConnectionError, OSError):
+            revoked_failed = True
+        check("CRL_revoked_client_is_rejected_before_Service", revoked_failed)
         return {"schema": "heptabao.cert-auth-live.v1", "status": "passed", "checks": checks,
                 "count": len(checks), "compatibility_claim": False, "production_authority": False}
     finally:

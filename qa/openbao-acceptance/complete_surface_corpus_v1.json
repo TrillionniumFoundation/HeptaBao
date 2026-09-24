@@ -15,7 +15,7 @@
   "coverage_summary": {
     "implemented_surface_count": 59,
     "defined_not_implemented_surface_count": 0,
-    "fixture_case_count": 433,
+    "fixture_case_count": 435,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -160,7 +160,7 @@
       "surface_id": "HB-SURFACE-AUTH-CERT",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 18,
+      "minimum_observations": 20,
       "fixture_state": "IMPLEMENTED_SCOPED",
       "fixture_case_ids": [
         "cert_auth_live.mTLS_listener_rejects_missing_client_chain",
@@ -180,7 +180,9 @@
         "cert_auth_live.untrusted_chain_rejected_by_TLS",
         "cert_auth_live.restart_starts_sealed",
         "cert_auth_live.restart_unseal_over_mTLS",
-        "cert_auth_live.cert_renewal_reauthenticates_after_restart"
+        "cert_auth_live.cert_renewal_reauthenticates_after_restart",
+        "cert_auth_live.CRL_preserves_unrevoked_same_CA_client_chain",
+        "cert_auth_live.CRL_revoked_client_is_rejected_before_Service"
       ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },

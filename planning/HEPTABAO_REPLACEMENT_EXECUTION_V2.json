@@ -504,7 +504,7 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Chain, CRL, OCSP and trusted-forwarded-certificate behavior."
+      "remaining_scope": "Listener-level leaf CRL enforcement is executable; OCSP, CRL refresh/CA rotation and trusted-forwarded-certificate behavior remain."
     },
     {
       "surface_id": "HB-SURFACE-AUTH-JWT-OIDC",

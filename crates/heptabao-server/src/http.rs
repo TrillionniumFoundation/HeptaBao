@@ -660,7 +660,10 @@ fn load_client_verifier(
         if crls.is_empty() {
             return Err("TLS client CRL bundle is empty".into());
         }
-        builder = builder.with_crls(crls).enforce_revocation_expiration();
+        builder = builder
+            .with_crls(crls)
+            .only_check_end_entity_revocation()
+            .enforce_revocation_expiration();
     }
     builder
         .build()

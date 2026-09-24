@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "5f297c6815655e12e9a789c749d7f4cb64e2d581db4475f9b46d035813bb4e84",
+  "corpus_sha256": "a2248a360fa7166b1a182691f5f7e409b3a0df6944d9334892a102d32ad23031",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -923,7 +923,9 @@
         "cert_auth_live.untrusted_chain_rejected_by_TLS",
         "cert_auth_live.restart_starts_sealed",
         "cert_auth_live.restart_unseal_over_mTLS",
-        "cert_auth_live.cert_renewal_reauthenticates_after_restart"
+        "cert_auth_live.cert_renewal_reauthenticates_after_restart",
+        "cert_auth_live.CRL_preserves_unrevoked_same_CA_client_chain",
+        "cert_auth_live.CRL_revoked_client_is_rejected_before_Service"
       ],
       "available_scoped_profiles": [
         "cert_auth_live"

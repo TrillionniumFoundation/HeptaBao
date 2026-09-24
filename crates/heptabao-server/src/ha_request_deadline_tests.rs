@@ -76,6 +76,7 @@ pub(crate) fn process_with_api(
             .collect(),
         forward_transport,
         forward_timeout: Duration::from_secs(1),
+        allow_legacy_peer_v1: false,
         forward_handler: Arc::new(Mutex::new(None)),
         listener: None,
     })

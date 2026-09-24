@@ -38,9 +38,100 @@ class RollingUpgradeCluster(Cluster):
         self.candidate_digest = hashlib.sha256(candidate_binary.read_bytes()).hexdigest()
         super().__init__(base_binary, root)
 
+    def leader(self) -> Node:
+        """Resolve one stable leader across the exact base/candidate health schema.
+
+        The exact base predates ``ha_application_ready``. Accept that missing
+        field only while /proc proves the process is the pinned base binary.
+        Candidate processes must expose and assert the stronger readiness bit.
+        """
+        deadline = time.monotonic() + 30
+        previous, stable_since = None, None
+        while time.monotonic() < deadline:
+            active = []
+            for node in self.running():
+                try:
+                    status, health = node.call("GET", "sys/health", timeout=2)
+                except (OSError, urllib.error.URLError, TimeoutError):
+                    continue
+                if status != 200:
+                    continue
+                digest = running_digest(node)
+                if health.get("ha_active") is not True or health.get("standby") is not False:
+                    raise FixtureError("health_success_without_active_authority")
+                if digest == self.candidate_digest:
+                    if health.get("ha_application_ready") is not True:
+                        raise FixtureError("candidate_health_success_without_application_readiness")
+                elif digest == self.base_digest:
+                    if "ha_application_ready" in health and health["ha_application_ready"] is not True:
+                        raise FixtureError("base_health_explicitly_not_application_ready")
+                else:
+                    raise FixtureError("rolling_upgrade_unknown_running_binary")
+                active.append(node)
+            if len(active) > 1:
+                raise FixtureError("multiple_active_health_responses")
+            if len(active) == 1:
+                node = active[0]
+                status, body = node.call("GET", "sys/leader", token=self.root_token)
+                if status == 200 and body.get("is_self") is True:
+                    observed = time.monotonic()
+                    if previous is not node:
+                        previous, stable_since = node, observed
+                    elif observed - stable_since >= 2.2:
+                        return node
+                else:
+                    previous, stable_since = None, None
+            else:
+                previous, stable_since = None, None
+            time.sleep(0.1)
+        raise FixtureError("unique_active_leader_not_observed")
+
+    def read(self, node: Node, path: str, value: str) -> None:
+        """Read without retrying writes and retain bounded mixed-version diagnostics."""
+        deadline = time.monotonic() + 30
+        last_status = None
+        while time.monotonic() < deadline:
+            try:
+                status, body = node.call(
+                    "GET", f"secret/data/{path}", token=self.root_token
+                )
+            except (OSError, urllib.error.URLError, TimeoutError):
+                time.sleep(0.1)
+                continue
+            last_status = status
+            if status == 200:
+                if body.get("data", {}).get("data", {}).get("value") != value:
+                    raise FixtureError("successful_read_returned_stale_or_wrong_data")
+                return
+            if status not in (429, 503):
+                raise FixtureError("acknowledged_write_not_visible")
+            time.sleep(0.1)
+        try:
+            health_status, health = node.call("GET", "sys/health", timeout=2)
+            detail = (
+                f"node_{node.node_id}_last_{last_status}_health_{health_status}"
+                f"_active_{health.get('ha_active')}_ready_{health.get('ha_application_ready')}"
+                f"_standby_{health.get('standby')}_sealed_{health.get('sealed')}"
+                f"_recovery_{health.get('recovery_required')}"
+            )
+        except (OSError, urllib.error.URLError, TimeoutError):
+            detail = f"node_{node.node_id}_last_{last_status}_health_unavailable"
+        raise FixtureError("readback_timeout_" + detail)
+
+    def set_legacy_forward_transition(self, node: Node, enabled: bool) -> None:
+        config_path = node.root / "ha.json"
+        config = json.loads(config_path.read_text())
+        if enabled:
+            config["allow_legacy_peer_v1"] = True
+        else:
+            config.pop("allow_legacy_peer_v1", None)
+        config_path.write_text(json.dumps(config))
+        config_path.chmod(0o600)
+
     def upgrade(self, node: Node, label: str) -> None:
         node.stop()
         node.binary = self.candidate_binary
+        self.set_legacy_forward_transition(node, True)
         node.start()
         if node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] != 200:
             raise FixtureError(label + "_candidate_unseal_failed")
@@ -121,6 +212,25 @@ class RollingUpgradeCluster(Cluster):
         self.upgrade(old, "rolling_upgrade_final_voter")
         upgraded.add(old.node_id)
         self.check("rolling_upgrade_all_three_candidate_voters", len(upgraded) == 3)
+
+        # The compatibility wire is an upgrade-only bridge. Restart each
+        # candidate one at a time with the flag removed, preserving quorum,
+        # then prove the strict cluster-bound current wire across all voters.
+        for node in self.nodes:
+            node.stop()
+            self.set_legacy_forward_transition(node, False)
+            node.start()
+            if node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] != 200:
+                raise FixtureError(
+                    f"rolling_upgrade_node_{node.node_id}_strict_restart_unseal_failed"
+                )
+            self.leader()
+            self.check(
+                f"rolling_upgrade_node_{node.node_id}_legacy_forwarding_disabled",
+                "allow_legacy_peer_v1"
+                not in json.loads((node.root / "ha.json").read_text()),
+            )
+        self.check("rolling_upgrade_strict_current_wire_restored", True)
 
         leader = self.leader()
         for node in self.nodes:

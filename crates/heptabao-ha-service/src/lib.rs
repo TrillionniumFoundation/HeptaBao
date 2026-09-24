@@ -851,6 +851,7 @@ pub fn serve_one_mtls_peer_frame<H>(
     server_config: Arc<rustls::ServerConfig>,
     identities: &PinnedClientCertificateMap,
     timeout: Duration,
+    allow_missing_raft_alpn: bool,
     handler: H,
 ) -> Result<(), HaError>
 where
@@ -871,7 +872,7 @@ where
     tls.conn
         .complete_io(&mut tls.sock)
         .map_err(|_| HaError::PeerAuthenticationFailed)?;
-    require_raft_alpn(tls.conn.alpn_protocol())?;
+    require_raft_alpn(tls.conn.alpn_protocol(), allow_missing_raft_alpn)?;
     let certificates = tls
         .conn
         .peer_certificates()
@@ -882,8 +883,11 @@ where
     write_bounded_frame(&mut tls, &response)
 }
 
-fn require_raft_alpn(protocol: Option<&[u8]>) -> Result<(), HaError> {
-    if protocol == Some(RAFT_ALPN_PROTOCOL) {
+fn require_raft_alpn(
+    protocol: Option<&[u8]>,
+    allow_missing_raft_alpn: bool,
+) -> Result<(), HaError> {
+    if protocol == Some(RAFT_ALPN_PROTOCOL) || (allow_missing_raft_alpn && protocol.is_none()) {
         Ok(())
     } else {
         Err(HaError::PeerAuthenticationFailed)
@@ -1494,10 +1498,12 @@ mod tests {
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        let root = std::env::temp_dir().join(format!(
-            "heptabao-ha-service-{name}-{}-{nonce}",
-            std::process::id()
-        ));
+        let root = fs::canonicalize(std::env::temp_dir())
+            .unwrap()
+            .join(format!(
+                "heptabao-ha-service-{name}-{}-{nonce}",
+                std::process::id()
+            ));
         #[cfg(unix)]
         {
             use std::os::unix::fs::DirBuilderExt;
@@ -1709,14 +1715,15 @@ mod tests {
     }
 
     #[test]
-    fn raft_peer_transport_requires_its_alpn_protocol() {
-        assert_eq!(require_raft_alpn(Some(RAFT_ALPN_PROTOCOL)), Ok(()));
+    fn raft_peer_transport_requires_alpn_except_explicit_missing_protocol_transition() {
+        assert_eq!(require_raft_alpn(Some(RAFT_ALPN_PROTOCOL), false), Ok(()));
+        assert_eq!(require_raft_alpn(None, true), Ok(()));
         assert_eq!(
-            require_raft_alpn(Some(b"http/1.1")),
+            require_raft_alpn(Some(b"http/1.1"), true),
             Err(HaError::PeerAuthenticationFailed)
         );
         assert_eq!(
-            require_raft_alpn(None),
+            require_raft_alpn(None, false),
             Err(HaError::PeerAuthenticationFailed)
         );
     }

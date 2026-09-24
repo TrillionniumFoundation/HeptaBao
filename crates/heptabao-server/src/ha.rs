@@ -31,8 +31,10 @@ use zeroize::Zeroizing;
 use crate::{
     Response,
     ha_forward::{
-        ForwardRequest, decode_request_for_cluster as decode_forward_request,
+        ForwardRequest, decode_legacy_response_for_transition,
+        decode_request_for_cluster_compatible as decode_forward_request,
         decode_response_for_cluster as decode_forward_response,
+        encode_legacy_request_for_transition, encode_legacy_response_for_transition,
         encode_request_for_cluster as encode_forward_request,
         encode_response_for_cluster as encode_forward_response, encode_wrapped_request_for_cluster,
         is_forward_request,
@@ -98,6 +100,11 @@ pub struct HaProcessConfig {
     pub forward_timeout_ms: u64,
     #[serde(default = "default_max_inflight")]
     pub max_inflight: usize,
+    /// Explicit, temporary one-step rolling compatibility for the pre-cluster-
+    /// bound HBFQ1/HBFS1 request-forwarding wire. Defaults closed and is
+    /// refused for a fresh Raft state.
+    #[serde(default)]
+    pub allow_legacy_peer_v1: bool,
 }
 
 fn default_peer_timeout_ms() -> u64 {
@@ -260,6 +267,7 @@ pub struct HaProcess {
     api_addresses: BTreeMap<u64, String>,
     forward_transport: MutualTlsPeerTransport,
     forward_timeout: Duration,
+    allow_legacy_peer_v1: bool,
     forward_handler: Arc<Mutex<Option<ForwardHandler>>>,
     listener: Option<PeerListener>,
 }
@@ -343,6 +351,12 @@ impl HaProcess {
             .build()
             .map_err(|error| error.to_string())?;
         let existing = durable_state_exists(&config.raft_dir)?;
+        if config.allow_legacy_peer_v1 && !existing {
+            return Err(
+                "legacy HA forwarding transition requires existing durable Raft state".into(),
+            );
+        }
+        let allow_legacy_peer_v1 = config.allow_legacy_peer_v1;
         let node = if existing {
             runtime
                 .block_on(ProcessRaftNode::reopen(
@@ -391,6 +405,7 @@ impl HaProcess {
             let listener_forward_handler = forward_handler.clone();
             let forward_slots = forward_slots.clone();
             let listener_cluster_id = cluster_id.clone();
+            let listener_allow_legacy_peer_v1 = allow_legacy_peer_v1;
             let worker = thread::Builder::new()
                 .name(format!("heptabao-raft-peer-{local_id}-{worker_id}"))
                 .spawn(move || {
@@ -403,21 +418,24 @@ impl HaProcess {
                             server_tls.clone(),
                             &identities,
                             timeout,
+                            listener_allow_legacy_peer_v1,
                             |peer, frame| {
                                 let source = *ids
                                     .get(&peer)
                                     .ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
                                 if is_forward_request(&frame) {
-                                    let request =
-                                        decode_forward_request(&frame, &listener_cluster_id)
-                                            .map_err(|_| {
-                                                heptabao_ha_service::HaError::InvalidFrame
-                                            })?;
+                                    let request = decode_forward_request(
+                                        &frame,
+                                        &listener_cluster_id,
+                                        listener_allow_legacy_peer_v1,
+                                    )
+                                    .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
                                     if request.source != source || request.target != local_id {
                                         return Err(
                                             heptabao_ha_service::HaError::PeerAuthenticationFailed,
                                         );
                                     }
+                                    let legacy_v1 = request.legacy_v1;
                                     // At most one forward may await the public service mutex.
                                     // The remaining workers stay available to consensus traffic.
                                     let _forward_slot =
@@ -430,13 +448,22 @@ impl HaProcess {
                                         .clone()
                                         .ok_or(heptabao_ha_service::HaError::NotLeader)?;
                                     let response = handler(request);
-                                    return encode_forward_response(
-                                        &listener_cluster_id,
-                                        local_id,
-                                        source,
-                                        response.status,
-                                        &response.body,
-                                    )
+                                    return if legacy_v1 {
+                                        encode_legacy_response_for_transition(
+                                            local_id,
+                                            source,
+                                            response.status,
+                                            &response.body,
+                                        )
+                                    } else {
+                                        encode_forward_response(
+                                            &listener_cluster_id,
+                                            local_id,
+                                            source,
+                                            response.status,
+                                            &response.body,
+                                        )
+                                    }
                                     .map_err(|_| heptabao_ha_service::HaError::InvalidFrame);
                                 }
                                 let request =
@@ -513,6 +540,7 @@ impl HaProcess {
             api_addresses,
             forward_transport,
             forward_timeout,
+            allow_legacy_peer_v1,
             forward_handler,
             listener: Some(listener_pool),
         })
@@ -565,7 +593,22 @@ impl HaProcess {
             .peers
             .get(&leader)
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
-        let request = Zeroizing::new(if let Some(peer) = origin_peer {
+        let legacy_v1 = self.allow_legacy_peer_v1;
+        let request = Zeroizing::new(if legacy_v1 {
+            // HBFQ1 predates trusted origin and client-certificate forwarding.
+            // Omit those optional contexts only for the bounded transition: the
+            // legacy leader fails closed when authorization actually requires
+            // source or certificate identity. Response wrapping is different:
+            // omitting it could release plaintext, so it remains unsupported.
+            if wrap_ttl_seconds.is_some() {
+                return Err(
+                    "legacy HA forwarding transition cannot carry response wrapping".into(),
+                );
+            }
+            encode_legacy_request_for_transition(
+                local, leader, method, path, namespace, token, body,
+            )?
+        } else if let Some(peer) = origin_peer {
             crate::ha_forward::encode_peer_request_for_cluster(
                 &self.cluster_id,
                 (local, leader),
@@ -609,7 +652,11 @@ impl HaProcess {
                 .exchange_before(target, &request, deadline)
                 .map_err(|error| error.to_string())?,
         );
-        let mut response = decode_forward_response(&response, &self.cluster_id)?;
+        let mut response = if legacy_v1 {
+            decode_legacy_response_for_transition(&response, &self.cluster_id)?
+        } else {
+            decode_forward_response(&response, &self.cluster_id)?
+        };
         if response.source != leader || response.target != local {
             return Err("HA forward response direction is invalid".into());
         }
@@ -1846,6 +1893,7 @@ mod tests {
         let mut config: HaProcessConfig = serde_json::from_value(legacy.clone())?;
         assert_eq!(config.peer_timeout_ms, 500);
         assert_eq!(config.forward_timeout_ms, 15_000);
+        assert!(!config.allow_legacy_peer_v1);
         validate_config(&config)?;
         for value in [1_000, 15_000, 60_000] {
             config.forward_timeout_ms = value;
@@ -1889,6 +1937,7 @@ mod tests {
             peer_timeout_ms: 750,
             forward_timeout_ms: 15_000,
             max_inflight: 64,
+            allow_legacy_peer_v1: false,
         };
         assert_eq!(
             validate_config(&config),
@@ -1947,6 +1996,7 @@ mod tests {
             peer_timeout_ms: 750,
             forward_timeout_ms: 15_000,
             max_inflight: 64,
+            allow_legacy_peer_v1: false,
         };
         assert_eq!(
             validate_config(&config),

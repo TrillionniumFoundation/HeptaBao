@@ -79,7 +79,9 @@
         "untrusted_chain_rejected_by_TLS",
         "restart_starts_sealed",
         "restart_unseal_over_mTLS",
-        "cert_renewal_reauthenticates_after_restart"
+        "cert_renewal_reauthenticates_after_restart",
+        "CRL_preserves_unrevoked_same_CA_client_chain",
+        "CRL_revoked_client_is_rejected_before_Service"
       ]
     },
     "ha_forwarding": {

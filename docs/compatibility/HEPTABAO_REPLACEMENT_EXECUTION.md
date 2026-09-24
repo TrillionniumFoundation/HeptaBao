@@ -254,7 +254,7 @@ Guides: `docs/compatibility/HEPTABAO_REPLACEMENT_EXECUTION.md`.
 
 **Lifecycle:** Refresh CRL/OCSP and rotate CA without resurrecting revoked sessions.
 
-**Remaining scope:** Chain, CRL, OCSP and trusted-forwarded-certificate behavior.
+**Remaining scope:** Listener-level leaf CRL enforcement is executable; OCSP, CRL refresh/CA rotation and trusted-forwarded-certificate behavior remain.
 
 Existing bounded profiles: `qa/openbao-acceptance/cert_auth_live.py`.
 
