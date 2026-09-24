@@ -5214,7 +5214,10 @@ impl Service {
             Err(_) => return (true, false, false, false, None, local),
         };
         let standby = leader.is_some() && leader != local;
-        let active = leader.is_some() && leader == local && ha.ensure_linearizable().is_ok();
+        let active = ha.bootstrap_ready()
+            && leader.is_some()
+            && leader == local
+            && ha.ensure_linearizable().is_ok();
         let application_ready = self
             .current_state_identity()
             .ok()

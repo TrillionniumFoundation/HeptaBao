@@ -274,6 +274,7 @@ pub(crate) struct CommittedApplicationState {
 
 pub struct HaProcess {
     record_commits_since_gc: AtomicU64,
+    bootstrap_ready: AtomicBool,
     runtime: Runtime,
     node: Option<ProcessRaftNode>,
     codec: ClusterStateCodec,
@@ -526,38 +527,16 @@ impl HaProcess {
             listener_pool.workers.push(worker);
         }
 
-        if !existing && config.bootstrap {
-            runtime
-                .block_on(node.initialize_single())
-                .map_err(|error| error.to_string())?;
-            runtime.block_on(async {
-                let deadline = tokio::time::Instant::now() + Duration::from_secs(5);
-                loop {
-                    if node.current_leader().await == Some(config.node_id) {
-                        break Ok::<(), String>(());
-                    }
-                    if tokio::time::Instant::now() >= deadline {
-                        break Err(
-                            "HA bootstrap did not elect the local node before membership expansion"
-                                .into(),
-                        );
-                    }
-                    tokio::time::sleep(Duration::from_millis(20)).await;
-                }
-            })?;
-            let voters = config.initial_voters.clone().unwrap_or(peer_ids);
-            for peer_id in voters.iter().copied().filter(|id| *id != config.node_id) {
-                runtime
-                    .block_on(node.add_learner(peer_id))
-                    .map_err(|error| error.to_string())?;
-            }
-            runtime
-                .block_on(node.change_membership(voters))
-                .map_err(|error| error.to_string())?;
-        }
+        let bootstrap_voters = config
+            .bootstrap
+            .then(|| config.initial_voters.clone().unwrap_or(peer_ids.clone()));
+        let bootstrap_ready = bootstrap_voters.as_ref().is_none_or(|voters| {
+            reconcile_bootstrap_membership(&runtime, &node, !existing, config.node_id, voters)
+        });
 
         Ok(Self {
             record_commits_since_gc: AtomicU64::new(0),
+            bootstrap_ready: AtomicBool::new(bootstrap_ready),
             runtime,
             node: Some(node),
             codec,
@@ -574,6 +553,15 @@ impl HaProcess {
 
     pub(crate) fn forward_timeout(&self) -> Duration {
         self.forward_timeout
+    }
+
+    /// Bootstrap admission is separate from listener/process startup. A
+    /// committed learner may still be catching up, and a lost bootstrap
+    /// leader leaves the process safely fenced until a later restart retries
+    /// reconciliation. No health or request path treats that partial state as
+    /// an active authority.
+    pub(crate) fn bootstrap_ready(&self) -> bool {
+        self.bootstrap_ready.load(Ordering::Acquire)
     }
 
     pub(crate) fn register_forward_handler(
@@ -1291,6 +1279,74 @@ fn manifest_envelope_identity(envelope: &ReplicatedEnvelope) -> [u8; 32] {
     let mut result = [0; 32];
     result.copy_from_slice(context.finish().as_ref());
     result
+}
+
+/// Reconcile the statically enrolled bootstrap set without conflating the
+/// membership commit with learner catch-up. This function is intentionally
+/// bounded and best-effort: a missing peer or lost leader leaves a durable
+/// learner (when enrollment committed) and a fenced process that can retry on
+/// the next bootstrap start. It never promotes a learner whose replication
+/// frontier has not been observed.
+fn reconcile_bootstrap_membership(
+    runtime: &Runtime,
+    node: &ProcessRaftNode,
+    initialize: bool,
+    local_id: u64,
+    voters: &BTreeSet<u64>,
+) -> bool {
+    if initialize && runtime.block_on(node.initialize_single()).is_err() {
+        return false;
+    }
+    let elected = runtime.block_on(async {
+        let deadline = tokio::time::Instant::now() + Duration::from_secs(5);
+        loop {
+            if node.current_leader().await == Some(local_id) {
+                break true;
+            }
+            if tokio::time::Instant::now() >= deadline {
+                break false;
+            }
+            tokio::time::sleep(Duration::from_millis(20)).await;
+        }
+    });
+    if !elected {
+        return false;
+    }
+
+    let mut membership = match runtime.block_on(node.membership_observation()) {
+        Ok(membership) => membership,
+        Err(_) => return false,
+    };
+    for peer_id in voters.iter().copied().filter(|id| *id != local_id) {
+        if membership.nodes.contains(&peer_id) {
+            continue;
+        }
+        if runtime.block_on(node.enroll_learner(peer_id)).is_err() {
+            return false;
+        }
+        membership = match runtime.block_on(node.membership_observation()) {
+            Ok(membership) => membership,
+            Err(_) => return false,
+        };
+    }
+
+    // Enrollment is a committed topology fact. Promotion requires the
+    // stronger readiness observation for every requested voter.
+    for peer_id in voters.iter().copied().filter(|id| *id != local_id) {
+        if !membership.voters.contains(&peer_id)
+            && runtime
+                .block_on(node.wait_for_learner_replication(peer_id, Duration::from_secs(2)))
+                .is_err()
+        {
+            return false;
+        }
+    }
+    if membership.voters == *voters {
+        return true;
+    }
+    runtime
+        .block_on(node.change_membership(voters.clone()))
+        .is_ok()
 }
 
 impl Drop for HaProcess {

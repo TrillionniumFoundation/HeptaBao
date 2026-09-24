@@ -122,22 +122,29 @@ impl ProcessRaftNode {
     }
 
     pub async fn add_learner(&self, id: u64) -> Result<(), RemoteRaftError> {
+        self.enroll_learner(id).await?;
+        self.wait_for_learner_replication(id, std::time::Duration::from_secs(8))
+            .await
+    }
+
+    /// Commit learner membership without requiring the target to be reachable.
+    ///
+    /// Bootstrap uses this operation before checking replication readiness. A
+    /// committed learner remains durable and can catch up when its process
+    /// returns; treating an unavailable learner as an admission failure would
+    /// strand a partially bootstrapped cluster.
+    pub async fn enroll_learner(&self, id: u64) -> Result<(), RemoteRaftError> {
         if id == 0 || id == self.id {
             return Err(RemoteRaftError::InvalidTopology);
         }
-        // Admission itself is deliberately non-blocking.  The OpenRaft
-        // blocking variant waits on its own replication heuristic and does
-        // not expose a committed, non-joint membership/heartbeat receipt to
-        // callers.  Observe those conditions explicitly below instead.
         let response = self
             .raft
             .add_learner(id, (), false)
             .await
             .map_err(|error| RemoteRaftError::Consensus(error.to_string()))?;
         let membership_frontier = response.log_id.index;
-        let target = id;
         self.raft
-            .wait(Some(std::time::Duration::from_secs(8)))
+            .wait(Some(std::time::Duration::from_secs(4)))
             .metrics(
                 move |metrics| {
                     let membership = &metrics.membership_config;
@@ -149,28 +156,62 @@ impl ProcessRaftNode {
                     {
                         return false;
                     }
+                    membership.get_node(&id).is_some()
+                },
+                "learner membership committed",
+            )
+            .await
+            .map(|_| ())
+            .map_err(|_| RemoteRaftError::Consensus("learner membership commit unobserved".into()))
+    }
+
+    /// Observe replication and heartbeat readiness separately from learner
+    /// enrollment. A timeout means the learner remains committed but is not
+    /// eligible for voter promotion yet.
+    pub async fn wait_for_learner_replication(
+        &self,
+        id: u64,
+        timeout: std::time::Duration,
+    ) -> Result<(), RemoteRaftError> {
+        if id == 0 || id == self.id {
+            return Err(RemoteRaftError::InvalidTopology);
+        }
+        self.raft
+            .wait(Some(timeout))
+            .metrics(
+                move |metrics| {
+                    let membership = &metrics.membership_config;
+                    if metrics.current_leader != Some(self.id)
+                        || membership != &metrics.committed_membership_config
+                        || membership.get_joint_config().len() != 1
+                    {
+                        return false;
+                    }
+                    let frontier = membership.log_id().as_ref().map(|log| log.index);
                     let matched = metrics
                         .replication
                         .as_ref()
-                        .and_then(|replication| replication.get(&target))
+                        .and_then(|replication| replication.get(&id))
                         .and_then(|log| log.as_ref())
                         .map(|log| log.index);
                     let heartbeat_recent = metrics
                         .heartbeat
                         .as_ref()
-                        .and_then(|heartbeats| heartbeats.get(&target))
+                        .and_then(|heartbeats| heartbeats.get(&id))
                         .and_then(|instant| instant.as_ref())
                         .is_some_and(|instant| {
                             instant.elapsed() <= std::time::Duration::from_secs(1)
                         });
-                    matched.is_some_and(|index| index >= membership_frontier) && heartbeat_recent
+                    frontier.is_some_and(|frontier| {
+                        matched.is_some_and(|index| index >= frontier) && heartbeat_recent
+                    })
                 },
                 "learner committed replication frontier",
             )
             .await
             .map(|_| ())
             .map_err(|_| {
-                RemoteRaftError::Consensus("learner replication completion unobserved".into())
+                RemoteRaftError::Consensus("learner replication readiness unobserved".into())
             })
     }
 
@@ -178,11 +219,31 @@ impl ProcessRaftNode {
         if voters.len() < 3 || !voters.contains(&self.id) || voters.contains(&0) {
             return Err(RemoteRaftError::InvalidTopology);
         }
-        self.raft
+        let expected_voters = voters.clone();
+        let response = self
+            .raft
             .change_membership(voters, false)
             .await
+            .map_err(|error| RemoteRaftError::Consensus(error.to_string()))?;
+        let expected = response.log_id.index;
+        self.raft
+            .wait(Some(std::time::Duration::from_secs(4)))
+            .metrics(
+                move |metrics| {
+                    let membership = &metrics.membership_config;
+                    membership == &metrics.committed_membership_config
+                        && membership.get_joint_config().len() == 1
+                        && membership
+                            .log_id()
+                            .as_ref()
+                            .is_some_and(|log| log.index >= expected)
+                        && membership.voter_ids().collect::<BTreeSet<_>>() == expected_voters
+                },
+                "voter membership committed",
+            )
+            .await
             .map(|_| ())
-            .map_err(|error| RemoteRaftError::Consensus(error.to_string()))
+            .map_err(|_| RemoteRaftError::Consensus("voter membership commit unobserved".into()))
     }
 
     pub async fn current_leader(&self) -> Option<u64> {

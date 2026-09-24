@@ -195,3 +195,75 @@ async fn large_log_reconnect_snapshot_then_new_leader_commits_its_blank()
     std::fs::remove_dir_all(&path)?;
     result
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn committed_unready_learner_is_not_promoted_and_can_recover()
+-> Result<(), Box<dyn std::error::Error>> {
+    let path = std::env::temp_dir().join(format!(
+        "heptabao-learner-readiness-{}-{}",
+        std::process::id(),
+        std::thread::current().name().unwrap_or("test")
+    ));
+    let _ = std::fs::remove_dir_all(&path);
+    let router = Arc::new(Router::default());
+    let peers = BTreeSet::from([1, 2, 3]);
+    let factory = RemoteNetworkFactory::new(1, peers.clone(), Arc::new(Arc::clone(&router)))?;
+    let leader_node = ProcessRaftNode::create(path.join("1"), 1, factory).await?;
+    router
+        .peers
+        .write()
+        .await
+        .insert(1, leader_node.rpc_service());
+
+    let result = async {
+        leader_node.initialize_single().await?;
+        leader(&leader_node, 1).await?;
+
+        // Enrollment is a durable membership fact even while the target process
+        // is absent. Readiness must remain false and promotion must not happen.
+        leader_node.enroll_learner(2).await?;
+        let enrolled = leader_node.membership_observation().await?;
+        assert!(enrolled.nodes.contains(&2));
+        assert_eq!(enrolled.voters, BTreeSet::from([1]));
+        assert!(
+            leader_node
+                .wait_for_learner_replication(2, Duration::from_millis(250))
+                .await
+                .is_err()
+        );
+        assert_eq!(
+            leader_node.membership_observation().await?.voters,
+            BTreeSet::from([1])
+        );
+
+        // Bring the learner process up later. The committed enrollment is reused;
+        // once replication/heartbeat catches up it becomes eligible to promote.
+        let factory2 = RemoteNetworkFactory::new(2, peers.clone(), Arc::new(Arc::clone(&router)))?;
+        let node2 = ProcessRaftNode::create(path.join("2"), 2, factory2).await?;
+        router.peers.write().await.insert(2, node2.rpc_service());
+        leader_node
+            .wait_for_learner_replication(2, Duration::from_secs(8))
+            .await?;
+
+        let factory3 = RemoteNetworkFactory::new(3, peers.clone(), Arc::new(Arc::clone(&router)))?;
+        let node3 = ProcessRaftNode::create(path.join("3"), 3, factory3).await?;
+        router.peers.write().await.insert(3, node3.rpc_service());
+        leader_node.enroll_learner(3).await?;
+        leader_node
+            .wait_for_learner_replication(3, Duration::from_secs(8))
+            .await?;
+        leader_node.change_membership(peers.clone()).await?;
+        assert_eq!(leader_node.membership_observation().await?.voters, peers);
+
+        router.peers.write().await.remove(&2);
+        router.peers.write().await.remove(&3);
+        node2.shutdown().await?;
+        node3.shutdown().await?;
+        Ok::<_, Box<dyn std::error::Error>>(())
+    }
+    .await;
+    router.peers.write().await.clear();
+    leader_node.shutdown().await?;
+    let _ = std::fs::remove_dir_all(&path);
+    result
+}

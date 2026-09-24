@@ -23,7 +23,7 @@ so an older legacy parser cannot silently discard the object map. Existing objec
 state-machine and 128MiB snapshot budgets remain enforced; this API description is
 not a successful scale, snapshot-transfer or mixed-version test receipt.
 
-`initialize_single`, `add_learner` and `change_membership(voters)` are administrative consensus operations, not HTTP authorization. The server/caller owns operator admission, peer identity and compatible cluster/key configuration. `trigger_snapshot` requests a local snapshot; success alone does not establish remote InstallSnapshot or destructive recovery qualification. `shutdown(self)` consumes the node, while `rpc_service()` clones the request adapter needed by the peer listener.
+`initialize_single`, `enroll_learner`, `add_learner`, `wait_for_learner_replication` and `change_membership(voters)` are administrative consensus operations, not HTTP authorization. `enroll_learner` observes a committed learner membership without requiring the target to be reachable; `add_learner` composes that operation with the stronger replication and recent-heartbeat readiness check. The server bootstrap path uses the split operations, so an unavailable learner remains a durable learner and is never promoted or reported as active. The server/caller owns operator admission, peer identity and compatible cluster/key configuration. `trigger_snapshot` requests a local snapshot; success alone does not establish remote InstallSnapshot or destructive recovery qualification. `shutdown(self)` consumes the node, while `rpc_service()` clones the request adapter needed by the peer listener.
 
 Current API declaration excerpt (illustrative, not a standalone program):
 
