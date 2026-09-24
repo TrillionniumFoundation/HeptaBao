@@ -6323,6 +6323,9 @@ impl AuthState {
         if mount.kind != "userpass" || mount.user_lockout_disable {
             return Err(err(status, message));
         }
+        if now == 0 {
+            return Err(err(503, "userpass lockout requires a trusted clock"));
+        }
         if user.failed_login_last_at > 0
             && now.saturating_sub(user.failed_login_last_at)
                 >= mount.user_lockout_counter_reset_duration

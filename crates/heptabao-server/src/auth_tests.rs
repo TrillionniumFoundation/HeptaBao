@@ -1719,6 +1719,19 @@ fn userpass_lockout_is_explicit_durable_and_fails_closed_across_restart() {
             .is_err()
     );
     assert!(!state.users["team"].contains_key("unknown"));
+    assert!(
+        state
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password":"wrong-password"}),
+                0,
+            )
+            .is_err()
+    );
+    assert_eq!(state.users["team"]["alice"].failed_login_count, 0);
     for now in [100, 101, 102] {
         let failed = state
             .handle(

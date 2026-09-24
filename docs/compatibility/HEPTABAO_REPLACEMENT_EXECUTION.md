@@ -208,7 +208,7 @@ Existing bounded profiles: `qa/openbao-acceptance/acceptance.py`.
 
 Implementation: `PARTIAL_RUNTIME`. Original work packages: `H16-WP02`, `H16-WP10`.
 API families: `auth/{mount}/users/*`; `auth/{mount}/login/*`.
-Runtime source: `crates/heptabao-server/src/auth.rs`, `crates/heptabao-server/src/auth_tests.rs`.
+Runtime source: `crates/heptabao-server/src/auth.rs`.
 Separate contracts: none claimed.
 Guides: `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`.
 
