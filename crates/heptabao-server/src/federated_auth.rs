@@ -150,6 +150,11 @@ pub struct VerifiedPrincipal {
     pub audiences: BTreeSet<String>,
     pub namespace: Option<String>,
     pub groups: BTreeSet<String>,
+    /// OIDC authentication context claims. These are populated only for the
+    /// authorization-code profile; native JWT keeps its existing claim
+    /// surface and does not acquire an MFA interpretation.
+    pub acr: Option<String>,
+    pub amr: BTreeSet<String>,
     pub token_id: String,
     pub issued_at: u64,
     pub expires_at: u64,
@@ -324,6 +329,14 @@ impl JwtVerifier {
         };
         let namespace = take_optional_string(&mut claims, "heptabao_namespace")?;
         let groups = take_string_set(&mut claims, "groups")?;
+        let (acr, amr) = if oidc.is_some() {
+            (
+                take_optional_string(&mut claims, "acr")?,
+                take_string_set(&mut claims, "amr")?,
+            )
+        } else {
+            (None, BTreeSet::new())
+        };
 
         if issuer != self.policy.issuer
             || audiences.is_disjoint(&self.policy.audiences)
@@ -351,6 +364,8 @@ impl JwtVerifier {
             audiences,
             namespace,
             groups,
+            acr,
+            amr,
             token_id,
             issued_at,
             expires_at,
@@ -1292,13 +1307,14 @@ mod tests {
             URL_SAFE_NO_PAD.encode(&digest::digest(&digest::SHA256, s.as_bytes()).as_ref()[..16])
         };
         let original = json!({"iss":"https://issuer.example:443","sub":"alice","aud":"client",
-            "iat":100,"exp":400,"nonce":"nonce","at_hash":short_hash("access"),"c_hash":short_hash("code")});
+            "iat":100,"exp":400,"nonce":"nonce","acr":"urn:example:loa:2",
+            "amr":["pwd","otp"],"at_hash":short_hash("access"),"c_hash":short_hash("code")});
         let encoded = sign(&original);
-        assert!(
-            verifier
-                .verify_oidc(&encoded, 110, "nonce", "access", "code")
-                .is_ok()
-        );
+        let verified = verifier
+            .verify_oidc(&encoded, 110, "nonce", "access", "code")
+            .unwrap();
+        assert_eq!(verified.acr.as_deref(), Some("urn:example:loa:2"));
+        assert_eq!(verified.amr, BTreeSet::from(["otp".into(), "pwd".into()]));
         assert!(verifier.verify(&encoded, 110).is_err()); // original JWT still requires jti
         assert!(
             verifier
@@ -1332,7 +1348,7 @@ mod tests {
                 "{field}"
             );
         }
-        let mut multiple = original;
+        let mut multiple = original.clone();
         multiple["aud"] = json!(["client", "other"]);
         multiple["azp"] = json!("client");
         assert!(
@@ -1340,5 +1356,14 @@ mod tests {
                 .verify_oidc(&sign(&multiple), 110, "nonce", "access", "code")
                 .is_ok()
         );
+        for value in [json!("otp"), json!(["pwd", 7])] {
+            let mut malformed = original.clone();
+            malformed["amr"] = value;
+            assert!(
+                verifier
+                    .verify_oidc(&sign(&malformed), 110, "nonce", "access", "code")
+                    .is_err()
+            );
+        }
     }
 }

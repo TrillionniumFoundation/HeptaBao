@@ -443,6 +443,62 @@ fn remount_same(state: &mut AuthState, root: &Principal, now: u64) {
 }
 
 #[test]
+fn oidc_required_authentication_context_is_rechecked_at_token_issuance() {
+    let (mut state, raw, _) = tests::setup();
+    let root = state.authenticate(&raw, 100).unwrap();
+    update(
+        &mut state,
+        &root,
+        json!({
+            "required_acr": "urn:example:loa:2",
+            "required_amr": ["pwd", "otp"]
+        }),
+        100,
+    );
+
+    let body = callback(&mut state, 101);
+    let exchange = state
+        .consume_oidc("", "browser", &body, 101)
+        .unwrap()
+        .unwrap();
+    let before = provider_renewal::state_revision(&state).unwrap();
+    assert_eq!(
+        state
+            .finish_oidc_observation(
+                "",
+                "browser",
+                exchange,
+                OidcLoginObservation::observed("alice", 101),
+            )
+            .err()
+            .unwrap()
+            .status,
+        403
+    );
+    assert_eq!(provider_renewal::state_revision(&state).unwrap(), before);
+
+    let body = callback(&mut state, 102);
+    let exchange = state
+        .consume_oidc("", "browser", &body, 102)
+        .unwrap()
+        .unwrap();
+    let response = state
+        .finish_oidc_observation(
+            "",
+            "browser",
+            exchange,
+            OidcLoginObservation::observed_with_context(
+                "alice",
+                Some("urn:example:loa:2"),
+                BTreeSet::from(["pwd".into(), "otp".into(), "webauthn".into()]),
+                102,
+            ),
+        )
+        .unwrap();
+    assert!(response.body["auth"]["client_token"].as_str().is_some());
+}
+
+#[test]
 fn oidc_discovery_and_consumed_exchange_cannot_complete_in_recreated_mount() {
     let (mut state, root, _) = fixture();
     let plan = state

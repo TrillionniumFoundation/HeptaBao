@@ -10,10 +10,10 @@ The global OpenBao 2.6.2 denominator is unchanged. Kubernetes and JWT/OIDC remai
 | Owner | Current responsibility |
 |---|---|
 | `auth_kubernetes.rs` | TokenReview configuration, exact ServiceAccount bindings, UID aliases, local token construction and shared online mount lookup. |
-| `auth_oidc.rs` | Confidential OIDC client configuration, roles, encrypted PKCE sessions, state/client-proof checks and signed ID-token verification orchestration. |
+| `auth_oidc.rs` | Confidential/public OIDC client configuration, roles, encrypted PKCE sessions, state/client-proof checks, signed ID-token verification and bounded provider MFA context enforcement. |
 | `service_online_auth.rs` | Actual request admission, live Identity projection, durable/HA session consumption and token publication. |
 | `outbound.rs`, `outbound_auth_https.rs` | Kubernetes/legacy enrolled HTTPS and scoped JWT/OIDC API-owned HTTPS, bounded POST and strict response framing; never ambient proxies or redirects. |
-| `federated_auth.rs` | Real RS256/ES256 signatures and issuer/audience/time checks; OIDC additionally checks nonce/azp/at_hash/c_hash. Native JWT assertions are reusable and do not require jti. |
+| `federated_auth.rs` | Real RS256/ES256 signatures and issuer/audience/time checks; OIDC additionally checks nonce/azp/at_hash/c_hash and signed `acr`/`amr` context claims. Native JWT assertions are reusable and do not require jti. |
 | `clients/python/heptabao/oidc_login.py` | Actual native loopback callback receiver and descriptor-anchored private credential publication. |
 
 The existing Service request audit, finite-token admission, ReadIndex, leader
@@ -168,7 +168,7 @@ OIDC access token, and the OAuth access token never becomes a local Principal.
 |---|---|---|
 | `auth/<mount>/config` | POST/PUT | Required `oidc_discovery_url` (exact issuer), `oidc_client_id`; optional `oidc_client_secret` (required for the default `oidc_client_auth_method:"client_secret_basic"`). Set `oidc_client_auth_method:"none"` for a public client; that mode requires `pkce_s256_enrolled:true` and an empty or omitted secret. `jwt_supported_algs` (RS256/ES256 only), `oidc_discovery_ca_pem` and `pkce_s256_enrolled` are optional. |
 | Same | GET | Public issuer/client/algorithm/CA fields, `oidc_client_auth_method` and secret-present flag. No secret echo or metadata fetch on a read. |
-| `auth/<mount>/role/<name>` | POST/PUT | Exact `allowed_redirect_uris`; optional `role_type:"oidc"`, `user_claim:"sub"`, `bound_subject`, `bound_groups`, `token_policies`, `token_ttl`, `token_max_ttl`, `token_period`, `token_explicit_max_ttl`, `token_num_uses`. Updates preserve omitted fields. |
+| `auth/<mount>/role/<name>` | POST/PUT | Exact `allowed_redirect_uris`; optional `role_type:"oidc"`, `user_claim:"sub"`, `bound_subject`, `bound_groups`, `required_acr`, `required_amr`, `token_policies`, `token_ttl`, `token_max_ttl`, `token_period`, `token_explicit_max_ttl`, `token_num_uses`. Updates preserve omitted fields. |
 | Same, and role collection | GET/DELETE, GET/LIST | Read/remove role; config or role updates invalidate affected pending sessions. |
 | `auth/<mount>/oidc/auth_url` | POST/PUT | Exactly `role`, `redirect_uri`, **client_nonce** (canonical base64url of 32 independent random bytes). |
 | `auth/<mount>/oidc/callback` | POST/PUT | Exactly `state`, `code`, and the same independent **client_nonce**. No arbitrary redirect override. |
@@ -211,6 +211,15 @@ are limited to `http://127.0.0.1:<explicit-port>/oidc/callback`. There are no wi
 localhost DNS aliases, dynamic query additions or insecure remote redirects.
 Roles cannot switch the subject claim away from sub. Issuer or client-ID changes
 require a new mount/accessor; secret rotation can occur within the same realm.
+
+OIDC roles may require provider authentication context with `required_acr` and
+`required_amr`. `required_acr` is an exact string match; every value in
+`required_amr` must occur in the signed ID token's `amr` array. The verifier
+rejects a missing or malformed claim, and role/configuration changes invalidate
+pending sessions through the existing session binding. These requirements
+compose provider MFA (for example `amr:["pwd","otp"]`) with local token
+issuance; they do not implement an external MFA service or infer assurance from
+an unsigned UserInfo response.
 
 ### Durable session and upstream-effect state machine
 

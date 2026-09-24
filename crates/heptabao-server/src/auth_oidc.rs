@@ -83,6 +83,10 @@ struct OidcRole {
     allowed_redirect_uris: BTreeSet<String>,
     bound_subject: Option<String>,
     bound_groups: BTreeSet<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    required_acr: Option<String>,
+    #[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
+    required_amr: BTreeSet<String>,
     token_policies: BTreeSet<String>,
     token_ttl: u64,
     #[serde(default, skip_serializing_if = "is_zero")]
@@ -145,6 +149,8 @@ pub(crate) struct OidcBeginObservation {
 
 pub(crate) struct OidcLoginObservation {
     subject: String,
+    acr: Option<String>,
+    amr: BTreeSet<String>,
     now: u64,
 }
 
@@ -153,6 +159,23 @@ impl OidcLoginObservation {
     pub(crate) fn observed(subject: &str, now: u64) -> Self {
         Self {
             subject: subject.into(),
+            acr: None,
+            amr: BTreeSet::new(),
+            now,
+        }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn observed_with_context(
+        subject: &str,
+        acr: Option<&str>,
+        amr: BTreeSet<String>,
+        now: u64,
+    ) -> Self {
+        Self {
+            subject: subject.into(),
+            acr: acr.map(str::to_owned),
+            amr,
             now,
         }
     }
@@ -256,12 +279,17 @@ impl OidcExchange {
                 .as_ref()
                 .is_some_and(|v| v != &verified.subject)
                 || !self.role.bound_groups.is_subset(&verified.groups)
+                || !self
+                    .role
+                    .accepts_authentication_context(verified.acr.as_deref(), &verified.amr)
                 || verified.namespace.as_ref().is_some_and(|v| v != namespace)
             {
                 return Err(denied());
             }
             Ok(OidcLoginObservation {
                 subject: verified.subject,
+                acr: verified.acr,
+                amr: verified.amr,
                 now,
             })
         })();
@@ -409,6 +437,12 @@ impl OidcRole {
                 .is_some_and(|v| !bounded_string(v, 1024))
             || self.bound_groups.len() > 128
             || self.bound_groups.iter().any(|v| !bounded_string(v, 1024))
+            || self
+                .required_acr
+                .as_ref()
+                .is_some_and(|v| !bounded_string(v, 256))
+            || self.required_amr.len() > 32
+            || self.required_amr.iter().any(|v| !bounded_string(v, 128))
             || self.token_policies.len() > 128
             || self
                 .token_policies
@@ -423,6 +457,12 @@ impl OidcRole {
             return Err(bad("invalid OIDC role bindings"));
         }
         Ok(())
+    }
+    fn accepts_authentication_context(&self, acr: Option<&str>, amr: &BTreeSet<String>) -> bool {
+        self.required_acr
+            .as_ref()
+            .is_none_or(|required| acr == Some(required.as_str()))
+            && self.required_amr.is_subset(amr)
     }
     fn limits(&self) -> NativeTokenLimits {
         NativeTokenLimits {
@@ -676,6 +716,11 @@ impl AuthState {
                 let mut data = serde_json::to_value(role).map_err(|_| bad("invalid OIDC role"))?;
                 data["role_type"] = json!("oidc");
                 data["user_claim"] = json!("sub");
+                data["required_acr"] = role
+                    .required_acr
+                    .as_ref()
+                    .map_or(Value::Null, |value| json!(value));
+                data["required_amr"] = json!(role.required_amr);
                 data["token_max_ttl"] = json!(role.token_max_ttl);
                 data["token_period"] = json!(role.token_period);
                 data["token_explicit_max_ttl"] = json!(role.token_explicit_max_ttl);
@@ -690,6 +735,8 @@ impl AuthState {
                         "allowed_redirect_uris",
                         "bound_subject",
                         "bound_groups",
+                        "required_acr",
+                        "required_amr",
                         "token_policies",
                         "token_ttl",
                         "token_max_ttl",
@@ -715,6 +762,8 @@ impl AuthState {
                         allowed_redirect_uris: BTreeSet::new(),
                         bound_subject: None,
                         bound_groups: BTreeSet::new(),
+                        required_acr: None,
+                        required_amr: BTreeSet::new(),
                         token_policies: BTreeSet::new(),
                         token_ttl: 0,
                         token_max_ttl: 0,
@@ -754,6 +803,23 @@ impl AuthState {
                 }
                 if body.get("bound_groups").is_some_and(|v| !v.is_null()) {
                     role.bound_groups = claim_values(body, "bound_groups")?;
+                }
+                if let Some(value) = body.get("required_acr") {
+                    role.required_acr = if value.is_null() {
+                        None
+                    } else {
+                        Some(
+                            value
+                                .as_str()
+                                .ok_or_else(|| bad("required_acr must be a string"))?
+                                .to_owned(),
+                        )
+                    };
+                }
+                if body.get("required_amr").is_some_and(|v| !v.is_null()) {
+                    role.required_amr = claim_values(body, "required_amr")?;
+                } else if body.get("required_amr").is_some() {
+                    role.required_amr.clear();
                 }
                 if body.get("token_policies").is_some_and(|v| !v.is_null()) {
                     role.token_policies =
@@ -1183,6 +1249,12 @@ impl AuthState {
                 "OIDC configuration changed after authorization session consumption",
             ));
         }
+        if !exchange
+            .role
+            .accepts_authentication_context(observation.acr.as_deref(), &observation.amr)
+        {
+            return Err(denied());
+        }
         let limits = exchange.role.limits();
         // Role readback preserves only configured policies. Old stored roles
         // may already contain default; leaving them unchanged also preserves
@@ -1291,6 +1363,78 @@ mod tests {
         assert!(response.body["data"].get("oidc_client_secret").is_none());
     }
 
+    #[test]
+    fn oidc_role_authentication_context_requires_provider_mfa_claims() {
+        let mut role = OidcRole {
+            allowed_redirect_uris: BTreeSet::from(["http://127.0.0.1:8259/oidc/callback".into()]),
+            bound_subject: None,
+            bound_groups: BTreeSet::new(),
+            required_acr: Some("urn:example:loa:2".into()),
+            required_amr: BTreeSet::from(["pwd".into(), "otp".into()]),
+            token_policies: BTreeSet::from(["default".into()]),
+            token_ttl: 300,
+            token_max_ttl: 0,
+            token_period: 0,
+            token_explicit_max_ttl: 0,
+            token_num_uses: 0,
+        };
+        assert!(role.validate().is_ok());
+        let amr = BTreeSet::from(["pwd".into(), "otp".into(), "webauthn".into()]);
+        assert!(role.accepts_authentication_context(Some("urn:example:loa:2"), &amr));
+        role.required_amr.insert("hwk".into());
+        assert!(!role.accepts_authentication_context(Some("urn:example:loa:2"), &amr));
+        role.required_amr.remove("hwk");
+        role.required_acr = Some("urn:example:loa:3".into());
+        assert!(!role.accepts_authentication_context(Some("urn:example:loa:2"), &amr));
+    }
+
+    #[test]
+    fn oidc_role_authentication_context_is_persisted_and_rejects_bad_shapes() {
+        let (mut state, raw, _) = setup();
+        let actor = state.authenticate(&raw, 100).unwrap();
+        state
+            .handle(
+                Some(&actor),
+                "",
+                "POST",
+                "auth/browser/role/app",
+                &json!({
+                    "required_acr": "urn:example:loa:2",
+                    "required_amr": ["pwd", "otp"]
+                }),
+                101,
+            )
+            .unwrap()
+            .unwrap();
+        let response = state
+            .handle(
+                Some(&actor),
+                "",
+                "GET",
+                "auth/browser/role/app",
+                &json!({}),
+                101,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(response.body["data"]["required_acr"], "urn:example:loa:2");
+        assert_eq!(response.body["data"]["required_amr"], json!(["otp", "pwd"]));
+        let before = serde_json::to_vec(&state).unwrap();
+        assert!(
+            state
+                .handle(
+                    Some(&actor),
+                    "",
+                    "POST",
+                    "auth/browser/role/app",
+                    &json!({"required_amr": ["otp", 7]}),
+                    101,
+                )
+                .is_err()
+        );
+        assert_eq!(serde_json::to_vec(&state).unwrap(), before);
+    }
+
     pub(super) fn setup() -> (AuthState, String, Value) {
         let (mut state, root) = AuthState::bootstrap(100).unwrap();
         let actor = state.authenticate(&root, 100).unwrap();
@@ -1318,6 +1462,8 @@ mod tests {
             allowed_redirect_uris: BTreeSet::from(["http://127.0.0.1:8259/oidc/callback".into()]),
             bound_subject: None,
             bound_groups: BTreeSet::new(),
+            required_acr: None,
+            required_amr: BTreeSet::new(),
             token_policies: BTreeSet::from(["default".into()]),
             token_ttl: 300,
             token_max_ttl: 0,

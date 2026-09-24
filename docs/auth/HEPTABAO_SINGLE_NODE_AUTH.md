@@ -396,6 +396,9 @@ zeroized when its owned record is dropped. This does not make the seed recoverab
 through an API. Administrators must retain their enrollment handoff securely;
 regeneration invalidates the old seed immediately. There is no recovery-code,
 push, WebAuthn or external MFA-provider implementation in this bounded profile.
+OIDC roles can compose provider MFA assurance with local issuance by requiring
+exact signed `acr` and set-valued `amr` claims; missing or malformed claims deny
+the code-flow login.
 
 ## Certificate authentication (bounded mTLS profile)
 
