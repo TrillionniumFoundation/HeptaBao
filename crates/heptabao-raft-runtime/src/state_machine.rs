@@ -228,10 +228,16 @@ impl StateMachine {
             .client_status
             .get(PRODUCTION_CLIENT)
             .ok_or(RecordRejection::StaleRoot)?;
-        if LegacyStatusIdentity::inspect(status)?.1 != expected {
+        let (legacy_envelope, observed) = LegacyStatusIdentity::inspect(status)?;
+        if observed != expected {
             return Err(RecordRejection::StaleRoot);
         }
-        if active.is_empty() || active.len() > 128 {
+        // Empty retention is valid only for the historical HBSR1 inline
+        // whole-state format, which has no physical chunk clients. Chunked
+        // formats must still name every authenticated active slot.
+        if active.len() > 128
+            || (active.is_empty() && !legacy_envelope.sealed().starts_with(b"HBSR1"))
+        {
             return Err(RecordRejection::Invalid);
         }
         let mut indexes = std::collections::BTreeSet::new();
@@ -254,8 +260,9 @@ impl StateMachine {
             }
             retained.insert(client);
         }
-        // The application proposer has authenticated the manifest and complete
-        // reference set under its serialized leader writer. Runtime has no key.
+        // The application proposer has authenticated the inline HBSR1 state or
+        // HBSM4 manifest and complete reference set under its serialized leader
+        // writer. Runtime has no replication key.
         // Freeze production legacy writes atomically with cleanup; a later old
         // writer cannot replace a kept slot or publish now-deleted staged slots.
         let keep = |client: &String| {

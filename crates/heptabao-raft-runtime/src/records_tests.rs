@@ -591,6 +591,46 @@ fn legacy_cleanup_checks_all_identities_before_any_change_or_fence() {
 }
 
 #[test]
+fn inline_hbsr1_cleanup_accepts_empty_active_set_and_fences_legacy_writer() {
+    let inline =
+        ReplicatedEnvelope::new("inline", [61; 32], [b"HBSR1".as_slice(), &[0; 64]].concat())
+            .expect("inline envelope");
+    let status = inline.encoded_status();
+    let expected = LegacyStatusIdentity::inspect(&status)
+        .expect("inline identity")
+        .1;
+    let mut state = StateMachine::default();
+    state
+        .client_status
+        .insert(crate::records::PRODUCTION_CLIENT.into(), status);
+    state.client_status.insert(
+        "heptabao-production-ha-chunk:000:0".into(),
+        ReplicatedEnvelope::new("stale", [62; 32], vec![62; 32])
+            .expect("stale envelope")
+            .encoded_status(),
+    );
+
+    apply(&mut state, retain(expected, vec![])).expect("inline preparation");
+    assert_eq!(state.base(), Ok(RecordRootBase::Legacy(expected.digest)));
+    assert!(
+        !state
+            .client_status
+            .contains_key("heptabao-production-ha-chunk:000:0")
+    );
+    let before = bytes(&state);
+    let response = state.apply(
+        &openraft_memstore::ClientRequest {
+            client: crate::records::PRODUCTION_CLIENT.into(),
+            serial: 9,
+            status: "late inline legacy write".into(),
+        }
+        .into(),
+    );
+    assert_eq!(response.result(), Err(RecordRejection::LegacyFenced));
+    assert_eq!(bytes(&state), before);
+}
+
+#[test]
 fn legacy_cleanup_preserves_exact_active_statuses_and_installs_durable_write_fence() {
     let (mut state, expected, active) = legacy_fixture();
     let original = state.client_status.clone();

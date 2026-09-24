@@ -706,7 +706,7 @@ Guides: `docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md`.
 
 **Remaining scope:** FSM, log, snapshot, chunking, membership, non-voter and autopilot.
 
-Existing bounded profiles: `qa/openbao-acceptance/ha_destructive.py`, `qa/openbao-acceptance/raft_membership_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/ha_destructive.py`, `qa/openbao-acceptance/raft_membership_live.py`, `qa/openbao-acceptance/ha_rolling_upgrade.py`.
 
 ### HB-SURFACE-PLUGIN-AUTH
 

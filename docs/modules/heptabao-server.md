@@ -287,10 +287,15 @@ Forward request Debug exposes only source, target and bounded method; path,
 namespace, token and body are redacted. Response Debug exposes direction/status
 and redacts the body. Serialization staging buffers are zeroized on drop,
 including oversize rejection; this does not guarantee removal of every library
-or allocator copy. Every HBRT1 consensus frame and HBFQ/HBFS forwarding frame
-also carries the configured cluster identity; receivers reject a validly signed
-or mTLS-authenticated frame from another cluster before dispatch. Hostile Rust
-tests exercise redaction, frame bounds and cross-cluster rejection.
+or allocator copy. Current-format HBRT1 consensus frames and HBFQ/HBFS
+forwarding frames carry the configured cluster identity; receivers reject a
+validly signed or mTLS-authenticated current frame from another cluster before
+dispatch. The explicit `allow_legacy_peer_v1` rolling bridge is the only
+exception: for an existing durable Raft state it temporarily emits and accepts
+the immediately preceding pre-cluster-bound HBRT1/HBFQ1/HBFS1 wire, and it is
+refused for a fresh cluster. The flag must be removed by one-at-a-time restart
+after every voter runs the candidate. Hostile Rust tests exercise redaction,
+frame bounds, strict-mode legacy rejection and cross-cluster rejection.
 
 Synthetic three-process testing is provided by
 `qa/openbao-acceptance/ha_destructive.py`; replay-epoch failover extends it in

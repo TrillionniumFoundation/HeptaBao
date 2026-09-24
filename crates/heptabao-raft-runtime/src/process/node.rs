@@ -300,16 +300,17 @@ impl ProcessRaftNode {
         })
     }
     /// Trusted application maintenance, not a public client operation. Caller
-    /// authenticates the complete HBSM4 manifest/chunks under its leader writer;
-    /// mixed old/new rolling writers are unsupported. Success installs a durable
-    /// legacy-write fence and requires a current binary for retry/recovery.
+    /// authenticates either a complete inline HBSR1 state or the complete HBSM4
+    /// manifest/chunks under its leader writer. An empty active set is accepted
+    /// by the state machine only when the exact persisted production envelope is
+    /// HBSR1. Success installs a durable legacy-write fence.
     pub async fn retain_legacy_application_chunks(
         &self,
         serial: u64,
         expected_manifest: crate::LegacyStatusIdentity,
         active: &[crate::LegacyChunkRef],
     ) -> Result<CommitReceipt, RaftRuntimeError> {
-        if active.is_empty() || active.len() > 128 {
+        if active.len() > 128 {
             return Err(RaftRuntimeError::RecordRejected(
                 crate::RecordRejection::Invalid,
             ));

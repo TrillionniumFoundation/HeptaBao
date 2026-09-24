@@ -529,8 +529,9 @@ impl HaProcess {
     }
 }
 
-/// This proof is created only after AEAD verification of HBSM4 and every
-/// active physical chunk. Local generation guards a consistent observation;
+/// This proof is created only after AEAD verification of either one complete
+/// inline HBSR1 state or HBSM4 plus every active physical chunk. Local generation
+/// guards a consistent observation;
 /// the replicated command CAS binds exact manifest/status/reference identities,
 /// not a node-local generation. Callers hold the serialized leader writer.
 struct VerifiedLegacyMigration {
@@ -559,12 +560,36 @@ fn authenticate_legacy_record_migration(
             envelope.sealed(),
         )
         .map_err(|error| error.to_string())?;
-    let CommittedStateDescriptor::Chunked(manifest) = descriptor else {
-        return Err("record migration requires an authenticated HBSM4 owner state".into());
+    let manifest = match descriptor {
+        CommittedStateDescriptor::Legacy(plaintext) => {
+            // HBSR1 is one authenticated whole-state envelope. There are no
+            // legacy chunk slots to retain, but the exact raw-status identity
+            // still becomes the replicated migration fence before RecordsV5.
+            if ring::digest::digest(&ring::digest::SHA256, &plaintext).as_ref()
+                != envelope.digest().as_slice()
+            {
+                return Err("inline legacy migration digest mismatch".into());
+            }
+            if current_generation() != generation {
+                return Err("legacy migration state changed during authentication".into());
+            }
+            return Ok(Some(VerifiedLegacyMigration {
+                identity,
+                active: Vec::new(),
+            }));
+        }
+        CommittedStateDescriptor::Chunked(manifest)
+            if manifest.owner_manifest_digest.is_some()
+                && manifest.state_digest == envelope.digest() =>
+        {
+            manifest
+        }
+        _ => {
+            return Err(
+                "record migration requires authenticated HBSR1 or HBSM4 owner state".into(),
+            );
+        }
     };
-    if manifest.owner_manifest_digest.is_none() || manifest.state_digest != envelope.digest() {
-        return Err("record migration requires an authenticated HBSM4 owner state".into());
-    }
     let mut digest = ring::digest::Context::new(&ring::digest::SHA256);
     let mut bytes = 0_u64;
     let mut active = Vec::with_capacity(manifest.chunks.len());
@@ -1012,8 +1037,38 @@ mod legacy_migration_tests {
             13,
         )?;
         assert!(fixture.verify(41).is_err());
-        fixture.manifest = observation(fixture.codec.seal("old-inline", [1; 32], b"abcdefg")?, 13)?;
-        assert!(fixture.verify(41).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn migration_accepts_authenticated_inline_hbsr1_without_chunk_retention() -> TestResult {
+        let codec = ClusterStateCodec::new("inline-legacy-test", [7; 32])?;
+        let inline = observation(codec.seal("old-inline", [1; 32], b"abcdefg")?, 13)?;
+        let reads = std::cell::Cell::new(0);
+        let verified = authenticate_legacy_record_migration(
+            &codec,
+            &StateIdentity::Legacy(inline.0.digest()),
+            || Ok((41, Some(inline.clone()))),
+            |_, _| {
+                reads.set(reads.get() + 1);
+                Ok(None)
+            },
+            || 41,
+        )?
+        .ok_or("missing inline legacy proof")?;
+        assert_eq!(verified.identity, inline.1);
+        assert!(verified.active.is_empty());
+        assert_eq!(reads.get(), 0);
+        assert!(
+            authenticate_legacy_record_migration(
+                &codec,
+                &StateIdentity::Legacy(inline.0.digest()),
+                || Ok((41, Some(inline))),
+                |_, _| Ok(None),
+                || 42,
+            )
+            .is_err()
+        );
         Ok(())
     }
 

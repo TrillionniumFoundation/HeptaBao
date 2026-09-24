@@ -1378,7 +1378,8 @@
       ],
       "executable_profiles": [
         "qa/openbao-acceptance/ha_destructive.py",
-        "qa/openbao-acceptance/raft_membership_live.py"
+        "qa/openbao-acceptance/raft_membership_live.py",
+        "qa/openbao-acceptance/ha_rolling_upgrade.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
