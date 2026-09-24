@@ -15,7 +15,7 @@
   "coverage_summary": {
     "implemented_surface_count": 59,
     "defined_not_implemented_surface_count": 0,
-    "fixture_case_count": 435,
+    "fixture_case_count": 437,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -149,10 +149,12 @@
       "surface_id": "HB-SURFACE-AUTH-APPROLE",
       "category": "auth_methods",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 1,
+      "minimum_observations": 3,
       "fixture_state": "IMPLEMENTED_SCOPED",
       "fixture_case_ids": [
-        "approle.login"
+        "approle.login",
+        "approle.secret_id_replay_denied",
+        "approle.invalid_secret_id_denied"
       ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },

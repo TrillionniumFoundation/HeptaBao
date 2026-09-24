@@ -26,7 +26,7 @@ CASES = {
             "cert_lookup", "lease_revoke", "revoked_lease_absent", "crl_json"],
     "totp": ["roundtrip"],
     "userpass": ["login"],
-    "approle": ["login"],
+    "approle": ["login", "secret_id_replay_denied", "invalid_secret_id_denied"],
     "edge_tls": ["health"],
     "system": ["init_status"],
     "operations": ["seal_status"],
@@ -397,6 +397,30 @@ class Suite:
             secret_id_observed=isinstance(secret_id, str) and bool(secret_id),
             token_issued=isinstance(child, str) and bool(child),
             default_policy="default" in auth.get("policies", []),
+        )
+        replay = self.call("approle.secret_id_replay_denied", "POST", "/v1/auth/approle/login",
+                           payload)
+        self.check(
+            "approle.secret_id_replay_denied",
+            replay,
+            400,
+            errors_present=isinstance(replay.body.get("errors"), list)
+            and bool(replay.body["errors"]),
+            no_auth=not replay.body.get("auth") and not replay.body.get("data"),
+        )
+        invalid = self.call(
+            "approle.invalid_secret_id_denied",
+            "POST",
+            "/v1/auth/approle/login",
+            {"role_id": role_id, "secret_id": secrets.token_urlsafe(24)},
+        )
+        self.check(
+            "approle.invalid_secret_id_denied",
+            invalid,
+            400,
+            errors_present=isinstance(invalid.body.get("errors"), list)
+            and bool(invalid.body["errors"]),
+            no_auth=not invalid.body.get("auth") and not invalid.body.get("data"),
         )
 
     def identity_cases(self):

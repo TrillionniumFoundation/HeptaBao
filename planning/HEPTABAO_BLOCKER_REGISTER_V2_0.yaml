@@ -216,6 +216,8 @@ repository_blockers:
   - crates/heptabao-raft-runtime/src/lib.rs
   - crates/heptabao-raft-runtime/src/cluster.rs
   - crates/heptabao-raft-runtime/src/network.rs
+  - crates/heptabao-raft-runtime/src/process/node.rs
+  - crates/heptabao-raft-runtime/src/process/replication_tests.rs
   - crates/heptabao-raft-runtime/src/store.rs
   - docs/modules/heptabao-raft-runtime.md
   - docs/architecture/HEPTABAO_V2_2_RAFT_RUNTIME.md

@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "a2248a360fa7166b1a182691f5f7e409b3a0df6944d9334892a102d32ad23031",
+  "corpus_sha256": "e17b24a75aff9860804f9d518d106817c3566905682f6ed7191e7c87f57f3582",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -885,7 +885,9 @@
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [
-        "approle.login"
+        "approle.login",
+        "approle.secret_id_replay_denied",
+        "approle.invalid_secret_id_denied"
       ],
       "available_scoped_profiles": [
         "fixed"
