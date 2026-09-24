@@ -126,7 +126,13 @@ class MySqlContainer:
     def _wait_ready(self) -> None:
         deadline = time.monotonic() + 45
         while time.monotonic() < deadline:
-            if self._client("root", self.password, "SELECT 1;").returncode == 0:
+            # The official image briefly starts an initialization server with
+            # networking disabled before shutting it down and starting the
+            # final server. A socket-only SELECT 1 can therefore report ready
+            # during that transient instance. Require the configured final
+            # server port so initialization cannot escape this readiness gate.
+            result = self._client("root", self.password, "SELECT @@port;")
+            if result.returncode == 0 and result.stdout.strip() == "3306":
                 return
             time.sleep(0.25)
         raise RuntimeError("mysql_readiness_failed")

@@ -543,7 +543,7 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Full jwt/oidc mount aliases and fields, arbitrary scopes/claim mappings/CEL, UserInfo/refresh, browser rendering/consent, external MFA, independent provider and production qualification. Public-client authorization-code exchange is repository-controlled with mandatory S256 PKCE and remains outside independent provider qualification."
+      "remaining_scope": "Full jwt/oidc mount aliases and fields, arbitrary scopes/claim mappings/CEL, refresh, browser rendering/consent, external MFA, independent provider and production qualification. Same-origin discovery-bound UserInfo subject and groups binding is repository-controlled; public-client authorization-code exchange remains repository-controlled with mandatory S256 PKCE and both remain outside independent provider qualification."
     },
     {
       "surface_id": "HB-SURFACE-AUTH-KUBERNETES",

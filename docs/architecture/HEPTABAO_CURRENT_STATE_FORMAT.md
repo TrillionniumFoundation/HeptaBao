@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **50**. Its source constant is
+The current Service state schema is **51**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -95,6 +95,7 @@ transactional within one request; crash-resumable step journals are not claimed.
 | 48 | Native certificate role/mount token type and TTL state, direct certificate issued metadata and immutable initial TTL, plus an independently gated Token API initial-TTL marker. Legacy absent fields remain absent; retained and expired tokens cannot hide new state under an older schema. |
 | 49 | Bounded, authenticated namespace-scoped workflow definitions under the existing namespace owner. Older binaries reject workflow-bearing state rather than silently dropping definitions; workflow execution remains synchronous and transactional within one request. |
 | 50 | Bounded Kerberos authentication mount/configuration and durable replay/clock state. A mount alone requires this version; old-format admission rejects populated Kerberos fields even before login. Keytab bytes, tickets and session keys are not application state. |
+| 51 | Discovery-bound OIDC UserInfo endpoints retained in encrypted authorization sessions. The endpoint is optional for legacy sessions; old-format admission rejects sessions that retain it rather than silently dropping the provider binding. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Schema 50 independently gates `AuthState::has_kerberos_state()`, including
@@ -102,6 +103,11 @@ mount-only enrollment and all retained configuration/replay records. Schema 48
 without Kerberos state is still readable. Empty absent Kerberos maps preserve
 historical serialization. This version fence is separate from cryptographic
 Kerberos verification, and does not assert historical-binary or HA qualification.
+
+Schema 51 independently gates `AuthState::has_oidc_userinfo_state()`. A legacy
+OIDC session without a discovered UserInfo endpoint remains byte-compatible;
+sessions that retain an endpoint require the new schema so an older reader
+cannot silently discard the provider binding.
 
 Schema 48 independently gates `AuthState::has_cert_batch_state()` and
 `AuthState::has_token_api_creation_ttl()`. Certificate role or mount configuration

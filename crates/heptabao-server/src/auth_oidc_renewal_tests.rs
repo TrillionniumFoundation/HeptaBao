@@ -22,6 +22,7 @@ fn discovery() -> OidcBeginObservation {
         authorization_endpoint: "https://issuer.example:443/realm/authorize".into(),
         token_endpoint: "https://issuer.example:443/realm/token".into(),
         jwks_uri: "https://issuer.example:443/realm/keys".into(),
+        userinfo_endpoint: None,
     }
 }
 fn begin_body() -> Value {

@@ -110,6 +110,8 @@ struct Session {
     expires_at: u64,
     token_endpoint: String,
     jwks_uri: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    userinfo_endpoint: Option<String>,
 }
 impl Drop for Session {
     fn drop(&mut self) {
@@ -145,12 +147,14 @@ pub(crate) struct OidcBeginObservation {
     authorization_endpoint: String,
     token_endpoint: String,
     jwks_uri: String,
+    userinfo_endpoint: Option<String>,
 }
 
 pub(crate) struct OidcLoginObservation {
     subject: String,
     acr: Option<String>,
     amr: BTreeSet<String>,
+    groups: BTreeSet<String>,
     now: u64,
 }
 
@@ -161,6 +165,7 @@ impl OidcLoginObservation {
             subject: subject.into(),
             acr: None,
             amr: BTreeSet::new(),
+            groups: BTreeSet::new(),
             now,
         }
     }
@@ -176,6 +181,18 @@ impl OidcLoginObservation {
             subject: subject.into(),
             acr: acr.map(str::to_owned),
             amr,
+            groups: BTreeSet::new(),
+            now,
+        }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn observed_with_groups(subject: &str, groups: BTreeSet<String>, now: u64) -> Self {
+        Self {
+            subject: subject.into(),
+            acr: None,
+            amr: BTreeSet::new(),
+            groups,
             now,
         }
     }
@@ -187,12 +204,13 @@ impl OidcBeginPlan {
         outbound: &Outbound,
         deadline: std::time::Instant,
     ) -> Result<OidcBeginObservation, AuthError> {
-        let (authorization_endpoint, token_endpoint, jwks_uri) =
+        let (authorization_endpoint, token_endpoint, jwks_uri, userinfo_endpoint) =
             self.config.metadata(outbound, deadline)?;
         Ok(OidcBeginObservation {
             authorization_endpoint,
             token_endpoint,
             jwks_uri,
+            userinfo_endpoint,
         })
     }
 }
@@ -273,12 +291,29 @@ impl OidcExchange {
                 .verifier()?
                 .verify_oidc(id_token, now, &self.session.nonce, access, &self.code)
                 .map_err(|_| denied())?;
+            let userinfo_groups = if let Some(endpoint) = &self.session.userinfo_endpoint {
+                let mut userinfo = outbound
+                    .get_auth_json_bearer(
+                        endpoint,
+                        access,
+                        self.config.transport.as_ref(),
+                        deadline,
+                    )
+                    .map_err(|_| err(503, "OIDC UserInfo unavailable; session consumed"))?;
+                let parsed = parse_userinfo(&userinfo, &verified.subject);
+                crate::service::erase_json(&mut userinfo);
+                parsed?
+            } else {
+                BTreeSet::new()
+            };
+            let mut groups = verified.groups.clone();
+            groups.extend(userinfo_groups);
             if self
                 .role
                 .bound_subject
                 .as_ref()
                 .is_some_and(|v| v != &verified.subject)
-                || !self.role.bound_groups.is_subset(&verified.groups)
+                || !self.role.bound_groups.is_subset(&groups)
                 || !self
                     .role
                     .accepts_authentication_context(verified.acr.as_deref(), &verified.amr)
@@ -290,6 +325,7 @@ impl OidcExchange {
                 subject: verified.subject,
                 acr: verified.acr,
                 amr: verified.amr,
+                groups,
                 now,
             })
         })();
@@ -377,7 +413,7 @@ impl OidcConfig {
         &self,
         outbound: &Outbound,
         deadline: std::time::Instant,
-    ) -> Result<(String, String, String), AuthError> {
+    ) -> Result<(String, String, String, Option<String>), AuthError> {
         let original = parse_auth_https_target(&self.oidc_discovery_url, self.transport.as_ref())
             .map_err(bad)?;
         let doc = self.discovery(outbound, deadline)?;
@@ -412,12 +448,52 @@ impl OidcConfig {
             }
             Ok(value.into())
         };
+        let userinfo_endpoint = match doc.get("userinfo_endpoint") {
+            None => None,
+            Some(Value::String(_)) => Some(endpoint("userinfo_endpoint")?),
+            Some(_) => return Err(bad("OIDC UserInfo endpoint must be a string")),
+        };
         Ok((
             endpoint("authorization_endpoint")?,
             endpoint("token_endpoint")?,
             endpoint("jwks_uri")?,
+            userinfo_endpoint,
         ))
     }
+}
+
+/// Parse the standard OIDC UserInfo response without treating arbitrary
+/// provider claims as authority. `sub` is mandatory and must match the
+/// already verified ID-token subject; only a bounded string-array `groups`
+/// claim is consumed for the existing role/Identity group binding.
+fn parse_userinfo(value: &Value, id_token_subject: &str) -> Result<BTreeSet<String>, AuthError> {
+    let object = value.as_object().ok_or_else(denied)?;
+    let subject = object
+        .get("sub")
+        .and_then(Value::as_str)
+        .filter(|value| bounded_string(value, 1024))
+        .ok_or_else(denied)?;
+    if subject != id_token_subject {
+        return Err(denied());
+    }
+    let Some(groups) = object.get("groups") else {
+        return Ok(BTreeSet::new());
+    };
+    let values = groups.as_array().ok_or_else(denied)?;
+    if values.len() > 128
+        || values.iter().any(|value| {
+            value
+                .as_str()
+                .is_none_or(|value| !bounded_string(value, 1024))
+        })
+    {
+        return Err(denied());
+    }
+    Ok(values
+        .iter()
+        .filter_map(Value::as_str)
+        .map(str::to_owned)
+        .collect())
 }
 fn array_contains(v: &Value, field: &str, expected: &str) -> bool {
     v.get(field).and_then(Value::as_array).is_some_and(|vs| {
@@ -583,6 +659,16 @@ impl AuthState {
     pub(super) fn has_oidc_state(&self) -> bool {
         self.oidc_mounts.values().any(|m| !m.is_empty())
     }
+    pub(crate) fn has_oidc_userinfo_state(&self) -> bool {
+        self.oidc_mounts.values().any(|mounts| {
+            mounts.values().any(|mount| {
+                mount
+                    .sessions
+                    .values()
+                    .any(|session| session.userinfo_endpoint.is_some())
+            })
+        })
+    }
     pub(super) fn validate_oidc_state(&self) -> Result<(), AuthError> {
         for (namespace, mounts) in &self.oidc_mounts {
             validate_namespace(namespace)?;
@@ -630,6 +716,11 @@ impl AuthState {
                             .map_err(bad)?
                             .origin
                             != origin
+                        || s.userinfo_endpoint.as_ref().is_some_and(|endpoint| {
+                            parse_auth_https_target(endpoint, config.transport.as_ref())
+                                .map(|target| target.origin != origin)
+                                .unwrap_or(true)
+                        })
                     {
                         return Err(denied());
                     }
@@ -1154,6 +1245,7 @@ impl AuthState {
             expires_at: checked_expiry(plan.now, SESSION_TTL)?,
             token_endpoint: observation.token_endpoint,
             jwks_uri: observation.jwks_uri,
+            userinfo_endpoint: observation.userinfo_endpoint,
         };
         let state = self.oidc_mut(scope);
         state.clock = plan.now;
@@ -1256,14 +1348,16 @@ impl AuthState {
             return Err(denied());
         }
         let limits = exchange.role.limits();
+        let subject = observation.subject;
+        let groups = observation.groups;
         // Role readback preserves only configured policies. Old stored roles
         // may already contain default; leaving them unchanged also preserves
         // pending-session bindings. Add the implicit policy only at issuance.
         let mut policies = exchange.role.token_policies;
         policies.insert("default".into());
-        self.issue_native_online_token(
+        let mut response = self.issue_native_online_token(
             AuthScope { namespace, mount },
-            &observation.subject,
+            &subject,
             NativeOnlineToken {
                 bound_cidrs: Vec::new(),
                 policies,
@@ -1275,7 +1369,13 @@ impl AuthState {
                 },
             },
             observation.now,
-        )
+        )?;
+        response.external_groups = Some(identity::ExternalGroups {
+            mount: mount.into(),
+            alias: subject,
+            names: groups,
+        });
+        Ok(response)
     }
 }
 
@@ -1389,6 +1489,48 @@ mod tests {
     }
 
     #[test]
+    fn oidc_userinfo_requires_matching_subject_and_only_accepts_bounded_groups() {
+        let groups = parse_userinfo(
+            &json!({"sub":"alice","groups":["engineering","prod"]}),
+            "alice",
+        )
+        .unwrap();
+        assert_eq!(
+            groups,
+            BTreeSet::from(["engineering".into(), "prod".into()])
+        );
+        assert!(parse_userinfo(&json!({"sub":"mallory","groups":["prod"]}), "alice").is_err());
+        assert!(parse_userinfo(&json!({"sub":"alice","groups":"prod"}), "alice").is_err());
+        assert!(parse_userinfo(&json!({"sub":"alice","groups":[7]}), "alice").is_err());
+        assert!(parse_userinfo(&json!({"groups":["prod"]}), "alice").is_err());
+    }
+
+    #[test]
+    fn oidc_provider_groups_publish_with_token_and_identity_binding() {
+        let (mut state, _, callback) = setup();
+        let exchange = state
+            .consume_oidc("", "browser", &callback, 110)
+            .unwrap()
+            .unwrap();
+        let response = state
+            .finish_oidc_observation(
+                "",
+                "browser",
+                exchange,
+                OidcLoginObservation::observed_with_groups(
+                    "alice",
+                    BTreeSet::from(["engineering".into()]),
+                    110,
+                ),
+            )
+            .unwrap();
+        assert_eq!(
+            response.external_groups.unwrap().names,
+            BTreeSet::from(["engineering".into()])
+        );
+    }
+
+    #[test]
     fn oidc_role_authentication_context_is_persisted_and_rejects_bad_shapes() {
         let (mut state, raw, _) = setup();
         let actor = state.authenticate(&raw, 100).unwrap();
@@ -1484,6 +1626,7 @@ mod tests {
             expires_at: 400,
             token_endpoint: "https://issuer.example:443/realm/token".into(),
             jwks_uri: "https://issuer.example:443/realm/keys".into(),
+            userinfo_endpoint: None,
         };
         let entry = state.oidc_mut(AuthScope {
             namespace: "",

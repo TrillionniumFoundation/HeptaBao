@@ -204,6 +204,47 @@ impl Outbound {
         Ok(value)
     }
 
+    /// Fetches a provider-owned JSON resource with the access token in the
+    /// Authorization header. The caller supplies the discovery-bound URL;
+    /// this helper never follows redirects or accepts a caller-controlled
+    /// host. It is used for OIDC UserInfo, whose response is not itself a
+    /// credential and must still be validated by the caller.
+    pub(crate) fn get_auth_json_bearer(
+        &self,
+        url: &str,
+        bearer: &str,
+        transport: Option<&AuthHttpsTransport>,
+        deadline: Instant,
+    ) -> Result<Value, &'static str> {
+        if bearer.is_empty()
+            || bearer.len() > 32 * 1024
+            || !bearer.bytes().all(|byte| byte.is_ascii_graphic())
+        {
+            return Err("invalid authentication bearer");
+        }
+        let (mut stream, target) = self.auth_https_connection(url, transport, deadline)?;
+        let mut head = Zeroizing::new(String::with_capacity(
+            192 + target.path.len() + target.authority.len() + bearer.len(),
+        ));
+        head.push_str("GET ");
+        head.push_str(&target.path);
+        head.push_str(" HTTP/1.1\r\nHost: ");
+        head.push_str(&target.authority);
+        head.push_str("\r\nAuthorization: Bearer ");
+        head.push_str(bearer);
+        head.push_str("\r\nAccept: application/json\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n");
+        stream
+            .write_all(head.as_bytes())
+            .and_then(|()| stream.flush())
+            .map_err(|_| "authentication GET failed; no retry")?;
+        let mut value = read_json_response_status(&mut stream, &[200])?;
+        if stream.sock.remaining().is_err() || remaining(deadline).is_err() {
+            crate::service::erase_json(&mut value);
+            return Err("authentication GET deadline exceeded");
+        }
+        Ok(value)
+    }
+
     /// Scoped authentication POST. The administrator's owned configuration
     /// supplies the target and trust; a bearer can never redirect the request.
     pub(crate) fn post_auth_json_bearer(
@@ -508,6 +549,23 @@ mod tests {
             ),
             Err("invalid or oversized authentication JSON")
         );
+    }
+
+    #[test]
+    fn scoped_bearer_get_rejects_bad_header_before_network_io() {
+        let outbound = Outbound::default();
+        let deadline = auth_https_deadline();
+        for bearer in ["", "x y", "x\r\nHost: other", "x\0y"] {
+            assert_eq!(
+                outbound.get_auth_json_bearer(
+                    "https://unresolvable.invalid/",
+                    bearer,
+                    None,
+                    deadline,
+                ),
+                Err("invalid authentication bearer")
+            );
+        }
     }
 
     #[test]

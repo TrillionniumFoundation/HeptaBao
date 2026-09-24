@@ -30,6 +30,12 @@ impl State {
                 "Kerberos authentication state requires schema 50",
             ));
         }
+        if self.schema < 51 && self.auth.has_oidc_userinfo_state() {
+            return Err(Response::error(
+                503,
+                "OIDC UserInfo session state requires schema 51",
+            ));
+        }
 
         if self.schema < 48 && self.auth.has_cert_batch_state() {
             return Err(Response::error(

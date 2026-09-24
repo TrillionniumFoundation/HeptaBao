@@ -10,9 +10,9 @@ The global OpenBao 2.6.2 denominator is unchanged. Kubernetes and JWT/OIDC remai
 | Owner | Current responsibility |
 |---|---|
 | `auth_kubernetes.rs` | TokenReview configuration, exact ServiceAccount bindings, UID aliases, local token construction and shared online mount lookup. |
-| `auth_oidc.rs` | Confidential/public OIDC client configuration, roles, encrypted PKCE sessions, state/client-proof checks, signed ID-token verification and bounded provider MFA context enforcement. |
+| `auth_oidc.rs` | Confidential/public OIDC client configuration, roles, encrypted PKCE sessions, state/client-proof checks, signed ID-token verification, same-origin UserInfo subject/group binding and bounded provider MFA context enforcement. |
 | `service_online_auth.rs` | Actual request admission, live Identity projection, durable/HA session consumption and token publication. |
-| `outbound.rs`, `outbound_auth_https.rs` | Kubernetes/legacy enrolled HTTPS and scoped JWT/OIDC API-owned HTTPS, bounded POST and strict response framing; never ambient proxies or redirects. |
+| `outbound.rs`, `outbound_auth_https.rs` | Kubernetes/legacy enrolled HTTPS and scoped JWT/OIDC API-owned HTTPS, bounded GET/POST and strict response framing; never ambient proxies or redirects. |
 | `federated_auth.rs` | Real RS256/ES256 signatures and issuer/audience/time checks; OIDC additionally checks nonce/azp/at_hash/c_hash and signed `acr`/`amr` context claims. Native JWT assertions are reusable and do not require jti. |
 | `clients/python/heptabao/oidc_login.py` | Actual native loopback callback receiver and descriptor-anchored private credential publication. |
 
@@ -221,6 +221,16 @@ compose provider MFA (for example `amr:["pwd","otp"]`) with local token
 issuance; they do not implement an external MFA service or infer assurance from
 an unsigned UserInfo response.
 
+When discovery advertises `userinfo_endpoint`, it must be a same-origin,
+discovery-bound HTTPS endpoint. The callback sends the provider access token in
+a bounded bearer request, requires a JSON `sub` equal to the verified ID-token
+subject, and consumes only a bounded string-array `groups` claim. Those groups
+join the signed ID-token groups for role binding and are refreshed into the
+existing external Identity-group projection in the same token publication.
+Transport failure, malformed claims, subject mismatch, cross-origin metadata or
+an untrusted endpoint fails closed after the one-use callback session is
+consumed. Other UserInfo claims are ignored.
+
 ### Durable session and upstream-effect state machine
 
 ```text
@@ -335,7 +345,7 @@ CA private keys and issuer/service directories are never uploaded.
 
 Still open: real Kubernetes control-plane version/RBAC/Pod-bound token histories;
 full alias and field compatibility; arbitrary OIDC scopes/claim mappings/CEL,
-UserInfo/refresh/public-client/browser UI and external MFA; distributed login
+refresh/public-client/browser UI and external MFA; distributed login
 throttling and large-scale sessions; independent security/custody/admission.
 
 Public specifications used: Kubernetes TokenReview v1 API definition
