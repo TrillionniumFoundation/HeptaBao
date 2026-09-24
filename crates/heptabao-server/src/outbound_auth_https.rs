@@ -255,51 +255,26 @@ impl Outbound {
         transport: Option<&AuthHttpsTransport>,
         deadline: Instant,
     ) -> Result<Value, &'static str> {
-        use base64::{Engine as _, engine::general_purpose::STANDARD};
-        let fields = [
-            exchange.client_id,
-            exchange.client_secret,
-            exchange.code,
-            exchange.redirect,
-            exchange.verifier,
-        ];
-        if fields.iter().any(|value| value.len() > 16 * 1024) {
-            return Err("OIDC exchange field exceeds bound");
-        }
-        let mut body = Zeroizing::new(String::with_capacity(
-            80 + 3 * (exchange.code.len() + exchange.redirect.len() + exchange.verifier.len()),
-        ));
-        body.push_str("grant_type=authorization_code&code=");
-        append_form(&mut body, exchange.code);
-        body.push_str("&redirect_uri=");
-        append_form(&mut body, exchange.redirect);
-        body.push_str("&code_verifier=");
-        append_form(&mut body, exchange.verifier);
-        let mut credentials = Zeroizing::new(String::with_capacity(
-            1 + 3 * (exchange.client_id.len() + exchange.client_secret.len()),
-        ));
-        append_form(&mut credentials, exchange.client_id);
-        credentials.push(':');
-        append_form(&mut credentials, exchange.client_secret);
-        let mut authorization =
-            Zeroizing::new(String::with_capacity(6 + 4 * credentials.len().div_ceil(3)));
-        authorization.push_str("Basic ");
-        STANDARD.encode_string(credentials.as_bytes(), &mut authorization);
-        if body.len() > MAX_DOCUMENT || authorization.len() > 48 * 1024 {
-            return Err("OIDC exchange exceeds bound");
-        }
+        let (body, authorization) = oidc_exchange_request(exchange)?;
         let (mut stream, target) = self.auth_https_connection(url, transport, deadline)?;
         let length = body.len().to_string();
         let mut head = Zeroizing::new(String::with_capacity(
-            256 + target.path.len() + target.authority.len() + authorization.len() + length.len(),
+            256 + target.path.len()
+                + target.authority.len()
+                + authorization.as_ref().map_or(0, |value| value.len())
+                + length.len(),
         ));
         head.push_str("POST ");
         head.push_str(&target.path);
         head.push_str(" HTTP/1.1\r\nHost: ");
         head.push_str(&target.authority);
-        head.push_str("\r\nContent-Type: application/x-www-form-urlencoded\r\nAuthorization: ");
-        head.push_str(&authorization);
-        head.push_str("\r\nContent-Length: ");
+        head.push_str("\r\nContent-Type: application/x-www-form-urlencoded\r\n");
+        if let Some(authorization) = authorization {
+            head.push_str("Authorization: ");
+            head.push_str(&authorization);
+            head.push_str("\r\n");
+        }
+        head.push_str("Content-Length: ");
         head.push_str(&length);
         head.push_str("\r\nAccept: application/json\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n");
         stream
@@ -320,10 +295,67 @@ impl Outbound {
     }
 }
 
+fn oidc_exchange_request(
+    exchange: AuthOidcExchange<'_>,
+) -> Result<(Zeroizing<String>, Option<Zeroizing<String>>), &'static str> {
+    use base64::{Engine as _, engine::general_purpose::STANDARD};
+    let fields = [
+        exchange.client_id,
+        exchange.client_secret,
+        exchange.code,
+        exchange.redirect,
+        exchange.verifier,
+    ];
+    if fields.iter().any(|value| value.len() > 16 * 1024) {
+        return Err("OIDC exchange field exceeds bound");
+    }
+    let mut body = Zeroizing::new(String::with_capacity(
+        80 + 3 * (exchange.code.len() + exchange.redirect.len() + exchange.verifier.len()),
+    ));
+    body.push_str("grant_type=authorization_code&");
+    if exchange.client_auth_method == "none" {
+        body.push_str("client_id=");
+        append_form(&mut body, exchange.client_id);
+        body.push('&');
+    }
+    body.push_str("code=");
+    append_form(&mut body, exchange.code);
+    body.push_str("&redirect_uri=");
+    append_form(&mut body, exchange.redirect);
+    body.push_str("&code_verifier=");
+    append_form(&mut body, exchange.verifier);
+    let authorization = if exchange.client_auth_method == "none" {
+        None
+    } else if exchange.client_auth_method == "client_secret_basic" {
+        let mut credentials = Zeroizing::new(String::with_capacity(
+            1 + 3 * (exchange.client_id.len() + exchange.client_secret.len()),
+        ));
+        append_form(&mut credentials, exchange.client_id);
+        credentials.push(':');
+        append_form(&mut credentials, exchange.client_secret);
+        let mut authorization =
+            Zeroizing::new(String::with_capacity(6 + 4 * credentials.len().div_ceil(3)));
+        authorization.push_str("Basic ");
+        STANDARD.encode_string(credentials.as_bytes(), &mut authorization);
+        Some(authorization)
+    } else {
+        return Err("unsupported OIDC client authentication method");
+    };
+    if body.len() > MAX_DOCUMENT
+        || authorization
+            .as_ref()
+            .is_some_and(|value| value.len() > 48 * 1024)
+    {
+        return Err("OIDC exchange exceeds bound");
+    }
+    Ok((body, authorization))
+}
+
 /// Borrowed from the owned OIDC effect; never Debug or copied into a log.
 pub(crate) struct AuthOidcExchange<'a> {
     pub(crate) client_id: &'a str,
     pub(crate) client_secret: &'a str,
+    pub(crate) client_auth_method: &'a str,
     pub(crate) code: &'a str,
     pub(crate) redirect: &'a str,
     pub(crate) verifier: &'a str,
@@ -485,5 +517,41 @@ mod tests {
         assert_eq!(serde_json::from_slice::<Value>(&encoded).unwrap(), value);
         assert_eq!(encoded.capacity(), MAX_DOCUMENT);
         assert!(bounded_auth_json(&serde_json::json!("x".repeat(MAX_DOCUMENT))).is_err());
+    }
+
+    #[test]
+    fn oidc_public_exchange_uses_pkce_client_id_without_basic_secret() {
+        let (body, authorization) = oidc_exchange_request(AuthOidcExchange {
+            client_id: "public client",
+            client_secret: "",
+            client_auth_method: "none",
+            code: "one-use-code",
+            redirect: "https://client.example:443/callback",
+            verifier: "verifier",
+        })
+        .unwrap();
+        assert!(authorization.is_none());
+        assert_eq!(
+            body.as_str(),
+            "grant_type=authorization_code&client_id=public%20client&code=one-use-code&redirect_uri=https%3A%2F%2Fclient.example%3A443%2Fcallback&code_verifier=verifier"
+        );
+    }
+
+    #[test]
+    fn oidc_confidential_exchange_keeps_basic_client_authentication() {
+        let (body, authorization) = oidc_exchange_request(AuthOidcExchange {
+            client_id: "client",
+            client_secret: "secret",
+            client_auth_method: "client_secret_basic",
+            code: "code",
+            redirect: "http://127.0.0.1:8259/oidc/callback",
+            verifier: "verifier",
+        })
+        .unwrap();
+        assert!(!body.contains("client_id="));
+        assert_eq!(
+            authorization.as_ref().map(|value| value.as_str()),
+            Some("Basic Y2xpZW50OnNlY3JldA==")
+        );
     }
 }

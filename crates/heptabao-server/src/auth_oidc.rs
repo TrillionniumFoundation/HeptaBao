@@ -8,6 +8,12 @@ use crate::outbound::{
 const SESSION_TTL: u64 = 300;
 const MAX_SESSIONS: usize = 128;
 const MAX_ROLES: usize = 256;
+const OIDC_CLIENT_SECRET_BASIC: &str = "client_secret_basic";
+const OIDC_CLIENT_NONE: &str = "none";
+
+fn default_oidc_client_auth_method() -> String {
+    OIDC_CLIENT_SECRET_BASIC.into()
+}
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
@@ -23,6 +29,8 @@ struct OidcConfig {
     oidc_discovery_url: String,
     oidc_client_id: String,
     oidc_client_secret: String,
+    #[serde(default = "default_oidc_client_auth_method")]
+    oidc_client_auth_method: String,
     jwt_supported_algs: BTreeSet<String>,
     pkce_s256_enrolled: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -181,6 +189,7 @@ impl OidcExchange {
                 AuthOidcExchange {
                     client_id: &self.config.oidc_client_id,
                     client_secret: &self.config.oidc_client_secret,
+                    client_auth_method: &self.config.oidc_client_auth_method,
                     code: &self.code,
                     redirect: &self.session.redirect,
                     verifier: &self.session.verifier,
@@ -290,7 +299,8 @@ impl OidcConfig {
         }
         if self.oidc_discovery_url.ends_with('/')
             || !bounded_string(&self.oidc_client_id, 512)
-            || !bounded_string(&self.oidc_client_secret, 4096)
+            || (!self.oidc_client_secret.is_empty()
+                && !bounded_string(&self.oidc_client_secret, 4096))
             || self.jwt_supported_algs.is_empty()
             || self
                 .jwt_supported_algs
@@ -300,6 +310,17 @@ impl OidcConfig {
             return Err(bad(
                 "invalid OIDC configuration; RS256/ES256 code flow required",
             ));
+        }
+        match self.oidc_client_auth_method.as_str() {
+            OIDC_CLIENT_SECRET_BASIC if bounded_string(&self.oidc_client_secret, 4096) => {}
+            OIDC_CLIENT_NONE if self.oidc_client_secret.is_empty() && self.pkce_s256_enrolled => {}
+            OIDC_CLIENT_SECRET_BASIC => {
+                return Err(bad("confidential OIDC clients require a client secret"));
+            }
+            OIDC_CLIENT_NONE => {
+                return Err(bad("public OIDC clients require S256 PKCE enrollment"));
+            }
+            _ => return Err(bad("unsupported OIDC client authentication method")),
         }
         Ok(())
     }
@@ -340,7 +361,7 @@ impl OidcConfig {
             || !array_contains(
                 &doc,
                 "token_endpoint_auth_methods_supported",
-                "client_secret_basic",
+                &self.oidc_client_auth_method,
             )
         {
             return Err(bad(
@@ -616,7 +637,9 @@ impl AuthState {
                         .ok_or_else(|| err(404, "OIDC configuration missing"))?;
                     Ok(response(
                         json!({"oidc_discovery_url":c.oidc_discovery_url,"oidc_client_id":c.oidc_client_id,
-                        "oidc_client_secret_set":true,"jwt_supported_algs":c.jwt_supported_algs,"pkce_s256_enrolled":c.pkce_s256_enrolled,
+                        "oidc_client_secret_set":!c.oidc_client_secret.is_empty(),
+                        "oidc_client_auth_method":c.oidc_client_auth_method,
+                        "jwt_supported_algs":c.jwt_supported_algs,"pkce_s256_enrolled":c.pkce_s256_enrolled,
                         "oidc_discovery_ca_pem":c.transport.as_ref().map_or("",|transport|transport.certificate.as_str())}),
                         false,
                     ))
@@ -780,11 +803,31 @@ impl AuthState {
                 "oidc_discovery_ca_pem",
                 "oidc_client_id",
                 "oidc_client_secret",
+                "oidc_client_auth_method",
                 "jwt_supported_algs",
                 "pkce_s256_enrolled",
             ],
         )?;
         let previous = self.oidc_at(scope).and_then(|state| state.config.as_ref());
+        let client_auth_method = body
+            .get("oidc_client_auth_method")
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("OIDC client authentication method must be a string"))
+            })
+            .transpose()?
+            .unwrap_or(OIDC_CLIENT_SECRET_BASIC)
+            .to_owned();
+        let client_secret = body
+            .get("oidc_client_secret")
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("OIDC client secret must be a string"))
+            })
+            .transpose()?
+            .unwrap_or("");
         let config = OidcConfig {
             transport: remote::parse_https_transport(
                 body,
@@ -802,7 +845,8 @@ impl AuthState {
                 .unwrap_or(false),
             oidc_discovery_url: string_field(body, "oidc_discovery_url")?.into(),
             oidc_client_id: string_field(body, "oidc_client_id")?.into(),
-            oidc_client_secret: string_field(body, "oidc_client_secret")?.into(),
+            oidc_client_secret: client_secret.into(),
+            oidc_client_auth_method: client_auth_method,
             jwt_supported_algs: if body.get("jwt_supported_algs").is_some() {
                 claim_values(body, "jwt_supported_algs")?
             } else {
@@ -1178,6 +1222,75 @@ mod renewal_tests;
 #[allow(clippy::unwrap_used, clippy::expect_used)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn public_oidc_clients_require_pkce_and_do_not_accept_a_secret() {
+        let mut config = OidcConfig {
+            transport: None,
+            oidc_discovery_url: "https://issuer.example:443/realm".into(),
+            oidc_client_id: "public-client".into(),
+            oidc_client_secret: String::new(),
+            oidc_client_auth_method: OIDC_CLIENT_NONE.into(),
+            jwt_supported_algs: BTreeSet::from(["RS256".into()]),
+            pkce_s256_enrolled: false,
+        };
+        assert!(config.validate().is_err());
+        config.pkce_s256_enrolled = true;
+        assert!(config.validate().is_ok());
+        config.oidc_client_secret = "unexpected-secret".into();
+        assert!(config.validate().is_err());
+    }
+
+    #[test]
+    fn old_oidc_state_defaults_to_confidential_client_authentication() {
+        let value = json!({
+            "oidc_discovery_url": "https://issuer.example:443/realm",
+            "oidc_client_id": "client",
+            "oidc_client_secret": "secret",
+            "jwt_supported_algs": ["RS256"],
+            "pkce_s256_enrolled": false
+        });
+        let config: OidcConfig = serde_json::from_value(value).unwrap();
+        assert_eq!(config.oidc_client_auth_method, OIDC_CLIENT_SECRET_BASIC);
+        assert!(config.validate().is_ok());
+    }
+
+    #[test]
+    fn public_oidc_configuration_is_runtime_persisted_and_secret_redacted() {
+        let (mut state, raw, _) = setup();
+        let actor = state.authenticate(&raw, 100).unwrap();
+        state
+            .handle(
+                Some(&actor),
+                "",
+                "POST",
+                "auth/browser/config",
+                &json!({
+                    "oidc_discovery_url": "https://issuer.example:443/realm",
+                    "oidc_client_id": "client",
+                    "oidc_client_auth_method": "none",
+                    "pkce_s256_enrolled": true
+                }),
+                101,
+            )
+            .unwrap()
+            .unwrap();
+        let response = state
+            .handle(
+                Some(&actor),
+                "",
+                "GET",
+                "auth/browser/config",
+                &json!({}),
+                101,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(response.body["data"]["oidc_client_auth_method"], "none");
+        assert_eq!(response.body["data"]["oidc_client_secret_set"], false);
+        assert!(response.body["data"].get("oidc_client_secret").is_none());
+    }
+
     pub(super) fn setup() -> (AuthState, String, Value) {
         let (mut state, root) = AuthState::bootstrap(100).unwrap();
         let actor = state.authenticate(&root, 100).unwrap();
@@ -1197,6 +1310,7 @@ mod tests {
             oidc_discovery_url: "https://issuer.example:443/realm".into(),
             oidc_client_id: "client".into(),
             oidc_client_secret: "private-client-secret".into(),
+            oidc_client_auth_method: OIDC_CLIENT_SECRET_BASIC.into(),
             jwt_supported_algs: BTreeSet::from(["RS256".into()]),
             pkce_s256_enrolled: false,
         };

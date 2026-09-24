@@ -117,7 +117,7 @@ Service now composes the native TLS/SCRAM PostgreSQL adapter and a bounded encry
 ## Current online authentication increment
 
 [Online Kubernetes / OIDC authentication](../auth/HEPTABAO_ONLINE_AUTHENTICATION.md) adds actual Service-owned
-TokenReview and confidential authorization-code/S256 PKCE sessions, plus a native
+TokenReview and confidential or public authorization-code/S256 PKCE sessions, plus a native
 loopback callback CLI. The separate remote-JWT profile above remains a bearer
 verifier, not code flow. Application writes use the discriminator in the current state-format contract. The new profiles
 retain root-controlled enrollment, live Identity, audit and durable/HA publication.

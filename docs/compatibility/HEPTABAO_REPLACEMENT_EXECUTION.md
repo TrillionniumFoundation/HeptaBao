@@ -272,7 +272,7 @@ Guides: `docs/auth/HEPTABAO_REMOTE_JWT_KEYS.md`, `docs/auth/HEPTABAO_ONLINE_AUTH
 
 **Lifecycle:** Rotate JWKS, expire browser state and recover token issuance after response loss.
 
-**Remaining scope:** Full jwt/oidc mount aliases and fields, arbitrary scopes/claim mappings/CEL, UserInfo/refresh/public clients, browser rendering/consent, external MFA, independent provider and production qualification.
+**Remaining scope:** Full jwt/oidc mount aliases and fields, arbitrary scopes/claim mappings/CEL, UserInfo/refresh, browser rendering/consent, external MFA, independent provider and production qualification. Public-client authorization-code exchange is implemented in the repository runtime with mandatory S256 PKCE; provider qualification remains open.
 
 Existing bounded profiles: `qa/openbao-acceptance/remote_jwks_compare.py`, `qa/openbao-acceptance/oidc_code_live.py`, `qa/openbao-acceptance/online_auth_ha.py`.
 

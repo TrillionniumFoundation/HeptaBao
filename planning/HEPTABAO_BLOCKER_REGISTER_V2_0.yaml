@@ -194,6 +194,7 @@ repository_blockers:
   - docs/auth/HEPTABAO_ONLINE_AUTHENTICATION.md
   - crates/heptabao-server/src/auth_kubernetes.rs
   - crates/heptabao-server/src/auth_oidc.rs
+  - crates/heptabao-server/src/outbound_auth_https.rs
   - crates/heptabao-server/src/service_online_auth.rs
   - clients/python/heptabao/oidc_login.py
   - qa/openbao-acceptance/kubernetes_online.py

@@ -157,7 +157,7 @@ explicit CA promotion, old-token renewal and downgrade refusal without changing
 application artifacts. Both use a controlled HTTPS TokenReview server; actual
 kube-apiserver/etcd/RBAC acceptance remains a separate gate below.
 
-## OIDC confidential authorization-code profile
+## OIDC authorization-code profiles
 
 Enable `POST sys/auth/<mount>` with `{"type":"oidc"}`. The existing `jwt` mount
 continues to mean its bounded bearer-JWT verifier; these are not full OpenBao
@@ -166,8 +166,8 @@ OIDC access token, and the OAuth access token never becomes a local Principal.
 
 | Route | Method | Required/optional inputs |
 |---|---|---|
-| `auth/<mount>/config` | POST/PUT | Required `oidc_discovery_url` (exact issuer), `oidc_client_id`, `oidc_client_secret`; optional `jwt_supported_algs` (RS256/ES256 only), `oidc_discovery_ca_pem` and `pkce_s256_enrolled`. |
-| Same | GET | Public issuer/client/algorithm/CA fields and secret-present flag. No secret echo or metadata fetch on a read. |
+| `auth/<mount>/config` | POST/PUT | Required `oidc_discovery_url` (exact issuer), `oidc_client_id`; optional `oidc_client_secret` (required for the default `oidc_client_auth_method:"client_secret_basic"`). Set `oidc_client_auth_method:"none"` for a public client; that mode requires `pkce_s256_enrolled:true` and an empty or omitted secret. `jwt_supported_algs` (RS256/ES256 only), `oidc_discovery_ca_pem` and `pkce_s256_enrolled` are optional. |
+| Same | GET | Public issuer/client/algorithm/CA fields, `oidc_client_auth_method` and secret-present flag. No secret echo or metadata fetch on a read. |
 | `auth/<mount>/role/<name>` | POST/PUT | Exact `allowed_redirect_uris`; optional `role_type:"oidc"`, `user_claim:"sub"`, `bound_subject`, `bound_groups`, `token_policies`, `token_ttl`, `token_max_ttl`, `token_period`, `token_explicit_max_ttl`, `token_num_uses`. Updates preserve omitted fields. |
 | Same, and role collection | GET/DELETE, GET/LIST | Read/remove role; config or role updates invalidate affected pending sessions. |
 | `auth/<mount>/oidc/auth_url` | POST/PUT | Exactly `role`, `redirect_uri`, **client_nonce** (canonical base64url of 32 independent random bytes). |
@@ -190,7 +190,11 @@ provider observations cannot restore an old alias or authorization graph. HTTP
 finalization rejects results arriving after the request deadline, even with an
 idle writer. This does not cancel a durable commit already begun before expiry.
 
-Only code flow, the openid scope, client_secret_basic and S256 PKCE are used.
+Only code flow, the openid scope and S256 PKCE are used. Confidential clients
+use `client_secret_basic`; public clients use `oidc_client_auth_method:"none"`,
+send `client_id` in the token request and never send an Authorization header.
+Public clients cannot configure a secret and cannot disable S256 PKCE. Existing
+configuration without `oidc_client_auth_method` remains confidential.
 The issuer string must exactly match verified discovery. Authorization, token
 and JWKS URLs must remain on its normalized origin. Old enrolled transport also
 enforces host path limits.
@@ -217,7 +221,8 @@ validated role + redirect + caller's independent client proof
   -> publish authorization URL (not the verifier or client proof)
   -> callback validates state, client proof, lifetime and role/config binding
   -> durable/HA removal of that session BEFORE token-endpoint contact
-  -> one Basic-authenticated authorization-code + verifier POST
+  -> one authorization-code + verifier POST (Basic auth for confidential clients;
+     client_id in the form and no Authorization header for public clients)
   -> fresh trusted JWKS, real signature and all ID-token bindings
   -> local token plus live Identity association durably committed
   -> result audit -> private credential response
