@@ -64,8 +64,8 @@ fn kerberos_schema50_rejects_mount_only_and_config_hidden_under_schema48() -> Te
 }
 
 #[test]
-fn kerberos_schema50_preserves_legacy48_and_workflow49_absence_and_rejects_unknown51() -> TestResult
-{
+fn kerberos_schema50_preserves_legacy48_workflow49_and_oidc51_absence_and_rejects_unknown52()
+-> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
     let (_, _) = bootstrap(&mut service)?;
@@ -85,6 +85,8 @@ fn kerberos_schema50_preserves_legacy48_and_workflow49_absence_and_rejects_unkno
     state.schema = 49;
     assert!(state.validate_format().is_ok());
     state.schema = 51;
+    assert!(state.validate_format().is_ok());
+    state.schema = 52;
     assert!(state.validate_format().is_err());
     Ok(())
 }
