@@ -45,7 +45,7 @@ class RaftSnapshotObservationTests(unittest.TestCase):
     def test_records_v5_requires_format3_and_compact_encoding(self):
         records = {"objects": {}, "published": None}
         state = dict(self.state, records_v5=records)
-        raw = json.dumps(state).encode()
+        raw = json.dumps({"format_version": 3, "state": state}).encode()
         self.bundle["format_version"] = 3
         self.bundle["state"] = state
         self.bundle["current_snapshot"]["data"] = base64.b64encode(raw).decode().rstrip("=")
@@ -53,6 +53,15 @@ class RaftSnapshotObservationTests(unittest.TestCase):
         self.assertEqual(inspect_bundle(self.path)["format_version"], 3)
         self.assertEqual(inspect_bundle(self.path, 3)["format_version"], 3)
         with self.assertRaises(ValueError): inspect_bundle(self.path, 2)
+        direct = json.dumps(state).encode()
+        self.bundle["current_snapshot"]["data"] = base64.b64encode(direct).decode().rstrip("=")
+        self.write()
+        with self.assertRaises(ValueError): inspect_bundle(self.path)
+        wrong = json.dumps({"format_version": 2, "state": state}).encode()
+        self.bundle["current_snapshot"]["data"] = base64.b64encode(wrong).decode().rstrip("=")
+        self.write()
+        with self.assertRaises(ValueError): inspect_bundle(self.path)
+        self.bundle["current_snapshot"]["data"] = base64.b64encode(raw).decode().rstrip("=")
         self.bundle["state"] = self.state
         self.write()
         with self.assertRaises(ValueError): inspect_bundle(self.path)

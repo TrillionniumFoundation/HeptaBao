@@ -46,14 +46,26 @@ def inspect_bundle(path: Path, expected_format: int | None = None) -> dict:
             decoded = base64.b64decode(data + "=" * (-len(data) % 4), validate=True)
             if base64.b64encode(decoded).decode().rstrip("=") != data:
                 raise ValueError("snapshot_compact_not_canonical")
-        state = json.loads(decoded)
-        if not isinstance(state, dict) or not isinstance(bundle["state"], dict):
+        decoded_state = json.loads(decoded)
+        if not isinstance(decoded_state, dict) or not isinstance(bundle["state"], dict):
             raise ValueError("snapshot_state_not_object")
         if actual_format == 3:
+            if set(decoded_state) != {"format_version", "state"}:
+                raise ValueError("snapshot_records_v5_wrapper_mismatch")
+            if decoded_state.get("format_version") != 3 or not isinstance(
+                decoded_state.get("state"), dict
+            ):
+                raise ValueError("snapshot_records_v5_wrapper_mismatch")
+            state = decoded_state["state"]
             if state.get("records_v5") is None or bundle["state"].get("records_v5") is None:
                 raise ValueError("snapshot_records_v5_missing")
-        elif state.get("records_v5") is not None or bundle["state"].get("records_v5") is not None:
-            raise ValueError("snapshot_records_v5_without_format_fence")
+        else:
+            state = decoded_state
+            if (
+                state.get("records_v5") is not None
+                or bundle["state"].get("records_v5") is not None
+            ):
+                raise ValueError("snapshot_records_v5_without_format_fence")
         if state.get("last_applied_log") != snapshot["meta"].get("last_log_id"):
             raise ValueError("snapshot_metadata_mismatch")
         if state.get("last_membership") != snapshot["meta"].get("last_membership"):

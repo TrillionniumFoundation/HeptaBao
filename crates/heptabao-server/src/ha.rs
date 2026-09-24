@@ -1297,6 +1297,17 @@ fn reconcile_bootstrap_membership(
     if initialize && runtime.block_on(node.initialize_single()).is_err() {
         return false;
     }
+    let mut membership = match runtime.block_on(node.membership_observation()) {
+        Ok(membership) => membership,
+        Err(_) => return false,
+    };
+    // A reopened node may be a follower in an already-complete cluster. The
+    // local process does not need to own reconciliation in that case; it may
+    // become leader later and must not remain fenced merely because startup
+    // happened on a standby.
+    if membership.committed && !membership.joint && membership.voters == *voters {
+        return true;
+    }
     let elected = runtime.block_on(async {
         let deadline = tokio::time::Instant::now() + Duration::from_secs(5);
         loop {
@@ -1313,10 +1324,6 @@ fn reconcile_bootstrap_membership(
         return false;
     }
 
-    let mut membership = match runtime.block_on(node.membership_observation()) {
-        Ok(membership) => membership,
-        Err(_) => return false,
-    };
     for peer_id in voters.iter().copied().filter(|id| *id != local_id) {
         if membership.nodes.contains(&peer_id) {
             continue;
