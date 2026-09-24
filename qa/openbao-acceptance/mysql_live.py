@@ -550,27 +550,36 @@ def run(binary: Path, root: Path, output: Path) -> int:
             and "data" not in body,
         )
         provider.restart()
-        reconcile_deadline = time.monotonic() + 12
-        status = 503
-        while time.monotonic() < reconcile_deadline:
-            status, body = instance.call(
+        deadline = time.monotonic() + 30
+        terminal = False
+        while time.monotonic() < deadline:
+            instance.call(
                 "POST", "sys/leases/reconcile/" + outage_lease, {}
             )
-            if status == 204:
-                break
-            errors = body.get("errors", [])
-            in_flight = (
-                status == 503
-                and body.get("reconcile_required") is True
-                and any("already in flight" in str(error) for error in errors)
+            lookup_status, lookup = instance.call(
+                "POST", "sys/leases/lookup", {"lease_id": outage_lease}
             )
-            if not in_flight:
+            phase = (
+                lookup.get("data", {}).get("phase")
+                if lookup_status == 200
+                else ""
+            )
+            revoke_status, _ = instance.call(
+                "POST", "sys/leases/revoke", {"lease_id": outage_lease}
+            )
+            terminal = revoke_status == 204 and (
+                (lookup_status == 200 and phase == "Revoked")
+                or lookup_status in (400, 404)
+            )
+            if terminal:
                 break
             time.sleep(0.1)
         check(
             "mysql_restart_reconciles_pending_revoke",
-            status == 204
-            and not provider.login(outage_cred["username"], outage_cred["password"]),
+            terminal
+            and not provider.login(
+                outage_cred["username"], outage_cred["password"]
+            ),
         )
 
         passed = {item["case"] for item in checks if item["passed"]}

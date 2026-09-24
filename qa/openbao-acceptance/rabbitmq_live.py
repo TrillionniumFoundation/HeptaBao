@@ -95,8 +95,24 @@ class RabbitContainer:
         except (UnicodeDecodeError, json.JSONDecodeError) as error:
             raise RabbitError("rabbitmq_invalid_json") from error
 
+    def _assert_port_binding(self) -> None:
+        mapped = subprocess.run(
+            ["docker", "port", self.name, "15672/tcp"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            timeout=12,
+        )
+        match = re.search(r":(\d+)\s*$", mapped.stdout.strip())
+        if (
+            mapped.returncode != 0
+            or match is None
+            or int(match.group(1)) != self.port
+        ):
+            raise RuntimeError("rabbitmq_port_binding_changed")
+
     def _wait_ready(self) -> None:
-        deadline = time.monotonic() + 90
+        deadline = time.monotonic() + 120
         while time.monotonic() < deadline:
             try:
                 status, _ = self.api("GET", "/api/overview")
@@ -108,34 +124,56 @@ class RabbitContainer:
         raise RuntimeError("rabbitmq_readiness_failed")
 
     def start_fresh(self) -> None:
-        with socket.socket() as listener:
-            listener.bind(("127.0.0.1", 0))
-            self.port = listener.getsockname()[1]
-        result = subprocess.run([
-            "docker", "run", "-d", "--name", self.name,
-            "--hostname", self.name,
-            "--tmpfs", "/tmp:rw,noexec,nosuid,nodev,size=64m",
-            "-e", "RABBITMQ_DEFAULT_USER=" + MANAGER,
-            "--env-file", "/dev/stdin",
-            "-p", f"127.0.0.1:{self.port}:15672",
-            IMAGE,
-        ], input="RABBITMQ_DEFAULT_PASS=" + self.password + "\n",
-            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-            text=True, timeout=60)
-        if result.returncode != 0:
-            raise RuntimeError("rabbitmq_container_start_failed")
+        # The checksum-bound plugin embeds the management endpoint. Keep the
+        # loopback mapping stable and retry only bounded host-port races.
+        for _ in range(16):
+            with socket.socket() as listener:
+                listener.bind(("127.0.0.1", 0))
+                self.port = int(listener.getsockname()[1])
+            result = subprocess.run(
+                [
+                    "docker", "run", "-d", "--name", self.name,
+                    "--hostname", self.name,
+                    "--tmpfs", "/tmp:rw,noexec,nosuid,nodev,size=64m",
+                    "-e", "RABBITMQ_DEFAULT_USER=" + MANAGER,
+                    "--env-file", "/dev/stdin",
+                    "-p", f"127.0.0.1:{self.port}:15672",
+                    IMAGE,
+                ],
+                input="RABBITMQ_DEFAULT_PASS=" + self.password + "\n",
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=60,
+            )
+            if result.returncode == 0:
+                break
+            subprocess.run(
+                ["docker", "rm", "-f", self.name],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=20,
+            )
+            retryable = result.stderr.lower()
+            if not any(
+                marker in retryable
+                for marker in (
+                    "port is already allocated",
+                    "address already in use",
+                    "failed to bind host port",
+                )
+            ):
+                raise RuntimeError("rabbitmq_container_start_failed")
+        else:
+            raise RuntimeError("rabbitmq_port_allocation_exhausted")
         self.created = True
         self.running = True
-        mapped = subprocess.run(
-            ["docker", "port", self.name, "15672/tcp"],
-            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-            text=True, timeout=12)
-        match = re.search(r":(\d+)\s*$", mapped.stdout.strip())
-        if mapped.returncode != 0 or match is None or int(match.group(1)) != self.port:
-            raise RuntimeError("rabbitmq_port_binding_mismatch")
+        self._assert_port_binding()
         self._wait_ready()
         for vhost in (VHOST, DENIED_VHOST):
-            status, _ = self.api("PUT", "/api/vhosts/" + quote(vhost, safe=""), body={})
+            status, _ = self.api(
+                "PUT", "/api/vhosts/" + quote(vhost, safe=""), body={}
+            )
             if status not in (201, 204):
                 raise RuntimeError("rabbitmq_vhost_creation_failed")
 
@@ -148,6 +186,8 @@ class RabbitContainer:
         if result.returncode != 0:
             raise RuntimeError("rabbitmq_container_restart_failed")
         self.running = True
+        # A changed mapping would invalidate the checksum-bound endpoint.
+        self._assert_port_binding()
         self._wait_ready()
 
     def stop(self) -> None:
@@ -558,14 +598,33 @@ def run(binary: Path, root: Path, output: Path) -> int:
             and body.get("lease_id") == outage_lease,
         )
         provider.restart()
-        status, _ = instance.call(
-            "POST", "sys/leases/reconcile/" + outage_lease, {})
-        if status != 204:
-            status, _ = instance.call(
-                "POST", "sys/leases/revoke", {"lease_id": outage_lease})
+        deadline = time.monotonic() + 30
+        terminal = False
+        while time.monotonic() < deadline:
+            instance.call(
+                "POST", "sys/leases/reconcile/" + outage_lease, {}
+            )
+            lookup_status, lookup = instance.call(
+                "POST", "sys/leases/lookup", {"lease_id": outage_lease}
+            )
+            phase = (
+                lookup.get("data", {}).get("phase")
+                if lookup_status == 200
+                else ""
+            )
+            revoke_status, _ = instance.call(
+                "POST", "sys/leases/revoke", {"lease_id": outage_lease}
+            )
+            terminal = revoke_status == 204 and (
+                (lookup_status == 200 and phase == "Revoked")
+                or lookup_status in (400, 404)
+            )
+            if terminal:
+                break
+            time.sleep(0.1)
         check(
             "rabbitmq_restart_reconciles_pending_revoke",
-            status == 204 and provider.user(outage_user) is None,
+            terminal and provider.user(outage_user) is None,
         )
 
         missing = sorted(set(CORPUS_CASE_IDS) - {

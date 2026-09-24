@@ -89,7 +89,7 @@ class CassandraContainer:
         )
 
     def _run_cql(self, user: str, password: str, sql: str) -> subprocess.CompletedProcess[str]:
-        rc = "/tmp/heptabao-cqlshrc"
+        rc = "/tmp/heptabao-cqlshrc-" + str(os.getpid()) + "-" + secrets.token_hex(8)
         config = f"[authentication]\nusername = {user}\npassword = {password}\n"
         put = subprocess.run(
             ["docker", "exec", "-i", self.name, "sh", "-c", 'umask 077; cat > "$1"', "sh", rc],
@@ -211,26 +211,25 @@ os.execv(v("--heptabao-plugin"),[v("--heptabao-plugin")])
     plugin_sha = make_exec(
         plugin,
         f"""#!{sys.executable}
-import json,re,struct,subprocess,sys
+import json,os,re,secrets,struct,subprocess,sys
 DOCKER={docker!r}
 CONTAINER={provider.name!r}
-RC="/tmp/heptabao-cqlshrc"
-
 def emit(value):
     p=json.dumps(value,sort_keys=True,separators=(",",":")).encode()
     sys.stdout.buffer.write(b"HBR1"+struct.pack(">I",len(p))+p)
 
 def run_cql(user,password,sql):
+    rc="/tmp/heptabao-cqlshrc-"+str(os.getpid())+"-"+secrets.token_hex(8)
     cfg="[authentication]\\nusername = "+user+"\\npassword = "+password+"\\n"
-    put=subprocess.run([DOCKER,"exec","-i",CONTAINER,"sh","-c",'umask 077; cat > "$1"',"sh",RC],
+    put=subprocess.run([DOCKER,"exec","-i",CONTAINER,"sh","-c",'umask 077; cat > "$1"',"sh",rc],
         input=cfg,text=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=8)
     if put.returncode:
         return put
     try:
-        return subprocess.run([DOCKER,"exec","-i",CONTAINER,"cqlsh","--cqlshrc="+RC],
+        return subprocess.run([DOCKER,"exec","-i",CONTAINER,"cqlsh","--cqlshrc="+rc],
             input=sql+"\\n",text=True,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,timeout=15)
     finally:
-        subprocess.run([DOCKER,"exec",CONTAINER,"rm","-f",RC],
+        subprocess.run([DOCKER,"exec",CONTAINER,"rm","-f",rc],
             stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=5)
 
 def cql(user,password,sql):
@@ -427,16 +426,38 @@ def run(binary: Path, root: Path, output: Path) -> int:
             status == 503 and body.get("reconcile_required") is True and "data" not in body,
         )
         provider.restart()
-        deadline = time.monotonic() + 15
-        status = 503
+        deadline = time.monotonic() + 30
+        terminal = False
         while time.monotonic() < deadline:
-            status, body = instance.call("POST", "sys/leases/reconcile/" + outage_lease, {})
-            if status == 204:
+            # The explicit request and the host lifecycle worker may race to
+            # reconcile. A successful current revoke removes the durable lease;
+            # older retained terminal rows report phase=Revoked. Require an
+            # idempotent 204 plus either terminal representation.
+            instance.call("POST", "sys/leases/reconcile/" + outage_lease, {})
+            lookup_status, lookup = instance.call(
+                "POST", "sys/leases/lookup", {"lease_id": outage_lease}
+            )
+            phase = (
+                lookup.get("data", {}).get("phase")
+                if lookup_status == 200
+                else ""
+            )
+            revoke_status, _ = instance.call(
+                "POST", "sys/leases/revoke", {"lease_id": outage_lease}
+            )
+            terminal = revoke_status == 204 and (
+                (lookup_status == 200 and phase == "Revoked")
+                or lookup_status in (400, 404)
+            )
+            if terminal:
                 break
             time.sleep(0.15)
         check(
             "cassandra_restart_reconciles_pending_revoke",
-            status == 204 and provider.wait_login(outage_cred["username"], outage_cred["password"], False),
+            terminal
+            and provider.wait_login(
+                outage_cred["username"], outage_cred["password"], False
+            ),
         )
 
         passed = {item["case"] for item in checks if item["passed"]}

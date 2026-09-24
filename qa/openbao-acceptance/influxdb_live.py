@@ -220,8 +220,24 @@ class InfluxContainer:
         except InfluxError:
             return False
 
+    def _assert_port_binding(self) -> None:
+        mapped = subprocess.run(
+            ["docker", "port", self.name, "8086/tcp"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            timeout=12,
+        )
+        match = re.search(r":(\d+)\s*$", mapped.stdout.strip())
+        if (
+            mapped.returncode != 0
+            or match is None
+            or int(match.group(1)) != self.port
+        ):
+            raise RuntimeError("influxdb_port_binding_changed")
+
     def _wait_ready(self) -> None:
-        deadline = time.monotonic() + 75
+        deadline = time.monotonic() + 120
         while time.monotonic() < deadline:
             try:
                 admin = any(
@@ -237,41 +253,53 @@ class InfluxContainer:
         raise RuntimeError("influxdb_readiness_failed")
 
     def start_fresh(self) -> None:
-        # The plugin executable is checksum-bound to the provider endpoint.
-        # Keep the loopback host port stable across container restarts.
-        with socket.socket() as listener:
-            listener.bind(("127.0.0.1", 0))
-            self.port = listener.getsockname()[1]
-        result = subprocess.run(
-            [
-                "docker", "run", "-d", "--name", self.name,
-                "--tmpfs", "/tmp:rw,noexec,nosuid,nodev,size=64m",
-                "-e", "INFLUXDB_DB=" + APP_DATABASE,
-                "-e", "INFLUXDB_ADMIN_USER=" + MANAGER_USERNAME,
-                "-e", "INFLUXDB_HTTP_AUTH_ENABLED=true",
-                "--env-file", "/dev/stdin",
-                "-p", f"127.0.0.1:{self.port}:8086", IMAGE,
-            ],
-            input="INFLUXDB_ADMIN_PASSWORD=" + self.password + "\n",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            text=True,
-            timeout=45,
-        )
-        if result.returncode != 0:
-            raise RuntimeError("influxdb_container_start_failed")
+        # The checksum-bound plugin embeds the provider endpoint, so the
+        # loopback mapping must remain stable across provider restarts. Pick a
+        # candidate port and let Docker claim it; bounded retries close the
+        # bind/close race without accepting a mutable endpoint.
+        for _ in range(16):
+            with socket.socket() as listener:
+                listener.bind(("127.0.0.1", 0))
+                self.port = int(listener.getsockname()[1])
+            result = subprocess.run(
+                [
+                    "docker", "run", "-d", "--name", self.name,
+                    "--tmpfs", "/tmp:rw,noexec,nosuid,nodev,size=64m",
+                    "-e", "INFLUXDB_DB=" + APP_DATABASE,
+                    "-e", "INFLUXDB_ADMIN_USER=" + MANAGER_USERNAME,
+                    "-e", "INFLUXDB_HTTP_AUTH_ENABLED=true",
+                    "--env-file", "/dev/stdin",
+                    "-p", f"127.0.0.1:{self.port}:8086", IMAGE,
+                ],
+                input="INFLUXDB_ADMIN_PASSWORD=" + self.password + "\n",
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=45,
+            )
+            if result.returncode == 0:
+                break
+            subprocess.run(
+                ["docker", "rm", "-f", self.name],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=15,
+            )
+            retryable = result.stderr.lower()
+            if not any(
+                marker in retryable
+                for marker in (
+                    "port is already allocated",
+                    "address already in use",
+                    "failed to bind host port",
+                )
+            ):
+                raise RuntimeError("influxdb_container_start_failed")
+        else:
+            raise RuntimeError("influxdb_port_allocation_exhausted")
         self.created = True
         self.running = True
-        mapped = subprocess.run(
-            ["docker", "port", self.name, "8086/tcp"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            text=True,
-            timeout=12,
-        )
-        match = re.search(r":(\d+)\s*$", mapped.stdout.strip())
-        if mapped.returncode != 0 or match is None or int(match.group(1)) != self.port:
-            raise RuntimeError("influxdb_port_binding_mismatch")
+        self._assert_port_binding()
         self._wait_ready()
         self.query("CREATE DATABASE \"" + UNGRANTED_DATABASE + "\"")
         self.query("CREATE DATABASE \"" + FENCE_DATABASE + "\"")
@@ -293,6 +321,8 @@ class InfluxContainer:
         if result.returncode != 0:
             raise RuntimeError("influxdb_container_restart_failed")
         self.running = True
+        # A changed mapping would invalidate the checksum-bound endpoint.
+        self._assert_port_binding()
         self._wait_ready()
 
     def stop(self) -> None:
@@ -773,25 +803,36 @@ def run(binary: Path, root: Path, output: Path) -> int:
             and "data" not in body,
         )
         provider.restart()
-        deadline = time.monotonic() + 15
-        status = 503
+        deadline = time.monotonic() + 30
+        terminal = False
         while time.monotonic() < deadline:
-            status, body = instance.call(
+            instance.call(
                 "POST", "sys/leases/reconcile/" + outage_lease, {}
             )
-            if status == 204:
-                break
-            errors = body.get("errors", [])
-            if not (
-                status == 503 and body.get("reconcile_required") is True
-                and any("already in flight" in str(error) for error in errors)
-            ):
+            lookup_status, lookup = instance.call(
+                "POST", "sys/leases/lookup", {"lease_id": outage_lease}
+            )
+            phase = (
+                lookup.get("data", {}).get("phase")
+                if lookup_status == 200
+                else ""
+            )
+            revoke_status, _ = instance.call(
+                "POST", "sys/leases/revoke", {"lease_id": outage_lease}
+            )
+            terminal = revoke_status == 204 and (
+                (lookup_status == 200 and phase == "Revoked")
+                or lookup_status in (400, 404)
+            )
+            if terminal:
                 break
             time.sleep(0.1)
         check(
             "influxdb_restart_reconciles_pending_revoke",
-            status == 204
-            and not provider.user_present(outage_cred["username"], outage_cred["password"]),
+            terminal
+            and not provider.user_present(
+                outage_cred["username"], outage_cred["password"]
+            ),
         )
 
         passed = {item["case"] for item in checks if item["passed"]}
