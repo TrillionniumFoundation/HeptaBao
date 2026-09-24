@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import hmac
 import json
 import os
 import stat
@@ -37,6 +38,7 @@ def make_exec(path: Path, text: str) -> str:
 
 def configure(instance: smoke.Instance, root: Path):
     provider_state = root / "database-plugin-state.json"
+    fingerprint_key = os.urandom(32)
     wrapper = root / "database-sandbox-wrapper.py"
     plugin = root / "database-plugin.py"
     wrapper_sha = make_exec(
@@ -55,8 +57,9 @@ os.execv(v("--heptabao-plugin"),[v("--heptabao-plugin")])
     plugin_sha = make_exec(
         plugin,
         f"""#!{sys.executable}
-import hashlib,json,os,struct,sys
+import hashlib,hmac,json,os,struct,sys
 STATE={str(provider_state)!r}
+FINGERPRINT_KEY={fingerprint_key!r}
 r=sys.stdin.buffer.read(1048588)
 if len(r)<11 or r[:4]!=b"HBP1" or r[4:6]!=b"\\x00\\x01":
     raise SystemExit(65)
@@ -114,7 +117,7 @@ if action=="issue":
         "request_digest":digest,
         "expires":expires,
         "active":True,
-        "password_sha256":hashlib.sha256(password.encode()).hexdigest(),
+        "password_hmac_sha256":hmac.new(FINGERPRINT_KEY,password.encode(),hashlib.sha256).hexdigest(),
     }}
 elif action=="renew":
     if (
@@ -173,14 +176,16 @@ emit({{
     ]
     config_path.write_text(json.dumps(config))
     config_path.chmod(0o600)
-    return plugin, provider_state, plugin.read_bytes(), plugin_sha
+    return plugin, provider_state, plugin.read_bytes(), plugin_sha, fingerprint_key
 
 
 def run(binary: Path, root: Path):
     os.umask(0o077)
     root.mkdir(mode=0o700, parents=True, exist_ok=False)
     instance = smoke.Instance(binary, root / "server")
-    plugin, provider_state, original_plugin, plugin_sha = configure(instance, root)
+    plugin, provider_state, original_plugin, plugin_sha, fingerprint_key = configure(
+        instance, root
+    )
     passed = []
 
     def check(name, condition):
@@ -271,8 +276,12 @@ def run(binary: Path, root: Path):
             "issued_secret_matches_plugin_digest",
             provider.get("active") is True
             and provider.get("username") == credential["username"]
-            and provider.get("password_sha256")
-            == hashlib.sha256(credential["password"].encode()).hexdigest(),
+            and provider.get("password_hmac_sha256")
+            == hmac.new(
+                fingerprint_key,
+                credential["password"].encode(),
+                hashlib.sha256,
+            ).hexdigest(),
         )
         issue_seq = provider["seq"]
 

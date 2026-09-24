@@ -30,6 +30,13 @@ class ProviderFixtureIsolationTests(unittest.TestCase):
             self.assertNotIn('"127.0.0.1::', value)
             self.assertGreaterEqual(value.count("self._assert_port_binding()"), 2)
 
+    def test_database_fixture_uses_keyed_credential_fingerprint(self) -> None:
+        value = source("plugin_database_live.py")
+        self.assertIn("fingerprint_key = os.urandom(32)", value)
+        self.assertIn("password_hmac_sha256", value)
+        self.assertIn("hmac.new(", value)
+        self.assertNotIn("password_sha256", value)
+
     def test_recovery_observes_durable_and_external_terminal_state(self) -> None:
         for name in (
             "cassandra_live.py",

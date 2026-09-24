@@ -47,6 +47,7 @@ class Instance:
         (root / "ca.key").chmod(0o600)
         (root / "tls.key").chmod(0o600)
         self.context = ssl.create_default_context(cafile=str(root / "ca.crt"))
+        self.context.minimum_version = ssl.TLSVersion.TLSv1_2
         self.client = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=self.context))
         private_write(root / "server.json", json.dumps({
             "listen": f"127.0.0.1:{self.port}", "data_dir": str(root / "data"),

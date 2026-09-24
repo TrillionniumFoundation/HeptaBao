@@ -40,33 +40,51 @@ struct Context<'a> {
 
 impl LdapNativeOptions<'_> {
     /// Check this bounded profile before storing configuration, without I/O or
-    /// any caller credential. Actual assertion sizes are checked again at login.
+    /// constructing any synthetic caller credential. Actual assertion sizes
+    /// and the supplied login credential are checked again at final use.
     pub(crate) fn validate_configuration(&self) -> Result<(), &'static str> {
-        self.validate("configuration-validation", "synthetic-validation-password")
+        self.validate_options()?;
+        self.validate_filters(Context {
+            username: "configuration-validation",
+            user_attr: self.user_attr,
+            user_dn: self.user_dn,
+            group: false,
+        })
     }
 
     fn validate(&self, username: &str, password: &str) -> Result<(), &'static str> {
+        self.validate_options()?;
         // This profile supports authenticated manager discovery, not accidental
         // anonymous/unauthenticated binds when either credential is missing.
-        if !valid_dn(self.bind_dn)
-            || !valid_dn(self.user_dn)
-            || !valid_password(self.bind_password)
-            || !valid_password(password)
+        if !valid_password(password)
             || username.is_empty()
             || username.len() > 1024
             || username.chars().any(char::is_control)
+        {
+            return Err("invalid native LDAP options or credential bounds");
+        }
+        self.validate_filters(Context {
+            username,
+            user_attr: self.user_attr,
+            user_dn: self.user_dn,
+            group: false,
+        })
+    }
+
+    fn validate_options(&self) -> Result<(), &'static str> {
+        if !valid_dn(self.bind_dn)
+            || !valid_dn(self.user_dn)
+            || !valid_password(self.bind_password)
             || !valid_ldap_attribute(self.user_attr)
             || !valid_ldap_attribute(self.group_attr)
             || (!self.group_dn.is_empty() && !valid_dn(self.group_dn))
         {
             return Err("invalid native LDAP options or credential bounds");
         }
-        let context = Context {
-            username,
-            user_attr: self.user_attr,
-            user_dn: self.user_dn,
-            group: false,
-        };
+        Ok(())
+    }
+
+    fn validate_filters(&self, context: Context<'_>) -> Result<(), &'static str> {
         let _ = compile_filter(self.user_filter_or_default(), context)?;
         // Validate configured syntax even when group search is disabled. Empty
         // groupfilter is the explicit no-search setting, as in OpenBao.
