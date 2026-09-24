@@ -44,7 +44,7 @@ Consensus ordering is delegated to one driver. A single-writer state lock serial
 
 ## Security and privacy
 
-Keys and payloads are redacted from Debug. Frames are bounded and HMAC authenticated. Concrete rustls mTLS transport and pinned leaf identity checking exist. Production issuance, rotation, revocation and trust-root custody remain mandatory operational qualification.
+Keys and payloads are redacted from Debug. Frames are bounded and HMAC authenticated. Concrete rustls mTLS transport and pinned leaf identity checking exist. Repository-controlled same-CA leaf overlap rotation and old-pin retirement are executable. Certificate issuance, revocation, rotation of CA/trust roots, provider-backed revocation distribution and trust-root custody remain mandatory external operational qualification.
 
 ## Persistence and compatibility
 
@@ -75,7 +75,7 @@ Tests cover leader execution, follower forwarding, deduplication, quorum loss, p
 The server now provides a concrete `heptabao-raft-runtime` adapter with one voter per process, mutually authenticated peer listener and forwarding path. Rolling-version upgrade, process kill/failover evidence and destructive multi-node qualification remain required on the unchanged candidate.
 ## V2.4 mutual TLS peer transport
 
-`MutualTlsPeerTransport` uses rustls with a caller-supplied client configuration and validated `ServerName`; `serve_one_mtls_peer_frame` requires a caller-supplied server configuration whose client-certificate verifier has already authenticated the chain, requires the exact Raft ALPN, accepts a bounded chain (up to eight certificates and four MiB), and binds the presented leaf certificate SHA-256 to an expected `NodeId`. Intermediates are not identity pins and may rotate only under the configured trust roots. Message-level HMAC and durable sequence fencing remain required in addition to TLS. Certificate issuance, revocation, rotation, trust-root custody and destructive multi-node qualification remain external operational gates.
+`MutualTlsPeerTransport` uses rustls with a caller-supplied client configuration and validated `ServerName`; `serve_one_mtls_peer_frame` requires a caller-supplied server configuration whose client-certificate verifier has already authenticated the chain, requires the exact Raft ALPN, accepts a bounded chain (up to eight certificates and four MiB), and binds the presented leaf certificate SHA-256 to an expected `NodeId`. Intermediates are not identity pins and may rotate only under the configured trust roots. Message-level HMAC and durable sequence fencing remain required in addition to TLS. Same-CA leaf overlap rotation and old-pin retirement are exercised by the repository three-process fixture. Certificate issuance, revocation, rotation of CA/trust roots, provider-backed revocation, trust-root custody, multi-host destructive qualification and independent admission remain external operational gates.
 
 The endpoint admission rejects port zero and unspecified addresses; configured loopback,
 private and routable peer addresses remain valid. The mutual-TLS client and accepted server sockets enable TCP_NODELAY while retaining

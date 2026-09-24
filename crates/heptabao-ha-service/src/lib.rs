@@ -827,7 +827,7 @@ pub struct PinnedClientCertificateMap {
 impl PinnedClientCertificateMap {
     pub fn new(by_leaf_sha256: BTreeMap<[u8; 32], NodeId>) -> Result<Self, HaError> {
         if by_leaf_sha256.is_empty()
-            || by_leaf_sha256.len() > MAX_PEERS
+            || by_leaf_sha256.len() > MAX_PEERS.saturating_mul(2)
             || by_leaf_sha256.keys().any(|digest| *digest == [0; 32])
         {
             return Err(HaError::InvalidCluster);
@@ -1712,6 +1712,29 @@ mod tests {
             identities.identify(b"different-certificate"),
             Err(HaError::PeerAuthenticationFailed)
         );
+    }
+
+    #[test]
+    fn tls_peer_identity_accepts_bounded_overlap_rotation_pins() {
+        let peer = node("n2");
+        let old_leaf = b"synthetic-old-leaf";
+        let next_leaf = b"synthetic-next-leaf";
+        let overlapping = PinnedClientCertificateMap::new(BTreeMap::from([
+            (sha256(old_leaf), peer.clone()),
+            (sha256(next_leaf), peer.clone()),
+        ]))
+        .unwrap();
+        assert_eq!(overlapping.identify(old_leaf).unwrap(), peer);
+        assert_eq!(overlapping.identify(next_leaf).unwrap(), node("n2"));
+
+        let retired =
+            PinnedClientCertificateMap::new(BTreeMap::from([(sha256(next_leaf), node("n2"))]))
+                .unwrap();
+        assert_eq!(
+            retired.identify(old_leaf),
+            Err(HaError::PeerAuthenticationFailed)
+        );
+        assert_eq!(retired.identify(next_leaf).unwrap(), node("n2"));
     }
 
     #[test]

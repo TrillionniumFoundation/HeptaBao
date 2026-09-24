@@ -576,6 +576,19 @@
         "system GSS-API library"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "ha_certificate_rotation": {
+      "script": "qa/openbao-acceptance/ha_certificate_rotation.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--expected-binary-sha256",
+        "{binary_sha256}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1787,7 +1800,7 @@
       "technical_contract": {
         "api_or_protocol": "Cluster peer listener and client/server certificate mapping",
         "required_positive_and_hostile_behavior": "Wrong node/certificate, replay, revoked trust, rotation and bounded peer frames",
-        "remaining_semantics_and_effect_checks": "Certificate possession must be bound to exactly one enrolled node and cluster",
+        "remaining_semantics_and_effect_checks": "Certificate possession is bound to exactly one enrolled node and cluster; bounded same-CA leaf rotation admits an explicit old/new overlap and then fails closed after the old pin is retired.",
         "crash_reopen": "Interrupt Cluster peer listener and client/server certificate mapping before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-CLUSTER-MTLS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -1796,7 +1809,8 @@
         "ha_mtls.peer_identity_and_cluster_authentication"
       ],
       "available_scoped_profiles": [
-        "ha"
+        "ha",
+        "ha_certificate_rotation"
       ],
       "whole_surface_admitted": false
     },

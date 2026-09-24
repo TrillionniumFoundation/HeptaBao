@@ -212,7 +212,7 @@ repository_blockers:
   class: REPOSITORY_CONTROLLED
   severity: CRITICAL
   title: production Raft HA replication and linearizable read path are incomplete
-  state: IMPLEMENTATION_IN_PROGRESS
+  state: IMPLEMENTED_REVIEW_REQUIRED
   evidence:
   - crates/heptabao-raft-runtime/src/lib.rs
   - crates/heptabao-raft-runtime/src/cluster.rs
@@ -223,6 +223,10 @@ repository_blockers:
   - docs/modules/heptabao-raft-runtime.md
   - docs/architecture/HEPTABAO_V2_2_RAFT_RUNTIME.md
   - docs/plan/HEPTABAO_MASTER_DEVELOPMENT_PLAN_V2_1.md
+  - qa/openbao-acceptance/ha_destructive.py
+  - qa/openbao-acceptance/ha_network_partition.py
+  - qa/openbao-acceptance/ha_rolling_upgrade.py
+  - qa/openbao-acceptance/ha_certificate_rotation.py
   closure_criteria:
   - repository-owned durable three-voter OpenRaft core passes restart, ReadIndex, snapshot and quorum-loss tests
   - replace the qualification router with authenticated bounded inter-process peer transport

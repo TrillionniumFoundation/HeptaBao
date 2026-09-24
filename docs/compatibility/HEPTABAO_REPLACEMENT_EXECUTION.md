@@ -794,9 +794,9 @@ Guides: `docs/modules/heptabao-ha-service.md`.
 
 **Lifecycle:** Rotate peer certificates and recover admission state across restart.
 
-**Remaining scope:** Cluster ID, node ID, cert rotation, join challenge and replay.
+**Remaining scope:** Repository-controlled cluster/node identity, pinned mTLS peer authentication, cross-cluster rejection, replay fencing and bounded same-CA leaf-certificate overlap rotation with old-pin retirement are executable. CA/trust-root rotation, provider-backed revocation, multi-host PKI faults, HSM/KMS custody and independent admission remain open.
 
-Existing bounded profiles: `qa/openbao-acceptance/ha_destructive.py`.
+Existing bounded profiles: `qa/openbao-acceptance/ha_destructive.py`, `qa/openbao-acceptance/ha_certificate_rotation.py`.
 
 ### HB-SURFACE-CLUSTER-FORWARDING
 

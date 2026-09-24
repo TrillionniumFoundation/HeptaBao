@@ -76,6 +76,11 @@ pub struct HaPeerConfig {
     pub api_address: Option<String>,
     pub server_name: String,
     pub certificate_sha256: String,
+    /// Optional overlap pin for bounded leaf-certificate rotation. During a
+    /// rollout peers accept either digest for the same enrolled node identity;
+    /// remove the old pin after every node has moved to the new certificate.
+    #[serde(default)]
+    pub certificate_sha256_next: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -125,6 +130,7 @@ struct ParsedPeer {
     node: NodeId,
     endpoint: TlsPeerEndpoint,
     certificate_sha256: [u8; 32],
+    certificate_sha256_next: Option<[u8; 32]>,
     api_address: Option<String>,
 }
 
@@ -334,7 +340,12 @@ impl HaProcess {
         let pinned = parsed_peers
             .iter()
             .filter(|peer| peer.id != config.node_id)
-            .map(|peer| (peer.certificate_sha256, peer.node.clone()))
+            .flat_map(|peer| {
+                std::iter::once((peer.certificate_sha256, peer.node.clone())).chain(
+                    peer.certificate_sha256_next
+                        .map(|digest| (digest, peer.node.clone())),
+                )
+            })
             .collect::<BTreeMap<_, _>>();
         let timeout = Duration::from_millis(config.peer_timeout_ms);
         let (client_tls, server_tls, local_leaf_digest) = build_mutual_tls(&config)?;
@@ -342,7 +353,9 @@ impl HaProcess {
             .iter()
             .find(|peer| peer.id == config.node_id)
             .ok_or_else(|| "HA local node is missing from peer registry".to_owned())?;
-        if local.certificate_sha256 != local_leaf_digest {
+        if local.certificate_sha256 != local_leaf_digest
+            && local.certificate_sha256_next != Some(local_leaf_digest)
+        {
             return Err("HA local certificate digest does not match peer registry".into());
         }
         let forward_timeout = Duration::from_millis(config.forward_timeout_ms);
@@ -1417,12 +1430,20 @@ fn parse_peers(config: &HaProcessConfig) -> Result<Vec<ParsedPeer>, String> {
         let endpoint = TlsPeerEndpoint::new(peer.address, peer.server_name.clone())
             .map_err(|error| error.to_string())?;
         let certificate_sha256 = decode_hex_32(&peer.certificate_sha256)?;
+        let certificate_sha256_next = peer
+            .certificate_sha256_next
+            .as_deref()
+            .map(decode_hex_32)
+            .transpose()?;
         let api_address = peer
             .api_address
             .as_deref()
             .map(parse_api_address)
             .transpose()?;
-        if !names.insert(node.clone()) || !digests.insert(certificate_sha256) {
+        if !names.insert(node.clone())
+            || !digests.insert(certificate_sha256)
+            || certificate_sha256_next.is_some_and(|digest| !digests.insert(digest))
+        {
             return Err("HA peer identities and certificate digests must be unique".into());
         }
         peers.push(ParsedPeer {
@@ -1430,6 +1451,7 @@ fn parse_peers(config: &HaProcessConfig) -> Result<Vec<ParsedPeer>, String> {
             node,
             endpoint,
             certificate_sha256,
+            certificate_sha256_next,
             api_address,
         });
     }
@@ -2064,6 +2086,14 @@ mod tests {
         }))
         .map_err(|_| "old peer configuration")?;
         assert!(old.api_address.is_none());
+        assert!(old.certificate_sha256_next.is_none());
+        let rotating: HaPeerConfig = serde_json::from_value(serde_json::json!({
+            "node_name":"node-1", "address":"127.0.0.1:8201",
+            "server_name":"node-1.example", "certificate_sha256":"11".repeat(32),
+            "certificate_sha256_next":"22".repeat(32),
+        }))
+        .map_err(|_| "rotating peer configuration")?;
+        assert_eq!(rotating.certificate_sha256_next, Some("22".repeat(32)));
         Ok(())
     }
 
@@ -2160,6 +2190,7 @@ mod tests {
                         address: "127.0.0.1:8201".parse().map_err(|_| "peer address")?,
                         server_name: "node-1.example.internal".into(),
                         certificate_sha256: "11".repeat(32),
+                        certificate_sha256_next: None,
                     },
                 ),
                 (
@@ -2170,6 +2201,7 @@ mod tests {
                         address: "127.0.0.1:8202".parse().map_err(|_| "peer address")?,
                         server_name: "node-2.example.internal".into(),
                         certificate_sha256: "22".repeat(32),
+                        certificate_sha256_next: None,
                     },
                 ),
                 (
@@ -2180,6 +2212,7 @@ mod tests {
                         address: "127.0.0.1:8203".parse().map_err(|_| "peer address")?,
                         server_name: "node-3.example.internal".into(),
                         certificate_sha256: "33".repeat(32),
+                        certificate_sha256_next: None,
                     },
                 ),
             ]),
