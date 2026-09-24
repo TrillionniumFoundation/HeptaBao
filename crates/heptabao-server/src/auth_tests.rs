@@ -1681,6 +1681,105 @@ fn userpass_totp_mfa_is_required_replay_safe_and_restart_persistent() {
 }
 
 #[test]
+fn userpass_lockout_is_explicit_durable_and_fails_closed_across_restart() {
+    let (mut state, _, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "sys/auth/userpass/tune",
+        json!({
+            "user_lockout_disable": false,
+            "user_lockout_threshold": 3,
+            "user_lockout_duration": 10,
+            "user_lockout_counter_reset_duration": 20
+        }),
+        100,
+    );
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/userpass/users/alice",
+        json!({"password":"correct-horse-battery-staple"}),
+        100,
+    );
+    assert!(
+        state
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/unknown",
+                &json!({"password":"wrong-password"}),
+                100,
+            )
+            .is_err()
+    );
+    assert!(!state.users["team"].contains_key("unknown"));
+    for now in [100, 101, 102] {
+        let failed = state
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password":"wrong-password"}),
+                now,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(failed.status, 400);
+        assert_eq!(
+            failed.body["errors"],
+            json!(["invalid username or password"])
+        );
+    }
+    assert_eq!(state.users["team"]["alice"].failed_login_count, 3);
+    assert_eq!(state.users["team"]["alice"].locked_until, 112);
+
+    let saved = serde_json::to_vec(&state).unwrap();
+    let mut restarted: AuthState = serde_json::from_slice(&saved).unwrap();
+    let mut corrupt = restarted.clone();
+    corrupt
+        .users
+        .get_mut("team")
+        .unwrap()
+        .get_mut("alice")
+        .unwrap()
+        .failed_login_last_at = 0;
+    assert!(corrupt.validate_userpass_lockout_state().is_err());
+    assert!(
+        restarted
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password":"correct-horse-battery-staple"}),
+                110,
+            )
+            .is_err()
+    );
+    let login = restarted
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/userpass/login/alice",
+            &json!({"password":"correct-horse-battery-staple"}),
+            112,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.status, 200);
+    assert_eq!(restarted.users["team"]["alice"].failed_login_count, 0);
+    assert_eq!(restarted.users["team"]["alice"].locked_until, 0);
+}
+
+#[test]
 fn totp_mfa_reset_is_explicit_sudo_only_and_status_never_returns_seed() {
     let (mut state, _, root) = setup();
     call(

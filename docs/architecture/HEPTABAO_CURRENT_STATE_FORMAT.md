@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **51**. Its source constant is
+The current Service state schema is **52**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -96,6 +96,7 @@ transactional within one request; crash-resumable step journals are not claimed.
 | 49 | Bounded, authenticated namespace-scoped workflow definitions under the existing namespace owner. Older binaries reject workflow-bearing state rather than silently dropping definitions; workflow execution remains synchronous and transactional within one request. |
 | 50 | Bounded Kerberos authentication mount/configuration and durable replay/clock state. A mount alone requires this version; old-format admission rejects populated Kerberos fields even before login. Keytab bytes, tickets and session keys are not application state. |
 | 51 | Discovery-bound OIDC UserInfo endpoints retained in encrypted authorization sessions. The endpoint is optional for legacy sessions; old-format admission rejects sessions that retain it rather than silently dropping the provider binding. |
+| 52 | Durable userpass lockout policy, counters, last-failure observations and lock windows. Old-format admission rejects populated lockout state rather than silently resetting authentication protection on restart. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Schema 50 independently gates `AuthState::has_kerberos_state()`, including

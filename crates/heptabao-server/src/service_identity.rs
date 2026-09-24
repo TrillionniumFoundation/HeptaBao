@@ -166,6 +166,15 @@ impl State {
         self.auth
             .validate_userpass_native_tokens()
             .map_err(|_| Response::error(503, "invalid native userpass state"))?;
+        self.auth
+            .validate_userpass_lockout_state()
+            .map_err(|_| Response::error(503, "invalid userpass lockout state"))?;
+        if self.schema < 52 && self.auth.has_userpass_lockout_state() {
+            return Err(Response::error(
+                503,
+                "userpass lockout state requires schema 52",
+            ));
+        }
         self.engines
             .validate_identity_alias_state()
             .map_err(|e| Response::error(503, &e.message))?;

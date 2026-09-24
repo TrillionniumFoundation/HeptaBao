@@ -114,6 +114,10 @@ const MFA_SEED_BYTES: usize = 32;
 const MFA_PERIOD_SECONDS: u64 = 30;
 const MFA_DIGITS: usize = 6;
 const MFA_DRIFT_STEPS: u64 = 1;
+const USERPASS_LOCKOUT_THRESHOLD: u32 = 5;
+const USERPASS_LOCKOUT_DURATION: u64 = 15 * 60;
+const USERPASS_LOCKOUT_COUNTER_RESET: u64 = 15 * 60;
+const MAX_USERPASS_LOCKOUT_THRESHOLD: u32 = 1000;
 const CAPABILITIES: &[&str] = &[
     "create", "read", "update", "delete", "list", "patch", "sudo", "deny",
 ];
@@ -123,6 +127,34 @@ const MAX_CERT_EXTENSION_VALUE_BYTES: usize = 4096;
 
 fn default_bind_secret_id() -> bool {
     true
+}
+
+fn default_userpass_lockout_threshold() -> u32 {
+    USERPASS_LOCKOUT_THRESHOLD
+}
+
+fn default_userpass_lockout_duration() -> u64 {
+    USERPASS_LOCKOUT_DURATION
+}
+
+fn default_userpass_lockout_counter_reset() -> u64 {
+    USERPASS_LOCKOUT_COUNTER_RESET
+}
+
+fn default_userpass_lockout_disable() -> bool {
+    true
+}
+
+fn is_default_userpass_lockout_threshold(value: &u32) -> bool {
+    *value == USERPASS_LOCKOUT_THRESHOLD
+}
+
+fn is_default_userpass_lockout_duration(value: &u64) -> bool {
+    *value == USERPASS_LOCKOUT_DURATION
+}
+
+fn is_default_userpass_lockout_counter_reset(value: &u64) -> bool {
+    *value == USERPASS_LOCKOUT_COUNTER_RESET
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -1013,6 +1045,26 @@ struct AuthMount {
     default_lease_ttl: u64,
     #[serde(default)]
     max_lease_ttl: u64,
+    #[serde(
+        default = "default_userpass_lockout_disable",
+        skip_serializing_if = "is_true"
+    )]
+    user_lockout_disable: bool,
+    #[serde(
+        default = "default_userpass_lockout_threshold",
+        skip_serializing_if = "is_default_userpass_lockout_threshold"
+    )]
+    user_lockout_threshold: u32,
+    #[serde(
+        default = "default_userpass_lockout_duration",
+        skip_serializing_if = "is_default_userpass_lockout_duration"
+    )]
+    user_lockout_duration: u64,
+    #[serde(
+        default = "default_userpass_lockout_counter_reset",
+        skip_serializing_if = "is_default_userpass_lockout_counter_reset"
+    )]
+    user_lockout_counter_reset_duration: u64,
 }
 
 #[derive(Clone, Copy)]
@@ -1036,6 +1088,10 @@ impl AuthMount {
             description: description.into(),
             default_lease_ttl: 0,
             max_lease_ttl: 0,
+            user_lockout_disable: true,
+            user_lockout_threshold: USERPASS_LOCKOUT_THRESHOLD,
+            user_lockout_duration: USERPASS_LOCKOUT_DURATION,
+            user_lockout_counter_reset_duration: USERPASS_LOCKOUT_COUNTER_RESET,
         }
     }
 
@@ -1289,6 +1345,14 @@ struct User {
     token_explicit_max_ttl: u64,
     #[serde(default)]
     mfa: Option<TotpEnrollment>,
+    /// Failed userpass authentication is durable so a restart cannot reset a
+    /// configured lockout window. These fields are omitted for old records.
+    #[serde(default, skip_serializing_if = "is_zero_u32")]
+    failed_login_count: u32,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    failed_login_last_at: u64,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    locked_until: u64,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -1443,8 +1507,14 @@ fn checked_expiry(now: u64, ttl: u64) -> Result<u64, AuthError> {
 fn is_zero(value: &u64) -> bool {
     *value == 0
 }
+fn is_zero_u32(value: &u32) -> bool {
+    *value == 0
+}
 fn is_false(value: &bool) -> bool {
     !*value
+}
+fn is_true(value: &bool) -> bool {
+    *value
 }
 
 fn unlimited_zero(value: u64) -> Option<u64> {
@@ -1516,6 +1586,16 @@ fn boolean(body: &Value, field: &str, default: bool) -> Result<bool, AuthError> 
         None => Ok(default),
         Some(value) => value.as_bool().ok_or_else(|| bad("expected boolean")),
     }
+}
+
+fn optional_u64(body: &Value, field: &str) -> Result<Option<u64>, AuthError> {
+    body.get(field)
+        .map(|value| {
+            value
+                .as_u64()
+                .ok_or_else(|| bad(&format!("{field} must be a nonnegative integer")))
+        })
+        .transpose()
 }
 fn optional_auth_revision(body: &Value) -> Result<Option<u64>, AuthError> {
     body.get("cas_revision")
@@ -2684,18 +2764,23 @@ impl AuthState {
                         .ok_or_else(|| err(404, "auth mount not found"))?;
                     let (default_ttl, max_ttl) =
                         self.auth_mount_lease_defaults(AuthScope { namespace, mount })?;
-                    Ok(response(
-                        json!({
-                            "default_lease_ttl":default_ttl,
-                            "description":entry.description,
-                            "force_no_cache":false,
-                            "max_lease_ttl":max_ttl,
-                            "token_type":entry.token_type.unwrap_or_default().name(),
-                            "revision":entry.revision,
-                            "accessor":entry.accessor.as_deref().unwrap_or("")
-                        }),
-                        false,
-                    ))
+                    let mut data = json!({
+                        "default_lease_ttl":default_ttl,
+                        "description":entry.description,
+                        "force_no_cache":false,
+                        "max_lease_ttl":max_ttl,
+                        "token_type":entry.token_type.unwrap_or_default().name(),
+                        "revision":entry.revision,
+                        "accessor":entry.accessor.as_deref().unwrap_or("")
+                    });
+                    if entry.kind == "userpass" {
+                        data["user_lockout_disable"] = json!(entry.user_lockout_disable);
+                        data["user_lockout_threshold"] = json!(entry.user_lockout_threshold);
+                        data["user_lockout_duration"] = json!(entry.user_lockout_duration);
+                        data["user_lockout_counter_reset_duration"] =
+                            json!(entry.user_lockout_counter_reset_duration);
+                    }
+                    Ok(response(data, false))
                 }
                 "POST" | "PUT" => {
                     let actor = self.permission(principal, namespace, &route, "update", now)?;
@@ -2708,6 +2793,10 @@ impl AuthState {
                             "max_lease_ttl",
                             "cas_revision",
                             "token_type",
+                            "user_lockout_disable",
+                            "user_lockout_threshold",
+                            "user_lockout_duration",
+                            "user_lockout_counter_reset_duration",
                         ],
                     )?;
                     let mut entries = self.effective_auth_mounts(namespace);
@@ -2757,6 +2846,55 @@ impl AuthState {
                     if entry.max_lease_ttl != max_lease_ttl {
                         entry.max_lease_ttl = max_lease_ttl;
                         changed = true;
+                    }
+                    let has_lockout_fields = body.get("user_lockout_disable").is_some()
+                        || body.get("user_lockout_threshold").is_some()
+                        || body.get("user_lockout_duration").is_some()
+                        || body.get("user_lockout_counter_reset_duration").is_some();
+                    if has_lockout_fields && entry.kind != "userpass" {
+                        return Err(bad("user lockout settings require a userpass auth mount"));
+                    }
+                    if entry.kind == "userpass" {
+                        let disable =
+                            boolean(body, "user_lockout_disable", entry.user_lockout_disable)?;
+                        let threshold = optional_u64(body, "user_lockout_threshold")?
+                            .map(|value| {
+                                u32::try_from(value)
+                                    .map_err(|_| bad("user lockout threshold is too large"))
+                            })
+                            .transpose()?
+                            .unwrap_or(entry.user_lockout_threshold);
+                        let lockout_duration =
+                            duration(body, "user_lockout_duration", entry.user_lockout_duration)?;
+                        let counter_reset = duration(
+                            body,
+                            "user_lockout_counter_reset_duration",
+                            entry.user_lockout_counter_reset_duration,
+                        )?;
+                        if !(1..=MAX_USERPASS_LOCKOUT_THRESHOLD).contains(&threshold)
+                            || lockout_duration == 0
+                            || lockout_duration > MAX_TTL
+                            || counter_reset == 0
+                            || counter_reset > MAX_TTL
+                        {
+                            return Err(bad("invalid user lockout settings"));
+                        }
+                        if entry.user_lockout_disable != disable {
+                            entry.user_lockout_disable = disable;
+                            changed = true;
+                        }
+                        if entry.user_lockout_threshold != threshold {
+                            entry.user_lockout_threshold = threshold;
+                            changed = true;
+                        }
+                        if entry.user_lockout_duration != lockout_duration {
+                            entry.user_lockout_duration = lockout_duration;
+                            changed = true;
+                        }
+                        if entry.user_lockout_counter_reset_duration != counter_reset {
+                            entry.user_lockout_counter_reset_duration = counter_reset;
+                            changed = true;
+                        }
                     }
                     if changed {
                         entry.revision = next_auth_revision(entry.revision)?;
@@ -2838,6 +2976,11 @@ impl AuthState {
                     next.userpass_name_mode = old.userpass_name_mode;
                     next.accessor = old.accessor.clone();
                     next.revision = old.revision;
+                    next.user_lockout_disable = old.user_lockout_disable;
+                    next.user_lockout_threshold = old.user_lockout_threshold;
+                    next.user_lockout_duration = old.user_lockout_duration;
+                    next.user_lockout_counter_reset_duration =
+                        old.user_lockout_counter_reset_duration;
                     if old.description != description {
                         next.revision = next_auth_revision(old.revision)?;
                     }
@@ -3076,6 +3219,72 @@ impl AuthState {
         self.plugin_auth_mounts
             .values()
             .any(|mounts| !mounts.is_empty())
+    }
+
+    pub(crate) fn has_userpass_lockout_state(&self) -> bool {
+        self.users.values().any(|users| {
+            users.values().any(|user| {
+                user.failed_login_count != 0
+                    || user.failed_login_last_at != 0
+                    || user.locked_until != 0
+            })
+        }) || self.mounted_users.values().any(|mounts| {
+            mounts.values().any(|users| {
+                users.values().any(|user| {
+                    user.failed_login_count != 0
+                        || user.failed_login_last_at != 0
+                        || user.locked_until != 0
+                })
+            })
+        }) || self.auth_mounts.values().any(|mounts| {
+            mounts.values().any(|mount| {
+                mount.kind == "userpass"
+                    && (mount.user_lockout_disable != default_userpass_lockout_disable()
+                        || mount.user_lockout_threshold != USERPASS_LOCKOUT_THRESHOLD
+                        || mount.user_lockout_duration != USERPASS_LOCKOUT_DURATION
+                        || mount.user_lockout_counter_reset_duration
+                            != USERPASS_LOCKOUT_COUNTER_RESET)
+            })
+        })
+    }
+
+    pub(crate) fn validate_userpass_lockout_state(&self) -> Result<(), AuthError> {
+        for namespace in self.known_namespaces() {
+            for mount in self.effective_auth_mounts(&namespace).values() {
+                if mount.kind != "userpass" {
+                    continue;
+                }
+                if !(1..=MAX_USERPASS_LOCKOUT_THRESHOLD).contains(&mount.user_lockout_threshold)
+                    || mount.user_lockout_duration == 0
+                    || mount.user_lockout_duration > MAX_TTL
+                    || mount.user_lockout_counter_reset_duration == 0
+                    || mount.user_lockout_counter_reset_duration > MAX_TTL
+                {
+                    return Err(err(503, "invalid persisted userpass lockout settings"));
+                }
+            }
+        }
+        for users in self.users.values() {
+            for user in users.values() {
+                if (user.failed_login_count == 0) != (user.failed_login_last_at == 0)
+                    || user.locked_until != 0 && user.failed_login_count == 0
+                {
+                    return Err(err(503, "invalid persisted userpass lockout state"));
+                }
+            }
+        }
+        for mounts in self.mounted_users.values() {
+            for users in mounts.values() {
+                for user in users.values() {
+                    if (user.failed_login_count == 0) != (user.failed_login_last_at == 0)
+                        || user.locked_until != 0 && user.failed_login_count == 0
+                    {
+                        return Err(err(503, "invalid persisted userpass lockout state"));
+                    }
+                }
+            }
+        }
+        Ok(())
     }
 
     pub(crate) fn has_radius_state(&self) -> bool {
@@ -5938,6 +6147,9 @@ impl AuthState {
             token_period: 0,
             token_explicit_max_ttl: 0,
             mfa: None,
+            failed_login_count: 0,
+            failed_login_last_at: 0,
+            locked_until: 0,
         });
         // Native userpass treats empty/null password in a general update as
         // an omitted replacement. Creation and the dedicated reset endpoint
@@ -6095,6 +6307,49 @@ impl AuthState {
     }
 
     #[allow(clippy::too_many_arguments)]
+    fn userpass_login_failure(
+        &mut self,
+        scope: AuthScope<'_>,
+        name: &str,
+        mut user: User,
+        now: u64,
+        status: u16,
+        message: &str,
+    ) -> Result<AuthResponse, AuthError> {
+        let mounts = self.effective_auth_mounts(scope.namespace);
+        let mount = mounts
+            .get(scope.mount)
+            .ok_or_else(|| err(503, "userpass auth mount disappeared"))?;
+        if mount.kind != "userpass" || mount.user_lockout_disable {
+            return Err(err(status, message));
+        }
+        if user.failed_login_last_at > 0
+            && now.saturating_sub(user.failed_login_last_at)
+                >= mount.user_lockout_counter_reset_duration
+        {
+            user.failed_login_count = 0;
+            user.locked_until = 0;
+        }
+        user.failed_login_count = user.failed_login_count.saturating_add(1);
+        user.failed_login_last_at = now;
+        if user.failed_login_count >= mount.user_lockout_threshold {
+            user.locked_until = now
+                .checked_add(mount.user_lockout_duration)
+                .ok_or_else(|| err(503, "userpass lockout time overflow"))?;
+        }
+        self.users_at_mut(scope).insert(name.into(), user);
+        Ok(AuthResponse {
+            approle_secret_consumption: None,
+            pending_batch: None,
+            login_identity: None,
+            external_groups: None,
+            status,
+            body: json!({"errors":[message]}),
+            mutated: true,
+        })
+    }
+
+    #[allow(clippy::too_many_arguments)]
     fn login_userpass(
         &mut self,
         scope: AuthScope<'_>,
@@ -6127,6 +6382,13 @@ impl AuthState {
             .users_at(scope)
             .and_then(|users| users.get(name))
             .cloned();
+        let lockout_enabled = self
+            .effective_auth_mounts(namespace)
+            .get(mount)
+            .is_some_and(|entry| entry.kind == "userpass" && !entry.user_lockout_disable);
+        if lockout_enabled && user.as_ref().is_some_and(|user| user.locked_until > now) {
+            return Err(err(403, "userpass account is temporarily locked"));
+        }
         let password_bytes = userpass_password_semantics::password_bytes(user.as_ref(), password)?;
         let verified =
             if let Some(user) = user.as_ref().filter(|user| user.imported_bcrypt.is_some()) {
@@ -6152,21 +6414,57 @@ impl AuthState {
                 )
                 .is_ok()
             };
-        let mut user = user
-            .filter(|_| verified)
-            .ok_or_else(|| bad("invalid username or password"))?;
+        let mut user = match user {
+            Some(user) if verified => user,
+            Some(user) => {
+                return self.userpass_login_failure(
+                    scope,
+                    name,
+                    user,
+                    now,
+                    400,
+                    "invalid username or password",
+                );
+            }
+            None => return Err(bad("invalid username or password")),
+        };
         token_cidrs::check(&user.token_bound_cidrs, origin_peer)?;
         let accepted_counter = match user.mfa.as_ref() {
-            Some(enrollment) => Some(verify_totp(
-                enrollment,
-                body.get("totp_code")
-                    .and_then(Value::as_str)
-                    .ok_or_else(denied)?,
-                now,
-            )?),
+            Some(enrollment) => match body.get("totp_code").and_then(Value::as_str) {
+                Some(code) => match verify_totp(enrollment, code, now) {
+                    Ok(counter) => Some(counter),
+                    Err(error) => {
+                        return self.userpass_login_failure(
+                            scope,
+                            name,
+                            user,
+                            now,
+                            error.status,
+                            &error.message,
+                        );
+                    }
+                },
+                None => {
+                    return self.userpass_login_failure(
+                        scope,
+                        name,
+                        user,
+                        now,
+                        403,
+                        "permission denied",
+                    );
+                }
+            },
             None => {
                 if body.get("totp_code").is_some() {
-                    return Err(bad("MFA is not configured for this user"));
+                    return self.userpass_login_failure(
+                        scope,
+                        name,
+                        user,
+                        now,
+                        400,
+                        "MFA is not configured for this user",
+                    );
                 }
                 None
             }
@@ -6245,6 +6543,9 @@ impl AuthState {
                 .ok_or_else(|| err(500, "MFA enrollment disappeared during login"))?;
             enrollment.last_accepted_counter = Some(counter);
         }
+        user.failed_login_count = 0;
+        user.failed_login_last_at = 0;
+        user.locked_until = 0;
         self.users_at_mut(scope).insert(name.into(), user);
         if let Some((token_id, token)) = issued_service {
             self.tokens.insert(token_id, token);

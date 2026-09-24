@@ -229,6 +229,18 @@ service owns response/request JSON cleanup. This does not promise complete
 zeroization of every allocator, compiler or cryptographic-provider copy, or
 protection against a compromised host.
 
+Userpass lockout is an explicit mount tune. `user_lockout_disable` defaults to
+true for the compatibility-preserving legacy profile; enabling it persists a
+bounded failure threshold, lock duration and counter-reset duration through
+`sys/auth/<mount>/tune`. Wrong-password and MFA failures for an existing account
+advance the durable counter in the same state transaction as the error response;
+unknown accounts do not create state. A successful login clears the counter,
+an active lock rejects the login before credential issuance, and a restart
+cannot reset the window. Invalid persisted counters or tune values fail closed.
+Lockout policy and counters require current state schema 52 and remain a
+repository-controlled runtime behavior pending full external auth-method
+qualification.
+
 Assignments cannot include `root`; a nonroot manager can assign only a subset
 of their own token policies. User configuration updates accept explicit
 `policies`/`token_policies`, `ttl`/`token_ttl` and `max_ttl`/`token_max_ttl` aliases;

@@ -64,7 +64,7 @@ fn kerberos_schema50_rejects_mount_only_and_config_hidden_under_schema48() -> Te
 }
 
 #[test]
-fn kerberos_schema50_preserves_legacy48_workflow49_and_oidc51_absence_and_rejects_unknown52()
+fn kerberos_schema50_preserves_legacy48_workflow49_and_oidc51_absence_and_rejects_unknown53()
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
@@ -87,7 +87,68 @@ fn kerberos_schema50_preserves_legacy48_workflow49_and_oidc51_absence_and_reject
     state.schema = 51;
     assert!(state.validate_format().is_ok());
     state.schema = 52;
+    assert!(state.validate_format().is_ok());
+    state.schema = 53;
     assert!(state.validate_format().is_err());
+    Ok(())
+}
+
+#[test]
+fn userpass_lockout_state_requires_schema52() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/auth/userpass/tune",
+            &admin,
+            json!({
+                "user_lockout_disable": false,
+                "user_lockout_threshold": 1,
+                "user_lockout_duration": 10,
+                "user_lockout_counter_reset_duration": 20
+            }),
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/userpass/users/alice",
+            &admin,
+            json!({"password":"correct-horse-battery-staple"}),
+        )
+        .status,
+        204
+    );
+    let failed = call(
+        &mut service,
+        "POST",
+        "auth/userpass/login/alice",
+        "",
+        json!({"password":"wrong-password"}),
+    );
+    assert_eq!(failed.status, 400);
+    let state = service.state.as_ref().ok_or("state")?;
+    assert_eq!(state.schema, 52);
+    assert!(state.auth.has_userpass_lockout_state());
+    assert!(state.validate_format().is_ok());
+
+    let mut downgraded = state.clone();
+    downgraded.schema = 51;
+    let rejected = downgraded
+        .validate_format()
+        .err()
+        .ok_or("downgrade admitted")?;
+    assert_eq!(rejected.status, 503);
+    assert_eq!(
+        rejected.body["errors"][0],
+        "userpass lockout state requires schema 52"
+    );
     Ok(())
 }
 

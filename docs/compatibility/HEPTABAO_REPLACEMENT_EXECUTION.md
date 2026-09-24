@@ -208,7 +208,7 @@ Existing bounded profiles: `qa/openbao-acceptance/acceptance.py`.
 
 Implementation: `PARTIAL_RUNTIME`. Original work packages: `H16-WP02`, `H16-WP10`.
 API families: `auth/{mount}/users/*`; `auth/{mount}/login/*`.
-Runtime source: `crates/heptabao-server/src/auth.rs`.
+Runtime source: `crates/heptabao-server/src/auth.rs`, `crates/heptabao-server/src/auth_tests.rs`.
 Separate contracts: none claimed.
 Guides: `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`.
 
@@ -218,7 +218,7 @@ Guides: `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`.
 
 **Lifecycle:** Rotate password and disable/remount while existing sessions and children are active.
 
-**Remaining scope:** Password hashing, lockout and audit require exact profiles.
+**Remaining scope:** Repository password and opt-in lockout behavior are tested; exact OpenBao field/error parity, audit profiles and independent auth-method qualification remain open.
 
 Existing bounded profiles: `qa/openbao-acceptance/acceptance.py`.
 

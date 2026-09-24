@@ -443,7 +443,7 @@
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Password hashing, lockout and audit require exact profiles."
+      "remaining_scope": "Repository password and opt-in lockout behavior are tested; exact OpenBao field/error parity, audit profiles and independent auth-method qualification remain open."
     },
     {
       "surface_id": "HB-SURFACE-AUTH-APPROLE",
