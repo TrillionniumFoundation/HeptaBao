@@ -118,6 +118,44 @@ role and per-lease provider row, and confirms that retirement before the Service
 removes the local lease record. Root enumeration is not a union of all engine
 classes.
 
+## Native username contract and recovery of the short-name regression
+
+New native PostgreSQL and Valkey credentials retain `hbp_` followed by 32 lowercase
+hexadecimal digits. The generic plugin path retains its separate 28-digit form
+for MySQL's 32-character account limit. Every durable lease ID retains all 128
+random bits. These formats do not change existing lease IDs, usernames, sequence
+numbers or request digests on reopen.
+
+The shared MySQL naming change once affected native PostgreSQL too: the Service
+persisted a short-name `PendingIssue`, but deployed PostgreSQL provider v2 rejected
+it before creating the role. Fixing future names alone does not retire those
+pending obligations. After taking a normal operator backup, the existing
+privileged function owner can explicitly apply
+`bootstrap/postgresql/upgrade_v2_username_recovery.sql` using `psql -X -v
+ON_ERROR_STOP=1 -f` and their existing protected connection configuration. Do not
+put credentials on the command line or rerun the fresh-install `provider.sql`.
+This upgrade is not applied automatically by the Service or by an API caller.
+
+The forward-only transaction replaces the three existing v2 cleanup/apply
+functions, preserving their identity, owner and grants. It leaves tables, live
+roles, leases and fences intact. Only revoke/retire/readback admit the historical
+28-digit form: issue and renewal still require the original 32-digit native
+contract. Existing ownership checks reject a colliding foreign role. Restart or
+explicit `sys/leases/reconcile/<lease-id>` still stages a higher-sequence revoke;
+it never rewrites a pending identity or blindly reissues a secret. Existing
+short-name work remains pending until the provider upgrade and authoritative
+cleanup succeed. The v2 protocol label is retained because the forward change
+only extends cleanup of previously rejected requests.
+
+`postgres_live.py` installs the checksum-frozen historical v2 SQL first and proves
+normal new credentials work against it. It then tests owner-only upgrade,
+unchanged function owners/grants, live credential preservation, rejected new
+short-name issuance, short-name revoke/retirement, stale replay rejection and
+foreign-role protection, followed by the full existing provider lifecycle. Its
+report binds the historical, fresh-install and upgrade SQL digests. This remains
+a scoped native-provider qualification, not general OpenBao statement or
+static-role compatibility.
+
 ## State machine and external-effect boundary
 
 Each operation binds cluster identity, namespace, mount/client lease ID, opaque

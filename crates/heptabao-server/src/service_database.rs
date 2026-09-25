@@ -1080,6 +1080,19 @@ fn name(s: &str) -> bool {
             .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
 }
 
+// Native PostgreSQL v2 operators already deployed the exact hbp_ + 32-hex
+// contract. Do not change that protocol while accommodating MySQL's 32-byte
+// account-name limit in the generic plugin adapter. Existing persisted names
+// (both lengths) remain unchanged, including pending reconciliation identities.
+fn generated_database_username(provider: DatabaseProvider, entropy: &[u8; 16]) -> String {
+    let encoded = hex(entropy);
+    let digits = match provider {
+        DatabaseProvider::Postgresql | DatabaseProvider::Valkey => 32,
+        DatabaseProvider::Plugin => 28,
+    };
+    format!("hbp_{}", &encoded[..digits])
+}
+
 fn valid_database_username(s: &str) -> bool {
     s.starts_with("hbp_")
         && matches!(s.len(), 32 | 36)
@@ -1660,19 +1673,18 @@ impl Service {
                                 "database active or unresolved lease capacity exhausted",
                             ));
                         }
-                        if !database_mount
+                        let connection = database_mount
                             .connections
                             .get(&role.db_name)
-                            .is_some_and(|c| c.allowed_roles.contains(key))
-                        {
-                            return Err(Response::error(403, "database role is no longer allowed"));
-                        }
-                        let entropy = hex(&crypto::random::<16>().map_err(failure)?);
-                        // MySQL 8.x caps account names at 32 characters. Keep the
-                        // full 128-bit entropy in the durable lease identity while
-                        // using a 112-bit provider-side username. Historical 36-byte
-                        // usernames remain valid on reopen for upgrade compatibility.
-                        let username = format!("hbp_{}", &entropy[..28]);
+                            .filter(|c| c.allowed_roles.contains(key))
+                            .ok_or_else(|| {
+                                Response::error(403, "database role is no longer allowed")
+                            })?;
+                        let entropy = crypto::random::<16>().map_err(failure)?;
+                        let username = generated_database_username(connection.provider, &entropy);
+                        // The durable identity always retains all 128 random bits,
+                        // including for plugins with a shorter username contract.
+                        let entropy = hex(&entropy);
                         let id = format!("{mount}creds/{key}/{entropy}");
                         if id.len() > 512 {
                             return Err(invalid("database lease identity exceeds bound"));
@@ -2443,6 +2455,29 @@ mod tests {
             "hbp_{}",
             "zz".repeat(14)
         )));
+    }
+
+    #[test]
+    fn native_database_names_preserve_deployed_provider_contracts() {
+        let entropy = [0xab; 16];
+        for provider in [DatabaseProvider::Postgresql, DatabaseProvider::Valkey] {
+            let username = generated_database_username(provider, &entropy);
+            assert_eq!(username, format!("hbp_{}", "ab".repeat(16)));
+            assert!(valid_database_username(&username));
+        }
+    }
+
+    #[test]
+    fn plugin_database_names_keep_mysql_limit_without_changing_native_names() {
+        let entropy = [0xcd; 16];
+        let username = generated_database_username(DatabaseProvider::Plugin, &entropy);
+        assert_eq!(username.len(), 32);
+        assert_eq!(username, format!("hbp_{}", "cd".repeat(14)));
+        assert!(valid_database_username(&username));
+        assert_ne!(
+            username,
+            generated_database_username(DatabaseProvider::Postgresql, &entropy)
+        );
     }
 
     #[test]

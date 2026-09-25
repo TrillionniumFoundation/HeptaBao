@@ -169,13 +169,87 @@ class Postgres:
                     process.wait(timeout=5)
                 except subprocess.TimeoutExpired:
                     process.kill();process.wait(timeout=5)
-    def install(self):
+    def install(self, provider_sql=None):
         q=self.sql("CREATE ROLE hb_manager LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD '"+self.manager_password+"'; CREATE ROLE app_reader NOLOGIN; CREATE DATABASE app;",database='postgres')
         if q.returncode:raise RuntimeError('postgres_operator_bootstrap_failed')
-        q=self.sql((ROOT/'bootstrap/postgresql/provider.sql').read_text())
+        source=ROOT/'bootstrap/postgresql/provider.sql' if provider_sql is None else provider_sql
+        q=self.sql(source.read_text())
         if q.returncode:raise RuntimeError('postgres_provider_sql_failed')
         q=self.sql("GRANT USAGE ON SCHEMA heptabao_provider TO hb_manager; GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA heptabao_provider TO hb_manager; INSERT INTO heptabao_provider.allowed_groups VALUES('hb_manager','app_reader');")
         if q.returncode:raise RuntimeError('postgres_provider_enrollment_failed')
+
+
+def qualify_username_recovery(pg, check):
+    """Upgrade an actually installed v2 without rewriting owner/fence/lease data."""
+    fence='hbf1:'+('a1'*32)
+    provider='hb1:'+('b2'*32)
+    short='hbp_'+('c3'*14)
+    digest='d4'*32
+    expires=int(time.time())+300
+
+    def apply(action, seq, username=short, lease_id=provider):
+        password='e5'*32 if action=='issue' else ''
+        expiry=expires if action!='revoke' else 0
+        # Every substituted value is fixed synthetic fixture data, never an
+        # inbound API value. Passwords travel over psql stdin, never argv.
+        return pg.sql(
+            "SELECT heptabao_provider.apply('"+fence+"','"+lease_id+"','"+username
+            +"',"+str(seq)+",'"+action+"',"+str(expiry)+",'app_reader','"
+            +password+"','"+digest+"')::text", 'hb_manager', pg.manager_password)
+
+    check('legacy_v2_rejects_short_issuance', apply('issue',1).returncode!=0)
+    check('legacy_rejection_publishes_no_provider_fence', pg.sql(
+        "SELECT count(*) FROM heptabao_provider.fences WHERE fence_id='"+fence+"'"
+    ).stdout.strip()=='0')
+    identity_query="""SELECT p.oid,p.proname,p.proowner,p.proacl,p.prosecdef,p.proconfig
+        FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+        WHERE n.nspname='heptabao_provider' ORDER BY p.proname"""
+    before=pg.sql(identity_query)
+    check('legacy_function_identities_observed',before.returncode==0 and len(before.stdout.splitlines())==5)
+    upgrade=(ROOT/'bootstrap/postgresql/upgrade_v2_username_recovery.sql').read_text()
+    check('manager_cannot_upgrade_provider_functions',pg.sql(upgrade,'hb_manager',pg.manager_password).returncode!=0)
+    check('owner_installs_username_recovery_atomically',pg.sql(upgrade).returncode==0)
+    after=pg.sql(identity_query)
+    check('username_upgrade_preserves_function_owners_and_grants',after.returncode==0 and after.stdout==before.stdout)
+    check('username_upgrade_is_repeatable',pg.sql(upgrade).returncode==0)
+    check('username_upgrade_preserves_protocol_version',pg.sql(
+        'SELECT heptabao_provider.protocol()','hb_manager',pg.manager_password
+    ).stdout.strip()=='heptabao-postgresql-provider-v2')
+    check('upgraded_v2_still_rejects_short_issuance',apply('issue',2).returncode!=0)
+    check('upgraded_v2_still_rejects_short_renewal',apply('renew',3).returncode!=0)
+    result=apply('revoke',4)
+    check('historical_short_identity_can_be_revoked',result.returncode==0
+          and json.loads(result.stdout).get('username')==short
+          and json.loads(result.stdout).get('login') is False)
+    args="('"+fence+"','"+provider+"','"+short+"',4)"
+    check('historical_short_identity_can_be_retired',pg.sql(
+        'SELECT heptabao_provider.retire'+args,'hb_manager',pg.manager_password
+    ).stdout.strip()=='t')
+    check('historical_short_retirement_has_authoritative_readback',pg.sql(
+        'SELECT heptabao_provider.retired'+args,'hb_manager',pg.manager_password
+    ).stdout.strip()=='t')
+    check('historical_short_retirement_keeps_global_fence',pg.sql(
+        "SELECT last_seq FROM heptabao_provider.fences WHERE fence_id='"+fence+"'"
+    ).stdout.strip()=='4')
+    check('retirement_does_not_reenable_stale_issuance',apply(
+        'issue',3,username='hbp_'+('f6'*16),lease_id='hb1:'+('f6'*32)
+    ).returncode!=0)
+    collision='hbp_'+('a7'*14)
+    check('foreign_short_role_fixture_created',pg.sql('CREATE ROLE '+collision+' NOLOGIN').returncode==0)
+    try:
+        check('historical_cleanup_rejects_unowned_short_role',apply(
+            'revoke',5,username=collision,lease_id='hb1:'+('a7'*32)
+        ).returncode!=0)
+        check('rejected_cleanup_does_not_delete_foreign_role',pg.sql(
+            "SELECT count(*) FROM pg_roles WHERE rolname='"+collision+"'"
+        ).stdout.strip()=='1')
+        check('rejected_cleanup_does_not_advance_global_fence',pg.sql(
+            "SELECT last_seq FROM heptabao_provider.fences WHERE fence_id='"+fence+"'"
+        ).stdout.strip()=='4')
+    finally:
+        # Only the role this fixture just created in its private cluster.
+        if pg.sql('DROP ROLE '+collision).returncode:
+            raise RuntimeError('foreign_short_fixture_cleanup_failed')
 
 
 def run(binary,bin_dir,root,checks):
@@ -185,7 +259,11 @@ def run(binary,bin_dir,root,checks):
         if c is not True:raise RuntimeError(name)
     try:
         pg=Postgres(bin_dir,root/'postgres',instance.root/'tls.crt',instance.root/'tls.key',instance.root/'ca.crt')
-        pg.start();pg.install();check('real_postgres_bootstrap_sql_executed',True)
+        pg.start()
+        legacy=ROOT/'qa/openbao-acceptance/fixtures/postgresql-provider-v2-legacy.sql'
+        if hashlib.sha256(legacy.read_bytes()).hexdigest()!='c0422f3dda8de5ae8921f875859c858259264a2a92bca24701057f961398fcf6':
+            raise RuntimeError('legacy_postgresql_provider_fixture_changed')
+        pg.install(legacy);check('real_postgres_bootstrap_sql_executed',True)
         p=instance.root/'server.json';c=json.loads(p.read_text());c['lifecycle_interval_seconds']=1;c['outbound_endpoints']=[dict(origin=pg.origin,address=f'127.0.0.1:{pg.port}',server_name='localhost',ca_pem=(instance.root/'ca.crt').read_text())];p.write_text(json.dumps(c));p.chmod(0o600)
         instance.start();status,init=instance.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1});check('initialize',status==200)
         instance.token=init['root_token'];key=init['keys_base64'][0];check('unseal',instance.call('POST','sys/unseal',{'key':key})[0]==200)
@@ -204,6 +282,9 @@ def run(binary,bin_dir,root,checks):
         check('database_role_list_after_delete',status==200 and listed.get('data',{}).get('keys')==['churn','reader','short'])
         status,issued=instance.call('GET','database/creds/reader');check('issue',status==200)
         cred=issued['data'];identity=issued['lease_id'];check('credential_really_logs_into_postgresql',pg.login(cred['username'],cred['password']))
+        check('native_username_matches_deployed_v2_contract',re.fullmatch(r'hbp_[0-9a-f]{32}',cred['username']) is not None)
+        qualify_username_recovery(pg,check)
+        check('username_upgrade_preserves_existing_live_credential',pg.login(cred['username'],cred['password']))
         check('wrong_password_really_denied',not pg.login(cred['username'],'wrong-synthetic-password'))
         provider_id=pg.sql(
             "SELECT lease_id FROM heptabao_provider.leases WHERE username='"+cred['username']+"'"
@@ -333,6 +414,8 @@ def main():
     if not re.fullmatch(r'postgres \(PostgreSQL\) 17\.[0-9]+(?:\s.*)?',version):p.error('PostgreSQL 17.x required')
     binary=Path(a.binary).resolve(strict=True);digest=hashlib.sha256(binary.read_bytes()).hexdigest();root=Path(tempfile.mkdtemp(prefix='hb-real-postgres-'));root.chmod(0o711 if os.geteuid()==0 else 0o700)
     report.update(postgres_version=version,binary_sha256=digest,provider_sql_sha256=hashlib.sha256((ROOT/'bootstrap/postgresql/provider.sql').read_bytes()).hexdigest())
+    report['legacy_provider_sql_sha256']=hashlib.sha256((ROOT/'qa/openbao-acceptance/fixtures/postgresql-provider-v2-legacy.sql').read_bytes()).hexdigest()
+    report['username_recovery_sql_sha256']=hashlib.sha256((ROOT/'bootstrap/postgresql/upgrade_v2_username_recovery.sql').read_bytes()).hexdigest()
     try:
         run(binary,bin_dir,root,checks);report.update(status='passed',real_postgresql_executed=True,provider_sql_executed=True)
     except Exception as error:report.update(status='failed',failure=str(error) if type(error) is RuntimeError else type(error).__name__)

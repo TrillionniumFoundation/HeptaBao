@@ -63,7 +63,7 @@ DECLARE floor bigint;
 BEGIN
     IF p_fence IS NULL OR p_id IS NULL OR p_name IS NULL OR p_seq IS NULL
        OR p_fence !~ '^hbf1:[0-9a-f]{64}$' OR p_id !~ '^hb1:[0-9a-f]{64}$'
-       OR p_name !~ '^hbp_([0-9a-f]{28}|[0-9a-f]{32})$' OR p_seq < 1 THEN
+       OR p_name !~ '^hbp_[0-9a-f]{32}$' OR p_seq < 1 THEN
         RAISE EXCEPTION 'invalid provider retirement query';
     END IF;
     SELECT last_seq INTO floor FROM heptabao_provider.fences
@@ -88,9 +88,8 @@ BEGIN
     IF p_fence IS NULL OR p_id IS NULL OR p_name IS NULL OR p_seq IS NULL OR p_action IS NULL
        OR p_expires IS NULL OR p_group IS NULL OR p_password IS NULL OR p_digest IS NULL
        OR p_fence !~ '^hbf1:[0-9a-f]{64}$' OR p_id !~ '^hb1:[0-9a-f]{64}$'
-       OR p_name !~ '^hbp_([0-9a-f]{28}|[0-9a-f]{32})$' OR p_seq<1
+       OR p_name !~ '^hbp_[0-9a-f]{32}$' OR p_seq<1
        OR p_action NOT IN ('issue','renew','revoke') OR p_expires<0
-       OR (p_action <> 'revoke' AND p_name !~ '^hbp_[0-9a-f]{32}$')
        OR p_digest !~ '^[0-9a-f]{64}$' OR length(p_group)>63 OR p_group='' THEN
         RAISE EXCEPTION 'invalid provider operation';
     END IF;
@@ -196,7 +195,7 @@ DECLARE l heptabao_provider.leases%ROWTYPE; floor bigint; sessions bigint; role 
 BEGIN
     IF p_fence IS NULL OR p_id IS NULL OR p_name IS NULL OR p_seq IS NULL
        OR p_fence !~ '^hbf1:[0-9a-f]{64}$' OR p_id !~ '^hb1:[0-9a-f]{64}$'
-       OR p_name !~ '^hbp_([0-9a-f]{28}|[0-9a-f]{32})$' OR p_seq<1 THEN
+       OR p_name !~ '^hbp_[0-9a-f]{32}$' OR p_seq<1 THEN
         RAISE EXCEPTION 'invalid provider retirement';
     END IF;
     PERFORM pg_advisory_xact_lock(hashtextextended(session_user || ':' || p_fence,0));

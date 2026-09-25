@@ -1,63 +1,24 @@
--- Operator-installed PostgreSQL 17 provider contract. Execute as a dedicated
--- privileged schema owner; grant only the five functions to the login manager.
--- No API caller is allowed to supply SQL. The manager and group allowlist are
--- provisioned separately, never inferred from an API request or a role name.
+-- Forward-only cleanup extension for the deployed PostgreSQL provider v2.
+-- Run as the existing function owner against the enrolled database, with
+-- psql -X -v ON_ERROR_STOP=1. Do not re-run the fresh-install provider.sql.
+-- Only historical hbp_ + 28-hex names gain revoke/retire support; issue/renew
+-- still require 32 hex digits. No table, role, fence, owner or ACL is rewritten.
 BEGIN;
-CREATE SCHEMA heptabao_provider;
-REVOKE ALL ON SCHEMA heptabao_provider FROM PUBLIC;
-CREATE TABLE heptabao_provider.allowed_groups (
-    manager name NOT NULL, group_name name NOT NULL, PRIMARY KEY (manager, group_name)
-);
-CREATE TABLE heptabao_provider.fences (
-    manager name NOT NULL,
-    fence_id text NOT NULL CHECK(fence_id ~ '^hbf1:[0-9a-f]{64}$'),
-    last_seq bigint NOT NULL CHECK(last_seq >= 0),
-    PRIMARY KEY(manager, fence_id)
-);
-CREATE TABLE heptabao_provider.leases (
-    manager name NOT NULL,
-    fence_id text NOT NULL CHECK(fence_id ~ '^hbf1:[0-9a-f]{64}$'),
-    lease_id text NOT NULL,
-    username name NOT NULL UNIQUE,
-    seq bigint NOT NULL CHECK(seq > 0),
-    action text NOT NULL CHECK(action IN ('issue','renew','revoke')),
-    expires bigint NOT NULL,
-    group_name name NOT NULL,
-    request_digest text NOT NULL,
-    password_digest text,
-    role_oid oid,
-    group_oid oid,
-    payload_digest text NOT NULL,
-    PRIMARY KEY(manager, lease_id)
-);
-REVOKE ALL ON ALL TABLES IN SCHEMA heptabao_provider FROM PUBLIC;
-
-CREATE FUNCTION heptabao_provider.protocol() RETURNS text
-LANGUAGE sql IMMUTABLE SET search_path = pg_catalog
-AS $$ SELECT 'heptabao-postgresql-provider-v2'::text $$;
-REVOKE ALL ON FUNCTION heptabao_provider.protocol() FROM PUBLIC;
-
-CREATE FUNCTION heptabao_provider.observe(p_id text) RETURNS jsonb
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog AS $$
-DECLARE l heptabao_provider.leases%ROWTYPE; r record; sessions bigint;
+SET LOCAL lock_timeout = '5s';
+SET LOCAL statement_timeout = '30s';
+DO $$
 BEGIN
-    SELECT * INTO l FROM heptabao_provider.leases WHERE manager = session_user AND lease_id = p_id;
-    IF NOT FOUND THEN RETURN jsonb_build_object('found',false); END IF;
-    SELECT oid, rolcanlogin, rolsuper, rolcreatedb, rolcreaterole, rolreplication, rolbypassrls,
-           rolvaliduntil, rolpassword INTO r FROM pg_authid WHERE rolname=l.username;
-    SELECT count(*) INTO sessions FROM pg_stat_activity WHERE usename=l.username;
-    RETURN jsonb_build_object('found',true,'fence_id',l.fence_id,'lease_id',l.lease_id,'username',l.username,
-        'seq',l.seq,'action',l.action,'expires',l.expires,'request_digest',l.request_digest,
-        'login',COALESCE(r.rolcanlogin,false),'active_sessions',sessions,
-        'controlled',r.oid=l.role_oid AND r.rolpassword IS NOT NULL
-            AND (SELECT count(*)=1 AND bool_and(roleid=l.group_oid) FROM pg_auth_members WHERE member=r.oid)
-            AND NOT (r.rolsuper OR r.rolcreatedb OR r.rolcreaterole OR r.rolreplication OR r.rolbypassrls)
-            AND encode(sha256(convert_to(r.rolpassword,'UTF8')),'hex')=l.password_digest
-            AND extract(epoch FROM r.rolvaliduntil)::bigint=l.expires);
+    IF heptabao_provider.protocol() IS DISTINCT FROM 'heptabao-postgresql-provider-v2' THEN
+        RAISE EXCEPTION 'provider v2 required for username recovery migration';
+    END IF;
+    IF to_regprocedure('heptabao_provider.retired(text,text,text,bigint)') IS NULL
+       OR to_regprocedure('heptabao_provider.apply(text,text,text,bigint,text,bigint,text,text,text)') IS NULL
+       OR to_regprocedure('heptabao_provider.retire(text,text,text,bigint)') IS NULL THEN
+        RAISE EXCEPTION 'existing provider v2 functions required';
+    END IF;
 END $$;
-REVOKE ALL ON FUNCTION heptabao_provider.observe(text) FROM PUBLIC;
 
-CREATE FUNCTION heptabao_provider.retired(p_fence text,p_id text,p_name text,p_seq bigint) RETURNS boolean
+CREATE OR REPLACE FUNCTION heptabao_provider.retired(p_fence text,p_id text,p_name text,p_seq bigint) RETURNS boolean
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog AS $$
 DECLARE floor bigint;
 BEGIN
@@ -75,9 +36,8 @@ BEGIN
        )
        AND NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname=p_name);
 END $$;
-REVOKE ALL ON FUNCTION heptabao_provider.retired(text,text,text,bigint) FROM PUBLIC;
 
-CREATE FUNCTION heptabao_provider.apply(
+CREATE OR REPLACE FUNCTION heptabao_provider.apply(
     p_fence text,p_id text,p_name text,p_seq bigint,p_action text,p_expires bigint,
     p_group text,p_password text,p_digest text
 ) RETURNS jsonb
@@ -188,9 +148,8 @@ BEGIN
       WHERE manager=session_user AND fence_id=p_fence;
     RETURN heptabao_provider.observe(p_id);
 END $$;
-REVOKE ALL ON FUNCTION heptabao_provider.apply(text,text,text,bigint,text,bigint,text,text,text) FROM PUBLIC;
 
-CREATE FUNCTION heptabao_provider.retire(p_fence text,p_id text,p_name text,p_seq bigint) RETURNS boolean
+CREATE OR REPLACE FUNCTION heptabao_provider.retire(p_fence text,p_id text,p_name text,p_seq bigint) RETURNS boolean
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog AS $$
 DECLARE l heptabao_provider.leases%ROWTYPE; floor bigint; sessions bigint; role record;
 BEGIN
@@ -232,14 +191,5 @@ BEGIN
       WHERE manager=session_user AND lease_id=p_id;
     RETURN true;
 END $$;
-REVOKE ALL ON FUNCTION heptabao_provider.retire(text,text,text,bigint) FROM PUBLIC;
 
 COMMIT;
--- Explicit example, after CREATE ROLE hb_manager LOGIN PASSWORD ...:
--- GRANT USAGE ON SCHEMA heptabao_provider TO hb_manager;
--- GRANT EXECUTE ON FUNCTION heptabao_provider.protocol() TO hb_manager;
--- GRANT EXECUTE ON FUNCTION heptabao_provider.observe(text) TO hb_manager;
--- GRANT EXECUTE ON FUNCTION heptabao_provider.retired(text,text,text,bigint) TO hb_manager;
--- GRANT EXECUTE ON FUNCTION heptabao_provider.apply(text,text,text,bigint,text,bigint,text,text,text) TO hb_manager;
--- GRANT EXECUTE ON FUNCTION heptabao_provider.retire(text,text,text,bigint) TO hb_manager;
--- INSERT INTO heptabao_provider.allowed_groups VALUES ('hb_manager','app_reader');
