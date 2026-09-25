@@ -440,3 +440,82 @@ fn v3_state_chunks_are_retired_atomically_by_retained_v4_owner_publication()
     );
     Ok(())
 }
+
+#[test]
+fn legacy_owner_raw_projection_survives_two_unseals() -> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, _) = bootstrap(&mut service)?;
+    let state = service.state.as_ref().ok_or("state")?.clone();
+    // A legacy logical JSON object need not have this binary's struct-field
+    // order. Both byte strings deserialize to the same validated State.
+    let source = serde_json::to_vec(&serde_json::to_value(&state)?)?;
+    assert_ne!(source, owner_store::serialize_owner(&state)?.as_slice());
+    service
+        .durable
+        .as_mut()
+        .ok_or("durable")?
+        .put(PutRequest::new(
+            "legacy-owner-regression",
+            "system",
+            "legacy-source-projection",
+            "state",
+            crypto::digest(&source),
+            Secret::new(source)?,
+        )?)?;
+    drop(service);
+    for _ in 0..2 {
+        let mut service = root.service()?;
+        let response = call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}));
+        assert_eq!(response.status, 200, "{}", response.body);
+        let manifest = current_manifest(&service)?;
+        let bytes = owner_store::serialize_owner(service.state.as_ref().ok_or("state")?)?;
+        manifest.verify_logical(&bytes)?;
+    }
+    Ok(())
+}
+
+#[test]
+fn legacy_owner_ha_projection_keeps_wire_identity_and_reopens()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, _) = bootstrap(&mut service)?;
+    let state = service.state.as_ref().ok_or("state")?.clone();
+    let source = serde_json::to_vec(&serde_json::to_value(&state)?)?;
+    let canonical = owner_store::serialize_owner(&state)?;
+    assert_ne!(source, canonical.as_slice());
+    let cluster =
+        crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &state.cluster_id)?;
+    let leader = Arc::clone(&cluster.processes[0]);
+    let follower = Arc::clone(&cluster.processes[1]);
+    leader
+        .lock()
+        .map_err(|_| "HA mutex")?
+        .commit_state("legacy-source-order", [0; 32], &source)?;
+    service.ha = Some(Arc::clone(&follower));
+    service
+        .sync_from_ha()
+        .map_err(|response| format!("sync: {}", response.body))?;
+    assert_eq!(
+        service.current_state_digest().map_err(|_| "identity")?,
+        crypto::digest(&source)
+    );
+    current_manifest(&service)?.verify_logical(&canonical)?;
+    drop(service);
+    for _ in 0..2 {
+        let mut service = root.service()?;
+        service.ha = Some(Arc::clone(&follower));
+        let response = call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}));
+        assert_eq!(response.status, 200, "{}", response.body);
+        service
+            .sync_from_ha()
+            .map_err(|response| format!("sync: {}", response.body))?;
+        assert_eq!(
+            service.current_state_digest().map_err(|_| "identity")?,
+            crypto::digest(&source)
+        );
+        current_manifest(&service)?.verify_logical(&canonical)?;
+    }
+    Ok(())
+}
