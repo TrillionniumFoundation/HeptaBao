@@ -553,9 +553,9 @@ fn current_owner_bound_noncanonical_projection_is_rejected_before_publication()
         .map_err(|_| "HA mutex")?
         .commit_state_with_owner_binding(operation, [0; 32], &source, binding)?;
     service.ha = Some(Arc::clone(&cluster.processes[0]));
-    let response = service
-        .sync_from_ha()
-        .expect_err("noncanonical current owner must be rejected");
+    let Err(response) = service.sync_from_ha() else {
+        return Err("noncanonical current owner must be rejected".into());
+    };
     assert_eq!(response.status, 503);
     assert_eq!(
         response.body["errors"],
