@@ -221,6 +221,13 @@ impl Service {
         if logical_rewrite {
             state.schema = CURRENT_STATE_SCHEMA;
             state.validate_format()?;
+        }
+        if logical_rewrite || needs_rewrite {
+            // Raw legacy bytes can use another serializer's field order or
+            // omitted defaults. The new owner chunks serialize the typed State;
+            // their local logical digest must bind that same representation.
+            // Already-published owner manifests are verified above, never
+            // repaired by accepting a mismatched digest.
             bytes = owner_store::serialize_owner(&state).map_err(state_serialization_error)?;
             needs_rewrite = true;
         }

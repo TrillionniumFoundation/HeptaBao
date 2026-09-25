@@ -5169,6 +5169,13 @@ impl Service {
         // this node before any local publication or old observation release.
         let activation = self.prepare_epoch_activation(state.replay_epoch, true)?;
         let operation_id = format!("hasync-{}", hex(&committed.digest));
+        // Older HA envelopes bind their exact logical wire bytes, not this
+        // binary's State serializer. Materialized owners are written with the
+        // current serializer, so local V4 integrity must bind those bytes.
+        // Keep committed.digest as the HA/CAS identity below: a local format
+        // projection must never relabel the authoritative remote publication.
+        let local_bytes =
+            owner_store::serialize_owner(&state).map_err(state_serialization_error)?;
         // HBSM4 carries the canonical owner-plan identity from the leader.
         // Rebuild the follower's local plan before publication and compare the
         // canonical manifest identity.  The changed-owner mask is a delta from
@@ -5183,6 +5190,15 @@ impl Service {
             committed.changed_owner_mask,
         ) {
             (Some(expected_digest), Some(expected_mask)) => {
+                // An owner-bound publication already declares its canonical
+                // representation. Unlike legacy unbound envelopes it cannot
+                // be normalized into another identity by a receiving node.
+                if local_bytes.as_slice() != committed.bytes.as_slice() {
+                    return Err(Response::error(
+                        503,
+                        "HA owner-bound logical state is not canonical",
+                    ));
+                }
                 if expected_mask & !0x1f != 0 {
                     return Err(Response::error(
                         503,
@@ -5229,7 +5245,7 @@ impl Service {
         };
         let result = self.persist_local_with_epoch_policy_and_plan(
             &state,
-            &committed.bytes,
+            &local_bytes,
             &operation_id,
             state.schema,
             state.replay_epoch,

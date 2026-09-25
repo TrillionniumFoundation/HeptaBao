@@ -321,6 +321,21 @@ hash; an exit, missing executable or change during verification cannot publish a
 cached proof. This avoids repeatedly allocating and hashing hundreds of MiB in
 every health poll without letting a candidate borrow the base-health exception.
 
+Legacy materialized-state catch-up keeps two distinct identities: the exact
+HA logical-wire digest remains the authoritative CAS predecessor, while the
+local V4 owner manifest hashes the current typed State serialization actually
+used to write its owner chunks. Raw legacy-state migration applies the same
+local serialization rule before publishing the new manifest. A successful
+import therefore remains recoverable on the second and later unseal even when
+legacy JSON uses another field order or omitted defaults. Current owner-bound
+HBSM4 publications cannot use this legacy normalization: noncanonical logical
+bytes fail before local publication, and their declared owner digest/mask must
+still verify. Existing mismatched V4 manifests remain fail-closed; these checks
+do not turn corrupted storage into an accepted migration. The regressions in
+`service_state_store_integration_tests.rs` cover raw migration, genuine Raft
+ReadIndex catch-up with preserved wire identity, repeated reopen and rejection
+of a noncanonical owner-bound publication without changing durable generation.
+
 Synthetic three-process testing is provided by
 `qa/openbao-acceptance/ha_destructive.py`; replay-epoch failover extends it in
 `qa/openbao-acceptance/replay_epoch_ha.py`. Both create their own private state
