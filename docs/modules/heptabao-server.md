@@ -293,9 +293,26 @@ validly signed or mTLS-authenticated current frame from another cluster before
 dispatch. The explicit `allow_legacy_peer_v1` rolling bridge is the only
 exception: for an existing durable Raft state it temporarily emits and accepts
 the immediately preceding pre-cluster-bound HBRT1/HBFQ1/HBFS1 wire, and it is
-refused for a fresh cluster. The flag must be removed by one-at-a-time restart
-after every voter runs the candidate. Hostile Rust tests exercise redaction,
-frame bounds, strict-mode legacy rejection and cross-cluster rejection.
+refused for a fresh cluster. Omission of `emit_legacy_peer_v1` preserves this
+existing bridge behavior; `emit_legacy_peer_v1: false` switches outbound consensus
+and forwarding requests to the current cluster-bound format without closing
+legacy inbound admission. Emitting legacy requests with legacy receive admission
+disabled is rejected before startup.
+
+Retire the bridge in three ordered phases, maintaining quorum at every restart:
+upgrade every voter with the legacy bridge enabled; then restart every voter with
+`allow_legacy_peer_v1: true` and `emit_legacy_peer_v1: false`; only after all voters
+send current frames may one-at-a-time restarts remove both fields. Directly
+removing the old combined flag partitions remaining legacy senders. This is an
+explicit deployment transition, not transport-error negotiation or retry in a
+weaker format. Each response must use its admitted request's format; current
+senders reject legacy responses even while their inbound listener remains dual.
+
+`ha_rolling_upgrade.py` exercises writes and readback through every sender phase,
+then strict receiver retirement, replay retirement and restart. The Rust
+`peer_wire_upgrade` tests enumerate all directed links during each transition,
+preserve the historical omitted-field behavior, reject invalid policy, and
+retain strict legacy and foreign-cluster rejection.
 
 Synthetic three-process testing is provided by
 `qa/openbao-acceptance/ha_destructive.py`; replay-epoch failover extends it in

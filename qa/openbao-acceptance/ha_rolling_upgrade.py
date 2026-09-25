@@ -118,13 +118,22 @@ class RollingUpgradeCluster(Cluster):
             detail = f"node_{node.node_id}_last_{last_status}_health_unavailable"
         raise FixtureError("readback_timeout_" + detail)
 
-    def set_legacy_forward_transition(self, node: Node, enabled: bool) -> None:
+    def set_legacy_forward_transition(self, node: Node, enabled: bool,
+                                      *, emit_legacy: bool | None = None) -> None:
+        if node.process is not None:
+            raise FixtureError("rolling_wire_configuration_requires_stopped_node")
+        if emit_legacy is True and not enabled:
+            raise FixtureError("rolling_legacy_sender_requires_legacy_receiver")
         config_path = node.root / "ha.json"
         config = json.loads(config_path.read_text())
         if enabled:
             config["allow_legacy_peer_v1"] = True
         else:
             config.pop("allow_legacy_peer_v1", None)
+        if emit_legacy is None:
+            config.pop("emit_legacy_peer_v1", None)
+        else:
+            config["emit_legacy_peer_v1"] = emit_legacy
         config_path.write_text(json.dumps(config))
         config_path.chmod(0o600)
 
@@ -213,6 +222,27 @@ class RollingUpgradeCluster(Cluster):
         upgraded.add(old.node_id)
         self.check("rolling_upgrade_all_three_candidate_voters", len(upgraded) == 3)
 
+        # First retire legacy *senders* while every receiver still accepts
+        # both formats. Closing receive admission at the same time would
+        # partition the remaining legacy senders during a rolling restart.
+        for node in self.nodes:
+            node.stop()
+            self.set_legacy_forward_transition(node, True, emit_legacy=False)
+            node.start()
+            if node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] != 200:
+                raise FixtureError(f"rolling_upgrade_node_{node.node_id}_sender_restart_unseal_failed")
+            self.leader()
+            config = json.loads((node.root / "ha.json").read_text())
+            self.check(f"rolling_upgrade_node_{node.node_id}_strict_sender_dual_receiver",
+                       config.get("allow_legacy_peer_v1") is True
+                       and config.get("emit_legacy_peer_v1") is False)
+            marker = secrets.token_hex(16)
+            self.write(node, f"rolling-new-wire-{node.node_id}", marker)
+            for observer in self.nodes:
+                self.read(observer, f"rolling-new-wire-{node.node_id}", marker)
+            self.check(f"rolling_upgrade_node_{node.node_id}_new_wire_write_observed", True)
+        self.check("rolling_upgrade_all_senders_current_before_any_receiver_closes", True)
+
         # The compatibility wire is an upgrade-only bridge. Restart each
         # candidate one at a time with the flag removed, preserving quorum,
         # then prove the strict cluster-bound current wire across all voters.
@@ -227,8 +257,8 @@ class RollingUpgradeCluster(Cluster):
             self.leader()
             self.check(
                 f"rolling_upgrade_node_{node.node_id}_legacy_forwarding_disabled",
-                "allow_legacy_peer_v1"
-                not in json.loads((node.root / "ha.json").read_text()),
+                not {"allow_legacy_peer_v1", "emit_legacy_peer_v1"}
+                & json.loads((node.root / "ha.json").read_text()).keys(),
             )
         self.check("rolling_upgrade_strict_current_wire_restored", True)
 

@@ -111,6 +111,18 @@ pub struct HaProcessConfig {
     /// consensus wire. Defaults closed and is refused for a fresh Raft state.
     #[serde(default)]
     pub allow_legacy_peer_v1: bool,
+    /// Omission preserves the old bridge's outbound behavior. After every
+    /// voter is upgraded, set false on all nodes while receivers stay dual-
+    /// format; only then retire allow_legacy_peer_v1 by rolling restart.
+    #[serde(default)]
+    pub emit_legacy_peer_v1: Option<bool>,
+}
+
+impl HaProcessConfig {
+    fn outbound_legacy_peer_v1(&self) -> bool {
+        self.emit_legacy_peer_v1
+            .unwrap_or(self.allow_legacy_peer_v1)
+    }
 }
 
 fn default_peer_timeout_ms() -> u64 {
@@ -141,7 +153,7 @@ struct MutualTlsRaftRpc {
     peers: Arc<BTreeMap<u64, NodeId>>,
     transport: MutualTlsPeerTransport,
     inflight: Arc<Semaphore>,
-    allow_legacy_peer_v1: bool,
+    emit_legacy_peer_v1: bool,
 }
 
 impl fmt::Debug for MutualTlsRaftRpc {
@@ -152,7 +164,7 @@ impl fmt::Debug for MutualTlsRaftRpc {
             .field("cluster_id", &self.cluster_id)
             .field("peers", &self.peers.keys().collect::<Vec<_>>())
             .field("transport", &"[MUTUAL_TLS]")
-            .field("allow_legacy_peer_v1", &self.allow_legacy_peer_v1)
+            .field("emit_legacy_peer_v1", &self.emit_legacy_peer_v1)
             .finish()
     }
 }
@@ -171,7 +183,7 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
         let target_node = self.peers.get(&target).cloned();
         let transport = self.transport.clone();
         let inflight = self.inflight.clone();
-        let allow_legacy_peer_v1 = self.allow_legacy_peer_v1;
+        let emit_legacy_peer_v1 = self.emit_legacy_peer_v1;
         Box::pin(async move {
             if source != local_id || source == target || timeout.is_zero() {
                 return Err(RemoteRaftError::InvalidRpc);
@@ -184,9 +196,9 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
                 target,
                 kind,
                 payload,
-                legacy_v1: allow_legacy_peer_v1,
+                legacy_v1: emit_legacy_peer_v1,
             };
-            let request = if allow_legacy_peer_v1 {
+            let request = if emit_legacy_peer_v1 {
                 encode_legacy_raft_frame_for_transition(request_frame)?
             } else {
                 encode_raft_frame(request_frame)?
@@ -208,12 +220,13 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
             let response = decode_raft_frame_for_cluster_compatible(
                 &response,
                 &cluster_id,
-                allow_legacy_peer_v1,
+                emit_legacy_peer_v1,
             )?;
             if response.role != RAFT_FRAME_RESPONSE
                 || response.source != target
                 || response.target != source
                 || response.kind != kind
+                || response.legacy_v1 != emit_legacy_peer_v1
             {
                 return Err(RemoteRaftError::InvalidRpc);
             }
@@ -289,7 +302,7 @@ pub struct HaProcess {
     api_addresses: BTreeMap<u64, String>,
     forward_transport: MutualTlsPeerTransport,
     forward_timeout: Duration,
-    allow_legacy_peer_v1: bool,
+    emit_legacy_peer_v1: bool,
     forward_handler: Arc<Mutex<Option<ForwardHandler>>>,
     listener: Option<PeerListener>,
 }
@@ -371,7 +384,7 @@ impl HaProcess {
             peers: peers.clone(),
             transport: transport.clone(),
             inflight: Arc::new(Semaphore::new(config.max_inflight)),
-            allow_legacy_peer_v1: config.allow_legacy_peer_v1,
+            emit_legacy_peer_v1: config.outbound_legacy_peer_v1(),
         });
         let network = RemoteNetworkFactory::new(config.node_id, peer_ids.clone(), rpc)
             .map_err(|error| error.to_string())?;
@@ -387,6 +400,7 @@ impl HaProcess {
             );
         }
         let allow_legacy_peer_v1 = config.allow_legacy_peer_v1;
+        let emit_legacy_peer_v1 = config.outbound_legacy_peer_v1();
         let node = if existing {
             runtime
                 .block_on(ProcessRaftNode::reopen(
@@ -558,7 +572,7 @@ impl HaProcess {
             api_addresses,
             forward_transport,
             forward_timeout,
-            allow_legacy_peer_v1,
+            emit_legacy_peer_v1,
             forward_handler,
             listener: Some(listener_pool),
         })
@@ -620,7 +634,7 @@ impl HaProcess {
             .peers
             .get(&leader)
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
-        let legacy_v1 = self.allow_legacy_peer_v1;
+        let legacy_v1 = self.emit_legacy_peer_v1;
         let request = Zeroizing::new(if legacy_v1 {
             // HBFQ1 predates trusted origin and client-certificate forwarding.
             // Omit those optional contexts only for the bounded transition: the
@@ -1381,6 +1395,9 @@ impl Drop for HaProcess {
 fn validate_config(config: &HaProcessConfig) -> Result<(), String> {
     if !valid_cluster_id(&config.cluster_id) {
         return Err("invalid HA cluster identity".into());
+    }
+    if config.outbound_legacy_peer_v1() && !config.allow_legacy_peer_v1 {
+        return Err("legacy HA outbound requires explicit legacy inbound admission".into());
     }
     if config.initial_voters.as_ref().is_some_and(|v| {
         v.len() < 3
@@ -2160,6 +2177,7 @@ mod tests {
             forward_timeout_ms: 15_000,
             max_inflight: 64,
             allow_legacy_peer_v1: false,
+            emit_legacy_peer_v1: None,
         };
         assert_eq!(
             validate_config(&config),
@@ -2222,6 +2240,7 @@ mod tests {
             forward_timeout_ms: 15_000,
             max_inflight: 64,
             allow_legacy_peer_v1: false,
+            emit_legacy_peer_v1: None,
         };
         assert_eq!(
             validate_config(&config),
@@ -2509,3 +2528,7 @@ pub(crate) mod request_deadline_tests;
 #[cfg(test)]
 #[path = "ha_snapshot_test_support.rs"]
 pub(crate) mod snapshot_test_support;
+
+#[cfg(test)]
+#[path = "ha_peer_wire_upgrade_tests.rs"]
+mod peer_wire_upgrade_tests;
