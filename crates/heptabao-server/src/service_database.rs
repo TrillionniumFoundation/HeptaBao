@@ -770,7 +770,7 @@ impl DatabaseState {
     pub(super) fn has_provider_fence(&self) -> bool {
         self.provider_fence != 0
     }
-    fn next_provider_fence(&mut self) -> Result<u64, Response> {
+    fn current_provider_fence(&self) -> u64 {
         let retained_max = self
             .mounts
             .values()
@@ -779,9 +779,12 @@ impl DatabaseState {
             .map(|lease| lease.seq)
             .max()
             .unwrap_or(0);
+        self.provider_fence.max(retained_max)
+    }
+
+    fn next_provider_fence(&mut self) -> Result<u64, Response> {
         let next = self
-            .provider_fence
-            .max(retained_max)
+            .current_provider_fence()
             .checked_add(1)
             .filter(|value| *value <= i64::MAX as u64)
             .ok_or_else(|| failure("database provider fence exhausted"))?;
@@ -2061,15 +2064,22 @@ impl Service {
     }
 
     fn stage_revoke(state: &mut State, ns: &str, mount: &str, id: &str) -> Result<(), Response> {
-        let phase = state
+        let (phase, seq) = state
             .database
             .mount(ns, mount)
             .and_then(|database_mount| database_mount.leases.get(id))
-            .map(|lease| lease.phase.clone())
+            .map(|lease| (lease.phase.clone(), lease.seq))
             .ok_or_else(|| invalid("lease not found"))?;
-        if phase == Phase::PendingRevoke {
+        if phase == Phase::PendingRevoke && seq == state.database.current_provider_fence() {
             return Ok(());
         }
+        // A failed cleanup can be overtaken by another admitted lease operation.
+        // Its old sequence must remain rejected by the provider. Re-admit only
+        // this subtractive effect under the current Service writer, with a fresh
+        // durable sequence/digest before external entry. A current pending revoke
+        // keeps its identity unchanged; no remote counter or old backup can grant
+        // this process a newer local frontier.
+
         let provider_fence = state.database.next_provider_fence()?;
         let l = state
             .database
@@ -3059,6 +3069,125 @@ mod tests {
             .database_effect_plan("", "database/", &id, 100)
             .map_err(|_| "plan")?;
         Ok((root, service, key, root_token, plan))
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn pending_revoke_overtaken_by_other_work_is_readmitted_without_identity_change()
+    -> CompletionResult {
+        let (root, mut service, key, _, plan) = completion_fixture(Phase::PendingRevoke)?;
+        let mut state = service.state.clone().ok_or("state")?;
+        let original = (
+            plan.lease.id.clone(),
+            plan.lease.provider_id.clone(),
+            plan.lease.username.clone(),
+            plan.lease.seq,
+        );
+        let newer = state.database.next_provider_fence().map_err(|_| "newer")?;
+        assert!(newer > original.3);
+        Service::stage_revoke(&mut state, "", "database/", &original.0).map_err(|_| "readmit")?;
+        let lease = state
+            .database
+            .mount("", "database/")
+            .and_then(|mount| mount.leases.get(&original.0))
+            .ok_or("lease")?;
+        assert_eq!(
+            (&lease.id, &lease.provider_id, &lease.username),
+            (&original.0, &original.1, &original.2)
+        );
+        assert!(lease.seq > newer);
+        assert!(lease.phase == Phase::PendingRevoke);
+        assert_eq!(lease.expires, 0);
+        assert!(lease.password.is_none());
+        let seq = lease.seq;
+        let digest = lease.request_digest.clone();
+        Service::stage_revoke(&mut state, "", "database/", &original.0).map_err(|_| "retry")?;
+        service.publish_database(state).map_err(|_| "publish")?;
+        // A delayed success for the older attempt must not overwrite the
+        // replacement intent or claim this freshly admitted cleanup completed.
+        let response = service.finalize_database_effect(&plan, Ok(()));
+        assert_eq!(response.status, 503);
+        let lease = service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .database
+            .mount("", "database/")
+            .and_then(|m| m.leases.get(&original.0))
+            .ok_or("lease")?;
+        assert_eq!(lease.seq, seq);
+        assert_eq!(lease.request_digest, digest);
+        assert!(lease.phase == Phase::PendingRevoke);
+        drop(plan);
+        drop(service);
+
+        // Reopen the actual encrypted owner, not only a serialized lease. The
+        // freshly committed cleanup is current and must not be readmitted again.
+        let mut service = root.service()?;
+        assert_eq!(
+            super::super::tests::call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}))
+                .status,
+            200
+        );
+        let pending = service
+            .prepare_database_maintenance(101)?
+            .ok_or("cleanup")?;
+        let lease = &pending.plan.lease;
+        assert_eq!(
+            (&lease.id, &lease.provider_id, &lease.username),
+            (&original.0, &original.1, &original.2)
+        );
+        assert_eq!(lease.seq, seq);
+        assert_eq!(lease.request_digest, digest);
+        assert!(lease.phase == Phase::PendingRevoke);
+        assert!(lease.password.is_none());
+        assert_eq!(lease.expires, 0);
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn overtaken_pending_revoke_waits_for_its_live_plan_before_readmission() -> CompletionResult {
+        let (_root, mut service, _, token, plan) = completion_fixture(Phase::PendingRevoke)?;
+        let mut state = service.state.clone().ok_or("state")?;
+        let newer = state.database.next_provider_fence().map_err(|_| "newer")?;
+        service.publish_database(state).map_err(|_| "publish")?;
+        let before = serde_json::to_vec(&*service.state.as_ref().ok_or("state")?.database)?;
+        assert!(service.prepare_database_maintenance(100)?.is_none());
+        let response = super::super::tests::call(
+            &mut service,
+            "POST",
+            "sys/leases/revoke",
+            &token,
+            json!({"lease_id":plan.lease.id}),
+        );
+        assert_eq!(response.status, 503);
+        assert_eq!(response.body["reconcile_required"], true);
+        assert_eq!(
+            serde_json::to_vec(&*service.state.as_ref().ok_or("state")?.database)?,
+            before
+        );
+        let id = plan.lease.id.clone();
+        drop(plan);
+        let pending = service
+            .prepare_database_maintenance(100)?
+            .ok_or("cleanup")?;
+        assert_eq!(pending.plan.lease.id, id);
+        assert!(pending.plan.lease.seq > newer);
+        assert!(pending.plan.lease.phase == Phase::PendingRevoke);
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn overtaken_revoke_fence_exhaustion_is_atomic() -> CompletionResult {
+        let (_root, service, _, _, plan) = completion_fixture(Phase::PendingRevoke)?;
+        let mut state = service.state.clone().ok_or("state")?;
+        state.database.provider_fence = i64::MAX as u64;
+        let before = serde_json::to_vec(&*state.database)?;
+        assert!(Service::stage_revoke(&mut state, "", "database/", &plan.lease.id).is_err());
+        assert_eq!(serde_json::to_vec(&*state.database)?, before);
+        Ok(())
     }
 
     #[cfg(target_os = "linux")]

@@ -252,6 +252,42 @@ def qualify_username_recovery(pg, check):
             raise RuntimeError('foreign_short_fixture_cleanup_failed')
 
 
+def qualify_pending_revoke_fence(instance, pg, key, check):
+    """A rejected revoke must recover after another lease overtakes its fence."""
+    status, first=instance.call('GET','database/creds/churn')
+    check('overtaken_revoke_first_credential',status==200)
+    username=first['data']['username']
+    check('overtaken_revoke_username_bound',re.fullmatch(r'hbp_[0-9a-f]{32}',username) is not None)
+    check('overtaken_revoke_drift_fixture',pg.sql(
+        'CREATE ROLE hb_fixture_extra NOLOGIN; GRANT hb_fixture_extra TO '+username
+    ).returncode==0)
+    status, failure=instance.call('POST','sys/leases/revoke',dict(lease_id=first['lease_id']))
+    check('ownership_drift_retains_pending_revoke',status==503
+          and failure.get('reconcile_required') is True and 'data' not in failure)
+    status, second=instance.call('GET','database/creds/churn')
+    check('independent_lease_overtakes_pending_revoke',status==200)
+    instance.stop()
+    check('overtaken_revoke_ownership_restored',pg.sql(
+        'REVOKE hb_fixture_extra FROM '+username+'; DROP ROLE hb_fixture_extra'
+    ).returncode==0)
+    instance.start()
+    check('overtaken_revoke_restart_unseal',instance.call('POST','sys/unseal',{'key':key})[0]==200)
+    deadline=time.monotonic()+10
+    while True:
+        status, result=instance.call('POST','sys/leases/revoke',dict(lease_id=first['lease_id']))
+        if status==204:break
+        if status!=503 or result.get('reconcile_required') is not True or time.monotonic()>=deadline:
+            raise RuntimeError('pending_revoke_recovers_after_other_lease_advanced_fence')
+        time.sleep(.1)
+    check('pending_revoke_recovers_after_other_lease_advanced_fence',True)
+    check('overtaken_revoke_does_not_disable_unrelated_lease',pg.login(
+        second['data']['username'],second['data']['password']))
+    check('overtaken_revoke_recovered_credential_is_unusable',not pg.login(
+        first['data']['username'],first['data']['password']))
+    check('overtaken_revoke_unrelated_cleanup',instance.call(
+        'POST','sys/leases/revoke',dict(lease_id=second['lease_id']))[0]==204)
+
+
 def run(binary,bin_dir,root,checks):
     instance=Instance(binary,root/'candidate');pg=None
     def check(name,c):
@@ -357,6 +393,7 @@ def run(binary,bin_dir,root,checks):
         for index,(lease_id,prefix_cred) in enumerate(prefix_credentials):
             check('database_prefix_revoke_login_denied_'+str(index),not pg.login(prefix_cred['username'],prefix_cred['password']))
             check('database_prefix_revoke_lookup_absent_'+str(index),instance.call('POST','sys/leases/lookup',{'lease_id':lease_id})[0]==400)
+        qualify_pending_revoke_fence(instance,pg,key,check)
         for index in range(132):
             status,churn=instance.call('GET','database/creds/churn')
             if status!=200:

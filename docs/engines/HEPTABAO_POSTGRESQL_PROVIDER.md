@@ -194,6 +194,19 @@ also resolved by revocation rather than silently extending authority. A provider
 that returns an ownership conflict remains pending until operator diagnosis; no
 forced takeover or deletion of an unowned role exists.
 
+A pending revoke can be overtaken while a different lease advances the admitted
+global provider fence. Recovery does not relax PostgreSQL's old-sequence check.
+With no live plan for that lease, the current Service writer re-admits only the
+subtractive cleanup under a fresh locally admitted sequence and semantic digest,
+commits it, and then enters the provider. Lease ID, provider ID and username stay
+unchanged. A pending revoke already at the current frontier retains its sequence
+across retries/restarts; counter exhaustion is an atomic rejection. Delayed
+completion of the old plan cannot publish over the replacement intent. This does
+not adopt an untrusted remote counter or make an old-backup writer current.
+The real PostgreSQL profile induces a controlled role-ownership mismatch, leaves
+the first revoke pending, successfully issues another lease, restores the role,
+and requires authoritative cleanup without disabling the unrelated credential.
+
 The provider serializes operations with a fence-scoped advisory transaction lock
 and row locks. Same-sequence retries must have the same internally computed
 payload digest as well as the supplied request digest while a per-lease row still
