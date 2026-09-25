@@ -46,6 +46,10 @@ class Instance:
                        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         (root / "ca.key").chmod(0o600)
         (root / "tls.key").chmod(0o600)
+        # OpenSSL inherits the caller's umask for public certificates. A
+        # group-writable CA must not become an admitted client trust root.
+        (root / "ca.crt").chmod(0o644)
+        (root / "tls.crt").chmod(0o644)
         self.context = ssl.create_default_context(cafile=str(root / "ca.crt"))
         self.context.minimum_version = ssl.TLSVersion.TLSv1_2
         self.client = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=self.context))

@@ -181,6 +181,16 @@ verifies the same state and operation identities. CI builds the feature-enabled
 binary in a separate target directory so later ordinary-product profiles cannot
 accidentally execute a qualification-feature binary.
 
+The `qa/openbao-acceptance/capacity_ha_live.py` profile runs three actual
+TLS/Raft processes. A lower-capacity follower receives quorum-committed state,
+then becomes leader: it must remain unavailable rather than serving its stale
+local state. After restart with the original admitted budget, the same node must
+become leader, read every acknowledged value, reject the previously refused
+write as absent and accept a fresh mutation. This is a single-host, synthetic,
+feature-enabled fault test, not a multi-host production sizing or independent
+compatibility receipt. CI retains only its credential-free result JSON and exact
+source binding, never the private cluster directory, keys or raw process logs.
+
 ## State publication and legacy migration
 
 `system/state` is the sole local authority: a legacy State/manifest, V4 owner

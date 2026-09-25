@@ -53,6 +53,21 @@ jobs:
           fi
           printf 'source_commit=%s\nsource_tree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
 
+      - name: Bind safe diagnostic reports to the immutable candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -m 700 "$RUNNER_TEMP/heptabao-safe-reports"
+          python - <<'PY'
+          import json, os, pathlib, subprocess
+          report = {"source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+                    "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+                    "expected_source": os.environ["EXPECTED_SOURCE"], "pr_base": os.environ["PR_BASE"],
+                    "pr_head": os.environ["PR_HEAD"], "run_id": os.environ["GITHUB_RUN_ID"],
+                    "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "independent_admission": False}
+          pathlib.Path(os.environ["RUNNER_TEMP"], "heptabao-safe-reports", "source.json").write_text(json.dumps(report, sort_keys=True))
+          PY
+
       - name: Install Python validation dependencies
         shell: bash
         run: |
@@ -89,7 +104,7 @@ jobs:
 
       - name: Test the complete locked Rust workspace
         shell: bash
-        run: cargo +1.98.0 test --locked --workspace --all-targets
+        run: cargo +1.98.0 test --locked --workspace --all-targets --no-fail-fast
 
       - name: Check strict first-party workspace Clippy
         shell: bash
@@ -240,6 +255,18 @@ jobs:
           timeout 180 python qa/openbao-acceptance/capacity_live.py \
             --binary "$CARGO_TARGET_DIR/debug/heptabao-server" --output "$reports/capacity.json"
 
+      - name: Exercise lower-capacity HA election and committed-state recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          binary="$RUNNER_TEMP/heptabao-capacity-target/debug/heptabao-server"
+          reports="$RUNNER_TEMP/heptabao-capacity-evidence"
+          timeout 240 python qa/openbao-acceptance/capacity_ha_live.py \
+            --binary "$binary" \
+            --expected-binary-sha256 "$(sha256sum "$binary" | cut -d ' ' -f 1)" \
+            --work-dir "$RUNNER_TEMP/heptabao-capacity-ha" \
+            | tee "$reports/capacity-ha.json"
+
       - name: Measure audited immutable KV reads over growing state
         shell: bash
         run: |
@@ -318,7 +345,7 @@ jobs:
           candidate_binary="$PWD/target/debug/heptabao-server"
           base_digest="$(sha256sum "$base_binary" | cut -d ' ' -f 1)"
           candidate_digest="$(sha256sum "$candidate_binary" | cut -d ' ' -f 1)"
-          timeout 480 python qa/openbao-acceptance/ha_rolling_upgrade.py             --base-binary "$base_binary"             --base-sha256 "$base_digest"             --candidate-binary "$candidate_binary"             --candidate-sha256 "$candidate_digest"             --work-dir "$RUNNER_TEMP/heptabao-ha-rolling-upgrade"
+          timeout 480 python qa/openbao-acceptance/ha_rolling_upgrade.py             --base-binary "$base_binary"             --base-sha256 "$base_digest"             --candidate-binary "$candidate_binary"             --candidate-sha256 "$candidate_digest"             --work-dir "$RUNNER_TEMP/heptabao-ha-rolling-upgrade" | tee "$RUNNER_TEMP/heptabao-safe-reports/rolling-upgrade.json"
           cleanup
           trap - EXIT
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
@@ -723,6 +750,19 @@ jobs:
           set -euo pipefail
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           git diff --check
+
+      - name: Retain only credential-free capacity and upgrade diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: replacement-safe-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.source_kind }}
+          path: |
+            ${{ runner.temp }}/heptabao-safe-reports/source.json
+            ${{ runner.temp }}/heptabao-safe-reports/rolling-upgrade.json
+            ${{ runner.temp }}/heptabao-capacity-evidence/capacity.json
+            ${{ runner.temp }}/heptabao-capacity-evidence/capacity-ha.json
+          if-no-files-found: warn
+          retention-days: 14
 
   qualification-verdict:
     name: OpenBao replacement / exact-head-and-merge verdict

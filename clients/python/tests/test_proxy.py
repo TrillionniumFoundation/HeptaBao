@@ -49,7 +49,7 @@ class ProxyTests(unittest.TestCase):
     def test_fixed_namespace_and_ready_token_snapshot_are_used_once(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);state=root/'state';state.mkdir(mode=0o700)
-            ca=root/'ca';ca.write_text('synthetic-ca')
+            ca=root/'ca';ca.write_text('synthetic-ca');ca.chmod(0o600)
             cfg=AgentConfig('https://localhost:8200',str(ca),str(root/'role'),str(root/'secret'),str(state),namespace='team')
             with StateDirectory(state,writer=True) as directory:
                 raw=b'synthetic-ready-token\n';directory.write('token',raw)
@@ -63,6 +63,23 @@ class ProxyTests(unittest.TestCase):
                 v=directory.json('state.json');v['phase']='renew_pending';directory.publish('state.json',v)
             with self.assertRaises(BaoError):forward(policy,cfg,'GET','secret/data/a',None,client_factory=factory)
             factory.return_value.request.assert_called_once()
+    def test_writable_ca_rejects_before_token_or_upstream_access(self):
+        for mode in (0o620, 0o602, 0o666):
+            with self.subTest(mode=oct(mode)), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                ca = root / 'ca'
+                ca.write_text('synthetic-ca')
+                ca.chmod(mode)
+                cfg = AgentConfig('https://localhost:8200', str(ca),
+                    str(root / 'role'), str(root / 'secret'), str(root / 'absent-state'))
+                factory = Mock()
+                policy = {'timeout': 5, 'routes': [
+                    {'method': 'GET', 'path': 'secret/data/a', 'effectful': False}]}
+                with self.assertRaisesRegex(BaoError, 'trust_root_requires_bounded_nonwritable_regular_file'):
+                    forward(policy, cfg, 'GET', 'secret/data/a', None, client_factory=factory)
+                factory.assert_not_called()
+                self.assertFalse((root / 'absent-state').exists())
+
     def test_missing_explicit_effect_admission_and_system_routes_reject(self):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp)/'proxy.json'
