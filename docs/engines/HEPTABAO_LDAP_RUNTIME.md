@@ -170,3 +170,27 @@ membership and proves the next login loses that policy, then restores membership
 and verifies the mapping survives HeptaBao restart. Provider outage/recovery and
 local-authority deletion are exercised in the same profile. Independent
 qualification remains a separate exit.
+
+
+## Private Linux acceptance prerequisites
+
+The real OpenLDAP fixtures may use the installed `slapd`, or an explicitly
+selected private extraction of an authenticated distribution package through
+`HB_QA_OPENLDAP_ROOT`. The latter must be an absolute, canonical, owner-only
+root containing `usr/sbin/slapd`, the four LDAP schemas and the MDB module.
+Verify the package against the authenticated distribution index before extraction;
+path/permission validation is not package authentication or independent admission.
+
+The private `libslapi` directory is selected only for the fixture child. Ambient
+`LD_PRELOAD` and `LD_LIBRARY_PATH` are not inherited by that child; missing,
+foreign, group/other-writable or ambiguous library locations are rejected.
+The parent process, HeptaBao process, system OpenLDAP configuration and system
+services are not changed. No system-wide linker search path is installed.
+The report records the observed operating system/architecture and executable
+digest instead of labelling every run as the historical ARM guest.
+
+`qa/openbao-acceptance/tests/test_openldap_prerequisites.py` covers these negative
+boundaries. Run the `ldap_openldap_live.py`, `ldap_renewal_live.py` and
+`ldap_native_live.py` profiles with the same selected prerequisite; official
+comparison still requires the pinned `HB_ORACLE_BINARY` and `HB_ORACLE_ARCHIVE`.
+These are scoped local executions, not full LDAP or production qualification.

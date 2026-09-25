@@ -161,6 +161,13 @@ class Directory:
             raise RuntimeError("ldap_directory_join_failed")
 
 
+def configuration_matches(status, body, expected_url):
+    """Validate the native data envelope, never an old top-level fallback."""
+    return (type(status) is int and status == 200 and isinstance(body, dict)
+            and isinstance(body.get("data"), dict)
+            and body["data"].get("url") == expected_url)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--binary", required=True)
@@ -204,7 +211,8 @@ def main() -> int:
             "starttls": False,
         }
         check("config", ins.call("POST", "auth/ldap/config", cfg)[0] == 204)
-        check("config_roundtrip", ins.call("GET", "auth/ldap/config", {})[1].get("url") == cfg["url"])
+        status, configured = ins.call("GET", "auth/ldap/config", {})
+        check("config_roundtrip", configuration_matches(status, configured, cfg["url"]))
 
         # This local password is deliberately different. The durable user object
         # supplies bounded policies/TTL/MFA mapping only; it must not authenticate LDAP.
