@@ -35,6 +35,30 @@ acknowledgement loss, terminal retry and atomic rejection. The actual pinned
 OpenBao/candidate comparison is `qa/openbao-acceptance/namespace_tree_live.py`;
 bounded seal behavior remains in `namespace_seal_live.py`.
 
+## External plugin response authority
+
+Secret-read and KMS plans retain the original non-cloneable `Principal`; the
+server does not retain the raw bearer or authenticate again to release a result.
+After provider I/O, the Service writer installs current HA application state and
+rechecks identity/group policy, live ACL, token/ancestor expiry or revocation,
+namespace seal/incarnation, deployment host identity and the original deadline.
+Secret results additionally bind the durable mount incarnation, not only its
+reusable path and plugin name. Rejected result values are erased before return.
+
+This preserves a legitimate finite token's last admitted use without granting
+another use, and applies the existing batch-token checker rather than creating
+service-token backing rows. The authoritative response check is distinct from
+provider-side effect reconciliation: durable unknown KMS effects, secret-plugin
+writes and full OpenBao plugin RPC remain outside this bounded implementation.
+
+`service_plugin_completion_tests.rs` and the real gated-provider
+`qa/openbao-acceptance/plugin_completion_live.py` regress revoke, policy change,
+expiry, global/namespace seal and mount recreation while I/O is in flight,
+with finite-use and batch positive controls. Native tests also fence namespace
+reincarnation; the live profile confirms that populated namespace deletion is
+still refused and leaves its active reader valid. The supplemental profile
+is a required CI step; it does not replace the fixed official compatibility corpus.
+
 ## Public API and ownership
 
 The developing `postgres_storage` library component provides physical records

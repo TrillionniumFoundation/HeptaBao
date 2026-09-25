@@ -1452,7 +1452,8 @@
         "docs/modules/heptabao-plugin-host.md"
       ],
       "executable_profiles": [
-        "qa/openbao-acceptance/plugin_secret_live.py"
+        "qa/openbao-acceptance/plugin_secret_live.py",
+        "qa/openbao-acceptance/plugin_completion_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
@@ -1525,7 +1526,8 @@
         "docs/modules/heptabao-kms-contracts.md"
       ],
       "executable_profiles": [
-        "qa/openbao-acceptance/plugin_kms_live.py"
+        "qa/openbao-acceptance/plugin_kms_live.py",
+        "qa/openbao-acceptance/plugin_completion_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,

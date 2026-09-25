@@ -589,6 +589,19 @@
       ],
       "prerequisites": [],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "plugin_completion_live": {
+      "script": "qa/openbao-acceptance/plugin_completion_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1712,7 +1725,7 @@
         "required_positive_and_hostile_behavior": "Versioned RPC, secret-safe IPC, resource limits, sandbox and lease ownership",
         "remaining_semantics_and_effect_checks": "The server loads a checksum-bound read-only secret plugin through the admitted sandbox wrapper; write, issue, renew and revoke effects still require Service-owned durable external-effect reconciliation and qualified sandbox evidence.",
         "crash_reopen": "Interrupt sys/plugins catalog and secret plugin mounts before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-PLUGIN-SECRET, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "isolation": "Retain the affine request Principal through unlocked provider work; before response release, refresh HA application state and recheck current identity, policy, token lifetime, namespace and deployment host identity. Secret mounts also require the original durable incarnation. The supplemental concurrent profile is not a full protocol or independent admission claim.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [
@@ -1723,7 +1736,8 @@
         "plugin_secret_live.digest_fence"
       ],
       "available_scoped_profiles": [
-        "plugin_secret"
+        "plugin_secret",
+        "plugin_completion_live"
       ],
       "whole_surface_admitted": false
     },
@@ -1768,7 +1782,7 @@
         "required_positive_and_hostile_behavior": "Versioned wrap/unwrap, key epoch/custody, context binding and provider outage",
         "remaining_semantics_and_effect_checks": "No fallback to plaintext/local keys; real isolated KMS or HSM acceptance required",
         "crash_reopen": "Interrupt KMS plugin catalog and seal provider invocation before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-PLUGIN-KMS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "isolation": "Retain the affine request Principal through unlocked provider work; before response release, refresh HA application state and recheck current identity, policy, token lifetime, namespace and deployment host identity. Secret mounts also require the original durable incarnation. The supplemental concurrent profile is not a full protocol or independent admission claim.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [
@@ -1788,7 +1802,8 @@
         "plugin_kms_live.restart_readmits_without_replaying_unknown"
       ],
       "available_scoped_profiles": [
-        "plugin_kms_live"
+        "plugin_kms_live",
+        "plugin_completion_live"
       ],
       "whole_surface_admitted": false
     },

@@ -125,12 +125,62 @@ pub(super) struct KmsKeyBinding {
     pub enabled: bool,
 }
 
+/// Own the original affine admission capability through unlocked provider I/O.
+/// Rechecking it never authenticates a bearer again or spends another token use.
+struct PluginResponseAuthority {
+    principal: Principal,
+    namespace: String,
+    namespace_incarnation: Option<u64>,
+    cluster_id: String,
+    path: String,
+    capability: &'static str,
+    sudo: bool,
+    admitted_at: u64,
+    started: std::time::Instant,
+    deadline: Option<std::time::Instant>,
+}
+
+impl PluginResponseAuthority {
+    fn new(
+        principal: Principal,
+        state: &State,
+        request: &RequestView<'_>,
+        capability: &'static str,
+        sudo: bool,
+    ) -> Self {
+        Self {
+            principal,
+            namespace: request.namespace.to_owned(),
+            namespace_incarnation: state.namespaces.incarnation(request.namespace),
+            cluster_id: state.cluster_id.clone(),
+            path: request.path.to_owned(),
+            capability,
+            sudo,
+            admitted_at: request.now,
+            started: request.admission_started,
+            deadline: crate::request_deadline::current(),
+        }
+    }
+
+    fn now(&self) -> u64 {
+        std::time::Duration::from_secs(self.admitted_at)
+            .saturating_add(self.started.elapsed())
+            .as_secs()
+    }
+
+    fn deadline_expired(&self) -> bool {
+        self.deadline
+            .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+    }
+}
+
 pub(super) struct PluginKmsPlan {
     pub plugin_id: String,
     pub key_binding: KmsKeyBinding,
     host: SharedKmsPlugin,
     request: SecretValue,
     action: &'static str,
+    authority: PluginResponseAuthority,
 }
 
 pub(crate) struct PluginKmsObservation {
@@ -141,8 +191,10 @@ pub(super) struct PluginReadPlan {
     pub namespace: String,
     pub mount: String,
     pub plugin_id: String,
+    mount_incarnation: u64,
     host: SharedSecretPlugin,
     request: SecretValue,
+    authority: PluginResponseAuthority,
 }
 
 pub(super) struct PluginAuthPlan {
@@ -729,7 +781,7 @@ impl Service {
     pub(super) fn plugin_kms_route(
         &mut self,
         state: &State,
-        principal: Option<&Principal>,
+        principal: Option<Principal>,
         request: &RequestView<'_>,
     ) -> Response {
         let RequestView {
@@ -755,7 +807,7 @@ impl Service {
         };
         if let Err(error) = state
             .auth
-            .authorize_sudo_request(principal, namespace, path, "update", *now)
+            .authorize_sudo_request(&principal, namespace, path, "update", *now)
         {
             return Response::error(error.status, &error.message);
         }
@@ -865,6 +917,7 @@ impl Service {
             Ok(value) => value,
             Err(_) => return Response::error(500, "KMS plugin request encoding failed"),
         };
+        let authority = PluginResponseAuthority::new(principal, state, request, "update", true);
         let request = match SecretValue::new(encoded) {
             Ok(value) => value,
             Err(_) => return Response::error(413, "KMS plugin request exceeds runtime bound"),
@@ -875,31 +928,106 @@ impl Service {
             host,
             request,
             action,
+            authority,
         });
         Response::error(500, "KMS plugin was not dispatched")
     }
 
     pub(super) fn finalize_plugin_kms(
         &mut self,
-        plan: PluginKmsPlan,
+        mut plan: PluginKmsPlan,
         result: Result<PluginKmsObservation, Response>,
     ) -> Response {
-        let observation = match result {
+        let mut observation = match result {
             Ok(value) => value,
             Err(error) => return error,
         };
-        let Some(current) = self.kms_keys.get(&plan.plugin_id) else {
-            return Response::error(503, "KMS result withheld because key binding disappeared");
-        };
-        if !current.enabled
-            || current.key_id != plan.key_binding.key_id
-            || current.key_version != plan.key_binding.key_version
-            || current.capabilities != plan.key_binding.capabilities
-            || !self.kms_plugins.contains_key(&plan.plugin_id)
-        {
-            return Response::error(503, "KMS result withheld because key binding changed");
+        if let Err(error) = self.validate_plugin_response(&mut plan.authority) {
+            erase_json(&mut observation.value);
+            return error;
+        }
+        let binding_current = self.kms_keys.get(&plan.plugin_id).is_some_and(|current| {
+            current.enabled
+                && current.key_id == plan.key_binding.key_id
+                && current.key_version == plan.key_binding.key_version
+                && current.capabilities == plan.key_binding.capabilities
+        });
+        let host_current = self
+            .kms_plugins
+            .get(&plan.plugin_id)
+            .is_some_and(|host| Arc::ptr_eq(host, &plan.host));
+        if !binding_current || !host_current {
+            erase_json(&mut observation.value);
+            return Response::error(
+                503,
+                "KMS result withheld because key or host binding changed",
+            );
         }
         Response::ok(json!({"data": observation.value}))
+    }
+
+    fn validate_plugin_response(
+        &mut self,
+        authority: &mut PluginResponseAuthority,
+    ) -> Result<(), Response> {
+        let _deadline_scope = authority
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        if authority.deadline_expired() || self.recovery_required || self.state.is_none() {
+            return Err(Response::error(
+                503,
+                "plugin response withheld by deadline, seal or recovery fence",
+            ));
+        }
+        // ReadIndex alone is insufficient: install the current application state
+        // so revocations committed while the Service writer was unlocked apply.
+        if self.ha.is_some() && self.sync_from_ha_with_anchor(false).is_err() {
+            return Err(Response::error(
+                503,
+                "plugin response withheld after HA synchronization failure",
+            ));
+        }
+        let Some(state) = self.state.as_ref() else {
+            return Err(Response::error(
+                503,
+                "plugin response withheld because server sealed",
+            ));
+        };
+        if self.recovery_required
+            || state.cluster_id != authority.cluster_id
+            || !state.namespace_exists(&authority.namespace)
+            || state.namespace_is_sealed(&authority.namespace)
+            || state.namespaces.incarnation(&authority.namespace) != authority.namespace_incarnation
+        {
+            return Err(Response::error(
+                503,
+                "plugin response withheld because owner binding changed",
+            ));
+        }
+        Self::bind_identity_principal(state, &mut authority.principal, &authority.namespace)?;
+        let now = authority.now();
+        let authorized = if authority.sudo {
+            state.auth.authorize_sudo_request(
+                &authority.principal,
+                &authority.namespace,
+                &authority.path,
+                authority.capability,
+                now,
+            )
+        } else {
+            state.auth.authorize_request(
+                &authority.principal,
+                &authority.namespace,
+                &authority.path,
+                authority.capability,
+                now,
+            )
+        };
+        authorized.map_err(|error| Response::error(error.status, &error.message))?;
+        if authority.deadline_expired() {
+            return Err(Response::error(503, "plugin response deadline exceeded"));
+        }
+        Ok(())
     }
 
     pub(super) fn plugin_auth_login(
@@ -1023,7 +1151,7 @@ impl Service {
     pub(super) fn plugin_secret_route(
         &mut self,
         state: State,
-        principal: Option<&Principal>,
+        principal: Option<Principal>,
         request: &RequestView<'_>,
     ) -> Response {
         let RequestView {
@@ -1035,7 +1163,9 @@ impl Service {
             wrap_ttl_seconds,
             ..
         } = request;
-        let Some((mount, plugin_id)) = state.engines.plugin_secret_mount(namespace, path) else {
+        let Some((mount, plugin_id, mount_incarnation)) =
+            state.engines.plugin_secret_mount_binding(namespace, path)
+        else {
             return Response::error(404, "plugin mount not found");
         };
         let Some(principal) = principal else {
@@ -1048,7 +1178,7 @@ impl Service {
         };
         if let Err(e) = state
             .auth
-            .authorize_request(principal, namespace, path, capability, *now)
+            .authorize_request(&principal, namespace, path, capability, *now)
         {
             return Response::error(e.status, &e.message);
         }
@@ -1084,6 +1214,7 @@ impl Service {
             Ok(v) => v,
             Err(_) => return Response::error(500, "plugin request encoding failed"),
         };
+        let authority = PluginResponseAuthority::new(principal, &state, request, capability, false);
         let request = match SecretValue::new(encoded) {
             Ok(v) => v,
             Err(_) => return Response::error(413, "plugin request exceeds runtime bound"),
@@ -1092,45 +1223,49 @@ impl Service {
             namespace: (*namespace).to_owned(),
             mount,
             plugin_id,
+            mount_incarnation,
             host,
             request,
+            authority,
         });
         Response::error(500, "plugin read was not dispatched")
     }
 
     pub(super) fn finalize_plugin_read(
         &mut self,
-        plan: &PluginReadPlan,
+        mut plan: PluginReadPlan,
         result: Result<Value, Response>,
     ) -> Response {
-        let value = match result {
+        let mut value = match result {
             Ok(v) => v,
             Err(e) => return e,
         };
-        if let Some(ha) = &self.ha {
-            let ok = ha
-                .lock_for_request()
-                .ok()
-                .and_then(|ha| ha.ensure_linearizable().ok())
-                .is_some();
-            if !ok {
-                return Response::error(
-                    503,
-                    "plugin response withheld after HA leadership uncertainty",
-                );
-            }
+        if let Err(error) = self.validate_plugin_response(&mut plan.authority) {
+            erase_json(&mut value);
+            return error;
         }
-        let Some(state) = self.state.as_ref() else {
-            return Response::error(503, "plugin response withheld because server sealed");
-        };
-        if state
-            .engines
-            .plugin_secret_mount(&plan.namespace, &plan.mount)
-            .is_none_or(|(m, id)| m != plan.mount || id != plan.plugin_id)
-        {
+        let binding_current = self
+            .state
+            .as_ref()
+            .and_then(|state| {
+                state
+                    .engines
+                    .plugin_secret_mount_binding(&plan.namespace, &plan.mount)
+            })
+            .is_some_and(|(mount, plugin, incarnation)| {
+                mount == plan.mount
+                    && plugin == plan.plugin_id
+                    && incarnation == plan.mount_incarnation
+            });
+        let host_current = self
+            .plugins
+            .get(&plan.plugin_id)
+            .is_some_and(|host| Arc::ptr_eq(host, &plan.host));
+        if !binding_current || !host_current {
+            erase_json(&mut value);
             return Response::error(
                 503,
-                "plugin response withheld because durable mount binding changed",
+                "plugin response withheld because mount or host binding changed",
             );
         }
         Response::ok(json!({"data": value}))
@@ -1174,3 +1309,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "service_plugin_completion_tests.rs"]
+mod completion_tests;

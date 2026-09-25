@@ -216,6 +216,14 @@ impl NamespaceRegistry {
         path.is_empty() || self.entries.contains_key(path)
     }
 
+    pub(super) fn incarnation(&self, path: &str) -> Option<u64> {
+        if path.is_empty() {
+            Some(0)
+        } else {
+            self.entries.get(path).map(|entry| entry.incarnation)
+        }
+    }
+
     pub(super) fn is_sealed(&self, path: &str) -> bool {
         if path.is_empty() {
             return false;

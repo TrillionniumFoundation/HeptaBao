@@ -742,7 +742,7 @@ Guides: `docs/modules/heptabao-server.md`, `docs/modules/heptabao-plugin-host.md
 
 **Remaining scope:** Checksum-bound sandboxed read-only secret plugins are executable through the real Service. Write/issue/renew/revoke effects, dynamic lease ownership, OpenBao plugin RPC compatibility and independently qualified sandbox containment remain open.
 
-Existing bounded profiles: `qa/openbao-acceptance/plugin_secret_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/plugin_secret_live.py`, `qa/openbao-acceptance/plugin_completion_live.py`.
 
 ### HB-SURFACE-PLUGIN-DATABASE
 
@@ -778,7 +778,7 @@ Guides: `docs/modules/heptabao-kms-contracts.md`.
 
 **Remaining scope:** Bounded checksum-pinned KMS wrap/unwrap/data-key runtime, exact key identity/version/capability admission, external custody, restart, executable-digest fencing and post-entry timeout fencing are executable. Auto-unseal composition, durable unknown-effect reconciliation, provider key rotation/disaster recovery, HA/multi-host faults, full OpenBao KMS plugin RPC compatibility and independent HSM/provider admission remain open.
 
-Existing bounded profiles: `qa/openbao-acceptance/plugin_kms_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/plugin_kms_live.py`, `qa/openbao-acceptance/plugin_completion_live.py`.
 
 ### HB-SURFACE-CLUSTER-MTLS
 

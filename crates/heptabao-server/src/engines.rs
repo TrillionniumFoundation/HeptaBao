@@ -508,16 +508,29 @@ impl EngineState {
         namespace: &str,
         path: &str,
     ) -> Option<(String, String)> {
+        self.plugin_secret_mount_binding(namespace, path)
+            .map(|(mount, plugin, _)| (mount, plugin))
+    }
+
+    /// The incarnation fences a slow plugin reply across disable/recreate,
+    /// including reuse of the same path and deployment plugin identifier.
+    pub(crate) fn plugin_secret_mount_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(String, String, u64)> {
         self.namespaces
             .get(namespace)?
             .mounts
             .iter()
             .filter(|(mount, _)| path.starts_with(mount.as_str()))
             .filter_map(|(mount, value)| match &value.backend {
-                Backend::PluginSecret(plugin_id) => Some((mount.clone(), plugin_id.clone())),
+                Backend::PluginSecret(plugin_id) => {
+                    Some((mount.clone(), plugin_id.clone(), value.incarnation))
+                }
                 _ => None,
             })
-            .max_by_key(|(mount, _)| mount.len())
+            .max_by_key(|(mount, _, _)| mount.len())
     }
 
     pub(crate) fn kubernetes_mount(&self, namespace: &str, path: &str) -> Option<String> {

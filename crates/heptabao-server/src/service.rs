@@ -1478,7 +1478,7 @@ impl Service {
                 self.finalize_plugin_auth(plan, result)
             }
             (ExternalEffectPlan::PluginRead(plan), ExternalEffectResult::PluginRead(result)) => {
-                self.finalize_plugin_read(&plan, result)
+                self.finalize_plugin_read(plan, result)
             }
             (ExternalEffectPlan::PluginKms(plan), ExternalEffectResult::PluginKms(result)) => {
                 self.finalize_plugin_kms(plan, result)
@@ -2074,10 +2074,10 @@ impl Service {
             return self.kubernetes_secret_route(admitted, principal.as_ref(), &request);
         }
         if Self::plugin_kms_handles(path) {
-            return self.plugin_kms_route(&admitted, principal.as_ref(), &request);
+            return self.plugin_kms_route(&admitted, principal, &request);
         }
         if self.plugin_secret_handles(&admitted, namespace, path) {
-            return self.plugin_secret_route(admitted, principal.as_ref(), &request);
+            return self.plugin_secret_route(admitted, principal, &request);
         }
         if path == "sys/step-down" {
             if !matches!(method, "POST" | "PUT") {
