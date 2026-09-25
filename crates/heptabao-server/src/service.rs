@@ -1461,7 +1461,7 @@ impl Service {
     ) -> Response {
         let response = match (pending.effect, result) {
             (ExternalEffectPlan::Database(plan), ExternalEffectResult::Database(result)) => {
-                self.finalize_database_effect(&plan, result)
+                self.finalize_database_request(plan, result)
             }
             (
                 ExternalEffectPlan::DatabaseConfig(plan),

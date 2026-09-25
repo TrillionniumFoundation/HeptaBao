@@ -606,3 +606,31 @@ synthetic database plugin through the real TLS Service, gates provider completio
 changes authority concurrently and reads configuration after a full restart.
 Neither fixture qualifies arbitrary SQL templates, static roles, root rotation,
 all providers, mixed-version HA or full OpenBao plugin RPC.
+
+
+## Database credential delivery authority
+
+Request-driven database issuance and renewal retain the original affine caller
+admission across unlocked provider I/O. Before publication and again after the
+terminal commit, completion checks current caller ACL, entity/group membership,
+namespace seal/incarnation, cluster identity, token lifetime and request deadline.
+Lease time is sampled after potentially blocking HA synchronization. A live lease
+owner does not substitute for a now-unauthorized renewal requester. The retained
+request capability is process-local and boxed; it is neither serialized into the
+lease nor reconstructed from a caller-supplied bearer during recovery.
+
+A confirmed provider effect followed by a delivery veto never returns its secret
+or claims that no external effect occurred. It preserves the original lease and
+provider identity, stages a durable `PendingRevoke` compensation with cleared
+plaintext, and reports a reconcile-only outcome. If that publication itself
+fails, the original unresolved record remains available to the existing owner.
+Already admitted subtractive revocation and maintenance remain separate from
+credential delivery, so caller expiry cannot prevent safe cleanup. No new retry
+loop, parallel ledger or storage owner is introduced.
+
+`service_database_delivery_tests.rs` exercises the normal in-memory Service
+admission and encrypted restart path with **simulated provider results only**.
+The tests cover live ACL changes for service and batch callers, namespace seal,
+request expiry, renewal-requester isolation, unrelated committed writes and
+subtractive cleanup after requester revocation. They do not execute a provider,
+prove the corresponding new live race matrix or establish full OpenBao parity.

@@ -126,6 +126,9 @@ pub(super) struct DatabaseEffectPlan {
     connection: Connection,
     fence_id: String,
     lease: DatabaseLease,
+    // Request delivery authority is process-local and never persisted/replayed.
+    // Maintenance deliberately has none and may only reconcile/clean up effects.
+    response_authority: Option<Box<plugin::PluginResponseAuthority>>,
     // Kept through provider execution and local finalization. Dropping an
     // abandoned plan makes its durable intent eligible for maintenance again.
     _in_flight: Arc<()>,
@@ -1361,18 +1364,18 @@ impl Service {
             ..
         } = request;
         let now = (*now).max(state.database.clock);
+        let capability = match *method {
+            "GET" => "read",
+            "LIST" => "list",
+            "DELETE" => "delete",
+            _ => "update",
+        };
+        let sudo =
+            path.starts_with("sys/") || path.contains("/config/") || path.contains("/roles/");
         let execute = (|| -> Result<Response, Response> {
             let p = principal
                 .as_ref()
                 .ok_or_else(|| Response::error(403, "missing client token"))?;
-            let capability = match *method {
-                "GET" => "read",
-                "LIST" => "list",
-                "DELETE" => "delete",
-                _ => "update",
-            };
-            let sudo =
-                path.starts_with("sys/") || path.contains("/config/") || path.contains("/roles/");
             if sudo {
                 state
                     .auth
@@ -1769,7 +1772,22 @@ impl Service {
         })();
         // Include intent publication time as well as unlocked provider I/O.
         if let Some(plan) = &mut self.pending_database_effect {
-            plan.started = started;
+            plan.started = request.admission_started;
+            if plan.lease.phase != Phase::PendingRevoke {
+                let (Some(principal), Some(current)) = (principal.take(), self.state.as_ref())
+                else {
+                    // No provider entry has occurred. Retain the durable pending
+                    // record for cleanup, but do not dispatch without authority.
+                    self.pending_database_effect = None;
+                    return failure("database delivery admission is unavailable");
+                };
+                plan.response_authority = Some(Box::new(
+                    plugin::PluginResponseAuthority::new(
+                        principal, current, request, capability, sudo,
+                    )
+                    .with_time_floor(now),
+                ));
+            }
         }
         if let Some(batch) = &mut self.pending_database_batch_effect {
             for plan in &mut batch.plans {
@@ -1907,6 +1925,7 @@ impl Service {
             connection,
             fence_id: provider_fence_identity(&state.cluster_id)?,
             lease,
+            response_authority: None,
             _in_flight: self.database_in_flight.track(ns, mount, id),
         })
     }
@@ -1936,6 +1955,36 @@ impl Service {
         ))
     }
 
+    /// Complete a caller-owned operation using its original admission. A
+    /// provider success does not authorize releasing credentials to a caller
+    /// whose ACL, identity, namespace or deadline changed during unlocked I/O.
+    pub(super) fn finalize_database_request(
+        &mut self,
+        mut plan: DatabaseEffectPlan,
+        provider_result: Result<(), Response>,
+    ) -> Response {
+        let mut authority = plan.response_authority.take();
+        let cleanup = plan.lease.phase == Phase::PendingRevoke;
+        self.finalize_database_effect_checked(
+            &plan,
+            provider_result,
+            || plan.completed_now(),
+            |service| {
+                if cleanup {
+                    // A previously admitted subtractive cleanup remains useful
+                    // after expiry/revocation; it never returns credentials.
+                    return Ok(());
+                }
+                let authority = authority
+                    .as_mut()
+                    .ok_or_else(|| failure("database delivery authority is unavailable"))?;
+                service.validate_plugin_response(authority)
+            },
+        )
+    }
+
+    // Physical outcome reconciliation for the lifecycle owner, not an HTTP
+    // delivery entry point. Request dispatch must use finalize_database_request.
     pub(super) fn finalize_database_effect(
         &mut self,
         plan: &DatabaseEffectPlan,
@@ -1948,7 +1997,17 @@ impl Service {
         &mut self,
         plan: &DatabaseEffectPlan,
         provider_result: Result<(), Response>,
+        completed_now: impl FnMut() -> u64,
+    ) -> Response {
+        self.finalize_database_effect_checked(plan, provider_result, completed_now, |_| Ok(()))
+    }
+
+    fn finalize_database_effect_checked(
+        &mut self,
+        plan: &DatabaseEffectPlan,
+        provider_result: Result<(), Response>,
         mut completed_now: impl FnMut() -> u64,
+        mut authorize_delivery: impl FnMut(&mut Self) -> Result<(), Response>,
     ) -> Response {
         if let Err(error) = provider_result {
             return error;
@@ -1961,6 +2020,7 @@ impl Service {
                 &plan.lease.id,
             );
         }
+        let delivery_allowed = authorize_delivery(self).is_ok();
         let Some(mut next) = self.state.clone() else {
             return post_provider_publication_failure(
                 failure("server sealed after provider entry"),
@@ -1991,7 +2051,7 @@ impl Service {
         }
         let now = completed_now().max(next.database.clock);
         if current.phase != Phase::PendingRevoke
-            && !Self::database_completion_owner_live(&next, plan, now)
+            && (!delivery_allowed || !Self::database_completion_owner_live(&next, plan, now))
         {
             return self.reject_database_completion(next, plan, now);
         }
@@ -2031,6 +2091,10 @@ impl Service {
         }
         // Publication itself may take time. Never release a secret after its
         // authority expired while persisting the terminal state.
+        let delivery_allowed =
+            plan.lease.phase == Phase::PendingRevoke || authorize_delivery(self).is_ok();
+        // The authority recheck can perform HA synchronization. Resample lease
+        // time after that work, not before another potentially blocking boundary.
         let now = completed_now().max(now);
         if plan.lease.phase != Phase::PendingRevoke {
             let Some(current) = self.state.as_ref() else {
@@ -2039,7 +2103,7 @@ impl Service {
                     &plan.lease.id,
                 );
             };
-            if !Self::database_completion_owner_live(current, plan, now) {
+            if !delivery_allowed || !Self::database_completion_owner_live(current, plan, now) {
                 return self.reject_database_completion(current.clone(), plan, now);
             }
         }
@@ -2048,6 +2112,8 @@ impl Service {
 
     fn database_completion_owner_live(state: &State, plan: &DatabaseEffectPlan, now: u64) -> bool {
         plan.lease.expires > now
+            && state.namespace_exists(&plan.namespace)
+            && !state.namespace_is_sealed(&plan.namespace)
             && state
                 .auth
                 .resolve_lease_owner(&plan.lease.owner, &plan.namespace, now)
@@ -2068,7 +2134,7 @@ impl Service {
             .and_then(|()| self.publish_database(state));
         post_provider_publication_failure(
             staged.err().unwrap_or_else(|| {
-                failure("database lease owner expired or was revoked during provider entry")
+                failure("database delivery authority expired or changed during provider entry")
             }),
             &plan.lease.id,
         )
@@ -3830,3 +3896,7 @@ mod tests {
 #[cfg(test)]
 #[path = "service_database_config_tests.rs"]
 mod configuration_completion_tests;
+
+#[cfg(test)]
+#[path = "service_database_delivery_tests.rs"]
+mod request_delivery_tests;
