@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "e17b24a75aff9860804f9d518d106817c3566905682f6ed7191e7c87f57f3582",
+  "corpus_sha256": "327ca606ef11a0f45def9802305c4c07ae690c6867d9e3a5165ee79042c2582e",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",

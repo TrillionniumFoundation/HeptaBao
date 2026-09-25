@@ -705,8 +705,8 @@ categories:
         support_profiles: [HB-P11-MIGRATE-OPENBAO-2_6, HB-P12-FULL-C5]
         notes: Source and target writers never overlap; unknown authority means no writer.
 coverage:
-  total_items: 60
-  identified: 60
+  total_items: 59
+  identified: 59
   captured: 0
   reviewed: 0
   qualified: 0

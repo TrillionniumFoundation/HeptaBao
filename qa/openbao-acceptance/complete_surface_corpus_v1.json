@@ -8,7 +8,7 @@
   },
   "inventory": {
     "path": "oracle/inventory/openbao-v2.6.2/surface-catalog.yaml",
-    "sha256": "e3c1adb32c50eaa8cb08e2a0dcc25cb735f4eb856e82f919a98abce9e2c650ad",
+    "sha256": "c4e9b99fb71a6851d522cca7c0f18c82308d9839146fa6ba33c302ed4262324a",
     "surface_count": 59,
     "category_count": 11
   },

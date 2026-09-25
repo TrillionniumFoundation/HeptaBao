@@ -24,6 +24,9 @@ FALSE_CLAIMS: dict[str, Any] = {
     "production_authority": False,
     "authority_effect": "NONE",
 }
+# The pinned 2.6.2 product inventory excludes test-only pkiext; its PKI
+# behaviors remain owned by HB-SURFACE-SECRET-PKI. Scope changes are explicit.
+EXPECTED_SURFACE_COUNT = 59
 VALID_FIXTURE_STATES = {"IMPLEMENTED_SCOPED", "DEFINED_NOT_IMPLEMENTED"}
 
 
@@ -119,6 +122,14 @@ def inventory_surfaces(inventory: dict[str, Any]) -> tuple[dict[str, dict[str, s
                 "category": category["id"],
                 "criticality": criticality,
             }
+    if len(surfaces) != EXPECTED_SURFACE_COUNT:
+        raise ValueError(f"surface inventory must retain {EXPECTED_SURFACE_COUNT} runtime surfaces")
+    coverage = inventory.get("coverage")
+    if not isinstance(coverage, dict):
+        raise ValueError("surface inventory coverage must be a mapping")
+    for key in ("total_items", "identified"):
+        if type(coverage.get(key)) is not int or coverage[key] != len(surfaces):
+            raise ValueError(f"surface inventory coverage {key} differs from exact runtime rows")
     return surfaces, len(categories)
 
 

@@ -74,6 +74,30 @@ class CompatibilityCorpusV23Tests(unittest.TestCase):
             ],
         )
 
+    def test_inventory_summary_cannot_disagree_with_runtime_rows(self) -> None:
+        inventory = VALIDATOR._mapping(INVENTORY_PATH, "surface inventory")
+        for key in ("total_items", "identified"):
+            for value in (60, 58, True, "59", 59.0, None):
+                with self.subTest(key=key, value=value):
+                    changed = copy.deepcopy(inventory)
+                    changed["coverage"][key] = value
+                    with self.assertRaisesRegex(ValueError, "coverage"):
+                        VALIDATOR.inventory_surfaces(changed)
+
+    def test_inventory_cannot_shrink_denominator_with_matching_summary(self) -> None:
+        inventory = VALIDATOR._mapping(INVENTORY_PATH, "surface inventory")
+        inventory["categories"][-1]["items"].pop()
+        inventory["coverage"].update(total_items=58, identified=58)
+        with self.assertRaisesRegex(ValueError, "retain 59 runtime surfaces"):
+            VALIDATOR.inventory_surfaces(inventory)
+
+    def test_current_readme_agrees_with_runtime_inventory(self) -> None:
+        inventory = VALIDATOR._mapping(INVENTORY_PATH, "surface inventory")
+        surfaces, _ = VALIDATOR.inventory_surfaces(inventory)
+        readme = (ROOT / "README.md").read_text()
+        self.assertIn(f"exact {len(surfaces)}-surface", readme)
+        self.assertNotIn("all original 60 surfaces", readme)
+
     def _validate_mutation(self, mutate) -> list[str]:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

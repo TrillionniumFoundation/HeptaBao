@@ -151,12 +151,13 @@ def validate_surface_catalog(work_packages: set[str], profiles: set[str]) -> int
                 fail(f"{item_id}: no fixture capture/review is currently evidenced")
             if item["criticality"].endswith("CRITICAL") and not item["owner_work_packages"]:
                 fail(f"{item_id}: unowned critical surface")
-    if count != 60:
-        fail(f"surface item count mismatch: {count} != 60")
+    # pkiext is test-only; the PKI runtime row retains its behavioral scope.
+    if count != 59:
+        fail(f"surface item count mismatch: {count} != 59")
     coverage = value["coverage"]
     if coverage != {
-        "total_items": 60,
-        "identified": 60,
+        "total_items": 59,
+        "identified": 59,
         "captured": 0,
         "reviewed": 0,
         "qualified": 0,
