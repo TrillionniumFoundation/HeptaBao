@@ -35,10 +35,8 @@ impl Service {
             Ok(value) => value,
             Err(_) => return Response::error(503, "durable capacity observation unavailable"),
         };
-        #[cfg(not(test))]
-        let state_limit = MAX_STATE_BYTES;
-        #[cfg(test)]
-        let state_limit = self.state_capacity;
+        let opaque_owner_limit = self.opaque_owner_limit();
+        let state_limit = opaque_owner_limit;
 
         let (state_bytes, state_limit, storage_format, profile, chunk_target, size_basis) =
             if let Some(root) = &self.record_root {
@@ -59,10 +57,14 @@ impl Service {
                     return Response::error(503, "record capacity arithmetic failed");
                 };
                 #[cfg(not(test))]
-                let record_limit = MAX_STATE_BYTES + crate::state_records::MAX_GRAPH_BYTES;
+                let Some(record_limit) =
+                    opaque_owner_limit.checked_add(crate::state_records::MAX_GRAPH_BYTES)
+                else {
+                    return Response::error(503, "record capacity arithmetic failed");
+                };
                 #[cfg(test)]
                 let record_limit = if self.state_capacity == MAX_STATE_BYTES {
-                    MAX_STATE_BYTES + crate::state_records::MAX_GRAPH_BYTES
+                    opaque_owner_limit + crate::state_records::MAX_GRAPH_BYTES
                 } else {
                     self.state_capacity
                 };
@@ -111,7 +113,7 @@ impl Service {
             "state_size_basis": size_basis,
             "durable_payload_bytes": capacity.logical_payload_bytes,
             "durable_artifact_limit_bytes": capacity.max_file_bytes,
-            "opaque_owner_limit_bytes": MAX_STATE_BYTES,
+            "opaque_owner_limit_bytes": opaque_owner_limit,
             "kv1_encoded_graph_limit_bytes": crate::state_records::MAX_GRAPH_BYTES,
             "state_remaining_is_admission_budget": false,
             "state_limit_bytes": state_limit,
@@ -149,6 +151,77 @@ mod tests {
         });
         assert_eq!(unknown.body["recovery_reference"], "synthetic-reference");
         assert!(unknown.body.get("unexpected").is_none());
+    }
+
+    #[cfg(feature = "fixture-capacity-limit")]
+    #[test]
+    fn qualification_capacity_limit_is_lower_only_and_tracks_v4_to_v5()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let root = Root::new();
+        let mut service = root.service()?;
+        assert!(
+            service
+                .install_fixture_opaque_owner_limit(Some(1024 * 1024 - 1))
+                .is_err()
+        );
+        assert!(
+            service
+                .install_fixture_opaque_owner_limit(Some(MAX_STATE_BYTES + 1))
+                .is_err()
+        );
+        service.install_fixture_opaque_owner_limit(Some(2 * 1024 * 1024))?;
+        let (_, token) = bootstrap(&mut service)?;
+        let before = call(
+            &mut service,
+            "GET",
+            "sys/internal/capacity",
+            &token,
+            json!({}),
+        );
+        assert_eq!(before.status, 200);
+        assert_eq!(before.body["data"]["profile"], "bounded-owner-state-v4");
+        assert_eq!(
+            before.body["data"]["opaque_owner_limit_bytes"],
+            2 * 1024 * 1024
+        );
+        assert_eq!(before.body["data"]["state_limit_bytes"], 2 * 1024 * 1024);
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "secret/data/capacity-profile",
+                &token,
+                json!({"data":{"value":"current"}}),
+            )
+            .status,
+            200
+        );
+        let after = call(
+            &mut service,
+            "GET",
+            "sys/internal/capacity",
+            &token,
+            json!({}),
+        );
+        assert_eq!(after.body["data"]["profile"], "bounded-record-state-v5");
+        assert_eq!(
+            after.body["data"]["opaque_owner_limit_bytes"],
+            2 * 1024 * 1024
+        );
+        assert_eq!(
+            after.body["data"]["state_limit_bytes"],
+            2 * 1024 * 1024 + crate::state_records::MAX_GRAPH_BYTES
+        );
+        assert_eq!(
+            after.body["data"]["state_remaining_is_admission_budget"],
+            false
+        );
+        assert!(
+            service
+                .install_fixture_opaque_owner_limit(Some(1024 * 1024))
+                .is_err()
+        );
+        Ok(())
     }
 
     #[test]
@@ -401,6 +474,118 @@ mod tests {
         assert_eq!(
             after.body["data"]["state_bytes"],
             before.body["data"]["state_bytes"]
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn capacity_guard_reopen_leaves_over_budget_v4_and_v5_sealed()
+    -> Result<(), Box<dyn std::error::Error>> {
+        for records in [false, true] {
+            let root = Root::new();
+            let mut service = root.service()?;
+            let (key, token) = bootstrap(&mut service)?;
+            if records {
+                assert_eq!(
+                    call(
+                        &mut service,
+                        "PUT",
+                        "secret/data/capacity-guard",
+                        &token,
+                        json!({"data":{"value":"retained"}})
+                    )
+                    .status,
+                    200
+                );
+            }
+            let identity = service.current_state_identity().map_err(|_| "identity")?;
+            let generation = service.durable.as_ref().ok_or("durable")?.generation();
+            drop(service);
+            let mut reopened = root.service()?;
+            reopened.opaque_owner_capacity = 1;
+            assert_ne!(
+                call(&mut reopened, "PUT", "sys/unseal", "", json!({"key":key})).status,
+                200
+            );
+            assert!(reopened.state.is_none());
+            assert!(reopened.durable.is_none());
+            drop(reopened);
+            let mut reopened = root.service()?;
+            assert_eq!(
+                call(&mut reopened, "PUT", "sys/unseal", "", json!({"key":key})).status,
+                200
+            );
+            assert_eq!(
+                reopened
+                    .current_state_identity()
+                    .map_err(|_| "reopen identity")?,
+                identity
+            );
+            assert_eq!(
+                reopened.durable.as_ref().ok_or("durable")?.generation(),
+                generation
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn capacity_guard_committed_ha_install_fences_without_local_publication()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = bootstrap(&mut service)?;
+        assert_eq!(
+            call(
+                &mut service,
+                "PUT",
+                "secret/data/capacity-guard",
+                &token,
+                json!({"data":{"value":"retained"}})
+            )
+            .status,
+            200
+        );
+        let identity = service.current_state_identity().map_err(|_| "identity")?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let epoch = service.durable.as_ref().ok_or("durable")?.replay_epoch();
+        let nonce = service.unseal_nonce.clone();
+        let mut received = service.state.clone().ok_or("state")?;
+        received.replay_epoch += 3;
+        let plan = service.prepare_record_plan(&received).map_err(|_| "plan")?;
+        let original_limit = service.opaque_owner_capacity;
+        service.opaque_owner_capacity = 1;
+        let error = service
+            .install_received_record_state(received.clone(), plan)
+            .err()
+            .ok_or("over-capacity HA state installed")?;
+        assert_eq!(error.status, 503);
+        assert_eq!(error.body["recovery_required"], true);
+        assert_eq!(error.body["retry_allowed"], false);
+        assert!(service.recovery_required);
+        assert_eq!(
+            service.current_state_identity().map_err(|_| "identity")?,
+            identity
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.replay_epoch(),
+            epoch
+        );
+        assert_eq!(service.unseal_nonce, nonce);
+        service.opaque_owner_capacity = original_limit;
+        let plan = service
+            .prepare_record_plan(&received)
+            .map_err(|_| "retry plan")?;
+        service
+            .install_received_record_state(received, plan)
+            .map_err(|_| "retry install")?;
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.replay_epoch(),
+            epoch + 3
         );
         Ok(())
     }

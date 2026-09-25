@@ -445,21 +445,24 @@ impl Service {
         {
             return Err(unavailable());
         }
+        let opaque_owner_bytes = plan
+            .root
+            .owners
+            .iter()
+            .try_fold(0_u64, |total, owner| total.checked_add(owner.total_bytes))
+            .ok_or_else(|| Response::error(503, "record capacity arithmetic failed"))?;
+        if opaque_owner_bytes > self.opaque_owner_limit() as u64 {
+            return Err(Response::error(507, "opaque owner capacity exhausted"));
+        }
         #[cfg(test)]
         if self.state_capacity != MAX_STATE_BYTES {
-            let payload = plan
-                .root
-                .owners
-                .iter()
-                .map(|owner| owner.total_bytes)
-                .sum::<u64>()
-                .saturating_add(
-                    plan.root
-                        .kv1
-                        .reference
-                        .as_ref()
-                        .map_or(0, |reference| reference.payload_bytes),
-                );
+            let payload = opaque_owner_bytes.saturating_add(
+                plan.root
+                    .kv1
+                    .reference
+                    .as_ref()
+                    .map_or(0, |reference| reference.payload_bytes),
+            );
             if payload > self.state_capacity as u64 {
                 return Err(Response::error(507, "state capacity exhausted"));
             }
@@ -799,6 +802,12 @@ impl Service {
         state: State,
         plan: RecordPlan,
     ) -> Result<(), Response> {
+        // Raft already owns this state; a local limit is not a pre-entry rejection.
+        if let Err(error) = self.validate_loaded_capacity(&state, Some(&plan.root)) {
+            self.recovery_required = true;
+            self.ha_read_cache = None;
+            return Err(Self::ha_committed_local_failure(error));
+        }
         let activation = self.prepare_epoch_activation(state.replay_epoch, true)?;
         let operation = match crypto::random::<16>() {
             Ok(value) => format!("hasync-record-{}", hex(&value)),

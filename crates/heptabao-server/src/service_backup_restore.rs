@@ -280,6 +280,7 @@ impl Service {
         }
         let root = records::decode_root(&bytes)
             .map_err(|_| Response::error(400, "snapshot publication is invalid"))?;
+        self.validate_loaded_capacity(&state, root.as_ref())?;
         let digest = match &root {
             Some(root) => root
                 .identity()
@@ -381,6 +382,9 @@ impl Service {
                 409,
                 "external provider state cannot be rolled back with a local snapshot",
             );
+        }
+        if let Err(error) = self.validate_loaded_capacity(&prepared.state, prepared.root.as_ref()) {
+            return error;
         }
         let Some(durable) = self.durable.as_mut() else {
             return Response::error(503, "server is sealed");

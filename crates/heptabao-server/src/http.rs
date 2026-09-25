@@ -97,6 +97,12 @@ pub struct Config {
     pub plugin_kms: Vec<crate::PluginKmsConfig>,
     #[serde(default)]
     pub plugin_secrets: Vec<crate::PluginSecretConfig>,
+    /// Qualification-only lower bound seam. Ordinary binaries reject this
+    /// field because the feature is absent; feature builds may only reduce the
+    /// canonical 16 MiB opaque-owner ceiling, never raise it.
+    #[cfg(feature = "fixture-capacity-limit")]
+    #[serde(default)]
+    pub fixture_opaque_owner_limit_bytes: Option<usize>,
 }
 fn default_lifecycle_interval() -> u64 {
     5
@@ -279,6 +285,8 @@ fn serve_inner(
     };
     tls.alpn_protocols = vec![b"http/1.1".to_vec()];
     let tls = Arc::new(tls);
+    #[cfg(feature = "fixture-capacity-limit")]
+    let fixture_opaque_owner_limit_bytes = config.fixture_opaque_owner_limit_bytes;
     let ha_enabled = ha.is_some();
     let forwarding_ha = ha.clone();
     let service = Arc::new(Mutex::new(
@@ -301,6 +309,8 @@ fn serve_inner(
         {
             service.native_restore_fault = fixture;
         }
+        #[cfg(feature = "fixture-capacity-limit")]
+        service.install_fixture_opaque_owner_limit(fixture_opaque_owner_limit_bytes)?;
         service.install_outbound_endpoints(config.outbound_endpoints)?;
         service.install_auth_plugins(config.plugin_auth)?;
         service.install_database_plugins(config.plugin_database)?;
@@ -1216,6 +1226,24 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn capacity_guard_config_requires_explicit_fixture_feature() {
+        let value = json!({
+            "listen":"127.0.0.1:8200", "data_dir":"/synthetic/data",
+            "audit_file":"/synthetic/audit.jsonl",
+            "tls_cert_file":"/synthetic/cert.pem", "tls_key_file":"/synthetic/key.pem",
+            "fixture_opaque_owner_limit_bytes": 2 * 1024 * 1024
+        });
+        #[cfg(not(feature = "fixture-capacity-limit"))]
+        assert!(serde_json::from_value::<Config>(value).is_err());
+        #[cfg(feature = "fixture-capacity-limit")]
+        assert_eq!(
+            serde_json::from_value::<Config>(value)
+                .ok()
+                .and_then(|config| config.fixture_opaque_owner_limit_bytes),
+            Some(2 * 1024 * 1024)
+        );
+    }
     use super::*;
 
     #[test]

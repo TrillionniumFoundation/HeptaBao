@@ -147,20 +147,28 @@ def collect(source: Client, target: Client, planned_additional_bytes: int | None
             validate_observation(capacity)
         except ScenarioFailure:
             raise BaoError('target_capacity_invalid') from None
-        if (capacity.get('profile') != 'bounded-owner-state-v4'
-                or capacity.get('state_storage_format') != 'heptabao-state-owners-v4'
-                or capacity.get('state_chunk_target_bytes') != 512 * 1024
-                or capacity.get('scope') != 'serving-leader-local'):
-            raise BaoError('target_capacity_profile_unknown')
-        fields = ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes', 'generation',
-                  'retained_operations', 'operation_limit', 'operations_remaining',
-                  'journal_bytes', 'journal_limit_bytes')
-        report['target_capacity'] = {'status': 'observed', **{k: capacity[k] for k in fields},
-                                     'admission_reserved': False}
+        fields = (
+            'profile', 'state_storage_format', 'state_size_basis',
+            'state_bytes', 'state_limit_bytes', 'state_remaining_bytes',
+            'opaque_owner_limit_bytes', 'kv1_encoded_graph_limit_bytes',
+            'state_remaining_is_admission_budget', 'generation',
+            'retained_operations', 'operation_limit', 'operations_remaining',
+            'journal_bytes', 'journal_limit_bytes', 'admission_reserved',
+        )
+        report['target_capacity'] = {
+            'status': 'observed', **{key: capacity[key] for key in fields}
+        }
         if capacity['operations_remaining'] == 0:
             report['blockers'].append('target_operation_identity_budget_exhausted')
-        if planned_additional_bytes is not None and planned_additional_bytes > capacity['state_remaining_bytes']:
-            report['blockers'].append('target_state_estimate_exceeds_current_capacity')
+        if planned_additional_bytes is not None:
+            report['blockers'].append('target_state_estimate_not_an_admission_reservation')
+            definitely_exceeds = (
+                planned_additional_bytes > capacity['state_remaining_bytes']
+                if capacity['profile'] == 'bounded-owner-state-v4'
+                else planned_additional_bytes > capacity['state_limit_bytes']
+            )
+            if definitely_exceeds:
+                report['blockers'].append('target_state_estimate_exceeds_current_capacity')
     else:
         report['target_capacity'] = {'status': 'unobserved', 'http_status': capacity_response.status}
         report['blockers'].append('target_capacity_unobserved')

@@ -232,8 +232,13 @@ jobs:
           set -euo pipefail
           reports="$RUNNER_TEMP/heptabao-capacity-evidence"
           mkdir -m 700 "$reports"
+          # Keep fixture features out of the ordinary product binary.
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/heptabao-capacity-target"
+          cargo +1.98.0 test --locked -p heptabao-server --features fixture-capacity-limit --lib service::capacity::tests
+          cargo +1.98.0 clippy --locked -p heptabao-server --features fixture-capacity-limit --all-targets -- -D warnings
+          cargo +1.98.0 build --locked -p heptabao-server --features fixture-capacity-limit
           timeout 180 python qa/openbao-acceptance/capacity_live.py \
-            --binary "$PWD/target/debug/heptabao-server" --output "$reports/capacity.json"
+            --binary "$CARGO_TARGET_DIR/debug/heptabao-server" --output "$reports/capacity.json"
 
       - name: Measure audited immutable KV reads over growing state
         shell: bash

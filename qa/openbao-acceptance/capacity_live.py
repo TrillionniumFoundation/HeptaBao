@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Measure the real bounded service on a new synthetic loopback TLS instance.
+"""Measure the real V4-to-V5 capacity boundary on a synthetic TLS instance.
 
-No existing endpoint, credentials or data directory can be supplied. A pass
-proves the current 16 MiB owner-scoped local-state profile's refusal/reopen semantics,
-never production scale or record-oriented scalability.
+No existing endpoint, credentials or data directory can be supplied. The
+qualification binary enables a lower-only opaque-owner limit so the same
+production admission path can reach refusal quickly. The seam cannot raise the
+canonical 16 MiB ceiling and does not qualify production scale.
 """
 from __future__ import annotations
 
@@ -20,10 +21,12 @@ from bao_http import BaoError, SafeArgumentParser, private_write
 from heptabao.private_state import StateDirectory
 from core_isolation import ROOT, ScenarioFailure, file_hash
 
-CURRENT_STATE_LIMIT_BYTES = 16 * 1024 * 1024
-LEGACY_STATE_LIMIT_BYTES = 768 * 1024
+DEFAULT_OPAQUE_OWNER_LIMIT_BYTES = 16 * 1024 * 1024
+QUALIFICATION_OPAQUE_OWNER_LIMIT_BYTES = 2 * 1024 * 1024
+KV1_ENCODED_GRAPH_LIMIT_BYTES = 64 * 1024 * 1024
+PRE_RECORD_STATE_FLOOR_BYTES = 768 * 1024
 SATURATION_PAYLOAD_BYTES = 224 * 1024
-MAX_SATURATION_WRITES = 96
+MAX_SATURATION_WRITES = 16
 
 
 def tree_bytes(path: Path) -> int:
@@ -123,14 +126,45 @@ def growth_curve(samples: list[dict], baseline_write_bytes: int | None) -> list[
 
 
 def validate_observation(data: dict) -> None:
-    names = ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes', 'generation',
-             'retained_operations', 'operation_limit', 'operations_remaining',
-             'journal_bytes', 'journal_limit_bytes', 'state_chunk_target_bytes')
-    if not isinstance(data, dict) or any(type(data.get(k)) is not int or data[k] < 0 for k in names):
+    names = (
+        'state_schema', 'state_bytes', 'state_limit_bytes', 'state_remaining_bytes',
+        'generation', 'retained_operations', 'operation_limit', 'operations_remaining',
+        'journal_bytes', 'journal_limit_bytes', 'state_chunk_target_bytes',
+        'durable_payload_bytes', 'durable_artifact_limit_bytes',
+        'opaque_owner_limit_bytes', 'kv1_encoded_graph_limit_bytes',
+        'kv_read_only_dispatches',
+    )
+    if not isinstance(data, dict) or any(
+        type(data.get(key)) is not int or data[key] < 0 for key in names
+    ):
         raise ScenarioFailure('capacity.invalid_observation')
-    if (data.get('profile') != 'bounded-owner-state-v4'
-            or data.get('state_storage_format') != 'heptabao-state-owners-v4'
-            or data['state_chunk_target_bytes'] != 512 * 1024):
+    if data.get('scope') != 'serving-leader-local':
+        raise ScenarioFailure('capacity.invalid_scope')
+    opaque_limit = data['opaque_owner_limit_bytes']
+    graph_limit = data['kv1_encoded_graph_limit_bytes']
+    if not 1024 * 1024 <= opaque_limit <= DEFAULT_OPAQUE_OWNER_LIMIT_BYTES:
+        raise ScenarioFailure('capacity.invalid_opaque_owner_limit')
+    if graph_limit != KV1_ENCODED_GRAPH_LIMIT_BYTES:
+        raise ScenarioFailure('capacity.kv1_graph_limit_drift')
+    profile = data.get('profile')
+    if profile == 'bounded-owner-state-v4':
+        valid_profile = (
+            data.get('state_storage_format') == 'heptabao-state-owners-v4'
+            and data.get('state_size_basis') == 'canonical-state-json'
+            and data['state_chunk_target_bytes'] == 512 * 1024
+            and data['state_limit_bytes'] == opaque_limit
+        )
+    elif profile == 'bounded-record-state-v5':
+        valid_profile = (
+            data.get('state_storage_format') == 'heptabao-state-records-v5'
+            and data.get('state_size_basis')
+                == 'opaque-owner-json-plus-kv1-canonical-values'
+            and data['state_chunk_target_bytes'] == 256 * 1024
+            and data['state_limit_bytes'] == opaque_limit + graph_limit
+        )
+    else:
+        valid_profile = False
+    if not valid_profile:
         raise ScenarioFailure('capacity.storage_profile_drift')
     for used, limit, remaining in (
         ('state_bytes', 'state_limit_bytes', 'state_remaining_bytes'),
@@ -140,8 +174,11 @@ def validate_observation(data: dict) -> None:
             raise ScenarioFailure('capacity.inconsistent_bound')
     if data['journal_bytes'] > data['journal_limit_bytes']:
         raise ScenarioFailure('capacity.journal_bound')
-    for key in ('admission_reserved', 'compaction_reclaims_operation_identities',
-                'full_openbao_compatibility', 'production_qualified'):
+    for key in (
+        'state_remaining_is_admission_budget', 'admission_reserved',
+        'compaction_reclaims_operation_identities', 'full_openbao_compatibility',
+        'production_qualified',
+    ):
         if data.get(key) is not False:
             raise ScenarioFailure('capacity.inflated_claim')
 
@@ -166,7 +203,7 @@ def run(binary: Path, output: Path) -> int:
     instance = None
     started = time.monotonic()
     stage = 'setup'
-    report = {'schema': 'heptabao.capacity-live.v2', 'synthetic_only': True, 'cases': [],
+    report = {'schema': 'heptabao.capacity-live.v3', 'synthetic_only': True, 'cases': [],
               'binary_sha256': file_hash(binary), 'runner_sha256': file_hash(Path(__file__)),
               'source_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
               'source_tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=ROOT, text=True).strip(),
@@ -238,6 +275,11 @@ def run(binary: Path, output: Path) -> int:
         smoke = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(smoke)
         instance = smoke.Instance(binary, root/'server')
+        config_path = instance.root / 'server.json'
+        config = json.loads(config_path.read_text())
+        config['fixture_opaque_owner_limit_bytes'] = QUALIFICATION_OPAQUE_OWNER_LIMIT_BYTES
+        config_path.write_text(json.dumps(config, sort_keys=True))
+        config_path.chmod(0o600)
         instance.start()
         status, init = instance.call('POST', 'sys/init', {'secret_shares': 1, 'secret_threshold': 1})
         check('capacity.init', status == 200)
@@ -245,8 +287,17 @@ def run(binary: Path, output: Path) -> int:
         key = init['keys_base64'][0]
         check('capacity.unseal', instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
         initial = observe()
-        check('capacity.profile_is_current_bound', initial['state_limit_bytes'] == CURRENT_STATE_LIMIT_BYTES)
-        check('capacity.legacy_bound_retired', initial['state_limit_bytes'] > LEGACY_STATE_LIMIT_BYTES)
+        check('capacity.initial_profile_is_v4', initial['profile'] == 'bounded-owner-state-v4')
+        check(
+            'capacity.qualification_limit_is_exact_lower_only',
+            initial['opaque_owner_limit_bytes'] == QUALIFICATION_OPAQUE_OWNER_LIMIT_BYTES
+            and initial['state_limit_bytes'] == QUALIFICATION_OPAQUE_OWNER_LIMIT_BYTES
+            and initial['opaque_owner_limit_bytes'] < DEFAULT_OPAQUE_OWNER_LIMIT_BYTES,
+        )
+        check(
+            'capacity.pre_record_floor_retired',
+            initial['state_limit_bytes'] > PRE_RECORD_STATE_FLOOR_BYTES,
+        )
         original = instance.token
         instance.token = 'synthetic-invalid-token'
         check('capacity.anonymous_denied', instance.call('GET', 'sys/internal/capacity')[0] == 403)
@@ -256,8 +307,13 @@ def run(binary: Path, output: Path) -> int:
         initial = restart_and_measure('initial', initial, key)
 
         stage = 'saturation'
-        progress('phase', stage=stage, state_limit_bytes=initial['state_limit_bytes'],
-                 payload_bytes=SATURATION_PAYLOAD_BYTES, max_writes=MAX_SATURATION_WRITES)
+        progress(
+            'phase', stage=stage,
+            opaque_owner_limit_bytes=initial['opaque_owner_limit_bytes'],
+            aggregate_diagnostic_limit_bytes=initial['state_limit_bytes'],
+            payload_bytes=SATURATION_PAYLOAD_BYTES,
+            max_writes=MAX_SATURATION_WRITES,
+        )
         payload = {'data': {'synthetic': 'x' * SATURATION_PAYLOAD_BYTES}}
         previous = observe()
         latencies = []
@@ -281,6 +337,15 @@ def run(binary: Path, output: Path) -> int:
             check('capacity.write.' + str(number), status == 200)
             accepted += 1
             previous = observe()
+            check(
+                'capacity.v5_profile_after_write.' + str(number),
+                previous['profile'] == 'bounded-record-state-v5'
+                and previous['opaque_owner_limit_bytes']
+                    == QUALIFICATION_OPAQUE_OWNER_LIMIT_BYTES
+                and previous['state_limit_bytes']
+                    == QUALIFICATION_OPAQUE_OWNER_LIMIT_BYTES
+                    + KV1_ENCODED_GRAPH_LIMIT_BYTES,
+            )
             rss_kib = process_rss_kib(instance.process.pid if instance.process else None)
             disk_bytes = tree_bytes(instance.root / 'data')
             growth_samples.append({
@@ -302,13 +367,13 @@ def run(binary: Path, output: Path) -> int:
                          retained_operations=previous['retained_operations'],
                          durable_data_bytes=disk_bytes, rss_kib=rss_kib,
                          last_write_ms=round(latencies[-1], 3))
-            if previous['state_bytes'] > LEGACY_STATE_LIMIT_BYTES:
+            if previous['state_bytes'] > PRE_RECORD_STATE_FLOOR_BYTES:
                 crossed_legacy = True
         else:
             raise ScenarioFailure('capacity.did_not_reach_declared_bound')
 
         check('capacity.nontrivial_growth', accepted > 1)
-        check('capacity.crossed_legacy_ceiling_before_refusal', crossed_legacy)
+        check('capacity.crossed_pre_record_floor_before_refusal', crossed_legacy)
         saturated = observe()
         check('capacity.rejection_no_state_or_identity_effect', saturated == previous)
         check('capacity.rejected_key_absent', instance.call('GET', 'secret/data/capacity-' + str(accepted))[0] == 404)
@@ -320,6 +385,24 @@ def run(binary: Path, output: Path) -> int:
         compacted = observe()
         check('capacity.compaction_not_ledger_gc', compacted['retained_operations'] == saturated['retained_operations'])
         check('capacity.compaction_not_state_growth', compacted['state_bytes'] == saturated['state_bytes'])
+        stage = 'lowered-limit-reopen'
+        progress('phase', stage=stage)
+        check('capacity.lowered_limit_below_existing_state', compacted['state_bytes'] > 1024 * 1024)
+        instance.stop()
+        config = json.loads(config_path.read_text())
+        config['fixture_opaque_owner_limit_bytes'] = 1024 * 1024
+        config_path.write_text(json.dumps(config, sort_keys=True))
+        instance.start()
+        status, body = instance.call('POST', 'sys/unseal', {'key': key})
+        check('capacity.lowered_limit_rejects_existing_state',
+              status == 507 and body.get('errors') == ['opaque owner capacity exhausted'])
+        check('capacity.lowered_limit_keeps_server_sealed',
+              instance.call('GET', 'sys/health')[0] == 503)
+        check('capacity.lowered_limit_releases_no_capacity_view',
+              instance.call('GET', 'sys/internal/capacity')[0] == 503)
+        instance.stop()
+        config['fixture_opaque_owner_limit_bytes'] = QUALIFICATION_OPAQUE_OWNER_LIMIT_BYTES
+        config_path.write_text(json.dumps(config, sort_keys=True))
         stage = 'restart'
         progress('phase', stage=stage, generation=compacted['generation'])
         reopened = restart_and_measure('near-capacity', compacted, key)
@@ -327,8 +410,10 @@ def run(binary: Path, output: Path) -> int:
         check('capacity.binary_unchanged', file_hash(binary) == report['binary_sha256'])
         report.update(status='passed', initial=initial, saturated=saturated, after_compaction=compacted,
                       accepted_writes=accepted,
-                      legacy_state_limit_bytes=LEGACY_STATE_LIMIT_BYTES,
-                      current_state_limit_bytes=CURRENT_STATE_LIMIT_BYTES,
+                      pre_record_state_floor_bytes=PRE_RECORD_STATE_FLOOR_BYTES,
+                      default_opaque_owner_limit_bytes=DEFAULT_OPAQUE_OWNER_LIMIT_BYTES,
+                      configured_opaque_owner_limit_bytes=QUALIFICATION_OPAQUE_OWNER_LIMIT_BYTES,
+                      kv1_encoded_graph_limit_bytes=KV1_ENCODED_GRAPH_LIMIT_BYTES,
                       saturation_payload_bytes=SATURATION_PAYLOAD_BYTES,
                       latency_ms={'min': min(latencies), 'max': max(latencies),
                                   'mean': sum(latencies)/len(latencies),
@@ -341,7 +426,7 @@ def run(binary: Path, output: Path) -> int:
                       peak_rss_kib=max((sample['rss_kib'] for sample in growth_samples
                                         if sample['rss_kib'] is not None), default=None),
                       durable_bytes_at_refusal=tree_bytes(instance.root / 'data'),
-                      scope='bounded_owner_scoped_local_state_with_whole_logical_state_limit_physical_write_amplification_throughput_tail_latency_rss_and_recovery_curves_not_scale_qualification')
+                      scope='lower_only_real_v4_to_v5_opaque_owner_admission_with_physical_write_amplification_throughput_tail_latency_rss_and_recovery_curves_not_scale_qualification')
     except Exception as error:
         progress('failure', stage=stage, failure_type=type(error).__name__)
         report['failure'] = str(error) if isinstance(error, ScenarioFailure) else type(error).__name__

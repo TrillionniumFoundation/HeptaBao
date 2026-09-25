@@ -157,6 +157,30 @@ forwarding returns the serving leader's local counters, not a sum or reservation
 No token, key, path, resource name, request identity or credential is returned.
 This is a HeptaBao extension, not an OpenBao compatibility surface closure.
 
+## Lower-only qualification seam
+
+The ordinary server binary fixes the combined opaque-owner ceiling at 16 MiB. A binary built with `fixture-capacity-limit` may accept `fixture_opaque_owner_limit_bytes` in process configuration, but only in the inclusive 1–16 MiB range. Ordinary builds reject the field; feature builds cannot raise the canonical limit or change it while unsealed. The limit is enforced on V4 writes, V5 opaque-owner publication, reopen, restore, and HA installation. CI uses 2 MiB solely to reach the real refusal/recovery path without spending minutes rewriting a near-16-MiB synthetic state. This seam is not a production sizing control or scale qualification.
+
+Migration preflight accepts both exact V4 and V5 discriminators. For V5, `state_remaining_bytes` is aggregate diagnostic headroom across unlike components and is never an admission reservation. A migration estimate remains blocked pending serialized candidate admission even when the displayed aggregate exceeds the estimate.
+
+Capacity refusal is checked both while preparing a snapshot and immediately
+before publishing it. A rejected local restore leaves the previous root and
+generation unchanged. HA catch-up is different: Raft may already have committed
+the candidate, so a local capacity refusal fences that node with HTTP 503,
+`recovery_required: true` and `retry_allowed: false`; it is not reported as an
+unexecuted HTTP 507 operation. Neither the local replay epoch nor the activation
+identity advances before an admissible local publication.
+
+Regression anchors are `capacity_guard_restore_checks_v4_and_v5_before_prepare_and_commit`,
+`capacity_guard_committed_ha_install_fences_without_local_publication`,
+`capacity_guard_reopen_leaves_over_budget_v4_and_v5_sealed`, and
+`capacity_guard_config_requires_explicit_fixture_feature`. The real TLS capacity
+profile also reopens the saturated store below its retained owner size, requires
+explicit capacity refusal while sealed, then restores the original limit and
+verifies the same state and operation identities. CI builds the feature-enabled
+binary in a separate target directory so later ordinary-product profiles cannot
+accidentally execute a qualification-feature binary.
+
 ## State publication and legacy migration
 
 `system/state` is the sole local authority: a legacy State/manifest, V4 owner

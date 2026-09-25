@@ -8,6 +8,7 @@ publish = false
 [features]
 default = []
 fixture-native-restore-faults = ["dep:rustix"]
+fixture-capacity-limit = []
 
 [dependencies]
 bcrypt = { path = "../../vendor/bcrypt-0.19.3", version = "=0.19.3", default-features = false, features = ["std", "zeroize"] }

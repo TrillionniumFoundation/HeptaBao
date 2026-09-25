@@ -883,6 +883,7 @@ pub struct Service {
     rekey: Option<RekeyState>,
     recovery_required: bool,
     ha: Option<Arc<Mutex<HaProcess>>>,
+    opaque_owner_capacity: usize,
     #[cfg(test)]
     state_capacity: usize,
     #[cfg(test)]
@@ -890,6 +891,58 @@ pub struct Service {
 }
 
 impl Service {
+    fn opaque_owner_limit(&self) -> usize {
+        #[cfg(test)]
+        {
+            self.opaque_owner_capacity.min(self.state_capacity)
+        }
+        #[cfg(not(test))]
+        {
+            self.opaque_owner_capacity
+        }
+    }
+
+    fn validate_loaded_capacity(
+        &self,
+        state: &State,
+        root: Option<&RecordStateRoot>,
+    ) -> Result<(), Response> {
+        let bytes = match root {
+            Some(root) => root
+                .owners
+                .iter()
+                .try_fold(0_u64, |total, owner| total.checked_add(owner.total_bytes))
+                .and_then(|total| usize::try_from(total).ok())
+                .ok_or_else(|| Response::error(503, "record capacity arithmetic failed"))?,
+            None => owner_store::serialize_owner(state)
+                .map_err(state_serialization_error)?
+                .len(),
+        };
+        if bytes > self.opaque_owner_limit() {
+            return Err(Response::error(507, "opaque owner capacity exhausted"));
+        }
+        Ok(())
+    }
+
+    #[cfg(feature = "fixture-capacity-limit")]
+    pub(crate) fn install_fixture_opaque_owner_limit(
+        &mut self,
+        limit: Option<usize>,
+    ) -> Result<(), String> {
+        const MIN_FIXTURE_LIMIT: usize = 1024 * 1024;
+        let Some(limit) = limit else {
+            return Ok(());
+        };
+        if self.state.is_some() {
+            return Err("fixture capacity is immutable while unsealed".into());
+        }
+        if !(MIN_FIXTURE_LIMIT..=MAX_STATE_BYTES).contains(&limit) {
+            return Err("fixture opaque-owner limit must be 1 MiB through 16 MiB".into());
+        }
+        self.opaque_owner_capacity = limit;
+        Ok(())
+    }
+
     /// Install the trusted process configuration before unseal, never via HTTP.
     pub fn install_outbound_endpoints(
         &mut self,
@@ -1170,6 +1223,7 @@ impl Service {
             rekey,
             recovery_required,
             ha,
+            opaque_owner_capacity: MAX_STATE_BYTES,
             #[cfg(test)]
             state_capacity: MAX_STATE_BYTES,
             #[cfg(test)]
@@ -2960,11 +3014,7 @@ impl Service {
                 "record state cannot publish legacy bytes",
             ));
         }
-        #[cfg(not(test))]
-        let capacity = MAX_STATE_BYTES;
-        #[cfg(test)]
-        let capacity = self.state_capacity;
-        if bytes.len() > capacity {
+        if bytes.len() > self.opaque_owner_limit() {
             return Err(Response::error(507, "state capacity exhausted"));
         }
         let activation = self.prepare_epoch_activation(target_replay_epoch, false)?;
@@ -3968,6 +4018,8 @@ impl Service {
                 .map_err(|_| Response::error(400, "unseal or recovery failed"))?,
         };
         let (state, bytes, state_rewrite_required) = Self::load_state_from_durable(&durable)?;
+        let record_root = records::decode_root(&bytes)?;
+        self.validate_loaded_capacity(&state, record_root.as_ref())?;
         // Bind durable identity before any local state is admitted into an HA epoch.
         if let Some(ha) = self.ha.as_ref() {
             let ha = ha
@@ -3985,7 +4037,7 @@ impl Service {
                 "state-format-{}",
                 hex(&crypto::random::<16>().map_err(|error| Response::error(503, error))?)
             );
-            let rewrite_result = if let Some(root) = records::decode_root(&bytes)? {
+            let rewrite_result = if let Some(root) = record_root.clone() {
                 let plan = records::existing_plan(root)?;
                 Self::persist_record_batch(&mut durable, &plan, &operation_id)
             } else {
@@ -4036,7 +4088,7 @@ impl Service {
         }
         self.durable = Some(durable);
         self.state = Some(state);
-        self.record_root = records::decode_root(&bytes)?;
+        self.record_root = record_root;
         self.state_digest = Some(match &self.record_root {
             Some(root) => root
                 .identity()
@@ -5107,6 +5159,11 @@ impl Service {
                 503,
                 "HA committed state belongs to a different cluster",
             ));
+        }
+        if let Err(error) = self.validate_loaded_capacity(&state, None) {
+            self.recovery_required = true;
+            self.ha_read_cache = None;
+            return Err(Self::ha_committed_local_failure(error));
         }
         // This epoch is already authoritative in Raft. RNG failure must fence
         // this node before any local publication or old observation release.

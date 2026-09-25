@@ -17,14 +17,38 @@ from bao_http import BaoError, Response
 from core_isolation import ScenarioFailure
 
 
-def observation():
-    return dict(profile='bounded-owner-state-v4',
-        state_storage_format='heptabao-state-owners-v4', state_chunk_target_bytes=512*1024,
-        kv_read_only_dispatches=0, scope='serving-leader-local', state_bytes=40,
-        state_limit_bytes=100, state_remaining_bytes=60, generation=1, retained_operations=1,
-        operation_limit=10, operations_remaining=9, journal_bytes=20, journal_limit_bytes=200,
+def observation(profile='v4'):
+    opaque_limit = 2 * 1024 * 1024
+    graph_limit = 64 * 1024 * 1024
+    if profile == 'v4':
+        name = 'bounded-owner-state-v4'
+        storage_format = 'heptabao-state-owners-v4'
+        size_basis = 'canonical-state-json'
+        chunk = 512 * 1024
+        state_limit = opaque_limit
+    elif profile == 'v5':
+        name = 'bounded-record-state-v5'
+        storage_format = 'heptabao-state-records-v5'
+        size_basis = 'opaque-owner-json-plus-kv1-canonical-values'
+        chunk = 256 * 1024
+        state_limit = opaque_limit + graph_limit
+    else:
+        raise ValueError(profile)
+    return dict(
+        profile=name, state_storage_format=storage_format,
+        state_size_basis=size_basis, state_chunk_target_bytes=chunk,
+        state_schema=37, kv_read_only_dispatches=0, scope='serving-leader-local',
+        state_bytes=40, state_limit_bytes=state_limit,
+        state_remaining_bytes=state_limit - 40,
+        durable_payload_bytes=80, durable_artifact_limit_bytes=64 * 1024 * 1024,
+        opaque_owner_limit_bytes=opaque_limit,
+        kv1_encoded_graph_limit_bytes=graph_limit,
+        state_remaining_is_admission_budget=False,
+        generation=1, retained_operations=1, operation_limit=10,
+        operations_remaining=9, journal_bytes=20, journal_limit_bytes=200,
         admission_reserved=False, compaction_reclaims_operation_identities=False,
-        full_openbao_compatibility=False, production_qualified=False)
+        full_openbao_compatibility=False, production_qualified=False,
+    )
 
 
 class FakeClient:
@@ -57,7 +81,26 @@ class FakeClient:
 
 class CapacityObservationTests(unittest.TestCase):
     def test_valid_observation(self):
-        capacity.validate_observation(observation())
+        for profile in ('v4', 'v5'):
+            with self.subTest(profile=profile):
+                capacity.validate_observation(observation(profile))
+
+    def test_profile_components_are_exact(self):
+        cases = (
+            ('v4', 'state_size_basis', 'opaque-owner-json-plus-kv1-canonical-values'),
+            ('v4', 'state_chunk_target_bytes', 256 * 1024),
+            ('v5', 'state_storage_format', 'heptabao-state-owners-v4'),
+            ('v5', 'state_limit_bytes', 2 * 1024 * 1024),
+            ('v5', 'kv1_encoded_graph_limit_bytes', 1),
+        )
+        for profile, key, value in cases:
+            with self.subTest(profile=profile, key=key):
+                data = observation(profile)
+                data[key] = value
+                if key == 'state_limit_bytes':
+                    data['state_remaining_bytes'] = value - data['state_bytes']
+                with self.assertRaises(ScenarioFailure):
+                    capacity.validate_observation(data)
 
     def test_bool_negative_or_missing_count_rejected(self):
         for bad in (True, -1, '40', None):
@@ -101,8 +144,19 @@ class MigrationPreflightTests(unittest.TestCase):
         self.assertTrue(all(m in ('GET', 'LIST') and b is None for m, p, b in self.source.calls+self.target.calls))
 
     def test_capacity_estimate_exceeds_bound(self):
-        report = preflight.collect(self.source, self.target, 61)
+        data = observation()
+        estimate = data['state_remaining_bytes'] + 1
+        report = preflight.collect(self.source, self.target, estimate)
         self.assertIn('target_state_estimate_exceeds_current_capacity', report['blockers'])
+        self.assertIn('target_state_estimate_not_an_admission_reservation', report['blockers'])
+
+    def test_v5_diagnostic_remaining_is_not_a_reservation(self):
+        data = observation('v5')
+        self.target.overrides['/v1/sys/internal/capacity'] = Response(200, {'data': data})
+        report = preflight.collect(self.source, self.target, data['state_remaining_bytes'] + 1)
+        self.assertNotIn('target_state_estimate_exceeds_current_capacity', report['blockers'])
+        self.assertIn('target_state_estimate_not_an_admission_reservation', report['blockers'])
+        self.assertFalse(report['target_capacity']['state_remaining_is_admission_budget'])
 
     def test_bad_estimate_rejected_before_network(self):
         for value in (True, -1, '60', 2**64):

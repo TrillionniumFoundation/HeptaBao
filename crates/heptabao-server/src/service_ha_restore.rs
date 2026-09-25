@@ -259,6 +259,7 @@ impl Service {
             *key.expose(),
         )
         .map_err(|_| invalid())?;
+        self.validate_loaded_capacity(&state, Some(&root))?;
         // Full closure, including shared edges, must be available before any
         // proposal. Imported unrelated staging objects are deliberately omitted.
         let mut visited = BTreeSet::new();

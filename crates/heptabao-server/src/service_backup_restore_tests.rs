@@ -340,3 +340,58 @@ fn owner_format_backup_restore_preserves_legacy_format_without_forcing_record_mi
     );
     Ok(())
 }
+
+#[test]
+fn capacity_guard_restore_checks_v4_and_v5_before_prepare_and_commit() -> TestResult {
+    for records in [false, true] {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = bootstrap(&mut service)?;
+        if records {
+            write(&mut service, &token, "capacity-guard");
+        }
+        let backup = archive(&service)?;
+        let before = state_record(&service)?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let limit = service.opaque_owner_capacity;
+        service.opaque_owner_capacity = 1;
+        let error = service
+            .prepare_snapshot_restore(&backup)
+            .err()
+            .ok_or("over-capacity restore preparation was accepted")?;
+        assert_eq!(error.status, 507);
+        assert_eq!(state_record(&service)?, before);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        service.opaque_owner_capacity = limit;
+        let prepared = service
+            .prepare_snapshot_restore(&backup)
+            .map_err(|_| "prepare")?;
+        let principal = actor(&mut service, &token)?;
+        // Test the final publication choke point independently of preparation.
+        service.opaque_owner_capacity = 1;
+        let body = json!({});
+        let response =
+            service.commit_snapshot_restore(prepared, &principal, &request(&token, &body));
+        assert_eq!(response.status, 507);
+        assert!(!service.recovery_required);
+        assert_eq!(state_record(&service)?, before);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        service.opaque_owner_capacity = limit;
+        let prepared = service
+            .prepare_snapshot_restore(&backup)
+            .map_err(|_| "retry prepare")?;
+        assert_eq!(
+            service
+                .commit_snapshot_restore(prepared, &principal, &request(&token, &body))
+                .status,
+            200
+        );
+    }
+    Ok(())
+}
