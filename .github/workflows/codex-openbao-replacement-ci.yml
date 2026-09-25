@@ -119,6 +119,7 @@ jobs:
         run: cargo +1.98.0 doc --locked --workspace --no-deps
 
       - name: Build and exercise the real TLS service
+        id: runtime_ready
         shell: bash
         run: |
           set -euo pipefail
@@ -127,7 +128,11 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" \
             --work-dir "$RUNNER_TEMP/heptabao-openbao-replacement-smoke"
 
+      # Once the normal product is built and its TLS smoke passes, independent
+      # fixtures keep running after a sibling failure. Their failures still fail
+      # the job/verdict; errors are not ignored and qualification is never inherited.
       - name: Exercise scoped authenticated workflow runtime
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -138,6 +143,7 @@ jobs:
             --output "$reports/workflow.json"
 
       - name: Exercise bounded server-integrated read-only secret plugin
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -146,6 +152,7 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-plugin-secret"
 
       - name: Exercise bounded server-integrated authentication plugin
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -155,12 +162,14 @@ jobs:
 
 
       - name: Exercise bounded server-integrated database plugin
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
           timeout 180 python qa/openbao-acceptance/plugin_database_live.py             --binary "$PWD/target/debug/heptabao-server"             --work-dir "$RUNNER_TEMP/heptabao-plugin-database"
 
       - name: Exercise bounded server-integrated KMS plugin
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -170,6 +179,7 @@ jobs:
 
 
       - name: Exercise checksum-pinned MySQL 8.4 provider lifecycle
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -182,6 +192,7 @@ jobs:
 
 
       - name: Exercise checksum-pinned Cassandra 5.0 provider lifecycle
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -193,6 +204,7 @@ jobs:
 
 
       - name: Exercise checksum-pinned InfluxDB 1.8 provider lifecycle
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -205,6 +217,7 @@ jobs:
 
 
       - name: Exercise checksum-pinned RabbitMQ 4.1 provider lifecycle
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -216,6 +229,7 @@ jobs:
 
 
       - name: Exercise mandatory host-enrolled HTTPS audit delivery
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -224,6 +238,7 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-http-audit"
 
       - name: Exercise deployment-owned TCP socket audit delivery
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -234,6 +249,7 @@ jobs:
 
 
       - name: Exercise process-configured local Unix syslog audit delivery
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -242,6 +258,8 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-syslog-audit"
 
       - name: Exercise bounded state saturation and replay-preserving capacity recovery
+        id: capacity_ready
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -256,6 +274,7 @@ jobs:
             --binary "$CARGO_TARGET_DIR/debug/heptabao-server" --output "$reports/capacity.json"
 
       - name: Exercise lower-capacity HA election and committed-state recovery
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.capacity_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -268,6 +287,7 @@ jobs:
             | tee "$reports/capacity-ha.json"
 
       - name: Measure audited immutable KV reads over growing state
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -277,6 +297,7 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/reads.json"
 
       - name: Exercise real three-process HA with synthetic state
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -288,6 +309,7 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-three-process-ha"
 
       - name: Exercise real encrypted-link network partitions
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -300,6 +322,7 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-network-partition-ha"
 
       - name: Exercise bounded HA peer certificate rotation
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -314,6 +337,7 @@ jobs:
           git diff --exit-code
 
       - name: Exercise multi-epoch replay retirement, snapshot catch-up and failover
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -328,7 +352,7 @@ jobs:
           git diff --exit-code
 
       - name: Exercise exact-base to candidate HA rolling upgrade
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && github.event_name == 'pull_request' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -351,6 +375,8 @@ jobs:
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
       - name: Exercise actual private-output client and OTP wrapping HA
+        id: runtime_clients
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -371,6 +397,8 @@ jobs:
             --output "$evidence/idle-ha.json"
 
       - name: Install the real PostgreSQL 17 prerequisite from signed packages
+        id: provider_packages_ready
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -384,6 +412,7 @@ jobs:
           dpkg-query -W postgresql-17 postgresql-client-17
 
       - name: Exercise PostgreSQL physical storage transactions and crash recovery
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.provider_packages_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -395,6 +424,7 @@ jobs:
             --output "$RUNNER_TEMP/heptabao-postgresql-storage.json"
 
       - name: Exercise PostgreSQL durable backend and server initialization recovery
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.provider_packages_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -409,6 +439,7 @@ jobs:
             --output "$RUNNER_TEMP/heptabao-postgresql-service.json"
 
       - name: Exercise actual PostgreSQL SQL and active-session revocation
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.provider_packages_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -420,6 +451,7 @@ jobs:
           # failure here, never a successful skip or a protocol-model fallback.
 
       - name: Exercise actual Valkey ACL persistence and session revocation
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.provider_packages_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -429,12 +461,15 @@ jobs:
             --output "$RUNNER_TEMP/heptabao-valkey-real.json"
 
       - name: Acquire the checksum-pinned official binary in the Oracle lane
+        id: oracle_ready
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
           python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
 
       - name: Compare KV metadata CAS and enumeration with official OpenBao 2.6.2
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -451,6 +486,7 @@ jobs:
             --output "$reports/enumeration.json"
 
       - name: Compare live RADIUS token renewal with official OpenBao 2.6.2
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -474,6 +510,7 @@ jobs:
             --output "$reports/radius-native-renewal-ha.json"
 
       - name: Compare operational Agent and Proxy behavior with official OpenBao
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' && steps.runtime_clients.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -507,6 +544,7 @@ jobs:
           git diff --exit-code
 
       - name: Exercise online authentication and durable cross-node code consumption
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' && steps.provider_packages_ready.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -537,6 +575,7 @@ jobs:
           # No secret-bearing service/issuer/client directories are uploaded.
 
       - name: Prove a slow provider does not serialize unrelated durable work
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -548,6 +587,7 @@ jobs:
           git diff --exit-code
 
       - name: Observe real migration catalogs and target capacity without cutover
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -560,6 +600,7 @@ jobs:
             --binary "$PWD/target/debug/heptabao-server" --output "$reports/preflight.json"
 
       - name: Inspect an authentic OpenBao Raft snapshot without restoring it
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -575,6 +616,7 @@ jobs:
           git diff --exit-code
 
       - name: Execute all bounded official-binary differential profiles
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -600,6 +642,7 @@ jobs:
           test "$failed" -eq 0
 
       - name: Re-encrypt actual official Transit ciphertext with restart and lost acknowledgement
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -613,6 +656,7 @@ jobs:
           # Missing official binaries (exit 77) remain a blocking failure.
 
       - name: Execute the fixed corpus against the official OpenBao binary
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -624,6 +668,7 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-fixed-corpus-comparison"
 
       - name: Rehearse the real bounded KV migration and lost acknowledgement
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -636,6 +681,7 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-live-kv-migration"
 
       - name: Compare bounded OpenAPI runtime with official OpenBao
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -667,6 +713,7 @@ jobs:
           git diff --exit-code
 
       - name: Rehearse bounded policy Identity auth-mount and SSH role migration against the official source
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash
         env:
           HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle/bao
@@ -719,6 +766,7 @@ jobs:
           git diff --exit-code
 
       - name: Exercise committed membership snapshot catch-up and real cleanup grace
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -727,6 +775,7 @@ jobs:
             --output "$RUNNER_TEMP/heptabao-raft-membership.json"
 
       - name: Exercise actual Kubernetes API etcd and RBAC with a pinned disposable node
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -745,6 +794,7 @@ jobs:
           # No kubeconfig, TokenRequest response, private key or cluster data is uploaded.
 
       - name: Confirm source remained immutable
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
