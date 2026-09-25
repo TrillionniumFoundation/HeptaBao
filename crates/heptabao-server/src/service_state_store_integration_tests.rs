@@ -488,12 +488,12 @@ fn legacy_owner_ha_projection_keeps_wire_identity_and_reopens()
     let cluster =
         crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &state.cluster_id)?;
     let leader = Arc::clone(&cluster.processes[0]);
-    let follower = Arc::clone(&cluster.processes[1]);
+    let read_owner = Arc::clone(&leader);
     leader
         .lock()
         .map_err(|_| "HA mutex")?
         .commit_state("legacy-source-order", [0; 32], &source)?;
-    service.ha = Some(Arc::clone(&follower));
+    service.ha = Some(Arc::clone(&read_owner));
     service
         .sync_from_ha()
         .map_err(|response| format!("sync: {}", response.body))?;
@@ -505,7 +505,7 @@ fn legacy_owner_ha_projection_keeps_wire_identity_and_reopens()
     drop(service);
     for _ in 0..2 {
         let mut service = root.service()?;
-        service.ha = Some(Arc::clone(&follower));
+        service.ha = Some(Arc::clone(&read_owner));
         let response = call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}));
         assert_eq!(response.status, 200, "{}", response.body);
         service
@@ -517,5 +517,54 @@ fn legacy_owner_ha_projection_keeps_wire_identity_and_reopens()
         );
         current_manifest(&service)?.verify_logical(&canonical)?;
     }
+    Ok(())
+}
+
+#[test]
+fn current_owner_bound_noncanonical_projection_is_rejected_before_publication()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    bootstrap(&mut service)?;
+    let state = service.state.as_ref().ok_or("state")?.clone();
+    let source = serde_json::to_vec(&serde_json::to_value(&state)?)?;
+    let operation = "noncanonical-current-owner";
+    let durable = service.durable.as_ref().ok_or("durable")?;
+    let generation = durable.generation();
+    let original_manifest = current_manifest(&service)?;
+    let plan = Service::prepare_owner_state_plan(
+        durable,
+        &state,
+        &source,
+        operation,
+        state.schema,
+        state.replay_epoch,
+        PersistOwnerStateOptions {
+            compact_before_entry: true,
+            allow_epoch_catchup: false,
+            reuse: OwnerReuseHint::default(),
+        },
+    )?;
+    let binding = plan.publication_binding(operation, &source)?;
+    let cluster =
+        crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &state.cluster_id)?;
+    cluster.processes[0]
+        .lock()
+        .map_err(|_| "HA mutex")?
+        .commit_state_with_owner_binding(operation, [0; 32], &source, binding)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    let response = service
+        .sync_from_ha()
+        .expect_err("noncanonical current owner must be rejected");
+    assert_eq!(response.status, 503);
+    assert_eq!(
+        response.body["errors"],
+        json!(["HA owner-bound logical state is not canonical"])
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(current_manifest(&service)?, original_manifest);
     Ok(())
 }
