@@ -33,6 +33,24 @@ REALM = "HBKERB.TEST"
 SERVICE = "HTTP"
 SERVICE_ACCOUNT = f"{SERVICE}/127.0.0.1@{REALM}"
 CLIENT = f"alice@{REALM}"
+# Match the declared role to the real native validator. A zero-skew native
+# profile rejects even a valid authenticator delayed across a wall-clock second.
+NATIVE_CLOCK_SKEW_SECONDS = 60
+SHORT_TICKET_SECONDS = 5
+EXPIRY_MARGIN_SECONDS = 2
+NORMAL_REQUEST_DELAY_SECONDS = 2.1
+
+
+def expired_ticket_wait_seconds() -> int:
+    # MIT applies clockskew to ticket endtime as well as authenticator time.
+    # Do not turn a still-native-valid ticket into a claimed expiry negative.
+    return SHORT_TICKET_SECONDS + NATIVE_CLOCK_SKEW_SECONDS + EXPIRY_MARGIN_SECONDS
+
+
+def wait_at_least(seconds: float) -> None:
+    deadline = time.monotonic() + seconds
+    while (remaining := deadline - time.monotonic()) > 0:
+        time.sleep(remaining)
 
 CORPUS_CASE_IDS = (
     "config_roundtrip", "real_mit_ap_req_login", "replayed_negotiation_denied",
@@ -102,7 +120,7 @@ def kerberos_files(root: Path, port: int) -> tuple[Path, Path, Path, Path]:
  dns_lookup_kdc = false
  dns_lookup_realm = false
  rdns = false
- clockskew = 0
+ clockskew = {NATIVE_CLOCK_SKEW_SECONDS}
  ticket_lifetime = 10m
  forwardable = false
 
@@ -294,15 +312,18 @@ def run(binary: Path, work_dir: Path) -> dict[str, object]:
                 "token_policies": ["default"],
                 "token_ttl": 300,
                 "token_max_ttl": 600,
-                "clock_skew_seconds": 60,
+                "clock_skew_seconds": NATIVE_CLOCK_SKEW_SECONDS,
             }
             check(instance.call("POST", "auth/kerberos/config", config)[0] == 204, "config")
             status, readback = instance.call("GET", "auth/kerberos/config")
             check(status == 200 and "keytab_path" not in json.dumps(readback), "redacted_config")
-            check(readback["data"]["clock_skew_seconds"] == 60, "config_roundtrip")
+            check(readback["data"]["clock_skew_seconds"] == NATIVE_CLOCK_SKEW_SECONDS, "config_roundtrip")
 
             checked(["kinit", "-c", str(ccache), CLIENT], environment, input_text=f"{client_password}\n")
             first_header = negotiate_header(instance, environment)
+            # Mandatory cross-second delivery guards against reintroducing the
+            # accidentally zero-skew fixture. No retry is allowed after failure.
+            wait_at_least(NORMAL_REQUEST_DELAY_SECONDS)
             first_status = instance.call(
                 "POST", "auth/kerberos/login", {}, token="", extra_headers={"Authorization": first_header}
             )[0]
@@ -345,9 +366,11 @@ def run(binary: Path, work_dir: Path) -> dict[str, object]:
             checked(["kdestroy", "-c", str(ccache)], environment)
             short_cache = work_dir / "expired.ccache"
             environment["KRB5CCNAME"] = f"FILE:{short_cache}"
-            checked(["kinit", "-l", "5s", "-c", str(short_cache), CLIENT], environment, input_text=f"{client_password}\n")
+            checked(["kinit", "-l", f"{SHORT_TICKET_SECONDS}s", "-c", str(short_cache), CLIENT], environment, input_text=f"{client_password}\n")
             expired_header = negotiate_header(instance, environment)
-            time.sleep(6)
+            # This AP-REQ has never been presented. Replaying a consumed request
+            # here could mask a broken expiry check with a replay rejection.
+            wait_at_least(expired_ticket_wait_seconds())
             expired_status = instance.call("POST", "auth/kerberos/login", {}, token="", extra_headers={"Authorization": expired_header})[0]
             check(expired_status >= 400, "expired_ticket_denied")
 
@@ -386,7 +409,12 @@ def run(binary: Path, work_dir: Path) -> dict[str, object]:
                   and fresh_native_cache.exists(), "restart_fresh_ticket_still_works")
             check(set(CORPUS_CASE_IDS).issubset(passed), "corpus_complete")
             return {"status": "passed", "checks": [name for name in passed if name in CORPUS_CASE_IDS],
-                    "native_replay_cache_enabled": True, "independent_qualification": False,
+                    "native_replay_cache_enabled": True,
+                    "native_clock_skew_seconds": NATIVE_CLOCK_SKEW_SECONDS,
+                    "valid_ap_req_delivery_delay_seconds": NORMAL_REQUEST_DELAY_SECONDS,
+                    "expiry_wait_seconds": expired_ticket_wait_seconds(),
+                    "expiry_semantics": "beyond_ticket_endtime_plus_native_clockskew",
+                    "independent_qualification": False,
                     "openbao_api_parity": False}
         finally:
             for name, value in original.items():

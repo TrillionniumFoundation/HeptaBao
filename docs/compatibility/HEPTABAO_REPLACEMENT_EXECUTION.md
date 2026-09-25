@@ -454,7 +454,7 @@ Guides: `docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md`.
 
 **Remaining scope:** Static/dynamic roles, root rotation, statement templates, renew/revoke and rollback.
 
-Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`, `qa/openbao-acceptance/database_config_completion_live.py`.
 
 ### HB-SURFACE-SECRET-KUBERNETES
 
@@ -760,7 +760,7 @@ Guides: `docs/modules/heptabao-plugin-host.md`.
 
 **Remaining scope:** Static-role lifecycle, root credential rotation, full OpenBao database-plugin RPC compatibility, migration/HA fault qualification and independent provider admission remain open.
 
-Existing bounded profiles: `qa/openbao-acceptance/plugin_database_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/plugin_database_live.py`, `qa/openbao-acceptance/database_config_completion_live.py`.
 
 ### HB-SURFACE-PLUGIN-KMS
 

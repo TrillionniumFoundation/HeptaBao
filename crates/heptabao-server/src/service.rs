@@ -2065,7 +2065,7 @@ impl Service {
             }
         }
         if self.database_handles(&admitted, namespace, path, body) {
-            return self.database_route(admitted, principal.as_ref(), &request);
+            return self.database_route(admitted, principal, &request);
         }
         if Self::openldap_handles(&admitted, namespace, path, body) {
             return self.openldap_route(admitted, principal.as_ref(), &request);

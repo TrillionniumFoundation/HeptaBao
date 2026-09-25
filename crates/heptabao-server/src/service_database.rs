@@ -189,6 +189,8 @@ pub(super) type DatabaseBatchEffectResult = Vec<Result<(), Response>>;
 pub(super) struct DatabaseConfigPlan {
     namespace: String,
     mount: String,
+    mount_incarnation: u64,
+    authority: plugin::PluginResponseAuthority,
     key: String,
     connection: Connection,
     plugin: Option<plugin::SharedDatabasePlugin>,
@@ -1345,7 +1347,7 @@ impl Service {
     pub(super) fn database_route(
         &mut self,
         mut state: State,
-        principal: Option<&Principal>,
+        mut principal: Option<Principal>,
         request: &RequestView<'_>,
     ) -> Response {
         let started = std::time::Instant::now();
@@ -1360,7 +1362,9 @@ impl Service {
         } = request;
         let now = (*now).max(state.database.clock);
         let execute = (|| -> Result<Response, Response> {
-            let p = principal.ok_or_else(|| Response::error(403, "missing client token"))?;
+            let p = principal
+                .as_ref()
+                .ok_or_else(|| Response::error(403, "missing client token"))?;
             let capability = match *method {
                 "GET" => "read",
                 "LIST" => "list",
@@ -1506,9 +1510,30 @@ impl Service {
                             .as_ref()
                             .and_then(|id| self.database_plugins.get(id))
                             .cloned();
+                        let mount_incarnation = state
+                            .engines
+                            .database_mount_binding(ns, path)
+                            .map(|(_, incarnation)| incarnation)
+                            .ok_or_else(|| {
+                                failure("database mount disappeared before validation")
+                            })?;
+                        // Keep the consumed admission capability, not a replayable
+                        // bearer or a second authentication/use at completion.
+                        let authority = plugin::PluginResponseAuthority::new(
+                            principal
+                                .take()
+                                .ok_or_else(|| failure("database admission disappeared"))?,
+                            &state,
+                            request,
+                            capability,
+                            sudo,
+                        )
+                        .with_time_floor(now);
                         self.pending_database_config_effect = Some(DatabaseConfigPlan {
                             namespace: (*ns).into(),
                             mount,
+                            mount_incarnation,
+                            authority,
                             key: key.into(),
                             connection,
                             plugin,
@@ -1762,15 +1787,38 @@ impl Service {
     }
     pub(super) fn finalize_database_config(
         &mut self,
-        plan: DatabaseConfigPlan,
+        mut plan: DatabaseConfigPlan,
         validation: Result<(), Response>,
     ) -> Response {
         if let Err(error) = validation {
             return error;
         }
+        // Provider validation executes outside the Service writer. Synchronize
+        // HA and recheck live ACL, identity, expiry, deadline and namespace owner
+        // before installing credentials. Failure preserves the previous config.
+        if let Err(error) = self.validate_plugin_response(&mut plan.authority) {
+            return error;
+        }
         let Some(mut state) = self.state.clone() else {
             return failure("server sealed after database configuration validation");
         };
+        if state
+            .engines
+            .database_mount_binding(&plan.namespace, &plan.mount)
+            != Some((plan.mount.as_str(), plan.mount_incarnation))
+        {
+            return Response::error(409, "database mount incarnation changed during validation");
+        }
+        if let Some(host) = &plan.plugin {
+            let current = plan
+                .connection
+                .plugin_id
+                .as_ref()
+                .and_then(|id| self.database_plugins.get(id));
+            if current.is_none_or(|current| !std::sync::Arc::ptr_eq(current, host)) {
+                return failure("database plugin host changed during validation");
+            }
+        }
         let current_digest =
             match database_mount_digest(state.database.mount(&plan.namespace, &plan.mount)) {
                 Ok(digest) => digest,
@@ -1792,7 +1840,7 @@ impl Service {
                 "provider identity is frozen while lease/tombstone records exist",
             );
         }
-        state.database.clock = state.database.clock.max(plan.now);
+        state.database.clock = state.database.clock.max(plan.now).max(plan.authority.now());
         let mount = state.database.mount_mut(&plan.namespace, &plan.mount);
         if mount.connections.len() >= 16 && !mount.connections.contains_key(&plan.key) {
             return Response::error(507, "database connection capacity exhausted");
@@ -3778,3 +3826,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "service_database_config_tests.rs"]
+mod configuration_completion_tests;

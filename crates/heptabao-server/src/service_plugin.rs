@@ -127,7 +127,7 @@ pub(super) struct KmsKeyBinding {
 
 /// Own the original affine admission capability through unlocked provider I/O.
 /// Rechecking it never authenticates a bearer again or spends another token use.
-struct PluginResponseAuthority {
+pub(super) struct PluginResponseAuthority {
     principal: Principal,
     namespace: String,
     namespace_incarnation: Option<u64>,
@@ -141,7 +141,7 @@ struct PluginResponseAuthority {
 }
 
 impl PluginResponseAuthority {
-    fn new(
+    pub(super) fn new(
         principal: Principal,
         state: &State,
         request: &RequestView<'_>,
@@ -162,7 +162,13 @@ impl PluginResponseAuthority {
         }
     }
 
-    fn now(&self) -> u64 {
+    /// Domain clocks may already be ahead of the request's wall-clock sample.
+    pub(super) fn with_time_floor(mut self, floor: u64) -> Self {
+        self.admitted_at = self.admitted_at.max(floor);
+        self
+    }
+
+    pub(super) fn now(&self) -> u64 {
         std::time::Duration::from_secs(self.admitted_at)
             .saturating_add(self.started.elapsed())
             .as_secs()
@@ -966,7 +972,7 @@ impl Service {
         Response::ok(json!({"data": observation.value}))
     }
 
-    fn validate_plugin_response(
+    pub(super) fn validate_plugin_response(
         &mut self,
         authority: &mut PluginResponseAuthority,
     ) -> Result<(), Response> {

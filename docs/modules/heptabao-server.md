@@ -582,3 +582,27 @@ intent and validates provider readback before returning credentials.
 [The Valkey guide](../engines/HEPTABAO_VALKEY_PROVIDER.md) specifies exact
 command permissions, WATCH/EXEC plus durable ACL marker fencing, expiry and
 restart semantics, and the remaining full-provider compatibility work.
+
+
+## Database configuration completion authority
+
+Database provider validation runs without the Service writer. The resulting
+configuration can be installed only after the original, already-consumed
+admission capability is checked against current token/ACL/entity/group state,
+expiry, request deadline, namespace seal/incarnation, HA application state and
+cluster identity. The engine mount incarnation and the deployment plugin host
+must still match. The existing database-state digest CAS and lease/tombstone
+reference rules remain in force. A rejected completion preserves the previous
+configuration across restart; it does not silently install manager credentials.
+Reauthentication is deliberately avoided: a legitimate final token use is not
+spent twice, batch tokens remain usable, and unrelated committed writes are not
+lost. This uses the existing Service authority and storage owner, not a new
+configuration store or a generic retry bypass.
+
+`service_database_config_tests.rs` exercises real admission and durable
+publication with simulated provider results. The separate
+`qa/openbao-acceptance/database_config_completion_live.py` runs a checksum-bound
+synthetic database plugin through the real TLS Service, gates provider completion,
+changes authority concurrently and reads configuration after a full restart.
+Neither fixture qualifies arbitrary SQL templates, static roles, root rotation,
+all providers, mixed-version HA or full OpenBao plugin RPC.

@@ -78,6 +78,22 @@ class KerberosBoundaryTests(unittest.TestCase):
             self.assertNotIn("kdc_ports =", text)
             self.assertNotIn("kdc_tcp_ports =", text)
 
+    def test_native_and_declared_clock_window_cannot_drift_to_zero(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config, _, _, _ = fixture.kerberos_files(Path(directory), 12345)
+            self.assertIn(f"clockskew = {fixture.NATIVE_CLOCK_SKEW_SECONDS}", config.read_text())
+        self.assertGreater(fixture.NORMAL_REQUEST_DELAY_SECONDS, 1)
+        self.assertGreater(fixture.NATIVE_CLOCK_SKEW_SECONDS, fixture.NORMAL_REQUEST_DELAY_SECONDS)
+        self.assertLessEqual(fixture.NATIVE_CLOCK_SKEW_SECONDS, 300)
+        self.assertGreater(fixture.expired_ticket_wait_seconds(),
+                           fixture.SHORT_TICKET_SECONDS + fixture.NATIVE_CLOCK_SKEW_SECONDS)
+
+    def test_wait_rechecks_monotonic_deadline_after_early_wakeup(self):
+        with patch("kerberos_mit_live.time.monotonic", side_effect=[10, 10, 11, 13]), \
+             patch("kerberos_mit_live.time.sleep") as sleep:
+            fixture.wait_at_least(3)
+        self.assertEqual([call.args[0] for call in sleep.call_args_list], [3, 2])
+
     def test_failure_stage_cannot_reflect_arbitrary_provider_text(self):
         error = fixture.FixtureFailure("provider stderr: secret credential")
         self.assertEqual(error.stage, "unclassified_failure")

@@ -491,6 +491,17 @@ impl EngineState {
     /// The caller must authorize this capability under the same service lock used
     /// by `handle`. `None` means this module does not own the supplied route.
     pub(crate) fn database_mount(&self, namespace: &str, path: &str) -> Option<&str> {
+        self.database_mount_binding(namespace, path)
+            .map(|(mount, _)| mount)
+    }
+
+    /// Retain owner identity while provider configuration is checked without
+    /// the Service writer. An identical mount at a new incarnation is not it.
+    pub(crate) fn database_mount_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(&str, u64)> {
         self.namespaces
             .get(namespace)?
             .mounts
@@ -499,7 +510,7 @@ impl EngineState {
             .max_by_key(|(mount, _)| mount.len())
             .and_then(|(mount, value)| {
                 matches!(value.backend, Backend::Database | Backend::RabbitMq)
-                    .then_some(mount.as_str())
+                    .then_some((mount.as_str(), value.incarnation))
             })
     }
 

@@ -602,6 +602,19 @@
         "Linux candidate runtime"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "database_config_completion_live": {
+      "script": "qa/openbao-acceptance/database_config_completion_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1268,7 +1281,8 @@
       ],
       "available_scoped_profiles": [
         "postgres",
-        "postgres_pipeline_simulated"
+        "postgres_pipeline_simulated",
+        "database_config_completion_live"
       ],
       "whole_surface_admitted": false
     },
@@ -1768,7 +1782,8 @@
         "plugin_database_live.revoked_plugin_credential_is_inactive"
       ],
       "available_scoped_profiles": [
-        "plugin_database_live"
+        "plugin_database_live",
+        "database_config_completion_live"
       ],
       "whole_surface_admitted": false
     },
