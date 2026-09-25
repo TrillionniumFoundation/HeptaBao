@@ -611,8 +611,10 @@ struct PluginAuthMount {
 pub(crate) struct PluginAuthLoginPlan {
     namespace: String,
     mount: String,
+    mount_revision: AuthMount,
     config: PluginAuthMount,
     now: u64,
+    started: std::time::Instant,
 }
 
 impl PluginAuthLoginPlan {
@@ -626,7 +628,13 @@ impl PluginAuthLoginPlan {
         &self.config.plugin_id
     }
     pub(crate) fn now(&self) -> u64 {
-        self.now
+        std::time::Duration::from_secs(self.now)
+            .saturating_add(self.started.elapsed())
+            .as_secs()
+    }
+    pub(crate) fn with_admission_started(mut self, started: std::time::Instant) -> Self {
+        self.started = started;
+        self
     }
 }
 
@@ -3360,9 +3368,34 @@ impl AuthState {
         Ok(Some(PluginAuthLoginPlan {
             namespace: namespace.into(),
             mount: mount.clone(),
+            mount_revision: entry.clone(),
             config,
             now,
+            started: std::time::Instant::now(),
         }))
+    }
+
+    pub(crate) fn validate_plugin_auth_login_binding(
+        &self,
+        plan: &PluginAuthLoginPlan,
+    ) -> Result<(), AuthError> {
+        let current = self
+            .plugin_auth_mounts
+            .get(&plan.namespace)
+            .and_then(|entries| entries.get(&plan.mount))
+            .ok_or_else(|| err(409, "plugin authentication configuration changed"))?;
+        if current != &plan.config
+            || !self
+                .effective_auth_mounts(&plan.namespace)
+                .get(&plan.mount)
+                .is_some_and(|entry| entry == &plan.mount_revision && entry.kind == "plugin")
+        {
+            return Err(err(409, "plugin authentication binding changed"));
+        }
+        if plan.config.policies.contains("root") {
+            return Err(denied());
+        }
+        Ok(())
     }
 
     pub(crate) fn finish_plugin_auth_login(
@@ -3373,26 +3406,12 @@ impl AuthState {
         if alias.is_empty() || alias.len() > 1024 || alias.chars().any(char::is_control) {
             return Err(denied());
         }
+        self.validate_plugin_auth_login_binding(&plan)?;
+        let now = plan.now();
         let scope = AuthScope {
             namespace: &plan.namespace,
             mount: &plan.mount,
         };
-        let current = self
-            .plugin_auth_mounts
-            .get(&plan.namespace)
-            .and_then(|entries| entries.get(&plan.mount))
-            .ok_or_else(|| err(409, "plugin authentication configuration changed"))?;
-        if current != &plan.config
-            || !self
-                .effective_auth_mounts(&plan.namespace)
-                .get(&plan.mount)
-                .is_some_and(|entry| entry.kind == "plugin")
-        {
-            return Err(err(409, "plugin authentication binding changed"));
-        }
-        if plan.config.policies.contains("root") {
-            return Err(denied());
-        }
         let (token_ttl, token_max_ttl) =
             self.auth_mount_token_limits(scope, plan.config.token_ttl, plan.config.token_max_ttl)?;
         let alias_hash = hash(alias);
@@ -3404,10 +3423,10 @@ impl AuthState {
             token_max_ttl,
             plan.config.token_num_uses,
             format!("plugin-{suffix}"),
-            plan.now,
+            now,
         )?;
         token.auth_mount = Some(plan.mount.clone());
-        let (token_id, token, mut response) = Self::prepare_issue(token, plan.now)?;
+        let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
             metadata: None,
             mount: plan.mount,

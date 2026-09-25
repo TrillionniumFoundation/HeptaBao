@@ -60,3 +60,63 @@ named `transaction`, cloned from durably `admitted` state so failed wrapper
 publication can roll back domain mutation without undoing finite-use admission.
 The lexical guard follows this explicit call, not an old variable name. Runtime
 failure tests and compile-fail visibility remain the semantic checks.
+
+## External effect completion and activation
+
+The private request principal can remain owned by the same in-flight request
+while a provider executes outside the Service writer. It is not exported,
+cloned, serialized, reauthenticated, or made available to a different request.
+`PluginResponseAuthority` binds that admission to the original path/capability,
+namespace incarnation, cluster, request deadline and Service activation nonce.
+Current identity and policy are resolved again before delivery; HA state is
+installed before this check, and the activation fence is rechecked after sync.
+A seal followed by unseal invalidates the old admission even when the durable
+cluster, token and namespace identities are unchanged. A freshly admitted
+request after unseal remains valid. Unrelated durable writes alone do not
+invalidate a request and repeated checks do not spend another token use.
+
+The shared boundary is used by secret/KMS plugin responses, database
+configuration and credential issue/renewal, and Kubernetes/OpenLDAP credential
+delivery. Durable finalizers also recheck after publication where applicable.
+An already-admitted subtractive revoke is not a fresh credential grant and may
+complete cleanup after the requester's policy changes. Unknown outcomes retain
+the original durable identity instead of authorizing a blind new issue.
+
+Recovery does not reconstruct an HTTP principal. In particular, an OpenLDAP
+pending issue in a still-sealed namespace is admitted only for tombstone/revoke
+reconciliation after restart. An already-delivered active lease is not revoked
+solely because the namespace was sealed; its original expiry and owner remain
+binding. After global unseal, a still-live durable pending issue may reconcile
+its original identity, but maintenance returns only a completion result, not a
+credential response to the old request, and never resets its expiry.
+
+`service_secret_delivery_tests.rs` covers delivery revocation, policy changes,
+deadlines, namespace/global seal, seal/unseal, crash before finalization,
+original-expiry recovery and unaffected positive paths.
+`service_plugin_completion_tests.rs` covers shared admission and fresh requests
+after reactivation. `database_delivery_live.py` and
+`plugin_completion_live.py` exercise the real TLS service with checksum-bound
+external fixture processes, including seal/unseal while a provider is paused.
+These are scoped regression paths, not native-provider or independent
+qualification. The separate `openldap_secret_live.py` executes real slapd
+credential binding, revocation, idle expiry and restart.
+
+### Authentication-plugin result binding
+
+Unauthenticated plugin login has no request Principal. Its private response
+context instead retains the cluster, namespace incarnation, Service activation
+and original request deadline. The finalizer reuses the native online-auth
+leadership and post-synchronization checks before creating a token and after
+durable publication. It additionally compares the entire original auth-mount
+revision and the admitted plugin configuration. Deleting and recreating the
+same path with identical configuration cannot adopt the old plugin decision.
+Only the server chooses policies, identity projection, uses and token lifetime.
+
+Token issuance uses the monotonic elapsed completion clock, not the stale
+admission sample; a slow successful provider cannot produce an already-expired
+short-lived token merely because its request started earlier. The original
+request deadline still bounds whether that decision may be accepted. Native
+unit regressions and the existing real-process `plugin_completion_live.py`
+cover namespace/global seal, global reactivation, replacement, slow issuance,
+new requests after recovery and unrelated writes. This does not claim general
+OpenBao plugin RPC, hot reload, or independent sandbox qualification.

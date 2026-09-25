@@ -29,9 +29,32 @@ check. A local snapshot restore is refused while an OpenLDAP mount exists,
 because an older snapshot cannot revoke a directory identity created by newer
 state.
 
-The real fixture is
-`qa/openbao-acceptance/openldap_secret_live.py`; its receipt is
-`qa/openbao-acceptance/evidence/openldap-secret-live-da33417.json`.
+## Delivery and recovery admission
+
+HTTP credential delivery retains the original private request admission across
+provider I/O and rechecks current policy, identity, namespace, request deadline
+and Service activation before and after durable completion. A global
+seal/unseal cycle cannot revive the old admission. Rejection retains the same
+lease identity for cleanup; cleanup never requires a new credential grant.
+
+If a namespace was sealed and the process disappeared before the finalizer
+recorded rejection, recovery converts that pending issue to revoke before
+another directory Add can be admitted. Already-delivered active leases still
+retain their original owner and expiry; sealing a namespace is not a blanket
+revocation of them. Global unseal may recover the original still-live pending
+issue through the maintenance-only path without restoring its lost HTTP
+admission or extending its expiry. See the request capability boundary and
+`service_secret_delivery_tests.rs` for executable distinctions.
+
+The real fixture is `qa/openbao-acceptance/openldap_secret_live.py`. It uses the
+same private, validated slapd prerequisite resolver as the authentication
+fixtures, and sends manager/issued bind passwords through inherited anonymous
+pipes. Subprocess and pipe failures must close descriptors without replacing
+the original failure or leaving plaintext password files.
+`qa/openbao-acceptance/evidence/openldap-secret-live-da33417.json` is a retained
+historical receipt, not current-head evidence. The replacement workflow runs
+the live profile separately for each candidate; its success does not remove
+the whole-surface gaps below.
 
 ## Remaining OpenBao 2.6.2 surface
 

@@ -17,6 +17,8 @@ pub(super) struct OpenLdapEffectPlan {
     outbound: Outbound,
     ha: Option<Arc<Mutex<HaProcess>>>,
     _in_flight: Arc<()>,
+    // Present only for caller delivery, never for lifecycle reconciliation.
+    response_authority: Option<Box<plugin::PluginResponseAuthority>>,
 }
 
 #[derive(Default)]
@@ -64,6 +66,7 @@ impl OpenLdapEffectPlan {
             outbound,
             ha,
             _in_flight: in_flight,
+            response_authority: None,
         }
     }
 
@@ -193,6 +196,12 @@ impl Service {
         let Some((namespace, mount, lease_id, force_revoke)) = selected else {
             return Ok(None);
         };
+        // A sealed namespace may still need subtractive cleanup, but a
+        // process restart must not turn its unacknowledged issue into a new Add.
+        // Already-active live leases are not candidates solely because of seal.
+        let force_revoke = force_revoke
+            || !current.namespace_exists(&namespace)
+            || current.namespace_is_sealed(&namespace);
         self.openldap_cursor = Some((namespace.clone(), mount.clone(), lease_id.clone()));
         let mut next = current.clone();
         let plan = next
@@ -278,10 +287,10 @@ impl Service {
     pub(super) fn openldap_route(
         &mut self,
         mut state: State,
-        principal: Option<&Principal>,
+        principal: Option<Principal>,
         request: &RequestView<'_>,
     ) -> Response {
-        let started = std::time::Instant::now();
+        let started = request.admission_started;
         let Some(principal) = principal else {
             return Response::error(403, "missing client token");
         };
@@ -296,7 +305,7 @@ impl Service {
             || request.path.contains("/role");
         let authorization = if sudo {
             state.auth.authorize_sudo_request(
-                principal,
+                &principal,
                 request.namespace,
                 request.path,
                 capability,
@@ -304,7 +313,7 @@ impl Service {
             )
         } else {
             state.auth.authorize_request(
-                principal,
+                &principal,
                 request.namespace,
                 request.path,
                 capability,
@@ -318,7 +327,7 @@ impl Service {
         {
             match state
                 .auth
-                .typed_lease_issuer(principal, request.namespace, request.now)
+                .typed_lease_issuer(&principal, request.namespace, request.now)
             {
                 Ok(value) => Some(value),
                 Err(error) => return Response::error(error.status, &error.message),
@@ -490,21 +499,57 @@ impl Service {
                 if let Err(error) = self.commit_state(&state) {
                     return error;
                 }
+                let authority = plugin::PluginResponseAuthority::new(
+                    principal,
+                    &state,
+                    request,
+                    capability,
+                    sudo,
+                    &self.unseal_nonce,
+                )
+                .with_time_floor(state.engines.lease_clock());
                 self.state = Some(state);
                 let in_flight = self.openldap_in_flight.track(&plan);
-                self.pending_openldap_effect = Some(OpenLdapEffectPlan::new(
+                let mut effect = OpenLdapEffectPlan::new(
                     plan,
                     self.outbound.clone(),
                     self.ha.clone(),
                     in_flight,
                     request.now,
                     started,
-                ));
+                );
+                effect.response_authority = Some(Box::new(authority));
+                self.pending_openldap_effect = Some(effect);
                 Response::error(500, "OpenLDAP provider effect was not dispatched")
             }
         }
     }
 
+    pub(super) fn finalize_openldap_request(
+        &mut self,
+        mut plan: OpenLdapEffectPlan,
+        result: Result<(), Response>,
+    ) -> Response {
+        let mut authority = plan.response_authority.take();
+        let cleanup = matches!(plan.inner.action, openldap::EffectAction::Revoke);
+        self.finalize_openldap_effect_checked(
+            &plan,
+            result,
+            || plan.completed_now(),
+            |service| {
+                // Previously admitted subtractive cleanup never returns credentials.
+                if cleanup {
+                    return Ok(());
+                }
+                let authority = authority
+                    .as_mut()
+                    .ok_or_else(|| openldap_outcome_unknown(&plan.inner.lease_id))?;
+                service.validate_plugin_response(authority)
+            },
+        )
+    }
+
+    // Lifecycle reconciliation only; HTTP delivery uses the admission above.
     pub(super) fn finalize_openldap_effect(
         &mut self,
         plan: &OpenLdapEffectPlan,
@@ -517,7 +562,17 @@ impl Service {
         &mut self,
         plan: &OpenLdapEffectPlan,
         result: Result<(), Response>,
+        completed_now: impl FnMut() -> u64,
+    ) -> Response {
+        self.finalize_openldap_effect_checked(plan, result, completed_now, |_| Ok(()))
+    }
+
+    fn finalize_openldap_effect_checked(
+        &mut self,
+        plan: &OpenLdapEffectPlan,
+        result: Result<(), Response>,
         mut completed_now: impl FnMut() -> u64,
+        mut authorize_delivery: impl FnMut(&mut Self) -> Result<(), Response>,
     ) -> Response {
         if let Err(error) = result {
             return error;
@@ -525,6 +580,7 @@ impl Service {
         if self.ha.is_some() && self.sync_from_ha_with_anchor(false).is_err() {
             return openldap_outcome_unknown(&plan.inner.lease_id);
         }
+        let delivery_allowed = authorize_delivery(self).is_ok();
         let Some(mut state) = self.state.clone() else {
             return openldap_outcome_unknown(&plan.inner.lease_id);
         };
@@ -537,7 +593,7 @@ impl Service {
             return openldap_outcome_unknown(&plan.inner.lease_id);
         }
         if matches!(plan.inner.action, openldap::EffectAction::Issue)
-            && !Self::openldap_completion_owner_live(&state, plan, now)
+            && (!delivery_allowed || !Self::openldap_completion_owner_live(&state, plan, now))
         {
             return self.reject_openldap_completion(state, plan, now);
         }
@@ -554,12 +610,13 @@ impl Service {
             return openldap_outcome_unknown(&plan.inner.lease_id);
         }
         self.state = Some(state);
+        let delivery_allowed = authorize_delivery(self).is_ok();
         let now = completed_now().max(now);
         if matches!(plan.inner.action, openldap::EffectAction::Issue) {
             let Some(current) = self.state.as_ref() else {
                 return openldap_outcome_unknown(&plan.inner.lease_id);
             };
-            if !Self::openldap_completion_owner_live(current, plan, now) {
+            if !delivery_allowed || !Self::openldap_completion_owner_live(current, plan, now) {
                 return self.reject_openldap_completion(current.clone(), plan, now);
             }
         }
@@ -575,6 +632,8 @@ impl Service {
 
     fn openldap_completion_owner_live(state: &State, plan: &OpenLdapEffectPlan, now: u64) -> bool {
         plan.inner.expires_at > now
+            && state.namespace_exists(&plan.inner.namespace)
+            && !state.namespace_is_sealed(&plan.inner.namespace)
             && state
                 .auth
                 .resolve_lease_owner(&plan.inner.owner, &plan.inner.namespace, now)

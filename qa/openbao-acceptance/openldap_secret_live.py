@@ -20,7 +20,7 @@ import subprocess
 import sys
 import time
 
-from ldap_openldap_live import Directory, private
+from ldap_openldap_live import Directory, private, openldap_paths, openldap_environment
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "qa/single-node"))
@@ -45,16 +45,24 @@ changetype: delete
 
 
 def command(directory: Directory, tool: str, *arguments: str, dn=None, password=None):
-    """Pass secrets by a private file, never argv, environment or report output."""
-    password_file = directory.password_file
-    if password is not None:
-        password_file = directory.root / "probe.pass"
-        private(password_file, password)
-    return subprocess.run(
-        [tool, "-x", "-H", directory.origin, "-D", dn or directory.admin_dn,
-         "-y", str(password_file), "-o", "nettimeout=3", *arguments],
-        env=directory.ldap_env, capture_output=True, text=True, timeout=6,
-    )
+    """Pass secrets by an inherited pipe, never a file, argv or environment."""
+    read_fd, write_fd = os.pipe()
+    try:
+        secret = directory.admin_password if password is None else password
+        stream = os.fdopen(write_fd, "wb")
+        write_fd = -1  # Ownership moved before write/flush, including failures.
+        with stream:
+            stream.write(secret.encode("utf-8"))
+        return subprocess.run(
+            [tool, "-x", "-H", directory.origin, "-D", dn or directory.admin_dn,
+             "-y", "/dev/fd/" + str(read_fd), "-o", "nettimeout=3", *arguments],
+            env=directory.ldap_env, capture_output=True, text=True, timeout=6,
+            pass_fds=(read_fd,),
+        )
+    finally:
+        if write_fd >= 0:
+            os.close(write_fd)
+        os.close(read_fd)
 
 
 def bind_result(directory: Directory, dn: str, password: str) -> int:
@@ -150,14 +158,19 @@ def main() -> int:
             "Tombstone garbage collection and unbounded deployment churn",
         ],
     }
-    missing = [tool for tool in ("slapd", "ldapadd", "ldapsearch", "ldapwhoami", "openssl")
+    missing = [tool for tool in ("ldapadd", "ldapsearch", "ldapwhoami", "openssl")
                if shutil.which(tool) is None]
+    try:
+        executable, _, _, private_prerequisite = openldap_paths()
+    except (OSError, ValueError):
+        missing.append("safe_openldap_prerequisite")
     if missing:
         report.update(status="blocked", missing_dependencies=missing,
                       actual_slapd_distribution=False)
         write_receipt(args.output, report)
         return 77
-    version = subprocess.run(["slapd", "-VV"], capture_output=True, text=True, timeout=5)
+    version = subprocess.run([str(executable), "-VV"], capture_output=True, text=True, timeout=5,
+                             env=openldap_environment(executable, private_prerequisite))
     report["openldap_distribution"] = (version.stdout + version.stderr).splitlines()[0][:300]
     args.work_dir.mkdir(mode=0o700, exist_ok=False)
     instance = None

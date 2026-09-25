@@ -615,6 +615,19 @@
         "Linux candidate runtime"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "database_delivery_live": {
+      "script": "qa/openbao-acceptance/database_delivery_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--work-dir",
+        "{private_work_dir}"
+      ],
+      "prerequisites": [
+        "Linux candidate runtime"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1282,7 +1295,8 @@
       "available_scoped_profiles": [
         "postgres",
         "postgres_pipeline_simulated",
-        "database_config_completion_live"
+        "database_config_completion_live",
+        "database_delivery_live"
       ],
       "whole_surface_admitted": false
     },
@@ -1712,7 +1726,7 @@
         "required_positive_and_hostile_behavior": "Version/checksum pinning, process RPC, mount ownership, cancellation and token authority boundary",
         "remaining_semantics_and_effect_checks": "The server composes a checksum-bound authentication plugin through the audited private auth dispatcher. The plugin may return only an authentication decision and bounded alias; token policy, TTL and authority remain server-owned. OpenBao Go plugin RPC compatibility, reload semantics and independently qualified sandbox containment remain open.",
         "crash_reopen": "Interrupt sys/plugins catalog and mounted authentication plugin before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-PLUGIN-AUTH, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "isolation": "The unauthenticated login result retains namespace incarnation, cluster, original request deadline, activation and complete auth-mount revision. Refresh current HA state and leadership before and after publication; seal/unseal, namespace seal and same-configuration mount recreation cannot adopt an old decision. Token issuance uses completion time; unrelated work and fresh requests after recovery remain valid. The concurrent profile is scoped regression evidence, not independent admission.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [
@@ -1725,7 +1739,8 @@
         "plugin_auth_live.issued_token_revoked_on_disable"
       ],
       "available_scoped_profiles": [
-        "plugin_auth"
+        "plugin_auth",
+        "plugin_completion_live"
       ],
       "whole_surface_admitted": false
     },
@@ -1783,7 +1798,8 @@
       ],
       "available_scoped_profiles": [
         "plugin_database_live",
-        "database_config_completion_live"
+        "database_config_completion_live",
+        "database_delivery_live"
       ],
       "whole_surface_admitted": false
     },

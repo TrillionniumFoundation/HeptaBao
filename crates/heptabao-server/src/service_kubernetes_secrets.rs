@@ -19,6 +19,8 @@ pub(crate) struct KubernetesTokenEffectPlan {
     started: std::time::Instant,
     activation_nonce: String,
     last_use: bool,
+    // Process-local affine admission; never persisted or reconstructed on replay.
+    response_authority: Option<Box<plugin::PluginResponseAuthority>>,
 }
 
 impl KubernetesTokenEffectPlan {
@@ -39,6 +41,7 @@ impl KubernetesTokenEffectPlan {
             started,
             activation_nonce,
             last_use,
+            response_authority: None,
         }
     }
 
@@ -209,7 +212,7 @@ impl Service {
     pub(super) fn kubernetes_secret_route(
         &mut self,
         mut state: State,
-        principal: Option<&Principal>,
+        principal: Option<Principal>,
         request: &RequestView<'_>,
     ) -> Response {
         let Some(principal) = principal else {
@@ -220,7 +223,7 @@ impl Service {
             .required_capability(request.namespace, request.method, request.path)
             .unwrap_or("update");
         if let Err(error) = state.auth.authorize_request(
-            principal,
+            &principal,
             request.namespace,
             request.path,
             capability,
@@ -249,7 +252,7 @@ impl Service {
         }
         let issuer = if relative.starts_with("creds/") {
             match state.auth.admitted_kubernetes_lease_issuer(
-                principal,
+                &principal,
                 request.namespace,
                 request.now,
             ) {
@@ -310,16 +313,28 @@ impl Service {
                 if let Err(error) = self.commit_state(&state) {
                     return error;
                 }
+                let last_use = principal.consumed_last_use();
+                let authority = plugin::PluginResponseAuthority::new(
+                    principal,
+                    &state,
+                    request,
+                    capability,
+                    false,
+                    &self.unseal_nonce,
+                )
+                .with_time_floor(state.engines.lease_clock());
                 self.state = Some(state);
-                self.pending_kubernetes_token = Some(KubernetesTokenEffectPlan::new(
+                let mut effect = KubernetesTokenEffectPlan::new(
                     plan,
                     self.outbound.clone(),
                     self.ha.clone(),
                     request.now,
                     request.admission_started,
                     self.unseal_nonce.clone(),
-                    principal.consumed_last_use(),
-                ));
+                    last_use,
+                );
+                effect.response_authority = Some(Box::new(authority));
+                self.pending_kubernetes_token = Some(effect);
                 Response::error(500, "Kubernetes TokenRequest was not dispatched")
             }
         }
@@ -327,17 +342,40 @@ impl Service {
 
     pub(super) fn finalize_kubernetes_token(
         &mut self,
-        plan: &KubernetesTokenEffectPlan,
+        mut plan: KubernetesTokenEffectPlan,
         result: Result<TokenMetadata, Response>,
     ) -> Response {
-        self.finalize_kubernetes_token_with_clock(plan, result, || plan.completed_now())
+        let mut authority = plan.response_authority.take();
+        self.finalize_kubernetes_token_checked(
+            &plan,
+            result,
+            || plan.completed_now(),
+            |service| {
+                let authority = authority
+                    .as_mut()
+                    .ok_or_else(|| post_provider_completion_failure(&plan.inner.lease_id))?;
+                service.validate_plugin_response(authority)
+            },
+        )
     }
 
+    // Test seam for provider/owner semantics, not a product delivery entry point.
+    #[cfg(test)]
     fn finalize_kubernetes_token_with_clock(
         &mut self,
         plan: &KubernetesTokenEffectPlan,
         result: Result<TokenMetadata, Response>,
+        completed_now: impl FnMut() -> u64,
+    ) -> Response {
+        self.finalize_kubernetes_token_checked(plan, result, completed_now, |_| Ok(()))
+    }
+
+    fn finalize_kubernetes_token_checked(
+        &mut self,
+        plan: &KubernetesTokenEffectPlan,
+        result: Result<TokenMetadata, Response>,
         mut completed_now: impl FnMut() -> u64,
+        mut authorize_delivery: impl FnMut(&mut Self) -> Result<(), Response>,
     ) -> Response {
         let metadata = match result {
             Ok(metadata) => metadata,
@@ -355,11 +393,12 @@ impl Service {
         {
             return post_provider_completion_failure(&plan.inner.lease_id);
         }
+        let delivery_allowed = authorize_delivery(self).is_ok();
         let Some(mut state) = self.state.clone() else {
             return post_provider_completion_failure(&plan.inner.lease_id);
         };
         let now = completed_now().max(state.engines.lease_clock());
-        let live = Self::kubernetes_completion_owner_live(&state, plan, now);
+        let live = delivery_allowed && Self::kubernetes_completion_owner_live(&state, plan, now);
         let mut response = match state.engines.kubernetes_finalize(
             &plan.inner.namespace,
             &plan.inner.mount,
@@ -384,6 +423,8 @@ impl Service {
         }
         if response.status == 200 {
             let published_now = now;
+            let delivery_allowed = authorize_delivery(self).is_ok();
+            // Revalidation can synchronize HA; sample time after it completes.
             let now = completed_now().max(now);
             let Some(current) = self.state.as_ref() else {
                 return post_provider_completion_failure(&plan.inner.lease_id);
@@ -391,7 +432,10 @@ impl Service {
             // Persisted provider expiry may be shorter than the admitted cap.
             let original_ttl = response.body["lease_duration"].as_u64().unwrap_or(0);
             let remaining = original_ttl.saturating_sub(now.saturating_sub(published_now));
-            if !Self::kubernetes_completion_owner_live(current, plan, now) || remaining == 0 {
+            if !delivery_allowed
+                || !Self::kubernetes_completion_owner_live(current, plan, now)
+                || remaining == 0
+            {
                 let mut retired = current.clone();
                 if retired
                     .engines
@@ -423,6 +467,8 @@ impl Service {
         now: u64,
     ) -> bool {
         plan.inner.authority.expires_at > now
+            && state.namespace_exists(&plan.inner.namespace)
+            && !state.namespace_is_sealed(&plan.inner.namespace)
             && state
                 .auth
                 .resolve_lease_owner(&plan.inner.authority.owner, &plan.inner.namespace, now)

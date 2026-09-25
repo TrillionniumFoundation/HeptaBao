@@ -40,7 +40,12 @@ fn admitted(
         client_certificates: None,
     };
     Ok(PluginResponseAuthority::new(
-        principal, state, &request, capability, sudo,
+        principal,
+        state,
+        &request,
+        capability,
+        sudo,
+        &service.unseal_nonce,
     ))
 }
 
@@ -258,5 +263,181 @@ fn plugin_completion_rejects_recreated_namespace_identity() -> TestResult {
         200
     );
     assert!(service.validate_plugin_response(&mut authority).is_err());
+    Ok(())
+}
+
+#[test]
+fn plugin_completion_seal_unseal_invalidates_old_but_not_new_admission() -> TestResult {
+    for sudo in [false, true] {
+        for extra in [json!({}), json!({"type":"batch"})] {
+            let root = Root::new();
+            let mut service = root.service()?;
+            let (key, root_token) = bootstrap(&mut service)?;
+            let token = issue(&mut service, &root_token, extra)?;
+            let mut old = admitted(&mut service, &token, "", sudo)?;
+            assert!(service.validate_plugin_response(&mut old).is_ok());
+            assert_eq!(
+                call(&mut service, "POST", "sys/seal", &root_token, json!({})).status,
+                204
+            );
+            assert_eq!(
+                call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+                200
+            );
+            assert!(service.validate_plugin_response(&mut old).is_err());
+            let mut fresh = admitted(&mut service, &token, "", sudo)?;
+            assert!(service.validate_plugin_response(&mut fresh).is_ok());
+        }
+    }
+    Ok(())
+}
+
+fn auth_binding_fixture(
+    service: &mut Service,
+    root_token: &str,
+) -> TestResult<(crate::auth::PluginAuthLoginPlan, PluginAuthResponseContext)> {
+    assert_eq!(
+        call(
+            service,
+            "POST",
+            "sys/auth/external",
+            root_token,
+            json!({"type":"plugin"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(call(service, "POST", "auth/external/config", root_token,
+        json!({"plugin_id":"fixture", "policies":["default"], "token_ttl":2, "token_max_ttl":60})).status, 204);
+    let body = json!({"username":"alice"});
+    let request = RequestView {
+        method: "POST",
+        path: "auth/external/login",
+        namespace: "",
+        token: "",
+        body: &body,
+        now: 100,
+        admission_started: Instant::now(),
+        allow_forward: true,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    };
+    let state = service.state.as_ref().ok_or("state")?;
+    let plan = state
+        .auth
+        .prepare_plugin_auth_login("", "POST", request.path, &body, 100)?
+        .ok_or("login plan")?;
+    let context = PluginAuthResponseContext::new(state, &request, &service.unseal_nonce);
+    Ok((plan, context))
+}
+
+#[test]
+fn plugin_auth_completion_context_fences_deadline_recovery_and_reactivation() -> TestResult {
+    for scenario in [
+        "deadline",
+        "recovery",
+        "cluster",
+        "namespace",
+        "seal",
+        "seal_cycle",
+    ] {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (key, root_token) = bootstrap(&mut service)?;
+        let (binding, mut context) = auth_binding_fixture(&mut service, &root_token)?;
+        assert!(
+            service
+                .validate_plugin_auth_response(&context, &binding)
+                .is_ok()
+        );
+        match scenario {
+            "deadline" => context.deadline = Some(Instant::now() - Duration::from_secs(1)),
+            "recovery" => service.recovery_required = true,
+            "cluster" => context.cluster_id.push_str("-other"),
+            "namespace" => context.namespace_incarnation = Some(u64::MAX),
+            "seal" | "seal_cycle" => {
+                assert_eq!(
+                    call(&mut service, "POST", "sys/seal", &root_token, json!({})).status,
+                    204
+                );
+                if scenario == "seal_cycle" {
+                    assert_eq!(
+                        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+                        200
+                    );
+                }
+            }
+            _ => unreachable!(),
+        }
+        assert!(
+            service
+                .validate_plugin_auth_response(&context, &binding)
+                .is_err(),
+            "{scenario}"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn plugin_auth_completion_uses_current_issuance_time_after_slow_provider() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    let (plan, context) = auth_binding_fixture(&mut service, &root_token)?;
+    let plan = plan.with_admission_started(Instant::now() - Duration::from_secs(3));
+    assert!(
+        service
+            .validate_plugin_auth_response(&context, &plan)
+            .is_ok()
+    );
+    let now = plan.now();
+    assert!(now >= 103);
+    let state = service.state.as_mut().ok_or("state")?;
+    let issued = state.auth.finish_plugin_auth_login(plan, "alice")?;
+    let token = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("issued token")?;
+    assert!(
+        state.auth.authenticate(token, now).is_ok(),
+        "a two-second token must not be born expired"
+    );
+    assert!(
+        state.auth.authenticate(token, now + 3).is_err(),
+        "completion time does not remove the configured lifetime"
+    );
+    Ok(())
+}
+
+#[test]
+fn plugin_auth_completion_same_config_cannot_rebind_a_recreated_mount() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    let (old, old_context) = auth_binding_fixture(&mut service, &root_token)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/auth/external",
+            &root_token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    let (fresh, fresh_context) = auth_binding_fixture(&mut service, &root_token)?;
+    let error = service
+        .validate_plugin_auth_response(&old_context, &old)
+        .err()
+        .ok_or("old mount admitted")?;
+    assert_eq!(error.status, 409);
+    assert!(
+        service
+            .validate_plugin_auth_response(&fresh_context, &fresh)
+            .is_ok()
+    );
     Ok(())
 }

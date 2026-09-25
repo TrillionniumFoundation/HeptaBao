@@ -15,14 +15,17 @@ from pathlib import Path
 import subprocess
 import time
 
+import plugin_auth_live as auth_fixture
 import plugin_kms_live as kms_fixture
 import plugin_secret_live as secret_fixture
 
 CASES = (
-    "secret_revoke", "secret_policy", "secret_expiry", "secret_seal",
+    "secret_revoke", "secret_policy", "secret_expiry", "secret_seal", "secret_seal_cycle",
     "secret_mount_recreate", "secret_namespace_seal", "secret_namespace_delete_refused",
     "secret_final_use", "secret_batch", "secret_identity_disabled", "secret_identity_group_revoked",
-    "kms_revoke", "kms_policy", "kms_expiry", "kms_seal", "kms_final_use", "kms_identity_disabled", "kms_identity_group_revoked",
+    "kms_revoke", "kms_policy", "kms_expiry", "kms_seal", "kms_seal_cycle", "kms_final_use", "kms_identity_disabled", "kms_identity_group_revoked",
+    "auth_current", "auth_unrelated_write", "auth_delayed_ttl", "auth_seal",
+    "auth_seal_cycle", "auth_namespace_seal", "auth_config_change", "auth_mount_recreate",
 )
 
 
@@ -43,12 +46,12 @@ def sha256(path):
 def configure(binary, root, kind):
     root.mkdir(mode=0o700)
     instance = secret_fixture.smoke.Instance(binary, root / "server")
-    values = (kms_fixture if kind == "kms" else secret_fixture).configure(instance, root)
+    values = {"kms": kms_fixture, "secret": secret_fixture, "auth": auth_fixture}[kind].configure(instance, root)
     plugin = values[0]
     count = values[2] if kind == "kms" else values[1]
     entered, release = root / "entered", root / "release"
     source = plugin.read_text()
-    anchor = "q=json.loads(r[11:].decode())"
+    anchor = "p=json.dumps(result,sort_keys=True).encode()" if kind == "auth" else "q=json.loads(r[11:].decode())"
     require(source.count(anchor) == 1, "plugin_gate_anchor")
     gate = (
         "\nimport pathlib,time\n"
@@ -61,7 +64,7 @@ def configure(binary, root, kind):
     plugin.write_text(source.replace(anchor, anchor + gate, 1))
     config_path = instance.root / "server.json"
     config = json.loads(config_path.read_text())
-    for spec in config["plugin_kms" if kind == "kms" else "plugin_secrets"]:
+    for spec in config[{"kms": "plugin_kms", "secret": "plugin_secrets", "auth": "plugin_auth"}[kind]]:
         spec["command_sha256"] = sha256(plugin)
         spec["timeout_ms"] = 20000
     config_path.write_text(json.dumps(config))
@@ -88,7 +91,75 @@ def identity_requester(instance):
     return token, entity, value["data"]["id"]
 
 
+def check_auth_case(binary, root, case):
+    instance, entered, release, count = configure(binary, root / case, "auth")
+    pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    namespace = "team" if case == "auth_namespace_seal" else ""
+    try:
+        instance.start()
+        status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
+        require(status == 200, "initialize")
+        instance.token, key = initialized["root_token"], initialized["keys_base64"][0]
+        require(instance.call("POST", "sys/unseal", {"key": key})[0] == 200, "unseal")
+        if namespace:
+            require(instance.call("POST", "sys/namespaces/team", {})[0] == 200, "create_namespace")
+        mount = {"type": "plugin"}
+        config = {"plugin_id": "auth_fixture", "policies": ["reader"],
+                  "token_ttl": "2s" if case == "auth_delayed_ttl" else "10m", "token_max_ttl": "30m"}
+        require(instance.call("POST", "sys/auth/external", mount, namespace=namespace)[0] == 204, "auth_mount")
+        require(instance.call("POST", "sys/policies/acl/reader", {"policy": 'path "auth/token/lookup-self" { capabilities = ["read"] }'}, namespace=namespace)[0] == 204, "auth_policy")
+        require(instance.call("POST", "auth/external/config", config, namespace=namespace)[0] == 204, "auth_config")
+        login = {"username": "alice", "password": "correct"}
+        future = pool.submit(instance.call, "POST", "auth/external/login", login, token="", namespace=namespace)
+        limit = time.monotonic() + 8
+        while not entered.exists():
+            if future.done() or time.monotonic() >= limit:
+                raise FixtureFailure("auth_provider_did_not_reach_decision")
+            time.sleep(0.01)
+        if case in ("auth_seal", "auth_seal_cycle"):
+            require(instance.call("POST", "sys/seal", {})[0] == 204, "auth_global_seal")
+            if case == "auth_seal_cycle":
+                require(instance.call("POST", "sys/unseal", {"key": key})[0] == 200, "auth_new_activation")
+        elif case == "auth_namespace_seal":
+            require(instance.call("POST", "sys/namespaces/team/seal", {})[0] == 204, "auth_namespace_seal")
+        elif case == "auth_config_change":
+            config = dict(config, token_ttl="20m")
+            require(instance.call("POST", "auth/external/config", config)[0] == 204, "auth_config_replaced")
+        elif case == "auth_mount_recreate":
+            require(instance.call("DELETE", "sys/auth/external")[0] == 204, "auth_mount_disabled")
+            require(instance.call("POST", "sys/auth/external", mount)[0] == 204, "auth_mount_recreated")
+            require(instance.call("POST", "auth/external/config", config)[0] == 204, "auth_same_config_recreated")
+        elif case == "auth_unrelated_write":
+            require(instance.call("POST", "sys/policies/acl/unrelated", {"policy": 'path "unused/*" { capabilities = ["read"] }'})[0] == 204, "auth_unrelated_write")
+        elif case == "auth_delayed_ttl":
+            time.sleep(3.1)
+        release.write_text("release")
+        status, response = future.result(timeout=12)
+        positive = case in ("auth_current", "auth_unrelated_write", "auth_delayed_ttl")
+        expected = 200 if positive else 409 if case in ("auth_config_change", "auth_mount_recreate") else 503
+        token = response.get("auth", {}).get("client_token")
+        released = isinstance(token, str) and bool(token)
+        lookup = instance.call("GET", "auth/token/lookup-self", token=token, namespace=namespace)[0] if positive and released else None
+        correct = status == expected and released == positive and (not positive or lookup == 200)
+        if not positive and correct:
+            if case == "auth_seal":
+                require(instance.call("POST", "sys/unseal", {"key": key})[0] == 200, "auth_recover_global_seal")
+            elif case == "auth_namespace_seal":
+                require(instance.call("POST", "sys/namespaces/team/unseal", {})[0] == 204, "auth_recover_namespace_seal")
+            fresh_status, fresh = instance.call("POST", "auth/external/login", login, token="", namespace=namespace)
+            fresh_token = fresh.get("auth", {}).get("client_token")
+            correct = fresh_status == 200 and isinstance(fresh_token, str) and instance.call("GET", "auth/token/lookup-self", token=fresh_token, namespace=namespace)[0] == 200
+        return {"case": case, "passed": bool(correct), "status": status, "expected_status": expected,
+                "token_released": released, "lookup_status": lookup, "provider_decision_before_change": True}
+    finally:
+        release.touch()
+        pool.shutdown(wait=True, cancel_futures=True)
+        instance.stop()
+
+
 def check_case(binary, root, case):
+    if case.startswith("auth_"):
+        return check_auth_case(binary, root, case)
     kind = "kms" if case.startswith("kms_") else "secret"
     instance, entered, release, count = configure(binary, root / case, kind)
     pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
@@ -152,6 +223,9 @@ def check_case(binary, root, case):
             require(instance.call("GET", "sys/namespaces/team")[0] == 200, "refused_delete_preserves_namespace")
         elif case.endswith("seal"):
             require(instance.call("POST", "sys/seal", {})[0] == 204, "concurrent_global_seal")
+        elif case.endswith("seal_cycle"):
+            require(instance.call("POST", "sys/seal", {})[0] == 204, "concurrent_global_seal")
+            require(instance.call("POST", "sys/unseal", {"key": initialized["keys_base64"][0]})[0] == 200, "new_activation")
         elif case == "secret_mount_recreate":
             require(instance.call("DELETE", "sys/mounts/external")[0] == 204, "delete_mount")
             require(instance.call("POST", "sys/mounts/external", mount)[0] == 204, "recreate_mount")

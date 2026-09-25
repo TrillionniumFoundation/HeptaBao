@@ -131,6 +131,7 @@ pub(super) struct PluginResponseAuthority {
     principal: Principal,
     namespace: String,
     namespace_incarnation: Option<u64>,
+    activation_nonce: String,
     cluster_id: String,
     path: String,
     capability: &'static str,
@@ -147,11 +148,13 @@ impl PluginResponseAuthority {
         request: &RequestView<'_>,
         capability: &'static str,
         sudo: bool,
+        activation_nonce: &str,
     ) -> Self {
         Self {
             principal,
             namespace: request.namespace.to_owned(),
             namespace_incarnation: state.namespaces.incarnation(request.namespace),
+            activation_nonce: activation_nonce.to_owned(),
             cluster_id: state.cluster_id.clone(),
             path: request.path.to_owned(),
             capability,
@@ -207,6 +210,33 @@ pub(super) struct PluginAuthPlan {
     pub(super) auth: crate::auth::PluginAuthLoginPlan,
     host: SharedAuthPlugin,
     request: SecretValue,
+    response_context: PluginAuthResponseContext,
+}
+
+// Binding metadata for an unauthenticated login, not a Principal or a grant.
+struct PluginAuthResponseContext {
+    namespace: String,
+    namespace_incarnation: Option<u64>,
+    cluster_id: String,
+    activation_nonce: String,
+    deadline: Option<std::time::Instant>,
+}
+
+impl PluginAuthResponseContext {
+    fn new(state: &State, request: &RequestView<'_>, activation_nonce: &str) -> Self {
+        Self {
+            namespace: request.namespace.to_owned(),
+            namespace_incarnation: state.namespaces.incarnation(request.namespace),
+            cluster_id: state.cluster_id.clone(),
+            activation_nonce: activation_nonce.to_owned(),
+            deadline: crate::request_deadline::current(),
+        }
+    }
+
+    fn deadline_expired(&self) -> bool {
+        self.deadline
+            .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+    }
 }
 
 pub(crate) struct PluginAuthObservation {
@@ -923,7 +953,14 @@ impl Service {
             Ok(value) => value,
             Err(_) => return Response::error(500, "KMS plugin request encoding failed"),
         };
-        let authority = PluginResponseAuthority::new(principal, state, request, "update", true);
+        let authority = PluginResponseAuthority::new(
+            principal,
+            state,
+            request,
+            "update",
+            true,
+            &self.unseal_nonce,
+        );
         let request = match SecretValue::new(encoded) {
             Ok(value) => value,
             Err(_) => return Response::error(413, "KMS plugin request exceeds runtime bound"),
@@ -979,7 +1016,11 @@ impl Service {
         let _deadline_scope = authority
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);
-        if authority.deadline_expired() || self.recovery_required || self.state.is_none() {
+        if authority.deadline_expired()
+            || self.recovery_required
+            || self.state.is_none()
+            || self.unseal_nonce != authority.activation_nonce
+        {
             return Err(Response::error(
                 503,
                 "plugin response withheld by deadline, seal or recovery fence",
@@ -1000,6 +1041,7 @@ impl Service {
             ));
         };
         if self.recovery_required
+            || self.unseal_nonce != authority.activation_nonce
             || state.cluster_id != authority.cluster_id
             || !state.namespace_exists(&authority.namespace)
             || state.namespace_is_sealed(&authority.namespace)
@@ -1094,14 +1136,61 @@ impl Service {
             }
         };
         self.pending_plugin_auth = Some(PluginAuthPlan {
-            auth,
+            auth: auth.with_admission_started(request.admission_started),
             host,
             request: plugin_request,
+            response_context: PluginAuthResponseContext::new(state, request, &self.unseal_nonce),
         });
         Some(Response::error(
             500,
             "authentication plugin was not dispatched",
         ))
+    }
+
+    fn validate_plugin_auth_response(
+        &mut self,
+        context: &PluginAuthResponseContext,
+        binding: &crate::auth::PluginAuthLoginPlan,
+    ) -> Result<(), Response> {
+        let _deadline_scope = context
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        if context.deadline_expired() {
+            return Err(Response::error(
+                503,
+                "authentication plugin request deadline expired",
+            ));
+        }
+        // Reuse native online-auth leadership, activation and post-sync checks.
+        self.revalidate_online_authority_with_sync(
+            &context.namespace,
+            &context.activation_nonce,
+            Self::sync_from_ha,
+        )?;
+        let state = self
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "authentication plugin authority unavailable"))?;
+        if state.cluster_id != context.cluster_id
+            || state.namespaces.incarnation(&context.namespace) != context.namespace_incarnation
+            || binding.namespace() != context.namespace
+        {
+            return Err(Response::error(
+                503,
+                "authentication plugin namespace identity changed",
+            ));
+        }
+        state
+            .auth
+            .validate_plugin_auth_login_binding(binding)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        if context.deadline_expired() {
+            return Err(Response::error(
+                503,
+                "authentication plugin request deadline expired",
+            ));
+        }
+        Ok(())
     }
 
     pub(super) fn finalize_plugin_auth(
@@ -1113,17 +1202,28 @@ impl Service {
             Ok(value) => value,
             Err(error) => return error,
         };
+        let PluginAuthPlan {
+            auth,
+            response_context,
+            ..
+        } = plan;
+        let _deadline_scope = response_context
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        if let Err(error) = self.validate_plugin_auth_response(&response_context, &auth) {
+            return error;
+        }
         let Some(mut state) = self.state.clone() else {
-            return Response::error(
-                503,
-                "authentication plugin result withheld because server sealed",
-            );
+            return Response::error(503, "authentication plugin authority unavailable");
         };
-        let namespace = plan.auth.namespace().to_owned();
-        let now = plan.auth.now();
+        // Retain only the immutable validation snapshot for the post-commit
+        // check. The external observation is consumed by exactly one finalizer.
+        let binding = auth.clone();
+        let namespace = auth.namespace().to_owned();
+        let now = auth.now();
         let mut issued = match state
             .auth
-            .finish_plugin_auth_login(plan.auth, &observation.alias)
+            .finish_plugin_auth_login(auth, &observation.alias)
         {
             Ok(response) => response,
             Err(error) => return Response::error(error.status, &error.message),
@@ -1144,6 +1244,10 @@ impl Service {
             return error;
         }
         self.state = Some(state);
+        if let Err(error) = self.validate_plugin_auth_response(&response_context, &binding) {
+            erase_json(&mut issued.body);
+            return error;
+        }
         Response {
             status: issued.status,
             body: issued.body,
@@ -1220,7 +1324,14 @@ impl Service {
             Ok(v) => v,
             Err(_) => return Response::error(500, "plugin request encoding failed"),
         };
-        let authority = PluginResponseAuthority::new(principal, &state, request, capability, false);
+        let authority = PluginResponseAuthority::new(
+            principal,
+            &state,
+            request,
+            capability,
+            false,
+            &self.unseal_nonce,
+        );
         let request = match SecretValue::new(encoded) {
             Ok(v) => v,
             Err(_) => return Response::error(413, "plugin request exceeds runtime bound"),

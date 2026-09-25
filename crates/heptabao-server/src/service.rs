@@ -1486,9 +1486,9 @@ impl Service {
             (
                 ExternalEffectPlan::KubernetesToken(plan),
                 ExternalEffectResult::KubernetesToken(result),
-            ) => self.finalize_kubernetes_token(&plan, result),
+            ) => self.finalize_kubernetes_token(plan, result),
             (ExternalEffectPlan::OpenLdap(plan), ExternalEffectResult::OpenLdap(result)) => {
-                self.finalize_openldap_effect(&plan, result)
+                self.finalize_openldap_request(plan, result)
             }
             (
                 ExternalEffectPlan::SnapshotTransfer(plan),
@@ -2068,10 +2068,10 @@ impl Service {
             return self.database_route(admitted, principal, &request);
         }
         if Self::openldap_handles(&admitted, namespace, path, body) {
-            return self.openldap_route(admitted, principal.as_ref(), &request);
+            return self.openldap_route(admitted, principal, &request);
         }
         if Self::kubernetes_secret_handles(&admitted, namespace, path) {
-            return self.kubernetes_secret_route(admitted, principal.as_ref(), &request);
+            return self.kubernetes_secret_route(admitted, principal, &request);
         }
         if Self::plugin_kms_handles(path) {
             return self.plugin_kms_route(&admitted, principal, &request);
@@ -6929,3 +6929,7 @@ mod cert_batch_tests;
 #[cfg(test)]
 #[path = "service_kerberos_schema_tests.rs"]
 mod kerberos_schema_tests;
+
+#[cfg(test)]
+#[path = "service_secret_delivery_tests.rs"]
+mod secret_delivery_tests;

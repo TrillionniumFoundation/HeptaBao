@@ -1530,6 +1530,7 @@ impl Service {
                             request,
                             capability,
                             sudo,
+                            &self.unseal_nonce,
                         )
                         .with_time_floor(now);
                         self.pending_database_config_effect = Some(DatabaseConfigPlan {
@@ -1783,7 +1784,12 @@ impl Service {
                 };
                 plan.response_authority = Some(Box::new(
                     plugin::PluginResponseAuthority::new(
-                        principal, current, request, capability, sudo,
+                        principal,
+                        current,
+                        request,
+                        capability,
+                        sudo,
+                        &self.unseal_nonce,
                     )
                     .with_time_floor(now),
                 ));
