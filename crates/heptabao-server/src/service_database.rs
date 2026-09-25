@@ -3061,6 +3061,79 @@ mod tests {
         Ok((root, service, key, root_token, plan))
     }
 
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn historical_short_native_intent_reopens_as_same_identity_cleanup() -> CompletionResult {
+        let (root, mut service, key, _, plan) = completion_fixture(Phase::PendingIssue)?;
+        let mut state = service.state.clone().ok_or("state")?;
+        let lease = state
+            .database
+            .mount_mut("", "database/")
+            .leases
+            .get_mut(&plan.lease.id)
+            .ok_or("lease")?;
+        // Reproduce the committed short-name shape from the MySQL spillover,
+        // not a newly issued credential under the corrected native contract.
+        lease.username = format!("hbp_{}", "ab".repeat(14));
+        lease.request_digest = digest_lease(lease).map_err(|_| "digest")?;
+        let original = (
+            lease.id.clone(),
+            lease.provider_id.clone(),
+            lease.username.clone(),
+            lease.seq,
+            lease.request_digest.clone(),
+        );
+        service.publish_database(state).map_err(|_| "publish")?;
+        drop(plan);
+        drop(service);
+
+        let mut service = root.service()?;
+        assert_eq!(
+            super::super::tests::call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}))
+                .status,
+            200
+        );
+        let pending = service
+            .prepare_database_maintenance(100)?
+            .ok_or("cleanup")?;
+        let lease = &pending.plan.lease;
+        assert_eq!(
+            (&lease.id, &lease.provider_id, &lease.username),
+            (&original.0, &original.1, &original.2)
+        );
+        assert!(lease.phase == Phase::PendingRevoke);
+        assert!(lease.password.is_none());
+        assert_eq!(lease.expires, 0);
+        assert!(lease.seq > original.3);
+        assert_ne!(lease.request_digest, original.4);
+        let seq = lease.seq;
+        let digest = lease.request_digest.clone();
+        drop(pending);
+        drop(service);
+
+        // A second restart must resume that same cleanup, not re-issue or
+        // silently rename the obligation and not allocate a fresh sequence.
+        let mut service = root.service()?;
+        assert_eq!(
+            super::super::tests::call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}))
+                .status,
+            200
+        );
+        let pending = service
+            .prepare_database_maintenance(101)?
+            .ok_or("cleanup")?;
+        let lease = &pending.plan.lease;
+        assert_eq!(
+            (&lease.id, &lease.provider_id, &lease.username),
+            (&original.0, &original.1, &original.2)
+        );
+        assert!(lease.phase == Phase::PendingRevoke);
+        assert!(lease.password.is_none());
+        assert_eq!(lease.seq, seq);
+        assert_eq!(lease.request_digest, digest);
+        Ok(())
+    }
+
     #[test]
     fn completion_database_expired_issue_and_renew_keep_durable_cleanup_without_secret()
     -> CompletionResult {

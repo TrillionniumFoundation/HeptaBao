@@ -371,8 +371,13 @@ def run(binary,bin_dir,root,checks):
         check('lease_retirement_survives_more_than_old_128_lifetime_limit',True)
         check('provider_ledger_compacts_after_churn',pg.sql("SELECT count(*) FROM heptabao_provider.leases").stdout.strip()=='0')
         check('provider_generated_roles_compact_after_churn',pg.sql("SELECT count(*) FROM pg_roles WHERE rolname LIKE 'hbp_%'").stdout.strip()=='0')
-        fence=pg.sql("SELECT count(*),min(last_seq),max(last_seq) FROM heptabao_provider.fences")
+        # The upgrade regression intentionally retains a separate recovery
+        # fence. Compaction is one durable floor per cluster/manager, not one
+        # row for all independent cluster identities sharing a provider.
+        fence=pg.sql("SELECT count(*),min(last_seq),max(last_seq) FROM heptabao_provider.fences WHERE manager='hb_manager' AND fence_id='"+fence_id+"'")
         check('provider_global_fence_is_compact_and_monotonic',fence.returncode==0 and fence.stdout.strip().split('|')[0]=='1' and int(fence.stdout.strip().split('|')[2])>128)
+        recovery=pg.sql("SELECT count(*),min(last_seq),max(last_seq) FROM heptabao_provider.fences WHERE fence_id='hbf1:"+('a1'*32)+"'")
+        check('recovery_fixture_fence_is_retained_and_isolated',recovery.returncode==0 and recovery.stdout.strip()=='1|4|4')
         check('provider_manager_cannot_bypass_ledger',pg.sql('DELETE FROM heptabao_provider.leases','hb_manager',pg.manager_password).returncode!=0)
         status,issued=instance.call('GET','database/creds/reader');check('outage_seed',status==200);cred=issued['data'];identity=issued['lease_id']
         pg.stop();status,body=instance.call('POST','sys/leases/renew',dict(lease_id=identity,increment=120))
