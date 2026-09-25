@@ -170,7 +170,7 @@ def main() -> int:
         status, continued_result = call("POST", "sys/workflows/execute/operations/continued", {})
         check("allow_failure_continues", status == 200 and continued_result.get("data") == {"value": "continued"})
 
-        check("namespace_create", call("POST", "sys/namespaces/workflow-ns", {})[0] == 204)
+        check("namespace_create", call("POST", "sys/namespaces/workflow-ns", {})[0] == 200)
         scoped = {**basic, "cas": 0}
         check(
             "namespace_scoped_management",

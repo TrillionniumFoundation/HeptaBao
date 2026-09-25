@@ -115,7 +115,7 @@ def run(binary,root,rows,inherited,diagnostics,*,ldap=False):
         forward.call('ha.finite_second','GET','cidr-kv/item',token=finite['client_token'],source='127.0.0.2')
         forward.call('ha.finite_exhausted','GET','cidr-kv/item',token=finite['client_token'],source='127.0.0.2',status=403)
         primary.config('ha.clear_config',{'token_bound_cidrs':[],'token_num_uses':0})
-        primary.call('ha.new_namespace','POST','sys/namespaces/health-created',{},status=204)
+        primary.call('ha.new_namespace','POST','sys/namespaces/health-created',{},status=200)
         leader.stop()
         caught_up=await_namespaced_health(cluster,'health-created')
         replacement=cluster.leader();after=trace(replacement)

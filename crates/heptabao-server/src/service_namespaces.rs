@@ -96,6 +96,32 @@ fn namespace_id(cluster_id: &str, path: &str, incarnation: u64) -> String {
         .collect()
 }
 
+/// Public UUID is a stable projection of the existing durable incarnation.
+/// It is not an authority token and never rewrites legacy namespace IDs/state.
+fn namespace_metadata(cluster_id: &str, path: &str, entry: &NamespaceEntry) -> Value {
+    let binding = format!(
+        "heptabao-namespace-uuid-v1\0{cluster_id}\0{path}\0{}",
+        entry.incarnation
+    );
+    let digest = crypto::digest(binding.as_bytes());
+    let hex: String = digest[..16]
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    let uuid = format!(
+        "{}-{}-{}-{}-{}",
+        &hex[..8],
+        &hex[8..12],
+        &hex[12..16],
+        &hex[16..20],
+        &hex[20..]
+    );
+    json!({
+        "id": entry.id, "uuid": uuid, "path": format!("{path}/"),
+        "locked": false, "tainted": false, "custom_metadata": entry.custom_metadata,
+    })
+}
+
 fn validate_metadata_value(key: &str, value: &str) -> Result<(), Response> {
     if key.is_empty()
         || key.len() > MAX_METADATA_KEY_BYTES
@@ -398,22 +424,19 @@ impl NamespaceRegistry {
         Ok(())
     }
 
-    fn read(&self, base: &str, path: &str) -> Result<Response, Response> {
+    fn read(&self, cluster_id: &str, base: &str, path: &str) -> Result<Response, Response> {
         let entry = self
             .entries
             .get(path)
             .ok_or_else(|| Response::error(404, "namespace not found"))?;
-        let relative = relative_path(base, path)
+        relative_path(base, path)
             .ok_or_else(|| Response::error(404, "namespace is outside request scope"))?;
-        Ok(Response::ok(json!({
-            "id": entry.id,
-            "path": format!("{relative}/"),
-            "sealed": entry.sealed,
-            "custom_metadata": entry.custom_metadata,
-        })))
+        Ok(Response::ok(
+            json!({"data": namespace_metadata(cluster_id, path, entry)}),
+        ))
     }
 
-    fn list(&self, base: &str, recursive: bool) -> Response {
+    fn list(&self, cluster_id: &str, base: &str, recursive: bool) -> Response {
         let mut keys = BTreeSet::new();
         let mut info = serde_json::Map::new();
         for path in self.entries.keys() {
@@ -439,12 +462,7 @@ impl NamespaceRegistry {
             if let Some(entry) = self.entries.get(&absolute) {
                 info.insert(
                     key.clone(),
-                    json!({
-                        "id": entry.id,
-                        "path": key,
-                        "sealed": entry.sealed,
-                        "custom_metadata": entry.custom_metadata,
-                    }),
+                    namespace_metadata(cluster_id, &absolute, entry),
                 );
             }
         }
@@ -529,8 +547,12 @@ impl Service {
                 return Response::error(400, "namespace list accepts an empty request body");
             }
             return match request.method {
-                "LIST" => state.namespaces.list(request.namespace, false),
-                "SCAN" => state.namespaces.list(request.namespace, true),
+                "LIST" => state
+                    .namespaces
+                    .list(&state.cluster_id, request.namespace, false),
+                "SCAN" => state
+                    .namespaces
+                    .list(&state.cluster_id, request.namespace, true),
                 _ => Response::error(405, "namespace path is required"),
             };
         }
@@ -605,6 +627,11 @@ impl Service {
                 "namespace delete-sealed recovery requires a dedicated key custody profile",
             );
         }
+        // CRUD addresses one direct child in the authenticated namespace.
+        // A slash in the suffix must not smuggle an ancestor-relative target.
+        if suffix.contains('/') {
+            return Response::error(400, "namespace name cannot contain /");
+        }
         let target = match join_path(request.namespace, suffix) {
             Ok(path) => path,
             Err(error) => return error,
@@ -616,10 +643,16 @@ impl Service {
                 }
                 state
                     .namespaces
-                    .read(request.namespace, &target)
+                    .read(&state.cluster_id, request.namespace, &target)
                     .unwrap_or_else(|error| error)
             }
             "POST" | "PUT" => {
+                if matches!(
+                    suffix,
+                    "root" | "sys" | "audit" | "auth" | "cubbyhole" | "identity"
+                ) {
+                    return Response::error(400, "reserved namespace name");
+                }
                 let parent = parent_path(&target).to_owned();
                 if !state.namespace_exists(&parent) {
                     return Response::error(404, "parent namespace not found");
@@ -645,11 +678,12 @@ impl Service {
                 if let Err(error) = self.commit_state(&state) {
                     return error;
                 }
+                let response = state
+                    .namespaces
+                    .read(&state.cluster_id, request.namespace, &target)
+                    .unwrap_or_else(|error| error);
                 self.state = Some(state);
-                Response {
-                    status: 204,
-                    body: Value::Null,
-                }
+                response
             }
             "PATCH" => {
                 if let Err(error) = state.namespaces.patch(&target, request.body) {
@@ -662,15 +696,20 @@ impl Service {
                 if let Err(error) = self.commit_state(&state) {
                     return error;
                 }
+                let response = state
+                    .namespaces
+                    .read(&state.cluster_id, request.namespace, &target)
+                    .unwrap_or_else(|error| error);
                 self.state = Some(state);
-                Response {
-                    status: 204,
-                    body: Value::Null,
-                }
+                response
             }
             "DELETE" => {
                 if request.body.as_object().is_none_or(|body| !body.is_empty()) {
                     return Response::error(400, "namespace delete accepts an empty request body");
+                }
+                if !state.namespaces.contains(&target) {
+                    // Terminal observation of an absent namespace is read-only.
+                    return Response::ok(json!({"data": null}));
                 }
                 if !state.namespace_payload_is_empty(&target) {
                     return Response::error(
@@ -690,10 +729,11 @@ impl Service {
                     return error;
                 }
                 self.state = Some(state);
-                Response {
-                    status: 204,
-                    body: Value::Null,
-                }
+                // Native deletion acknowledges the accepted cleanup. This scoped
+                // empty-owner case is already durably removed; callers still
+                // observe absence (or repeat DELETE with null data) to confirm.
+                // No asynchronous cleanup of populated namespaces is claimed.
+                Response::ok(json!({"data": {"status": "in-progress"}}))
             }
             _ => Response::error(405, "unsupported namespace method"),
         }

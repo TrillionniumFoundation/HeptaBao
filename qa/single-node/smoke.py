@@ -177,7 +177,7 @@ def run(binary: Path, root: Path, keep_running: bool):
               extra_headers={"X-Vault-Wrap-TTL": "60s", "X-Vault-Wrap-Format": "jwt"})[0] == 501)
         check("unsupported_mfa_fails_closed", instance.call("GET", "secret/data/item", extra_headers={"X-Vault-MFA": "synthetic"})[0] == 501)
         check("secret_query_rejected", instance.call("POST", "smoke-totp/keys/leak?url=synthetic", {})[0] == 400)
-        check("namespace_create", instance.call("POST", "sys/namespaces/isolated", {})[0] == 204)
+        check("namespace_create", instance.call("POST", "sys/namespaces/isolated", {})[0] == 200)
         # Equal path suffixes in distinct namespaces must not share bytes.
         check("namespace_write", instance.call("POST", "secret/data/item", {"data": {"value": "different"}}, namespace="isolated")[0] == 200)
         check("namespace_isolation", instance.call("GET", "secret/data/item")[1]["data"]["data"]["value"] == marker)

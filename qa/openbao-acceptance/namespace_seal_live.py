@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import platform
 from pathlib import Path
 import shutil
 import subprocess
@@ -60,17 +61,17 @@ def main() -> int:
 
         check(
             "create_namespace",
-            instance.call("POST", "sys/namespaces/team", {})[0] == 204,
+            instance.call("POST", "sys/namespaces/team", {})[0] == 200,
         )
         check(
             "create_child_before_parent_seal",
-            instance.call("POST", "sys/namespaces/team/child", {}, namespace="")[0] == 204,
+            instance.call("POST", "sys/namespaces/child", {}, namespace="team")[0] == 200,
         )
         check(
             "seal_namespace",
             instance.call("POST", "sys/namespaces/team/seal", {})[0] == 204,
         )
-        status, info = instance.call("GET", "sys/namespaces/team")
+        status, info = instance.call("GET", "sys/namespaces/team/seal-status")
         check("sealed_state_readback", status == 200 and info.get("sealed") is True)
         status, seal_status = instance.call("GET", "sys/namespaces/team/seal-status")
         check("seal_status", status == 200 and seal_status.get("sealed") is True)
@@ -127,7 +128,7 @@ def main() -> int:
             "candidate_binary_sha256": binary_sha256,
             "candidate_binary_source_head": source_head,
             "source_worktree_dirty": source_worktree_dirty,
-            "execution_platform": "Linux aarch64 guest (Ubuntu Noble)",
+            "execution_platform": platform.system() + " " + platform.machine(),
         }
         output = Path(args.output)
         with output.open("x", encoding="utf-8") as stream:

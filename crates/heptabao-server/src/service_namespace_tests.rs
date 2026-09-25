@@ -18,7 +18,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
             json!({"custom_metadata":{"owner":"platform","tier":"dev"}})
         )
         .status,
-        204
+        200
     );
     let team = call(
         &mut service,
@@ -28,9 +28,9 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
         json!({}),
     );
     assert_eq!(team.status, 200);
-    assert_eq!(team.body["path"], "team/");
-    assert_eq!(team.body["custom_metadata"]["owner"], "platform");
-    let first_id = team.body["id"]
+    assert_eq!(team.body["data"]["path"], "team/");
+    assert_eq!(team.body["data"]["custom_metadata"]["owner"], "platform");
+    let first_id = team.body["data"]["id"]
         .as_str()
         .ok_or("missing namespace id")?
         .to_owned();
@@ -51,7 +51,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
                 100
             )
             .status,
-        204
+        200
     );
     let child = service.handle_at(
         "GET",
@@ -62,7 +62,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
         100,
     );
     assert_eq!(child.status, 200);
-    assert_eq!(child.body["path"], "child/");
+    assert_eq!(child.body["data"]["path"], "team/child/");
     assert_eq!(
         service
             .handle_at(
@@ -74,7 +74,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
                 100
             )
             .status,
-        204
+        200
     );
     assert_eq!(
         service
@@ -87,7 +87,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
                 100
             )
             .status,
-        204
+        200
     );
     let scan = call(&mut service, "SCAN", "sys/namespaces", &token, json!({}));
     assert_eq!(scan.status, 200);
@@ -118,7 +118,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
         json!({}),
     );
     assert_eq!(reopened.status, 200);
-    assert_eq!(reopened.body["id"], first_id);
+    assert_eq!(reopened.body["data"]["id"], first_id);
     let child = service.handle_at(
         "GET",
         "sys/namespaces/child",
@@ -127,8 +127,12 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
         json!({}),
         100,
     );
-    assert_eq!(child.body["custom_metadata"]["owner"], "payments");
-    assert!(child.body["custom_metadata"].get("obsolete").is_none());
+    assert_eq!(child.body["data"]["custom_metadata"]["owner"], "payments");
+    assert!(
+        child.body["data"]["custom_metadata"]
+            .get("obsolete")
+            .is_none()
+    );
 
     assert_eq!(
         service
@@ -141,7 +145,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
                 100
             )
             .status,
-        204
+        200
     );
     assert_eq!(
         call(
@@ -152,7 +156,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
             json!({})
         )
         .status,
-        204
+        200
     );
     assert_eq!(
         call(
@@ -163,7 +167,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
             json!({})
         )
         .status,
-        204
+        200
     );
     let recreated = call(
         &mut service,
@@ -172,7 +176,7 @@ fn namespace_tree_metadata_restart_and_incarnation_are_durable()
         &token,
         json!({}),
     );
-    assert_ne!(recreated.body["id"], first_id);
+    assert_ne!(recreated.body["data"]["id"], first_id);
     Ok(())
 }
 
@@ -201,12 +205,12 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
             json!({"seal":true})
         )
         .status,
-        204
+        200
     );
     let sealed = call(
         &mut service,
         "GET",
-        "sys/namespaces/sealed",
+        "sys/namespaces/sealed/seal-status",
         &token,
         json!({}),
     );
@@ -221,7 +225,7 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
             json!({})
         )
         .status,
-        204
+        200
     );
     assert_eq!(
         service
@@ -292,7 +296,7 @@ fn namespace_seal_routes_fail_closed_and_unseal_from_parent()
             json!({}),
         )
         .status,
-        204
+        200
     );
     assert_eq!(
         network_call(
@@ -404,7 +408,7 @@ fn unknown_namespace_is_not_an_implicit_scope_or_write_target()
             json!({}),
         )
         .status,
-        204
+        200
     );
     assert_eq!(
         call(
@@ -415,7 +419,7 @@ fn unknown_namespace_is_not_an_implicit_scope_or_write_target()
             json!({}),
         )
         .status,
-        204
+        200
     );
     assert_eq!(
         network_call(
@@ -470,7 +474,7 @@ fn health_get_and_head_preserve_namespace_and_recovery_fences()
             json!({})
         )
         .status,
-        204
+        200
     );
     for method in ["GET", "HEAD"] {
         let before = service.state_digest;
@@ -521,6 +525,202 @@ fn malformed_health_queries_never_change_application_state()
             );
         }
     }
+    assert_eq!(service.state_digest, before);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    Ok(())
+}
+
+#[test]
+fn native_namespace_wire_projection_preserves_durable_identity()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    let created = call(
+        &mut service,
+        "POST",
+        "sys/namespaces/native",
+        &token,
+        json!({"custom_metadata":{"owner":"first"}}),
+    );
+    assert_eq!(created.status, 200);
+    let data = created.body["data"].clone();
+    assert_eq!(data["path"], "native/");
+    assert_eq!(data["locked"], false);
+    assert_eq!(data["tainted"], false);
+    assert_eq!(data["uuid"].as_str().ok_or("uuid")?.len(), 36);
+    // The pre-existing v1 persisted ID remains unchanged, not rewritten to
+    // imitate the variable-length opaque identifier of another implementation.
+    assert_eq!(data["id"].as_str().ok_or("id")?.len(), 5);
+    let before = serde_json::to_vec(&service.state.as_ref().ok_or("state")?.namespaces)?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let read = call(
+        &mut service,
+        "GET",
+        "sys/namespaces/native",
+        &token,
+        json!({}),
+    );
+    assert_eq!(read.body["data"], data);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(
+        serde_json::to_vec(&service.state.as_ref().ok_or("state")?.namespaces)?,
+        before
+    );
+    let saved: Value = serde_json::from_slice(&before)?;
+    assert!(saved["entries"]["native"].get("uuid").is_none());
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let reopened = call(
+        &mut service,
+        "GET",
+        "sys/namespaces/native",
+        &token,
+        json!({}),
+    );
+    assert_eq!(reopened.body["data"], data);
+    let patched = call(
+        &mut service,
+        "PATCH",
+        "sys/namespaces/native",
+        &token,
+        json!({"custom_metadata":{"owner":"second"}}),
+    );
+    assert_eq!(patched.status, 200);
+    assert_eq!(patched.body["data"]["id"], data["id"]);
+    assert_eq!(patched.body["data"]["uuid"], data["uuid"]);
+    assert_eq!(patched.body["data"]["custom_metadata"]["owner"], "second");
+    let removed = call(
+        &mut service,
+        "DELETE",
+        "sys/namespaces/native",
+        &token,
+        json!({}),
+    );
+    assert_eq!(removed.status, 200);
+    assert_eq!(removed.body, json!({"data":{"status":"in-progress"}}));
+    // Lose the deletion acknowledgement, then recover the same committed absence.
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/namespaces/native",
+            &token,
+            json!({})
+        )
+        .status,
+        404
+    );
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let repeated = call(
+        &mut service,
+        "DELETE",
+        "sys/namespaces/native",
+        &token,
+        json!({}),
+    );
+    assert_eq!(repeated.status, 200);
+    assert_eq!(repeated.body, json!({"data":null}));
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    let recreated = call(
+        &mut service,
+        "POST",
+        "sys/namespaces/native",
+        &token,
+        json!({}),
+    );
+    assert_eq!(recreated.status, 200);
+    assert_ne!(recreated.body["data"]["id"], data["id"]);
+    assert_ne!(recreated.body["data"]["uuid"], data["uuid"]);
+    Ok(())
+}
+
+#[test]
+fn native_namespace_rejections_do_not_publish_or_rebind_owner_state()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    let before = service.state_digest;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    for method in ["GET", "POST", "PATCH", "DELETE"] {
+        assert_eq!(
+            call(
+                &mut service,
+                method,
+                "sys/namespaces/team/child",
+                &token,
+                json!({})
+            )
+            .status,
+            400
+        );
+    }
+    for reserved in ["root", "sys", "audit", "auth", "cubbyhole", "identity"] {
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                &format!("sys/namespaces/{reserved}"),
+                &token,
+                json!({})
+            )
+            .status,
+            400
+        );
+    }
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/namespaces/team",
+            "invalid",
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "PATCH",
+            "sys/namespaces/team",
+            &token,
+            json!({"custom_metadata":{"good":"must-not-commit","invalid":1}})
+        )
+        .status,
+        400
+    );
     assert_eq!(service.state_digest, before);
     assert_eq!(
         service.durable.as_ref().ok_or("durable")?.generation(),

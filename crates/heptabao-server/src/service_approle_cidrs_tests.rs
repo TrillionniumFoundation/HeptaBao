@@ -20,7 +20,7 @@ fn approle_per_secret_id_presence_requires46_and_absent45_reads_preserve_bytes()
                             json!({})
                         )
                         .status,
-                        204
+                        200
                     );
                     assert_eq!(
                         service

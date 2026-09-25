@@ -14,6 +14,27 @@ with explicit CA verification. The current contract and bounded comparison
 profile are in `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`; none of these source
 changes asserts whole-surface OpenBao, HA or historical-upgrade qualification.
 
+## Native namespace API scope
+
+Namespace CRUD reuses the existing encrypted `NamespaceRegistry` and journal,
+not a second namespace owner. Create, read and metadata PATCH return HTTP 200
+with a native `data` envelope, absolute namespace path and stable public UUID
+projected from the retained incarnation. Legacy stored IDs are unchanged.
+The path suffix selects one direct child under the authenticated namespace;
+slash-containing suffixes and reserved creation names are rejected before commit.
+
+Empty-namespace deletion commits the tombstone before acknowledgement. Its
+native accepted response is followed by observable absence; repeating a completed
+delete returns `data: null` without a new state publication. A recreated namespace
+receives a new incarnation and public identity. Populated/child cleanup remains
+explicitly refused; this is not a claim of complete asynchronous deletion or
+independent per-namespace key custody.
+
+`service_namespace_tests.rs` covers restart, metadata identity retention,
+acknowledgement loss, terminal retry and atomic rejection. The actual pinned
+OpenBao/candidate comparison is `qa/openbao-acceptance/namespace_tree_live.py`;
+bounded seal behavior remains in `namespace_seal_live.py`.
+
 ## Public API and ownership
 
 The developing `postgres_storage` library component provides physical records

@@ -355,7 +355,7 @@ def run(binary: Path, work_dir: Path) -> dict[str, object]:
             checked(["kinit", "-c", str(ccache), CLIENT], environment, input_text=f"{client_password}\n")
             second_header = negotiate_header(instance, environment)
             check(instance.call("POST", "auth/kerberos/login", {}, token="", extra_headers={"Authorization": second_header})[0] == 200, "second_login")
-            check(instance.call("POST", "sys/namespaces/kerberos-peer", {})[0] == 204, "peer_namespace")
+            check(instance.call("POST", "sys/namespaces/kerberos-peer", {})[0] == 200, "peer_namespace")
             check(instance.call("POST", "sys/auth/kerberos", {"type":"kerberos"},
                   namespace="kerberos-peer")[0] == 204, "peer_mount")
             check(instance.call("POST", "auth/kerberos/config", config,

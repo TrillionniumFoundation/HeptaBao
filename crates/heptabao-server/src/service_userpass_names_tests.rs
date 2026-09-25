@@ -112,7 +112,7 @@ fn new_namespace_has_native_default_but_untouched_defaults_do_not_prevent_deleti
                 json!({})
             )
             .status,
-            204
+            200
         );
         let encoded = serde_json::to_value(&service.state.as_ref().ok_or("state")?.auth)?;
         assert_eq!(
@@ -128,7 +128,7 @@ fn new_namespace_has_native_default_but_untouched_defaults_do_not_prevent_deleti
                 json!({})
             )
             .status,
-            204
+            200
         );
         let encoded = serde_json::to_value(&service.state.as_ref().ok_or("state")?.auth)?;
         assert!(encoded["auth_mounts"].get("team").is_none());
@@ -142,7 +142,7 @@ fn new_namespace_has_native_default_but_untouched_defaults_do_not_prevent_deleti
             json!({})
         )
         .status,
-        204
+        200
     );
     assert_eq!(
         service
