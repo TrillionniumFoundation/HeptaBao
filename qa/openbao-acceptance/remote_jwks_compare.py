@@ -2,9 +2,9 @@
 """Selected remote JWT-key behavior vs pinned official OpenBao 2.6.2.
 
 The two servers use the SAME HTTPS issuer and signed claim scenarios. Candidate
-CA/egress is enrolled at process startup; Oracle CA is configured on its auth
-mount. These deployment differences are disclosed, not normalized away into
-API-format parity. The test does not exercise browser OIDC code flow.
+and Oracle CA trust is explicitly configured on each auth mount. Neither side
+uses a process-level endpoint enrollment as a substitute for the native API.
+The test does not exercise browser OIDC code flow or complete API-format parity.
 """
 from __future__ import annotations
 import argparse
@@ -36,7 +36,7 @@ def scenarios(client,issuer,ca,is_oracle,results):
         config={'bound_issuer':origin,'jwt_supported_algs':['RS256','ES256','EdDSA']}
         if mode=='direct':config['jwks_url']=origin+'/keys'
         else:config['oidc_discovery_url']=origin
-        if is_oracle:config['jwks_ca_pem' if mode=='direct' else 'oidc_discovery_ca_pem']=ca
+        config['jwks_ca_pem' if mode=='direct' else 'oidc_discovery_ca_pem']=ca
         check(mode+'.configure',call('POST','auth/'+mount+'/config',config).status==204)
         check(mode+'.role',call('POST','auth/'+mount+'/role/test',{'role_type':'jwt','user_claim':'sub','bound_audiences':['heptabao-test'],'token_policies':['default'],'token_ttl':60}).status==204)
         def login(jwt):return call('POST','auth/'+mount+'/login',{'role':'test','jwt':jwt})
@@ -62,10 +62,10 @@ def main():
     if out.exists():p.error('output must be new')
     root=Path(tempfile.mkdtemp(prefix='hb-jwks-compare-'));instance=Instance(binary,root/'candidate');issuer=JsonIssuer(instance.root/'tls.crt',instance.root/'tls.key');oracle=None
     digest=hashlib.sha256(binary.read_bytes()).hexdigest()
-    report={'schema':'heptabao.remote-jwt-selected-comparison.v1','target_version':'2.6.2','candidate_binary_sha256':digest,'oracle_binary_sha256':BINARY_SHA256,'cases':{},'side_failures':{},'independent_qualification':False,'full_openbao_compatibility':False,'deployment_difference':'candidate startup-pinned egress/CA versus oracle per-mount CA; not configuration API equivalence','excluded':'browser code flow, immediate Oracle cache invalidation, arbitrary claims mappings; ordinary JWT reuse has a separate jwt_login_claims_live.py profile'}
+    report={'schema':'heptabao.remote-jwt-selected-comparison.v1','target_version':'2.6.2','candidate_binary_sha256':digest,'oracle_binary_sha256':BINARY_SHA256,'cases':{},'side_failures':{},'independent_qualification':False,'full_openbao_compatibility':False,'deployment_difference':'both native auth mounts use the same explicit CA; selected behaviors are not complete configuration API equivalence','excluded':'browser code flow, immediate Oracle cache invalidation, arbitrary claims mappings; ordinary JWT reuse has a separate jwt_login_claims_live.py profile'}
     try:
         cpath=instance.root/'server.json';cfg=json.loads(cpath.read_text());ca=(instance.root/'ca.crt').read_text()
-        cfg['outbound_endpoints']=[dict(origin=issuer.origin,address=f'127.0.0.1:{issuer.port}',server_name='localhost',ca_pem=ca)]
+        cfg['outbound_endpoints']=[]
         cpath.write_text(json.dumps(cfg));cpath.chmod(0o600);instance.start()
         status,init=instance.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1})
         if status!=200:raise RuntimeError('init')

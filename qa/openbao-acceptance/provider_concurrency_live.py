@@ -74,12 +74,9 @@ def run(binary: Path, root: Path, report: dict) -> None:
 
     config_path = instance.root / "server.json"
     config = json.loads(config_path.read_text())
-    config["outbound_endpoints"] = [{
-        "origin": issuer.origin,
-        "address": f"127.0.0.1:{issuer.port}",
-        "server_name": "localhost",
-        "ca_pem": (instance.root / "ca.crt").read_text(),
-    }]
+    # Native JWT configuration owns its explicit TLS trust snapshot. Do not
+    # depend on the legacy process-enrolled endpoint registry for native calls.
+    config["outbound_endpoints"] = []
     config_path.write_text(json.dumps(config))
     config_path.chmod(0o600)
 
@@ -97,6 +94,15 @@ def run(binary: Path, root: Path, report: dict) -> None:
         check("unseal", instance.call("POST", "sys/unseal", {"key": unseal_key})[0] == 200)
         check("jwt_mount", instance.call("POST", "sys/auth/federated", {"type": "jwt"})[0] == 204)
         check(
+            "untrusted_jwks_configuration_rejected",
+            instance.call(
+                "POST",
+                "auth/federated/config",
+                {"bound_issuer": issuer.origin, "jwks_url": issuer.origin + "/keys",
+                 "jwt_supported_algs": ["RS256"]},
+            )[0] == 400,
+        )
+        check(
             "jwks_config",
             instance.call(
                 "POST",
@@ -104,6 +110,7 @@ def run(binary: Path, root: Path, report: dict) -> None:
                 {
                     "bound_issuer": issuer.origin,
                     "jwks_url": issuer.origin + "/keys",
+                    "jwks_ca_pem": (instance.root / "ca.crt").read_text(),
                     "jwt_supported_algs": ["RS256"],
                 },
             )[0] == 204,
