@@ -188,8 +188,10 @@ local state. After restart with the original admitted budget, the same node must
 become leader, read every acknowledged value, reject the previously refused
 write as absent and accept a fresh mutation. This is a single-host, synthetic,
 feature-enabled fault test, not a multi-host production sizing or independent
-compatibility receipt. CI retains only its credential-free result JSON and exact
-source binding, never the private cluster directory, keys or raw process logs.
+compatibility receipt. The runner writes credential-free result JSON and exact
+source binding locally and prints the result in the job log. No new artifact
+export is enabled: the private cluster directory, keys and raw process logs are
+not uploaded, and the reviewed workflow export policy is unchanged.
 
 ## State publication and legacy migration
 
