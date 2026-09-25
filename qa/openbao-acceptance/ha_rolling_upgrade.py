@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import secrets
 import subprocess
@@ -21,12 +22,38 @@ import urllib.error
 from ha_destructive import Cluster, FixtureError, Node, checked_binary
 
 
+def executable_identity(metadata: os.stat_result) -> tuple[int, ...]:
+    return (metadata.st_dev, metadata.st_ino, metadata.st_size,
+            metadata.st_mtime_ns, metadata.st_ctime_ns)
+
+
 def running_digest(node: Node) -> str:
-    if node.process is None:
+    process = node.process
+    if process is None or process.poll() is not None:
         raise FixtureError("rolling_upgrade_node_not_running")
-    executable = Path("/proc") / str(node.process.pid) / "exe"
+    executable = Path("/proc") / str(process.pid) / "exe"
     try:
-        return hashlib.sha256(executable.read_bytes()).hexdigest()
+        # Always open the actual running executable, not its deployment path.
+        # A cache belongs to this Popen instance AND this executable identity;
+        # PID reuse, a new process, exec(), replacement or changed bytes require
+        # a new digest. Linux also refuses writes to a running executable.
+        with executable.open("rb") as stream:
+            before = executable_identity(os.fstat(stream.fileno()))
+            cached = getattr(node, "_upgrade_binary_identity", None)
+            if cached is not None and cached[0] is process and cached[1] == before:
+                digest = cached[2]
+            else:
+                hasher = hashlib.sha256()
+                for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                    hasher.update(chunk)
+                digest = hasher.hexdigest()
+            after = executable_identity(os.fstat(stream.fileno()))
+        if before != after or after != executable_identity(executable.stat()):
+            raise FixtureError("rolling_upgrade_running_binary_changed_during_verification")
+        if node.process is not process or process.poll() is not None:
+            raise FixtureError("rolling_upgrade_node_changed_during_verification")
+        node._upgrade_binary_identity = (process, after, digest)
+        return digest
     except OSError as error:
         raise FixtureError("rolling_upgrade_running_binary_unreadable") from error
 

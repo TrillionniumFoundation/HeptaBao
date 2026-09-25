@@ -312,7 +312,14 @@ senders reject legacy responses even while their inbound listener remains dual.
 then strict receiver retirement, replay retirement and restart. The Rust
 `peer_wire_upgrade` tests enumerate all directed links during each transition,
 preserve the historical omitted-field behavior, reject invalid policy, and
-retain strict legacy and foreign-cluster rejection.
+retain strict legacy and foreign-cluster rejection. Running binary evidence is
+read from `/proc/<pid>/exe` in bounded 1 MiB chunks, not from the deployment path.
+The fixture caches only an unchanged Popen instance and executable device, inode,
+size, mtime and ctime, and rechecks the running process and executable identity
+on every probe. Restart/PID reuse or changed executable identity forces a new
+hash; an exit, missing executable or change during verification cannot publish a
+cached proof. This avoids repeatedly allocating and hashing hundreds of MiB in
+every health poll without letting a candidate borrow the base-health exception.
 
 Synthetic three-process testing is provided by
 `qa/openbao-acceptance/ha_destructive.py`; replay-epoch failover extends it in

@@ -1,9 +1,12 @@
 """Rolling wire retirement must preserve quorum without weakening evidence."""
+import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -99,6 +102,94 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
             self.cluster().read(node, "test", "expected")
         self.assertEqual(node.call.call_count, 2)
         self.assertTrue(all(call.args[0] == "GET" for call in node.call.call_args_list))
+
+
+class RunningBinaryIdentityTests(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.proc = Path(self.directory.name)
+        (self.proc / "123").mkdir()
+        self.executable = self.proc / "123" / "exe"
+        self.executable.write_bytes(b"synthetic executable")
+        self.node = SimpleNamespace(process=self.process())
+        patcher = patch.object(upgrade, "Path", return_value=self.proc)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    @staticmethod
+    def process():
+        return SimpleNamespace(pid=123, poll=lambda: None)
+
+    def test_unchanged_running_executable_is_hashed_once(self):
+        expected = hashlib.sha256(self.executable.read_bytes()).hexdigest()
+        with patch.object(upgrade.hashlib, "sha256", wraps=hashlib.sha256) as hasher:
+            self.assertEqual(upgrade.running_digest(self.node), expected)
+            self.assertEqual(upgrade.running_digest(self.node), expected)
+            self.assertEqual(hasher.call_count, 1)
+
+    def test_new_process_reusing_pid_does_not_reuse_digest(self):
+        with patch.object(upgrade.hashlib, "sha256", wraps=hashlib.sha256) as hasher:
+            first = upgrade.running_digest(self.node)
+            self.node.process = self.process()
+            self.assertEqual(upgrade.running_digest(self.node), first)
+            self.assertEqual(hasher.call_count, 2)
+
+    def test_changed_executable_is_rehashed(self):
+        first = upgrade.running_digest(self.node)
+        before = self.executable.stat()
+        self.executable.write_bytes(b"different executable")
+        os.utime(self.executable, ns=(before.st_atime_ns, before.st_mtime_ns + 1000000000))
+        self.assertNotEqual(upgrade.running_digest(self.node), first)
+
+    def test_replaced_inode_is_rehashed_even_with_same_bytes(self):
+        with patch.object(upgrade.hashlib, "sha256", wraps=hashlib.sha256) as hasher:
+            first = upgrade.running_digest(self.node)
+            other = self.executable.with_name("replacement")
+            other.write_bytes(self.executable.read_bytes())
+            other.replace(self.executable)
+            self.assertEqual(upgrade.running_digest(self.node), first)
+            self.assertEqual(hasher.call_count, 2)
+
+    def test_dead_process_cannot_use_cached_result(self):
+        upgrade.running_digest(self.node)
+        self.node.process.poll = lambda: 0
+        with self.assertRaisesRegex(upgrade.FixtureError, "node_not_running"):
+            upgrade.running_digest(self.node)
+
+    def test_missing_executable_cannot_use_cached_result(self):
+        upgrade.running_digest(self.node)
+        self.executable.unlink()
+        with self.assertRaisesRegex(upgrade.FixtureError, "binary_unreadable"):
+            upgrade.running_digest(self.node)
+
+    def test_change_during_hashing_does_not_publish_cache(self):
+        before = upgrade.executable_identity(self.executable.stat())
+        after = before[:-1] + (before[-1] + 1,)
+        with patch.object(upgrade, "executable_identity", side_effect=[before, after]):
+            with self.assertRaisesRegex(upgrade.FixtureError, "changed_during_verification"):
+                upgrade.running_digest(self.node)
+        self.assertFalse(hasattr(self.node, "_upgrade_binary_identity"))
+
+    def test_process_change_during_hashing_does_not_publish_cache(self):
+        hasher = Mock(wraps=hashlib.sha256())
+        def replace_process(data):
+            self.node.process = self.process()
+        hasher.update.side_effect = replace_process
+        with patch.object(upgrade.hashlib, "sha256", return_value=hasher):
+            with self.assertRaisesRegex(upgrade.FixtureError, "node_changed_during_verification"):
+                upgrade.running_digest(self.node)
+        self.assertFalse(hasattr(self.node, "_upgrade_binary_identity"))
+
+    def test_hashing_memory_is_bounded_to_one_megabyte_chunks(self):
+        data = b"x" * (2 * 1024 * 1024 + 5)
+        self.executable.write_bytes(data)
+        expected = hashlib.sha256(data).hexdigest()
+        hasher = Mock(wraps=hashlib.sha256())
+        with patch.object(upgrade.hashlib, "sha256", return_value=hasher):
+            self.assertEqual(upgrade.running_digest(self.node), expected)
+        self.assertEqual([len(call.args[0]) for call in hasher.update.call_args_list],
+                         [1024 * 1024, 1024 * 1024, 5])
 
 
 if __name__ == "__main__":
