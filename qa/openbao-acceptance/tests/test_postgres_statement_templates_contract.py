@@ -99,8 +99,11 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
                       "credential_type", "credential_config"):
             self.assertIn('"' + field + '"', source)
         statements = (ROOT / "crates/heptabao-server/src/service_database_statements.rs").read_text()
+        policies = (ROOT / "crates/heptabao-server/src/auth_password_policy.rs").read_text()
         self.assertIn('value != "password"', statements)
-        self.assertIn("password credential_config requires an integrated password-policy owner", statements)
+        self.assertIn('key != "password_policy"', statements)
+        self.assertIn("parse_credential_config", statements)
+        self.assertIn("generate_database_password", policies)
         self.assertIn("provider_role and statement templates are mutually exclusive", source)
         self.assertIn("statement-backed database roles currently require PostgreSQL", source)
 
@@ -108,7 +111,7 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
         service = (ROOT / "crates/heptabao-server/src/service.rs").read_text()
         identity = (ROOT / "crates/heptabao-server/src/service_identity.rs").read_text()
         database = (ROOT / "crates/heptabao-server/src/service_database.rs").read_text()
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 55;")
+        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 56;")
         self.assertIn("database statement templates require schema 54", identity)
         self.assertIn("Exact legacy tuple: old pending intents must reopen byte-stably", database)
         self.assertIn("heptabao.database.statements.v1", database)

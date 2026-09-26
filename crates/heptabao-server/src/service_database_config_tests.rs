@@ -13,10 +13,11 @@ fn config(password: &str) -> Value {
         "allowed_roles":["reader"], "verify_connection":true})
 }
 
-fn stage(
+fn stage_body(
     service: &mut Service,
     token: &str,
     started: Instant,
+    body: Value,
 ) -> TestResult<PendingExternalRequest> {
     let execution = service.begin_at_mode_started(
         RequestDispatch {
@@ -24,7 +25,7 @@ fn stage(
             path: "database/config/local",
             namespace: "",
             token,
-            body: config("synthetic-replacement"),
+            body,
             now: 100,
             allow_forward: true,
             enforce_namespace: true,
@@ -46,6 +47,14 @@ fn stage(
             Err(format!("configuration did not stage: {}", response.status).into())
         }
     }
+}
+
+fn stage(
+    service: &mut Service,
+    token: &str,
+    started: Instant,
+) -> TestResult<PendingExternalRequest> {
+    stage_body(service, token, started, config("synthetic-replacement"))
 }
 
 fn setup(service: &mut Service, root: &str, extra: Value) -> TestResult<String> {
@@ -273,6 +282,135 @@ fn database_config_completion_rejects_mount_recreation_without_publishing_creden
         .status,
         404
     );
+    Ok(())
+}
+
+#[test]
+fn database_config_partial_metadata_update_preserves_frozen_provider_identity() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    setup(&mut service, &root_token, json!({}))?;
+
+    let initial = stage(&mut service, &root_token, Instant::now())?;
+    assert_eq!(
+        service
+            .finish_external_request(initial, ExternalEffectResult::DatabaseConfig(Ok(())))
+            .status,
+        204
+    );
+
+    let rotation = service.begin_at_mode_started(
+        RequestDispatch {
+            method: "POST",
+            path: "database/rotate-root/local",
+            namespace: "",
+            token: &root_token,
+            body: json!({}),
+            now: 101,
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        Instant::now(),
+    );
+    let RequestExecution::External(rotation) = rotation else {
+        return Err("root rotation did not persist an external intent".into());
+    };
+    drop(rotation);
+    let before = service
+        .state
+        .as_ref()
+        .and_then(|state| state.database.mount("", "database/"))
+        .and_then(|mount| mount.connections.get("local"))
+        .ok_or("connection")?;
+    let identity = (
+        before.plugin_name().to_owned(),
+        before.connection_url.clone(),
+        before.username.clone(),
+        before.password.0.clone(),
+        before.password_authentication,
+    );
+    let rotation_digest = before
+        .root_rotation
+        .as_ref()
+        .ok_or("root rotation")?
+        .request_digest
+        .clone();
+
+    let partial = stage_body(
+        &mut service,
+        &root_token,
+        Instant::now(),
+        json!({
+            "allowed_roles":["reader", "writer"],
+            "password_policy":"future-policy",
+            "username_template":"{{ printf \"future-%s\" (.RoleName | truncate 16) }}",
+            "verify_connection":true
+        }),
+    )?;
+    assert_eq!(
+        service
+            .finish_external_request(partial, ExternalEffectResult::DatabaseConfig(Ok(())))
+            .status,
+        204
+    );
+    let after = service
+        .state
+        .as_ref()
+        .and_then(|state| state.database.mount("", "database/"))
+        .and_then(|mount| mount.connections.get("local"))
+        .ok_or("updated connection")?;
+    assert_eq!(
+        (
+            after.plugin_name().to_owned(),
+            after.connection_url.clone(),
+            after.username.clone(),
+            after.password.0.clone(),
+            after.password_authentication,
+        ),
+        identity
+    );
+    assert_eq!(
+        after.allowed_roles,
+        BTreeSet::from(["reader".to_owned(), "writer".to_owned()])
+    );
+    assert_eq!(after.password_policy.as_deref(), Some("future-policy"));
+    assert_eq!(
+        after.username_template,
+        r#"{{ printf "future-%s" (.RoleName | truncate 16) }}"#
+    );
+    assert_eq!(
+        after
+            .root_rotation
+            .as_ref()
+            .ok_or("preserved root rotation")?
+            .request_digest,
+        rotation_digest
+    );
+
+    let denied = service.begin_at_mode_started(
+        RequestDispatch {
+            method: "POST",
+            path: "database/config/local",
+            namespace: "",
+            token: &root_token,
+            body: json!({"password":"different-manager-password", "verify_connection":true}),
+            now: 102,
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        Instant::now(),
+    );
+    let RequestExecution::Complete(denied) = denied else {
+        return Err("provider identity update entered external validation".into());
+    };
+    assert_eq!(denied.status, 409);
     Ok(())
 }
 

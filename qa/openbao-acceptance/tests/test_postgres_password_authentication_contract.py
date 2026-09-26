@@ -10,8 +10,14 @@ ROOT = Path(__file__).resolve().parents[3]
 def extension(path: Path) -> str:
     source = path.read_text()
     start = source.index("-- PostgreSQL password-authentication extension.")
-    end = source.index("COMMIT;", start)
-    return source[start:end]
+    boundaries = [source.index("COMMIT;", start)]
+    generation = source.find(
+        "-- PostgreSQL password-policy and username-template generation extension.",
+        start,
+    )
+    if generation >= 0:
+        boundaries.append(generation)
+    return source[start:min(boundaries)].rstrip() + "\n"
 
 
 def function(source: str, name: str) -> str:
@@ -120,7 +126,7 @@ class PostgresPasswordAuthenticationContractTests(unittest.TestCase):
         self.assertIn('config_data.get("password_authentication") == "password"',
                       static_profile)
         self.assertIn('"password" not in config_data', static_profile)
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 55;")
+        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 56;")
         self.assertIn("PostgreSQL SCRAM password authentication requires schema 55",
                       identity)
 

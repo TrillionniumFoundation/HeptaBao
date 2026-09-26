@@ -36,6 +36,15 @@ impl State {
                 "OIDC UserInfo session state requires schema 51",
             ));
         }
+        self.auth
+            .validate_password_policy_state()
+            .map_err(|_| Response::error(503, "invalid password policy state"))?;
+        if self.schema < 56 && self.auth.has_password_policy_state() {
+            return Err(Response::error(
+                503,
+                "password policy state requires schema 56",
+            ));
+        }
 
         if self.schema < 48 && self.auth.has_cert_batch_state() {
             return Err(Response::error(
@@ -262,6 +271,12 @@ impl State {
             return Err(Response::error(
                 503,
                 "PostgreSQL SCRAM password authentication requires schema 55",
+            ));
+        }
+        if self.schema < 56 && self.database.has_password_generation_state() {
+            return Err(Response::error(
+                503,
+                "database password policies and username templates require schema 56",
             ));
         }
         if self.schema < 7 && self.auth.has_ldap_group_state() {
@@ -491,7 +506,7 @@ impl State {
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
             | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37
             | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52 | 53
-            | 54 | CURRENT_STATE_SCHEMA => Ok(()),
+            | 54 | 55 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

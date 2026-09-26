@@ -618,8 +618,15 @@ issue/renew/revoke, restart, default cleanup and transactional failed creation.
 Bounded PostgreSQL static-role and manager-password rotation are owned by
 `service_database_rotation.rs`; `postgres_static_rotation_live.py` covers its
 owner-only provider extension, scheduled/manual rotation, digest-bound retirement,
-manager rotation and restart. These scoped profiles do not establish complete
-OpenBao SQL/error parity, password-policy credentials or multi-host provider
+manager rotation and restart. Namespace password policies are owned by
+`auth_password_policy.rs`, while `service_database_username.rs` owns the bounded
+PostgreSQL template evaluator. `postgres_generation_live.py` compares fresh and
+owner-only v4→v5 provider installation, creates schema-55 state with the pinned
+predecessor, proves read-only non-promotion and downgrade refusal, and executes
+connection/role/static/root inheritance plus official/custom templates on real
+PostgreSQL 17. These scoped profiles still do not establish
+`root_rotation_statements`, pool-field behavior, complete OpenBao field/error and
+helper parity, generic plugin RPC, multi-host provider faults or independent
 qualification.
 
 

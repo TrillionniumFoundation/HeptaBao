@@ -169,6 +169,8 @@ pub struct AuthState {
     wrapping_clock: u64,
     tokens: BTreeMap<String, Token>,
     policies: BTreeMap<String, BTreeMap<String, Policy>>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    password_policies: BTreeMap<String, BTreeMap<String, password_policy::PasswordPolicy>>,
     users: BTreeMap<String, BTreeMap<String, User>>,
     roles: BTreeMap<String, BTreeMap<String, Role>>,
     // The original fixed mounts retain their exact persisted representation.
@@ -1834,6 +1836,12 @@ impl AuthState {
                 .filter(|value| !value.is_empty())
                 .cloned(),
         );
+        namespaces.extend(
+            self.password_policies
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
         namespaces.extend(self.users.keys().filter(|value| !value.is_empty()).cloned());
         namespaces.extend(self.roles.keys().filter(|value| !value.is_empty()).cloned());
         namespaces.extend(
@@ -1933,6 +1941,10 @@ impl AuthState {
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
             && self
+                .password_policies
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
                 .users
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
@@ -2007,6 +2019,7 @@ impl AuthState {
             wrapping_clock: 0,
             tokens: BTreeMap::new(),
             policies: BTreeMap::new(),
+            password_policies: BTreeMap::new(),
             users: BTreeMap::new(),
             roles: BTreeMap::new(),
             mounted_users: BTreeMap::new(),
@@ -3210,6 +3223,11 @@ impl AuthState {
                 _ => Err(err(404, "unsupported auth route")),
             };
             return result.map(Some);
+        }
+        if path == "sys/policies/password" || path.starts_with("sys/policies/password/") {
+            return self
+                .password_policy_route(principal, namespace, method, path, body, now)
+                .map(Some);
         }
         if path == "sys/policies/acl"
             || path.starts_with("sys/policies/acl/")
@@ -7499,6 +7517,7 @@ fn rule(path: String, capabilities: BTreeSet<String>) -> Result<Rule, AuthError>
 enum Lex {
     Word(String),
     String(String),
+    Number(u64),
     Symbol(char),
 }
 fn take(tokens: &[Lex], cursor: &mut usize, wanted: Lex) -> Result<(), AuthError> {
@@ -7570,17 +7589,31 @@ fn lex_hcl(source: &str) -> Result<Vec<Lex>, AuthError> {
         if bytes[index].is_ascii_alphabetic() || bytes[index] == b'_' {
             let start = index;
             while index < bytes.len()
-                && (bytes[index].is_ascii_alphanumeric() || bytes[index] == b'_')
+                && (bytes[index].is_ascii_alphanumeric() || matches!(bytes[index], b'_' | b'-'))
             {
                 index += 1;
             }
             result.push(Lex::Word(source[start..index].into()));
             continue;
         }
+        if bytes[index].is_ascii_digit() {
+            let start = index;
+            while index < bytes.len() && bytes[index].is_ascii_digit() {
+                index += 1;
+            }
+            let value = source[start..index]
+                .parse::<u64>()
+                .map_err(|_| bad("HCL integer exceeds supported range"))?;
+            result.push(Lex::Number(value));
+            continue;
+        }
         return Err(bad("unsupported character in HCL policy"));
     }
     Ok(result)
 }
+
+#[path = "auth_password_policy.rs"]
+mod password_policy;
 
 #[cfg(test)]
 #[path = "auth_tests.rs"]

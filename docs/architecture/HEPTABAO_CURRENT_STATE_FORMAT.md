@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **55**. Its source constant is
+The current Service state schema is **56**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -40,6 +40,15 @@ Schema 49 adds bounded, authenticated namespace-scoped workflow definitions unde
 the existing namespace owner. Older binaries reject workflow-bearing state rather
 than silently dropping definitions. Workflow execution remains synchronous and
 transactional within one request; crash-resumable step journals are not claimed.
+
+Schema 56 adds namespace-owned password policies and PostgreSQL connection/role
+password-policy and username-template bindings. The policy source and selected
+names are encrypted with Auth/database state; unresolved dynamic, statement,
+static and root intents retain the generated credential bytes and exact semantic
+digests. A valid schema-55 state with absent generation fields remains readable
+without rewrite and preserves its historical credential shapes. A current
+mutation publishes schema 56, which schema-55 binaries must refuse without
+altering the encrypted record.
 
 ## Read admission and mutation promotion
 
@@ -100,8 +109,24 @@ transactional within one request; crash-resumable step journals are not claimed.
 | 53 | Durable PostgreSQL static-role password and manager-password rotation intents. Pending passwords, provider sequences, semantic digests, rotation times and phases stay inside the encrypted database owner; schema-52 readers must reject this state rather than drop unresolved external effects. |
 | 54 | Bounded PostgreSQL statement-template role and lease state. Creation/renewal/revocation/rollback template arrays are encrypted inside the database owner and copied into pending lease identity. Legacy provider-role records retain their old serialization and digest; schema-53 readers must reject template-bearing state rather than discard the provider effect contract. |
 | 55 | Explicit PostgreSQL connection `password_authentication=scram-sha-256` plus a strict, encrypted provider-verifier pair on unresolved dynamic, statement, static-role and root password mutations. Default/absent `password` selection retains schema-54 bytes and legacy digest tuples; a non-default selection or retained verifier requires this reader. |
+| 56 | Namespace password-policy state, PostgreSQL connection/role policy selectors and persisted nonempty username templates. Historical schema-55 records with absent generation fields remain readable and byte-stable; current writes and generation-bearing state require this reader. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
+
+Schema 56 independently gates `AuthState::has_password_policy_state()` and
+`DatabaseState::has_password_generation_state()`. Policy source is reparsed and
+bounded on every admission. A nonempty policy map, a connection/role policy
+selector or nonempty username template cannot hide under schema 55. Conversely,
+a schema-55 connection with absent selectors and an empty template remains
+readable and retains the historical native username/password generation path.
+Pure read and unseal do not populate defaults or promote the discriminator.
+
+The first successful current mutation publishes schema 56. A predecessor binary
+must reject that state before mutation; a failed downgrade attempt must leave its
+encrypted bytes unchanged so the current binary can reopen it. Provider-side v5
+function installation is a separate owner-only SQL upgrade and does not rewrite
+Service state by itself. This discriminator does not establish complete OpenBao
+field/error/template-helper parity or independent provider admission.
 
 Schema 55 independently gates
 `DatabaseState::has_scram_password_authentication()`. The selection field is absent
@@ -116,16 +141,17 @@ retain their exact serialization and digest tuples.
 A persisted SCRAM connection requires the password-authentication provider
 protocol. Dynamic, statement, static and root paths send only the verifier to the
 strict SCRAM wrapper while retaining the raw value for authorized client delivery
-or post-rotation reconnect. This discriminator does not qualify password policies,
-username templates or non-PostgreSQL providers.
+or post-rotation reconnect. Password policies and username templates have their
+separate schema-56 gate; non-PostgreSQL provider parity remains separate.
 
 Schema 54 independently gates `DatabaseState::has_statement_template_state()`.
 An empty/default statement owner remains byte-compatible with schema 53, including
 legacy request digests. A nonempty template array on either a role or retained
 lease requires schema 54. This version fence does not by itself qualify arbitrary
 SQL: the current implementation accepts bounded PostgreSQL password templates,
-uses exact byte-digest provider readback and leaves password policies, external
-non-transactional effects and full OpenBao field/error parity open.
+uses exact byte-digest provider readback. Password-policy selection is separately
+gated by schema 56; external non-transactional effects and full OpenBao field/error
+parity remain open.
 
 Schema 50 independently gates `AuthState::has_kerberos_state()`, including
 mount-only enrollment and all retained configuration/replay records. Schema 48
@@ -507,7 +533,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 47. An authenticated
+it. Initialization and committed mutations use schema 56. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.

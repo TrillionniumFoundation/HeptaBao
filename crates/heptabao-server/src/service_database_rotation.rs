@@ -21,6 +21,8 @@ pub(super) struct DatabaseStaticRole {
     pub(super) db_name: String,
     pub(super) username: String,
     pub(super) rotation_period: u64,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub(super) password_policy: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) current_password: Option<PrivateString>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -145,7 +147,25 @@ fn root_operation_id(
 }
 
 fn static_digest(role_name: &str, role: &DatabaseStaticRole) -> Result<String, Response> {
-    if let Some(provider_password) = &role.pending_provider_password {
+    if !role.password_policy.is_empty() {
+        rotation_digest(&(
+            "heptabao.database.static.password-policy.v1",
+            role_name,
+            role.db_name.as_str(),
+            role.username.as_str(),
+            role.rotation_period,
+            role.password_policy.as_str(),
+            role.seq,
+            role.pending_password
+                .as_ref()
+                .map(|value| value.0.as_str())
+                .unwrap_or(""),
+            role.pending_provider_password
+                .as_ref()
+                .map(|value| value.0.as_str())
+                .unwrap_or(""),
+        ))
+    } else if let Some(provider_password) = &role.pending_provider_password {
         rotation_digest(&(
             "heptabao.database.static.scram-sha-256.v1",
             role_name,
@@ -177,13 +197,24 @@ fn static_digest(role_name: &str, role: &DatabaseStaticRole) -> Result<String, R
 }
 
 fn static_retire_digest(role_name: &str, role: &DatabaseStaticRole) -> Result<String, Response> {
-    rotation_digest(&(
-        "retire-static",
-        role_name,
-        role.db_name.as_str(),
-        role.username.as_str(),
-        role.seq,
-    ))
+    if role.password_policy.is_empty() {
+        rotation_digest(&(
+            "retire-static",
+            role_name,
+            role.db_name.as_str(),
+            role.username.as_str(),
+            role.seq,
+        ))
+    } else {
+        rotation_digest(&(
+            "heptabao.database.static.retire.password-policy.v1",
+            role_name,
+            role.db_name.as_str(),
+            role.username.as_str(),
+            role.password_policy.as_str(),
+            role.seq,
+        ))
+    }
 }
 
 fn root_digest(connection_name: &str, rotation: &DatabaseRootRotation) -> Result<String, Response> {
@@ -596,12 +627,7 @@ impl DatabaseMount {
                         )
                     || rotation.seq == 0
                     || rotation.seq > i64::MAX as u64
-                    || rotation.pending_password.0.len() != 64
-                    || !rotation
-                        .pending_password
-                        .0
-                        .bytes()
-                        .all(|byte| byte.is_ascii_hexdigit())
+                    || !super::valid_generated_database_password(&rotation.pending_password.0)
                     || rotation.request_digest.len() != 64
                     || !rotation
                         .request_digest
@@ -633,15 +659,12 @@ impl DatabaseMount {
                 || !connection.allowed_roles.contains(name)
                 || !(MIN_STATIC_ROTATION_SECONDS..=MAX_STATIC_ROTATION_SECONDS)
                     .contains(&role.rotation_period)
+                || (!role.password_policy.is_empty() && !super::name(&role.password_policy))
                 || role.seq == 0
                 || role.seq > i64::MAX as u64
                 || role.next_rotation < role.last_rotation.unwrap_or(0)
-                || current.is_some_and(|value| {
-                    value.0.len() != 64 || !value.0.bytes().all(|byte| byte.is_ascii_hexdigit())
-                })
-                || pending.is_some_and(|value| {
-                    value.0.len() != 64 || !value.0.bytes().all(|byte| byte.is_ascii_hexdigit())
-                })
+                || current.is_some_and(|value| !super::valid_generated_database_password(&value.0))
+                || pending.is_some_and(|value| !super::valid_generated_database_password(&value.0))
                 || !connection
                     .password_authentication
                     .persisted_provider_password_is_valid(
@@ -760,11 +783,27 @@ impl Service {
                     "db_name":role.db_name,
                     "username":role.username,
                     "rotation_period":role.rotation_period,
-                    "credential_type":"password"
+                    "credential_type":"password",
+                    "credential_config": if role.password_policy.is_empty() {
+                        json!({})
+                    } else {
+                        json!({"password_policy":role.password_policy})
+                    }
                 }})))
             }
             ("static-roles", "POST" | "PUT") => {
-                fields(request.body, &["db_name", "username", "rotation_period"])?;
+                fields(
+                    request.body,
+                    &[
+                        "db_name",
+                        "username",
+                        "rotation_period",
+                        "credential_type",
+                        "credential_config",
+                    ],
+                )?;
+                statements::parse_credential_type(request.body)?;
+                let configured_password_policy = statements::parse_credential_config(request.body)?;
                 let db_name = text(request.body, "db_name")?.to_owned();
                 let username = text(request.body, "username")?.to_owned();
                 if !name(&db_name) || !name(&username) {
@@ -818,6 +857,27 @@ impl Service {
                         "database static-role capacity exhausted",
                     ));
                 }
+                let prior = state
+                    .database
+                    .mount(request.namespace, mount)
+                    .and_then(|value| value.static_roles.get(key))
+                    .cloned();
+                let password_policy = configured_password_policy.unwrap_or_else(|| {
+                    prior
+                        .as_ref()
+                        .map(|role| role.password_policy.clone())
+                        .unwrap_or_default()
+                });
+                let effective_password_policy = if password_policy.is_empty() {
+                    connection.password_policy.as_deref()
+                } else {
+                    Some(password_policy.as_str())
+                };
+                let pending_password = PrivateString(generate_database_client_password(
+                    &state.auth,
+                    request.namespace,
+                    effective_password_policy,
+                )?);
                 let authority = plugin::PluginResponseAuthority::new(
                     principal
                         .take()
@@ -831,19 +891,13 @@ impl Service {
                 .with_time_floor(now);
                 let password_authentication = connection.password_authentication;
                 let seq = state.database.next_provider_fence()?;
-                let pending_password =
-                    PrivateString(hex(&crypto::random::<32>().map_err(failure)?));
                 let pending_provider_password =
                     password_authentication.generate_provider_password(&pending_password.0)?;
-                let prior = state
-                    .database
-                    .mount(request.namespace, mount)
-                    .and_then(|value| value.static_roles.get(key))
-                    .cloned();
                 let mut role = DatabaseStaticRole {
                     db_name,
                     username,
                     rotation_period,
+                    password_policy,
                     current_password: prior
                         .as_ref()
                         .and_then(|value| value.current_password.clone()),
@@ -1042,7 +1096,7 @@ impl Service {
         role_name: &str,
         now: u64,
     ) -> Result<(), Response> {
-        let password_authentication = {
+        let (password_authentication, password_policy) = {
             let database_mount = state
                 .database
                 .mount(namespace, mount)
@@ -1054,13 +1108,24 @@ impl Service {
             if role.phase != DatabaseStaticPhase::Active {
                 return Err(failure("database static-role rotation is already pending"));
             }
-            database_mount
+            let connection = database_mount
                 .connections
                 .get(&role.db_name)
-                .ok_or_else(|| failure("database static-role connection disappeared"))?
-                .password_authentication
+                .ok_or_else(|| failure("database static-role connection disappeared"))?;
+            (
+                connection.password_authentication,
+                if role.password_policy.is_empty() {
+                    connection.password_policy.clone()
+                } else {
+                    Some(role.password_policy.clone())
+                },
+            )
         };
-        let pending_password = PrivateString(hex(&crypto::random::<32>().map_err(failure)?));
+        let pending_password = PrivateString(generate_database_client_password(
+            &state.auth,
+            namespace,
+            password_policy.as_deref(),
+        )?);
         let pending_provider_password =
             password_authentication.generate_provider_password(&pending_password.0)?;
         let seq = state.database.next_provider_fence()?;
@@ -1126,13 +1191,22 @@ impl Service {
         mount: &str,
         connection_name: &str,
     ) -> Result<(), Response> {
-        let password_authentication = state
+        let (password_authentication, password_policy) = state
             .database
             .mount(namespace, mount)
             .and_then(|database_mount| database_mount.connections.get(connection_name))
-            .ok_or_else(|| Response::error(404, "database configuration not found"))?
-            .password_authentication;
-        let pending_password = PrivateString(hex(&crypto::random::<32>().map_err(failure)?));
+            .map(|connection| {
+                (
+                    connection.password_authentication,
+                    connection.password_policy.clone(),
+                )
+            })
+            .ok_or_else(|| Response::error(404, "database configuration not found"))?;
+        let pending_password = PrivateString(generate_database_client_password(
+            &state.auth,
+            namespace,
+            password_policy.as_deref(),
+        )?);
         let provider_password =
             password_authentication.generate_provider_password(&pending_password.0)?;
         let seq = state.database.next_provider_fence()?;
@@ -1761,6 +1835,8 @@ mod tests {
                     username: "hb_manager".into(),
                     password: PrivateString("old-manager-password".into()),
                     allowed_roles: BTreeSet::from(["static-a".into(), "static-b".into()]),
+                    password_policy: None,
+                    username_template: String::new(),
                     password_authentication: PostgresqlPasswordAuthentication::Password,
                     root_rotation: None,
                 },
@@ -1792,6 +1868,7 @@ mod tests {
             db_name: "local".into(),
             username: username.into(),
             rotation_period: 60,
+            password_policy: String::new(),
             current_password: None,
             pending_password: Some(pending_password),
             pending_provider_password,
@@ -2182,6 +2259,7 @@ mod tests {
             db_name: "local".into(),
             username: "app_static_a".into(),
             rotation_period: 60,
+            password_policy: String::new(),
             current_password: Some(PrivateString("ab".repeat(32))),
             pending_password: None,
             pending_provider_password: None,
@@ -2245,6 +2323,153 @@ mod tests {
             7,
             "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
         ));
+        Ok(())
+    }
+
+    #[test]
+    fn static_and_root_rotation_use_current_named_password_policies() -> TestResult {
+        use super::super::super::tests::call;
+        let (_root, mut service, root_token) = fixture()?;
+        for (name, character, length) in [("static-policy", "S", 11), ("root-policy", "R", 13)] {
+            let policy = format!(
+                "length = {length}\nrule \"charset\" {{ charset = \"{character}\" min-chars = {length} }}"
+            );
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    &format!("sys/policies/password/{name}"),
+                    &root_token,
+                    json!({"policy":policy}),
+                )
+                .status,
+                204
+            );
+        }
+        let mut state = service.state.clone().ok_or("state")?;
+        state
+            .database
+            .mount_mut("", "database/")
+            .connections
+            .get_mut("local")
+            .ok_or("connection")?
+            .password_policy = Some("root-policy".into());
+        let seq = response(state.database.next_provider_fence())?;
+        state
+            .database
+            .mount_mut("", "database/")
+            .static_roles
+            .insert(
+                "static-a".into(),
+                DatabaseStaticRole {
+                    db_name: "local".into(),
+                    username: "app_static_a".into(),
+                    rotation_period: 60,
+                    password_policy: "static-policy".into(),
+                    current_password: Some(PrivateString("old-static-password".into())),
+                    pending_password: None,
+                    pending_provider_password: None,
+                    last_rotation: Some(100),
+                    next_rotation: 160,
+                    seq,
+                    phase: DatabaseStaticPhase::Active,
+                    request_digest: String::new(),
+                },
+            );
+        response(service.stage_static_rotation(&mut state, "", "database/", "static-a", 160))?;
+        let static_role = state
+            .database
+            .mount("", "database/")
+            .and_then(|mount| mount.static_roles.get("static-a"))
+            .ok_or("static role")?;
+        assert_eq!(
+            static_role
+                .pending_password
+                .as_ref()
+                .map(|value| value.0.as_str()),
+            Some("S".repeat(11).as_str()),
+        );
+        assert_eq!(static_role.password_policy, "static-policy");
+
+        response(service.stage_root_rotation(&mut state, "", "database/", "local"))?;
+        let root_rotation = state
+            .database
+            .mount("", "database/")
+            .and_then(|mount| mount.connections.get("local"))
+            .and_then(|connection| connection.root_rotation.as_ref())
+            .ok_or("root rotation")?;
+        assert_eq!(root_rotation.pending_password.0, "R".repeat(13));
+        state.schema = CURRENT_STATE_SCHEMA;
+        response(state.validate_format())?;
+        let mut downgraded = state;
+        downgraded.schema = 55;
+        assert_eq!(
+            downgraded
+                .validate_format()
+                .err()
+                .ok_or("schema55 admitted generation state")?
+                .body["errors"][0],
+            "password policy state requires schema 56",
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn static_role_without_override_inherits_connection_policy() -> TestResult {
+        use super::super::super::tests::call;
+        let (_root, mut service, root_token) = fixture()?;
+        let policy = "length = 9\nrule \"charset\" { charset = \"C\" min-chars = 9 }";
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/policies/password/connection-policy",
+                &root_token,
+                json!({"policy":policy}),
+            )
+            .status,
+            204
+        );
+        let mut state = service.state.clone().ok_or("state")?;
+        state
+            .database
+            .mount_mut("", "database/")
+            .connections
+            .get_mut("local")
+            .ok_or("connection")?
+            .password_policy = Some("connection-policy".into());
+        let seq = response(state.database.next_provider_fence())?;
+        state
+            .database
+            .mount_mut("", "database/")
+            .static_roles
+            .insert(
+                "static-a".into(),
+                DatabaseStaticRole {
+                    db_name: "local".into(),
+                    username: "app_static_a".into(),
+                    rotation_period: 60,
+                    password_policy: String::new(),
+                    current_password: Some(PrivateString("old-static-password".into())),
+                    pending_password: None,
+                    pending_provider_password: None,
+                    last_rotation: Some(100),
+                    next_rotation: 160,
+                    seq,
+                    phase: DatabaseStaticPhase::Active,
+                    request_digest: String::new(),
+                },
+            );
+        response(service.stage_static_rotation(&mut state, "", "database/", "static-a", 160))?;
+        assert_eq!(
+            state
+                .database
+                .mount("", "database/")
+                .and_then(|mount| mount.static_roles.get("static-a"))
+                .and_then(|role| role.pending_password.as_ref())
+                .map(|value| value.0.as_str()),
+            Some("C".repeat(9).as_str()),
+        );
         Ok(())
     }
 

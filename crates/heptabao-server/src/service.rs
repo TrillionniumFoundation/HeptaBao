@@ -36,8 +36,9 @@ use crate::state_record_root::RecordStateRoot;
 // durable userpass lockout counters and windows; schema 53 adds PostgreSQL
 // static-role and manager-password rotation intents; schema 54 binds persisted
 // PostgreSQL statement templates to lease identities and provider ledgers;
-// schema 55 persists explicit PostgreSQL password-authentication selection.
-const CURRENT_STATE_SCHEMA: u32 = 55;
+// schema 55 persists explicit PostgreSQL password-authentication selection;
+// schema 56 adds namespace-owned password policies and database generation bindings.
+const CURRENT_STATE_SCHEMA: u32 = 56;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -722,7 +723,7 @@ impl RequestExecution {
 }
 
 enum ExternalEffectPlan {
-    Database(database::DatabaseEffectPlan),
+    Database(Box<database::DatabaseEffectPlan>),
     DatabaseConfig(database::DatabaseConfigPlan),
     DatabaseRotation(database::DatabaseRotationPlan),
     DatabaseBatch(database::DatabaseBatchEffectPlan),
@@ -1475,7 +1476,7 @@ impl Service {
     ) -> Response {
         let response = match (pending.effect, result) {
             (ExternalEffectPlan::Database(plan), ExternalEffectResult::Database(result)) => {
-                self.finalize_database_request(plan, result)
+                self.finalize_database_request(*plan, result)
             }
             (
                 ExternalEffectPlan::DatabaseConfig(plan),
@@ -1722,6 +1723,7 @@ impl Service {
             ));
         }
         let effect = database
+            .map(Box::new)
             .map(ExternalEffectPlan::Database)
             .or_else(|| database_config.map(ExternalEffectPlan::DatabaseConfig))
             .or_else(|| database_rotation.map(ExternalEffectPlan::DatabaseRotation))

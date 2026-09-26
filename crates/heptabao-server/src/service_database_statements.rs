@@ -183,20 +183,26 @@ pub(super) fn parse_credential_type(body: &Value) -> Result<Option<&str>, Respon
     Ok(Some(value))
 }
 
-pub(super) fn validate_credential_config(body: &Value) -> Result<(), Response> {
+pub(super) fn parse_credential_config(body: &Value) -> Result<Option<String>, Response> {
     let Some(value) = body.get("credential_config") else {
-        return Ok(());
+        return Ok(None);
     };
     let object = value
         .as_object()
         .ok_or_else(|| invalid("credential_config must be an object"))?;
-    if !object.is_empty() {
-        return Err(Response::error(
-            400,
-            "password credential_config requires an integrated password-policy owner",
-        ));
+    if object.keys().any(|key| key != "password_policy") {
+        return Err(invalid("unsupported password credential_config field"));
     }
-    Ok(())
+    let Some(value) = object.get("password_policy") else {
+        return Ok(Some(String::new()));
+    };
+    let value = value
+        .as_str()
+        .ok_or_else(|| invalid("credential_config password_policy must be a string"))?;
+    if !value.is_empty() && !name(value) {
+        return Err(invalid("invalid credential_config password_policy"));
+    }
+    Ok(Some(value.to_owned()))
 }
 
 fn validate_placeholders(statement: &str) -> Result<(), ()> {
@@ -668,6 +674,8 @@ mod tests {
                     username: "hb_manager".into(),
                     password: PrivateString("synthetic-manager".into()),
                     allowed_roles: BTreeSet::from(["templated".into()]),
+                    password_policy: None,
+                    username_template: String::new(),
                     password_authentication: PostgresqlPasswordAuthentication::Password,
                     root_rotation: None,
                 },
@@ -749,9 +757,33 @@ mod tests {
         assert_eq!(updated.body["data"]["creation_statements"], json!(creation));
         assert_eq!(updated.body["data"]["max_ttl"], 900);
 
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "database/roles/templated",
+                &root_token,
+                json!({"credential_config":{"password_policy":"external"}}),
+            )
+            .status,
+            204
+        );
+        let policy_updated = call(
+            &mut service,
+            "GET",
+            "database/roles/templated",
+            &root_token,
+            json!({}),
+        );
+        assert_eq!(
+            policy_updated.body["data"]["credential_config"],
+            json!({"password_policy":"external"}),
+        );
+
         for body in [
             json!({"credential_type":"rsa_private_key"}),
-            json!({"credential_config":{"password_policy":"external"}}),
+            json!({"credential_config":{"password_policy":7}}),
+            json!({"credential_config":{"unknown":"value"}}),
             json!({"provider_role":"app_reader"}),
             json!({"creation_statements":["SELECT '{{unsupported}}'"]}),
         ] {
@@ -770,7 +802,7 @@ mod tests {
                 &root_token,
                 json!({}),
             );
-            assert_eq!(unchanged.body, updated.body);
+            assert_eq!(unchanged.body, policy_updated.body);
         }
         Ok(())
     }

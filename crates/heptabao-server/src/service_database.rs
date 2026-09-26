@@ -17,6 +17,8 @@ use std::sync::Weak;
 mod rotation;
 #[path = "service_database_statements.rs"]
 mod statements;
+#[path = "service_database_username.rs"]
+mod username;
 pub(super) use rotation::{
     DatabaseRotationMaintenance, DatabaseRotationObservation, DatabaseRotationPlan,
 };
@@ -217,6 +219,10 @@ struct Connection {
     username: String,
     password: PrivateString,
     allowed_roles: BTreeSet<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    password_policy: Option<String>,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    username_template: String,
     #[serde(default, skip_serializing_if = "password_authentication_is_default")]
     password_authentication: PostgresqlPasswordAuthentication,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -238,6 +244,8 @@ struct DatabaseRole {
     provider_role: String,
     #[serde(default, skip_serializing_if = "DatabaseStatements::is_empty")]
     statements: DatabaseStatements,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    password_policy: String,
     default_ttl: u64,
     max_ttl: u64,
 }
@@ -355,6 +363,7 @@ pub(super) struct DatabaseConfigPlan {
     authority: plugin::PluginResponseAuthority,
     key: String,
     connection: Connection,
+    provider_identity_changed: bool,
     plugin: Option<plugin::SharedDatabasePlugin>,
     expected_mount_digest: [u8; 32],
     outbound: crate::outbound::Outbound,
@@ -489,6 +498,24 @@ impl DatabaseConfigPlan {
         }
         Ok(())
     }
+}
+
+fn database_connection_has_provider_references(
+    mount: &DatabaseMount,
+    connection_name: &str,
+) -> bool {
+    mount
+        .leases
+        .values()
+        .any(|lease| lease.db_name == connection_name)
+        || mount
+            .static_roles
+            .values()
+            .any(|role| role.db_name == connection_name)
+        || mount
+            .connections
+            .get(connection_name)
+            .is_some_and(|connection| connection.root_rotation.is_some())
 }
 
 fn database_mount_digest(mount: Option<&DatabaseMount>) -> Result<[u8; 32], Response> {
@@ -978,6 +1005,23 @@ impl DatabaseState {
                 })
             })
     }
+    pub(super) fn has_password_generation_state(&self) -> bool {
+        self.mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .any(|mount| {
+                mount.connections.values().any(|connection| {
+                    connection.password_policy.is_some() || !connection.username_template.is_empty()
+                }) || mount
+                    .roles
+                    .values()
+                    .any(|role| !role.password_policy.is_empty())
+                    || mount
+                        .static_roles
+                        .values()
+                        .any(|role| !role.password_policy.is_empty())
+            })
+    }
     fn current_provider_fence(&self) -> u64 {
         let retained_max = self
             .mounts
@@ -1061,6 +1105,21 @@ impl DatabaseState {
                         || connection.allowed_roles.is_empty()
                         || connection.allowed_roles.len() > 64
                         || connection.allowed_roles.iter().any(|s| !name(s))
+                        || connection
+                            .password_policy
+                            .as_deref()
+                            .is_some_and(|policy| !policy.is_empty() && !name(policy))
+                        || (connection.provider != DatabaseProvider::Postgresql
+                            && !connection.username_template.is_empty())
+                        || (connection.provider == DatabaseProvider::Postgresql
+                            && username::validate_username_template(
+                                if connection.username_template.is_empty() {
+                                    username::DEFAULT_POSTGRESQL_USERNAME_TEMPLATE
+                                } else {
+                                    &connection.username_template
+                                },
+                            )
+                            .is_err())
                         || (connection.password_authentication
                             != PostgresqlPasswordAuthentication::Password
                             && connection.provider != DatabaseProvider::Postgresql)
@@ -1120,6 +1179,7 @@ impl DatabaseState {
                     };
                     if !name(role_name)
                         || connection.is_none()
+                        || (!role.password_policy.is_empty() && !name(&role.password_policy))
                         || mode_invalid
                         || role.default_ttl == 0
                         || role.default_ttl > role.max_ttl
@@ -1164,9 +1224,9 @@ impl DatabaseState {
                         || l.max_expires > i64::MAX as u64
                         || l.max_expires.saturating_sub(l.issued) > 86400
                         || !l.request_digest.bytes().all(|b| b.is_ascii_hexdigit())
-                        || l.password.as_ref().is_some_and(|p| {
-                            p.0.len() != 64 || !p.0.bytes().all(|b| b.is_ascii_hexdigit())
-                        })
+                        || l.password
+                            .as_ref()
+                            .is_some_and(|password| !valid_generated_database_password(&password.0))
                         || matches!(l.phase, Phase::PendingRevoke | Phase::Revoked)
                             && l.expires != 0
                         || !matches!(l.phase, Phase::PendingIssue | Phase::Quarantined)
@@ -1176,8 +1236,9 @@ impl DatabaseState {
                         || l.seq > i64::MAX as u64
                         || l.max_expires <= l.issued
                         || l.expires > l.max_expires
-                        || !valid_database_username(&l.username)
-                        || connection.is_none()
+                        || connection.is_none_or(|connection| {
+                            !username::valid_database_username(connection.provider, &l.username)
+                        })
                         || l.request_digest.len() != 64
                         || l.phase == Phase::Active && l.password.is_some()
                         || l.phase == Phase::PendingIssue && l.password.is_none()
@@ -1301,7 +1362,15 @@ impl Connection {
         if !name(database) {
             return Err("invalid PostgreSQL database name");
         }
-        PgSession::connect(&endpoint, database, &self.username, &self.password.0)
+        let mut session =
+            PgSession::connect(&endpoint, database, &self.username, &self.password.0)?;
+        if (self.password_policy.is_some() || !self.username_template.is_empty())
+            && session.scalar("SELECT heptabao_provider.generation_protocol()", &[])?
+                != "heptabao-postgresql-generation-v1"
+        {
+            return Err("PostgreSQL password-policy/username-template extension is unavailable");
+        }
+        Ok(session)
     }
 
     fn valkey_session(
@@ -1384,23 +1453,24 @@ fn name(s: &str) -> bool {
             .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')
 }
 
-// Native PostgreSQL v2 operators already deployed the exact hbp_ + 32-hex
-// contract. Do not change that protocol while accommodating MySQL's 32-byte
-// account-name limit in the generic plugin adapter. Existing persisted names
-// (both lengths) remain unchanged, including pending reconciliation identities.
-fn generated_database_username(provider: DatabaseProvider, entropy: &[u8; 16]) -> String {
-    let encoded = hex(entropy);
-    let digits = match provider {
-        DatabaseProvider::Postgresql | DatabaseProvider::Valkey => 32,
-        DatabaseProvider::Plugin => 28,
-    };
-    format!("hbp_{}", &encoded[..digits])
+fn valid_generated_database_password(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 16 * 1024
+        && value.chars().count() <= 4096
+        && !value.chars().any(char::is_control)
 }
 
-fn valid_database_username(s: &str) -> bool {
-    s.starts_with("hbp_")
-        && matches!(s.len(), 32 | 36)
-        && s[4..].bytes().all(|b| b.is_ascii_hexdigit())
+fn generate_database_client_password(
+    auth: &AuthState,
+    namespace: &str,
+    policy: Option<&str>,
+) -> Result<String, Response> {
+    match policy {
+        Some(policy) => auth
+            .generate_database_password(namespace, policy)
+            .map_err(|error| Response::error(error.status, &error.message)),
+        None => Ok(hex(&crypto::random::<32>().map_err(failure)?)),
+    }
 }
 
 fn ttl(body: &Value, key: &str, default: u64) -> Result<u64, Response> {
@@ -1764,9 +1834,22 @@ impl Service {
                                 "allowed_roles",
                                 "verify_connection",
                                 "password_authentication",
+                                "password_policy",
+                                "username_template",
                             ],
                         )?;
-                        let plugin_name = text(body, "plugin_name")?;
+                        let existing = state
+                            .database
+                            .mount(ns, &mount)
+                            .and_then(|database_mount| database_mount.connections.get(key))
+                            .cloned();
+                        let plugin_name = match body.get("plugin_name") {
+                            Some(_) => text(body, "plugin_name")?,
+                            None => existing
+                                .as_ref()
+                                .map(Connection::plugin_name)
+                                .ok_or_else(|| invalid("plugin_name is required"))?,
+                        };
                         let (provider, plugin_id) = match plugin_name {
                             "postgresql-database-plugin" => (DatabaseProvider::Postgresql, None),
                             "valkey-database-plugin" => (DatabaseProvider::Valkey, None),
@@ -1781,11 +1864,17 @@ impl Service {
                         };
                         if body
                             .get("verify_connection")
-                            .is_some_and(|v| v != &Value::Bool(true))
+                            .is_some_and(|value| value != &Value::Bool(true))
                         {
                             return Err(invalid("provider configuration verification is required"));
                         }
-                        let url = text(body, "connection_url")?.to_owned();
+                        let url = match body.get("connection_url") {
+                            Some(_) => text(body, "connection_url")?.to_owned(),
+                            None => existing
+                                .as_ref()
+                                .map(|connection| connection.connection_url.clone())
+                                .ok_or_else(|| invalid("connection_url is required"))?,
+                        };
                         if provider != DatabaseProvider::Plugin {
                             let target = Target::parse(
                                 &url,
@@ -1805,48 +1894,124 @@ impl Service {
                                 ));
                             }
                         }
-                        let username = text(body, "username")?.to_owned();
+                        let username = match body.get("username") {
+                            Some(_) => text(body, "username")?.to_owned(),
+                            None => existing
+                                .as_ref()
+                                .map(|connection| connection.username.clone())
+                                .ok_or_else(|| invalid("username is required"))?,
+                        };
                         if !name(&username) {
                             return Err(invalid("invalid database manager name"));
                         }
-                        let password = text(body, "password")?.to_owned();
+                        let password = match body.get("password") {
+                            Some(_) => text(body, "password")?.to_owned(),
+                            None => existing
+                                .as_ref()
+                                .map(|connection| connection.password.0.clone())
+                                .ok_or_else(|| invalid("password is required"))?,
+                        };
                         if password.len() > 512 || !password.is_ascii() {
                             return Err(invalid(
                                 "bounded ASCII database manager password required",
                             ));
                         }
-                        let roles = body
-                            .get("allowed_roles")
-                            .and_then(Value::as_array)
-                            .ok_or_else(|| invalid("allowed_roles array is required"))?;
-                        if roles.is_empty() || roles.len() > 64 {
-                            return Err(invalid("allowed_roles count outside bounds"));
-                        }
-                        let allowed_roles: BTreeSet<String> = roles
-                            .iter()
-                            .map(|v| {
-                                v.as_str()
-                                    .filter(|s| name(s))
+                        let allowed_roles = if let Some(roles) = body.get("allowed_roles") {
+                            let roles = roles
+                                .as_array()
+                                .ok_or_else(|| invalid("allowed_roles must be an array"))?;
+                            if roles.is_empty() || roles.len() > 64 {
+                                return Err(invalid("allowed_roles count outside bounds"));
+                            }
+                            roles
+                                .iter()
+                                .map(|value| {
+                                    value
+                                        .as_str()
+                                        .filter(|role| name(role))
+                                        .map(str::to_owned)
+                                        .ok_or_else(|| invalid("invalid allowed role"))
+                                })
+                                .collect::<Result<BTreeSet<_>, _>>()?
+                        } else {
+                            existing
+                                .as_ref()
+                                .map(|connection| connection.allowed_roles.clone())
+                                .ok_or_else(|| invalid("allowed_roles array is required"))?
+                        };
+                        let password_authentication = match body.get("password_authentication") {
+                            Some(value) => {
+                                PostgresqlPasswordAuthentication::parse(Some(value), provider)?
+                            }
+                            None if existing
+                                .as_ref()
+                                .is_some_and(|connection| connection.provider == provider) =>
+                            {
+                                existing
+                                    .as_ref()
+                                    .map(|connection| connection.password_authentication)
+                                    .unwrap_or_default()
+                            }
+                            None => PostgresqlPasswordAuthentication::parse(None, provider)?,
+                        };
+                        let password_policy = body
+                            .get("password_policy")
+                            .map(|value| {
+                                value
+                                    .as_str()
+                                    .filter(|value| value.is_empty() || name(value))
                                     .map(str::to_owned)
-                                    .ok_or_else(|| invalid("invalid allowed role"))
+                                    .ok_or_else(|| invalid("invalid database password_policy"))
                             })
-                            .collect::<Result<_, _>>()?;
-                        let password_authentication = PostgresqlPasswordAuthentication::parse(
-                            body.get("password_authentication"),
-                            provider,
-                        )?;
-                        if state.database.mount(ns, &mount).is_some_and(|m| {
-                            m.leases.values().any(|l| l.db_name == key)
-                                || m.static_roles.values().any(|role| role.db_name == key)
-                                || m.connections
-                                    .get(key)
-                                    .is_some_and(|connection| connection.root_rotation.is_some())
-                        }) {
-                            return Err(Response::error(
-                                409,
-                                "provider identity is frozen while lease/tombstone records exist",
-                            ));
+                            .transpose()?
+                            .map(Some)
+                            .unwrap_or_else(|| {
+                                existing.as_ref().map_or_else(
+                                    || (provider == DatabaseProvider::Postgresql).then(String::new),
+                                    |connection| connection.password_policy.clone(),
+                                )
+                            });
+                        let username_template = if let Some(value) = body.get("username_template") {
+                            let configured = value
+                                .as_str()
+                                .filter(|value| value.len() <= 4096)
+                                .ok_or_else(|| invalid("invalid database username_template"))?;
+                            if provider == DatabaseProvider::Postgresql {
+                                let template = if configured.is_empty() {
+                                    username::DEFAULT_POSTGRESQL_USERNAME_TEMPLATE.to_owned()
+                                } else {
+                                    configured.to_owned()
+                                };
+                                username::validate_username_template(&template)?;
+                                template
+                            } else {
+                                if !configured.is_empty() {
+                                    return Err(invalid(
+                                        "username_template is supported only by PostgreSQL",
+                                    ));
+                                }
+                                String::new()
+                            }
+                        } else if let Some(connection) = existing.as_ref() {
+                            if connection.provider == provider {
+                                connection.username_template.clone()
+                            } else if provider == DatabaseProvider::Postgresql {
+                                username::DEFAULT_POSTGRESQL_USERNAME_TEMPLATE.to_owned()
+                            } else {
+                                String::new()
+                            }
+                        } else if provider == DatabaseProvider::Postgresql {
+                            username::DEFAULT_POSTGRESQL_USERNAME_TEMPLATE.to_owned()
+                        } else {
+                            String::new()
+                        };
+                        if provider == DatabaseProvider::Postgresql && !username_template.is_empty()
+                        {
+                            username::validate_username_template(&username_template)?;
                         }
+                        let root_rotation = existing
+                            .as_ref()
+                            .and_then(|connection| connection.root_rotation.clone());
                         let connection = Connection {
                             provider,
                             plugin_id: plugin_id.clone(),
@@ -1854,9 +2019,33 @@ impl Service {
                             username,
                             password: PrivateString(password),
                             allowed_roles,
+                            password_policy,
+                            username_template,
                             password_authentication,
-                            root_rotation: None,
+                            root_rotation,
                         };
+                        let provider_identity_changed = existing.as_ref().is_none_or(|current| {
+                            current.provider != connection.provider
+                                || current.plugin_id != connection.plugin_id
+                                || current.connection_url != connection.connection_url
+                                || current.username != connection.username
+                                || current.password.0 != connection.password.0
+                                || current.password_authentication
+                                    != connection.password_authentication
+                        });
+                        if provider_identity_changed
+                            && state
+                                .database
+                                .mount(ns, &mount)
+                                .is_some_and(|database_mount| {
+                                    database_connection_has_provider_references(database_mount, key)
+                                })
+                        {
+                            return Err(Response::error(
+                                409,
+                                "provider identity is frozen while lease/tombstone records exist",
+                            ));
+                        }
                         let expected_mount_digest =
                             database_mount_digest(state.database.mount(ns, &mount))?;
                         if self.pending_database_config_effect.is_some() {
@@ -1895,6 +2084,7 @@ impl Service {
                             authority,
                             key: key.into(),
                             connection,
+                            provider_identity_changed,
                             plugin,
                             expected_mount_digest,
                             outbound: self.outbound.clone(),
@@ -1919,8 +2109,12 @@ impl Service {
                             "connection_url":c.connection_url,
                             "username":c.username,
                             "allowed_roles":c.allowed_roles,
-                            "verify_connection":true
+                            "verify_connection":true,
+                            "username_template":c.username_template
                         });
+                        if let Some(password_policy) = &c.password_policy {
+                            data["password_policy"] = json!(password_policy);
+                        }
                         if c.provider == DatabaseProvider::Postgresql {
                             data["password_authentication"] =
                                 json!(c.password_authentication.as_str());
@@ -1991,7 +2185,7 @@ impl Service {
                             ],
                         )?;
                         statements::parse_credential_type(body)?;
-                        statements::validate_credential_config(body)?;
+                        let configured_password_policy = statements::parse_credential_config(body)?;
                         let existing = state
                             .database
                             .mount(ns, &mount)
@@ -2060,6 +2254,12 @@ impl Service {
                         if default_ttl > max_ttl {
                             return Err(invalid("default TTL exceeds maximum"));
                         }
+                        let password_policy = configured_password_policy.unwrap_or_else(|| {
+                            existing
+                                .as_ref()
+                                .map(|role| role.password_policy.clone())
+                                .unwrap_or_default()
+                        });
                         let database_mount = state
                             .database
                             .mount(ns, &mount)
@@ -2117,6 +2317,7 @@ impl Service {
                                 db_name,
                                 provider_role,
                                 statements: role_statements,
+                                password_policy,
                                 default_ttl,
                                 max_ttl,
                             },
@@ -2152,7 +2353,14 @@ impl Service {
                             ("default_ttl".into(), json!(role.default_ttl)),
                             ("max_ttl".into(), json!(role.max_ttl)),
                             ("credential_type".into(), json!("password")),
-                            ("credential_config".into(), json!({})),
+                            (
+                                "credential_config".into(),
+                                if role.password_policy.is_empty() {
+                                    json!({})
+                                } else {
+                                    json!({"password_policy":role.password_policy})
+                                },
+                            ),
                         ]);
                         if !role.provider_role.is_empty() {
                             data.insert("provider_role".into(), json!(role.provider_role));
@@ -2205,12 +2413,20 @@ impl Service {
                         let connection = database_mount
                             .connections
                             .get(&role.db_name)
-                            .filter(|c| c.allowed_roles.contains(key))
+                            .filter(|connection| connection.allowed_roles.contains(key))
+                            .cloned()
                             .ok_or_else(|| {
                                 Response::error(403, "database role is no longer allowed")
                             })?;
                         let entropy = crypto::random::<16>().map_err(failure)?;
-                        let username = generated_database_username(connection.provider, &entropy);
+                        let username = username::generate_database_username(
+                            connection.provider,
+                            &connection.username_template,
+                            p.display_name(),
+                            key,
+                            now,
+                            &entropy,
+                        )?;
                         // The durable identity always retains all 128 random bits,
                         // including for plugins with a shorter username contract.
                         let entropy = hex(&entropy);
@@ -2219,7 +2435,22 @@ impl Service {
                             return Err(invalid("database lease identity exceeds bound"));
                         }
                         let provider_id = provider_identity(&cluster_identity, ns, &id)?;
-                        let password = hex(&crypto::random::<32>().map_err(failure)?);
+                        let password_policy = if role.password_policy.is_empty() {
+                            connection.password_policy.as_deref()
+                        } else {
+                            Some(role.password_policy.as_str())
+                        };
+                        let password =
+                            generate_database_client_password(&state.auth, ns, password_policy)?;
+                        if !role.statements.is_empty()
+                            && !password.bytes().all(|byte| {
+                                byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-')
+                            })
+                        {
+                            return Err(invalid(
+                                "statement-template password policy must use only ASCII letters, digits, '_' or '-'",
+                            ));
+                        }
                         let provider_password = connection
                             .password_authentication
                             .generate_provider_password(&password)?;
@@ -2356,10 +2587,11 @@ impl Service {
                 "database mount changed during provider configuration validation",
             );
         }
-        if state
-            .database
-            .mount(&plan.namespace, &plan.mount)
-            .is_some_and(|mount| mount.leases.values().any(|lease| lease.db_name == plan.key))
+        if plan.provider_identity_changed
+            && state
+                .database
+                .mount(&plan.namespace, &plan.mount)
+                .is_some_and(|mount| database_connection_has_provider_references(mount, &plan.key))
         {
             return Response::error(
                 409,
@@ -3073,21 +3305,29 @@ mod tests {
     }
 
     #[test]
-    fn database_username_accepts_mysql_bound_and_historical_shape() {
-        assert!(valid_database_username(&format!("hbp_{}", "ab".repeat(14))));
-        assert!(valid_database_username(&format!("hbp_{}", "ab".repeat(16))));
-        assert!(!valid_database_username(&format!(
-            "hbp_{}",
-            "ab".repeat(13)
-        )));
-        assert!(!valid_database_username(&format!(
-            "hbp_{}",
-            "ab".repeat(15)
-        )));
-        assert!(!valid_database_username(&format!(
-            "hbp_{}",
-            "zz".repeat(14)
-        )));
+    fn database_username_validation_preserves_legacy_provider_shapes() {
+        let mysql = format!("hbp_{}", "ab".repeat(14));
+        let native = format!("hbp_{}", "ab".repeat(16));
+        assert!(username::valid_database_username(
+            DatabaseProvider::Plugin,
+            &mysql
+        ));
+        assert!(username::valid_database_username(
+            DatabaseProvider::Postgresql,
+            &native
+        ));
+        assert!(username::valid_database_username(
+            DatabaseProvider::Valkey,
+            &native
+        ));
+        assert!(!username::valid_database_username(
+            DatabaseProvider::Plugin,
+            &native
+        ));
+        assert!(!username::valid_database_username(
+            DatabaseProvider::Valkey,
+            &format!("hbp_{}", "zz".repeat(16)),
+        ));
     }
 
     #[test]
@@ -3219,26 +3459,69 @@ mod tests {
     }
 
     #[test]
-    fn native_database_names_preserve_deployed_provider_contracts() {
+    fn database_username_generation_distinguishes_legacy_and_current_postgresql_shapes()
+    -> Result<(), TestFailure> {
         let entropy = [0xab; 16];
-        for provider in [DatabaseProvider::Postgresql, DatabaseProvider::Valkey] {
-            let username = generated_database_username(provider, &entropy);
-            assert_eq!(username, format!("hbp_{}", "ab".repeat(16)));
-            assert!(valid_database_username(&username));
-        }
-    }
+        let legacy_postgresql = username::generate_database_username(
+            DatabaseProvider::Postgresql,
+            "",
+            "ignored",
+            "ignored",
+            100,
+            &entropy,
+        )?;
+        assert_eq!(legacy_postgresql, format!("hbp_{}", "ab".repeat(16)));
+        assert!(username::valid_database_username(
+            DatabaseProvider::Postgresql,
+            &legacy_postgresql,
+        ));
 
-    #[test]
-    fn plugin_database_names_keep_mysql_limit_without_changing_native_names() {
-        let entropy = [0xcd; 16];
-        let username = generated_database_username(DatabaseProvider::Plugin, &entropy);
-        assert_eq!(username.len(), 32);
-        assert_eq!(username, format!("hbp_{}", "cd".repeat(14)));
-        assert!(valid_database_username(&username));
-        assert_ne!(
-            username,
-            generated_database_username(DatabaseProvider::Postgresql, &entropy)
+        let postgresql = username::generate_database_username(
+            DatabaseProvider::Postgresql,
+            username::DEFAULT_POSTGRESQL_USERNAME_TEMPLATE,
+            "display-name",
+            "reader-role",
+            100,
+            &entropy,
+        )?;
+        assert!(
+            postgresql.starts_with("v-display--reader-r-"),
+            "{postgresql}"
         );
+        assert!(postgresql.ends_with("-100"), "{postgresql}");
+        assert!(username::valid_database_username(
+            DatabaseProvider::Postgresql,
+            &postgresql,
+        ));
+
+        let valkey = username::generate_database_username(
+            DatabaseProvider::Valkey,
+            "",
+            "ignored",
+            "ignored",
+            100,
+            &entropy,
+        )?;
+        assert_eq!(valkey, format!("hbp_{}", "ab".repeat(16)));
+        assert!(username::valid_database_username(
+            DatabaseProvider::Valkey,
+            &valkey
+        ));
+
+        let plugin = username::generate_database_username(
+            DatabaseProvider::Plugin,
+            "",
+            "ignored",
+            "ignored",
+            100,
+            &entropy,
+        )?;
+        assert_eq!(plugin, format!("hbp_{}", "ab".repeat(14)));
+        assert!(username::valid_database_username(
+            DatabaseProvider::Plugin,
+            &plugin
+        ));
+        Ok(())
     }
 
     #[test]
@@ -3347,6 +3630,8 @@ mod tests {
                 username: "hb_manager".into(),
                 password: PrivateString("synthetic-password".into()),
                 allowed_roles: BTreeSet::from(["reader".into()]),
+                password_policy: None,
+                username_template: String::new(),
                 password_authentication: PostgresqlPasswordAuthentication::Password,
                 root_rotation: None,
             },
@@ -3376,6 +3661,41 @@ mod tests {
         m.leases.insert(id.clone(), l);
         Ok((state, id))
     }
+    #[test]
+    fn database_generation_settings_require_schema56_independently() -> Result<(), TestFailure> {
+        let root = super::super::tests::Root::new();
+        let mut service = root.service().map_err(|_| TestFailure)?;
+        let _ = super::super::tests::bootstrap(&mut service).map_err(|_| TestFailure)?;
+        let mut state = service.state.clone().ok_or(TestFailure)?;
+        state.schema = 55;
+        state.validate_format().map_err(|_| TestFailure)?;
+        let mount = state.database.mount_mut("", "database/");
+        mount.connections.insert(
+            "local".into(),
+            Connection {
+                provider: DatabaseProvider::Postgresql,
+                plugin_id: None,
+                connection_url: "postgresql://localhost:5432/app".into(),
+                username: "hb_manager".into(),
+                password: PrivateString("synthetic-password".into()),
+                allowed_roles: BTreeSet::from(["reader".into()]),
+                password_policy: None,
+                username_template: r#"{{ printf "db-%s" (.RoleName | truncate 8) }}"#.into(),
+                password_authentication: PostgresqlPasswordAuthentication::Password,
+                root_rotation: None,
+            },
+        );
+        state.schema = 55;
+        let error = state.validate_format().err().ok_or(TestFailure)?;
+        assert_eq!(
+            error.body["errors"][0],
+            "database password policies and username templates require schema 56",
+        );
+        state.schema = CURRENT_STATE_SCHEMA;
+        state.validate_format().map_err(|_| TestFailure)?;
+        Ok(())
+    }
+
     #[test]
     fn scram_pending_database_state_requires_verifier_and_digest_binding() -> Result<(), TestFailure>
     {
@@ -4583,6 +4903,228 @@ mod tests {
                 assert!(response.body["data"]["password"].is_string());
             }
         }
+        Ok(())
+    }
+
+    type GenerationResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+    fn generation_intent(
+        connection_policy: &str,
+        role_policy: &str,
+        username_template: &str,
+    ) -> GenerationResult<(String, String)> {
+        use super::super::tests::{Root, bootstrap, call};
+        use std::time::Instant;
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, root_token) = bootstrap(&mut service)?;
+        for (name, character, length) in [("connection-policy", "A", 12), ("role-policy", "B", 14)]
+        {
+            let policy = format!(
+                "length = {length}\nrule \"charset\" {{ charset = \"{character}\" min-chars = {length} }}"
+            );
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    &format!("sys/policies/password/{name}"),
+                    &root_token,
+                    json!({"policy":policy}),
+                )
+                .status,
+                204
+            );
+        }
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/mounts/database",
+                &root_token,
+                json!({"type":"database"}),
+            )
+            .status,
+            204
+        );
+        let mut state = service.state.clone().ok_or("state")?;
+        let mount = state.database.mount_mut("", "database/");
+        mount.connections.insert(
+            "local".into(),
+            Connection {
+                provider: DatabaseProvider::Postgresql,
+                plugin_id: None,
+                connection_url: "postgresql://127.0.0.1:5432/app".into(),
+                username: "manager".into(),
+                password: PrivateString("synthetic-manager".into()),
+                allowed_roles: BTreeSet::from(["reader".into()]),
+                password_policy: Some(connection_policy.into()),
+                username_template: if username_template.is_empty() {
+                    username::DEFAULT_POSTGRESQL_USERNAME_TEMPLATE.into()
+                } else {
+                    username_template.into()
+                },
+                password_authentication: PostgresqlPasswordAuthentication::Password,
+                root_rotation: None,
+            },
+        );
+        mount.roles.insert(
+            "reader".into(),
+            DatabaseRole {
+                db_name: "local".into(),
+                provider_role: "readonly".into(),
+                statements: DatabaseStatements::default(),
+                password_policy: role_policy.into(),
+                default_ttl: 120,
+                max_ttl: 600,
+            },
+        );
+        service
+            .publish_database(state)
+            .map_err(|_| "publish database")?;
+        let execution = service.begin_at_mode_started(
+            RequestDispatch {
+                method: "GET",
+                path: "database/creds/reader",
+                namespace: "",
+                token: &root_token,
+                body: json!({}),
+                now: 100,
+                allow_forward: true,
+                enforce_namespace: true,
+                wrap_ttl_seconds: None,
+                origin_peer: None,
+                client_certificates: None,
+            },
+            Instant::now(),
+        );
+        let RequestExecution::External(pending) = execution else {
+            return Err("database issue did not produce an external intent".into());
+        };
+        let ExternalEffectPlan::Database(plan) = pending.effect else {
+            return Err("unexpected external effect".into());
+        };
+        let password = plan
+            .lease
+            .password
+            .as_ref()
+            .ok_or("pending client password")?
+            .0
+            .clone();
+        Ok((plan.lease.username, password))
+    }
+
+    #[test]
+    fn password_policy_crud_generation_restart_and_schema_fence() -> GenerationResult {
+        use super::super::tests::{Root, bootstrap, call};
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (key, root_token) = bootstrap(&mut service)?;
+        let policy = "length = 10\nrule \"charset\" { charset = \"Q\" min-chars = 10 }";
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/policies/password/database-policy",
+                &root_token,
+                json!({"policy":policy}),
+            )
+            .status,
+            204
+        );
+        let read = call(
+            &mut service,
+            "GET",
+            "sys/policies/password/database-policy",
+            &root_token,
+            json!({}),
+        );
+        assert_eq!(read.status, 200);
+        assert_eq!(read.body["data"]["policy"], policy);
+        let generated = call(
+            &mut service,
+            "GET",
+            "sys/policies/password/database-policy/generate",
+            &root_token,
+            json!({}),
+        );
+        assert_eq!(generated.status, 200);
+        assert_eq!(generated.body["data"]["password"], "Q".repeat(10));
+        let mut downgraded = service.state.clone().ok_or("state")?;
+        downgraded.schema = 55;
+        let error = downgraded
+            .validate_format()
+            .err()
+            .ok_or("schema55 admitted policy")?;
+        assert_eq!(
+            error.body["errors"][0],
+            "password policy state requires schema 56"
+        );
+        drop(service);
+
+        let mut service = root.service()?;
+        assert_eq!(
+            call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+            200
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "sys/policies/password/database-policy/generate",
+                &root_token,
+                json!({}),
+            )
+            .body["data"]["password"],
+            "Q".repeat(10),
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "DELETE",
+                "sys/policies/password/database-policy",
+                &root_token,
+                json!({}),
+            )
+            .status,
+            204
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "sys/policies/password/database-policy",
+                &root_token,
+                json!({}),
+            )
+            .status,
+            404
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn dynamic_issue_uses_role_policy_over_connection_and_custom_username() -> GenerationResult {
+        let template =
+            r#"{{ printf "db-%s-%s" (.DisplayName | truncate 4) (.RoleName | truncate 6) }}"#;
+        let (username, password) = generation_intent("connection-policy", "role-policy", template)?;
+        assert_eq!(username, "db-root-reader");
+        assert_eq!(password, "B".repeat(14));
+        Ok(())
+    }
+
+    #[test]
+    fn dynamic_issue_falls_back_to_connection_then_openbao_default() -> GenerationResult {
+        let (username, password) = generation_intent("connection-policy", "", "")?;
+        assert!(username.starts_with("v-root-reader-"), "{username}");
+        assert!(username.ends_with("-100"), "{username}");
+        assert_eq!(password, "A".repeat(12));
+
+        let (_, password) = generation_intent("", "", "")?;
+        assert_eq!(password.len(), 20);
+        assert!(password.bytes().any(|value| value.is_ascii_lowercase()));
+        assert!(password.bytes().any(|value| value.is_ascii_uppercase()));
+        assert!(password.bytes().any(|value| value.is_ascii_digit()));
+        assert!(password.contains('-'));
         Ok(())
     }
 }

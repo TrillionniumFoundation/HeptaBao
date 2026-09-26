@@ -28,25 +28,31 @@ retirement/readback behavior.
 ## Ownership and source
 
 `crates/heptabao-server/src/service_database.rs`,
-`service_database_statements.rs` and `service_database_rotation.rs` own encrypted
-connection, dynamic lease, statement-template, static-role and manager-rotation
-intent records inside the existing Service state. `postgres_wire.rs` owns bounded
-PostgreSQL TLS/SCRAM/extended-query transport. `bootstrap/postgresql/provider.sql`
-owns the separate provider-side transaction and idempotency ledgers.
-`upgrade_v2_static_credentials.sql`, `upgrade_v3_statement_templates.sql` and
-`upgrade_v4_password_authentication.sql` are owner-only forward extensions for an
-already installed provider-v2 schema.
-`outbound.rs` owns host-enrolled network destinations.
+`service_database_statements.rs`, `service_database_rotation.rs`,
+`auth_password_policy.rs` and `service_database_username.rs` own encrypted
+connection, password-policy, username-template, dynamic lease, statement-template,
+static-role and manager-rotation state inside the existing Service transaction.
+`postgres_wire.rs` owns bounded PostgreSQL TLS/SCRAM/extended-query transport.
+`bootstrap/postgresql/provider.sql` owns the separate provider-side transaction and
+idempotency ledgers. `upgrade_v2_static_credentials.sql`,
+`upgrade_v3_statement_templates.sql`, `upgrade_v4_password_authentication.sql` and
+`upgrade_v5_password_policy_username_templates.sql` are owner-only forward
+extensions for an already installed provider-v2 schema. `outbound.rs` owns
+host-enrolled network destinations.
 No component may infer an external transaction's success from local persistence.
 
 The ordinary Service request admission, live Identity/ACL, pre-entry audit,
 encrypted durable writer and Raft commit remain mandatory. A database mutation
 never installs a second local authoritative store. The original dynamic provider increment introduced schema 4; retained static/root
-rotation state requires schema 53, persisted statement templates require
-schema 54, and an explicit non-default PostgreSQL password-authentication mode
-requires schema 55. Read-only opening of valid older state does not upgrade it. Any real mutation
-publishes the current discriminator defined in `../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`. An old executable must refuse the new state; changing the
-schema number by hand is not a downgrade or rollback procedure.
+rotation state requires schema 53, persisted statement templates require schema 54,
+and explicit PostgreSQL password-authentication selection requires schema 55.
+Schema 56 adds namespace-owned password policies and persisted PostgreSQL username
+and password-generation bindings. A valid schema-55 state remains readable without
+promotion; absent generation fields preserve its historical `hbp_`/64-hex behavior.
+Any real current mutation publishes the discriminator defined in
+`../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`. An old executable must refuse
+schema 56 without rewriting it; changing the schema number by hand is not downgrade
+or rollback.
 
 ## Enrollment and bounded API
 
@@ -74,10 +80,12 @@ After independently provisioning the SQL contract, configure the database mount:
 
 ```text
 POST sys/mounts/database                         {"type":"database"}
-POST database/config/local                      connection configuration
+POST/GET/LIST/DELETE sys/policies/password/<name> namespace-owned policy CRUD
+GET  sys/policies/password/<name>/generate       authorized one-time generation
+POST database/config/local                       connection configuration
 LIST database/config                             configured connection names
 DELETE database/config/local                     delete only when unreferenced
-POST database/roles/reader                      bounded role configuration
+POST database/roles/reader                       bounded role configuration
 LIST database/roles                              configured role names
 DELETE database/roles/reader                     stop future issuance for that role
 GET  database/creds/reader                       creates real provider intent
@@ -91,20 +99,30 @@ LIST sys/leases/lookup/database/creds/reader
 
 Connection configuration accepts `plugin_name` equal to
 `postgresql-database-plugin`, `connection_url`, `username`, `password`,
-`allowed_roles`, optional `verify_connection=true`, and optional
-`password_authentication`. The latter is `password` by default or
-`scram-sha-256` for the native PostgreSQL provider. The manager credential is
-sealed by existing Service persistence, never returned by config read. Successful
-configuration requires a verified current-user and provider-contract query.
+`allowed_roles`, optional `verify_connection=true`, `password_authentication`,
+`password_policy` and `username_template`. Password authentication is `password`
+by default or `scram-sha-256` for the native PostgreSQL provider. An empty
+`password_policy` selects the bounded default policy; a nonempty value names a
+namespace-owned `sys/policies/password/*` record. An empty configured username
+template resets to the official OpenBao 2.6.2 PostgreSQL default. Partial updates
+preserve omitted manager and generation fields. Provider identity changes are
+rejected while roles, static roles, root intents or retained leases reference the
+connection; generation-only changes do not rewrite already-issued credentials.
+The manager credential is sealed by existing Service persistence and never
+returned by config read. Successful configuration requires a verified
+current-user and provider-contract query.
 
 Role configuration has two mutually exclusive modes. The retained provider-role
-mode uses `db_name`, **`provider_role`**, `default_ttl` and `max_ttl`;
-`provider_role` is a separately approved non-login PostgreSQL group. The bounded
-statement mode uses `creation_statements`, optional `renew_statements`,
-`revocation_statements` and `rollback_statements`, plus `credential_type=password`
-and an empty `credential_config`. Both modes retain the same `db_name` and TTL
-bounds. A role cannot mix `provider_role` and statement templates, and statement
-roles currently require the native PostgreSQL provider.
+mode uses `db_name`, **`provider_role`**, `default_ttl`, `max_ttl` and optional
+`credential_config.password_policy`; `provider_role` is a separately approved
+non-login PostgreSQL group. The bounded statement mode uses `creation_statements`,
+optional `renew_statements`, `revocation_statements` and `rollback_statements`,
+plus `credential_type=password` and optional
+`credential_config.password_policy`. An omitted or empty role policy inherits the
+connection policy. Both modes retain the same `db_name` and TTL bounds. A role
+cannot mix `provider_role` and statement templates, and statement roles currently
+require the native PostgreSQL provider. Deleting a referenced policy blocks new
+issuance or rotation but does not erase or mutate existing lease credentials.
 
 Role deletion removes only the issuance configuration: existing provider leases
 remain independently owned and must still be renewed, revoked or reconciled
@@ -176,8 +194,63 @@ actual `pg_authid` SCRAM verifier, rejects raw/malformed input at SCRAM wrappers
 before any fence or role is created, rotates the manager, restarts HeptaBao and
 executes the v2→static→statement→password-auth forward path twice. It compares
 owner function OID/owner/ACL/security configuration before and after upgrade.
-Password-policy generation, `username_template`, non-PostgreSQL providers,
-multi-host faults and independent admission remain open.
+This profile predates the generation settings below; it does not qualify their
+schema transition or current username shapes by itself.
+
+## Password policy and PostgreSQL username generation
+
+Password policies are namespace-owned encrypted Service state, not provider
+configuration or PostgreSQL rows. Root/sudo-authorized callers use
+`sys/policies/password/<name>` to create, read, list, delete and generate from a
+reviewed HCL subset: one `length` and bounded `rule "charset"` blocks with
+`charset` and `min-chars`. Source is limited to 64 KiB, 128 policies per
+namespace, 64 rules per policy, 4–100 output characters and a 255-character
+aggregate charset. Malformed restored policy source fails validation. Generation
+uses operating-system randomness, rejection-sampled indexes and a final
+Fisher–Yates shuffle. The built-in policy emits 20 characters with at least one
+lowercase, uppercase, digit and hyphen; generated values are returned only by an
+authorized request and are never written to audit output.
+
+A PostgreSQL connection can select a namespace policy by name. Dynamic and
+statement-backed roles may override it with
+`credential_config.password_policy`; static-role rotation inherits the role
+override and then the connection policy, while root rotation uses the connection
+policy. An empty policy name means the bounded built-in policy. Missing or
+deleted named policy state blocks future issue/rotation before provider entry;
+it does not mutate already-issued credentials. Statement templates additionally
+require policy output to contain only ASCII letters, digits, underscore or
+hyphen so policy choice cannot inject SQL syntax through a placeholder.
+
+Fresh PostgreSQL connections persist the official OpenBao 2.6.2 username
+template. The evaluator admits only `.DisplayName`, `.RoleName`, bounded literal
+and pipeline expressions, and a reviewed pure helper set that includes `printf`,
+`random`, `unix_time`, `truncate`, `truncate_sha256`, case conversion, hashing,
+base64/hex conversion, replacement and UUID generation. It rejects control flow,
+variables, template inclusion and ambient input instead of approximating them.
+Template source, token count, nesting, arguments, intermediates and random lengths
+are bounded; the final PostgreSQL username must be printable ASCII and at most 63
+bytes. A configured empty template resets to the official default.
+
+Schema 56 binds password-policy and username-template state. A valid schema-55
+connection with absent generation fields remains readable byte-stably and keeps
+its historical `hbp_` plus 32-hex username and 64-hex password generation until a
+current mutation publishes schema 56. The predecessor binary must reject schema
+56 without altering the encrypted state, and the current candidate must reopen it
+again. The provider's owner-only v5 extension adds an exact generation protocol
+and bounded username/password validators, while retaining historical short-name
+cleanup. Fresh and forward-installed function definitions must match; the API
+manager cannot install the upgrade and receives only explicit execution grants.
+
+`postgres_generation_live.py` executes a real PostgreSQL 17 fresh install and a
+v4→v5 owner-only provider upgrade, then creates a real schema-55 Service state
+with the pinned predecessor binary. It proves read-only non-promotion, legacy
+credential behavior, current promotion, old-binary downgrade refusal without
+rewrite, current reopen, dynamic/statement/static/root policy inheritance,
+official/custom username templates, real logins, manager rotation, active-lease
+partial updates, restart, policy deletion behavior and plaintext scans. The
+profile binds both binary/source identities and is mandatory in replacement CI.
+It remains repository-controlled scoped evidence, not full provider or
+independent admission.
 
 ## Bounded OpenBao statement-template roles
 
@@ -250,9 +323,11 @@ database connection. The API role name must remain in the connection's
 `allowed_roles`, while the physical PostgreSQL username must be independently
 enrolled by the provider owner in `allowed_static_roles`. The manager itself,
 privileged roles, recreated role OIDs and identity rebinding are rejected. Rotation
-periods are bounded to 5–86,400 seconds. Static passwords are generated as 32
-random bytes encoded in lowercase hex; configuration reads never return manager
-or pending credentials.
+periods are bounded to 5–86,400 seconds. Current static rotation uses the role's
+password-policy override, then the connection policy, then the bounded built-in
+policy. Historical schema-55 roles with absent policy state preserve the legacy
+64-hex generation contract until a current mutation promotes the state.
+Configuration reads never return manager or pending credentials.
 
 Every manual, scheduled, delete or root rotation first persists its sequence,
 semantic digest and pending secret in the encrypted Service transaction. Provider
@@ -293,20 +368,25 @@ provider-capacity saturation before password mutation, plaintext scans and
 restricted-manager negative cases. It also disables lifecycle,
 retains a root intent through provider outage and process restart, overtakes it with
 an unrelated dynamic effect, then proves lifecycle readmission and completion. It is
-mandatory in the replacement workflow. This scoped profile does not implement connection password-policy generation,
-username-template/password-authentication option parity, complete OpenBao
-field/error parity, generic database-plugin capability negotiation,
-non-PostgreSQL static roles or multi-host database failover. OpenBao 2.6.2's
-native PostgreSQL plugin is password-based; RSA and client-certificate credential
-types are generic plugin capabilities, not attributed to this provider.
+mandatory in the replacement workflow. Password-authentication, password-policy
+and username-template configuration are now separate executable extensions; this
+older profile does not substitute for their exact-head receipts. Remaining scope
+includes `root_rotation_statements`, connection-pool controls and measured pooling
+behavior, complete OpenBao field/error/template-helper parity, generic
+database-plugin capability negotiation, non-PostgreSQL static roles and
+multi-host database failover. OpenBao 2.6.2's native PostgreSQL plugin is
+password-based; RSA and client-certificate credential types are generic plugin
+capabilities, not attributed to this provider.
 
 ## Native username contract and recovery of the short-name regression
 
-New native PostgreSQL and Valkey credentials retain `hbp_` followed by 32 lowercase
-hexadecimal digits. The generic plugin path retains its separate 28-digit form
-for MySQL's 32-character account limit. Every durable lease ID retains all 128
-random bits. These formats do not change existing lease IDs, usernames, sequence
-numbers or request digests on reopen.
+Fresh current PostgreSQL connections persist and execute the official bounded
+`v-<display>-<role>-<random>-<unix-time>` template described above. Historical
+PostgreSQL connections whose schema-55 representation has no template retain
+`hbp_` plus 32 lowercase hexadecimal digits. Valkey keeps that native 32-digit
+shape; the generic plugin path retains its separate 28-digit form for MySQL's
+32-character account limit. Every durable lease ID retains all 128 random bits.
+Reopen never rewrites an existing lease ID, username, sequence or request digest.
 
 The shared MySQL naming change once affected native PostgreSQL too: the Service
 persisted a short-name `PendingIssue`, but deployed PostgreSQL provider v2 rejected
@@ -452,8 +532,10 @@ The stricter existing encrypted Service-state size limit still applies first. Th
 real PostgreSQL acceptance profile churns more than 128 issue/revoke lifecycles
 and requires the per-lease provider ledger plus generated-role set to return to a
 bounded terminal footprint while the global fence keeps increasing.
-Manager passwords are bounded ASCII; issued passwords are 32 random bytes encoded
-as hex. No caller-supplied username is used for dynamic accounts.
+Manager passwords are bounded ASCII. Current issued client passwords come from the
+selected namespace policy; historical absent-policy connections retain 32 random
+bytes encoded as lowercase hex. Dynamic usernames come only from the admitted
+provider/template path—never from a caller-supplied account name.
 
 TLS uses an absolute 3-second connection/I/O budget; the PostgreSQL profile sets
 2.5-second statement and 1.5-second lock timeouts. Query text is fixed, parameters
@@ -486,6 +568,8 @@ python qa/openbao-acceptance/postgres_pipeline_ha.py --binary <server> --output 
 python qa/openbao-acceptance/postgres_live.py --binary <server> --postgres-bin <pg17-bin> --output <new-json>
 python qa/openbao-acceptance/postgres_static_rotation_live.py --binary <server> --postgres-bin <pg17-bin> --work-dir <new-private-dir> --output <new-json>
 python qa/openbao-acceptance/postgres_statement_templates_live.py --binary <server> --postgres-bin <pg17-bin> --work-dir <new-private-dir> --output <new-json>
+python qa/openbao-acceptance/postgres_password_authentication_live.py --binary <server> --postgres-bin <pg17-bin> --work-dir <new-private-dir> --output <new-json>
+python qa/openbao-acceptance/postgres_generation_live.py --binary <server> --legacy-binary <schema55-server> --build-source-commit <candidate-parent> --legacy-source-commit <candidate-parent> --expected-binary-sha256 <sha256> --expected-legacy-sha256 <sha256> --postgres-bin <pg17-bin> --work-dir <new-private-dir> --output <new-json>
 ```
 
 The first two Python runners use an explicitly labelled in-memory wire model

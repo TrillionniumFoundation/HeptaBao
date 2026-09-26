@@ -20,6 +20,12 @@ impl VerifiedCredential {
             Self::Batch(claims) => claims.entity_id(),
         }
     }
+    pub(super) fn display_name(&self) -> &str {
+        match self {
+            Self::Service(token) => &token.display_name,
+            Self::Batch(claims) => claims.display_name(),
+        }
+    }
 }
 
 pub(super) enum CheckedCredential<'a> {
@@ -123,6 +129,9 @@ impl Principal {
     pub(crate) fn consumed_last_use(&self) -> bool {
         self.service_token()
             .is_some_and(|token| token.uses_remaining == Some(0))
+    }
+    pub(crate) fn display_name(&self) -> &str {
+        self.credential.display_name()
     }
 }
 
