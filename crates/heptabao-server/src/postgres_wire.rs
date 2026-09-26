@@ -256,13 +256,33 @@ impl PgSession {
     }
     /// One statement, one parameterized execution, one JSON/text scalar row.
     /// This intentionally retains the small historical contract used by the
-    /// dynamic credentials provider.
+    /// original dynamic credentials provider.
     pub fn scalar(&mut self, sql: &str, parameters: &[&str]) -> Result<String, &'static str> {
+        self.scalar_with_parameter_limit(sql, parameters, 4096)
+    }
+
+    /// The statement-template provider carries a bounded JSON array in one
+    /// extended-query parameter. Existing scalar callers retain the 4 KiB cap.
+    pub(crate) fn scalar_large(
+        &mut self,
+        sql: &str,
+        parameters: &[&str],
+    ) -> Result<String, &'static str> {
+        self.scalar_with_parameter_limit(sql, parameters, 128 * 1024)
+    }
+
+    fn scalar_with_parameter_limit(
+        &mut self,
+        sql: &str,
+        parameters: &[&str],
+        parameter_limit: usize,
+    ) -> Result<String, &'static str> {
         if sql.len() > 4096
             || parameters.len() > 12
+            || parameter_limit > MAX_PARAMETER_VALUE
             || parameters
                 .iter()
-                .any(|p| p.len() > 4096 || p.contains('\0'))
+                .any(|p| p.len() > parameter_limit || p.contains('\0'))
         {
             return Err("PostgreSQL parameter bound exceeded");
         }

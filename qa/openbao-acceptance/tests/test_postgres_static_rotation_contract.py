@@ -13,8 +13,11 @@ SPEC.loader.exec_module(MODULE)
 def extension(path):
     text = path.read_text()
     start = text.index("-- PostgreSQL static-role and manager-password rotation extension.")
-    end = text.index("COMMIT;", start)
-    return text[start:end]
+    boundaries = [text.index("COMMIT;", start)]
+    next_extension = text.find("-- PostgreSQL statement-template extension.", start)
+    if next_extension >= 0:
+        boundaries.append(next_extension)
+    return text[start:min(boundaries)]
 
 
 class PostgresStaticRotationContractTests(unittest.TestCase):
@@ -22,6 +25,10 @@ class PostgresStaticRotationContractTests(unittest.TestCase):
         self.assertEqual(
             extension(ROOT / "bootstrap/postgresql/provider.sql"),
             extension(ROOT / "bootstrap/postgresql/upgrade_v2_static_credentials.sql"),
+        )
+        self.assertNotIn(
+            "PostgreSQL statement-template extension",
+            extension(ROOT / "bootstrap/postgresql/provider.sql"),
         )
 
     def test_retirement_is_a_digest_bound_bounded_tombstone(self):

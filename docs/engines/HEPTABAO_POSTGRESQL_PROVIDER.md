@@ -1,4 +1,4 @@
-# PostgreSQL dynamic credentials, static roles and manager rotation
+# PostgreSQL dynamic credentials, statement templates, static roles and manager rotation
 
 Status: implemented development profile with source-bound real PostgreSQL 17.11
 provider and batch-lease execution receipts below. TLS/SCRAM protocol models
@@ -27,20 +27,22 @@ retirement/readback behavior.
 
 ## Ownership and source
 
-`crates/heptabao-server/src/service_database.rs` and
-`service_database_rotation.rs` own encrypted connection, dynamic lease, static-role
-and manager-rotation intent records inside the existing Service state.
-`postgres_wire.rs` owns bounded PostgreSQL TLS/SCRAM/extended-query transport.
-`bootstrap/postgresql/provider.sql` owns the separate provider-side transaction
-and idempotency ledger. `upgrade_v2_static_credentials.sql` is the owner-only
-forward extension for an already installed provider-v2 schema. `outbound.rs` owns host-enrolled network destinations.
+`crates/heptabao-server/src/service_database.rs`,
+`service_database_statements.rs` and `service_database_rotation.rs` own encrypted
+connection, dynamic lease, statement-template, static-role and manager-rotation
+intent records inside the existing Service state. `postgres_wire.rs` owns bounded
+PostgreSQL TLS/SCRAM/extended-query transport. `bootstrap/postgresql/provider.sql`
+owns the separate provider-side transaction and idempotency ledgers.
+`upgrade_v2_static_credentials.sql` and `upgrade_v3_statement_templates.sql` are
+owner-only forward extensions for an already installed provider-v2 schema.
+`outbound.rs` owns host-enrolled network destinations.
 No component may infer an external transaction's success from local persistence.
 
 The ordinary Service request admission, live Identity/ACL, pre-entry audit,
 encrypted durable writer and Raft commit remain mandatory. A database mutation
 never installs a second local authoritative store. The original dynamic provider increment introduced schema 4; retained static/root
-rotation state requires schema 53;
-read-only opening of valid older state does not upgrade it. Any real mutation
+rotation state requires schema 53, and persisted statement templates require
+schema 54. Read-only opening of valid older state does not upgrade it. Any real mutation
 publishes the current discriminator defined in `../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`. An old executable must refuse the new state; changing the
 schema number by hand is not a downgrade or rollback procedure.
 
@@ -91,11 +93,14 @@ Connection configuration accepts `plugin_name` equal to
 sealed by existing Service persistence, never returned by config read. Successful
 configuration requires a verified current-user and provider-contract query.
 
-Role configuration uses `db_name`, **`provider_role`**, `default_ttl` and `max_ttl`.
-`provider_role` is a separately approved, non-login PostgreSQL group; it is not
-arbitrary SQL or an OpenBao creation-statement template. HTTP-provided creation,
-rollback, rotation and revocation SQL are rejected. Consequently this API is a
-bounded provider profile, not a drop-in OpenBao database plugin.
+Role configuration has two mutually exclusive modes. The retained provider-role
+mode uses `db_name`, **`provider_role`**, `default_ttl` and `max_ttl`;
+`provider_role` is a separately approved non-login PostgreSQL group. The bounded
+statement mode uses `creation_statements`, optional `renew_statements`,
+`revocation_statements` and `rollback_statements`, plus `credential_type=password`
+and an empty `credential_config`. Both modes retain the same `db_name` and TTL
+bounds. A role cannot mix `provider_role` and statement templates, and statement
+roles currently require the native PostgreSQL provider.
 
 Role deletion removes only the issuance configuration: existing provider leases
 remain independently owned and must still be renewed, revoked or reconciled
@@ -120,6 +125,58 @@ external revoke, advances a cluster-bound monotonic fence, retires the generated
 role and per-lease provider row, and confirms that retirement before the Service
 removes the local lease record. Root enumeration is not a union of all engine
 classes.
+
+## Bounded OpenBao statement-template roles
+
+The statement profile persists the exact template arrays in encrypted Service
+state and copies them into each durable lease intent. A statement-backed lease is
+domain-separated from the legacy provider-role digest, so old pending intents
+reopen byte-stably while a template or ordering change cannot adopt an existing
+operation. Supported placeholders are `{{name}}`, `{{username}}`, `{{password}}`
+and `{{expiration}}`. Each phase permits at most 16 configured entries, each entry
+is at most 16 KiB, aggregate configured text is at most 64 KiB, and one provider
+operation may execute at most 64 split statements. Single/double/dollar-quoted
+strings, PostgreSQL escape strings, line comments and nested block comments are
+tracked before semicolon splitting. Unknown or unmatched placeholder delimiters,
+unterminated strings/comments and excess comment nesting fail before intent
+publication.
+
+The Service renders only fixed generated usernames, 32-byte hexadecimal
+passwords and UTC expirations. It serializes the normalized statement array once,
+binds its exact SHA-256 digest into provider readback, and passes the original
+bounded JSON text to `apply_statements`. The privileged provider parses that text,
+verifies array/type/size bounds, records only digests and role identity, and runs
+all statements inside one PostgreSQL transaction. Readback must match fence,
+lease, username, sequence, action, expiry, request digest and the exact statement
+digest before Service may publish completion. A same-sequence retry with different
+bytes is a semantic conflict; a later global fence does not invalidate exact
+read-only replay of the already recorded operation.
+
+Empty renewal statements use a bounded `ALTER ROLE ... VALID UNTIL` default.
+Empty revocation statements call the non-public `default_statement_revoke`, which
+sets NOLOGIN, terminates sessions, revokes bounded schema/database privileges and
+drops the generated role. Custom revocation may leave a NOLOGIN role only when no
+session remains. Creation statements and provider-ledger publication share one
+transaction, so a late SQL failure rolls back the generated role and ledger row.
+`rollback_statements` are persisted and digest-bound for OpenBao field fidelity,
+but are not separately executed after PostgreSQL has already rolled back the
+transaction; templates that cause non-transactional external side effects remain
+outside this bounded profile.
+
+Fresh installs include the statement extension. An existing provider-v2 plus
+static/root installation must be backed up and extended by the privileged schema
+owner with `upgrade_v3_statement_templates.sql`; the API manager cannot install
+or mutate the extension. Fresh and forward-install extension blocks are kept
+byte-identical. The manager gets explicit execution grants only and never table
+mutation or schema creation.
+
+`postgres_statement_templates_live.py` runs a fresh PostgreSQL 17 cluster and an
+independent v2→static/root→statement forward-upgrade database. It exercises field
+readback and partial updates, real generated-role login and grants, denied writes,
+renewal, restart, custom and default revoke, exact retry after a later global
+fence, transactional failed creation, ledger retirement and plaintext scans. The
+profile is mandatory in replacement CI and remains repository-controlled scoped
+evidence, not complete OpenBao database-plugin admission.
 
 ## Bounded static roles and manager-password rotation
 
@@ -166,7 +223,7 @@ applied retries remain observable after unrelated later effects advance the glob
 provider floor. Root rotation similarly keeps one manager-bound ledger row and
 refuses identity rebinding.
 
-Fresh installs use the thirteen-function provider contract. An existing provider-v2
+Fresh installs use the eighteen-function provider contract. An existing provider-v2
 installation must be backed up and extended only by the privileged schema owner
 with `upgrade_v2_static_credentials.sql`; the API manager cannot install or modify
 its tables. The forward script and fresh-install block are byte-aligned for these
@@ -180,9 +237,12 @@ provider-capacity saturation before password mutation, plaintext scans and
 restricted-manager negative cases. It also disables lifecycle,
 retains a root intent through provider outage and process restart, overtakes it with
 an unrelated dynamic effect, then proves lifecycle readmission and completion. It is
-mandatory in the replacement workflow. This scoped profile does not implement arbitrary creation or
-rotation SQL, cron schedules/windows, non-PostgreSQL static roles, complete OpenBao
-field/error parity or multi-host database failover.
+mandatory in the replacement workflow. This scoped profile does not implement connection password-policy generation,
+username-template/password-authentication option parity, complete OpenBao
+field/error parity, generic database-plugin capability negotiation,
+non-PostgreSQL static roles or multi-host database failover. OpenBao 2.6.2's
+native PostgreSQL plugin is password-based; RSA and client-certificate credential
+types are generic plugin capabilities, not attributed to this provider.
 
 ## Native username contract and recovery of the short-name regression
 
@@ -286,8 +346,8 @@ row and generated PostgreSQL role have been removed.
 
 An independent privileged PostgreSQL schema owner installs `provider.sql` into
 the selected database. The caller must explicitly provision a nonprivileged login
-manager, a non-login application group and its application permissions, grant
-only schema usage and the five dynamic plus eight rotation functions, and enroll manager/group in
+manager, a non-login application group and its application permissions, grant only schema usage and the five dynamic, eight rotation and five statement
+functions, and enroll manager/group in
 `allowed_groups`. Do not grant the manager table mutation, schema CREATE or
 membership in a privileged role. Function search paths are fixed to pg_catalog;
 relation references are schema-qualified. The installer is deliberately non-
@@ -368,6 +428,8 @@ cargo test --locked -p heptabao-server postgres_wire
 python qa/openbao-acceptance/postgres_pipeline_simulated.py --binary <server> --output <new-json>
 python qa/openbao-acceptance/postgres_pipeline_ha.py --binary <server> --output <new-json>
 python qa/openbao-acceptance/postgres_live.py --binary <server> --postgres-bin <pg17-bin> --output <new-json>
+python qa/openbao-acceptance/postgres_static_rotation_live.py --binary <server> --postgres-bin <pg17-bin> --work-dir <new-private-dir> --output <new-json>
+python qa/openbao-acceptance/postgres_statement_templates_live.py --binary <server> --postgres-bin <pg17-bin> --work-dir <new-private-dir> --output <new-json>
 ```
 
 The first two Python runners use an explicitly labelled in-memory wire model

@@ -442,7 +442,7 @@ Existing bounded profiles: `qa/openbao-acceptance/ssh_otp_live.py`, `qa/openbao-
 
 Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP01`, `H19-WP02`, `H19-WP03`, `H19-WP04`.
 API families: `{mount}/config/*`; `{mount}/roles/*`; `{mount}/static-roles/*`; `{mount}/creds/*`; `{mount}/rotate-root/*`.
-Runtime source: `crates/heptabao-server/src/service_database.rs`, `crates/heptabao-server/src/postgres_wire.rs`.
+Runtime source: `crates/heptabao-server/src/service_database.rs`, `crates/heptabao-server/src/service_database_statements.rs`, `crates/heptabao-server/src/postgres_wire.rs`.
 Separate contracts: none claimed.
 Guides: `docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md`.
 
@@ -452,9 +452,9 @@ Guides: `docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md`.
 
 **Lifecycle:** Reconcile timeout after actual SQL effect, expiry, rollback and lease revocation.
 
-**Remaining scope:** Static/dynamic roles, root rotation, statement templates, renew/revoke and rollback.
+**Remaining scope:** Bounded provider-role and statement-template dynamic roles, static roles, root rotation, renew/revoke and transactional failed-creation rollback are executable. Connection-level password-policy generation, plugin-specific username-template and password-authentication configuration, complete OpenBao field/error parity, generic database-plugin capability negotiation, non-PostgreSQL static roles, non-transactional external SQL side effects, multi-host provider faults and independent admission remain open.
 
-Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`, `qa/openbao-acceptance/database_config_completion_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`, `qa/openbao-acceptance/database_config_completion_live.py`, `qa/openbao-acceptance/postgres_static_rotation_live.py`, `qa/openbao-acceptance/postgres_statement_templates_live.py`.
 
 ### HB-SURFACE-SECRET-KUBERNETES
 
@@ -514,7 +514,7 @@ Existing bounded profiles: `qa/openbao-acceptance/rabbitmq_live.py`.
 
 Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP05`, `H19-WP13`.
 API families: `database/config/*`; `database/roles/*`; `database/static-roles/*`; `database/creds/*`.
-Runtime source: `crates/heptabao-server/src/service_database.rs`, `crates/heptabao-server/src/postgres_wire.rs`.
+Runtime source: `crates/heptabao-server/src/service_database.rs`, `crates/heptabao-server/src/service_database_statements.rs`, `crates/heptabao-server/src/postgres_wire.rs`.
 Separate contracts: none claimed.
 Guides: `docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md`.
 
@@ -524,9 +524,9 @@ Guides: `docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md`.
 
 **Lifecycle:** Reconcile create/renew/revoke/rollback and active sessions against real PostgreSQL.
 
-**Remaining scope:** The scoped PostgreSQL 17.11 TLS/SCRAM dynamic issue/renew/revoke, session termination, outage/restart reconciliation and >128 retirement profile is recorded in qa/openbao-acceptance/evidence/postgresql-live-45c7edc.json; real static-role/root-rotation and full OpenBao statement/template/error parity, multi-host fault and independent qualification matrices remain required.
+**Remaining scope:** The native PostgreSQL profiles execute TLS/SCRAM provider-role and statement-template dynamic issue/renew/revoke, session termination, outage/restart reconciliation, long-lived retirement, static-role rotation and manager-password rotation. The statement profile binds exact template bytes to provider readback and exercises fresh plus owner-only forward install. OpenBao 2.6.2's native PostgreSQL plugin is password-based; remaining native gaps are connection password-policy, username-template and password-authentication configuration, complete field/error parity, non-transactional external side effects, multi-host faults and independent qualification. RSA/client-certificate credentials belong to generic plugin capability negotiation and are not attributed to this native provider.
 
-Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`, `qa/openbao-acceptance/postgres_static_rotation_live.py`, `qa/openbao-acceptance/postgres_statement_templates_live.py`.
 
 ### HB-SURFACE-DB-MYSQL
 

@@ -15,9 +15,12 @@ use std::sync::Weak;
 
 #[path = "service_database_rotation.rs"]
 mod rotation;
+#[path = "service_database_statements.rs"]
+mod statements;
 pub(super) use rotation::{
     DatabaseRotationMaintenance, DatabaseRotationObservation, DatabaseRotationPlan,
 };
+use statements::DatabaseStatements;
 
 /// The provider has already been entered and its effect observed. No local
 /// persistence failure can now mean that issuance/renewal/revocation was absent.
@@ -93,7 +96,10 @@ impl Drop for PrivateString {
 #[serde(deny_unknown_fields)]
 struct DatabaseRole {
     db_name: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
     provider_role: String,
+    #[serde(default, skip_serializing_if = "DatabaseStatements::is_empty")]
+    statements: DatabaseStatements,
     default_ttl: u64,
     max_ttl: u64,
 }
@@ -113,7 +119,10 @@ struct DatabaseLease {
     provider_id: String,
     username: String,
     db_name: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
     provider_role: String,
+    #[serde(default, skip_serializing_if = "DatabaseStatements::is_empty")]
+    statements: DatabaseStatements,
     owner: LeaseOwner,
     issued: u64,
     expires: u64,
@@ -386,6 +395,9 @@ impl DatabaseEffectPlan {
         }
         if self.connection.provider == DatabaseProvider::Valkey {
             return self.execute_valkey();
+        }
+        if !self.lease.statements.is_empty() {
+            return self.execute_postgresql_statements();
         }
         let mut pg = self
             .connection
@@ -897,17 +909,34 @@ impl DatabaseState {
                         return Err(failure("invalid persisted provider configuration"));
                     }
                 }
+                if state
+                    .roles
+                    .keys()
+                    .any(|role_name| state.static_roles.contains_key(role_name))
+                {
+                    return Err(failure(
+                        "dynamic and static database role names must be unique",
+                    ));
+                }
                 for (role_name, role) in &state.roles {
-                    if !name(role_name)
-                        || !name(&role.provider_role)
-                        || !state.connections.contains_key(&role.db_name)
-                        || state
-                            .connections
-                            .get(&role.db_name)
-                            .is_some_and(|connection| {
+                    let connection = state.connections.get(&role.db_name);
+                    let statement_mode = !role.statements.is_empty();
+                    let mode_invalid = if statement_mode {
+                        !role.provider_role.is_empty()
+                            || connection.is_none_or(|connection| {
+                                connection.provider != DatabaseProvider::Postgresql
+                            })
+                            || role.statements.validate().is_err()
+                    } else {
+                        !name(&role.provider_role)
+                            || connection.is_some_and(|connection| {
                                 connection.provider == DatabaseProvider::Valkey
                                     && valkey_permissions(&role.provider_role).is_none()
                             })
+                    };
+                    if !name(role_name)
+                        || connection.is_none()
+                        || mode_invalid
                         || role.default_ttl == 0
                         || role.default_ttl > role.max_ttl
                         || role.max_ttl > 86400
@@ -917,12 +946,23 @@ impl DatabaseState {
                 }
                 state.validate_rotation_state()?;
                 for (id, l) in &state.leases {
+                    let connection = state.connections.get(&l.db_name);
+                    let statement_mode = !l.statements.is_empty();
+                    let mode_invalid = if statement_mode {
+                        !l.provider_role.is_empty()
+                            || connection.is_none_or(|connection| {
+                                connection.provider != DatabaseProvider::Postgresql
+                            })
+                            || l.statements.validate().is_err()
+                    } else {
+                        !name(&l.provider_role)
+                    };
                     if id != &l.id
                         || id.len() > 512
                         || l.provider_id.len() != 68
                         || !l.provider_id.starts_with("hb1:")
                         || !l.provider_id[4..].bytes().all(|b| b.is_ascii_hexdigit())
-                        || !name(&l.provider_role)
+                        || mode_invalid
                         || l.owner
                             .validate_scope(ns, ServiceOwnerProfile::CanonicalDigest)
                             .is_err()
@@ -945,7 +985,7 @@ impl DatabaseState {
                         || l.max_expires <= l.issued
                         || l.expires > l.max_expires
                         || !valid_database_username(&l.username)
-                        || !state.connections.contains_key(&l.db_name)
+                        || connection.is_none()
                         || l.request_digest.len() != 64
                         || l.phase == Phase::Active && l.password.is_some()
                         || l.phase == Phase::PendingIssue && l.password.is_none()
@@ -1317,7 +1357,8 @@ fn valkey_fence_admits(previous: Option<(u64, &str)>, sequence: u64, digest: &st
     previous.is_none_or(|(old, binding)| sequence > old || (sequence == old && digest == binding))
 }
 fn digest_lease(l: &DatabaseLease) -> Result<String, Response> {
-    let bytes = Zeroizing::new(
+    let bytes = if l.statements.is_empty() {
+        // Exact legacy tuple: old pending intents must reopen byte-stably.
         serde_json::to_vec(&(
             l.id.as_str(),
             l.provider_id.as_str(),
@@ -1328,10 +1369,23 @@ fn digest_lease(l: &DatabaseLease) -> Result<String, Response> {
             l.provider_role.as_str(),
             l.password.as_ref().map(|p| p.0.as_str()).unwrap_or(""),
         ))
-        .map_err(|_| failure("lease serialization failed"))?,
-    );
-    Ok(hex(&crypto::digest(&bytes)))
+    } else {
+        serde_json::to_vec(&(
+            "heptabao.database.statements.v1",
+            l.id.as_str(),
+            l.provider_id.as_str(),
+            l.username.as_str(),
+            l.seq,
+            action(l),
+            l.expires,
+            &l.statements,
+            l.password.as_ref().map(|p| p.0.as_str()).unwrap_or(""),
+        ))
+    }
+    .map_err(|_| failure("lease serialization failed"))?;
+    Ok(hex(&crypto::digest(&Zeroizing::new(bytes))))
 }
+
 impl Service {
     pub(super) fn database_handles(
         &self,
@@ -1669,44 +1723,146 @@ impl Service {
                     ("roles", "POST" | "PUT") => {
                         fields(
                             body,
-                            &["db_name", "provider_role", "default_ttl", "max_ttl"],
+                            &[
+                                "db_name",
+                                "provider_role",
+                                "creation_statements",
+                                "revocation_statements",
+                                "rollback_statements",
+                                "renew_statements",
+                                "credential_type",
+                                "credential_config",
+                                "default_ttl",
+                                "max_ttl",
+                            ],
                         )?;
-                        let db_name = text(body, "db_name")?.to_owned();
-                        let provider_role = text(body, "provider_role")?.to_owned();
-                        if !name(&db_name) || !name(&provider_role) {
+                        statements::parse_credential_type(body)?;
+                        statements::validate_credential_config(body)?;
+                        let existing = state
+                            .database
+                            .mount(ns, &mount)
+                            .and_then(|database_mount| database_mount.roles.get(key))
+                            .cloned();
+                        let db_name = if body.get("db_name").is_some() {
+                            text(body, "db_name")?.to_owned()
+                        } else {
+                            existing
+                                .as_ref()
+                                .map(|role| role.db_name.clone())
+                                .ok_or_else(|| invalid("database name is required"))?
+                        };
+                        if !name(&db_name) {
                             return Err(invalid("invalid database role reference"));
                         }
-                        let default_ttl = ttl(body, "default_ttl", 3600)?;
-                        let max_ttl = ttl(body, "max_ttl", 86400)?;
+                        let provider_role = if let Some(value) = body.get("provider_role") {
+                            value
+                                .as_str()
+                                .filter(|value| {
+                                    value.len() <= 63 && !value.chars().any(char::is_control)
+                                })
+                                .ok_or_else(|| invalid("invalid provider_role"))?
+                                .to_owned()
+                        } else {
+                            existing
+                                .as_ref()
+                                .map(|role| role.provider_role.clone())
+                                .unwrap_or_default()
+                        };
+                        let mut role_statements = existing
+                            .as_ref()
+                            .map(|role| role.statements.clone())
+                            .unwrap_or_default();
+                        if let Some(value) =
+                            statements::parse_statement_field(body, "creation_statements")?
+                        {
+                            role_statements.creation = value;
+                        }
+                        if let Some(value) =
+                            statements::parse_statement_field(body, "revocation_statements")?
+                        {
+                            role_statements.revocation = value;
+                        }
+                        if let Some(value) =
+                            statements::parse_statement_field(body, "rollback_statements")?
+                        {
+                            role_statements.rollback = value;
+                        }
+                        if let Some(value) =
+                            statements::parse_statement_field(body, "renew_statements")?
+                        {
+                            role_statements.renewal = value;
+                        }
+                        role_statements.validate()?;
+                        let default_ttl = if body.get("default_ttl").is_some() {
+                            ttl(body, "default_ttl", 3600)?
+                        } else {
+                            existing.as_ref().map_or(3600, |role| role.default_ttl)
+                        };
+                        let max_ttl = if body.get("max_ttl").is_some() {
+                            ttl(body, "max_ttl", 86400)?
+                        } else {
+                            existing.as_ref().map_or(86400, |role| role.max_ttl)
+                        };
                         if default_ttl > max_ttl {
                             return Err(invalid("default TTL exceeds maximum"));
                         }
-                        let m = state.database.mount_mut(ns, &mount);
-                        let c = m
+                        let database_mount = state
+                            .database
+                            .mount(ns, &mount)
+                            .ok_or_else(|| Response::error(404, "database mount not found"))?;
+                        if database_mount.static_roles.contains_key(key) {
+                            return Err(Response::error(
+                                400,
+                                "Role and Static Role names must be unique",
+                            ));
+                        }
+                        let connection = database_mount
                             .connections
                             .get(&db_name)
                             .ok_or_else(|| invalid("unknown database configuration"))?;
-                        if c.provider == DatabaseProvider::Valkey
-                            && valkey_permissions(&provider_role).is_none()
-                        {
-                            return Err(invalid(
-                                "Valkey provider_role must be readonly or readwrite",
-                            ));
+                        if role_statements.is_empty() {
+                            if !name(&provider_role) {
+                                return Err(invalid(
+                                    "provider_role or creation_statements are required",
+                                ));
+                            }
+                            if connection.provider == DatabaseProvider::Valkey
+                                && valkey_permissions(&provider_role).is_none()
+                            {
+                                return Err(invalid(
+                                    "Valkey provider_role must be readonly or readwrite",
+                                ));
+                            }
+                        } else {
+                            if !provider_role.is_empty() {
+                                return Err(invalid(
+                                    "provider_role and statement templates are mutually exclusive",
+                                ));
+                            }
+                            if connection.provider != DatabaseProvider::Postgresql {
+                                return Err(Response::error(
+                                    501,
+                                    "statement-backed database roles currently require PostgreSQL",
+                                ));
+                            }
                         }
-                        if !c.allowed_roles.contains(key) {
+                        if !connection.allowed_roles.contains(key) {
                             return Err(Response::error(
                                 403,
                                 "database role is not allowed by connection",
                             ));
                         }
-                        if m.roles.len() >= 64 && !m.roles.contains_key(key) {
+                        if database_mount.roles.len() >= 64
+                            && !database_mount.roles.contains_key(key)
+                        {
                             return Err(Response::error(507, "database role capacity exhausted"));
                         }
-                        m.roles.insert(
+                        state.database.mount_mut(ns, &mount).roles.insert(
                             key.into(),
                             DatabaseRole {
                                 db_name,
                                 provider_role,
+                                statements: role_statements,
                                 default_ttl,
                                 max_ttl,
                             },
@@ -1724,7 +1880,30 @@ impl Service {
                             .mount(ns, &mount)
                             .and_then(|m| m.roles.get(key))
                             .ok_or_else(|| Response::error(404, "database role not found"))?;
-                        Ok(Response::ok(json!({"data":role})))
+                        let mut data = serde_json::Map::from_iter([
+                            ("db_name".into(), json!(role.db_name)),
+                            (
+                                "creation_statements".into(),
+                                json!(role.statements.creation),
+                            ),
+                            (
+                                "revocation_statements".into(),
+                                json!(role.statements.revocation),
+                            ),
+                            (
+                                "rollback_statements".into(),
+                                json!(role.statements.rollback),
+                            ),
+                            ("renew_statements".into(), json!(role.statements.renewal)),
+                            ("default_ttl".into(), json!(role.default_ttl)),
+                            ("max_ttl".into(), json!(role.max_ttl)),
+                            ("credential_type".into(), json!("password")),
+                            ("credential_config".into(), json!({})),
+                        ]);
+                        if !role.provider_role.is_empty() {
+                            data.insert("provider_role".into(), json!(role.provider_role));
+                        }
+                        Ok(Response::ok(json!({"data":data})))
                     }
                     ("roles", "LIST") => {
                         fields(body, &[])?;
@@ -1807,6 +1986,7 @@ impl Service {
                             username: username.clone(),
                             db_name: role.db_name,
                             provider_role: role.provider_role,
+                            statements: role.statements,
                             owner: owner.owner.clone(),
                             issued: now,
                             expires,
@@ -2789,6 +2969,7 @@ mod tests {
             username: format!("hbp_{}", "ab".repeat(16)),
             db_name: "local".into(),
             provider_role: "app_reader".into(),
+            statements: DatabaseStatements::default(),
             owner: LeaseOwner::service(
                 &base64::engine::general_purpose::URL_SAFE_NO_PAD.encode([1u8; 32]),
             )
@@ -2912,6 +3093,7 @@ mod tests {
                 username: format!("hbp_{:032x}", index + 1),
                 db_name: "local".into(),
                 provider_role: "app_reader".into(),
+                statements: DatabaseStatements::default(),
                 owner: LeaseOwner::service(
                     &base64::engine::general_purpose::URL_SAFE_NO_PAD.encode([1u8; 32]),
                 )

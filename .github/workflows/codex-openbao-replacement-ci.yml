@@ -489,6 +489,19 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
           git diff --exit-code
 
+      - name: Exercise PostgreSQL OpenBao statement-template transactions and recovery
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.provider_packages_ready.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 360 python qa/openbao-acceptance/postgres_statement_templates_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --postgres-bin /usr/lib/postgresql/17/bin \
+            --work-dir "$RUNNER_TEMP/heptabao-postgresql-statement-templates" \
+            --output "$RUNNER_TEMP/heptabao-postgresql-statement-templates.json"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
       - name: Exercise actual Valkey ACL persistence and session revocation
         if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.provider_packages_ready.outcome == 'success' }}
         shell: bash

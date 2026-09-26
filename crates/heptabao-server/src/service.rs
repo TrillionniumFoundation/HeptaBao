@@ -34,8 +34,9 @@ use crate::state_record_root::RecordStateRoot;
 // Schema 49 introduced durable workflow state; schema 50 adds durable Kerberos auth state;
 // schema 51 adds discovery-bound OIDC UserInfo session endpoints; schema 52 adds
 // durable userpass lockout counters and windows; schema 53 adds PostgreSQL
-// static-role and manager-password rotation intents.
-const CURRENT_STATE_SCHEMA: u32 = 53;
+// static-role and manager-password rotation intents; schema 54 binds persisted
+// PostgreSQL statement templates to lease identities and provider ledgers.
+const CURRENT_STATE_SCHEMA: u32 = 54;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;

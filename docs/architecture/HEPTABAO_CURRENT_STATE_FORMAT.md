@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **53**. Its source constant is
+The current Service state schema is **54**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -98,7 +98,17 @@ transactional within one request; crash-resumable step journals are not claimed.
 | 51 | Discovery-bound OIDC UserInfo endpoints retained in encrypted authorization sessions. The endpoint is optional for legacy sessions; old-format admission rejects sessions that retain it rather than silently dropping the provider binding. |
 | 52 | Durable userpass lockout policy, counters, last-failure observations and lock windows. Old-format admission rejects populated lockout state rather than silently resetting authentication protection on restart. |
 | 53 | Durable PostgreSQL static-role password and manager-password rotation intents. Pending passwords, provider sequences, semantic digests, rotation times and phases stay inside the encrypted database owner; schema-52 readers must reject this state rather than drop unresolved external effects. |
+| 54 | Bounded PostgreSQL statement-template role and lease state. Creation/renewal/revocation/rollback template arrays are encrypted inside the database owner and copied into pending lease identity. Legacy provider-role records retain their old serialization and digest; schema-53 readers must reject template-bearing state rather than discard the provider effect contract. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
+
+
+Schema 54 independently gates `DatabaseState::has_statement_template_state()`.
+An empty/default statement owner remains byte-compatible with schema 53, including
+legacy request digests. A nonempty template array on either a role or retained
+lease requires schema 54. This version fence does not by itself qualify arbitrary
+SQL: the current implementation accepts bounded PostgreSQL password templates,
+uses exact byte-digest provider readback and leaves password policies, external
+non-transactional effects and full OpenBao field/error parity open.
 
 Schema 50 independently gates `AuthState::has_kerberos_state()`, including
 mount-only enrollment and all retained configuration/replay records. Schema 48

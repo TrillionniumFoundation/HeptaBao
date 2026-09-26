@@ -80,30 +80,30 @@ pub(crate) struct LifecycleWorker {
 }
 
 enum ProviderMaintenance {
-    Database(database::DatabaseMaintenance),
-    DatabaseRotation(database::DatabaseRotationMaintenance),
-    OpenLdap(openldap_secret::OpenLdapMaintenance),
+    Database(Box<database::DatabaseMaintenance>),
+    DatabaseRotation(Box<database::DatabaseRotationMaintenance>),
+    OpenLdap(Box<openldap_secret::OpenLdapMaintenance>),
 }
 fn prepare_database_provider(writer: &mut Service, now: u64) -> Option<ProviderMaintenance> {
     let prefer_rotation = writer.lifecycle_database_rotation_cursor;
     writer.lifecycle_database_rotation_cursor = !prefer_rotation;
     if prefer_rotation {
         match writer.prepare_database_rotation_maintenance(now) {
-            Ok(Some(value)) => Some(ProviderMaintenance::DatabaseRotation(value)),
+            Ok(Some(value)) => Some(ProviderMaintenance::DatabaseRotation(Box::new(value))),
             Ok(None) | Err(_) => writer
                 .prepare_database_maintenance(now)
                 .ok()
                 .flatten()
-                .map(ProviderMaintenance::Database),
+                .map(|value| ProviderMaintenance::Database(Box::new(value))),
         }
     } else {
         match writer.prepare_database_maintenance(now) {
-            Ok(Some(value)) => Some(ProviderMaintenance::Database(value)),
+            Ok(Some(value)) => Some(ProviderMaintenance::Database(Box::new(value))),
             Ok(None) | Err(_) => writer
                 .prepare_database_rotation_maintenance(now)
                 .ok()
                 .flatten()
-                .map(ProviderMaintenance::DatabaseRotation),
+                .map(|value| ProviderMaintenance::DatabaseRotation(Box::new(value))),
         }
     }
 }
@@ -151,14 +151,16 @@ pub(crate) fn start_lifecycle_worker(
                     writer.lifecycle_provider_cursor = !prefer_openldap;
                     let pending = if prefer_openldap {
                         match writer.prepare_openldap_maintenance(now) {
-                            Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(value)),
+                            Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(Box::new(value))),
                             Ok(None) | Err(_) => prepare_database_provider(&mut writer, now),
                         }
                     } else {
                         match prepare_database_provider(&mut writer, now) {
                             Some(value) => Some(value),
                             None => match writer.prepare_openldap_maintenance(now) {
-                                Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(value)),
+                                Ok(Some(value)) => {
+                                    Some(ProviderMaintenance::OpenLdap(Box::new(value)))
+                                }
                                 Ok(None) | Err(_) => None,
                             },
                         }
@@ -181,7 +183,10 @@ pub(crate) fn start_lifecycle_worker(
                             eprintln!("heptabao-lifecycle: provider finalize deferred");
                             continue;
                         };
-                        if writer.finish_database_maintenance(pending, result).is_err() {
+                        if writer
+                            .finish_database_maintenance(*pending, result)
+                            .is_err()
+                        {
                             eprintln!("heptabao-lifecycle: provider reconciliation pending");
                         }
                     }
@@ -192,7 +197,7 @@ pub(crate) fn start_lifecycle_worker(
                             continue;
                         };
                         if writer
-                            .finish_database_rotation_maintenance(pending, result)
+                            .finish_database_rotation_maintenance(*pending, result)
                             .is_err()
                         {
                             eprintln!("heptabao-lifecycle: database rotation pending");
@@ -204,7 +209,10 @@ pub(crate) fn start_lifecycle_worker(
                             eprintln!("heptabao-lifecycle: OpenLDAP finalize deferred");
                             continue;
                         };
-                        if writer.finish_openldap_maintenance(pending, result).is_err() {
+                        if writer
+                            .finish_openldap_maintenance(*pending, result)
+                            .is_err()
+                        {
                             eprintln!("heptabao-lifecycle: OpenLDAP reconciliation pending");
                         }
                     }
