@@ -42,6 +42,7 @@ REQUIRED_CASES = frozenset({
     'kubernetes_role_via_follower',
     'pre_failover_session',
     'pre_failover_issuer_code',
+    'successor_quorum_observed_before_code_exchange',
     'leader_killed_after_session_commit_before_code_exchange',
     'successor_consumes_replicated_pkce_session',
     'callback_replay_denied_on_surviving_nodes',
@@ -64,6 +65,23 @@ REQUIRED_CASES = frozenset({
     'complete',
 })
 
+
+
+def await_stable_successor(cluster, stopped, observations):
+    """Observe committed quorum before requiring an application-ready leader.
+
+    Both phases are read-only. No authentication URL, callback or provider
+    mutation is retried. This separates election progress from the stricter
+    stable-leader/readiness check on loaded CI hosts.
+    """
+    observations["first_failover_stage"] = "waiting_for_committed_quorum"
+    cluster.wait_quorum()
+    observations["first_failover_stage"] = "waiting_for_application_ready_leader"
+    successor = cluster.leader()
+    if successor is stopped:
+        raise RuntimeError("stopped_leader_reselected")
+    observations["first_failover_stage"] = "successor_ready"
+    return successor
 
 
 def callback_targets(nodes, leader):
@@ -125,7 +143,8 @@ def run(binary, root, checks, inherited, observations):
             check(label+"_issuer_code",granted.status == 200 and bool(granted.body.get("code")))
             return {"state":values["state"],"client_nonce":proof,"code":granted.body["code"]}
         callback=code_flow(follower,"pre_failover")
-        old=leader;old.stop();leader=cluster.leader()
+        old=leader;old.stop();leader=await_stable_successor(cluster,old,observations)
+        check("successor_quorum_observed_before_code_exchange", True)
         check("leader_killed_after_session_commit_before_code_exchange",leader is not old)
         follower=next(n for n in cluster.running() if n is not leader)
         status,result=follower.call("POST","auth/browser/oidc/callback",callback)

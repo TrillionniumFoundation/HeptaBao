@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Measure audited KV reads against growing synthetic state in a real TLS process.
 
-No external endpoint or credential input is accepted. Baseline mode records the
-same workload without asserting the new fast-path counter; it never qualifies a
-candidate. Timings are observations on this host, not a production SLA.
+No external endpoint or credential input is accepted. Growth is materialized
+through the current KV1 record owner so this read-path profile does not spend its
+budget repeatedly serializing the legacy opaque KV2 owner. The logical payload,
+three growth points and read/audit checks are unchanged. Baseline mode records
+the same workload without asserting the new fast-path counter; it never qualifies
+a candidate. Timings are observations on this host, not a production SLA.
 """
 from __future__ import annotations
 
@@ -60,7 +63,7 @@ def run(binary: Path, output: Path, baseline=False, build_source=ROOT):
         'source_worktree_dirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=build_source)),
         'source_binding_basis': 'caller_build_source_not_binary_attestation',
         'full_openbao_compatibility': False, 'production_qualified': False,
-        'record_oriented_writes': False, 'cases': [], 'points': [],
+        'record_oriented_writes': True, 'cases': [], 'points': [],
     }
     instance = None
 
@@ -85,26 +88,37 @@ def run(binary: Path, output: Path, baseline=False, build_source=ROOT):
         instance.token = initialized['root_token']
         key = initialized['keys_base64'][0]
         check('unsealed', instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
-        check('seed_small', instance.call('POST', 'secret/data/small', {'data': {'value': 'synthetic-small'}})[0] == 200)
+        check('record_mount', instance.call('POST', 'sys/mounts/read-scale',
+              {'type':'kv', 'options':{'version':'1'}})[0] == 204)
+        check('seed_small', instance.call('POST', 'read-scale/small',
+              {'value': 'synthetic-small'})[0] == 204)
         written = 0
         for count in GROWTH_COUNTS:
             while written < count:
-                status, _ = instance.call('POST', f'secret/data/growth/{written:04d}',
-                                           {'data': {'payload': 'x' * PAYLOAD_BYTES}})
-                check('growth_write', status == 200)
+                status, _ = instance.call('POST', f'read-scale/growth/{written:04d}',
+                                           {'payload': 'x' * PAYLOAD_BYTES})
+                check('growth_write', status == 204)
                 written += 1
             before = observe()
+            check('record_storage_format',
+                  before.get('state_storage_format') == 'heptabao-state-records-v5')
+            check('logical_state_floor', before.get('state_bytes', -1) >= count * PAYLOAD_BYTES)
+            if report['points']:
+                check('state_growth_monotonic',
+                      before['state_bytes'] > report['points'][-1]['state_bytes'])
             audit_before = len((instance.root / 'audit.jsonl').read_bytes().splitlines())
             rss_before = process_rss_kib(instance.process.pid)
             durations = []
             for _ in range(READS_PER_POINT):
                 start = time.perf_counter_ns()
-                status, body = instance.call('GET', 'secret/data/small')
+                status, body = instance.call('GET', 'read-scale/small')
                 durations.append((time.perf_counter_ns() - start) / 1_000_000)
-                check('read_exact', status == 200 and body.get('data', {}).get('data') == {'value': 'synthetic-small'})
-            status, body = instance.call('LIST', 'secret/metadata?limit=1')
-            check('shallow_list', status == 200 and body['data']['keys'] == ['growth/'])
-            status, body = instance.call('SCAN', 'secret/metadata', {'after': f'growth/{count-3:04d}', 'limit': 2})
+                check('read_exact', status == 200 and body.get('data') == {'value': 'synthetic-small'})
+            status, body = instance.call('LIST', 'read-scale?limit=1')
+            check('shallow_list', status == 200
+                  and body['data']['keys'] == ['growth/', 'small'])
+            status, body = instance.call('SCAN', 'read-scale',
+                                         {'after': f'growth/{count-3:04d}', 'limit': 2})
             check('scan_ignores_pagination', status == 200 and body['data']['keys'] == ['small'] + [f'growth/{index:04d}' for index in range(count)])
             audit_after = len((instance.root / 'audit.jsonl').read_bytes().splitlines())
             after = observe()
@@ -124,11 +138,15 @@ def run(binary: Path, output: Path, baseline=False, build_source=ROOT):
             print(json.dumps({'event': 'read_growth_point', **report['points'][-1]}, sort_keys=True), flush=True)
         instance.stop()
         instance.start()
-        check('reopened_sealed', instance.call('GET', 'secret/data/small')[0] == 503)
+        check('reopened_sealed', instance.call('GET', 'read-scale/small')[0] == 503)
         check('reopened_unseal', instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
         if not baseline:
             check('counter_is_process_local', observe()['kv_read_only_dispatches'] == 0)
-        check('reopened_read_exact', instance.call('GET', 'secret/data/small')[1]['data']['data'] == {'value': 'synthetic-small'})
+        check('reopened_read_exact', instance.call('GET', 'read-scale/small')[1]['data'] == {'value': 'synthetic-small'})
+        check('all_declared_growth_points',
+              [point['stored_growth_keys'] for point in report['points']] == list(GROWTH_COUNTS))
+        check('unchanged_logical_payload_scale',
+              report['points'][-1]['state_bytes'] >= GROWTH_COUNTS[-1] * PAYLOAD_BYTES)
         check('binary_unchanged', report['binary_sha256'] == file_hash(binary))
         report['status'] = 'passed_scoped_read_measurements'
     except Exception as error:

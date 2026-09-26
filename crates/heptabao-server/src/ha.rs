@@ -16,8 +16,8 @@ use heptabao_ha_service::{
     TlsPeerEndpoint, serve_one_mtls_peer_frame,
 };
 use heptabao_raft_runtime::{
-    CommitReceipt, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RemoteNetworkFactory,
-    RemoteRaftError, ReplicatedEnvelope,
+    CommitReceipt, MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind,
+    RemoteNetworkFactory, RemoteRaftError, ReplicatedEnvelope,
 };
 use ring::digest;
 use rustls::pki_types::{CertificateDer, PrivateKeyDer};
@@ -294,6 +294,7 @@ pub(crate) struct CommittedApplicationState {
 pub struct HaProcess {
     record_commits_since_gc: AtomicU64,
     bootstrap_ready: AtomicBool,
+    bootstrap_voters: Option<BTreeSet<u64>>,
     runtime: Runtime,
     node: Option<ProcessRaftNode>,
     codec: ClusterStateCodec,
@@ -564,6 +565,7 @@ impl HaProcess {
         Ok(Self {
             record_commits_since_gc: AtomicU64::new(0),
             bootstrap_ready: AtomicBool::new(bootstrap_ready),
+            bootstrap_voters,
             runtime,
             node: Some(node),
             codec,
@@ -588,7 +590,24 @@ impl HaProcess {
     /// reconciliation. No health or request path treats that partial state as
     /// an active authority.
     pub(crate) fn bootstrap_ready(&self) -> bool {
-        self.bootstrap_ready.load(Ordering::Acquire)
+        if self.bootstrap_ready.load(Ordering::Acquire) {
+            return true;
+        }
+        let Some(expected) = self.bootstrap_voters.as_ref() else {
+            return false;
+        };
+        let ready = self
+            .node
+            .as_ref()
+            .and_then(|node| self.runtime.block_on(node.membership_observation()).ok())
+            .is_some_and(|observed| bootstrap_membership_complete(expected, &observed));
+        if ready {
+            // Bootstrap is a one-way historical admission. Later topology
+            // changes have their own guarded protocol; they must not reopen a
+            // completed startup fence or depend on transient leadership.
+            self.bootstrap_ready.store(true, Ordering::Release);
+        }
+        ready
     }
 
     pub(crate) fn register_forward_handler(
@@ -1311,9 +1330,17 @@ fn manifest_envelope_identity(envelope: &ReplicatedEnvelope) -> [u8; 32] {
 /// Reconcile the statically enrolled bootstrap set without conflating the
 /// membership commit with learner catch-up. This function is intentionally
 /// bounded and best-effort: a missing peer or lost leader leaves a durable
-/// learner (when enrollment committed) and a fenced process that can retry on
-/// the next bootstrap start. It never promotes a learner whose replication
+/// learner (when enrollment committed) and a fenced process. Once the exact
+/// committed non-joint voter set is observed, the process may close that fence
+/// without mutating membership. It never promotes a learner whose replication
 /// frontier has not been observed.
+fn bootstrap_membership_complete(
+    expected: &BTreeSet<u64>,
+    observed: &MembershipObservation,
+) -> bool {
+    observed.committed && !observed.joint && observed.voters == *expected
+}
+
 fn reconcile_bootstrap_membership(
     runtime: &Runtime,
     node: &ProcessRaftNode,
@@ -1332,7 +1359,7 @@ fn reconcile_bootstrap_membership(
     // local process does not need to own reconciliation in that case; it may
     // become leader later and must not remain fenced merely because startup
     // happened on a standby.
-    if membership.committed && !membership.joint && membership.voters == *voters {
+    if bootstrap_membership_complete(voters, &membership) {
         return true;
     }
     let elected = runtime.block_on(async {
@@ -2072,6 +2099,49 @@ pub(crate) mod read_tests;
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn membership(voters: BTreeSet<u64>, committed: bool, joint: bool) -> MembershipObservation {
+        MembershipObservation {
+            local_id: 1,
+            leader: Some(1),
+            term: 7,
+            membership_index: Some(11),
+            committed,
+            joint,
+            nodes: voters.clone(),
+            voters,
+            applied_index: Some(11),
+            snapshot_index: None,
+            purged_index: None,
+            peer_matched: BTreeMap::new(),
+            peer_contact_ms: BTreeMap::new(),
+        }
+    }
+
+    #[test]
+    fn bootstrap_fence_can_close_only_from_exact_committed_non_joint_membership() {
+        let expected = BTreeSet::from([1, 2, 3]);
+        assert!(bootstrap_membership_complete(
+            &expected,
+            &membership(expected.clone(), true, false)
+        ));
+        assert!(!bootstrap_membership_complete(
+            &expected,
+            &membership(expected.clone(), false, false)
+        ));
+        assert!(!bootstrap_membership_complete(
+            &expected,
+            &membership(expected.clone(), true, true)
+        ));
+        assert!(!bootstrap_membership_complete(
+            &expected,
+            &membership(BTreeSet::from([1, 2]), true, false)
+        ));
+        assert!(!bootstrap_membership_complete(
+            &expected,
+            &membership(BTreeSet::from([1, 2, 3, 4]), true, false)
+        ));
+    }
 
     #[test]
     fn advertised_api_addresses_are_https_origins_with_no_request_or_header_input()

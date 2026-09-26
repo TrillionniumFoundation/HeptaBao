@@ -44,6 +44,22 @@ class MilestonePublicationTests(unittest.TestCase):
     def rows(module):
         return [{"case": name, "passed": True} for name in sorted(module.REQUIRED_CASES)]
 
+
+    def test_successor_wait_is_two_phase_read_only_and_rejects_old_leader(self):
+        calls=[]
+        old=object();successor=object()
+        class Cluster:
+            def wait_quorum(self):calls.append("quorum")
+            def leader(self):calls.append("leader");return successor
+        observations={}
+        self.assertIs(online_auth_ha.await_stable_successor(Cluster(),old,observations),successor)
+        self.assertEqual(calls,["quorum","leader"])
+        self.assertEqual(observations["first_failover_stage"],"successor_ready")
+        class Broken(Cluster):
+            def leader(self):calls.append("old");return old
+        with self.assertRaisesRegex(RuntimeError,"stopped_leader_reselected"):
+            online_auth_ha.await_stable_successor(Broken(),old,{})
+
     def test_every_named_phase_is_required_even_with_terminal_complete(self):
         for module in MODULES:
             for missing in module.REQUIRED_CASES:

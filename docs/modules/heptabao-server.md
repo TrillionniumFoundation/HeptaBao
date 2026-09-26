@@ -408,15 +408,20 @@ ambiguous write, and rejects a successful stale read immediately. Its synthetic
 cold-cloned seed is not an implementation of production peer enrollment. Each
 result binds the actual binary digest and lists uncovered fault categories.
 
-Bootstrap now records learner enrollment and replication readiness separately.
+Bootstrap records learner enrollment and replication readiness separately.
 The bootstrap process commits each statically requested learner before waiting
 for its replicated frontier and recent heartbeat. An unavailable learner or a
 lost bootstrap leader leaves the process fenced from active health and writes;
-it does not discard the committed learner or report a three-voter cluster. A
-later bootstrap start reopens the durable membership and retries reconciliation.
-Promotion occurs only after every requested learner is observed ready and the
-stable voter membership commit is observed. This is a bounded restart recovery
-path, not a dynamic peer-enrollment protocol.
+it does not discard the committed learner or report a three-voter cluster.
+The fence is process-local but no longer permanently snapshots a transient
+startup failure: every later health/admission observation may close it only after
+the local Raft metrics expose the exact requested voter set as committed and
+non-joint. This transition is one-way and read-only; it cannot add/promote a
+peer, depend on current leadership, or accept a configured-but-uncommitted set.
+A restart still retries incomplete enrollment and promotion. Promotion occurs
+only after every requested learner is observed ready and the stable voter
+membership commit is observed. This is bounded bootstrap recovery, not a dynamic
+peer-enrollment protocol.
 
 ## Core-isolation implementation supplement
 

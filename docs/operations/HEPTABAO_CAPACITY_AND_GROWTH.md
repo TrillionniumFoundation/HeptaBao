@@ -331,8 +331,12 @@ not a successful-read counter. It resets on restart and is deliberately excluded
 durable-state equality; it is not a compatibility counter or a persisted promise.
 The real TLS profile `qa/openbao-acceptance/kv_read_scaling_live.py` verifies
 unchanged generation, replay and journal bytes plus both audit records per read
-while growing state through three declared points. It reports read latency and
-RSS, and repeats a read after SIGKILL/reopen. `--baseline` measures the same workload
+while growing the current KV1 record owner through the unchanged 8/32/64 points
+with 224KiB canonical payloads. Record-oriented setup prevents legacy opaque-KV2
+whole-owner write amplification from consuming the read profile's fixed CI budget;
+the final logical/state floor remains above 14MiB. GET, exact shallow LIST, full
+SCAN, process-local dispatch count and restart readback remain mandatory. It
+reports read latency and RSS, and repeats a read after SIGKILL/reopen. `--baseline` measures the same workload
 without claiming the new dispatch path. Timing is descriptive and sample counts
 are explicit; this single-host development fixture cannot grant production scale.
 

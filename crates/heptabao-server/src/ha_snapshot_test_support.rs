@@ -122,6 +122,7 @@ impl Cluster {
             processes.push(Arc::new(Mutex::new(HaProcess {
                 record_commits_since_gc: AtomicU64::new(0),
                 bootstrap_ready: AtomicBool::new(true),
+                bootstrap_voters: None,
                 runtime,
                 node: Some(node),
                 codec: ClusterStateCodec::new(cluster_id, [19; 32])?,

@@ -64,6 +64,7 @@ pub(crate) fn process_with_api(
     Ok(HaProcess {
         record_commits_since_gc: AtomicU64::new(0),
         bootstrap_ready: AtomicBool::new(true),
+        bootstrap_voters: None,
         runtime,
         node: Some(node),
         codec: ClusterStateCodec::new("request-deadline", [9; 32])?,
