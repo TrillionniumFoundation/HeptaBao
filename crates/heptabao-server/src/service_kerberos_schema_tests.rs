@@ -64,7 +64,7 @@ fn kerberos_schema50_rejects_mount_only_and_config_hidden_under_schema48() -> Te
 }
 
 #[test]
-fn kerberos_schema50_preserves_legacy48_workflow49_and_oidc51_absence_and_rejects_unknown53()
+fn kerberos_schema50_preserves_legacy48_workflow49_oidc51_and_lockout52_and_rejects_unknown54()
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
@@ -88,7 +88,9 @@ fn kerberos_schema50_preserves_legacy48_workflow49_and_oidc51_absence_and_reject
     assert!(state.validate_format().is_ok());
     state.schema = 52;
     assert!(state.validate_format().is_ok());
-    state.schema = 53;
+    state.schema = CURRENT_STATE_SCHEMA;
+    assert!(state.validate_format().is_ok());
+    state.schema = CURRENT_STATE_SCHEMA + 1;
     assert!(state.validate_format().is_err());
     Ok(())
 }
@@ -134,7 +136,7 @@ fn userpass_lockout_state_requires_schema52() -> TestResult {
     );
     assert_eq!(failed.status, 400);
     let state = service.state.as_ref().ok_or("state")?;
-    assert_eq!(state.schema, 52);
+    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     assert!(state.auth.has_userpass_lockout_state());
     assert!(state.validate_format().is_ok());
 
