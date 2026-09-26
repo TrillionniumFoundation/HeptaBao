@@ -713,6 +713,23 @@
         "synthetic_loopback_udp_provider"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "postgres_static_rotation_live": {
+      "script": "qa/openbao-acceptance/postgres_static_rotation_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--postgres-bin",
+        "{postgres_bin}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "actual_postgresql_17"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1367,7 +1384,7 @@
       "technical_contract": {
         "api_or_protocol": "database/config/*, roles/*, creds/*, rotate-root and static roles targets",
         "required_positive_and_hostile_behavior": "Provider-committed issue/renew/revoke, SQL templates, connection TLS, role mapping and retained intents",
-        "remaining_semantics_and_effect_checks": "Existing custom provider_role profile is not arbitrary OpenBao SQL-template compatibility",
+        "remaining_semantics_and_effect_checks": "Bounded PostgreSQL static-role and manager-password rotation are executable with owner-enrolled identities, durable intent, digest-bound retirement tombstones and restart recovery. Arbitrary OpenBao SQL templates, static schedules/windows, complete field/error parity and non-PostgreSQL static roles remain open.",
         "crash_reopen": "Interrupt database/config/* before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-SECRET-DATABASE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -1386,7 +1403,8 @@
         "postgres",
         "postgres_pipeline_simulated",
         "database_config_completion_live",
-        "database_delivery_live"
+        "database_delivery_live",
+        "postgres_static_rotation_live"
       ],
       "whole_surface_admitted": false
     },
@@ -1491,7 +1509,7 @@
       "technical_contract": {
         "api_or_protocol": "PostgreSQL database plugin and native provider lifecycle",
         "required_positive_and_hostile_behavior": "TLS/SCRAM, creation/renew/revoke SQL, static rotation, root rotation and session termination",
-        "remaining_semantics_and_effect_checks": "Custom bootstrap SQL and provider_role are a scoped profile; full plugin SQL contract and privileges remain open",
+        "remaining_semantics_and_effect_checks": "The native provider now covers bounded dynamic leases plus owner-enrolled static password and manager-password rotation. Full OpenBao statement/template/plugin compatibility, static schedules/windows and multi-host provider faults remain open.",
         "crash_reopen": "Interrupt PostgreSQL database plugin and native provider lifecycle before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-DB-POSTGRESQL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -1507,7 +1525,8 @@
         "postgres_live.restart_reconcile"
       ],
       "available_scoped_profiles": [
-        "postgres"
+        "postgres",
+        "postgres_static_rotation_live"
       ],
       "whole_surface_admitted": false
     },

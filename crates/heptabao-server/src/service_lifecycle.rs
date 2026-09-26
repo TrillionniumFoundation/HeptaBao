@@ -81,8 +81,33 @@ pub(crate) struct LifecycleWorker {
 
 enum ProviderMaintenance {
     Database(database::DatabaseMaintenance),
+    DatabaseRotation(database::DatabaseRotationMaintenance),
     OpenLdap(openldap_secret::OpenLdapMaintenance),
 }
+fn prepare_database_provider(writer: &mut Service, now: u64) -> Option<ProviderMaintenance> {
+    let prefer_rotation = writer.lifecycle_database_rotation_cursor;
+    writer.lifecycle_database_rotation_cursor = !prefer_rotation;
+    if prefer_rotation {
+        match writer.prepare_database_rotation_maintenance(now) {
+            Ok(Some(value)) => Some(ProviderMaintenance::DatabaseRotation(value)),
+            Ok(None) | Err(_) => writer
+                .prepare_database_maintenance(now)
+                .ok()
+                .flatten()
+                .map(ProviderMaintenance::Database),
+        }
+    } else {
+        match writer.prepare_database_maintenance(now) {
+            Ok(Some(value)) => Some(ProviderMaintenance::Database(value)),
+            Ok(None) | Err(_) => writer
+                .prepare_database_rotation_maintenance(now)
+                .ok()
+                .flatten()
+                .map(ProviderMaintenance::DatabaseRotation),
+        }
+    }
+}
+
 impl Drop for LifecycleWorker {
     fn drop(&mut self) {
         let _ = self.stop.send(());
@@ -127,15 +152,12 @@ pub(crate) fn start_lifecycle_worker(
                     let pending = if prefer_openldap {
                         match writer.prepare_openldap_maintenance(now) {
                             Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(value)),
-                            Ok(None) | Err(_) => match writer.prepare_database_maintenance(now) {
-                                Ok(Some(value)) => Some(ProviderMaintenance::Database(value)),
-                                Ok(None) | Err(_) => None,
-                            },
+                            Ok(None) | Err(_) => prepare_database_provider(&mut writer, now),
                         }
                     } else {
-                        match writer.prepare_database_maintenance(now) {
-                            Ok(Some(value)) => Some(ProviderMaintenance::Database(value)),
-                            Ok(None) | Err(_) => match writer.prepare_openldap_maintenance(now) {
+                        match prepare_database_provider(&mut writer, now) {
+                            Some(value) => Some(value),
+                            None => match writer.prepare_openldap_maintenance(now) {
                                 Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(value)),
                                 Ok(None) | Err(_) => None,
                             },
@@ -161,6 +183,19 @@ pub(crate) fn start_lifecycle_worker(
                         };
                         if writer.finish_database_maintenance(pending, result).is_err() {
                             eprintln!("heptabao-lifecycle: provider reconciliation pending");
+                        }
+                    }
+                    ProviderMaintenance::DatabaseRotation(pending) => {
+                        let result = pending.execute();
+                        let Ok(mut writer) = service.try_lock() else {
+                            eprintln!("heptabao-lifecycle: database rotation finalize deferred");
+                            continue;
+                        };
+                        if writer
+                            .finish_database_rotation_maintenance(pending, result)
+                            .is_err()
+                        {
+                            eprintln!("heptabao-lifecycle: database rotation pending");
                         }
                     }
                     ProviderMaintenance::OpenLdap(pending) => {

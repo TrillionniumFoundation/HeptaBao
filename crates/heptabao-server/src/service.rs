@@ -33,8 +33,9 @@ use crate::state_record_root::RecordStateRoot;
 
 // Schema 49 introduced durable workflow state; schema 50 adds durable Kerberos auth state;
 // schema 51 adds discovery-bound OIDC UserInfo session endpoints; schema 52 adds
-// durable userpass lockout counters and windows.
-const CURRENT_STATE_SCHEMA: u32 = 52;
+// durable userpass lockout counters and windows; schema 53 adds PostgreSQL
+// static-role and manager-password rotation intents.
+const CURRENT_STATE_SCHEMA: u32 = 53;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -721,6 +722,7 @@ impl RequestExecution {
 enum ExternalEffectPlan {
     Database(database::DatabaseEffectPlan),
     DatabaseConfig(database::DatabaseConfigPlan),
+    DatabaseRotation(database::DatabaseRotationPlan),
     DatabaseBatch(database::DatabaseBatchEffectPlan),
     OnlineAuth(online_auth::OnlineAuthEffectPlan),
     PluginAuth(plugin::PluginAuthPlan),
@@ -734,6 +736,7 @@ enum ExternalEffectPlan {
 pub(crate) enum ExternalEffectResult {
     Database(Result<(), Response>),
     DatabaseConfig(Result<(), Response>),
+    DatabaseRotation(Result<database::DatabaseRotationObservation, Response>),
     DatabaseBatch(database::DatabaseBatchEffectResult),
     OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
     PluginAuth(Result<plugin::PluginAuthObservation, Response>),
@@ -769,6 +772,9 @@ impl PendingExternalRequest {
             ExternalEffectPlan::Database(plan) => ExternalEffectResult::Database(plan.execute()),
             ExternalEffectPlan::DatabaseConfig(plan) => {
                 ExternalEffectResult::DatabaseConfig(plan.execute())
+            }
+            ExternalEffectPlan::DatabaseRotation(plan) => {
+                ExternalEffectResult::DatabaseRotation(plan.execute())
             }
             ExternalEffectPlan::DatabaseBatch(plan) => {
                 ExternalEffectResult::DatabaseBatch(plan.execute())
@@ -830,9 +836,11 @@ fn classify_request_effect(
 pub struct Service {
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
+    database_rotation_cursor: Option<(String, String, String)>,
     database_in_flight: database::DatabaseFlights,
     pending_database_effect: Option<database::DatabaseEffectPlan>,
     pending_database_config_effect: Option<database::DatabaseConfigPlan>,
+    pending_database_rotation_effect: Option<database::DatabaseRotationPlan>,
     pending_database_batch_effect: Option<database::DatabaseBatchEffectPlan>,
     pending_online_auth_effect: Option<online_auth::OnlineAuthEffectPlan>,
     pending_plugin_auth: Option<plugin::PluginAuthPlan>,
@@ -847,6 +855,7 @@ pub struct Service {
     openldap_in_flight: openldap_secret::OpenLdapFlights,
     openldap_cursor: Option<(String, String, String)>,
     lifecycle_provider_cursor: bool,
+    lifecycle_database_rotation_cursor: bool,
     auth_plugins: BTreeMap<String, plugin::SharedAuthPlugin>,
     database_plugins: BTreeMap<String, plugin::SharedDatabasePlugin>,
     kms_plugins: BTreeMap<String, plugin::SharedKmsPlugin>,
@@ -1170,9 +1179,11 @@ impl Service {
         Ok(Self {
             outbound: crate::outbound::Outbound::default(),
             database_cursor: None,
+            database_rotation_cursor: None,
             database_in_flight: database::DatabaseFlights::default(),
             pending_database_effect: None,
             pending_database_config_effect: None,
+            pending_database_rotation_effect: None,
             pending_database_batch_effect: None,
             pending_online_auth_effect: None,
             pending_plugin_auth: None,
@@ -1187,6 +1198,7 @@ impl Service {
             openldap_in_flight: openldap_secret::OpenLdapFlights::default(),
             openldap_cursor: None,
             lifecycle_provider_cursor: false,
+            lifecycle_database_rotation_cursor: false,
             auth_plugins: BTreeMap::new(),
             database_plugins: BTreeMap::new(),
             kms_plugins: BTreeMap::new(),
@@ -1468,6 +1480,10 @@ impl Service {
                 ExternalEffectResult::DatabaseConfig(result),
             ) => self.finalize_database_config(plan, result),
             (
+                ExternalEffectPlan::DatabaseRotation(plan),
+                ExternalEffectResult::DatabaseRotation(result),
+            ) => self.finalize_database_rotation_request(plan, result),
+            (
                 ExternalEffectPlan::DatabaseBatch(plan),
                 ExternalEffectResult::DatabaseBatch(result),
             ) => self.finalize_database_batch_effect(&plan, result),
@@ -1555,6 +1571,7 @@ impl Service {
         }
         if self.pending_database_effect.is_some()
             || self.pending_database_config_effect.is_some()
+            || self.pending_database_rotation_effect.is_some()
             || self.pending_database_batch_effect.is_some()
             || self.pending_online_auth_effect.is_some()
             || self.pending_plugin_auth.is_some()
@@ -1674,6 +1691,7 @@ impl Service {
         erase_json(&mut body);
         let database = self.pending_database_effect.take();
         let database_config = self.pending_database_config_effect.take();
+        let database_rotation = self.pending_database_rotation_effect.take();
         let database_batch = self.pending_database_batch_effect.take();
         let online_auth = self.pending_online_auth_effect.take();
         let plugin_auth = self.pending_plugin_auth.take();
@@ -1684,6 +1702,7 @@ impl Service {
         let snapshot_transfer = self.pending_snapshot_transfer.take();
         let staged = usize::from(database.is_some())
             + usize::from(database_config.is_some())
+            + usize::from(database_rotation.is_some())
             + usize::from(database_batch.is_some())
             + usize::from(online_auth.is_some())
             + usize::from(plugin_auth.is_some())
@@ -1703,6 +1722,7 @@ impl Service {
         let effect = database
             .map(ExternalEffectPlan::Database)
             .or_else(|| database_config.map(ExternalEffectPlan::DatabaseConfig))
+            .or_else(|| database_rotation.map(ExternalEffectPlan::DatabaseRotation))
             .or_else(|| database_batch.map(ExternalEffectPlan::DatabaseBatch))
             .or_else(|| online_auth.map(ExternalEffectPlan::OnlineAuth))
             .or_else(|| plugin_auth.map(ExternalEffectPlan::PluginAuth))

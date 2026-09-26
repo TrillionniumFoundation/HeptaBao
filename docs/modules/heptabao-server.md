@@ -529,7 +529,7 @@ profile and independent platform gates remain unchanged.
 
 ## Earlier schema-4 runtime extensions
 
-Current Service integrates [PostgreSQL](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md), [remote JWT keys](../auth/HEPTABAO_REMOTE_JWT_KEYS.md), and [Raft administration](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) through its existing writer. Source files `service_database.rs`, `postgres_wire.rs`, `outbound.rs`, `auth_remote.rs` and `service_raft_admin.rs` own the corresponding concrete boundaries; server package existence alone does not qualify them. Database effect intent and exact readback are durable. PostgreSQL and generic outbound providers retain startup enrollment. Fresh native LDAP, RADIUS, JWT/OIDC and Kubernetes authentication configure their scoped transport through their management APIs; legacy records preserve their enrolled authority until explicit promotion. Native membership acknowledgement requires stable committed configuration. Real PostgreSQL execution remains an exact-candidate gate, distinct from protocol models. Current online code-flow authentication is described below; full OIDC/MFA, mixed-version/forced restore and independent production acceptance remain open. These earlier fields required schema 4; current writes use the discriminator in the current state-format contract and old readers must not ignore the new state. See the linked guides for limits, configuration, state machine, failures and exact test commands.
+Current Service integrates [PostgreSQL](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md), [remote JWT keys](../auth/HEPTABAO_REMOTE_JWT_KEYS.md), and [Raft administration](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) through its existing writer. Source files `service_database.rs`, `service_database_rotation.rs`, `postgres_wire.rs`, `outbound.rs`, `auth_remote.rs` and `service_raft_admin.rs` own the corresponding concrete boundaries; server package existence alone does not qualify them. Database effect intent and exact readback are durable. PostgreSQL and generic outbound providers retain startup enrollment. Fresh native LDAP, RADIUS, JWT/OIDC and Kubernetes authentication configure their scoped transport through their management APIs; legacy records preserve their enrolled authority until explicit promotion. Native membership acknowledgement requires stable committed configuration. Real PostgreSQL execution remains an exact-candidate gate, distinct from protocol models. Current online code-flow authentication is described below; full OIDC/MFA, mixed-version/forced restore and independent production acceptance remain open. These earlier fields required schema 4; current writes use the discriminator in the current state-format contract and old readers must not ignore the new state. See the linked guides for limits, configuration, state machine, failures and exact test commands.
 
 ## Current online authentication and native callback
 
@@ -609,8 +609,12 @@ publication with simulated provider results. The separate
 `qa/openbao-acceptance/database_config_completion_live.py` runs a checksum-bound
 synthetic database plugin through the real TLS Service, gates provider completion,
 changes authority concurrently and reads configuration after a full restart.
-Neither fixture qualifies arbitrary SQL templates, static roles, root rotation,
-all providers, mixed-version HA or full OpenBao plugin RPC.
+Neither fixture qualifies arbitrary SQL templates, all providers, mixed-version
+HA or full OpenBao plugin RPC. Bounded PostgreSQL static-role and manager-password
+rotation are owned by `service_database_rotation.rs`; the real
+`postgres_static_rotation_live.py` profile covers owner-only provider extension,
+scheduled/manual rotation, digest-bound retirement, manager rotation and restart.
+It does not establish arbitrary SQL/template or full OpenBao plugin compatibility.
 
 
 ## Database credential delivery authority

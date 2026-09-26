@@ -13,6 +13,12 @@ use heptabao_plugin_host::{PluginHostError, PluginOperation, SecretEnvironment};
 use std::collections::BTreeSet;
 use std::sync::Weak;
 
+#[path = "service_database_rotation.rs"]
+mod rotation;
+pub(super) use rotation::{
+    DatabaseRotationMaintenance, DatabaseRotationObservation, DatabaseRotationPlan,
+};
+
 /// The provider has already been entered and its effect observed. No local
 /// persistence failure can now mean that issuance/renewal/revocation was absent.
 /// Keep the durable pending intent and expose only reconciliation metadata.
@@ -46,6 +52,8 @@ fn provider_fence_is_zero(value: &u64) -> bool {
 struct DatabaseMount {
     connections: BTreeMap<String, Connection>,
     roles: BTreeMap<String, DatabaseRole>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    static_roles: BTreeMap<String, rotation::DatabaseStaticRole>,
     leases: BTreeMap<String, DatabaseLease>,
 }
 #[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
@@ -70,6 +78,8 @@ struct Connection {
     username: String,
     password: PrivateString,
     allowed_roles: BTreeSet<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    root_rotation: Option<rotation::DatabaseRootRotation>,
 }
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -780,8 +790,15 @@ impl DatabaseState {
             .mounts
             .values()
             .flat_map(|mounts| mounts.values())
-            .flat_map(|mount| mount.leases.values())
-            .map(|lease| lease.seq)
+            .map(|mount| {
+                mount
+                    .leases
+                    .values()
+                    .map(|lease| lease.seq)
+                    .max()
+                    .unwrap_or(0)
+                    .max(mount.max_rotation_sequence())
+            })
             .max()
             .unwrap_or(0);
         self.provider_fence.max(retained_max)
@@ -810,6 +827,18 @@ impl DatabaseState {
             .map(|lease| lease.seq)
             .max()
             .unwrap_or(0);
+        let rotation_max = self
+            .mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .map(DatabaseMount::max_rotation_sequence)
+            .max()
+            .unwrap_or(0);
+        if self.provider_fence < rotation_max {
+            return Err(failure(
+                "database provider fence regressed behind credential rotation state",
+            ));
+        }
         if self.provider_fence != 0 && self.provider_fence < retained_max {
             return Err(failure(
                 "database provider fence regressed behind retained lease state",
@@ -825,6 +854,7 @@ impl DatabaseState {
                     || state.leases.len() > 128
                     || state.connections.len() > 16
                     || state.roles.len() > 64
+                    || state.static_roles.len() > 64
                 {
                     return Err(failure("invalid database state bounds"));
                 }
@@ -885,6 +915,7 @@ impl DatabaseState {
                         return Err(failure("invalid persisted database role"));
                     }
                 }
+                state.validate_rotation_state()?;
                 for (id, l) in &state.leases {
                     if id != &l.id
                         || id.len() > 512
@@ -1370,8 +1401,13 @@ impl Service {
             "DELETE" => "delete",
             _ => "update",
         };
-        let sudo =
-            path.starts_with("sys/") || path.contains("/config/") || path.contains("/roles/");
+        let sudo = path.starts_with("sys/")
+            || path.contains("/config/")
+            || path.contains("/roles/")
+            || path.contains("/static-roles/")
+            || path.ends_with("/static-roles")
+            || path.contains("/rotate-role/")
+            || path.contains("/rotate-root/");
         let execute = (|| -> Result<Response, Response> {
             let p = principal
                 .as_ref()
@@ -1401,10 +1437,27 @@ impl Service {
             if let Some(mount) = state.engines.database_mount(ns, path).map(str::to_owned) {
                 let relative = &path[mount.len()..];
                 let (kind, key) = relative.split_once('/').unwrap_or((relative, ""));
-                let collection_list =
-                    *method == "LIST" && key.is_empty() && matches!(kind, "roles" | "config");
+                let collection_list = *method == "LIST"
+                    && key.is_empty()
+                    && matches!(kind, "roles" | "config" | "static-roles");
                 if !collection_list && !name(key) {
                     return Err(invalid("invalid database resource name"));
+                }
+                if matches!(
+                    kind,
+                    "static-roles" | "static-creds" | "rotate-role" | "rotate-root"
+                ) {
+                    return self.database_rotation_route(
+                        state,
+                        &mut principal,
+                        request,
+                        &mount,
+                        kind,
+                        key,
+                        now,
+                        capability,
+                        sudo,
+                    );
                 }
                 match (kind, *method) {
                     ("config", "POST" | "PUT") => {
@@ -1484,11 +1537,13 @@ impl Service {
                                     .ok_or_else(|| invalid("invalid allowed role"))
                             })
                             .collect::<Result<_, _>>()?;
-                        if state
-                            .database
-                            .mount(ns, &mount)
-                            .is_some_and(|m| m.leases.values().any(|l| l.db_name == key))
-                        {
+                        if state.database.mount(ns, &mount).is_some_and(|m| {
+                            m.leases.values().any(|l| l.db_name == key)
+                                || m.static_roles.values().any(|role| role.db_name == key)
+                                || m.connections
+                                    .get(key)
+                                    .is_some_and(|connection| connection.root_rotation.is_some())
+                        }) {
                             return Err(Response::error(
                                 409,
                                 "provider identity is frozen while lease/tombstone records exist",
@@ -1501,6 +1556,7 @@ impl Service {
                             username,
                             password: PrivateString(password),
                             allowed_roles,
+                            root_rotation: None,
                         };
                         let expected_mount_digest =
                             database_mount_digest(state.database.mount(ns, &mount))?;
@@ -1589,10 +1645,18 @@ impl Service {
                                 .leases
                                 .values()
                                 .any(|lease| lease.db_name == key)
+                            || database_mount
+                                .static_roles
+                                .values()
+                                .any(|role| role.db_name == key)
+                            || database_mount
+                                .connections
+                                .get(key)
+                                .is_some_and(|connection| connection.root_rotation.is_some())
                         {
                             return Err(Response::error(
                                 409,
-                                "database configuration is still referenced by a role or lease",
+                                "database configuration is still referenced by a dynamic/static role, lease or root rotation",
                             ));
                         }
                         state.database.mount_mut(ns, &mount).connections.remove(key);
@@ -2716,6 +2780,7 @@ mod tests {
                 username: "hb_manager".into(),
                 password: PrivateString("synthetic-password".into()),
                 allowed_roles: BTreeSet::from(["reader".into()]),
+                root_rotation: None,
             },
         );
         let mut l = DatabaseLease {

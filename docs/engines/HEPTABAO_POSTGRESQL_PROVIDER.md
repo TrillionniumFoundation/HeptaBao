@@ -1,4 +1,4 @@
-# PostgreSQL dynamic credentials and renewable lease implementation
+# PostgreSQL dynamic credentials, static roles and manager rotation
 
 Status: implemented development profile with source-bound real PostgreSQL 17.11
 provider and batch-lease execution receipts below. TLS/SCRAM protocol models
@@ -27,16 +27,19 @@ retirement/readback behavior.
 
 ## Ownership and source
 
-`crates/heptabao-server/src/service_database.rs` owns encrypted connection,
-role, lease and pending-effect records inside the existing Service state.
+`crates/heptabao-server/src/service_database.rs` and
+`service_database_rotation.rs` own encrypted connection, dynamic lease, static-role
+and manager-rotation intent records inside the existing Service state.
 `postgres_wire.rs` owns bounded PostgreSQL TLS/SCRAM/extended-query transport.
 `bootstrap/postgresql/provider.sql` owns the separate provider-side transaction
-and idempotency ledger. `outbound.rs` owns host-enrolled network destinations.
+and idempotency ledger. `upgrade_v2_static_credentials.sql` is the owner-only
+forward extension for an already installed provider-v2 schema. `outbound.rs` owns host-enrolled network destinations.
 No component may infer an external transaction's success from local persistence.
 
 The ordinary Service request admission, live Identity/ACL, pre-entry audit,
 encrypted durable writer and Raft commit remain mandatory. A database mutation
-never installs a second local authoritative store. This provider increment introduced schema 4;
+never installs a second local authoritative store. The original dynamic provider increment introduced schema 4; retained static/root
+rotation state requires schema 53;
 read-only opening of valid older state does not upgrade it. Any real mutation
 publishes the current discriminator defined in `../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`. An old executable must refuse the new state; changing the
 schema number by hand is not a downgrade or rollback procedure.
@@ -118,6 +121,69 @@ role and per-lease provider row, and confirms that retirement before the Service
 removes the local lease record. Root enumeration is not a union of all engine
 classes.
 
+## Bounded static roles and manager-password rotation
+
+The same database mount now exposes a bounded PostgreSQL-only profile:
+
+```text
+POST/GET/LIST/DELETE database/static-roles/<name>
+GET                  database/static-creds/<name>
+POST                 database/rotate-role/<name>
+POST                 database/rotate-root/<connection>
+```
+
+A static role names an existing operator-created LOGIN role and one configured
+database connection. The API role name must remain in the connection's
+`allowed_roles`, while the physical PostgreSQL username must be independently
+enrolled by the provider owner in `allowed_static_roles`. The manager itself,
+privileged roles, recreated role OIDs and identity rebinding are rejected. Rotation
+periods are bounded to 5–86,400 seconds. Static passwords are generated as 32
+random bytes encoded in lowercase hex; configuration reads never return manager
+or pending credentials.
+
+Every manual, scheduled, delete or root rotation first persists its sequence,
+semantic digest and pending secret in the encrypted Service transaction. Provider
+I/O occurs outside the writer. Completion installs the exact current intent only
+after provider readback and current request authority; lifecycle recovery never
+reconstructs an HTTP authority. Manager-password rotation first attempts exact
+readback with the pending secret, so a committed effect with a lost response can
+be recovered without replaying the old-password mutation. If the old secret still
+authenticates and the provider ledger proves that a later global fence overtook an
+unapplied root intent, Service commits a fresh sequence and digest around the same
+pending password before any retry. Exact applied state, verifier drift, newer root
+state or identity rebinding never satisfy that negative proof.
+
+Provider retirement keeps one bounded tombstone per owner-enrolled static identity
+instead of treating an absent row plus a global counter as proof. The tombstone
+binds fence, static ID, username, sequence, request digest and internally computed
+payload digest. A wrong digest, different username or recreated PostgreSQL OID is
+not terminal evidence. Recreating the same API role reactivates the same provider
+identity under a higher global sequence. Provider storage is fail-closed at 4,096
+static identities per manager and database; exhaustion is checked before `ALTER
+ROLE`, so capacity failure cannot mutate the existing password. Tombstones are not
+automatically discarded because doing so could readmit a delayed old effect. Exact
+applied retries remain observable after unrelated later effects advance the global
+provider floor. Root rotation similarly keeps one manager-bound ledger row and
+refuses identity rebinding.
+
+Fresh installs use the thirteen-function provider contract. An existing provider-v2
+installation must be backed up and extended only by the privileged schema owner
+with `upgrade_v2_static_credentials.sql`; the API manager cannot install or modify
+its tables. The forward script and fresh-install block are byte-aligned for these
+eight functions and three tables. Grants remain explicit: the manager receives
+schema usage and function execution only, never table mutation or schema create.
+
+`postgres_static_rotation_live.py` executes fresh install and forward upgrade on
+real PostgreSQL 17, automatic/manual rotation, old-password denial, global-fence
+overtaking, digest-bound delete/recreate, two manager rotations, encrypted restart,
+provider-capacity saturation before password mutation, plaintext scans and
+restricted-manager negative cases. It also disables lifecycle,
+retains a root intent through provider outage and process restart, overtakes it with
+an unrelated dynamic effect, then proves lifecycle readmission and completion. It is
+mandatory in the replacement workflow. This scoped profile does not implement arbitrary creation or
+rotation SQL, cron schedules/windows, non-PostgreSQL static roles, complete OpenBao
+field/error parity or multi-host database failover.
+
 ## Native username contract and recovery of the short-name regression
 
 New native PostgreSQL and Valkey credentials retain `hbp_` followed by 32 lowercase
@@ -153,8 +219,8 @@ unchanged function owners/grants, live credential preservation, rejected new
 short-name issuance, short-name revoke/retirement, stale replay rejection and
 foreign-role protection, followed by the full existing provider lifecycle. Its
 report binds the historical, fresh-install and upgrade SQL digests. This remains
-a scoped native-provider qualification, not general OpenBao statement or
-static-role compatibility.
+a scoped native-provider qualification, not general OpenBao statement or full
+database-plugin compatibility.
 
 ## State machine and external-effect boundary
 
@@ -221,7 +287,7 @@ row and generated PostgreSQL role have been removed.
 An independent privileged PostgreSQL schema owner installs `provider.sql` into
 the selected database. The caller must explicitly provision a nonprivileged login
 manager, a non-login application group and its application permissions, grant
-only schema usage and the five provider functions, and enroll manager/group in
+only schema usage and the five dynamic plus eight rotation functions, and enroll manager/group in
 `allowed_groups`. Do not grant the manager table mutation, schema CREATE or
 membership in a privileged role. Function search paths are fixed to pg_catalog;
 relation references are schema-qualified. The installer is deliberately non-
@@ -251,8 +317,8 @@ The SSD Lima guest provider run bound to source head `45c7edc` used PostgreSQL
 [54-check receipt](../../qa/openbao-acceptance/evidence/postgresql-live-45c7edc.json)
 covered the current provider-role profile, including exact fence blocking,
 restart/outage reconciliation, active-session termination and more than 128
-issue/revoke lifecycles. The receipt is scoped repository evidence; it does not
-admit static roles, root rotation, full OpenBao statement/template/error parity,
+issue/revoke lifecycles. The receipt predates the separate static/root profile and remains scoped
+repository evidence; it does not admit full OpenBao statement/template/error parity,
 multi-host provider faults or independent qualification.
 
 A later `eeab30a` binary passed [46 real PostgreSQL batch-lease checks](../../qa/openbao-acceptance/evidence/batch-postgres-lease-eeab30a.json),

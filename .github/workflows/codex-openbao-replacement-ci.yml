@@ -476,6 +476,19 @@ jobs:
           # The runner returns 77 for missing real binaries; that is a blocking
           # failure here, never a successful skip or a protocol-model fallback.
 
+      - name: Exercise PostgreSQL static-role and manager credential rotation
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.provider_packages_ready.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 300 python qa/openbao-acceptance/postgres_static_rotation_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --postgres-bin /usr/lib/postgresql/17/bin \
+            --work-dir "$RUNNER_TEMP/heptabao-postgresql-static-rotation" \
+            --output "$RUNNER_TEMP/heptabao-postgresql-static-rotation.json"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
       - name: Exercise actual Valkey ACL persistence and session revocation
         if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.provider_packages_ready.outcome == 'success' }}
         shell: bash
