@@ -10,8 +10,11 @@ ROOT = Path(__file__).resolve().parents[3]
 def extension(path: Path) -> str:
     source = path.read_text()
     start = source.index("-- PostgreSQL statement-template extension.")
-    end = source.index("COMMIT;", start)
-    return source[start:end]
+    boundaries = [source.index("COMMIT;", start)]
+    later = source.find("-- PostgreSQL password-authentication extension.", start)
+    if later >= 0:
+        boundaries.append(later)
+    return source[start:min(boundaries)].rstrip() + "\n"
 
 
 def function(source: str, name: str) -> str:
@@ -62,9 +65,11 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
         self.assertIn("sha256(convert_to(p_statements,'UTF8'))", apply)
         self.assertNotIn("sha256(convert_to(p_statements::text", apply)
         rust = (ROOT / "crates/heptabao-server/src/service_database_statements.rs").read_text()
+        selector = (ROOT / "crates/heptabao-server/src/service_database.rs").read_text()
         self.assertIn('object.get("statements_digest") != Some(&json!(expected_statements_digest))', rust)
-        self.assertIn("$9::text", rust)
-        self.assertNotIn("$9::jsonb", rust)
+        self.assertIn("self.connection.statement_apply_function()", rust)
+        self.assertIn("$9::text", selector)
+        self.assertNotIn("$9::jsonb", rust + selector)
 
     def test_parser_tracks_comments_escapes_and_unmatched_placeholder_closers(self):
         rust = (ROOT / "crates/heptabao-server/src/service_database_statements.rs").read_text()
@@ -99,11 +104,11 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
         self.assertIn("provider_role and statement templates are mutually exclusive", source)
         self.assertIn("statement-backed database roles currently require PostgreSQL", source)
 
-    def test_schema54_and_legacy_digest_are_explicit(self):
+    def test_schema54_gate_and_current_schema_are_explicit(self):
         service = (ROOT / "crates/heptabao-server/src/service.rs").read_text()
         identity = (ROOT / "crates/heptabao-server/src/service_identity.rs").read_text()
         database = (ROOT / "crates/heptabao-server/src/service_database.rs").read_text()
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 54;")
+        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 55;")
         self.assertIn("database statement templates require schema 54", identity)
         self.assertIn("Exact legacy tuple: old pending intents must reopen byte-stably", database)
         self.assertIn("heptabao.database.statements.v1", database)

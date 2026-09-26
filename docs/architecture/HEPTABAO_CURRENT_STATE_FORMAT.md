@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **54**. Its source constant is
+The current Service state schema is **55**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -99,8 +99,25 @@ transactional within one request; crash-resumable step journals are not claimed.
 | 52 | Durable userpass lockout policy, counters, last-failure observations and lock windows. Old-format admission rejects populated lockout state rather than silently resetting authentication protection on restart. |
 | 53 | Durable PostgreSQL static-role password and manager-password rotation intents. Pending passwords, provider sequences, semantic digests, rotation times and phases stay inside the encrypted database owner; schema-52 readers must reject this state rather than drop unresolved external effects. |
 | 54 | Bounded PostgreSQL statement-template role and lease state. Creation/renewal/revocation/rollback template arrays are encrypted inside the database owner and copied into pending lease identity. Legacy provider-role records retain their old serialization and digest; schema-53 readers must reject template-bearing state rather than discard the provider effect contract. |
+| 55 | Explicit PostgreSQL connection `password_authentication=scram-sha-256` plus a strict, encrypted provider-verifier pair on unresolved dynamic, statement, static-role and root password mutations. Default/absent `password` selection retains schema-54 bytes and legacy digest tuples; a non-default selection or retained verifier requires this reader. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
+
+Schema 55 independently gates
+`DatabaseState::has_scram_password_authentication()`. The selection field is absent
+for default `password` mode, preserving valid schema-54 serialized connections.
+In SCRAM mode the Service persists the generated raw client password and a locally
+derived canonical verifier only while the same external mutation is unresolved.
+Both values, operation identity and mode are domain-separated into the request
+digest. State validation rejects a missing, extra, malformed or unpaired verifier;
+terminal publication clears both pending values. Historical password-mode intents
+retain their exact serialization and digest tuples.
+
+A persisted SCRAM connection requires the password-authentication provider
+protocol. Dynamic, statement, static and root paths send only the verifier to the
+strict SCRAM wrapper while retaining the raw value for authorized client delivery
+or post-rotation reconnect. This discriminator does not qualify password policies,
+username templates or non-PostgreSQL providers.
 
 Schema 54 independently gates `DatabaseState::has_statement_template_state()`.
 An empty/default statement owner remains byte-compatible with schema 53, including

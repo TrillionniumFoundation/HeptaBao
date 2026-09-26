@@ -26,6 +26,8 @@ pub(super) struct DatabaseStaticRole {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) pending_password: Option<PrivateString>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) pending_provider_password: Option<PrivateString>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) last_rotation: Option<u64>,
     pub(super) next_rotation: u64,
     pub(super) seq: u64,
@@ -38,6 +40,8 @@ pub(super) struct DatabaseStaticRole {
 pub(super) struct DatabaseRootRotation {
     pub(super) seq: u64,
     pub(super) pending_password: PrivateString,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) provider_password: Option<PrivateString>,
     pub(super) request_digest: String,
 }
 
@@ -141,18 +145,35 @@ fn root_operation_id(
 }
 
 fn static_digest(role_name: &str, role: &DatabaseStaticRole) -> Result<String, Response> {
-    rotation_digest(&(
-        "rotate-static",
-        role_name,
-        role.db_name.as_str(),
-        role.username.as_str(),
-        role.rotation_period,
-        role.seq,
-        role.pending_password
-            .as_ref()
-            .map(|value| value.0.as_str())
-            .unwrap_or(""),
-    ))
+    if let Some(provider_password) = &role.pending_provider_password {
+        rotation_digest(&(
+            "heptabao.database.static.scram-sha-256.v1",
+            role_name,
+            role.db_name.as_str(),
+            role.username.as_str(),
+            role.rotation_period,
+            role.seq,
+            role.pending_password
+                .as_ref()
+                .map(|value| value.0.as_str())
+                .unwrap_or(""),
+            provider_password.0.as_str(),
+        ))
+    } else {
+        // Exact published tuple for password-mode and historical intents.
+        rotation_digest(&(
+            "rotate-static",
+            role_name,
+            role.db_name.as_str(),
+            role.username.as_str(),
+            role.rotation_period,
+            role.seq,
+            role.pending_password
+                .as_ref()
+                .map(|value| value.0.as_str())
+                .unwrap_or(""),
+        ))
+    }
 }
 
 fn static_retire_digest(role_name: &str, role: &DatabaseStaticRole) -> Result<String, Response> {
@@ -166,12 +187,23 @@ fn static_retire_digest(role_name: &str, role: &DatabaseStaticRole) -> Result<St
 }
 
 fn root_digest(connection_name: &str, rotation: &DatabaseRootRotation) -> Result<String, Response> {
-    rotation_digest(&(
-        "rotate-root",
-        connection_name,
-        rotation.seq,
-        rotation.pending_password.0.as_str(),
-    ))
+    if let Some(provider_password) = &rotation.provider_password {
+        rotation_digest(&(
+            "heptabao.database.root.scram-sha-256.v1",
+            connection_name,
+            rotation.seq,
+            rotation.pending_password.0.as_str(),
+            provider_password.0.as_str(),
+        ))
+    } else {
+        // Exact published tuple for password-mode and historical intents.
+        rotation_digest(&(
+            "rotate-root",
+            connection_name,
+            rotation.seq,
+            rotation.pending_password.0.as_str(),
+        ))
+    }
 }
 
 fn parse_provider_object(value: &str) -> Result<serde_json::Map<String, Value>, Response> {
@@ -272,18 +304,22 @@ impl DatabaseRotationPlan {
                 &self.operation_id,
             ));
         }
+        let provider_password = self
+            .connection
+            .password_authentication
+            .provider_password(&password.0, expected.pending_provider_password.as_ref())?;
         let seq = expected.seq.to_string();
-        // This timestamp is part of the durable intent. Retries after a lost
-        // response must send byte-identical semantics under the same sequence.
+        // This timestamp and provider credential are part of the durable intent.
+        // Retries after a lost response send byte-identical semantics.
         let rotated_at = expected.next_rotation.to_string();
         pg.scalar(
-            "SELECT heptabao_provider.rotate_static($1,$2,$3,$4::bigint,$5,$6,$7::bigint)::text",
+            self.connection.static_rotation_function(),
             &[
                 &self.fence_id,
                 &self.operation_id,
                 &expected.username,
                 &seq,
-                &password.0,
+                provider_password,
                 &expected.request_digest,
                 &rotated_at,
             ],
@@ -451,13 +487,17 @@ impl DatabaseRotationPlan {
         if retriable == "true" {
             return Ok(DatabaseRotationObservation::ReadmitRequired);
         }
+        let provider_password = self.connection.password_authentication.provider_password(
+            &expected.pending_password.0,
+            expected.provider_password.as_ref(),
+        )?;
         old.scalar(
-            "SELECT heptabao_provider.rotate_root($1,$2,$3::bigint,$4,$5)::text",
+            self.connection.root_rotation_function(),
             &[
                 &self.fence_id,
                 &self.operation_id,
                 &seq,
-                &expected.pending_password.0,
+                provider_password,
                 &expected.request_digest,
             ],
         )
@@ -548,6 +588,12 @@ impl DatabaseMount {
         for connection in self.connections.values() {
             if let Some(rotation) = &connection.root_rotation
                 && (connection.provider != DatabaseProvider::Postgresql
+                    || !connection
+                        .password_authentication
+                        .persisted_provider_password_is_valid(
+                            Some(&rotation.pending_password),
+                            rotation.provider_password.as_ref(),
+                        )
                     || rotation.seq == 0
                     || rotation.seq > i64::MAX as u64
                     || rotation.pending_password.0.len() != 64
@@ -595,7 +641,13 @@ impl DatabaseMount {
                 })
                 || pending.is_some_and(|value| {
                     value.0.len() != 64 || !value.0.bytes().all(|byte| byte.is_ascii_hexdigit())
-                });
+                })
+                || !connection
+                    .password_authentication
+                    .persisted_provider_password_is_valid(
+                        pending,
+                        role.pending_provider_password.as_ref(),
+                    );
             let phase_invalid = match role.phase {
                 DatabaseStaticPhase::PendingRotate => {
                     pending.is_none()
@@ -777,9 +829,12 @@ impl Service {
                     &self.unseal_nonce,
                 )
                 .with_time_floor(now);
+                let password_authentication = connection.password_authentication;
                 let seq = state.database.next_provider_fence()?;
                 let pending_password =
                     PrivateString(hex(&crypto::random::<32>().map_err(failure)?));
+                let pending_provider_password =
+                    password_authentication.generate_provider_password(&pending_password.0)?;
                 let prior = state
                     .database
                     .mount(request.namespace, mount)
@@ -793,6 +848,7 @@ impl Service {
                         .as_ref()
                         .and_then(|value| value.current_password.clone()),
                     pending_password: Some(pending_password),
+                    pending_provider_password,
                     last_rotation: prior.as_ref().and_then(|value| value.last_rotation),
                     next_rotation: now,
                     seq,
@@ -848,6 +904,7 @@ impl Service {
                     .ok_or_else(|| Response::error(404, "database static role not found"))?;
                 role.seq = seq;
                 role.pending_password = None;
+                role.pending_provider_password = None;
                 role.phase = DatabaseStaticPhase::PendingDelete;
                 role.request_digest = static_retire_digest(key, role)?;
                 self.publish_database(state)?;
@@ -985,6 +1042,27 @@ impl Service {
         role_name: &str,
         now: u64,
     ) -> Result<(), Response> {
+        let password_authentication = {
+            let database_mount = state
+                .database
+                .mount(namespace, mount)
+                .ok_or_else(|| Response::error(404, "database mount not found"))?;
+            let role = database_mount
+                .static_roles
+                .get(role_name)
+                .ok_or_else(|| Response::error(404, "database static role not found"))?;
+            if role.phase != DatabaseStaticPhase::Active {
+                return Err(failure("database static-role rotation is already pending"));
+            }
+            database_mount
+                .connections
+                .get(&role.db_name)
+                .ok_or_else(|| failure("database static-role connection disappeared"))?
+                .password_authentication
+        };
+        let pending_password = PrivateString(hex(&crypto::random::<32>().map_err(failure)?));
+        let pending_provider_password =
+            password_authentication.generate_provider_password(&pending_password.0)?;
         let seq = state.database.next_provider_fence()?;
         let role = state
             .database
@@ -992,13 +1070,9 @@ impl Service {
             .static_roles
             .get_mut(role_name)
             .ok_or_else(|| Response::error(404, "database static role not found"))?;
-        if role.phase != DatabaseStaticPhase::Active {
-            return Err(failure("database static-role rotation is already pending"));
-        }
         role.seq = seq;
-        role.pending_password = Some(PrivateString(
-            hex(&crypto::random::<32>().map_err(failure)?),
-        ));
+        role.pending_password = Some(pending_password);
+        role.pending_provider_password = pending_provider_password;
         role.phase = DatabaseStaticPhase::PendingRotate;
         role.next_rotation = now;
         role.request_digest = static_digest(role_name, role)?;
@@ -1052,11 +1126,20 @@ impl Service {
         mount: &str,
         connection_name: &str,
     ) -> Result<(), Response> {
-        let seq = state.database.next_provider_fence()?;
+        let password_authentication = state
+            .database
+            .mount(namespace, mount)
+            .and_then(|database_mount| database_mount.connections.get(connection_name))
+            .ok_or_else(|| Response::error(404, "database configuration not found"))?
+            .password_authentication;
         let pending_password = PrivateString(hex(&crypto::random::<32>().map_err(failure)?));
+        let provider_password =
+            password_authentication.generate_provider_password(&pending_password.0)?;
+        let seq = state.database.next_provider_fence()?;
         let mut rotation = DatabaseRootRotation {
             seq,
             pending_password,
+            provider_password,
             request_digest: String::new(),
         };
         rotation.request_digest = root_digest(connection_name, &rotation)?;
@@ -1372,6 +1455,7 @@ impl Service {
                             .get_mut(role_name)
                         {
                             role.current_password = role.pending_password.take();
+                            role.pending_provider_password = None;
                             role.last_rotation = Some(expected.next_rotation);
                             role.next_rotation =
                                 expected.next_rotation.saturating_add(role.rotation_period);
@@ -1677,6 +1761,7 @@ mod tests {
                     username: "hb_manager".into(),
                     password: PrivateString("old-manager-password".into()),
                     allowed_roles: BTreeSet::from(["static-a".into(), "static-b".into()]),
+                    password_authentication: PostgresqlPasswordAuthentication::Password,
                     root_rotation: None,
                 },
             );
@@ -1694,12 +1779,22 @@ mod tests {
         now: u64,
     ) -> Result<DatabaseStaticRole, Response> {
         let seq = state.database.next_provider_fence()?;
+        let pending_password = PrivateString("ab".repeat(32));
+        let password_authentication = state
+            .database
+            .mount("", "database/")
+            .and_then(|mount| mount.connections.get("local"))
+            .ok_or_else(|| failure("static fixture connection missing"))?
+            .password_authentication;
+        let pending_provider_password =
+            password_authentication.generate_provider_password(&pending_password.0)?;
         let mut role = DatabaseStaticRole {
             db_name: "local".into(),
             username: username.into(),
             rotation_period: 60,
             current_password: None,
-            pending_password: Some(PrivateString("ab".repeat(32))),
+            pending_password: Some(pending_password),
+            pending_provider_password,
             last_rotation: None,
             next_rotation: now,
             seq,
@@ -1750,6 +1845,84 @@ mod tests {
             service.state.as_ref().ok_or("state")?.schema,
             CURRENT_STATE_SCHEMA
         );
+        Ok(())
+    }
+
+    #[test]
+    fn scram_rotation_state_requires_provider_verifier_pairing() -> TestResult {
+        let (_root, service, _) = fixture()?;
+        let mut state = service.state.clone().ok_or("state")?;
+        state
+            .database
+            .mount_mut("", "database/")
+            .connections
+            .get_mut("local")
+            .ok_or("connection")?
+            .password_authentication = PostgresqlPasswordAuthentication::ScramSha256;
+        let pending = response(insert_pending_static(
+            &mut state,
+            "static-a",
+            "app_static_a",
+            100,
+        ))?;
+        assert!(
+            pending
+                .pending_provider_password
+                .as_ref()
+                .is_some_and(|value| valid_postgresql_scram_verifier(&value.0))
+        );
+        response(state.validate_format())?;
+        let saved = state
+            .database
+            .mount_mut("", "database/")
+            .static_roles
+            .get_mut("static-a")
+            .ok_or("role")?
+            .pending_provider_password
+            .take();
+        assert!(state.validate_format().is_err());
+        state
+            .database
+            .mount_mut("", "database/")
+            .static_roles
+            .get_mut("static-a")
+            .ok_or("role")?
+            .pending_provider_password = saved;
+        response(state.validate_format())?;
+
+        let mut root_state = service.state.clone().ok_or("root state")?;
+        root_state
+            .database
+            .mount_mut("", "database/")
+            .connections
+            .get_mut("local")
+            .ok_or("connection")?
+            .password_authentication = PostgresqlPasswordAuthentication::ScramSha256;
+        response(service.stage_root_rotation(&mut root_state, "", "database/", "local"))?;
+        response(root_state.validate_format())?;
+        let root_provider = root_state
+            .database
+            .mount_mut("", "database/")
+            .connections
+            .get_mut("local")
+            .ok_or("connection")?
+            .root_rotation
+            .as_mut()
+            .ok_or("root rotation")?
+            .provider_password
+            .take();
+        assert!(root_state.validate_format().is_err());
+        root_state
+            .database
+            .mount_mut("", "database/")
+            .connections
+            .get_mut("local")
+            .ok_or("connection")?
+            .root_rotation
+            .as_mut()
+            .ok_or("root rotation")?
+            .provider_password = root_provider;
+        response(root_state.validate_format())?;
         Ok(())
     }
 
@@ -2011,6 +2184,7 @@ mod tests {
             rotation_period: 60,
             current_password: Some(PrivateString("ab".repeat(32))),
             pending_password: None,
+            pending_provider_password: None,
             last_rotation: Some(100),
             next_rotation: 160,
             seq,

@@ -1,4 +1,4 @@
-# PostgreSQL dynamic credentials, statement templates, static roles and manager rotation
+# PostgreSQL dynamic credentials, statement templates, password authentication, static roles and manager rotation
 
 Status: implemented development profile with source-bound real PostgreSQL 17.11
 provider and batch-lease execution receipts below. TLS/SCRAM protocol models
@@ -33,16 +33,18 @@ connection, dynamic lease, statement-template, static-role and manager-rotation
 intent records inside the existing Service state. `postgres_wire.rs` owns bounded
 PostgreSQL TLS/SCRAM/extended-query transport. `bootstrap/postgresql/provider.sql`
 owns the separate provider-side transaction and idempotency ledgers.
-`upgrade_v2_static_credentials.sql` and `upgrade_v3_statement_templates.sql` are
-owner-only forward extensions for an already installed provider-v2 schema.
+`upgrade_v2_static_credentials.sql`, `upgrade_v3_statement_templates.sql` and
+`upgrade_v4_password_authentication.sql` are owner-only forward extensions for an
+already installed provider-v2 schema.
 `outbound.rs` owns host-enrolled network destinations.
 No component may infer an external transaction's success from local persistence.
 
 The ordinary Service request admission, live Identity/ACL, pre-entry audit,
 encrypted durable writer and Raft commit remain mandatory. A database mutation
 never installs a second local authoritative store. The original dynamic provider increment introduced schema 4; retained static/root
-rotation state requires schema 53, and persisted statement templates require
-schema 54. Read-only opening of valid older state does not upgrade it. Any real mutation
+rotation state requires schema 53, persisted statement templates require
+schema 54, and an explicit non-default PostgreSQL password-authentication mode
+requires schema 55. Read-only opening of valid older state does not upgrade it. Any real mutation
 publishes the current discriminator defined in `../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`. An old executable must refuse the new state; changing the
 schema number by hand is not a downgrade or rollback procedure.
 
@@ -89,7 +91,9 @@ LIST sys/leases/lookup/database/creds/reader
 
 Connection configuration accepts `plugin_name` equal to
 `postgresql-database-plugin`, `connection_url`, `username`, `password`,
-`allowed_roles`, and optional `verify_connection=true`. The manager credential is
+`allowed_roles`, optional `verify_connection=true`, and optional
+`password_authentication`. The latter is `password` by default or
+`scram-sha-256` for the native PostgreSQL provider. The manager credential is
 sealed by existing Service persistence, never returned by config read. Successful
 configuration requires a verified current-user and provider-contract query.
 
@@ -126,6 +130,55 @@ role and per-lease provider row, and confirms that retirement before the Service
 removes the local lease record. Root enumeration is not a union of all engine
 classes.
 
+## Explicit PostgreSQL password authentication
+
+Connection configuration accepts OpenBao 2.6.2's `password_authentication`
+selection. `password` preserves the historical path and PostgreSQL's enrolled
+server policy. `scram-sha-256` requires the separately installed
+`heptabao-postgresql-password-authentication-v1` provider extension. The Service
+derives a canonical PostgreSQL SCRAM-SHA-256 verifier locally from the generated
+raw client password and a persisted random salt. The raw password remains only in
+the encrypted pending intent and authorized response; SCRAM-mode SQL receives the
+verifier, never the raw login secret. Provider readback hashes PostgreSQL's stored
+verifier and remains bound to the existing operation digest.
+
+The same dynamic, statement-template, static-role and root-rotation functions
+remain the only mutation owners. The owner-only extension atomically replaces
+those four function bodies under their existing signatures, preserving function
+OID, owner, ACL, SECURITY-DEFINER flag and search path while expanding only the
+credential validator from legacy 64-hex input to legacy input or one strict,
+canonical SCRAM verifier. Thin SCRAM wrappers reject raw or malformed material
+before delegating to those owners. Advisory locks, sequence/fence checks, payload
+digests, role identity and provider readback are unchanged. Same-sequence retry
+therefore uses the exact persisted verifier bytes. Static and manager rotations
+reconnect with the raw pending client password while provider mutation receives
+only its paired verifier.
+
+Fresh installs contain the strict verifier helpers, upgraded owner bodies and
+wrappers. Existing provider-v2 installations must first have the static/root and
+statement extensions, then be backed up and extended by the schema owner with
+`upgrade_v4_password_authentication.sql`. The forward upgrade is repeatable,
+uses bounded lock/statement timeouts, preserves the four owner functions' OID,
+owner and ACL, and creates new helpers/wrappers with PUBLIC execution revoked.
+The API manager cannot install the extension; the operator must grant only the
+new protocol/wrapper entrypoints needed by that enrolled manager.
+
+Persisted `scram-sha-256` selection requires schema 55. Each unresolved dynamic,
+statement, static or root password mutation also retains the paired verifier in
+the encrypted database owner and binds it into the request digest. Missing,
+extra, malformed or digest-substituted verifier state is rejected. Verifiers are
+cleared with the pending raw password after terminal publication. Absent/default
+`password` selection retains schema-54 serialization and historical digest bytes.
+
+`postgres_password_authentication_live.py` runs all four credential mutation
+paths on a private PostgreSQL 17 cluster, verifies raw client login and the
+actual `pg_authid` SCRAM verifier, rejects raw/malformed input at SCRAM wrappers
+before any fence or role is created, rotates the manager, restarts HeptaBao and
+executes the v2→static→statement→password-auth forward path twice. It compares
+owner function OID/owner/ACL/security configuration before and after upgrade.
+Password-policy generation, `username_template`, non-PostgreSQL providers,
+multi-host faults and independent admission remain open.
+
 ## Bounded OpenBao statement-template roles
 
 The statement profile persists the exact template arrays in encrypted Service
@@ -141,10 +194,13 @@ tracked before semicolon splitting. Unknown or unmatched placeholder delimiters,
 unterminated strings/comments and excess comment nesting fail before intent
 publication.
 
-The Service renders only fixed generated usernames, 32-byte hexadecimal
-passwords and UTC expirations. It serializes the normalized statement array once,
-binds its exact SHA-256 digest into provider readback, and passes the original
-bounded JSON text to `apply_statements`. The privileged provider parses that text,
+The Service renders only fixed generated usernames, one mode-selected provider
+credential and UTC expirations. Historical `password` mode renders the 32-byte
+hexadecimal client password. `scram-sha-256` renders the paired canonical verifier
+while retaining the raw password only for the encrypted intent and authorized
+response. It serializes the normalized statement array once, binds its exact
+SHA-256 digest into provider readback, and passes the original bounded JSON text
+to the selected statement owner. The privileged provider parses that text,
 verifies array/type/size bounds, records only digests and role identity, and runs
 all statements inside one PostgreSQL transaction. Readback must match fence,
 lease, username, sequence, action, expiry, request digest and the exact statement

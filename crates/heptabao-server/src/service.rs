@@ -35,8 +35,9 @@ use crate::state_record_root::RecordStateRoot;
 // schema 51 adds discovery-bound OIDC UserInfo session endpoints; schema 52 adds
 // durable userpass lockout counters and windows; schema 53 adds PostgreSQL
 // static-role and manager-password rotation intents; schema 54 binds persisted
-// PostgreSQL statement templates to lease identities and provider ledgers.
-const CURRENT_STATE_SCHEMA: u32 = 54;
+// PostgreSQL statement templates to lease identities and provider ledgers;
+// schema 55 persists explicit PostgreSQL password-authentication selection.
+const CURRENT_STATE_SCHEMA: u32 = 55;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;

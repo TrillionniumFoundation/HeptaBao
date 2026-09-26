@@ -366,7 +366,11 @@ SELECT 'hb_manager','hbf1:'||repeat('1',64),
         first_root_id, first_root_fence = first_root[1], first_root[3]
         check("old_manager_password_denied", not pg.login("hb_manager", old_manager))
         status, config = instance.call("GET", "database/config/local")
-        check("manager_password_readback_redacted", status == 200 and "password" not in json.dumps(config))
+        config_data = config.get("data", {})
+        check("manager_password_readback_redacted", status == 200
+              and isinstance(config_data, dict) and "password" not in config_data
+              and config_data.get("password_authentication") == "password"
+              and old_manager not in json.dumps(config))
         check("service_uses_rotated_manager_password", instance.call(
             "POST", "database/rotate-role/staticapp", {}
         )[0] == 204)

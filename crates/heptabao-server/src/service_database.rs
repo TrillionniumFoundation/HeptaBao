@@ -70,6 +70,142 @@ enum DatabaseProvider {
 fn is_postgresql_provider(provider: &DatabaseProvider) -> bool {
     *provider == DatabaseProvider::Postgresql
 }
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, Default)]
+#[serde(rename_all = "kebab-case")]
+enum PostgresqlPasswordAuthentication {
+    #[default]
+    Password,
+    #[serde(rename = "scram-sha-256")]
+    ScramSha256,
+}
+fn password_authentication_is_default(value: &PostgresqlPasswordAuthentication) -> bool {
+    *value == PostgresqlPasswordAuthentication::Password
+}
+const POSTGRESQL_SCRAM_ITERATIONS: u32 = 4096;
+const POSTGRESQL_SCRAM_SALT_BYTES: usize = 16;
+const POSTGRESQL_SCRAM_KEY_BYTES: usize = 32;
+
+fn canonical_postgresql_scram_component(value: &str, expected_bytes: usize) -> bool {
+    let Ok(decoded) = STANDARD.decode(value) else {
+        return false;
+    };
+    let decoded = Zeroizing::new(decoded);
+    decoded.len() == expected_bytes && STANDARD.encode(&decoded[..]) == value
+}
+
+fn valid_postgresql_scram_verifier(value: &str) -> bool {
+    let Some(value) = value.strip_prefix("SCRAM-SHA-256$4096:") else {
+        return false;
+    };
+    let Some((salt, keys)) = value.split_once('$') else {
+        return false;
+    };
+    let Some((stored, server)) = keys.split_once(':') else {
+        return false;
+    };
+    !server.contains(':')
+        && canonical_postgresql_scram_component(salt, POSTGRESQL_SCRAM_SALT_BYTES)
+        && canonical_postgresql_scram_component(stored, POSTGRESQL_SCRAM_KEY_BYTES)
+        && canonical_postgresql_scram_component(server, POSTGRESQL_SCRAM_KEY_BYTES)
+}
+
+fn postgresql_scram_verifier_with_salt(
+    password: &str,
+    salt: &[u8; POSTGRESQL_SCRAM_SALT_BYTES],
+) -> Result<PrivateString, Response> {
+    let iterations = std::num::NonZeroU32::new(POSTGRESQL_SCRAM_ITERATIONS)
+        .ok_or_else(|| failure("PostgreSQL SCRAM iteration profile is invalid"))?;
+    let mut salted_password = Zeroizing::new([0u8; POSTGRESQL_SCRAM_KEY_BYTES]);
+    ring::pbkdf2::derive(
+        ring::pbkdf2::PBKDF2_HMAC_SHA256,
+        iterations,
+        salt,
+        password.as_bytes(),
+        &mut salted_password[..],
+    );
+    let key = hmac::Key::new(hmac::HMAC_SHA256, &salted_password[..]);
+    let client_key = hmac::sign(&key, b"Client Key");
+    let stored_key = ring::digest::digest(&ring::digest::SHA256, client_key.as_ref());
+    let server_key = hmac::sign(&key, b"Server Key");
+    let value = format!(
+        "SCRAM-SHA-256${POSTGRESQL_SCRAM_ITERATIONS}:{}${}:{}",
+        STANDARD.encode(salt),
+        STANDARD.encode(stored_key.as_ref()),
+        STANDARD.encode(server_key.as_ref()),
+    );
+    if !valid_postgresql_scram_verifier(&value) {
+        return Err(failure("PostgreSQL SCRAM verifier generation failed"));
+    }
+    Ok(PrivateString(value))
+}
+
+impl PostgresqlPasswordAuthentication {
+    fn parse(value: Option<&Value>, provider: DatabaseProvider) -> Result<Self, Response> {
+        let value = match value {
+            None => Self::Password,
+            Some(Value::String(value)) if value == "password" => Self::Password,
+            Some(Value::String(value)) if value == "scram-sha-256" => Self::ScramSha256,
+            _ => {
+                return Err(invalid(
+                    "password_authentication must be password or scram-sha-256",
+                ));
+            }
+        };
+        if value == Self::ScramSha256 && provider != DatabaseProvider::Postgresql {
+            return Err(invalid(
+                "scram-sha-256 password authentication requires PostgreSQL",
+            ));
+        }
+        Ok(value)
+    }
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::Password => "password",
+            Self::ScramSha256 => "scram-sha-256",
+        }
+    }
+
+    fn generate_provider_password(self, password: &str) -> Result<Option<PrivateString>, Response> {
+        match self {
+            Self::Password => Ok(None),
+            Self::ScramSha256 => {
+                let salt = crypto::random::<POSTGRESQL_SCRAM_SALT_BYTES>().map_err(failure)?;
+                postgresql_scram_verifier_with_salt(password, &salt).map(Some)
+            }
+        }
+    }
+
+    fn provider_password<'a>(
+        self,
+        password: &'a str,
+        provider_password: Option<&'a PrivateString>,
+    ) -> Result<&'a str, Response> {
+        match (self, provider_password) {
+            (Self::Password, None) => Ok(password),
+            (Self::ScramSha256, Some(value)) if valid_postgresql_scram_verifier(&value.0) => {
+                Ok(&value.0)
+            }
+            _ => Err(failure(
+                "persisted PostgreSQL password-authentication material is invalid",
+            )),
+        }
+    }
+
+    fn persisted_provider_password_is_valid(
+        self,
+        password: Option<&PrivateString>,
+        provider_password: Option<&PrivateString>,
+    ) -> bool {
+        match self {
+            Self::Password => provider_password.is_none(),
+            Self::ScramSha256 => match (password, provider_password) {
+                (Some(_), Some(value)) => valid_postgresql_scram_verifier(&value.0),
+                (None, None) => true,
+                _ => false,
+            },
+        }
+    }
+}
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Connection {
@@ -81,6 +217,8 @@ struct Connection {
     username: String,
     password: PrivateString,
     allowed_roles: BTreeSet<String>,
+    #[serde(default, skip_serializing_if = "password_authentication_is_default")]
+    password_authentication: PostgresqlPasswordAuthentication,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     root_rotation: Option<rotation::DatabaseRootRotation>,
 }
@@ -131,6 +269,8 @@ struct DatabaseLease {
     seq: u64,
     phase: Phase,
     password: Option<PrivateString>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    provider_password: Option<PrivateString>,
     request_digest: String,
 }
 
@@ -258,6 +398,20 @@ impl DatabaseConfigPlan {
                 {
                     return Err(failure(
                         "PostgreSQL provider contract is not installed or mismatched",
+                    ));
+                }
+                if self.connection.password_authentication
+                    == PostgresqlPasswordAuthentication::ScramSha256
+                    && pg
+                        .scalar(
+                            "SELECT heptabao_provider.password_authentication_protocol()",
+                            &[],
+                        )
+                        .map_err(failure)?
+                        != "heptabao-postgresql-password-authentication-v1"
+                {
+                    return Err(failure(
+                        "PostgreSQL SCRAM password-authentication extension is not installed",
                     ));
                 }
             }
@@ -427,8 +581,28 @@ impl DatabaseEffectPlan {
             }
         }
 
+        let apply = match self.connection.password_authentication {
+            PostgresqlPasswordAuthentication::Password => {
+                "SELECT heptabao_provider.apply($1,$2,$3,$4::bigint,$5,$6::bigint,$7,$8,$9)::text"
+            }
+            PostgresqlPasswordAuthentication::ScramSha256 => {
+                "SELECT heptabao_provider.apply_scram($1,$2,$3,$4::bigint,$5,$6::bigint,$7,$8,$9)::text"
+            }
+        };
+        let provider_password = if self.lease.phase == Phase::PendingIssue {
+            let password = self
+                .lease
+                .password
+                .as_ref()
+                .ok_or_else(|| failure("pending database issue lost client password"))?;
+            self.connection
+                .password_authentication
+                .provider_password(&password.0, self.lease.provider_password.as_ref())?
+        } else {
+            ""
+        };
         pg.scalar(
-            "SELECT heptabao_provider.apply($1,$2,$3,$4::bigint,$5,$6::bigint,$7,$8,$9)::text",
+            apply,
             &[
                 &self.fence_id,
                 &self.lease.provider_id,
@@ -437,11 +611,7 @@ impl DatabaseEffectPlan {
                 action(&self.lease),
                 &expires,
                 &self.lease.provider_role,
-                self.lease
-                    .password
-                    .as_ref()
-                    .map(|p| p.0.as_str())
-                    .unwrap_or(""),
+                provider_password,
                 &self.lease.request_digest,
             ],
         )
@@ -797,6 +967,17 @@ impl DatabaseState {
     pub(super) fn has_provider_fence(&self) -> bool {
         self.provider_fence != 0
     }
+    pub(super) fn has_scram_password_authentication(&self) -> bool {
+        self.mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .any(|mount| {
+                mount.connections.values().any(|connection| {
+                    connection.password_authentication
+                        == PostgresqlPasswordAuthentication::ScramSha256
+                })
+            })
+    }
     fn current_provider_fence(&self) -> u64 {
         let retained_max = self
             .mounts
@@ -880,6 +1061,9 @@ impl DatabaseState {
                         || connection.allowed_roles.is_empty()
                         || connection.allowed_roles.len() > 64
                         || connection.allowed_roles.iter().any(|s| !name(s))
+                        || (connection.password_authentication
+                            != PostgresqlPasswordAuthentication::Password
+                            && connection.provider != DatabaseProvider::Postgresql)
                         || match connection.provider {
                             DatabaseProvider::Postgresql => {
                                 connection.plugin_id.is_some()
@@ -963,6 +1147,14 @@ impl DatabaseState {
                         || !l.provider_id.starts_with("hb1:")
                         || !l.provider_id[4..].bytes().all(|b| b.is_ascii_hexdigit())
                         || mode_invalid
+                        || connection.is_none_or(|connection| {
+                            !connection
+                                .password_authentication
+                                .persisted_provider_password_is_valid(
+                                    l.password.as_ref(),
+                                    l.provider_password.as_ref(),
+                                )
+                        })
                         || l.owner
                             .validate_scope(ns, ServiceOwnerProfile::CanonicalDigest)
                             .is_err()
@@ -1064,6 +1256,39 @@ impl Connection {
             DatabaseProvider::Postgresql => "postgresql-database-plugin",
             DatabaseProvider::Valkey => "valkey-database-plugin",
             DatabaseProvider::Plugin => self.plugin_id.as_deref().unwrap_or(""),
+        }
+    }
+
+    fn static_rotation_function(&self) -> &'static str {
+        match self.password_authentication {
+            PostgresqlPasswordAuthentication::Password => {
+                "SELECT heptabao_provider.rotate_static($1,$2,$3,$4::bigint,$5,$6,$7::bigint)::text"
+            }
+            PostgresqlPasswordAuthentication::ScramSha256 => {
+                "SELECT heptabao_provider.rotate_static_scram($1,$2,$3,$4::bigint,$5,$6,$7::bigint)::text"
+            }
+        }
+    }
+
+    fn root_rotation_function(&self) -> &'static str {
+        match self.password_authentication {
+            PostgresqlPasswordAuthentication::Password => {
+                "SELECT heptabao_provider.rotate_root($1,$2,$3::bigint,$4,$5)::text"
+            }
+            PostgresqlPasswordAuthentication::ScramSha256 => {
+                "SELECT heptabao_provider.rotate_root_scram($1,$2,$3::bigint,$4,$5)::text"
+            }
+        }
+    }
+
+    fn statement_apply_function(&self) -> &'static str {
+        match self.password_authentication {
+            PostgresqlPasswordAuthentication::Password => {
+                "SELECT heptabao_provider.apply_statements($1,$2,$3,$4::bigint,$5,$6::bigint,$7,$8,$9::text)::text"
+            }
+            PostgresqlPasswordAuthentication::ScramSha256 => {
+                "SELECT heptabao_provider.apply_statements_scram($1,$2,$3,$4::bigint,$5,$6::bigint,$7,$8,$9::text)::text"
+            }
         }
     }
 
@@ -1357,7 +1582,21 @@ fn valkey_fence_admits(previous: Option<(u64, &str)>, sequence: u64, digest: &st
     previous.is_none_or(|(old, binding)| sequence > old || (sequence == old && digest == binding))
 }
 fn digest_lease(l: &DatabaseLease) -> Result<String, Response> {
-    let bytes = if l.statements.is_empty() {
+    let bytes = if let Some(provider_password) = &l.provider_password {
+        serde_json::to_vec(&(
+            "heptabao.database.scram-sha-256.v1",
+            l.id.as_str(),
+            l.provider_id.as_str(),
+            l.username.as_str(),
+            l.seq,
+            action(l),
+            l.expires,
+            l.provider_role.as_str(),
+            &l.statements,
+            l.password.as_ref().map(|p| p.0.as_str()).unwrap_or(""),
+            provider_password.0.as_str(),
+        ))
+    } else if l.statements.is_empty() {
         // Exact legacy tuple: old pending intents must reopen byte-stably.
         serde_json::to_vec(&(
             l.id.as_str(),
@@ -1524,6 +1763,7 @@ impl Service {
                                 "password",
                                 "allowed_roles",
                                 "verify_connection",
+                                "password_authentication",
                             ],
                         )?;
                         let plugin_name = text(body, "plugin_name")?;
@@ -1591,6 +1831,10 @@ impl Service {
                                     .ok_or_else(|| invalid("invalid allowed role"))
                             })
                             .collect::<Result<_, _>>()?;
+                        let password_authentication = PostgresqlPasswordAuthentication::parse(
+                            body.get("password_authentication"),
+                            provider,
+                        )?;
                         if state.database.mount(ns, &mount).is_some_and(|m| {
                             m.leases.values().any(|l| l.db_name == key)
                                 || m.static_roles.values().any(|role| role.db_name == key)
@@ -1610,6 +1854,7 @@ impl Service {
                             username,
                             password: PrivateString(password),
                             allowed_roles,
+                            password_authentication,
                             root_rotation: None,
                         };
                         let expected_mount_digest =
@@ -1669,9 +1914,18 @@ impl Service {
                             .ok_or_else(|| {
                                 Response::error(404, "database configuration not found")
                             })?;
-                        Ok(Response::ok(
-                            json!({"data":{"plugin_name":c.plugin_name(),"connection_url":c.connection_url,"username":c.username,"allowed_roles":c.allowed_roles,"verify_connection":true}}),
-                        ))
+                        let mut data = json!({
+                            "plugin_name":c.plugin_name(),
+                            "connection_url":c.connection_url,
+                            "username":c.username,
+                            "allowed_roles":c.allowed_roles,
+                            "verify_connection":true
+                        });
+                        if c.provider == DatabaseProvider::Postgresql {
+                            data["password_authentication"] =
+                                json!(c.password_authentication.as_str());
+                        }
+                        Ok(Response::ok(json!({"data":data})))
                     }
                     ("config", "LIST") => {
                         fields(body, &[])?;
@@ -1966,6 +2220,9 @@ impl Service {
                         }
                         let provider_id = provider_identity(&cluster_identity, ns, &id)?;
                         let password = hex(&crypto::random::<32>().map_err(failure)?);
+                        let provider_password = connection
+                            .password_authentication
+                            .generate_provider_password(&password)?;
                         let max_expires = now
                             .checked_add(role.max_ttl)
                             .ok_or_else(|| invalid("lease time exhausted"))?;
@@ -1995,6 +2252,7 @@ impl Service {
                             seq: provider_fence,
                             phase: Phase::PendingIssue,
                             password: Some(PrivateString(password)),
+                            provider_password,
                             request_digest: String::new(),
                         };
                         lease.request_digest = digest_lease(&lease)?;
@@ -2331,6 +2589,7 @@ impl Service {
                 );
             };
             current.password = None;
+            current.provider_password = None;
             current.phase = Phase::Active;
             if plan.lease.phase == Phase::PendingRenew {
                 current.last_renewal = Some(now);
@@ -2832,6 +3091,134 @@ mod tests {
     }
 
     #[test]
+    fn postgres_password_authentication_selects_only_scram_wrappers() -> Result<(), TestFailure> {
+        let (state, _) = sample()?;
+        let mut connection = state
+            .mount("", "database/")
+            .and_then(|mount| mount.connections.get("local"))
+            .cloned()
+            .ok_or(TestFailure)?;
+        assert_eq!(connection.password_authentication.as_str(), "password");
+        assert!(
+            connection
+                .static_rotation_function()
+                .contains("rotate_static(")
+        );
+        assert!(connection.root_rotation_function().contains("rotate_root("));
+        assert!(
+            connection
+                .statement_apply_function()
+                .contains("apply_statements(")
+        );
+        let encoded = serde_json::to_string(&connection).map_err(|_| TestFailure)?;
+        assert!(!encoded.contains("password_authentication"));
+
+        connection.password_authentication = PostgresqlPasswordAuthentication::ScramSha256;
+        assert!(
+            connection
+                .static_rotation_function()
+                .contains("rotate_static_scram(")
+        );
+        assert!(
+            connection
+                .root_rotation_function()
+                .contains("rotate_root_scram(")
+        );
+        assert!(
+            connection
+                .statement_apply_function()
+                .contains("apply_statements_scram(")
+        );
+        let encoded = serde_json::to_string(&connection).map_err(|_| TestFailure)?;
+        assert!(encoded.contains("scram-sha-256"));
+        assert!(!encoded.contains("scram-sha256"));
+        let reopened: Connection = serde_json::from_str(&encoded).map_err(|_| TestFailure)?;
+        assert_eq!(
+            reopened.password_authentication,
+            PostgresqlPasswordAuthentication::ScramSha256
+        );
+        assert_eq!(
+            PostgresqlPasswordAuthentication::parse(
+                Some(&json!("scram-sha-256")),
+                DatabaseProvider::Postgresql,
+            )
+            .map_err(|_| TestFailure)?,
+            PostgresqlPasswordAuthentication::ScramSha256
+        );
+        assert!(
+            PostgresqlPasswordAuthentication::parse(
+                Some(&json!("scram-sha-256")),
+                DatabaseProvider::Valkey,
+            )
+            .is_err()
+        );
+        assert!(
+            PostgresqlPasswordAuthentication::parse(
+                Some(&json!("md5")),
+                DatabaseProvider::Postgresql,
+            )
+            .is_err()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn postgres_scram_verifier_matches_known_vector_and_persisted_pairing()
+    -> Result<(), TestFailure> {
+        let salt: [u8; POSTGRESQL_SCRAM_SALT_BYTES] =
+            core::array::from_fn(|index| u8::try_from(index).unwrap_or(0));
+        let expected = "SCRAM-SHA-256$4096:AAECAwQFBgcICQoLDA0ODw==$ONYbSJBXtKl6bP6PVqw8pm9e7EiacprLnoUQPFS80Hw=:IPOtHuGJ2HifEQg74W2XXqqCrCyQG55GbPRHa6g6n9w=";
+        let verifier = postgresql_scram_verifier_with_salt("correct horse battery staple", &salt)?;
+        assert_eq!(verifier.0, expected);
+        assert!(valid_postgresql_scram_verifier(expected));
+        for invalid in [
+            "ab",
+            &"ab".repeat(32),
+            "SCRAM-SHA-256$4095:AAECAwQFBgcICQoLDA0ODw==$ONYbSJBXtKl6bP6PVqw8pm9e7EiacprLnoUQPFS80Hw=:IPOtHuGJ2HifEQg74W2XXqqCrCyQG55GbPRHa6g6n9w=",
+            "SCRAM-SHA-256$4096:AAECAwQFBgcICQoLDA0ODw==$ONYbSJBXtKl6bP6PVqw8pm9e7EiacprLnoUQPFS80Hw=:IPOtHuGJ2HifEQg74W2XXqqCrCyQG55GbPRHa6g6n9w=A",
+            "SCRAM-SHA-256$4096:AAECAwQFBgcICQoLDA0ODw==$ONYbSJBXtKl6bP6PVqw8pm9e7EiacprLnoUQPFS80Hw=:IPOtHuGJ2HifEQg74W2XXqqCrCyQG55GbPRHa6g6n9x=",
+        ] {
+            assert!(!valid_postgresql_scram_verifier(invalid));
+        }
+        let raw = PrivateString("cd".repeat(32));
+        assert!(
+            PostgresqlPasswordAuthentication::Password
+                .generate_provider_password(&raw.0)?
+                .is_none()
+        );
+        assert!(
+            PostgresqlPasswordAuthentication::Password
+                .persisted_provider_password_is_valid(Some(&raw), None)
+        );
+        assert!(
+            !PostgresqlPasswordAuthentication::Password
+                .persisted_provider_password_is_valid(Some(&raw), Some(&verifier))
+        );
+        assert!(
+            PostgresqlPasswordAuthentication::ScramSha256
+                .persisted_provider_password_is_valid(Some(&raw), Some(&verifier))
+        );
+        assert!(
+            PostgresqlPasswordAuthentication::ScramSha256
+                .persisted_provider_password_is_valid(None, None)
+        );
+        assert!(
+            !PostgresqlPasswordAuthentication::ScramSha256
+                .persisted_provider_password_is_valid(Some(&raw), None)
+        );
+        assert!(
+            !PostgresqlPasswordAuthentication::ScramSha256
+                .persisted_provider_password_is_valid(None, Some(&verifier))
+        );
+        assert_eq!(
+            PostgresqlPasswordAuthentication::ScramSha256
+                .provider_password(&raw.0, Some(&verifier))?,
+            expected,
+        );
+        Ok(())
+    }
+
+    #[test]
     fn native_database_names_preserve_deployed_provider_contracts() {
         let entropy = [0xab; 16];
         for provider in [DatabaseProvider::Postgresql, DatabaseProvider::Valkey] {
@@ -2960,6 +3347,7 @@ mod tests {
                 username: "hb_manager".into(),
                 password: PrivateString("synthetic-password".into()),
                 allowed_roles: BTreeSet::from(["reader".into()]),
+                password_authentication: PostgresqlPasswordAuthentication::Password,
                 root_rotation: None,
             },
         );
@@ -2981,12 +3369,62 @@ mod tests {
             seq: 1,
             phase: Phase::PendingIssue,
             password: Some(PrivateString("ab".repeat(32))),
+            provider_password: None,
             request_digest: String::new(),
         };
         l.request_digest = digest_lease(&l)?;
         m.leases.insert(id.clone(), l);
         Ok((state, id))
     }
+    #[test]
+    fn scram_pending_database_state_requires_verifier_and_digest_binding() -> Result<(), TestFailure>
+    {
+        let (mut state, id) = sample()?;
+        let mount = state.mount_mut("", "database/");
+        mount
+            .connections
+            .get_mut("local")
+            .ok_or_else(|| failure("fixture connection"))?
+            .password_authentication = PostgresqlPasswordAuthentication::ScramSha256;
+        let lease = mount
+            .leases
+            .get_mut(&id)
+            .ok_or_else(|| failure("fixture lease"))?;
+        let raw = lease
+            .password
+            .as_ref()
+            .ok_or_else(|| failure("fixture client password"))?;
+        lease.provider_password =
+            PostgresqlPasswordAuthentication::ScramSha256.generate_provider_password(&raw.0)?;
+        lease.request_digest = digest_lease(lease)?;
+        state.validate_scope("cluster")?;
+
+        let verifier = state
+            .mount_mut("", "database/")
+            .leases
+            .get_mut(&id)
+            .ok_or_else(|| failure("fixture lease"))?
+            .provider_password
+            .take();
+        assert!(state.validate_scope("cluster").is_err());
+        let lease = state
+            .mount_mut("", "database/")
+            .leases
+            .get_mut(&id)
+            .ok_or_else(|| failure("fixture lease"))?;
+        lease.provider_password = verifier;
+        lease.request_digest = digest_lease(lease)?;
+        state.validate_scope("cluster")?;
+        state
+            .mount_mut("", "database/")
+            .leases
+            .get_mut(&id)
+            .ok_or_else(|| failure("fixture lease"))?
+            .provider_password = Some(PrivateString("SCRAM-SHA-256$4096:bad".into()));
+        assert!(state.validate_scope("cluster").is_err());
+        Ok(())
+    }
+
     #[test]
     fn pending_database_state_survives_serde_with_real_owner_digest_shape()
     -> Result<(), TestFailure> {
@@ -3105,6 +3543,7 @@ mod tests {
                 seq,
                 phase: Phase::PendingIssue,
                 password: Some(PrivateString("ab".repeat(32))),
+                provider_password: None,
                 request_digest: String::new(),
             };
             lease.request_digest = digest_lease(&lease)?;
@@ -3316,6 +3755,7 @@ mod tests {
             lease.phase = phase;
             lease.expires = 0;
             lease.password = None;
+            lease.provider_password = None;
             lease.request_digest = digest_lease(lease)?;
             state.validate_scope("cluster")?;
             assert!(
@@ -3428,6 +3868,7 @@ mod tests {
         lease.phase = phase;
         if lease.phase != Phase::PendingIssue {
             lease.password = None;
+            lease.provider_password = None;
         }
         lease.request_digest = digest_lease(lease).map_err(|_| "digest")?;
         state.database = database.into();

@@ -125,8 +125,11 @@ def configure(instance: Instance, pg: Postgres):
 def statement_extension(path: Path) -> str:
     source = path.read_text()
     start = source.index("-- PostgreSQL statement-template extension.")
-    end = source.index("COMMIT;", start)
-    return source[start:end]
+    boundaries = [source.index("COMMIT;", start)]
+    later = source.find("-- PostgreSQL password-authentication extension.", start)
+    if later >= 0:
+        boundaries.append(later)
+    return source[start:min(boundaries)].rstrip() + "\n"
 
 
 def run(binary: Path, postgres_bin: Path, work: Path, output: Path) -> int:

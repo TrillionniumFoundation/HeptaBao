@@ -476,8 +476,20 @@ impl DatabaseEffectPlan {
                 return Ok(());
             }
         }
+        let provider_password = if self.lease.phase == Phase::PendingIssue {
+            let password = self
+                .lease
+                .password
+                .as_ref()
+                .ok_or_else(|| failure("pending statement issue lost client password"))?;
+            self.connection
+                .password_authentication
+                .provider_password(&password.0, self.lease.provider_password.as_ref())?
+        } else {
+            ""
+        };
         pg.scalar_large(
-            "SELECT heptabao_provider.apply_statements($1,$2,$3,$4::bigint,$5,$6::bigint,$7,$8,$9::text)::text",
+            self.connection.statement_apply_function(),
             &[
                 &self.fence_id,
                 &self.lease.provider_id,
@@ -485,11 +497,7 @@ impl DatabaseEffectPlan {
                 &seq,
                 action,
                 &expires,
-                self.lease
-                    .password
-                    .as_ref()
-                    .map(|password| password.0.as_str())
-                    .unwrap_or(""),
+                provider_password,
                 &self.lease.request_digest,
                 encoded.as_str(),
             ],
@@ -660,6 +668,7 @@ mod tests {
                     username: "hb_manager".into(),
                     password: PrivateString("synthetic-manager".into()),
                     allowed_roles: BTreeSet::from(["templated".into()]),
+                    password_authentication: PostgresqlPasswordAuthentication::Password,
                     root_rotation: None,
                 },
             );
@@ -767,7 +776,7 @@ mod tests {
     }
 
     #[test]
-    fn statement_state_requires_schema54_but_legacy_roles_remain_schema53() -> TestResult {
+    fn statement_state_requires_schema54_and_remains_valid_under_schema55() -> TestResult {
         use super::super::super::tests::call;
         let (_root, mut service, root_token) = configured_service()?;
         let legacy = service.state.clone().ok_or("legacy state")?;
@@ -800,6 +809,10 @@ mod tests {
         assert!(reopened.validate_format().is_ok());
         assert_eq!(bytes, serde_json::to_vec(&reopened)?);
 
+        let mut statement54 = state.clone();
+        statement54.schema = 54;
+        assert!(statement54.validate_format().is_ok());
+
         let mut downgraded = state;
         downgraded.schema = 53;
         let error = downgraded
@@ -811,6 +824,42 @@ mod tests {
             error.body["errors"][0],
             "database statement templates require schema 54"
         );
+        Ok(())
+    }
+
+    #[test]
+    fn scram_connection_requires_schema55_while_default_connection_remains_schema54() -> TestResult
+    {
+        let (_root, service, _) = configured_service()?;
+        let mut state = service.state.clone().ok_or("state")?;
+        state.schema = 54;
+        assert!(state.validate_format().is_ok());
+        let connection = state
+            .database
+            .mount_mut("", "database/")
+            .connections
+            .get_mut("local")
+            .ok_or("connection")?;
+        connection.password_authentication = PostgresqlPasswordAuthentication::ScramSha256;
+        let error = state
+            .validate_format()
+            .err()
+            .ok_or("schema54 admitted SCRAM")?;
+        assert_eq!(error.status, 503);
+        assert_eq!(
+            error.body["errors"][0],
+            "PostgreSQL SCRAM password authentication requires schema 55"
+        );
+        state.schema = CURRENT_STATE_SCHEMA;
+        assert!(state.validate_format().is_ok());
+        let bytes = serde_json::to_vec(&state)?;
+        assert!(
+            bytes
+                .windows(b"scram-sha-256".len())
+                .any(|window| window == b"scram-sha-256")
+        );
+        let reopened: State = serde_json::from_slice(&bytes)?;
+        assert!(reopened.validate_format().is_ok());
         Ok(())
     }
 
@@ -836,6 +885,7 @@ mod tests {
             seq: 9,
             phase: Phase::PendingIssue,
             password: Some(PrivateString("cd".repeat(32))),
+            provider_password: None,
             request_digest: String::new(),
         };
         let legacy_bytes = Zeroizing::new(serde_json::to_vec(&(

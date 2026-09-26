@@ -747,6 +747,23 @@
         "actual_postgresql_17"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "postgres_password_authentication_live": {
+      "script": "qa/openbao-acceptance/postgres_password_authentication_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--postgres-bin",
+        "{postgres_bin}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "actual_postgresql_17"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1422,7 +1439,8 @@
         "database_config_completion_live",
         "database_delivery_live",
         "postgres_static_rotation_live",
-        "postgres_statement_templates_live"
+        "postgres_statement_templates_live",
+        "postgres_password_authentication_live"
       ],
       "whole_surface_admitted": false
     },
@@ -1545,7 +1563,8 @@
       "available_scoped_profiles": [
         "postgres",
         "postgres_static_rotation_live",
-        "postgres_statement_templates_live"
+        "postgres_statement_templates_live",
+        "postgres_password_authentication_live"
       ],
       "whole_surface_admitted": false
     },
