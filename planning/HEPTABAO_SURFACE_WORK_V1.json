@@ -628,6 +628,19 @@
         "Linux candidate runtime"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "ha_step_down": {
+      "script": "qa/openbao-acceptance/ha_step_down.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--expected-binary-sha256",
+        "{binary_sha256}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1910,7 +1923,7 @@
       "technical_contract": {
         "api_or_protocol": "sys/step-down leadership transfer",
         "required_positive_and_hostile_behavior": "Root authorization, valid successor, committed membership and no dual writer",
-        "remaining_semantics_and_effect_checks": "Real handoff under load, interrupted transfer and restart must preserve every acknowledged write",
+        "remaining_semantics_and_effect_checks": "The current scoped profile executes same-version loopback transfer during unique CAS=0 load, abandons one complete admin response before terminating the serving leader, restarts that node, and reads every acknowledged version-1 write through every voter. Separate-host latency, WAN, mixed-version transfer, physical power/disk faults and longitudinal client-history analysis remain open.",
         "crash_reopen": "Interrupt sys/step-down leadership transfer before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-CLUSTER-STEPDOWN, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -1918,7 +1931,9 @@
       "fixture_case_ids": [
         "ha_step_down.explicit_leadership_transfer_and_old_writer_fence"
       ],
-      "available_scoped_profiles": [],
+      "available_scoped_profiles": [
+        "ha_step_down"
+      ],
       "whole_surface_admitted": false
     },
     {

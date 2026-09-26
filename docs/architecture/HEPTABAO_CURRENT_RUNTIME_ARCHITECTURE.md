@@ -104,10 +104,14 @@ The current server source additionally integrates a bounded internal PKI engine,
 inline public-only JWKS parsing for the existing JWT verifier profile, and an
 authenticated `sys/step-down` route backed by OpenRaft leadership transfer. The
 step-down path requires both `update` and `sudo`, refuses non-HA use, and waits
-for observation of a different leader before success. The loopback three-voter
-fixture proves explicit transfer and forwarding after the old leader becomes a
-standby; it does not establish mixed-version rolling upgrade or multi-host WAN
-qualification. The PKI and JWKS boundaries are documented in the engine/auth
+for observation of a different leader before success. The dedicated loopback three-voter profile now overlaps transfer with unique
+CAS=0 writes, counts only returned version-1 acknowledgements, then verifies all
+of them through every voter after the old leader restarts. A separate phase sends
+a complete step-down request but reads no response, terminates the serving leader
+without retrying the admin operation, and reconciles from committed state before
+new work. This remains same-version one-host evidence; it does not establish
+mixed-version transfer, separate-host timing, WAN behavior, physical power/disk
+fault survival, or independent production qualification. The PKI and JWKS boundaries are documented in the engine/auth
 guides and remain narrower than the full OpenBao surfaces.
 
 ## Schema 4 external-effect and Raft-administration boundaries

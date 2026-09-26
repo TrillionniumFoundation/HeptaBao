@@ -317,6 +317,23 @@ jobs:
             --expected-binary-sha256 "$digest" \
             --work-dir "$RUNNER_TEMP/heptabao-three-process-ha"
 
+      - name: Exercise leadership transfer under load response loss and restart
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          binary="$PWD/target/debug/heptabao-server"
+          digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          reports="$RUNNER_TEMP/heptabao-ha-step-down"
+          mkdir -m 700 "$reports"
+          timeout 300 python qa/openbao-acceptance/ha_step_down.py \
+            --binary "$binary" \
+            --expected-binary-sha256 "$digest" \
+            --output "$reports/step-down.json"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
       - name: Exercise real encrypted-link network partitions
         if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
         shell: bash

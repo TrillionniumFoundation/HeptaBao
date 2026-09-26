@@ -56,6 +56,16 @@ source and local node before OpenRaft checks its vote and flushed-log frontier.
 Without this RPC, the upstream network trait's default only reports unreachable;
 waiting for a subsequent election is not evidence that the requested target took
 over. A completed transfer still requires a fresh leader/application observation.
+The current `ha_step_down.py` profile makes every load mutation a unique CAS=0
+request and attempts it once. Only HTTP 200 plus version 1 enters the acknowledged
+set. It overlaps those requests with an authenticated transfer, checks exact
+readback through every voter, restarts the former leader, and checks again. Its
+interruption phase sends a complete step-down request, intentionally consumes no
+response, terminates that serving process, and does not retry the uncertain admin
+operation; the surviving quorum and restarted node must still expose every
+previously acknowledged write before a fresh mutation is accepted. This proves a
+bounded response-loss/process-exit recovery path, not the exact internal point at
+which OpenRaft accepted the abandoned transfer request.
 
 Each configured HA peer may include `api_address`, an absolute HTTPS origin for
 that node's HTTP listener, such as `https://bao-1.example:8200`. Paths, query
@@ -330,6 +340,7 @@ safe against an old expected_index, force an unseal, or erase logs to recover.
 cargo test --locked -p heptabao-raft-runtime
 python qa/openbao-acceptance/raft_membership_live.py --binary <server> --dead-cleanup --output <new-json>
 python qa/openbao-acceptance/ha_network_partition.py --binary <server> --output <new-json>
+python qa/openbao-acceptance/ha_step_down.py --binary <server> --expected-binary-sha256 <sha256> --output <new-json>
 ```
 
 The membership suite starts five real local processes with three initial voters,
