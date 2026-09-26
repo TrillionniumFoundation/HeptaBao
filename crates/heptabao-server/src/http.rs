@@ -1,7 +1,14 @@
 //! Bounded HTTP/1.1 over verified Rustls TLS. One request per connection avoids
 //! ambiguous reuse, smuggling and unbounded streaming in this single-node profile.
-use crate::{Response, Service, crypto, ha::HaProcess, service::WireRejection};
-use rustls::{ServerConfig, ServerConnection, StreamOwned};
+use crate::request_deadline::{LockWaitError, RequestDeadlineScope, lock_until};
+use crate::{
+    Response, Service, ServiceRequest, crypto,
+    ha::HaProcess,
+    service::{RequestExecution, WireRejection},
+};
+use rustls::pki_types::CertificateRevocationListDer;
+use rustls::server::WebPkiClientVerifier;
+use rustls::{RootCertStore, ServerConfig, ServerConnection, StreamOwned};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use std::{
@@ -18,6 +25,12 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "http_snapshot.rs"]
+mod snapshot;
+
+#[path = "http_leader.rs"]
+mod leader;
+
 const MAX_HEADERS: usize = 16 * 1024;
 const MAX_BODY: usize = 256 * 1024;
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
@@ -33,6 +46,18 @@ pub struct Config {
     pub audit: crate::AuditConfig,
     pub tls_cert_file: PathBuf,
     pub tls_key_file: PathBuf,
+    /// Deployment-owned client trust roots. A configured bundle requires a
+    /// valid client certificate unless optional client authentication is set.
+    #[serde(default)]
+    pub tls_client_ca_file: Option<PathBuf>,
+    /// Allow connections without a certificate while still verifying every
+    /// presented chain. Requires explicit trust roots; defaults to mandatory.
+    #[serde(default)]
+    pub tls_client_auth_optional: bool,
+    /// Optional CRL bundle applied to the client certificate chain. A CRL is
+    /// never accepted without an explicit client CA bundle.
+    #[serde(default)]
+    pub tls_client_crl_file: Option<PathBuf>,
     #[serde(default = "default_connections")]
     pub max_connections: usize,
     #[serde(default = "default_timeout")]
@@ -43,6 +68,44 @@ pub struct Config {
     pub rate_limit_burst: u32,
     #[serde(default = "default_rate_limit_entries")]
     pub rate_limit_entries: usize,
+    /// Zero explicitly disables idle maintenance. Active request checks remain mandatory.
+    #[serde(default = "default_lifecycle_interval")]
+    pub lifecycle_interval_seconds: u64,
+    /// Deployment-owned egress allowlist; API configuration cannot widen it.
+    #[serde(default)]
+    pub outbound_endpoints: Vec<crate::outbound::EndpointConfig>,
+    /// Optional mandatory HTTPS audit collector. The URL must resolve only
+    /// through `outbound_endpoints`; API requests cannot replace it.
+    #[serde(default)]
+    pub audit_http_url: Option<String>,
+    /// Optional deployment-owned TCP socket audit collector. The mandatory
+    /// authenticated file sink remains enabled even if this collector fails.
+    #[serde(default)]
+    pub audit_socket: Option<crate::AuditSocketConfig>,
+    /// Optional deployment-owned local Unix syslog audit device.
+    #[serde(default)]
+    pub audit_syslog: Option<crate::AuditSyslogConfig>,
+    /// Optional deployment-owned PostgreSQL durable backend. The password is
+    /// process configuration and is never accepted from an HTTP request.
+    #[serde(default)]
+    pub postgres_durable: Option<crate::postgres_storage::PgStorageConfig>,
+    #[serde(default)]
+    pub plugin_auth: Vec<crate::PluginAuthConfig>,
+    #[serde(default)]
+    pub plugin_database: Vec<crate::PluginDatabaseConfig>,
+    #[serde(default)]
+    pub plugin_kms: Vec<crate::PluginKmsConfig>,
+    #[serde(default)]
+    pub plugin_secrets: Vec<crate::PluginSecretConfig>,
+    /// Qualification-only lower bound seam. Ordinary binaries reject this
+    /// field because the feature is absent; feature builds may only reduce the
+    /// canonical 16 MiB opaque-owner ceiling, never raise it.
+    #[cfg(feature = "fixture-capacity-limit")]
+    #[serde(default)]
+    pub fixture_opaque_owner_limit_bytes: Option<usize>,
+}
+fn default_lifecycle_interval() -> u64 {
+    5
 }
 fn default_connections() -> usize {
     16
@@ -126,16 +189,47 @@ impl RateLimiter {
 }
 
 pub fn serve(config: Config) -> Result<(), String> {
-    serve_inner(config, None)
+    serve_inner(
+        config,
+        None,
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        None,
+    )
 }
 
 pub fn serve_with_ha(config: Config, ha: Arc<Mutex<HaProcess>>) -> Result<(), String> {
-    serve_inner(config, Some(ha))
+    serve_inner(
+        config,
+        Some(ha),
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        None,
+    )
 }
 
-fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), String> {
+#[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+pub fn serve_with_ha_fixture(
+    config: Config,
+    ha: Arc<Mutex<HaProcess>>,
+    fixture: crate::fixture_native_restore::NativeRestoreFaultGate,
+) -> Result<(), String> {
+    serve_inner(config, Some(ha), Some(fixture))
+}
+
+fn serve_inner(
+    config: Config,
+    ha: Option<Arc<Mutex<HaProcess>>>,
+    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))] fixture: Option<
+        crate::fixture_native_restore::NativeRestoreFaultGate,
+    >,
+) -> Result<(), String> {
     if !(1..=128).contains(&config.max_connections) || !(1..=60).contains(&config.timeout_seconds) {
         return Err("invalid bounded connection policy".into());
+    }
+    if config.lifecycle_interval_seconds > 60 {
+        return Err("lifecycle interval must be zero or 1..=60 seconds".into());
+    }
+    if config.tls_client_auth_optional && config.tls_client_ca_file.is_none() {
+        return Err("optional TLS client authentication requires a client CA bundle".into());
     }
     let limiter = Arc::new(Mutex::new(RateLimiter::new(
         config.rate_limit_per_second,
@@ -163,14 +257,36 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         .map_err(|_| "invalid TLS key")?
         .ok_or("missing TLS private key")?;
     let provider = Arc::new(rustls::crypto::ring::default_provider());
-    let mut tls = ServerConfig::builder_with_provider(provider)
+    if config.tls_client_crl_file.is_some() && config.tls_client_ca_file.is_none() {
+        return Err("TLS client CRL requires a client CA bundle".into());
+    }
+    let verifier = match config.tls_client_ca_file.as_ref() {
+        Some(path) => Some(load_client_verifier(
+            path,
+            config.tls_client_crl_file.as_ref(),
+            config.tls_client_auth_optional,
+            &config.data_dir,
+            Arc::clone(&provider),
+        )?),
+        None => None,
+    };
+    let builder = ServerConfig::builder_with_provider(provider)
         .with_safe_default_protocol_versions()
-        .map_err(|_| "TLS versions unavailable")?
-        .with_no_client_auth()
-        .with_single_cert(certificates, key)
-        .map_err(|_| "TLS key and certificate do not match")?;
+        .map_err(|_| "TLS versions unavailable")?;
+    let mut tls = match verifier {
+        Some(verifier) => builder
+            .with_client_cert_verifier(verifier)
+            .with_single_cert(certificates, key)
+            .map_err(|_| "TLS key and certificate do not match")?,
+        None => builder
+            .with_no_client_auth()
+            .with_single_cert(certificates, key)
+            .map_err(|_| "TLS key and certificate do not match")?,
+    };
     tls.alpn_protocols = vec![b"http/1.1".to_vec()];
     let tls = Arc::new(tls);
+    #[cfg(feature = "fixture-capacity-limit")]
+    let fixture_opaque_owner_limit_bytes = config.fixture_opaque_owner_limit_bytes;
     let ha_enabled = ha.is_some();
     let forwarding_ha = ha.clone();
     let service = Arc::new(Mutex::new(
@@ -187,22 +303,52 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
         }
         .map_err(str::to_owned)?,
     ));
+    {
+        let mut service = service.lock().map_err(|_| "service lock unavailable")?;
+        #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+        {
+            service.native_restore_fault = fixture;
+        }
+        #[cfg(feature = "fixture-capacity-limit")]
+        service.install_fixture_opaque_owner_limit(fixture_opaque_owner_limit_bytes)?;
+        service.install_outbound_endpoints(config.outbound_endpoints)?;
+        service.install_auth_plugins(config.plugin_auth)?;
+        service.install_database_plugins(config.plugin_database)?;
+        service.install_kms_plugins(config.plugin_kms)?;
+        service.install_secret_plugins(config.plugin_secrets)?;
+        service.install_audit_http_endpoint(config.audit_http_url)?;
+        service.install_audit_socket(config.audit_socket)?;
+        service.install_audit_syslog(config.audit_syslog)?;
+        if let Some(postgres) = config.postgres_durable {
+            service.install_postgres_durable_storage(postgres)?;
+        }
+    }
     if let Some(ha) = forwarding_ha {
+        let forward_timeout = ha
+            .lock()
+            .map_err(|_| "HA process lock is unavailable".to_owned())?
+            .forward_timeout()
+            .min(Duration::from_secs(config.timeout_seconds));
         let weak_service = Arc::downgrade(&service);
         let handler: crate::ha::ForwardHandler = Arc::new(move |mut request| {
             let Some(service) = weak_service.upgrade() else {
                 return Response::error(503, "HA forward service is unavailable");
             };
-            let response = match service.lock() {
-                Ok(mut service) => service.handle_forwarded(
-                    &request.method,
-                    &request.path,
-                    &request.namespace,
-                    &request.token,
-                    std::mem::take(&mut request.body),
-                ),
-                Err(_) => Response::error(503, "HA forward service lock is unavailable"),
-            };
+            let response = execute_service_request(
+                &service,
+                ServiceRequest {
+                    method: &request.method,
+                    path: &request.path,
+                    namespace: &request.namespace,
+                    token: &request.token,
+                    body: std::mem::take(&mut request.body),
+                    wrap_ttl_seconds: request.wrap_ttl_seconds,
+                    origin_peer: request.origin_peer,
+                    client_certificates: request.client_certificates.take(),
+                },
+                Instant::now() + forward_timeout,
+                true,
+            );
             request.token.zeroize();
             response
         });
@@ -212,6 +358,10 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     }
     let listener =
         TcpListener::bind(config.listen).map_err(|_| "cannot bind configured listener")?;
+    let _lifecycle = crate::service::start_lifecycle_worker(
+        &service,
+        Duration::from_secs(config.lifecycle_interval_seconds),
+    )?;
     let connections = Arc::new(AtomicUsize::new(0));
     eprintln!(
         "HeptaBao {} TLS listener ready at {}",
@@ -220,6 +370,10 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     );
     for stream in listener.incoming() {
         let stream = stream.map_err(|_| "listener accept failed")?;
+        let timeout = Duration::from_secs(config.timeout_seconds);
+        // One budget from accept, including worker scheduling, TLS/body reads,
+        // service lock waiting, forwarding, provider work, and response writes.
+        let deadline = Instant::now() + timeout;
         if connections
             .fetch_update(Ordering::AcqRel, Ordering::Acquire, |value| {
                 (value < config.max_connections).then_some(value + 1)
@@ -239,7 +393,6 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
             .map_or(true, |mut limiter| !limiter.allow(peer));
         let service = Arc::clone(&service);
         let tls = Arc::clone(&tls);
-        let timeout = Duration::from_secs(config.timeout_seconds);
         let spawn = std::thread::Builder::new()
             .name("heptabao-request".into())
             .spawn(move || {
@@ -252,13 +405,7 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                 let Ok(connection) = ServerConnection::new(tls) else {
                     return;
                 };
-                let mut stream = StreamOwned::new(
-                    connection,
-                    DeadlineStream {
-                        stream,
-                        deadline: Instant::now() + timeout,
-                    },
-                );
+                let mut stream = StreamOwned::new(connection, DeadlineStream { stream, deadline });
                 let attempt_id = match crypto::random::<16>() {
                     Ok(value) => value,
                     Err(_) => return,
@@ -270,38 +417,74 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
                         WireRejection::RateLimited,
                         429,
                         "request rate limit exceeded",
+                        deadline,
                     );
                     let _ = write_response(&mut stream, response, false);
                     return;
                 }
-                let parsed = read_request(&mut stream, timeout);
-                let (response, head) = match parsed {
+                let parsed = read_request_mode(&mut stream, timeout, true);
+                let (reply, head) = match parsed {
                     Ok(mut request) => {
+                        request.client_certificates =
+                            stream.conn.peer_certificates().map(|certificates| {
+                                certificates
+                                    .iter()
+                                    .map(|certificate| certificate.as_ref().to_vec())
+                                    .collect()
+                            });
                         let is_head = request.method == "HEAD";
-                        let response = match service.lock() {
-                            Ok(mut service) => service.handle(
-                                if is_head { "GET" } else { &request.method },
-                                &request.path,
-                                &request.namespace,
-                                &request.token,
-                                std::mem::take(&mut request.body.0),
-                            ),
-                            Err(_) => Response::error(503, "service state is unavailable"),
+                        let native_snapshot = request.native_snapshot.take();
+                        let service_request = ServiceRequest {
+                            method: if is_head
+                                && request.path != "sys/leader"
+                                && request.wrap_ttl_seconds.is_none()
+                            {
+                                "GET"
+                            } else {
+                                &request.method
+                            },
+                            path: &request.path,
+                            namespace: &request.namespace,
+                            token: &request.token,
+                            body: std::mem::take(&mut request.body.0),
+                            wrap_ttl_seconds: request.wrap_ttl_seconds,
+                            origin_peer: Some(peer),
+                            client_certificates: request.client_certificates.take(),
                         };
-                        (response, is_head)
+                        let reply = if let Some(native) = native_snapshot {
+                            snapshot::execute(
+                                &service,
+                                service_request,
+                                native,
+                                &mut stream,
+                                deadline,
+                            )
+                        } else {
+                            snapshot::NativeReply::Json(execute_service_request(
+                                &service,
+                                service_request,
+                                deadline,
+                                false,
+                            ))
+                        };
+                        (reply, is_head)
                     }
-                    Err(error) => (
-                        audited_wire_rejection(
+                    Err(error) => {
+                        let mut response = audited_wire_rejection(
                             &service,
                             &attempt_id,
                             WireRejection::ParseRejected,
                             error.status,
                             error.message,
-                        ),
-                        false,
-                    ),
+                            deadline,
+                        );
+                        if error.empty_errors && response.status == error.status {
+                            response.body = json!({"errors": []});
+                        }
+                        (snapshot::NativeReply::Json(response), false)
+                    }
                 };
-                let _ = write_response(&mut stream, response, head);
+                let _ = reply.write(&mut stream, head);
             });
         if spawn.is_err() {
             return Err("cannot create bounded request worker".into());
@@ -310,16 +493,76 @@ fn serve_inner(config: Config, ha: Option<Arc<Mutex<HaProcess>>>) -> Result<(), 
     Ok(())
 }
 
+fn execute_external_without_writer<T, P, R, E, F>(
+    state: &Arc<Mutex<T>>,
+    pending: P,
+    deadline: Instant,
+    execute: E,
+    finish: F,
+) -> Response
+where
+    E: FnOnce(&P) -> R,
+    F: FnOnce(&mut T, P, R) -> Response,
+{
+    let _scope = RequestDeadlineScope::enter(deadline);
+    // Deliberately execute before acquiring the state writer. This helper is the
+    // production boundary that prevents slow enrolled providers from monopolizing
+    // unrelated service state while their external effect/readback is in flight.
+    let result = execute(&pending);
+    match lock_until(state, deadline) {
+        Ok(mut writer) => finish(&mut writer, pending, result),
+        Err(LockWaitError::Busy) => Response::error(
+            503,
+            "provider result awaits durable reconciliation; service finalize deadline exceeded",
+        ),
+        Err(LockWaitError::Poisoned) => Response::error(
+            503,
+            "provider result awaits durable reconciliation; service state unavailable",
+        ),
+    }
+}
+
+fn execute_service_request(
+    service: &Arc<Mutex<Service>>,
+    mut request: ServiceRequest<'_>,
+    deadline: Instant,
+    forwarded: bool,
+) -> Response {
+    let execution = match lock_until(service, deadline) {
+        Ok(mut writer) => writer.begin_request_before(request, deadline, forwarded),
+        Err(LockWaitError::Busy) => {
+            crate::service::erase_json(&mut request.body);
+            return Response::error(503, "service state lock deadline exceeded");
+        }
+        Err(LockWaitError::Poisoned) => {
+            crate::service::erase_json(&mut request.body);
+            return Response::error(503, "service state is unavailable");
+        }
+    };
+    match execution {
+        RequestExecution::Complete(response) => response,
+        RequestExecution::External(pending) => execute_external_without_writer(
+            service,
+            pending,
+            deadline,
+            |pending| pending.execute_before(deadline),
+            |writer, pending, result| writer.finish_external_request(*pending, result),
+        ),
+    }
+}
+
 fn audited_wire_rejection(
     service: &Arc<Mutex<Service>>,
     attempt_id: &[u8; 16],
     rejection: WireRejection,
     status: u16,
     message: &'static str,
+    deadline: Instant,
 ) -> Response {
-    match service.lock() {
+    match lock_until(service, deadline) {
         Ok(mut service) => service.handle_wire_rejection(attempt_id, rejection, status, message),
-        Err(_) => Response::error(503, "service state is unavailable"),
+        Err(LockWaitError::Busy) => Response::error(503, "service state lock deadline exceeded"),
+        Err(LockWaitError::Poisoned) => Response::error(503, "service state is unavailable"),
     }
 }
 
@@ -365,7 +608,7 @@ fn bounded_file(path: &PathBuf, private: bool) -> Result<Zeroizing<Vec<u8>>, Str
     #[cfg(target_os = "linux")]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
     let file = options.open(path).map_err(|_| "cannot open TLS file")?;
     let meta = file.metadata().map_err(|_| "cannot inspect TLS file")?;
@@ -389,6 +632,54 @@ fn bounded_file(path: &PathBuf, private: bool) -> Result<Zeroizing<Vec<u8>>, Str
     Ok(data)
 }
 
+fn load_client_verifier(
+    ca_path: &PathBuf,
+    crl_path: Option<&PathBuf>,
+    optional: bool,
+    data_dir: &PathBuf,
+    provider: Arc<rustls::crypto::CryptoProvider>,
+) -> Result<Arc<dyn rustls::server::danger::ClientCertVerifier>, String> {
+    if !ca_path.is_absolute() || ca_path.starts_with(data_dir) {
+        return Err("TLS client CA path must be absolute and outside the data directory".into());
+    }
+    if crl_path.is_some_and(|path| !path.is_absolute() || path.starts_with(data_dir)) {
+        return Err("TLS client CRL path must be absolute and outside the data directory".into());
+    }
+    let ca_bytes = bounded_file(ca_path, false)?;
+    let mut roots = RootCertStore::empty();
+    let certificates = rustls_pemfile::certs(&mut BufReader::new(ca_bytes.as_slice()))
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|_| "invalid TLS client CA bundle")?;
+    if certificates.is_empty() {
+        return Err("TLS client CA bundle is empty".into());
+    }
+    for certificate in certificates {
+        roots
+            .add(certificate)
+            .map_err(|_| "invalid TLS client CA certificate")?;
+    }
+    let mut builder = WebPkiClientVerifier::builder_with_provider(Arc::new(roots), provider);
+    if optional {
+        builder = builder.allow_unauthenticated();
+    }
+    if let Some(crl_path) = crl_path {
+        let crl_bytes = bounded_file(crl_path, false)?;
+        let crls = rustls_pemfile::crls(&mut BufReader::new(crl_bytes.as_slice()))
+            .collect::<Result<Vec<CertificateRevocationListDer<'static>>, _>>()
+            .map_err(|_| "invalid TLS client CRL bundle")?;
+        if crls.is_empty() {
+            return Err("TLS client CRL bundle is empty".into());
+        }
+        builder = builder
+            .with_crls(crls)
+            .only_check_end_entity_revocation()
+            .enforce_revocation_expiration();
+    }
+    builder
+        .build()
+        .map_err(|_| "invalid TLS client certificate verifier".to_owned())
+}
+
 struct SecretJson(Value);
 impl Drop for SecretJson {
     fn drop(&mut self) {
@@ -396,21 +687,28 @@ impl Drop for SecretJson {
     }
 }
 struct Request {
+    native_snapshot: Option<snapshot::NativeRequest>,
     method: String,
     path: String,
     namespace: String,
     token: Zeroizing<String>,
     body: SecretJson,
+    wrap_ttl_seconds: Option<u64>,
+    client_certificates: Option<Vec<Vec<u8>>>,
 }
 struct ParseError {
     status: u16,
     message: &'static str,
+    // The dedicated leader handler's global selector rejection has no logical
+    // error message. Do not replace an audit failure with this empty shape.
+    empty_errors: bool,
 }
 impl From<io::Error> for ParseError {
     fn from(_: io::Error) -> Self {
         Self {
             status: 400,
             message: "incomplete or timed out HTTP request",
+            empty_errors: false,
         }
     }
 }
@@ -418,10 +716,20 @@ fn bad(message: &'static str) -> ParseError {
     ParseError {
         status: 400,
         message,
+        empty_errors: false,
     }
 }
 
+#[cfg(test)]
 fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, ParseError> {
+    read_request_mode(reader, timeout, false)
+}
+
+fn read_request_mode(
+    reader: &mut impl Read,
+    timeout: Duration,
+    native_wire: bool,
+) -> Result<Request, ParseError> {
     let start = Instant::now();
     let mut bytes = Zeroizing::new(Vec::new());
     let mut buffer = Zeroizing::new([0; 4096]);
@@ -452,19 +760,21 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     let mut lines = headers[..headers.len() - 4].split("\r\n");
     let request_line = lines.next().ok_or_else(|| bad("missing request line"))?;
     let parts: Vec<_> = request_line.split(' ').collect();
-    if parts.len() != 3
-        || parts[2] != "HTTP/1.1"
-        || !matches!(
-            parts[0],
-            "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD"
-        )
-    {
+    if parts.len() != 3 || parts[2] != "HTTP/1.1" {
         return Err(bad("unsupported HTTP method or version"));
     }
     let method = parts[0].to_owned();
     let target = Zeroizing::new(parts[1].to_owned());
     if target.len() > 8192 || !target.starts_with("/v1/") {
         return Err(bad("request must use /v1/ API"));
+    }
+    let leader_route = target[4..].split('?').next() == Some("sys/leader");
+    if !matches!(
+        method.as_str(),
+        "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD"
+    ) && !(leader_route && leader::valid_method(&method))
+    {
+        return Err(bad("unsupported HTTP method or version"));
     }
     let mut map = BTreeMap::new();
     for (count, line) in lines.enumerate() {
@@ -489,20 +799,75 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     if !map.contains_key("host") {
         return Err(bad("Host header is required"));
     }
-    if map.keys().any(|name| {
-        (name.starts_with("x-vault-") || name.starts_with("x-bao-"))
-            && !matches!(
-                name.as_str(),
-                "x-vault-token" | "x-vault-namespace" | "x-vault-request"
-            )
-    }) {
+    if !leader_route
+        && map.keys().any(|name| {
+            (name.starts_with("x-vault-") || name.starts_with("x-bao-"))
+                && !matches!(
+                    name.as_str(),
+                    "x-vault-token"
+                        | "x-vault-namespace"
+                        | "x-vault-request"
+                        | "x-vault-wrap-ttl"
+                        | "x-vault-wrap-format"
+                )
+        })
+    {
         return Err(ParseError {
             status: 501,
             message: "requested OpenBao header semantics are not implemented",
+            empty_errors: false,
         });
     }
-    if map.contains_key("transfer-encoding") || map.contains_key("expect") {
-        return Err(bad("streamed request bodies are not supported"));
+    if !leader_route
+        && map
+            .get("x-vault-wrap-format")
+            .is_some_and(|value| value.as_str() != "uuid")
+    {
+        return Err(ParseError {
+            status: 501,
+            message: "only opaque response wrapping tokens are supported",
+            empty_errors: false,
+        });
+    }
+    let wrap_ttl_seconds = if leader_route {
+        None
+    } else {
+        map.get("x-vault-wrap-ttl")
+            .map(|value| parse_wrap_ttl(value))
+            .transpose()?
+            .flatten()
+    };
+    let route = target[4..].split('?').next().unwrap_or_default();
+    let snapshot_route = matches!(
+        route,
+        "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+    );
+    let download =
+        matches!(method.as_str(), "GET" | "HEAD") && route == "sys/storage/raft/snapshot";
+    let json_body = map
+        .get("content-type")
+        .is_some_and(|value| value.split(';').next() == Some("application/json"));
+    let native_snapshot = native_wire
+        && snapshot_route
+        && ((download
+            && !map
+                .get("accept")
+                .is_some_and(|value| value.as_str() == "application/json"))
+            || (matches!(method.as_str(), "POST" | "PUT") && !json_body));
+    let chunked = match map.get("transfer-encoding") {
+        Some(value)
+            if native_snapshot
+                && !download
+                && value.eq_ignore_ascii_case("chunked")
+                && !map.contains_key("content-length") =>
+        {
+            true
+        }
+        Some(_) => return Err(bad("unsupported or ambiguous transfer framing")),
+        None => false,
+    };
+    if map.contains_key("expect") {
+        return Err(bad("Expect framing is not supported"));
     }
     let length = match map.get("content-length") {
         Some(v) if !v.is_empty() && v.bytes().all(|b| b.is_ascii_digit()) => v
@@ -511,7 +876,9 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         None => 0,
         _ => return Err(bad("invalid content length")),
     };
-    let maximum_body = if target.starts_with("/v1/sys/storage/raft/snapshot") {
+    let maximum_body = if native_snapshot {
+        crate::snapshot_file::MAX_NATIVE_ARCHIVE as usize
+    } else if snapshot_route {
         MAX_SNAPSHOT_BODY
     } else {
         MAX_BODY
@@ -520,9 +887,14 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         return Err(ParseError {
             status: 413,
             message: "request body exceeds limit",
+            empty_errors: false,
         });
     }
-    let raw_namespace = map.get("x-vault-namespace").map_or("", |s| s.as_str());
+    let raw_namespace = if leader_route {
+        ""
+    } else {
+        map.get("x-vault-namespace").map_or("", |s| s.as_str())
+    };
     if raw_namespace == "/" || raw_namespace.contains("//") {
         return Err(bad("ambiguous namespace segments"));
     }
@@ -530,11 +902,19 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         .strip_suffix('/')
         .unwrap_or(raw_namespace)
         .to_owned();
-    let token = map.remove("x-vault-token").unwrap_or_default();
+    let token = if leader_route {
+        Zeroizing::new(String::new())
+    } else {
+        map.remove("x-vault-token").unwrap_or_default()
+    };
     if token.len() > 16 * 1024 {
         return Err(bad("token header exceeds limit"));
     }
+    let query_only = matches!(method.as_str(), "GET" | "HEAD" | "DELETE" | "LIST" | "SCAN");
     if length > 0
+        && !leader_route
+        && !native_snapshot
+        && !query_only
         && map.get("content-type").is_some_and(|v| {
             !matches!(
                 v.split(';').next(),
@@ -544,7 +924,7 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     {
         return Err(bad("JSON content type required"));
     }
-    while bytes.len() < header_end + length {
+    while !native_snapshot && bytes.len() < header_end + length {
         if start.elapsed() > timeout {
             return Err(bad("request deadline exceeded"));
         }
@@ -555,10 +935,26 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         }
         bytes.extend_from_slice(&buffer[..count]);
     }
-    if bytes.len() != header_end + length {
+    if !native_snapshot && bytes.len() != header_end + length {
         return Err(bad("pipelining and trailing bytes are not supported"));
     }
-    let mut body = SecretJson(if length == 0 {
+    if leader_route {
+        leader::validate_selectors(&method, &target)?;
+        return Ok(Request {
+            native_snapshot: None,
+            method,
+            path: "sys/leader".to_owned(),
+            namespace: String::new(),
+            token,
+            body: SecretJson(json!({})),
+            wrap_ttl_seconds: None,
+            client_certificates: None,
+        });
+    }
+    // OpenBao reads fields for these operations from the query string only.
+    // Still consume and bound the complete body above so ignored bytes cannot
+    // become a second request or evade the framing and deadline checks.
+    let mut body = SecretJson(if native_snapshot || length == 0 || query_only {
         json!({})
     } else {
         crate::auth::parse_strict_json(&bytes[header_end..])
@@ -571,6 +967,27 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     if path.contains('%') || path.contains('#') {
         return Err(bad("ambiguous encoded paths are not supported"));
     }
+    // Kerberos uses the standard HTTP Negotiate carrier rather than a JSON
+    // credential. Keep the provider token request-local and let the auth
+    // route's strict body schema reject it everywhere else.
+    if path.starts_with("auth/")
+        && path.ends_with("/login")
+        && let Some(authorization) = map.remove("authorization")
+    {
+        if !authorization.starts_with("Negotiate ")
+            || authorization.len() > crate::outbound::MAX_KERBEROS_TOKEN * 2 + 16
+            || !authorization.is_ascii()
+        {
+            return Err(bad("invalid Kerberos authorization header"));
+        }
+        if object.contains_key("kerberos_authorization") {
+            return Err(bad("duplicate Kerberos authorization"));
+        }
+        object.insert(
+            "kerberos_authorization".into(),
+            Value::String(authorization.to_string()),
+        );
+    }
     for pair in query.split('&').filter(|v| !v.is_empty()) {
         let (key, value) = pair
             .split_once('=')
@@ -579,7 +996,19 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         let value = Zeroizing::new(decode_query(value)?);
         if !matches!(
             key.as_str(),
-            "version" | "depth" | "limit" | "list" | "after" | "exclude_deleted"
+            "version"
+                | "depth"
+                | "limit"
+                | "list"
+                | "scan"
+                | "after"
+                | "exclude_deleted"
+                | "standbyok"
+                | "perfstandbyok"
+                | "uninitcode"
+                | "sealedcode"
+                | "standbycode"
+                | "activecode"
         ) {
             return Err(bad(
                 "unsupported query parameter; request fields belong in JSON body",
@@ -588,37 +1017,145 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
         if object.contains_key(&key) {
             return Err(bad("duplicate body/query parameter"));
         }
-        let parsed = if matches!(key.as_str(), "version" | "depth" | "limit") {
+        let parsed = if key == "limit" {
+            // Endpoints that declare this field validate its type. KV v1
+            // ignores it entirely, including values outside the signed range.
+            value
+                .parse::<i64>()
+                .map_or_else(|_| Value::String(value.to_string()), |limit| json!(limit))
+        } else if matches!(key.as_str(), "version" | "depth") {
             json!(
                 value
                     .parse::<u64>()
                     .map_err(|_| bad("invalid numeric query"))?
             )
-        } else if value.as_str() == "true" {
+        } else if matches!(
+            key.as_str(),
+            "uninitcode" | "sealedcode" | "standbycode" | "activecode"
+        ) {
+            let status = value
+                .parse::<u16>()
+                .ok()
+                .filter(|status| (100..=999).contains(status))
+                .ok_or_else(|| bad("invalid health status code"))?;
+            json!(status)
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
+            && matches!(value.as_str(), "true" | "1")
+        {
             Value::Bool(true)
-        } else if value.as_str() == "false" {
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
+            && matches!(value.as_str(), "false" | "0")
+        {
             Value::Bool(false)
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok") {
+            return Err(bad("invalid health boolean query"));
+        } else if method == "GET" && matches!(key.as_str(), "list" | "scan") {
+            Value::Bool(match value.as_str() {
+                "true" | "True" | "TRUE" | "t" | "T" | "1" => true,
+                "" | "false" | "False" | "FALSE" | "f" | "F" | "0" => false,
+                _ => return Err(bad("invalid list or scan query")),
+            })
+        } else if key == "after" {
+            Value::String(value.to_string())
+        } else if matches!(value.as_str(), "true" | "false") {
+            Value::Bool(value.as_str() == "true")
         } else {
             Value::String(value.to_string())
         };
         object.insert(key, parsed);
     }
-    if method == "GET" && object.get("list").is_some_and(|v| !v.is_boolean()) {
-        return Err(bad("list parameter must be boolean"));
-    }
-    let method = if method == "GET" && object.get("list") == Some(&Value::Bool(true)) {
-        object.remove("list");
-        "LIST".to_owned()
+    let method = if method == "GET" {
+        let list = object.get("list") == Some(&Value::Bool(true));
+        let scan = object.get("scan") == Some(&Value::Bool(true));
+        if list && scan {
+            return Err(bad("list and scan are mutually exclusive"));
+        }
+        if list {
+            object.remove("list");
+            "LIST".to_owned()
+        } else if scan {
+            object.remove("scan");
+            "SCAN".to_owned()
+        } else {
+            method
+        }
     } else {
         method
     };
+    let native_snapshot = if native_snapshot {
+        if download && (length != 0 || bytes.len() != header_end) {
+            return Err(bad("snapshot download does not accept a body"));
+        }
+        Some(snapshot::NativeRequest {
+            target: snapshot::NativeTarget::checked(&target)?,
+            body: snapshot::NativeBody {
+                framing: if download {
+                    snapshot::Framing::Download
+                } else if chunked {
+                    snapshot::Framing::Chunked
+                } else {
+                    snapshot::Framing::Length(length as u64)
+                },
+                prefix: Zeroizing::new(bytes[header_end..].to_vec()),
+            },
+        })
+    } else {
+        None
+    };
     Ok(Request {
+        native_snapshot,
         method,
         path: path.to_owned(),
         namespace,
         token,
         body,
+        wrap_ttl_seconds,
+        client_certificates: None,
     })
+}
+
+fn parse_wrap_ttl(value: &str) -> Result<Option<u64>, ParseError> {
+    let invalid = || bad("invalid or unsupported wrapping TTL");
+    if value.is_empty() || value.len() > 64 || !value.is_ascii() {
+        return Err(invalid());
+    }
+    let mut total = 0u64;
+    let mut number = 0u64;
+    let mut digits = false;
+    for byte in value.bytes() {
+        if byte.is_ascii_digit() {
+            number = number
+                .checked_mul(10)
+                .and_then(|v| v.checked_add(u64::from(byte - b'0')))
+                .ok_or_else(invalid)?;
+            digits = true;
+        } else {
+            if !digits {
+                return Err(invalid());
+            }
+            let unit = match byte {
+                b'h' => 3600,
+                b'm' => 60,
+                b's' => 1,
+                _ => return Err(invalid()),
+            };
+            total = total
+                .checked_add(number.checked_mul(unit).ok_or_else(invalid)?)
+                .ok_or_else(invalid)?;
+            number = 0;
+            digits = false;
+        }
+    }
+    if digits {
+        if !value.bytes().all(|b| b.is_ascii_digit()) {
+            return Err(invalid());
+        }
+        total = number;
+    }
+    if total > 32 * 24 * 3600 {
+        return Err(invalid());
+    }
+    Ok((total != 0).then_some(total))
 }
 
 fn decode_query(value: &str) -> Result<String, ParseError> {
@@ -689,7 +1226,78 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn capacity_guard_config_requires_explicit_fixture_feature() {
+        let value = json!({
+            "listen":"127.0.0.1:8200", "data_dir":"/synthetic/data",
+            "audit_file":"/synthetic/audit.jsonl",
+            "tls_cert_file":"/synthetic/cert.pem", "tls_key_file":"/synthetic/key.pem",
+            "fixture_opaque_owner_limit_bytes": 2 * 1024 * 1024
+        });
+        #[cfg(not(feature = "fixture-capacity-limit"))]
+        assert!(serde_json::from_value::<Config>(value).is_err());
+        #[cfg(feature = "fixture-capacity-limit")]
+        assert_eq!(
+            serde_json::from_value::<Config>(value)
+                .ok()
+                .and_then(|config| config.fixture_opaque_owner_limit_bytes),
+            Some(2 * 1024 * 1024)
+        );
+    }
     use super::*;
+
+    #[test]
+    fn optional_client_auth_requires_explicit_roots_and_keeps_mandatory_default()
+    -> Result<(), String> {
+        let mut value = json!({
+            "listen":"127.0.0.1:0", "data_dir":"/unused-data", "audit_file":"/unused-audit",
+            "tls_cert_file":"/unused-cert", "tls_key_file":"/unused-key"
+        });
+        let config: Config = serde_json::from_value(value.clone()).map_err(|e| e.to_string())?;
+        assert!(!config.tls_client_auth_optional);
+        value["tls_client_auth_optional"] = json!(true);
+        let config: Config = serde_json::from_value(value.clone()).map_err(|e| e.to_string())?;
+        assert_eq!(
+            serve(config),
+            Err("optional TLS client authentication requires a client CA bundle".into())
+        );
+        value["tls_client_auth_optional"] = Value::Null;
+        assert!(serde_json::from_value::<Config>(value).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn optional_client_verifier_still_requests_and_checks_presented_certificates()
+    -> Result<(), String> {
+        use rustls::pki_types::{CertificateDer, UnixTime};
+        let ca =
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src/testdata/kubernetes-api-ca.pem");
+        let data = PathBuf::from("/unused-data");
+        for optional in [false, true] {
+            let verifier = load_client_verifier(
+                &ca,
+                None,
+                optional,
+                &data,
+                Arc::new(rustls::crypto::ring::default_provider()),
+            )?;
+            assert!(verifier.offer_client_auth());
+            assert_eq!(verifier.client_auth_mandatory(), !optional);
+            assert!(!verifier.root_hint_subjects().is_empty());
+            // Optional authentication must never turn a supplied invalid chain
+            // into an anonymous connection. Real chain/EKU cases run over TLS.
+            assert!(
+                verifier
+                    .verify_client_cert(
+                        &CertificateDer::from(vec![0_u8; 32]),
+                        &[],
+                        UnixTime::since_unix_epoch(Duration::from_secs(1_790_000_000))
+                    )
+                    .is_err()
+            );
+        }
+        Ok(())
+    }
 
     #[test]
     fn rate_limiter_enforces_burst_refill_and_bounded_peer_table() -> Result<(), String> {
@@ -755,12 +1363,7 @@ mod tests {
             payload.len()
         );
         assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
-        for header in [
-            "X-Vault-Wrap-TTL",
-            "X-Vault-MFA",
-            "X-Vault-Policy-Override",
-            "X-Vault-Index",
-        ] {
+        for header in ["X-Vault-MFA", "X-Vault-Policy-Override", "X-Vault-Index"] {
             let request = format!(
                 "GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n{header}: synthetic\r\n\r\n"
             );
@@ -805,5 +1408,403 @@ mod tests {
             .join()
             .map_err(|_| io::Error::other("sender thread failed"))?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod service_lock_deadline_tests {
+    use super::*;
+
+    #[test]
+    fn slow_body_and_writer_wait_share_budget_before_mutating_dispatch()
+    -> Result<(), Box<dyn std::error::Error>> {
+        struct Directory(PathBuf);
+        impl Drop for Directory {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let root = Directory(std::env::temp_dir().join(format!(
+            "heptabao-http-deadline-{}-{}",
+            std::process::id(),
+            u64::from_le_bytes(crypto::random::<8>()?),
+        )));
+        std::fs::create_dir(&root.0)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let service = Arc::new(Mutex::new(Service::new(
+            root.0.join("data"),
+            &root.0.join("audit.jsonl"),
+        )?));
+        let listener = TcpListener::bind("127.0.0.1:0")?;
+        let mut client = TcpStream::connect(listener.local_addr()?)?;
+        let (stream, _) = listener.accept()?;
+        let deadline = Instant::now() + Duration::from_millis(250);
+        let mut stream = DeadlineStream { stream, deadline };
+        let sender = std::thread::spawn(move || -> io::Result<()> {
+            let body = br#"{"secret_shares":1,"secret_threshold":1}"#;
+            write!(
+                client,
+                "POST /v1/sys/init HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n",
+                body.len()
+            )?;
+            std::thread::sleep(Duration::from_millis(40));
+            client.write_all(body)
+        });
+        let mut parsed = read_request(&mut stream, Duration::from_secs(1))
+            .map_err(|_| "synthetic slow request failed parsing")?;
+        sender.join().map_err(|_| "synthetic sender panicked")??;
+        // The body has consumed part of the accepted connection's budget.
+        // Keep the writer busy beyond the remaining budget; no dispatch may run.
+        let held = service.lock().map_err(|_| "test service poisoned")?;
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new(
+                &parsed.method,
+                &parsed.path,
+                &parsed.namespace,
+                &parsed.token,
+                std::mem::take(&mut parsed.body.0),
+            ),
+            deadline,
+            false,
+        );
+        assert_eq!(response.status, 503);
+        drop(held);
+        let read = execute_service_request(
+            &service,
+            ServiceRequest::new("GET", "sys/init", "", "", Value::Null),
+            Instant::now() + Duration::from_secs(1),
+            false,
+        );
+        assert_eq!(read.status, 200);
+        assert_eq!(read.body["initialized"], false);
+        // A new connection is allowed a new budget: the same valid mutation
+        // succeeds, proving the timed-out request was not a rejected test input.
+        let mut initialized = execute_service_request(
+            &service,
+            ServiceRequest::new(
+                "POST",
+                "sys/init",
+                "",
+                "",
+                json!({"secret_shares":1,"secret_threshold":1}),
+            ),
+            Instant::now() + Duration::from_secs(5),
+            false,
+        );
+        assert_eq!(initialized.status, 200);
+        crate::service::erase_json(&mut initialized.body);
+        Ok(())
+    }
+
+    #[test]
+    fn service_lock_wait_is_bounded_when_another_request_holds_the_writer()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let lock = Mutex::new(());
+        let _held = lock.lock().map_err(|_| "test mutex poisoned")?;
+        assert!(matches!(
+            lock_until(&lock, Instant::now() + Duration::from_millis(5)),
+            Err(LockWaitError::Busy)
+        ));
+        Ok(())
+    }
+
+    #[test]
+    fn external_effect_phase_does_not_hold_the_shared_state_writer()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let state = Arc::new(Mutex::new(0_u64));
+        let entered = Arc::new(std::sync::Barrier::new(2));
+        let release = Arc::new(std::sync::Barrier::new(2));
+        let worker_state = Arc::clone(&state);
+        let worker_entered = Arc::clone(&entered);
+        let worker_release = Arc::clone(&release);
+        let deadline = Instant::now() + Duration::from_secs(2);
+        let worker = std::thread::spawn(move || {
+            execute_external_without_writer(
+                &worker_state,
+                (),
+                deadline,
+                |_| {
+                    assert_eq!(crate::request_deadline::current(), Some(deadline));
+                    worker_entered.wait();
+                    worker_release.wait();
+                    41_u64
+                },
+                |value, (), result| {
+                    assert_eq!(crate::request_deadline::current(), Some(deadline));
+                    *value = result + 1;
+                    Response {
+                        status: 200,
+                        body: json!({"data":{"completed":true}}),
+                    }
+                },
+            )
+        });
+        entered.wait();
+        let observed = state
+            .try_lock()
+            .map(|guard| *guard)
+            .map_err(|_| "external effect held the shared writer");
+        release.wait();
+        let response = worker
+            .join()
+            .map_err(|_| "external effect worker panicked")?;
+        assert_eq!(observed?, 0);
+        assert_eq!(response.status, 200);
+        assert_eq!(
+            *state
+                .lock()
+                .map_err(|_| "state poisoned after external effect")?,
+            42
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn expired_deadline_rejects_an_uncontended_writer() {
+        let lock = Mutex::new(());
+        let deadline = Instant::now() - Duration::from_millis(1);
+        assert!(matches!(
+            lock_until(&lock, deadline),
+            Err(LockWaitError::Busy)
+        ));
+    }
+
+    #[test]
+    fn gated_external_result_after_deadline_never_calls_finish_even_when_writer_is_free()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let state = Arc::new(Mutex::new(0_u64));
+        let entered = Arc::new(std::sync::Barrier::new(2));
+        let release = Arc::new(std::sync::Barrier::new(2));
+        let worker_state = Arc::clone(&state);
+        let worker_entered = Arc::clone(&entered);
+        let worker_release = Arc::clone(&release);
+        let finished = Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let worker_finished = Arc::clone(&finished);
+        let worker = std::thread::spawn(move || {
+            execute_external_without_writer(
+                &worker_state,
+                (),
+                Instant::now() + Duration::from_millis(40),
+                |_| {
+                    worker_entered.wait();
+                    worker_release.wait();
+                    99_u64
+                },
+                |value, (), observed| {
+                    worker_finished.store(true, Ordering::Release);
+                    *value = observed;
+                    Response {
+                        status: 200,
+                        body: json!({"data":{"completed":true}}),
+                    }
+                },
+            )
+        });
+        entered.wait();
+        let concurrent = state
+            .try_lock()
+            .map(|mut value| {
+                *value = 7;
+            })
+            .map_err(|_| "external effect held writer");
+        // The provider gate opens after the original request budget. The
+        // writer remains free, which exposed the old try_lock-before-deadline bug.
+        std::thread::sleep(Duration::from_millis(60));
+        release.wait();
+        let response = worker.join().map_err(|_| "external worker panicked")?;
+        concurrent?;
+        assert_eq!(response.status, 503);
+        assert!(!finished.load(Ordering::Acquire));
+        assert_eq!(*state.lock().map_err(|_| "state poisoned")?, 7);
+        Ok(())
+    }
+
+    #[test]
+    fn poisoned_service_lock_fails_without_waiting_for_the_deadline() {
+        let lock = Arc::new(Mutex::new(()));
+        let worker = Arc::clone(&lock);
+        let poisoned = std::thread::spawn(move || {
+            if let Ok(_held) = worker.lock() {
+                // Deliberately unwind while holding the lock: this is the fault
+                // being tested, not an assertion failure or production panic.
+                std::panic::resume_unwind(Box::new("poison test mutex"));
+            }
+        })
+        .join();
+        assert!(poisoned.is_err());
+        assert!(matches!(
+            lock_until(&lock, Instant::now() + Duration::from_secs(1)),
+            Err(LockWaitError::Poisoned)
+        ));
+    }
+}
+
+#[cfg(test)]
+mod wrapping_header_tests {
+    use super::*;
+    #[test]
+    fn wrapping_duration_is_bounded_and_rejects_silent_rounding() {
+        for (input, expected) in [
+            ("60", Some(60)),
+            ("1h30m5s", Some(5405)),
+            ("0s", None),
+            ("0", None),
+        ] {
+            assert!(parse_wrap_ttl(input).is_ok_and(|actual| actual == expected));
+        }
+        for input in [
+            "",
+            "-1",
+            "1.5s",
+            "1ms",
+            "1d",
+            "1s5",
+            "s",
+            " 60",
+            "18446744073709551616",
+            "768h1s",
+        ] {
+            assert!(parse_wrap_ttl(input).is_err());
+        }
+    }
+    #[test]
+    fn wrapping_headers_are_retained_and_duplicates_or_jwt_reject() {
+        let valid =
+            b"GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: 60s\r\n\r\n";
+        assert!(
+            read_request(&mut valid.as_slice(), Duration::from_secs(1))
+                .is_ok_and(|r| r.wrap_ttl_seconds == Some(60))
+        );
+        for header in [
+            "X-Vault-Wrap-TTL: 60s\r\nx-vault-wrap-ttl: 1s",
+            "X-Vault-Wrap-TTL: invalid",
+            "X-Vault-Wrap-Format: jwt",
+        ] {
+            let request =
+                format!("GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n{header}\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
+    }
+
+    #[test]
+    fn health_probe_query_flags_are_parsed_as_booleans() {
+        for (query, key) in [
+            ("standbyok=1", "standbyok"),
+            ("perfstandbyok=true", "perfstandbyok"),
+        ] {
+            let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| r.body.0[key] == Value::Bool(true))
+            );
+        }
+        let request = b"GET /v1/sys/health?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n";
+        assert!(read_request(&mut request.as_slice(), Duration::from_secs(1)).is_err());
+    }
+
+    #[test]
+    fn ordinary_boolean_queries_keep_their_boolean_shape() {
+        for (method, query, key) in [
+            ("POST", "list=true", "list"),
+            ("GET", "exclude_deleted=false", "exclude_deleted"),
+        ] {
+            let request = format!(
+                "{method} /v1/secret/metadata/a?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n"
+            );
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| r.body.0[key].is_boolean())
+            );
+        }
+    }
+
+    #[test]
+    fn list_queries_preserve_signed_limits_and_literal_cursors() {
+        for (query, expected) in [
+            ("limit=-1", json!({"limit": -1})),
+            ("limit=0", json!({"limit": 0})),
+            ("limit=9223372036854775807", json!({"limit": i64::MAX})),
+            ("limit=-9223372036854775808", json!({"limit": i64::MIN})),
+            ("after=true", json!({"after": "true"})),
+            ("after=false", json!({"after": "false"})),
+            ("limit=", json!({"limit": ""})),
+            (
+                "limit=9223372036854775808",
+                json!({"limit": "9223372036854775808"}),
+            ),
+            (
+                "limit=-9223372036854775809",
+                json!({"limit": "-9223372036854775809"}),
+            ),
+            ("limit=1.5", json!({"limit": "1.5"})),
+        ] {
+            let request =
+                format!("LIST /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| r.body.0 == expected)
+            );
+        }
+        for query in ["version=-1", "depth=-1"] {
+            let request =
+                format!("LIST /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
+    }
+
+    #[test]
+    fn query_operations_ignore_framed_bodies_and_get_selects_list_or_scan() {
+        for (method, query, selected) in [
+            ("GET", "list=1", "LIST"),
+            ("GET", "scan=True", "SCAN"),
+            ("GET", "scan=", "GET"),
+            ("LIST", "limit=-2", "LIST"),
+            ("SCAN", "limit=-2", "SCAN"),
+            ("HEAD", "limit=-2", "HEAD"),
+            ("DELETE", "limit=-2", "DELETE"),
+        ] {
+            for payload in [r#"{"limit":3,"after":"body","list":true}"#, "not JSON"] {
+                let request = format!(
+                    "{method} /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{payload}",
+                    payload.len()
+                );
+                assert!(
+                    read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_ok_and(|r| r
+                        .method
+                        == selected
+                        && r.body.0.get("after").is_none()
+                        && r.body.0.get("list").is_none())
+                );
+            }
+        }
+        for query in ["list=true&scan=true", "scan=invalid", "list=invalid"] {
+            let request =
+                format!("GET /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
+    }
+
+    #[test]
+    fn health_status_code_queries_are_bounded_integers() {
+        let request = b"GET /v1/sys/health?uninitcode=204&sealedcode=499&standbycode=430&activecode=201 HTTP/1.1\r\nHost: localhost\r\n\r\n";
+        let parsed = read_request(&mut request.as_slice(), Duration::from_secs(1));
+        assert!(parsed.is_ok());
+        let parsed = match parsed {
+            Ok(request) => request,
+            Err(_) => return,
+        };
+        assert_eq!(parsed.body.0["uninitcode"], json!(204));
+        assert_eq!(parsed.body.0["sealedcode"], json!(499));
+        assert_eq!(parsed.body.0["standbycode"], json!(430));
+        assert_eq!(parsed.body.0["activecode"], json!(201));
+        for query in ["activecode=99", "sealedcode=1000", "standbycode=nope"] {
+            let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
     }
 }

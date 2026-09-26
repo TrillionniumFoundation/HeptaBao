@@ -5,19 +5,49 @@ edition.workspace = true
 rust-version.workspace = true
 publish = false
 
+[features]
+default = []
+fixture-native-restore-faults = ["dep:rustix"]
+fixture-capacity-limit = []
+
 [dependencies]
+bcrypt = { path = "../../vendor/bcrypt-0.19.3", version = "=0.19.3", default-features = false, features = ["std", "zeroize"] }
+# Feature-unify bcrypt's cipher so its expanded key schedule is cleared on Drop.
+blowfish = { version = "=0.10.0", default-features = false, features = ["zeroize"] }
+flate2 = { version = "=1.1.8", default-features = false, features = ["rust_backend"] }
 heptabao-durable-service = { path = "../heptabao-durable-service" }
+heptabao-filesystem-guard = { path = "../heptabao-filesystem-guard" }
 heptabao-ha-service = { path = "../heptabao-ha-service" }
 heptabao-raft-runtime = { path = "../heptabao-raft-runtime" }
+heptabao-domain = { path = "../heptabao-domain" }
+heptabao-plugin-contracts = { path = "../heptabao-plugin-contracts" }
+heptabao-plugin-host = { path = "../heptabao-plugin-host" }
+heptabao-kms-contracts = { path = "../heptabao-kms-contracts" }
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
 ring = "=0.17.14"
 base64 = "=0.22.1"
+qrcode = { path = "../../vendor/qrcode-0.14.1", default-features = false }
+chacha20poly1305 = { version = "=0.10.1", default-features = false, features = ["alloc", "std"] }
+hmac = { version = "=0.12.1", default-features = false, features = ["std"] }
+md5 = "=0.8.0"
+subtle = "=2.6.1"
+sha2 = { version = "=0.10.9", default-features = false, features = ["std"] }
+sha3 = { version = "=0.10.9", default-features = false, features = ["std"] }
 rustls = { version = "=0.23.44", default-features = false, features = ["ring", "std", "tls12"] }
 rustls-pemfile = "=2.2.0"
+rustls-native-certs = "=0.8.2"
+x509-parser = { version = "=0.18.1", default-features = false }
 zeroize = "=1.8.1"
 futures = "=0.3.34"
 tokio = { version = "=1.53.1", default-features = false, features = ["rt-multi-thread", "sync", "time"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+cross-krb5 = { version = "=0.5.0", default-features = false }
+rustix = { version = "=1.1.4", optional = true, features = ["net", "process"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "=0.2.189"
 
 [lints]
 workspace = true

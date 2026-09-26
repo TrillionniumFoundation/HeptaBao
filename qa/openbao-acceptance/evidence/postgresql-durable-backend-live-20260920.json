@@ -1,0 +1,172 @@
+{
+  "schema": "heptabao.postgresql-durable-backend.v1",
+  "status": "passed_scoped_backend",
+  "source_sha": "833f20bcd37509a0c95ae652a865c3ba86dff1c9",
+  "source_dirty": false,
+  "candidate_probe_sha256": "1680b7c6bf8e7145d0abb849f74fae742ff735977af260bbf29ad4a12b6ff2ff",
+  "runner_sha256": "118029e52738d7eca5c9d41cd88df0ed40793029fd1e6225ffadbc129687d416",
+  "observed_at_unix": 1789918166,
+  "checks": [
+    {
+      "case": "fresh_postgresql_17_cluster_and_unprivileged_storage_owner",
+      "passed": true
+    },
+    {
+      "case": "durable_initialize_empty",
+      "passed": true
+    },
+    {
+      "case": "durable_initialize_empty_rejects_existing_scope",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_retry_matches_exact_bundle",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_retry_rejects_different_bundle",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_conflict_preserves_bundle",
+      "passed": true
+    },
+    {
+      "case": "durable_bundle_roundtrip",
+      "passed": true
+    },
+    {
+      "case": "durable_append_returns_exact_length",
+      "passed": true
+    },
+    {
+      "case": "durable_append_replay_bytes_exact",
+      "passed": true
+    },
+    {
+      "case": "durable_append_rejects_stale_length",
+      "passed": true
+    },
+    {
+      "case": "durable_checkpoint_atomic_publish",
+      "passed": true
+    },
+    {
+      "case": "durable_basic_probe",
+      "passed": true
+    },
+    {
+      "case": "durable_reopen_bundle_present",
+      "passed": true
+    },
+    {
+      "case": "durable_reopen_probe",
+      "passed": true
+    },
+    {
+      "case": "orphan_chunk_fixture_created",
+      "passed": true
+    },
+    {
+      "case": "durable_initialization_rejects_orphan_chunks",
+      "passed": true
+    },
+    {
+      "case": "orphan_scope_initialization_rejected",
+      "passed": true
+    },
+    {
+      "case": "orphan_chunk_bytes_preserved",
+      "passed": true
+    },
+    {
+      "case": "orphan_scope_manifest_not_created",
+      "passed": true
+    },
+    {
+      "case": "deferred_commit_gate_installed",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_probe_started",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_commit_reached_and_blocked",
+      "passed": true
+    },
+    {
+      "case": "lost_commit/lost_commit_fences_unknown_outcome",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_probe_exited_cleanly",
+      "passed": true
+    },
+    {
+      "case": "durable_lost_commit_replayed_exactly_once",
+      "passed": true
+    },
+    {
+      "case": "lost_commit_reopen_exactly_once",
+      "passed": true
+    },
+    {
+      "case": "durable_writer_fence_acquired",
+      "passed": true
+    },
+    {
+      "case": "durable_second_writer_rejected_without_blocking",
+      "passed": true
+    },
+    {
+      "case": "durable_second_writer_rejected",
+      "passed": true
+    },
+    {
+      "case": "unlogged_durable_table_installed",
+      "passed": true
+    },
+    {
+      "case": "unlogged/durable_schema_fault_rejected",
+      "passed": true
+    },
+    {
+      "case": "unlogged_durable_table_rejected",
+      "passed": true
+    },
+    {
+      "case": "logged_durable_table_restored",
+      "passed": true
+    },
+    {
+      "case": "weakened_durable_check_installed",
+      "passed": true
+    },
+    {
+      "case": "weakened/durable_schema_fault_rejected",
+      "passed": true
+    },
+    {
+      "case": "weakened_durable_check_rejected",
+      "passed": true
+    },
+    {
+      "case": "durable_check_restored",
+      "passed": true
+    },
+    {
+      "case": "durable_untrusted_connection_rejected",
+      "passed": true
+    },
+    {
+      "case": "wrong_durable_password_rejected",
+      "passed": true
+    }
+  ],
+  "server_storage_integrated": false,
+  "full_openbao_compatibility": false,
+  "production_qualified": false,
+  "independent_reproduction": false,
+  "postgresql_version": "postgres (PostgreSQL) 17.11 (Ubuntu 17.11-1.pgdg24.04+2)"
+}

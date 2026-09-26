@@ -1,10 +1,8 @@
 name: export-exact-audit-source
 
 on:
-  push:
-    branches:
-      - "codex/plan-v1.2-canonical-gap-closure-v1"
-      - "codex/plan-v1.3-gap-closure-v2"
+  # Deterministic source archives are release/audit artifacts.  Running this
+  # on every historical branch push only duplicates qualification work.
   workflow_dispatch:
 
 permissions:
@@ -16,7 +14,6 @@ concurrency:
 
 jobs:
   export:
-    if: ${{ github.event_name != 'pull_request' || github.head_ref != 'codex/plan-v1.3-gap-closure-v2' }}
     runs-on: ubuntu-slim
     timeout-minutes: 15
     steps:

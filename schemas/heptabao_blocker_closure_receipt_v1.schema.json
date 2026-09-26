@@ -61,7 +61,7 @@
       ],
       "properties": {
         "repository": {
-          "const": "ProfHepta/HeptaBao"
+          "const": "TrillionniumFoundation/HeptaBao"
         },
         "ref": {
           "type": "string",

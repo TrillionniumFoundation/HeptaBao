@@ -2,11 +2,19 @@
 
 Current executable ownership and route/test mapping: `docs/modules/CURRENT_RUNTIME_MAP.md` and `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md`. Five packages are in the current server runtime dependency closure; the remaining guides describe separate models, contracts, prototypes and tools.
 
-Current status: `V2.3 / 46 WORKSPACE PACKAGES`
+Current status: `V2.1 / 46 WORKSPACE PACKAGES`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
 The package set is derived from `Cargo.toml` and must exactly match `Cargo.lock`, `planning/HEPTABAO_PRODUCT_CAPABILITY_MATRIX_V2_0.yaml`, source roots and this guide set. Shared rules live in `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`; V3 guides follow `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md`.
+
+Every package also has one source-bound closure dossier in
+[`docs/module-closure/`](../module-closure/) and one entry in
+[`planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml`](../../planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml).
+The dossier is the independent record of module design and state ownership,
+trust and integration boundaries, failure and retry semantics, and exact-head
+acceptance evidence. A guide without its matching dossier is incomplete.
+Run `python scripts/validate_module_closure.py` to check the closed set.
 
 ## Current package index
 
@@ -73,8 +81,7 @@ A package change updates source, tests, guide, capability matrix and blocker evi
 
 ## Current source facts and preserved history
 
-All current workspace packages are bound by
-`planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json` and the read-only V2 validator.
+All current workspace packages are bound by the exact Git commit/tree exercised by CI. `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json` is a reproducible diagnostic projection checked for structural validity by the read-only V2 validator.
 See `docs/modules/CURRENT_SOURCE_BINDING.md` for details, regeneration and the
 commit/tree receipt boundary. The V1.4.7 inventory and generated guide blocks
 are preserved historical snapshots, not current source authority; their older

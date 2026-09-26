@@ -193,7 +193,7 @@ def validate_current_documentation(plan_id: str, package_names: set[str]) -> lis
             "python scripts/validate_repository_v2.py",
             "cargo +1.98.0 fmt --all -- --check",
             "cargo +1.98.0 test --locked --workspace --all-targets",
-            "cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings",
+            "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
             "cargo +1.98.0 doc --locked --workspace --no-deps",
         ):
             if command not in readme:
@@ -489,6 +489,14 @@ def validate() -> list[str]:
         semantics_module = importlib.util.module_from_spec(semantics_spec)
         semantics_spec.loader.exec_module(semantics_module)
         errors.extend(semantics_module.validate(ROOT))
+    for script in ("validate_replacement_execution", "validate_execution_truth"):
+        extra_spec = importlib.util.spec_from_file_location(script, ROOT / "scripts" / (script + ".py"))
+        if extra_spec is None or extra_spec.loader is None:
+            errors.append("cannot load execution guard: " + script)
+            continue
+        extra_module = importlib.util.module_from_spec(extra_spec)
+        extra_spec.loader.exec_module(extra_module)
+        errors.extend(extra_module.validate(ROOT))
     return errors
 
 

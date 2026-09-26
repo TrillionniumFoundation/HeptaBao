@@ -1,10 +1,8 @@
 name: h02-final-gap-closure-arm64
 
 on:
-  push:
-    branches: ["codex/plan-v1.2.1-final-gap-closure-v1"]
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

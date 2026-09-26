@@ -16,7 +16,7 @@ Provides service-level leader routing, fail-closed quorum checks, authenticated 
 
 `PeerAuthenticator::new(cluster_id, keys)` owns configured 32-byte per-peer HMAC keys. `seal` binds sender, receiver, term, sequence, message kind and payload; `admit_peer_envelope` authenticates before advancing `PersistentPeerSequences`. The sequence owner opens one absolute durable root, persists incoming/outgoing progress and rejects replay across restarts. `ReplayDetected`/`PeerAuthenticationFailed` are denial; `OutcomeUnknown` requires authenticated reopen/readback; `QuorumUnavailable`, `NotLeader` and `StaleLeaderResponse` never become a successful stale read.
 
-`MutualTlsPeerTransport::new(peers, client_config, timeout)` owns endpoint mappings, a shared rustls client configuration and a finite deadline. `exchange(peer, frame)` checks bounds and returns owned bytes. `serve_one_mtls_peer_frame` borrows the listener and pinned certificate map, takes a configured rustls server verifier and invokes one handler only for the authenticated `NodeId`. The caller must supply correct CA/client-auth policy before construction. `TcpPeerTransport` is a separate plain transport test adapter; the production-shaped server composition uses the mTLS path.
+`MutualTlsPeerTransport::new(peers, client_config, timeout)` owns endpoint mappings, a shared rustls client configuration and a finite deadline. `exchange(peer, frame)` checks bounds and returns owned bytes. The production configuration advertises `heptabao-raft/1` through `RAFT_ALPN_PROTOCOL`; `serve_one_mtls_peer_frame` rejects a handshake that does not negotiate that exact protocol before dispatching any frame. It borrows the listener and pinned certificate map, takes a configured rustls server verifier and invokes one handler only for the authenticated `NodeId`. The caller must supply correct CA/client-auth policy before construction. `TcpPeerTransport` is a separate plain transport test adapter; the production-shaped server composition uses the mTLS path.
 
 `SnapshotManifest::build`/`verify` bind chunk integrity and `MembershipTransition::joint_quorum` checks old/new voter majorities. They validate supplied facts rather than enrolling a peer or proving snapshot installation. The server consumes the concrete transport; its own `HaProcess` performs consensus routing instead of simply wrapping the generic `HaService` facade.
 
@@ -44,7 +44,7 @@ Consensus ordering is delegated to one driver. A single-writer state lock serial
 
 ## Security and privacy
 
-Keys and payloads are redacted from Debug. Frames are bounded and HMAC authenticated. Concrete rustls mTLS transport and pinned leaf identity checking exist. Production issuance, rotation, revocation and trust-root custody remain mandatory operational qualification.
+Keys and payloads are redacted from Debug. Frames are bounded and HMAC authenticated. Concrete rustls mTLS transport and pinned leaf identity checking exist. Repository-controlled same-CA leaf overlap rotation and old-pin retirement are executable. Certificate issuance, revocation, rotation of CA/trust roots, provider-backed revocation distribution and trust-root custody remain mandatory external operational qualification.
 
 ## Persistence and compatibility
 
@@ -68,18 +68,23 @@ Current named source scenarios:
 
 Run `cargo +1.98.0 test --locked -p heptabao-ha-service --all-targets`. These are source anchors; a current test receipt is separate.
 
-Tests cover leader execution, follower forwarding, deduplication, quorum loss, persistent replay, tampering, receiver binding, snapshots, joint quorum and TCP framing.
+Tests cover leader execution, follower forwarding, deduplication, quorum loss, persistent replay, tampering, receiver binding, snapshots, joint quorum, exact Raft ALPN binding and TCP framing.
 
 ## Evolution and open boundaries
 
 The server now provides a concrete `heptabao-raft-runtime` adapter with one voter per process, mutually authenticated peer listener and forwarding path. Rolling-version upgrade, process kill/failover evidence and destructive multi-node qualification remain required on the unchanged candidate.
 ## V2.4 mutual TLS peer transport
 
-`MutualTlsPeerTransport` uses rustls with a caller-supplied client configuration and validated `ServerName`; `serve_one_mtls_peer_frame` requires a caller-supplied server configuration whose client-certificate verifier has already authenticated the chain, then binds the single presented leaf certificate SHA-256 to an expected `NodeId`. Message-level HMAC and durable sequence fencing remain required in addition to TLS. Certificate issuance, revocation, rotation, trust-root custody and destructive multi-node qualification remain external operational gates.
+`MutualTlsPeerTransport` uses rustls with a caller-supplied client configuration and validated `ServerName`; `serve_one_mtls_peer_frame` requires a caller-supplied server configuration whose client-certificate verifier has already authenticated the chain, requires the exact Raft ALPN, accepts a bounded chain (up to eight certificates and four MiB), and binds the presented leaf certificate SHA-256 to an expected `NodeId`. Intermediates are not identity pins and may rotate only under the configured trust roots. Message-level HMAC and durable sequence fencing remain required in addition to TLS. Same-CA leaf overlap rotation and old-pin retirement are exercised by the repository three-process fixture. Certificate issuance, revocation, rotation of CA/trust roots, provider-backed revocation, trust-root custody, multi-host destructive qualification and independent admission remain external operational gates.
 
-The mutual-TLS client and accepted server sockets enable TCP_NODELAY while retaining
+The endpoint admission rejects port zero and unspecified addresses; configured loopback,
+private and routable peer addresses remain valid. The mutual-TLS client and accepted server sockets enable TCP_NODELAY while retaining
 bounded framing, certificate identity checks and configured read/write timeouts.
 The consuming server runs a fixed bounded peer worker pool rather than placing
 all consensus and forwarded-client work behind one serial TLS receiver. These
 changes do not supply membership policy, remote key custody or independent HA
 qualification. The server guide defines its configured timing and admission bounds.
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-ha-service.md).

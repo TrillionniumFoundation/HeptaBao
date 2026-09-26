@@ -8,8 +8,8 @@
 
 use super::{
     DynamicLeaseRecord, DynamicLeaseSpec, DynamicLeaseState, DynamicLeaseView, DynamicSecretBroker,
-    DynamicSecretIssue, PluginHostError, PluginHostState, PluginOperation, SandboxRunner,
-    SecretEnvironment, sha256,
+    DynamicSecretIssue, PluginHostError, PluginHostState, PluginManifest, PluginOperation,
+    SandboxRunner, SecretEnvironment, sha256,
 };
 use heptabao_domain::{CanonicalPath, Id, SecretValue, Tick};
 use heptabao_durable_service::{
@@ -197,6 +197,14 @@ impl<B: Barrier, R: SandboxRunner> DurableDynamicSecretBroker<B, R> {
         })
     }
 
+    /// Perform a generation-fenced host handoff when no durable invocation is
+    /// pending. The underlying host admits the replacement before swapping;
+    /// persisted lease projections remain unchanged.
+    pub fn upgrade(&mut self, replacement: PluginManifest) -> Result<(), PluginHostError> {
+        self.ensure_ready()?;
+        self.broker.host.upgrade(replacement)
+    }
+
     pub fn view(&mut self, lease_id: &Id, now: Tick) -> Result<DynamicLeaseView, PluginHostError> {
         self.broker.view(lease_id, now)
     }
@@ -378,6 +386,37 @@ impl<B: Barrier, R: SandboxRunner> DurableDynamicSecretBroker<B, R> {
                 Err(error)
             }
         }
+    }
+
+    /// Revoke all active leases below a canonical scope prefix.
+    ///
+    /// Each lease is committed independently through the normal durable
+    /// intent protocol. If a provider call becomes uncertain, the current
+    /// lease remains fenced and no later lease is attempted.
+    pub fn revoke_prefix(
+        &mut self,
+        context: &PluginMutationContext,
+        prefix: &CanonicalPath,
+        request: &SecretValue,
+        environment: &SecretEnvironment,
+    ) -> Result<usize, PluginHostError> {
+        self.ensure_ready()?;
+        let lease_ids = self
+            .broker
+            .leases
+            .iter()
+            .filter(|(_, record)| {
+                record.view.state == DynamicLeaseState::Active
+                    && record.view.scope.matches_prefix(prefix)
+            })
+            .map(|(lease_id, _)| lease_id.clone())
+            .collect::<Vec<_>>();
+        let mut revoked = 0;
+        for lease_id in lease_ids {
+            self.revoke(context, &lease_id, request, environment)?;
+            revoked += 1;
+        }
+        Ok(revoked)
     }
 
     pub fn reconcile(
@@ -586,9 +625,13 @@ fn storage_request_id(
     phase: &str,
     intent: &DurablePluginIntent,
 ) -> String {
+    // One logical prefix revoke expands into one durable mutation per lease.
+    // Bind the resource into the retained request identity so those mutations
+    // cannot collide when the caller supplies one outer request id.
     format!(
-        "{}:{}:{}:{}",
+        "{}:{}:{}:{}:{}",
         context.request_id.as_str(),
+        intent.lease_id.as_str(),
         phase,
         intent.operation.as_str(),
         intent.generation
@@ -1086,6 +1129,97 @@ mod tests {
             reopened.view(&Id::parse("lease_one")?, Tick::new(101))?
         );
         assert!(!tree_contains(&root.0, b"synthetic-issued-secret")?);
+        Ok(())
+    }
+
+    #[test]
+    fn durable_revoke_prefix_commits_each_matching_lease_and_survives_reopen()
+    -> Result<(), Box<dyn Error>> {
+        let root = TestRoot::new("revoke-prefix")?;
+        let mut durable = DurableDynamicSecretBroker::create_new(
+            &root.0,
+            TestBarrier::new(),
+            broker(Behavior::Success)?,
+            64,
+        )?;
+        let first = durable.issue(
+            &context("prefix_first")?,
+            spec()?,
+            &SecretValue::new(b"first-input".to_vec())?,
+            &SecretEnvironment::new(),
+        )?;
+        let second_spec = DynamicLeaseSpec {
+            lease_id: Id::parse("lease_two")?,
+            owner_entity: Id::parse("entity_two")?,
+            scope: CanonicalPath::parse("/database/role_two")?,
+            issued_at: Tick::new(100),
+            ttl: 300,
+            renewable: true,
+        };
+        durable.issue(
+            &context("prefix_second")?,
+            second_spec,
+            &SecretValue::new(b"second-input".to_vec())?,
+            &SecretEnvironment::new(),
+        )?;
+        let outside_spec = DynamicLeaseSpec {
+            lease_id: Id::parse("lease_outside")?,
+            owner_entity: Id::parse("entity_three")?,
+            scope: CanonicalPath::parse("/other/role")?,
+            issued_at: Tick::new(100),
+            ttl: 300,
+            renewable: true,
+        };
+        durable.issue(
+            &context("prefix_outside")?,
+            outside_spec,
+            &SecretValue::new(b"outside-input".to_vec())?,
+            &SecretEnvironment::new(),
+        )?;
+
+        let revoked = durable.revoke_prefix(
+            &context("prefix_revoke")?,
+            &CanonicalPath::parse("/database")?,
+            &SecretValue::new(b"provider-revoke".to_vec())?,
+            &SecretEnvironment::new(),
+        )?;
+        assert_eq!(2, revoked);
+        assert_eq!(
+            DynamicLeaseState::Revoked,
+            durable.view(&first.lease.lease_id, Tick::new(101))?.state
+        );
+        assert_eq!(
+            DynamicLeaseState::Revoked,
+            durable
+                .view(&Id::parse("lease_two")?, Tick::new(101))?
+                .state
+        );
+        assert_eq!(
+            DynamicLeaseState::Active,
+            durable
+                .view(&Id::parse("lease_outside")?, Tick::new(101))?
+                .state
+        );
+        drop(durable);
+
+        let mut reopened = DurableDynamicSecretBroker::reopen(
+            &root.0,
+            TestBarrier::new(),
+            broker(Behavior::Success)?,
+            64,
+        )?;
+        assert_eq!(
+            DynamicLeaseState::Revoked,
+            reopened
+                .view(&Id::parse("lease_two")?, Tick::new(101))?
+                .state
+        );
+        assert_eq!(
+            DynamicLeaseState::Active,
+            reopened
+                .view(&Id::parse("lease_outside")?, Tick::new(101))?
+                .state
+        );
         Ok(())
     }
 

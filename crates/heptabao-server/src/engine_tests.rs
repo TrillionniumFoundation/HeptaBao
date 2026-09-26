@@ -3,6 +3,52 @@ use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 
 type TestResult = std::result::Result<(), Box<dyn std::error::Error>>;
 
+#[test]
+fn namespace_state_is_copy_on_write_without_changing_json_shape() -> TestResult {
+    let mut state = EngineState::default();
+    state
+        .namespaces
+        .insert("team-a".into(), CowNamespace::default());
+    state
+        .namespaces
+        .insert("team-b".into(), CowNamespace::default());
+    let before = serde_json::to_vec(&state)?;
+
+    let mut clone = state.clone();
+    let team_b_before = Arc::clone(&clone.namespaces.get("team-b").ok_or("team-b")?.0);
+    clone
+        .namespaces
+        .get_mut("team-a")
+        .ok_or("team-a")?
+        .mount_epochs
+        .insert("extra/".into(), 2);
+
+    assert!(Arc::ptr_eq(
+        &team_b_before,
+        &clone.namespaces.get("team-b").ok_or("team-b")?.0,
+    ));
+    assert!(
+        state
+            .namespaces
+            .get("team-a")
+            .ok_or("team-a")?
+            .mount_epochs
+            .is_empty()
+    );
+    assert!(
+        !clone
+            .namespaces
+            .get("team-a")
+            .ok_or("team-a")?
+            .mount_epochs
+            .is_empty()
+    );
+
+    let round_trip: EngineState = serde_json::from_slice(&before)?;
+    assert_eq!(serde_json::to_vec(&round_trip)?, before);
+    Ok(())
+}
+
 fn request(
     state: &mut EngineState,
     namespace: &str,
@@ -424,7 +470,12 @@ fn failed_operations_never_modify_engine_state() -> TestResult {
 
 #[test]
 fn transit_all_aead_algorithms_authenticate_and_roundtrip_after_restart() -> TestResult {
-    for kind in ["aes128-gcm96", "aes256-gcm96", "chacha20-poly1305"] {
+    for kind in [
+        "aes128-gcm96",
+        "aes256-gcm96",
+        "chacha20-poly1305",
+        "xchacha20-poly1305",
+    ] {
         let mut state = EngineState::default();
         request(
             &mut state,
@@ -481,7 +532,73 @@ fn transit_all_aead_algorithms_authenticate_and_roundtrip_after_restart() -> Tes
 }
 
 #[test]
-fn transit_aad_rejects_namespace_mount_and_name_transplants() -> TestResult {
+fn transit_xchacha_uses_openbao_raw_aad_and_24_byte_nonce() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "a",
+        "POST",
+        "transit/keys/k",
+        json!({"type":"xchacha20-poly1305"}),
+        1,
+    )?;
+    let associated = BASE64.encode(b"openbao-aad");
+    let ciphertext = request(
+        &mut state,
+        "a",
+        "POST",
+        "transit/encrypt/k",
+        json!({"plaintext":BASE64.encode(b"portable"),"associated_data":associated}),
+        2,
+    )?
+    .body["data"]["ciphertext"]
+        .clone();
+    let ciphertext_text = ciphertext.as_str().ok_or("ciphertext string missing")?;
+    let (_, versioned) = ciphertext_text
+        .split_once(':')
+        .ok_or("ciphertext version missing")?;
+    let (_, payload) = versioned
+        .split_once(':')
+        .ok_or("ciphertext payload missing")?;
+    assert_eq!(BASE64.decode(payload)?.len(), 24 + 8 + 16);
+
+    // OpenBao authenticates only the caller-provided associated data. A copied
+    // key ring therefore remains portable across logical paths, while the
+    // outer namespace/policy router still controls who can reach each path.
+    let namespace = state
+        .namespaces
+        .get("a")
+        .cloned()
+        .ok_or("namespace missing")?;
+    state.namespaces.insert("a/b".into(), namespace);
+    let decrypted = request(
+        &mut state,
+        "a/b",
+        "POST",
+        "transit/decrypt/k",
+        json!({"ciphertext":ciphertext,"associated_data":associated}),
+        3,
+    )?;
+    assert_eq!(
+        decrypted.body["data"]["plaintext"],
+        BASE64.encode(b"portable")
+    );
+    assert!(
+        request(
+            &mut state,
+            "a/b",
+            "POST",
+            "transit/decrypt/k",
+            json!({"ciphertext":ciphertext,"associated_data":BASE64.encode(b"wrong")}),
+            3,
+        )
+        .is_err()
+    );
+    Ok(())
+}
+
+#[test]
+fn transit_aad_is_portable_and_rejects_tampering() -> TestResult {
     let mut state = EngineState::default();
     request(
         &mut state,
@@ -509,7 +626,7 @@ fn transit_aad_rejects_namespace_mount_and_name_transplants() -> TestResult {
         .cloned()
         .ok_or("namespace missing")?;
     state.namespaces.insert("a/b".into(), namespace.clone());
-    assert!(
+    assert_eq!(
         request(
             &mut state,
             "a/b",
@@ -517,8 +634,9 @@ fn transit_aad_rejects_namespace_mount_and_name_transplants() -> TestResult {
             "transit/decrypt/k",
             json!({"ciphertext":ciphertext}),
             3
-        )
-        .is_err()
+        )?
+        .body["data"]["plaintext"],
+        BASE64.encode(b"isolated")
     );
     let mount = namespace
         .mounts
@@ -531,7 +649,7 @@ fn transit_aad_rejects_namespace_mount_and_name_transplants() -> TestResult {
         .ok_or("namespace missing")?
         .mounts
         .insert("alternate/".into(), mount);
-    assert!(
+    assert_eq!(
         request(
             &mut state,
             "a",
@@ -539,21 +657,37 @@ fn transit_aad_rejects_namespace_mount_and_name_transplants() -> TestResult {
             "alternate/decrypt/k",
             json!({"ciphertext":ciphertext}),
             3
-        )
-        .is_err()
+        )?
+        .body["data"]["plaintext"],
+        BASE64.encode(b"isolated")
     );
     let mut serialized = serde_json::to_value(&state)?;
     serialized["namespaces"]["a"]["mounts"]["transit/"]["backend"]["Transit"]["keys"]["other"] =
         serialized["namespaces"]["a"]["mounts"]["transit/"]["backend"]["Transit"]["keys"]["k"]
             .clone();
     let mut renamed: EngineState = serde_json::from_value(serialized)?;
-    assert!(
+    assert_eq!(
         request(
             &mut renamed,
             "a",
             "POST",
             "transit/decrypt/other",
             json!({"ciphertext":ciphertext}),
+            3
+        )?
+        .body["data"]["plaintext"],
+        BASE64.encode(b"isolated")
+    );
+    assert!(
+        request(
+            &mut renamed,
+            "a",
+            "POST",
+            "transit/decrypt/other",
+            json!({
+                "ciphertext":ciphertext,
+                "associated_data":BASE64.encode(b"tampered")
+            }),
             3
         )
         .is_err()
@@ -714,6 +848,62 @@ fn transit_rotation_rewrap_minimum_versions_and_soft_delete() -> TestResult {
 }
 
 #[test]
+fn transit_auto_rotation_is_engine_state_maintenance_and_resets_after_manual_rotation() -> TestResult
+{
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "transit/keys/periodic",
+        json!({"type":"aes256-gcm96", "auto_rotate_period":"1h"}),
+        100,
+    )?;
+    request(
+        &mut state,
+        "",
+        "POST",
+        "transit/encrypt/periodic",
+        json!({"plaintext": BASE64.encode(b"initial")}),
+        100,
+    )?;
+    assert!(state.has_auto_rotate_keys());
+    assert!(!state.maintain_auto_rotation(3_699)?);
+    assert!(state.maintain_auto_rotation(3_700)?);
+    let descriptor = request(
+        &mut state,
+        "",
+        "GET",
+        "transit/keys/periodic",
+        json!({}),
+        3_700,
+    )?;
+    assert_eq!(descriptor.body["data"]["latest_version"], 2);
+    assert_eq!(descriptor.body["data"]["auto_rotate_period"], 3600);
+
+    request(
+        &mut state,
+        "",
+        "POST",
+        "transit/keys/periodic/rotate",
+        json!({}),
+        4_000,
+    )?;
+    assert!(!state.maintain_auto_rotation(7_599)?);
+    assert!(state.maintain_auto_rotation(7_600)?);
+    let descriptor = request(
+        &mut state,
+        "",
+        "GET",
+        "transit/keys/periodic",
+        json!({}),
+        7_600,
+    )?;
+    assert_eq!(descriptor.body["data"]["latest_version"], 4);
+    Ok(())
+}
+
+#[test]
 fn transit_sign_verify_hmac_and_hash_use_real_crypto() -> TestResult {
     let mut state = EngineState::default();
     request(
@@ -853,6 +1043,102 @@ fn transit_hmac_matches_rfc4231_test_case_1() -> TestResult {
         hmac.body["data"]["hmac"],
         format!("vault:v1:{}", BASE64.encode(expected))
     );
+    Ok(())
+}
+
+#[test]
+fn transit_supports_openbao_hash_and_hmac_algorithm_matrix() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "transit/keys/algorithm-matrix",
+        json!({"type":"hmac"}),
+        1,
+    )?;
+    let mut serialized = serde_json::to_value(&state)?;
+    serialized["namespaces"][""]["mounts"]["transit/"]["backend"]["Transit"]["keys"]["algorithm-matrix"]
+        ["versions"]["1"]["hmac_material"] = json!(BASE64.encode([0x0b; 20]));
+    let mut state: EngineState = serde_json::from_value(serialized)?;
+    let input = BASE64.encode(b"Hi There");
+    let cases = [
+        (
+            "sha2-224",
+            "iW+xEoq73xloMhB81J3zP0e0sRaZErpPU2hLIg==",
+            "ea09ae9cc6768c50fcee903ed054556e5bfc8347907f12598aa24193",
+        ),
+        (
+            "sha2-256",
+            "sDRMYdjbOFNcqK/OrwvxK4gdwgDJgz2nJuk3bC4yz/c=",
+            "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+        ),
+        (
+            "sha2-384",
+            "r9A5RNhIlWJrCCX0q0aQfxX52tvkEB7GgqoDTHzrxZz66p6pB27ef0rxUuiy+py2",
+            "59e1748777448c69de6b800d7a33bbfb9ff1b463e44354c3553bcdb9c666fa90125a3c79f90397bdf5f6a13de828684f",
+        ),
+        (
+            "sha2-512",
+            "h6p83qXvYZ1P8LQkGh1ssCN59OLOTsJ4etCzBUXhfN7aqDO31rinAgOLJ06uo/Tkvp2RTuth8XAuaWwgOhJoVA==",
+            "9b71d224bd62f3785d96d46ad3ea3d73319bfbc2890caadae2dff72519673ca72323c3d99ba5c11d7c7acc6e14b8c5da0c4663475c2e5c3adef46f73bcdec043",
+        ),
+        (
+            "sha3-224",
+            "OxZUa7x74nBqAx3K/VY3PZiENnZB2MWa88hg9w==",
+            "b87f88c72702fff1748e58b87e9141a42c0dbedc29a78cb0d4a5cd81",
+        ),
+        (
+            "sha3-256",
+            "uoUZIxDf+pbio6QOaXdDURQLtxheEgLNzJF1ifleFrs=",
+            "3338be694f50c5f338814986cdf0686453a888b84f424d792af4b9202398f392",
+        ),
+        (
+            "sha3-384",
+            "aNLc9/1N3QoiQMikNzBfYftzNM+10CJuG8J9wQoucjog03C0d0MTDiasfj1TKIa9",
+            "720aea11019ef06440fbf05d87aa24680a2153df3907b23631e7177ce620fa1330ff07c0fddee54699a4c3ee0ee9d887",
+        ),
+        (
+            "sha3-512",
+            "6z+9Sy6quPXFBL06QUZarOwVdwp8q6xTHkgvhgtex7pHzLLG8q/Oj4jSK23GE4DyOmaP04iLuAU3wKC4ZAdong==",
+            "75d527c368f2efe848ecf6b073a36767800805e9eef2b1857d5f984f036eb6df891d75f72d9b154518c1cd58835286d1da9a38deba3de98b5a53e5ed78a84976",
+        ),
+    ];
+    for (algorithm, expected_hmac, expected_hash) in cases {
+        let hmac = request(
+            &mut state,
+            "",
+            "POST",
+            &format!("transit/hmac/algorithm-matrix/{algorithm}"),
+            json!({"input":input}),
+            2,
+        )?;
+        assert_eq!(
+            hmac.body["data"]["hmac"],
+            format!("vault:v1:{}", expected_hmac)
+        );
+        assert_eq!(
+            request(
+                &mut state,
+                "",
+                "POST",
+                &format!("transit/verify/algorithm-matrix/{algorithm}"),
+                json!({"input":input,"hmac":hmac.body["data"]["hmac"]}),
+                2,
+            )?
+            .body["data"]["valid"],
+            true
+        );
+        let hash = request(
+            &mut state,
+            "",
+            "POST",
+            &format!("transit/hash/{algorithm}"),
+            json!({"input":BASE64.encode(b"hello")}),
+            2,
+        )?;
+        assert_eq!(hash.body["data"]["sum"], expected_hash);
+    }
     Ok(())
 }
 
@@ -998,7 +1284,6 @@ fn transit_datakey_export_random_and_unsupported_modes_are_explicit() -> TestRes
             "transit/encrypt/key",
             json!({"plaintext":"","nonce":BASE64.encode([0u8;12])}),
         ),
-        ("sys/mounts/pki", json!({"type":"pki"})),
     ] {
         assert_eq!(
             request(&mut state, "", "POST", path, body, 3)
@@ -1317,19 +1602,56 @@ fn totp_url_enrollment_import_metadata_and_deletion() -> TestResult {
         100,
     )?;
     assert!(request(&mut state, "", "GET", "totp/code/imported", json!({}), 100).is_err());
-    assert_eq!(
-        request(
-            &mut state,
-            "",
-            "POST",
-            "totp/keys/qr",
-            json!({"generate":true,"issuer":"Hepta","account_name":"u"}),
-            100
-        )
-        .err()
-        .map(|e| e.status),
-        Some(501)
-    );
+    Ok(())
+}
+
+#[test]
+fn totp_generated_qr_barcode_is_png_and_export_controls_it() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "sys/mounts/totp",
+        json!({"type":"totp"}),
+        100,
+    )?;
+    let exported = request(
+        &mut state,
+        "",
+        "POST",
+        "totp/keys/qr",
+        json!({"generate":true,"issuer":"Hepta","account_name":"u","qr_size":64}),
+        100,
+    )?;
+    let barcode = BASE64.decode(
+        exported.body["data"]["barcode"]
+            .as_str()
+            .ok_or("TOTP barcode missing")?,
+    )?;
+    assert!(barcode.starts_with(b"\x89PNG\r\n\x1a\n"));
+    assert_eq!(u32::from_be_bytes(barcode[16..20].try_into()?), 64);
+    assert_eq!(u32::from_be_bytes(barcode[20..24].try_into()?), 64);
+
+    let no_qr = request(
+        &mut state,
+        "",
+        "POST",
+        "totp/keys/no-qr",
+        json!({"generate":true,"issuer":"Hepta","account_name":"no-qr","qr_size":0}),
+        100,
+    )?;
+    assert!(no_qr.body["data"].get("barcode").is_none());
+
+    let imported = request(
+        &mut state,
+        "",
+        "POST",
+        "totp/keys/imported-qr",
+        json!({"key":"GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ","qr_size":64}),
+        100,
+    )?;
+    assert!(imported.body["data"].get("barcode").is_none());
     Ok(())
 }
 
@@ -1392,6 +1714,591 @@ fn totp_guessing_limit_is_persisted_and_recovers_next_period() -> TestResult {
         )?
         .body["data"]["valid"],
         true
+    );
+    Ok(())
+}
+
+#[test]
+fn mount_registry_revision_cas_remount_and_incarnation_are_persisted() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "sys/mounts/team",
+        json!({"type":"kv","options":{"version":"2"},"cas_revision":0}),
+        100,
+    )?;
+    let created = request(&mut state, "", "GET", "sys/mounts/team", json!({}), 100)?;
+    assert_eq!(created.body["data"]["revision"], 1);
+    assert_eq!(created.body["data"]["incarnation"], 1);
+    request(
+        &mut state,
+        "",
+        "POST",
+        "team/data/app",
+        json!({"data":{"value":"kept"}}),
+        101,
+    )?;
+    request(
+        &mut state,
+        "",
+        "PUT",
+        "sys/mounts/team/tune",
+        json!({"description":"team-v2","cas_revision":1}),
+        102,
+    )?;
+    let tuned = request(&mut state, "", "GET", "sys/mounts/team", json!({}), 102)?;
+    assert_eq!(tuned.body["data"]["revision"], 2);
+    let before_stale = serde_json::to_vec(&state)?;
+    assert_eq!(
+        request(
+            &mut state,
+            "",
+            "PUT",
+            "sys/mounts/team/tune",
+            json!({"description":"stale","cas_revision":1}),
+            103,
+        )
+        .err()
+        .map(|error| error.status),
+        Some(409)
+    );
+    assert_eq!(before_stale, serde_json::to_vec(&state)?);
+    let moved = state.remount("", "team", "archive", Some(2))?;
+    assert_eq!(moved.body["data"]["revision"], 3);
+    assert!(
+        state
+            .handle("", "GET", "team/data/app", &json!({}), 104)?
+            .is_none()
+    );
+    let read = request(&mut state, "", "GET", "archive/data/app", json!({}), 104)?;
+    assert_eq!(read.body["data"]["data"]["value"], "kept");
+    let mut restored: EngineState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
+    let descriptor = request(
+        &mut restored,
+        "",
+        "GET",
+        "sys/mounts/archive",
+        json!({}),
+        105,
+    )?;
+    assert_eq!(descriptor.body["data"]["revision"], 3);
+    assert_eq!(descriptor.body["data"]["incarnation"], 1);
+    request(
+        &mut restored,
+        "",
+        "DELETE",
+        "sys/mounts/archive",
+        json!({"cas_revision":3}),
+        106,
+    )?;
+    request(
+        &mut restored,
+        "",
+        "POST",
+        "sys/mounts/archive",
+        json!({"type":"kv","options":{"version":"2"},"cas_revision":0}),
+        107,
+    )?;
+    let recreated = request(
+        &mut restored,
+        "",
+        "GET",
+        "sys/mounts/archive",
+        json!({}),
+        107,
+    )?;
+    assert_eq!(recreated.body["data"]["revision"], 1);
+    assert_eq!(recreated.body["data"]["incarnation"], 2);
+    assert_eq!(
+        restored
+            .handle("", "GET", "archive/data/app", &json!({}), 108)
+            .err()
+            .map(|error| error.status),
+        Some(404)
+    );
+    Ok(())
+}
+
+#[test]
+fn rabbitmq_mount_is_database_owned_but_preserves_its_public_type() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "sys/mounts/rabbitmq",
+        json!({"type":"rabbitmq"}),
+        100,
+    )?;
+    let descriptor = request(&mut state, "", "GET", "sys/mounts/rabbitmq", json!({}), 100)?;
+    assert_eq!(descriptor.body["data"]["type"], "rabbitmq");
+    assert_eq!(
+        state.database_mount("", "rabbitmq/config/local"),
+        Some("rabbitmq/")
+    );
+    assert!(state.has_database_mount());
+
+    let mut restored: EngineState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
+    assert_eq!(
+        restored.database_mount("", "rabbitmq/creds/reader"),
+        Some("rabbitmq/")
+    );
+    assert!(matches!(
+        restored
+            .handle("", "GET", "rabbitmq/config/local", &json!({}), 101)
+            .err()
+            .map(|error| error.status),
+        Some(501)
+    ));
+    Ok(())
+}
+
+#[test]
+fn kv_metadata_cas_is_independent_of_data_versions_and_survives_reopen() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/data/data-first",
+        json!({"data":{"v":1}}),
+        10,
+    )?;
+    let read = request(
+        &mut state,
+        "",
+        "GET",
+        "secret/metadata/data-first",
+        json!({}),
+        10,
+    )?;
+    assert_eq!(read.body["data"]["current_metadata_version"], 0);
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/metadata/data-first",
+        json!({"metadata_cas":0,"custom_metadata":{"owner":"first"}}),
+        11,
+    )?;
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/metadata/metadata-first",
+        json!({"metadata_cas":0,"metadata_cas_required":true,"custom_metadata":{"owner":"first"}}),
+        12,
+    )?;
+    let read = request(
+        &mut state,
+        "",
+        "GET",
+        "secret/metadata/metadata-first",
+        json!({}),
+        12,
+    )?;
+    assert_eq!(read.body["data"]["current_metadata_version"], 1);
+    assert_eq!(read.body["data"]["metadata_cas_required"], true);
+    assert_eq!(read.body["data"]["current_version"], 0);
+    let bytes = serde_json::to_vec(&state)?;
+    state = serde_json::from_slice(&bytes)?;
+    for body in [
+        json!({"custom_metadata":{"owner":"bad"}}),
+        json!({"metadata_cas":0,"custom_metadata":{"owner":"bad"}}),
+        json!({"metadata_cas":2,"custom_metadata":{"owner":"bad"}}),
+        json!({"metadata_cas":1,"cas_required":true,"custom_metadata":{"owner":42}}),
+    ] {
+        let before = serde_json::to_vec(&state)?;
+        assert_eq!(
+            request(
+                &mut state,
+                "",
+                "PATCH",
+                "secret/metadata/metadata-first",
+                body,
+                13
+            )
+            .err()
+            .ok_or("invalid metadata update")?
+            .status,
+            400
+        );
+        assert_eq!(serde_json::to_vec(&state)?, before);
+    }
+    request(
+        &mut state,
+        "",
+        "PATCH",
+        "secret/metadata/metadata-first",
+        json!({"metadata_cas":1,"custom_metadata":{"owner":null,"team":"second"}}),
+        14,
+    )?;
+    let read = request(
+        &mut state,
+        "",
+        "GET",
+        "secret/metadata/metadata-first",
+        json!({}),
+        14,
+    )?;
+    assert_eq!(read.body["data"]["current_metadata_version"], 2);
+    assert_eq!(
+        read.body["data"]["custom_metadata"],
+        json!({"team":"second"})
+    );
+    assert_eq!(read.body["data"]["updated_time"], json!(timestamp(14)));
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/data/metadata-first",
+        json!({"data":{"v":1}}),
+        15,
+    )?;
+    let read = request(
+        &mut state,
+        "",
+        "GET",
+        "secret/metadata/metadata-first",
+        json!({}),
+        15,
+    )?;
+    assert_eq!(read.body["data"]["current_metadata_version"], 2);
+    assert_eq!(read.body["data"]["current_version"], 1);
+    let before = serde_json::to_vec(&state)?;
+    for method in ["POST", "PATCH"] {
+        assert!(
+            !request(
+                &mut state,
+                "",
+                method,
+                "secret/metadata/metadata-first",
+                json!({"metadata_cas":123}),
+                20
+            )?
+            .mutated
+        );
+    }
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
+#[test]
+fn kv_metadata_cas_global_policy_and_legacy_state_defaults() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/data/legacy",
+        json!({"data":{"v":1}}),
+        10,
+    )?;
+    // Old snapshots omit both new fields at every config/entry nesting level.
+    fn remove_new_fields(value: &mut Value) {
+        if let Value::Object(map) = value {
+            map.remove("metadata_cas_required");
+            map.remove("current_metadata_version");
+            for child in map.values_mut() {
+                remove_new_fields(child);
+            }
+        }
+    }
+    let mut legacy = serde_json::to_value(&state)?;
+    remove_new_fields(&mut legacy);
+    let legacy_bytes = serde_json::to_vec(&legacy)?;
+    state = serde_json::from_value(legacy)?;
+    assert_eq!(
+        serde_json::to_vec(&serde_json::to_value(&state)?)?,
+        legacy_bytes
+    );
+    let read = request(
+        &mut state,
+        "",
+        "GET",
+        "secret/metadata/legacy",
+        json!({}),
+        10,
+    )?;
+    assert_eq!(read.body["data"]["current_metadata_version"], 0);
+    assert_eq!(read.body["data"]["metadata_cas_required"], false);
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/config",
+        json!({"metadata_cas_required":true}),
+        11,
+    )?;
+    let config = request(&mut state, "", "GET", "secret/config", json!({}), 11)?;
+    assert_eq!(config.body["data"]["metadata_cas_required"], true);
+    for body in [
+        json!({"custom_metadata":{"v":"no-cas"}}),
+        json!({"metadata_cas":1,"custom_metadata":{"v":"bad-cas"}}),
+    ] {
+        let before = serde_json::to_vec(&state)?;
+        assert_eq!(
+            request(&mut state, "", "POST", "secret/metadata/new", body, 12)
+                .err()
+                .ok_or("missing or invalid initial CAS")?
+                .status,
+            400
+        );
+        assert_eq!(serde_json::to_vec(&state)?, before);
+    }
+    request(
+        &mut state,
+        "",
+        "POST",
+        "secret/metadata/new",
+        json!({"metadata_cas":0,"custom_metadata":{"v":"ok"}}),
+        13,
+    )?;
+    let response = request(
+        &mut state,
+        "",
+        "PATCH",
+        "secret/metadata/new",
+        json!({"metadata_cas":1,"metadata_cas_required":false}),
+        14,
+    )?;
+    assert_eq!(response.status, 200);
+    assert_eq!(
+        response.body["warnings"],
+        json!([
+            "\"metadata_cas_required\" set to false, but is mandated by backend config. This value will be ignored."
+        ])
+    );
+    let before = serde_json::to_vec(&state)?;
+    assert_eq!(
+        request(
+            &mut state,
+            "",
+            "POST",
+            "secret/metadata/new",
+            json!({"custom_metadata":{"v":"still-required"}}),
+            15
+        )
+        .err()
+        .ok_or("global enforcement survives local false")?
+        .status,
+        400
+    );
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
+#[test]
+fn kv_enumeration_matches_openbao_directory_scan_and_signed_list_limits() -> TestResult {
+    let mut state = EngineState::default();
+    let paths = [
+        "a",
+        "a/one",
+        "a/deep/two",
+        "b",
+        "b/one",
+        "pure/leaf",
+        "é/leaf",
+    ];
+    for path in paths {
+        request(
+            &mut state,
+            "",
+            "POST",
+            &format!("secret/data/{path}"),
+            json!({"data":{"v":"synthetic"}}),
+            20,
+        )?;
+    }
+    let before = serde_json::to_vec(&state)?;
+    let shallow = json!(["a", "a/", "b", "b/", "pure/", "é/"]);
+    for limit in [
+        json!(0),
+        json!(-1),
+        json!(i64::MIN),
+        json!("-42"),
+        json!(""),
+    ] {
+        let result = request(
+            &mut state,
+            "",
+            "LIST",
+            "secret/metadata",
+            json!({"limit":limit}),
+            20,
+        )?;
+        assert_eq!(result.body["data"]["keys"], shallow);
+    }
+    let page = request(
+        &mut state,
+        "",
+        "LIST",
+        "secret/metadata",
+        json!({"limit":1,"after":"a"}),
+        20,
+    )?;
+    assert_eq!(page.body["data"]["keys"], json!(["a/"]));
+    let after = request(
+        &mut state,
+        "",
+        "LIST",
+        "secret/metadata",
+        json!({"limit":-1,"after":"a/"}),
+        20,
+    )?;
+    assert_eq!(
+        after.body["data"]["keys"],
+        json!(["b", "b/", "pure/", "é/"])
+    );
+    for limit in [
+        json!(u64::MAX),
+        json!("9223372036854775808"),
+        json!({"invalid":true}),
+    ] {
+        for method in ["LIST", "SCAN"] {
+            assert_eq!(
+                request(
+                    &mut state,
+                    "",
+                    method,
+                    "secret/metadata",
+                    json!({"limit":limit}),
+                    20
+                )
+                .err()
+                .ok_or("invalid limit admitted")?
+                .status,
+                400
+            );
+        }
+    }
+    let scan = request(
+        &mut state,
+        "",
+        "SCAN",
+        "secret/metadata",
+        json!({"after":"é/leaf","limit":1}),
+        20,
+    )?;
+    assert_eq!(
+        scan.body["data"]["keys"],
+        json!([
+            "a",
+            "b",
+            "é/leaf",
+            "pure/leaf",
+            "b/one",
+            "a/one",
+            "a/deep/two"
+        ])
+    );
+    let subtree = request(
+        &mut state,
+        "",
+        "SCAN",
+        "secret/metadata/a/",
+        json!({"after":"z","limit":-1}),
+        20,
+    )?;
+    assert_eq!(subtree.body["data"]["keys"], json!(["one", "deep/two"]));
+    let detailed = request(
+        &mut state,
+        "",
+        "LIST",
+        "secret/detailed-metadata",
+        json!({}),
+        20,
+    )?;
+    assert_eq!(detailed.body["data"]["keys"], shallow);
+    let info = detailed.body["data"]["key_info"]
+        .as_object()
+        .ok_or("missing key_info")?;
+    assert_eq!(info.len(), 6);
+    assert_eq!(info["a/"], info["a"]);
+    assert_eq!(info["b/"], info["b"]);
+    assert_eq!(info["pure/"], json!({}));
+    assert_eq!(info["é/"], json!({}));
+    let scan_info = request(
+        &mut state,
+        "",
+        "SCAN",
+        "secret/detailed-metadata",
+        json!({"after":"z","limit":1}),
+        20,
+    )?;
+    assert_eq!(scan_info.body["data"]["keys"], scan.body["data"]["keys"]);
+    assert_eq!(
+        scan_info.body["data"]["key_info"]
+            .as_object()
+            .ok_or("missing scan key_info")?
+            .len(),
+        paths.len()
+    );
+    for path in [
+        "secret/metadata/missing",
+        "secret/detailed-metadata/missing",
+    ] {
+        assert_eq!(
+            request(&mut state, "", "SCAN", path, json!({}), 20)?.body,
+            json!({"data":{}})
+        );
+        assert_eq!(
+            request(&mut state, "", "LIST", path, json!({}), 20)
+                .err()
+                .ok_or("empty list admitted")?
+                .status,
+            404
+        );
+    }
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
+#[test]
+fn kv_v1_enumeration_ignores_undeclared_pagination_fields() -> TestResult {
+    let mut state = EngineState::default();
+    request(
+        &mut state,
+        "",
+        "POST",
+        "sys/mounts/legacy",
+        json!({"type":"kv","options":{"version":"1"}}),
+        20,
+    )?;
+    for path in ["a", "a/child", "z", "z/child"] {
+        request(
+            &mut state,
+            "",
+            "POST",
+            &format!("legacy/{path}"),
+            json!({"v":"synthetic"}),
+            20,
+        )?;
+    }
+    for body in [
+        json!({"after":"z","limit":1}),
+        json!({"after":[],"limit":{}}),
+    ] {
+        let list = request(&mut state, "", "LIST", "legacy/", body.clone(), 20)?;
+        assert_eq!(list.body["data"]["keys"], json!(["a", "a/", "z", "z/"]));
+        let scan = request(&mut state, "", "SCAN", "legacy/", body, 20)?;
+        assert_eq!(
+            scan.body["data"]["keys"],
+            json!(["a", "z", "z/child", "a/child"])
+        );
+    }
+    assert_eq!(
+        request(&mut state, "", "SCAN", "legacy/missing", json!({}), 20)?.body,
+        json!({"data":{}})
+    );
+    assert_eq!(
+        request(&mut state, "", "LIST", "legacy/missing", json!({}), 20)
+            .err()
+            .ok_or("empty v1 list admitted")?
+            .status,
+        404
     );
     Ok(())
 }

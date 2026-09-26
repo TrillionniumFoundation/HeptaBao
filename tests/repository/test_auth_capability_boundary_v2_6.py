@@ -11,6 +11,7 @@ SERVER = ROOT / "crates" / "heptabao-server" / "src"
 LIB_RS = SERVER / "lib.rs"
 AUTH_RS = SERVER / "auth.rs"
 SERVICE_RS = SERVER / "service.rs"
+WORKFLOWS_RS = SERVER / "service_workflows.rs"
 BOUNDARY_DOC = ROOT / "docs" / "security" / "HEPTABAO_REQUEST_CAPABILITY_BOUNDARY_V1.md"
 
 
@@ -57,13 +58,64 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
         text = SERVICE_RS.read_text(encoding="utf-8")
         compact = re.sub(r"\s+", "", text)
         self.assertRegex(text, r"principal:\s*Option<Principal>")
-        self.assertRegex(text, r"Self::dispatch\(\s*&mut admitted,\s*principal,")
+        self.assertRegex(text, r"Self::dispatch\(\s*&mut transaction,\s*principal,")
         self.assertNotRegex(
             text,
-            r"Self::dispatch\(\s*&mut admitted,\s*principal\.as_ref\(\)",
+            r"Self::dispatch\(\s*&mut transaction,\s*principal\.as_ref\(\)",
         )
-        self.assertEqual(3, compact.count(".authorize_request("))
+        self.assertIn("letmuttransaction=admitted;", compact)
+        self.assertIn("letwrapping_rollback=wrap_ttl_seconds.map(|_|admitted.clone());", compact)
+        dispatch_start = compact.index("letwrapping_rollback=wrap_ttl_seconds.map(|_|admitted.clone());")
+        dispatch_end = compact.index("if admitted.engines.record_root().is_some()".replace(" ", ""), dispatch_start)
+        dispatch_block = compact[dispatch_start:dispatch_end]
+        self.assertEqual(1, dispatch_block.count("admitted.clone()"))
+        self.assertEqual(1, len(re.findall(r"Self::dispatch\(", text)))
+        workflows = WORKFLOWS_RS.read_text(encoding="utf-8")
+        self.assertRegex(
+            text,
+            r"fn dispatch_authorized_subrequest\(\s*state:\s*&mut State,\s*principal:\s*Option<&Principal>",
+        )
+        self.assertEqual(
+            2,
+            len(
+                re.findall(
+                    r"Self::dispatch_authorized_subrequest\(",
+                    text + "\n" + workflows,
+                )
+            ),
+        )
+        self.assertEqual(
+            1,
+            len(re.findall(r"Self::dispatch_authorized_subrequest\(", workflows)),
+        )
+        self.assertGreaterEqual(compact.count(".authorize_request("), 3)
         self.assertIn(",now)", compact)
+
+    def test_wrapping_request_envelope_does_not_carry_authority(self) -> None:
+        text = SERVICE_RS.read_text(encoding="utf-8")
+        match = re.search(r"pub struct ServiceRequest<'a> \{(.*?)\n\}", text, re.S)
+        self.assertIsNotNone(match)
+        fields = set(re.findall(r"pub (\w+):", match.group(1)))
+        self.assertEqual(
+            fields,
+            {
+                "method",
+                "path",
+                "namespace",
+                "token",
+                "body",
+                "wrap_ttl_seconds",
+                "origin_peer",
+            },
+        )
+        # A verified TLS chain is transport evidence for certificate auth; it
+        # is never an authenticated Principal or an authorization decision. It
+        # is crate-private so external callers cannot inject an unverified
+        # chain through the public ServiceRequest literal.
+        self.assertIn("pub(crate) client_certificates", match.group(1))
+        self.assertNotIn("Principal", match.group(1))
+        self.assertNotIn("AuthState", match.group(1))
+        self.assertNotRegex(text, r"#\[derive\([^]]*(?:Clone|Debug)[^]]*\)\]\s*pub struct ServiceRequest")
 
     def test_request_capability_has_one_documented_owner(self) -> None:
         self.assertTrue(BOUNDARY_DOC.is_file())

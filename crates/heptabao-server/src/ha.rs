@@ -4,19 +4,20 @@ use std::fs::OpenOptions;
 use std::io::{BufReader, Read};
 use std::net::{SocketAddr, TcpListener};
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use futures::future::BoxFuture;
 use heptabao_ha_service::{
-    MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, TlsPeerEndpoint,
-    serve_one_mtls_peer_frame,
+    MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap, RAFT_ALPN_PROTOCOL,
+    TlsPeerEndpoint, serve_one_mtls_peer_frame,
 };
 use heptabao_raft_runtime::{
-    CommitReceipt, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RemoteNetworkFactory,
-    RemoteRaftError, ReplicatedEnvelope,
+    CommitReceipt, MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind,
+    RemoteNetworkFactory, RemoteRaftError, ReplicatedEnvelope,
 };
 use ring::digest;
 use rustls::pki_types::{CertificateDer, PrivateKeyDer};
@@ -30,19 +31,37 @@ use zeroize::Zeroizing;
 use crate::{
     Response,
     ha_forward::{
-        ForwardRequest, decode_request as decode_forward_request,
-        decode_response as decode_forward_response, encode_request as encode_forward_request,
-        encode_response as encode_forward_response, is_forward_request,
+        ForwardRequest, decode_legacy_response_for_transition,
+        decode_request_for_cluster_compatible as decode_forward_request,
+        decode_response_for_cluster as decode_forward_response,
+        encode_legacy_request_for_transition, encode_legacy_response_for_transition,
+        encode_request_for_cluster as encode_forward_request,
+        encode_response_for_cluster as encode_forward_response, encode_wrapped_request_for_cluster,
+        is_forward_request,
     },
-    ha_state::ClusterStateCodec,
+    ha_state::{
+        ClusterStateCodec, CommittedStateDescriptor, MAX_REPLICATED_STATE_CHUNKS,
+        REPLICATED_STATE_CHUNK_BYTES, ReplicatedChunkRef, ReplicatedStateManifest,
+    },
+    service::OwnerPublicationBinding,
 };
+
+#[path = "ha_record_runtime.rs"]
+mod records;
+pub(crate) use records::{CommittedRecordState, RecordPublicationPreflightError};
 
 const RAFT_FRAME_MAGIC: &[u8; 5] = b"HBRT1";
 const RAFT_FRAME_REQUEST: u8 = 1;
 const RAFT_FRAME_RESPONSE: u8 = 2;
+const RAFT_FRAME_HEADER_BYTES: usize = 29;
+const LEGACY_RAFT_FRAME_HEADER_BYTES: usize = 27;
+const MAX_CLUSTER_ID_BYTES: usize = 128;
 const MAX_RAFT_FRAME_BYTES: usize = 896 * 1024;
 const MAX_TLS_FILE_BYTES: usize = 1024 * 1024;
 const REPLICATION_KEY_BYTES: usize = 32;
+const REPLICATED_CHUNK_MIN_BYTES: usize = 192 * 1024;
+const REPLICATED_CHUNK_WINDOW_BYTES: usize = 64;
+const REPLICATED_CHUNK_MASK: u64 = (1_u64 << 18) - 1;
 
 type MutualTlsConfigs = (Arc<ClientConfig>, Arc<ServerConfig>, [u8; 32]);
 pub(crate) type ForwardHandler = Arc<dyn Fn(ForwardRequest) -> Response + Send + Sync>;
@@ -52,8 +71,16 @@ pub(crate) type ForwardHandler = Arc<dyn Fn(ForwardRequest) -> Response + Send +
 pub struct HaPeerConfig {
     pub node_name: String,
     pub address: SocketAddr,
+    /// Deployment-advertised HTTPS API origin; never inferred from the Raft socket.
+    #[serde(default)]
+    pub api_address: Option<String>,
     pub server_name: String,
     pub certificate_sha256: String,
+    /// Optional overlap pin for bounded leaf-certificate rotation. During a
+    /// rollout peers accept either digest for the same enrolled node identity;
+    /// remove the old pin after every node has moved to the new certificate.
+    #[serde(default)]
+    pub certificate_sha256_next: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -70,14 +97,40 @@ pub struct HaProcessConfig {
     pub peers: BTreeMap<u64, HaPeerConfig>,
     #[serde(default)]
     pub bootstrap: bool,
+    /// Initial voters may be a subset of the statically enrolled peer registry.
+    #[serde(default)]
+    pub initial_voters: Option<BTreeSet<u64>>,
     #[serde(default = "default_peer_timeout_ms")]
     pub peer_timeout_ms: u64,
+    #[serde(default = "default_forward_timeout_ms")]
+    pub forward_timeout_ms: u64,
     #[serde(default = "default_max_inflight")]
     pub max_inflight: usize,
+    /// Explicit, temporary one-step rolling compatibility for the pre-cluster-
+    /// bound HBFQ1/HBFS1 forwarding wire and the pre-cluster-bound HBRT1
+    /// consensus wire. Defaults closed and is refused for a fresh Raft state.
+    #[serde(default)]
+    pub allow_legacy_peer_v1: bool,
+    /// Omission preserves the old bridge's outbound behavior. After every
+    /// voter is upgraded, set false on all nodes while receivers stay dual-
+    /// format; only then retire allow_legacy_peer_v1 by rolling restart.
+    #[serde(default)]
+    pub emit_legacy_peer_v1: Option<bool>,
+}
+
+impl HaProcessConfig {
+    fn outbound_legacy_peer_v1(&self) -> bool {
+        self.emit_legacy_peer_v1
+            .unwrap_or(self.allow_legacy_peer_v1)
+    }
 }
 
 fn default_peer_timeout_ms() -> u64 {
     750
+}
+
+fn default_forward_timeout_ms() -> u64 {
+    15_000
 }
 
 fn default_max_inflight() -> usize {
@@ -89,14 +142,18 @@ struct ParsedPeer {
     node: NodeId,
     endpoint: TlsPeerEndpoint,
     certificate_sha256: [u8; 32],
+    certificate_sha256_next: Option<[u8; 32]>,
+    api_address: Option<String>,
 }
 
 #[derive(Clone)]
 struct MutualTlsRaftRpc {
     local_id: u64,
+    cluster_id: String,
     peers: Arc<BTreeMap<u64, NodeId>>,
     transport: MutualTlsPeerTransport,
     inflight: Arc<Semaphore>,
+    emit_legacy_peer_v1: bool,
 }
 
 impl fmt::Debug for MutualTlsRaftRpc {
@@ -104,8 +161,10 @@ impl fmt::Debug for MutualTlsRaftRpc {
         formatter
             .debug_struct("MutualTlsRaftRpc")
             .field("local_id", &self.local_id)
+            .field("cluster_id", &self.cluster_id)
             .field("peers", &self.peers.keys().collect::<Vec<_>>())
             .field("transport", &"[MUTUAL_TLS]")
+            .field("emit_legacy_peer_v1", &self.emit_legacy_peer_v1)
             .finish()
     }
 }
@@ -120,21 +179,30 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
         timeout: Duration,
     ) -> BoxFuture<'static, Result<Vec<u8>, RemoteRaftError>> {
         let local_id = self.local_id;
+        let cluster_id = self.cluster_id.clone();
         let target_node = self.peers.get(&target).cloned();
         let transport = self.transport.clone();
         let inflight = self.inflight.clone();
+        let emit_legacy_peer_v1 = self.emit_legacy_peer_v1;
         Box::pin(async move {
             if source != local_id || source == target || timeout.is_zero() {
                 return Err(RemoteRaftError::InvalidRpc);
             }
             let target_node = target_node.ok_or(RemoteRaftError::InvalidTopology)?;
-            let request = encode_raft_frame(RaftWireFrame {
+            let request_frame = RaftWireFrame {
+                cluster_id: cluster_id.clone(),
                 role: RAFT_FRAME_REQUEST,
                 source,
                 target,
                 kind,
                 payload,
-            })?;
+                legacy_v1: emit_legacy_peer_v1,
+            };
+            let request = if emit_legacy_peer_v1 {
+                encode_legacy_raft_frame_for_transition(request_frame)?
+            } else {
+                encode_raft_frame(request_frame)?
+            };
             let permit = tokio::time::timeout(timeout, inflight.acquire_owned())
                 .await
                 .map_err(|_| RemoteRaftError::Transport("peer RPC admission timed out".into()))?
@@ -149,11 +217,16 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
                 .await
                 .map_err(|_| RemoteRaftError::Transport("peer RPC timed out".into()))?
                 .map_err(|error| RemoteRaftError::Transport(error.to_string()))??;
-            let response = decode_raft_frame(&response)?;
+            let response = decode_raft_frame_for_cluster_compatible(
+                &response,
+                &cluster_id,
+                emit_legacy_peer_v1,
+            )?;
             if response.role != RAFT_FRAME_RESPONSE
                 || response.source != target
                 || response.target != source
                 || response.kind != kind
+                || response.legacy_v1 != emit_legacy_peer_v1
             {
                 return Err(RemoteRaftError::InvalidRpc);
             }
@@ -164,11 +237,13 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
 
 #[derive(Debug)]
 struct RaftWireFrame {
+    cluster_id: String,
     role: u8,
     source: u64,
     target: u64,
     kind: RaftRpcKind,
     payload: Vec<u8>,
+    legacy_v1: bool,
 }
 
 // Fixed workers bound inbound TLS memory and keep a forwarded client request
@@ -187,18 +262,48 @@ impl Drop for PeerListener {
     }
 }
 
+/// Opaque evidence issued only after complete chunk authentication and hashing.
+/// It is process-local, contains no plaintext state and is never serialized.
+#[derive(Clone)]
+pub(crate) struct ValidatedReadCursor {
+    records_v5: bool,
+    generation: u64,
+    envelope_identity: [u8; 32],
+}
+
+pub(crate) enum CommittedStateRead {
+    Absent,
+    Unchanged,
+    Materialized(CommittedApplicationState),
+    Records(Box<CommittedRecordState>),
+}
+
 pub(crate) struct CommittedApplicationState {
     pub digest: [u8; 32],
     pub bytes: Zeroizing<Vec<u8>>,
+    /// True only for the pre-manifest HBSR1 whole-state envelope.  HBSM2-
+    /// HBSM4 are all manifest-backed, even when older manifests do not carry
+    /// owner publication metadata, so callers must not infer this from the
+    /// optional owner fields.
+    pub legacy_whole_state: bool,
+    pub read_cursor: Option<ValidatedReadCursor>,
+    pub owner_manifest_digest: Option<[u8; 32]>,
+    pub changed_owner_mask: Option<u8>,
 }
 
 pub struct HaProcess {
+    record_commits_since_gc: AtomicU64,
+    bootstrap_ready: AtomicBool,
+    bootstrap_voters: Option<BTreeSet<u64>>,
     runtime: Runtime,
     node: Option<ProcessRaftNode>,
     codec: ClusterStateCodec,
     cluster_id: String,
     peers: Arc<BTreeMap<u64, NodeId>>,
+    api_addresses: BTreeMap<u64, String>,
     forward_transport: MutualTlsPeerTransport,
+    forward_timeout: Duration,
+    emit_legacy_peer_v1: bool,
     forward_handler: Arc<Mutex<Option<ForwardHandler>>>,
     listener: Option<PeerListener>,
 }
@@ -221,6 +326,14 @@ impl HaProcess {
         let codec = ClusterStateCodec::new(config.cluster_id.clone(), replication_key)
             .map_err(|error| error.to_string())?;
         let parsed_peers = parse_peers(&config)?;
+        let api_addresses = parsed_peers
+            .iter()
+            .filter_map(|peer| {
+                peer.api_address
+                    .as_ref()
+                    .map(|address| (peer.id, address.clone()))
+            })
+            .collect();
         let peer_ids = parsed_peers
             .iter()
             .map(|peer| peer.id)
@@ -241,7 +354,12 @@ impl HaProcess {
         let pinned = parsed_peers
             .iter()
             .filter(|peer| peer.id != config.node_id)
-            .map(|peer| (peer.certificate_sha256, peer.node.clone()))
+            .flat_map(|peer| {
+                std::iter::once((peer.certificate_sha256, peer.node.clone())).chain(
+                    peer.certificate_sha256_next
+                        .map(|digest| (digest, peer.node.clone())),
+                )
+            })
             .collect::<BTreeMap<_, _>>();
         let timeout = Duration::from_millis(config.peer_timeout_ms);
         let (client_tls, server_tls, local_leaf_digest) = build_mutual_tls(&config)?;
@@ -249,17 +367,25 @@ impl HaProcess {
             .iter()
             .find(|peer| peer.id == config.node_id)
             .ok_or_else(|| "HA local node is missing from peer registry".to_owned())?;
-        if local.certificate_sha256 != local_leaf_digest {
+        if local.certificate_sha256 != local_leaf_digest
+            && local.certificate_sha256_next != Some(local_leaf_digest)
+        {
             return Err("HA local certificate digest does not match peer registry".into());
         }
+        let forward_timeout = Duration::from_millis(config.forward_timeout_ms);
+        let forward_transport =
+            MutualTlsPeerTransport::new(endpoint_map.clone(), client_tls.clone(), forward_timeout)
+                .map_err(|error| error.to_string())?;
         let transport = MutualTlsPeerTransport::new(endpoint_map, client_tls, timeout)
             .map_err(|error| error.to_string())?;
         let peers = Arc::new(nodes_by_id);
         let rpc = Arc::new(MutualTlsRaftRpc {
             local_id: config.node_id,
+            cluster_id: config.cluster_id.clone(),
             peers: peers.clone(),
             transport: transport.clone(),
             inflight: Arc::new(Semaphore::new(config.max_inflight)),
+            emit_legacy_peer_v1: config.outbound_legacy_peer_v1(),
         });
         let network = RemoteNetworkFactory::new(config.node_id, peer_ids.clone(), rpc)
             .map_err(|error| error.to_string())?;
@@ -269,6 +395,13 @@ impl HaProcess {
             .build()
             .map_err(|error| error.to_string())?;
         let existing = durable_state_exists(&config.raft_dir)?;
+        if config.allow_legacy_peer_v1 && !existing {
+            return Err(
+                "legacy HA peer-wire transition requires existing durable Raft state".into(),
+            );
+        }
+        let allow_legacy_peer_v1 = config.allow_legacy_peer_v1;
+        let emit_legacy_peer_v1 = config.outbound_legacy_peer_v1();
         let node = if existing {
             runtime
                 .block_on(ProcessRaftNode::reopen(
@@ -305,6 +438,7 @@ impl HaProcess {
             workers: Vec::new(),
         };
         let local_id = config.node_id;
+        let cluster_id = config.cluster_id.clone();
         for worker_id in 0..config.max_inflight.clamp(4, 16) {
             let listener_stop = stop.clone();
             let listener = listener.clone();
@@ -315,6 +449,8 @@ impl HaProcess {
             let runtime_handle = runtime.handle().clone();
             let listener_forward_handler = forward_handler.clone();
             let forward_slots = forward_slots.clone();
+            let listener_cluster_id = cluster_id.clone();
+            let listener_allow_legacy_peer_v1 = allow_legacy_peer_v1;
             let worker = thread::Builder::new()
                 .name(format!("heptabao-raft-peer-{local_id}-{worker_id}"))
                 .spawn(move || {
@@ -327,18 +463,24 @@ impl HaProcess {
                             server_tls.clone(),
                             &identities,
                             timeout,
+                            listener_allow_legacy_peer_v1,
                             |peer, frame| {
                                 let source = *ids
                                     .get(&peer)
                                     .ok_or(heptabao_ha_service::HaError::UnknownPeer)?;
                                 if is_forward_request(&frame) {
-                                    let request = decode_forward_request(&frame)
-                                        .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+                                    let request = decode_forward_request(
+                                        &frame,
+                                        &listener_cluster_id,
+                                        listener_allow_legacy_peer_v1,
+                                    )
+                                    .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
                                     if request.source != source || request.target != local_id {
                                         return Err(
                                             heptabao_ha_service::HaError::PeerAuthenticationFailed,
                                         );
                                     }
+                                    let legacy_v1 = request.legacy_v1;
                                     // At most one forward may await the public service mutex.
                                     // The remaining workers stay available to consensus traffic.
                                     let _forward_slot =
@@ -351,16 +493,30 @@ impl HaProcess {
                                         .clone()
                                         .ok_or(heptabao_ha_service::HaError::NotLeader)?;
                                     let response = handler(request);
-                                    return encode_forward_response(
-                                        local_id,
-                                        source,
-                                        response.status,
-                                        &response.body,
-                                    )
+                                    return if legacy_v1 {
+                                        encode_legacy_response_for_transition(
+                                            local_id,
+                                            source,
+                                            response.status,
+                                            &response.body,
+                                        )
+                                    } else {
+                                        encode_forward_response(
+                                            &listener_cluster_id,
+                                            local_id,
+                                            source,
+                                            response.status,
+                                            &response.body,
+                                        )
+                                    }
                                     .map_err(|_| heptabao_ha_service::HaError::InvalidFrame);
                                 }
-                                let request = decode_raft_frame(&frame)
-                                    .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
+                                let request = decode_raft_frame_for_cluster_compatible(
+                                    &frame,
+                                    &listener_cluster_id,
+                                    listener_allow_legacy_peer_v1,
+                                )
+                                .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
                                 if request.role != RAFT_FRAME_REQUEST
                                     || request.source != source
                                     || request.target != local_id
@@ -369,16 +525,24 @@ impl HaProcess {
                                         heptabao_ha_service::HaError::PeerAuthenticationFailed,
                                     );
                                 }
+                                let legacy_v1 = request.legacy_v1;
                                 let payload = handle
                                     .block_on(service.handle(source, request.kind, request.payload))
                                     .map_err(map_remote_service_error)?;
-                                encode_raft_frame(RaftWireFrame {
+                                let response = RaftWireFrame {
+                                    cluster_id: listener_cluster_id.clone(),
                                     role: RAFT_FRAME_RESPONSE,
                                     source: local_id,
                                     target: source,
                                     kind: request.kind,
                                     payload,
-                                })
+                                    legacy_v1,
+                                };
+                                if legacy_v1 {
+                                    encode_legacy_raft_frame_for_transition(response)
+                                } else {
+                                    encode_raft_frame(response)
+                                }
                                 .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)
                             },
                         );
@@ -391,45 +555,59 @@ impl HaProcess {
             listener_pool.workers.push(worker);
         }
 
-        if !existing && config.bootstrap {
-            runtime
-                .block_on(node.initialize_single())
-                .map_err(|error| error.to_string())?;
-            runtime.block_on(async {
-                let deadline = tokio::time::Instant::now() + Duration::from_secs(5);
-                loop {
-                    if node.current_leader().await == Some(config.node_id) {
-                        break Ok::<(), String>(());
-                    }
-                    if tokio::time::Instant::now() >= deadline {
-                        break Err(
-                            "HA bootstrap did not elect the local node before membership expansion"
-                                .into(),
-                        );
-                    }
-                    tokio::time::sleep(Duration::from_millis(20)).await;
-                }
-            })?;
-            for peer_id in peer_ids.iter().copied().filter(|id| *id != config.node_id) {
-                runtime
-                    .block_on(node.add_learner(peer_id))
-                    .map_err(|error| error.to_string())?;
-            }
-            runtime
-                .block_on(node.change_membership(peer_ids))
-                .map_err(|error| error.to_string())?;
-        }
+        let bootstrap_voters = config
+            .bootstrap
+            .then(|| config.initial_voters.clone().unwrap_or(peer_ids.clone()));
+        let bootstrap_ready = bootstrap_voters.as_ref().is_none_or(|voters| {
+            reconcile_bootstrap_membership(&runtime, &node, !existing, config.node_id, voters)
+        });
 
         Ok(Self {
+            record_commits_since_gc: AtomicU64::new(0),
+            bootstrap_ready: AtomicBool::new(bootstrap_ready),
+            bootstrap_voters,
             runtime,
             node: Some(node),
             codec,
             cluster_id: config.cluster_id,
             peers,
-            forward_transport: transport,
+            api_addresses,
+            forward_transport,
+            forward_timeout,
+            emit_legacy_peer_v1,
             forward_handler,
             listener: Some(listener_pool),
         })
+    }
+
+    pub(crate) fn forward_timeout(&self) -> Duration {
+        self.forward_timeout
+    }
+
+    /// Bootstrap admission is separate from listener/process startup. A
+    /// committed learner may still be catching up, and a lost bootstrap
+    /// leader leaves the process safely fenced until a later restart retries
+    /// reconciliation. No health or request path treats that partial state as
+    /// an active authority.
+    pub(crate) fn bootstrap_ready(&self) -> bool {
+        if self.bootstrap_ready.load(Ordering::Acquire) {
+            return true;
+        }
+        let Some(expected) = self.bootstrap_voters.as_ref() else {
+            return false;
+        };
+        let ready = self
+            .node
+            .as_ref()
+            .and_then(|node| self.runtime.block_on(node.membership_observation()).ok())
+            .is_some_and(|observed| bootstrap_membership_complete(expected, &observed));
+        if ready {
+            // Bootstrap is a one-way historical admission. Later topology
+            // changes have their own guarded protocol; they must not reopen a
+            // completed startup fence or depend on transient leadership.
+            self.bootstrap_ready.store(true, Ordering::Release);
+        }
+        ready
     }
 
     pub(crate) fn register_forward_handler(
@@ -447,6 +625,9 @@ impl HaProcess {
         Ok(())
     }
 
+    // Forwarding preserves the existing wire tuple plus the verified client
+    // chain; keep fields explicit so no identity is silently omitted.
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn forward_request(
         &self,
         method: &str,
@@ -454,7 +635,13 @@ impl HaProcess {
         namespace: &str,
         token: &str,
         body: &serde_json::Value,
+        wrap_ttl_seconds: Option<u64>,
+        origin_peer: Option<std::net::IpAddr>,
+        client_certificates: Option<&[Vec<u8>]>,
+        caller_deadline: Option<Instant>,
     ) -> Result<Response, String> {
+        let deadline = Instant::now() + self.forward_timeout;
+        let deadline = caller_deadline.map_or(deadline, |caller| caller.min(deadline));
         let local = self.local_id()?;
         let leader = self
             .leader()?
@@ -466,15 +653,75 @@ impl HaProcess {
             .peers
             .get(&leader)
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
-        let request = encode_forward_request(local, leader, method, path, namespace, token, body)?;
+        let legacy_v1 = self.emit_legacy_peer_v1;
+        let request = Zeroizing::new(if legacy_v1 {
+            // HBFQ1 predates trusted origin and client-certificate forwarding.
+            // Omit those optional contexts only for the bounded transition: the
+            // legacy leader fails closed when authorization actually requires
+            // source or certificate identity. Response wrapping is different:
+            // omitting it could release plaintext, so it remains unsupported.
+            if wrap_ttl_seconds.is_some() {
+                return Err(
+                    "legacy HA forwarding transition cannot carry response wrapping".into(),
+                );
+            }
+            encode_legacy_request_for_transition(
+                local, leader, method, path, namespace, token, body,
+            )?
+        } else if let Some(peer) = origin_peer {
+            crate::ha_forward::encode_peer_request_for_cluster(
+                &self.cluster_id,
+                (local, leader),
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                wrap_ttl_seconds,
+                client_certificates,
+                peer,
+            )?
+        } else {
+            match wrap_ttl_seconds {
+                Some(ttl) => encode_wrapped_request_for_cluster(
+                    &self.cluster_id,
+                    (local, leader),
+                    method,
+                    path,
+                    namespace,
+                    token,
+                    body,
+                    ttl,
+                    client_certificates,
+                )?,
+                None => encode_forward_request(
+                    &self.cluster_id,
+                    local,
+                    leader,
+                    method,
+                    path,
+                    namespace,
+                    token,
+                    body,
+                    client_certificates,
+                )?,
+            }
+        });
         let response = zeroize::Zeroizing::new(
             self.forward_transport
-                .exchange(target, &request)
+                .exchange_before(target, &request, deadline)
                 .map_err(|error| error.to_string())?,
         );
-        let mut response = decode_forward_response(&response)?;
+        let mut response = if legacy_v1 {
+            decode_legacy_response_for_transition(&response, &self.cluster_id)?
+        } else {
+            decode_forward_response(&response, &self.cluster_id)?
+        };
         if response.source != leader || response.target != local {
             return Err("HA forward response direction is invalid".into());
+        }
+        if Instant::now() >= deadline {
+            return Err("HA forwarding deadline exceeded; outcome may be committed".into());
         }
         Ok(Response {
             status: response.status,
@@ -493,6 +740,10 @@ impl HaProcess {
         &self.cluster_id
     }
 
+    pub(crate) fn api_address(&self, node_id: u64) -> Option<&str> {
+        self.api_addresses.get(&node_id).map(String::as_str)
+    }
+
     pub fn leader(&self) -> Result<Option<u64>, String> {
         let node = self
             .node
@@ -506,14 +757,154 @@ impl HaProcess {
         Ok(self.leader()? == Some(local_id))
     }
 
+    /// Transfer leadership to another configured voter and wait until this node
+    /// observes a different leader. A failed/unreachable target is tried once
+    /// before the next configured peer; no client mutation is retried here.
+    pub fn step_down(&self) -> Result<u64, String> {
+        let node = self
+            .node
+            .as_ref()
+            .ok_or_else(|| "HA process is shut down".to_owned())?;
+        let local = node.id();
+        if self.runtime.block_on(node.current_leader()) != Some(local) {
+            return Err("HA step-down requires the current leader".into());
+        }
+        let membership = self
+            .runtime
+            .block_on(node.membership_observation())
+            .map_err(|_| "membership unavailable")?;
+        let targets: Vec<u64> = membership
+            .voters
+            .iter()
+            .copied()
+            .filter(|id| *id != local)
+            .collect();
+        if targets.is_empty() {
+            return Err("HA cluster has no alternate voter".into());
+        }
+        self.runtime.block_on(async {
+            for target in targets {
+                if node.transfer_leadership(target).await.is_err() {
+                    continue;
+                }
+                let deadline = tokio::time::Instant::now() + Duration::from_secs(3);
+                loop {
+                    if let Some(leader) = node.current_leader().await
+                        && leader != local
+                    {
+                        return Ok(leader);
+                    }
+                    if tokio::time::Instant::now() >= deadline {
+                        break;
+                    }
+                    tokio::time::sleep(Duration::from_millis(25)).await;
+                }
+            }
+            Err("HA leadership transfer did not complete".into())
+        })
+    }
+
+    pub fn enrolled(&self, id: u64) -> bool {
+        self.peers.contains_key(&id)
+    }
+    pub fn membership(&self) -> Result<heptabao_raft_runtime::MembershipObservation, String> {
+        let node = self.node.as_ref().ok_or("HA stopped")?;
+        self.ensure_linearizable()?;
+        self.runtime
+            .block_on(node.membership_observation())
+            .map_err(|_| "membership observation failed".into())
+    }
+    pub fn modify_membership(
+        &self,
+        index: u64,
+        id: u64,
+        operation: &str,
+    ) -> Result<heptabao_raft_runtime::MembershipObservation, String> {
+        if !self.enrolled(id) {
+            return Err("peer is not host-enrolled".into());
+        }
+        let node = self.node.as_ref().ok_or("HA stopped")?;
+        self.block_on_read(node.change_membership_guarded(index, id, operation))
+            .map_err(|_| "membership operation requires reconciliation".into())
+    }
+    pub fn observed_snapshot(&self) -> Result<heptabao_raft_runtime::SnapshotObservation, String> {
+        let node = self.node.as_ref().ok_or("HA stopped")?;
+        self.block_on_read(node.snapshot_observed())
+            .map_err(|_| "snapshot completion unobserved".into())
+    }
+
+    // Capture the synchronous request scope before entering Tokio. A task-local
+    // copy reaches nested admin ReadIndex calls and cannot leak to Raft workers.
+    // This does not timeout or cancel the surrounding mutation/maintenance.
+    fn block_on_read<F: std::future::Future>(&self, operation: F) -> F::Output {
+        match crate::request_deadline::current() {
+            Some(deadline) => {
+                self.runtime
+                    .block_on(heptabao_raft_runtime::with_read_index_deadline(
+                        deadline, operation,
+                    ))
+            }
+            None => self.runtime.block_on(operation),
+        }
+    }
+
     pub fn ensure_linearizable(&self) -> Result<(), String> {
         let node = self
             .node
             .as_ref()
             .ok_or_else(|| "HA process is shut down".to_owned())?;
-        self.runtime
-            .block_on(node.ensure_linearizable())
+        self.block_on_read(node.ensure_linearizable())
             .map_err(|error| error.to_string())
+    }
+
+    /// Prove that the local process is observing the committed application
+    /// generation identified by the typed `expected` identity.
+    ///
+    /// A successful ReadIndex only proves quorum authority; it does not prove
+    /// that this process has applied the same application state after a
+    /// restart, snapshot install, or leadership transfer.  Health and request
+    /// admission use this stronger fence so a node cannot report an active
+    /// authority while serving a stale local state image.
+    pub(crate) fn ensure_application_identity(
+        &self,
+        expected: crate::state_record_root::StateIdentity,
+    ) -> Result<(), String> {
+        use crate::state_record_root::StateIdentity;
+        if expected.digest() == [0; 32] {
+            return Err("HA application identity is not initialized".into());
+        }
+        // This performs ReadIndex and authenticates the typed root, including
+        // its base and public references. A published V5 root never falls back
+        // to a retired legacy client, even if the raw digest happens to match.
+        if let Some(committed) = self.read_record_root_if_present(None)? {
+            return match committed {
+                CommittedStateRead::Records(record) if record.identity == expected => Ok(()),
+                _ => Err("HA application state is not converged on the committed identity".into()),
+            };
+        }
+        let StateIdentity::Legacy(expected_digest) = expected else {
+            return Err("HA record root has not been committed".into());
+        };
+        let node = self.node.as_ref().ok_or("HA process is shut down")?;
+        let committed = self
+            .runtime
+            .block_on(node.latest_envelope())
+            .map_err(|error| error.to_string())?
+            .ok_or("HA application state has not been committed")?;
+        let descriptor = self
+            .codec
+            .open_committed_descriptor(
+                committed.operation_id(),
+                committed.digest(),
+                committed.sealed(),
+            )
+            .map_err(|error| error.to_string())?;
+        if committed.digest() != expected_digest
+            || matches!(descriptor, CommittedStateDescriptor::RecordsV5(_))
+        {
+            return Err("HA application state is not converged on the committed identity".into());
+        }
+        Ok(())
     }
 
     pub fn trigger_snapshot(&self) -> Result<(), String> {
@@ -521,20 +912,84 @@ impl HaProcess {
             .node
             .as_ref()
             .ok_or_else(|| "HA process is shut down".to_owned())?;
-        self.runtime
-            .block_on(node.trigger_snapshot())
+        self.block_on_read(node.snapshot_observed())
+            .map(|_| ())
             .map_err(|error| error.to_string())
     }
 
-    /// Replicate one complete next application state. The caller supplies the
-    /// digest of the exact local state used to derive it. A leader refuses to
-    /// commit if Raft already contains a different current application digest.
+    /// Replicate the next authoritative application state with a manifest as
+    /// the sole publication point. HBSM3 separates logical chunk order from the
+    /// bounded physical Raft chunk index so content-defined boundaries can reuse
+    /// authenticated chunks after insertions/deletions instead of shifting every
+    /// later fixed chunk. HBSM4 additionally carries the authenticated local
+    /// owner-plan digest and changed-owner mask, so the record-oriented local
+    /// delta cannot be replaced by an opaque whole-state fallback at the HA
+    /// boundary. New chunks are staged into an unreferenced index/slot; the
+    /// production manifest remains the only publication point.
+    pub(crate) fn commit_state_with_owner_binding(
+        &self,
+        operation_id: &str,
+        expected_base_digest: [u8; 32],
+        bytes: &[u8],
+        binding: OwnerPublicationBinding,
+    ) -> Result<CommitReceipt, String> {
+        validate_owner_binding(operation_id, bytes, binding)?;
+        self.commit_state_inner(
+            operation_id,
+            expected_base_digest,
+            bytes,
+            Some((
+                binding.owner_manifest_digest(),
+                binding.changed_owner_mask(),
+            )),
+            false,
+        )
+    }
+
+    /// Explicitly promote an HBSR1 whole-state envelope to an owner-bound
+    /// HBSM4 manifest.  This is intentionally separate from ordinary state
+    /// mutation: the latter must remain fail-closed until an operator invokes
+    /// the authenticated migration route.
+    pub(crate) fn commit_legacy_owner_migration_with_binding(
+        &self,
+        operation_id: &str,
+        expected_base_digest: [u8; 32],
+        bytes: &[u8],
+        binding: OwnerPublicationBinding,
+    ) -> Result<CommitReceipt, String> {
+        validate_owner_binding(operation_id, bytes, binding)?;
+        self.commit_state_inner(
+            operation_id,
+            expected_base_digest,
+            bytes,
+            Some((
+                binding.owner_manifest_digest(),
+                binding.changed_owner_mask(),
+            )),
+            true,
+        )
+    }
+
     pub fn commit_state(
         &self,
         operation_id: &str,
         expected_base_digest: [u8; 32],
         bytes: &[u8],
     ) -> Result<CommitReceipt, String> {
+        self.commit_state_inner(operation_id, expected_base_digest, bytes, None, false)
+    }
+
+    fn commit_state_inner(
+        &self,
+        operation_id: &str,
+        expected_base_digest: [u8; 32],
+        bytes: &[u8],
+        owner_binding: Option<([u8; 32], u8)>,
+        allow_legacy_migration: bool,
+    ) -> Result<CommitReceipt, String> {
+        if bytes.is_empty() || bytes.len() > crate::MAX_APPLICATION_STATE_BYTES {
+            return Err("HA application state is empty or exceeds the shared bound".into());
+        }
         let node = self
             .node
             .as_ref()
@@ -547,8 +1002,7 @@ impl HaProcess {
         if leader != local_id {
             return Err(format!("HA write requires current leader node {leader}"));
         }
-        self.runtime
-            .block_on(node.ensure_linearizable())
+        self.block_on_read(node.ensure_linearizable())
             .map_err(|error| error.to_string())?;
         let latest = self
             .runtime
@@ -559,10 +1013,125 @@ impl HaProcess {
         {
             return Err("HA application base conflicts with latest committed state".into());
         }
-        let proposal = self
-            .codec
-            .seal(operation_id.to_owned(), expected_base_digest, bytes)
-            .map_err(|error| error.to_string())?;
+        if allow_legacy_migration && latest.is_none() {
+            return Err("legacy owner-manifest migration requires an HBSR1 base state".into());
+        }
+
+        let previous_manifest = match latest.as_ref() {
+            None => None,
+            Some(envelope) => {
+                let descriptor = self
+                    .codec
+                    .open_committed_descriptor(
+                        envelope.operation_id(),
+                        envelope.digest(),
+                        envelope.sealed(),
+                    )
+                    .map_err(|error| error.to_string())?;
+                if allow_legacy_migration {
+                    validate_legacy_migration_base(&descriptor, owner_binding.is_some())?;
+                } else {
+                    reject_legacy_mutation_fallback(&descriptor)?;
+                }
+                match descriptor {
+                    CommittedStateDescriptor::Legacy(state) => {
+                        if sha256(&state) != envelope.digest() {
+                            return Err("legacy HA state digest readback failed".into());
+                        }
+                        None
+                    }
+                    CommittedStateDescriptor::Chunked(manifest) => Some(manifest),
+                    CommittedStateDescriptor::RecordsV5(_) => {
+                        return Err("record state cannot use whole-state publication".into());
+                    }
+                }
+            }
+        };
+
+        let plans = plan_replicated_chunks(bytes, previous_manifest.as_ref())?;
+        let mut refs = Vec::with_capacity(plans.len());
+        for plan in plans {
+            let reference = plan.reference.clone();
+            if plan.reused {
+                let staged = self
+                    .runtime
+                    .block_on(node.application_chunk_envelope(reference.index, reference.slot))
+                    .map_err(|error| error.to_string())?
+                    .ok_or_else(|| "HA committed manifest references a missing chunk".to_owned())?;
+                if staged.digest() != reference.digest {
+                    return Err("HA committed chunk digest metadata is inconsistent".into());
+                }
+                let opened = self
+                    .codec
+                    .open_chunk_parts(
+                        reference.index,
+                        reference.slot,
+                        staged.operation_id(),
+                        staged.digest(),
+                        staged.sealed(),
+                    )
+                    .map_err(|error| error.to_string())?;
+                if opened.as_slice() != plan.bytes
+                    || opened.len() != usize::try_from(reference.bytes).unwrap_or(usize::MAX)
+                    || sha256(&opened) != reference.digest
+                {
+                    return Err("HA committed reusable chunk failed authenticated readback".into());
+                }
+            } else {
+                let chunk_operation =
+                    chunk_operation_id(operation_id, reference.index, reference.slot);
+                let proposal = self
+                    .codec
+                    .seal_chunk(
+                        chunk_operation.clone(),
+                        reference.index,
+                        reference.slot,
+                        plan.bytes,
+                    )
+                    .map_err(|error| error.to_string())?;
+                let envelope = ReplicatedEnvelope::new(
+                    proposal.operation_id().to_owned(),
+                    proposal.digest(),
+                    proposal.sealed().to_vec(),
+                )
+                .map_err(|error| error.to_string())?;
+                let serial = self
+                    .runtime
+                    .block_on(node.next_production_client_serial())
+                    .map_err(|error| error.to_string())?;
+                let receipt = self
+                    .runtime
+                    .block_on(node.replicate_application_chunk(
+                        reference.index,
+                        reference.slot,
+                        serial,
+                        &envelope,
+                    ))
+                    .map_err(|error| error.to_string())?;
+                if receipt.leader_id != local_id || receipt.envelope_digest != reference.digest {
+                    return Err("HA chunk commit receipt did not bind the staged payload".into());
+                }
+            }
+            refs.push(reference);
+        }
+
+        let proposal = match owner_binding {
+            Some((owner_manifest_digest, changed_owner_mask)) => self
+                .codec
+                .seal_manifest_with_owner_binding(
+                    operation_id.to_owned(),
+                    expected_base_digest,
+                    bytes,
+                    refs,
+                    owner_manifest_digest,
+                    changed_owner_mask,
+                )
+                .map_err(|error| error.to_string())?,
+            None => self
+                .codec
+                .seal_manifest(operation_id.to_owned(), expected_base_digest, bytes, refs)
+                .map_err(|error| error.to_string())?,
+        };
         let envelope = ReplicatedEnvelope::new(
             proposal.operation_id().to_owned(),
             proposal.digest(),
@@ -578,44 +1147,267 @@ impl HaProcess {
             .block_on(node.replicate(serial, &envelope))
             .map_err(|error| error.to_string())?;
         if receipt.leader_id != local_id || receipt.envelope_digest != proposal.digest() {
-            return Err("HA commit receipt did not bind the submitted application state".into());
+            return Err("HA commit receipt did not bind the submitted application manifest".into());
         }
         Ok(receipt)
     }
 
-    /// Return the newest complete application state after a linearizable ReadIndex.
-    /// The envelope is authenticated under the cluster replication key before
-    /// plaintext is returned to the local durable-store reconciliation path.
+    /// Return the newest complete application state after a linearizable
+    /// ReadIndex. HBSR1 whole-state envelopes and HBSM2 fixed-position manifests
+    /// remain readable for online upgrade; HBSM3/HBSM4 resolve ordered logical
+    /// chunks through authenticated position-independent physical index/slot
+    /// references. HBSM4 also validates the owner-delta identity carried by the
+    /// service publication binding.
     pub(crate) fn latest_committed_state(
         &self,
     ) -> Result<Option<CommittedApplicationState>, String> {
+        match self.latest_committed_state_if_changed(None)? {
+            CommittedStateRead::Absent => Ok(None),
+            CommittedStateRead::Records(_) => {
+                Err("record state requires its typed root and object reader".into())
+            }
+            CommittedStateRead::Materialized(state) => Ok(Some(state)),
+            CommittedStateRead::Unchanged => {
+                Err("HA read reused an absent verification cursor".into())
+            }
+        }
+    }
+
+    pub(crate) fn latest_committed_state_if_changed(
+        &self,
+        known: Option<&ValidatedReadCursor>,
+    ) -> Result<CommittedStateRead, String> {
+        if let Some(records) = self.read_record_root_if_present(known)? {
+            return Ok(records);
+        }
         let node = self
             .node
             .as_ref()
             .ok_or_else(|| "HA process is shut down".to_owned())?;
-        self.runtime
-            .block_on(node.ensure_linearizable())
-            .map_err(|error| error.to_string())?;
-        let Some(envelope) = self
-            .runtime
-            .block_on(node.latest_envelope())
-            .map_err(|error| error.to_string())?
-        else {
-            return Ok(None);
-        };
-        let bytes = self
-            .codec
-            .open_committed_parts(
-                envelope.operation_id(),
-                envelope.digest(),
-                envelope.sealed(),
+        read_committed_application(
+            &self.codec,
+            known,
+            || {
+                self.block_on_read(node.ensure_linearizable())
+                    .map_err(|error| error.to_string())
+            },
+            || {
+                self.runtime
+                    .block_on(node.latest_envelope_at_generation())
+                    .map_err(|error| error.to_string())
+            },
+            |index, slot| {
+                self.runtime
+                    .block_on(node.application_chunk_envelope(index, slot))
+                    .map_err(|error| error.to_string())
+            },
+            || self.runtime.block_on(node.application_state_generation()),
+        )
+    }
+}
+
+/// Keep ReadIndex and manifest authentication ahead of every reuse decision.
+/// The narrow callbacks also let tests prove that a warm read never loads chunks
+/// and that authority loss or a changed mutable slot still fails closed.
+fn read_committed_application(
+    codec: &ClusterStateCodec,
+    known: Option<&ValidatedReadCursor>,
+    read_index: impl FnOnce() -> Result<(), String>,
+    latest: impl FnOnce() -> Result<(u64, Option<ReplicatedEnvelope>), String>,
+    mut load_chunk: impl FnMut(u16, u8) -> Result<Option<ReplicatedEnvelope>, String>,
+    current_generation: impl FnOnce() -> u64,
+) -> Result<CommittedStateRead, String> {
+    read_index()?;
+    let (generation, Some(envelope)) = latest()? else {
+        return Ok(CommittedStateRead::Absent);
+    };
+    let descriptor = codec
+        .open_committed_descriptor(
+            envelope.operation_id(),
+            envelope.digest(),
+            envelope.sealed(),
+        )
+        .map_err(|error| error.to_string())?;
+    let identity = manifest_envelope_identity(&envelope);
+    let (bytes, legacy_whole_state, owner_manifest_digest, changed_owner_mask) = match descriptor {
+        CommittedStateDescriptor::Legacy(bytes) => (bytes, true, None, None),
+        CommittedStateDescriptor::RecordsV5(_) => {
+            return Err("record state requires typed application materialization".into());
+        }
+        CommittedStateDescriptor::Chunked(manifest) => {
+            if manifest.state_digest != envelope.digest() {
+                return Err("HA manifest digest does not match production envelope".into());
+            }
+            // Only owner-bound HBSM4 has a local canonical publication identity
+            // that Service can bind to admitted durable state before reusing.
+            if manifest.owner_manifest_digest.is_some()
+                && known.is_some_and(|cursor| {
+                    !cursor.records_v5
+                        && cursor.generation == generation
+                        && cursor.envelope_identity == identity
+                })
+            {
+                return Ok(CommittedStateRead::Unchanged);
+            }
+            let total = usize::try_from(manifest.total_bytes)
+                .map_err(|_| "HA manifest total length overflow".to_owned())?;
+            let mut assembled = Zeroizing::new(Vec::with_capacity(total));
+            for chunk in &manifest.chunks {
+                let staged = load_chunk(chunk.index, chunk.slot)?.ok_or_else(|| {
+                    "HA manifest references an unavailable committed chunk".to_owned()
+                })?;
+                if staged.digest() != chunk.digest {
+                    return Err("HA manifest/chunk digest binding mismatch".into());
+                }
+                let opened = codec
+                    .open_chunk_parts(
+                        chunk.index,
+                        chunk.slot,
+                        staged.operation_id(),
+                        staged.digest(),
+                        staged.sealed(),
+                    )
+                    .map_err(|error| error.to_string())?;
+                if opened.len()
+                    != usize::try_from(chunk.bytes)
+                        .map_err(|_| "HA chunk length overflow".to_owned())?
+                {
+                    return Err("HA committed chunk length mismatch".into());
+                }
+                assembled.extend_from_slice(&opened);
+                if assembled.len() > total {
+                    return Err("HA committed chunk set exceeds manifest length".into());
+                }
+            }
+            if assembled.len() != total || sha256(&assembled) != manifest.state_digest {
+                return Err("HA committed chunk set does not reconstruct manifest state".into());
+            }
+            (
+                assembled,
+                false,
+                manifest.owner_manifest_digest,
+                manifest.changed_owner_mask,
             )
-            .map_err(|error| error.to_string())?;
-        Ok(Some(CommittedApplicationState {
+        }
+    };
+    if sha256(&bytes) != envelope.digest() {
+        return Err("HA committed application digest readback failed".into());
+    }
+    // An apply or snapshot during materialization invalidates the observation,
+    // even if it left the publication envelope itself untouched. Do not issue
+    // evidence spanning that mutation; the next read can validate it afresh.
+    let read_cursor = (owner_manifest_digest.is_some() && current_generation() == generation)
+        .then_some(ValidatedReadCursor {
+            records_v5: false,
+            generation,
+            envelope_identity: identity,
+        });
+    Ok(CommittedStateRead::Materialized(
+        CommittedApplicationState {
             digest: envelope.digest(),
             bytes,
-        }))
+            legacy_whole_state,
+            owner_manifest_digest,
+            changed_owner_mask,
+            read_cursor,
+        },
+    ))
+}
+
+fn manifest_envelope_identity(envelope: &ReplicatedEnvelope) -> [u8; 32] {
+    let mut context = digest::Context::new(&digest::SHA256);
+    context.update(b"heptabao-verified-ha-manifest-v1");
+    context.update(&(envelope.operation_id().len() as u64).to_be_bytes());
+    context.update(envelope.operation_id().as_bytes());
+    context.update(&envelope.digest());
+    context.update(&(envelope.sealed().len() as u64).to_be_bytes());
+    context.update(envelope.sealed());
+    let mut result = [0; 32];
+    result.copy_from_slice(context.finish().as_ref());
+    result
+}
+
+/// Reconcile the statically enrolled bootstrap set without conflating the
+/// membership commit with learner catch-up. This function is intentionally
+/// bounded and best-effort: a missing peer or lost leader leaves a durable
+/// learner (when enrollment committed) and a fenced process. Once the exact
+/// committed non-joint voter set is observed, the process may close that fence
+/// without mutating membership. It never promotes a learner whose replication
+/// frontier has not been observed.
+fn bootstrap_membership_complete(
+    expected: &BTreeSet<u64>,
+    observed: &MembershipObservation,
+) -> bool {
+    observed.committed && !observed.joint && observed.voters == *expected
+}
+
+fn reconcile_bootstrap_membership(
+    runtime: &Runtime,
+    node: &ProcessRaftNode,
+    initialize: bool,
+    local_id: u64,
+    voters: &BTreeSet<u64>,
+) -> bool {
+    if initialize && runtime.block_on(node.initialize_single()).is_err() {
+        return false;
     }
+    let mut membership = match runtime.block_on(node.membership_observation()) {
+        Ok(membership) => membership,
+        Err(_) => return false,
+    };
+    // A reopened node may be a follower in an already-complete cluster. The
+    // local process does not need to own reconciliation in that case; it may
+    // become leader later and must not remain fenced merely because startup
+    // happened on a standby.
+    if bootstrap_membership_complete(voters, &membership) {
+        return true;
+    }
+    let elected = runtime.block_on(async {
+        let deadline = tokio::time::Instant::now() + Duration::from_secs(5);
+        loop {
+            if node.current_leader().await == Some(local_id) {
+                break true;
+            }
+            if tokio::time::Instant::now() >= deadline {
+                break false;
+            }
+            tokio::time::sleep(Duration::from_millis(20)).await;
+        }
+    });
+    if !elected {
+        return false;
+    }
+
+    for peer_id in voters.iter().copied().filter(|id| *id != local_id) {
+        if membership.nodes.contains(&peer_id) {
+            continue;
+        }
+        if runtime.block_on(node.enroll_learner(peer_id)).is_err() {
+            return false;
+        }
+        membership = match runtime.block_on(node.membership_observation()) {
+            Ok(membership) => membership,
+            Err(_) => return false,
+        };
+    }
+
+    // Enrollment is a committed topology fact. Promotion requires the
+    // stronger readiness observation for every requested voter.
+    for peer_id in voters.iter().copied().filter(|id| *id != local_id) {
+        if !membership.voters.contains(&peer_id)
+            && runtime
+                .block_on(node.wait_for_learner_replication(peer_id, Duration::from_secs(2)))
+                .is_err()
+        {
+            return false;
+        }
+    }
+    if membership.voters == *voters {
+        return true;
+    }
+    runtime
+        .block_on(node.change_membership(voters.clone()))
+        .is_ok()
 }
 
 impl Drop for HaProcess {
@@ -628,11 +1420,32 @@ impl Drop for HaProcess {
 }
 
 fn validate_config(config: &HaProcessConfig) -> Result<(), String> {
+    if !valid_cluster_id(&config.cluster_id) {
+        return Err("invalid HA cluster identity".into());
+    }
+    if config.outbound_legacy_peer_v1() && !config.allow_legacy_peer_v1 {
+        return Err("legacy HA outbound requires explicit legacy inbound admission".into());
+    }
+    if config.initial_voters.as_ref().is_some_and(|v| {
+        v.len() < 3
+            || v.len() > 9
+            || v.iter().any(|id| !config.peers.contains_key(id))
+            || config.bootstrap && !v.contains(&config.node_id)
+    }) {
+        return Err("invalid initial voter subset".into());
+    }
     if config.node_id == 0
         || config.peers.len() < 3
         || config.peers.len() > 9
         || !config.peers.contains_key(&config.node_id)
+        // A zero listener port asks the OS to choose an ephemeral endpoint.
+        // Peer addresses are statically enrolled, so allowing that choice can
+        // leave a node listening on an address no peer can reach after a
+        // restart.  Outbound peer endpoints have the same bound in
+        // `TlsPeerEndpoint::new`.
+        || config.listen.port() == 0
         || !(50..=5_000).contains(&config.peer_timeout_ms)
+        || !(1_000..=60_000).contains(&config.forward_timeout_ms)
         || !(4..=256).contains(&config.max_inflight)
         || !config.raft_dir.is_absolute()
         || !config.ca_file.is_absolute()
@@ -661,7 +1474,20 @@ fn parse_peers(config: &HaProcessConfig) -> Result<Vec<ParsedPeer>, String> {
         let endpoint = TlsPeerEndpoint::new(peer.address, peer.server_name.clone())
             .map_err(|error| error.to_string())?;
         let certificate_sha256 = decode_hex_32(&peer.certificate_sha256)?;
-        if !names.insert(node.clone()) || !digests.insert(certificate_sha256) {
+        let certificate_sha256_next = peer
+            .certificate_sha256_next
+            .as_deref()
+            .map(decode_hex_32)
+            .transpose()?;
+        let api_address = peer
+            .api_address
+            .as_deref()
+            .map(parse_api_address)
+            .transpose()?;
+        if !names.insert(node.clone())
+            || !digests.insert(certificate_sha256)
+            || certificate_sha256_next.is_some_and(|digest| !digests.insert(digest))
+        {
             return Err("HA peer identities and certificate digests must be unique".into());
         }
         peers.push(ParsedPeer {
@@ -669,9 +1495,26 @@ fn parse_peers(config: &HaProcessConfig) -> Result<Vec<ParsedPeer>, String> {
             node,
             endpoint,
             certificate_sha256,
+            certificate_sha256_next,
+            api_address,
         });
     }
     Ok(peers)
+}
+
+fn parse_api_address(address: &str) -> Result<String, String> {
+    // Reuse the side-effect-free HTTPS authority parser, including IPv6 and
+    // default port handling. An API base must not contain a query or path;
+    // request paths must never be interpreted as part of an authority.
+    let target = crate::outbound::parse_auth_https_target(
+        address,
+        Some(&crate::outbound::AuthHttpsTransport::default()),
+    )
+    .map_err(|_| "invalid HA peer API address".to_owned())?;
+    if target.path != "/" {
+        return Err("HA peer API address must be an HTTPS origin".into());
+    }
+    Ok(target.origin)
 }
 
 fn build_mutual_tls(config: &HaProcessConfig) -> Result<MutualTlsConfigs, String> {
@@ -694,7 +1537,7 @@ fn build_mutual_tls(config: &HaProcessConfig) -> Result<MutualTlsConfigs, String
         .with_root_certificates(client_roots)
         .with_client_auth_cert(certificates.clone(), clone_private_key(&key)?)
         .map_err(|_| "invalid HA TLS client identity".to_owned())?;
-    client.alpn_protocols = vec![b"heptabao-raft/1".to_vec()];
+    client.alpn_protocols = vec![RAFT_ALPN_PROTOCOL.to_vec()];
 
     let verifier = WebPkiClientVerifier::builder_with_provider(
         Arc::new(root_store(&ca)?),
@@ -708,7 +1551,7 @@ fn build_mutual_tls(config: &HaProcessConfig) -> Result<MutualTlsConfigs, String
         .with_client_cert_verifier(verifier)
         .with_single_cert(certificates, key)
         .map_err(|_| "invalid HA TLS server identity".to_owned())?;
-    server.alpn_protocols = vec![b"heptabao-raft/1".to_vec()];
+    server.alpn_protocols = vec![RAFT_ALPN_PROTOCOL.to_vec()];
     Ok((Arc::new(client), Arc::new(server), local_leaf_digest))
 }
 
@@ -769,7 +1612,7 @@ fn read_bounded_regular_file_with_privacy(
     #[cfg(target_os = "linux")]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
     let file = options
         .open(path)
@@ -808,7 +1651,9 @@ fn durable_state_exists(root: &Path) -> Result<bool, String> {
 }
 
 fn encode_raft_frame(frame: RaftWireFrame) -> Result<Vec<u8>, RemoteRaftError> {
-    if frame.source == 0
+    if frame.legacy_v1
+        || !valid_cluster_id(&frame.cluster_id)
+        || frame.source == 0
         || frame.target == 0
         || frame.source == frame.target
         || !matches!(frame.role, RAFT_FRAME_REQUEST | RAFT_FRAME_RESPONSE)
@@ -816,9 +1661,109 @@ fn encode_raft_frame(frame: RaftWireFrame) -> Result<Vec<u8>, RemoteRaftError> {
     {
         return Err(RemoteRaftError::InvalidRpc);
     }
+    let cluster_length =
+        u16::try_from(frame.cluster_id.len()).map_err(|_| RemoteRaftError::InvalidRpc)?;
     let payload_length =
         u32::try_from(frame.payload.len()).map_err(|_| RemoteRaftError::InvalidRpc)?;
-    let mut encoded = Vec::with_capacity(27 + frame.payload.len());
+    let mut encoded =
+        Vec::with_capacity(RAFT_FRAME_HEADER_BYTES + frame.cluster_id.len() + frame.payload.len());
+    encoded.extend_from_slice(RAFT_FRAME_MAGIC);
+    encoded.push(frame.role);
+    encoded.extend_from_slice(&frame.source.to_be_bytes());
+    encoded.extend_from_slice(&frame.target.to_be_bytes());
+    encoded.push(kind_tag(frame.kind));
+    encoded.extend_from_slice(&cluster_length.to_be_bytes());
+    encoded.extend_from_slice(&payload_length.to_be_bytes());
+    encoded.extend_from_slice(frame.cluster_id.as_bytes());
+    encoded.extend_from_slice(&frame.payload);
+    if encoded.len() > MAX_RAFT_FRAME_BYTES {
+        return Err(RemoteRaftError::InvalidRpc);
+    }
+    Ok(encoded)
+}
+
+fn decode_raft_frame(encoded: &[u8]) -> Result<RaftWireFrame, RemoteRaftError> {
+    if encoded.len() < RAFT_FRAME_HEADER_BYTES
+        || encoded.len() > MAX_RAFT_FRAME_BYTES
+        || &encoded[..5] != RAFT_FRAME_MAGIC
+    {
+        return Err(RemoteRaftError::InvalidRpc);
+    }
+    let role = encoded[5];
+    if !matches!(role, RAFT_FRAME_REQUEST | RAFT_FRAME_RESPONSE) {
+        return Err(RemoteRaftError::InvalidRpc);
+    }
+    let source = u64::from_be_bytes(
+        encoded[6..14]
+            .try_into()
+            .map_err(|_| RemoteRaftError::InvalidRpc)?,
+    );
+    let target = u64::from_be_bytes(
+        encoded[14..22]
+            .try_into()
+            .map_err(|_| RemoteRaftError::InvalidRpc)?,
+    );
+    let kind = decode_kind(encoded[22])?;
+    let cluster_length = u16::from_be_bytes(
+        encoded[23..25]
+            .try_into()
+            .map_err(|_| RemoteRaftError::InvalidRpc)?,
+    ) as usize;
+    let length = u32::from_be_bytes(
+        encoded[25..29]
+            .try_into()
+            .map_err(|_| RemoteRaftError::InvalidRpc)?,
+    ) as usize;
+    let payload_start = RAFT_FRAME_HEADER_BYTES
+        .checked_add(cluster_length)
+        .ok_or(RemoteRaftError::InvalidRpc)?;
+    if source == 0
+        || target == 0
+        || source == target
+        || cluster_length == 0
+        || cluster_length > MAX_CLUSTER_ID_BYTES
+        || length == 0
+        || encoded.len()
+            != payload_start
+                .checked_add(length)
+                .ok_or(RemoteRaftError::InvalidRpc)?
+    {
+        return Err(RemoteRaftError::InvalidRpc);
+    }
+    let cluster_id = std::str::from_utf8(&encoded[RAFT_FRAME_HEADER_BYTES..payload_start])
+        .map_err(|_| RemoteRaftError::InvalidRpc)?
+        .to_owned();
+    if !valid_cluster_id(&cluster_id) {
+        return Err(RemoteRaftError::InvalidRpc);
+    }
+    Ok(RaftWireFrame {
+        cluster_id,
+        role,
+        source,
+        target,
+        kind,
+        payload: encoded[payload_start..].to_vec(),
+        legacy_v1: false,
+    })
+}
+
+fn encode_legacy_raft_frame_for_transition(
+    frame: RaftWireFrame,
+) -> Result<Vec<u8>, RemoteRaftError> {
+    if !frame.legacy_v1
+        || !valid_cluster_id(&frame.cluster_id)
+        || frame.source == 0
+        || frame.target == 0
+        || frame.source == frame.target
+        || !matches!(frame.role, RAFT_FRAME_REQUEST | RAFT_FRAME_RESPONSE)
+        || frame.kind == RaftRpcKind::TransferLeader
+        || frame.payload.is_empty()
+    {
+        return Err(RemoteRaftError::InvalidRpc);
+    }
+    let payload_length =
+        u32::try_from(frame.payload.len()).map_err(|_| RemoteRaftError::InvalidRpc)?;
+    let mut encoded = Vec::with_capacity(LEGACY_RAFT_FRAME_HEADER_BYTES + frame.payload.len());
     encoded.extend_from_slice(RAFT_FRAME_MAGIC);
     encoded.push(frame.role);
     encoded.extend_from_slice(&frame.source.to_be_bytes());
@@ -832,8 +1777,14 @@ fn encode_raft_frame(frame: RaftWireFrame) -> Result<Vec<u8>, RemoteRaftError> {
     Ok(encoded)
 }
 
-fn decode_raft_frame(encoded: &[u8]) -> Result<RaftWireFrame, RemoteRaftError> {
-    if encoded.len() < 27
+fn decode_legacy_raft_frame_for_transition(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<RaftWireFrame, RemoteRaftError> {
+    if !valid_cluster_id(expected_cluster_id) {
+        return Err(RemoteRaftError::InvalidTopology);
+    }
+    if encoded.len() < LEGACY_RAFT_FRAME_HEADER_BYTES
         || encoded.len() > MAX_RAFT_FRAME_BYTES
         || &encoded[..5] != RAFT_FRAME_MAGIC
     {
@@ -859,17 +1810,71 @@ fn decode_raft_frame(encoded: &[u8]) -> Result<RaftWireFrame, RemoteRaftError> {
             .try_into()
             .map_err(|_| RemoteRaftError::InvalidRpc)?,
     ) as usize;
-    if source == 0 || target == 0 || source == target || length == 0 || encoded.len() != 27 + length
+    if source == 0
+        || target == 0
+        || source == target
+        || kind == RaftRpcKind::TransferLeader
+        || length == 0
+        || encoded.len()
+            != LEGACY_RAFT_FRAME_HEADER_BYTES
+                .checked_add(length)
+                .ok_or(RemoteRaftError::InvalidRpc)?
     {
         return Err(RemoteRaftError::InvalidRpc);
     }
     Ok(RaftWireFrame {
+        cluster_id: expected_cluster_id.to_owned(),
         role,
         source,
         target,
         kind,
-        payload: encoded[27..].to_vec(),
+        payload: encoded[LEGACY_RAFT_FRAME_HEADER_BYTES..].to_vec(),
+        legacy_v1: true,
     })
+}
+
+fn valid_cluster_id(value: &str) -> bool {
+    if value.is_empty() || value.len() > MAX_CLUSTER_ID_BYTES {
+        return false;
+    }
+    if value
+        .bytes()
+        .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
+    {
+        return true;
+    }
+    STANDARD
+        .decode(value)
+        .is_ok_and(|bytes| bytes.len() == 16 && STANDARD.encode(bytes) == value)
+}
+
+fn decode_raft_frame_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<RaftWireFrame, RemoteRaftError> {
+    if !valid_cluster_id(expected_cluster_id) {
+        return Err(RemoteRaftError::InvalidTopology);
+    }
+    let frame = decode_raft_frame(encoded)?;
+    if frame.cluster_id != expected_cluster_id {
+        return Err(RemoteRaftError::InvalidTopology);
+    }
+    Ok(frame)
+}
+
+fn decode_raft_frame_for_cluster_compatible(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+    allow_legacy_peer_v1: bool,
+) -> Result<RaftWireFrame, RemoteRaftError> {
+    match decode_raft_frame_for_cluster(encoded, expected_cluster_id) {
+        Ok(frame) => Ok(frame),
+        Err(strict_error) if allow_legacy_peer_v1 && encoded.starts_with(RAFT_FRAME_MAGIC) => {
+            decode_legacy_raft_frame_for_transition(encoded, expected_cluster_id)
+                .map_err(|_| strict_error)
+        }
+        Err(error) => Err(error),
+    }
 }
 
 fn kind_tag(kind: RaftRpcKind) -> u8 {
@@ -878,6 +1883,7 @@ fn kind_tag(kind: RaftRpcKind) -> u8 {
         RaftRpcKind::Vote => 2,
         RaftRpcKind::PreVote => 3,
         RaftRpcKind::SnapshotChunk => 4,
+        RaftRpcKind::TransferLeader => 5,
     }
 }
 
@@ -887,6 +1893,7 @@ fn decode_kind(value: u8) -> Result<RaftRpcKind, RemoteRaftError> {
         2 => Ok(RaftRpcKind::Vote),
         3 => Ok(RaftRpcKind::PreVote),
         4 => Ok(RaftRpcKind::SnapshotChunk),
+        5 => Ok(RaftRpcKind::TransferLeader),
         _ => Err(RemoteRaftError::InvalidRpc),
     }
 }
@@ -901,6 +1908,155 @@ fn map_remote_service_error(error: RemoteRaftError) -> heptabao_ha_service::HaEr
             heptabao_ha_service::HaError::Transport
         }
     }
+}
+
+struct ReplicatedChunkPlan<'a> {
+    bytes: &'a [u8],
+    reference: ReplicatedChunkRef,
+    reused: bool,
+}
+
+fn validate_owner_binding(
+    operation_id: &str,
+    bytes: &[u8],
+    binding: OwnerPublicationBinding,
+) -> Result<(), String> {
+    binding
+        .verify(operation_id, bytes)
+        .map_err(|_| "local owner publication does not bind the HA state".to_owned())
+}
+
+fn reject_legacy_mutation_fallback(descriptor: &CommittedStateDescriptor) -> Result<(), String> {
+    if matches!(descriptor, CommittedStateDescriptor::Legacy(_)) {
+        return Err(
+            "legacy HA state requires explicit owner-manifest migration before mutation".into(),
+        );
+    }
+    Ok(())
+}
+
+fn validate_legacy_migration_base(
+    descriptor: &CommittedStateDescriptor,
+    owner_bound: bool,
+) -> Result<(), String> {
+    if !owner_bound {
+        return Err("legacy owner-manifest migration requires an owner publication binding".into());
+    }
+    if !matches!(descriptor, CommittedStateDescriptor::Legacy(_)) {
+        return Err("legacy owner-manifest migration requires an HBSR1 base state".into());
+    }
+    Ok(())
+}
+
+fn plan_replicated_chunks<'a>(
+    bytes: &'a [u8],
+    previous: Option<&ReplicatedStateManifest>,
+) -> Result<Vec<ReplicatedChunkPlan<'a>>, String> {
+    let chunks = replicated_content_defined_chunks(bytes);
+    if chunks.is_empty() || chunks.len() > MAX_REPLICATED_STATE_CHUNKS {
+        return Err("HA content-defined chunk count exceeds bounded physical index space".into());
+    }
+
+    let previous_chunks = previous
+        .map(|manifest| manifest.chunks.as_slice())
+        .unwrap_or(&[]);
+    let mut reserved = BTreeSet::new();
+    let mut matches = Vec::with_capacity(chunks.len());
+    for chunk in &chunks {
+        let digest = sha256(chunk);
+        let chunk_bytes =
+            u32::try_from(chunk.len()).map_err(|_| "HA application chunk length overflow")?;
+        let found = previous_chunks
+            .iter()
+            .find(|reference| {
+                !reserved.contains(&reference.index)
+                    && reference.digest == digest
+                    && reference.bytes == chunk_bytes
+            })
+            .cloned();
+        if let Some(reference) = found.as_ref() {
+            reserved.insert(reference.index);
+        }
+        matches.push(found);
+    }
+
+    let old_by_index = previous_chunks
+        .iter()
+        .map(|reference| (reference.index, reference))
+        .collect::<BTreeMap<_, _>>();
+    let mut used = reserved;
+    let mut plans = Vec::with_capacity(chunks.len());
+    for (chunk, matched) in chunks.into_iter().zip(matches) {
+        if let Some(reference) = matched {
+            plans.push(ReplicatedChunkPlan {
+                bytes: chunk,
+                reference,
+                reused: true,
+            });
+            continue;
+        }
+        let index = (0..MAX_REPLICATED_STATE_CHUNKS)
+            .find_map(|value| {
+                let index = u16::try_from(value).ok()?;
+                (!used.contains(&index)).then_some(index)
+            })
+            .ok_or_else(|| "HA physical chunk index space exhausted".to_owned())?;
+        used.insert(index);
+        let slot = old_by_index
+            .get(&index)
+            .map_or(0, |reference| 1 - reference.slot);
+        plans.push(ReplicatedChunkPlan {
+            bytes: chunk,
+            reference: ReplicatedChunkRef {
+                index,
+                slot,
+                bytes: u32::try_from(chunk.len())
+                    .map_err(|_| "HA application chunk length overflow")?,
+                digest: sha256(chunk),
+            },
+            reused: false,
+        });
+    }
+    Ok(plans)
+}
+
+fn replicated_content_defined_chunks(bytes: &[u8]) -> Vec<&[u8]> {
+    let mut chunks = Vec::new();
+    let mut start = 0_usize;
+    let mut rolling = 0_u64;
+    for (index, byte) in bytes.iter().copied().enumerate() {
+        rolling = rolling.rotate_left(1) ^ replicated_chunk_byte_hash(byte);
+        if index >= REPLICATED_CHUNK_WINDOW_BYTES {
+            rolling ^= replicated_chunk_byte_hash(bytes[index - REPLICATED_CHUNK_WINDOW_BYTES])
+                .rotate_left((REPLICATED_CHUNK_WINDOW_BYTES % u64::BITS as usize) as u32);
+        }
+        let length = index + 1 - start;
+        if length >= REPLICATED_CHUNK_MIN_BYTES
+            && ((rolling & REPLICATED_CHUNK_MASK) == 0 || length >= REPLICATED_STATE_CHUNK_BYTES)
+        {
+            chunks.push(&bytes[start..=index]);
+            start = index + 1;
+        }
+    }
+    if start < bytes.len() {
+        chunks.push(&bytes[start..]);
+    }
+    chunks
+}
+
+fn replicated_chunk_byte_hash(byte: u8) -> u64 {
+    let mut value = u64::from(byte).wrapping_add(0x9e37_79b9_7f4a_7c15);
+    value = (value ^ (value >> 30)).wrapping_mul(0xbf58_476d_1ce4_e5b9);
+    value = (value ^ (value >> 27)).wrapping_mul(0x94d0_49bb_1331_11eb);
+    value ^ (value >> 31)
+}
+
+fn chunk_operation_id(operation_id: &str, index: u16, slot: u8) -> String {
+    let suffix = format!(":c:{index:03}:{slot}");
+    let keep = operation_id
+        .len()
+        .min(128_usize.saturating_sub(suffix.len()));
+    format!("{}{}", &operation_id[..keep], suffix)
 }
 
 fn decode_hex_32(value: &str) -> Result<[u8; 32], String> {
@@ -933,41 +2089,398 @@ fn sha256(bytes: &[u8]) -> [u8; 32] {
     output
 }
 
+#[path = "ha_leader_status.rs"]
+mod leader_status;
+
+#[cfg(test)]
+#[path = "ha_read_tests.rs"]
+pub(crate) mod read_tests;
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    fn membership(voters: BTreeSet<u64>, committed: bool, joint: bool) -> MembershipObservation {
+        MembershipObservation {
+            local_id: 1,
+            leader: Some(1),
+            term: 7,
+            membership_index: Some(11),
+            committed,
+            joint,
+            nodes: voters.clone(),
+            voters,
+            applied_index: Some(11),
+            snapshot_index: None,
+            purged_index: None,
+            peer_matched: BTreeMap::new(),
+            peer_contact_ms: BTreeMap::new(),
+        }
+    }
+
+    #[test]
+    fn bootstrap_fence_can_close_only_from_exact_committed_non_joint_membership() {
+        let expected = BTreeSet::from([1, 2, 3]);
+        assert!(bootstrap_membership_complete(
+            &expected,
+            &membership(expected.clone(), true, false)
+        ));
+        assert!(!bootstrap_membership_complete(
+            &expected,
+            &membership(expected.clone(), false, false)
+        ));
+        assert!(!bootstrap_membership_complete(
+            &expected,
+            &membership(expected.clone(), true, true)
+        ));
+        assert!(!bootstrap_membership_complete(
+            &expected,
+            &membership(BTreeSet::from([1, 2]), true, false)
+        ));
+        assert!(!bootstrap_membership_complete(
+            &expected,
+            &membership(BTreeSet::from([1, 2, 3, 4]), true, false)
+        ));
+    }
+
+    #[test]
+    fn advertised_api_addresses_are_https_origins_with_no_request_or_header_input()
+    -> Result<(), String> {
+        for (input, expected) in [
+            ("https://Bao.Example", "https://bao.example:443"),
+            ("https://127.0.0.1:8200/", "https://127.0.0.1:8200"),
+            ("https://[::1]:8200", "https://[::1]:8200"),
+        ] {
+            assert_eq!(parse_api_address(input)?, expected);
+        }
+        for input in [
+            "http://bao.example:8200",
+            "https://bao.example:0",
+            "https://user@bao.example",
+            "https://bao.example?token=secret",
+            "https://bao.example/#fragment",
+            "https://bao.example/v1/sys/health",
+            "https://bao.example/../",
+            "https://bao.example/%0d%0aLocation:x",
+            "https://bao.example\r\nLocation: x",
+            "https://bao.example\\@other.example",
+        ] {
+            assert!(parse_api_address(input).is_err());
+        }
+        let old: HaPeerConfig = serde_json::from_value(serde_json::json!({
+            "node_name":"node-1", "address":"127.0.0.1:8201",
+            "server_name":"node-1.example", "certificate_sha256":"11".repeat(32),
+        }))
+        .map_err(|_| "old peer configuration")?;
+        assert!(old.api_address.is_none());
+        assert!(old.certificate_sha256_next.is_none());
+        let rotating: HaPeerConfig = serde_json::from_value(serde_json::json!({
+            "node_name":"node-1", "address":"127.0.0.1:8201",
+            "server_name":"node-1.example", "certificate_sha256":"11".repeat(32),
+            "certificate_sha256_next":"22".repeat(32),
+        }))
+        .map_err(|_| "rotating peer configuration")?;
+        assert_eq!(rotating.certificate_sha256_next, Some("22".repeat(32)));
+        Ok(())
+    }
+
+    #[test]
+    fn forwarding_timeout_defaults_and_validation_do_not_change_peer_timeout()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let legacy = serde_json::json!({
+            "node_id":1,"cluster_id":"cluster-a","raft_dir":"/private/raft",
+            "listen":"127.0.0.1:8201","ca_file":"/private/ca",
+            "cert_file":"/private/cert","key_file":"/private/key",
+            "replication_key_file":"/private/replication",
+            "peer_timeout_ms":500,
+            "peers": {
+                "1":{"node_name":"n1","address":"127.0.0.1:8201","server_name":"n1.invalid","certificate_sha256":"11".repeat(32)},
+                "2":{"node_name":"n2","address":"127.0.0.1:8202","server_name":"n2.invalid","certificate_sha256":"22".repeat(32)},
+                "3":{"node_name":"n3","address":"127.0.0.1:8203","server_name":"n3.invalid","certificate_sha256":"33".repeat(32)}
+            }
+        });
+        let mut config: HaProcessConfig = serde_json::from_value(legacy.clone())?;
+        assert_eq!(config.peer_timeout_ms, 500);
+        assert_eq!(config.forward_timeout_ms, 15_000);
+        assert!(!config.allow_legacy_peer_v1);
+        validate_config(&config)?;
+        for value in [1_000, 15_000, 60_000] {
+            config.forward_timeout_ms = value;
+            validate_config(&config)?;
+            assert_eq!(config.peer_timeout_ms, 500);
+        }
+        for value in [0, 999, 60_001, u64::MAX] {
+            config.forward_timeout_ms = value;
+            assert!(validate_config(&config).is_err());
+        }
+        config.forward_timeout_ms = 15_000;
+        config.peer_timeout_ms = 5_001;
+        assert!(validate_config(&config).is_err());
+        let mut defaults = legacy;
+        defaults
+            .as_object_mut()
+            .ok_or("config object")?
+            .remove("peer_timeout_ms");
+        let config: HaProcessConfig = serde_json::from_value(defaults)?;
+        assert_eq!(config.peer_timeout_ms, 750);
+        assert_eq!(config.forward_timeout_ms, 15_000);
+        Ok(())
+    }
+
+    #[test]
+    fn invalid_cluster_identity_is_rejected_before_peer_validation() -> Result<(), String> {
+        let config = HaProcessConfig {
+            node_id: 0,
+            cluster_id: "cluster/with-invalid-delimiter".into(),
+            raft_dir: PathBuf::new(),
+            listen: "127.0.0.1:1"
+                .parse()
+                .map_err(|_| "synthetic listener address")?,
+            ca_file: PathBuf::new(),
+            cert_file: PathBuf::new(),
+            key_file: PathBuf::new(),
+            replication_key_file: PathBuf::new(),
+            peers: BTreeMap::new(),
+            bootstrap: false,
+            initial_voters: None,
+            peer_timeout_ms: 750,
+            forward_timeout_ms: 15_000,
+            max_inflight: 64,
+            allow_legacy_peer_v1: false,
+            emit_legacy_peer_v1: None,
+        };
+        assert_eq!(
+            validate_config(&config),
+            Err("invalid HA cluster identity".into())
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn zero_listener_port_is_rejected_for_static_peer_enrollment() -> Result<(), String> {
+        let config = HaProcessConfig {
+            node_id: 1,
+            cluster_id: "cluster-a".into(),
+            raft_dir: PathBuf::from("/var/lib/heptabao/node-1/raft"),
+            listen: "127.0.0.1:0"
+                .parse()
+                .map_err(|_| "synthetic listener address")?,
+            ca_file: PathBuf::from("/var/lib/heptabao/ca.crt"),
+            cert_file: PathBuf::from("/var/lib/heptabao/node-1/tls.crt"),
+            key_file: PathBuf::from("/var/lib/heptabao/node-1/tls.key"),
+            replication_key_file: PathBuf::from("/var/lib/heptabao/replication.key"),
+            peers: BTreeMap::from([
+                (
+                    1,
+                    HaPeerConfig {
+                        node_name: "node-1".into(),
+                        api_address: None,
+                        address: "127.0.0.1:8201".parse().map_err(|_| "peer address")?,
+                        server_name: "node-1.example.internal".into(),
+                        certificate_sha256: "11".repeat(32),
+                        certificate_sha256_next: None,
+                    },
+                ),
+                (
+                    2,
+                    HaPeerConfig {
+                        node_name: "node-2".into(),
+                        api_address: None,
+                        address: "127.0.0.1:8202".parse().map_err(|_| "peer address")?,
+                        server_name: "node-2.example.internal".into(),
+                        certificate_sha256: "22".repeat(32),
+                        certificate_sha256_next: None,
+                    },
+                ),
+                (
+                    3,
+                    HaPeerConfig {
+                        node_name: "node-3".into(),
+                        api_address: None,
+                        address: "127.0.0.1:8203".parse().map_err(|_| "peer address")?,
+                        server_name: "node-3.example.internal".into(),
+                        certificate_sha256: "33".repeat(32),
+                        certificate_sha256_next: None,
+                    },
+                ),
+            ]),
+            bootstrap: false,
+            initial_voters: None,
+            peer_timeout_ms: 750,
+            forward_timeout_ms: 15_000,
+            max_inflight: 64,
+            allow_legacy_peer_v1: false,
+            emit_legacy_peer_v1: None,
+        };
+        assert_eq!(
+            validate_config(&config),
+            Err("invalid bounded HA process configuration".into())
+        );
+        Ok(())
+    }
+
     #[test]
     fn raft_wire_frame_binds_direction_kind_and_payload() -> Result<(), Box<dyn std::error::Error>>
     {
-        let encoded = encode_raft_frame(RaftWireFrame {
-            role: RAFT_FRAME_REQUEST,
-            source: 1,
-            target: 2,
-            kind: RaftRpcKind::AppendEntries,
-            payload: b"bounded-raft-rpc".to_vec(),
-        })?;
-        let decoded = decode_raft_frame(&encoded)?;
-        assert_eq!(decoded.role, RAFT_FRAME_REQUEST);
-        assert_eq!(decoded.source, 1);
-        assert_eq!(decoded.target, 2);
-        assert_eq!(decoded.kind, RaftRpcKind::AppendEntries);
-        assert_eq!(decoded.payload, b"bounded-raft-rpc");
+        for kind in [
+            RaftRpcKind::AppendEntries,
+            RaftRpcKind::Vote,
+            RaftRpcKind::PreVote,
+            RaftRpcKind::SnapshotChunk,
+            RaftRpcKind::TransferLeader,
+        ] {
+            let encoded = encode_raft_frame(RaftWireFrame {
+                cluster_id: "cluster-a".into(),
+                role: RAFT_FRAME_REQUEST,
+                source: 1,
+                target: 2,
+                kind,
+                payload: b"bounded-raft-rpc".to_vec(),
+                legacy_v1: false,
+            })?;
+            let decoded = decode_raft_frame(&encoded)?;
+            assert_eq!(decoded.cluster_id, "cluster-a");
+            assert_eq!(decoded.role, RAFT_FRAME_REQUEST);
+            assert_eq!(decoded.source, 1);
+            assert_eq!(decoded.target, 2);
+            assert_eq!(decoded.kind, kind);
+            assert_eq!(decoded.payload, b"bounded-raft-rpc");
+        }
+        assert!(decode_kind(6).is_err());
         Ok(())
+    }
+
+    #[test]
+    fn ha_commit_rejects_owner_binding_for_different_operation_or_state()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let logical = br#"{"schema":9,"cluster_id":"cluster"}"#;
+        let plan = crate::service::OwnerWritePlan::new(
+            logical,
+            "owner-op-binding",
+            9,
+            "cluster",
+            0,
+            vec![
+                ("namespaces", br#"{"next_incarnation":1}"#.to_vec()),
+                ("auth", br#"{"tokens":[]}"#.to_vec()),
+                ("engines", br#"{"mounts":[]}"#.to_vec()),
+                ("database", br#"{"connections":[]}"#.to_vec()),
+                ("raft_admin", br#"{"policy":null}"#.to_vec()),
+            ],
+            None,
+            Vec::new(),
+        )?;
+        let binding = plan.publication_binding("owner-op-binding", logical)?;
+        assert!(validate_owner_binding("owner-op-binding", logical, binding).is_ok());
+        assert!(validate_owner_binding("owner-op-other", logical, binding).is_err());
+        let mut altered = logical.to_vec();
+        altered[0] ^= 1;
+        assert!(validate_owner_binding("owner-op-binding", &altered, binding).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn ha_commit_rejects_legacy_whole_state_fallback() -> Result<(), Box<dyn std::error::Error>> {
+        let legacy = CommittedStateDescriptor::Legacy(Zeroizing::new(b"legacy-state".to_vec()));
+        let error = match reject_legacy_mutation_fallback(&legacy) {
+            Ok(()) => return Err("mutation must not promote HBSR1 implicitly".into()),
+            Err(error) => error,
+        };
+        assert!(error.contains("explicit owner-manifest migration"));
+        Ok(())
+    }
+
+    #[test]
+    fn legacy_migration_requires_owner_binding_and_hbsr1_base() {
+        let legacy = CommittedStateDescriptor::Legacy(Zeroizing::new(b"legacy-state".to_vec()));
+        assert!(validate_legacy_migration_base(&legacy, false).is_err());
+        assert!(validate_legacy_migration_base(&legacy, true).is_ok());
+
+        let manifest = CommittedStateDescriptor::Chunked(ReplicatedStateManifest {
+            base_digest: [0; 32],
+            state_digest: [7; 32],
+            total_bytes: 0,
+            chunks: Vec::new(),
+            owner_manifest_digest: None,
+            changed_owner_mask: None,
+        });
+        assert!(validate_legacy_migration_base(&manifest, true).is_err());
     }
 
     #[test]
     fn raft_wire_frame_rejects_direction_and_length_drift() -> Result<(), Box<dyn std::error::Error>>
     {
         let mut encoded = encode_raft_frame(RaftWireFrame {
+            cluster_id: "cluster-a".into(),
             role: RAFT_FRAME_RESPONSE,
             source: 2,
             target: 1,
             kind: RaftRpcKind::Vote,
             payload: b"vote".to_vec(),
+            legacy_v1: false,
         })?;
         encoded[26] ^= 1;
         assert!(decode_raft_frame(&encoded).is_err());
+        let cross_cluster = encode_raft_frame(RaftWireFrame {
+            cluster_id: "cluster-b".into(),
+            role: RAFT_FRAME_REQUEST,
+            source: 1,
+            target: 2,
+            kind: RaftRpcKind::Vote,
+            payload: b"vote".to_vec(),
+            legacy_v1: false,
+        })?;
+        let decoded = decode_raft_frame(&cross_cluster)?;
+        assert_ne!(decoded.cluster_id, "cluster-a");
+        assert!(decode_raft_frame_for_cluster(&cross_cluster, "cluster-a").is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn legacy_raft_wire_is_explicit_transition_only() -> Result<(), Box<dyn std::error::Error>> {
+        let legacy = encode_legacy_raft_frame_for_transition(RaftWireFrame {
+            cluster_id: "cluster-a".into(),
+            role: RAFT_FRAME_REQUEST,
+            source: 1,
+            target: 2,
+            kind: RaftRpcKind::Vote,
+            payload: b"legacy-vote".to_vec(),
+            legacy_v1: true,
+        })?;
+        assert!(decode_raft_frame(&legacy).is_err());
+        assert!(decode_raft_frame_for_cluster_compatible(&legacy, "cluster-a", false).is_err());
+        let decoded = decode_raft_frame_for_cluster_compatible(&legacy, "cluster-a", true)?;
+        assert!(decoded.legacy_v1);
+        assert_eq!(decoded.cluster_id, "cluster-a");
+        assert_eq!(decoded.source, 1);
+        assert_eq!(decoded.target, 2);
+        assert_eq!(decoded.kind, RaftRpcKind::Vote);
+        assert_eq!(decoded.payload, b"legacy-vote");
+
+        assert!(
+            encode_raft_frame(RaftWireFrame {
+                cluster_id: "cluster-a".into(),
+                role: RAFT_FRAME_REQUEST,
+                source: 1,
+                target: 2,
+                kind: RaftRpcKind::Vote,
+                payload: b"strict".to_vec(),
+                legacy_v1: true,
+            })
+            .is_err()
+        );
+        assert!(
+            encode_legacy_raft_frame_for_transition(RaftWireFrame {
+                cluster_id: "cluster-a".into(),
+                role: RAFT_FRAME_REQUEST,
+                source: 1,
+                target: 2,
+                kind: RaftRpcKind::TransferLeader,
+                payload: b"transfer".to_vec(),
+                legacy_v1: true,
+            })
+            .is_err()
+        );
         Ok(())
     }
 
@@ -998,9 +2511,94 @@ mod tests {
     }
 
     #[test]
+    fn position_independent_chunk_plan_reuses_tail_after_prefix_insertion()
+    -> Result<(), Box<dyn std::error::Error>> {
+        const STATE_BYTES: usize = 4 * 1024 * 1024;
+        let mut state = Vec::with_capacity(STATE_BYTES);
+        let mut value = 0x1234_5678_9abc_def0_u64;
+        for _ in 0..STATE_BYTES {
+            value ^= value << 13;
+            value ^= value >> 7;
+            value ^= value << 17;
+            state.push((value >> 24) as u8);
+        }
+        let first = plan_replicated_chunks(&state, None)?;
+        assert!(first.len() >= 8);
+        let previous = ReplicatedStateManifest {
+            base_digest: [1; 32],
+            state_digest: sha256(&state),
+            total_bytes: u64::try_from(state.len())?,
+            chunks: first.iter().map(|plan| plan.reference.clone()).collect(),
+            owner_manifest_digest: None,
+            changed_owner_mask: None,
+        };
+
+        let insertion = b"ha-prefix-insertion-".repeat(7);
+        let mut changed = Vec::with_capacity(state.len() + insertion.len());
+        changed.extend_from_slice(&state[..96 * 1024]);
+        changed.extend_from_slice(&insertion);
+        changed.extend_from_slice(&state[96 * 1024..]);
+        let second = plan_replicated_chunks(&changed, Some(&previous))?;
+        let reused = second.iter().filter(|plan| plan.reused).count();
+        assert!(
+            reused >= previous.chunks.len().saturating_sub(2),
+            "content-defined HA chunking should resynchronize and preserve most physical indices"
+        );
+        assert_eq!(
+            second
+                .iter()
+                .map(|plan| plan.reference.index)
+                .collect::<BTreeSet<_>>()
+                .len(),
+            second.len()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn changed_chunk_uses_opposite_slot_without_overwriting_previous_manifest()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let state = vec![0x5a; 512 * 1024];
+        let first = plan_replicated_chunks(&state, None)?;
+        let previous = ReplicatedStateManifest {
+            base_digest: [2; 32],
+            state_digest: sha256(&state),
+            total_bytes: u64::try_from(state.len())?,
+            chunks: first.iter().map(|plan| plan.reference.clone()).collect(),
+            owner_manifest_digest: None,
+            changed_owner_mask: None,
+        };
+        let mut changed = state.clone();
+        changed[0] ^= 1;
+        let next = plan_replicated_chunks(&changed, Some(&previous))?;
+        for plan in next.iter().filter(|plan| !plan.reused) {
+            if let Some(old) = previous
+                .chunks
+                .iter()
+                .find(|old| old.index == plan.reference.index)
+            {
+                assert_eq!(plan.reference.slot, 1 - old.slot);
+            }
+        }
+        Ok(())
+    }
+
+    #[test]
     fn certificate_digest_is_strict_hex() {
         assert_eq!(decode_hex_32(&"ab".repeat(32)), Ok([0xab; 32]));
         assert!(decode_hex_32("ab").is_err());
         assert!(decode_hex_32(&"gg".repeat(32)).is_err());
     }
 }
+
+#[cfg(test)]
+#[path = "ha_request_deadline_tests.rs"]
+pub(crate) mod request_deadline_tests;
+
+#[cfg(test)]
+#[path = "ha_snapshot_test_support.rs"]
+pub(crate) mod snapshot_test_support;
+
+#[cfg(test)]
+#[path = "ha_peer_wire_upgrade_tests.rs"]
+mod peer_wire_upgrade_tests;

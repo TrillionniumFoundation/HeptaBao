@@ -17,7 +17,7 @@ use std::io::{self, Read, Write};
 use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::path::{Component, Path, PathBuf};
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use zeroize::Zeroize;
 
 use ring::rand::{SecureRandom, SystemRandom};
@@ -28,8 +28,15 @@ const MAX_CLUSTER_ID_BYTES: usize = 128;
 const MAX_PAYLOAD_BYTES: usize = 1024 * 1024;
 const MAX_PEERS: usize = 255;
 const MAX_SNAPSHOT_CHUNKS: usize = 65_536;
+// A peer certificate chain is validated by rustls before this layer sees it.
+// Keep the chain count and aggregate bytes bounded while allowing the normal
+// leaf + one-or-more intermediate deployment shape.
+const MAX_PEER_CERT_CHAIN: usize = 8;
+const MAX_PEER_CERT_CHAIN_BYTES: usize = 4 * 1024 * 1024;
 const PEER_STATE_MAGIC: &[u8; 5] = b"HBPS1";
 const PEER_FRAME_MAGIC: &[u8; 5] = b"HBPF1";
+/// ALPN protocol negotiated by the authenticated Raft peer transport.
+pub const RAFT_ALPN_PROTOCOL: &[u8] = b"heptabao-raft/1";
 
 #[derive(Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct NodeId(String);
@@ -674,7 +681,9 @@ pub struct TlsPeerEndpoint {
 impl TlsPeerEndpoint {
     pub fn new(address: SocketAddr, server_name: impl Into<String>) -> Result<Self, HaError> {
         let server_name = server_name.into();
-        if server_name.is_empty()
+        if address.port() == 0
+            || address.ip().is_unspecified()
+            || server_name.is_empty()
             || server_name.len() > 253
             || rustls::pki_types::ServerName::try_from(server_name.clone()).is_err()
         {
@@ -714,6 +723,37 @@ impl MutualTlsPeerTransport {
         })
     }
 
+    /// Application forwarding uses one absolute budget, including connect and
+    /// every TLS/frame I/O. Consensus RPCs retain their separate peer timeout.
+    pub fn exchange_before(
+        &self,
+        peer: &NodeId,
+        frame: &[u8],
+        caller_deadline: Instant,
+    ) -> Result<Vec<u8>, HaError> {
+        if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
+            return Err(HaError::InvalidFrame);
+        }
+        let deadline = caller_deadline.min(Instant::now() + self.timeout);
+        let endpoint = self.peers.get(peer).ok_or(HaError::UnknownPeer)?;
+        let server_name = rustls::pki_types::ServerName::try_from(endpoint.server_name.clone())
+            .map_err(|_| HaError::InvalidCluster)?;
+        let remaining = forward_remaining(deadline).map_err(|_| HaError::Transport)?;
+        let stream = TcpStream::connect_timeout(&endpoint.address, remaining)
+            .map_err(|_| HaError::Transport)?;
+        stream.set_nodelay(true).map_err(|_| HaError::Transport)?;
+        let stream = ForwardDeadlineStream { stream, deadline };
+        let connection = rustls::ClientConnection::new(self.client_config.clone(), server_name)
+            .map_err(|_| HaError::Transport)?;
+        let mut tls = rustls::StreamOwned::new(connection, stream);
+        write_bounded_frame(&mut tls, frame)?;
+        let mut response = zeroize::Zeroizing::new(read_bounded_frame(&mut tls)?);
+        // Buffered TLS plaintext must not bypass the final deadline check, and
+        // a rejected late response must erase its plaintext before deallocation.
+        forward_remaining(deadline).map_err(|_| HaError::Transport)?;
+        Ok(std::mem::take(&mut *response))
+    }
+
     pub fn exchange(&self, peer: &NodeId, frame: &[u8]) -> Result<Vec<u8>, HaError> {
         if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
             return Err(HaError::InvalidFrame);
@@ -736,6 +776,38 @@ impl MutualTlsPeerTransport {
     }
 }
 
+fn forward_remaining(deadline: Instant) -> io::Result<Duration> {
+    deadline
+        .checked_duration_since(Instant::now())
+        .filter(|remaining| !remaining.is_zero())
+        .ok_or_else(|| io::Error::new(io::ErrorKind::TimedOut, "forward deadline exceeded"))
+}
+
+struct ForwardDeadlineStream {
+    stream: TcpStream,
+    deadline: Instant,
+}
+
+impl Read for ForwardDeadlineStream {
+    fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
+        self.stream
+            .set_read_timeout(Some(forward_remaining(self.deadline)?))?;
+        self.stream.read(buffer)
+    }
+}
+impl Write for ForwardDeadlineStream {
+    fn write(&mut self, buffer: &[u8]) -> io::Result<usize> {
+        self.stream
+            .set_write_timeout(Some(forward_remaining(self.deadline)?))?;
+        self.stream.write(buffer)
+    }
+    fn flush(&mut self) -> io::Result<()> {
+        self.stream
+            .set_write_timeout(Some(forward_remaining(self.deadline)?))?;
+        self.stream.flush()
+    }
+}
+
 impl fmt::Debug for MutualTlsPeerTransport {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
@@ -755,7 +827,7 @@ pub struct PinnedClientCertificateMap {
 impl PinnedClientCertificateMap {
     pub fn new(by_leaf_sha256: BTreeMap<[u8; 32], NodeId>) -> Result<Self, HaError> {
         if by_leaf_sha256.is_empty()
-            || by_leaf_sha256.len() > MAX_PEERS
+            || by_leaf_sha256.len() > MAX_PEERS.saturating_mul(2)
             || by_leaf_sha256.keys().any(|digest| *digest == [0; 32])
         {
             return Err(HaError::InvalidCluster);
@@ -779,6 +851,7 @@ pub fn serve_one_mtls_peer_frame<H>(
     server_config: Arc<rustls::ServerConfig>,
     identities: &PinnedClientCertificateMap,
     timeout: Duration,
+    allow_missing_raft_alpn: bool,
     handler: H,
 ) -> Result<(), HaError>
 where
@@ -799,17 +872,51 @@ where
     tls.conn
         .complete_io(&mut tls.sock)
         .map_err(|_| HaError::PeerAuthenticationFailed)?;
+    require_raft_alpn(tls.conn.alpn_protocol(), allow_missing_raft_alpn)?;
     let certificates = tls
         .conn
         .peer_certificates()
         .ok_or(HaError::PeerAuthenticationFailed)?;
-    if certificates.len() != 1 {
-        return Err(HaError::PeerAuthenticationFailed);
-    }
-    let peer = identities.identify(certificates[0].as_ref())?;
+    let peer = identify_peer_certificate_chain(identities, certificates)?;
     let request = read_bounded_frame(&mut tls)?;
     let response = handler(peer, request)?;
     write_bounded_frame(&mut tls, &response)
+}
+
+fn require_raft_alpn(
+    protocol: Option<&[u8]>,
+    allow_missing_raft_alpn: bool,
+) -> Result<(), HaError> {
+    if protocol == Some(RAFT_ALPN_PROTOCOL) || (allow_missing_raft_alpn && protocol.is_none()) {
+        Ok(())
+    } else {
+        Err(HaError::PeerAuthenticationFailed)
+    }
+}
+
+fn identify_peer_certificate_chain(
+    identities: &PinnedClientCertificateMap,
+    certificates: &[rustls::pki_types::CertificateDer<'_>],
+) -> Result<NodeId, HaError> {
+    if certificates.is_empty() || certificates.len() > MAX_PEER_CERT_CHAIN {
+        return Err(HaError::PeerAuthenticationFailed);
+    }
+    let total_bytes = certificates.iter().try_fold(0_usize, |total, cert| {
+        if cert.is_empty() {
+            return Err(HaError::PeerAuthenticationFailed);
+        }
+        total
+            .checked_add(cert.len())
+            .filter(|bytes| *bytes <= MAX_PEER_CERT_CHAIN_BYTES)
+            .ok_or(HaError::PeerAuthenticationFailed)
+    })?;
+    if total_bytes > MAX_PEER_CERT_CHAIN_BYTES {
+        return Err(HaError::PeerAuthenticationFailed);
+    }
+    // rustls has already authenticated the complete chain. Identity pinning
+    // intentionally binds only the leaf; intermediates may rotate without
+    // changing the configured node identity.
+    identities.identify(certificates[0].as_ref())
 }
 
 #[derive(Clone, Debug)]
@@ -1230,11 +1337,11 @@ fn read_bounded_frame(reader: &mut impl Read) -> Result<Vec<u8>, HaError> {
     if length == 0 || length > MAX_PAYLOAD_BYTES + 4096 {
         return Err(HaError::InvalidFrame);
     }
-    let mut frame = vec![0_u8; length];
+    let mut frame = zeroize::Zeroizing::new(vec![0_u8; length]);
     reader
         .read_exact(&mut frame)
         .map_err(|_| HaError::Transport)?;
-    Ok(frame)
+    Ok(std::mem::take(&mut *frame))
 }
 
 fn write_frame(stream: &mut TcpStream, frame: &[u8]) -> Result<(), HaError> {
@@ -1391,10 +1498,12 @@ mod tests {
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        let root = std::env::temp_dir().join(format!(
-            "heptabao-ha-service-{name}-{}-{nonce}",
-            std::process::id()
-        ));
+        let root = fs::canonicalize(std::env::temp_dir())
+            .unwrap()
+            .join(format!(
+                "heptabao-ha-service-{name}-{}-{nonce}",
+                std::process::id()
+            ));
         #[cfg(unix)]
         {
             use std::os::unix::fs::DirBuilderExt;
@@ -1578,6 +1687,21 @@ mod tests {
             TlsPeerEndpoint::new(address, "bad name with spaces"),
             Err(HaError::InvalidCluster)
         );
+        assert_eq!(
+            TlsPeerEndpoint::new("0.0.0.0:8201".parse().unwrap(), "node-2.example.internal"),
+            Err(HaError::InvalidCluster)
+        );
+        assert_eq!(
+            TlsPeerEndpoint::new("127.0.0.1:0".parse().unwrap(), "node-2.example.internal"),
+            Err(HaError::InvalidCluster)
+        );
+        assert!(
+            TlsPeerEndpoint::new(
+                "192.0.2.10:8201".parse().unwrap(),
+                "node-2.example.internal"
+            )
+            .is_ok()
+        );
         let certificate = b"synthetic-test-certificate-der";
         let peer = node("n2");
         let identities =
@@ -1587,6 +1711,171 @@ mod tests {
         assert_eq!(
             identities.identify(b"different-certificate"),
             Err(HaError::PeerAuthenticationFailed)
+        );
+    }
+
+    #[test]
+    fn tls_peer_identity_accepts_bounded_overlap_rotation_pins() {
+        let peer = node("n2");
+        let old_leaf = b"synthetic-old-leaf";
+        let next_leaf = b"synthetic-next-leaf";
+        let overlapping = PinnedClientCertificateMap::new(BTreeMap::from([
+            (sha256(old_leaf), peer.clone()),
+            (sha256(next_leaf), peer.clone()),
+        ]))
+        .unwrap();
+        assert_eq!(overlapping.identify(old_leaf).unwrap(), peer);
+        assert_eq!(overlapping.identify(next_leaf).unwrap(), node("n2"));
+
+        let retired =
+            PinnedClientCertificateMap::new(BTreeMap::from([(sha256(next_leaf), node("n2"))]))
+                .unwrap();
+        assert_eq!(
+            retired.identify(old_leaf),
+            Err(HaError::PeerAuthenticationFailed)
+        );
+        assert_eq!(retired.identify(next_leaf).unwrap(), node("n2"));
+    }
+
+    #[test]
+    fn raft_peer_transport_requires_alpn_except_explicit_missing_protocol_transition() {
+        assert_eq!(require_raft_alpn(Some(RAFT_ALPN_PROTOCOL), false), Ok(()));
+        assert_eq!(require_raft_alpn(None, true), Ok(()));
+        assert_eq!(
+            require_raft_alpn(Some(b"http/1.1"), true),
+            Err(HaError::PeerAuthenticationFailed)
+        );
+        assert_eq!(
+            require_raft_alpn(None, false),
+            Err(HaError::PeerAuthenticationFailed)
+        );
+    }
+
+    #[test]
+    fn tls_peer_chain_accepts_bounded_intermediates_but_pins_leaf() {
+        let leaf = b"synthetic-leaf-der".to_vec();
+        let identities =
+            PinnedClientCertificateMap::new(BTreeMap::from([(sha256(&leaf), node("n2"))])).unwrap();
+        let chain = (0..3)
+            .map(|ordinal| {
+                rustls::pki_types::CertificateDer::from(if ordinal == 0 {
+                    leaf.clone()
+                } else {
+                    format!("synthetic-intermediate-{ordinal}").into_bytes()
+                })
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            identify_peer_certificate_chain(&identities, &chain).unwrap(),
+            node("n2")
+        );
+
+        let too_many = (0..=MAX_PEER_CERT_CHAIN)
+            .map(|ordinal| {
+                rustls::pki_types::CertificateDer::from(if ordinal == 0 {
+                    leaf.clone()
+                } else {
+                    vec![ordinal as u8]
+                })
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            identify_peer_certificate_chain(&identities, &too_many),
+            Err(HaError::PeerAuthenticationFailed)
+        );
+
+        let oversized = vec![rustls::pki_types::CertificateDer::from(vec![
+            0_u8;
+            MAX_PEER_CERT_CHAIN_BYTES
+                + 1
+        ])];
+        assert_eq!(
+            identify_peer_certificate_chain(&identities, &oversized),
+            Err(HaError::PeerAuthenticationFailed)
+        );
+    }
+
+    #[test]
+    fn forwarded_exchange_rejects_expired_budget_before_connect() {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let tls = rustls::ClientConfig::builder_with_provider(Arc::new(
+            rustls::crypto::ring::default_provider(),
+        ))
+        .with_safe_default_protocol_versions()
+        .unwrap()
+        .with_root_certificates(rustls::RootCertStore::empty())
+        .with_no_client_auth();
+        let transport = MutualTlsPeerTransport::new(
+            BTreeMap::from([(
+                node("n2"),
+                TlsPeerEndpoint::new(listener.local_addr().unwrap(), "node-2.example.internal")
+                    .unwrap(),
+            )]),
+            Arc::new(tls),
+            Duration::from_secs(15),
+        )
+        .unwrap();
+        assert_eq!(
+            transport.exchange_before(&node("n2"), b"request", Instant::now()),
+            Err(HaError::Transport)
+        );
+        assert!(
+            listener
+                .accept()
+                .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
+        );
+    }
+
+    #[test]
+    fn forwarding_fragments_cannot_reset_absolute_budget() {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let client = TcpStream::connect(listener.local_addr().unwrap()).unwrap();
+        let (stream, _) = listener.accept().unwrap();
+        let mut stream = ForwardDeadlineStream {
+            stream,
+            deadline: Instant::now() + Duration::from_millis(80),
+        };
+        let sender = thread::spawn(move || {
+            let mut client = client;
+            for _ in 0..10 {
+                if client.write_all(b"x").is_err() {
+                    break;
+                }
+                thread::sleep(Duration::from_millis(20));
+            }
+        });
+        let start = Instant::now();
+        let mut received = 0;
+        let mut byte = [0];
+        while stream.read(&mut byte).is_ok_and(|count| count == 1) {
+            received += 1;
+        }
+        assert!(received < 10);
+        assert!(start.elapsed() < Duration::from_millis(500));
+        drop(stream);
+        sender.join().unwrap();
+    }
+
+    #[test]
+    fn expired_forward_stream_cannot_write_or_flush() {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let client = TcpStream::connect(listener.local_addr().unwrap()).unwrap();
+        let (stream, _) = listener.accept().unwrap();
+        client.set_nonblocking(true).unwrap();
+        let mut stream = ForwardDeadlineStream {
+            stream,
+            deadline: Instant::now(),
+        };
+        assert_eq!(
+            stream.write(b"request").unwrap_err().kind(),
+            io::ErrorKind::TimedOut
+        );
+        assert_eq!(stream.flush().unwrap_err().kind(), io::ErrorKind::TimedOut);
+        assert!(
+            (&client)
+                .read(&mut [0])
+                .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
         );
     }
 

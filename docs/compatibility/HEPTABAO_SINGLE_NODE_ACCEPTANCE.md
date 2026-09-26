@@ -78,6 +78,8 @@ same cases as local smoke coverage; it never records an Oracle or a compatibilit
 match. `--modules kv`, `--modules kv,token`, or `--modules transit` narrows the
 profile; token tests depend on a successful KV fixture.
 
+The latest recorded scoped exact-head comparison is [`qa/openbao-acceptance/evidence/openbao-2.6.2-comparison-facced1.json`](../../qa/openbao-acceptance/evidence/openbao-2.6.2-comparison-facced1.json). It binds the clean `facced1` source and candidate binary `63f209…`, reporting no mismatches for the selected bounded cases; it is not a complete-surface or production qualification receipt.
+
 ## Executable case matrix
 
 All paths below are relative to `/v1`. The implementation report records each

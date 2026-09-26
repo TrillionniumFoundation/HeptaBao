@@ -1,4 +1,4 @@
-"""Current-source binding rejects drift without rewriting frozen history."""
+"""Current-source diagnostics validate structure without duplicating Git authority."""
 from __future__ import annotations
 
 import importlib.util
@@ -52,15 +52,18 @@ class CurrentSourceInventoryTests(unittest.TestCase):
             self.assertEqual(["fn", "limit"], detail["public_lexical_declarations"][0][2:4])
             self.assertEqual("bounded", detail["discovered_test_functions"][0][2])
 
-    def test_source_guide_manifest_and_lock_drift_are_each_rejected(self) -> None:
+    def test_source_guide_manifest_and_lock_drift_change_diagnostic_without_blocking(self) -> None:
         for path in ["crates/heptabao-probe/src/lib.rs", "docs/modules/heptabao-probe.md", "crates/heptabao-probe/Cargo.toml", "Cargo.lock"]:
             with self.subTest(path=path), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 self.fixture(root)
+                before, _ = INV.inventory(root)
                 original = (root / path).read_text()
                 (root / path).write_text(original + "\n")
-                self.assertTrue(INV.validate(root))
-                self.save(root)
+                after, _ = INV.inventory(root)
+                self.assertNotEqual(before["inventory_sha256"], after["inventory_sha256"])
+                # Exact Git commit/tree identity, not a second generated hash
+                # commit, binds the current source bytes in repository CI.
                 self.assertEqual([], INV.validate(root))
 
     def test_frozen_history_cannot_be_rebased_by_regeneration(self) -> None:
@@ -95,7 +98,7 @@ class CurrentSourceInventoryTests(unittest.TestCase):
                 self.skipTest("symlink creation unavailable on this test platform")
             self.assertTrue(INV.validate(root))
 
-    def test_readonly_validation_does_not_repair_a_bad_snapshot(self) -> None:
+    def test_readonly_validation_rejects_malformed_snapshot_without_repairing_it(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             self.fixture(root)
@@ -104,6 +107,17 @@ class CurrentSourceInventoryTests(unittest.TestCase):
             self.assertTrue(INV.validate(root))
             self.assertEqual("{}\n", path.read_text())
 
+    def test_stale_but_well_formed_snapshot_is_diagnostic_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.fixture(root)
+            snapshot = root / INV.SNAPSHOT
+            before = snapshot.read_text()
+            source = root / "crates/heptabao-probe/src/lib.rs"
+            source.write_text(source.read_text() + "\npub fn later() {}\n")
+            self.assertEqual([], INV.validate(root))
+            self.assertEqual(before, snapshot.read_text())
+
     def test_workspace_escape_and_duplicate_patterns_are_rejected(self) -> None:
         for patterns in ['["../other"]', '["crates/*", "crates/*"]']:
             with self.subTest(patterns=patterns), tempfile.TemporaryDirectory() as directory:
@@ -111,6 +125,26 @@ class CurrentSourceInventoryTests(unittest.TestCase):
                 self.fixture(root)
                 (root / "Cargo.toml").write_text(f'[workspace]\nmembers={patterns}\n')
                 self.assertTrue(INV.validate(root))
+
+    def test_vendor_exclusion_preserves_product_inventory_and_cannot_hide_members(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.fixture(root)
+            vendor = root / "vendor/upstream-1.0"
+            vendor.mkdir(parents=True)
+            (vendor / "Cargo.toml").write_text('[package]\nname="upstream"\nversion="1.0.0"\n')
+            (root / "Cargo.toml").write_text(
+                '[workspace]\nmembers=["crates/*"]\nexclude=["vendor/upstream-1.0"]\n')
+            self.assertEqual(INV.members(root), ["crates/heptabao-probe"])
+            self.assertEqual(INV.validate(root), [])
+            for excluded in ["crates/heptabao-probe", "vendor/*", "vendor/../crates", "vendor/missing"]:
+                (root / "Cargo.toml").write_text(
+                    f'[workspace]\nmembers=["crates/*"]\nexclude=["{excluded}"]\n')
+                self.assertTrue(INV.validate(root), excluded)
+            (root / "Cargo.toml").write_text(
+                '[workspace]\nmembers=["crates/*", "vendor/*"]\nexclude=["vendor/upstream-1.0"]\n')
+            with self.assertRaisesRegex(ValueError, "hides a declared member"):
+                INV.members(root)
 
 
 if __name__ == "__main__":

@@ -3,13 +3,17 @@
 Status: implemented candidate; explicit API subset; not a production or complete
 OpenBao replacement acceptance. This document describes the code under
 `crates/heptabao-server/src/engines.rs`, `engines/{kv,transit,totp}.rs` and
-`engine_tests.rs`. It is separate from the older in-memory domain-model crates.
+`engine_tests.rs`, with current PKI/SSH/lease and database routing extensions
+below. It is separate from the older in-memory domain-model crates. Current
+state-format rules are in [the Service format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md).
 
 ## Responsibility and integration boundary
 
-`EngineState` is the serializable, secret-bearing engine state inside the server's
-authenticated encrypted snapshot. It owns namespace-local mounts and their
-resources. It does not listen on a socket, authenticate a caller, decide whether a
+`EngineState` owns namespace-local mounts and resources inside the Service's
+authenticated publication. Its opaque owner is serializable; after the schema 36
+transition, KV1 payloads instead live in the authenticated immutable record graph.
+Serialized `Kv1Records` mount metadata is unusable without that graph/root.
+KV2 and the other engine payloads remain in the opaque owner. It does not listen on a socket, authenticate a caller, decide whether a
 caller is an administrator, or save an unencrypted file. Those responsibilities
 belong to `Service`, `AuthState`, the TLS listener and the durable storage adapter.
 
@@ -32,11 +36,12 @@ payloads. A response contains `status`, `body` and `mutated`. Its body is alread
 an OpenBao-style `data` envelope, except a no-content response has JSON null and
 HTTP 204. The HTTP server owns outer response fields and request identifiers.
 
-The engine clones the selected namespace, validates and operates on that
-candidate, then replaces live engine state only for `Ok(response)` with
-`response.mutated == true`. The service additionally operates on a candidate of
-the complete server state and commits an encrypted snapshot before exposing the
-result. A failed CAS, invalid metadata field, invalid key configuration or failed
+The engine isolates the affected candidate and replaces it only after a valid
+operation. KV1 record writes replace an immutable index path; namespace/mount
+metadata is reused unless it changed. `Service` compares the canonical legacy
+or typed record identity and publishes the encrypted candidate before exposing
+the result. Mount removal/remount also changes the namespace/mount/incarnation
+record scope, preventing old data from reappearing under a recreated mount. A failed CAS, invalid metadata field, invalid key configuration or failed
 AEAD verification therefore cannot partially alter durable engine state.
 
 **HTTP status alone is not a commit decision.** A Transit batch with both
@@ -68,8 +73,9 @@ The identity hierarchy is represented by nested maps:
 ```text
 EngineState.namespaces[namespace]
   .mounts[mount_path_with_trailing_slash]
-  .backend.{Kv1 | Kv2 | Transit | Totp}
-  .entries[resource] or .keys[key_name]
+  .backend.{Database | RabbitMq | Kubernetes | PluginSecret | OpenLdap | Kv1 | Kv1Records | Kv2 | Transit | Pki | Ssh | Totp}
+  .entries[resource] or .keys[key_name]  (opaque-owner backends)
+  Kv1Records -> authenticated KV1 graph scoped by namespace/mount/incarnation
 ```
 
 The expression above is a schema path, not a concatenated storage key. Namespace,
@@ -105,16 +111,20 @@ still protect the host and snapshot encryption keys.
 | Method and path | Implemented behavior |
 | --- | --- |
 | `GET sys/mounts` | Namespace-local descriptors, backend types, options and default lease settings |
-| `POST/PUT sys/mounts/:path` | Enable `kv`, `kv-v1`, `kv-v2`, `transit` or `totp` after option validation |
+| `POST/PUT sys/mounts/:path` | Enable `kv`, `kv-v1`, `kv-v2`, `transit`, `totp`, bounded `pki`/`ssh`, or the Service-owned `database` route after option validation |
 | `GET sys/mounts/:path` | Read one mount descriptor |
 | `DELETE sys/mounts/:path` | Remove the mount and its namespace-local resources |
 | `GET sys/mounts/:path/tune` | Read supported mount configuration |
-| `POST/PUT sys/mounts/:path/tune` | Change description; accept an unchanged KV version |
+| `POST/PUT sys/mounts/:path/tune` | Change description; accept an unchanged KV version; enforce supported PKI/SSH TTL tuning |
 
 Online KV version conversion, custom lease tuning, local mount replication
 semantics, seal wrapping and external entropy sources are not implemented.
-Requests for these options return explicit errors. PKI, SSH, database, LDAP,
-Kubernetes and other engine types return HTTP 501 instead of registering a
+Requests for these options return explicit errors. Bounded PKI and SSH implementations are described below. `database` is a
+routing marker whose effects, configuration and leases are owned by Service, not
+an unauthenticated EngineState callback; read the [PostgreSQL contract](HEPTABAO_POSTGRESQL_PROVIDER.md).
+The bounded OpenLDAP dynamic-secret profile is described in
+`HEPTABAO_OPENLDAP_RUNTIME.md`; broader LDAP engine types and unsupported
+provider operations return explicit HTTP 501 instead of registering a
 nonfunctional mount. There is no generic plugin-success route.
 
 ## KV v1
@@ -122,8 +132,11 @@ nonfunctional mount. There is no generic plugin-success route.
 KV v1 stores JSON objects at arbitrary canonical paths in its own mount. POST and
 PUT replace the complete object and return 204. GET returns the object under
 `data`; DELETE removes it permanently. LIST emits only immediate children and
-adds `/` to folder entries. SCAN emits descendant paths recursively. Missing read
-or empty list returns 404. Values are not filtered by per-key ACL during listing;
+adds `/` to folder entries. SCAN emits descendant paths recursively, returning
+each directory's sorted leaves before visiting its child directories in reverse
+sorted order, as OpenBao's directory stack does. KV v1 ignores `after` and `limit`.
+Missing read or empty LIST returns 404; empty SCAN returns 200 with empty `data`.
+Values are not filtered by per-key ACL during listing;
 authorization applies to the requested list path, so secret values must not be
 encoded in path names.
 
@@ -149,9 +162,17 @@ JSON serialization and snapshot restart.
 | `POST/PUT metadata/:path` | Set key configuration/custom metadata without a new data version |
 | `PATCH metadata/:path` | Modify metadata on an existing key; null map entries remove fields |
 | `DELETE metadata/:path` | Delete all key versions and metadata |
-| `LIST/SCAN metadata/:prefix` | Immediate/recursive key listing, with `after` and `limit` |
-| `LIST/SCAN detailed-metadata/:prefix` | Listing plus complete metadata for leaf entries |
+| `LIST metadata/:prefix` | Immediate children, with `after` and signed `limit`; zero, negative or empty limits return all remaining children |
+| `SCAN metadata/:prefix` | Recursive directory-stack traversal; validates but ignores `after` and `limit` |
+| `LIST/SCAN detailed-metadata/:prefix` | Listing plus metadata; a pure directory has `{}`, and a directory with a same-named leaf has that leaf's metadata |
 | `GET subkeys/:path` | Preserve object shape while replacing values with null; optional depth |
+
+HTTP LIST and SCAN take fields from the query string and ignore their request
+bodies. GET also accepts `?list=true` or `?scan=true`; selecting both is invalid.
+KV v2 SCAN uses the same directory-stack order as v1. Empty SCAN returns 200 with
+empty `data`; empty LIST returns 404. A literal `after=true` or `after=false` is
+a string cursor. These semantics are compared with the official 2.6.2 binary by
+`qa/openbao-acceptance/kv_enumeration_live.py`.
 
 CAS is checked before mutation. An explicit zero succeeds only when no data
 version exists. A stale number fails with 400. A soft-deleted or destroyed latest
@@ -159,6 +180,34 @@ version does not reset the current version. Engine-wide or per-key required CAS
 cannot be bypassed by omitting options. PATCH additionally requires a current
 readable version; null removes object members, nested objects merge recursively
 and arrays replace as whole values.
+
+Metadata updates have a separate OpenBao 2.6.2 check-and-set counter. Configure
+`metadata_cas_required` on the engine or a key, and provide `metadata_cas` to
+POST/PUT/PATCH `metadata/:path`. Either requirement is sufficient to require the
+counter; a key cannot relax the engine-wide requirement. Reads expose
+`current_metadata_version` and the key's `metadata_cas_required` setting. An
+explicit initial counter must be zero. Creating metadata directly sets its
+counter to one; metadata initially created by a data write starts at zero.
+Successful metadata updates increment the counter without creating a data
+version, and update `updated_time`. Data writes do not increment this counter.
+A stale counter or a missing required counter returns 400 without changing the
+entry. Empty metadata updates (including a request containing only the counter)
+do not mutate state. Disabling a key requirement while the engine mandates it
+returns a warning and leaves the engine-wide requirement effective.
+
+The metadata CAS fields survive serialization. Older snapshots without these
+fields reopen with counter zero and the requirement disabled, preserving their
+canonical serialized form. Service state schema 15 fences populated metadata CAS
+state from older readers; schema 14 remains readable only without the new state. The focused
+`kv_metadata_cas_*` engine tests cover this upgrade, stale/missing counters,
+PATCH, failed-update atomicity and separation from data versions.
+`qa/openbao-acceptance/kv_metadata_cas_live.py` runs the same requests against
+fresh HeptaBao and pinned official OpenBao 2.6.2 HTTPS instances. It checks
+statuses, counter/metadata response fields, no-op and failed-write readback,
+POST/PUT/PATCH and exact global-enforcement warnings. It uses
+`HB_ORACLE_BINARY`/`HB_ORACLE_ARCHIVE` and the shared comparison harness; run it
+with `--binary <candidate> --output <new-private-receipt>`. Its scoped comparison
+does not qualify all KV behavior or production use.
 
 GET of a retained deleted or destroyed version returns 404 with its version
 metadata and null data. It does not fall back to an earlier live version. A
@@ -188,14 +237,16 @@ a persisted encryption count. Private signing material uses ring's PKCS#8 output
 
 | Key type | AEAD | Sign/verify | HMAC |
 | --- | --- | --- | --- |
-| `aes128-gcm96` | AES-128-GCM, 96-bit random nonce | No | SHA-256/384/512 |
-| `aes256-gcm96` | AES-256-GCM, 96-bit random nonce | No | SHA-256/384/512 |
-| `chacha20-poly1305` | ChaCha20-Poly1305, 96-bit random nonce | No | SHA-256/384/512 |
-| `ed25519` | No | Pure Ed25519 | SHA-256/384/512 |
-| `hmac` | No | No | SHA-256/384/512 |
+| `aes128-gcm96` | AES-128-GCM, 96-bit random nonce | No | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
+| `aes256-gcm96` | AES-256-GCM, 96-bit random nonce | No | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
+| `chacha20-poly1305` | ChaCha20-Poly1305, 96-bit random nonce | No | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
+| `xchacha20-poly1305` | XChaCha20-Poly1305, 192-bit random nonce | No | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
+| `ed25519` | No | Pure Ed25519 | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
+| `hmac` | No | No | SHA-2-224/256/384/512, SHA-3-224/256/384/512 |
 
-All primitives and randomness come from ring and the platform entropy source.
-There is no handwritten cipher, hash, entropy generator or signature primitive.
+AEAD, signing and entropy use ring or RustCrypto's audited implementations as
+appropriate, and all key material comes from the platform entropy source. There
+is no handwritten cipher, hash, entropy generator or signature primitive.
 
 | Method and relative path | Behavior |
 | --- | --- |
@@ -216,17 +267,18 @@ There is no handwritten cipher, hash, entropy generator or signature primitive.
 | `POST/PUT sign/:name` | Versioned Ed25519 signature over base64 input |
 | `POST/PUT verify/:name[/:algorithm]` | Verify signature or HMAC with minimum-version policy |
 | `POST/PUT random[/platform][/N]` | Platform CSPRNG bytes in base64 or hex |
-| `POST/PUT hash[/:algorithm]` | SHA-256/384/512 over base64 input, in hex or base64 |
+| `POST/PUT hash[/:algorithm]` | SHA-2-224/256/384/512 or SHA-3-224/256/384/512 over base64 input, in hex or base64 |
 | `GET export/{encryption-key,hmac-key}/:name[/:version]` | Explicitly exportable symmetric/HMAC material only |
 
-The opaque envelope is `vault:vN:BASE64(nonce || ciphertext || tag)`. Its AAD is
-the JSON tuple of a format-domain identifier, namespace, mount path, key name and
-decoded caller `associated_data`. Therefore an identical raw key moved to a
-different namespace/mount/name cannot decrypt the original ciphertext. This is
-an intentional security/portability boundary: OpenBao ciphertexts are not
-promised to decrypt here merely because the text prefix matches. Migrating
-Transit data requires source decryption followed by destination encryption, or a
-future independently verified import adapter with explicit domain handling.
+The opaque envelope is `vault:vN:BASE64(nonce || ciphertext || tag)`. Newly
+written AES-GCM, ChaCha20-Poly1305 and XChaCha20-Poly1305 ciphertexts bind exactly
+the decoded caller `associated_data`, matching OpenBao's portable AEAD contract.
+Already persisted pre-compatibility AES/ChaCha ciphertexts have a read-only
+fallback that also accepts the former namespace/mount/name-bound AAD. Moving an
+OpenBao-compatible key and ciphertext across those route domains therefore does
+not change authentication, while HeptaBao legacy ciphertexts remain readable.
+Migrating Transit data still requires source decryption followed by destination
+encryption when key material is not explicitly imported.
 
 Encryption, rewrap and datakey use count as mutations. A version refuses further
 encryption after 2^32 encryptions. Random nonces still have probabilistic collision
@@ -243,9 +295,14 @@ items, individual fixed diagnostics and optional references. Nested batches are
 rejected. Partial failure follows the commit rule above. Inputs are bounded to
 approximately 4 MiB of decoded material, in addition to the HTTP request limit.
 
-Derived/context keys, supplied nonces, convergent encryption, RSA/ECDSA/XChaCha,
-SHA-224/SHA-3, Ed25519ph, BYOK wrapping/import, plaintext backup, automated periodic
-rotation and unsupported export formats are explicit errors. Descriptor flags
+Derived/context keys, supplied nonces, convergent encryption, RSA/ECDSA,
+Ed25519ph, BYOK wrapping/import, plaintext backup and unsupported export formats
+are explicit errors. SHA-224/SHA-3 are available on the hash/HMAC routes while
+Ed25519 signing remains limited to its sha2-256 profile. XChaCha20-Poly1305
+and newly written AES/ChaCha ciphertexts use OpenBao's raw caller-supplied
+associated data and nonce envelopes for ciphertext portability. Existing
+pre-compatibility AES/ChaCha ciphertexts retain a read-only legacy
+namespace/mount/name-bound decryption path. Descriptor flags
 report the implemented capabilities; for example `supports_derivation` is false
 even where an OpenBao key of the same cipher type reports true.
 
@@ -266,9 +323,11 @@ compatibility mode; general Transit hash/sign endpoints do not offer SHA1.
 | `POST/PUT code/:name` | Validate exact decimal code and persist acceptance/guessing state |
 
 Generated enrollment requires issuer/account name and supports 10–128-byte keys.
-With `exported:true`, callers must explicitly set `qr_size:0`; the response
-contains a standards-compatible otpauth URL. Requested QR PNG generation returns
-501. `exported:false` returns no secret enrollment material. URL import checks
+With `exported:true`, the response contains a standards-compatible otpauth URL.
+`qr_size` defaults to 200 and returns a Base64-encoded grayscale PNG barcode;
+`qr_size:0` suppresses the barcode. The server bounds the requested image to
+4,096 pixels per side. `exported:false` returns no secret enrollment material.
+URL import checks
 the scheme, duplicate parameters, issuer consistency, percent encoding, base32
 padding and supported algorithms. Malformed or whitespace-padded codes return
 400. There is no MFA login integration hidden behind this engine: authentication
@@ -294,15 +353,17 @@ cargo test -p heptabao-server engines --lib --offline
 cargo clippy -p heptabao-server --lib --tests --offline -- -D warnings
 ```
 
-Twenty engine tests passed during implementation. They cover KV lifecycle/CAS
-atomicity and recovery, structural namespace/mount separation, retention and
+The current engine test selection covers KV lifecycle/CAS atomicity and
+recovery, structural namespace/mount separation, retention and
 deadline behavior, merge patches, lists/scans, all three AEAD implementations,
 tampered ciphertext and AAD, exact-key transplantation across domains, rotation
 and minimum-version policies, Ed25519 and HMAC verification, RFC 4231 HMAC case 1,
 a SHA-256 known value, partial batch recovery, datakey/export behavior, required
 capabilities, explicit unsupported modes, all eighteen RFC 6238 TOTP vectors,
 RFC 4648 base32 examples, replay across restart/reimport/clock rollback, domain
-isolation, URL enrollment and durable guessing limits. The service integration
+isolation, URL enrollment and durable guessing limits. The Transit algorithm
+matrix also checks deterministic SHA-2/SHA-3 hashes, HMAC tags and verification
+for every exposed digest. The service integration
 suite and external TLS/OpenBao observer remain separate evidence; this document
 does not relabel unit tests as independent black-box acceptance.
 
@@ -321,3 +382,44 @@ acceptance. Implementing another route does not establish HA or migration safety
 - [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238): TOTP algorithm and fixed interoperability vectors.
 - [RFC 4231](https://www.rfc-editor.org/rfc/rfc4231): HMAC SHA-2 test vectors.
 - [RFC 4648](https://www.rfc-editor.org/rfc/rfc4648): base32 encoding examples.
+
+## Current bounded PKI increment
+
+The runnable server now admits a `pki` secrets mount with an internal Ed25519
+root, bounded DNS roles, leaf issuance, optional registered certificate leases,
+exact lease revocation, certificate lookup and a signed JSON CRL at
+`cert/crl`. Mount default/max lease TTL tuning is enforced by the same mount
+registry used by the Service. Generated leaf private keys are returned only in
+the successful response and are not retained; the CA key and certificate state
+are persisted only inside the encrypted Service state. Lease-backed certificates
+are revoked rather than deleted when their issuer becomes invalid, so the CRL
+continues to publish the revocation after restart and HA replication.
+
+The selected `qa/openbao-acceptance/pki_live.py` profile compares the same
+internal Ed25519 root/role/lease-backed issue/revoke/CRL observations with the
+pinned OpenBao 2.6.2 binary. That finite profile is not the full PKI surface.
+Intermediates, imported/KMS keys, CSR signing/sign-verbatim, issuer/key rotation,
+OCSP, ACME, EST, PKIext, raw CRL endpoints, all role parameters and high-volume
+revocation/tidy behavior remain outside the current implementation.
+
+## Current SSH OTP increment
+
+[SSH OTP and registered local leases](HEPTABAO_SSH_OTP.md) now supports actual
+role CRUD, online credential issuance/verification, mount TTL tuning, local lease
+lookup/list/exact and segment-bound prefix revocation. It does not implement SSH
+CA, a host/PAM integration, general renewable-provider callbacks. The current bounded Service
+lifecycle worker and its expiry rules are documented in
+[the operational consumer contract](../operations/HEPTABAO_AGENT_PROXY_HELPER.md). The real `Service` owns authorization, issuer liveness, durable
+consumption and commit-before-response; standalone `EngineState` is not a bypass.
+
+## Mount registry revision and remount boundary
+
+Secret-engine mounts now persist a monotonically increasing `revision` and a path
+`incarnation`. Mutating tune/delete/remount calls may provide `cas_revision`; a stale
+value returns conflict before state mutation. Disable records the next path incarnation,
+so recreating the same path cannot resurrect the old mount identity or embedded dynamic
+state. `sys/remount` moves the complete backend atomically inside the Service transaction,
+invalidates the old route immediately, rejects overlapping/reserved destinations, and is
+fenced while dynamic leases are live. Repository-local restart tests verify the moved
+backend, revision/incarnation and disable/recreate boundary. Later migration, multi-host
+fault/upgrade, full OpenBao 2.6.2 differential and independent admission remain open.

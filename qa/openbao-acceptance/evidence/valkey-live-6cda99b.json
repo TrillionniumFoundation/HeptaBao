@@ -1,0 +1,230 @@
+{
+  "schema": "heptabao.valkey-bounded-live.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "case": "real_valkey_tls_ping",
+      "passed": true
+    },
+    {
+      "case": "initialize",
+      "passed": true
+    },
+    {
+      "case": "unseal",
+      "passed": true
+    },
+    {
+      "case": "mount_database",
+      "passed": true
+    },
+    {
+      "case": "nonzero_database_rejected",
+      "passed": true
+    },
+    {
+      "case": "unauthorized_config_rejected",
+      "passed": true
+    },
+    {
+      "case": "valkey_tls_acl_configuration",
+      "passed": true
+    },
+    {
+      "case": "config_readback_hides_password",
+      "passed": true
+    },
+    {
+      "case": "readonly_role",
+      "passed": true
+    },
+    {
+      "case": "privilege_escape_role_rejected",
+      "passed": true
+    },
+    {
+      "case": "issue_acl_user",
+      "passed": true
+    },
+    {
+      "case": "manager_seeds_allowed_key",
+      "passed": true
+    },
+    {
+      "case": "issued_user_ping",
+      "passed": true
+    },
+    {
+      "case": "issued_user_reads_bound_key",
+      "passed": true
+    },
+    {
+      "case": "issued_readonly_user_cannot_write",
+      "passed": true
+    },
+    {
+      "case": "issued_user_key_escape_denied",
+      "passed": true
+    },
+    {
+      "case": "acl_user_survives_valkey_restart",
+      "passed": true
+    },
+    {
+      "case": "service_restart_is_sealed",
+      "passed": true
+    },
+    {
+      "case": "service_restart_unseal",
+      "passed": true
+    },
+    {
+      "case": "config_survives_service_restart",
+      "passed": true
+    },
+    {
+      "case": "renew_after_both_restarts",
+      "passed": true
+    },
+    {
+      "case": "renewed_user_remains_live",
+      "passed": true
+    },
+    {
+      "case": "readwrite_role",
+      "passed": true
+    },
+    {
+      "case": "issue_readwrite",
+      "passed": true
+    },
+    {
+      "case": "readwrite_can_set",
+      "passed": true
+    },
+    {
+      "case": "readwrite_denies_flushall",
+      "passed": true
+    },
+    {
+      "case": "readwrite_denies_flushdb",
+      "passed": true
+    },
+    {
+      "case": "readwrite_denies_keys",
+      "passed": true
+    },
+    {
+      "case": "readwrite_denies_set",
+      "passed": true
+    },
+    {
+      "case": "readwrite_denies_acl",
+      "passed": true
+    },
+    {
+      "case": "stale_writer_watch",
+      "passed": true
+    },
+    {
+      "case": "stale_writer_multi",
+      "passed": true
+    },
+    {
+      "case": "stale_writer_queued",
+      "passed": true
+    },
+    {
+      "case": "revoke_acl_user",
+      "passed": true
+    },
+    {
+      "case": "stale_writer_aborted_after_revoke",
+      "passed": true
+    },
+    {
+      "case": "revoke_terminates_existing_session",
+      "passed": true
+    },
+    {
+      "case": "revocation_fence_survives_provider_restart",
+      "passed": true
+    },
+    {
+      "case": "revoked_user_denied",
+      "passed": true
+    },
+    {
+      "case": "revoked_user_absent_after_readback",
+      "passed": true
+    },
+    {
+      "case": "drift_test_issue",
+      "passed": true
+    },
+    {
+      "case": "external_selector_drift_installed",
+      "passed": true
+    },
+    {
+      "case": "selector_drift_blocks_renewal",
+      "passed": true
+    },
+    {
+      "case": "drifted_user_can_be_revoked",
+      "passed": true
+    },
+    {
+      "case": "short_role",
+      "passed": true
+    },
+    {
+      "case": "short_issue",
+      "passed": true
+    },
+    {
+      "case": "idle_expiry_removes_native_credential",
+      "passed": true
+    },
+    {
+      "case": "provider_outage_retains_revoke_intent",
+      "passed": true
+    },
+    {
+      "case": "pending_revoke_restart_unseal",
+      "passed": true
+    },
+    {
+      "case": "restart_reconciles_pending_native_revoke",
+      "passed": true
+    },
+    {
+      "case": "final_restart_unseal",
+      "passed": true
+    },
+    {
+      "case": "reconciled_revoke_survives_both_restarts",
+      "passed": true
+    }
+  ],
+  "provider_version": "Server v=7.2.13 sha=00000000:0 malloc=jemalloc-5.3.0 bits=64 build=d168676aca4db8ba",
+  "tls_resp2": true,
+  "acl_save_restart_persistence": true,
+  "independent_observation": false,
+  "uncovered": [
+    "OpenBao differential parity",
+    "HeptaBao multi-node failover",
+    "Valkey replication/cluster failover",
+    "physical power-loss and disk-full",
+    "ACL marker retirement",
+    "Valkey 9.x ACL extensions"
+  ],
+  "bounded_profile": "Valkey 7.2 TLS; explicit command allowlists; generated key patterns; WATCH/EXEC; durable ACL marker and ACL SAVE; no provider cluster failover qualification",
+  "full_openbao_valkey_compatibility": false,
+  "independent_qualification": false,
+  "production_authority": false,
+  "candidate_binary_sha256": "9b06272534e22175f7838e9b4c4f4f3ac8468399390ea6efff52bc1e3181b1e5",
+  "candidate_binary_source_head": "6cda99b4a53fdca7677460d21315143fa9d22e22",
+  "source_worktree_dirty": false,
+  "execution_platform": "Linux aarch64 guest (Ubuntu Noble)"
+}

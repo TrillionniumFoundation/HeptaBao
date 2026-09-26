@@ -75,12 +75,17 @@ class Node:
     def data_dir(self) -> Path:
         return self.root / "data"
 
-    def call(self, method: str, path: str, body=None, *, token: str = "", timeout: float = 8.0):
+    def call(self, method: str, path: str, body=None, *, token: str = "", timeout: float = 8.0, wrap_ttl: str | None = None):
         if not path or path.startswith("/") or "://" in path or ".." in path.split("/"):
             raise FixtureError("invalid_fixture_request_path")
-        headers = {"Content-Type": "application/json"}
+        headers = {"Accept": "application/json", "Content-Type": "application/json"}
         if token:
             headers["X-Vault-Token"] = token
+        if wrap_ttl is not None:
+            if not isinstance(wrap_ttl, str) or not 1 <= len(wrap_ttl) <= 64 or any(
+                    ord(c) < 33 or ord(c) > 126 for c in wrap_ttl):
+                raise FixtureError("invalid_fixture_wrapping_ttl")
+            headers["X-Vault-Wrap-TTL"] = wrap_ttl
         request = urllib.request.Request(
             f"https://127.0.0.1:{self.http_port}/v1/{path}",
             data=None if body is None else json.dumps(body).encode(), headers=headers, method=method)
@@ -99,7 +104,7 @@ class Node:
                 raise FixtureError("non_object_response")
             return int(response.status), parsed
 
-    def start(self, ha: bool = True) -> None:
+    def start(self, ha: bool = True, *, wait: bool = True) -> None:
         if self.process is not None:
             raise FixtureError("node_already_running")
         # Created inside a fresh owner-only synthetic directory, never an existing log.
@@ -111,6 +116,19 @@ class Node:
         self.process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
                                         stdout=self.log, stderr=self.log, start_new_session=True)
         self.started_pids.append(self.process.pid)
+        if not wait:
+            return
+        self.wait_ready()
+
+    def wait_ready(self) -> None:
+        """Wait for the HTTPS listener after all peers have had a chance to bind.
+
+        HA bootstrap can need a peer listener while the bootstrap process is
+        starting.  Starting every process first avoids making node 1's startup
+        depend on an incidental process scheduling order.
+        """
+        if self.process is None:
+            raise FixtureError("node_not_running")
         deadline = time.monotonic() + 30
         while time.monotonic() < deadline:
             if self.process.poll() is not None:
@@ -137,6 +155,7 @@ class Node:
 
 
 class Cluster:
+    NODE_IDS = (1, 2, 3)
     def __init__(self, binary: Path, root: Path):
         if not root.is_absolute() or root.resolve() != root or root.exists() or not root.parent.is_dir():
             raise FixtureError("work_directory_must_be_new_absolute_non_symlink")
@@ -164,7 +183,7 @@ class Cluster:
         ca_key.chmod(0o600)
         context = ssl.create_default_context(cafile=str(ca_cert))
         peers = {}
-        for number in (1, 2, 3):
+        for number in self.NODE_IDS:
             root = self.root / f"node-{number}"
             root.mkdir(mode=0o700)
             node = Node(number, self.binary, root, context)
@@ -186,7 +205,7 @@ class Cluster:
                 "max_connections": 32, "timeout_seconds": 5,
                 "rate_limit_per_second": 1000, "rate_limit_burst": 2000, "rate_limit_entries": 256}))
         ports = [port for node in self.nodes for port in (node.http_port, node.raft_port)]
-        if len(set(ports)) != 6:
+        if len(set(ports)) != 2 * len(self.NODE_IDS):
             raise FixtureError("ephemeral_port_collision")
         self.peers = peers
 
@@ -239,7 +258,9 @@ class Cluster:
                 except (OSError, urllib.error.URLError, TimeoutError):
                     continue
                 if status == 200:
-                    if health.get("ha_active") is not True or health.get("standby") is not False:
+                    if (health.get("ha_active") is not True
+                            or health.get("ha_application_ready") is not True
+                            or health.get("standby") is not False):
                         raise FixtureError("health_success_without_active_authority")
                     active.append(node)
             if len(active) > 1:
@@ -288,7 +309,8 @@ class Cluster:
         if node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] != 200:
             raise FixtureError("restart_unseal_failed")
 
-    def run(self) -> None:
+    def bootstrap(self) -> None:
+        """Start the synthetic three-voter cluster without unrelated fault cases."""
         seed = self.nodes[0]
         seed.start(ha=False)
         self.check("fresh_seed_uninitialized", seed.call("GET", "sys/health")[0] == 501)
@@ -303,17 +325,30 @@ class Cluster:
         self.configure_ha()
         for node in self.nodes[1:]:
             shutil.copytree(seed.data_dir, node.data_dir)
-        # Test that a legitimate peer cannot unseal a different application cluster.
+        # This intentionally tests a cold-cloned encrypted seed, NOT production enrollment.
+        # Bootstrap every peer with the same cluster identity before exercising
+        # the hostile misbinding case.  The bootstrap voter may contact its
+        # peers during membership expansion, so bind every listener first.
+        for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
+            node.start(wait=False)
+        for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
+            node.wait_ready()
+        self.check("three_distinct_service_processes", len({node.process.pid for node in self.nodes}) == 3)
+        self.wait_quorum()
+        for node in self.nodes:
+            self.check(f"node_{node.node_id}_unsealed", node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
+
+    def run(self) -> None:
+        self.bootstrap()
+        # Test that a legitimate peer cannot unseal a different application
+        # cluster after it has already joined the committed three-voter set.
         wrong = self.nodes[2]
+        wrong.stop()
         wrong_config = json.loads((wrong.root / "ha.json").read_text())
         wrong_config["cluster_id"] = "deliberately-wrong-application-cluster"
         wrong.ha_config = wrong.root / "wrong-cluster.json"
         private_write(wrong.ha_config, json.dumps(wrong_config))
-        # This intentionally tests a cold-cloned encrypted seed, NOT production enrollment.
-        for node in [self.nodes[1], self.nodes[2], self.nodes[0]]:
-            node.start()
-        self.check("three_distinct_service_processes", len({node.process.pid for node in self.nodes}) == 3)
-        self.wait_quorum()
+        wrong.start()
         status, denied = wrong.call("POST", "sys/unseal", {"key": self.unseal_key})
         self.check("misbound_cluster_unseal_denied", status == 503 and denied.get("errors") == ["HA configuration belongs to a different cluster"])
         status, health = wrong.call("GET", "sys/health")
@@ -322,8 +357,7 @@ class Cluster:
         wrong.ha_config = wrong.root / "ha.json"
         wrong.start()
         self.wait_quorum()
-        for node in self.nodes:
-            self.check(f"node_{node.node_id}_unsealed", node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
+        self.check("restored_peer_unsealed", wrong.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
         leader = self.leader()
         marker = secrets.token_hex(16)
         self.write(leader, "ha-probe", marker)

@@ -12,11 +12,11 @@ This package owns migration writer authority, the immutable source-to-target inv
 
 ### Current API contract and integration boundary
 
-Two exported layers coexist. `MigrationState` in `lib.rs` is a public-field in-memory phase model: `fence_source`, `begin_copy`, `verify_copy`, `activate_target`, `fence_target`, `rollback` and `fail` change flags/generation but do not operate a source or target. `validate_no_overlap` checks the two local flags; caller mutation of public fields is not an externally enforced writer fence.
+The migration transition API is durable-only. The former public-field `MigrationState` model was an in-memory phase simulation: it could change local flags without fencing either endpoint or persisting an intent. It is now an unconstructable, deprecated compatibility marker whose constructor always returns `DurableJournalRequired`; no process-local model can claim migration authority. Callers must use `DurableMigrationJournal` so every transition is bound to the guarded journal, inventory, operation identity and durable publication.
 
 `MigrationObject::new` binds ID/class/source path/source SHA-256/expected target SHA-256/dependencies. `MigrationInventory::new` owns 1–4096 objects, canonicalizes object order, requires at most 128 sorted unique dependencies per object, rejects missing dependencies/cycles and computes the inventory digest. `execution_order()` returns borrowed objects in deterministic dependency order. The 14 object-class variants define an inventory vocabulary; they do not supply class-specific OpenBao readers or target writers. SHA-256 text validation accepts 64 lowercase hex characters, including an all-zero value; actual source/target hashing is an adapter duty.
 
-`DurableMigrationJournal` owns the Linux exclusive directory guard, frozen inventory, current record and selected journal authentication profile. `create_new(root, binding, inventory)` and `open(root, &expected_binding, inventory)` remain compatibility aliases for the **unkeyed v1 checksum** profile; new explicit `create_legacy_checksum`/`open_legacy_checksum` names expose that limitation. The root must meet the guarded safe-directory contract. `binding`, `phase`, `generation`, writer flags and `recovered_from_previous` expose status; `object_state(id)` borrows a per-object record.
+`DurableMigrationJournal` owns the Linux exclusive directory guard, frozen inventory, current record and selected journal authentication profile. `create_new(root, binding, inventory)` and `open(root, &expected_binding, inventory)` remain compatibility aliases for the **unkeyed v1 checksum** profile; new explicit `create_legacy_checksum`/`open_legacy_checksum` names expose that limitation. The root must meet the guarded safe-directory contract. `binding`, `phase`, `generation`, writer flags and `recovered_from_previous` expose status; `object_state(id)` borrows a per-object record. `objects_requiring_reconciliation()` returns every object still carrying either a persisted intent or an unknown outcome, in canonical order; `pending_reconciliation()` remains the narrower unknown-only view for callers that have already inspected surviving intents.
 
 For keyed checkpoints, `MigrationJournalAuthenticator::new(key_id, material: &[u8])` requires a valid bounded key ID and exactly 32 non-all-zero key bytes. `create_authenticated(root, binding, inventory, authenticator)` and `open_authenticated(root, &expected_binding, inventory, authenticator)` take ownership of that provider. `authentication_key_id()` exposes `Some(id)` for v2 or `None` for legacy. The caller owns key generation, external custody and clearing its original key buffer; key material is not written to the journal or exposed by Debug.
 
@@ -34,13 +34,41 @@ pub fn create_authenticated(
     ) -> Result<Self, MigrationJournalError>
 ```
 
-After an externally obtained `WriterFenceReceipt`, `fence_source(&receipt)` records source fencing. `begin_object(object_id, operation_id)` requires every dependency Verified, both writers disabled and a globally unused operation ID; it persists intent before returning `CopyIntent`. The copy adapter then performs the effect. `confirm_committed` accepts only the bound target digest; `mark_outcome_unknown` marks an entered uncertainty; `confirm_not_committed` requires that explicit unknown state before returning Pending with a permanently consumed old operation ID. `fail_object` records a bounded reason code and locally fails both writer flags closed.
+After an externally obtained `WriterFenceReceipt`, `fence_source(&receipt)` records source fencing. Replaying the exact source fence receipt after a timeout or restart is an idempotent no-op; a changed receipt remains rejected. `begin_object(object_id, operation_id)` requires every dependency Verified, both writers disabled and a globally unused operation ID; it persists intent before returning `CopyIntent`. If the response is lost after publication, `resume_object(object_id, operation_id)` re-obtains the same durable intent without allocating another attempt. It refuses unknown outcomes, which still require authoritative reconciliation. The copy adapter then performs the effect. `confirm_committed` accepts only the bound target digest and treats an identical acknowledgement for an already Verified object as an idempotent no-op; `mark_outcome_unknown` marks an entered uncertainty; `confirm_not_committed` requires that explicit unknown state before returning Pending with a permanently consumed old operation ID. `fail_object` records a bounded reason code and locally fails both writer flags closed.
 
-On restart, an `IntentPersisted` object is not automatically converted to `OutcomeUnknownAfterEntry`. `pending_reconciliation()` lists only the latter. A restart controller must inspect every inventory object's state, treat surviving intents as requiring readback, and explicitly mark them unknown if the effect is not proven committed. It must not interpret an empty pending-reconciliation list as proof that no copy entered. A journal publication I/O error may leave a newer generation on disk; stop transitions, release ownership and reopen before deciding the next action.
+On restart, an `IntentPersisted` object is not automatically converted to `OutcomeUnknownAfterEntry`. `objects_requiring_reconciliation()` lists both surviving intents and unknown outcomes in deterministic order; `pending_reconciliation()` remains the unknown-only subset. A restart controller must read back every object returned by the broad method, use `resume_object` for a still-persisted intent, and explicitly mark it unknown if the effect is not proven committed. It must not interpret an empty unknown-only list as proof that no copy entered. A journal publication I/O error may leave a newer generation on disk; stop transitions, release ownership and reopen before deciding the next action.
 
-`verify_copy()` requires every object Verified; `activate_target(&receipt, anchor_digest)` records target activation only after that point. Rollback after activation requires `fence_target` with a newer target generation, then `rollback` with a newer source-reactivation receipt and no outstanding intent/unknown state. These methods validate receipt fields and local ordering, not the external fencing action or receipt signatures. The controller owns real writer exclusion, source preservation, target readback and anchor custody.
+`verify_copy()` requires every object Verified and is idempotent once `CutoverReady` is durably recorded; `activate_target(&receipt, anchor_digest)` records target activation only after that point and accepts an identical replay as a no-op. `fence_target` likewise accepts only an identical replay of the recorded target fence receipt. Rollback after activation requires `fence_target` with a newer target generation, then `rollback` with a newer source-reactivation receipt and no outstanding intent/unknown state; replaying the same completed rollback is a no-op. These methods validate receipt fields and local ordering, not the external fencing action or receipt signatures. The controller owns real writer exclusion, source preservation, target readback and anchor custody.
 
 The durable journal is implemented but **outside the current server dependency closure**. The Python live KV tool `qa/openbao-acceptance/migrate_kv2.py` does not use this Rust journal; selecting its v2 HMAC API does not automatically authenticate that tool's checkpoint. There is no automatic migration entrypoint in the native server through this crate, and no general OpenBao migration is established merely by serializing all object classes.
+
+### OpenBao `raft.snap` inspection boundary
+
+`inspect_openbao_raft_snapshot` and
+`inspect_openbao_raft_snapshot_with_limits` validate the OpenBao 2.6.2
+inspection format: a bounded gzip stream containing a tar archive with exactly
+`meta.json`, `state.bin` and `SHA256SUMS`, plus an optional non-empty
+`SHA256SUMS.sealed` marker. The validator rejects duplicate or unknown paths,
+non-regular entries, unsafe resource sizes, malformed version-1 Raft metadata,
+state-size mismatches, checksum-list substitutions and non-zero trailing bytes.
+It computes the metadata/state SHA-256 digests and reports only bounded
+metadata and sizes.
+
+This is deliberately an **inspection-only** API. It never decrypts or verifies
+`SHA256SUMS.sealed`, opens a Raft store, writes extracted `state.bin`, restores
+the snapshot or converts it into a HeptaBao backup. A valid inspection therefore
+proves archive structure and byte integrity only; it does not prove barrier-key
+availability, application-state compatibility, migration completeness or
+cutover authority. The inspection subset is implemented-scoped; full snapshot
+conversion, restore and migration authority remain open until separately
+reviewed adapters and interruption-safe protocols exist.
+
+The `inspect-openbao-snapshot` binary is the bounded read-only caller for this
+API. `qa/openbao-acceptance/migration_snapshot_live.py` binds it to a pinned
+OpenBao 2.6.2 Raft oracle, checks an authentic `raft.snap`, and rejects tampered
+archives, state-size overflows and unknown archive members. These observations
+admit only the inspection subset; restore, conversion and migration authority
+remain open.
 
 ### Historical V1.4.7 lexical snapshot
 
@@ -157,9 +185,11 @@ Current authenticated-profile regressions in `crates/heptabao-migration/src/dura
 
 Current executable anchors (source assertions, not a claim that tests were rerun for this documentation edit):
 
-- [`tests::rollback_requires_target_fencing_after_cutover`](../../crates/heptabao-migration/src/lib.rs) checks the in-memory phase ordering before source reactivation.
+- The deprecated `MigrationState::new` compatibility marker is fail-closed and always returns `DurableJournalRequired`; it is intentionally not a migration test path.
 - [`durable::tests::inventory_is_closed_sorted_dependency_checked_and_hashed`](../../crates/heptabao-migration/src/durable.rs) checks inventory ordering/digest and rejects a dependency cycle.
 - [`durable::tests::intent_unknown_and_reconciliation_survive_restart`](../../crates/heptabao-migration/src/durable.rs) checks explicitly marked unknown state persists, blocks blind retry and consumes old operation IDs.
+- [`durable::tests::persisted_intent_is_visible_to_restart_reconciliation`](../../crates/heptabao-migration/src/durable.rs) checks a surviving intent is reported before authoritative readback even when the unknown-only queue is empty.
+- [`durable::tests::persisted_intent_and_cutover_receipts_are_idempotent`](../../crates/heptabao-migration/src/durable.rs) checks restart-safe intent replay, duplicate acknowledgements and cutover receipt retries without new generations.
 - [`durable::tests::cutover_requires_every_digest_and_never_overlaps_writers`](../../crates/heptabao-migration/src/durable.rs) checks target digest/all-object gates and target fencing before rollback.
 - [`durable::tests::binding_tampering_and_second_writer_fail_closed`](../../crates/heptabao-migration/src/durable.rs) checks source rebinding and concurrent writer rejection.
 - [`durable::tests::previous_generation_is_recovered_but_conflicts_are_rejected`](../../crates/heptabao-migration/src/durable.rs) checks previous-generation fallback and conflicting bindings.
@@ -186,3 +216,7 @@ The V1.4.7 generated facts below are a preserved historical snapshot. Current de
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-migration.md).

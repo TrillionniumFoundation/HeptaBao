@@ -1,16 +1,17 @@
 name: HeptaBao V2.5 multi-platform repository qualification
 
 on:
-  push:
-    branches:
-      - codex/openbao-replacement-v2.4-authoritative-closure-20260909
-  pull_request:
-    branches:
-      - main
+  # Current cross-platform coverage is distinct from the Linux PR gate.
+  schedule:
+    - cron: "17 2 * * *"
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always
@@ -87,6 +88,64 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
+  release-candidate-reproducibility:
+    name: release candidate / reproducible binary + SPDX SBOM
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Install exact Rust 1.98 toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.98.0 --profile minimal
+          rustc +1.98.0 --version
+          cargo +1.98.0 --version
+
+      - name: Build the exact release candidate twice in isolated target roots
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
+          CARGO_TARGET_DIR="$RUNNER_TEMP/release-a" cargo +1.98.0 build --locked --release -p heptabao-server
+          CARGO_TARGET_DIR="$RUNNER_TEMP/release-b" cargo +1.98.0 build --locked --release -p heptabao-server
+          binary_a="$RUNNER_TEMP/release-a/release/heptabao-server"
+          binary_b="$RUNNER_TEMP/release-b/release/heptabao-server"
+          test -x "$binary_a" && test -x "$binary_b"
+          sha_a="$(sha256sum "$binary_a" | cut -d ' ' -f1)"
+          sha_b="$(sha256sum "$binary_b" | cut -d ' ' -f1)"
+          printf 'release_binary_sha256_first=%s\nrelease_binary_sha256_second=%s\n' "$sha_a" "$sha_b"
+          test "$sha_a" = "$sha_b"
+          cmp "$binary_a" "$binary_b"
+          cp "$binary_a" "$RUNNER_TEMP/heptabao-server-release-candidate"
+
+      - name: Generate and revalidate deterministic SPDX 2.3 candidate SBOM
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/release_candidate_sbom.py             --lock Cargo.lock             --binary "$RUNNER_TEMP/heptabao-server-release-candidate"             --source-sha "$GITHUB_SHA"             --output "$RUNNER_TEMP/heptabao.spdx.json"
+          python scripts/release_candidate_sbom.py             --validate             --lock Cargo.lock             --binary "$RUNNER_TEMP/heptabao-server-release-candidate"             --source-sha "$GITHUB_SHA"             --output "$RUNNER_TEMP/heptabao.spdx.json"
+          printf 'candidate_sbom_sha256=%s\n' "$(sha256sum "$RUNNER_TEMP/heptabao.spdx.json" | cut -d ' ' -f1)"
+
+      - name: Verify release evidence does not mutate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
   repository-linux-arm64:
     name: repository / ubuntu-24.04-arm
     runs-on: ubuntu-24.04-arm
@@ -118,6 +177,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # ARM hosted runners can arrive with an interrupted/preinstalled 1.98
+          # manifestation whose clippy binary conflicts with rustup recovery.
+          # This is an ephemeral runner: remove only that exact toolchain before
+          # installing the pinned complete component set. Product gates stay
+          # unchanged.
+          rustup toolchain uninstall 1.98.0-aarch64-unknown-linux-gnu || true
           rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
           cargo +1.98.0 --version
           rustc +1.98.0 --version
@@ -192,6 +257,11 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+          # Hosted macOS images can also arrive with a partial/preinstalled 1.98
+          # toolchain whose cargo-clippy conflicts with rustup recovery. The
+          # runner is ephemeral; remove only the exact pinned toolchain before
+          # installing the complete component set, matching the ARM lane.
+          rustup toolchain uninstall 1.98.0-aarch64-apple-darwin || true
           rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
           cargo +1.98.0 --version
           rustc +1.98.0 --version

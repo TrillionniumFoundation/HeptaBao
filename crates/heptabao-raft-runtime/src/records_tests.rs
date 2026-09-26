@@ -1,0 +1,1008 @@
+use super::*;
+use crate::records::RecordCommand;
+use crate::state_machine::{ApplicationRequest, RecordRequest};
+
+pub(crate) fn block(id: u8) -> SealedRecordObject {
+    SealedRecordObject::new(
+        RecordObjectRef {
+            id: [id; 32],
+            kind: RecordObjectKind::Block,
+            encoded_bytes: 29,
+            record_count: 0,
+            payload_bytes: 4,
+        },
+        vec![],
+        vec![id; 62],
+    )
+    .expect("bounded synthetic sealed block")
+}
+pub(crate) fn owner(id: u8) -> SealedRecordObject {
+    SealedRecordObject::new(
+        RecordObjectRef {
+            id: [id; 32],
+            kind: RecordObjectKind::OwnerChunk,
+            encoded_bytes: 29,
+            record_count: 0,
+            payload_bytes: 4,
+        },
+        vec![],
+        vec![id; 62],
+    )
+    .expect("owner")
+}
+fn value(id: u8, block: &SealedRecordObject) -> SealedRecordObject {
+    SealedRecordObject::new(
+        RecordObjectRef {
+            id: [id; 32],
+            kind: RecordObjectKind::Value,
+            encoded_bytes: 80,
+            record_count: 1,
+            payload_bytes: 4,
+        },
+        vec![block.reference().clone()],
+        vec![id; 113],
+    )
+    .expect("value")
+}
+pub(crate) fn root(
+    base: RecordRootBase,
+    id: u8,
+    refs: Vec<RecordObjectRef>,
+) -> PublishedRecordRoot {
+    PublishedRecordRoot::new(
+        base,
+        ReplicatedEnvelope::new("root", [id; 32], vec![id; 100]).expect("envelope"),
+        refs,
+    )
+    .expect("published root")
+}
+fn apply(state: &mut StateMachine, command: RecordCommand) -> Result<(), RecordRejection> {
+    state
+        .apply(&ApplicationRequest::records(1, command).expect("bounded command"))
+        .result()
+}
+fn bytes(state: &StateMachine) -> Vec<u8> {
+    serde_json::to_vec(state).expect("state encoding")
+}
+
+#[test]
+fn stage_child_first_exact_immutability_and_no_partial_publication() {
+    let mut state = StateMachine::default();
+    let b = block(1);
+    let v = value(2, &b);
+    assert_eq!(
+        apply(&mut state, RecordCommand::Stage { object: v.clone() }),
+        Err(RecordRejection::MissingDependency)
+    );
+    assert!(state.records_v5.is_none());
+    apply(&mut state, RecordCommand::Stage { object: b.clone() }).expect("stage child");
+    let before = bytes(&state);
+    apply(&mut state, RecordCommand::Stage { object: b.clone() }).expect("idempotent stage");
+    assert_eq!(bytes(&state), before);
+    let changed = SealedRecordObject::new(b.reference().clone(), vec![], vec![9; 62])
+        .expect("different valid ciphertext");
+    assert_eq!(
+        apply(&mut state, RecordCommand::Stage { object: changed }),
+        Err(RecordRejection::ImmutableConflict)
+    );
+    assert_eq!(bytes(&state), before);
+    apply(&mut state, RecordCommand::Stage { object: v }).expect("stage parent");
+    assert!(
+        state
+            .records_v5
+            .as_ref()
+            .expect("records")
+            .published()
+            .is_none()
+    );
+    let missing = owner(4);
+    let publish = root(RecordRootBase::Empty, 5, vec![missing.reference().clone()]);
+    let before = bytes(&state);
+    assert_eq!(
+        apply(&mut state, RecordCommand::Publish { root: publish }),
+        Err(RecordRejection::MissingDependency)
+    );
+    assert_eq!(bytes(&state), before);
+}
+
+#[test]
+fn publish_cas_fences_legacy_and_prune_protects_current_root() {
+    let mut state = StateMachine::default();
+    let a = owner(1);
+    let b = owner(2);
+    for object in [&a, &b] {
+        apply(
+            &mut state,
+            RecordCommand::Stage {
+                object: object.clone(),
+            },
+        )
+        .expect("stage");
+    }
+    let first = root(RecordRootBase::Empty, 3, vec![a.reference().clone()]);
+    apply(
+        &mut state,
+        RecordCommand::Publish {
+            root: first.clone(),
+        },
+    )
+    .expect("first publish");
+    apply(&mut state, RecordCommand::Publish { root: first }).expect("retry exact publication");
+    let before = bytes(&state);
+    assert_eq!(
+        apply(
+            &mut state,
+            RecordCommand::Publish {
+                root: root(RecordRootBase::Empty, 4, vec![b.reference().clone()])
+            }
+        ),
+        Err(RecordRejection::StaleRoot)
+    );
+    assert_eq!(bytes(&state), before);
+    assert_eq!(
+        state
+            .apply(
+                &openraft_memstore::ClientRequest {
+                    client: crate::records::PRODUCTION_CLIENT.into(),
+                    serial: 1,
+                    status: "bypass".into()
+                }
+                .into()
+            )
+            .result(),
+        Err(RecordRejection::LegacyFenced)
+    );
+    assert_eq!(bytes(&state), before);
+    assert_eq!(
+        apply(
+            &mut state,
+            RecordCommand::Prune {
+                expected_root: [3; 32],
+                ids: vec![a.reference().id]
+            }
+        ),
+        Err(RecordRejection::Reachable)
+    );
+    assert_eq!(bytes(&state), before);
+    assert_eq!(
+        apply(
+            &mut state,
+            RecordCommand::Prune {
+                expected_root: [0; 32],
+                ids: vec![b.reference().id]
+            }
+        ),
+        Err(RecordRejection::StaleRoot)
+    );
+    apply(
+        &mut state,
+        RecordCommand::Publish {
+            root: root(
+                RecordRootBase::RecordsV5([3; 32]),
+                4,
+                vec![b.reference().clone()],
+            ),
+        },
+    )
+    .expect("CAS update");
+    apply(
+        &mut state,
+        RecordCommand::Prune {
+            expected_root: [4; 32],
+            ids: vec![a.reference().id],
+        },
+    )
+    .expect("prune retired root");
+    assert!(
+        state
+            .records_v5
+            .as_ref()
+            .expect("records")
+            .object(a.reference())
+            .expect("lookup")
+            .is_none()
+    );
+    assert!(
+        state
+            .records_v5
+            .as_ref()
+            .expect("records")
+            .object(b.reference())
+            .expect("lookup")
+            .is_some()
+    );
+}
+
+#[test]
+fn unpublished_gc_is_parent_first_and_zero_cas_cannot_cross_publication() {
+    let mut state = StateMachine::default();
+    let b = block(1);
+    let v = value(2, &b);
+    // A real legacy manifest can coexist with failed migration staging.
+    let legacy = ReplicatedEnvelope::new("legacy", [8; 32], vec![1]).expect("legacy envelope");
+    state
+        .apply(
+            &openraft_memstore::ClientRequest {
+                client: crate::records::PRODUCTION_CLIENT.into(),
+                serial: 1,
+                status: legacy.encoded_status(),
+            }
+            .into(),
+        )
+        .result()
+        .expect("legacy");
+    for object in [&b, &v] {
+        apply(
+            &mut state,
+            RecordCommand::Stage {
+                object: object.clone(),
+            },
+        )
+        .expect("stage");
+    }
+    assert_eq!(
+        state
+            .records_v5
+            .as_ref()
+            .expect("records")
+            .prunable(256)
+            .expect("candidates"),
+        vec![v.reference().id]
+    );
+    assert_eq!(
+        apply(
+            &mut state,
+            RecordCommand::Prune {
+                expected_root: [0; 32],
+                ids: vec![b.reference().id]
+            }
+        ),
+        Err(RecordRejection::ReferencedByStaged)
+    );
+    apply(
+        &mut state,
+        RecordCommand::Prune {
+            expected_root: [0; 32],
+            ids: vec![v.reference().id],
+        },
+    )
+    .expect("parent first");
+    apply(
+        &mut state,
+        RecordCommand::Prune {
+            expected_root: [0; 32],
+            ids: vec![b.reference().id],
+        },
+    )
+    .expect("then child");
+    apply(
+        &mut state,
+        RecordCommand::Publish {
+            root: root(RecordRootBase::Legacy([8; 32]), 9, vec![]),
+        },
+    )
+    .expect("migrate exact legacy root");
+    assert_eq!(
+        apply(
+            &mut state,
+            RecordCommand::Prune {
+                expected_root: [0; 32],
+                ids: vec![[10; 32]]
+            }
+        ),
+        Err(RecordRejection::StaleRoot)
+    );
+}
+
+#[test]
+fn typed_wire_fences_old_decoders_and_preserves_legacy_shapes() {
+    let legacy = openraft_memstore::ClientRequest {
+        client: "legacy".into(),
+        serial: 3,
+        status: "value".into(),
+    };
+    let old = serde_json::to_vec(&legacy).expect("old request");
+    let own: ApplicationRequest = serde_json::from_slice(&old).expect("new reads old");
+    assert_eq!(serde_json::to_vec(&own).expect("same encoding"), old);
+    let typed = ApplicationRequest::records(4, RecordCommand::Stage { object: owner(1) })
+        .expect("typed request");
+    let wire = serde_json::to_vec(&typed).expect("wire");
+    assert!(serde_json::from_slice::<openraft_memstore::ClientRequest>(&wire).is_err());
+    let mut state = StateMachine::default();
+    state.apply(&own).result().expect("legacy state");
+    let old_snapshot = state.snapshot_bytes().expect("old snapshot");
+    assert!(
+        serde_json::from_slice::<openraft_memstore::MemStoreStateMachine>(&old_snapshot).is_ok()
+    );
+    state.apply(&typed).result().expect("stage");
+    let new_snapshot = state.snapshot_bytes().expect("new snapshot");
+    assert!(
+        serde_json::from_slice::<openraft_memstore::MemStoreStateMachine>(&new_snapshot).is_err()
+    );
+    assert_eq!(
+        StateMachine::from_snapshot(&new_snapshot)
+            .expect("new restore")
+            .snapshot_bytes()
+            .expect("encode"),
+        new_snapshot
+    );
+    assert!(
+        StateMachine::from_snapshot(&bytes(&state)).is_err(),
+        "typed state without version wrapper must fail"
+    );
+}
+
+#[test]
+fn malformed_graph_base64_and_aggregate_are_rejected_on_restore() {
+    let mut state = StateMachine::default();
+    let b = block(1);
+    let v = value(2, &b);
+    for object in [&b, &v] {
+        apply(
+            &mut state,
+            RecordCommand::Stage {
+                object: object.clone(),
+            },
+        )
+        .expect("stage");
+    }
+    let original: serde_json::Value =
+        serde_json::from_slice(&state.snapshot_bytes().expect("snapshot")).expect("json");
+    let id = |id: u8| format!("{id:02x}").repeat(32);
+    for kind in 0..4 {
+        let mut damaged = original.clone();
+        let objects = &mut damaged["state"]["records_v5"]["objects"];
+        match kind {
+            0 => {
+                objects.as_object_mut().expect("map").remove(&id(1));
+            }
+            1 => objects[id(1)]["sealed"] = serde_json::json!("AQ=="),
+            2 => objects[id(2)]["reference"]["payload_bytes"] = serde_json::json!(8),
+            _ => objects[id(2)]["children"][0]["encoded_bytes"] = serde_json::json!(30),
+        }
+        assert!(
+            StateMachine::from_snapshot(&serde_json::to_vec(&damaged).expect("damaged")).is_err()
+        );
+    }
+}
+
+#[test]
+fn semantic_invalid_command_does_not_change_state_and_encoded_budget_counts_legacy() {
+    let mut state = StateMachine::default();
+    let invalid = ApplicationRequest::RecordsV5(RecordRequest {
+        serial: 0,
+        records_v5: RecordCommand::Stage { object: owner(1) },
+    });
+    let before = bytes(&state);
+    assert_eq!(
+        state.apply(&invalid).result(),
+        Err(RecordRejection::Invalid)
+    );
+    assert_eq!(bytes(&state), before);
+    state
+        .client_status
+        .insert("old-chunks".into(), "x".repeat(47 * 1024 * 1024));
+    let before = bytes(&state);
+    assert_eq!(
+        apply(&mut state, RecordCommand::Stage { object: owner(1) }),
+        Err(RecordRejection::Budget)
+    );
+    assert_eq!(bytes(&state), before);
+    assert!(state.records_v5.is_none());
+}
+
+#[test]
+fn cached_usage_and_bounded_inventory_track_only_actual_changes() {
+    let mut state = StateMachine::default();
+    let initial = state.record_usage().expect("initial");
+    let a = owner(1);
+    let b = owner(2);
+    for object in [&a, &b] {
+        apply(
+            &mut state,
+            RecordCommand::Stage {
+                object: object.clone(),
+            },
+        )
+        .expect("stage");
+    }
+    let usage = state.record_usage().expect("usage");
+    assert_eq!(usage.object_count, 2);
+    assert!(usage.encoded_bytes > initial.encoded_bytes);
+    apply(&mut state, RecordCommand::Stage { object: a.clone() }).expect("retry");
+    assert_eq!(state.record_usage().expect("same usage"), usage);
+    let records = state.records_v5.as_ref().expect("records");
+    assert_eq!(
+        records.inventory(None, 1).expect("page"),
+        vec![a.reference().clone()]
+    );
+    assert_eq!(
+        records.inventory(Some(a.reference().id), 1).expect("after"),
+        vec![b.reference().clone()]
+    );
+    assert!(records.inventory(None, 257).is_err());
+    apply(
+        &mut state,
+        RecordCommand::Prune {
+            expected_root: [0; 32],
+            ids: vec![a.reference().id, b.reference().id],
+        },
+    )
+    .expect("remove");
+    assert_eq!(state.record_usage().expect("empty").object_count, 0);
+}
+
+#[test]
+fn object_shape_and_ciphertext_bounds_keep_real_proposals_within_transport_capacity() {
+    let reference = RecordObjectRef {
+        id: [1; 32],
+        kind: RecordObjectKind::Block,
+        encoded_bytes: 256 * 1024 + 25,
+        record_count: 0,
+        payload_bytes: 256 * 1024,
+    };
+    let block = SealedRecordObject::new(
+        reference.clone(),
+        vec![],
+        vec![1; reference.encoded_bytes as usize + 33],
+    )
+    .expect("largest production block");
+    let request =
+        ApplicationRequest::records(1, RecordCommand::Stage { object: block }).expect("proposal");
+    assert!(
+        serde_json::to_vec(&request)
+            .expect("encoded proposal")
+            .len()
+            < 512 * 1024
+    );
+    assert!(
+        SealedRecordObject::new(
+            reference.clone(),
+            vec![],
+            vec![1; reference.encoded_bytes as usize + 257]
+        )
+        .is_err()
+    );
+    let mut bad = reference;
+    bad.record_count = 1;
+    assert!(SealedRecordObject::new(bad, vec![], vec![1]).is_err());
+    let b = owner(2);
+    let invalid_value = RecordObjectRef {
+        id: [3; 32],
+        kind: RecordObjectKind::Value,
+        encoded_bytes: 80,
+        record_count: 1,
+        payload_bytes: 4,
+    };
+    assert!(
+        SealedRecordObject::new(invalid_value, vec![b.reference().clone()], vec![1]).is_err(),
+        "value cannot reference owner chunks"
+    );
+}
+
+fn legacy_fixture() -> (StateMachine, LegacyStatusIdentity, Vec<LegacyChunkRef>) {
+    let manifest = ReplicatedEnvelope::new("manifest", [50; 32], vec![50; 100]).expect("manifest");
+    let chunk = ReplicatedEnvelope::new("chunk", [51; 32], vec![51; 100]).expect("chunk");
+    let mut state = StateMachine::default();
+    // hbr2 encodings ensure the identity is the actual stored representation.
+    let old_status = |e: &ReplicatedEnvelope| {
+        format!(
+            "hbr2:{}:{}:{}:{}",
+            e.operation_id().len(),
+            e.operation_id(),
+            e.digest()
+                .iter()
+                .map(|b| format!("{b:02x}"))
+                .collect::<String>(),
+            e.sealed()
+                .iter()
+                .map(|b| format!("{b:02x}"))
+                .collect::<String>()
+        )
+    };
+    let manifest_status = old_status(&manifest);
+    let chunk_status = old_status(&chunk);
+    let expected = LegacyStatusIdentity::inspect(&manifest_status)
+        .expect("manifest identity")
+        .1;
+    let active = vec![LegacyChunkRef {
+        index: 0,
+        slot: 1,
+        identity: LegacyStatusIdentity::inspect(&chunk_status)
+            .expect("chunk identity")
+            .1,
+    }];
+    state
+        .client_status
+        .insert(crate::records::PRODUCTION_CLIENT.into(), manifest_status);
+    for client in [
+        "heptabao-production-ha-chunk:000:0",
+        "heptabao-production-ha-chunk:000:1",
+        "heptabao-production-ha-chunk:127:0",
+        "heptabao-production-ha-chunk:999:0",
+        "heptabao-production-ha-chunk:00:1",
+        "qualification",
+    ] {
+        state
+            .client_status
+            .insert(client.into(), chunk_status.clone());
+    }
+    (state, expected, active)
+}
+fn retain(expected_manifest: LegacyStatusIdentity, active: Vec<LegacyChunkRef>) -> RecordCommand {
+    RecordCommand::RetainLegacyChunks {
+        expected_manifest,
+        active,
+    }
+}
+
+#[test]
+fn legacy_cleanup_checks_all_identities_before_any_change_or_fence() {
+    let (mut state, expected, active) = legacy_fixture();
+    let before = bytes(&state);
+    let mut wrong = expected;
+    wrong.status_sha256[0] ^= 1;
+    assert_eq!(
+        apply(&mut state, retain(wrong, active.clone())),
+        Err(RecordRejection::StaleRoot)
+    );
+    let mut wrong = expected;
+    wrong.digest[0] ^= 1;
+    assert_eq!(
+        apply(&mut state, retain(wrong, active.clone())),
+        Err(RecordRejection::StaleRoot)
+    );
+    let mut refs = active.clone();
+    refs[0].identity.status_sha256[0] ^= 1;
+    assert_eq!(
+        apply(&mut state, retain(expected, refs)),
+        Err(RecordRejection::ImmutableConflict)
+    );
+    let mut refs = active.clone();
+    refs[0].identity.digest[0] ^= 1;
+    assert_eq!(
+        apply(&mut state, retain(expected, refs)),
+        Err(RecordRejection::ImmutableConflict)
+    );
+    let mut refs = active.clone();
+    refs[0].index = 126;
+    assert_eq!(
+        apply(&mut state, retain(expected, refs)),
+        Err(RecordRejection::MissingDependency)
+    );
+    assert_eq!(
+        apply(&mut state, retain(expected, vec![])),
+        Err(RecordRejection::Invalid)
+    );
+    let mut refs = active.clone();
+    refs.push(refs[0]);
+    assert_eq!(
+        apply(&mut state, retain(expected, refs)),
+        Err(RecordRejection::Invalid)
+    );
+    let mut refs = active.clone();
+    refs[0].slot = 2;
+    assert_eq!(
+        apply(&mut state, retain(expected, refs)),
+        Err(RecordRejection::Invalid)
+    );
+    assert_eq!(bytes(&state), before);
+    assert!(state.records_v5.is_none());
+}
+
+#[test]
+fn inline_hbsr1_cleanup_accepts_empty_active_set_and_fences_legacy_writer() {
+    let inline =
+        ReplicatedEnvelope::new("inline", [61; 32], [b"HBSR1".as_slice(), &[0; 64]].concat())
+            .expect("inline envelope");
+    let status = inline.encoded_status();
+    let expected = LegacyStatusIdentity::inspect(&status)
+        .expect("inline identity")
+        .1;
+    let mut state = StateMachine::default();
+    state
+        .client_status
+        .insert(crate::records::PRODUCTION_CLIENT.into(), status);
+    state.client_status.insert(
+        "heptabao-production-ha-chunk:000:0".into(),
+        ReplicatedEnvelope::new("stale", [62; 32], vec![62; 32])
+            .expect("stale envelope")
+            .encoded_status(),
+    );
+
+    apply(&mut state, retain(expected, vec![])).expect("inline preparation");
+    assert_eq!(state.base(), Ok(RecordRootBase::Legacy(expected.digest)));
+    assert!(
+        !state
+            .client_status
+            .contains_key("heptabao-production-ha-chunk:000:0")
+    );
+    let before = bytes(&state);
+    let response = state.apply(
+        &openraft_memstore::ClientRequest {
+            client: crate::records::PRODUCTION_CLIENT.into(),
+            serial: 9,
+            status: "late inline legacy write".into(),
+        }
+        .into(),
+    );
+    assert_eq!(response.result(), Err(RecordRejection::LegacyFenced));
+    assert_eq!(bytes(&state), before);
+}
+
+#[test]
+fn legacy_cleanup_preserves_exact_active_statuses_and_installs_durable_write_fence() {
+    let (mut state, expected, active) = legacy_fixture();
+    let original = state.client_status.clone();
+    apply(&mut state, retain(expected, active.clone())).expect("cleanup");
+    for name in [
+        crate::records::PRODUCTION_CLIENT,
+        "heptabao-production-ha-chunk:000:1",
+        "heptabao-production-ha-chunk:999:0",
+        "heptabao-production-ha-chunk:00:1",
+        "qualification",
+    ] {
+        assert_eq!(state.client_status.get(name), original.get(name));
+    }
+    assert!(
+        !state
+            .client_status
+            .contains_key("heptabao-production-ha-chunk:000:0")
+    );
+    assert!(
+        !state
+            .client_status
+            .contains_key("heptabao-production-ha-chunk:127:0")
+    );
+    assert_eq!(state.base(), Ok(RecordRootBase::Legacy(expected.digest)));
+    assert_eq!(
+        state
+            .records_v5
+            .as_ref()
+            .and_then(crate::records::RecordState::published_digest),
+        None
+    );
+    let once = bytes(&state);
+    apply(&mut state, retain(expected, active.clone())).expect("exact retry");
+    assert_eq!(bytes(&state), once);
+    let snapshot = state.snapshot_bytes().expect("snapshot3");
+    assert!(serde_json::from_slice::<openraft_memstore::MemStoreStateMachine>(&snapshot).is_err());
+    state = StateMachine::from_snapshot(&snapshot).expect("prepared reopen");
+    for client in [
+        crate::records::PRODUCTION_CLIENT,
+        "heptabao-production-ha-chunk:000:1",
+        "heptabao-production-ha-chunk:126:0",
+    ] {
+        let before = bytes(&state);
+        let response = state.apply(
+            &openraft_memstore::ClientRequest {
+                client: client.into(),
+                serial: 8,
+                status: "late legacy write".into(),
+            }
+            .into(),
+        );
+        assert_eq!(response.result(), Err(RecordRejection::LegacyFenced));
+        assert_eq!(bytes(&state), before);
+    }
+    assert!(
+        state
+            .apply(
+                &openraft_memstore::ClientRequest {
+                    client: "qualification".into(),
+                    serial: 9,
+                    status: "still allowed".into(),
+                }
+                .into()
+            )
+            .result()
+            .is_ok()
+    );
+    let object = owner(4);
+    apply(
+        &mut state,
+        RecordCommand::Stage {
+            object: object.clone(),
+        },
+    )
+    .expect("stage after preparation");
+    apply(
+        &mut state,
+        RecordCommand::Publish {
+            root: root(
+                RecordRootBase::Legacy(expected.digest),
+                5,
+                vec![object.reference().clone()],
+            ),
+        },
+    )
+    .expect("publish typed root");
+    assert_eq!(
+        state
+            .records_v5
+            .as_ref()
+            .and_then(crate::records::RecordState::prepared_identity),
+        None
+    );
+    let before = bytes(&state);
+    assert_eq!(
+        apply(&mut state, retain(expected, active)),
+        Err(RecordRejection::LegacyFenced)
+    );
+    assert_eq!(bytes(&state), before);
+}
+
+#[test]
+fn oversized_legacy_slots_can_shrink_without_relaxing_typed_stage_budget() {
+    let (mut state, expected, _) = legacy_fixture();
+    state
+        .client_status
+        .retain(|client, _| client == crate::records::PRODUCTION_CLIENT);
+    let mut active = Vec::new();
+    // 32 valid bounded envelopes in each physical slot produce >47MiB of
+    // encoded legacy state. Each individual envelope remains below 1MiB.
+    for index in 0..32_u16 {
+        for slot in 0..2_u8 {
+            let envelope = ReplicatedEnvelope::new(
+                format!("chunk-{index}-{slot}"),
+                [u8::try_from(index).expect("bounded index") + 1; 32],
+                vec![slot + 1; 600 * 1024],
+            )
+            .expect("bounded legacy chunk");
+            let status = envelope.encoded_status();
+            if slot == 0 {
+                active.push(LegacyChunkRef {
+                    index,
+                    slot,
+                    identity: LegacyStatusIdentity::inspect(&status)
+                        .expect("active identity")
+                        .1,
+                });
+            }
+            state.client_status.insert(
+                format!("heptabao-production-ha-chunk:{index:03}:{slot}"),
+                status,
+            );
+        }
+    }
+    assert_eq!(state.record_usage(), Err(RecordRejection::Budget));
+    apply(&mut state, retain(expected, active)).expect("oversized inactive map can shrink");
+    let usage = state.record_usage().expect("new usage");
+    assert!(usage.encoded_bytes < 27 * 1024 * 1024);
+    assert_eq!(state.client_status.len(), 33);
+    state.validate().expect("prepared state valid");
+    apply(&mut state, RecordCommand::Stage { object: owner(1) })
+        .expect("typed staging fits after cleanup");
+
+    let (mut still_large, expected, active) = legacy_fixture();
+    for index in 0..64 {
+        still_large
+            .client_status
+            .insert(format!("qualification-{index}"), "x".repeat(768 * 1024));
+    }
+    apply(&mut still_large, retain(expected, active))
+        .expect("preparation retains existing legacy data");
+    still_large
+        .validate()
+        .expect("empty prepared graph retains legacy-only excess");
+    let usage = still_large
+        .record_usage()
+        .expect("honest over-limit legacy observation");
+    assert!(usage.encoded_bytes > usage.encoded_limit);
+    assert_eq!(usage.object_count, 0);
+    assert_eq!(
+        apply(&mut still_large, RecordCommand::Stage { object: owner(1) }),
+        Err(RecordRejection::Budget)
+    );
+    assert_eq!(
+        still_large
+            .record_usage()
+            .expect("unchanged objects")
+            .object_count,
+        0
+    );
+}
+
+fn packed(
+    id: u8,
+    count: u64,
+    inline_bytes: u64,
+    children: Vec<RecordObjectRef>,
+) -> SealedRecordObject {
+    let payload_bytes = inline_bytes
+        + children
+            .iter()
+            .map(|child| child.payload_bytes)
+            .sum::<u64>();
+    SealedRecordObject::new(
+        RecordObjectRef {
+            id: [id; 32],
+            kind: RecordObjectKind::PackedLeaf,
+            encoded_bytes: 4096,
+            record_count: count,
+            payload_bytes,
+        },
+        children,
+        vec![id; 4129],
+    )
+    .expect("synthetic bounded packed page metadata")
+}
+
+#[test]
+fn packed_leaf_stage_publish_and_snapshot_preserve_inline_and_repeated_reference_counts() {
+    let b = block(71);
+    let v = value(72, &b);
+    let leaf = packed(73, 3, 7, vec![v.reference().clone(), v.reference().clone()]);
+    let mut state = StateMachine::default();
+    assert_eq!(
+        apply(
+            &mut state,
+            RecordCommand::Stage {
+                object: leaf.clone()
+            }
+        ),
+        Err(RecordRejection::MissingDependency)
+    );
+    for object in [b, v, leaf.clone()] {
+        apply(&mut state, RecordCommand::Stage { object }).expect("child-first staging");
+    }
+    let published = root(RecordRootBase::Empty, 74, vec![leaf.reference().clone()]);
+    apply(
+        &mut state,
+        RecordCommand::Publish {
+            root: published.clone(),
+        },
+    )
+    .expect("packed root publication");
+    let encoded = state.snapshot_bytes().expect("typed snapshot");
+    let reopened =
+        StateMachine::from_snapshot(&encoded).expect("full graph decoder accepts PackedLeaf");
+    assert_eq!(
+        reopened.records_v5.as_ref().expect("records").published(),
+        Some(published)
+    );
+    assert_eq!(
+        reopened
+            .records_v5
+            .as_ref()
+            .expect("records")
+            .object(leaf.reference())
+            .expect("object"),
+        Some(leaf)
+    );
+    let empty_inline = packed(75, 1, 0, vec![]);
+    apply(
+        &mut state,
+        RecordCommand::Stage {
+            object: empty_inline,
+        },
+    )
+    .expect("generic core empty byte value remains legal");
+    let boundary = SealedRecordObject::new(
+        RecordObjectRef {
+            id: [76; 32],
+            kind: RecordObjectKind::PackedLeaf,
+            encoded_bytes: 32768,
+            record_count: 256,
+            payload_bytes: 1024,
+        },
+        vec![],
+        vec![76; 32801],
+    )
+    .expect("inclusive page and entry limits");
+    apply(&mut state, RecordCommand::Stage { object: boundary }).expect("bounded maximum page");
+}
+
+#[test]
+fn packed_leaf_invalid_aggregate_and_size_commands_reject_without_changing_application() {
+    let valid = packed(81, 1, 4, vec![]);
+    let mut state = StateMachine::default();
+    let before = bytes(&state);
+    for (field, value) in [
+        ("record_count", 0_u64),
+        ("record_count", 257),
+        ("encoded_bytes", 26),
+        ("encoded_bytes", 32769),
+        ("payload_bytes", 1025),
+    ] {
+        let mut wire = serde_json::to_value(&valid).expect("wire");
+        wire["reference"][field] = value.into();
+        let invalid: SealedRecordObject =
+            serde_json::from_value(wire).expect("decode untrusted descriptor");
+        assert_eq!(
+            apply(&mut state, RecordCommand::Stage { object: invalid }),
+            Err(RecordRejection::Invalid)
+        );
+        assert_eq!(bytes(&state), before);
+    }
+    let b = block(82);
+    let v = value(83, &b);
+    let mixed = packed(84, 2, 4, vec![v.reference().clone()]);
+    for mode in [
+        "no-inline",
+        "underflow",
+        "wrong-kind",
+        "wrong-count",
+        "page-payload",
+    ] {
+        let mut wire = serde_json::to_value(&mixed).expect("wire");
+        match mode {
+            "no-inline" => wire["reference"]["record_count"] = 1.into(),
+            "underflow" => wire["reference"]["payload_bytes"] = 3.into(),
+            "wrong-kind" => wire["children"][0]["kind"] = "Block".into(),
+            "wrong-count" => wire["children"][0]["record_count"] = 0.into(),
+            _ => {
+                wire["reference"]["encoded_bytes"] = 30.into();
+                wire["sealed"] = "AQ".into();
+            }
+        }
+        let invalid: SealedRecordObject =
+            serde_json::from_value(wire).expect("decode untrusted descriptor");
+        assert_eq!(
+            apply(&mut state, RecordCommand::Stage { object: invalid }),
+            Err(RecordRejection::Invalid),
+            "{mode}"
+        );
+        assert_eq!(bytes(&state), before);
+    }
+}
+
+#[test]
+fn branch_accepts_mixed_legacy_and_packed_leaves_but_never_mixed_tree_levels() {
+    let b = block(91);
+    let v = value(92, &b);
+    let legacy = SealedRecordObject::new(
+        RecordObjectRef {
+            id: [93; 32],
+            kind: RecordObjectKind::Leaf,
+            encoded_bytes: 100,
+            record_count: 1,
+            payload_bytes: 4,
+        },
+        vec![v.reference().clone()],
+        vec![93; 133],
+    )
+    .expect("legacy leaf");
+    let small = packed(94, 1, 3, vec![]);
+    let branch_ref = RecordObjectRef {
+        id: [95; 32],
+        kind: RecordObjectKind::Branch,
+        encoded_bytes: 300,
+        record_count: 2,
+        payload_bytes: 7,
+    };
+    let branch = SealedRecordObject::new(
+        branch_ref.clone(),
+        vec![legacy.reference().clone(), small.reference().clone()],
+        vec![95; 333],
+    )
+    .expect("same-level mixed leaves");
+    let mut state = StateMachine::default();
+    for object in [b, v, legacy, small.clone(), branch.clone()] {
+        apply(&mut state, RecordCommand::Stage { object }).expect("valid graph");
+    }
+    apply(
+        &mut state,
+        RecordCommand::Publish {
+            root: root(RecordRootBase::Empty, 96, vec![branch_ref]),
+        },
+    )
+    .expect("publish mixed leaf graph");
+    StateMachine::from_snapshot(&state.snapshot_bytes().expect("snapshot"))
+        .expect("restore mixed graph");
+    let invalid = RecordObjectRef {
+        id: [97; 32],
+        kind: RecordObjectKind::Branch,
+        encoded_bytes: 300,
+        record_count: 3,
+        payload_bytes: 10,
+    };
+    assert!(
+        SealedRecordObject::new(
+            invalid,
+            vec![branch.reference().clone(), small.reference().clone()],
+            vec![97; 333]
+        )
+        .is_err()
+    );
+}

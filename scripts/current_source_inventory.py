@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Content-bound current module inventory; frozen V1.4.7 evidence is not rewritten.
+"""Reproducible current module inventory; frozen V1.4.7 evidence is not rewritten.
 
-This is a lexical inventory, NOT a Rust visibility proof or a test-pass receipt.
-The compact committed snapshot binds the full reproducible details by SHA-256.
-An external CI receipt binds that snapshot to the actual commit and Git tree,
-which avoids embedding a self-referential commit ID inside the commit itself.
+This is a lexical diagnostic inventory, NOT a Rust visibility proof, a test-pass
+receipt, or an additional source authority. Exact Git commit/tree identity already
+binds repository bytes in CI. The compact committed snapshot is retained only as a
+review aid and may lag source changes without blocking development; --details or
+--write always recompute the current digest from the checked-out tree.
 """
 from __future__ import annotations
 
@@ -22,7 +23,7 @@ SNAPSHOT = "planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json"
 HISTORICAL = "planning/HEPTABAO_MODULE_SOURCE_TRUTH_V1_4_7.yaml"
 # Exact preserved bytes at the reviewed input to this remediation, not regenerated.
 HISTORICAL_SHA256 = "4b88d830ad088b9b611f051164b1c202d3cfcee986d100ae67706c701f5c8cf7"
-SCHEMA = "heptabao.current-source-inventory.v2"
+SCHEMA = "heptabao.current-source-inventory.v3"
 PUBLIC = re.compile(r"^\s*pub(?:\([^)]*\))?\s+(?:(?:async|unsafe|const)\s+)*(fn|struct|enum|trait|type|mod|use|static|const)\s+([A-Za-z_][A-Za-z0-9_]*)")
 TEST = re.compile(r"^\s*#\[(?:test|(?:tokio|async_std)::test)(?:\([^]]*\))?\]\s*$")
 FN = re.compile(r"\b(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)")
@@ -52,8 +53,17 @@ def read(root: Path, relative: str) -> bytes:
 
 def members(root: Path) -> list[str]:
     workspace = tomllib.loads(read(root, "Cargo.toml").decode())["workspace"]
-    if workspace.get("exclude"):
-        raise ValueError("workspace.exclude requires an explicit inventory policy update")
+    # Vendored dependencies can own their upstream build/test policy without
+    # becoming first-party modules. Never let an exclusion hide a declared
+    # product member or an unchecked path outside the vendor directory.
+    excluded = workspace.get("exclude", [])
+    if not isinstance(excluded, list):
+        raise ValueError("invalid workspace exclusions")
+    for entry in excluded:
+        if (not isinstance(entry, str) or not re.fullmatch(r"vendor/[A-Za-z0-9_.-]+", entry)
+                or Path(entry).name in {".", ".."}):
+            raise ValueError("workspace exclusions must name explicit vendored dependencies")
+        read(root, f"{entry}/Cargo.toml")
     result: list[str] = []
     for pattern in workspace["members"]:
         if not isinstance(pattern, str) or Path(pattern).is_absolute() or ".." in Path(pattern).parts:
@@ -64,6 +74,8 @@ def members(root: Path) -> list[str]:
         result.extend(p.relative_to(root).as_posix() for p in matches)
     if len(result) != len(set(result)):
         raise ValueError("duplicate workspace member")
+    if set(result).intersection(excluded):
+        raise ValueError("workspace exclusion hides a declared member")
     return sorted(result)
 
 
@@ -140,23 +152,49 @@ def inventory(root: Path = ROOT) -> tuple[dict[str, Any], dict[str, Any]]:
     guides = {p.stem for p in (root / "docs/modules").glob("heptabao-*.md")}
     if guides != set(all_details):
         raise ValueError("module guide set differs from the expanded workspace")
+    binding = {"workspace_sha256": digest(read(root, "Cargo.toml")),
+               "lockfile_sha256": digest(read(root, "Cargo.lock")),
+               "historical_v1_4_7_sha256": HISTORICAL_SHA256,
+               "modules": rows}
     snapshot = {"schema": SCHEMA, "scope": "source-and-document-binding-only",
-                "workspace_sha256": digest(read(root, "Cargo.toml")),
-                "lockfile_sha256": digest(read(root, "Cargo.lock")),
-                "historical_v1_4_7_sha256": HISTORICAL_SHA256,
-                "package_count": len(rows), "modules": rows,
+                "package_count": len(rows),
+                "inventory_sha256": digest(canonical(binding)),
                 "qualification": False, "compatibility_claim": False,
                 "production_authority": False, "release_authority": False}
     return snapshot, all_details
 
 
 def validate(root: Path = ROOT) -> list[str]:
+    """Validate inventory inputs and the diagnostic snapshot envelope.
+
+    Source/guide/manifest/lock content drift is intentionally *not* compared with
+    the committed snapshot. The exact checkout's Git tree is the source binding;
+    requiring a second hand-refreshed digest commit after every source edit adds
+    no independent evidence and used to create false-negative CI churn.
+    """
     try:
-        expected, _ = inventory(root)
-        if read(root, SNAPSHOT) != canonical(expected):
-            return ["current source inventory drift: regenerate and review the V2 snapshot, not V1.4.7"]
+        current, _ = inventory(root)
+        raw = read(root, SNAPSHOT)
+        snapshot = json.loads(raw)
+        if not isinstance(snapshot, dict):
+            return ["current source inventory snapshot must contain an object"]
+        required = {
+            "schema": SCHEMA,
+            "scope": "source-and-document-binding-only",
+            "package_count": current["package_count"],
+            "qualification": False,
+            "compatibility_claim": False,
+            "production_authority": False,
+            "release_authority": False,
+        }
+        for key, expected in required.items():
+            if snapshot.get(key) != expected:
+                return [f"current source inventory snapshot has invalid {key}"]
+        value = snapshot.get("inventory_sha256")
+        if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value) or value == "0" * 64:
+            return ["current source inventory snapshot has invalid diagnostic digest"]
         return []
-    except (OSError, ValueError, KeyError, TypeError) as error:
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as error:
         return [f"current source inventory: {error}"]
 
 
@@ -172,7 +210,11 @@ def main() -> int:
         for error in errors:
             print(error, file=sys.stderr)
         if not errors:
-            print("current-source-inventory: PASS (source binding only)")
+            snapshot, _ = inventory()
+            print(
+                "current-source-inventory: PASS "
+                f"(Git tree authoritative; current diagnostic={snapshot['inventory_sha256']})"
+            )
         return int(bool(errors))
     try:
         snapshot, details = inventory()

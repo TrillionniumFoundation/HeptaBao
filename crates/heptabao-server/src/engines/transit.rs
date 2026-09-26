@@ -1,10 +1,14 @@
 use super::*;
+use ::hmac::{Hmac, Mac};
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use chacha20poly1305::{AeadInPlace, KeyInit, XChaCha20Poly1305, XNonce};
 use ring::{
-    aead, digest, hmac,
+    aead,
     rand::{SecureRandom, SystemRandom},
     signature::{self, KeyPair},
 };
+use sha2::{Digest as RustDigest, Sha224, Sha256, Sha384, Sha512};
+use sha3::{Sha3_224, Sha3_256, Sha3_384, Sha3_512};
 
 const MAX_INPUT_BYTES: usize = 4 * 1024 * 1024;
 use zeroize::Zeroizing;
@@ -25,6 +29,8 @@ struct Key {
     min_encryption_version: u64,
     deletion_allowed: bool,
     exportable: bool,
+    #[serde(default)]
+    auto_rotate_period: u64,
     deleted: bool,
     versions: BTreeMap<u64, KeyVersion>,
 }
@@ -76,7 +82,9 @@ impl KeyVersion {
     fn generate(kind: &str, now: u64) -> Result<Self> {
         let material = match kind {
             "aes128-gcm96" => random_bytes(16)?,
-            "aes256-gcm96" | "chacha20-poly1305" | "hmac" => random_bytes(32)?,
+            "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305" | "hmac" => {
+                random_bytes(32)?
+            }
             "ed25519" => Zeroizing::new(
                 signature::Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
                     .map_err(|_| error(503, "key generation failed"))?
@@ -109,18 +117,7 @@ impl Key {
                 ));
             }
         }
-        if body
-            .get("auto_rotate_period")
-            .map(duration_seconds)
-            .transpose()?
-            .unwrap_or(0)
-            != 0
-        {
-            return Err(error(
-                501,
-                "automatic time-based rotation is not implemented",
-            ));
-        }
+        let auto_rotate_period = auto_rotate_period(body.get("auto_rotate_period"))?;
         let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
         let version = KeyVersion::generate(kind, now)?;
         Ok(Self {
@@ -130,6 +127,7 @@ impl Key {
             min_encryption_version: 0,
             deletion_allowed: false,
             exportable,
+            auto_rotate_period,
             deleted: false,
             versions: BTreeMap::from([(1, version)]),
         })
@@ -150,7 +148,7 @@ impl Key {
         }
         let encryption = matches!(
             self.kind.as_str(),
-            "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305"
+            "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305"
         );
         Ok(
             json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
@@ -158,7 +156,7 @@ impl Key {
             "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":false,
             "derived":false,"convergent_encryption":false,"supports_derivation":false,
             "supports_encryption":encryption,"supports_decryption":encryption,"supports_signing":self.kind=="ed25519",
-            "supports_hmac":true,"imported_key":false,"auto_rotate_period":0,"soft_deleted":self.deleted,"min_available_version":0}),
+            "supports_hmac":true,"imported_key":false,"auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0}),
         )
     }
 
@@ -205,6 +203,10 @@ impl Key {
                 "auto_rotate_period",
             ],
         )?;
+        let requested_auto_rotate_period = body
+            .get("auto_rotate_period")
+            .map(|value| auto_rotate_period(Some(value)))
+            .transpose()?;
         if let Some(value) = optional_u64(body, "min_decryption_version")? {
             self.min_decryption_version = value.max(1);
         }
@@ -232,25 +234,63 @@ impl Key {
         if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false) {
             return Err(error(501, "plaintext backup is not implemented"));
         }
-        if body
-            .get("auto_rotate_period")
-            .map(duration_seconds)
-            .transpose()?
-            .unwrap_or(0)
-            != 0
-        {
-            return Err(error(
-                501,
-                "automatic time-based rotation is not implemented",
-            ));
+        if let Some(period) = requested_auto_rotate_period {
+            self.auto_rotate_period = period;
         }
         Ok(())
     }
+
+    fn auto_rotate(&mut self, now: u64) -> Result<bool> {
+        if self.deleted || self.auto_rotate_period == 0 || self.versions.len() >= 10_000 {
+            return Ok(false);
+        }
+        let created = self
+            .versions
+            .get(&self.latest_version)
+            .ok_or_else(|| error(500, "latest transit key version is missing"))?
+            .created_at;
+        let due = created
+            .checked_add(self.auto_rotate_period)
+            .ok_or_else(|| error(500, "transit rotation deadline overflow"))?;
+        if now < due {
+            return Ok(false);
+        }
+        let next = self
+            .latest_version
+            .checked_add(1)
+            .ok_or_else(|| bad("key version limit reached"))?;
+        self.versions
+            .insert(next, KeyVersion::generate(&self.kind, now)?);
+        self.latest_version = next;
+        Ok(true)
+    }
+}
+
+fn auto_rotate_period(value: Option<&Value>) -> Result<u64> {
+    let period = value.map(duration_seconds).transpose()?.unwrap_or(0);
+    if period != 0 && period < 3600 {
+        return Err(bad("auto_rotate_period must be at least 1h or 0"));
+    }
+    Ok(period)
 }
 
 impl Transit {
     pub(super) fn contains(&self, name: &str) -> bool {
         self.keys.contains_key(name)
+    }
+
+    pub(super) fn has_auto_rotate_keys(&self) -> bool {
+        self.keys
+            .values()
+            .any(|key| key.auto_rotate_period != 0 && !key.deleted)
+    }
+
+    pub(super) fn maintain_auto_rotation(&mut self, now: u64) -> Result<bool> {
+        let mut changed = false;
+        for key in self.keys.values_mut() {
+            changed |= key.auto_rotate(now)?;
+        }
+        Ok(changed)
     }
 
     pub(super) fn handle(
@@ -377,16 +417,11 @@ impl Transit {
                 {
                     return Err(bad("use the key config endpoint to change exportability"));
                 }
-                if body
-                    .get("auto_rotate_period")
-                    .map(duration_seconds)
-                    .transpose()?
-                    .unwrap_or(0)
-                    != 0
+                if let Some(value) = body.get("auto_rotate_period")
+                    && auto_rotate_period(Some(value))? != key.auto_rotate_period
                 {
-                    return Err(error(
-                        501,
-                        "automatic time-based rotation is not implemented",
+                    return Err(bad(
+                        "use the key config endpoint to change auto_rotate_period",
                     ));
                 }
                 return Ok(ok(key.descriptor(name)?, false));
@@ -456,7 +491,7 @@ impl Transit {
             && !(kind == "encryption-key"
                 && matches!(
                     key.kind.as_str(),
-                    "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305"
+                    "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305"
                 ))
         {
             return Err(error(501, "requested key export format is not implemented"));
@@ -754,9 +789,9 @@ fn handle_crypto(
                     .ok_or_else(not_found)?
                     .hmac_material,
             )?;
-            let mac_key = hmac::Key::new(hmac_algorithm(algorithm)?, &material);
-            let tag = hmac::sign(&mac_key, &decode_field(body, "input")?);
-            json!({"hmac":format!("vault:v{version}:{}", BASE64.encode(tag.as_ref()))})
+            let input = decode_field(body, "input")?;
+            let tag = hmac_tag(algorithm, &material, &input)?;
+            json!({"hmac":format!("vault:v{version}:{}", BASE64.encode(tag))})
         }
         "sign" => {
             signing_options(key, body, algorithm)?;
@@ -778,8 +813,7 @@ fn handle_crypto(
                 let version = key.decrypt_version(version)?;
                 let material = stored_material(&version.hmac_material)?;
                 let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
-                let mac_key = hmac::Key::new(hmac_algorithm(algorithm)?, &material);
-                hmac::verify(&mac_key, &input, &tag).is_ok()
+                hmac_verify(algorithm, &material, &input, &tag)?
             } else {
                 signing_options(key, body, algorithm)?;
                 let (version, bytes) = parse_wrapped(string(body, "signature")?)?;
@@ -851,7 +885,7 @@ fn aead_algorithm(kind: &str) -> Result<&'static aead::Algorithm> {
     }
 }
 
-fn aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>> {
+fn associated_data(body: &Value) -> Result<Vec<u8>> {
     let associated = body
         .get("associated_data")
         .map(|v| {
@@ -862,9 +896,14 @@ fn aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>
         })
         .transpose()?
         .unwrap_or_default();
+    Ok(associated.to_vec())
+}
+
+fn legacy_aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>> {
+    let associated = associated_data(body)?;
     // A JSON tuple is unambiguous even when namespace/path contain delimiters.
-    // Domain separation is intentionally stronger than OpenBao opaque ciphertext
-    // portability; moving raw key/ciphertext state requires a decrypt/re-encrypt.
+    // This remains a read-only migration path for pre-OpenBao-compatibility
+    // HeptaBao ciphertexts. New ciphertexts use the raw caller AAD below.
     serde_json::to_vec(&(
         "heptabao-transit-aead-v1",
         namespace,
@@ -875,15 +914,46 @@ fn aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>
     .map_err(|_| error(500, "associated data encoding failed"))
 }
 
+fn xchacha20_encrypt(
+    material: &[u8],
+    nonce: &[u8; 24],
+    aad: &[u8],
+    plaintext: &[u8],
+) -> Result<Vec<u8>> {
+    let cipher = XChaCha20Poly1305::new_from_slice(material)
+        .map_err(|_| error(500, "stored encryption key is invalid"))?;
+    let mut ciphertext = Zeroizing::new(plaintext.to_vec());
+    cipher
+        .encrypt_in_place(XNonce::from_slice(nonce), aad, &mut *ciphertext)
+        .map_err(|_| error(500, "encryption failed"))?;
+    Ok(ciphertext.to_vec())
+}
+
+fn xchacha20_decrypt(
+    material: &[u8],
+    nonce: &[u8; 24],
+    aad: &[u8],
+    ciphertext: &mut [u8],
+) -> Result<Zeroizing<Vec<u8>>> {
+    let cipher = XChaCha20Poly1305::new_from_slice(material)
+        .map_err(|_| error(500, "stored encryption key is invalid"))?;
+    let mut plaintext = ciphertext.to_vec();
+    cipher
+        .decrypt_in_place(XNonce::from_slice(nonce), aad, &mut plaintext)
+        .map_err(|_| bad("ciphertext authentication failed"))?;
+    Ok(Zeroizing::new(plaintext))
+}
+
 fn encrypt(
     key: &mut Key,
-    namespace: &str,
-    mount: &str,
-    name: &str,
+    _namespace: &str,
+    _mount: &str,
+    _name: &str,
     body: &Value,
     plaintext: &[u8],
 ) -> Result<Value> {
-    let algorithm = aead_algorithm(&key.kind)?;
+    let xchacha = key.kind == "xchacha20-poly1305";
+    let algorithm = (!xchacha).then(|| aead_algorithm(&key.kind)).transpose()?;
     let version_number = key.selected_version(body)?;
     let version = key
         .versions
@@ -895,22 +965,34 @@ fn encrypt(
         ));
     }
     let material = stored_material(&version.material)?;
-    let key = aead::LessSafeKey::new(
-        aead::UnboundKey::new(algorithm, &material)
-            .map_err(|_| error(500, "stored encryption key is invalid"))?,
-    );
-    let mut nonce_bytes = [0; 12];
-    SystemRandom::new()
-        .fill(&mut nonce_bytes)
-        .map_err(|_| error(503, "system entropy is unavailable"))?;
-    let mut ciphertext = Zeroizing::new(plaintext.to_vec());
-    key.seal_in_place_append_tag(
-        aead::Nonce::assume_unique_for_key(nonce_bytes),
-        aead::Aad::from(aad(namespace, mount, name, body)?),
-        &mut *ciphertext,
-    )
-    .map_err(|_| error(500, "encryption failed"))?;
-    let mut wrapped = nonce_bytes.to_vec();
+    let (nonce, ciphertext) = if xchacha {
+        let mut nonce = [0; 24];
+        SystemRandom::new()
+            .fill(&mut nonce)
+            .map_err(|_| error(503, "system entropy is unavailable"))?;
+        let associated = associated_data(body)?;
+        let ciphertext = xchacha20_encrypt(&material, &nonce, &associated, plaintext)?;
+        (nonce.to_vec(), ciphertext)
+    } else {
+        let algorithm = algorithm.ok_or_else(|| error(500, "AEAD algorithm is unavailable"))?;
+        let key = aead::LessSafeKey::new(
+            aead::UnboundKey::new(algorithm, &material)
+                .map_err(|_| error(500, "stored encryption key is invalid"))?,
+        );
+        let mut nonce = [0; 12];
+        SystemRandom::new()
+            .fill(&mut nonce)
+            .map_err(|_| error(503, "system entropy is unavailable"))?;
+        let mut ciphertext = Zeroizing::new(plaintext.to_vec());
+        key.seal_in_place_append_tag(
+            aead::Nonce::assume_unique_for_key(nonce),
+            aead::Aad::from(associated_data(body)?),
+            &mut *ciphertext,
+        )
+        .map_err(|_| error(500, "encryption failed"))?;
+        (nonce.to_vec(), ciphertext.to_vec())
+    };
+    let mut wrapped = nonce;
     wrapped.extend_from_slice(&ciphertext);
     version.encryptions += 1;
     Ok(
@@ -925,24 +1007,50 @@ fn decrypt(
     name: &str,
     body: &Value,
 ) -> Result<Zeroizing<Vec<u8>>> {
-    let algorithm = aead_algorithm(&key.kind)?;
+    let xchacha = key.kind == "xchacha20-poly1305";
+    let algorithm = (!xchacha).then(|| aead_algorithm(&key.kind)).transpose()?;
     let (version_number, mut ciphertext) = parse_wrapped(string(body, "ciphertext")?)?;
     let version = key.decrypt_version(version_number)?;
-    if ciphertext.len() < 28 {
+    let nonce_len = if xchacha { 24 } else { 12 };
+    if ciphertext.len() < nonce_len + 16 {
         return Err(bad("invalid ciphertext"));
     }
     let material = stored_material(&version.material)?;
+    if xchacha {
+        let mut nonce = [0; 24];
+        nonce.copy_from_slice(&ciphertext[..24]);
+        return xchacha20_decrypt(
+            &material,
+            &nonce,
+            &associated_data(body)?,
+            &mut ciphertext[24..],
+        );
+    }
+    let algorithm = algorithm.ok_or_else(|| error(500, "AEAD algorithm is unavailable"))?;
     let key = aead::LessSafeKey::new(
         aead::UnboundKey::new(algorithm, &material)
             .map_err(|_| error(500, "stored encryption key is invalid"))?,
     );
     let mut nonce = [0; 12];
     nonce.copy_from_slice(&ciphertext[..12]);
+    let associated = associated_data(body)?;
+    let mut raw_payload = ciphertext[12..].to_vec();
+    if let Ok(plaintext) = key.open_in_place(
+        aead::Nonce::assume_unique_for_key(nonce),
+        aead::Aad::from(associated),
+        &mut raw_payload,
+    ) {
+        return Ok(Zeroizing::new(plaintext.to_vec()));
+    }
+
+    // Keep already-persisted HeptaBao ciphertexts readable while all new
+    // ciphertexts follow OpenBao's portable raw-AAD contract.
+    let mut legacy_payload = ciphertext[12..].to_vec();
     let plaintext = key
         .open_in_place(
             aead::Nonce::assume_unique_for_key(nonce),
-            aead::Aad::from(aad(namespace, mount, name, body)?),
-            &mut ciphertext[12..],
+            aead::Aad::from(legacy_aad(namespace, mount, name, body)?),
+            &mut legacy_payload,
         )
         .map_err(|_| bad("ciphertext authentication failed"))?;
     Ok(Zeroizing::new(plaintext.to_vec()))
@@ -966,11 +1074,46 @@ fn parse_wrapped(input: &str) -> Result<(u64, Zeroizing<Vec<u8>>)> {
     Ok((version, decode(data)?))
 }
 
-fn hmac_algorithm(name: &str) -> Result<hmac::Algorithm> {
+fn hmac_tag(name: &str, material: &[u8], input: &[u8]) -> Result<Vec<u8>> {
+    macro_rules! compute {
+        ($digest:ty) => {{
+            let mut mac = <Hmac<$digest> as Mac>::new_from_slice(material)
+                .map_err(|_| error(500, "stored HMAC key material is invalid"))?;
+            mac.update(input);
+            Ok(mac.finalize().into_bytes().to_vec())
+        }};
+    }
     match name {
-        "sha2-256" => Ok(hmac::HMAC_SHA256),
-        "sha2-384" => Ok(hmac::HMAC_SHA384),
-        "sha2-512" => Ok(hmac::HMAC_SHA512),
+        "sha2-224" => compute!(Sha224),
+        "sha2-256" => compute!(Sha256),
+        "sha2-384" => compute!(Sha384),
+        "sha2-512" => compute!(Sha512),
+        "sha3-224" => compute!(Sha3_224),
+        "sha3-256" => compute!(Sha3_256),
+        "sha3-384" => compute!(Sha3_384),
+        "sha3-512" => compute!(Sha3_512),
+        _ => Err(error(501, "HMAC algorithm is not implemented")),
+    }
+}
+
+fn hmac_verify(name: &str, material: &[u8], input: &[u8], tag: &[u8]) -> Result<bool> {
+    macro_rules! verify {
+        ($digest:ty) => {{
+            let mut mac = <Hmac<$digest> as Mac>::new_from_slice(material)
+                .map_err(|_| error(500, "stored HMAC key material is invalid"))?;
+            mac.update(input);
+            Ok(mac.verify_slice(tag).is_ok())
+        }};
+    }
+    match name {
+        "sha2-224" => verify!(Sha224),
+        "sha2-256" => verify!(Sha256),
+        "sha2-384" => verify!(Sha384),
+        "sha2-512" => verify!(Sha512),
+        "sha3-224" => verify!(Sha3_224),
+        "sha3-256" => verify!(Sha3_256),
+        "sha3-384" => verify!(Sha3_384),
+        "sha3-512" => verify!(Sha3_512),
         _ => Err(error(501, "HMAC algorithm is not implemented")),
     }
 }
@@ -1027,17 +1170,89 @@ fn random(path: &str, body: &Value) -> Result<EngineResponse> {
 
 fn hash(path: &str, body: &Value) -> Result<EngineResponse> {
     reject_unknown(body, &["input", "algorithm", "format"])?;
-    let algorithm = match select_algorithm(path, body, "algorithm", "sha2-256")? {
-        "sha2-256" => &digest::SHA256,
-        "sha2-384" => &digest::SHA384,
-        "sha2-512" => &digest::SHA512,
-        _ => return Err(error(501, "hash algorithm is not implemented")),
-    };
-    let hashed = digest::digest(algorithm, &decode_field(body, "input")?);
+    let algorithm = select_algorithm(path, body, "algorithm", "sha2-256")?;
+    let input = decode_field(body, "input")?;
+    let hashed = hash_digest(algorithm, &input)?;
     let format = body
         .get("format")
         .map(|v| v.as_str().ok_or_else(|| bad("format must be a string")))
         .transpose()?
         .unwrap_or("hex");
-    Ok(ok(json!({"sum":encoded(hashed.as_ref(),format)?}), false))
+    Ok(ok(json!({"sum":encoded(&hashed,format)?}), false))
+}
+
+fn hash_digest(name: &str, input: &[u8]) -> Result<Vec<u8>> {
+    macro_rules! compute {
+        ($digest:ty) => {{
+            let mut digest = <$digest>::new();
+            digest.update(input);
+            Ok(digest.finalize().to_vec())
+        }};
+    }
+    match name {
+        "sha2-224" => compute!(Sha224),
+        "sha2-256" => compute!(Sha256),
+        "sha2-384" => compute!(Sha384),
+        "sha2-512" => compute!(Sha512),
+        "sha3-224" => compute!(Sha3_224),
+        "sha3-256" => compute!(Sha3_256),
+        "sha3-384" => compute!(Sha3_384),
+        "sha3-512" => compute!(Sha3_512),
+        _ => Err(error(501, "hash algorithm is not implemented")),
+    }
+}
+
+#[cfg(test)]
+mod auto_rotation_tests {
+    use super::*;
+
+    #[test]
+    fn auto_rotation_uses_one_hour_minimum_and_persists_across_restart()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let mut key = Key::new(
+            &json!({"type":"aes256-gcm96", "auto_rotate_period":"1h"}),
+            100,
+        )?;
+        assert_eq!(key.auto_rotate_period, 3600);
+        assert!(!key.auto_rotate(3_699)?);
+        assert!(key.auto_rotate(3_700)?);
+        assert_eq!(key.latest_version, 2);
+        assert_eq!(key.versions[&2].created_at, 3_700);
+        assert!(!key.auto_rotate(7_299)?);
+        assert!(key.auto_rotate(7_300)?);
+
+        let restored: Key = serde_json::from_value(serde_json::to_value(&key)?)?;
+        assert_eq!(restored.auto_rotate_period, 3600);
+        assert_eq!(restored.latest_version, 3);
+        Ok(())
+    }
+
+    #[test]
+    fn zero_disables_rotation_and_soft_deleted_or_retained_keys_do_not_rotate()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let mut disabled = Key::new(&json!({"auto_rotate_period":"0"}), 100)?;
+        assert!(!disabled.auto_rotate(10_000)?);
+
+        let mut deleted = Key::new(&json!({"auto_rotate_period":"1h"}), 100)?;
+        deleted.deleted = true;
+        assert!(!deleted.auto_rotate(10_000)?);
+
+        let mut retained = Key::new(&json!({"auto_rotate_period":"1h"}), 100)?;
+        for version in 2..=10_000 {
+            retained
+                .versions
+                .insert(version, KeyVersion::generate(&retained.kind, version)?);
+        }
+        retained.latest_version = 10_000;
+        assert!(!retained.auto_rotate(20_000)?);
+        Ok(())
+    }
+
+    #[test]
+    fn auto_rotation_rejects_sub_hour_periods()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        assert!(auto_rotate_period(Some(&json!("3599s"))).is_err());
+        assert_eq!(auto_rotate_period(Some(&json!("0")))?, 0);
+        Ok(())
+    }
 }

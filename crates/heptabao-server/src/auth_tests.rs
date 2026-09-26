@@ -1,10 +1,214 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 use super::*;
 
+#[path = "auth_approle_defaults_tests.rs"]
+mod approle_defaults_tests;
+#[path = "auth_approle_renewal_tests.rs"]
+mod approle_renewal_tests;
+#[path = "auth_cert_renewal_tests.rs"]
+mod certificate_renewal_tests;
+#[path = "auth_token_creation_ttl_tests.rs"]
+mod token_creation_ttl_tests;
+#[path = "auth_token_lifetime_tests.rs"]
+mod token_lifetime_tests;
+#[path = "auth_token_ttl_tests.rs"]
+mod token_ttl_tests;
+
+#[path = "auth_jwt_renewal_tests.rs"]
+mod jwt_renewal_tests;
+
+#[path = "auth_jwt_login_tests.rs"]
+mod jwt_login_tests;
+
+#[path = "auth_jwt_bound_claims_tests.rs"]
+mod jwt_bound_claims_tests;
+
+#[path = "auth_kerberos_tests.rs"]
+mod kerberos_tests;
+
 fn setup() -> (AuthState, String, Principal) {
     let (mut state, raw) = AuthState::bootstrap(100).unwrap();
     let principal = state.authenticate(&raw, 100).unwrap();
     (state, raw, principal)
+}
+
+#[test]
+fn ldap_bounded_profile_config_login_and_injection_rejection() {
+    let (mut state, _raw, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "sys/auth/ldap",
+        json!({"type":"ldap"}),
+        100,
+    );
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/ldap/config",
+        json!({
+            "url":"ldaps://directory.example.test",
+            "bind_dn":"cn=heptabao,dc=example,dc=test",
+            "user_dn_template":"uid={{username}},ou=people,dc=example,dc=test",
+            "starttls":false
+        }),
+        100,
+    );
+    let cfg = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/ldap/config",
+        json!({}),
+        100,
+    );
+    assert_eq!(cfg.body["data"]["url"], "ldaps://directory.example.test");
+    call(
+        &mut state,
+        &root,
+        "",
+        "PUT",
+        "auth/ldap/users/alice",
+        json!({"password":"correct horse battery staple"}),
+        100,
+    );
+    let before = state.tokens.len();
+    let offline = state.handle(
+        Some(&root),
+        "",
+        "POST",
+        "auth/ldap/login/alice",
+        &json!({"password":"correct horse battery staple"}),
+        101,
+    );
+    assert_eq!(offline.err().unwrap().status, 503);
+    assert_eq!(
+        state.tokens.len(),
+        before,
+        "local password must not replace LDAP bind"
+    );
+    let plan = state
+        .prepare_ldap_login(
+            "",
+            "ldap",
+            "alice",
+            "POST",
+            &json!({"password":"directory-password"}),
+            101,
+        )
+        .unwrap();
+    // This unit observation exercises local mapping only. Real LDAPS bind and
+    // directory-group readback are exercised by ldap_openldap_live.py.
+    let login = state
+        .finish_ldap_login(
+            plan,
+            LdapLoginObservation {
+                alias: None,
+                groups: BTreeSet::new(),
+            },
+        )
+        .unwrap();
+    let issued = login.body["auth"]["client_token"].as_str().unwrap();
+    assert!(state.authenticate(issued, 102).is_ok());
+    assert!(
+        state
+            .handle(
+                Some(&root),
+                "",
+                "PUT",
+                "auth/ldap/config",
+                &json!({
+                    "url":"ldap://directory.example.test/??(|(uid=*))"
+                }),
+                100
+            )
+            .is_err()
+    );
+}
+
+#[test]
+fn radius_bounded_profile_config_login_and_policy_projection() {
+    let (mut state, _raw, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "sys/auth/radius",
+        json!({"type":"radius"}),
+        100,
+    );
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/radius/config",
+        json!({
+            "url":"radius://radius.example.test:1812",
+            "token_policies":["default","operator"],
+            "token_ttl":120,
+            "token_max_ttl":240,
+            "token_num_uses":2
+        }),
+        100,
+    );
+    let cfg = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/radius/config",
+        json!({}),
+        100,
+    );
+    assert_eq!(cfg.body["data"]["url"], "radius://radius.example.test:1812");
+    let plan = state
+        .prepare_radius_login(
+            "",
+            "radius",
+            "POST",
+            &json!({"username":"alice","password":"radius-password"}),
+            101,
+        )
+        .unwrap();
+    let login = state
+        .finish_radius_login(plan, RadiusLoginObservation)
+        .unwrap();
+    assert_eq!(
+        login.body["auth"]["token_policies"],
+        json!(["default", "operator"])
+    );
+    let issued = login.body["auth"]["client_token"].as_str().unwrap();
+    assert!(state.authenticate(issued, 102).is_ok());
+    assert!(
+        state
+            .prepare_radius_login(
+                "",
+                "radius",
+                "POST",
+                &json!({"username":"alice","password":""}),
+                101,
+            )
+            .is_err()
+    );
+    assert!(
+        state
+            .handle(
+                Some(&root),
+                "",
+                "POST",
+                "auth/radius/config",
+                &json!({"url":"radius://radius.example.test:1812/path"}),
+                100,
+            )
+            .is_err()
+    );
 }
 fn call(
     state: &mut AuthState,
@@ -618,19 +822,632 @@ fn approle_secret_ids_are_hashed_consumable_and_expiring() {
 }
 
 #[test]
-fn approle_destroy_and_policy_assignment_fail_closed() {
+fn approle_custom_secret_id_is_bounded_hashed_and_consumable() {
     let (mut state, _, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/approle/role/custom",
+        json!({"secret_id_ttl": 30, "secret_id_num_uses": 2}),
+        100,
+    );
+    let role_id = call(
+        &mut state,
+        &root,
+        "team",
+        "GET",
+        "auth/approle/role/custom/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let secret_id = "operator-issued-secret";
+    let issued = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/approle/role/custom/custom-secret-id",
+        json!({"secret_id": secret_id}),
+        100,
+    );
+    assert_eq!(issued.body["data"]["secret_id"], secret_id);
+    assert_eq!(issued.body["data"]["secret_id_num_uses"], 2);
+    assert_eq!(issued.body["data"]["secret_id_ttl"], 30);
+    let serialized = serde_json::to_string(&state).unwrap();
+    assert!(!serialized.contains(secret_id));
+
+    let duplicate = state.handle(
+        Some(&root),
+        "team",
+        "POST",
+        "auth/approle/role/custom/custom-secret-id",
+        &json!({"secret_id": secret_id}),
+        100,
+    );
+    assert_eq!(
+        duplicate
+            .err()
+            .expect("duplicate custom secret ID must fail")
+            .status,
+        400
+    );
+    let login_body = json!({"role_id": role_id, "secret_id": secret_id});
     assert!(
         state
-            .handle(
-                Some(&root),
-                "",
-                "POST",
-                "auth/approle/role/bad",
-                &json!({"bind_secret_id": false}),
-                100
-            )
+            .handle(None, "team", "POST", "auth/approle/login", &login_body, 101)
+            .is_ok()
+    );
+    assert!(
+        state
+            .handle(None, "team", "POST", "auth/approle/login", &login_body, 102)
+            .is_ok()
+    );
+    assert!(
+        state
+            .handle(None, "team", "POST", "auth/approle/login", &login_body, 103)
             .is_err()
+    );
+
+    let invalid = state.handle(
+        Some(&root),
+        "team",
+        "POST",
+        "auth/approle/role/custom/custom-secret-id",
+        &json!({"secret_id": "", "unexpected": true}),
+        104,
+    );
+    assert_eq!(
+        invalid
+            .err()
+            .expect("invalid custom secret ID must fail")
+            .status,
+        400
+    );
+}
+
+#[test]
+fn approle_periodic_role_issues_fixed_period_tokens() {
+    let (mut state, _, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/periodic",
+        json!({"token_period": 15, "token_ttl": 5, "secret_id_num_uses": 0}),
+        100,
+    );
+    let role = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/periodic",
+        json!({}),
+        100,
+    );
+    assert_eq!(role.body["data"]["token_period"], 15);
+    let role_id = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/periodic/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let secret = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/periodic/secret-id",
+        json!({"num_uses": 0}),
+        100,
+    )
+    .body["data"]["secret_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let login = state
+        .handle(
+            None,
+            "",
+            "POST",
+            "auth/approle/login",
+            &json!({"role_id": role_id, "secret_id": secret}),
+            100,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.body["auth"]["lease_duration"], 15);
+    assert_eq!(login.body["auth"]["renewable"], true);
+    let token = login.body["auth"]["client_token"].as_str().unwrap();
+    let actor = state.authenticate(token, 110).unwrap();
+    let renewed = call(
+        &mut state,
+        &actor,
+        "",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment": 999}),
+        110,
+    );
+    assert_eq!(renewed.body["auth"]["lease_duration"], 15);
+    let actor = state.authenticate(token, 111).unwrap();
+    let lookup = call(
+        &mut state,
+        &actor,
+        "",
+        "GET",
+        "auth/token/lookup-self",
+        json!({}),
+        111,
+    );
+    assert_eq!(lookup.body["data"]["period"], 15);
+    assert_eq!(lookup.body["data"]["explicit_max_ttl"], 0);
+}
+
+#[test]
+fn approle_explicit_max_ttl_clamps_periodic_and_finite_tokens() {
+    let (mut state, _, root) = setup();
+    let configured = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/capped",
+        json!({
+            "token_ttl": 30,
+            "token_max_ttl": 60,
+            "token_period": 15,
+            "token_explicit_max_ttl": 20,
+            "secret_id_num_uses": 0
+        }),
+        100,
+    );
+    assert_eq!(configured.status, 204);
+    let role = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/capped",
+        json!({}),
+        100,
+    );
+    assert_eq!(role.body["data"]["token_explicit_max_ttl"], 20);
+    assert_eq!(role.body["data"]["token_period"], 15);
+    assert!(role.body["data"].get("period").is_none());
+    let role_id = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/capped/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let secret = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/capped/secret-id",
+        json!({"num_uses": 0}),
+        100,
+    )
+    .body["data"]["secret_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let login = state
+        .handle(
+            None,
+            "",
+            "POST",
+            "auth/approle/login",
+            &json!({"role_id": role_id, "secret_id": secret}),
+            100,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.body["auth"]["lease_duration"], 15);
+    let token = login.body["auth"]["client_token"].as_str().unwrap();
+
+    let actor = state.authenticate(token, 110).unwrap();
+    let renewed = call(
+        &mut state,
+        &actor,
+        "",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment": 999}),
+        110,
+    );
+    assert_eq!(renewed.body["auth"]["lease_duration"], 10);
+    assert!(state.authenticate(token, 120).is_err());
+
+    let finite = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/finite-capped",
+        json!({
+            "token_ttl": 30,
+            "token_max_ttl": 60,
+            "token_explicit_max_ttl": 20,
+            "secret_id_num_uses": 0
+        }),
+        100,
+    );
+    assert_eq!(finite.status, 204);
+    let finite_role_id = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/finite-capped/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let finite_secret = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/finite-capped/secret-id",
+        json!({"num_uses": 0}),
+        100,
+    )
+    .body["data"]["secret_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let finite_login = state
+        .handle(
+            None,
+            "",
+            "POST",
+            "auth/approle/login",
+            &json!({"role_id": finite_role_id, "secret_id": finite_secret}),
+            100,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(finite_login.body["auth"]["lease_duration"], 20);
+    let finite_token = finite_login.body["auth"]["client_token"].as_str().unwrap();
+    assert!(state.authenticate(finite_token, 120).is_err());
+
+    let rejected = state.handle(
+        Some(&root),
+        "",
+        "POST",
+        "auth/approle/role/too-large",
+        &json!({"token_explicit_max_ttl": 32 * 24 * 3600 + 1}),
+        100,
+    );
+    assert_eq!(rejected.err().unwrap().status, 400);
+}
+
+#[test]
+fn approle_renewal_reloads_live_role_mount_and_survives_restart() {
+    let (mut state, root_raw, root) = setup();
+    mount_auth(&mut state, &root, "team", "build", "approle");
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/build/role/service",
+        json!({
+            "token_ttl": 30,
+            "token_max_ttl": 90,
+            "secret_id_num_uses": 0,
+            "policies": ["default"]
+        }),
+        100,
+    );
+    let role_id = call(
+        &mut state,
+        &root,
+        "team",
+        "GET",
+        "auth/build/role/service/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let secret_id = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/build/role/service/secret-id",
+        json!({"num_uses": 0}),
+        100,
+    )
+    .body["data"]["secret_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let login = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/build/login",
+            &json!({"role_id": role_id, "secret_id": secret_id}),
+            100,
+        )
+        .unwrap()
+        .unwrap();
+    let raw = login.body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let id = hash(&raw);
+    assert!(matches!(
+        state.tokens[&id].auth_provenance.as_ref(),
+        Some(TokenAuthProvenance::AppRole { role_name, .. }) if role_name == "service"
+    ));
+
+    // A restart must preserve the issuer binding without ever persisting the
+    // bearer or allowing display_name to stand in for role identity.
+    let saved = serde_json::to_string(&state).unwrap();
+    assert!(!saved.contains(&raw));
+    assert!(saved.contains("auth_provenance"));
+    let mut restarted: AuthState = serde_json::from_str(&saved).unwrap();
+    let restarted_root = restarted.authenticate(&root_raw, 105).unwrap();
+    put_policy(
+        &mut restarted,
+        &restarted_root,
+        "team",
+        "changed",
+        json!(r#"path "secret/data/*" { capabilities = ["read"] }"#),
+    );
+    // Change the role's policies and finite bounds after issuance. Renewal
+    // keeps the token's original policies, but uses current TTL/max settings.
+    call(
+        &mut restarted,
+        &restarted_root,
+        "team",
+        "POST",
+        "auth/build/role/service",
+        json!({"token_ttl": 10, "token_max_ttl": 20, "policies": ["changed"]}),
+        110,
+    );
+    let actor = restarted.authenticate(&raw, 110).unwrap();
+    let renewed = call(
+        &mut restarted,
+        &actor,
+        "team",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment": 0}),
+        110,
+    );
+    assert_eq!(renewed.body["auth"]["lease_duration"], 10);
+    assert_eq!(renewed.body["auth"]["policies"], json!(["default"]));
+
+    // A current role max is an absolute lifetime from issue, not a new window
+    // beginning at each renewal. The 20-second cap therefore leaves 10 seconds.
+    let actor = restarted.authenticate(&raw, 115).unwrap();
+    let renewed = call(
+        &mut restarted,
+        &actor,
+        "team",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment": 999}),
+        115,
+    );
+    assert_eq!(renewed.body["auth"]["lease_duration"], 5);
+
+    // Deleting the live role fences an already-issued token at renewal.
+    call(
+        &mut restarted,
+        &restarted_root,
+        "team",
+        "DELETE",
+        "auth/build/role/service",
+        json!({}),
+        116,
+    );
+    let actor = restarted.authenticate(&raw, 116).unwrap();
+    let denied = restarted.handle(
+        Some(&actor),
+        "team",
+        "POST",
+        "auth/token/renew-self",
+        &json!({"increment": 1}),
+        116,
+    );
+    assert!(matches!(denied, Err(error) if error.status == 500));
+}
+
+#[test]
+fn approle_periodic_renewal_uses_current_mount_bound_and_children_are_ordinary() {
+    let (mut state, _, root) = setup();
+    mount_auth(&mut state, &root, "team", "build", "approle");
+    put_policy(
+        &mut state,
+        &root,
+        "team",
+        "issuer",
+        json!(r#"path "auth/token/create*" { capabilities = ["update"] }"#),
+    );
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/build/role/periodic",
+        json!({"token_period": 50, "token_ttl": 5, "secret_id_num_uses": 0, "policies": ["issuer"]}),
+        100,
+    );
+    let role_id = call(
+        &mut state,
+        &root,
+        "team",
+        "GET",
+        "auth/build/role/periodic/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let secret_id = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/build/role/periodic/secret-id",
+        json!({"num_uses": 0}),
+        100,
+    )
+    .body["data"]["secret_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let login = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/build/login",
+            &json!({"role_id": role_id, "secret_id": secret_id}),
+            100,
+        )
+        .unwrap()
+        .unwrap();
+    let raw = login.body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let actor = state.authenticate(&raw, 101).unwrap();
+    let child = token(
+        &mut state,
+        &actor,
+        "team",
+        json!({"policies": ["default"]}),
+        101,
+    );
+    assert!(matches!(
+        state.tokens[&hash(&child)].auth_provenance,
+        Some(TokenAuthProvenance::TokenApi { .. })
+    ));
+
+    // The role's period is 50, but tuning the issuing mount to 20 clamps the
+    // next renewal without changing the already-issued token's policies.
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "sys/auth/build/tune",
+        json!({"default_lease_ttl": 10, "max_lease_ttl": 20}),
+        105,
+    );
+    let actor = state.authenticate(&raw, 110).unwrap();
+    let renewed = call(
+        &mut state,
+        &actor,
+        "team",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment": 999}),
+        110,
+    );
+    assert_eq!(renewed.body["auth"]["lease_duration"], 20);
+
+    // The token API child follows ordinary token renewal and is not coupled to
+    // the AppRole's current period or role deletion.
+    let child_actor = state.authenticate(&child, 110).unwrap();
+    let child_renewed = call(
+        &mut state,
+        &child_actor,
+        "team",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment": 7}),
+        110,
+    );
+    assert_eq!(child_renewed.body["auth"]["lease_duration"], 7);
+}
+
+#[test]
+fn approle_destroy_and_policy_assignment_fail_closed() {
+    let (mut state, _, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/role/no-secret",
+        json!({"bind_secret_id": false, "token_bound_cidrs": ["127.0.0.1"]}),
+        100,
+    );
+    let no_secret_role_id = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/no-secret/role-id",
+        json!({}),
+        100,
+    )
+    .body["data"]["role_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let no_secret_role = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/approle/role/no-secret",
+        json!({}),
+        100,
+    );
+    assert_eq!(no_secret_role.body["data"]["bind_secret_id"], false);
+    let no_secret_login = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/approle/login",
+        json!({"role_id": no_secret_role_id}),
+        101,
+    );
+    assert!(
+        no_secret_login.body["auth"]["client_token"]
+            .as_str()
+            .is_some()
     );
     assert!(
         state
@@ -650,7 +1467,7 @@ fn approle_destroy_and_policy_assignment_fail_closed() {
         "",
         "POST",
         "auth/approle/role/hepta",
-        json!({}),
+        json!({"secret_id_num_uses":1}),
         100,
     );
     let role_id = call(
@@ -861,6 +1678,118 @@ fn userpass_totp_mfa_is_required_replay_safe_and_restart_persistent() {
             )
             .is_ok()
     );
+}
+
+#[test]
+fn userpass_lockout_is_explicit_durable_and_fails_closed_across_restart() {
+    let (mut state, _, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "sys/auth/userpass/tune",
+        json!({
+            "user_lockout_disable": false,
+            "user_lockout_threshold": 3,
+            "user_lockout_duration": 10,
+            "user_lockout_counter_reset_duration": 20
+        }),
+        100,
+    );
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/userpass/users/alice",
+        json!({"password":"correct-horse-battery-staple"}),
+        100,
+    );
+    assert!(
+        state
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/unknown",
+                &json!({"password":"wrong-password"}),
+                100,
+            )
+            .is_err()
+    );
+    assert!(!state.users["team"].contains_key("unknown"));
+    assert!(
+        state
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password":"wrong-password"}),
+                0,
+            )
+            .is_err()
+    );
+    assert_eq!(state.users["team"]["alice"].failed_login_count, 0);
+    for now in [100, 101, 102] {
+        let failed = state
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password":"wrong-password"}),
+                now,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(failed.status, 400);
+        assert_eq!(
+            failed.body["errors"],
+            json!(["invalid username or password"])
+        );
+    }
+    assert_eq!(state.users["team"]["alice"].failed_login_count, 3);
+    assert_eq!(state.users["team"]["alice"].locked_until, 112);
+
+    let saved = serde_json::to_vec(&state).unwrap();
+    let mut restarted: AuthState = serde_json::from_slice(&saved).unwrap();
+    let mut corrupt = restarted.clone();
+    corrupt
+        .users
+        .get_mut("team")
+        .unwrap()
+        .get_mut("alice")
+        .unwrap()
+        .failed_login_last_at = 0;
+    assert!(corrupt.validate_userpass_lockout_state().is_err());
+    assert!(
+        restarted
+            .handle(
+                None,
+                "team",
+                "POST",
+                "auth/userpass/login/alice",
+                &json!({"password":"correct-horse-battery-staple"}),
+                110,
+            )
+            .is_err()
+    );
+    let login = restarted
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/userpass/login/alice",
+            &json!({"password":"correct-horse-battery-staple"}),
+            112,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.status, 200);
+    assert_eq!(restarted.users["team"]["alice"].failed_login_count, 0);
+    assert_eq!(restarted.users["team"]["alice"].locked_until, 0);
 }
 
 #[test]
@@ -1359,6 +2288,279 @@ fn auth_mount_registry_requires_sudo_for_mutation() {
     assert!(state.auth_mount_enabled("", "userpass", "userpass"));
 }
 
+#[test]
+fn certificate_role_login_requires_the_verified_leaf_digest() {
+    let (mut state, _raw, root) = setup();
+    mount_auth(&mut state, &root, "", "cert", "cert");
+    let leaf = vec![1_u8, 2, 3, 4];
+    let digest = certificate_sha256(&leaf);
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/cert/certs/operator",
+        json!({
+            "certificate_sha256": digest,
+            "token_policies": ["default"],
+        }),
+        100,
+    );
+
+    let no_peer = state.handle_with_client_certificates(
+        None,
+        "",
+        "POST",
+        "auth/cert/login",
+        &json!({}),
+        101,
+        None,
+    );
+    assert!(matches!(no_peer, Err(error) if error.status == 403));
+
+    let wrong_leaf = vec![9_u8, 8, 7, 6];
+    let wrong = state.handle_with_client_certificates(
+        None,
+        "",
+        "POST",
+        "auth/cert/login",
+        &json!({}),
+        101,
+        Some(std::slice::from_ref(&wrong_leaf)),
+    );
+    assert!(matches!(wrong, Err(error) if error.status == 403));
+
+    let login = state
+        .handle_with_client_certificates(
+            None,
+            "",
+            "POST",
+            "auth/cert/login",
+            &json!({}),
+            101,
+            Some(std::slice::from_ref(&leaf)),
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.status, 200);
+    assert_eq!(login.login_identity.unwrap().alias, "operator");
+    assert!(
+        login.body["auth"]["metadata"]
+            .as_object()
+            .is_some_and(serde_json::Map::is_empty)
+    );
+}
+
+#[test]
+fn certificate_role_login_name_selects_the_requested_matching_role() {
+    let (mut state, _raw, root) = setup();
+    mount_auth(&mut state, &root, "", "cert", "cert");
+    let leaf = vec![11_u8, 12, 13, 14];
+    let digest = certificate_sha256(&leaf);
+    for role in ["operator", "reader"] {
+        call(
+            &mut state,
+            &root,
+            "",
+            "POST",
+            &format!("auth/cert/certs/{role}"),
+            json!({
+                "certificate_sha256": digest,
+                "token_policies": ["default"],
+            }),
+            100,
+        );
+    }
+
+    let selected = state
+        .handle_with_client_certificates(
+            None,
+            "",
+            "POST",
+            "auth/cert/login",
+            &json!({"name": "reader"}),
+            101,
+            Some(std::slice::from_ref(&leaf)),
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(selected.status, 200);
+    assert_eq!(selected.login_identity.unwrap().alias, "reader");
+
+    let unknown = state.handle_with_client_certificates(
+        None,
+        "",
+        "POST",
+        "auth/cert/login",
+        &json!({"name": "missing"}),
+        101,
+        Some(std::slice::from_ref(&leaf)),
+    );
+    assert!(matches!(unknown, Err(error) if error.status == 403));
+
+    let malformed = state.handle_with_client_certificates(
+        None,
+        "",
+        "POST",
+        "auth/cert/login",
+        &json!({"name": "bad/name"}),
+        101,
+        Some(std::slice::from_ref(&leaf)),
+    );
+    assert!(matches!(malformed, Err(error) if error.status == 400));
+}
+
+#[test]
+fn certificate_role_selectors_match_sans_subject_and_metadata() {
+    let (mut state, _raw, root) = setup();
+    mount_auth(&mut state, &root, "", "cert", "cert");
+    let leaf = include_bytes!("../testdata/cert-selector.der").to_vec();
+    let digest = certificate_sha256(&leaf);
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/cert/certs/operator",
+        json!({
+            "certificate_sha256": digest,
+            "allowed_names": ["client.*"],
+            "allowed_common_names": ["client.example.test"],
+            "allowed_dns_sans": ["client.example.test"],
+            "allowed_email_sans": ["user@*example.test"],
+            "allowed_uri_sans": ["spiffe://example/*"],
+            "allowed_organizational_units": ["Eng*"],
+            "required_extensions": ["1.2.3.4.5:tenant-*"],
+            "allowed_metadata_extensions": ["1.2.3.4.5"],
+            "token_policies": ["default"],
+        }),
+        100,
+    );
+    let login = state
+        .handle_with_client_certificates(
+            None,
+            "",
+            "POST",
+            "auth/cert/login",
+            &json!({}),
+            101,
+            Some(std::slice::from_ref(&leaf)),
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.login_identity.unwrap().alias, "client.example.test");
+    assert_eq!(login.body["auth"]["metadata"]["1-2-3-4-5"], "tenant-a");
+    assert_eq!(login.body["auth"]["metadata"]["cert_name"], "operator");
+    assert_eq!(
+        login.body["auth"]["metadata"]["common_name"],
+        "client.example.test"
+    );
+    assert_eq!(
+        login.body["auth"]["metadata"]["serial_number"],
+        "604808306919950594911996544712097931612123050017"
+    );
+    assert_eq!(
+        login.body["auth"]["metadata"]["subject_key_id"],
+        "42:90:9c:3f:b0:be:cd:25:b9:7d:58:c7:f6:1e:a9:46:85:9d:66:5b"
+    );
+    assert_eq!(login.body["auth"]["metadata"]["authority_key_id"], "");
+    let raw = login.body["auth"]["client_token"]
+        .as_str()
+        .expect("certificate login returns a token")
+        .to_owned();
+    let actor = state.authenticate(&raw, 101).unwrap();
+    let renewal_without_certificate = state.handle(
+        Some(&actor),
+        "",
+        "POST",
+        "auth/token/renew-self",
+        &json!({}),
+        102,
+    );
+    assert!(matches!(renewal_without_certificate, Err(error) if error.status == 400));
+    let wrong_leaf = vec![91_u8, 92, 93];
+    let renewal_with_wrong_certificate = state.handle_with_client_certificates(
+        Some(&actor),
+        "",
+        "POST",
+        "auth/token/renew-self",
+        &json!({}),
+        102,
+        Some(std::slice::from_ref(&wrong_leaf)),
+    );
+    assert!(matches!(renewal_with_wrong_certificate, Err(error) if error.status == 403));
+    let renewal = state
+        .handle_with_client_certificates(
+            Some(&actor),
+            "",
+            "POST",
+            "auth/token/renew-self",
+            &json!({}),
+            102,
+            Some(std::slice::from_ref(&leaf)),
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(renewal.status, 200);
+
+    call(
+        &mut state,
+        &root,
+        "",
+        "PUT",
+        "auth/cert/certs/operator",
+        json!({
+            "certificate_sha256": certificate_sha256(&leaf),
+            "allowed_names": ["client?.example.test"],
+            "token_policies": ["default"],
+        }),
+        102,
+    );
+    let literal_question_mark = state.handle_with_client_certificates(
+        None,
+        "",
+        "POST",
+        "auth/cert/login",
+        &json!({}),
+        103,
+        Some(std::slice::from_ref(&leaf)),
+    );
+    assert!(matches!(literal_question_mark, Err(error) if error.status == 403));
+    let renewal_after_selector_change = state.handle_with_client_certificates(
+        Some(&actor),
+        "",
+        "POST",
+        "auth/token/renew-self",
+        &json!({}),
+        104,
+        Some(std::slice::from_ref(&leaf)),
+    );
+    assert!(matches!(renewal_after_selector_change, Err(error) if error.status == 403));
+
+    assert_eq!(
+        call(
+            &mut state,
+            &root,
+            "",
+            "DELETE",
+            "auth/cert/certs/operator",
+            json!({}),
+            104,
+        )
+        .status,
+        204
+    );
+    let renewal_after_role_delete = state.handle(
+        Some(&actor),
+        "",
+        "POST",
+        "auth/token/renew-self",
+        &json!({}),
+        105,
+    );
+    assert!(matches!(renewal_after_role_delete, Err(error) if error.status == 403));
+}
+
 fn mount_auth(state: &mut AuthState, root: &Principal, namespace: &str, mount: &str, kind: &str) {
     assert_eq!(
         call(
@@ -1557,7 +2759,7 @@ fn custom_approle_mounts_isolate_role_ids_secret_ids_and_tidy() {
             "team",
             "POST",
             &format!("auth/{mount}/role/service"),
-            json!({}),
+            json!({"secret_id_num_uses":1}),
             100,
         );
         call(
@@ -1585,6 +2787,17 @@ fn custom_approle_mounts_isolate_role_ids_secret_ids_and_tidy() {
                 .to_owned(),
         );
     }
+    // Final-use login now removes its record immediately. Keep a separate
+    // expired credential so tidy still exercises the custom-mount boundary.
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/build/role/service/secret-id",
+        json!({"ttl":1}),
+        100,
+    );
     assert!(
         state
             .handle(
@@ -1784,7 +2997,7 @@ fn configured_jwt_mount(
 }
 
 #[test]
-fn jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_replay() {
+fn jwt_login_composes_pinned_signature_policy_and_reusable_bearer_tokens() {
     use ring::signature::{Ed25519KeyPair, KeyPair};
     let pair = Ed25519KeyPair::from_seed_unchecked(&[47; 32]).unwrap();
     let (mut state, _, root) = setup();
@@ -1821,7 +3034,7 @@ fn jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_
         )
         .unwrap()
         .unwrap();
-    assert_eq!(result.body["auth"]["lease_duration"], 250);
+    assert_eq!(result.body["auth"]["lease_duration"], 600);
     let raw = result.body["auth"]["client_token"].as_str().unwrap();
     let actor = state.authenticate(raw, 1051).unwrap();
     assert!(
@@ -1842,6 +3055,11 @@ fn jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_
     assert!(
         state
             .authorize_request(&actor, "team", "secret/data/app", "read", 1300)
+            .is_ok()
+    );
+    assert!(
+        state
+            .authorize_request(&actor, "team", "secret/data/app", "read", 1650)
             .is_err()
     );
     let saved = serde_json::to_vec(&state).unwrap();
@@ -1857,9 +3075,9 @@ fn jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_
                 &request,
                 1051
             )
-            .is_err()
+            .is_ok()
     );
-    assert_eq!(serde_json::to_vec(&state).unwrap(), saved);
+    assert_ne!(serde_json::to_vec(&state).unwrap(), saved);
     assert!(
         state
             .handle(
@@ -1898,7 +3116,7 @@ fn jwt_login_composes_pinned_signature_policy_token_and_persistent_mount_scoped_
 }
 
 #[test]
-fn jwt_login_denies_invalid_trust_claims_headers_and_roles_without_consuming_replay() {
+fn jwt_login_denies_invalid_trust_claims_headers_and_roles_without_mutation() {
     use ring::signature::{Ed25519KeyPair, KeyPair};
     let pair = Ed25519KeyPair::from_seed_unchecked(&[48; 32]).unwrap();
     let wrong_pair = Ed25519KeyPair::from_seed_unchecked(&[49; 32]).unwrap();
@@ -1919,7 +3137,7 @@ fn jwt_login_denies_invalid_trust_claims_headers_and_roles_without_consuming_rep
         ("sub", json!("mallory")),
         ("groups", json!(["others"])),
         ("heptabao_namespace", json!("other")),
-        ("exp", json!(1050)),
+        ("exp", json!(1049)),
         ("exp", json!(100000)),
         ("nbf", json!(1100)),
         ("iat", json!(1100)),
@@ -1928,9 +3146,6 @@ fn jwt_login_denies_invalid_trust_claims_headers_and_roles_without_consuming_rep
         claims[field] = value;
         invalid.push(signed_jwt(&pair, &header, &claims));
     }
-    let mut missing_jti = valid.clone();
-    missing_jti.as_object_mut().unwrap().remove("jti");
-    invalid.push(signed_jwt(&pair, &header, &missing_jti));
     for header in [
         json!({"alg":"none","kid":"key-1"}),
         json!({"alg":"ES256","kid":"key-1"}),
@@ -1994,7 +3209,7 @@ fn jwt_login_denies_invalid_trust_claims_headers_and_roles_without_consuming_rep
 }
 
 #[test]
-fn jwt_replay_pruning_cannot_be_reversed_by_clock_rollback_after_restart() {
+fn jwt_successful_native_login_retires_legacy_replay_without_rejecting_reuse() {
     use ring::signature::{Ed25519KeyPair, KeyPair};
     let pair = Ed25519KeyPair::from_seed_unchecked(&[50; 32]).unwrap();
     let (mut state, _, root) = setup();
@@ -2009,28 +3224,26 @@ fn jwt_replay_pruning_cannot_be_reversed_by_clock_rollback_after_restart() {
     let mut old_claims = jwt_claims("old");
     old_claims["exp"] = json!(1100);
     let old = signed_jwt(&pair, &header, &old_claims);
+    let scope = AuthScope {
+        namespace: "team",
+        mount: "workload",
+    };
+    let fingerprint = state
+        .jwt_at(scope)
+        .unwrap()
+        .config
+        .as_ref()
+        .unwrap()
+        .verifier()
+        .unwrap()
+        .verify(&old, 1050)
+        .unwrap()
+        .replay_fingerprint();
     state
-        .handle(
-            None,
-            "team",
-            "POST",
-            "auth/workload/login",
-            &json!({"role":"app","jwt":old}),
-            1050,
-        )
-        .unwrap();
-    let new = signed_jwt(&pair, &header, &jwt_claims("new"));
-    state
-        .handle(
-            None,
-            "team",
-            "POST",
-            "auth/workload/login",
-            &json!({"role":"app","jwt":new}),
-            1150,
-        )
-        .unwrap();
-    assert_eq!(state.jwt_mounts["team"]["workload"].replay.len(), 1);
+        .jwt_at_mut(scope)
+        .replay
+        .insert(URL_SAFE_NO_PAD.encode(fingerprint), 1100);
+    state.jwt_at_mut(scope).last_admission_time = 1150;
     let saved = serde_json::to_vec(&state).unwrap();
     let mut state: AuthState = serde_json::from_slice(&saved).unwrap();
     assert!(
@@ -2040,12 +3253,42 @@ fn jwt_replay_pruning_cannot_be_reversed_by_clock_rollback_after_restart() {
                 "team",
                 "POST",
                 "auth/workload/login",
-                &json!({"role":"app","jwt":old}),
+                &json!({"role":"app","jwt":"invalid"}),
                 1050
             )
             .is_err()
     );
     assert_eq!(serde_json::to_vec(&state).unwrap(), saved);
+    let first = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/workload/login",
+            &json!({"role":"app","jwt":old}),
+            1050,
+        )
+        .unwrap()
+        .unwrap();
+    let second = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/workload/login",
+            &json!({"role":"app","jwt":old}),
+            1051,
+        )
+        .unwrap()
+        .unwrap();
+    assert_ne!(
+        first.body["auth"]["client_token"],
+        second.body["auth"]["client_token"]
+    );
+    assert!(state.jwt_at(scope).unwrap().native_claims);
+    assert!(state.jwt_at(scope).unwrap().replay.is_empty());
+    assert_eq!(state.jwt_at(scope).unwrap().last_admission_time, 0);
+    state.validate_native_jwt_state().unwrap();
 }
 
 #[test]
@@ -2116,6 +3359,56 @@ fn jwt_configuration_rejects_bad_keys_namespace_and_privilege_escalation() {
 }
 
 #[test]
+fn jwt_config_and_role_readback_preserve_openbao_aliases() {
+    use ring::signature::{Ed25519KeyPair, KeyPair};
+    let pair = Ed25519KeyPair::from_seed_unchecked(&[53; 32]).unwrap();
+    let (mut state, _, root) = setup();
+    configured_jwt_mount(
+        &mut state,
+        &root,
+        "workload",
+        pair.public_key().as_ref(),
+        "EdDSA",
+    );
+
+    let config = call(
+        &mut state,
+        &root,
+        "team",
+        "GET",
+        "auth/workload/config",
+        json!({}),
+        1001,
+    );
+    assert_eq!(
+        config.body["data"]["issuer"],
+        config.body["data"]["bound_issuer"]
+    );
+    assert_eq!(
+        config.body["data"]["bound_issuer"],
+        "https://issuer.example"
+    );
+
+    let role = call(
+        &mut state,
+        &root,
+        "team",
+        "GET",
+        "auth/workload/role/app",
+        json!({}),
+        1001,
+    );
+    assert_eq!(
+        role.body["data"]["policies"],
+        role.body["data"]["token_policies"]
+    );
+    assert_eq!(
+        role.body["data"]["token_policies"],
+        json!(["default", "reader"])
+    );
+}
+
+#[test]
 fn jwt_es256_login_uses_real_p256_signature_and_rejects_algorithm_confusion() {
     use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair, KeyPair};
     let rng = SystemRandom::new();
@@ -2154,7 +3447,7 @@ fn jwt_es256_login_uses_real_p256_signature_and_rejects_algorithm_confusion() {
 }
 
 #[test]
-fn jwt_service_persists_login_token_replay_and_unmount_revocation_across_reopen() {
+fn jwt_service_persists_tokens_and_allows_assertion_reuse_across_reopen() {
     use ring::signature::{Ed25519KeyPair, KeyPair};
     struct SyntheticRoot(std::path::PathBuf);
     impl Drop for SyntheticRoot {
@@ -2268,7 +3561,7 @@ fn jwt_service_persists_login_token_replay_and_unmount_revocation_across_reopen(
                 1053
             )
             .status,
-        403
+        200
     );
     assert_eq!(
         service
@@ -2304,3 +3597,343 @@ fn jwt_service_persists_login_token_replay_and_unmount_revocation_across_reopen(
         403
     );
 }
+
+#[test]
+fn jwt_jwks_config_accepts_public_ed25519_and_drives_login() {
+    use ring::signature::{Ed25519KeyPair, KeyPair};
+    let pair = Ed25519KeyPair::from_seed_unchecked(&[91; 32]).unwrap();
+    let (mut state, _, root) = setup();
+    put_policy(
+        &mut state,
+        &root,
+        "team",
+        "reader",
+        json!(r#"path "secret/data/app" { capabilities = ["read"] }"#),
+    );
+    mount_auth(&mut state, &root, "team", "federated", "jwt");
+    let config = json!({
+        "issuer":"https://issuer.example",
+        "audiences":["https://service.example/bao"],
+        "required_namespace":"team",
+        "clock_skew_seconds":0,
+        "maximum_token_lifetime_seconds":3600,
+        "jwks":{"keys":[{
+            "kid":"key-1","kty":"OKP","crv":"Ed25519","alg":"EdDSA","use":"sig","key_ops":["verify"],
+            "x":URL_SAFE_NO_PAD.encode(pair.public_key().as_ref())
+        }]}
+    });
+    let response = call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/federated/config",
+        config,
+        1000,
+    );
+    assert_eq!(response.status, 204);
+    call(
+        &mut state,
+        &root,
+        "team",
+        "POST",
+        "auth/federated/role/app",
+        json!({"token_policies":["reader"],"bound_subject":"alice","bound_groups":["team/developers"],
+            "bound_audiences":["https://service.example/bao"],"token_ttl":120,"token_max_ttl":240}),
+        1000,
+    );
+    let token = signed_jwt(
+        &pair,
+        &json!({"alg":"EdDSA","kid":"key-1","typ":"JWT"}),
+        &jwt_claims("jwks-login"),
+    );
+    let login = state
+        .handle(
+            None,
+            "team",
+            "POST",
+            "auth/federated/login",
+            &json!({"role":"app","jwt":token}),
+            1001,
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(login.status, 200);
+    assert_eq!(
+        login.body["auth"]["token_policies"],
+        json!(["default", "reader"])
+    );
+}
+
+#[test]
+fn jwt_jwks_rejects_private_symmetric_duplicate_and_mixed_key_material_without_mutation() {
+    use ring::signature::{Ed25519KeyPair, KeyPair};
+    let pair = Ed25519KeyPair::from_seed_unchecked(&[92; 32]).unwrap();
+    let (mut state, _, root) = setup();
+    mount_auth(&mut state, &root, "team", "federated", "jwt");
+    let base = serde_json::to_vec(&state).unwrap();
+    let x = URL_SAFE_NO_PAD.encode(pair.public_key().as_ref());
+    let bad_jwks = [
+        json!({"keys":[{"kid":"k","kty":"oct","crv":"Ed25519","alg":"EdDSA","x":x}]}),
+        json!({"keys":[{"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x,"d":"private"}]}),
+        json!({"keys":[
+            {"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x},
+            {"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x}
+        ]}),
+    ];
+    for jwks in bad_jwks {
+        let result = state.handle(
+            Some(&root),
+            "team",
+            "POST",
+            "auth/federated/config",
+            &json!({"issuer":"https://issuer.example","audiences":["https://service.example/bao"],
+                "required_namespace":"team","clock_skew_seconds":0,"maximum_token_lifetime_seconds":3600,
+                "jwks":jwks}),
+            1000,
+        );
+        assert!(result.is_err());
+        assert_eq!(serde_json::to_vec(&state).unwrap(), base);
+    }
+    let mixed = state.handle(
+        Some(&root),
+        "team",
+        "POST",
+        "auth/federated/config",
+        &json!({"issuer":"https://issuer.example","audiences":["https://service.example/bao"],
+            "required_namespace":"team","clock_skew_seconds":0,"maximum_token_lifetime_seconds":3600,
+            "keys":[{"kid":"legacy","algorithm":"EdDSA","key_base64":x}],
+            "jwks":{"keys":[{"kid":"k","kty":"OKP","crv":"Ed25519","alg":"EdDSA","x":x}]}}),
+        1000,
+    );
+    assert!(mixed.is_err());
+    assert_eq!(serde_json::to_vec(&state).unwrap(), base);
+}
+
+#[test]
+fn auth_mount_revision_tune_remount_and_recreate_rotate_identity() {
+    let (mut state, _raw, root) = setup();
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "sys/auth/team",
+        json!({"type":"userpass","cas_revision":0}),
+        100,
+    );
+    let created = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/auth/team",
+        json!({}),
+        100,
+    );
+    let accessor = created.body["data"]["accessor"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    assert_eq!(created.body["data"]["revision"], 1);
+    call(
+        &mut state,
+        &root,
+        "",
+        "PUT",
+        "sys/auth/team/tune",
+        json!({"description":"team-v2","cas_revision":1}),
+        100,
+    );
+    call(
+        &mut state,
+        &root,
+        "",
+        "PUT",
+        "auth/team/users/alice",
+        json!({"password":"correct horse battery staple"}),
+        100,
+    );
+    let issued = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/team/login/alice",
+        json!({"password":"correct horse battery staple"}),
+        101,
+    )
+    .body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let moved = state.remount_mount("", "team", "moved", Some(2)).unwrap();
+    assert_eq!(moved.body["data"]["revision"], 3);
+    assert_eq!(moved.body["data"]["accessor"], accessor);
+    assert_eq!(
+        state
+            .handle(
+                None,
+                "",
+                "POST",
+                "auth/team/login/alice",
+                &json!({"password":"correct horse battery staple"}),
+                102,
+            )
+            .err()
+            .map(|error| error.status),
+        Some(404)
+    );
+    assert_eq!(
+        state
+            .handle(
+                None,
+                "",
+                "POST",
+                "auth/moved/login/alice",
+                &json!({"password":"correct horse battery staple"}),
+                102,
+            )
+            .unwrap()
+            .unwrap()
+            .status,
+        200
+    );
+    assert!(state.authenticate(&issued, 102).is_ok());
+    let before_stale = serde_json::to_vec(&state).unwrap();
+    assert_eq!(
+        state
+            .remount_mount("", "moved", "other", Some(1))
+            .err()
+            .map(|error| error.status),
+        Some(409)
+    );
+    assert_eq!(before_stale, serde_json::to_vec(&state).unwrap());
+    call(
+        &mut state,
+        &root,
+        "",
+        "DELETE",
+        "sys/auth/moved",
+        json!({"cas_revision":3}),
+        103,
+    );
+    assert!(state.authenticate(&issued, 103).is_err());
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "sys/auth/moved",
+        json!({"type":"userpass","cas_revision":0}),
+        104,
+    );
+    let recreated = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/auth/moved",
+        json!({}),
+        104,
+    );
+    assert_eq!(recreated.body["data"]["revision"], 1);
+    assert_ne!(recreated.body["data"]["accessor"], accessor);
+}
+
+#[test]
+fn token_lookup_reports_standard_expiry_for_all_selectors_and_after_renewal() {
+    let (mut state, root_raw, root) = setup();
+    let root_info = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/token/lookup-self",
+        json!({}),
+        100,
+    );
+    assert_eq!(
+        root_info.body["data"].get("expire_time"),
+        Some(&Value::Null)
+    );
+    let created = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/create",
+        json!({"policies":["default"],"ttl":60}),
+        100,
+    );
+    let raw = created.body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let accessor = created.body["auth"]["accessor"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    for (path, body, caller) in [
+        ("auth/token/lookup-self", json!({}), raw.as_str()),
+        ("auth/token/lookup", json!({"token":raw}), root_raw.as_str()),
+        (
+            "auth/token/lookup-accessor",
+            json!({"accessor":accessor}),
+            root_raw.as_str(),
+        ),
+    ] {
+        let actor = state.authenticate(caller, 105).unwrap();
+        let info = call(&mut state, &actor, "", "GET", path, body, 105);
+        assert_eq!(info.body["data"]["expire_time"], "1970-01-01T00:02:40Z");
+        assert_eq!(info.body["data"]["ttl"], 55);
+    }
+    let actor = state.authenticate(&raw, 110).unwrap();
+    call(
+        &mut state,
+        &actor,
+        "",
+        "POST",
+        "auth/token/renew-self",
+        json!({"increment":80}),
+        110,
+    );
+    let persisted = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+    let mut reopened: AuthState = serde_json::from_slice(&persisted).unwrap();
+    let actor = reopened.authenticate(&raw, 111).unwrap();
+    let info = call(
+        &mut reopened,
+        &actor,
+        "",
+        "GET",
+        "auth/token/lookup-self",
+        json!({}),
+        111,
+    );
+    assert_eq!(info.body["data"]["expire_time"], "1970-01-01T00:03:10Z");
+    assert_eq!(info.body["data"]["ttl"], 79);
+}
+
+#[path = "auth_userpass_renewal_tests.rs"]
+mod userpass_renewal_tests;
+
+#[path = "auth_userpass_password_tests.rs"]
+mod userpass_password_tests;
+
+#[path = "auth_userpass_alias_tests.rs"]
+mod userpass_alias_tests;
+
+#[path = "auth_userpass_compare_tests.rs"]
+mod userpass_compare_tests;
+
+#[path = "auth_userpass_bcrypt_tests.rs"]
+mod userpass_bcrypt_tests;
+
+#[path = "auth_userpass_cidrs_tests.rs"]
+mod userpass_cidrs_tests;
+
+#[path = "auth_userpass_no_default_tests.rs"]
+mod userpass_no_default_tests;
+
+#[path = "auth_userpass_names_tests.rs"]
+mod userpass_names_tests;

@@ -91,7 +91,7 @@ Required/observed surface counts, matching observation counts, missing surface i
 
 ## Operations
 
-Operators first validate the frozen 60-surface corpus, then collect the required cases against one exact Oracle/candidate pair. They publish a claim only after independent evidence admission. Revocation takes precedence when a regression, inventory drift or provenance defect appears.
+Operators first validate the current frozen surface corpus, then collect the required cases against one exact Oracle/candidate pair. They publish a claim only after independent evidence admission. Revocation takes precedence when a regression, inventory drift or provenance defect appears.
 
 ## Tests and executable evidence
 
@@ -102,11 +102,23 @@ Current executable anchors (source assertions, not a claim that tests were rerun
 - [`tests::side_effect_mismatch_blocks_admission`](../../crates/heptabao-compatibility/src/lib.rs) rejects matching responses whose side-effect digests differ.
 - [`tests::unknown_surface_and_inventory_rebinding_fail_closed`](../../crates/heptabao-compatibility/src/lib.rs) checks unknown surfaces and evidence rebound to a different inventory.
 
-`cargo +1.98.0 test -p heptabao-compatibility` proves exact-denominator enforcement, minimum observation counts, inventory/artifact binding, repository self-admission rejection and side-effect mismatch blocking. `python scripts/validate_compatibility_corpus.py` proves that all 60 inventoried surfaces are present exactly once and all 38 current scoped cases are mapped exactly once.
+`cargo +1.98.0 test -p heptabao-compatibility` proves exact-denominator enforcement, minimum observation counts, inventory/artifact binding, repository self-admission rejection and side-effect mismatch blocking. `python scripts/validate_compatibility_corpus.py` proves that all inventoried surfaces are present exactly once and every current scoped case is mapped exactly once. The source-derived counts below must match the corpus.
+
+<!-- BEGIN CURRENT COMPATIBILITY COVERAGE -->
+| Source-derived coverage metric | Count |
+|---|---:|
+| Inventoried surfaces | 59 |
+| Surfaces with scoped fixtures | 59 |
+| Surfaces without implemented fixtures | 0 |
+| Scoped fixture cases | 437 |
+
+Scoped fixtures are not full behavior coverage or independent compatibility admission.
+The counts above are regenerated from corpus rows; they are not test-pass receipts.
+<!-- END CURRENT COMPATIBILITY COVERAGE -->
 
 ## Evolution and open boundaries
 
-Fifty-four inventoried surfaces still have no executable fixture, and no surface has independent observation bound to the current exact head. Endpoint/error precedence, external auth, additional engines, streaming, HA, upgrade trains and full OpenBao observation remain repository and external evidence work tracked by `HB-V2-REP-016` and `HB-BLK-EXT-005`.
+No inventoried surface lacks a scoped executable fixture in the current projection. No surface has independent observation bound to the current exact head. Scoped fixture implementation therefore no longer blocks repository source completion, while full per-surface behavior parity, complete exact-head Oracle/candidate differential execution, independent-origin evidence admission, HA/upgrade qualification and external review remain admission work. No compatibility or production authority is implied.
 
 ## Machine-verified source truth
 
@@ -124,3 +136,7 @@ The V1.4.7 generated facts below are a preserved historical snapshot. Current de
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-compatibility.md).

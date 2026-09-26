@@ -4,6 +4,7 @@ use std::{
     path::Path,
     sync::{Arc, Mutex},
 };
+use zeroize::Zeroizing;
 
 fn main() -> std::process::ExitCode {
     match run() {
@@ -17,6 +18,12 @@ fn main() -> std::process::ExitCode {
 
 fn run() -> Result<(), String> {
     let arguments: Vec<_> = std::env::args().skip(1).collect();
+    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+    let (arguments, fixture) = {
+        let mut arguments = arguments;
+        let fixture = heptabao_server::fixture_native_restore::take_arguments(&mut arguments)?;
+        (arguments, fixture)
+    };
     if !matches!(arguments.as_slice(), [flag, _] if flag == "--config")
         && !matches!(arguments.as_slice(), [flag, _, ha_flag, _] if flag == "--config" && ha_flag == "--ha-config")
     {
@@ -41,10 +48,14 @@ fn run() -> Result<(), String> {
     let ha = Arc::new(Mutex::new(heptabao_server::ha::HaProcess::start(
         ha_config,
     )?));
+    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+    if let Some(fixture) = fixture {
+        return heptabao_server::http::serve_with_ha_fixture(config, ha, fixture);
+    }
     heptabao_server::http::serve_with_ha(config, ha)
 }
 
-fn read_bounded_config(path: &Path) -> Result<Vec<u8>, String> {
+fn read_bounded_config(path: &Path) -> Result<Zeroizing<Vec<u8>>, String> {
     if !path.is_absolute() {
         return Err("config path must be absolute".into());
     }
@@ -53,7 +64,7 @@ fn read_bounded_config(path: &Path) -> Result<Vec<u8>, String> {
     #[cfg(target_os = "linux")]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(0o400000 | 0o2000000 | 0o4000);
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
     }
     let file = options
         .open(path)
@@ -64,7 +75,7 @@ fn read_bounded_config(path: &Path) -> Result<Vec<u8>, String> {
     if !metadata.is_file() || metadata.len() > 65_536 {
         return Err("configuration must be a bounded regular file".into());
     }
-    let mut bytes = Vec::new();
+    let mut bytes = Zeroizing::new(Vec::new());
     file.take(65_537)
         .read_to_end(&mut bytes)
         .map_err(|_| "cannot read configuration")?;
