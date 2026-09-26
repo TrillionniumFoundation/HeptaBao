@@ -641,6 +641,78 @@
       ],
       "prerequisites": [],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "audit_file": {
+      "script": "qa/openbao-acceptance/audit_file_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "radius_native": {
+      "script": "qa/openbao-acceptance/radius_native_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--build-source-commit",
+        "{source}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2",
+        "synthetic_loopback_udp_provider"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "radius_renewal": {
+      "script": "qa/openbao-acceptance/radius_renewal_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2",
+        "synthetic_loopback_udp_provider"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "radius_renewal_ha": {
+      "script": "qa/openbao-acceptance/radius_renewal_ha.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "Linux_candidate_runtime",
+        "synthetic_loopback_udp_provider"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "radius_renewal_ha_native": {
+      "script": "qa/openbao-acceptance/radius_renewal_ha.py",
+      "arguments": [
+        "--native",
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "Linux_candidate_runtime",
+        "synthetic_loopback_udp_provider"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1084,11 +1156,11 @@
       "surface_id": "HB-SURFACE-AUTH-RADIUS",
       "category": "auth_methods",
       "implementation_status": "runtime_partial",
-      "runtime_source": "crates/heptabao-server/src/auth_kubernetes.rs",
+      "runtime_source": "crates/heptabao-server/src/auth_radius_native.rs",
       "technical_contract": {
         "api_or_protocol": "auth/:mount/config, users/* and login",
         "required_positive_and_hostile_behavior": "Authenticators, shared-secret custody, challenge flow, retransmission bounds and source peer checks",
-        "remaining_semantics_and_effect_checks": "Spoofed replies or duplicate replies cannot create a token; real RADIUS acceptance required",
+        "remaining_semantics_and_effect_checks": "Current scoped profiles execute real HTTPS plus loopback UDP PAP, strict candidate Message-Authenticator/Response-Authenticator checks, candidate/official 2.6.2 configuration-users-login-renewal-wrapping-restart-DNS-IPv6 comparisons, and three-process legacy/native renewal HA. CHAP, EAP, Access-Challenge, arbitrary resolver/network/server deployments, broader option/error parity, multi-host faults and independent provider qualification remain open.",
         "crash_reopen": "Interrupt auth/:mount/config before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-AUTH-RADIUS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -1100,7 +1172,12 @@
         "radius_bounded.reject_bad_response_authenticator",
         "radius_bounded.timeout_fails_closed"
       ],
-      "available_scoped_profiles": [],
+      "available_scoped_profiles": [
+        "radius_native",
+        "radius_renewal",
+        "radius_renewal_ha",
+        "radius_renewal_ha_native"
+      ],
       "whole_surface_admitted": false
     },
     {
@@ -1574,7 +1651,7 @@
       "technical_contract": {
         "api_or_protocol": "sys/audit file-device lifecycle and current authenticated file sink",
         "required_positive_and_hostile_behavior": "Pre-entry durability, keyed chaining, rotation/crash recovery, permission and disk-full failures",
-        "remaining_semantics_and_effect_checks": "Current local HMAC log is not full OpenBao audit-device API/HMAC byte compatibility",
+        "remaining_semantics_and_effect_checks": "The current official-2.6.2 differential covers deployment-owned file listing, exact per-device/duplicate/disable refusals and unchanged binding. OpenBao field-HMAC byte compatibility, dynamic device options/enrollment, rotation/checkpoint format parity, permission/disk-full faults, HA collectors and independent production qualification remain open.",
         "crash_reopen": "Interrupt sys/audit file-device lifecycle and current authenticated file sink before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-AUDIT-FILE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -1586,7 +1663,9 @@
         "audit_file_live.duplicate_enable_rejected",
         "audit_file_live.disable_rejected"
       ],
-      "available_scoped_profiles": [],
+      "available_scoped_profiles": [
+        "audit_file"
+      ],
       "whole_surface_admitted": false
     },
     {

@@ -57,6 +57,24 @@ class SurfaceWorkTests(unittest.TestCase):
     def test_evidence_dimensions_cannot_be_dropped(self):
         self.assertTrue(self.validate_mutation(lambda d: d['required_completion_evidence'].remove('independent_admission')))
 
+    def test_executed_file_audit_and_radius_profiles_are_bound_to_real_owners(self):
+        rows = {row['surface_id']: row for row in self.doc['surfaces']}
+        audit = rows['HB-SURFACE-AUDIT-FILE']
+        self.assertEqual(audit['available_scoped_profiles'], ['audit_file'])
+        self.assertEqual(self.doc['profile_definitions']['audit_file']['script'],
+                         'qa/openbao-acceptance/audit_file_live.py')
+        radius = rows['HB-SURFACE-AUTH-RADIUS']
+        self.assertEqual(radius['runtime_source'], 'crates/heptabao-server/src/auth_radius_native.rs')
+        self.assertEqual(radius['available_scoped_profiles'], [
+            'radius_native', 'radius_renewal', 'radius_renewal_ha',
+            'radius_renewal_ha_native'])
+        self.assertEqual(self.doc['profile_definitions']['radius_native']['script'],
+                         'qa/openbao-acceptance/radius_native_live.py')
+        self.assertEqual(self.doc['profile_definitions']['radius_renewal']['script'],
+                         'qa/openbao-acceptance/radius_renewal_live.py')
+        self.assertEqual(self.doc['profile_definitions']['radius_renewal_ha']['script'],
+                         'qa/openbao-acceptance/radius_renewal_ha.py')
+
     def test_profile_path_escape_rejects(self):
         self.assertTrue(self.validate_mutation(lambda d: d['profile_definitions']['fixed'].update(script='../outside.py')))
 

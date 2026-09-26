@@ -578,7 +578,7 @@ classified as ordinary versus explicit; log in again to use raised ordinary
 limits. Tokens created through `auth/token/create` deliberately do not inherit
 AppRole issuer provenance and therefore use ordinary token renewal semantics.
 This persisted field requires service state schema 11; older binaries reject it
-instead of silently dropping renewal authority. Bounded RADIUS PAP mounts add durable route and token policy in schema 12; the process-enrolled `radius://` UDP endpoint and shared secret stay outside `AuthState`, and schema-11 readers reject the state. The profile supports one-shot IPv4 UDP PAP with strict Message-Authenticator and Response Authenticator checks; CHAP, EAP, IPv6, challenge flows and full OpenBao field parity remain outside this slice.
+instead of silently dropping renewal authority. Bounded RADIUS PAP mounts add durable route and token policy in schema 12; the historical process-enrolled `radius://` UDP endpoint and shared secret stay outside `AuthState`, and schema-11 readers reject the state. That legacy transport is one-shot IPv4 PAP with strict Message-Authenticator and Response Authenticator checks. The later native API-owned transport described below adds bounded DNS/IP and IPv6 selection; neither transport claims CHAP, EAP, Access-Challenge or complete OpenBao field/error parity.
 
 Schema 16 adds direct RADIUS token provenance and a bounded PAP credential inside
 encrypted Auth state. `auth/token/renew-self`, `renew`, and `renew-accessor` stage a
@@ -638,6 +638,18 @@ Secret, policy and timeout-only updates preserve the old network authority.
 The process credential remains optional for these old native mounts; legacy URL
 mounts require their original process credential. Transport changes invalidate
 pending login and renewal observations through the existing revision checks.
+
+The current executable RADIUS evidence is split deliberately rather than hidden
+behind one completion label. `radius_native_live.py` compares selected native
+configuration, users, PAP login, DNS/IPv4/IPv6 transport, wrapping, restart and
+renewal behavior with the checksum-pinned OpenBao 2.6.2 binary. The separate
+`radius_renewal_live.py` profile binds direct renewal semantics to the same
+provider acceptance. `radius_renewal_ha.py` executes three-process forwarding,
+leader loss, quorum fencing and restart for both the historical process-secret
+configuration and `--native` encrypted API-owned configuration. These are real
+HTTPS/UDP same-host profiles, not an independent production RADIUS deployment,
+CHAP/EAP/challenge coverage, arbitrary resolver/network qualification or full
+option/error parity.
 
 Native RADIUS and native LDAP accept `token_bound_cidrs` as a list or comma-separated string;
 null or an empty list clears future issuance constraints. The bounded profile

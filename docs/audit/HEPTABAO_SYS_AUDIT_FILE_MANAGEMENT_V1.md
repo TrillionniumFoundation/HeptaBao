@@ -41,7 +41,10 @@ promoted on the next durable rotation. No audit-state schema change is required.
 ## Verification and scope
 
 `qa/openbao-acceptance/audit_file_live.py` executes real listing, exact standard
-refusals and unchanged-device readback against both processes. The Rust
+refusals and unchanged-device readback against both the current candidate and
+the checksum-pinned OpenBao 2.6.2 process. It is bound as the `audit_file`
+scoped profile in the surface work inventory and runs in the mandatory official
+profile lane; that mapping is evidence navigation, not whole-device admission. The Rust
 `sys_audit_exposes_and_binds_mandatory_file_device` regression separately checks
 the internal extension, invalid-token rejection and standard-route isolation.
 This is a bounded API comparison, not independent whole-device or production
