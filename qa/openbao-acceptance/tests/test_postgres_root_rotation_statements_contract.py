@@ -1,5 +1,6 @@
 """PostgreSQL root-rotation statements stay bounded and migration-safe."""
 from pathlib import Path
+import hashlib
 import json
 import subprocess
 import unittest
@@ -27,10 +28,24 @@ class RootRotationStatementsContractTests(unittest.TestCase):
 
     def test_upgrade_baseline_is_the_exact_published_v5_provider(self):
         baseline = ROOT / "qa/openbao-acceptance/fixtures/postgresql-provider-v5-root-statements-baseline.sql"
-        published = subprocess.check_output(
-            ["git", "show", "HEAD:bootstrap/postgresql/provider.sql"], cwd=ROOT
+        pins = json.loads(
+            (ROOT / "qa/openbao-acceptance/fixtures/postgres-schema-migration-sources-v1.json").read_text()
         )
-        self.assertEqual(baseline.read_bytes(), published)
+        published_commit = pins["schema56_root_rotation_statements"]["commit"]
+        published = subprocess.check_output(
+            ["git", "show", published_commit + ":bootstrap/postgresql/provider.sql"], cwd=ROOT
+        )
+        baseline_bytes = baseline.read_bytes()
+        self.assertEqual(
+            hashlib.sha256(baseline_bytes).hexdigest(),
+            "29d075931c2b6ce3b627287956377c05dc2b3a0c62e97fd916e832fdfe3586b2",
+        )
+        self.assertEqual(baseline_bytes, published)
+        self.assertNotEqual(
+            baseline_bytes,
+            (ROOT / "bootstrap/postgresql/provider.sql").read_bytes(),
+            "the immutable v5 fixture must not silently adopt the current v6 provider",
+        )
     def test_schema_migration_sources_are_exact_ancestors_and_trees(self):
         pins = json.loads((ROOT / "qa/openbao-acceptance/fixtures/postgres-schema-migration-sources-v1.json").read_text())
         self.assertEqual(pins["schema"], "heptabao.postgresql-schema-migration-sources.v1")
