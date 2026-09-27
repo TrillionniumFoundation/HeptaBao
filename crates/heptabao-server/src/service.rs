@@ -4124,28 +4124,73 @@ impl Service {
         self.record_writes_since_gc = 64;
         self.barrier_key = Some(Zeroizing::new(*key));
         self.recovery_required = false;
-        let sync_as_leader = if let Some(ha) = self.ha.as_ref() {
-            match ha.lock_for_request() {
-                Ok(ha) => match ha.is_leader() {
-                    Ok(value) => value,
-                    Err(_) => {
-                        self.recovery_required = true;
-                        return Err(Response::error(503, "HA role is unavailable during unseal"));
-                    }
-                },
-                Err(_) => {
-                    self.recovery_required = true;
-                    return Err(Response::error(503, "HA role is unavailable during unseal"));
-                }
-            }
-        } else {
-            false
-        };
-        if sync_as_leader && let Err(error) = self.sync_from_ha() {
+        if let Err(error) = self.synchronize_ha_after_unseal() {
             self.recovery_required = true;
             return Err(error);
         }
         Ok(())
+    }
+
+    fn transient_ha_unseal_error(response: &Response) -> bool {
+        response.status == 503
+            && response.body["errors"].as_array().is_some_and(|errors| {
+                errors.len() == 1
+                    && errors[0].as_str().is_some_and(|message| {
+                        matches!(
+                            message,
+                            "HA linearizable state is unavailable"
+                                | "HA control state is unavailable"
+                                | "HA role is unavailable"
+                                | "HA role is unavailable during unseal"
+                        )
+                    })
+            })
+    }
+
+    fn ha_leader_during_unseal(&self) -> Result<bool, Response> {
+        let Some(ha) = self.ha.as_ref() else {
+            return Ok(false);
+        };
+        ha.lock_for_request()
+            .map_err(|_| Response::error(503, "HA role is unavailable during unseal"))?
+            .is_leader()
+            .map_err(|_| Response::error(503, "HA role is unavailable during unseal"))
+    }
+
+    fn synchronize_ha_after_unseal(&mut self) -> Result<(), Response> {
+        self.synchronize_ha_after_unseal_with(
+            |service| service.ha_leader_during_unseal(),
+            |service| service.sync_from_ha(),
+            || std::thread::sleep(std::time::Duration::from_millis(50)),
+        )
+    }
+
+    fn synchronize_ha_after_unseal_with(
+        &mut self,
+        mut is_leader: impl FnMut(&Self) -> Result<bool, Response>,
+        mut synchronize: impl FnMut(&mut Self) -> Result<(), Response>,
+        mut pause: impl FnMut(),
+    ) -> Result<(), Response> {
+        const ATTEMPTS: usize = 20;
+        for attempt in 0..ATTEMPTS {
+            match is_leader(self) {
+                Ok(false) => return Ok(()),
+                Ok(true) => {}
+                Err(error) if attempt + 1 < ATTEMPTS && Self::transient_ha_unseal_error(&error) => {
+                    pause();
+                    continue;
+                }
+                Err(error) => return Err(error),
+            }
+            match synchronize(self) {
+                Ok(()) => return Ok(()),
+                Err(error) if attempt + 1 < ATTEMPTS && Self::transient_ha_unseal_error(&error) => {
+                    pause();
+                }
+                Err(error) => return Err(error),
+            }
+        }
+        Err(Response::error(503, "HA linearizable state is unavailable"))
     }
 
     fn rotate_unseal_nonce(&mut self) -> Result<(), &'static str> {
@@ -6958,3 +7003,7 @@ mod kerberos_schema_tests;
 #[cfg(test)]
 #[path = "service_secret_delivery_tests.rs"]
 mod secret_delivery_tests;
+
+#[cfg(test)]
+#[path = "ha_initial_anchor_tests.rs"]
+mod ha_initial_anchor_tests;

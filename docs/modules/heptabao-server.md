@@ -426,6 +426,15 @@ only after the exact initial voter set is committed and non-joint, before active
 authority is exposed. A torn completion suffix remains pending and is repaired
 only after membership is re-observed.
 
+
+Barrier activation does not weaken this fence. The initially elected process
+may retry only bounded ReadIndex, control-lock and HA-role observations while no
+new local publication has an uncertain outcome. It performs at most twenty
+attempts separated by 50 ms, rechecks leadership before each synchronization,
+and returns success without anchoring when another process becomes leader.
+Errors from durable publication, capacity, schema validation or unknown effects
+are not classified as transient and terminate unseal with recovery fencing.
+
 Completion is a durable one-way historical fact. Later guarded removal, join,
 demotion or Autopilot contraction does not reopen the original voter set when
 any node restarts. Historical completion is not itself current service authority:

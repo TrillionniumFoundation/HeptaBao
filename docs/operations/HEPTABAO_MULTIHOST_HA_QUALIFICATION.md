@@ -119,6 +119,18 @@ Missing-marker legacy state is adopted only from local-only pending membership
 or a stable enrolled set of at least three voters; joint, two-voter, uncommitted
 or unenrolled state fails closed.
 
+After the cluster elects its first leader, unseal may briefly race the initial
+ReadIndex or role observation even though the immutable voter transition is
+already converging. Service retries only the named pre-publication failures
+`HA linearizable state is unavailable`, `HA control state is unavailable`, and
+the two bounded HA-role observations. The retry is limited to twenty attempts
+with a 50 ms pause. A node that becomes a follower stops anchoring and lets the
+new leader own the transition. Durable publication failure, unknown outcome,
+capacity failure and every unclassified error remain terminal and are never
+turned into a blind retry. `ha_initial_anchor_tests.rs` checks recovery, role
+transfer and immediate rejection of a terminal publication error; the private
+multi-host profile remains the real first-start network proof.
+
 ## Four-host Autopilot cleanup
 
 `ha_multihost_autopilot_live.py` has a separate fixed 55-check denominator and
