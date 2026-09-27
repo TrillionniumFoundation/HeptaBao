@@ -267,3 +267,52 @@ async fn committed_unready_learner_is_not_promoted_and_can_recover()
     let _ = std::fs::remove_dir_all(&path);
     result
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn guarded_join_acknowledges_committed_learner_before_replication()
+-> Result<(), Box<dyn std::error::Error>> {
+    let path = std::env::temp_dir().join(format!(
+        "heptabao-guarded-join-{}-{}",
+        std::process::id(),
+        std::thread::current().name().unwrap_or("test")
+    ));
+    let _ = std::fs::remove_dir_all(&path);
+    let router = Arc::new(Router::default());
+    let peers = BTreeSet::from([1, 2, 3]);
+    let factory = RemoteNetworkFactory::new(1, peers, Arc::new(Arc::clone(&router)))?;
+    let node = ProcessRaftNode::create(path.join("1"), 1, factory).await?;
+    router.peers.write().await.insert(1, node.rpc_service());
+
+    let result = async {
+        node.initialize_single().await?;
+        leader(&node, 1).await?;
+        let before = node.membership_observation().await?;
+        let index = before.membership_index.ok_or("initial membership index")?;
+
+        // Node 2 has no running process and no registered RPC service. Explicit
+        // join must still acknowledge its committed learner membership; catch-up
+        // and promotion remain separate observations.
+        let observed = tokio::time::timeout(
+            Duration::from_secs(6),
+            node.change_membership_guarded(index, 2, "add_learner"),
+        )
+        .await
+        .map_err(|_| "guarded learner join waited for replication")??;
+        assert!(observed.committed);
+        assert!(!observed.joint);
+        assert!(observed.nodes.contains(&2));
+        assert!(!observed.voters.contains(&2));
+        assert!(
+            node.wait_for_learner_replication(2, Duration::from_millis(250))
+                .await
+                .is_err(),
+            "membership acknowledgement must not fabricate replication readiness"
+        );
+        Ok::<_, Box<dyn std::error::Error>>(())
+    }
+    .await;
+    router.peers.write().await.clear();
+    node.shutdown().await?;
+    let _ = std::fs::remove_dir_all(&path);
+    result
+}

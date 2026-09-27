@@ -272,6 +272,7 @@ server dependencies. Current module status and all independent gates are unchang
 - [PostgreSQL provider, renewable lease and reconcile](engines/HEPTABAO_POSTGRESQL_PROVIDER.md): real PostgreSQL 17.11 execution has source-bound provider and batch-lease receipts; full plugin parity and independent acceptance remain open, and changed candidates require their own runs.
 - [Remote JWKS / Discovery-backed JWT](auth/HEPTABAO_REMOTE_JWT_KEYS.md): fresh verified HTTPS keys, not browser OIDC code flow.
 - [Raft membership / persisted snapshots / Autopilot](operations/HEPTABAO_RAFT_ADMINISTRATION.md): same-version pre-enrolled native consensus operations, not full restore/migration parity.
+- [Private multi-host HA qualification](operations/HEPTABAO_MULTIHOST_HA_QUALIFICATION.md): manual three-host lifecycle and four-host bounded Autopilot cleanup over authorized private-tailnet machines; not mixed-version, WAN, physical-fault or independent production admission.
 
 These current implementation notes supersede earlier absence-of-implementation statements only for their exact bounded profiles. Original 60-surface admission statuses and independent authority remain unchanged.
 

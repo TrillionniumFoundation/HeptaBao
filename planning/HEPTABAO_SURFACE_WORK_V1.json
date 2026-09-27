@@ -848,6 +848,37 @@
         "OpenSSL and one checksum-bound HeptaBao candidate binary"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "ha_multihost_autopilot": {
+      "script": "qa/openbao-acceptance/ha_multihost_autopilot_live.py",
+      "arguments": [
+        "--binary-source",
+        "{ssh_alias}:{binary}",
+        "--expected-binary-sha256",
+        "{binary_sha256}",
+        "--source-commit",
+        "{source}",
+        "--source-tree",
+        "{source_tree}",
+        "--node",
+        "{node_1}",
+        "--node",
+        "{node_2}",
+        "--node",
+        "{node_3}",
+        "--node",
+        "{node_4}",
+        "--work-root",
+        "{private_work_dir}",
+        "--allow-private-tailnet"
+      ],
+      "prerequisites": [
+        "four authorized Linux hosts on one private tailnet",
+        "noninteractive SSH aliases and new owner-only /home fixture roots",
+        "OpenSSL and one checksum-bound HeptaBao candidate binary",
+        "at least sixty seconds for the real persisted dead-server grace"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -2173,9 +2204,9 @@
       "technical_contract": {
         "api_or_protocol": "sys/storage/raft/autopilot config/state and membership changes",
         "required_positive_and_hostile_behavior": "Stabilization windows, healthy voter quorum, learner catch-up and dead-server grace",
-        "remaining_semantics_and_effect_checks": "Never fabricate last-contact health or remove the last safe quorum; multi-host qualification remains open",
+        "remaining_semantics_and_effect_checks": "Same-version separate-host evidence observes real replication health, retains a stopped voter through the persisted sixty-second grace, removes it only while four voters can safely contract to three, refuses another removal below the configured minimum, and requires explicit authenticated readmission before the old host can catch up and regain voter status. Mixed-version Autopilot, WAN loss/latency, disk and power faults, clock discontinuities, long-horizon histories and independent production qualification remain open.",
         "crash_reopen": "Interrupt sys/storage/raft/autopilot config/state and membership changes before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-CLUSTER-AUTOPILOT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "isolation": "Bind every participant to a pre-enrolled node ID, mTLS certificate, private tailnet address and checksum-identical binary. A removed host cannot self-rejoin from stale local membership; explicit root-authorized join plus learner catch-up and stabilization is required. No force removal, mutation retry, arbitrary endpoint enrollment or cleanup below the three-voter minimum is admitted.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [
@@ -2185,7 +2216,8 @@
         "raft_membership_live.autopilot_policy_persists_across_restart"
       ],
       "available_scoped_profiles": [
-        "raft"
+        "raft",
+        "ha_multihost_autopilot"
       ],
       "whole_surface_admitted": false
     },

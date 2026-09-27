@@ -331,6 +331,17 @@ through Service before external consensus administration. Losing leadership or
 quorum blocks further admission. Existing Service/raft persistence, retry/reconcile
 and audit boundaries remain in force; no operator safety override is manufactured.
 
+The private four-host Autopilot profile starts four pre-enrolled voters on four
+separate Linux hosts. It stops one non-leader, requires current-leader replication
+metrics to report the voter unhealthy, retains it through the complete persisted
+60-second grace and contracts only from four voters to the configured safe minimum
+of three. Restarting the removed process cannot rejoin from stale local membership.
+One root-authorized join at the current membership frontier must add it as a
+learner; catch-up and continuous stabilization precede voter promotion. The profile
+then returns to three voters, proves another removal is rejected, transfers
+leadership through process loss and checks policy persistence. It issues each
+membership mutation once and never uses a force path.
+
 ## Operation and verification
 
 Changing static enrollment requires a reviewed host-profile change, not a join
@@ -343,16 +354,23 @@ cargo test --locked -p heptabao-raft-runtime
 python qa/openbao-acceptance/raft_membership_live.py --binary <server> --dead-cleanup --output <new-json>
 python qa/openbao-acceptance/ha_network_partition.py --binary <server> --output <new-json>
 python qa/openbao-acceptance/ha_step_down.py --binary <server> --expected-binary-sha256 <sha256> --output <new-json>
+python qa/openbao-acceptance/ha_multihost_autopilot_live.py \
+  --binary-source <ssh-alias>:/home/.../heptabao-server \
+  --expected-binary-sha256 <sha256> --source-commit <commit> --source-tree <tree> \
+  --node <alias,tailnet-ip,new-/home-root> --node <...> --node <...> --node <...> \
+  --work-root <new-controller-root> --allow-private-tailnet
 ```
 
 The membership suite starts five real local processes with three initial voters,
 persists a snapshot, joins learners, checks stale/unknown-peer rejection, observes
 stabilization and catch-up, promotes/demotes/removes native members, verifies real
 dead-server grace and cleanup, then checks leader failure and restart. These are
-same-binary loopback tests, not five physical hosts or simulated power failures.
-ARM64/macOS/Windows, large-state load, physical disk faults, OpenBao binary-format
-parity, automatic arbitrary-node challenge enrollment, force restore and rolling
-mixed-version upgrade require separate evidence.
+same-binary loopback tests. The separate four-host profile exercises the bounded
+dead-voter policy on distinct private-tailnet hosts; it is manual private-lab
+evidence, not simulated power loss or production admission. ARM64/macOS/Windows,
+large-state load, physical disk faults, clock discontinuities, WAN behavior,
+OpenBao binary-format parity, automatic arbitrary-node challenge enrollment,
+force restore and rolling mixed-version upgrade require separate evidence.
 
 The current SSD Linux receipts use the `6cc53a3` candidate binary with digest `eac7867bc9f7b0626b291bce7362eec8eba3a61b02578549e17644e18c4aaf8f`: [`raft-membership-6cc53a3.json`](../../qa/openbao-acceptance/evidence/raft-membership-6cc53a3.json) records 38 native membership scenarios; [`raft-membership-dead-cleanup-6cc53a3.json`](../../qa/openbao-acceptance/evidence/raft-membership-dead-cleanup-6cc53a3.json) records 41 scenarios including dead-voter cleanup. The companion [`ha-network-partition-6cc53a3.json`](../../qa/openbao-acceptance/evidence/ha-network-partition-6cc53a3.json), [`ha-step-down-6cc53a3.json`](../../qa/openbao-acceptance/evidence/ha-step-down-6cc53a3.json) and [`idle-lifecycle-ha-6cc53a3.json`](../../qa/openbao-acceptance/evidence/idle-lifecycle-ha-6cc53a3.json) receipts cover partition fencing, explicit leadership transfer and autonomous expiry after leader loss. They remain same-version loopback evidence and do not grant production or compatibility authority.
 

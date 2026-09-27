@@ -56,15 +56,17 @@ Audit is part of admission and response publication: a request record is persist
 | Audit sequence, HMAC chain and rotation checkpoint | service audit owner, private key and independently synchronized JSONL/manifest files | every admitted request and response; server audit tests |
 | HA ordering, log/vote/membership and state-machine apply | `ha.rs` composes per-process `ProcessRaftNode`; peer transport binds certificates and messages | peer listener, forwarding, authenticated `sys/step-down` and `sys/storage/raft/*`; HA and raft-runtime tests |
 
-The same HA owner is now exercised by the scoped private multi-host profile in
-`qa/openbao-acceptance/ha_multihost_live.py`. It uses three separately authorized
-Linux hosts, distinct pre-enrolled certificates, private tailnet listeners and a
-fixed lifecycle covering forwarding, snapshot catch-up, leader process loss,
-explicit step-down, quorum-loss fencing and complete rejoin. This is manual lab
-evidence only: it is not a default public-PR job, automatic node discovery,
-Autopilot policy, mixed-version operation, WAN qualification, physical-fault
-qualification or production key custody. See
-[Private multi-host HA qualification](../operations/HEPTABAO_MULTIHOST_HA_QUALIFICATION.md).
+The same HA owner is now exercised by two scoped private multi-host profiles.
+`qa/openbao-acceptance/ha_multihost_live.py` uses three separately authorized
+Linux hosts for forwarding, snapshot catch-up, leader process loss, explicit
+step-down, quorum-loss fencing and complete rejoin.
+`qa/openbao-acceptance/ha_multihost_autopilot_live.py` uses four pre-enrolled
+voters to observe a real sixty-second dead-server grace, safe contraction to the
+three-voter minimum, refusal below that minimum and explicit learner readmission
+of the removed host. Both use distinct certificates and private tailnet listeners.
+They are manual lab evidence only: not default public-PR jobs, automatic discovery,
+mixed-version operation, WAN or physical-fault qualification, long-horizon history
+or production key custody. See [Private multi-host HA qualification](../operations/HEPTABAO_MULTIHOST_HA_QUALIFICATION.md).
 
 The integrated `plugin-host`, `plugin-contracts` and `domain` packages own deployment-enrolled checksum-bound authentication and read-only secret-plugin boundaries. Authentication plugins may return only a decision and bounded alias; token policy/TTL authority remains in `auth.rs`. Secret plugins remain read-only. Neither path provides OpenBao Go-plugin RPC compatibility, secret write/lease callbacks or independently qualified sandbox containment.
 

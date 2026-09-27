@@ -89,7 +89,11 @@ impl ProcessRaftNode {
         let mut voters = before.voters.clone();
         match operation {
             "add_learner" if !before.nodes.contains(&target) => {
-                self.add_learner(target).await?;
+                // Join acknowledges the committed learner membership only.
+                // Replication catch-up is a separate observed fact used by
+                // stabilization and promotion; waiting for it here can spend
+                // the request deadline after the durable membership effect.
+                self.enroll_learner(target).await?;
             }
             "promote" if before.nodes.contains(&target) && !before.voters.contains(&target) => {
                 let frontier = before

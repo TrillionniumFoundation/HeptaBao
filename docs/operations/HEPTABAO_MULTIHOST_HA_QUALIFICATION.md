@@ -2,26 +2,29 @@
 
 Status: `IMPLEMENTED_SCOPED_LAB_PROFILE`
 
-This profile runs one exact HeptaBao binary on three separately authorized Linux
-hosts joined only by a private tailnet. It proves a bounded, same-version,
-pre-enrolled three-voter lifecycle. It does not grant OpenBao compatibility,
+These profiles run one exact HeptaBao binary on separately authorized Linux
+hosts joined only by a private tailnet. The three-host profile proves a bounded,
+same-version, pre-enrolled voter lifecycle. The four-host profile exercises the
+persisted Autopilot dead-server grace, safe contraction to three voters and
+explicit readmission of the removed host. Neither grants OpenBao compatibility,
 independent admission, production authority, key custody approval, or permission
 to use arbitrary remote machines.
 
-The executable owner is
-`qa/openbao-acceptance/ha_multihost_live.py`. The surface inventory names it
-`ha_multihost`. It is deliberately **not** part of the default GitHub-hosted PR
-workflow: public runners cannot reach the private hosts, and untrusted pull
-requests must never be routed to persistent LAN runners merely to make this gate
-automatic.
+The executable owners are `qa/openbao-acceptance/ha_multihost_live.py` and
+`qa/openbao-acceptance/ha_multihost_autopilot_live.py`. The surface inventory
+names them `ha_multihost` and `ha_multihost_autopilot`. They are deliberately
+**not** part of the default GitHub-hosted PR workflow: public runners cannot
+reach the private hosts, and untrusted pull requests must never be routed to
+persistent LAN runners merely to make these gates automatic.
 
 ## Prerequisites and trust boundary
 
-Use exactly three Linux hosts that the operator is authorized to control. Every
-host must be reachable through a preconfigured noninteractive SSH alias and a
-unique address inside `100.64.0.0/10`. The runner rejects public, loopback, LAN,
-VPN-routed non-tailnet, duplicate, or noncanonical addresses. Remote fixture
-roots and the source binary must be new canonical paths below `/home/`.
+Use exactly three Linux hosts for the general lifecycle or exactly four for
+Autopilot cleanup, all explicitly authorized by the operator. Every host must be
+reachable through a preconfigured noninteractive SSH alias and a unique address
+inside `100.64.0.0/10`. The runners reject public, loopback, LAN, VPN-routed
+non-tailnet, duplicate, or noncanonical addresses. Remote fixture roots and the
+source binary must be new canonical paths below `/home/`.
 
 The controller work-root parent must already exist, be owned by the invoking
 user, resolve without a symlink, and be unwritable by group or others. The runner
@@ -59,7 +62,7 @@ host. The profile creates one
 fixture-only CA, one distinct client/server certificate per node, and a private
 replication key. HTTP and Raft bind only the declared tailnet addresses.
 
-## Fixed 54-check lifecycle
+## Fixed 55-check lifecycle
 
 `REQUIRED_CHECKS` is a fixed denominator. A report can pass only when every name
 appears exactly once, every row passes, the runner and all four candidate copies
@@ -94,6 +97,54 @@ Read polling may repeat because it is observational. Mutating requests, includin
 CAS writes, snapshot trigger, step-down and cleanup deletes, are each issued once.
 An unknown mutation outcome is not retried by this harness.
 
+## Four-host Autopilot cleanup
+
+`ha_multihost_autopilot_live.py` has a separate fixed 55-check denominator and
+requires four distinct hosts. It starts all four as pre-enrolled voters, commits
+and reads a baseline through every host, then persists an Autopilot policy with
+a three-voter minimum, a three-second stabilization window and a real 60-second
+dead-server grace. A representative invocation is:
+
+```bash
+run_id=$(python3 -c 'import secrets; print(secrets.token_hex(4))')
+head=$(git rev-parse HEAD)
+tree=$(git rev-parse 'HEAD^{tree}')
+binary=/home/builder/heptabao-target/debug/heptabao-server
+digest=$(sha256sum "$binary" | cut -d ' ' -f 1)
+
+python3 qa/openbao-acceptance/ha_multihost_autopilot_live.py \
+  --binary-source local:/home/controller/heptabao-target/debug/heptabao-server \
+  --expected-binary-sha256 "$digest" \
+  --source-commit "$head" --source-tree "$tree" \
+  --node host-a,100.64.0.21,/home/operator/heptabao-auto-$run_id \
+  --node host-b,100.64.0.22,/home/operator/heptabao-auto-$run_id \
+  --node host-c,100.64.0.23,/home/operator/heptabao-auto-$run_id \
+  --node host-d,100.64.0.24,/home/operator/heptabao-auto-$run_id \
+  --api-port 46240 --raft-port 46241 \
+  --work-root /home/controller/heptabao-auto-control-$run_id \
+  --allow-private-tailnet
+```
+
+The profile stops a non-leader and derives health only from current-leader
+ReadIndex and replication contact. It must first observe that voter as unhealthy
+while still retained during grace. Only after the full persisted threshold may
+membership contract from four voters to the configured safe minimum of three.
+The survivors must continue committing and reading data.
+
+Restarting the removed host is not readmission: it must not become active or
+appear in committed membership from stale local state. The controller submits
+one authenticated `join` using the current membership index. The host must enter
+as a learner, catch up, remain non-voting through stabilization and only then
+become a voter. The profile removes that rejoined node explicitly, proves another
+removal below the three-voter minimum returns 409, kills the current leader,
+checks policy persistence across failover/restart, verifies new writes through
+all survivors, deletes every synthetic key and stops only recorded PIDs.
+
+The runner does not shorten or mock the 60-second threshold, infer liveness from
+SSH, retry a membership mutation, enroll a submitted address/certificate, or use
+a force flag. Read polling is observational. A pass remains same-version private
+lab evidence, not proof of WAN, storage, clock or long-horizon behavior.
+
 ## Process and artifact safety
 
 Before `SIGKILL`, the stop path reads the recorded PID, resolves
@@ -111,10 +162,15 @@ controller and three remote roots. Do not use a wildcard or a parent directory.
 
 ## What this profile does and does not establish
 
-A passing run adds real separate-host evidence for mTLS peer identity, standby
-forwarding, ReadIndex-backed readback, snapshot catch-up, leader process death,
-old-leader recovery, explicit step-down, quorum-loss fencing and complete rejoin.
-It does not exercise mixed-version rolling upgrade, WAN latency/loss, host power
-removal, disk-full or torn-write behavior, arbitrary membership discovery,
-Autopilot removal policy, long-horizon linearizability, production certificates,
-or independent destructive qualification. Those remain explicit blockers.
+The three-host pass adds real separate-host evidence for mTLS peer identity,
+standby forwarding, ReadIndex-backed readback, snapshot catch-up, leader process
+death, old-leader recovery, explicit step-down, quorum-loss fencing and complete
+rejoin. The four-host pass additionally covers current-leader health observation,
+real grace-based dead-voter cleanup, the minimum-voter fence, non-automatic stale
+host recovery and explicit learner readmission.
+
+Neither profile exercises mixed-version rolling upgrade or mixed-version Autopilot, WAN
+latency/loss, host power removal, disk-full or torn-write behavior, clock
+rollback/jump, arbitrary membership discovery, long-horizon linearizability,
+production certificates, or independent destructive qualification. Those remain
+explicit blockers.
