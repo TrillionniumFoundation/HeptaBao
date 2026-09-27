@@ -43,6 +43,7 @@ shares, TLS private keys and plaintext migration exports must not be uploaded.
 | Real PostgreSQL | `postgres_live.py` | Actual PostgreSQL 17 SQL, login, renewal, NOLOGIN revocation, termination of an existing session, restart reconciliation and idle expiry. Never substitute a wire model. |
 | HTTP audit | `audit_http_live.py` | Real host-enrolled TLS collector, local-file-first delivery, redirect denial, outage fail-closed and restart recovery; dynamic OpenBao audit-device option parity remains open. |
 | Raft administration | `raft_membership_live.py --dead-cleanup` | Five real same-host processes, committed membership, persisted-snapshot catch-up and observed cleanup grace; not five physical hosts. |
+| Private multi-host HA (authorized manual lab) | `ha_multihost_live.py` | Three separately authorized tailnet hosts, distinct mTLS identities, standby forwarding, snapshot catch-up, leader loss, step-down, quorum fencing and full rejoin. This profile is not a default PR job and does not cover WAN, power, disk or production custody. |
 | Bounded migration | `live_migration_rehearsal.py` | Real TLS KV history transfer, lost-acknowledgement reconciliation, restart, process-fenced source→target cutover and target→same-source-root rollback rehearsal; not full-instance or post-cutover-write migration. |
 
 All named Python profiles live under `qa/openbao-acceptance/`. Oracle input
@@ -163,8 +164,10 @@ state to make an old binary or snapshot acceptable.
 
 The current HeptaBao backup and native snapshot status are not OpenBao `raft.snap`.
 Mixed-version upgrades, force restore, different-seal disaster recovery, large
-states, physical disk/power faults and independent multi-host histories remain
-separate exits. Restoring state containing database provider effects remains
+states, physical disk/power faults, WAN histories and independently controlled
+multi-host qualification remain separate exits. The private three-host profile is
+scoped repository evidence, not that external admission. Restoring state containing
+database provider effects remains
 blocked until external effect/tombstone reconciliation can prevent resurrection.
 
 Production KMS/HSM or signer custody, an external monotonic rollback boundary,

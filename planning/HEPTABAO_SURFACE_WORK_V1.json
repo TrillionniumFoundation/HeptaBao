@@ -820,6 +820,34 @@
         "pinned_schema56_binary"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "ha_multihost": {
+      "script": "qa/openbao-acceptance/ha_multihost_live.py",
+      "arguments": [
+        "--binary-source",
+        "{ssh_alias}:{binary}",
+        "--expected-binary-sha256",
+        "{binary_sha256}",
+        "--source-commit",
+        "{source}",
+        "--source-tree",
+        "{source_tree}",
+        "--node",
+        "{node_1}",
+        "--node",
+        "{node_2}",
+        "--node",
+        "{node_3}",
+        "--work-root",
+        "{private_work_dir}",
+        "--allow-private-tailnet"
+      ],
+      "prerequisites": [
+        "three authorized Linux hosts on one private tailnet",
+        "noninteractive SSH aliases and new owner-only /home fixture roots",
+        "OpenSSL and one checksum-bound HeptaBao candidate binary"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1908,7 +1936,7 @@
       "technical_contract": {
         "api_or_protocol": "sys/storage/raft, membership, snapshot and durable state machine",
         "required_positive_and_hostile_behavior": "ReadIndex, durable acknowledgment, torn/corrupt snapshot rejection, catch-up and membership",
-        "remaining_semantics_and_effect_checks": "OpenBao raft.snap bytes and physical disk/power-fault recovery remain unsupported",
+        "remaining_semantics_and_effect_checks": "Same-version separate-host snapshot catch-up, remote leader process loss, quorum fencing and complete rejoin are executable through the private multi-host profile. OpenBao raft.snap byte compatibility, mixed-version operation, disk-full and torn-write behavior, WAN behavior and long-horizon histories remain unsupported.",
         "crash_reopen": "Interrupt sys/storage/raft before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-STORAGE-RAFT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -1921,7 +1949,8 @@
       ],
       "available_scoped_profiles": [
         "ha",
-        "raft"
+        "raft",
+        "ha_multihost"
       ],
       "whole_surface_admitted": false
     },
@@ -2055,7 +2084,7 @@
       "technical_contract": {
         "api_or_protocol": "Cluster peer listener and client/server certificate mapping",
         "required_positive_and_hostile_behavior": "Wrong node/certificate, replay, revoked trust, rotation and bounded peer frames",
-        "remaining_semantics_and_effect_checks": "Certificate possession is bound to exactly one enrolled node and cluster; bounded same-CA leaf rotation admits an explicit old/new overlap and then fails closed after the old pin is retired.",
+        "remaining_semantics_and_effect_checks": "The private multi-host profile binds three distinct pre-enrolled certificates to three separate tailnet hosts and one cluster. Same-CA leaf rotation remains a separate scoped profile; production PKI custody, revocation distribution, WAN operation and independent destructive qualification remain open.",
         "crash_reopen": "Interrupt Cluster peer listener and client/server certificate mapping before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-CLUSTER-MTLS, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -2065,7 +2094,8 @@
       ],
       "available_scoped_profiles": [
         "ha",
-        "ha_certificate_rotation"
+        "ha_certificate_rotation",
+        "ha_multihost"
       ],
       "whole_surface_admitted": false
     },
@@ -2077,7 +2107,7 @@
       "technical_contract": {
         "api_or_protocol": "Standby request forwarding to current leader",
         "required_positive_and_hostile_behavior": "Bind method/path/namespace/body/auth/wrapping to one bounded frame and reject loops",
-        "remaining_semantics_and_effect_checks": "Dropped acknowledgement never leads to blind mutation retry; forwarded principals are not caller authority",
+        "remaining_semantics_and_effect_checks": "A one-shot mutation sent to a remote standby is forwarded to the current leader and read back through every host without reauthentication or mutation retry. Dropped acknowledgements, late responses, mixed-version forwarding, WAN faults and longitudinal client-history analysis remain open.",
         "crash_reopen": "Interrupt Standby request forwarding to current leader before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-CLUSTER-FORWARDING, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -2086,7 +2116,8 @@
         "ha_forwarding.standby_mutation_forwarding_and_context"
       ],
       "available_scoped_profiles": [
-        "ha"
+        "ha",
+        "ha_multihost"
       ],
       "whole_surface_admitted": false
     },
@@ -2098,7 +2129,7 @@
       "technical_contract": {
         "api_or_protocol": "Standby and leader read admission",
         "required_positive_and_hostile_behavior": "ReadIndex freshness, minority rejection, leadership transition and read-only retry",
-        "remaining_semantics_and_effect_checks": "Successful stale read is a failure even if a retry later returns fresh state",
+        "remaining_semantics_and_effect_checks": "Actual separate-host reads require the acknowledged value and version through every voter; a lone survivor loses authority and a rejected write remains absent after quorum recovery. Deliberate WAN latency and loss, long-running read histories and mixed-version standby behavior remain open.",
         "crash_reopen": "Interrupt Standby and leader read admission before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-CLUSTER-READ-STANDBY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -2107,7 +2138,8 @@
         "ha_read_standby.readindex_committed_state_and_partition_fence"
       ],
       "available_scoped_profiles": [
-        "network"
+        "network",
+        "ha_multihost"
       ],
       "whole_surface_admitted": false
     },
@@ -2119,7 +2151,7 @@
       "technical_contract": {
         "api_or_protocol": "sys/step-down leadership transfer",
         "required_positive_and_hostile_behavior": "Root authorization, valid successor, committed membership and no dual writer",
-        "remaining_semantics_and_effect_checks": "The current scoped profile executes same-version loopback transfer during unique CAS=0 load, abandons one complete admin response before terminating the serving leader, restarts that node, and reads every acknowledged version-1 write through every voter. Separate-host latency, WAN, mixed-version transfer, physical power/disk faults and longitudinal client-history analysis remain open.",
+        "remaining_semantics_and_effect_checks": "The private multi-host profile now executes same-version transfer across separate hosts, remote leader process loss, old-leader catch-up and three observed leadership epochs. Mixed-version transfer, WAN behavior, host storage faults and long-horizon client-history analysis remain open.",
         "crash_reopen": "Interrupt sys/step-down leadership transfer before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-CLUSTER-STEPDOWN, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
@@ -2128,7 +2160,8 @@
         "ha_step_down.explicit_leadership_transfer_and_old_writer_fence"
       ],
       "available_scoped_profiles": [
-        "ha_step_down"
+        "ha_step_down",
+        "ha_multihost"
       ],
       "whole_surface_admitted": false
     },

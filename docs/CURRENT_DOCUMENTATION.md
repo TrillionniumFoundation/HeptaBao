@@ -82,6 +82,8 @@ entry point can issue independent or production admission.
 ## Operations, security and compatibility
 
 - `docs/operations/HEPTABAO_SINGLE_NODE_OPERATOR_RUNBOOK_V1.md`
+- `docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md`
+- `docs/operations/HEPTABAO_MULTIHOST_HA_QUALIFICATION.md`
 - `docs/operations/HEPTABAO_OBSERVABILITY_CATALOG_V1.md`
 - `docs/recovery/HEPTABAO_AUTHORITATIVE_RECOVERY_PROTOCOL_V1.md`
 - `docs/storage/HEPTABAO_DURABILITY_AND_CRASH_CONSISTENCY_CONTRACT_V1.md`

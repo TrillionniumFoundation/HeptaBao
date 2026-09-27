@@ -56,6 +56,16 @@ Audit is part of admission and response publication: a request record is persist
 | Audit sequence, HMAC chain and rotation checkpoint | service audit owner, private key and independently synchronized JSONL/manifest files | every admitted request and response; server audit tests |
 | HA ordering, log/vote/membership and state-machine apply | `ha.rs` composes per-process `ProcessRaftNode`; peer transport binds certificates and messages | peer listener, forwarding, authenticated `sys/step-down` and `sys/storage/raft/*`; HA and raft-runtime tests |
 
+The same HA owner is now exercised by the scoped private multi-host profile in
+`qa/openbao-acceptance/ha_multihost_live.py`. It uses three separately authorized
+Linux hosts, distinct pre-enrolled certificates, private tailnet listeners and a
+fixed lifecycle covering forwarding, snapshot catch-up, leader process loss,
+explicit step-down, quorum-loss fencing and complete rejoin. This is manual lab
+evidence only: it is not a default public-PR job, automatic node discovery,
+Autopilot policy, mixed-version operation, WAN qualification, physical-fault
+qualification or production key custody. See
+[Private multi-host HA qualification](../operations/HEPTABAO_MULTIHOST_HA_QUALIFICATION.md).
+
 The integrated `plugin-host`, `plugin-contracts` and `domain` packages own deployment-enrolled checksum-bound authentication and read-only secret-plugin boundaries. Authentication plugins may return only a decision and bounded alias; token policy/TTL authority remains in `auth.rs`. Secret plugins remain read-only. Neither path provides OpenBao Go-plugin RPC compatibility, secret write/lease callbacks or independently qualified sandbox containment.
 
 The standalone `token`, `policy`, `kv-engine`, `namespace`, `identity`, `lease`, `key-lifecycle`, `rollback-anchor` and `telemetry` packages are not these server owners. Their separately tested data models must not be substituted into a current storage, API or security claim. The server's bounded dynamic database leases, PostgreSQL statement-template intents and static/root rotation intents are owned by `service_database.rs`, `service_database_statements.rs`, `service_database_rotation.rs` and their private `DatabaseState`; Kubernetes TokenRequest and OpenLDAP dynamic-secret leases use their existing Service/EngineState owners. These are integrated paths, not evidence that the standalone lease package is the runtime owner. Their completion checks reuse the private request-admission and activation fence. General Go-plugin RPC, full provider semantics, KMS auto-unseal and a remote rollback anchor are not established merely by corresponding package names.

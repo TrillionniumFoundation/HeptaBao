@@ -1,8 +1,10 @@
 # Raft membership, persisted snapshots and bounded Autopilot
 
 Status: implemented same-version, pre-enrolled development profile with real
-multi-process tests. Not full OpenBao Integrated Storage compatibility, arbitrary
-node discovery, mixed-version upgrade or independent destructive qualification.
+multi-process and scoped private multi-host tests. Not full OpenBao Integrated
+Storage compatibility, arbitrary node discovery, mixed-version upgrade or
+independent destructive qualification. The separate-host operating boundary is
+in [Private multi-host HA qualification](HEPTABAO_MULTIHOST_HA_QUALIFICATION.md).
 
 ## Owners and persistence
 
