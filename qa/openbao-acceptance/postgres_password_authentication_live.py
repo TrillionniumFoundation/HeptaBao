@@ -85,7 +85,14 @@ def scram_role(pg: Postgres, username: str) -> bool:
 def extension(path: Path) -> str:
     source = path.read_text()
     start = source.index("-- PostgreSQL password-authentication extension.")
-    return source[start:source.index("COMMIT;", start)]
+    boundaries = [source.index("COMMIT;", start)]
+    generation = source.find(
+        "-- PostgreSQL password-policy and username-template generation extension.",
+        start,
+    )
+    if generation >= 0:
+        boundaries.append(generation)
+    return source[start:min(boundaries)].rstrip() + "\n"
 
 
 def configure_instance(instance: Instance, pg: Postgres):
@@ -377,7 +384,7 @@ def run(binary: Path, postgres_bin: Path, work: Path, output: Path) -> int:
             "password_authentication": ["password", "scram-sha-256"],
             "full_openbao_compatibility": False,
             "independent_qualification": False, "production_authority": False,
-            "uncovered": ["username_template", "password-policy generation",
+            "uncovered": ["complete OpenBao field/error parity",
                           "non-PostgreSQL providers", "multi-host provider faults"],
         }
     except Exception as error:

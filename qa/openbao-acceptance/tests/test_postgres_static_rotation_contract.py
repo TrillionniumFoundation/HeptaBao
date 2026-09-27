@@ -60,6 +60,15 @@ class PostgresStaticRotationContractTests(unittest.TestCase):
         self.assertIn("--postgres-bin /usr/lib/postgresql/17/bin", workflow)
         self.assertIn('--work-dir "$RUNNER_TEMP/heptabao-postgresql-static-rotation"', workflow)
 
+    def test_current_builtin_password_shape_is_checked_before_exact_replay(self):
+        value = "aA1-" + "b" * 16
+        self.assertTrue(MODULE.official_password(value))
+        self.assertFalse(MODULE.official_password("a" * 20))
+        source = RUNNER.read_text()
+        self.assertIn('official_password(first_password)', source)
+        self.assertIn('sql_literal(manual_password, r"[A-Za-z0-9-]{20}")', source)
+        self.assertNotIn('sql_literal(manual_password, r"[0-9a-f]{64}")', source)
+
     def test_fixture_sql_literal_rejects_controlled_input_escape(self):
         self.assertEqual(MODULE.sql_literal("a1" * 32, r"[0-9a-f]{64}"), "'" + "a1" * 32 + "'")
         with self.assertRaises(MODULE.FixtureFailure):

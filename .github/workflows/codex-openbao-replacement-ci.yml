@@ -523,7 +523,12 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
           feature_source="${PR_HEAD:-$EXPECTED_SOURCE}"
           [[ "$feature_source" =~ ^[0-9a-f]{40}$ ]]
-          legacy_source="$(git rev-parse "${feature_source}^")"
+          pins="qa/openbao-acceptance/fixtures/postgres-schema-migration-sources-v1.json"
+          legacy_source="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["schema55_generation"]["commit"])' "$pins")"
+          legacy_tree="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["schema55_generation"]["tree"])' "$pins")"
+          [[ "$legacy_source" =~ ^[0-9a-f]{40}$ && "$legacy_tree" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse "${legacy_source}^{tree}")" = "$legacy_tree"
+          git merge-base --is-ancestor "$legacy_source" "$feature_source"
           legacy_dir="$RUNNER_TEMP/heptabao-generation-legacy"
           legacy_target="$RUNNER_TEMP/heptabao-generation-legacy-target"
           rm -rf "$legacy_dir" "$legacy_target"
@@ -550,6 +555,50 @@ jobs:
             --work-dir "$RUNNER_TEMP/heptabao-postgresql-generation" \
             --output "$RUNNER_TEMP/heptabao-postgresql-generation.json"
           cleanup_generation_legacy
+          trap - EXIT
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git diff --check
+
+      - name: Exercise bounded PostgreSQL root-rotation statements and schema-57 migration
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.provider_packages_ready.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          feature_source="${PR_HEAD:-$EXPECTED_SOURCE}"
+          pins="qa/openbao-acceptance/fixtures/postgres-schema-migration-sources-v1.json"
+          legacy_source="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["schema56_root_rotation_statements"]["commit"])' "$pins")"
+          legacy_tree="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["schema56_root_rotation_statements"]["tree"])' "$pins")"
+          [[ "$legacy_source" =~ ^[0-9a-f]{40}$ && "$legacy_tree" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse "${legacy_source}^{tree}")" = "$legacy_tree"
+          git merge-base --is-ancestor "$legacy_source" "$feature_source"
+          legacy_dir="$RUNNER_TEMP/heptabao-root-statements-legacy"
+          legacy_target="$RUNNER_TEMP/heptabao-root-statements-legacy-target"
+          rm -rf "$legacy_dir" "$legacy_target"
+          git worktree add --detach "$legacy_dir" "$legacy_source"
+          cleanup_root_statements_legacy() {
+            git worktree remove --force "$legacy_dir" >/dev/null 2>&1 || true
+          }
+          trap cleanup_root_statements_legacy EXIT
+          CARGO_TARGET_DIR="$legacy_target" cargo +1.98.0 build \
+            --locked -p heptabao-server --manifest-path "$legacy_dir/Cargo.toml"
+          candidate_binary="$PWD/target/debug/heptabao-server"
+          legacy_binary="$legacy_target/debug/heptabao-server"
+          candidate_digest="$(sha256sum "$candidate_binary" | cut -d ' ' -f 1)"
+          legacy_digest="$(sha256sum "$legacy_binary" | cut -d ' ' -f 1)"
+          test "$candidate_digest" != "$legacy_digest"
+          timeout 480 python qa/openbao-acceptance/postgres_root_rotation_statements_live.py \
+            --binary "$candidate_binary" \
+            --legacy-binary "$legacy_binary" \
+            --build-source-commit "$EXPECTED_SOURCE" \
+            --legacy-source-commit "$legacy_source" \
+            --expected-binary-sha256 "$candidate_digest" \
+            --expected-legacy-sha256 "$legacy_digest" \
+            --postgres-bin /usr/lib/postgresql/17/bin \
+            --work-dir "$RUNNER_TEMP/heptabao-postgresql-root-statements" \
+            --output "$RUNNER_TEMP/heptabao-postgresql-root-statements.json"
+          cleanup_root_statements_legacy
           trap - EXIT
           test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"

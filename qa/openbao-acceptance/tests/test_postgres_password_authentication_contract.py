@@ -33,6 +33,12 @@ def function(source: str, name: str) -> str:
 
 
 class PostgresPasswordAuthenticationContractTests(unittest.TestCase):
+    def test_live_profile_stops_comparison_before_later_extensions(self):
+        source = (ROOT / "qa/openbao-acceptance/postgres_password_authentication_live.py").read_text()
+        self.assertIn('boundaries = [source.index("COMMIT;", start)]', source)
+        self.assertIn("PostgreSQL password-policy and username-template generation extension.", source)
+        self.assertIn("return source[start:min(boundaries)].rstrip()", source)
+
     def test_fresh_and_forward_install_share_exact_extension(self):
         fresh = extension(ROOT / "bootstrap/postgresql/provider.sql")
         upgrade = extension(
@@ -126,7 +132,7 @@ class PostgresPasswordAuthenticationContractTests(unittest.TestCase):
         self.assertIn('config_data.get("password_authentication") == "password"',
                       static_profile)
         self.assertIn('"password" not in config_data', static_profile)
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 56;")
+        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 57;")
         self.assertIn("PostgreSQL SCRAM password authentication requires schema 55",
                       identity)
 

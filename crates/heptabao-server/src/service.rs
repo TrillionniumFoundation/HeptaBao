@@ -38,7 +38,8 @@ use crate::state_record_root::RecordStateRoot;
 // PostgreSQL statement templates to lease identities and provider ledgers;
 // schema 55 persists explicit PostgreSQL password-authentication selection;
 // schema 56 adds namespace-owned password policies and database generation bindings.
-const CURRENT_STATE_SCHEMA: u32 = 56;
+// schema 57 adds PostgreSQL root-rotation statement configuration and retained intents.
+const CURRENT_STATE_SCHEMA: u32 = 57;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;

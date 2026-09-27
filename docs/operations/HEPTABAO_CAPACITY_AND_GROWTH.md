@@ -143,6 +143,7 @@ bounded to **64 MiB**; request parsing bounds are separate from state capacity.
 | Field | Meaning |
 |---|---|
 | `state_bytes`, `state_limit_bytes`, `state_remaining_bytes` | V4: canonical State bytes/16MiB. V5: opaque-owner JSON plus logical KV1 value JSON, component-sum upper bound and logical headroom only; `state_remaining_is_admission_budget` is false. |
+| `state_schema` | Exact schema discriminator of the currently loaded authoritative state. It is not the binary's maximum supported schema; opening an older compatible state reports that older value until a committed current mutation publishes a new schema. |
 | `state_storage_format`, `state_chunk_target_bytes` | Exact active format: `heptabao-state-owners-v4`/512KiB target or `heptabao-state-records-v5`/256KiB owner chunks. These fields do not infer migration from schema alone. |
 | `state_size_basis`, `durable_payload_bytes`, `durable_artifact_limit_bytes` | Distinguish logical measurement from stored resources and the tighter encrypted-artifact admission boundary. |
 | `retained_operations`, `operation_limit`, `operations_remaining` | Active-epoch local durable replay identities and remaining slots. |

@@ -44,6 +44,8 @@ pub(super) struct DatabaseRootRotation {
     pub(super) pending_password: PrivateString,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) provider_password: Option<PrivateString>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub(super) statements: Vec<String>,
     pub(super) request_digest: String,
 }
 
@@ -218,7 +220,20 @@ fn static_retire_digest(role_name: &str, role: &DatabaseStaticRole) -> Result<St
 }
 
 fn root_digest(connection_name: &str, rotation: &DatabaseRootRotation) -> Result<String, Response> {
-    if let Some(provider_password) = &rotation.provider_password {
+    if !rotation.statements.is_empty() {
+        rotation_digest(&(
+            "heptabao.database.root.statements.v1",
+            connection_name,
+            rotation.seq,
+            rotation.pending_password.0.as_str(),
+            rotation
+                .provider_password
+                .as_ref()
+                .map(|value| value.0.as_str())
+                .unwrap_or(""),
+            &rotation.statements,
+        ))
+    } else if let Some(provider_password) = &rotation.provider_password {
         rotation_digest(&(
             "heptabao.database.root.scram-sha-256.v1",
             connection_name,
@@ -522,16 +537,49 @@ impl DatabaseRotationPlan {
             &expected.pending_password.0,
             expected.provider_password.as_ref(),
         )?;
-        old.scalar(
-            self.connection.root_rotation_function(),
-            &[
-                &self.fence_id,
-                &self.operation_id,
-                &seq,
-                provider_password,
-                &expected.request_digest,
-            ],
-        )
+        if expected.statements.is_empty() {
+            old.scalar(
+                self.connection.root_rotation_function(),
+                &[
+                    &self.fence_id,
+                    &self.operation_id,
+                    &seq,
+                    provider_password,
+                    &expected.request_digest,
+                ],
+            )
+        } else {
+            if old
+                .scalar("SELECT heptabao_provider.root_statement_protocol()", &[])
+                .map_err(|_| {
+                    rotation_failure(
+                        "PostgreSQL root-statement protocol unavailable",
+                        &self.operation_id,
+                    )
+                })?
+                != "heptabao-postgresql-root-statements-v1"
+            {
+                return Err(rotation_failure(
+                    "PostgreSQL root-statement protocol mismatched",
+                    &self.operation_id,
+                ));
+            }
+            let encoded = Zeroizing::new(
+                serde_json::to_string(&expected.statements)
+                    .map_err(|_| failure("root rotation statement encoding failed"))?,
+            );
+            old.scalar_large(
+                self.connection.root_rotation_statement_function(),
+                &[
+                    &self.fence_id,
+                    &self.operation_id,
+                    &seq,
+                    provider_password,
+                    &expected.request_digest,
+                    encoded.as_str(),
+                ],
+            )
+        }
         .map_err(|_| {
             rotation_failure(
                 "PostgreSQL root rotation is indeterminate",
@@ -616,7 +664,7 @@ impl DatabaseMount {
     }
 
     pub(super) fn validate_rotation_state(&self) -> Result<(), Response> {
-        for connection in self.connections.values() {
+        for (connection_name, connection) in &self.connections {
             if let Some(rotation) = &connection.root_rotation
                 && (connection.provider != DatabaseProvider::Postgresql
                     || !connection
@@ -628,11 +676,13 @@ impl DatabaseMount {
                     || rotation.seq == 0
                     || rotation.seq > i64::MAX as u64
                     || !super::valid_generated_database_password(&rotation.pending_password.0)
+                    || statements::validate_root_rotation_statements(&rotation.statements).is_err()
                     || rotation.request_digest.len() != 64
                     || !rotation
                         .request_digest
                         .bytes()
-                        .all(|byte| byte.is_ascii_hexdigit()))
+                        .all(|byte| byte.is_ascii_hexdigit())
+                    || root_digest(connection_name, rotation)? != rotation.request_digest)
             {
                 return Err(failure("invalid persisted database root rotation"));
             }
@@ -1191,7 +1241,7 @@ impl Service {
         mount: &str,
         connection_name: &str,
     ) -> Result<(), Response> {
-        let (password_authentication, password_policy) = state
+        let (password_authentication, password_policy, root_rotation_statements) = state
             .database
             .mount(namespace, mount)
             .and_then(|database_mount| database_mount.connections.get(connection_name))
@@ -1199,6 +1249,7 @@ impl Service {
                 (
                     connection.password_authentication,
                     connection.password_policy.clone(),
+                    connection.root_rotation_statements.clone(),
                 )
             })
             .ok_or_else(|| Response::error(404, "database configuration not found"))?;
@@ -1209,11 +1260,17 @@ impl Service {
         )?);
         let provider_password =
             password_authentication.generate_provider_password(&pending_password.0)?;
+        let statements = if root_rotation_statements.is_empty() {
+            Vec::new()
+        } else {
+            statements::root_rotation_templates(&root_rotation_statements)?
+        };
         let seq = state.database.next_provider_fence()?;
         let mut rotation = DatabaseRootRotation {
             seq,
             pending_password,
             provider_password,
+            statements,
             request_digest: String::new(),
         };
         rotation.request_digest = root_digest(connection_name, &rotation)?;
@@ -1377,6 +1434,15 @@ impl Service {
         if current.seq != expected.seq
             || current.request_digest != expected.request_digest
             || current.pending_password.0 != expected.pending_password.0
+            || current
+                .provider_password
+                .as_ref()
+                .map(|value| value.0.as_str())
+                != expected
+                    .provider_password
+                    .as_ref()
+                    .map(|value| value.0.as_str())
+            || current.statements != expected.statements
             || current.seq >= frontier
         {
             return rotation_failure(
@@ -1403,6 +1469,15 @@ impl Service {
         if rotation.seq != expected.seq
             || rotation.request_digest != expected.request_digest
             || rotation.pending_password.0 != expected.pending_password.0
+            || rotation
+                .provider_password
+                .as_ref()
+                .map(|value| value.0.as_str())
+                != expected
+                    .provider_password
+                    .as_ref()
+                    .map(|value| value.0.as_str())
+            || rotation.statements != expected.statements
         {
             return rotation_failure(
                 "database root-rotation intent changed during readmission",
@@ -1576,6 +1651,15 @@ impl Service {
                 if current.seq != expected.seq
                     || current.request_digest != expected.request_digest
                     || current.pending_password.0 != expected.pending_password.0
+                    || current
+                        .provider_password
+                        .as_ref()
+                        .map(|value| value.0.as_str())
+                        != expected
+                            .provider_password
+                            .as_ref()
+                            .map(|value| value.0.as_str())
+                    || current.statements != expected.statements
                 {
                     return rotation_failure(
                         "database root-rotation intent changed after provider entry",
@@ -1837,6 +1921,7 @@ mod tests {
                     allowed_roles: BTreeSet::from(["static-a".into(), "static-b".into()]),
                     password_policy: None,
                     username_template: String::new(),
+                    root_rotation_statements: Vec::new(),
                     password_authentication: PostgresqlPasswordAuthentication::Password,
                     root_rotation: None,
                 },
@@ -2410,6 +2495,64 @@ mod tests {
                 .ok_or("schema55 admitted generation state")?
                 .body["errors"][0],
             "password policy state requires schema 56",
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn root_rotation_statement_state_requires_schema57_independently() -> TestResult {
+        let (_root, service, _) = fixture()?;
+        let mut legacy = service.state.clone().ok_or("legacy state")?;
+        legacy.schema = 56;
+        response(legacy.validate_format())?;
+
+        legacy
+            .database
+            .mount_mut("", "database/")
+            .connections
+            .get_mut("local")
+            .ok_or("connection")?
+            .root_rotation_statements =
+            vec!["ALTER ROLE \"{{username}}\" WITH PASSWORD '{{password}}'".into()];
+        let error = legacy
+            .validate_format()
+            .err()
+            .ok_or("schema56 admitted root statement configuration")?;
+        assert_eq!(
+            error.body["errors"][0],
+            "database root rotation statements require schema 57",
+        );
+        legacy.schema = CURRENT_STATE_SCHEMA;
+        response(legacy.validate_format())?;
+
+        response(service.stage_root_rotation(&mut legacy, "", "database/", "local"))?;
+        let rotation = legacy
+            .database
+            .mount("", "database/")
+            .and_then(|mount| mount.connections.get("local"))
+            .and_then(|connection| connection.root_rotation.as_ref())
+            .ok_or("root rotation")?;
+        assert_eq!(rotation.statements.len(), 1);
+        let digest = rotation.request_digest.clone();
+        legacy.schema = 56;
+        assert_eq!(
+            legacy
+                .validate_format()
+                .err()
+                .ok_or("schema56 admitted retained root statement intent")?
+                .body["errors"][0],
+            "database root rotation statements require schema 57",
+        );
+        legacy.schema = CURRENT_STATE_SCHEMA;
+        response(legacy.validate_format())?;
+        assert_eq!(
+            legacy
+                .database
+                .mount("", "database/")
+                .and_then(|mount| mount.connections.get("local"))
+                .and_then(|connection| connection.root_rotation.as_ref())
+                .map(|rotation| rotation.request_digest.as_str()),
+            Some(digest.as_str()),
         );
         Ok(())
     }

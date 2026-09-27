@@ -111,7 +111,7 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
         service = (ROOT / "crates/heptabao-server/src/service.rs").read_text()
         identity = (ROOT / "crates/heptabao-server/src/service_identity.rs").read_text()
         database = (ROOT / "crates/heptabao-server/src/service_database.rs").read_text()
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 56;")
+        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 57;")
         self.assertIn("database statement templates require schema 54", identity)
         self.assertIn("Exact legacy tuple: old pending intents must reopen byte-stably", database)
         self.assertIn("heptabao.database.statements.v1", database)
@@ -139,7 +139,10 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
         self.assertIsInstance(call, ast.Call)
         values = ast.literal_eval(call.args[0])
         self.assertGreaterEqual(len(values), 40)
-        for case in ("exact_statement_retry_survives_later_global_floor",
+        for case in ("statement_password_policy_created",
+                     "password_policy_credential_config_admitted",
+                     "unsupported_credential_config_rejected",
+                     "exact_statement_retry_survives_later_global_floor",
                      "failed_creation_rolls_back_role_and_ledger",
                      "manager_cannot_call_default_revoke_outside_ledger",
                      "candidate_storage_contains_no_statement_passwords"):
@@ -147,6 +150,13 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
         for flag in ("full_openbao_compatibility", "independent_qualification",
                      "production_authority"):
             self.assertIn('"' + flag + '": False', source)
+
+    def test_real_profile_uses_current_generation_contract_not_legacy_hex_shapes(self):
+        source = (ROOT / "qa/openbao-acceptance/postgres_statement_templates_live.py").read_text()
+        self.assertIn('"password_policy": "statement-policy"', source)
+        self.assertIn('password == "S" * 12', source)
+        self.assertIn('v-root-template-', source)
+        self.assertNotIn('"nonempty_credential_config_rejected"', source)
 
     def test_real_profile_is_a_mandatory_replacement_step(self):
         workflow = (ROOT / ".github/workflows/codex-openbao-replacement-ci.yml").read_text()

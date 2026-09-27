@@ -28,6 +28,35 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'qa/single-node'))
 from smoke import Instance
 
+USERNAME_RECOVERY_DATABASE = "username_recovery"
+
+
+def official_password(value):
+    return (
+        isinstance(value, str) and value.isascii() and len(value) == 20
+        and all(character.isalnum() or character == "-" for character in value)
+        and any(character.islower() for character in value)
+        and any(character.isupper() for character in value)
+        and any(character.isdigit() for character in value)
+        and "-" in value
+    )
+
+
+def current_default_username(value, role):
+    role = role[:8]
+    return isinstance(value, str) and re.fullmatch(
+        rf"v-root-{re.escape(role)}-[0-9A-Za-z]{{20}}-[0-9]{{10}}", value
+    ) is not None
+
+
+def role_identifier(value):
+    if (not isinstance(value, str) or not value or len(value) > 63
+            or not value.isascii()
+            or any(ord(character) < 0x20 or ord(character) == 0x7f
+                   for character in value)):
+        raise RuntimeError("unsafe_postgresql_role_identifier")
+    return '"' + value.replace('"', '""') + '"'
+
 
 @contextmanager
 def psql_environment(root: Path, *, port: int, database: str, user: str,
@@ -180,76 +209,115 @@ class Postgres:
 
 
 def qualify_username_recovery(pg, check):
-    """Upgrade an actually installed v2 without rewriting owner/fence/lease data."""
-    fence='hbf1:'+('a1'*32)
-    provider='hb1:'+('b2'*32)
-    short='hbp_'+('c3'*14)
-    digest='d4'*32
-    expires=int(time.time())+300
+    """Upgrade an isolated actual v2 database without weakening the current provider."""
+    database = USERNAME_RECOVERY_DATABASE
+    legacy = ROOT / "qa/openbao-acceptance/fixtures/postgresql-provider-v2-legacy.sql"
+    if hashlib.sha256(legacy.read_bytes()).hexdigest() != "c0422f3dda8de5ae8921f875859c858259264a2a92bca24701057f961398fcf6":
+        raise RuntimeError("legacy_postgresql_provider_fixture_changed")
+    check("username_recovery_database_created", pg.sql(
+        "CREATE DATABASE " + database, database="postgres"
+    ).returncode == 0)
+    check("legacy_v2_provider_installed_for_username_recovery", pg.sql(
+        legacy.read_text(), database=database
+    ).returncode == 0)
+    grants = (
+        "GRANT USAGE ON SCHEMA heptabao_provider TO hb_manager;"
+        "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA heptabao_provider TO hb_manager;"
+        "INSERT INTO heptabao_provider.allowed_groups VALUES('hb_manager','app_reader');"
+    )
+    check("legacy_v2_manager_grants_installed_for_username_recovery", pg.sql(
+        grants, database=database
+    ).returncode == 0)
+
+    fence = "hbf1:" + ("a1" * 32)
+    provider = "hb1:" + ("b2" * 32)
+    short = "hbp_" + ("c3" * 14)
+    digest = "d4" * 32
+    expires = int(time.time()) + 300
 
     def apply(action, seq, username=short, lease_id=provider):
-        password='e5'*32 if action=='issue' else ''
-        expiry=expires if action!='revoke' else 0
+        password = "e5" * 32 if action == "issue" else ""
+        expiry = expires if action != "revoke" else 0
         # Every substituted value is fixed synthetic fixture data, never an
         # inbound API value. Passwords travel over psql stdin, never argv.
         return pg.sql(
-            "SELECT heptabao_provider.apply('"+fence+"','"+lease_id+"','"+username
-            +"',"+str(seq)+",'"+action+"',"+str(expiry)+",'app_reader','"
-            +password+"','"+digest+"')::text", 'hb_manager', pg.manager_password)
+            "SELECT heptabao_provider.apply('" + fence + "','" + lease_id + "','" + username
+            + "'," + str(seq) + ",'" + action + "'," + str(expiry) + ",'app_reader','"
+            + password + "','" + digest + "')::text",
+            "hb_manager", pg.manager_password, database=database,
+        )
 
-    check('legacy_v2_rejects_short_issuance', apply('issue',1).returncode!=0)
-    check('legacy_rejection_publishes_no_provider_fence', pg.sql(
-        "SELECT count(*) FROM heptabao_provider.fences WHERE fence_id='"+fence+"'"
-    ).stdout.strip()=='0')
-    identity_query="""SELECT p.oid,p.proname,p.proowner,p.proacl,p.prosecdef,p.proconfig
+    check("legacy_v2_rejects_short_issuance", apply("issue", 1).returncode != 0)
+    check("legacy_rejection_publishes_no_provider_fence", pg.sql(
+        "SELECT count(*) FROM heptabao_provider.fences WHERE fence_id='" + fence + "'",
+        database=database,
+    ).stdout.strip() == "0")
+    identity_query = """SELECT p.oid,p.proname,p.proowner,p.proacl,p.prosecdef,p.proconfig
         FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
         WHERE n.nspname='heptabao_provider' ORDER BY p.proname"""
-    before=pg.sql(identity_query)
-    check('legacy_function_identities_observed',before.returncode==0 and len(before.stdout.splitlines())==5)
-    upgrade=(ROOT/'bootstrap/postgresql/upgrade_v2_username_recovery.sql').read_text()
-    check('manager_cannot_upgrade_provider_functions',pg.sql(upgrade,'hb_manager',pg.manager_password).returncode!=0)
-    check('owner_installs_username_recovery_atomically',pg.sql(upgrade).returncode==0)
-    after=pg.sql(identity_query)
-    check('username_upgrade_preserves_function_owners_and_grants',after.returncode==0 and after.stdout==before.stdout)
-    check('username_upgrade_is_repeatable',pg.sql(upgrade).returncode==0)
-    check('username_upgrade_preserves_protocol_version',pg.sql(
-        'SELECT heptabao_provider.protocol()','hb_manager',pg.manager_password
-    ).stdout.strip()=='heptabao-postgresql-provider-v2')
-    check('upgraded_v2_still_rejects_short_issuance',apply('issue',2).returncode!=0)
-    check('upgraded_v2_still_rejects_short_renewal',apply('renew',3).returncode!=0)
-    result=apply('revoke',4)
-    check('historical_short_identity_can_be_revoked',result.returncode==0
-          and json.loads(result.stdout).get('username')==short
-          and json.loads(result.stdout).get('login') is False)
-    args="('"+fence+"','"+provider+"','"+short+"',4)"
-    check('historical_short_identity_can_be_retired',pg.sql(
-        'SELECT heptabao_provider.retire'+args,'hb_manager',pg.manager_password
-    ).stdout.strip()=='t')
-    check('historical_short_retirement_has_authoritative_readback',pg.sql(
-        'SELECT heptabao_provider.retired'+args,'hb_manager',pg.manager_password
-    ).stdout.strip()=='t')
-    check('historical_short_retirement_keeps_global_fence',pg.sql(
-        "SELECT last_seq FROM heptabao_provider.fences WHERE fence_id='"+fence+"'"
-    ).stdout.strip()=='4')
-    check('retirement_does_not_reenable_stale_issuance',apply(
-        'issue',3,username='hbp_'+('f6'*16),lease_id='hb1:'+('f6'*32)
-    ).returncode!=0)
-    collision='hbp_'+('a7'*14)
-    check('foreign_short_role_fixture_created',pg.sql('CREATE ROLE '+collision+' NOLOGIN').returncode==0)
+    before = pg.sql(identity_query, database=database)
+    check("legacy_function_identities_observed", before.returncode == 0
+          and len(before.stdout.splitlines()) == 5)
+    upgrade = (ROOT / "bootstrap/postgresql/upgrade_v2_username_recovery.sql").read_text()
+    check("manager_cannot_upgrade_provider_functions", pg.sql(
+        upgrade, "hb_manager", pg.manager_password, database=database
+    ).returncode != 0)
+    check("owner_installs_username_recovery_atomically", pg.sql(
+        upgrade, database=database
+    ).returncode == 0)
+    after = pg.sql(identity_query, database=database)
+    check("username_upgrade_preserves_function_owners_and_grants",
+          after.returncode == 0 and after.stdout == before.stdout)
+    check("username_upgrade_is_repeatable", pg.sql(
+        upgrade, database=database
+    ).returncode == 0)
+    check("username_upgrade_preserves_protocol_version", pg.sql(
+        "SELECT heptabao_provider.protocol()", "hb_manager", pg.manager_password,
+        database=database,
+    ).stdout.strip() == "heptabao-postgresql-provider-v2")
+    check("upgraded_v2_still_rejects_short_issuance", apply("issue", 2).returncode != 0)
+    check("upgraded_v2_still_rejects_short_renewal", apply("renew", 3).returncode != 0)
+    result = apply("revoke", 4)
+    check("historical_short_identity_can_be_revoked", result.returncode == 0
+          and json.loads(result.stdout).get("username") == short
+          and json.loads(result.stdout).get("login") is False)
+    args = "('" + fence + "','" + provider + "','" + short + "',4)"
+    check("historical_short_identity_can_be_retired", pg.sql(
+        "SELECT heptabao_provider.retire" + args,
+        "hb_manager", pg.manager_password, database=database,
+    ).stdout.strip() == "t")
+    check("historical_short_retirement_has_authoritative_readback", pg.sql(
+        "SELECT heptabao_provider.retired" + args,
+        "hb_manager", pg.manager_password, database=database,
+    ).stdout.strip() == "t")
+    check("historical_short_retirement_keeps_global_fence", pg.sql(
+        "SELECT last_seq FROM heptabao_provider.fences WHERE fence_id='" + fence + "'",
+        database=database,
+    ).stdout.strip() == "4")
+    check("retirement_does_not_reenable_stale_issuance", apply(
+        "issue", 3, username="hbp_" + ("f6" * 16), lease_id="hb1:" + ("f6" * 32)
+    ).returncode != 0)
+    collision = "hbp_" + ("a7" * 14)
+    check("foreign_short_role_fixture_created", pg.sql(
+        "CREATE ROLE " + collision + " NOLOGIN", database=database
+    ).returncode == 0)
     try:
-        check('historical_cleanup_rejects_unowned_short_role',apply(
-            'revoke',5,username=collision,lease_id='hb1:'+('a7'*32)
-        ).returncode!=0)
-        check('rejected_cleanup_does_not_delete_foreign_role',pg.sql(
-            "SELECT count(*) FROM pg_roles WHERE rolname='"+collision+"'"
-        ).stdout.strip()=='1')
-        check('rejected_cleanup_does_not_advance_global_fence',pg.sql(
-            "SELECT last_seq FROM heptabao_provider.fences WHERE fence_id='"+fence+"'"
-        ).stdout.strip()=='4')
+        check("historical_cleanup_rejects_unowned_short_role", apply(
+            "revoke", 5, username=collision, lease_id="hb1:" + ("a7" * 32)
+        ).returncode != 0)
+        check("rejected_cleanup_does_not_delete_foreign_role", pg.sql(
+            "SELECT count(*) FROM pg_roles WHERE rolname='" + collision + "'",
+            database=database,
+        ).stdout.strip() == "1")
+        check("rejected_cleanup_does_not_advance_global_fence", pg.sql(
+            "SELECT last_seq FROM heptabao_provider.fences WHERE fence_id='" + fence + "'",
+            database=database,
+        ).stdout.strip() == "4")
     finally:
         # Only the role this fixture just created in its private cluster.
-        if pg.sql('DROP ROLE '+collision).returncode:
-            raise RuntimeError('foreign_short_fixture_cleanup_failed')
+        if pg.sql("DROP ROLE " + collision, database=database).returncode:
+            raise RuntimeError("foreign_short_fixture_cleanup_failed")
+    return database
 
 
 def qualify_pending_revoke_fence(instance, pg, key, check):
@@ -257,9 +325,10 @@ def qualify_pending_revoke_fence(instance, pg, key, check):
     status, first=instance.call('GET','database/creds/churn')
     check('overtaken_revoke_first_credential',status==200)
     username=first['data']['username']
-    check('overtaken_revoke_username_bound',re.fullmatch(r'hbp_[0-9a-f]{32}',username) is not None)
+    check('overtaken_revoke_username_bound',current_default_username(username,'churn'))
     check('overtaken_revoke_drift_fixture',pg.sql(
-        'CREATE ROLE hb_fixture_extra NOLOGIN; GRANT hb_fixture_extra TO '+username
+        'CREATE ROLE hb_fixture_extra NOLOGIN; GRANT hb_fixture_extra TO '
+        + role_identifier(username)
     ).returncode==0)
     status, failure=instance.call('POST','sys/leases/revoke',dict(lease_id=first['lease_id']))
     check('ownership_drift_retains_pending_revoke',status==503
@@ -268,7 +337,8 @@ def qualify_pending_revoke_fence(instance, pg, key, check):
     check('independent_lease_overtakes_pending_revoke',status==200)
     instance.stop()
     check('overtaken_revoke_ownership_restored',pg.sql(
-        'REVOKE hb_fixture_extra FROM '+username+'; DROP ROLE hb_fixture_extra'
+        'REVOKE hb_fixture_extra FROM ' + role_identifier(username)
+        + '; DROP ROLE hb_fixture_extra'
     ).returncode==0)
     instance.start()
     check('overtaken_revoke_restart_unseal',instance.call('POST','sys/unseal',{'key':key})[0]==200)
@@ -296,10 +366,7 @@ def run(binary,bin_dir,root,checks):
     try:
         pg=Postgres(bin_dir,root/'postgres',instance.root/'tls.crt',instance.root/'tls.key',instance.root/'ca.crt')
         pg.start()
-        legacy=ROOT/'qa/openbao-acceptance/fixtures/postgresql-provider-v2-legacy.sql'
-        if hashlib.sha256(legacy.read_bytes()).hexdigest()!='c0422f3dda8de5ae8921f875859c858259264a2a92bca24701057f961398fcf6':
-            raise RuntimeError('legacy_postgresql_provider_fixture_changed')
-        pg.install(legacy);check('real_postgres_bootstrap_sql_executed',True)
+        pg.install();check('real_postgres_bootstrap_sql_executed',True)
         p=instance.root/'server.json';c=json.loads(p.read_text());c['lifecycle_interval_seconds']=1;c['outbound_endpoints']=[dict(origin=pg.origin,address=f'127.0.0.1:{pg.port}',server_name='localhost',ca_pem=(instance.root/'ca.crt').read_text())];p.write_text(json.dumps(c));p.chmod(0o600)
         instance.start();status,init=instance.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1});check('initialize',status==200)
         instance.token=init['root_token'];key=init['keys_base64'][0];check('unseal',instance.call('POST','sys/unseal',{'key':key})[0]==200)
@@ -318,9 +385,12 @@ def run(binary,bin_dir,root,checks):
         check('database_role_list_after_delete',status==200 and listed.get('data',{}).get('keys')==['churn','reader','short'])
         status,issued=instance.call('GET','database/creds/reader');check('issue',status==200)
         cred=issued['data'];identity=issued['lease_id'];check('credential_really_logs_into_postgresql',pg.login(cred['username'],cred['password']))
-        check('native_username_matches_deployed_v2_contract',re.fullmatch(r'hbp_[0-9a-f]{32}',cred['username']) is not None)
-        qualify_username_recovery(pg,check)
-        check('username_upgrade_preserves_existing_live_credential',pg.login(cred['username'],cred['password']))
+        check('current_default_username_and_password',
+              current_default_username(cred['username'], 'reader')
+              and official_password(cred['password']))
+        recovery_database=qualify_username_recovery(pg,check)
+        check('isolated_username_upgrade_preserves_current_live_credential',
+              pg.login(cred['username'],cred['password']))
         check('wrong_password_really_denied',not pg.login(cred['username'],'wrong-synthetic-password'))
         provider_id=pg.sql(
             "SELECT lease_id FROM heptabao_provider.leases WHERE username='"+cred['username']+"'"
@@ -407,14 +477,23 @@ def run(binary,bin_dir,root,checks):
             time.sleep(0.1)
         check('lease_retirement_survives_more_than_old_128_lifetime_limit',True)
         check('provider_ledger_compacts_after_churn',pg.sql("SELECT count(*) FROM heptabao_provider.leases").stdout.strip()=='0')
-        check('provider_generated_roles_compact_after_churn',pg.sql("SELECT count(*) FROM pg_roles WHERE rolname LIKE 'hbp_%'").stdout.strip()=='0')
+        check('provider_generated_roles_compact_after_churn',pg.sql("SELECT count(*) FROM pg_roles WHERE rolname LIKE 'v-root-churn-%'").stdout.strip()=='0')
         # The upgrade regression intentionally retains a separate recovery
         # fence. Compaction is one durable floor per cluster/manager, not one
         # row for all independent cluster identities sharing a provider.
         fence=pg.sql("SELECT count(*),min(last_seq),max(last_seq) FROM heptabao_provider.fences WHERE manager='hb_manager' AND fence_id='"+fence_id+"'")
         check('provider_global_fence_is_compact_and_monotonic',fence.returncode==0 and fence.stdout.strip().split('|')[0]=='1' and int(fence.stdout.strip().split('|')[2])>128)
-        recovery=pg.sql("SELECT count(*),min(last_seq),max(last_seq) FROM heptabao_provider.fences WHERE fence_id='hbf1:"+('a1'*32)+"'")
-        check('recovery_fixture_fence_is_retained_and_isolated',recovery.returncode==0 and recovery.stdout.strip()=='1|4|4')
+        recovery_fence = "hbf1:" + ("a1" * 32)
+        main_recovery = pg.sql(
+            "SELECT count(*) FROM heptabao_provider.fences WHERE fence_id='" + recovery_fence + "'"
+        )
+        recovery = pg.sql(
+            "SELECT count(*),min(last_seq),max(last_seq) FROM heptabao_provider.fences "
+            "WHERE fence_id='" + recovery_fence + "'", database=recovery_database,
+        )
+        check('recovery_fixture_fence_is_retained_and_isolated',
+              main_recovery.returncode == 0 and main_recovery.stdout.strip() == '0'
+              and recovery.returncode == 0 and recovery.stdout.strip() == '1|4|4')
         check('provider_manager_cannot_bypass_ledger',pg.sql('DELETE FROM heptabao_provider.leases','hb_manager',pg.manager_password).returncode!=0)
         status,issued=instance.call('GET','database/creds/reader');check('outage_seed',status==200);cred=issued['data'];identity=issued['lease_id']
         pg.stop();status,body=instance.call('POST','sys/leases/renew',dict(lease_id=identity,increment=120))

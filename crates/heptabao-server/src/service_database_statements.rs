@@ -54,14 +54,15 @@ impl DatabaseStatements {
                 {
                     return Err(invalid("database statement is empty or outside bounds"));
                 }
-                validate_placeholders(value).map_err(|_| {
-                    invalid(match phase {
-                        "creation" => "invalid creation statement placeholder",
-                        "revocation" => "invalid revocation statement placeholder",
-                        "rollback" => "invalid rollback statement placeholder",
-                        _ => "invalid renewal statement placeholder",
-                    })
-                })?;
+                validate_placeholders(value, &["name", "username", "password", "expiration"])
+                    .map_err(|_| {
+                        invalid(match phase {
+                            "creation" => "invalid creation statement placeholder",
+                            "revocation" => "invalid revocation statement placeholder",
+                            "rollback" => "invalid rollback statement placeholder",
+                            _ => "invalid renewal statement placeholder",
+                        })
+                    })?;
                 total = total
                     .checked_add(value.len())
                     .ok_or_else(|| invalid("database statement bytes exceed bound"))?;
@@ -167,6 +168,120 @@ pub(super) fn parse_statement_field(
     ))
 }
 
+pub(super) fn parse_root_rotation_statement_field(
+    body: &Value,
+    key: &str,
+) -> Result<Option<Vec<String>>, Response> {
+    // OpenBao TypeStringSlice treats an explicitly present null as the zero
+    // value. Omission still means preserve-on-update, while null/empty clears.
+    if body.get(key).is_some_and(Value::is_null) {
+        return Ok(Some(Vec::new()));
+    }
+    let Some(values) = parse_statement_field(body, key)? else {
+        return Ok(None);
+    };
+    validate_root_rotation_statements(&values)?;
+    Ok(Some(values))
+}
+
+fn root_rotation_statement_is_bounded_password_change(statement: &str) -> bool {
+    let normalized = statement.split_whitespace().collect::<Vec<_>>().join(" ");
+    for command in ["ALTER ROLE", "ALTER USER"] {
+        for identity in ["\"{{username}}\"", "\"{{name}}\""] {
+            for with in ["", " WITH"] {
+                for encryption in ["", " ENCRYPTED"] {
+                    if normalized
+                        == format!(
+                            "{command} {identity}{with}{encryption} PASSWORD '{{{{password}}}}'"
+                        )
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    false
+}
+
+pub(super) fn validate_root_rotation_statements(values: &[String]) -> Result<(), Response> {
+    if values.len() > MAX_STATEMENTS_PER_PHASE {
+        return Err(invalid("root rotation statement count exceeds bound"));
+    }
+    let mut total = 0usize;
+    let mut rendered_count = 0usize;
+    let mut has_password = false;
+    for value in values {
+        let value = value.trim();
+        if value.is_empty()
+            || value.len() > MAX_STATEMENT_BYTES
+            || value.contains('\0')
+            || value
+                .chars()
+                .any(|character| character.is_control() && !matches!(character, '\n' | '\r' | '\t'))
+        {
+            return Err(invalid(
+                "root rotation statement is empty or outside bounds",
+            ));
+        }
+        validate_placeholders(value, &["name", "username", "password"])
+            .map_err(|_| invalid("invalid root rotation statement placeholder"))?;
+        has_password |= value.contains("{{password}}");
+        let statements = split_sql_statements(value)?;
+        if statements.is_empty()
+            || statements
+                .iter()
+                .any(|statement| !root_rotation_statement_is_bounded_password_change(statement))
+        {
+            return Err(invalid(
+                "root rotation statements must be bounded PostgreSQL password changes",
+            ));
+        }
+        rendered_count = rendered_count
+            .checked_add(statements.len())
+            .ok_or_else(|| invalid("root rotation statement count exceeds bound"))?;
+        if rendered_count > MAX_RENDERED_STATEMENTS {
+            return Err(invalid("root rotation statement count exceeds bound"));
+        }
+        total = total
+            .checked_add(value.len())
+            .ok_or_else(|| invalid("root rotation statement bytes exceed bound"))?;
+    }
+    if total > MAX_STATEMENTS_BYTES {
+        return Err(invalid("root rotation statement bytes exceed bound"));
+    }
+    if !values.is_empty() && !has_password {
+        return Err(invalid(
+            "root rotation statements must bind the generated password",
+        ));
+    }
+    Ok(())
+}
+
+pub(super) fn root_rotation_templates(values: &[String]) -> Result<Vec<String>, Response> {
+    validate_root_rotation_statements(values)?;
+    let defaults;
+    let values = if values.is_empty() {
+        defaults = vec!["ALTER ROLE \"{{username}}\" WITH PASSWORD '{{password}}'".to_owned()];
+        &defaults
+    } else {
+        values
+    };
+    let mut normalized = Vec::new();
+    for value in values {
+        for statement in split_sql_statements(value)? {
+            if normalized.len() >= MAX_RENDERED_STATEMENTS {
+                return Err(invalid("root rotation statement count exceeds bound"));
+            }
+            normalized.push(statement);
+        }
+    }
+    if normalized.is_empty() {
+        return Err(invalid("root rotation statement set rendered empty"));
+    }
+    Ok(normalized)
+}
+
 pub(super) fn parse_credential_type(body: &Value) -> Result<Option<&str>, Response> {
     let Some(value) = body.get("credential_type") else {
         return Ok(None);
@@ -205,7 +320,7 @@ pub(super) fn parse_credential_config(body: &Value) -> Result<Option<String>, Re
     Ok(Some(value.to_owned()))
 }
 
-fn validate_placeholders(statement: &str) -> Result<(), ()> {
+fn validate_placeholders(statement: &str, allowed: &[&str]) -> Result<(), ()> {
     let mut cursor = 0usize;
     while cursor < statement.len() {
         let next_open = statement[cursor..].find("{{").map(|index| cursor + index);
@@ -220,9 +335,7 @@ fn validate_placeholders(statement: &str) -> Result<(), ()> {
                     .map(|index| open + 2 + index)
                     .ok_or(())?;
                 let name = &statement[open + 2..close];
-                if name.contains("{{")
-                    || !matches!(name, "name" | "username" | "password" | "expiration")
-                {
+                if name.contains("{{") || !allowed.contains(&name) {
                     return Err(());
                 }
                 cursor = close + 2;
@@ -606,7 +719,11 @@ mod tests {
             "SELECT '{{name {{password}}'",
             "SELECT '{{name'",
         ] {
-            assert!(validate_placeholders(statement).is_err(), "{statement}");
+            assert!(
+                validate_placeholders(statement, &["name", "username", "password", "expiration"])
+                    .is_err(),
+                "{statement}"
+            );
         }
     }
 
@@ -639,6 +756,35 @@ mod tests {
             .map_err(|_| "revoke render failed")?;
         assert_eq!(revoked.len(), 1);
         Ok(())
+    }
+
+    #[test]
+    fn root_rotation_statements_use_official_placeholders_and_bounded_sql_splitting()
+    -> ParseTestResult {
+        let configured = vec![
+            "ALTER ROLE \"{{username}}\" WITH PASSWORD '{{password}}'; ALTER USER \"{{name}}\" PASSWORD '{{password}}';".into(),
+        ];
+        let normalized = root_rotation_templates(&configured)
+            .map_err(|_| "root statement normalization failed")?;
+        assert_eq!(normalized.len(), 2);
+        assert!(normalized[1].contains("{{password}}"));
+        let defaults =
+            root_rotation_templates(&[]).map_err(|_| "default root statement missing")?;
+        assert_eq!(defaults.len(), 1);
+        assert!(defaults[0].contains("{{username}}"));
+        assert!(defaults[0].contains("{{password}}"));
+        Ok(())
+    }
+
+    #[test]
+    fn root_rotation_statements_reject_missing_password_and_non_root_placeholders() {
+        for configured in [
+            vec!["SELECT '{{username}}', '{{password}}'".into()],
+            vec!["ALTER ROLE \"{{username}}\" VALID UNTIL '{{expiration}}'".into()],
+            vec!["SELECT '{{unknown}}', '{{password}}'".into()],
+        ] {
+            assert!(validate_root_rotation_statements(&configured).is_err());
+        }
     }
 
     type TestResult = Result<(), Box<dyn std::error::Error>>;
@@ -676,6 +822,7 @@ mod tests {
                     allowed_roles: BTreeSet::from(["templated".into()]),
                     password_policy: None,
                     username_template: String::new(),
+                    root_rotation_statements: Vec::new(),
                     password_authentication: PostgresqlPasswordAuthentication::Password,
                     root_rotation: None,
                 },
@@ -804,6 +951,32 @@ mod tests {
             );
             assert_eq!(unchanged.body, policy_updated.body);
         }
+        Ok(())
+    }
+
+    #[test]
+    fn root_rotation_statement_null_matches_typestringslice_zero_value() -> ParseTestResult {
+        assert_eq!(
+            parse_root_rotation_statement_field(
+                &json!({"root_rotation_statements":null}),
+                "root_rotation_statements",
+            )
+            .map_err(|_| "null root statement parse failed")?,
+            Some(Vec::new()),
+        );
+        assert_eq!(
+            parse_root_rotation_statement_field(&json!({}), "root_rotation_statements")
+                .map_err(|_| "omitted root statement parse failed")?,
+            None,
+        );
+        assert_eq!(
+            parse_root_rotation_statement_field(
+                &json!({"root_rotation_statements":""}),
+                "root_rotation_statements",
+            )
+            .map_err(|_| "empty root statement parse failed")?,
+            Some(Vec::new()),
+        );
         Ok(())
     }
 

@@ -896,7 +896,7 @@
       ],
       "positive": "Compose bounded password policies and usernames, dynamic/provider statements, static roles and root/static rotation with real PostgreSQL readback",
       "hostile": "Reject malformed policy/template source, missing named policies, stale schema/admission, unapproved providers and ownership-changing SQL output before forbidden effect or delivery",
-      "lifecycle": "Read schema-55 without promotion, migrate only on current mutation, reject non-mutating downgrade, and reconcile timeout after actual SQL effect, expiry, rollback and lease revocation",
+      "lifecycle": "Read fixed schema-55 and schema-56 application state without promotion; permit only re-sealing of the committed-operation ledger checkpoint; migrate to schema 57 only on a current mutation; reject unsupported downgrade while preserving application artifacts and logical frontier; reconcile timeout after actual SQL effect, expiry, rollback and lease revocation.",
       "implementation": "PARTIAL_RUNTIME",
       "runtime_sources": [
         "crates/heptabao-server/src/service_database.rs",
@@ -907,7 +907,10 @@
         "crates/heptabao-server/src/service_database_username.rs"
       ],
       "contract_sources": [
-        "bootstrap/postgresql/upgrade_v5_password_policy_username_templates.sql"
+        "bootstrap/postgresql/upgrade_v5_password_policy_username_templates.sql",
+        "bootstrap/postgresql/provider.sql",
+        "bootstrap/postgresql/upgrade_v6_root_rotation_statements.sql",
+        "qa/openbao-acceptance/fixtures/postgres-schema-migration-sources-v1.json"
       ],
       "guides": [
         "docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md"
@@ -918,11 +921,12 @@
         "qa/openbao-acceptance/postgres_static_rotation_live.py",
         "qa/openbao-acceptance/postgres_statement_templates_live.py",
         "qa/openbao-acceptance/postgres_password_authentication_live.py",
-        "qa/openbao-acceptance/postgres_generation_live.py"
+        "qa/openbao-acceptance/postgres_generation_live.py",
+        "qa/openbao-acceptance/postgres_root_rotation_statements_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Bounded provider-role and statement-template dynamic roles, password-policy and username-template generation, explicit password authentication, static roles, root rotation, renew/revoke and transactional rollback are executable. Remaining scope is root_rotation_statements, connection-pool fields and measured pooling behavior, complete OpenBao field/error/template-helper parity, generic database-plugin capability negotiation, non-PostgreSQL static roles, non-transactional external SQL side effects, multi-host provider faults and independent admission.",
+      "remaining_scope": "Bounded provider-role and statement-template dynamic roles, password-policy and username-template generation, explicit password authentication, static roles, root rotation, bounded password-only root_rotation_statements, renew/revoke and transactional rollback are executable. Remaining scope is arbitrary official root SQL parity, connection-pool fields and measured pooling behavior, complete OpenBao field/error/template-helper parity, generic database-plugin capability negotiation, non-PostgreSQL static roles, non-transactional external SQL side effects, multi-host provider faults and independent admission.",
       "fixture_case_ids": [
         "postgres_pipeline_simulated.verified_scram_configuration",
         "postgres_pipeline_simulated.configuration_never_returns_password",
@@ -934,10 +938,15 @@
         "postgres_pipeline_simulated.lost_post_apply_response_no_secret",
         "postgres_generation_live.legacy_state_created_by_pinned_binary",
         "postgres_generation_live.legacy_read_does_not_rewrite_state",
-        "postgres_generation_live.legacy_old_binary_rejects_schema56",
+        "postgres_generation_live.legacy_old_binary_rejects_current_schema",
         "postgres_generation_live.partial_connection_update_with_active_leases",
         "postgres_generation_live.official_default_username_template",
-        "postgres_generation_live.custom_username_template"
+        "postgres_generation_live.custom_username_template",
+        "postgres_root_rotation_statements_live.schema56_state_created_by_pinned_binary",
+        "postgres_root_rotation_statements_live.schema56_binary_rejects_schema57",
+        "postgres_root_rotation_statements_live.quoted_manager_arbitrary_sql_rejected_before_mutation",
+        "postgres_root_rotation_statements_live.custom_root_rotation",
+        "postgres_root_rotation_statements_live.scram_custom_root_rotation"
       ]
     },
     {
@@ -1057,7 +1066,7 @@
       ],
       "positive": "Support password/SCRAM, bounded policy/template generation, provider-role and statement-template issue/renew/revoke, static credentials and root rotation",
       "hostile": "Deny malformed policy/templates, stale predecessor adoption, downgrade rewrite, SQL/template injection and foreign OID ownership while preserving supported operations",
-      "lifecycle": "Reconcile create/renew/revoke/rollback and active sessions against real PostgreSQL across schema-55\u219256 and provider v4\u2192v5 transitions",
+      "lifecycle": "Reconcile create/renew/revoke/rollback and active sessions against real PostgreSQL across tree-pinned schema-55\u219257 and owner-only provider v4\u2192v5\u2192v6 transitions, including predecessor refusal without application-state or logical-frontier drift.",
       "implementation": "PARTIAL_RUNTIME",
       "runtime_sources": [
         "crates/heptabao-server/src/service_database.rs",
@@ -1069,7 +1078,9 @@
       ],
       "contract_sources": [
         "bootstrap/postgresql/provider.sql",
-        "bootstrap/postgresql/upgrade_v5_password_policy_username_templates.sql"
+        "bootstrap/postgresql/upgrade_v5_password_policy_username_templates.sql",
+        "bootstrap/postgresql/upgrade_v6_root_rotation_statements.sql",
+        "qa/openbao-acceptance/fixtures/postgres-schema-migration-sources-v1.json"
       ],
       "guides": [
         "docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md"
@@ -1079,11 +1090,12 @@
         "qa/openbao-acceptance/postgres_static_rotation_live.py",
         "qa/openbao-acceptance/postgres_statement_templates_live.py",
         "qa/openbao-acceptance/postgres_password_authentication_live.py",
-        "qa/openbao-acceptance/postgres_generation_live.py"
+        "qa/openbao-acceptance/postgres_generation_live.py",
+        "qa/openbao-acceptance/postgres_root_rotation_statements_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "The native PostgreSQL profiles execute TLS/SCRAM, provider-role and statement-template dynamic lifecycle, namespace password-policy inheritance, official/custom username templates, clean schema-55\u219256 behavior, fresh/owner-only provider v5 installation, static-role rotation and manager-password rotation. Remaining native gaps are root_rotation_statements, connection-pool fields and measured pooling behavior, complete field/error/template-helper parity, non-transactional external side effects, generic plugin capability negotiation, multi-host faults and independent qualification. RSA/client-certificate credentials remain generic plugin capabilities rather than native PostgreSQL 2.6.2 behavior."
+      "remaining_scope": "The native PostgreSQL profiles execute TLS/SCRAM, provider-role and statement-template dynamic lifecycle, namespace password-policy inheritance, official/custom username templates, tree-pinned schema-55\u219257 behavior, fresh/owner-only provider v5/v6 installation, static-role rotation, manager password rotation and bounded password-only root_rotation_statements. Remaining native gaps are arbitrary official root SQL parity, connection-pool fields and measured pooling behavior, complete field/error/template-helper parity, non-transactional external side effects, generic plugin capability negotiation, multi-host faults and independent qualification. RSA/client-certificate credentials remain generic plugin capabilities rather than native PostgreSQL 2.6.2 behavior."
     },
     {
       "surface_id": "HB-SURFACE-DB-MYSQL",

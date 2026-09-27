@@ -40,6 +40,17 @@ def digest(path: Path) -> str:
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def official_password(value) -> bool:
+    return (
+        isinstance(value, str) and value.isascii() and len(value) == 20
+        and all(character.isalnum() or character == "-" for character in value)
+        and any(character.islower() for character in value)
+        and any(character.isupper() for character in value)
+        and any(character.isdigit() for character in value)
+        and "-" in value
+    )
+
+
 def sql_literal(value: str, pattern: str) -> str:
     if re.fullmatch(pattern, value) is None:
         raise FixtureFailure("unsafe_fixture_sql_value")
@@ -214,8 +225,7 @@ SELECT 'hb_manager','hbf1:'||repeat('1',64),
         check("static_role_list", status == 200 and listed.get("data", {}).get("keys") == ["staticapp"])
         status, credential = instance.call("GET", "database/static-creds/staticapp")
         first_password = credential.get("data", {}).get("password")
-        check("static_credential_returned", status == 200 and isinstance(first_password, str)
-              and re.fullmatch(r"[0-9a-f]{64}", first_password) is not None)
+        check("static_credential_returned", status == 200 and official_password(first_password))
         sensitive.append(first_password)
         check("initial_operator_password_retired", not pg.login("app_static", initial_static))
         check("issued_static_password_logs_in", pg.login("app_static", first_password))
@@ -230,7 +240,8 @@ SELECT 'hb_manager','hbf1:'||repeat('1',64),
                 automatic_password = candidate
                 break
             time.sleep(0.25)
-        check("automatic_static_rotation", automatic_password != first_password)
+        check("automatic_static_rotation", official_password(automatic_password)
+              and automatic_password != first_password)
         sensitive.append(automatic_password)
         check("automatic_rotation_invalidates_old_password", not pg.login("app_static", first_password))
         check("automatic_rotation_new_password_logs_in", pg.login("app_static", automatic_password))
@@ -238,7 +249,8 @@ SELECT 'hb_manager','hbf1:'||repeat('1',64),
         check("manual_static_rotation", instance.call("POST", "database/rotate-role/staticapp", {})[0] == 204)
         status, credential = instance.call("GET", "database/static-creds/staticapp")
         manual_password = credential.get("data", {}).get("password")
-        check("manual_rotation_returns_new_password", status == 200 and isinstance(manual_password, str)
+        check("manual_rotation_returns_new_password", status == 200
+              and official_password(manual_password)
               and manual_password != automatic_password)
         sensitive.append(manual_password)
         check("manual_rotation_invalidates_old_password", not pg.login("app_static", automatic_password))
@@ -253,7 +265,7 @@ SELECT 'hb_manager','hbf1:'||repeat('1',64),
         static_id, fence_id, seq, request_digest, rotated_at, _ = fields
         for value, pattern in ((static_id, r"hbs1:[0-9a-f]{64}"), (fence_id, r"hbf1:[0-9a-f]{64}"),
                                (seq, r"[1-9][0-9]*"), (request_digest, r"[0-9a-f]{64}"),
-                               (rotated_at, r"[0-9]+"), (manual_password, r"[0-9a-f]{64}")):
+                               (rotated_at, r"[0-9]+"), (manual_password, r"[A-Za-z0-9-]{20}")):
             require(re.fullmatch(pattern, value) is not None, "provider_identity_shape")
 
         # An unrelated dynamic effect advances the global provider floor. Exact static
@@ -269,7 +281,7 @@ SELECT 'hb_manager','hbf1:'||repeat('1',64),
             sql_literal(fence_id, r"hbf1:[0-9a-f]{64}"),
             sql_literal(static_id, r"hbs1:[0-9a-f]{64}"),
             "'app_static'", seq + "::bigint",
-            sql_literal(manual_password, r"[0-9a-f]{64}"),
+            sql_literal(manual_password, r"[A-Za-z0-9-]{20}"),
             sql_literal(request_digest, r"[0-9a-f]{64}"), rotated_at + "::bigint",
         ]) + ")::text"
         check("exact_static_retry_survives_later_global_floor", manager_call(pg, exact).returncode == 0)
@@ -300,7 +312,8 @@ SELECT 'hb_manager','hbf1:'||repeat('1',64),
         )[0] == 204)
         status, credential = instance.call("GET", "database/static-creds/staticapp")
         recreated_password = credential.get("data", {}).get("password")
-        check("recreated_static_password_logs_in", status == 200 and isinstance(recreated_password, str)
+        check("recreated_static_password_logs_in", status == 200
+              and official_password(recreated_password)
               and pg.login("app_static", recreated_password))
         sensitive.append(recreated_password)
         bounded = row(pg, "SELECT count(*),bool_and(NOT retired) FROM heptabao_provider.static_roles "

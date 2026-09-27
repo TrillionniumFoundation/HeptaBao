@@ -35,6 +35,10 @@ impl Service {
             Ok(value) => value,
             Err(_) => return Response::error(503, "durable capacity observation unavailable"),
         };
+        let Some(state) = self.state.as_ref() else {
+            return Response::error(503, "server is sealed");
+        };
+        let state_schema = state.schema;
         let opaque_owner_limit = self.opaque_owner_limit();
         let state_limit = opaque_owner_limit;
 
@@ -77,14 +81,11 @@ impl Service {
                     "opaque-owner-json-plus-kv1-canonical-values",
                 )
             } else {
-                let bytes = match self.state.as_ref() {
-                    Some(state) => match owner_store::serialize_owner(state) {
-                        Ok(bytes) => bytes.len(),
-                        Err(_) => {
-                            return Response::error(503, "server state serialization unavailable");
-                        }
-                    },
-                    None => return Response::error(503, "server is sealed"),
+                let bytes = match owner_store::serialize_owner(state) {
+                    Ok(bytes) => bytes.len(),
+                    Err(_) => {
+                        return Response::error(503, "server state serialization unavailable");
+                    }
                 };
                 (
                     bytes,
@@ -105,7 +106,7 @@ impl Service {
         Response::ok(json!({"data": {
             "profile": profile,
             "scope": "serving-leader-local",
-            "state_schema": CURRENT_STATE_SCHEMA,
+            "state_schema": state_schema,
             "state_storage_format": storage_format,
             "state_chunk_target_bytes": chunk_target,
             "kv_read_only_dispatches": self.kv_read_only_dispatches,
@@ -286,6 +287,41 @@ mod tests {
         let encoded = serde_json::to_string(&response.body)?;
         assert!(!encoded.contains(&token));
         assert!(!encoded.contains(root.path.to_str().ok_or("path encoding")?));
+        Ok(())
+    }
+
+    #[test]
+    fn capacity_reports_loaded_schema_not_binary_maximum() -> Result<(), Box<dyn std::error::Error>>
+    {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = bootstrap(&mut service)?;
+        let current = call(
+            &mut service,
+            "GET",
+            "sys/internal/capacity",
+            &token,
+            json!({}),
+        );
+        assert_eq!(current.status, 200);
+        assert_eq!(current.body["data"]["state_schema"], CURRENT_STATE_SCHEMA);
+
+        let legacy_schema = CURRENT_STATE_SCHEMA.checked_sub(1).ok_or("schema")?;
+        service.state.as_mut().ok_or("state")?.schema = legacy_schema;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let legacy = call(
+            &mut service,
+            "GET",
+            "sys/internal/capacity",
+            &token,
+            json!({}),
+        );
+        assert_eq!(legacy.status, 200);
+        assert_eq!(legacy.body["data"]["state_schema"], legacy_schema);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
         Ok(())
     }
 

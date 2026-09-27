@@ -23,6 +23,10 @@ from database_config_completion_live import source_identity
 from postgres_live import Postgres
 from smoke import Instance
 
+PIN_PATH = ROOT / "qa/openbao-acceptance/fixtures/postgres-schema-migration-sources-v1.json"
+PINS = json.loads(PIN_PATH.read_text())
+SCHEMA55_SOURCE = PINS["schema55_generation"]["commit"]
+SCHEMA55_TREE = PINS["schema55_generation"]["tree"]
 OFFICIAL_TEMPLATE = '{{ printf "v-%s-%s-%s-%s" (.DisplayName | truncate 8) (.RoleName | truncate 8) (random 20) (unix_time) | truncate 63 }}'
 REQUIRED_CASES = frozenset({
     "fresh_generation_protocol", "forward_generation_protocol",
@@ -32,8 +36,8 @@ REQUIRED_CASES = frozenset({
     "legacy_provider_cleanup_preserved",
     "legacy_state_created_by_pinned_binary", "legacy_read_does_not_rewrite_state",
     "legacy_connection_shape_preserved", "legacy_dynamic_username_and_password",
-    "legacy_old_binary_rejects_schema56", "legacy_failed_downgrade_preserves_state",
-    "legacy_candidate_reopens",
+    "legacy_old_binary_rejects_current_schema", "legacy_failed_downgrade_preserves_state",
+    "legacy_candidate_reopens", "legacy_failed_downgrade_preserves_logical_frontier",
     "initialize", "unseal", "mount", "password_policy_crud",
     "connection_default_password_policy", "dynamic_role_policy_override",
     "official_default_username_template", "custom_username_template",
@@ -65,6 +69,38 @@ def require(value, code):
 def digest(path: Path) -> str:
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def durable_application_snapshot(root: Path) -> dict[str, str]:
+    expected = {"state.hbs", "journal.hbj", "ledger.hbl", "seal.json"}
+    files = {path.name: path for path in root.iterdir() if path.is_file()}
+    require(set(files) == expected, "unexpected_durable_artifact_set")
+    # Reopen may materialize the same committed operations into a freshly
+    # sealed ledger checkpoint. Snapshot, journal and seal are byte-stable.
+    return {
+        name: digest(files[name])
+        for name in ("state.hbs", "journal.hbj", "seal.json")
+    }
+
+
+def durable_ledger_digest(root: Path) -> str:
+    path = root / "ledger.hbl"
+    require(path.is_file(), "durable_ledger_missing")
+    return digest(path)
+
+
+def capacity_frontier(instance: Instance) -> dict[str, int]:
+    status, body = instance.call("GET", "sys/internal/capacity")
+    data = body.get("data", {})
+    names = (
+        "state_bytes", "generation", "retained_operations",
+        "journal_bytes", "state_schema",
+    )
+    require(
+        status == 200 and all(type(data.get(name)) is int for name in names),
+        "durable_frontier_unavailable",
+    )
+    return {name: data[name] for name in names}
 
 
 AUDIT_OPAQUE_FIELDS = frozenset({"mac", "path_digest", "previous"})
@@ -186,6 +222,13 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
         digest(binary), digest(legacy_binary), digest(Path(__file__))
     )
     require(before["head"] == build_source_commit, "candidate_source_commit_mismatch")
+    require(PINS.get("schema") == "heptabao.postgresql-schema-migration-sources.v1",
+            "schema_source_pin_format_mismatch")
+    require(legacy_source_commit == SCHEMA55_SOURCE, "schema55_source_pin_mismatch")
+    legacy_tree = subprocess.check_output(
+        ["git", "rev-parse", legacy_source_commit + "^{tree}"], cwd=ROOT, text=True
+    ).strip()
+    require(legacy_tree == SCHEMA55_TREE, "schema55_source_tree_mismatch")
     require(binary_hash == expected_binary_sha256, "candidate_binary_digest_mismatch")
     require(legacy_hash == expected_legacy_sha256, "legacy_binary_digest_mismatch")
     require(binary_hash != legacy_hash, "candidate_and_legacy_binaries_must_differ")
@@ -194,6 +237,7 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
     instance = Instance(binary, work / "candidate")
     legacy_instance = None
     pg = None
+    durable_reopen_observations: dict[str, object] = {}
 
     def check(name, condition):
         nonlocal current_case
@@ -306,7 +350,7 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
         )
         # A real schema-55 connection created by the pinned predecessor must
         # remain byte-stable under current pure reads and retain its legacy
-        # username/password profile until a current mutation promotes schema 56.
+        # username/password profile until a current mutation publishes the current schema.
         legacy_instance = Instance(legacy_binary, work / "legacy-state")
         configure_outbound(legacy_instance, pg)
         legacy_instance.start()
@@ -339,9 +383,12 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
         check("legacy_binary_role", legacy_instance.call(
             "POST", "database/roles/legacy", legacy_role
         )[0] == 204)
+        schema55_frontier = capacity_frontier(legacy_instance)
         legacy_instance.stop()
-        legacy_state = legacy_instance.root / "data/state.hbs"
-        legacy_state_digest = digest(legacy_state)
+        legacy_data_root = legacy_instance.root / "data"
+        legacy_state = legacy_data_root / "state.hbs"
+        schema55_application = durable_application_snapshot(legacy_data_root)
+        schema55_ledger = durable_ledger_digest(legacy_data_root)
         check("legacy_state_created_by_pinned_binary", legacy_state.is_file())
 
         legacy_instance.binary = binary
@@ -356,7 +403,25 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
             status == 200 and "password_policy" not in legacy_data
             and legacy_data.get("username_template") == "",
         )
-        check("legacy_read_does_not_rewrite_state", digest(legacy_state) == legacy_state_digest)
+        schema55_after_application = durable_application_snapshot(legacy_data_root)
+        schema55_after_frontier = capacity_frontier(legacy_instance)
+        schema55_after_ledger = durable_ledger_digest(legacy_data_root)
+        durable_reopen_observations["schema55"] = {
+            "application_artifacts_unchanged": (
+                schema55_after_application == schema55_application
+            ),
+            "frontier_before": schema55_frontier,
+            "frontier_after": schema55_after_frontier,
+            "logical_frontier_unchanged": schema55_after_frontier == schema55_frontier,
+            "ledger_checkpoint_resealed_or_materialized": (
+                schema55_after_ledger != schema55_ledger
+            ),
+        }
+        check(
+            "legacy_read_does_not_rewrite_state",
+            schema55_after_application == schema55_application
+            and schema55_after_frontier == schema55_frontier,
+        )
         status, legacy_issued = legacy_instance.call("GET", "database/creds/legacy")
         legacy_username = legacy_issued.get("data", {}).get("username")
         legacy_password = legacy_issued.get("data", {}).get("password")
@@ -370,22 +435,47 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
             and pg.login(legacy_username, legacy_password),
         )
         sensitive.append(legacy_password)
+        current_schema_frontier = capacity_frontier(legacy_instance)
         legacy_instance.stop()
-        schema56_digest = digest(legacy_state)
+        current_schema_application = durable_application_snapshot(legacy_data_root)
+        current_schema_ledger = durable_ledger_digest(legacy_data_root)
+        require(
+            current_schema_application != schema55_application
+            and current_schema_frontier["state_schema"] == 57,
+            "current_schema_state_not_published",
+        )
 
         legacy_instance.binary = legacy_binary
         legacy_instance.start()
-        check("legacy_old_binary_rejects_schema56", legacy_instance.call(
+        check("legacy_old_binary_rejects_current_schema", legacy_instance.call(
             "POST", "sys/unseal", {"key": legacy_key}
         )[0] == 503)
         legacy_instance.stop()
-        check("legacy_failed_downgrade_preserves_state", digest(legacy_state) == schema56_digest)
+        downgrade_application = durable_application_snapshot(legacy_data_root)
+        downgrade_ledger = durable_ledger_digest(legacy_data_root)
+        durable_reopen_observations["schema57_old_reader_refusal"] = {
+            "application_artifacts_unchanged": (
+                downgrade_application == current_schema_application
+            ),
+            "frontier_before": current_schema_frontier,
+            "ledger_checkpoint_resealed_or_materialized": (
+                downgrade_ledger != current_schema_ledger
+            ),
+        }
+        check(
+            "legacy_failed_downgrade_preserves_state",
+            downgrade_application == current_schema_application,
+        )
 
         legacy_instance.binary = binary
         legacy_instance.start()
         check("legacy_candidate_reopens", legacy_instance.call(
             "POST", "sys/unseal", {"key": legacy_key}
         )[0] == 200 and pg.login(legacy_username, legacy_password))
+        check(
+            "legacy_failed_downgrade_preserves_logical_frontier",
+            capacity_frontier(legacy_instance) == current_schema_frontier,
+        )
         legacy_instance.stop()
         initial_static = "a1" * 32
         sensitive.append(initial_static)
@@ -678,6 +768,7 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
             ).strip(),
             "checks": checks,
             "check_count": len(checks),
+            "durable_reopen_observations": durable_reopen_observations,
             "fresh_and_forward_provider_equal": True,
             "real_postgresql_executed": True,
             "password_policy_generation": True,
@@ -699,6 +790,7 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
             "runner_sha256": runner_hash,
             "checks": checks,
             "check_count": len(checks),
+            "durable_reopen_observations": durable_reopen_observations,
             "real_postgresql_executed": pg is not None,
             "full_openbao_compatibility": False,
             "independent_qualification": False,

@@ -443,18 +443,18 @@ Existing bounded profiles: `qa/openbao-acceptance/ssh_otp_live.py`, `qa/openbao-
 Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP01`, `H19-WP02`, `H19-WP03`, `H19-WP04`.
 API families: `sys/policies/password/*`; `{mount}/config/*`; `{mount}/roles/*`; `{mount}/static-roles/*`; `{mount}/creds/*`; `{mount}/rotate-root/*`.
 Runtime source: `crates/heptabao-server/src/service_database.rs`, `crates/heptabao-server/src/service_database_statements.rs`, `crates/heptabao-server/src/postgres_wire.rs`, `crates/heptabao-server/src/service_database_rotation.rs`, `crates/heptabao-server/src/auth_password_policy.rs`, `crates/heptabao-server/src/service_database_username.rs`.
-Separate contracts: `bootstrap/postgresql/upgrade_v5_password_policy_username_templates.sql`.
+Separate contracts: `bootstrap/postgresql/upgrade_v5_password_policy_username_templates.sql`, `bootstrap/postgresql/provider.sql`, `bootstrap/postgresql/upgrade_v6_root_rotation_statements.sql`, `qa/openbao-acceptance/fixtures/postgres-schema-migration-sources-v1.json`.
 Guides: `docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md`.
 
 **Positive:** Compose bounded password policies and usernames, dynamic/provider statements, static roles and root/static rotation with real PostgreSQL readback.
 
 **Hostile:** Reject malformed policy/template source, missing named policies, stale schema/admission, unapproved providers and ownership-changing SQL output before forbidden effect or delivery.
 
-**Lifecycle:** Read schema-55 without promotion, migrate only on current mutation, reject non-mutating downgrade, and reconcile timeout after actual SQL effect, expiry, rollback and lease revocation.
+**Lifecycle:** Read fixed schema-55 and schema-56 application state without promotion; permit only re-sealing of the committed-operation ledger checkpoint; migrate to schema 57 only on a current mutation; reject unsupported downgrade while preserving application artifacts and logical frontier; reconcile timeout after actual SQL effect, expiry, rollback and lease revocation..
 
-**Remaining scope:** Bounded provider-role and statement-template dynamic roles, password-policy and username-template generation, explicit password authentication, static roles, root rotation, renew/revoke and transactional rollback are executable. Remaining scope is root_rotation_statements, connection-pool fields and measured pooling behavior, complete OpenBao field/error/template-helper parity, generic database-plugin capability negotiation, non-PostgreSQL static roles, non-transactional external SQL side effects, multi-host provider faults and independent admission.
+**Remaining scope:** Bounded provider-role and statement-template dynamic roles, password-policy and username-template generation, explicit password authentication, static roles, root rotation, bounded password-only root_rotation_statements, renew/revoke and transactional rollback are executable. Remaining scope is arbitrary official root SQL parity, connection-pool fields and measured pooling behavior, complete OpenBao field/error/template-helper parity, generic database-plugin capability negotiation, non-PostgreSQL static roles, non-transactional external SQL side effects, multi-host provider faults and independent admission.
 
-Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`, `qa/openbao-acceptance/database_config_completion_live.py`, `qa/openbao-acceptance/postgres_static_rotation_live.py`, `qa/openbao-acceptance/postgres_statement_templates_live.py`, `qa/openbao-acceptance/postgres_password_authentication_live.py`, `qa/openbao-acceptance/postgres_generation_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`, `qa/openbao-acceptance/database_config_completion_live.py`, `qa/openbao-acceptance/postgres_static_rotation_live.py`, `qa/openbao-acceptance/postgres_statement_templates_live.py`, `qa/openbao-acceptance/postgres_password_authentication_live.py`, `qa/openbao-acceptance/postgres_generation_live.py`, `qa/openbao-acceptance/postgres_root_rotation_statements_live.py`.
 
 ### HB-SURFACE-SECRET-KUBERNETES
 
@@ -515,18 +515,18 @@ Existing bounded profiles: `qa/openbao-acceptance/rabbitmq_live.py`.
 Implementation: `PARTIAL_RUNTIME`. Original work packages: `H19-WP05`, `H19-WP13`.
 API families: `sys/policies/password/*`; `database/config/*`; `database/roles/*`; `database/static-roles/*`; `database/creds/*`; `database/rotate-root/*`.
 Runtime source: `crates/heptabao-server/src/service_database.rs`, `crates/heptabao-server/src/service_database_statements.rs`, `crates/heptabao-server/src/postgres_wire.rs`, `crates/heptabao-server/src/service_database_rotation.rs`, `crates/heptabao-server/src/auth_password_policy.rs`, `crates/heptabao-server/src/service_database_username.rs`.
-Separate contracts: `bootstrap/postgresql/provider.sql`, `bootstrap/postgresql/upgrade_v5_password_policy_username_templates.sql`.
+Separate contracts: `bootstrap/postgresql/provider.sql`, `bootstrap/postgresql/upgrade_v5_password_policy_username_templates.sql`, `bootstrap/postgresql/upgrade_v6_root_rotation_statements.sql`, `qa/openbao-acceptance/fixtures/postgres-schema-migration-sources-v1.json`.
 Guides: `docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md`.
 
 **Positive:** Support password/SCRAM, bounded policy/template generation, provider-role and statement-template issue/renew/revoke, static credentials and root rotation.
 
 **Hostile:** Deny malformed policy/templates, stale predecessor adoption, downgrade rewrite, SQL/template injection and foreign OID ownership while preserving supported operations.
 
-**Lifecycle:** Reconcile create/renew/revoke/rollback and active sessions against real PostgreSQL across schema-55→56 and provider v4→v5 transitions.
+**Lifecycle:** Reconcile create/renew/revoke/rollback and active sessions against real PostgreSQL across tree-pinned schema-55→57 and owner-only provider v4→v5→v6 transitions, including predecessor refusal without application-state or logical-frontier drift..
 
-**Remaining scope:** The native PostgreSQL profiles execute TLS/SCRAM, provider-role and statement-template dynamic lifecycle, namespace password-policy inheritance, official/custom username templates, clean schema-55→56 behavior, fresh/owner-only provider v5 installation, static-role rotation and manager-password rotation. Remaining native gaps are root_rotation_statements, connection-pool fields and measured pooling behavior, complete field/error/template-helper parity, non-transactional external side effects, generic plugin capability negotiation, multi-host faults and independent qualification. RSA/client-certificate credentials remain generic plugin capabilities rather than native PostgreSQL 2.6.2 behavior.
+**Remaining scope:** The native PostgreSQL profiles execute TLS/SCRAM, provider-role and statement-template dynamic lifecycle, namespace password-policy inheritance, official/custom username templates, tree-pinned schema-55→57 behavior, fresh/owner-only provider v5/v6 installation, static-role rotation, manager password rotation and bounded password-only root_rotation_statements. Remaining native gaps are arbitrary official root SQL parity, connection-pool fields and measured pooling behavior, complete field/error/template-helper parity, non-transactional external side effects, generic plugin capability negotiation, multi-host faults and independent qualification. RSA/client-certificate credentials remain generic plugin capabilities rather than native PostgreSQL 2.6.2 behavior.
 
-Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`, `qa/openbao-acceptance/postgres_static_rotation_live.py`, `qa/openbao-acceptance/postgres_statement_templates_live.py`, `qa/openbao-acceptance/postgres_password_authentication_live.py`, `qa/openbao-acceptance/postgres_generation_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/postgres_live.py`, `qa/openbao-acceptance/postgres_static_rotation_live.py`, `qa/openbao-acceptance/postgres_statement_templates_live.py`, `qa/openbao-acceptance/postgres_password_authentication_live.py`, `qa/openbao-acceptance/postgres_generation_live.py`, `qa/openbao-acceptance/postgres_root_rotation_statements_live.py`.
 
 ### HB-SURFACE-DB-MYSQL
 

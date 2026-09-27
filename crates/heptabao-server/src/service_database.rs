@@ -223,6 +223,8 @@ struct Connection {
     password_policy: Option<String>,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     username_template: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    root_rotation_statements: Vec<String>,
     #[serde(default, skip_serializing_if = "password_authentication_is_default")]
     password_authentication: PostgresqlPasswordAuthentication,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1022,6 +1024,23 @@ impl DatabaseState {
                         .any(|role| !role.password_policy.is_empty())
             })
     }
+    pub(super) fn has_root_rotation_statement_state(&self) -> bool {
+        self.mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .any(|mount| {
+                mount
+                    .connections
+                    .values()
+                    .any(|connection| !connection.root_rotation_statements.is_empty())
+                    || mount.connections.values().any(|connection| {
+                        connection
+                            .root_rotation
+                            .as_ref()
+                            .is_some_and(|rotation| !rotation.statements.is_empty())
+                    })
+            })
+    }
     fn current_provider_fence(&self) -> u64 {
         let retained_max = self
             .mounts
@@ -1110,7 +1129,12 @@ impl DatabaseState {
                             .as_deref()
                             .is_some_and(|policy| !policy.is_empty() && !name(policy))
                         || (connection.provider != DatabaseProvider::Postgresql
-                            && !connection.username_template.is_empty())
+                            && (!connection.username_template.is_empty()
+                                || !connection.root_rotation_statements.is_empty()))
+                        || statements::validate_root_rotation_statements(
+                            &connection.root_rotation_statements,
+                        )
+                        .is_err()
                         || (connection.provider == DatabaseProvider::Postgresql
                             && username::validate_username_template(
                                 if connection.username_template.is_empty() {
@@ -1342,6 +1366,17 @@ impl Connection {
         }
     }
 
+    fn root_rotation_statement_function(&self) -> &'static str {
+        match self.password_authentication {
+            PostgresqlPasswordAuthentication::Password => {
+                "SELECT heptabao_provider.rotate_root_statements($1,$2,$3::bigint,$4,$5,$6::text)::text"
+            }
+            PostgresqlPasswordAuthentication::ScramSha256 => {
+                "SELECT heptabao_provider.rotate_root_statements_scram($1,$2,$3::bigint,$4,$5,$6::text)::text"
+            }
+        }
+    }
+
     fn statement_apply_function(&self) -> &'static str {
         match self.password_authentication {
             PostgresqlPasswordAuthentication::Password => {
@@ -1369,6 +1404,12 @@ impl Connection {
                 != "heptabao-postgresql-generation-v1"
         {
             return Err("PostgreSQL password-policy/username-template extension is unavailable");
+        }
+        if !self.root_rotation_statements.is_empty()
+            && session.scalar("SELECT heptabao_provider.root_statement_protocol()", &[])?
+                != "heptabao-postgresql-root-statements-v1"
+        {
+            return Err("PostgreSQL root-rotation statement extension is unavailable");
         }
         Ok(session)
     }
@@ -1836,6 +1877,7 @@ impl Service {
                                 "password_authentication",
                                 "password_policy",
                                 "username_template",
+                                "root_rotation_statements",
                             ],
                         )?;
                         let existing = state
@@ -2009,6 +2051,32 @@ impl Service {
                         {
                             username::validate_username_template(&username_template)?;
                         }
+                        let root_rotation_statements =
+                            match statements::parse_root_rotation_statement_field(
+                                body,
+                                "root_rotation_statements",
+                            )? {
+                                Some(values) => values,
+                                None if existing
+                                    .as_ref()
+                                    .is_some_and(|connection| connection.provider == provider) =>
+                                {
+                                    existing
+                                        .as_ref()
+                                        .map(|connection| {
+                                            connection.root_rotation_statements.clone()
+                                        })
+                                        .unwrap_or_default()
+                                }
+                                None => Vec::new(),
+                            };
+                        if provider != DatabaseProvider::Postgresql
+                            && !root_rotation_statements.is_empty()
+                        {
+                            return Err(invalid(
+                                "root_rotation_statements are supported only by PostgreSQL",
+                            ));
+                        }
                         let root_rotation = existing
                             .as_ref()
                             .and_then(|connection| connection.root_rotation.clone());
@@ -2021,6 +2089,7 @@ impl Service {
                             allowed_roles,
                             password_policy,
                             username_template,
+                            root_rotation_statements,
                             password_authentication,
                             root_rotation,
                         };
@@ -2110,7 +2179,8 @@ impl Service {
                             "username":c.username,
                             "allowed_roles":c.allowed_roles,
                             "verify_connection":true,
-                            "username_template":c.username_template
+                            "username_template":c.username_template,
+                            "root_rotation_statements":c.root_rotation_statements
                         });
                         if let Some(password_policy) = &c.password_policy {
                             data["password_policy"] = json!(password_policy);
@@ -3632,6 +3702,7 @@ mod tests {
                 allowed_roles: BTreeSet::from(["reader".into()]),
                 password_policy: None,
                 username_template: String::new(),
+                root_rotation_statements: Vec::new(),
                 password_authentication: PostgresqlPasswordAuthentication::Password,
                 root_rotation: None,
             },
@@ -3681,6 +3752,7 @@ mod tests {
                 allowed_roles: BTreeSet::from(["reader".into()]),
                 password_policy: None,
                 username_template: r#"{{ printf "db-%s" (.RoleName | truncate 8) }}"#.into(),
+                root_rotation_statements: Vec::new(),
                 password_authentication: PostgresqlPasswordAuthentication::Password,
                 root_rotation: None,
             },
@@ -4963,6 +5035,7 @@ mod tests {
                 } else {
                     username_template.into()
                 },
+                root_rotation_statements: Vec::new(),
                 password_authentication: PostgresqlPasswordAuthentication::Password,
                 root_rotation: None,
             },

@@ -58,16 +58,20 @@ class PostgreSQLUsernameUpgradeTests(unittest.TestCase):
 
     def test_real_profile_checks_old_install_and_post_upgrade_authority(self):
         source = (ROOT / 'qa/openbao-acceptance/postgres_live.py').read_text()
-        for check in ('native_username_matches_deployed_v2_contract',
+        for check in ('current_default_username_and_password',
+                      'username_recovery_database_created',
+                      'legacy_v2_provider_installed_for_username_recovery',
                       'historical_short_identity_can_be_revoked',
                       'historical_short_identity_can_be_retired',
                       'manager_cannot_upgrade_provider_functions',
                       'username_upgrade_preserves_function_owners_and_grants',
-                      'username_upgrade_preserves_existing_live_credential',
+                      'isolated_username_upgrade_preserves_current_live_credential',
                       'historical_cleanup_rejects_unowned_short_role',
                       'upgraded_v2_still_rejects_short_issuance'):
             self.assertIn(check, source)
-        self.assertIn('pg.install(legacy)', source)
+        self.assertIn('pg.install();check', source)
+        self.assertIn('USERNAME_RECOVERY_DATABASE', source)
+        self.assertNotIn('pg.install(legacy)', source)
 
 
 if __name__ == '__main__':

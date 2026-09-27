@@ -208,7 +208,7 @@ All auth and engine state shares the durable transaction boundary. KV data, pass
 
 ## Observability
 
-`GET sys/internal/capacity` is a root-token, root-namespace-only service endpoint. It reports the serving leader's serialized logical state bytes, active replay-operation count, journal budget and generation. It accepts no mutation/reset fields and does not reserve headroom. The retained `GET sys/internal/storage/capacity` view additionally reports the serving node's `replay_epoch`, `retired_through_generation`, and whether replay retirement is `raft-coordinated` in HA. Standby requests can forward to the leader, so this HTTP view alone is not follower-local convergence evidence. Ordinary request/result audit and sealed/recovery rejection still apply. See `docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md`, `docs/architecture/HEPTABAO_REPLAY_EPOCH_PROTOCOL.md`, and `crates/heptabao-server/src/service_capacity.rs` for the source-bound contracts. These are HeptaBao extensions, not newly completed OpenBao compatibility surfaces.
+`GET sys/internal/capacity` is a root-token, root-namespace-only service endpoint. It reports the serving leader's loaded schema discriminator, serialized logical state bytes, active replay-operation count, journal budget and generation. The schema field describes authoritative loaded state, not merely the binary's newest supported schema. It accepts no mutation/reset fields and does not reserve headroom. The retained `GET sys/internal/storage/capacity` view additionally reports the serving node's `replay_epoch`, `retired_through_generation`, and whether replay retirement is `raft-coordinated` in HA. Standby requests can forward to the leader, so this HTTP view alone is not follower-local convergence evidence. Ordinary request/result audit and sealed/recovery rejection still apply. See `docs/operations/HEPTABAO_CAPACITY_AND_GROWTH.md`, `docs/architecture/HEPTABAO_REPLAY_EPOCH_PROTOCOL.md`, and `crates/heptabao-server/src/service_capacity.rs` for the source-bound contracts. These are HeptaBao extensions, not newly completed OpenBao compatibility surfaces.
 
 The process logs only listener readiness and safe errors. `sys/health` and
 `sys/seal-status` report seal/recovery state. In HA, active health success also
@@ -624,10 +624,12 @@ PostgreSQL template evaluator. `postgres_generation_live.py` compares fresh and
 owner-only v4→v5 provider installation, creates schema-55 state with the pinned
 predecessor, proves read-only non-promotion and downgrade refusal, and executes
 connection/role/static/root inheritance plus official/custom templates on real
-PostgreSQL 17. These scoped profiles still do not establish
-`root_rotation_statements`, pool-field behavior, complete OpenBao field/error and
-helper parity, generic plugin RPC, multi-host provider faults or independent
-qualification.
+PostgreSQL 17. `postgres_root_rotation_statements_live.py` additionally covers
+bounded password-only root statements, schema-56→57 promotion, predecessor
+refusal and password/SCRAM manager rotation. These scoped profiles still do not
+establish arbitrary official root SQL parity, pool-field behavior, complete
+OpenBao field/error and helper parity, generic plugin RPC, multi-host provider
+faults or independent qualification.
 
 
 ## Database credential delivery authority

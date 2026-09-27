@@ -32,9 +32,10 @@ REQUIRED_CASES = frozenset({
     "manager_cannot_install_statement_extension", "owner_installs_statement_extension",
     "fresh_and_upgrade_statement_extensions_match", "application_table_created",
     "create_statement_role", "statement_role_readback",
-    "statement_partial_update_preserves_templates",
-    "unsupported_credential_type_rejected", "nonempty_credential_config_rejected",
-    "provider_role_statement_mix_rejected", "unknown_placeholder_rejected",
+    "statement_partial_update_preserves_templates", "statement_password_policy_created",
+    "password_policy_credential_config_admitted", "unsupported_credential_type_rejected",
+    "unsupported_credential_config_rejected", "provider_role_statement_mix_rejected",
+    "unknown_placeholder_rejected",
     "statement_issue_returns_credential", "issued_statement_password_logs_in",
     "issued_role_can_select_granted_table", "issued_role_cannot_insert",
     "statement_provider_ledger_observed", "statement_digest_binds_exact_rendered_templates",
@@ -209,11 +210,17 @@ def run(binary: Path, postgres_bin: Path, work: Path, output: Path) -> int:
             "DROP ROLE IF EXISTS \"{{name}}\";"
         ]
         rollback = ["DROP ROLE IF EXISTS \"{{name}}\""]
+        check("statement_password_policy_created", instance.call(
+            "POST", "sys/policies/password/statement-policy", {
+                "policy": 'length = 12\nrule "charset" { charset = "S" min-chars = 12 }',
+            }
+        )[0] == 204)
         body = {
             "db_name": "local", "creation_statements": creation,
             "renew_statements": renewal, "revocation_statements": revocation,
             "rollback_statements": rollback, "credential_type": "password",
-            "credential_config": {}, "default_ttl": 60, "max_ttl": 300,
+            "credential_config": {"password_policy": "statement-policy"},
+            "default_ttl": 60, "max_ttl": 300,
         }
         check("create_statement_role", instance.call(
             "POST", "database/roles/templated", body
@@ -226,15 +233,16 @@ def run(binary: Path, postgres_bin: Path, work: Path, output: Path) -> int:
               and data.get("revocation_statements") == revocation
               and data.get("rollback_statements") == rollback
               and data.get("credential_type") == "password"
-              and data.get("credential_config") == {}
               and "provider_role" not in data)
+        check("password_policy_credential_config_admitted",
+              data.get("credential_config") == {"password_policy": "statement-policy"})
         check("statement_partial_update_preserves_templates", instance.call(
             "POST", "database/roles/templated", {"max_ttl": 600}
         )[0] == 204 and instance.call("GET", "database/roles/templated")[1]
             .get("data", {}).get("creation_statements") == creation)
         for name, invalid in (
             ("unsupported_credential_type_rejected", {"credential_type": "rsa_private_key"}),
-            ("nonempty_credential_config_rejected", {"credential_config": {"password_policy": "external"}}),
+            ("unsupported_credential_config_rejected", {"credential_config": {"unknown": "external"}}),
             ("provider_role_statement_mix_rejected", {"provider_role": "app_reader"}),
             ("unknown_placeholder_rejected", {"creation_statements": ["SELECT '{{unknown}}'"]}),
         ):
@@ -247,9 +255,9 @@ def run(binary: Path, postgres_bin: Path, work: Path, output: Path) -> int:
         check("statement_issue_returns_credential", status == 200
               and isinstance(lease_id, str)
               and isinstance(username, str)
-              and re.fullmatch(r"hbp_[0-9a-f]{32}", username) is not None
-              and isinstance(password, str)
-              and re.fullmatch(r"[0-9a-f]{64}", password) is not None)
+              and re.fullmatch(r"v-root-template-[0-9A-Za-z]{20}-[0-9]{10}", username)
+                  is not None
+              and password == "S" * 12)
         sensitive.append(password)
         check("issued_statement_password_logs_in", pg.login(username, password))
         check("issued_role_can_select_granted_table", role_query(
@@ -361,13 +369,13 @@ def run(binary: Path, postgres_bin: Path, work: Path, output: Path) -> int:
         check("create_broken_statement_role", instance.call(
             "POST", "database/roles/broken", broken
         )[0] == 204)
-        before_roles = int(row(pg, "SELECT count(*) FROM pg_roles WHERE rolname LIKE 'hbp_%'")[0])
+        before_roles = int(row(pg, "SELECT count(*) FROM pg_roles WHERE rolname LIKE 'v-root-%'")[0])
         before_rows = int(row(pg, "SELECT count(*) FROM heptabao_provider.statement_leases")[0])
         status, failure = instance.call("GET", "database/creds/broken")
         check("failed_creation_is_indeterminate_not_success", status == 503
               and failure.get("reconcile_required") is True)
         check("failed_creation_rolls_back_role_and_ledger", int(row(pg,
-            "SELECT count(*) FROM pg_roles WHERE rolname LIKE 'hbp_%'"
+            "SELECT count(*) FROM pg_roles WHERE rolname LIKE 'v-root-%'"
         )[0]) == before_roles and int(row(pg,
             "SELECT count(*) FROM heptabao_provider.statement_leases"
         )[0]) == before_rows)

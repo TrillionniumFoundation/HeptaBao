@@ -1,4 +1,4 @@
-# PostgreSQL dynamic credentials, statement templates, password authentication, static roles and manager rotation
+# PostgreSQL dynamic credentials, statements, password authentication, static roles and manager rotation
 
 Status: implemented development profile with source-bound real PostgreSQL 17.11
 provider and batch-lease execution receipts below. TLS/SCRAM protocol models
@@ -35,8 +35,9 @@ static-role and manager-rotation state inside the existing Service transaction.
 `postgres_wire.rs` owns bounded PostgreSQL TLS/SCRAM/extended-query transport.
 `bootstrap/postgresql/provider.sql` owns the separate provider-side transaction and
 idempotency ledgers. `upgrade_v2_static_credentials.sql`,
-`upgrade_v3_statement_templates.sql`, `upgrade_v4_password_authentication.sql` and
-`upgrade_v5_password_policy_username_templates.sql` are owner-only forward
+`upgrade_v3_statement_templates.sql`, `upgrade_v4_password_authentication.sql`,
+`upgrade_v5_password_policy_username_templates.sql` and
+`upgrade_v6_root_rotation_statements.sql` are owner-only forward
 extensions for an already installed provider-v2 schema. `outbound.rs` owns
 host-enrolled network destinations.
 No component may infer an external transaction's success from local persistence.
@@ -47,11 +48,12 @@ never installs a second local authoritative store. The original dynamic provider
 rotation state requires schema 53, persisted statement templates require schema 54,
 and explicit PostgreSQL password-authentication selection requires schema 55.
 Schema 56 adds namespace-owned password policies and persisted PostgreSQL username
-and password-generation bindings. A valid schema-55 state remains readable without
+and password-generation bindings. Schema 57 independently adds nonempty bounded
+root-rotation statement configuration and statement-bearing pending root intents. A valid schema-55 state remains readable without
 promotion; absent generation fields preserve its historical `hbp_`/64-hex behavior.
 Any real current mutation publishes the discriminator defined in
-`../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`. An old executable must refuse
-schema 56 without rewriting it; changing the schema number by hand is not downgrade
+`../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md`. An old executable must refuse the first unsupported schema without rewriting it;
+changing the schema number by hand is not downgrade
 or rollback.
 
 ## Enrollment and bounded API
@@ -232,17 +234,28 @@ are bounded; the final PostgreSQL username must be printable ASCII and at most 6
 bytes. A configured empty template resets to the official default.
 
 Schema 56 binds password-policy and username-template state. A valid schema-55
-connection with absent generation fields remains readable byte-stably and keeps
-its historical `hbp_` plus 32-hex username and 64-hex password generation until a
-current mutation publishes schema 56. The predecessor binary must reject schema
-56 without altering the encrypted state, and the current candidate must reopen it
-again. The provider's owner-only v5 extension adds an exact generation protocol
-and bounded username/password validators, while retaining historical short-name
-cleanup. Fresh and forward-installed function definitions must match; the API
-manager cannot install the upgrade and receives only explicit execution grants.
+connection with absent generation fields remains readable without application
+promotion and keeps its historical `hbp_` plus 32-hex username and 64-hex password
+generation until a current mutation. The fixed schema-56 candidate historically
+publishes schema 56; the current schema-57 candidate may promote directly to 57.
+For both predecessors, `state.hbs`, `journal.hbj`, seal metadata and the logical
+capacity frontier remain stable across current read-only reopen. `ledger.hbl` may
+be freshly sealed while reconstructing the same committed journal operations.
+Tree-pinned schema-55 and schema-56 binaries must reject the first unsupported
+schema without changing application artifacts; the current candidate must reopen
+it with the same logical frontier. The provider's owner-only v5 extension adds an
+exact generation protocol and bounded username/password validators, while
+retaining historical short-name cleanup. Fresh and forward-installed function
+definitions must match; the API manager cannot install the upgrade and receives
+only explicit execution grants.
 
 `postgres_generation_live.py` executes a real PostgreSQL 17 fresh install and a
-v4→v5 owner-only provider upgrade, then creates a real schema-55 Service state
+v4→v5 owner-only provider upgrade. The ordinary dynamic/static/statement/SCRAM
+profiles use the current fresh provider contract and its current generated
+credential shapes. Historical provider-v2 username recovery is exercised in a
+separate database so an old provider cannot accidentally satisfy a current fresh
+connection and a current provider cannot mask the forward-upgrade proof. The
+migration profile then creates a real schema-55 Service state
 with the pinned predecessor binary. It proves read-only non-promotion, legacy
 credential behavior, current promotion, old-binary downgrade refusal without
 rewrite, current reopen, dynamic/statement/static/root policy inheritance,
@@ -307,6 +320,47 @@ fence, transactional failed creation, ledger retirement and plaintext scans. The
 profile is mandatory in replacement CI and remains repository-controlled scoped
 evidence, not complete OpenBao database-plugin admission.
 
+## Bounded root-rotation statements
+
+A PostgreSQL connection may persist an ordered `root_rotation_statements` list.
+Omission on update preserves the current list; explicit `null`, an empty string or
+an empty array clears it, matching OpenBao's `TypeStringSlice` zero-value
+behavior. The current profile deliberately admits only PostgreSQL password changes
+of the form `ALTER ROLE|USER "{{username|name}}" [WITH] [ENCRYPTED] PASSWORD
+'{{password}}'`. It rejects arbitrary SQL, unsupported placeholders, unquoted
+identity substitution, unterminated syntax, excessive entries and oversized
+aggregate text before publishing a durable intent.
+
+Service snapshots the normalized ordered list into the pending root intent and
+binds it into a domain-separated request digest. The provider parses the bounded
+JSON array, checks exact identity, sequence, request and payload digests plus the
+global fence, then executes every rendered statement in one PostgreSQL
+transaction. It substitutes the complete quoted identity token with
+`quote_ident(session_user)` and the complete password literal token with
+`quote_literal(p_password)`, so manager names containing quotes and passwords
+containing quotes or backslashes remain correct even when
+`standard_conforming_strings` is disabled. Postcondition readback and the
+manager-bound root ledger are mandatory before Service publishes the new secret.
+Same-sequence retry with different statement bytes is a semantic conflict.
+
+Nonempty configuration and statement-bearing pending intents require schema 57.
+A tree-pinned schema-56 binary creates the predecessor state. Current read-only
+reopen must preserve the application snapshot, journal, seal metadata and logical
+capacity frontier; a current mutation promotes it. DurableService may authenticate
+the journal and re-materialize the same committed request set into a freshly
+sealed `ledger.hbl` checkpoint during reopen. That physical checkpoint replacement
+is neither an application mutation nor schema promotion. A predecessor must refuse
+the resulting schema before application mutation; after the current reader reopens,
+the same logical frontier and application artifacts must remain. The privileged
+provider owner applies `upgrade_v6_root_rotation_statements.sql`; the API manager
+cannot install it and receives only explicit function execution grants.
+`postgres_root_rotation_statements_live.py` exercises fresh/forward definitions,
+owner-only upgrade, nondefault string GUCs, quoted manager identity, exact retry,
+conflict and arbitrary-SQL rejection, omission/null update semantics, downgrade
+refusal, restart, password and SCRAM rotations, ledger monotonicity and plaintext
+scans on real PostgreSQL 17. This is bounded scoped evidence, not arbitrary
+OpenBao root-SQL or independent provider admission.
+
 ## Bounded static roles and manager-password rotation
 
 The same database mount now exposes a bounded PostgreSQL-only profile:
@@ -354,7 +408,7 @@ applied retries remain observable after unrelated later effects advance the glob
 provider floor. Root rotation similarly keeps one manager-bound ledger row and
 refuses identity rebinding.
 
-Fresh installs use the eighteen-function provider contract. An existing provider-v2
+Fresh installs use the current source-bound provider contract. An existing provider-v2
 installation must be backed up and extended only by the privileged schema owner
 with `upgrade_v2_static_credentials.sql`; the API manager cannot install or modify
 its tables. The forward script and fresh-install block are byte-aligned for these
@@ -370,9 +424,9 @@ retains a root intent through provider outage and process restart, overtakes it 
 an unrelated dynamic effect, then proves lifecycle readmission and completion. It is
 mandatory in the replacement workflow. Password-authentication, password-policy
 and username-template configuration are now separate executable extensions; this
-older profile does not substitute for their exact-head receipts. Remaining scope
-includes `root_rotation_statements`, connection-pool controls and measured pooling
-behavior, complete OpenBao field/error/template-helper parity, generic
+older profile does not substitute for their exact-head receipts. Remaining scope includes arbitrary official root-rotation SQL, connection-pool
+controls and measured pooling behavior, complete OpenBao field/error/template-helper
+parity, generic
 database-plugin capability negotiation, non-PostgreSQL static roles and
 multi-host database failover. OpenBao 2.6.2's native PostgreSQL plugin is
 password-based; RSA and client-certificate credential types are generic plugin

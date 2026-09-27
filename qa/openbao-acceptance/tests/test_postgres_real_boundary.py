@@ -58,6 +58,22 @@ class PostgreSQLBoundaryTests(unittest.TestCase):
                     self.fail('invalid credential accepted')
         self.assertEqual(list(self.root.iterdir()), [])
 
+    def test_current_template_names_are_quoted_as_postgresql_identifiers(self):
+        self.assertEqual(pg.role_identifier('v-root-reader-Aa0b-1700000000'),
+                         '"v-root-reader-Aa0b-1700000000"')
+        self.assertEqual(pg.role_identifier('quoted"role'), '"quoted""role"')
+        for value in ('', 'bad\nrole', 'x' * 64):
+            with self.subTest(value=repr(value)), self.assertRaises(RuntimeError):
+                pg.role_identifier(value)
+
+    def test_current_provider_and_historical_upgrade_use_separate_databases(self):
+        source = (QA / "postgres_live.py").read_text()
+        self.assertIn("pg.install();check", source)
+        self.assertIn('USERNAME_RECOVERY_DATABASE = "username_recovery"', source)
+        self.assertIn("legacy_v2_provider_installed_for_username_recovery", source)
+        self.assertNotIn("pg.install(legacy)", source)
+        self.assertIn("current_default_username_and_password", source)
+
     def test_missing_real_postgresql_is_exit_77_not_success(self):
         import json
         output = self.root / 'result.json'

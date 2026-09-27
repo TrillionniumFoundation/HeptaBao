@@ -792,6 +792,34 @@
         "pinned_predecessor_binary"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "postgres_root_rotation_statements_live": {
+      "script": "qa/openbao-acceptance/postgres_root_rotation_statements_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--legacy-binary",
+        "{legacy_binary}",
+        "--build-source-commit",
+        "{candidate_source}",
+        "--legacy-source-commit",
+        "{legacy_source}",
+        "--expected-binary-sha256",
+        "{candidate_sha256}",
+        "--expected-legacy-sha256",
+        "{legacy_sha256}",
+        "--postgres-bin",
+        "{postgres_bin}",
+        "--work-dir",
+        "{private_work_dir}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "actual_postgresql_17",
+        "pinned_schema56_binary"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1445,11 +1473,11 @@
       "runtime_source": "crates/heptabao-server/src/service_database.rs",
       "technical_contract": {
         "api_or_protocol": "sys/policies/password/* plus database/config/*, roles/*, creds/*, rotate-root and static-role targets",
-        "required_positive_and_hostile_behavior": "Provider-committed issue/renew/revoke, bounded password policies and username templates, schema-55 read compatibility, SQL templates, connection TLS, role mapping and retained intents",
-        "remaining_semantics_and_effect_checks": "Bounded PostgreSQL provider-role and statement-template leases, password/password-policy generation, official/custom username templates, explicit password-authentication, static-role rotation and manager-password rotation are executable with owner-enrolled identities, durable intent, exact digests, retirement tombstones and restart recovery. Remaining gaps are root_rotation_statements, connection-pool fields and measured pooling behavior, complete OpenBao field/error/template-helper parity, generic plugin capability negotiation, non-PostgreSQL static roles, non-transactional external SQL effects, multi-host provider faults and independent admission.",
+        "required_positive_and_hostile_behavior": "Provider-committed issue/renew/revoke, bounded password policies and username templates, schema-55 and schema-56 read compatibility, SQL templates, bounded root-rotation statements, connection TLS, role mapping and retained intents",
+        "remaining_semantics_and_effect_checks": "Bounded PostgreSQL provider-role and statement-template leases, password generation, username templates, password authentication, static-role rotation, manager rotation and bounded password-only root_rotation_statements are executable with durable identity and exact digests. Remaining gaps include arbitrary official root SQL parity, connection-pool controls, complete field/error parity, generic plugin capability negotiation, non-PostgreSQL static roles, multi-host provider faults and independent admission.",
         "crash_reopen": "Interrupt database/config/* before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-SECRET-DATABASE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
-        "migration_upgrade": "Read valid schema-55 state without promotion, preserve absent generation fields and historical credential shapes, publish schema 56 only on a current mutation, and require the old binary to refuse schema 56 without rewriting it. Provider v4\u2192v5 is owner-only and fresh/forward function bodies must match."
+        "migration_upgrade": "Use fixed, tree-pinned ancestors rather than the candidate first parent. Schema-55 generation and schema-56 empty-root-statement state must remain readable without application-state promotion: state.hbs, journal.hbj, seal metadata and the logical capacity frontier stay stable while ledger.hbl may be re-sealed from the same committed journal. A current mutation publishes schema 57; pinned schema-55/schema-56 binaries must refuse unsupported schema-57 state without changing application artifacts, and the current reader must recover the same logical frontier. Provider v4-to-v5 and v5-to-v6 upgrades are owner-only and source-bound."
       },
       "fixture_case_ids": [
         "postgres_pipeline_simulated.verified_scram_configuration",
@@ -1469,7 +1497,8 @@
         "postgres_static_rotation_live",
         "postgres_statement_templates_live",
         "postgres_password_authentication_live",
-        "postgres_generation_live"
+        "postgres_generation_live",
+        "postgres_root_rotation_statements_live"
       ],
       "whole_surface_admitted": false
     },
@@ -1574,10 +1603,10 @@
       "technical_contract": {
         "api_or_protocol": "PostgreSQL database plugin and native provider lifecycle",
         "required_positive_and_hostile_behavior": "TLS/SCRAM, bounded password-policy and username-template generation, provider upgrade, dynamic/static/root rotation, statement execution, session termination and downgrade refusal",
-        "remaining_semantics_and_effect_checks": "The native provider covers password and SCRAM authentication, provider-role and statement-template leases, namespace password-policy inheritance, official/custom username templates, schema-55\u219256 behavior, owner-only provider v5 upgrade, static-role rotation and manager-password rotation. Remaining native gaps are root_rotation_statements, connection-pool fields and measured pooling behavior, complete OpenBao field/error/template-helper parity, non-transactional external effects, generic plugin capability negotiation, multi-host provider faults and independent qualification.",
+        "remaining_semantics_and_effect_checks": "The native provider covers password and SCRAM authentication, provider-role and statement-template leases, namespace password-policy inheritance, official/custom username templates, schema-55\u219257 behavior, owner-only provider v5/v6 upgrades, static-role rotation, manager-password rotation and bounded password-only root_rotation_statements. Remaining native gaps are arbitrary official root SQL parity, connection-pool fields and measured pooling behavior, complete OpenBao field/error/template-helper parity, non-transactional external effects, generic plugin capability negotiation, multi-host provider faults and independent qualification.",
         "crash_reopen": "Interrupt PostgreSQL database plugin and native provider lifecycle before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-DB-POSTGRESQL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
-        "migration_upgrade": "Execute clean predecessor-created schema-55 state, read it without rewrite, promote only on current mutation, prove old-binary schema-56 refusal is non-mutating, reopen current state, and compare fresh versus owner-only provider v5 definitions."
+        "migration_upgrade": "Execute clean tree-pinned schema-55 and schema-56 states, read them without application promotion, publish schema 57 only on a current mutation, prove predecessor refusal preserves application artifacts and logical frontier, reopen current state, and compare fresh versus owner-only provider v5/v6 definitions."
       },
       "fixture_case_ids": [
         "postgres_live.native_pg_tls_scram_config",
@@ -1594,7 +1623,8 @@
         "postgres_static_rotation_live",
         "postgres_statement_templates_live",
         "postgres_password_authentication_live",
-        "postgres_generation_live"
+        "postgres_generation_live",
+        "postgres_root_rotation_statements_live"
       ],
       "whole_surface_admitted": false
     },
