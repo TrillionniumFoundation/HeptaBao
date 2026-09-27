@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
-use std::fs::OpenOptions;
-use std::io::{BufReader, Read};
+use std::fs::{self, OpenOptions};
+use std::io::{BufReader, Read, Seek, SeekFrom, Write};
 use std::net::{SocketAddr, TcpListener};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -62,6 +62,10 @@ const REPLICATION_KEY_BYTES: usize = 32;
 const REPLICATED_CHUNK_MIN_BYTES: usize = 192 * 1024;
 const REPLICATED_CHUNK_WINDOW_BYTES: usize = 64;
 const REPLICATED_CHUNK_MASK: u64 = (1_u64 << 18) - 1;
+const BOOTSTRAP_MARKER_LEAF: &str = ".heptabao-bootstrap-v1";
+const BOOTSTRAP_MARKER_MAGIC: &[u8] = b"HBBT1\0";
+const BOOTSTRAP_COMPLETE_SUFFIX: &[u8] = b"complete\n";
+const MAX_BOOTSTRAP_MARKER_BYTES: usize = 64;
 
 type MutualTlsConfigs = (Arc<ClientConfig>, Arc<ServerConfig>, [u8; 32]);
 pub(crate) type ForwardHandler = Arc<dyn Fn(ForwardRequest) -> Response + Send + Sync>;
@@ -291,10 +295,249 @@ pub(crate) struct CommittedApplicationState {
     pub changed_owner_mask: Option<u8>,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum BootstrapMarkerState {
+    Pending,
+    Complete,
+}
+
+#[derive(Debug)]
+struct BootstrapAdmission {
+    path: PathBuf,
+    binding: [u8; 32],
+}
+
+impl BootstrapAdmission {
+    fn binding(cluster_id: &str, voters: &BTreeSet<u64>) -> [u8; 32] {
+        let mut context = digest::Context::new(&digest::SHA256);
+        context.update(b"heptabao-bootstrap-admission-v1\0");
+        context.update(&(cluster_id.len() as u64).to_be_bytes());
+        context.update(cluster_id.as_bytes());
+        context.update(&(voters.len() as u64).to_be_bytes());
+        for voter in voters {
+            context.update(&voter.to_be_bytes());
+        }
+        let mut binding = [0_u8; 32];
+        binding.copy_from_slice(context.finish().as_ref());
+        binding
+    }
+
+    fn marker_path(raft_dir: &Path) -> Result<PathBuf, String> {
+        if !raft_dir.is_absolute() {
+            return Err("HA raft directory for bootstrap marker must be absolute".into());
+        }
+        Ok(raft_dir.join(BOOTSTRAP_MARKER_LEAF))
+    }
+
+    fn pending_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::with_capacity(BOOTSTRAP_MARKER_MAGIC.len() + self.binding.len());
+        bytes.extend_from_slice(BOOTSTRAP_MARKER_MAGIC);
+        bytes.extend_from_slice(&self.binding);
+        bytes
+    }
+
+    fn parse_state(&self, bytes: &[u8]) -> Result<BootstrapMarkerState, String> {
+        let pending = self.pending_bytes();
+        if !bytes.starts_with(&pending) {
+            return Err("HA bootstrap admission marker binding is invalid".into());
+        }
+        let suffix = &bytes[pending.len()..];
+        if suffix == BOOTSTRAP_COMPLETE_SUFFIX {
+            return Ok(BootstrapMarkerState::Complete);
+        }
+        if BOOTSTRAP_COMPLETE_SUFFIX.starts_with(suffix) {
+            // An interrupted append remains pending. Exact committed membership
+            // is re-observed before completing the suffix on the next attempt.
+            return Ok(BootstrapMarkerState::Pending);
+        }
+        Err("HA bootstrap admission marker is corrupt".into())
+    }
+
+    fn open_options(&self, write: bool, create: bool) -> OpenOptions {
+        let mut options = OpenOptions::new();
+        options.read(true).write(write).create_new(create);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        #[cfg(target_os = "linux")]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+        }
+        options
+    }
+
+    fn validate_file(file: &fs::File) -> Result<(), String> {
+        let metadata = file
+            .metadata()
+            .map_err(|_| "cannot inspect HA bootstrap admission marker".to_owned())?;
+        if !metadata.is_file() || metadata.len() > MAX_BOOTSTRAP_MARKER_BYTES as u64 {
+            return Err("HA bootstrap admission marker must be a bounded regular file".into());
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            if metadata.permissions().mode() & 0o077 != 0 {
+                return Err("HA bootstrap admission marker must be owner only".into());
+            }
+        }
+        Ok(())
+    }
+
+    fn read_from(&self, file: &mut fs::File) -> Result<Vec<u8>, String> {
+        Self::validate_file(file)?;
+        file.seek(SeekFrom::Start(0))
+            .map_err(|_| "cannot seek HA bootstrap admission marker".to_owned())?;
+        let mut bytes = Vec::new();
+        file.take(MAX_BOOTSTRAP_MARKER_BYTES as u64 + 1)
+            .read_to_end(&mut bytes)
+            .map_err(|_| "cannot read HA bootstrap admission marker".to_owned())?;
+        if bytes.len() > MAX_BOOTSTRAP_MARKER_BYTES {
+            return Err("HA bootstrap admission marker exceeds its bound".into());
+        }
+        Ok(bytes)
+    }
+
+    fn sync_parent(&self) -> Result<(), String> {
+        let parent = self
+            .path
+            .parent()
+            .ok_or_else(|| "HA bootstrap admission marker parent is unavailable".to_owned())?;
+        fs::File::open(parent)
+            .and_then(|directory| directory.sync_all())
+            .map_err(|_| "HA bootstrap admission directory sync failed".to_owned())
+    }
+
+    fn load(
+        raft_dir: &Path,
+        cluster_id: &str,
+        voters: &BTreeSet<u64>,
+    ) -> Result<Option<(Self, BootstrapMarkerState)>, String> {
+        let admission = Self {
+            path: Self::marker_path(raft_dir)?,
+            binding: Self::binding(cluster_id, voters),
+        };
+        let mut file = match admission.open_options(false, false).open(&admission.path) {
+            Ok(file) => file,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                return Ok(None);
+            }
+            Err(_) => {
+                return Err("cannot open HA bootstrap admission marker".into());
+            }
+        };
+        let bytes = admission.read_from(&mut file)?;
+        let state = admission.parse_state(&bytes)?;
+        Ok(Some((admission, state)))
+    }
+
+    fn create_pending(
+        raft_dir: &Path,
+        cluster_id: &str,
+        voters: &BTreeSet<u64>,
+    ) -> Result<Self, String> {
+        let admission = Self {
+            path: Self::marker_path(raft_dir)?,
+            binding: Self::binding(cluster_id, voters),
+        };
+        let mut file = admission
+            .open_options(true, true)
+            .open(&admission.path)
+            .map_err(|_| "cannot create HA bootstrap admission marker".to_owned())?;
+        file.write_all(&admission.pending_bytes())
+            .and_then(|()| file.sync_all())
+            .map_err(|_| "cannot persist HA bootstrap admission marker".to_owned())?;
+        admission.sync_parent()?;
+        Ok(admission)
+    }
+
+    fn mark_complete(&self) -> Result<(), String> {
+        let mut file = self
+            .open_options(true, false)
+            .open(&self.path)
+            .map_err(|_| "cannot open HA bootstrap marker for completion".to_owned())?;
+        let bytes = self.read_from(&mut file)?;
+        if self.parse_state(&bytes)? == BootstrapMarkerState::Complete {
+            return Ok(());
+        }
+        let pending = self.pending_bytes();
+        file.set_len(pending.len() as u64)
+            .and_then(|()| file.seek(SeekFrom::End(0)).map(|_| ()))
+            .and_then(|()| file.write_all(BOOTSTRAP_COMPLETE_SUFFIX))
+            .and_then(|()| file.sync_all())
+            .map_err(|_| "cannot complete HA bootstrap admission marker".to_owned())?;
+        self.sync_parent()
+    }
+}
+
+fn prepare_bootstrap_admission(
+    raft_dir: &Path,
+    cluster_id: &str,
+    voters: &BTreeSet<u64>,
+    enrolled: &BTreeSet<u64>,
+    existing: bool,
+    runtime: &Runtime,
+    node: &ProcessRaftNode,
+) -> Result<(BootstrapAdmission, BootstrapMarkerState), String> {
+    if let Some((admission, marker)) = BootstrapAdmission::load(raft_dir, cluster_id, voters)? {
+        if !existing {
+            return Err("HA bootstrap marker exists without prior durable Raft state".into());
+        }
+        let observed = runtime
+            .block_on(node.membership_observation())
+            .map_err(|_| "persisted HA bootstrap membership is unavailable".to_owned())?;
+        if !observed.voters.is_subset(enrolled) || !observed.nodes.is_subset(enrolled) {
+            return Err("persisted HA bootstrap membership contains an unenrolled node".into());
+        }
+        if marker == BootstrapMarkerState::Complete {
+            // Reopen metrics can transiently expose empty or local-only
+            // membership before the durable log is replayed. Historical
+            // completion forbids restoring the initial set, while current
+            // authority stays fenced until safe membership is observed.
+            return Ok((admission, marker));
+        }
+        let recovered = legacy_bootstrap_marker_state(
+            node.id(), voters, enrolled, &observed,
+        )
+        .ok_or_else(|| {
+            "pending HA bootstrap marker has ambiguous committed membership; explicit operator recovery is required"
+                .to_owned()
+        })?;
+        if recovered == BootstrapMarkerState::Complete {
+            admission.mark_complete()?;
+        }
+        return Ok((admission, recovered));
+    }
+    if !existing {
+        return BootstrapAdmission::create_pending(raft_dir, cluster_id, voters)
+            .map(|admission| (admission, BootstrapMarkerState::Pending));
+    }
+    let observed = runtime
+        .block_on(node.membership_observation())
+        .map_err(|_| "existing HA bootstrap membership is unavailable".to_owned())?;
+    let state = legacy_bootstrap_marker_state(
+        node.id(), voters, enrolled, &observed,
+    )
+    .ok_or_else(|| {
+        "existing HA bootstrap state has no marker and its membership is ambiguous; explicit operator recovery is required"
+            .to_owned()
+    })?;
+    let admission = BootstrapAdmission::create_pending(raft_dir, cluster_id, voters)?;
+    if state == BootstrapMarkerState::Complete {
+        admission.mark_complete()?;
+    }
+    Ok((admission, state))
+}
+
 pub struct HaProcess {
     record_commits_since_gc: AtomicU64,
     bootstrap_ready: AtomicBool,
     bootstrap_voters: Option<BTreeSet<u64>>,
+    bootstrap_admission: Option<BootstrapAdmission>,
+    bootstrap_history_complete: AtomicBool,
+    bootstrap_owner: bool,
     runtime: Runtime,
     node: Option<ProcessRaftNode>,
     codec: ClusterStateCodec,
@@ -556,16 +799,44 @@ impl HaProcess {
         }
 
         let bootstrap_voters = config
-            .bootstrap
-            .then(|| config.initial_voters.clone().unwrap_or(peer_ids.clone()));
-        let bootstrap_ready = bootstrap_voters.as_ref().is_none_or(|voters| {
-            reconcile_bootstrap_membership(&runtime, &node, !existing, config.node_id, voters)
-        });
+            .initial_voters
+            .clone()
+            .unwrap_or_else(|| peer_ids.clone());
+        let bootstrap_owner = config.bootstrap;
+        let (bootstrap_admission, state) = prepare_bootstrap_admission(
+            &config.raft_dir,
+            &config.cluster_id,
+            &bootstrap_voters,
+            &peer_ids,
+            existing,
+            &runtime,
+            &node,
+        )?;
+        let mut bootstrap_history_complete = state == BootstrapMarkerState::Complete;
+        let bootstrap_ready = if !bootstrap_history_complete
+            && bootstrap_owner
+            && reconcile_bootstrap_membership(
+                &runtime,
+                &node,
+                !existing,
+                config.node_id,
+                &bootstrap_voters,
+            ) {
+            bootstrap_admission.mark_complete()?;
+            bootstrap_history_complete = true;
+            true
+        } else {
+            false
+        };
+        let bootstrap_admission = Some(bootstrap_admission);
 
         Ok(Self {
             record_commits_since_gc: AtomicU64::new(0),
             bootstrap_ready: AtomicBool::new(bootstrap_ready),
-            bootstrap_voters,
+            bootstrap_voters: Some(bootstrap_voters),
+            bootstrap_admission,
+            bootstrap_history_complete: AtomicBool::new(bootstrap_history_complete),
+            bootstrap_owner,
             runtime,
             node: Some(node),
             codec,
@@ -585,29 +856,52 @@ impl HaProcess {
     }
 
     /// Bootstrap admission is separate from listener/process startup. A
-    /// committed learner may still be catching up, and a lost bootstrap
-    /// leader leaves the process safely fenced until a later restart retries
-    /// reconciliation. No health or request path treats that partial state as
-    /// an active authority.
+    /// committed learner may still be catching up, but health observation on
+    /// the current bootstrap leader continues the same bounded, immutable
+    /// membership transition instead of requiring a process restart. The
+    /// completion marker is persisted before authority is exposed, so later
+    /// guarded topology changes do not reopen historical bootstrap on restart.
     pub(crate) fn bootstrap_ready(&self) -> bool {
         if self.bootstrap_ready.load(Ordering::Acquire) {
             return true;
         }
-        let Some(expected) = self.bootstrap_voters.as_ref() else {
+        let (Some(expected), Some(admission), Some(node)) = (
+            self.bootstrap_voters.as_ref(),
+            self.bootstrap_admission.as_ref(),
+            self.node.as_ref(),
+        ) else {
             return false;
         };
-        let ready = self
-            .node
-            .as_ref()
-            .and_then(|node| self.runtime.block_on(node.membership_observation()).ok())
-            .is_some_and(|observed| bootstrap_membership_complete(expected, &observed));
-        if ready {
-            // Bootstrap is a one-way historical admission. Later topology
-            // changes have their own guarded protocol; they must not reopen a
-            // completed startup fence or depend on transient leadership.
-            self.bootstrap_ready.store(true, Ordering::Release);
+        let observed = match self.runtime.block_on(node.membership_observation()) {
+            Ok(observed) => observed,
+            Err(_) => return false,
+        };
+        let enrolled = self.peers.keys().copied().collect::<BTreeSet<_>>();
+        if self.bootstrap_history_complete.load(Ordering::Acquire) {
+            let ready = bootstrap_membership_operational(&enrolled, &observed);
+            if ready {
+                self.bootstrap_ready.store(true, Ordering::Release);
+            }
+            return ready;
         }
-        ready
+        let ready = match legacy_bootstrap_marker_state(node.id(), expected, &enrolled, &observed) {
+            Some(BootstrapMarkerState::Complete) => true,
+            Some(BootstrapMarkerState::Pending)
+                if self.bootstrap_owner && observed.leader == Some(node.id()) =>
+            {
+                reconcile_bootstrap_membership(&self.runtime, node, false, node.id(), expected)
+            }
+            _ => false,
+        };
+        if ready && admission.mark_complete().is_ok() {
+            // Publish historical completion before exposing current authority.
+            // Later topology changes are observed, never rewritten as bootstrap.
+            self.bootstrap_history_complete
+                .store(true, Ordering::Release);
+            self.bootstrap_ready.store(true, Ordering::Release);
+            return true;
+        }
+        false
     }
 
     pub(crate) fn register_forward_handler(
@@ -1341,6 +1635,40 @@ fn bootstrap_membership_complete(
     observed.committed && !observed.joint && observed.voters == *expected
 }
 
+fn bootstrap_membership_operational(
+    enrolled: &BTreeSet<u64>,
+    observed: &MembershipObservation,
+) -> bool {
+    observed.committed
+        && !observed.joint
+        && observed.voters.len() >= 3
+        && observed.voters.is_subset(enrolled)
+        && observed.nodes.is_subset(enrolled)
+}
+
+fn legacy_bootstrap_marker_state(
+    local_id: u64,
+    expected: &BTreeSet<u64>,
+    enrolled: &BTreeSet<u64>,
+    observed: &MembershipObservation,
+) -> Option<BootstrapMarkerState> {
+    if bootstrap_membership_operational(enrolled, observed) {
+        return Some(BootstrapMarkerState::Complete);
+    }
+    if !observed.committed
+        || observed.joint
+        || !observed.voters.is_subset(enrolled)
+        || !observed.nodes.is_subset(enrolled)
+    {
+        return None;
+    }
+    let singleton = BTreeSet::from([local_id]);
+    let pending_voters = observed.voters.is_empty() || observed.voters == singleton;
+    let pending_nodes = observed.nodes.is_subset(expected)
+        && (observed.nodes.is_empty() || observed.nodes.contains(&local_id));
+    (pending_voters && pending_nodes).then_some(BootstrapMarkerState::Pending)
+}
+
 fn reconcile_bootstrap_membership(
     runtime: &Runtime,
     node: &ProcessRaftNode,
@@ -1348,13 +1676,21 @@ fn reconcile_bootstrap_membership(
     local_id: u64,
     voters: &BTreeSet<u64>,
 ) -> bool {
-    if initialize && runtime.block_on(node.initialize_single()).is_err() {
-        return false;
-    }
     let mut membership = match runtime.block_on(node.membership_observation()) {
         Ok(membership) => membership,
         Err(_) => return false,
     };
+    if (initialize || membership.voters.is_empty())
+        && runtime.block_on(node.initialize_single()).is_err()
+    {
+        return false;
+    }
+    if initialize || membership.voters.is_empty() {
+        membership = match runtime.block_on(node.membership_observation()) {
+            Ok(membership) => membership,
+            Err(_) => return false,
+        };
+    }
     // A reopened node may be a follower in an already-complete cluster. The
     // local process does not need to own reconciliation in that case; it may
     // become leader later and must not remain fenced merely because startup
@@ -2141,6 +2477,147 @@ mod tests {
             &expected,
             &membership(BTreeSet::from([1, 2, 3, 4]), true, false)
         ));
+    }
+
+    #[test]
+    fn completed_bootstrap_history_waits_for_current_safe_membership() {
+        let enrolled = BTreeSet::from([1, 2, 3, 4]);
+        for current in [BTreeSet::new(), BTreeSet::from([1]), BTreeSet::from([1, 2])] {
+            assert!(!bootstrap_membership_operational(
+                &enrolled,
+                &membership(current, true, false),
+            ));
+        }
+        for current in [
+            BTreeSet::from([1, 2, 3]),
+            BTreeSet::from([2, 3, 4]),
+            enrolled.clone(),
+        ] {
+            assert!(bootstrap_membership_operational(
+                &enrolled,
+                &membership(current, true, false),
+            ));
+        }
+        assert!(!bootstrap_membership_operational(
+            &enrolled,
+            &membership(BTreeSet::from([1, 2, 3]), false, false),
+        ));
+        assert!(!bootstrap_membership_operational(
+            &enrolled,
+            &membership(BTreeSet::from([1, 2, 3]), true, true),
+        ));
+        assert!(!bootstrap_membership_operational(
+            &enrolled,
+            &membership(BTreeSet::from([1, 2, 9]), true, false),
+        ));
+    }
+
+    #[test]
+    fn legacy_bootstrap_marker_adoption_distinguishes_pending_from_later_topology() {
+        let expected = BTreeSet::from([1, 2, 3, 4]);
+        let enrolled = BTreeSet::from([1, 2, 3, 4, 5]);
+        assert_eq!(
+            legacy_bootstrap_marker_state(
+                1,
+                &expected,
+                &enrolled,
+                &membership(expected.clone(), true, false),
+            ),
+            Some(BootstrapMarkerState::Complete)
+        );
+        for current in [
+            BTreeSet::from([1, 2, 3]),
+            BTreeSet::from([2, 3, 4]),
+            BTreeSet::from([1, 2, 3, 5]),
+        ] {
+            assert_eq!(
+                legacy_bootstrap_marker_state(
+                    1,
+                    &expected,
+                    &enrolled,
+                    &membership(current, true, false),
+                ),
+                Some(BootstrapMarkerState::Complete)
+            );
+        }
+        for current in [BTreeSet::new(), BTreeSet::from([1])] {
+            assert_eq!(
+                legacy_bootstrap_marker_state(
+                    1,
+                    &expected,
+                    &enrolled,
+                    &membership(current, true, false),
+                ),
+                Some(BootstrapMarkerState::Pending)
+            );
+        }
+        for observed in [
+            membership(BTreeSet::from([2]), true, false),
+            membership(BTreeSet::from([1, 2]), true, false),
+            membership(BTreeSet::from([1]), false, false),
+            membership(BTreeSet::from([1]), true, true),
+            membership(BTreeSet::from([1, 2, 3, 9]), true, false),
+        ] {
+            assert_eq!(
+                legacy_bootstrap_marker_state(1, &expected, &enrolled, &observed,),
+                None
+            );
+        }
+    }
+
+    #[test]
+    fn bootstrap_admission_marker_is_bound_durable_and_recovers_partial_completion()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let root = std::env::temp_dir().join(format!(
+            "heptabao-bootstrap-marker-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)?
+                .as_nanos()
+        ));
+        fs::create_dir(&root)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(&root, fs::Permissions::from_mode(0o700))?;
+        }
+        let raft = root.join("raft");
+        fs::create_dir(&raft)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(&raft, fs::Permissions::from_mode(0o700))?;
+        }
+        let voters = BTreeSet::from([1, 2, 3, 4]);
+        assert!(BootstrapAdmission::load(&raft, "cluster-a", &voters)?.is_none());
+        let admission = BootstrapAdmission::create_pending(&raft, "cluster-a", &voters)?;
+        assert_eq!(
+            BootstrapAdmission::load(&raft, "cluster-a", &voters)?
+                .ok_or("pending marker missing")?
+                .1,
+            BootstrapMarkerState::Pending
+        );
+        let mut interrupted = OpenOptions::new().append(true).open(&admission.path)?;
+        interrupted.write_all(&BOOTSTRAP_COMPLETE_SUFFIX[..3])?;
+        interrupted.sync_all()?;
+        drop(interrupted);
+        assert_eq!(
+            BootstrapAdmission::load(&raft, "cluster-a", &voters)?
+                .ok_or("partial marker missing")?
+                .1,
+            BootstrapMarkerState::Pending
+        );
+        admission.mark_complete()?;
+        admission.mark_complete()?;
+        assert_eq!(
+            BootstrapAdmission::load(&raft, "cluster-a", &voters)?
+                .ok_or("complete marker missing")?
+                .1,
+            BootstrapMarkerState::Complete
+        );
+        assert!(BootstrapAdmission::load(&raft, "cluster-a", &BTreeSet::from([1, 2, 3])).is_err());
+        fs::remove_dir_all(root)?;
+        Ok(())
     }
 
     #[test]

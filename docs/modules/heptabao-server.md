@@ -408,20 +408,36 @@ ambiguous write, and rejects a successful stale read immediately. Its synthetic
 cold-cloned seed is not an implementation of production peer enrollment. Each
 result binds the actual binary digest and lists uncovered fault categories.
 
-Bootstrap records learner enrollment and replication readiness separately.
-The bootstrap process commits each statically requested learner before waiting
-for its replicated frontier and recent heartbeat. An unavailable learner or a
-lost bootstrap leader leaves the process fenced from active health and writes;
-it does not discard the committed learner or report a three-voter cluster.
-The fence is process-local but no longer permanently snapshots a transient
-startup failure: every later health/admission observation may close it only after
-the local Raft metrics expose the exact requested voter set as committed and
-non-joint. This transition is one-way and read-only; it cannot add/promote a
-peer, depend on current leadership, or accept a configured-but-uncommitted set.
-A restart still retries incomplete enrollment and promotion. Promotion occurs
-only after every requested learner is observed ready and the stable voter
-membership commit is observed. This is bounded bootstrap recovery, not a dynamic
-peer-enrollment protocol.
+Bootstrap records learner enrollment, replication readiness and historical
+completion separately. Every statically configured process creates an owner-only
+bounded marker inside its `raft_dir`, bound to the cluster identity and exact
+declared initial voter set. Only the process with `bootstrap: true` may mutate a
+pending transition, and only while it is current leader; followers may only
+observe committed membership and publish their own completion. Each learner is
+committed before its replicated frontier and recent heartbeat can make it
+eligible for the single final voter-set change.
+
+An unavailable learner or lost bootstrap leader leaves the process fenced from
+active health and writes without discarding committed learner membership.
+Subsequent health observation on the current bootstrap leader may continue the
+same bounded reconciliation; it never treats configured names as readiness and
+never promotes one learner at a time. The marker is completed and synchronized
+only after the exact initial voter set is committed and non-joint, before active
+authority is exposed. A torn completion suffix remains pending and is repaired
+only after membership is re-observed.
+
+Completion is a durable one-way historical fact. Later guarded removal, join,
+demotion or Autopilot contraction does not reopen the original voter set when
+any node restarts. Historical completion is not itself current service authority:
+OpenRaft may initially expose empty or local-only metrics while replaying its
+durable log, so such a node remains running but fenced. It becomes ready only
+after committed, non-joint membership contains at least three voters and every
+reported node remains in the enrolled peer set. For pre-marker durable state, an
+empty or local-only committed membership containing only expected nodes is
+adopted as pending; a stable enrolled set of at least three voters is adopted as
+historically complete. Two-voter, joint, uncommitted or unenrolled membership is
+refused for explicit operator recovery. This is bounded bootstrap recovery, not
+peer discovery or a dynamic enrollment authority.
 
 ## Core-isolation implementation supplement
 

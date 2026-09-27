@@ -62,7 +62,7 @@ host. The profile creates one
 fixture-only CA, one distinct client/server certificate per node, and a private
 replication key. HTTP and Raft bind only the declared tailnet addresses.
 
-## Fixed 55-check lifecycle
+## Fixed 54-check lifecycle
 
 `REQUIRED_CHECKS` is a fixed denominator. A report can pass only when every name
 appears exactly once, every row passes, the runner and all four candidate copies
@@ -96,6 +96,28 @@ The lifecycle performs these stages without retrying a mutation:
 Read polling may repeat because it is observational. Mutating requests, including
 CAS writes, snapshot trigger, step-down and cleanup deletes, are each issued once.
 An unknown mutation outcome is not retried by this harness.
+
+## First-start bootstrap convergence
+
+Both profiles require exactly one Raft leader to be observable before any node
+is unsealed. A pass must come from fresh remote roots and the first process
+lifecycle; stopping and restarting a partially bootstrapped cluster is diagnostic
+evidence, not a substitute for first-start qualification.
+
+Every node durably binds a private marker inside its `raft_dir` to the cluster
+identity and declared initial voter set. Markers remain pending while learners
+are enrolled or catching up. Health polling may cause only the configured
+bootstrap process, while current leader, to continue that immutable transition;
+a follower can only observe and persist exact completion. No node exposes active
+authority before its own marker is complete. Marker completion records history,
+not a cached claim that current membership is ready: a restarted process may see
+empty or local-only metrics while replaying its log and must stay alive but
+fenced until committed, non-joint membership again contains at least three
+enrolled voters. Later Autopilot removal or explicit membership administration
+must therefore survive any node restart without restoring the original set.
+Missing-marker legacy state is adopted only from local-only pending membership
+or a stable enrolled set of at least three voters; joint, two-voter, uncommitted
+or unenrolled state fails closed.
 
 ## Four-host Autopilot cleanup
 
