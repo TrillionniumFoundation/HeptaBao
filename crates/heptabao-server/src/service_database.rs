@@ -3556,9 +3556,12 @@ mod tests {
         )?;
         assert!(
             postgresql.starts_with("v-display--reader-r-"),
-            "{postgresql}"
+            "generated PostgreSQL username has the wrong shape"
         );
-        assert!(postgresql.ends_with("-100"), "{postgresql}");
+        assert!(
+            postgresql.ends_with("-100"),
+            "generated PostgreSQL username has the wrong shape"
+        );
         assert!(username::valid_database_username(
             DatabaseProvider::Postgresql,
             &postgresql,
@@ -5188,8 +5191,14 @@ mod tests {
     #[test]
     fn dynamic_issue_falls_back_to_connection_then_openbao_default() -> GenerationResult {
         let (username, password) = generation_intent("connection-policy", "", "")?;
-        assert!(username.starts_with("v-root-reader-"), "{username}");
-        assert!(username.ends_with("-100"), "{username}");
+        assert!(
+            username.starts_with("v-root-reader-"),
+            "generated database username has the wrong shape"
+        );
+        assert!(
+            username.ends_with("-100"),
+            "generated database username has the wrong shape"
+        );
         assert_eq!(password, "A".repeat(12));
 
         let (_, password) = generation_intent("", "", "")?;

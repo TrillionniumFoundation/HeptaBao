@@ -52,7 +52,7 @@ fn large_engine_owner_round_trips_through_owner_chunks_and_restart()
         "secret/data/large",
         json!({"data":{"blob":payload}}),
     )?;
-    assert_eq!(response.status, 200, "{}", response.body);
+    assert_eq!(response.status, 200);
 
     let manifest = current_manifest(&service)?;
     assert!(manifest.chunk_count("engines")? >= 2);
@@ -77,9 +77,9 @@ fn large_engine_owner_round_trips_through_owner_chunks_and_restart()
     drop(service);
     let mut service = root.service()?;
     let unseal = call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}));
-    assert_eq!(unseal.status, 200, "{}", unseal.body);
+    assert_eq!(unseal.status, 200);
     let read = call(&mut service, "GET", "secret/data/large", &token, json!({}));
-    assert_eq!(read.status, 200, "{}", read.body);
+    assert_eq!(read.status, 200);
     assert_eq!(
         read.body["data"]["data"]["blob"].as_str().map(str::len),
         Some(900 * 1024)
@@ -122,7 +122,7 @@ fn legacy_raw_state_is_eagerly_migrated_to_owner_manifest_in_one_generation()
 
     let mut service = root.service()?;
     let unseal = call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}));
-    assert_eq!(unseal.status, 200, "{}", unseal.body);
+    assert_eq!(unseal.status, 200);
     let durable = service
         .durable
         .as_ref()
@@ -140,7 +140,7 @@ fn legacy_raw_state_is_eagerly_migrated_to_owner_manifest_in_one_generation()
         &token,
         json!({}),
     );
-    assert_eq!(lookup.status, 200, "{}", lookup.body);
+    assert_eq!(lookup.status, 200);
     Ok(())
 }
 
@@ -179,7 +179,7 @@ fn tampered_or_missing_owner_chunk_fails_unseal_closed() -> Result<(), Box<dyn s
 
         let mut service = root.service()?;
         let unseal = call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}));
-        assert_eq!(unseal.status, 503, "missing={missing}: {}", unseal.body);
+        assert_eq!(unseal.status, 503, "missing={missing}");
         assert!(service.state.is_none());
         assert!(service.durable.is_none());
     }
@@ -204,7 +204,7 @@ fn owner_commits_reuse_unchanged_owners_retire_replaced_chunks_and_restart()
         "secret/data/first",
         json!({"data":{"value":"one"}}),
     )?;
-    assert_eq!(first.status, 200, "{}", first.body);
+    assert_eq!(first.status, 200);
     let after_first = current_manifest(&service)?;
     let after_first_auth = (0..after_first.chunk_count("auth")?)
         .map(|index| after_first.chunk_resource("auth", index))
@@ -220,7 +220,7 @@ fn owner_commits_reuse_unchanged_owners_retire_replaced_chunks_and_restart()
         "secret/data/second",
         json!({"data":{"value":"two"}}),
     )?;
-    assert_eq!(second.status, 200, "{}", second.body);
+    assert_eq!(second.status, 200);
     let final_manifest = current_manifest(&service)?;
     let final_all = final_manifest.unique_chunk_resources()?;
     let durable = service
@@ -247,10 +247,10 @@ fn owner_commits_reuse_unchanged_owners_retire_replaced_chunks_and_restart()
 
     let mut service = root.service()?;
     let unseal = call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}));
-    assert_eq!(unseal.status, 200, "{}", unseal.body);
+    assert_eq!(unseal.status, 200);
     for (path, value) in [("secret/data/first", "one"), ("secret/data/second", "two")] {
         let read = call(&mut service, "GET", path, &token, json!({}));
-        assert_eq!(read.status, 200, "{}", read.body);
+        assert_eq!(read.status, 200);
         assert_eq!(read.body["data"]["data"]["value"], value);
     }
     Ok(())
@@ -408,7 +408,7 @@ fn v3_state_chunks_are_retired_atomically_by_retained_v4_owner_publication()
         "secret/data/promote-v4",
         json!({"data":{"value":"v4"}}),
     )?;
-    assert_eq!(write.status, 200, "{}", write.body);
+    assert_eq!(write.status, 200);
     let durable = service.durable.as_ref().ok_or("durable missing")?;
     for old in old_resources {
         assert!(
@@ -467,7 +467,7 @@ fn legacy_owner_raw_projection_survives_two_unseals() -> Result<(), Box<dyn std:
     for _ in 0..2 {
         let mut service = root.service()?;
         let response = call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}));
-        assert_eq!(response.status, 200, "{}", response.body);
+        assert_eq!(response.status, 200);
         let manifest = current_manifest(&service)?;
         let bytes = owner_store::serialize_owner(service.state.as_ref().ok_or("state")?)?;
         manifest.verify_logical(&bytes)?;
@@ -496,7 +496,7 @@ fn legacy_owner_ha_projection_keeps_wire_identity_and_reopens()
     service.ha = Some(Arc::clone(&read_owner));
     service
         .sync_from_ha()
-        .map_err(|response| format!("sync: {}", response.body))?;
+        .map_err(|response| format!("sync status: {}", response.status))?;
     assert_eq!(
         service.current_state_digest().map_err(|_| "identity")?,
         crypto::digest(&source)
@@ -507,10 +507,10 @@ fn legacy_owner_ha_projection_keeps_wire_identity_and_reopens()
         let mut service = root.service()?;
         service.ha = Some(Arc::clone(&read_owner));
         let response = call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}));
-        assert_eq!(response.status, 200, "{}", response.body);
+        assert_eq!(response.status, 200);
         service
             .sync_from_ha()
-            .map_err(|response| format!("sync: {}", response.body))?;
+            .map_err(|response| format!("sync status: {}", response.status))?;
         assert_eq!(
             service.current_state_digest().map_err(|_| "identity")?,
             crypto::digest(&source)

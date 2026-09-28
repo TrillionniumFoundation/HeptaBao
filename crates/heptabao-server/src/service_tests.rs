@@ -816,7 +816,7 @@ fn unsupported_database_provider_names_fail_closed_without_mount_state()
         &token,
         json!({"type":"database"}),
     );
-    assert!(mounted.status < 300, "{}", mounted.body);
+    assert!(mounted.status < 300, "database mount failed");
     let before = service.state_digest;
     for plugin_name in [
         "mysql-database-plugin",
@@ -837,7 +837,7 @@ fn unsupported_database_provider_names_fail_closed_without_mount_state()
                 "verify_connection": true
             }),
         );
-        assert_eq!(response.status, 400, "{plugin_name}: {}", response.body);
+        assert_eq!(response.status, 400, "plugin={plugin_name}");
         assert_eq!(
             service.state_digest, before,
             "{plugin_name} mutated durable state"
@@ -1754,8 +1754,7 @@ fn unknown_journal_write_releases_no_secret_and_preserves_last_committed_state()
     assert_eq!(result.status, 503);
     assert!(
         result.body["recovery_reference"].is_string(),
-        "{}",
-        result.body
+        "uncertain result must carry a recovery reference"
     );
     assert!(!result.body.to_string().contains("uncertain-secret"));
     assert!(service.recovery_required);

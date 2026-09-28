@@ -1276,8 +1276,12 @@ done
         summary = work / "summary.json"
         summary.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
         summary.chmod(0o600)
-        print(json.dumps({"status": report["status"], "checks": len(checks),
-                          "failure_code": report.get("failure_code")}, sort_keys=True))
+        # Console output is a literal classification, not a data-flow copy of
+        # a secret-bearing runtime result. Exact redacted details stay in summary.
+        public_status = "passed" if report["status"] == "passed" else "failed"
+        print(json.dumps({"status": public_status, "checks": len(checks),
+                          "failure_code": None if public_status == "passed" else "fixture_failed"},
+                         sort_keys=True))
     return 0 if (report["status"] == "passed"
                  and len(checks) == len(required_checks)
                  and {row.get("case") for row in checks} == required_checks

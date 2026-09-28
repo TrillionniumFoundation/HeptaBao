@@ -33,7 +33,7 @@ fn initial_ha_leader_unseal_anchors_existing_durable_state() -> TestResult {
         Arc::clone(&cluster.processes[0]),
     )?;
     let response = leader.handle("POST", "sys/unseal", "", "", json!({"key":key}));
-    assert_eq!(response.status, 200, "{}", response.body);
+    assert_eq!(response.status, 200);
     assert!(leader.state.is_some());
     assert!(!leader.recovery_required);
     Ok(())

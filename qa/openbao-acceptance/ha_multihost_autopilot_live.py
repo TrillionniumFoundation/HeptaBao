@@ -790,9 +790,11 @@ done
         summary = work / "summary.json"
         summary.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
         summary.chmod(0o600)
+        # Exact diagnostics remain in the secret-checked private report.
+        public_status = "passed" if report["status"] == "passed" else "failed"
         print(json.dumps({
-            "status": report["status"], "checks": len(checks),
-            "failure_code": report.get("failure_code"),
+            "status": public_status, "checks": len(checks),
+            "failure_code": None if public_status == "passed" else "fixture_failed",
         }, sort_keys=True))
     return 0 if (
         report["status"] == "passed"

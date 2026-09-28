@@ -248,7 +248,11 @@ def main():
         if admit_output(output) != output_parent:
             raise ValueError("output_parent_changed")
         private_write(output, result)
-    print(json.dumps({"status": result["status"], "checks": len(result["cases"]), "failure": result.get("failure")}))
+    # A fixed public classification cannot disclose a provider credential.
+    # The private report retains the exact bounded diagnostic and case trace.
+    public_status = "passed" if result["status"] == "passed" else "failed"
+    print(json.dumps({"status": public_status, "checks": len(result["cases"]),
+                      "failure": None if public_status == "passed" else "fixture_failed"}))
     return 0 if result["status"] == "passed" else 1
 
 
