@@ -442,3 +442,8 @@ invalidates the old route immediately, rejects overlapping/reserved destinations
 fenced while dynamic leases are live. Repository-local restart tests verify the moved
 backend, revision/incarnation and disable/recreate boundary. Later migration, multi-host
 fault/upgrade, full OpenBao 2.6.2 differential and independent admission remain open.
+
+PKI cluster/AIA URL validation retains the pinned malformed-URL error status but
+deliberately does not reflect the submitted URL in its diagnostic. Credentials
+and private path components must not escape through error bodies. This is a
+bounded safe-diagnostic contract, not a claim of full upstream error-text parity.

@@ -379,6 +379,26 @@ fn empty(mutated: bool) -> EngineResponse {
         mutated,
     }
 }
+// Use one logical operation for Service ACL, canonical roots and KV dispatch.
+pub(crate) fn kv_request_method<'a>(method: &'a str, body: &Value) -> &'a str {
+    if method != "GET" {
+        return method;
+    }
+    if body
+        .get("list")
+        .is_some_and(|value| value == true || value == "true")
+    {
+        "LIST"
+    } else if body
+        .get("scan")
+        .is_some_and(|value| value == true || value == "true")
+    {
+        "SCAN"
+    } else {
+        method
+    }
+}
+
 fn write_method(method: &str) -> bool {
     matches!(method, "POST" | "PUT")
 }
@@ -934,12 +954,7 @@ impl EngineState {
         if !params.is_object() {
             return Err(bad("request body must be an object"));
         }
-        let method =
-            if method == "GET" && params.get("list").is_some_and(|v| v == "true" || v == true) {
-                "LIST"
-            } else {
-                method
-            };
+        let method = kv_request_method(method, &params);
         let relative = &path[mount_path.len()..];
         match &mount.backend {
             Backend::Kv1(entries) => kv::read_v1(entries, method, relative, &params),
@@ -1153,12 +1168,7 @@ impl EngineState {
             }
             map.insert(key.into(), Value::String(value.into()));
         }
-        let method =
-            if method == "GET" && params.get("list").is_some_and(|v| v == "true" || v == true) {
-                "LIST"
-            } else {
-                method
-            };
+        let method = kv_request_method(method, &params);
 
         if identity::owns(path) {
             let mut candidate = self

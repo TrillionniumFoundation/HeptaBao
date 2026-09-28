@@ -1055,11 +1055,12 @@ fn validate_uri(value: &str, field: &str) -> Result<()> {
     }
     let invalid_url = || {
         let message = if field == "PKI cluster path" {
-            format!("invalid, non-URL path given to cluster: {value}")
+            "invalid, non-URL path given to cluster"
         } else {
-            format!("invalid, non-URL path given to AIA: {value}")
+            "invalid, non-URL path given to AIA"
         };
-        error(500, &message)
+        // Keep the upstream status without reflecting credentials or private paths.
+        error(500, message)
     };
     let Some((scheme, rest)) = value.split_once("://") else {
         return Err(invalid_url());

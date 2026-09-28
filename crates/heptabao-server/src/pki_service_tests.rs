@@ -312,21 +312,72 @@ fn pki_extension_configuration_is_hostile_bounded_and_persists_after_restart() -
     assert_eq!(enabled.status, 200);
     assert_eq!(enabled.body["data"]["enabled"], true);
     assert_eq!(enabled.body["data"]["eab_policy"], "new-account-required");
-    let before = call(&mut s, &root, "GET", "pki/config/acme", json!({}), 101).body;
-    for (path, body) in [
+    let warned = call(
+        &mut s,
+        &root,
+        "POST",
+        "pki/config/acme",
+        json!({"enabled":false,"unknown":"ignored-value-must-not-persist"}),
+        101,
+    );
+    assert_eq!(warned.status, 200);
+    assert_eq!(warned.body["data"]["enabled"], false);
+    assert!(
+        warned.body["warnings"]
+            .as_array()
+            .is_some_and(|v| !v.is_empty())
+    );
+    assert!(
+        !warned
+            .body
+            .to_string()
+            .contains("ignored-value-must-not-persist")
+    );
+    assert_eq!(
+        call(&mut s, &root, "GET", "pki/config/acme", json!({}), 101).body["data"]["enabled"],
+        false
+    );
+    assert!(
+        !serde_json::to_string(s.state.as_ref().ok_or("state")?)?
+            .contains("ignored-value-must-not-persist")
+    );
+    assert_eq!(
+        call(
+            &mut s,
+            &root,
+            "POST",
+            "pki/config/acme",
+            json!({"enabled":true}),
+            101
+        )
+        .status,
+        200
+    );
+    let before = call(&mut s, &root, "GET", "pki/config/acme", json!({}), 101)
+        .body
+        .clone();
+    for (path, body, expected_status) in [
         (
             "pki/config/acme",
-            json!({"enabled":false,"unknown":"must-not-persist"}),
+            json!({"enabled":"invalid-bool","unknown":"must-not-persist"}),
+            400,
         ),
         (
             "pki/config/cluster",
             json!({"path":"file:///secret-location"}),
+            500,
+        ),
+        (
+            "pki/config/cluster",
+            json!({"path":"https://private-user:private-password@private.example/secret-location"}),
+            500,
         ),
     ] {
         let rejected = call(&mut s, &root, "POST", path, body, 101);
-        assert_eq!(rejected.status, 400);
+        assert_eq!(rejected.status, expected_status);
         assert!(!rejected.body.to_string().contains("must-not-persist"));
         assert!(!rejected.body.to_string().contains("secret-location"));
+        assert!(!rejected.body.to_string().contains("private-password"));
     }
     assert_eq!(
         call(&mut s, &root, "GET", "pki/config/acme", json!({}), 101,).body,

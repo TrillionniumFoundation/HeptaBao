@@ -814,22 +814,7 @@ enum RequestEffectClass {
 }
 
 fn kv_authorization_method<'a>(method: &'a str, body: &Value) -> &'a str {
-    if method != "GET" {
-        return method;
-    }
-    if body
-        .get("list")
-        .is_some_and(|value| value == true || value == "true")
-    {
-        "LIST"
-    } else if body
-        .get("scan")
-        .is_some_and(|value| value == true || value == "true")
-    {
-        "SCAN"
-    } else {
-        method
-    }
+    crate::engines::kv_request_method(method, body)
 }
 
 fn classify_request_effect(
@@ -1929,9 +1914,11 @@ impl Service {
         // only against the leader's synchronized mount registry, before ACL
         // and either immutable or ordinary dispatch. Unknown roots stay as-is.
         let canonical_kv_root = self.state.as_ref().and_then(|state| {
-            state
-                .engines
-                .canonical_kv_enumeration_root(namespace, method, path)
+            state.engines.canonical_kv_enumeration_root(
+                namespace,
+                kv_authorization_method(method, body),
+                path,
+            )
         });
         let path = canonical_kv_root.as_deref().unwrap_or(path);
         let request = RequestView { path, ..request };
