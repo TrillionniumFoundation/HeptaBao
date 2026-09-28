@@ -230,14 +230,16 @@
       ],
       "contract_sources": [],
       "guides": [
-        "docs/auth/HEPTABAO_CAPABILITIES.md"
+        "docs/auth/HEPTABAO_CAPABILITIES.md",
+        "docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md"
       ],
       "executable_profiles": [
         "qa/openbao-acceptance/core_isolation.py",
         "qa/openbao-acceptance/capabilities_live.py",
         "qa/openbao-acceptance/policy_parameters_live.py",
         "qa/openbao-acceptance/policy_templates_live.py",
-        "qa/openbao-acceptance/policy_wrapping_ttl_live.py"
+        "qa/openbao-acceptance/policy_wrapping_ttl_live.py",
+        "qa/openbao-acceptance/ha_multihost_acl_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
@@ -275,11 +277,13 @@
       ],
       "contract_sources": [],
       "guides": [
-        "docs/engines/HEPTABAO_IDENTITY_RUNTIME.md"
+        "docs/engines/HEPTABAO_IDENTITY_RUNTIME.md",
+        "docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md"
       ],
       "executable_profiles": [
         "qa/openbao-acceptance/identity_live.py",
-        "qa/openbao-acceptance/policy_templates_live.py"
+        "qa/openbao-acceptance/policy_templates_live.py",
+        "qa/openbao-acceptance/ha_multihost_acl_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
@@ -341,13 +345,15 @@
       ],
       "contract_sources": [],
       "guides": [
-        "docs/auth/HEPTABAO_RESPONSE_WRAPPING.md"
+        "docs/auth/HEPTABAO_RESPONSE_WRAPPING.md",
+        "docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md"
       ],
       "executable_profiles": [
         "qa/openbao-acceptance/core_isolation.py",
         "qa/openbao-acceptance/response_wrapping.py",
         "qa/openbao-acceptance/wrapping_ha.py",
-        "qa/openbao-acceptance/policy_wrapping_ttl_live.py"
+        "qa/openbao-acceptance/policy_wrapping_ttl_live.py",
+        "qa/openbao-acceptance/ha_multihost_acl_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
@@ -1425,12 +1431,14 @@
       ],
       "contract_sources": [],
       "guides": [
-        "docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md"
+        "docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md",
+        "docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md"
       ],
       "executable_profiles": [
         "qa/openbao-acceptance/ha_destructive.py",
         "qa/openbao-acceptance/raft_membership_live.py",
-        "qa/openbao-acceptance/ha_rolling_upgrade.py"
+        "qa/openbao-acceptance/ha_rolling_upgrade.py",
+        "qa/openbao-acceptance/ha_multihost_acl_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
@@ -1639,10 +1647,12 @@
       ],
       "contract_sources": [],
       "guides": [
-        "docs/modules/heptabao-server.md"
+        "docs/modules/heptabao-server.md",
+        "docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md"
       ],
       "executable_profiles": [
-        "qa/openbao-acceptance/ha_destructive.py"
+        "qa/openbao-acceptance/ha_destructive.py",
+        "qa/openbao-acceptance/ha_multihost_acl_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
@@ -1670,10 +1680,12 @@
       ],
       "contract_sources": [],
       "guides": [
-        "docs/modules/heptabao-server.md"
+        "docs/modules/heptabao-server.md",
+        "docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md"
       ],
       "executable_profiles": [
-        "qa/openbao-acceptance/ha_network_partition.py"
+        "qa/openbao-acceptance/ha_network_partition.py",
+        "qa/openbao-acceptance/ha_multihost_acl_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,

@@ -401,12 +401,17 @@ echo "$pid"
 
 
 def api(context: ssl.SSLContext, node: Node, method: str, path: str,
-        body=None, token: str = "", timeout: float = 8.0) -> tuple[int, dict]:
+        body=None, token: str = "", timeout: float = 8.0, *,
+        wrap_ttl: str | None = None) -> tuple[int, dict]:
     if not path or path.startswith("/") or ".." in path.split("/") or "://" in path:
         raise FixtureError("invalid_api_path")
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
     if token:
         headers["X-Vault-Token"] = token
+    if wrap_ttl is not None:
+        if not isinstance(wrap_ttl, str) or re.fullmatch(r"[0-9]{1,10}", wrap_ttl) is None:
+            raise FixtureError("invalid_fixture_wrap_ttl")
+        headers["X-Vault-Wrap-TTL"] = wrap_ttl
     request = urllib.request.Request(
         f"{node.api_origin}/v1/{path}",
         data=None if body is None else json.dumps(body, separators=(",", ":")).encode(),
@@ -594,7 +599,14 @@ def parse_node(text: str, node_id: int, api_port: int, raft_port: int) -> Node:
     return Node(node_id, alias, str(address), root.rstrip("/"), api_port, raft_port)
 
 
-def main() -> int:
+def main(*, extension=None) -> int:
+    # The baseline retains its original fixed denominator. A separately named
+    # composed profile must satisfy both sets; it cannot borrow baseline success.
+    required_checks = REQUIRED_CHECKS
+    if extension is not None:
+        if not extension.required_checks or extension.required_checks & REQUIRED_CHECKS:
+            raise FixtureError("invalid_lifecycle_extension_denominator")
+        required_checks = REQUIRED_CHECKS | extension.required_checks
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary-source", required=True,
                         help="ssh-alias:/absolute/path/to/heptabao-server")
@@ -639,8 +651,10 @@ def main() -> int:
     events: list[dict] = []
     started: set[Node] = set()
     acknowledged: dict[str, str] = {}
-    runner_path = Path(__file__).resolve(strict=True)
+    runner_path = Path(__file__ if extension is None else extension.runner_path).resolve(strict=True)
+    shared_runner_path = Path(__file__).resolve(strict=True)
     initial_runner_sha256 = sha256_file(runner_path)
+    initial_shared_runner_sha256 = sha256_file(shared_runner_path)
     report = {
         "schema": "heptabao.multihost-ha.v1",
         "status": "failed",
@@ -648,7 +662,7 @@ def main() -> int:
         "source_tree": args.source_tree,
         "binary_sha256": args.expected_binary_sha256,
         "runner_sha256": initial_runner_sha256,
-        "required_check_count": len(REQUIRED_CHECKS),
+        "required_check_count": len(required_checks),
         "host_count": 3,
         "transport": "private-tailnet-mtls",
         "checks": checks,
@@ -660,6 +674,12 @@ def main() -> int:
         "uncovered": ["physical_power_loss", "disk_full", "WAN_faults",
                       "long_horizon_linearizability", "production_custody"],
     }
+
+    if extension is not None:
+        report.update({"schema": extension.schema, "scope": extension.scope,
+                       "shared_runner_sha256": initial_shared_runner_sha256,
+                       "baseline_check_count": len(REQUIRED_CHECKS),
+                       "extension_check_count": len(extension.required_checks)})
 
     def check(name: str, condition: bool, **metadata) -> None:
         row = {"case": name, "passed": condition is True, **metadata}
@@ -889,6 +909,9 @@ test -d "$root/data"
             read_exact(context, node, root_token, path, value)
         check("remote_standby_write_forwarded", True)
         readiness_path, readiness_value = path, value
+        if extension is not None:
+            stage = "acl_live_authority"
+            extension.setup(context, nodes, initial, standby, root_token, check)
 
         stage = "snapshot_catchup"
         offline = next(node for node in nodes if node not in (initial, standby))
@@ -925,6 +948,9 @@ test -d "$root/data"
             seconds=90, request_timeout=12,
         )
         check("remote_snapshot_catchup", True)
+        if extension is not None:
+            stage = "acl_snapshot_authority"
+            extension.after_snapshot(offline)
 
         stage = "leader_failover"
         killed = remote_stop(initial)
@@ -969,6 +995,9 @@ test -d "$root/data"
             if node != initial:
                 read_exact(context, node, root_token, path, value)
         check("post_failover_write_on_survivors", True)
+        if extension is not None:
+            stage = "acl_failover_authority"
+            extension.after_failover([node for node in nodes if node != initial], successor)
 
         remote_start(initial, ha=True); started.add(initial)
         wait_listener(context, initial)
@@ -976,6 +1005,9 @@ test -d "$root/data"
         check("old_leader_restarted_and_unsealed", status == 200)
         read_exact(context, initial, root_token, path, value, 45)
         check("old_leader_caught_up", True)
+        if extension is not None:
+            stage = "acl_rejoined_authority"
+            extension.after_rejoin(initial)
 
         stage = "leadership_transfer"
         current = wait_leader(context, nodes, root_token)
@@ -1038,6 +1070,10 @@ test -d "$root/data"
             read_exact(context, node, root_token, path, value, 45)
             wait_absent(context, node, root_token, rejected_path)
         check("all_hosts_rejoined_after_quorum_recovery", True)
+        if extension is not None:
+            stage = "acl_quorum_recovery_authority"
+            extension.after_quorum_recovery(nodes)
+            extension.cleanup(final_leader)
 
         stage = "application_cleanup"
         for key in acknowledged:
@@ -1061,19 +1097,22 @@ test -d "$root/data"
         unchanged = (
             sha256_file(local_binary) == args.expected_binary_sha256
             and sha256_file(runner_path) == initial_runner_sha256
+            and sha256_file(shared_runner_path) == initial_shared_runner_sha256
             and set(remote_digests.values()) == {args.expected_binary_sha256}
         )
         check("source_and_binary_unchanged", unchanged)
-        check("report_excludes_runtime_secrets",
-              report_is_secret_safe(report, (root_token, unseal_key)))
+        runtime_secrets = (root_token, unseal_key)
+        if extension is not None:
+            runtime_secrets += extension.runtime_secrets()
+        check("report_excludes_runtime_secrets", report_is_secret_safe(report, runtime_secrets))
         observed = [row.get("case") for row in checks]
         check("multihost.complete",
               len(observed) == len(set(observed))
-              and set(observed) == REQUIRED_CHECKS - {"multihost.complete"}
+              and set(observed) == required_checks - {"multihost.complete"}
               and all(row.get("passed") is True for row in checks))
         final_names = [row.get("case") for row in checks]
         if (len(final_names) != len(set(final_names))
-                or set(final_names) != REQUIRED_CHECKS):
+                or set(final_names) != required_checks):
             raise FixtureError("multihost_check_denominator_mismatch")
         report.update({
             "status": "passed",
@@ -1132,7 +1171,10 @@ done
                 except subprocess.SubprocessError:
                     pass
         # Refuse to write a report containing a secret-bearing key or value.
-        report = secret_safe_report(report, (root_token, unseal_key))
+        report = secret_safe_report(report, (root_token, unseal_key,
+            *(extension.runtime_secrets() if extension is not None else ())))
+        if extension is not None:
+            extension.clear()
         root_token = ""
         unseal_key = ""
         summary = work / "summary.json"
@@ -1141,8 +1183,8 @@ done
         print(json.dumps({"status": report["status"], "checks": len(checks),
                           "failure_code": report.get("failure_code")}, sort_keys=True))
     return 0 if (report["status"] == "passed"
-                 and len(checks) == len(REQUIRED_CHECKS)
-                 and {row.get("case") for row in checks} == REQUIRED_CHECKS
+                 and len(checks) == len(required_checks)
+                 and {row.get("case") for row in checks} == required_checks
                  and all(row.get("passed") is True for row in checks)) else 1
 
 

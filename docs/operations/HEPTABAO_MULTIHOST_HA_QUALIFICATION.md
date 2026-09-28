@@ -222,3 +222,14 @@ latency/loss, host power removal, disk-full or torn-write behavior, clock
 rollback/jump, arbitrary membership discovery, long-horizon linearizability,
 production certificates, or independent destructive qualification. Those remain
 explicit blockers.
+
+## Composed live ACL lifecycle
+
+The original 54-check report remains unchanged. The separate
+[`ha_multihost_acl_live.py` profile](HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md)
+composes this controller with 64 additional checks for original Identity-bound
+service/batch tokens, wrapping TTL metadata, revocation and request effects across
+the same physical fault lifecycle. Its fixed 118-check denominator and separate
+report schema cannot be satisfied by an older baseline-only receipt. Both the
+wrapper and shared controller hashes are retained and verified; the extension
+does not change the three-host process or Raft control kernel.

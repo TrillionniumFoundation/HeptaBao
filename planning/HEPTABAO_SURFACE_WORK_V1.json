@@ -931,6 +931,34 @@
         "official_openbao_2.6.2"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "ha_multihost_acl": {
+      "script": "qa/openbao-acceptance/ha_multihost_acl_live.py",
+      "arguments": [
+        "--binary-source",
+        "{ssh_alias}:{binary}",
+        "--expected-binary-sha256",
+        "{binary_sha256}",
+        "--source-commit",
+        "{source}",
+        "--source-tree",
+        "{source_tree}",
+        "--node",
+        "{node_1}",
+        "--node",
+        "{node_2}",
+        "--node",
+        "{node_3}",
+        "--work-root",
+        "{private_work_dir}",
+        "--allow-private-tailnet"
+      ],
+      "prerequisites": [
+        "three authorized Linux hosts on one private tailnet",
+        "noninteractive SSH aliases and new owner-only /home fixture roots",
+        "OpenSSL and one checksum-bound HeptaBao candidate binary"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1073,7 +1101,7 @@
         "required_positive_and_hostile_behavior": "Winning-pattern specificity, identical-pattern union, explicit deny, create/update distinction, sudo separation, distinct list and scan capabilities, and schema-58 allowed/denied/required parameters on read/create/update/patch with OpenBao 2.6.2 HTTP value semantics; live entity/alias/member-group path projection and whole-second wrapping bounds, with explicit-zero context preserved through the authenticated request path",
         "remaining_semantics_and_effect_checks": "MFA/pagination/response-key attributes, unsupported template forms and duration precision, positive HEAD and external-effect wrapping, the complete path/glob/operation corpus, physical-fault combinations and independent security admission remain open",
         "crash_reopen": "Parameter constraints require reader 58, Identity templates reader 60 and nonzero wrapping bounds reader 61 independently. Real encrypted reopen preserves old no-feature states and rechecks live Identity and policy authority; denied requests do not mutate backend records",
-        "isolation": "Refresh live token, parent, Identity and policy authority; select only the highest-priority path pattern, merge identical-pattern constraints, normalize GET list/scan selectors before admission, and apply request parameters only to read/create/update/patch at top-level, workflow subrequest and post-provider response boundaries; rendered paths are shared by capability, parameter and wrapping decisions; template group access requires verified membership and current mount aliases",
+        "isolation": "Refresh live token, parent, Identity and policy authority; select only the highest-priority path pattern, merge identical-pattern constraints, normalize GET list/scan selectors before admission, and apply request parameters only to read/create/update/patch at top-level, workflow subrequest and post-provider response boundaries; rendered paths are shared by capability, parameter and wrapping decisions; template group access requires verified membership and current mount aliases; a separate composed three-host profile verifies original Identity-bound service/batch tokens, wrapping metadata and revocation across snapshot, process failover and quorum recovery without mutating-request retries",
         "migration_upgrade": "The current candidate publishes schema 61 only on mutation. Earlier field-free schemas remain readable without promotion; each independent feature discriminator prevents older readers from silently dropping authority constraints"
       },
       "fixture_case_ids": [
@@ -1110,7 +1138,8 @@
         "core",
         "policy_parameters",
         "policy_templates",
-        "policy_wrapping_ttl"
+        "policy_wrapping_ttl",
+        "ha_multihost_acl"
       ],
       "whole_surface_admitted": false
     },
@@ -1124,7 +1153,7 @@
         "required_positive_and_hostile_behavior": "Entity/group updates, merge lineage, alias mount incarnation, cycle rejection and disabled entity behavior; bounded ACL selectors use live current entity and verified member-group data for old service and batch tokens",
         "remaining_semantics_and_effect_checks": "Old tokens must use live policy, not a copied permanently granted policy set",
         "crash_reopen": "Interrupt identity/entity before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-IDENTITY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "isolation": "For HB-SURFACE-IDENTITY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.; a separate composed three-host profile verifies original Identity-bound service/batch tokens, wrapping metadata and revocation across snapshot, process failover and quorum recovery without mutating-request retries",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [
@@ -1137,7 +1166,8 @@
       ],
       "available_scoped_profiles": [
         "identity",
-        "policy_templates"
+        "policy_templates",
+        "ha_multihost_acl"
       ],
       "whole_surface_admitted": false
     },
@@ -1175,7 +1205,7 @@
         "required_positive_and_hostile_behavior": "Owner-private maps, namespace isolation, one-shot delivery, expiry and concurrent unwrap; native minimum/maximum ACL bounds distinguish absent headers from explicit zero and reject disallowed application effects",
         "remaining_semantics_and_effect_checks": "Root cannot read another token cubbyhole; response-audit failure cannot release payload or restore consumed token",
         "crash_reopen": "Interrupt cubbyhole/* before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-CUBBYHOLE-WRAPPING, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "isolation": "For HB-SURFACE-CUBBYHOLE-WRAPPING, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.; a separate composed three-host profile verifies original Identity-bound service/batch tokens, wrapping metadata and revocation across snapshot, process failover and quorum recovery without mutating-request retries",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [
@@ -1186,7 +1216,8 @@
       "available_scoped_profiles": [
         "core",
         "wrapping",
-        "policy_wrapping_ttl"
+        "policy_wrapping_ttl",
+        "ha_multihost_acl"
       ],
       "whole_surface_admitted": false
     },
@@ -2062,7 +2093,7 @@
         "required_positive_and_hostile_behavior": "ReadIndex, durable acknowledgment, torn/corrupt snapshot rejection, catch-up and membership",
         "remaining_semantics_and_effect_checks": "Same-version separate-host snapshot catch-up, remote leader process loss, quorum fencing and complete rejoin are executable through the private multi-host profile. OpenBao raft.snap byte compatibility, mixed-version operation, disk-full and torn-write behavior, WAN behavior and long-horizon histories remain unsupported.",
         "crash_reopen": "Interrupt sys/storage/raft before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-STORAGE-RAFT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "isolation": "For HB-SURFACE-STORAGE-RAFT, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.; a separate composed three-host profile verifies original Identity-bound service/batch tokens, wrapping metadata and revocation across snapshot, process failover and quorum recovery without mutating-request retries",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [
@@ -2074,7 +2105,8 @@
       "available_scoped_profiles": [
         "ha",
         "raft",
-        "ha_multihost"
+        "ha_multihost",
+        "ha_multihost_acl"
       ],
       "whole_surface_admitted": false
     },
@@ -2233,7 +2265,7 @@
         "required_positive_and_hostile_behavior": "Bind method/path/namespace/body/auth/wrapping to one bounded frame and reject loops",
         "remaining_semantics_and_effect_checks": "A one-shot mutation sent to a remote standby is forwarded to the current leader and read back through every host without reauthentication or mutation retry. Dropped acknowledgements, late responses, mixed-version forwarding, WAN faults and longitudinal client-history analysis remain open.",
         "crash_reopen": "Interrupt Standby request forwarding to current leader before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-CLUSTER-FORWARDING, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "isolation": "For HB-SURFACE-CLUSTER-FORWARDING, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.; a separate composed three-host profile verifies original Identity-bound service/batch tokens, wrapping metadata and revocation across snapshot, process failover and quorum recovery without mutating-request retries",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [
@@ -2241,7 +2273,8 @@
       ],
       "available_scoped_profiles": [
         "ha",
-        "ha_multihost"
+        "ha_multihost",
+        "ha_multihost_acl"
       ],
       "whole_surface_admitted": false
     },
@@ -2255,7 +2288,7 @@
         "required_positive_and_hostile_behavior": "ReadIndex freshness, minority rejection, leadership transition and read-only retry",
         "remaining_semantics_and_effect_checks": "Actual separate-host reads require the acknowledged value and version through every voter; a lone survivor loses authority and a rejected write remains absent after quorum recovery. Deliberate WAN latency and loss, long-running read histories and mixed-version standby behavior remain open.",
         "crash_reopen": "Interrupt Standby and leader read admission before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-CLUSTER-READ-STANDBY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
+        "isolation": "For HB-SURFACE-CLUSTER-READ-STANDBY, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.; a separate composed three-host profile verifies original Identity-bound service/batch tokens, wrapping metadata and revocation across snapshot, process failover and quorum recovery without mutating-request retries",
         "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
       },
       "fixture_case_ids": [
@@ -2263,7 +2296,8 @@
       ],
       "available_scoped_profiles": [
         "network",
-        "ha_multihost"
+        "ha_multihost",
+        "ha_multihost_acl"
       ],
       "whole_surface_admitted": false
     },

@@ -164,3 +164,8 @@ path/glob/list/scan combinations, arbitrary duration precision, positive HEAD
 wrapping, external-effect wrapping envelopes and the full namespace administration
 hierarchy remain separate work. These APIs do not issue reusable execution
 capabilities. Independent security and full OpenBao compatibility remain open.
+
+The [composed private three-host profile](../operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md)
+adds original-token, explicit-zero, effect, snapshot, failover and revocation
+checks to the existing HA lifecycle. It has a separate 118-check denominator and
+does not grant full-surface or independent qualification.

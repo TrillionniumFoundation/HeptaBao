@@ -102,7 +102,7 @@ Implementation: `PARTIAL_RUNTIME`. Original work packages: `H08-WP01`, `H08-WP02
 API families: `sys/policies/acl/*`; `sys/capabilities*`.
 Runtime source: `crates/heptabao-server/src/auth_acl.rs`, `crates/heptabao-server/src/service_capabilities.rs`, `crates/heptabao-server/src/auth_acl_template.rs`, `crates/heptabao-server/src/auth_acl_wrapping.rs`, `crates/heptabao-server/src/engines/identity_acl_templates.rs`.
 Separate contracts: none claimed.
-Guides: `docs/auth/HEPTABAO_CAPABILITIES.md`.
+Guides: `docs/auth/HEPTABAO_CAPABILITIES.md`, `docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md`.
 
 **Positive:** Match winning path specificity, identical-pattern union, live policy replacement, and bounded allowed/denied/required request-parameter constraints against official OpenBao 2.6.2 HTTP behavior, sparse live Identity entity/alias/member-group path substitutions, and whole-second wrapping bounds including absent/explicit-zero metadata.
 
@@ -112,7 +112,7 @@ Guides: `docs/auth/HEPTABAO_CAPABILITIES.md`.
 
 **Remaining scope:** MFA/pagination/response-key attributes, unsupported template/duration forms, positive HEAD and external-effect wrapping, complete path/glob/list/scan and physical-fault corpora, security advisories, and independent security admission remain open.
 
-Existing bounded profiles: `qa/openbao-acceptance/core_isolation.py`, `qa/openbao-acceptance/capabilities_live.py`, `qa/openbao-acceptance/policy_parameters_live.py`, `qa/openbao-acceptance/policy_templates_live.py`, `qa/openbao-acceptance/policy_wrapping_ttl_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/core_isolation.py`, `qa/openbao-acceptance/capabilities_live.py`, `qa/openbao-acceptance/policy_parameters_live.py`, `qa/openbao-acceptance/policy_templates_live.py`, `qa/openbao-acceptance/policy_wrapping_ttl_live.py`, `qa/openbao-acceptance/ha_multihost_acl_live.py`.
 
 ### HB-SURFACE-IDENTITY
 
@@ -120,7 +120,7 @@ Implementation: `PARTIAL_RUNTIME`. Original work packages: `H09-WP01`, `H09-WP02
 API families: `identity/entity/*`; `identity/group/*`; `identity/mfa/*`; `identity/oidc/*`.
 Runtime source: `crates/heptabao-server/src/engines/identity.rs`, `crates/heptabao-server/src/service_identity.rs`.
 Separate contracts: none claimed.
-Guides: `docs/engines/HEPTABAO_IDENTITY_RUNTIME.md`.
+Guides: `docs/engines/HEPTABAO_IDENTITY_RUNTIME.md`, `docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md`.
 
 **Positive:** Compose entities, aliases, internal/external groups, MFA and provider identity.
 
@@ -130,7 +130,7 @@ Guides: `docs/engines/HEPTABAO_IDENTITY_RUNTIME.md`.
 
 **Remaining scope:** Namespace and mount non-interference are release blockers.
 
-Existing bounded profiles: `qa/openbao-acceptance/identity_live.py`, `qa/openbao-acceptance/policy_templates_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/identity_live.py`, `qa/openbao-acceptance/policy_templates_live.py`, `qa/openbao-acceptance/ha_multihost_acl_live.py`.
 
 ### HB-SURFACE-TOKEN
 
@@ -156,7 +156,7 @@ Implementation: `PARTIAL_RUNTIME`. Original work packages: `H10-WP07`, `H10-WP08
 API families: `cubbyhole/*`; `sys/wrapping/*`.
 Runtime source: `crates/heptabao-server/src/auth_cubbyhole.rs`, `crates/heptabao-server/src/auth_wrapping.rs`.
 Separate contracts: none claimed.
-Guides: `docs/auth/HEPTABAO_RESPONSE_WRAPPING.md`.
+Guides: `docs/auth/HEPTABAO_RESPONSE_WRAPPING.md`, `docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md`.
 
 **Positive:** Read token-private values and wrap/lookup/rewrap/unwrap exact response envelopes.
 
@@ -166,7 +166,7 @@ Guides: `docs/auth/HEPTABAO_RESPONSE_WRAPPING.md`.
 
 **Remaining scope:** Single-use and active/standby response-loss behavior require race fixtures.
 
-Existing bounded profiles: `qa/openbao-acceptance/core_isolation.py`, `qa/openbao-acceptance/response_wrapping.py`, `qa/openbao-acceptance/wrapping_ha.py`, `qa/openbao-acceptance/policy_wrapping_ttl_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/core_isolation.py`, `qa/openbao-acceptance/response_wrapping.py`, `qa/openbao-acceptance/wrapping_ha.py`, `qa/openbao-acceptance/policy_wrapping_ttl_live.py`, `qa/openbao-acceptance/ha_multihost_acl_live.py`.
 
 ### HB-SURFACE-LEASE-EXPIRATION
 
@@ -696,7 +696,7 @@ Implementation: `PARTIAL_RUNTIME`. Original work packages: `H20-WP01`, `H20-WP02
 API families: `sys/storage/raft/*`; `native consensus transport`.
 Runtime source: `crates/heptabao-server/src/ha.rs`, `crates/heptabao-server/src/ha_state.rs`.
 Separate contracts: none claimed.
-Guides: `docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md`.
+Guides: `docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md`, `docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md`.
 
 **Positive:** Persist logs/FSM, chunked snapshots and voter/nonvoter membership on real nodes.
 
@@ -706,7 +706,7 @@ Guides: `docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md`.
 
 **Remaining scope:** FSM, log, snapshot, chunking, membership, non-voter and autopilot.
 
-Existing bounded profiles: `qa/openbao-acceptance/ha_destructive.py`, `qa/openbao-acceptance/raft_membership_live.py`, `qa/openbao-acceptance/ha_rolling_upgrade.py`.
+Existing bounded profiles: `qa/openbao-acceptance/ha_destructive.py`, `qa/openbao-acceptance/raft_membership_live.py`, `qa/openbao-acceptance/ha_rolling_upgrade.py`, `qa/openbao-acceptance/ha_multihost_acl_live.py`.
 
 ### HB-SURFACE-PLUGIN-AUTH
 
@@ -804,7 +804,7 @@ Implementation: `PARTIAL_RUNTIME`. Original work packages: `H21-WP04`, `H21-WP05
 API families: `standby /v1/*`; `leader forwarding`.
 Runtime source: `crates/heptabao-server/src/ha_forward.rs`.
 Separate contracts: none claimed.
-Guides: `docs/modules/heptabao-server.md`.
+Guides: `docs/modules/heptabao-server.md`, `docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md`.
 
 **Positive:** Preserve namespace, token, wrapping and response semantics through real forwarding.
 
@@ -814,7 +814,7 @@ Guides: `docs/modules/heptabao-server.md`.
 
 **Remaining scope:** Token/wrap/namespace/context preservation and origin protection.
 
-Existing bounded profiles: `qa/openbao-acceptance/ha_destructive.py`.
+Existing bounded profiles: `qa/openbao-acceptance/ha_destructive.py`, `qa/openbao-acceptance/ha_multihost_acl_live.py`.
 
 ### HB-SURFACE-CLUSTER-READ-STANDBY
 
@@ -822,7 +822,7 @@ Implementation: `PARTIAL_RUNTIME`. Original work packages: `H21-WP06`, `H21-WP07
 API families: `standby reads`; `ReadIndex`.
 Runtime source: `crates/heptabao-server/src/ha.rs`, `crates/heptabao-server/src/service.rs`.
 Separate contracts: none claimed.
-Guides: `docs/modules/heptabao-server.md`.
+Guides: `docs/modules/heptabao-server.md`, `docs/operations/HEPTABAO_MULTIHOST_ACL_QUALIFICATION.md`.
 
 **Positive:** Read committed state under declared freshness and non-mutating-read policy.
 
@@ -832,7 +832,7 @@ Guides: `docs/modules/heptabao-server.md`.
 
 **Remaining scope:** HTTP GET is not automatically safe; lease-issuing reads remain active-only.
 
-Existing bounded profiles: `qa/openbao-acceptance/ha_network_partition.py`.
+Existing bounded profiles: `qa/openbao-acceptance/ha_network_partition.py`, `qa/openbao-acceptance/ha_multihost_acl_live.py`.
 
 ### HB-SURFACE-CLUSTER-STEPDOWN
 
