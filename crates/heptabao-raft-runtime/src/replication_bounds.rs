@@ -8,6 +8,10 @@ use serde::Serialize;
 use std::io;
 
 pub(crate) const MAX_REMOTE_RPC_BYTES: usize = 768 * 1024;
+// A replay batch should not fill the wire ceiling merely because backlog exists.
+// Keep normal multi-entry bursts small enough for the existing short RPC budget.
+// This is a batching target, not a smaller limit on accepted individual entries.
+pub(crate) const TARGET_APPEND_RPC_BYTES: usize = 128 * 1024;
 
 fn largest_log_id() -> LogIdOf<TypeConfig> {
     openraft::LogId {
@@ -59,6 +63,12 @@ pub(crate) fn entry_payload_budget() -> io::Result<usize> {
     MAX_REMOTE_RPC_BYTES
         .checked_sub(encoded_size(&largest_header())?)
         .ok_or_else(|| io::Error::other("Raft metadata exceeds wire budget"))
+}
+
+pub(crate) fn target_entry_payload_budget() -> io::Result<usize> {
+    TARGET_APPEND_RPC_BYTES
+        .checked_sub(encoded_size(&largest_header())?)
+        .ok_or_else(|| io::Error::other("Raft metadata exceeds batching target"))
 }
 
 pub(crate) fn validate_proposal(request: &ApplicationRequest) -> io::Result<()> {

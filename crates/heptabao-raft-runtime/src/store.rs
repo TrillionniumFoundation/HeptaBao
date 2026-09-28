@@ -878,6 +878,7 @@ impl RaftLogReader<TypeConfig> for DurableLogStore {
             return Ok(Vec::new());
         }
         let budget = crate::replication_bounds::entry_payload_budget()?;
+        let target = crate::replication_bounds::target_entry_payload_budget()?;
         let state = self.state.lock().await;
         let mut entries = Vec::new();
         let mut encoded_bytes = 0_usize;
@@ -894,6 +895,12 @@ impl RaftLogReader<TypeConfig> for DurableLogStore {
                 if entries.is_empty() {
                     return Err(invalid("single Raft entry exceeds remote wire budget"));
                 }
+                break;
+            }
+            // Large previously admitted entries still make progress as a
+            // singleton under the unchanged hard wire limit. Only a subsequent
+            // entry is deferred; never truncate, skip or acknowledge it here.
+            if !entries.is_empty() && next > target {
                 break;
             }
             let entry: EntryOf<TypeConfig> =
@@ -2016,7 +2023,9 @@ mod tests {
             );
             batches += 1;
         }
-        assert!(batches > 1 && batches < 7);
+        // All seven entries are individually above the soft batching target;
+        // each must still be delivered intact, rather than rejected or split.
+        assert_eq!(batches, 7);
         assert_eq!(store.try_get_log_entries(0..7).await?.len(), 7);
         store.state.lock().await.log.remove(&0);
         assert!(store.limited_get_log_entries(0, 7).await.is_err());
@@ -2036,6 +2045,92 @@ mod tests {
             .log
             .insert(1, serde_json::to_string(&entry).map_err(io::Error::other)?);
         assert!(store.limited_get_log_entries(1, 2).await.is_err());
+        drop(store);
+        fs::remove_dir_all(path)?;
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn mixed_replay_batches_preserve_large_singletons_and_pack_small_entries()
+    -> io::Result<()> {
+        use openraft::alias::EntryOf;
+        use openraft::storage::RaftLogReader;
+        let path = root("mixed-replay-target");
+        let mut store = DurableLogStore::create(&path)?;
+        let sizes = [
+            16 * 1024,
+            16 * 1024,
+            280 * 1024,
+            8 * 1024,
+            8 * 1024,
+            280 * 1024,
+        ];
+        {
+            let mut state = store.state.lock().await;
+            for (index, size) in sizes.into_iter().enumerate() {
+                let entry = EntryOf::<TypeConfig> {
+                    log_id: openraft::LogId {
+                        leader_id: openraft::impls::leader_id_adv::LeaderId {
+                            term: 1,
+                            node_id: 1,
+                        },
+                        index: index as u64,
+                    },
+                    payload: openraft::EntryPayload::Normal(
+                        openraft_memstore::ClientRequest {
+                            client: "synthetic-mixed".into(),
+                            serial: index as u64,
+                            status: "x".repeat(size),
+                        }
+                        .into(),
+                    ),
+                };
+                state.log.insert(
+                    index as u64,
+                    serde_json::to_string(&entry).map_err(io::Error::other)?,
+                );
+            }
+        }
+        let mut next = 0;
+        let mut small_batches = 0;
+        let mut large_singletons = 0;
+        while next < sizes.len() as u64 {
+            let entries = store
+                .limited_get_log_entries(next, sizes.len() as u64)
+                .await?;
+            assert!(!entries.is_empty());
+            for entry in &entries {
+                assert_eq!(entry.log_id.index, next);
+                next += 1;
+            }
+            let count = entries.len();
+            let request = openraft::raft::AppendEntriesRequest::<TypeConfig> {
+                vote: openraft::Vote::new_committed(u64::MAX, u64::MAX),
+                prev_log_id: entries.first().map(|entry| entry.log_id),
+                leader_commit: entries.last().map(|entry| entry.log_id),
+                entries,
+            };
+            let bytes = serde_json::to_vec(&request)
+                .map_err(io::Error::other)?
+                .len();
+            assert!(bytes <= crate::replication_bounds::MAX_REMOTE_RPC_BYTES);
+            if bytes > crate::replication_bounds::TARGET_APPEND_RPC_BYTES {
+                assert_eq!(count, 1);
+                large_singletons += 1;
+            } else {
+                assert!(count > 1);
+                small_batches += 1;
+            }
+        }
+        assert_eq!(large_singletons, 2);
+        assert_eq!(small_batches, 2);
+        assert_eq!(
+            store
+                .try_get_log_entries(0..sizes.len() as u64)
+                .await?
+                .len(),
+            sizes.len()
+        );
         drop(store);
         fs::remove_dir_all(path)?;
         Ok(())
