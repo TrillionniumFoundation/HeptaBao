@@ -110,6 +110,73 @@ class ReadinessPrerequisiteTests(unittest.TestCase):
             with self.subTest(url=url), self.assertRaises(ValueError):
                 handler.redirect_request(request,None,302,'redirect',{},url)
 
+    def test_explicit_270_acquisition_never_accepts_old_version_or_old_origin(self):
+        pin = module.pinned_artifact("Linux", "x86_64", version="2.7.0")
+        release = {'tag_name': 'v2.7.0', 'draft': False, 'prerelease': False,
+                   'assets': [{'digest': 'sha256:' + pin['artifact_sha256'], 'size': 10,
+                               'browser_download_url': 'https://github.com/openbao/openbao/releases/download/v2.7.0/fixture.tar.gz'}]}
+        with patch.object(module.platform, 'system', return_value='Linux'), \
+             patch.object(module.platform, 'machine', return_value='x86_64'):
+            self.assertEqual(module.select_asset(release, version='2.7.0'), release['assets'][0])
+            for transform in (lambda x:x.update(tag_name='v2.6.2'),
+                              lambda x:x['assets'][0].update(digest='sha256:'+module.ARTIFACT_SHA256),
+                              lambda x:x['assets'][0].update(browser_download_url=module.PREFIX+'fixture.tar.gz'),
+                              lambda x:x['assets'].append(x['assets'][0])):
+                changed = copy.deepcopy(release)
+                transform(changed)
+                with self.assertRaises(ValueError):
+                    module.select_asset(changed, version='2.7.0')
+
+    def test_explicit_archive_version_never_falls_back_to_legacy_helper_pins(self):
+        raw = self.archive()
+        with patch.object(module, 'ARTIFACT_SHA256', hashlib.sha256(raw).hexdigest()), \
+             patch.object(module, 'BINARY_SHA256', hashlib.sha256(b'fixture').hexdigest()):
+            self.assertEqual(module.extract_verified(raw, len(raw)), b'fixture')
+            with self.assertRaisesRegex(ValueError, 'official_archive_integrity_mismatch'):
+                module.extract_verified(raw, len(raw), version='2.7.0')
+
+    def test_270_cli_selects_official_metadata_before_download_failure(self):
+        with tempfile.TemporaryDirectory() as temp:
+            out = Path(temp)/'new-oracle270'
+            with patch.object(sys, 'argv', ['prepare', '--version', '2.7.0', '--output', str(out)]), \
+                 patch.object(module.platform, 'system', return_value='Linux'), \
+                 patch.object(module.platform, 'machine', return_value='x86_64'), \
+                 patch.object(module, 'download', side_effect=OSError('unavailable')) as download:
+                self.assertEqual(module.main(), 77)
+                download.assert_called_once_with('https://api.github.com/repos/openbao/openbao/releases/tags/v2.7.0', 2*1024*1024)
+            self.assertFalse(out.exists())
+            self.assertEqual(module.VERSION, '2.6.2')
+
+    def test_unverified_270_platform_rejected_before_allocating_or_downloading(self):
+        with tempfile.TemporaryDirectory() as temp:
+            out = Path(temp)/'not-created'
+            with patch.object(sys, 'argv', ['prepare', '--version', '2.7.0', '--output', str(out)]), \
+                 patch.object(module.platform, 'system', return_value='Linux'), \
+                 patch.object(module.platform, 'machine', return_value='aarch64'), \
+                 patch.object(module, 'download') as download, self.assertRaises(SystemExit) as stopped:
+                module.main()
+            self.assertEqual(stopped.exception.code, 2)
+            download.assert_not_called()
+            self.assertFalse(out.exists())
+
+    def test_270_ci_gates_exact_version_without_waiving_old_nonconflicting_profiles(self):
+        import yaml
+        workflow = yaml.safe_load((ROOT/'.github/workflows/codex-openbao-replacement-ci.yml').read_text())
+        steps = workflow['jobs']['qualify']['steps']
+        acquisition = next(step for step in steps if step.get('id') == 'oracle270_ready')
+        self.assertIn('--version 2.7.0', acquisition['run'])
+        comparison = next(step for step in steps if step.get('name') == 'Compare strict OpenBao 2.7.0 runtime and ACL error contracts')
+        self.assertIn("steps.oracle270_ready.outcome == 'success'", comparison['if'])
+        self.assertIn('--oracle-version 2.7.0', comparison['run'])
+        self.assertIn('policy_templates_live', comparison['run'])
+        self.assertIn('test "$failed" -eq 0', comparison['run'])
+        self.assertEqual(comparison['env']['HB_ORACLE_BINARY'], '${{ runner.temp }}/heptabao-official-oracle270/bao')
+        self.assertNotIn('continue-on-error', comparison)
+        legacy = next(step for step in steps if step.get('name') == 'Execute all bounded official-binary differential profiles')
+        self.assertNotIn(' policy_templates_live ', legacy['run'])
+        self.assertIn('remote_jwks_compare', legacy['run'])
+        self.assertIn('test "$failed" -eq 0', legacy['run'])
+
     def test_current_ci_invokes_real_not_model_only_acceptance(self):
         workflow=(ROOT/'.github/workflows/codex-openbao-replacement-ci.yml').read_text()
         for entry in ('postgres_live.py','run_official_comparison.py','live_migration_rehearsal.py',

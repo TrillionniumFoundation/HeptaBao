@@ -622,6 +622,39 @@ jobs:
           set -euo pipefail
           python scripts/prepare_openbao_oracle.py --output "$RUNNER_TEMP/heptabao-official-oracle"
 
+      - name: Acquire the separately pinned OpenBao 2.7.0 reference
+        id: oracle270_ready
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/prepare_openbao_oracle.py --version 2.7.0 \
+            --output "$RUNNER_TEMP/heptabao-official-oracle270"
+
+      - name: Compare strict OpenBao 2.7.0 runtime and ACL error contracts
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle270_ready.outcome == 'success' }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle270/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle270/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          binary="$PWD/target/debug/heptabao-server"
+          reports="$RUNNER_TEMP/heptabao-safe-reports/openbao270"
+          mkdir -m 700 "$reports"
+          failed=0
+          for profile in core_isolation identity_live response_wrapping capabilities_live pki_live pkiext_live ssh_otp_live audit_file_live namespace_tree_live policy_parameters_live policy_templates_live policy_wrapping_ttl_live kv_metadata_cas_live kv_enumeration_live; do
+            if timeout 360 python "qa/openbao-acceptance/$profile.py" \
+                --oracle-version 2.7.0 --binary "$binary" --output "$reports/$profile.json"; then
+              printf 'profile=%s version=2.7.0 process_exit=0 scope=bounded_not_independent\n' "$profile"
+            else
+              status=$?
+              printf 'profile=%s version=2.7.0 process_exit=%s scope=blocked_or_failed\n' "$profile" "$status"
+              failed=1
+            fi
+          done
+          test "$failed" -eq 0
+
       - name: Compare KV metadata CAS and enumeration with official OpenBao 2.6.2
         if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash
@@ -816,7 +849,10 @@ jobs:
           reports="$RUNNER_TEMP/heptabao-official-profile-reports"
           mkdir -m 700 "$reports"
           failed=0
-          for profile in core_isolation identity_live response_wrapping pki_live pkiext_live ssh_otp_live audit_file_live namespace_tree_live policy_parameters_live policy_templates_live policy_wrapping_ttl_live remote_jwks_compare; do
+          # The template profile moved to the mandatory 2.7.0 lane above: its
+          # invalid-binding status changed from 403 to 400. Do not accept both
+          # statuses or relabel a historical 2.6.2 receipt as 2.7.0 evidence.
+          for profile in core_isolation identity_live response_wrapping pki_live pkiext_live ssh_otp_live audit_file_live namespace_tree_live policy_parameters_live policy_wrapping_ttl_live remote_jwks_compare; do
             if timeout 240 python "qa/openbao-acceptance/$profile.py" \
                 --binary "$binary" --output "$reports/$profile.json"; then
               printf 'profile=%s process_exit=0 scope=bounded_not_independent\n' "$profile"
