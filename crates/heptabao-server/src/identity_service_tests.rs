@@ -1131,3 +1131,6 @@ fn existing_wrapper_expiry_observation_remains_durable_across_clock_rollback() -
     );
     Ok(())
 }
+
+#[path = "identity_acl_service_tests.rs"]
+mod acl_templates;

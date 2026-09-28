@@ -583,6 +583,7 @@ impl IdentityState {
         Ok(IdentityProjection {
             entity_id: entity.id.clone(),
             policies: expansion.policies,
+            group_ids: expansion.visited.into_iter().map(str::to_owned).collect(),
             disabled: entity.disabled,
         })
     }

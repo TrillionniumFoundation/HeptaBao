@@ -214,6 +214,7 @@ impl AuthState {
             credential: VerifiedCredential::Batch(Box::new(claims)),
             origin_peer,
             identity_policies: BTreeSet::new(),
+            identity_templates: IdentityTemplateValues::default(),
             identity_checked: false,
             #[cfg(test)]
             request_time: now,

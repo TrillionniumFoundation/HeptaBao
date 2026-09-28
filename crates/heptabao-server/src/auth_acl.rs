@@ -41,8 +41,8 @@ fn priority(left: &str, right: &str) -> Ordering {
 pub(super) type ParameterMap = BTreeMap<String, Vec<Value>>;
 
 #[derive(Default)]
-pub(super) struct Decision<'a> {
-    pattern: Option<&'a str>,
+pub(super) struct Decision {
+    pattern: Option<String>,
     allowed: bool,
     denied: bool,
     allowed_parameters: ParameterMap,
@@ -50,10 +50,10 @@ pub(super) struct Decision<'a> {
     required_parameters: BTreeSet<String>,
 }
 
-impl<'a> Decision<'a> {
+impl Decision {
     pub(super) fn consider<'b>(
         &mut self,
-        pattern: &'a str,
+        pattern: &str,
         capabilities: impl Iterator<Item = &'b str>,
         request_path: &str,
         requested: &str,
@@ -61,11 +61,11 @@ impl<'a> Decision<'a> {
         if !super::path_matches(pattern, request_path) {
             return;
         }
-        match self.pattern.map(|old| priority(pattern, old)) {
+        match self.pattern.as_deref().map(|old| priority(pattern, old)) {
             Some(Ordering::Less) => return,
             Some(Ordering::Equal) => {}
             None | Some(Ordering::Greater) => {
-                self.pattern = Some(pattern);
+                self.pattern = Some(pattern.to_owned());
                 self.allowed = false;
                 self.denied = false;
             }
@@ -78,7 +78,7 @@ impl<'a> Decision<'a> {
 
     pub(super) fn consider_parameters(
         &mut self,
-        pattern: &'a str,
+        pattern: &str,
         allowed: &ParameterMap,
         denied: &ParameterMap,
         required: &BTreeSet<String>,
@@ -87,11 +87,11 @@ impl<'a> Decision<'a> {
         if !super::path_matches(pattern, request_path) {
             return;
         }
-        match self.pattern.map(|old| priority(pattern, old)) {
+        match self.pattern.as_deref().map(|old| priority(pattern, old)) {
             Some(Ordering::Less) => return,
             Some(Ordering::Equal) => {}
             None | Some(Ordering::Greater) => {
-                self.pattern = Some(pattern);
+                self.pattern = Some(pattern.to_owned());
                 self.allowed_parameters.clear();
                 self.denied_parameters.clear();
                 self.required_parameters.clear();
@@ -216,6 +216,21 @@ fn globbed_string_matches(pattern: &str, value: &str) -> bool {
 mod tests {
     use super::*;
     use serde_json::json;
+
+    #[test]
+    fn acl_identity_template_policy_is_admitted_without_granting_literal_authority() {
+        let policy = super::super::parse_policy(&json!(
+            r#"path "secret/{{identity.entity.id}}/*" { capabilities = ["read"] }"#
+        ));
+        assert!(
+            policy.is_ok(),
+            "identity paths must be accepted for live expansion"
+        );
+        assert!(!super::super::path_matches(
+            "secret/{{identity.entity.id}}/*",
+            "secret/other/value"
+        ));
+    }
 
     #[test]
     fn acl_specificity_applies_all_five_tie_breaks() {

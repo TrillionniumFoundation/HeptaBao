@@ -60,19 +60,49 @@ impl Service {
                 .auth
                 .inspection_target(actor, namespace, path, body, now)
                 .map_err(|e| Response::error(e.status, &e.message))?;
-            let (policies, disabled) = match target.entity_id.as_deref() {
+            let (policies, disabled, templates) = match target.entity_id.as_deref() {
                 Some(id) => match state.engines.identity_projection(namespace, id) {
-                    Ok(projection) => (projection.policies, projection.disabled),
-                    Err(e) if e.status == 404 => (BTreeSet::new(), true),
+                    Ok(projection) if !projection.disabled => {
+                        let selectors = state
+                            .auth
+                            .inspection_template_selectors(namespace, &target, &projection.policies)
+                            .map_err(|e| Response::error(e.status, &e.message))?;
+                        let templates = state
+                            .engines
+                            .identity_template_values(
+                                namespace,
+                                &projection,
+                                &selectors,
+                                |accessor| state.auth.has_mount_accessor(namespace, accessor),
+                            )
+                            .map_err(|e| Response::error(e.status, &e.message))?;
+                        (projection.policies, false, templates)
+                    }
+                    Ok(_) => (
+                        BTreeSet::new(),
+                        true,
+                        crate::auth::IdentityTemplateValues::default(),
+                    ),
+                    Err(e) if e.status == 404 || e.status == 403 => (
+                        BTreeSet::new(),
+                        true,
+                        crate::auth::IdentityTemplateValues::default(),
+                    ),
                     Err(e) => return Err(Response::error(e.status, &e.message)),
                 },
-                None => (BTreeSet::new(), false),
+                None => (
+                    BTreeSet::new(),
+                    false,
+                    crate::auth::IdentityTemplateValues::default(),
+                ),
             };
             let mut data = serde_json::Map::new();
             for requested in &paths {
                 let capabilities = state
                     .auth
-                    .inspect_capabilities(namespace, requested, &target, &policies, disabled)
+                    .inspect_capabilities(
+                        namespace, requested, &target, &policies, disabled, &templates,
+                    )
                     .map_err(|e| Response::error(e.status, &e.message))?;
                 data.insert((*requested).into(), json!(capabilities));
             }

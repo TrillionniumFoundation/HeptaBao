@@ -146,7 +146,7 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
          scope="selected_cubbyhole_and_acl_behavior_only", runner_path=None) -> int:
     if profile not in ("core-isolation", "identity-live", "response-wrapping", "capabilities-live",
                         "ssh-otp-live", "pki-live", "pkiext-live", "audit-file-management", "namespace-tree", "kv-metadata-cas-live",
-                        "kv-enumeration-live", "policy-parameters-live"):
+                        "kv-enumeration-live", "policy-parameters-live", "policy-templates-live"):
         raise ValueError("unknown local comparison profile")
     runner_path = Path(__file__) if runner_path is None else Path(runner_path)
     parser = SafeArgumentParser(description=__doc__)

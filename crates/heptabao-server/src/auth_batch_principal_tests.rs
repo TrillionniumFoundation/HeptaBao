@@ -126,7 +126,8 @@ fn batch_target_lookup_and_capabilities_do_not_apply_target_cidrs_to_administrat
                 "auth/token/lookup-self",
                 &target,
                 &BTreeSet::new(),
-                false
+                false,
+                &IdentityTemplateValues::default()
             )
             .unwrap(),
         vec!["read"]
@@ -166,7 +167,14 @@ fn batch_target_lookup_and_capabilities_do_not_apply_target_cidrs_to_administrat
         .unwrap();
     assert!(
         state
-            .inspect_capabilities("", "secret/a", &self_target, &BTreeSet::new(), false)
+            .inspect_capabilities(
+                "",
+                "secret/a",
+                &self_target,
+                &BTreeSet::new(),
+                false,
+                &IdentityTemplateValues::default()
+            )
             .unwrap()
             .contains(&"read")
     );

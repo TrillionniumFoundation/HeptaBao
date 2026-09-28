@@ -37,6 +37,15 @@ impl State {
             ));
         }
         self.auth
+            .validate_acl_template_state()
+            .map_err(|_| Response::error(503, "invalid ACL Identity template state"))?;
+        if self.schema < 60 && self.auth.has_acl_template_state() {
+            return Err(Response::error(
+                503,
+                "ACL Identity templates require schema 60",
+            ));
+        }
+        self.auth
             .validate_acl_parameter_state()
             .map_err(|_| Response::error(503, "invalid ACL parameter policy state"))?;
         if self.schema < 58 && self.auth.has_acl_parameter_state() {
@@ -528,7 +537,7 @@ impl State {
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
             | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37
             | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52 | 53
-            | 54 | 55 | 56 | 57 | 58 | CURRENT_STATE_SCHEMA => Ok(()),
+            | 54 | 55 | 56 | 57 | 58 | 59 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
@@ -553,7 +562,18 @@ impl Service {
         if projection.disabled {
             return Err(Response::error(403, "permission denied"));
         }
+        let selectors = state
+            .auth
+            .principal_template_selectors(principal, namespace, &projection.policies)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        let values = state
+            .engines
+            .identity_template_values(namespace, &projection, &selectors, |accessor| {
+                state.auth.has_mount_accessor(namespace, accessor)
+            })
+            .map_err(|error| Response::error(error.status, &error.message))?;
         principal.bind_identity_policies(projection.policies);
+        principal.bind_identity_templates(values);
         Ok(())
     }
 

@@ -49,6 +49,10 @@ pub(crate) use remote::{RemoteJwtConfigPlan, RemoteJwtLoginObservation, RemoteJw
 
 #[path = "auth_acl.rs"]
 mod acl;
+#[path = "auth_acl_template.rs"]
+mod acl_template;
+pub(crate) use acl_template::parse_selector as parse_identity_selector;
+pub(crate) use acl_template::{IdentitySelector, IdentityTemplateValues, TemplateField};
 #[path = "auth_approle_renewal.rs"]
 mod approle_renewal;
 #[path = "auth_capabilities.rs"]
@@ -1279,6 +1283,7 @@ impl Drop for Token {
 pub(super) struct Principal {
     origin_peer: Option<std::net::IpAddr>,
     identity_policies: BTreeSet<String>,
+    identity_templates: IdentityTemplateValues,
     identity_checked: bool,
     digest: String,
     credential: batch_principal::VerifiedCredential,
@@ -2184,6 +2189,7 @@ impl AuthState {
         Principal {
             origin_peer,
             identity_policies: BTreeSet::new(),
+            identity_templates: IdentityTemplateValues::default(),
             identity_checked: false,
             digest: id,
             credential: batch_principal::VerifiedCredential::Service(Box::new(token)),
@@ -2289,6 +2295,7 @@ impl AuthState {
             capability,
             token.policies(),
             &principal.identity_policies,
+            &principal.identity_templates,
         ) {
             Ok(())
         } else {
@@ -2340,8 +2347,13 @@ impl AuthState {
                 .and_then(|entries| entries.get(policy_name))
             {
                 for rule in &policy.rules {
+                    let Some(rendered) =
+                        acl_template::render(&rule.path, &principal.identity_templates)
+                    else {
+                        continue;
+                    };
                     decision.consider_parameters(
-                        &rule.path,
+                        &rendered,
                         &rule.allowed_parameters,
                         &rule.denied_parameters,
                         &rule.required_parameters,
@@ -2364,6 +2376,7 @@ impl AuthState {
         capability: &str,
         policies: &BTreeSet<String>,
         identity_policies: &BTreeSet<String>,
+        identity_templates: &IdentityTemplateValues,
     ) -> bool {
         let mut decision = acl::Decision::default();
         for policy_name in policies.iter().chain(identity_policies) {
@@ -2373,8 +2386,12 @@ impl AuthState {
                 .and_then(|entries| entries.get(policy_name));
             if let Some(policy) = explicit {
                 for rule in &policy.rules {
+                    let Some(rendered) = acl_template::render(&rule.path, identity_templates)
+                    else {
+                        continue;
+                    };
                     decision.consider(
-                        &rule.path,
+                        &rendered,
                         rule.capabilities.iter().map(String::as_str),
                         path,
                         capability,
@@ -7837,7 +7854,7 @@ fn rule(
     denied_parameters: acl::ParameterMap,
     required_parameters: BTreeSet<String>,
 ) -> Result<Rule, AuthError> {
-    validate_path(&path, true)?;
+    acl_template::validate_policy_path(&path)?;
     if capabilities
         .iter()
         .any(|capability| !CAPABILITIES.contains(&capability.as_str()))

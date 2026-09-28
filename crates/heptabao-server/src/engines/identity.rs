@@ -12,6 +12,8 @@ const MAX_POLICIES: usize = 64;
 const MAX_MEMBERS: usize = 256;
 const MAX_GROUP_DEPTH: usize = 32;
 
+#[path = "identity_acl_templates.rs"]
+mod acl_templates;
 #[path = "identity_runtime.rs"]
 mod runtime;
 

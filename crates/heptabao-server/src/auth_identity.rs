@@ -28,13 +28,73 @@ impl Principal {
         self.credential.entity_id()
     }
 
+    pub(crate) fn bind_identity_templates(&mut self, values: IdentityTemplateValues) {
+        self.identity_templates = values;
+    }
+
     pub(crate) fn bind_identity_policies(&mut self, policies: BTreeSet<String>) {
         self.identity_policies = policies;
+        self.identity_templates = IdentityTemplateValues::default();
         self.identity_checked = true;
     }
 }
 
 impl AuthState {
+    pub(crate) fn has_acl_template_state(&self) -> bool {
+        self.policies
+            .values()
+            .flat_map(|policies| policies.values())
+            .flat_map(|policy| &policy.rules)
+            .any(|rule| rule.path.contains("{{") || rule.path.contains("}}"))
+    }
+
+    pub(crate) fn validate_acl_template_state(&self) -> Result<(), AuthError> {
+        for rule in self
+            .policies
+            .values()
+            .flat_map(|policies| policies.values())
+            .flat_map(|policy| &policy.rules)
+        {
+            acl_template::validate_policy_path(&rule.path)?;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn principal_template_selectors(
+        &self,
+        principal: &Principal,
+        namespace: &str,
+        identity_policies: &BTreeSet<String>,
+    ) -> Result<BTreeSet<String>, AuthError> {
+        self.policy_template_selectors(namespace, principal.policies(), identity_policies)
+    }
+
+    pub(super) fn policy_template_selectors(
+        &self,
+        namespace: &str,
+        policies: &BTreeSet<String>,
+        identity_policies: &BTreeSet<String>,
+    ) -> Result<BTreeSet<String>, AuthError> {
+        let mut selectors = BTreeSet::new();
+        for name in policies.iter().chain(identity_policies) {
+            if let Some(policy) = self
+                .policies
+                .get(namespace)
+                .and_then(|entries| entries.get(name))
+            {
+                for rule in &policy.rules {
+                    for selector in acl_template::selectors(&rule.path)? {
+                        selectors.insert(selector.to_owned());
+                        if selectors.len() > acl_template::MAX_EFFECTIVE_SELECTORS {
+                            return Err(bad("effective ACL Identity selectors exceed bound"));
+                        }
+                    }
+                }
+            }
+        }
+        Ok(selectors)
+    }
+
     pub(crate) fn has_live_identity_state(&self) -> bool {
         self.tokens.values().any(|token| token.entity_id.is_some())
             || self

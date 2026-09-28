@@ -5,10 +5,25 @@ use super::*;
 pub(crate) struct IdentityProjection {
     pub(crate) entity_id: String,
     pub(crate) policies: BTreeSet<String>,
+    pub(crate) group_ids: BTreeSet<String>,
     pub(crate) disabled: bool,
 }
 
 impl EngineState {
+    pub(crate) fn identity_template_values(
+        &self,
+        namespace: &str,
+        projection: &IdentityProjection,
+        selectors: &BTreeSet<String>,
+        live_accessor: impl Fn(&str) -> bool,
+    ) -> Result<crate::auth::IdentityTemplateValues> {
+        self.namespaces
+            .get(namespace)
+            .ok_or_else(|| error(403, "identity unavailable"))?
+            .identity
+            .acl_template_values(projection, selectors, live_accessor)
+    }
+
     pub(crate) fn validate_identity_alias_state(&self) -> Result<()> {
         for state in self.namespaces.values() {
             state.identity.validate_aliases()?;

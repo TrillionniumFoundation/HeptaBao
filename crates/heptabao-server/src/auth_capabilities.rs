@@ -82,6 +82,15 @@ impl AuthState {
         Ok(InspectionTarget::from_token(token))
     }
 
+    pub(crate) fn inspection_template_selectors(
+        &self,
+        namespace: &str,
+        target: &InspectionTarget,
+        policies: &BTreeSet<String>,
+    ) -> Result<BTreeSet<String>, AuthError> {
+        self.policy_template_selectors(namespace, &target.policies, policies)
+    }
+
     pub(crate) fn inspect_capabilities(
         &self,
         namespace: &str,
@@ -89,6 +98,7 @@ impl AuthState {
         target: &InspectionTarget,
         identity_policies: &BTreeSet<String>,
         identity_disabled: bool,
+        identity_templates: &IdentityTemplateValues,
     ) -> Result<Vec<&'static str>, AuthError> {
         validate_namespace(namespace)?;
         validate_path(path, false)?;
@@ -116,6 +126,7 @@ impl AuthState {
                         capability,
                         &target.policies,
                         identity_policies,
+                        identity_templates,
                     )
             })
             .collect();
