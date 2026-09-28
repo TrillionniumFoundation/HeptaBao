@@ -10,6 +10,7 @@ use tokio::sync::RwLock;
 const PASS: u8 = 0;
 const BLOCK_LOG_ENTRIES: u8 = 1;
 const BLOCK_ALL_APPEND: u8 = 2;
+const FAIL_ALL_APPEND_FAST: u8 = 3;
 static SEQUENCE: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Default)]
@@ -39,9 +40,10 @@ impl RaftPeerRpc for Arc<Router> {
                 let request: openraft::raft::AppendEntriesRequest<crate::TypeConfig> =
                     serde_json::from_slice(&payload).map_err(|_| RemoteRaftError::InvalidRpc)?;
                 let has_entries = !request.entries.is_empty();
-                let blocked = match router.mode.load(Ordering::SeqCst) {
+                let mode = router.mode.load(Ordering::SeqCst);
+                let blocked = match mode {
                     BLOCK_LOG_ENTRIES => has_entries,
-                    BLOCK_ALL_APPEND => true,
+                    BLOCK_ALL_APPEND | FAIL_ALL_APPEND_FAST => true,
                     _ => false,
                 };
                 if blocked {
@@ -53,7 +55,9 @@ impl RaftPeerRpc for Arc<Router> {
                     // Model an unresponsive peer for its actual RPC budget.
                     // Votes remain available: a leader can be elected without
                     // being able to commit its first blank entry.
-                    tokio::time::sleep(timeout).await;
+                    if mode != FAIL_ALL_APPEND_FAST {
+                        tokio::time::sleep(timeout).await;
+                    }
                     return Err(RemoteRaftError::Transport("test link blocked".into()));
                 }
             }
@@ -217,6 +221,80 @@ async fn uncommitted_blank_and_lost_quorum_reads_time_out_then_recover()
         Ok::<_, Box<dyn std::error::Error>>(())
     }
     .await;
+    router.mode.store(PASS, Ordering::SeqCst);
+    router.peers.write().await.clear();
+    for node in nodes {
+        node.shutdown().await?;
+    }
+    std::fs::remove_dir_all(path)?;
+    result
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn transient_quorum_probe_failure_recovers_within_one_read_budget_without_writes()
+-> Result<(), Box<dyn std::error::Error>> {
+    let path = std::env::temp_dir().join(format!(
+        "heptabao-read-probe-recovery-{}-{}",
+        std::process::id(),
+        SEQUENCE.fetch_add(1, Ordering::Relaxed),
+    ));
+    let router = Arc::new(Router::default());
+    let mut nodes = Vec::new();
+    for id in 1..=3 {
+        let factory = RemoteNetworkFactory::new(
+            id,
+            BTreeSet::from([1, 2, 3]),
+            Arc::new(Arc::clone(&router)),
+        )?;
+        let node = ProcessRaftNode::create(path.join(id.to_string()), id, factory).await?;
+        node.raft.runtime_config().elect(false);
+        router.peers.write().await.insert(id, node.rpc_service());
+        nodes.push(node);
+    }
+    let result = async {
+        let node = &nodes[0];
+        node.raft.initialize(BTreeMap::from([(1, ()), (2, ()), (3, ())])).await?;
+        node.raft.trigger().elect(false).await?;
+        node.raft.wait(Some(Duration::from_secs(5))).metrics(
+            |m| m.current_leader == Some(1) && m.last_applied.is_some(),
+            "initial leadership and committed blank",).await?;
+        node.ensure_linearizable().await?;
+        let log_before = node.raft.metrics().borrow_watched().last_log_index;
+        let generation_before = node.state_machine.generation().await;
+        let probes_before = router.blocked_probes.load(Ordering::SeqCst);
+        router.mode.store(FAIL_ALL_APPEND_FAST, Ordering::SeqCst);
+        let healer_router = Arc::clone(&router);
+        let healer = tokio::spawn(async move {
+            tokio::time::timeout(Duration::from_secs(2), async {
+                while healer_router.blocked_probes.load(Ordering::SeqCst) <= probes_before {
+                    tokio::time::sleep(Duration::from_millis(1)).await;
+                }
+            }).await?;
+            tokio::time::sleep(Duration::from_millis(40)).await;
+            healer_router.mode.store(PASS, Ordering::SeqCst);
+            Ok::<_, tokio::time::error::Elapsed>(())
+        });
+        let read = node.ensure_linearizable_with_timeout(Duration::from_secs(2)).await;
+        healer.await??;
+        read?;
+        assert!(router.blocked_probes.load(Ordering::SeqCst) > probes_before);
+        assert_eq!(node.raft.metrics().borrow_watched().last_log_index, log_before);
+        assert_eq!(node.state_machine.generation().await, generation_before);
+        assert!(node.latest_envelope().await?.is_none());
+
+        // A non-leader is not a transient quorum probe failure and cannot
+        // acquire authority by waiting for an unrelated leader's response.
+        assert!(nodes[1].ensure_linearizable_with_timeout(Duration::from_secs(2)).await.is_err());
+        let caller_deadline = std::time::Instant::now() + Duration::from_millis(80);
+        router.mode.store(FAIL_ALL_APPEND_FAST, Ordering::SeqCst);
+        let rejected = crate::with_read_index_deadline(caller_deadline,
+            node.ensure_linearizable_with_timeout(Duration::from_secs(2))).await;
+        assert!(matches!(rejected, Err(RemoteRaftError::Consensus(ref reason)) if reason == READ_INDEX_TIMEOUT));
+        assert!(std::time::Instant::now() >= caller_deadline);
+        assert_eq!(node.raft.metrics().borrow_watched().last_log_index, log_before);
+        assert_eq!(node.state_machine.generation().await, generation_before);
+        Ok::<_, Box<dyn std::error::Error>>(())
+    }.await;
     router.mode.store(PASS, Ordering::SeqCst);
     router.peers.write().await.clear();
     for node in nodes {
