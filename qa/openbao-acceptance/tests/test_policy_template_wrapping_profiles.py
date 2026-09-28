@@ -40,6 +40,30 @@ class IdentityTemplateHarnessTests(unittest.TestCase):
             self.assertIs(rows[0]["passed"], False)
             self.assertNotIn("complete", rows[0]["case"])
 
+    def test_minor_version_error_contracts_are_exact_not_a_status_union(self):
+        for version, expected, other in [("2.6.2", 403, 400), ("2.7.0", 400, 403)]:
+            self.assertEqual(templates.invalid_substitution_status(version), expected)
+            rows = []
+            templates.Trace(None, rows).check("invalid_binding", SimpleNamespace(status=expected, body={}), expected)
+            self.assertTrue(rows[0]["passed"])
+            with self.assertRaises(templates.ScenarioFailure):
+                templates.Trace(None, []).check("invalid_binding", SimpleNamespace(status=other, body={}), expected)
+        with self.assertRaises(KeyError):
+            templates.invalid_substitution_status("latest")
+
+    def test_explicit_versioned_runner_keeps_legacy_default_and_other_profiles(self):
+        versions = {"2.7.0": templates.run_scenarios_270}
+        self.assertIs(core_isolation.select_scenario_runner(templates.run_scenarios, "2.6.2", versions), templates.run_scenarios)
+        self.assertIs(core_isolation.select_scenario_runner(templates.run_scenarios, "2.7.0", versions), templates.run_scenarios_270)
+        self.assertIs(core_isolation.select_scenario_runner(wrapping.run_scenarios, "2.7.0"), wrapping.run_scenarios)
+
+    def test_unknown_version_or_invalid_runner_configuration_fails_closed(self):
+        for version, versions in [("latest", None), ("2.7.0", []),
+                                  ("2.7.0", {"unverified": templates.run_scenarios}),
+                                  ("2.7.0", {"2.7.0": None})]:
+            with self.subTest(version=version, versions=versions), self.assertRaises(ValueError):
+                core_isolation.select_scenario_runner(templates.run_scenarios, version, versions)
+
     def test_restart_requires_original_context(self):
         rows = []
         with self.assertRaisesRegex(templates.ScenarioFailure, "restart_context_missing"):

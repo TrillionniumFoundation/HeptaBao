@@ -145,8 +145,22 @@ def successful_comparison(cases: dict, side_failures: dict) -> bool:
             seen.add(name)
     return True
 
+def select_scenario_runner(default_runner, version, versioned_runners=None):
+    """Select one exact release contract; never union status codes across minors."""
+    if version not in SUPPORTED_VERSIONS or not callable(default_runner):
+        raise ValueError("unknown comparison release contract")
+    if versioned_runners is None:
+        return default_runner
+    if (not isinstance(versioned_runners, dict)
+            or any(key not in SUPPORTED_VERSIONS or not callable(value)
+                   for key, value in versioned_runners.items())):
+        raise ValueError("invalid versioned comparison contracts")
+    return versioned_runners.get(version, default_runner)
+
+
 def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-isolation",
-         scope="selected_cubbyhole_and_acl_behavior_only", runner_path=None) -> int:
+         scope="selected_cubbyhole_and_acl_behavior_only", runner_path=None,
+         versioned_scenario_runners=None) -> int:
     if profile not in ("core-isolation", "identity-live", "response-wrapping", "capabilities-live",
                         "ssh-otp-live", "pki-live", "pkiext-live", "audit-file-management", "namespace-tree", "kv-metadata-cas-live",
                         "kv-enumeration-live", "policy-parameters-live", "policy-templates-live", "policy-wrapping-ttl-live"):
@@ -159,6 +173,7 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
                         help="Exact official release; historical default remains 2.6.2")
     args = parser.parse_args()
     expected_oracle = pinned_artifact(version=args.oracle_version)
+    scenario_runner = select_scenario_runner(scenario_runner, args.oracle_version, versioned_scenario_runners)
     binary = Path(args.binary).resolve(strict=True)
     output = Path(args.output).resolve()
     if output.exists():

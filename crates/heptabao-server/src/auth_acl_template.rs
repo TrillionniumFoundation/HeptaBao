@@ -196,7 +196,12 @@ pub(super) fn render<'a>(
                 // present substitution fails the entire ACL evaluation,
                 // even when this particular rule would not match the path.
                 if value.contains(['*', '+']) {
-                    return Err(denied());
+                    // The pinned 2.7.0 oracle classifies an invalid present
+                    // binding as bad input, not a normal policy denial. Still
+                    // abort the entire evaluation; never echo Identity data.
+                    return Err(bad(
+                        "ACL Identity substitution contains a forbidden wildcard",
+                    ));
                 }
                 value.as_str()
             }
@@ -293,6 +298,21 @@ mod tests {
                 .and_then(|value| value.as_deref()),
             Some("secret/engineering/team/*")
         );
+    }
+
+    #[test]
+    fn openbao270_forbidden_wildcard_binding_is_a_redacted_bad_request() {
+        for value in ["*", "+", "synthetic-private-team*", "synthetic+private"] {
+            let mut values = IdentityTemplateValues::default();
+            values.insert("identity.entity.metadata.team", value);
+            assert!(
+                render("secret/{{identity.entity.metadata.team}}/item", &values).is_err_and(
+                    |error| error.status == 400
+                        && error.message
+                            == "ACL Identity substitution contains a forbidden wildcard"
+                )
+            );
+        }
     }
 
     #[test]

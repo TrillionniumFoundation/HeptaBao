@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare scoped live Identity ACL templates against pinned OpenBao 2.6.2.
+"""Compare scoped live Identity ACL templates against an exact pinned OpenBao release.
 
 Fresh local TLS services and synthetic data only. The retained restart context
 is process memory, never a report or token store. This is not whole-ACL,
@@ -39,7 +39,14 @@ class Trace:
             raise ScenarioFailure(row["case"])
 
 
-def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dict]:
+def invalid_substitution_status(version: str) -> int:
+    # Measured on independent pinned official artifacts, not an accepted union.
+    return {"2.6.2": 403, "2.7.0": 400}[version]
+
+
+def run_scenarios(client: Client, results: list[dict] | None = None, *,
+                  oracle_version: str = "2.6.2") -> list[dict]:
+    invalid_status = invalid_substitution_status(oracle_version)
     rows = [] if results is None else results
     t = Trace(client, rows)
     t.call("mount_kv", "POST", "sys/mounts/acl-template", 204,
@@ -136,7 +143,15 @@ path "acl-template/parameter/{{identity.entity.id}}/item" {
     t.call("new_team_current_batch", "GET", "acl-template/team/red/item", 200, token=batch["client_token"], data=payload)
     for label, value in [("star", "*"), ("segment", "+"), ("suffix", "red*")]:
         t.call("inject_" + label, "POST", entity_path, 204, {"metadata": {"team": value}})
-        t.call("injected_" + label + "_denied", "GET", "acl-template/team/red/item", 403, token=token)
+        t.call("injected_" + label + "_denied", "GET", "acl-template/team/red/item", invalid_status, token=token)
+        if oracle_version == "2.7.0":
+            t.call("injected_" + label + "_batch_denied", "GET", "acl-template/team/red/item", 400,
+                   token=batch["client_token"])
+            t.call("injected_" + label + "_write_denied", "POST", "acl-template/team/red/item", 400,
+                   {"synthetic": "must-not-publish"}, token=token)
+            t.call("injected_" + label + "_write_no_effect", "GET", "acl-template/team/red/item", 200, data=payload)
+            t.call("injected_" + label + "_inspection_rejected", "POST", "sys/capabilities", 400,
+                   {"token": token, "path": "acl-template/team/red/item"})
     t.call("restore_team", "POST", entity_path, 204, {"metadata": {"team": "red"}})
     t.call("remove_direct_membership", "POST", "identity/group/id/" + child, 204, {"member_entity_ids": []})
     t.call("direct_group_revoked", "GET", f"acl-template/group-id/{child}/item", 403, token=token)
@@ -150,6 +165,10 @@ path "acl-template/parameter/{{identity.entity.id}}/item" {
                                "own": own, "group_path": f"acl-template/group-id/{child}/item"}
     t.truth("pre_restart_complete", True)
     return rows
+
+
+def run_scenarios_270(client: Client, results: list[dict] | None = None) -> list[dict]:
+    return run_scenarios(client, results, oracle_version="2.7.0")
 
 
 def run_after_restart(client: Client, rows: list[dict]) -> None:
@@ -171,5 +190,6 @@ def run_after_restart(client: Client, rows: list[dict]) -> None:
 
 if __name__ == "__main__":
     raise SystemExit(main(scenario_runner=run_scenarios, restart_runner=run_after_restart,
+                         versioned_scenario_runners={"2.7.0": run_scenarios_270},
                          profile="policy-templates-live", runner_path=Path(__file__),
                          scope="bounded live Identity ACL substitutions, membership, parameter constraints and restart"))

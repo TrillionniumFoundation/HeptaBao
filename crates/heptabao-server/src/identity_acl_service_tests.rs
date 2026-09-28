@@ -283,6 +283,7 @@ fn acl_identity_templates_reject_metadata_wildcards_and_missing_identity_without
         "%2e%2e",
         "{{identity.entity.id}}",
     ] {
+        let expected_status = if value.contains(['*', '+']) { 400 } else { 403 };
         update_entity(
             &mut f.service,
             "",
@@ -290,7 +291,7 @@ fn acl_identity_templates_reject_metadata_wildcards_and_missing_identity_without
             &f.entity,
             json!({"metadata":{"team":value}}),
         );
-        assert_eq!(f.read("idtest/peer/item"), 403);
+        assert_eq!(f.read("idtest/peer/item"), expected_status);
         assert_eq!(
             call(
                 &mut f.service,
@@ -301,7 +302,7 @@ fn acl_identity_templates_reject_metadata_wildcards_and_missing_identity_without
                 json!({"synthetic":"forbidden"})
             )
             .status,
-            403
+            expected_status
         );
         assert_eq!(
             call(
@@ -560,7 +561,7 @@ path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["deny"] }
             );
             assert_eq!(
                 f.read("idtest/peer/item"),
-                403,
+                400,
                 "invalid substitution must fail the full ACL evaluation, not erase deny: batch={batch}"
             );
             let before = f
@@ -577,7 +578,7 @@ path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["deny"] }
                     json!({"synthetic":"forbidden"})
                 )
                 .status,
-                403
+                400
             );
             assert_eq!(
                 f.service
@@ -607,11 +608,11 @@ path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["deny"] }
                     json!({"token":f.token,"path":"idtest/peer/item"})
                 )
                 .status,
-                403
+                400
             );
         }
         f.restart()?;
-        assert_eq!(f.read("idtest/peer/item"), 403);
+        assert_eq!(f.read("idtest/peer/item"), 400);
         update_entity(
             &mut f.service,
             "",
