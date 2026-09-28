@@ -19,7 +19,7 @@ import subprocess
 import time
 import urllib.error
 
-from ha_destructive import Cluster, FixtureError, Node, checked_binary
+from ha_destructive import Cluster, FixtureError, MISBOUND_BOOTSTRAP_ERROR, Node, checked_binary
 
 
 def executable_identity(metadata: os.stat_result) -> tuple[int, ...]:
@@ -64,6 +64,34 @@ class RollingUpgradeCluster(Cluster):
         self.base_digest = hashlib.sha256(base_binary.read_bytes()).hexdigest()
         self.candidate_digest = hashlib.sha256(candidate_binary.read_bytes()).hexdigest()
         super().__init__(base_binary, root)
+
+    def assert_misbound_rejection(self, wrong: Node) -> None:
+        if wrong.binary == self.candidate_binary:
+            checked_binary(wrong.binary, self.candidate_digest)
+            return super().assert_misbound_rejection(wrong)
+        # The pinned PR base predates startup marker admission. Prove the actual
+        # running executable, then require its exact unseal refusal and sealed
+        # health. A candidate or unknown executable never receives this exception.
+        checked_binary(wrong.binary, self.base_digest)
+        try:
+            wrong.start()
+            if running_digest(wrong) != self.base_digest:
+                raise FixtureError("rolling_upgrade_base_binary_changed")
+            status, denied = wrong.call(
+                "POST", "sys/unseal", {"key": self.unseal_key}
+            )
+            self.check(
+                "rolling_upgrade_base_misbound_unseal_denied",
+                status == 503 and denied.get("errors")
+                == ["HA configuration belongs to a different cluster"],
+            )
+            status, health = wrong.call("GET", "sys/health")
+            self.check(
+                "rolling_upgrade_base_misbound_remains_sealed",
+                status == 503 and health.get("sealed") is True,
+            )
+        finally:
+            wrong.stop()
 
     def leader(self) -> Node:
         """Resolve one stable leader across the exact base/candidate health schema.

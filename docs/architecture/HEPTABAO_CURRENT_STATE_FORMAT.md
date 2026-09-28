@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **57**. Its source constant is
+The current Service state schema is **59**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -47,8 +47,8 @@ names are encrypted with Auth/database state; unresolved dynamic, statement,
 static and root intents retain the generated credential bytes and exact semantic
 digests. A valid schema-55 state with absent generation fields remains readable
 without rewrite and preserves its historical credential shapes. The fixed
-schema-56 candidate publishes schema 56 for this feature; the current schema-57
-candidate may promote the same legacy state directly to 57. Both fixed ancestors
+schema-56 candidate publishes schema 56 for this feature; the schema-57 candidate may promote the same legacy state directly to 57; the current
+schema-59 candidate promotes it directly to 59. Fixed ancestors
 must refuse the first unsupported schema without altering the encrypted record.
 
 ## Read admission and mutation promotion
@@ -112,8 +112,19 @@ must refuse the first unsupported schema without altering the encrypted record.
 | 55 | Explicit PostgreSQL connection `password_authentication=scram-sha-256` plus a strict, encrypted provider-verifier pair on unresolved dynamic, statement, static-role and root password mutations. Default/absent `password` selection retains schema-54 bytes and legacy digest tuples; a non-default selection or retained verifier requires this reader. |
 | 56 | Namespace password-policy state, PostgreSQL connection/role policy selectors and persisted nonempty username templates. Historical schema-55 records with absent generation fields remain readable without application-state promotion; snapshot, journal, seal metadata and logical frontier stay stable while the replay-ledger checkpoint may be re-sealed. Generation-bearing state requires this reader. |
 | 57 | Bounded PostgreSQL connection `root_rotation_statements` and retained root-rotation statement lists. Empty/absent statement configuration and statement-free intents remain valid schema-56 state; an older reader must reject nonempty lists rather than discard the provider mutation contract. |
+| 58 | Bounded ACL `allowed_parameters`, `denied_parameters` and `required_parameters`. Schema-57 state remains readable only when every policy rule omits these fields; a constraint-bearing state cannot be downgraded or silently stripped. |
+| 59 | Bounded PKI cluster/AIA paths and ACME configuration. Empty/default extension fields preserve older bytes; any nondefault extension state requires schema 59. ACME account/order/challenge/issuance protocol state remains unsupported. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
+
+Schema 59 independently gates `EngineState::has_pki_extension_state()`. A schema-58 ACL-only state remains readable without promotion; adding PKI configuration requires the schema-59 publication boundary. Old readers must refuse it, not discard configuration.
+
+Schema 58 independently gates `AuthState::has_acl_parameter_state()`. Policy
+parameter names and values are bounded and revalidated on reopen. Absent maps and
+sets retain the exact schema-57 policy representation and semantics. A policy
+mutation carrying any parameter constraint publishes the current schema 59 before it can
+authorize or deny product requests. Older binaries must refuse that encrypted
+state without rewriting policies or backend data.
 
 Schema 57 independently gates
 `DatabaseState::has_root_rotation_statement_state()`. A nonempty configured root
@@ -130,7 +141,7 @@ a schema-55 connection with absent selectors and an empty template remains
 readable and retains the historical native username/password generation path.
 Pure read and unseal do not populate defaults or promote the discriminator.
 
-The first successful current mutation publishes schema 57. A predecessor binary
+The first successful current mutation publishes schema 59. A predecessor binary
 must reject that state before application mutation. The authenticated application
 snapshot (`state.hbs`), journal and seal metadata must remain unchanged, and the
 current reader must recover the same generation, retained-operation count, journal
@@ -547,7 +558,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 57. An authenticated
+it. Initialization and committed mutations use schema 59. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.

@@ -61,7 +61,38 @@ namespace isolation, root semantics and argument bounds. `capabilities_live.py`
 executes selected matching requests against two real TLS services, with strict
 nonempty/all-passed observation validation. Its cases are not a full policy corpus.
 
-Template policies, every upstream HCL parameter constraint and the full namespace
-administration hierarchy are separate missing work. This API does not implement
-MFA, OIDC discovery, external identity synchronization, or an execution capability
-issuer. Independent security and full OpenBao compatibility remain open.
+## Request parameter constraints
+
+Schema 58 persists bounded `allowed_parameters`, `denied_parameters` and
+`required_parameters` on ordinary ACL path rules. Parameter names are ASCII,
+bounded and canonical lowercase in state. Each constraint map is limited to 128 keys, each value list to 128 entries, each encoded value to 16 KiB, and HCL value nesting to 32 levels before constructing nested children. The highest-priority matching path is
+selected first; only identical winning patterns merge their maps and required
+sets. An empty value list matches every value. A denied `*` rejects any nonempty
+request, while an allowed `*` admits otherwise-unlisted fields; a specific field
+beside allowed `*` still enforces its value list. Top-level strings support only
+the upstream leading/trailing `*` behavior. Bool, null, arrays and maps compare
+exactly. Public HTTP numeric values intentionally retain OpenBao 2.6.2's observed
+dynamic-type mismatch and do not match numeric HCL/JSON policy literals.
+
+The Service checks the actual request body for logical read, create, update and
+patch operations at authenticated top-level routes and workflow subrequests. The
+same rule applies to `HEAD` as a read. Matching OpenBao 2.6.2, generic request-body
+constraints do not run for delete, list, scan, renew, revoke or rollback; those
+operations retain their independent capability, selector and endpoint checks.
+GET selectors are normalized to LIST or SCAN before policy admission, so query or
+JSON selector framing cannot accidentally turn enumeration into a constrained
+read. LIST requires `list`; recursive SCAN requires the independent `scan`
+capability, matching OpenBao rather than treating scan as a stronger list. External database, Kubernetes, OpenLDAP, secret and KMS completions retain
+the original bounded body and effective operation and recheck current parameter
+rules after HA synchronization, policy/identity refresh and activation fencing.
+A denied request does not enter backend mutation. Constraints survive encrypted
+restart; schema 57 admits policies without constraints but rejects a state that
+contains them. `policy_parameters_live.py` compares these bounded HTTP semantics
+with the checksum-pinned official OpenBao 2.6.2 binary and includes effect
+readback for both denials and operation-specific exclusions.
+
+Identity/entity/group template expansion, wrapping-TTL/MFA/pagination/response-key
+rule attributes, broader path/glob/list/scan combinations and the full namespace
+administration hierarchy remain separate work. This API does not issue a reusable
+execution capability. Independent security and full OpenBao compatibility remain
+open.

@@ -401,10 +401,8 @@ fn acl_glob_boundaries_and_strict_hcl_parsing() {
     for source in [
         r#"path "secret/*/bad" { capabilities = ["read"] }"#,
         r#"path "secret/a+" { capabilities = ["read"] }"#,
-        r#"path "secret/*" { capabilities = ["read"] allowed_parameters = {} }"#,
         r#"path "secret/*" { capabilities = ["superuser"] }"#,
         r#"path "secret/*" { capabilities = ["read"] } junk"#,
-        r#"path "secret/*" { capabilities = ["read"] } path "secret/*" { capabilities = ["deny"] }"#,
         r#"path "secret/${identity}" { capabilities = ["read"] }"#,
         "/* unterminated",
     ] {
@@ -412,7 +410,7 @@ fn acl_glob_boundaries_and_strict_hcl_parsing() {
     }
     assert!(
         parse_policy(&json!({"path": {"*": {"capabilities": ["read"], "denied_parameters": {}}}}))
-            .is_err()
+            .is_ok()
     );
     assert!(
         parse_policy(&json!(
@@ -426,6 +424,58 @@ fn acl_glob_boundaries_and_strict_hcl_parsing() {
         ))
         .is_err()
     );
+}
+
+#[test]
+fn acl_parameter_policy_parsing_normalizes_and_preserves_bounded_values() {
+    let source = r#"
+path "secret/item" {
+  capabilities = ["create", "update"]
+  required_parameters = ["Foo"]
+  allowed_parameters = {
+    "FOO" = ["good*", {"nested" = "one"}]
+    "bar" = [1, false, null]
+  }
+  denied_parameters = { "blocked" = [] }
+}
+path "secret/item" {
+  capabilities = ["read"]
+  required_parameters = ["extra"]
+}
+"#;
+    let policy = parse_policy(&json!(source)).unwrap();
+    assert_eq!(policy.rules.len(), 2);
+    let rule = &policy.rules[0];
+    assert_eq!(rule.required_parameters, BTreeSet::from(["foo".into()]));
+    assert_eq!(
+        rule.allowed_parameters["foo"],
+        vec![json!("good*"), json!({"nested":"one"})]
+    );
+    assert_eq!(
+        rule.allowed_parameters["bar"],
+        vec![json!(1), json!(false), Value::Null]
+    );
+    assert!(rule.denied_parameters["blocked"].is_empty());
+
+    let json_policy = parse_policy(&json!({
+        "path": {"secret/json": {
+            "capabilities": ["update"],
+            "allowed_parameters": {"Name": ["prefix*"]},
+            "required_parameters": ["NAME"]
+        }}
+    }))
+    .unwrap();
+    assert!(json_policy.rules[0].allowed_parameters.contains_key("name"));
+    assert!(json_policy.rules[0].required_parameters.contains("name"));
+
+    for invalid in [
+        json!({"path":{"x":{"capabilities":["update"],"allowed_parameters":{"x":1}}}}),
+        json!({"path":{"x":{"capabilities":["update"],"required_parameters":[1]}}}),
+        json!(r#"path "x" { capabilities=["update"] allowed_parameters={"x"="bad"} }"#),
+        json!(r#"path "x" { capabilities=["update"] required_parameters=[true] }"#),
+    ] {
+        assert!(parse_policy(&invalid).is_err(), "{invalid}");
+    }
 }
 
 #[test]
@@ -3937,3 +3987,22 @@ mod userpass_no_default_tests;
 
 #[path = "auth_userpass_names_tests.rs"]
 mod userpass_names_tests;
+
+#[test]
+fn hcl_parameter_value_recursion_is_bounded_before_tree_construction() {
+    for depth in [32_usize, 33, 128, 1024] {
+        let source = format!("{}false{}", "[".repeat(depth), "]".repeat(depth));
+        let tokens = lex_hcl(&source).expect("bounded lexical input");
+        let mut cursor = 0;
+        let result = parse_hcl_value(&tokens, &mut cursor);
+        if depth <= 32 {
+            assert!(result.is_ok(), "the documented boundary is accepted");
+            assert_eq!(cursor, tokens.len());
+        } else {
+            assert!(
+                result.is_err(),
+                "depth {depth} must be rejected before recursion"
+            );
+        }
+    }
+}

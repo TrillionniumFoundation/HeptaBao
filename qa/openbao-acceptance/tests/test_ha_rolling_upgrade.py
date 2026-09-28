@@ -21,6 +21,53 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
         cluster.root_token = "synthetic-unused"
         return cluster
 
+    def test_pinned_base_misbinding_uses_exact_legacy_contract(self):
+        cluster = self.cluster()
+        cluster.scenarios, cluster.unseal_key = [], "synthetic-unused"
+        cluster.candidate_binary = Path("/candidate")
+        node = Mock(binary=Path("/base"))
+        node.call.side_effect = [(503, {"errors": ["HA configuration belongs to a different cluster"]}), (503, {"sealed": True})]
+        with patch.object(upgrade, "checked_binary") as checked, patch.object(upgrade, "running_digest", return_value=cluster.base_digest):
+            cluster.assert_misbound_rejection(node)
+        checked.assert_called_once_with(node.binary, cluster.base_digest)
+        node.start.assert_called_once_with()
+        node.stop.assert_called_once_with()
+        node.expect_startup_rejection.assert_not_called()
+        self.assertEqual(len(cluster.scenarios), 2)
+
+    def test_base_misbinding_rejects_generic_error_and_unsealed_health(self):
+        for replies in [[(503, {"errors": ["unrelated error"]})], [(200, {})], [(503, {"errors": ["HA configuration belongs to a different cluster"]}), (503, {"sealed": False})]]:
+            with self.subTest(replies=replies):
+                cluster = self.cluster()
+                cluster.scenarios, cluster.unseal_key = [], "synthetic-unused"
+                cluster.candidate_binary = Path("/candidate")
+                node = Mock(binary=Path("/base"))
+                node.call.side_effect = replies
+                with patch.object(upgrade, "checked_binary"), patch.object(upgrade, "running_digest", return_value=cluster.base_digest), self.assertRaises(upgrade.FixtureError):
+                    cluster.assert_misbound_rejection(node)
+                node.stop.assert_called_once_with()
+
+    def test_candidate_misbinding_keeps_strict_startup_contract(self):
+        cluster = self.cluster()
+        cluster.scenarios, cluster.candidate_binary = [], Path("/candidate")
+        node = Mock(binary=cluster.candidate_binary)
+        with patch.object(upgrade, "checked_binary") as checked:
+            cluster.assert_misbound_rejection(node)
+        checked.assert_called_once_with(node.binary, cluster.candidate_digest)
+        node.expect_startup_rejection.assert_called_once_with(upgrade.MISBOUND_BOOTSTRAP_ERROR)
+        node.call.assert_not_called()
+        self.assertEqual(cluster.scenarios, ["misbound_cluster_startup_rejected"])
+
+    def test_replaced_running_base_cannot_use_legacy_contract(self):
+        cluster = self.cluster()
+        cluster.scenarios, cluster.candidate_binary = [], Path("/candidate")
+        node = Mock(binary=Path("/base"))
+        with patch.object(upgrade, "checked_binary"), patch.object(upgrade, "running_digest", return_value=cluster.candidate_digest), self.assertRaisesRegex(upgrade.FixtureError, "base_binary_changed"):
+            cluster.assert_misbound_rejection(node)
+        node.call.assert_not_called()
+        node.stop.assert_called_once_with()
+        self.assertEqual(cluster.scenarios, [])
+
     def test_configuration_requires_stopped_process(self):
         node = Mock(process=object())
         with self.assertRaisesRegex(upgrade.FixtureError, "requires_stopped_node"):

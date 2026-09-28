@@ -119,7 +119,7 @@ const USERPASS_LOCKOUT_DURATION: u64 = 15 * 60;
 const USERPASS_LOCKOUT_COUNTER_RESET: u64 = 15 * 60;
 const MAX_USERPASS_LOCKOUT_THRESHOLD: u32 = 1000;
 const CAPABILITIES: &[&str] = &[
-    "create", "read", "update", "delete", "list", "patch", "sudo", "deny",
+    "create", "read", "update", "delete", "list", "scan", "patch", "sudo", "deny",
 ];
 const MAX_CERT_ROLE_MATCH_VALUES: usize = 32;
 const MAX_CERT_ROLE_MATCH_VALUE_BYTES: usize = 256;
@@ -1311,10 +1311,21 @@ struct Policy {
     rules: Vec<Rule>,
 }
 
+const MAX_POLICY_HCL_VALUE_DEPTH: usize = 32;
+const MAX_POLICY_PARAMETER_KEYS: usize = 128;
+const MAX_POLICY_PARAMETER_VALUES: usize = 128;
+const MAX_POLICY_PARAMETER_VALUE_BYTES: usize = 16 * 1024;
+
 #[derive(Clone, Serialize, Deserialize)]
 struct Rule {
     path: String,
     capabilities: BTreeSet<String>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    allowed_parameters: acl::ParameterMap,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    denied_parameters: acl::ParameterMap,
+    #[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
+    required_parameters: BTreeSet<String>,
 }
 
 /// Input comparison semantics only; both variants still use the stored strong
@@ -1814,6 +1825,38 @@ fn certificate_metadata_extensions(body: &Value, field: &str) -> Result<Vec<Stri
 }
 
 impl AuthState {
+    pub(crate) fn has_acl_parameter_state(&self) -> bool {
+        self.policies.values().any(|entries| {
+            entries.values().any(|policy| {
+                policy.rules.iter().any(|rule| {
+                    !rule.allowed_parameters.is_empty()
+                        || !rule.denied_parameters.is_empty()
+                        || !rule.required_parameters.is_empty()
+                })
+            })
+        })
+    }
+
+    pub(crate) fn validate_acl_parameter_state(&self) -> Result<(), AuthError> {
+        for entries in self.policies.values() {
+            for policy in entries.values() {
+                for rule in &policy.rules {
+                    validate_parameter_map(&rule.allowed_parameters)?;
+                    validate_parameter_map(&rule.denied_parameters)?;
+                    if rule.required_parameters.len() > MAX_POLICY_PARAMETER_KEYS
+                        || rule.required_parameters.iter().any(|name| {
+                            normalize_parameter_name(name).is_err()
+                                || normalize_parameter_name(name).ok().as_deref() != Some(name)
+                        })
+                    {
+                        return Err(bad("invalid persisted required ACL parameter"));
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn has_approle_token_provenance(&self) -> bool {
         self.tokens.values().any(|token| {
             matches!(
@@ -2263,6 +2306,55 @@ impl AuthState {
     ) -> Result<(), AuthError> {
         self.authorize_request(principal, namespace, path, capability, now)?;
         self.authorize_request(principal, namespace, path, "sudo", now)
+    }
+
+    pub(super) fn authorize_request_parameters(
+        &self,
+        principal: &Principal,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<(), AuthError> {
+        // OpenBao applies generic allowed/denied/required request parameters
+        // only to logical read/create/update/patch operations. Delete, list,
+        // scan, renew, revoke and rollback have separate admission semantics.
+        if !matches!(method, "GET" | "HEAD" | "POST" | "PUT" | "PATCH") {
+            return Ok(());
+        }
+        validate_path(path, false)?;
+        let token = self.check_principal(principal, namespace, now)?;
+        if principal
+            .service_token()
+            .is_some_and(|token| token.wrapping.is_some())
+            || token.is_root()
+        {
+            return Ok(());
+        }
+        let mut decision = acl::Decision::default();
+        for policy_name in token.policies().iter().chain(&principal.identity_policies) {
+            if let Some(policy) = self
+                .policies
+                .get(namespace)
+                .and_then(|entries| entries.get(policy_name))
+            {
+                for rule in &policy.rules {
+                    decision.consider_parameters(
+                        &rule.path,
+                        &rule.allowed_parameters,
+                        &rule.denied_parameters,
+                        &rule.required_parameters,
+                        path,
+                    );
+                }
+            }
+        }
+        if decision.parameters_allowed(body) {
+            Ok(())
+        } else {
+            Err(denied())
+        }
     }
 
     fn policy_allows(
@@ -7439,70 +7531,312 @@ fn parse_policy(input: &Value) -> Result<Policy, AuthError> {
     }
     let trimmed = source.trim();
     let rules = if trimmed.starts_with('{') {
-        let parsed = parse_strict_json(trimmed.as_bytes())?;
-        reject_unknown(&parsed, &["path"])?;
-        let paths = parsed
-            .get("path")
-            .and_then(Value::as_object)
-            .ok_or_else(|| bad("policy path object is required"))?;
-        let mut rules = Vec::new();
-        for (path, config) in paths {
-            reject_unknown(config, &["capabilities"])?;
-            let caps = config
-                .get("capabilities")
-                .and_then(Value::as_array)
-                .ok_or_else(|| bad("capabilities array is required"))?;
-            let caps = caps
-                .iter()
-                .map(|v| {
-                    v.as_str()
-                        .map(str::to_owned)
-                        .ok_or_else(|| bad("capability must be a string"))
-                })
-                .collect::<Result<BTreeSet<_>, _>>()?;
-            rules.push(rule(path.clone(), caps)?);
-        }
-        rules
+        parse_json_policy(trimmed)?
     } else {
-        let tokens = lex_hcl(trimmed)?;
-        let mut cursor = 0;
-        let mut rules = Vec::new();
-        let mut seen = BTreeSet::new();
-        while cursor < tokens.len() {
-            take(&tokens, &mut cursor, Lex::Word("path".into()))?;
-            let path = take_string(&tokens, &mut cursor)?;
-            if !seen.insert(path.clone()) {
-                return Err(bad("duplicate ACL path"));
-            }
-            take(&tokens, &mut cursor, Lex::Symbol('{'))?;
-            take(&tokens, &mut cursor, Lex::Word("capabilities".into()))?;
-            take(&tokens, &mut cursor, Lex::Symbol('='))?;
-            take(&tokens, &mut cursor, Lex::Symbol('['))?;
-            let mut caps = BTreeSet::new();
-            if tokens.get(cursor) != Some(&Lex::Symbol(']')) {
-                loop {
-                    caps.insert(take_string(&tokens, &mut cursor)?);
-                    if tokens.get(cursor) != Some(&Lex::Symbol(',')) {
-                        break;
-                    }
-                    cursor += 1;
-                    if tokens.get(cursor) == Some(&Lex::Symbol(']')) {
-                        break;
-                    }
-                }
-            }
-            take(&tokens, &mut cursor, Lex::Symbol(']'))?;
-            take(&tokens, &mut cursor, Lex::Symbol('}'))?;
-            rules.push(rule(path, caps)?);
-        }
-        rules
+        parse_hcl_policy(trimmed)?
     };
     if rules.len() > 4096 {
         return Err(bad("too many policy rules"));
     }
     Ok(Policy { source, rules })
 }
-fn rule(path: String, capabilities: BTreeSet<String>) -> Result<Rule, AuthError> {
+
+fn parse_json_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
+    let parsed = parse_strict_json(source.as_bytes())?;
+    reject_unknown(&parsed, &["path"])?;
+    let paths = parsed
+        .get("path")
+        .and_then(Value::as_object)
+        .ok_or_else(|| bad("policy path object is required"))?;
+    let mut rules = Vec::new();
+    for (path, config) in paths {
+        reject_unknown(
+            config,
+            &[
+                "capabilities",
+                "allowed_parameters",
+                "denied_parameters",
+                "required_parameters",
+            ],
+        )?;
+        let capabilities = parse_capability_array(
+            config
+                .get("capabilities")
+                .ok_or_else(|| bad("capabilities array is required"))?,
+        )?;
+        rules.push(rule(
+            path.clone(),
+            capabilities,
+            parse_parameter_map(config.get("allowed_parameters"))?,
+            parse_parameter_map(config.get("denied_parameters"))?,
+            parse_required_parameters(config.get("required_parameters"))?,
+        )?);
+    }
+    Ok(rules)
+}
+
+fn parse_hcl_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
+    let tokens = lex_hcl(source)?;
+    let mut cursor = 0;
+    let mut rules = Vec::new();
+    while cursor < tokens.len() {
+        take(&tokens, &mut cursor, Lex::Word("path".into()))?;
+        let path = take_string(&tokens, &mut cursor)?;
+        take(&tokens, &mut cursor, Lex::Symbol('{'))?;
+        let mut capabilities = None;
+        let mut allowed = acl::ParameterMap::new();
+        let mut denied = acl::ParameterMap::new();
+        let mut required = BTreeSet::new();
+        let mut seen = BTreeSet::new();
+        while tokens.get(cursor) != Some(&Lex::Symbol('}')) {
+            let field = take_word(&tokens, &mut cursor)?;
+            if !seen.insert(field.clone()) {
+                return Err(bad("duplicate ACL rule field"));
+            }
+            take(&tokens, &mut cursor, Lex::Symbol('='))?;
+            match field.as_str() {
+                "capabilities" => {
+                    capabilities = Some(parse_hcl_capabilities(&tokens, &mut cursor)?);
+                }
+                "allowed_parameters" => {
+                    allowed = parse_hcl_parameter_map(&tokens, &mut cursor)?;
+                }
+                "denied_parameters" => {
+                    denied = parse_hcl_parameter_map(&tokens, &mut cursor)?;
+                }
+                "required_parameters" => {
+                    required = parse_hcl_required_parameters(&tokens, &mut cursor)?;
+                }
+                _ => return Err(bad("unsupported ACL rule field")),
+            }
+        }
+        take(&tokens, &mut cursor, Lex::Symbol('}'))?;
+        rules.push(rule(
+            path,
+            capabilities.ok_or_else(|| bad("capabilities array is required"))?,
+            allowed,
+            denied,
+            required,
+        )?);
+    }
+    Ok(rules)
+}
+
+fn parse_capability_array(value: &Value) -> Result<BTreeSet<String>, AuthError> {
+    value
+        .as_array()
+        .ok_or_else(|| bad("capabilities array is required"))?
+        .iter()
+        .map(|value| {
+            value
+                .as_str()
+                .map(str::to_owned)
+                .ok_or_else(|| bad("capability must be a string"))
+        })
+        .collect()
+}
+
+fn parse_parameter_map(value: Option<&Value>) -> Result<acl::ParameterMap, AuthError> {
+    let Some(value) = value else {
+        return Ok(acl::ParameterMap::new());
+    };
+    let object = value
+        .as_object()
+        .ok_or_else(|| bad("ACL parameter rules must be an object"))?;
+    if object.len() > MAX_POLICY_PARAMETER_KEYS {
+        return Err(bad("too many ACL parameter rules"));
+    }
+    let mut result = acl::ParameterMap::new();
+    for (name, values) in object {
+        let name = normalize_parameter_name(name)?;
+        if result.contains_key(&name) {
+            return Err(bad("duplicate case-insensitive ACL parameter"));
+        }
+        let values = values
+            .as_array()
+            .ok_or_else(|| bad("ACL parameter values must be arrays"))?;
+        if values.len() > MAX_POLICY_PARAMETER_VALUES {
+            return Err(bad("too many ACL parameter values"));
+        }
+        let values = values.to_vec();
+        validate_parameter_values(&values)?;
+        result.insert(name, values);
+    }
+    Ok(result)
+}
+
+fn parse_required_parameters(value: Option<&Value>) -> Result<BTreeSet<String>, AuthError> {
+    let Some(value) = value else {
+        return Ok(BTreeSet::new());
+    };
+    let values = value
+        .as_array()
+        .ok_or_else(|| bad("required_parameters must be an array"))?;
+    if values.len() > MAX_POLICY_PARAMETER_KEYS {
+        return Err(bad("too many required ACL parameters"));
+    }
+    values
+        .iter()
+        .map(|value| {
+            normalize_parameter_name(
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("required parameter must be a string"))?,
+            )
+        })
+        .collect()
+}
+
+fn parse_hcl_capabilities(
+    tokens: &[Lex],
+    cursor: &mut usize,
+) -> Result<BTreeSet<String>, AuthError> {
+    let value = parse_hcl_value(tokens, cursor)?;
+    parse_capability_array(&value)
+}
+
+fn parse_hcl_parameter_map(
+    tokens: &[Lex],
+    cursor: &mut usize,
+) -> Result<acl::ParameterMap, AuthError> {
+    let value = parse_hcl_value(tokens, cursor)?;
+    parse_parameter_map(Some(&value))
+}
+
+fn parse_hcl_required_parameters(
+    tokens: &[Lex],
+    cursor: &mut usize,
+) -> Result<BTreeSet<String>, AuthError> {
+    let value = parse_hcl_value(tokens, cursor)?;
+    parse_required_parameters(Some(&value))
+}
+
+fn parse_hcl_value(tokens: &[Lex], cursor: &mut usize) -> Result<Value, AuthError> {
+    parse_hcl_value_at_depth(tokens, cursor, 0)
+}
+
+fn parse_hcl_value_at_depth(
+    tokens: &[Lex],
+    cursor: &mut usize,
+    depth: usize,
+) -> Result<Value, AuthError> {
+    // Bound recursion before constructing a child, not after serializing it.
+    // The policy byte limit alone still permits thousands of nested arrays.
+    if depth > MAX_POLICY_HCL_VALUE_DEPTH {
+        return Err(bad("HCL policy value nesting exceeds bound"));
+    }
+    match tokens.get(*cursor).cloned() {
+        Some(Lex::String(value)) => {
+            *cursor += 1;
+            Ok(Value::String(value))
+        }
+        Some(Lex::Number(value)) => {
+            *cursor += 1;
+            Ok(Value::Number(value.into()))
+        }
+        Some(Lex::Word(value)) if matches!(value.as_str(), "true" | "false" | "null") => {
+            *cursor += 1;
+            Ok(match value.as_str() {
+                "true" => Value::Bool(true),
+                "false" => Value::Bool(false),
+                _ => Value::Null,
+            })
+        }
+        Some(Lex::Symbol('[')) => {
+            *cursor += 1;
+            let mut values = Vec::new();
+            while tokens.get(*cursor) != Some(&Lex::Symbol(']')) {
+                values.push(parse_hcl_value_at_depth(tokens, cursor, depth + 1)?);
+                if tokens.get(*cursor) == Some(&Lex::Symbol(',')) {
+                    *cursor += 1;
+                } else if tokens.get(*cursor) != Some(&Lex::Symbol(']')) {
+                    return Err(bad("malformed HCL value array"));
+                }
+            }
+            *cursor += 1;
+            Ok(Value::Array(values))
+        }
+        Some(Lex::Symbol('{')) => {
+            *cursor += 1;
+            let mut values = serde_json::Map::new();
+            while tokens.get(*cursor) != Some(&Lex::Symbol('}')) {
+                let key = take_hcl_key(tokens, cursor)?;
+                if values.contains_key(&key) {
+                    return Err(bad("duplicate HCL object key"));
+                }
+                take(tokens, cursor, Lex::Symbol('='))?;
+                values.insert(key, parse_hcl_value_at_depth(tokens, cursor, depth + 1)?);
+                if tokens.get(*cursor) == Some(&Lex::Symbol(',')) {
+                    *cursor += 1;
+                }
+            }
+            *cursor += 1;
+            Ok(Value::Object(values))
+        }
+        _ => Err(bad("unsupported HCL policy value")),
+    }
+}
+
+fn take_hcl_key(tokens: &[Lex], cursor: &mut usize) -> Result<String, AuthError> {
+    match tokens.get(*cursor) {
+        Some(Lex::String(value)) | Some(Lex::Word(value)) => {
+            *cursor += 1;
+            Ok(value.clone())
+        }
+        _ => Err(bad("HCL object key must be a string or identifier")),
+    }
+}
+
+fn take_word(tokens: &[Lex], cursor: &mut usize) -> Result<String, AuthError> {
+    if let Some(Lex::Word(value)) = tokens.get(*cursor) {
+        *cursor += 1;
+        Ok(value.clone())
+    } else {
+        Err(bad("HCL identifier required"))
+    }
+}
+
+fn normalize_parameter_name(value: &str) -> Result<String, AuthError> {
+    if value.is_empty()
+        || value.len() > 128
+        || value.chars().any(char::is_control)
+        || !value.is_ascii()
+    {
+        return Err(bad("invalid ACL parameter name"));
+    }
+    Ok(value.to_ascii_lowercase())
+}
+
+fn validate_parameter_values(values: &[Value]) -> Result<(), AuthError> {
+    for value in values {
+        let encoded = serde_json::to_vec(value).map_err(|_| bad("invalid ACL parameter value"))?;
+        if encoded.len() > MAX_POLICY_PARAMETER_VALUE_BYTES {
+            return Err(bad("ACL parameter value exceeds bound"));
+        }
+    }
+    Ok(())
+}
+
+fn validate_parameter_map(values: &acl::ParameterMap) -> Result<(), AuthError> {
+    if values.len() > MAX_POLICY_PARAMETER_KEYS {
+        return Err(bad("too many ACL parameter rules"));
+    }
+    for (name, entries) in values {
+        if normalize_parameter_name(name)? != *name || entries.len() > MAX_POLICY_PARAMETER_VALUES {
+            return Err(bad("invalid persisted ACL parameter rule"));
+        }
+        validate_parameter_values(entries)?;
+    }
+    Ok(())
+}
+
+fn rule(
+    path: String,
+    capabilities: BTreeSet<String>,
+    allowed_parameters: acl::ParameterMap,
+    denied_parameters: acl::ParameterMap,
+    required_parameters: BTreeSet<String>,
+) -> Result<Rule, AuthError> {
     validate_path(&path, true)?;
     if capabilities
         .iter()
@@ -7510,7 +7844,22 @@ fn rule(path: String, capabilities: BTreeSet<String>) -> Result<Rule, AuthError>
     {
         return Err(bad("unsupported ACL capability"));
     }
-    Ok(Rule { path, capabilities })
+    validate_parameter_map(&allowed_parameters)?;
+    validate_parameter_map(&denied_parameters)?;
+    if required_parameters.len() > MAX_POLICY_PARAMETER_KEYS
+        || required_parameters
+            .iter()
+            .any(|name| normalize_parameter_name(name).is_err())
+    {
+        return Err(bad("invalid required ACL parameter"));
+    }
+    Ok(Rule {
+        path,
+        capabilities,
+        allowed_parameters,
+        denied_parameters,
+        required_parameters,
+    })
 }
 
 #[derive(Clone, PartialEq)]

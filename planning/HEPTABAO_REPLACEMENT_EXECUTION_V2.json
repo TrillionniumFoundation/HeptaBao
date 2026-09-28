@@ -217,9 +217,9 @@
         "sys/policies/acl/*",
         "sys/capabilities*"
       ],
-      "positive": "Match full ACL specificity, templates and parameter constraints against official behavior",
-      "hostile": "Check glob/segment ties, explicit deny and malformed policy without privilege union",
-      "lifecycle": "Apply live policy replacement and deletion to existing tokens across HA/reopen",
+      "positive": "Match winning path specificity, identical-pattern union, live policy replacement, and bounded allowed/denied/required request-parameter constraints against official OpenBao 2.6.2 HTTP behavior",
+      "hostile": "Reject malformed or over-bound constraints, absent required fields, unknown fields, denied values, stale policy/identity authority, and mismatched bool/map/numeric values before application effect",
+      "lifecycle": "Persist parameter-constrained policies under schema 58, reject downgrade to schema 57, preserve constraint-free schema-57 state, and recheck original request bodies after provider I/O and HA synchronization",
       "implementation": "PARTIAL_RUNTIME",
       "runtime_sources": [
         "crates/heptabao-server/src/auth_acl.rs",
@@ -231,11 +231,12 @@
       ],
       "executable_profiles": [
         "qa/openbao-acceptance/core_isolation.py",
-        "qa/openbao-acceptance/capabilities_live.py"
+        "qa/openbao-acceptance/capabilities_live.py",
+        "qa/openbao-acceptance/policy_parameters_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Security advisories and path/glob/list/scan edge cases require dedicated corpus."
+      "remaining_scope": "Identity/entity/group template expansion, wrapping TTL/MFA/pagination/response-key attributes, complete path/glob/list/scan corpus, security advisories, and independent security admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-IDENTITY",
@@ -896,7 +897,7 @@
       ],
       "positive": "Compose bounded password policies and usernames, dynamic/provider statements, static roles and root/static rotation with real PostgreSQL readback",
       "hostile": "Reject malformed policy/template source, missing named policies, stale schema/admission, unapproved providers and ownership-changing SQL output before forbidden effect or delivery",
-      "lifecycle": "Read fixed schema-55 and schema-56 application state without promotion; permit only re-sealing of the committed-operation ledger checkpoint; migrate to schema 57 only on a current mutation; reject unsupported downgrade while preserving application artifacts and logical frontier; reconcile timeout after actual SQL effect, expiry, rollback and lease revocation.",
+      "lifecycle": "Read fixed schema-55 and schema-56 application state without promotion; permit only re-sealing of the committed-operation ledger checkpoint; migrate to current schema 59 only on a current mutation; reject unsupported downgrade while preserving application artifacts and logical frontier; reconcile timeout after actual SQL effect, expiry, rollback and lease revocation.",
       "implementation": "PARTIAL_RUNTIME",
       "runtime_sources": [
         "crates/heptabao-server/src/service_database.rs",
@@ -943,7 +944,7 @@
         "postgres_generation_live.official_default_username_template",
         "postgres_generation_live.custom_username_template",
         "postgres_root_rotation_statements_live.schema56_state_created_by_pinned_binary",
-        "postgres_root_rotation_statements_live.schema56_binary_rejects_schema57",
+        "postgres_root_rotation_statements_live.schema56_binary_rejects_schema59",
         "postgres_root_rotation_statements_live.quoted_manager_arbitrary_sql_rejected_before_mutation",
         "postgres_root_rotation_statements_live.custom_root_rotation",
         "postgres_root_rotation_statements_live.scram_custom_root_rotation"

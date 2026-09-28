@@ -111,7 +111,7 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
         service = (ROOT / "crates/heptabao-server/src/service.rs").read_text()
         identity = (ROOT / "crates/heptabao-server/src/service_identity.rs").read_text()
         database = (ROOT / "crates/heptabao-server/src/service_database.rs").read_text()
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 57;")
+        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 59;")
         self.assertIn("database statement templates require schema 54", identity)
         self.assertIn("Exact legacy tuple: old pending intents must reopen byte-stably", database)
         self.assertIn("heptabao.database.statements.v1", database)

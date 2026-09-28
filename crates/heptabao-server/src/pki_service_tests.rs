@@ -269,3 +269,164 @@ fn pki_ip_sans_require_role_permission_and_are_encoded_as_ip_general_names() -> 
     assert!(der.windows(18).any(|w| w[0] == 0x87 && w[1] == 0x10));
     Ok(())
 }
+
+#[test]
+fn pki_extension_configuration_is_hostile_bounded_and_persists_after_restart() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, key) = start(&mut s)?;
+    install(&mut s, &root);
+    let unauthorized = call(
+        &mut s,
+        "invalid-pkiext-token",
+        "GET",
+        "pki/config/cluster",
+        json!({}),
+        101,
+    );
+    assert_eq!(unauthorized.status, 403);
+    assert!(!unauthorized.body.to_string().contains("private_key"));
+    assert_eq!(
+        call(
+            &mut s,
+            &root,
+            "POST",
+            "pki/config/cluster",
+            json!({
+                "path":"https://acme.example.test/v1/pki",
+                "aia_path":"http://cdn.example.test/pki"
+            }),
+            101,
+        )
+        .status,
+        200
+    );
+    let enabled = call(
+        &mut s,
+        &root,
+        "POST",
+        "pki/config/acme",
+        json!({"enabled":true,"eab_policy":"new-account-required"}),
+        101,
+    );
+    assert_eq!(enabled.status, 200);
+    assert_eq!(enabled.body["data"]["enabled"], true);
+    assert_eq!(enabled.body["data"]["eab_policy"], "new-account-required");
+    let before = call(&mut s, &root, "GET", "pki/config/acme", json!({}), 101).body;
+    for (path, body) in [
+        (
+            "pki/config/acme",
+            json!({"enabled":false,"unknown":"must-not-persist"}),
+        ),
+        (
+            "pki/config/cluster",
+            json!({"path":"file:///secret-location"}),
+        ),
+    ] {
+        let rejected = call(&mut s, &root, "POST", path, body, 101);
+        assert_eq!(rejected.status, 400);
+        assert!(!rejected.body.to_string().contains("must-not-persist"));
+        assert!(!rejected.body.to_string().contains("secret-location"));
+    }
+    assert_eq!(
+        call(&mut s, &root, "GET", "pki/config/acme", json!({}), 101,).body,
+        before
+    );
+    drop(s);
+    let mut s = f.service()?;
+    assert_eq!(
+        call(&mut s, "", "POST", "sys/unseal", json!({"key":key}), 102).status,
+        200
+    );
+    let reopened = call(&mut s, &root, "GET", "pki/config/acme", json!({}), 102);
+    assert_eq!(reopened.status, 200);
+    assert_eq!(reopened.body, before);
+    assert_eq!(
+        call(&mut s, &root, "GET", "pki/config/cluster", json!({}), 102,).body["data"],
+        json!({
+            "path":"https://acme.example.test/v1/pki",
+            "aia_path":"http://cdn.example.test/pki"
+        })
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_extension_protocol_routes_remain_explicitly_unsupported() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, _) = start(&mut s)?;
+    install(&mut s, &root);
+    for path in [
+        "pki/acme/directory",
+        "pki/acme/new-account",
+        "pki/acme/new-order",
+        "pki/acme/revoke-cert",
+    ] {
+        let response = call(&mut s, &root, "GET", path, json!({}), 101);
+        assert_eq!(response.status, 404, "{path}");
+        assert!(!response.body.to_string().contains("private_key"));
+    }
+    Ok(())
+}
+
+#[test]
+fn pki_default_shape_remains_readable_as_schema57_without_new_fields() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, _) = start(&mut s)?;
+    install(&mut s, &root);
+    let state = s.state.as_ref().ok_or("state")?;
+    assert!(!state.engines.has_pki_extension_state());
+    let encoded = serde_json::to_value(&state.engines)?;
+    let text = encoded.to_string();
+    assert!(!text.contains("\"cluster_path\""));
+    assert!(!text.contains("\"aia_path\""));
+    assert!(!text.contains("\"acme\""));
+    let mut legacy = state.clone();
+    legacy.schema = 57;
+    assert!(legacy.validate_format().is_ok());
+    let bytes = serde_json::to_vec(&legacy)?;
+    let reopened: State = serde_json::from_slice(&bytes)?;
+    assert!(reopened.validate_format().is_ok());
+    assert_eq!(bytes, serde_json::to_vec(&reopened)?);
+    Ok(())
+}
+
+#[test]
+fn pki_extension_state_requires_schema59_independently() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, _) = start(&mut s)?;
+    install(&mut s, &root);
+    assert_eq!(
+        call(
+            &mut s,
+            &root,
+            "POST",
+            "pki/config/cluster",
+            json!({"path":"https://acme.example.test/v1/pki"}),
+            101,
+        )
+        .status,
+        200
+    );
+    let state = s.state.as_ref().ok_or("state")?;
+    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
+    assert!(state.engines.has_pki_extension_state());
+    assert!(state.validate_format().is_ok());
+    for schema in [57, 58] {
+        let mut disguised = state.clone();
+        disguised.schema = schema;
+        let rejected = disguised
+            .validate_format()
+            .err()
+            .ok_or("pre-PKI schema admitted PKI extension state")?;
+        assert_eq!(rejected.status, 503);
+        assert_eq!(
+            rejected.body["errors"][0],
+            "PKI cluster or ACME configuration requires schema 59"
+        );
+    }
+    Ok(())
+}

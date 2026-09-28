@@ -1021,6 +1021,14 @@ impl EngineState {
         ))
     }
 
+    pub(crate) fn has_pki_extension_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_extension_state())
+            })
+        })
+    }
+
     pub(crate) fn has_database_mount(&self) -> bool {
         self.namespaces.values().any(|ns| {
             ns.mounts
@@ -1063,7 +1071,8 @@ impl EngineState {
         if identity::owns(path) {
             return Some(match method {
                 "GET" | "HEAD" => "read",
-                "LIST" | "SCAN" => "list",
+                "LIST" => "list",
+                "SCAN" => "scan",
                 "DELETE" => "delete",
                 "PATCH" => "patch",
                 _ => "update",
@@ -1106,7 +1115,8 @@ impl EngineState {
         }
         Some(match method {
             "GET" | "HEAD" => "read",
-            "LIST" | "SCAN" => "list",
+            "LIST" => "list",
+            "SCAN" => "scan",
             "DELETE" => "delete",
             "PATCH" => "patch",
             _ => "update",

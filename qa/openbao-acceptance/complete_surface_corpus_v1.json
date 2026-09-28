@@ -15,7 +15,7 @@
   "coverage_summary": {
     "implemented_surface_count": 59,
     "defined_not_implemented_surface_count": 0,
-    "fixture_case_count": 437,
+    "fixture_case_count": 472,
     "independently_observed_current_exact_head_surface_count": 0
   },
   "surfaces": [
@@ -57,12 +57,37 @@
       "surface_id": "HB-SURFACE-POLICY-ACL",
       "category": "core_system",
       "criticality": "SECURITY_CRITICAL",
-      "minimum_observations": 3,
+      "minimum_observations": 28,
       "fixture_state": "IMPLEMENTED_SCOPED",
       "fixture_case_ids": [
         "token.policy",
         "token.write_denied",
-        "token.denial_no_effect"
+        "token.denial_no_effect",
+        "acl_parameters.mount",
+        "acl_parameters.policy_accepted",
+        "acl_parameters.issuer",
+        "acl_parameters.allowed_string_glob",
+        "acl_parameters.read_required_missing",
+        "acl_parameters.list_skips_generic_constraints",
+        "acl_parameters.scan_skips_generic_constraints",
+        "acl_parameters.required_missing",
+        "acl_parameters.allowed_value_mismatch",
+        "acl_parameters.unknown_parameter",
+        "acl_parameters.denied_empty_list",
+        "acl_parameters.numeric_http_type_mismatch",
+        "acl_parameters.boolean_mismatch",
+        "acl_parameters.map_mismatch",
+        "acl_parameters.denials_no_effect",
+        "acl_parameters.delete_skips_generic_constraints",
+        "acl_parameters.delete_effect_observed",
+        "acl_parameters.recreated_after_delete",
+        "acl_parameters.list_only_policy_accepted",
+        "acl_parameters.list_only_issuer",
+        "acl_parameters.list_only_lists",
+        "acl_parameters.list_only_scan_denied",
+        "acl_parameters.allowed_bool_and_map",
+        "acl_parameters.final_readback",
+        "acl_parameters.complete"
       ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },
@@ -334,7 +359,7 @@
       "surface_id": "HB-SURFACE-SECRET-PKI",
       "category": "secret_engines",
       "criticality": "CRYPTO_CRITICAL",
-      "minimum_observations": 10,
+      "minimum_observations": 20,
       "fixture_state": "IMPLEMENTED_SCOPED",
       "fixture_case_ids": [
         "pki.mount",
@@ -346,7 +371,17 @@
         "pki.cert_lookup",
         "pki.lease_revoke",
         "pki.revoked_lease_absent",
-        "pki.crl_json"
+        "pki.crl_json",
+        "pkiext_live.pkiext.mount",
+        "pkiext_live.pkiext.unauthorized_denied",
+        "pkiext_live.pkiext.cluster_config",
+        "pkiext_live.pkiext.acme_config",
+        "pkiext_live.pkiext.acme_config_read",
+        "pkiext_live.pkiext.invalid_cluster_rejected",
+        "pkiext_live.pkiext.unknown_field_ignored_with_warning",
+        "pkiext_live.pkiext.known_field_persists_after_unknown",
+        "pkiext_live.pkiext.cluster_persists_after_restart",
+        "pkiext_live.pkiext.acme_persists_after_restart"
       ],
       "independent_observation_state": "EXTERNAL_REQUIRED"
     },

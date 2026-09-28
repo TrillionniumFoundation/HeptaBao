@@ -858,6 +858,134 @@ mod tests {
 
     #[test]
     #[cfg(target_os = "linux")]
+    fn workflow_subrequest_enforces_acl_parameters_before_effect()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let root = Root::new();
+        let _ = std::fs::remove_dir_all(&root.path);
+        let mut service = root.service()?;
+        let (_, root_token) = bootstrap(&mut service)?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/mounts/workflow-kv",
+                &root_token,
+                json!({"type":"kv","options":{"version":"1"}})
+            )
+            .status,
+            204
+        );
+        let policy = r#"
+path "sys/workflows/execute/operations/guarded" { capabilities = ["update"] }
+path "workflow-kv/item" {
+  capabilities = ["create", "update"]
+  required_parameters = ["foo"]
+  allowed_parameters = { "foo" = ["good*"] }
+}"#;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/policies/acl/workflow-parameter-guard",
+                &root_token,
+                json!({"policy":policy})
+            )
+            .status,
+            204
+        );
+        let issued = call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &root_token,
+            json!({"policies":["workflow-parameter-guard"],"no_default_policy":true,"ttl":"10m"}),
+        );
+        assert_eq!(issued.status, 200);
+        let token = issued.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("token")?
+            .to_owned();
+        let bad = json!({
+            "cas":0,
+            "steps":[{"name":"write","method":"POST","path":"workflow-kv/item","body":{"foo":"bad"}}],
+            "outputs":{}
+        });
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/workflows/manage/operations/guarded",
+                &root_token,
+                bad
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/workflows/execute/operations/guarded",
+                &token,
+                json!({})
+            )
+            .status,
+            403
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "workflow-kv/item",
+                &root_token,
+                json!({})
+            )
+            .status,
+            404
+        );
+        let good = json!({
+            "cas":1,
+            "steps":[{"name":"write","method":"POST","path":"workflow-kv/item","body":{"foo":"good-value"}}],
+            "outputs":{}
+        });
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/workflows/manage/operations/guarded",
+                &root_token,
+                good
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/workflows/execute/operations/guarded",
+                &token,
+                json!({})
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "workflow-kv/item",
+                &root_token,
+                json!({})
+            )
+            .body["data"],
+            json!({"foo":"good-value"})
+        );
+        Ok(())
+    }
+
+    #[test]
+    #[cfg(target_os = "linux")]
     fn authenticated_workflow_is_scoped_durable_and_executes_in_one_context()
     -> Result<(), Box<dyn std::error::Error>> {
         let root = Root::new();

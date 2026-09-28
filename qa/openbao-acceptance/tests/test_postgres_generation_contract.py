@@ -78,10 +78,10 @@ class PostgresGenerationContractTests(unittest.TestCase):
         service = (ROOT / "crates/heptabao-server/src/service.rs").read_text()
         identity = (ROOT / "crates/heptabao-server/src/service_identity.rs").read_text()
         database = (ROOT / "crates/heptabao-server/src/service_database.rs").read_text()
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 57;")
+        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 59;")
         self.assertIn("password policy state requires schema 56", identity)
         self.assertIn("database password policies and username templates require schema 56", identity)
-        self.assertIn("| 54 | 55 | 56 | CURRENT_STATE_SCHEMA => Ok(())", identity)
+        self.assertIn("| 54 | 55 | 56 | 57 | 58 | CURRENT_STATE_SCHEMA => Ok(())", identity)
         self.assertIn("state.schema = 55;", database)
         self.assertIn("statement-template password policy must use only ASCII", database)
 

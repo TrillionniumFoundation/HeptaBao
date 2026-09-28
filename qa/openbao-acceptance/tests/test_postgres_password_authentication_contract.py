@@ -132,7 +132,7 @@ class PostgresPasswordAuthenticationContractTests(unittest.TestCase):
         self.assertIn('config_data.get("password_authentication") == "password"',
                       static_profile)
         self.assertIn('"password" not in config_data', static_profile)
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 57;")
+        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 59;")
         self.assertIn("PostgreSQL SCRAM password authentication requires schema 55",
                       identity)
 

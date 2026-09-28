@@ -39,7 +39,9 @@ use crate::state_record_root::RecordStateRoot;
 // schema 55 persists explicit PostgreSQL password-authentication selection;
 // schema 56 adds namespace-owned password policies and database generation bindings.
 // schema 57 adds PostgreSQL root-rotation statement configuration and retained intents.
-const CURRENT_STATE_SCHEMA: u32 = 57;
+// schema 58 adds bounded ACL parameter constraints.
+// schema 59 adds bounded PKI cluster and ACME configuration state.
+const CURRENT_STATE_SCHEMA: u32 = 59;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -812,12 +814,19 @@ enum RequestEffectClass {
 }
 
 fn kv_authorization_method<'a>(method: &'a str, body: &Value) -> &'a str {
-    if method == "GET"
-        && body
-            .get("list")
-            .is_some_and(|value| value == true || value == "true")
+    if method != "GET" {
+        return method;
+    }
+    if body
+        .get("list")
+        .is_some_and(|value| value == true || value == "true")
     {
         "LIST"
+    } else if body
+        .get("scan")
+        .is_some_and(|value| value == true || value == "true")
+    {
+        "SCAN"
     } else {
         method
     }
@@ -2043,6 +2052,18 @@ impl Service {
         {
             return error;
         }
+        if let Some(principal) = principal.as_ref()
+            && let Err(error) = admitted.auth.authorize_request_parameters(
+                principal,
+                namespace,
+                kv_authorization_method(method, body),
+                path,
+                body,
+                now,
+            )
+        {
+            return Response::error(error.status, &error.message);
+        }
         if namespaces::owns(path) {
             return self.namespace_route(admitted, principal.as_ref(), &request);
         }
@@ -2436,6 +2457,16 @@ impl Service {
         {
             return Some(error);
         }
+        if let Err(error) = state.auth.authorize_request_parameters(
+            &principal,
+            request.namespace,
+            kv_authorization_method(request.method, request.body),
+            request.path,
+            request.body,
+            request.now,
+        ) {
+            return Some(Response::error(error.status, &error.message));
+        }
         // Direct Service callers must authorize the same operation as the HTTP
         // parser: GET+list is a LIST, never a read-only-policy enumeration bypass.
         let method = kv_authorization_method(request.method, request.body);
@@ -2514,6 +2545,18 @@ impl Service {
         origin_peer: Option<std::net::IpAddr>,
         approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
     ) -> Response {
+        if let Some(principal) = principal
+            && let Err(error) = state.auth.authorize_request_parameters(
+                principal,
+                namespace,
+                kv_authorization_method(method, body),
+                path,
+                body,
+                now,
+            )
+        {
+            return Response::error(error.status, &error.message);
+        }
         if path == "sys/remount" {
             if !matches!(method, "POST" | "PUT") {
                 return Response::error(405, "remount requires POST or PUT");
@@ -7003,6 +7046,10 @@ mod kerberos_schema_tests;
 #[cfg(test)]
 #[path = "service_secret_delivery_tests.rs"]
 mod secret_delivery_tests;
+
+#[cfg(test)]
+#[path = "service_acl_parameter_tests.rs"]
+mod acl_parameter_tests;
 
 #[cfg(test)]
 #[path = "ha_initial_anchor_tests.rs"]

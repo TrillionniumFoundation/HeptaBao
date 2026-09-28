@@ -133,7 +133,9 @@ pub(super) struct PluginResponseAuthority {
     namespace_incarnation: Option<u64>,
     activation_nonce: String,
     cluster_id: String,
+    method: String,
     path: String,
+    body: Value,
     capability: &'static str,
     sudo: bool,
     admitted_at: u64,
@@ -156,7 +158,9 @@ impl PluginResponseAuthority {
             namespace_incarnation: state.namespaces.incarnation(request.namespace),
             activation_nonce: activation_nonce.to_owned(),
             cluster_id: state.cluster_id.clone(),
+            method: kv_authorization_method(request.method, request.body).to_owned(),
             path: request.path.to_owned(),
+            body: request.body.clone(),
             capability,
             sudo,
             admitted_at: request.now,
@@ -1054,6 +1058,17 @@ impl Service {
         }
         Self::bind_identity_principal(state, &mut authority.principal, &authority.namespace)?;
         let now = authority.now();
+        state
+            .auth
+            .authorize_request_parameters(
+                &authority.principal,
+                &authority.namespace,
+                &authority.method,
+                &authority.path,
+                &authority.body,
+                now,
+            )
+            .map_err(|error| Response::error(error.status, &error.message))?;
         let authorized = if authority.sudo {
             state.auth.authorize_sudo_request(
                 &authority.principal,
@@ -1283,7 +1298,8 @@ impl Service {
         };
         let capability = match *method {
             "GET" | "HEAD" => "read",
-            "LIST" | "SCAN" => "list",
+            "LIST" => "list",
+            "SCAN" => "scan",
             _ => "update",
         };
         if let Err(e) = state

@@ -568,6 +568,51 @@
         "rabbitmq_outage_retains_revoke_intent",
         "rabbitmq_restart_reconciles_pending_revoke"
       ]
+    },
+    "acl_parameters": {
+      "script": "qa/openbao-acceptance/policy_parameters_live.py",
+      "case_ids": [
+        "mount",
+        "policy_accepted",
+        "issuer",
+        "allowed_string_glob",
+        "read_required_missing",
+        "list_skips_generic_constraints",
+        "scan_skips_generic_constraints",
+        "required_missing",
+        "allowed_value_mismatch",
+        "unknown_parameter",
+        "denied_empty_list",
+        "numeric_http_type_mismatch",
+        "boolean_mismatch",
+        "map_mismatch",
+        "denials_no_effect",
+        "delete_skips_generic_constraints",
+        "delete_effect_observed",
+        "recreated_after_delete",
+        "list_only_policy_accepted",
+        "list_only_issuer",
+        "list_only_lists",
+        "list_only_scan_denied",
+        "allowed_bool_and_map",
+        "final_readback",
+        "complete"
+      ]
+    },
+    "pkiext_live": {
+      "script": "qa/openbao-acceptance/pkiext_live.py",
+      "case_ids": [
+        "pkiext.mount",
+        "pkiext.unauthorized_denied",
+        "pkiext.cluster_config",
+        "pkiext.acme_config",
+        "pkiext.acme_config_read",
+        "pkiext.invalid_cluster_rejected",
+        "pkiext.unknown_field_ignored_with_warning",
+        "pkiext.known_field_persists_after_unknown",
+        "pkiext.cluster_persists_after_restart",
+        "pkiext.acme_persists_after_restart"
+      ]
     }
   },
   "schema": "heptabao.external-fixture-case-registry.v1"

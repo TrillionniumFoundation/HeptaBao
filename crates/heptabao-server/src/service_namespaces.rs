@@ -529,7 +529,8 @@ impl Service {
         }
         let capability = match request.method {
             "GET" | "HEAD" => "read",
-            "LIST" | "SCAN" => "list",
+            "LIST" => "list",
+            "SCAN" => "scan",
             "DELETE" => "delete",
             "PATCH" => "patch",
             "POST" | "PUT" => "update",

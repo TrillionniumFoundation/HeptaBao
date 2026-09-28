@@ -441,7 +441,7 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
         current_schema_ledger = durable_ledger_digest(legacy_data_root)
         require(
             current_schema_application != schema55_application
-            and current_schema_frontier["state_schema"] == 57,
+            and current_schema_frontier["state_schema"] == 59,
             "current_schema_state_not_published",
         )
 
@@ -453,7 +453,7 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
         legacy_instance.stop()
         downgrade_application = durable_application_snapshot(legacy_data_root)
         downgrade_ledger = durable_ledger_digest(legacy_data_root)
-        durable_reopen_observations["schema57_old_reader_refusal"] = {
+        durable_reopen_observations["schema59_old_reader_refusal"] = {
             "application_artifacts_unchanged": (
                 downgrade_application == current_schema_application
             ),

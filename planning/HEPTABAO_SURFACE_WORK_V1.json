@@ -3,7 +3,7 @@
   "subordinate_to": "HEPTABAO-PLAN-2026-09-07-V2.1",
   "target": "OpenBao 2.6.2",
   "corpus_path": "qa/openbao-acceptance/complete_surface_corpus_v1.json",
-  "corpus_sha256": "327ca606ef11a0f45def9802305c4c07ae690c6867d9e3a5165ee79042c2582e",
+  "corpus_sha256": "b256f4023347f4a30c0b4ca1bce2fb052716349c93e7a9535a5d0c3e853759c3",
   "profile_definitions": {
     "fixed": {
       "script": "qa/openbao-acceptance/run_official_comparison.py",
@@ -879,6 +879,32 @@
         "at least sixty seconds for the real persisted dead-server grace"
       ],
       "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "policy_parameters": {
+      "script": "qa/openbao-acceptance/policy_parameters_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
+    },
+    "pkiext": {
+      "script": "qa/openbao-acceptance/pkiext_live.py",
+      "arguments": [
+        "--binary",
+        "{binary}",
+        "--output",
+        "{private_output}"
+      ],
+      "prerequisites": [
+        "official_openbao_2.6.2"
+      ],
+      "scope": "repository_controlled_bounded_profile_not_whole_surface"
     }
   },
   "required_completion_evidence": [
@@ -1017,20 +1043,46 @@
       "implementation_status": "runtime_partial",
       "runtime_source": "crates/heptabao-server/src/auth_acl.rs",
       "technical_contract": {
-        "api_or_protocol": "sys/policies/acl/* and sys/capabilities[-self,-accessor]",
-        "required_positive_and_hostile_behavior": "Winning-pattern specificity, same-pattern union, explicit deny, create/update distinction and sudo separation",
-        "remaining_semantics_and_effect_checks": "Existing tokens see policy removal immediately; denial leaves application state unchanged",
-        "crash_reopen": "Interrupt sys/policies/acl/* and sys/capabilities[-self before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
-        "isolation": "For HB-SURFACE-POLICY-ACL, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
-        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+        "api_or_protocol": "sys/policies/acl/*, sys/capabilities[-self,-accessor], and request-body parameter admission",
+        "required_positive_and_hostile_behavior": "Winning-pattern specificity, identical-pattern union, explicit deny, create/update distinction, sudo separation, distinct list and scan capabilities, and schema-58 allowed/denied/required parameters on read/create/update/patch with OpenBao 2.6.2 HTTP value semantics",
+        "remaining_semantics_and_effect_checks": "Identity/entity/group template expansion, full wrapping TTL/MFA/pagination/filter attributes, broader path/glob and operation corpus, and independent security admission remain open",
+        "crash_reopen": "Parameter-constrained policies survive encrypted restart; schema 57 rejects constraint-bearing state, schema 58 reopens it, and denied requests never mutate backend state",
+        "isolation": "Refresh live token, parent, Identity and policy authority; select only the highest-priority path pattern, merge identical-pattern constraints, normalize GET list/scan selectors before admission, and apply request parameters only to read/create/update/patch at top-level, workflow subrequest and post-provider response boundaries",
+        "migration_upgrade": "Schema-57 state with no parameter constraints remains readable; the first constraint-bearing mutation publishes schema 58; older readers must reject without rewriting source or backend state"
       },
       "fixture_case_ids": [
         "token.policy",
         "token.write_denied",
-        "token.denial_no_effect"
+        "token.denial_no_effect",
+        "acl_parameters.mount",
+        "acl_parameters.policy_accepted",
+        "acl_parameters.issuer",
+        "acl_parameters.allowed_string_glob",
+        "acl_parameters.read_required_missing",
+        "acl_parameters.list_skips_generic_constraints",
+        "acl_parameters.scan_skips_generic_constraints",
+        "acl_parameters.required_missing",
+        "acl_parameters.allowed_value_mismatch",
+        "acl_parameters.unknown_parameter",
+        "acl_parameters.denied_empty_list",
+        "acl_parameters.numeric_http_type_mismatch",
+        "acl_parameters.boolean_mismatch",
+        "acl_parameters.map_mismatch",
+        "acl_parameters.denials_no_effect",
+        "acl_parameters.delete_skips_generic_constraints",
+        "acl_parameters.delete_effect_observed",
+        "acl_parameters.recreated_after_delete",
+        "acl_parameters.list_only_policy_accepted",
+        "acl_parameters.list_only_issuer",
+        "acl_parameters.list_only_lists",
+        "acl_parameters.list_only_scan_denied",
+        "acl_parameters.allowed_bool_and_map",
+        "acl_parameters.final_readback",
+        "acl_parameters.complete"
       ],
       "available_scoped_profiles": [
-        "core"
+        "core",
+        "policy_parameters"
       ],
       "whole_surface_admitted": false
     },
@@ -1471,12 +1523,12 @@
       "implementation_status": "runtime_partial",
       "runtime_source": "crates/heptabao-server/src/engines/pki.rs",
       "technical_contract": {
-        "api_or_protocol": "pki/root, roles, issue, sign, revoke, cert and CRL targets",
+        "api_or_protocol": "pki/root, roles, issue, sign, revoke, cert, CRL, config/cluster and config/acme targets",
         "required_positive_and_hostile_behavior": "Verify DER chain, SAN/domain constraints, issuer lifetime, private-key custody and revocation readback",
-        "remaining_semantics_and_effect_checks": "Complete intermediates, imported keys, CSR, OCSP/ACME and issuer rotation need real certificate clients",
+        "remaining_semantics_and_effect_checks": "Bounded cluster/ACME configuration is executable and persisted; intermediate/imported keys, CSR, OCSP, ACME account/order/challenge protocol, issuer rotation and real ACME clients remain open.",
         "crash_reopen": "Interrupt pki/root before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-SECRET-PKI, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
-        "migration_upgrade": "Preserve the above ownership, versions, revocation and replay invariants across the declared source/target format; reject unsupported downgrade without rewriting source."
+        "migration_upgrade": "Default PKI extension fields retain schema-57 bytes. Any nondefault cluster/AIA or ACME configuration requires schema 59; a pinned schema-57 reader must refuse it without rewriting application artifacts. Protocol state remains unsupported."
       },
       "fixture_case_ids": [
         "pki.mount",
@@ -1488,10 +1540,21 @@
         "pki.cert_lookup",
         "pki.lease_revoke",
         "pki.revoked_lease_absent",
-        "pki.crl_json"
+        "pki.crl_json",
+        "pkiext_live.pkiext.mount",
+        "pkiext_live.pkiext.unauthorized_denied",
+        "pkiext_live.pkiext.cluster_config",
+        "pkiext_live.pkiext.acme_config",
+        "pkiext_live.pkiext.acme_config_read",
+        "pkiext_live.pkiext.invalid_cluster_rejected",
+        "pkiext_live.pkiext.unknown_field_ignored_with_warning",
+        "pkiext_live.pkiext.known_field_persists_after_unknown",
+        "pkiext_live.pkiext.cluster_persists_after_restart",
+        "pkiext_live.pkiext.acme_persists_after_restart"
       ],
       "available_scoped_profiles": [
-        "pki"
+        "pki",
+        "pkiext"
       ],
       "whole_surface_admitted": false
     },
@@ -1536,7 +1599,7 @@
         "remaining_semantics_and_effect_checks": "Bounded PostgreSQL provider-role and statement-template leases, password generation, username templates, password authentication, static-role rotation, manager rotation and bounded password-only root_rotation_statements are executable with durable identity and exact digests. Remaining gaps include arbitrary official root SQL parity, connection-pool controls, complete field/error parity, generic plugin capability negotiation, non-PostgreSQL static roles, multi-host provider faults and independent admission.",
         "crash_reopen": "Interrupt database/config/* before effect, after durable effect and before response; classify exact outcome and prove restart readback.",
         "isolation": "For HB-SURFACE-SECRET-DATABASE, exercise denied principal, wrong namespace/mount incarnation and revoked credentials; observe no forbidden effect.",
-        "migration_upgrade": "Use fixed, tree-pinned ancestors rather than the candidate first parent. Schema-55 generation and schema-56 empty-root-statement state must remain readable without application-state promotion: state.hbs, journal.hbj, seal metadata and the logical capacity frontier stay stable while ledger.hbl may be re-sealed from the same committed journal. A current mutation publishes schema 57; pinned schema-55/schema-56 binaries must refuse unsupported schema-57 state without changing application artifacts, and the current reader must recover the same logical frontier. Provider v4-to-v5 and v5-to-v6 upgrades are owner-only and source-bound."
+        "migration_upgrade": "Use fixed, tree-pinned ancestors rather than the candidate first parent. Schema-55 generation and schema-56 empty-root-statement state must remain readable without application-state promotion: state.hbs, journal.hbj, seal metadata and the logical capacity frontier stay stable while ledger.hbl may be re-sealed from the same committed journal. A current mutation publishes schema 58; pinned schema-55/schema-56 binaries must refuse unsupported current state without changing application artifacts, and the current reader must recover the same logical frontier. Provider v4-to-v5 and v5-to-v6 upgrades are owner-only and source-bound."
       },
       "fixture_case_ids": [
         "postgres_pipeline_simulated.verified_scram_configuration",

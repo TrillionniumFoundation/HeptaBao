@@ -237,7 +237,7 @@ Schema 56 binds password-policy and username-template state. A valid schema-55
 connection with absent generation fields remains readable without application
 promotion and keeps its historical `hbp_` plus 32-hex username and 64-hex password
 generation until a current mutation. The fixed schema-56 candidate historically
-publishes schema 56; the current schema-57 candidate may promote directly to 57.
+publishes schema 56; the schema-57 candidate may promote directly to 57; the current schema-59 candidate promotes directly to 59.
 For both predecessors, `state.hbs`, `journal.hbj`, seal metadata and the logical
 capacity frontier remain stable across current read-only reopen. `ledger.hbl` may
 be freshly sealed while reconstructing the same committed journal operations.

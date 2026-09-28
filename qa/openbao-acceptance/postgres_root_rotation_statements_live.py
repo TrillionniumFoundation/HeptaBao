@@ -2,7 +2,7 @@
 """Exercise bounded PostgreSQL root-rotation statements on real PostgreSQL 17.
 
 The profile uses a new private loopback cluster and synthetic identities. It
-covers the exact schema-56 to schema-57 boundary, fresh and owner-only forward
+covers the exact schema-56 to current schema-59 boundary while the root-statement feature remains fenced at schema 57, fresh and owner-only forward
 provider installation, password and SCRAM paths, idempotency, restart, and
 negative SQL grammar cases. It is scoped evidence, not arbitrary SQL parity.
 """
@@ -63,14 +63,14 @@ REQUIRED_CASES = frozenset({
     "schema56_read_does_not_rewrite_state",
     "schema56_root_statement_field_is_empty",
     "invalid_api_statements_fail_atomically",
-    "candidate_promotes_root_statements_to_schema57",
+    "candidate_promotes_root_statements_to_current_schema59",
     "configured_statement_order_round_trips",
     "omitted_root_statements_preserve",
     "null_root_statements_clear",
     "reconfigured_root_statements_restore_order",
-    "schema56_binary_rejects_schema57",
+    "schema56_binary_rejects_schema59",
     "failed_downgrade_preserves_state",
-    "candidate_reopens_schema57",
+    "candidate_reopens_schema59",
     "failed_downgrade_preserves_logical_frontier",
     "custom_root_rotation",
     "old_manager_password_denied",
@@ -516,7 +516,7 @@ def run(
             )
         check("invalid_api_statements_fail_atomically", invalid_ok)
         check(
-            "candidate_promotes_root_statements_to_schema57",
+            "candidate_promotes_root_statements_to_current_schema59",
             legacy_instance.call(
                 "POST",
                 "database/config/local",
@@ -557,48 +557,48 @@ def run(
                 .get("data", {}).get("root_rotation_statements") == CUSTOM_STATEMENTS,
         )
 
-        schema57_frontier = capacity_frontier(legacy_instance)
+        schema59_frontier = capacity_frontier(legacy_instance)
         legacy_instance.stop()
-        schema57_application = durable_application_snapshot(data_root)
-        schema57_ledger = durable_ledger_digest(data_root)
+        schema59_application = durable_application_snapshot(data_root)
+        schema59_ledger = durable_ledger_digest(data_root)
         require(
-            schema57_application != schema56_application
-            and schema57_frontier["state_schema"] == 57,
-            "schema57_state_not_published",
+            schema59_application != schema56_application
+            and schema59_frontier["state_schema"] == 59,
+            "schema59_state_not_published",
         )
 
         legacy_instance.binary = legacy_binary
         legacy_instance.start()
         check(
-            "schema56_binary_rejects_schema57",
+            "schema56_binary_rejects_schema59",
             legacy_instance.call("POST", "sys/unseal", {"key": legacy_key})[0] == 503,
         )
         legacy_instance.stop()
         downgrade_application = durable_application_snapshot(data_root)
         downgrade_ledger = durable_ledger_digest(data_root)
-        durable_reopen_observations["schema57_old_reader_refusal"] = {
+        durable_reopen_observations["schema59_old_reader_refusal"] = {
             "application_artifacts_unchanged": (
-                downgrade_application == schema57_application
+                downgrade_application == schema59_application
             ),
-            "frontier_before": schema57_frontier,
+            "frontier_before": schema59_frontier,
             "ledger_checkpoint_resealed_or_materialized": (
-                downgrade_ledger != schema57_ledger
+                downgrade_ledger != schema59_ledger
             ),
         }
         check(
             "failed_downgrade_preserves_state",
-            downgrade_application == schema57_application,
+            downgrade_application == schema59_application,
         )
 
         legacy_instance.binary = binary
         legacy_instance.start()
         check(
-            "candidate_reopens_schema57",
+            "candidate_reopens_schema59",
             legacy_instance.call("POST", "sys/unseal", {"key": legacy_key})[0] == 200,
         )
         check(
             "failed_downgrade_preserves_logical_frontier",
-            capacity_frontier(legacy_instance) == schema57_frontier,
+            capacity_frontier(legacy_instance) == schema59_frontier,
         )
         old_manager = pg.manager_password
         check(
@@ -742,7 +742,7 @@ def run(
             "check_count": len(checks),
             "durable_reopen_observations": durable_reopen_observations,
             "real_postgresql_executed": True,
-            "schema56_to_schema57_upgrade": True,
+            "schema56_to_schema59_upgrade": True,
             "bounded_root_rotation_statements": True,
             "arbitrary_sql_supported": False,
             "full_openbao_compatibility": False,

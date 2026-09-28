@@ -97,7 +97,7 @@ The V1 system-context/crate graph and authoritative ownership map retain propose
 
 ## Core isolation implementation detail
 
-The [Cubbyhole contract](../engines/HEPTABAO_CUBBYHOLE.md) specifies current per-token state, final-use admission, explicit revoke/tidy cleanup and retention limitations. The [server Identity contract](../engines/HEPTABAO_IDENTITY_RUNTIME.md) documents structural Identity plus bounded login/entity/internal-group policy composition; complete MFA and OIDC integration remain unfinished. ACL rules are selected by highest-priority matching pattern; only identical winning patterns union. Parameter-constrained policies remain separate work.
+The [Cubbyhole contract](../engines/HEPTABAO_CUBBYHOLE.md) specifies current per-token state, final-use admission, explicit revoke/tidy cleanup and retention limitations. The [server Identity contract](../engines/HEPTABAO_IDENTITY_RUNTIME.md) documents structural Identity plus bounded login/entity/internal-group policy composition; complete MFA and OIDC integration remain unfinished. ACL rules are selected by highest-priority matching pattern; only identical winning patterns union. Schema-58 allowed/denied/required request parameters are enforced for read/create/update/patch at top-level, workflow and post-provider completion boundaries. Delete, renew, revoke and rollback keep their independent operation contracts; LIST and recursive SCAN require distinct `list` and `scan` capabilities rather than being rejected by generic request-body rules. Broader policy attributes and independent security admission remain open.
 
 ## Current wrapping, inspection and dynamic OTP assembly
 

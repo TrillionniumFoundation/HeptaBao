@@ -378,6 +378,12 @@ class Cluster:
         for node in self.nodes:
             self.check(f"node_{node.node_id}_unsealed", node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
 
+    def assert_misbound_rejection(self, wrong: Node) -> None:
+        # Current candidates must reject the bound durable marker before API
+        # admission. Historical rolling fixtures override only this assertion.
+        wrong.expect_startup_rejection(MISBOUND_BOOTSTRAP_ERROR)
+        self.check("misbound_cluster_startup_rejected", True)
+
     def run(self) -> None:
         self.bootstrap()
         # Test that a legitimate peer cannot unseal a different application
@@ -388,12 +394,7 @@ class Cluster:
         wrong_config["cluster_id"] = "deliberately-wrong-application-cluster"
         wrong.ha_config = wrong.root / "wrong-cluster.json"
         private_write(wrong.ha_config, json.dumps(wrong_config))
-        # The durable completed marker is already bound to the original
-        # application cluster. Refusing the process before it exposes an API is
-        # stricter than waiting for the later unseal identity check. Require the
-        # exact terminal diagnostic rather than treating it as a generic crash.
-        wrong.expect_startup_rejection(MISBOUND_BOOTSTRAP_ERROR)
-        self.check("misbound_cluster_startup_rejected", True)
+        self.assert_misbound_rejection(wrong)
         wrong.ha_config = wrong.root / "ha.json"
         wrong.start()
         self.wait_quorum()

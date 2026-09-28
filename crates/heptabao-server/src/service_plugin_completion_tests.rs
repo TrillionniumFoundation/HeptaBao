@@ -11,6 +11,24 @@ fn admitted(
     namespace: &str,
     sudo: bool,
 ) -> TestResult<PluginResponseAuthority> {
+    let path = if sudo {
+        "sys/plugins/kms/fixture/wrap"
+    } else {
+        "external/item"
+    };
+    let capability = if sudo { "update" } else { "read" };
+    admitted_with_body(service, token, namespace, path, capability, sudo, json!({}))
+}
+
+fn admitted_with_body(
+    service: &mut Service,
+    token: &str,
+    namespace: &str,
+    path: &str,
+    capability: &'static str,
+    sudo: bool,
+    body: Value,
+) -> TestResult<PluginResponseAuthority> {
     let state = service.state.as_mut().ok_or("missing test state")?;
     let mut principal = state
         .auth
@@ -18,13 +36,6 @@ fn admitted(
         .map_err(|_| "test authentication failed")?;
     Service::bind_identity_principal(state, &mut principal, namespace)
         .map_err(|_| "test identity binding failed")?;
-    let path = if sudo {
-        "sys/plugins/kms/fixture/wrap"
-    } else {
-        "external/item"
-    };
-    let capability = if sudo { "update" } else { "read" };
-    let body = json!({});
     let request = RequestView {
         method: if sudo { "POST" } else { "GET" },
         path,
@@ -123,6 +134,84 @@ fn plugin_completion_rechecks_revocation_acl_expiry_deadline_seal_and_owner() ->
             assert!(result.is_err(), "sudo={sudo}, scenario={scenario}");
         }
     }
+    Ok(())
+}
+
+#[test]
+fn plugin_completion_rechecks_original_body_against_replaced_parameter_policy() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    let policy = |value: &str| {
+        format!(
+            "path \"sys/plugins/kms/fixture/wrap\" {{ capabilities = [\"update\", \"sudo\"] allowed_parameters = {{ \"mode\" = [\"{value}\"] }} }}"
+        )
+    };
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/policies/acl/parameterized-plugin",
+            &root_token,
+            json!({"policy":policy("before")})
+        )
+        .status,
+        204
+    );
+    let issued = call(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &root_token,
+        json!({"policies":["parameterized-plugin"],"ttl":"10m"}),
+    );
+    assert_eq!(issued.status, 200);
+    let token = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("token")?
+        .to_owned();
+    let mut old = admitted_with_body(
+        &mut service,
+        &token,
+        "",
+        "sys/plugins/kms/fixture/wrap",
+        "update",
+        true,
+        json!({"mode":"before"}),
+    )?;
+    assert!(service.validate_plugin_response(&mut old).is_ok());
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/policies/acl/parameterized-plugin",
+            &root_token,
+            json!({"policy":policy("after")})
+        )
+        .status,
+        204
+    );
+    assert!(service.validate_plugin_response(&mut old).is_err());
+    let mut stale = admitted_with_body(
+        &mut service,
+        &token,
+        "",
+        "sys/plugins/kms/fixture/wrap",
+        "update",
+        true,
+        json!({"mode":"before"}),
+    )?;
+    assert!(service.validate_plugin_response(&mut stale).is_err());
+    let mut fresh = admitted_with_body(
+        &mut service,
+        &token,
+        "",
+        "sys/plugins/kms/fixture/wrap",
+        "update",
+        true,
+        json!({"mode":"after"}),
+    )?;
+    assert!(service.validate_plugin_response(&mut fresh).is_ok());
     Ok(())
 }
 

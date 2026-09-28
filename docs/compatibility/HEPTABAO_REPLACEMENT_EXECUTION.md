@@ -104,15 +104,15 @@ Runtime source: `crates/heptabao-server/src/auth_acl.rs`, `crates/heptabao-serve
 Separate contracts: none claimed.
 Guides: `docs/auth/HEPTABAO_CAPABILITIES.md`.
 
-**Positive:** Match full ACL specificity, templates and parameter constraints against official behavior.
+**Positive:** Match winning path specificity, identical-pattern union, live policy replacement, and bounded allowed/denied/required request-parameter constraints against official OpenBao 2.6.2 HTTP behavior.
 
-**Hostile:** Check glob/segment ties, explicit deny and malformed policy without privilege union.
+**Hostile:** Reject malformed or over-bound constraints, absent required fields, unknown fields, denied values, stale policy/identity authority, and mismatched bool/map/numeric values before application effect.
 
-**Lifecycle:** Apply live policy replacement and deletion to existing tokens across HA/reopen.
+**Lifecycle:** Persist parameter-constrained policies under schema 58, reject downgrade to schema 57, preserve constraint-free schema-57 state, and recheck original request bodies after provider I/O and HA synchronization.
 
-**Remaining scope:** Security advisories and path/glob/list/scan edge cases require dedicated corpus.
+**Remaining scope:** Identity/entity/group template expansion, wrapping TTL/MFA/pagination/response-key attributes, complete path/glob/list/scan corpus, security advisories, and independent security admission remain open.
 
-Existing bounded profiles: `qa/openbao-acceptance/core_isolation.py`, `qa/openbao-acceptance/capabilities_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/core_isolation.py`, `qa/openbao-acceptance/capabilities_live.py`, `qa/openbao-acceptance/policy_parameters_live.py`.
 
 ### HB-SURFACE-IDENTITY
 
@@ -450,7 +450,7 @@ Guides: `docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md`.
 
 **Hostile:** Reject malformed policy/template source, missing named policies, stale schema/admission, unapproved providers and ownership-changing SQL output before forbidden effect or delivery.
 
-**Lifecycle:** Read fixed schema-55 and schema-56 application state without promotion; permit only re-sealing of the committed-operation ledger checkpoint; migrate to schema 57 only on a current mutation; reject unsupported downgrade while preserving application artifacts and logical frontier; reconcile timeout after actual SQL effect, expiry, rollback and lease revocation..
+**Lifecycle:** Read fixed schema-55 and schema-56 application state without promotion; permit only re-sealing of the committed-operation ledger checkpoint; migrate to current schema 59 only on a current mutation; reject unsupported downgrade while preserving application artifacts and logical frontier; reconcile timeout after actual SQL effect, expiry, rollback and lease revocation..
 
 **Remaining scope:** Bounded provider-role and statement-template dynamic roles, password-policy and username-template generation, explicit password authentication, static roles, root rotation, bounded password-only root_rotation_statements, renew/revoke and transactional rollback are executable. Remaining scope is arbitrary official root SQL parity, connection-pool fields and measured pooling behavior, complete OpenBao field/error/template-helper parity, generic database-plugin capability negotiation, non-PostgreSQL static roles, non-transactional external SQL side effects, multi-host provider faults and independent admission.
 
