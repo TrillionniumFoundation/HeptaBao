@@ -35,6 +35,18 @@ FORBIDDEN_REPORT_KEYS = frozenset({
     "tls_private_key", "private_key", "client_token", "service_account_token",
     "password", "bearer", "token",
 })
+SAFE_RESPONSE_ERRORS = {
+    "HA cluster has no elected leader": "ha_no_elected_leader",
+    "HA committed application state is absent": "ha_committed_application_absent",
+    "HA control state is unavailable": "ha_control_unavailable",
+    "HA leader forwarding failed": "ha_leader_forwarding_failed",
+    "HA leader state is unavailable": "ha_leader_state_unavailable",
+    "HA linearizable state is unavailable": "ha_linearizable_unavailable",
+    "HA local identity is unavailable": "ha_local_identity_unavailable",
+    "HA process lock is unavailable": "ha_process_lock_unavailable",
+    "forwarded request reached a standby node": "forwarded_request_reached_standby",
+    "server is sealed": "server_sealed",
+}
 REMOTE_EVIDENCE_FILES = (
     "process.log", "pids.log", "server.json", "ha.json", "audit.jsonl",
 )
@@ -102,6 +114,15 @@ class FixtureError(RuntimeError):
 
 class FixtureInterrupted(FixtureError):
     pass
+
+
+def response_failure_code(status: int, body: dict) -> str:
+    """Return a bounded, secret-independent classification for diagnostics."""
+    errors = body.get("errors")
+    if (isinstance(errors, list) and len(errors) == 1
+            and isinstance(errors[0], str)):
+        return SAFE_RESPONSE_ERRORS.get(errors[0], f"http_{status}_unclassified")
+    return f"http_{status}_without_single_error"
 
 
 def interrupted(_signum, _frame):
@@ -468,17 +489,60 @@ def write_once(context: ssl.SSLContext, node: Node, token: str,
                        {"data": {"value": value}, "options": {"cas": 0}}, token, 12)
     version = body.get("data", {}).get("version")
     if status != 200 or version != 1:
-        raise FixtureError("write_not_acknowledged_exactly_once")
+        code = response_failure_code(status, body)
+        raise FixtureError(f"write_not_acknowledged_exactly_once_{code}")
     return version
 
 
-def read_exact(context: ssl.SSLContext, node: Node, token: str,
-               path: str, value: str, seconds: float = 35) -> None:
+def wait_linearizable_read_window(context: ssl.SSLContext, node: Node,
+                                  token: str, path: str, value: str,
+                                  seconds: float = 45,
+                                  stable_seconds: float = 1.5) -> None:
+    """Observe the complete protected read path before a one-shot mutation."""
     deadline = time.monotonic() + seconds
+    stable_since: float | None = None
+    successes = 0
     while time.monotonic() < deadline:
         try:
-            status, body = api(context, node, "GET", f"secret/data/{path}", token=token, timeout=4)
+            status, body = api(
+                context, node, "GET", f"secret/data/{path}",
+                token=token, timeout=4,
+            )
         except (OSError, ssl.SSLError, urllib.error.URLError, TimeoutError):
+            stable_since, successes = None, 0
+            time.sleep(0.25)
+            continue
+        if status == 200:
+            data = body.get("data", {})
+            if (data.get("data", {}).get("value") != value
+                    or data.get("metadata", {}).get("version") != 1):
+                raise FixtureError("readiness_read_is_stale_or_wrong")
+            now = time.monotonic()
+            stable_since = now if stable_since is None else stable_since
+            successes += 1
+            if successes >= 4 and now - stable_since >= stable_seconds:
+                return
+        elif status in (429, 503):
+            stable_since, successes = None, 0
+        else:
+            raise FixtureError("readiness_read_unexpected_status")
+        time.sleep(0.5)
+    raise FixtureError("linearizable_readiness_timeout")
+
+
+def read_exact(context: ssl.SSLContext, node: Node, token: str,
+               path: str, value: str, seconds: float = 35,
+               request_timeout: float = 4) -> None:
+    deadline = time.monotonic() + seconds
+    last_failure = "no_response"
+    while time.monotonic() < deadline:
+        try:
+            status, body = api(
+                context, node, "GET", f"secret/data/{path}",
+                token=token, timeout=request_timeout,
+            )
+        except (OSError, ssl.SSLError, urllib.error.URLError, TimeoutError):
+            last_failure = "transport_or_deadline"
             time.sleep(0.1)
             continue
         if status == 200:
@@ -486,10 +550,11 @@ def read_exact(context: ssl.SSLContext, node: Node, token: str,
             if data.get("data", {}).get("value") != value or data.get("metadata", {}).get("version") != 1:
                 raise FixtureError("successful_read_is_stale_or_wrong")
             return
+        last_failure = response_failure_code(status, body)
         if status not in (429, 503):
-            raise FixtureError("acknowledged_value_not_visible")
+            raise FixtureError(f"acknowledged_value_not_visible_{last_failure}")
         time.sleep(0.1)
-    raise FixtureError("readback_timeout")
+    raise FixtureError(f"readback_timeout_{last_failure}")
 
 
 def wait_absent(context: ssl.SSLContext, node: Node, token: str, path: str,
@@ -823,12 +888,21 @@ test -d "$root/data"
         for node in nodes:
             read_exact(context, node, root_token, path, value)
         check("remote_standby_write_forwarded", True)
+        readiness_path, readiness_value = path, value
 
         stage = "snapshot_catchup"
         offline = next(node for node in nodes if node not in (initial, standby))
         stopped_pid = remote_stop(offline)
         started.discard(offline)
         event("standby_stopped_for_snapshot_catchup", node=offline.node_id, pid=stopped_pid)
+        # Losing one voter can transiently close ReadIndex/application readiness
+        # while the remaining majority exchanges a fresh heartbeat. Observe that
+        # readiness with read-only probes before issuing any non-retryable write.
+        initial = wait_leader(context, [initial, standby], root_token)
+        wait_linearizable_read_window(
+            context, initial, root_token, readiness_path, readiness_value,
+        )
+        event("snapshot_majority_ready", node=initial.node_id)
         for index in range(8):
             path, value = new_value(f"snapshot-{index}")
             write_once(context, initial, root_token, path, value)
@@ -841,15 +915,50 @@ test -d "$root/data"
         wait_listener(context, offline)
         status, _ = api(context, offline, "POST", "sys/unseal", {"key": unseal_key}, timeout=10)
         check("offline_follower_restarted_and_unsealed", status == 200)
-        read_exact(context, offline, root_token, path, value, 45)
+        # Rejoining can transfer leadership while snapshot installation and peer
+        # forwarding settle. Observe the current authority before testing the
+        # recovered node; the read is repeatable, but no mutation is retried.
+        initial = wait_leader(context, nodes, root_token, seconds=60)
+        event("snapshot_rejoin_leader_ready", node=initial.node_id)
+        read_exact(
+            context, offline, root_token, path, value,
+            seconds=90, request_timeout=12,
+        )
         check("remote_snapshot_catchup", True)
 
         stage = "leader_failover"
         killed = remote_stop(initial)
         started.discard(initial)
         event("leader_sigkill", node=initial.node_id, pid=killed)
-        successor = wait_leader(context, [node for node in nodes if node != initial],
-                                root_token, previous=initial)
+        # Do not immediately flood both surviving voters with authenticated
+        # health/ReadIndex probes. The production election timeout maximum is
+        # two seconds; leave three full maxima for the two-voter majority to
+        # elect and publish local control state, then take one passive local
+        # leader observation before entering the ordinary stable-leader gate.
+        time.sleep(6.0)
+        for survivor in [node for node in nodes if node != initial]:
+            try:
+                status, local = api(
+                    context, survivor, "GET", "sys/leader", timeout=4,
+                )
+                event(
+                    "post_kill_passive_leader_observation",
+                    node=survivor.node_id,
+                    status=status,
+                    is_self=local.get("is_self") is True,
+                    committed_index=local.get("raft_committed_index"),
+                    applied_index=local.get("raft_applied_index"),
+                )
+            except (OSError, ssl.SSLError, urllib.error.URLError, TimeoutError):
+                event(
+                    "post_kill_passive_leader_observation",
+                    node=survivor.node_id,
+                    status="transport_or_deadline",
+                )
+        successor = wait_leader(
+            context, [node for node in nodes if node != initial],
+            root_token, previous=initial, seconds=60,
+        )
         epochs.append(successor.node_id)
         check("leader_changed_after_remote_sigkill", successor != initial)
         for old_path, old_value in acknowledged.items():

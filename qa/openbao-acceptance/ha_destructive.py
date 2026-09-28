@@ -26,6 +26,22 @@ class FixtureError(RuntimeError):
     """A safe fixed classification; never include credential-bearing responses."""
 
 
+MISBOUND_BOOTSTRAP_ERROR = (
+    "heptabao-server: HA bootstrap admission marker binding is invalid"
+)
+
+
+def exact_startup_rejection(returncode: int | None, log_delta: bytes,
+                            expected_line: str) -> bool:
+    """Admit only one exact, terminal fail-closed process rejection."""
+    try:
+        lines = [line.strip() for line in log_delta.decode("utf-8").splitlines()
+                 if line.strip()]
+    except UnicodeDecodeError:
+        return False
+    return returncode == 1 and bool(lines) and lines[-1] == expected_line
+
+
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, request, fp, code, message, headers, newurl):
         return None
@@ -140,6 +156,30 @@ class Node:
                 pass
             time.sleep(0.05)
         raise FixtureError("node_listener_timeout")
+
+    def expect_startup_rejection(self, expected_line: str) -> None:
+        """Require an exact nonzero process rejection before API admission."""
+        if self.process is not None:
+            raise FixtureError("node_already_running")
+        log_path = self.root / "process.log"
+        before = log_path.stat().st_size if log_path.exists() else 0
+        self.start(wait=False)
+        try:
+            try:
+                returncode = self.process.wait(timeout=10)
+            except subprocess.TimeoutExpired as error:
+                raise FixtureError("misbound_cluster_process_did_not_exit") from error
+            if self.log is None:
+                raise FixtureError("startup_rejection_log_unavailable")
+            self.log.flush()
+            with log_path.open("rb") as stream:
+                stream.seek(before)
+                delta = stream.read(64 * 1024 + 1)
+            if len(delta) > 64 * 1024 or not exact_startup_rejection(
+                    returncode, delta, expected_line):
+                raise FixtureError("unexpected_startup_rejection")
+        finally:
+            self.stop()
 
     def stop(self) -> None:
         try:
@@ -348,12 +388,12 @@ class Cluster:
         wrong_config["cluster_id"] = "deliberately-wrong-application-cluster"
         wrong.ha_config = wrong.root / "wrong-cluster.json"
         private_write(wrong.ha_config, json.dumps(wrong_config))
-        wrong.start()
-        status, denied = wrong.call("POST", "sys/unseal", {"key": self.unseal_key})
-        self.check("misbound_cluster_unseal_denied", status == 503 and denied.get("errors") == ["HA configuration belongs to a different cluster"])
-        status, health = wrong.call("GET", "sys/health")
-        self.check("misbound_cluster_remains_sealed", status == 503 and health.get("sealed") is True)
-        wrong.stop()
+        # The durable completed marker is already bound to the original
+        # application cluster. Refusing the process before it exposes an API is
+        # stricter than waiting for the later unseal identity check. Require the
+        # exact terminal diagnostic rather than treating it as a generic crash.
+        wrong.expect_startup_rejection(MISBOUND_BOOTSTRAP_ERROR)
+        self.check("misbound_cluster_startup_rejected", True)
         wrong.ha_config = wrong.root / "ha.json"
         wrong.start()
         self.wait_quorum()

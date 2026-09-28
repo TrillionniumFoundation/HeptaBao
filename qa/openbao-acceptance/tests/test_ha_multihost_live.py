@@ -82,7 +82,9 @@ class MultiHostHaContractTests(unittest.TestCase):
 
     def test_local_copy_and_deterministic_compression_preserve_candidate_bytes(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            # macOS exposes /var through /private/var. Use the canonical owner-
+            # controlled path so the production guard is exercised, not bypassed.
+            root = Path(directory).resolve(strict=True)
             source = root / "candidate"
             source.write_bytes((b"bounded-candidate-bytes\n" * 4096))
             source.chmod(0o500)
@@ -96,6 +98,24 @@ class MultiHostHaContractTests(unittest.TestCase):
             self.assertEqual(first.read_bytes(), second.read_bytes())
             import gzip
             self.assertEqual(gzip.decompress(first.read_bytes()), source.read_bytes())
+
+    def test_response_failure_codes_are_bounded_and_secret_independent(self):
+        self.assertEqual(
+            MODULE.response_failure_code(
+                503, {"errors": ["HA linearizable state is unavailable"]}
+            ),
+            "ha_linearizable_unavailable",
+        )
+        self.assertEqual(
+            MODULE.response_failure_code(
+                503, {"errors": ["synthetic secret-bearing unknown"]}
+            ),
+            "http_503_unclassified",
+        )
+        self.assertEqual(
+            MODULE.response_failure_code(429, {"errors": []}),
+            "http_429_without_single_error",
+        )
 
     def test_report_redaction_rejects_nested_keys_and_runtime_values(self):
         safe = {
@@ -129,6 +149,60 @@ class MultiHostHaContractTests(unittest.TestCase):
             and node.func.id == "api"
         ]
         self.assertEqual(len(api_calls), 1)
+        readiness = (
+            "initial = wait_leader(context, [initial, standby], root_token)"
+        )
+        protected_read = "wait_linearizable_read_window("
+        first_snapshot_write = "for index in range(8):"
+        self.assertIn(readiness, source)
+        readiness_offset = source.index(readiness)
+        protected_read_offset = source.index(protected_read, readiness_offset)
+        first_snapshot_write_offset = source.index(
+            first_snapshot_write, protected_read_offset
+        )
+        self.assertLess(readiness_offset, protected_read_offset)
+        self.assertLess(protected_read_offset, first_snapshot_write_offset)
+        self.assertIn('event("snapshot_majority_ready", node=initial.node_id)', source)
+        rejoin_leader = "initial = wait_leader(context, nodes, root_token, seconds=60)"
+        catchup_read = "seconds=90, request_timeout=12"
+        self.assertIn(rejoin_leader, source)
+        self.assertIn(catchup_read, source)
+        self.assertLess(source.index(rejoin_leader), source.index(catchup_read))
+        self.assertIn('event("snapshot_rejoin_leader_ready", node=initial.node_id)', source)
+        sigkill = 'event("leader_sigkill", node=initial.node_id, pid=killed)'
+        quiet = "time.sleep(6.0)"
+        passive = '"post_kill_passive_leader_observation"'
+        post_kill_gate = (
+            "root_token, previous=initial, seconds=60"
+        )
+        self.assertIn(sigkill, source)
+        self.assertIn(quiet, source)
+        self.assertIn(passive, source)
+        self.assertIn(post_kill_gate, source)
+        self.assertLess(source.index(sigkill), source.index(quiet))
+        self.assertLess(source.index(quiet), source.index(passive))
+        self.assertLess(source.index(passive), source.index(post_kill_gate))
+        post_kill_block = source[source.index(sigkill):source.index(post_kill_gate)]
+        self.assertNotIn('"POST"', post_kill_block)
+        self.assertNotIn('"PUT"', post_kill_block)
+        self.assertNotIn('"DELETE"', post_kill_block)
+        self.assertIn('"GET", "sys/leader"', post_kill_block)
+        read_window = next(
+            node for node in tree.body
+            if isinstance(node, ast.FunctionDef)
+            and node.name == "wait_linearizable_read_window"
+        )
+        self.assertFalse(any(isinstance(node, (ast.For, ast.AsyncFor))
+                             for node in ast.walk(read_window)))
+        read_api_calls = [
+            node for node in ast.walk(read_window)
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+            and node.func.id == "api"
+        ]
+        self.assertEqual(len(read_api_calls), 1)
+        method = read_api_calls[0].args[2]
+        self.assertIsInstance(method, ast.Constant)
+        self.assertEqual(method.value, "GET")
         for marker in (
             'exe=$(readlink -f "/proc/$pid/exe")',
             'test "$exe" = "$root/heptabao-server"',

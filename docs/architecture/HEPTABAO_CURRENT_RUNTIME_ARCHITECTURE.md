@@ -71,6 +71,11 @@ or production key custody. See [Private multi-host HA qualification](../operatio
 Initial static membership has a separate durable admission owner in `ha.rs`.
 Every statically configured process publishes an owner-only marker inside its
 `raft_dir`, bound to cluster identity and the exact declared initial voter set.
+On reopen, marker binding is validated during HA process construction, before
+Service/API admission. Changing the configured cluster identity or initial voter
+set after completion therefore terminates startup with a bounded diagnostic
+rather than waiting for an unseal request. The destructive profile requires that
+exact fail-closed exit and then proves the original configuration can rejoin.
 Only the process configured as bootstrap may mutate pending membership, and only
 while it is the current leader; all other nodes can close their local fence only
 from committed non-joint membership. Historical completion is synchronized

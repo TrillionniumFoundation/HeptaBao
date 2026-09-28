@@ -78,11 +78,25 @@ The lifecycle performs these stages without retrying a mutation:
    authority before and after all nodes unseal.
 3. Commit a baseline CAS=0 value, read it through every physical host, then send
    another one-shot mutation to a standby and verify forwarding and exact readback.
-4. Stop one follower, commit enough entries, trigger a native snapshot, add a
-   successor entry, restart the follower and require snapshot catch-up.
-5. Kill the active leader with `SIGKILL`, elect a different host, verify every
-   acknowledged value, commit once after failover, restart the old leader and
-   require it to catch up.
+4. Stop one follower, use read-only leader probes and a stable window of
+   exact protected reads of an already acknowledged KV value to observe a
+   two-voter majority through the same ReadIndex/application-sync path used by
+   normal requests. Only then commit enough entries, trigger a native snapshot,
+   add a successor entry, restart the follower and require snapshot catch-up.
+   After rejoin, leadership is observed again because snapshot installation may
+   legitimately move authority. The recovered host then gets a bounded 90-second
+   read window; each individual physical-host request may use the configured
+   12-second service deadline. Readiness observations may repeat; none of the
+   later writes is replayed to manufacture availability. Failure reports retain
+   only a whitelisted, secret-independent response class.
+5. Kill the active leader with `SIGKILL`. For three production election-timeout
+   maxima, issue no authenticated health, ReadIndex or mutation traffic to the
+   two surviving voters. Take one passive local `sys/leader` observation from
+   each survivor, then enter the ordinary stable-leader gate with a bounded
+   60-second window. Verify every acknowledged value, commit exactly once after
+   failover, restart the old leader and require it to catch up. The quiet window
+   is not a retry and does not treat elapsed time as evidence: the subsequent
+   authority, readback and one-shot mutation checks remain mandatory.
 6. Execute one authenticated `sys/step-down`, require another stable epoch and
    verify a fresh acknowledged value through every host. The bounded run must
    observe three leadership epochs and at least two distinct leaders.
