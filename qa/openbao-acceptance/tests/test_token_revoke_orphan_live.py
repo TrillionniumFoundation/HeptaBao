@@ -51,6 +51,36 @@ class OrphanProfileTests(unittest.TestCase):
         rows = [{"case": "orphan270.discard", "status": 404, "passed": False}]
         self.assertFalse(core_isolation.successful_comparison({"candidate": rows, "oracle": rows}, {}))
 
+    def test_complete_trace_has_unique_case_ids_and_redacts_fixture_bearers(self):
+        responses = [(204, {})]
+        for phase in range(2):
+            for index in range(5):
+                responses.append((200, {"auth": {"client_token": f"synthetic-private-{phase}-{index}"}}))
+            responses.extend([(400, {}), (200, {"data": {"orphan": False}}),
+                              (200, {"data": {"orphan": False}}), (204, {}),
+                              (403, {}), (400, {})])
+            responses.extend((200, {"data": {"orphan": value}})
+                             for value in (True, True, False, False))
+        for phase in range(2):
+            responses.append((403, {}))
+            responses.extend((200, {"data": {"orphan": value}})
+                             for value in (True, True, False, False))
+            responses.extend([(200, {"auth": {"client_token": f"synthetic-private-new-{phase}"}}),
+                              (204, {}), (403, {}), (403, {}), (403, {}),
+                              (200, {"data": {"orphan": True}}), (200, {"data": {"orphan": False}})])
+        responses.append((200, {}))
+        client = FakeClient(responses)
+        rows = []
+        profile.run_scenarios(client, rows)
+        profile.run_after_restart(client, rows)
+        self.assertEqual(len(rows), 83)
+        self.assertEqual(len(rows), len({row["case"] for row in rows}))
+        self.assertTrue(all(row["passed"] for row in rows))
+        self.assertNotIn(id(rows), profile._CONTEXT)
+        self.assertNotIn("synthetic-private", json.dumps(rows))
+        with self.assertRaises(StopIteration):
+            next(client.responses)
+
     def test_historical_oracle_rejected_before_fixture_allocation(self):
         with tempfile.TemporaryDirectory() as directory:
             argv = ["orphan270", "--binary", sys.executable, "--output", directory + "/report.json",

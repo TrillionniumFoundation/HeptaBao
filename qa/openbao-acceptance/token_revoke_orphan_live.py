@@ -62,7 +62,7 @@ def run_scenarios(client, results=None):
         t.call(tag + "_absent_target", method, "auth/token/revoke-orphan", 400, {"token": parent})
         for name, value, orphan in (("child", child, True), ("sibling", sibling, True),
                                     ("grandchild", grandchild, False), ("peer", peer, False)):
-            t.live(tag + "_" + name, value, orphan)
+            t.live(tag + "_after_" + name, value, orphan)
         contexts.append((tag, parent, child, sibling, grandchild, peer))
     _CONTEXT[id(rows)] = contexts
     return rows
@@ -78,7 +78,7 @@ def run_after_restart(client, rows):
         t.call(tag + "_parent_dead", "GET", "auth/token/lookup-self", 403, token=parent)
         for name, value, orphan in (("child", child, True), ("sibling", sibling, True),
                                     ("grandchild", grandchild, False), ("peer", peer, False)):
-            t.live(tag + "_" + name, value, orphan)
+            t.live(tag + "_after_" + name, value, orphan)
         descendant = t.create(tag + "_new_descendant", child)
         t.call(tag + "_normal_cascade", "POST", "auth/token/revoke", 204, {"token": child})
         for name, value in (("child", child), ("grandchild", grandchild), ("descendant", descendant)):
