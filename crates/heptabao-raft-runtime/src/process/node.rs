@@ -5,7 +5,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use crate::state_machine::StateMachine as MemStoreStateMachine;
-use openraft::{Config, Instant, ReadPolicy, SnapshotPolicy};
+use openraft::{Config, Instant, ReadPolicy, SnapshotPolicy, storage::RaftStateMachine};
 use openraft_memstore::ClientRequest;
 use tokio::task::spawn_blocking;
 
@@ -85,7 +85,16 @@ impl ProcessRaftNode {
         .await
         .map_err(|error| RemoteRaftError::Io(error.to_string()))?
         .map_err(|error| RemoteRaftError::Io(error.to_string()))?;
-        let (log_store, state_machine) = stores;
+        let (log_store, mut state_machine) = stores;
+        // Starting the core does not synchronously publish recovered metrics.
+        // Capture only its validated durable frontier, not application payloads.
+        let recovered = if create {
+            None
+        } else {
+            Some(state_machine.applied_state().await.map_err(|_| {
+                RemoteRaftError::Io("recovered Raft membership is unavailable".into())
+            })?)
+        };
         let rpc_factory = network.clone();
         let raft = DurableRaft::new(
             id,
@@ -96,6 +105,30 @@ impl ProcessRaftNode {
         )
         .await
         .map_err(|error| RemoteRaftError::Consensus(error.to_string()))?;
+        if let Some((applied, membership)) = recovered {
+            let recovered_index = membership.log_id().as_ref().map(|log| log.index);
+            let published = raft
+                .wait(Some(Duration::from_secs(8)))
+                .metrics(
+                    move |metrics| {
+                        let observed = &metrics.committed_membership_config;
+                        let observed_index = observed.log_id().as_ref().map(|log| log.index);
+                        metrics.running_state.is_ok()
+                            && metrics.last_applied >= applied
+                            && observed_index >= recovered_index
+                            && (observed_index != recovered_index
+                                || observed.as_ref() == &membership)
+                    },
+                    "recovered durable membership publication",
+                )
+                .await;
+            if published.is_err() {
+                let _ = raft.shutdown().await;
+                return Err(RemoteRaftError::Consensus(
+                    "recovered Raft membership publication deadline exceeded".into(),
+                ));
+            }
+        }
         let rpc_service = rpc_factory.rpc_service(raft.clone());
         Ok(Self {
             id,

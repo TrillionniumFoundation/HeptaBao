@@ -68,6 +68,15 @@ They are manual lab evidence only: not default public-PR jobs, automatic discove
 mixed-version operation, WAN or physical-fault qualification, long-horizon history
 or production key custody. See [Private multi-host HA qualification](../operations/HEPTABAO_MULTIHOST_HA_QUALIFICATION.md).
 
+Native Raft reopen captures the validated durable applied log and stored
+membership before starting its core. It waits at most eight seconds for metrics
+to publish at least that applied frontier and committed membership; equal
+membership indices require the exact stored membership. This is a local recovery
+publication barrier, not ReadIndex, a new election, or authority to restore a
+configured voter set. Missing, conflicting or late publication still prevents
+startup. Legacy pre-marker bootstrap classification therefore cannot mistake an
+initial empty metrics watch for the recovered cluster's topology.
+
 Initial static membership has a separate durable admission owner in `ha.rs`.
 Every statically configured process publishes an owner-only marker inside its
 `raft_dir`, bound to cluster identity and the exact declared initial voter set.

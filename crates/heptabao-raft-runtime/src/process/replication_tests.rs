@@ -316,3 +316,52 @@ async fn guarded_join_acknowledges_committed_learner_before_replication()
     let _ = std::fs::remove_dir_all(&path);
     result
 }
+
+#[tokio::test]
+async fn reopen_publishes_recovered_membership_before_returning()
+-> Result<(), Box<dyn std::error::Error>> {
+    let path = std::env::temp_dir().join(format!(
+        "heptabao-recovered-membership-{}",
+        std::process::id()
+    ));
+    let router = Arc::new(Router::default());
+    let factory =
+        || RemoteNetworkFactory::new(1, BTreeSet::from([1, 2, 3]), Arc::new(Arc::clone(&router)));
+    let node = ProcessRaftNode::create(&path, 1, factory()?).await?;
+    node.initialize_single().await?;
+    leader(&node, 1).await?;
+    node.ensure_linearizable().await?;
+    node.snapshot_observed().await?;
+    let baseline = node.membership_observation().await?;
+    assert!(baseline.committed && !baseline.joint);
+    assert!(baseline.membership_index.is_some());
+    assert!(baseline.applied_index.is_some());
+    let mut current = Some(node);
+    let result = async {
+        // A current-thread runtime makes stale initial metrics observable:
+        // the caller must not need a scheduling yield after reopen returns.
+        for _ in 0..8 {
+            current.take().ok_or("missing node")?.shutdown().await?;
+            current = Some(ProcessRaftNode::reopen(&path, 1, factory()?).await?);
+            let observed = current
+                .as_ref()
+                .ok_or("missing reopened node")?
+                .membership_observation()
+                .await?;
+            assert!(
+                observed.applied_index >= baseline.applied_index,
+                "reopen returned before publishing its durable applied frontier"
+            );
+            assert_eq!(observed.membership_index, baseline.membership_index);
+            assert!(observed.committed && !observed.joint);
+            assert_eq!(observed.voters, baseline.voters);
+        }
+        Ok::<_, Box<dyn std::error::Error>>(())
+    }
+    .await;
+    if let Some(node) = current {
+        node.shutdown().await?;
+    }
+    std::fs::remove_dir_all(&path)?;
+    result
+}
