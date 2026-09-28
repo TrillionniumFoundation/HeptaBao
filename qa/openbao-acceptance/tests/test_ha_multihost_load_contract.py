@@ -87,6 +87,30 @@ class LoadContractTests(unittest.TestCase):
                     with self.assertRaisesRegex(load.ha.FixtureError, "not_exact_version_one"):
                         lifecycle._read_once(1, "path", "expected")
 
+    def test_cleanup_failure_retains_only_safe_observation_without_retry(self):
+        import json
+        for body, expected in [
+            ({"errors": ["HA linearizable state is unavailable"]}, "ha_linearizable_unavailable"),
+            ({"errors": ["synthetic-private-error"]}, "http_503_unclassified"),
+        ]:
+            lifecycle = load.LoadLifecycle()
+            lifecycle.values = {"synthetic-private-path-a": "synthetic-private-value",
+                                "synthetic-private-path-b": "synthetic-private-value",
+                                "synthetic-private-path-c": "synthetic-private-value"}
+            lifecycle.root = "synthetic-private-bearer"
+            checks = []
+            lifecycle.check = lambda name, passed, **metadata: checks.append(
+                {"case": name, "passed": passed, **metadata})
+            with patch.object(load.ha, "api", side_effect=[(204, {}), (503, body)]) as submit:
+                with self.assertRaisesRegex(load.ha.FixtureError, expected):
+                    lifecycle.cleanup(1)
+                self.assertEqual(submit.call_count, 2)
+                self.assertTrue(all(call.args[2] == "DELETE" for call in submit.call_args_list))
+            self.assertEqual(checks, [{"case": "load_cleanup_once", "passed": False,
+                "attempted_deletes": 2, "acknowledged_deletes": 1, "http_status": 503,
+                "failure_code": expected, "mutations_retried": False}])
+            self.assertNotIn("synthetic-private", json.dumps(checks))
+
     def test_latency_summary_is_bounded_and_validates_samples(self):
         self.assertEqual(load.latency_summary([.004, .001, .003, .002]),
                          {"requests": 4, "p50_ms": 2., "p95_ms": 4., "max_ms": 4.})

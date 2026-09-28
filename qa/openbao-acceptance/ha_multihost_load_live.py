@@ -136,11 +136,17 @@ class LoadLifecycle:
         self.check("load_all_hosts_converged", True, writes=len(self.values), hosts=len(nodes))
 
     def cleanup(self, leader):
-        for path in self.values:
-            status, _ = ha.api(self.context, leader, "DELETE", "secret/metadata/" + path,
-                               token=self.root, timeout=12)
+        for ordinal, path in enumerate(self.values, 1):
+            status, body = ha.api(self.context, leader, "DELETE", "secret/metadata/" + path,
+                                  token=self.root, timeout=12)
             if status != 204:
-                raise ha.FixtureError("load_cleanup_not_acknowledged_once")
+                # Retain only bounded classifications, never the raw response,
+                # bearer, fixture path or synthetic value. No deletion is retried.
+                code = ha.response_failure_code(status, body)
+                self.check("load_cleanup_once", False, attempted_deletes=ordinal,
+                           acknowledged_deletes=ordinal - 1, http_status=status,
+                           failure_code=code, mutations_retried=False)
+                raise ha.FixtureError("load_cleanup_not_acknowledged_once_" + code)
         self.check("load_cleanup_once", True, deletes=len(self.values), mutations_retried=False)
         for node in self.nodes:
             for path in self.values:
