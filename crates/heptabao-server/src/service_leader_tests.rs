@@ -141,7 +141,7 @@ fn standby_leader_observation_is_local_and_does_not_admit_read_authority() -> Te
     let response = diagnostic(&mut service, "GET", "invalid");
     assert_eq!(response.status, 200);
     assert_eq!(response.body["ha_enabled"], true);
-    assert!(response.body.get("is_self").is_none());
+    assert_eq!(response.body.get("is_self"), Some(&json!(false)));
     assert!(response.body.get("leader_address").is_none());
     assert!(response.body.get("active_time").is_none());
     assert!(response.body.get("leader_cluster_address").is_none());
