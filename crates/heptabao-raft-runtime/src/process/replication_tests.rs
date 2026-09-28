@@ -20,6 +20,10 @@ struct Router {
     paced_target: AtomicUsize,
     paced_timeouts: AtomicUsize,
     paced_budget_ms: AtomicUsize,
+    snapshot_delay_ms: AtomicUsize,
+    snapshot_timeouts: AtomicUsize,
+    snapshot_budget_ms: AtomicUsize,
+    snapshot_chunks: AtomicUsize,
 }
 impl std::fmt::Debug for Router {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -67,6 +71,21 @@ impl RaftPeerRpc for Arc<Router> {
                             "bounded synthetic transfer timeout".into(),
                         ));
                     }
+                }
+            }
+            if matches!(kind, RaftRpcKind::SnapshotChunk) && target == 3 {
+                router.snapshot_chunks.fetch_add(1, Ordering::SeqCst);
+                router
+                    .snapshot_budget_ms
+                    .fetch_max(timeout.as_millis() as usize, Ordering::SeqCst);
+                let delay =
+                    Duration::from_millis(router.snapshot_delay_ms.load(Ordering::SeqCst) as u64);
+                tokio::time::sleep(delay.min(timeout)).await;
+                if delay >= timeout {
+                    router.snapshot_timeouts.fetch_add(1, Ordering::SeqCst);
+                    return Err(RemoteRaftError::Transport(
+                        "bounded synthetic snapshot install timeout".into(),
+                    ));
                 }
             }
             let peer = router
@@ -386,8 +405,22 @@ async fn reopen_publishes_recovered_membership_before_returning()
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn stopped_voter_reopens_after_purge_and_reaches_its_own_applied_frontier()
 -> Result<(), Box<dyn std::error::Error>> {
-    let path = std::env::temp_dir().join(format!("heptabao-reopen-purge-{}", std::process::id()));
+    snapshot_reopen_and_transfer(0).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn snapshot_recovery_has_a_distinct_bounded_install_budget()
+-> Result<(), Box<dyn std::error::Error>> {
+    snapshot_reopen_and_transfer(250).await
+}
+
+async fn snapshot_reopen_and_transfer(delay_ms: usize) -> Result<(), Box<dyn std::error::Error>> {
+    let path = std::env::temp_dir().join(format!(
+        "heptabao-reopen-purge-{}-{delay_ms}",
+        std::process::id(),
+    ));
     let router = Arc::new(Router::default());
+    router.snapshot_delay_ms.store(delay_ms, Ordering::SeqCst);
     let peers = BTreeSet::from([1, 2, 3]);
     let mut nodes = BTreeMap::new();
     for id in 1..=3 {
@@ -445,7 +478,18 @@ async fn stopped_voter_reopens_after_purge_and_reaches_its_own_applied_frontier(
             Ok::<_, RemoteRaftError>(())
         })
         .await
-        .map_err(|_| "restored voter's own applied index did not reach leader frontier")??;
+        .map_err(|_| {
+            format!(
+                "local snapshot recovery stalled: chunks={} timeouts={} budget_ms={} delay_ms={delay_ms}",
+                router.snapshot_chunks.load(Ordering::SeqCst),
+                router.snapshot_timeouts.load(Ordering::SeqCst),
+                router.snapshot_budget_ms.load(Ordering::SeqCst),
+            )
+        })??;
+        assert!(router.snapshot_chunks.load(Ordering::SeqCst) > 0,
+            "catch-up must use the snapshot rather than retained log replay");
+        assert_eq!(router.snapshot_timeouts.load(Ordering::SeqCst), 0);
+        assert!(router.snapshot_budget_ms.load(Ordering::SeqCst) > delay_ms);
         assert_eq!(
             restored
                 .latest_envelope()
