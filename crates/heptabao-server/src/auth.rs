@@ -2508,6 +2508,26 @@ impl AuthState {
         }
     }
 
+    /// Revoke exactly this stored service token and detach its direct children.
+    /// The Service owner publishes the edge changes and removal in one durable
+    /// state transition. Signed batch children are not rewritten or reissued.
+    fn revoke_orphan(&mut self, id: &str) -> Result<(), AuthError> {
+        if !self.tokens.contains_key(id) {
+            return Err(bad("token to revoke not found"));
+        }
+        for token in self.tokens.values_mut() {
+            if token.parent.as_deref() == Some(id)
+                && let Some(mut parent) = token.parent.take()
+            {
+                parent.zeroize();
+            }
+        }
+        if let Some((mut stored_id, _)) = self.tokens.remove_entry(id) {
+            stored_id.zeroize();
+        }
+        Ok(())
+    }
+
     fn effective_auth_mounts(&self, namespace: &str) -> BTreeMap<String, AuthMount> {
         let mut entries = self
             .auth_mounts
@@ -5626,11 +5646,24 @@ impl AuthState {
                 {
                     return Err(bad("root or sudo privileges required to revoke and orphan"));
                 }
-                let target = self.inspect_raw_target(raw, namespace, now)?;
-                if matches!(target, batch_principal::InspectionCredential::Batch(_)) {
-                    return Err(bad("batch tokens cannot be revoked"));
+                let target = self
+                    .inspect_raw_target(raw, namespace, now)
+                    .map_err(|error| {
+                        if error.status == 403 {
+                            bad("token to revoke not found")
+                        } else {
+                            error
+                        }
+                    })?;
+                match &target {
+                    batch_principal::InspectionCredential::Batch(_) => {
+                        Err(bad("batch tokens cannot be revoked"))
+                    }
+                    batch_principal::InspectionCredential::Service(id) => {
+                        self.revoke_orphan(id)?;
+                        Ok(empty(true))
+                    }
                 }
-                Err(err(404, "unsupported token operation"))
             }
             "revoke" | "revoke-accessor" => {
                 reject_unknown(
