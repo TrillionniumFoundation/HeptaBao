@@ -456,6 +456,10 @@ fn kv_root_enumeration_canonicalizes_before_authorization_and_forwarded_dispatch
             "path \"legacy/\" { capabilities = [\"list\"] }\npath \"legacy\" { capabilities = [\"deny\"] }",
         ),
         (
+            "root-scan",
+            "path \"legacy/\" { capabilities = [\"scan\"] }\npath \"legacy\" { capabilities = [\"deny\"] }",
+        ),
+        (
             "root-read",
             "path \"legacy/*\" { capabilities = [\"read\"] }",
         ),
@@ -473,7 +477,7 @@ fn kv_root_enumeration_canonicalizes_before_authorization_and_forwarded_dispatch
         );
     }
     let mut tokens = Vec::new();
-    for policy in ["root-list", "root-read"] {
+    for policy in ["root-list", "root-read", "root-scan"] {
         let response = call(
             &mut service,
             "POST",
@@ -490,10 +494,13 @@ fn kv_root_enumeration_canonicalizes_before_authorization_and_forwarded_dispatch
         );
     }
     let before = serde_json::to_vec(service.state.as_ref().ok_or("missing state")?)?;
-    for method in ["LIST", "SCAN"] {
+    for (method, permitted, opposite) in [
+        ("LIST", &tokens[0], &tokens[2]),
+        ("SCAN", &tokens[2], &tokens[0]),
+    ] {
         let audit_before = service.audit_sequence;
-        let bare = call(&mut service, method, "legacy", &tokens[0], json!({}));
-        let canonical = call(&mut service, method, "legacy/", &tokens[0], json!({}));
+        let bare = call(&mut service, method, "legacy", permitted, json!({}));
+        let canonical = call(&mut service, method, "legacy/", permitted, json!({}));
         assert_eq!(bare.status, 200);
         assert_eq!(bare.body, canonical.body);
         assert_eq!(bare.body["data"]["keys"], json!(["short-key"]));
@@ -511,19 +518,55 @@ fn kv_root_enumeration_canonicalizes_before_authorization_and_forwarded_dispatch
         for (pair, client_path) in events.as_chunks::<2>().0.iter().zip(["legacy", "legacy/"]) {
             assert_eq!(pair[0].kind, "request");
             assert_eq!(pair[1].kind, "response");
-            let fingerprint = service.request_fingerprint(method, client_path, "", &tokens[0]);
+            let fingerprint = service.request_fingerprint(method, client_path, "", permitted);
             assert_eq!(pair[0].path_digest, fingerprint);
             assert_eq!(pair[1].path_digest, fingerprint);
         }
 
         for path in ["legacy", "legacy/"] {
             assert_eq!(
+                call(&mut service, method, path, opposite, json!({})).status,
+                403
+            );
+            let selector = if method == "LIST" {
+                json!({"list":true})
+            } else {
+                json!({"scan":true})
+            };
+            assert_eq!(
+                call(&mut service, "GET", path, permitted, selector.clone()).status,
+                200
+            );
+            assert_eq!(
+                call(&mut service, "GET", path, opposite, selector).status,
+                403
+            );
+            let denied = match service.begin_at_mode(RequestDispatch {
+                method,
+                path,
+                namespace: "",
+                token: opposite,
+                body: json!({}),
+                now: 100,
+                allow_forward: false,
+                enforce_namespace: true,
+                wrap_ttl_seconds: None,
+                origin_peer: None,
+                client_certificates: None,
+            }) {
+                RequestExecution::Complete(response) => response,
+                RequestExecution::External(_) => {
+                    return Err("denied enumeration entered external execution".into());
+                }
+            };
+            assert_eq!(denied.status, 403);
+            assert_eq!(
                 call(&mut service, method, path, &tokens[1], json!({})).status,
                 403
             );
         }
         assert_eq!(
-            call(&mut service, method, "legacy-long", &tokens[0], json!({})).status,
+            call(&mut service, method, "legacy-long", permitted, json!({})).status,
             403
         );
         assert_eq!(
@@ -540,7 +583,7 @@ fn kv_root_enumeration_canonicalizes_before_authorization_and_forwarded_dispatch
             method,
             path: "legacy",
             namespace: "",
-            token: &root_token,
+            token: permitted,
             body: json!({}),
             now: 100,
             allow_forward: false,
