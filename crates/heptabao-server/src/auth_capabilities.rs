@@ -109,7 +109,7 @@ impl AuthState {
             return Ok(vec!["root"]);
         }
         if target.wrapping {
-            return Ok(if path == "sys/wrapping/unwrap" {
+            return Ok(if wrapping::allows_token_operation(path, "update") {
                 vec!["update"]
             } else {
                 vec!["deny"]

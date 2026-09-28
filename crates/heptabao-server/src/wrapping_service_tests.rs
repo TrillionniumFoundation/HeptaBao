@@ -636,3 +636,82 @@ fn wrapping_zero_context_is_plain_issuance_but_wrap_endpoint_requires_positive_t
     );
     Ok(())
 }
+
+#[test]
+fn wrapping_270_self_revoke_is_durable_without_releasing_or_revoking_peer() -> TestResult {
+    for method in ["POST", "PUT"] {
+        let f = Fixture::new()?;
+        let mut s = f.service()?;
+        let (root, key) = start(&mut s)?;
+        let payload = "synthetic-discard-without-disclosure-270";
+        let r = wrapped(
+            &mut s,
+            &root,
+            "",
+            "sys/wrapping/wrap",
+            json!({"secret":payload}),
+        );
+        assert_eq!(r.status, 200);
+        let token = text(&r.body, "/wrap_info/token")?;
+        let peer = wrapped(
+            &mut s,
+            &root,
+            "",
+            "sys/wrapping/wrap",
+            json!({"peer":"synthetic-independent"}),
+        );
+        let peer_token = text(&peer.body, "/wrap_info/token")?;
+        let discarded = s.handle_at(method, "auth/token/revoke-self", "", &token, json!({}), 100);
+        assert_eq!(discarded.status, 204);
+        assert!(discarded.body.get("data").is_none_or(Value::is_null));
+        assert!(discarded.body.get("wrap_info").is_none_or(Value::is_null));
+        let state = Zeroizing::new(snapshot(&s)?);
+        assert!(
+            !state
+                .windows(payload.len())
+                .any(|bytes| bytes == payload.as_bytes())
+        );
+        drop(s);
+        let mut s = f.service()?;
+        assert_eq!(
+            call(&mut s, "", "sys/unseal", json!({"key":key})).status,
+            200
+        );
+        assert_eq!(
+            call(&mut s, &root, "sys/wrapping/lookup", json!({"token":token})).status,
+            400
+        );
+        assert_eq!(
+            call(&mut s, &root, "sys/wrapping/unwrap", json!({"token":token})).status,
+            400
+        );
+        assert_eq!(
+            call(&mut s, &token, "auth/token/revoke-self", json!({})).status,
+            403
+        );
+        let peer = call(&mut s, &peer_token, "sys/wrapping/unwrap", json!({}));
+        assert_eq!(peer.status, 200);
+        assert_eq!(peer.body["data"], json!({"peer":"synthetic-independent"}));
+        assert_eq!(
+            s.handle_at("GET", "auth/token/lookup-self", "", &root, json!({}), 100)
+                .status,
+            200
+        );
+        for relative in [
+            "data/state.hbs",
+            "data/journal.hbj",
+            "data/ledger.hbl",
+            "audit.jsonl",
+        ] {
+            let bytes = fs::read(f.0.join(relative))?;
+            for forbidden in [payload, token.as_str(), peer_token.as_str()] {
+                assert!(
+                    !bytes
+                        .windows(forbidden.len())
+                        .any(|window| window == forbidden.as_bytes())
+                );
+            }
+        }
+    }
+    Ok(())
+}

@@ -160,16 +160,19 @@ def select_scenario_runner(default_runner, version, versioned_runners=None):
 
 def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-isolation",
          scope="selected_cubbyhole_and_acl_behavior_only", runner_path=None,
-         versioned_scenario_runners=None) -> int:
+         versioned_scenario_runners=None, required_oracle_version=None) -> int:
     if profile not in ("core-isolation", "identity-live", "response-wrapping", "capabilities-live",
                         "ssh-otp-live", "pki-live", "pkiext-live", "audit-file-management", "namespace-tree", "kv-metadata-cas-live",
-                        "kv-enumeration-live", "policy-parameters-live", "policy-templates-live", "policy-wrapping-ttl-live"):
+                        "kv-enumeration-live", "policy-parameters-live", "policy-templates-live", "policy-wrapping-ttl-live", "wrapping-self-revoke270"):
         raise ValueError("unknown local comparison profile")
     runner_path = Path(__file__) if runner_path is None else Path(runner_path)
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument("--binary", required=True)
     parser.add_argument("--output", required=True)
-    parser.add_argument("--oracle-version", choices=SUPPORTED_VERSIONS, default=VERSION,
+    if required_oracle_version is not None and required_oracle_version not in SUPPORTED_VERSIONS:
+        raise ValueError("unknown required oracle version")
+    versions = (required_oracle_version,) if required_oracle_version else SUPPORTED_VERSIONS
+    parser.add_argument("--oracle-version", choices=versions, default=required_oracle_version or VERSION,
                         help="Exact official release; historical default remains 2.6.2")
     args = parser.parse_args()
     expected_oracle = pinned_artifact(version=args.oracle_version)

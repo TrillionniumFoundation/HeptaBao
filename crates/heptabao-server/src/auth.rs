@@ -2288,7 +2288,7 @@ impl AuthState {
             .service_token()
             .is_some_and(|token| token.wrapping.is_some())
         {
-            return if path == "sys/wrapping/unwrap" && capability == "update" {
+            return if wrapping::allows_token_operation(path, capability) {
                 Ok(())
             } else {
                 Err(denied())

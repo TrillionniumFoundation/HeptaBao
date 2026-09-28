@@ -5,6 +5,12 @@ use super::*;
 const MAX_WRAPPED_RESPONSE_BYTES: usize = 64 * 1024;
 const MAX_LIVE_WRAPPERS: usize = 256;
 
+/// Opaque wrapping credentials can release or discard only their own response.
+/// Keep execution and capability introspection on the same exact-path contract.
+pub(super) fn allows_token_operation(path: &str, capability: &str) -> bool {
+    capability == "update" && matches!(path, "sys/wrapping/unwrap" | "auth/token/revoke-self")
+}
+
 fn bounded_wrapped_response(response: &Value) -> bool {
     // Both issuance and durable admission count encoded bytes without a
     // second plaintext JSON buffer containing bearer tokens or secrets.
