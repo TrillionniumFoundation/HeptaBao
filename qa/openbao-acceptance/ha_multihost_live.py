@@ -535,6 +535,25 @@ def wait_local_frontier(context: ssl.SSLContext, node: Node, required: int,
     raise FixtureError(f"node_{node.node_id}_raft_frontier_timeout")
 
 
+def record_health_failure(context: ssl.SSLContext, node: Node, record) -> None:
+    """One ordinary health observation; only bounded flags enter the report.
+
+    This is diagnostic after an already-failed lifecycle. It cannot rescue the
+    failed check, retry a transfer or turn a local leader into read authority.
+    """
+    try:
+        status, body = api(context, node, "GET", "sys/health", timeout=4)
+        flags = {name: value if type(value) is bool else None
+                 for name in ("initialized", "sealed", "standby", "ha_active",
+                              "ha_application_ready", "recovery_required")
+                 for value in (body.get(name),)}
+        record("failed_transfer_health_observation", node=node.node_id, status=status,
+               failure_code=response_failure_code(status, body), **flags)
+    except (OSError, ssl.SSLError, urllib.error.URLError, TimeoutError):
+        record("failed_transfer_health_observation", node=node.node_id,
+               status="transport_or_deadline")
+
+
 def write_once(context: ssl.SSLContext, node: Node, token: str,
                path: str, value: str) -> int:
     status, body = api(context, node, "POST", f"secret/data/{path}",
@@ -1089,6 +1108,7 @@ test -d "$root/data"
                 except (OSError, ssl.SSLError, urllib.error.URLError, TimeoutError):
                     event("failed_transfer_local_observation", node=observer.node_id,
                           status="transport_or_deadline")
+                record_health_failure(context, observer, event)
             raise
         epochs.append(next_leader.node_id)
         path, value = new_value("after-stepdown")

@@ -71,6 +71,37 @@ class LocalRaftFrontierTests(unittest.TestCase):
         self.assertEqual(events, [(("local_raft_frontier_timeout",), {
             "node": 1, "required_index": 7, "committed_index": 7, "applied_index": 7})])
 
+    def test_failed_health_observation_keeps_only_boolean_flags_and_safe_error(self):
+        import json
+        events = []
+        body = {"initialized": True, "sealed": False, "standby": False,
+                "ha_active": True, "ha_application_ready": False,
+                "recovery_required": True, "errors": ["synthetic-private-error"],
+                "cluster_id": "synthetic-private-cluster", "token": "synthetic-private-token"}
+        with patch.object(profile, "api", return_value=(503, body)) as request:
+            profile.record_health_failure(None, self.node, lambda name, **kw: events.append({"event": name, **kw}))
+            request.assert_called_once_with(None, self.node, "GET", "sys/health", timeout=4)
+        self.assertEqual(len(events), 1)
+        self.assertTrue(events[0]["recovery_required"])
+        self.assertFalse(events[0]["ha_application_ready"])
+        self.assertEqual(events[0]["failure_code"], "http_503_unclassified")
+        self.assertNotIn("synthetic-private", json.dumps(events))
+        self.assertNotIn("passed", events[0])
+        body.update({"initialized": 1, "sealed": "false", "recovery_required": {"token": "private"}})
+        events.clear()
+        with patch.object(profile, "api", return_value=(503, body)):
+            profile.record_health_failure(None, self.node, lambda name, **kw: events.append(kw))
+        for name in ("initialized", "sealed", "recovery_required"):
+            self.assertIsNone(events[0][name])
+
+    def test_health_diagnostic_transport_failure_is_not_retried_or_admitted(self):
+        events = []
+        with patch.object(profile, "api", side_effect=TimeoutError("synthetic-private-error")) as request:
+            profile.record_health_failure(None, self.node, lambda name, **kw: events.append({"event": name, **kw}))
+            self.assertEqual(request.call_count, 1)
+        self.assertEqual(events, [{"event": "failed_transfer_health_observation",
+                                  "node": 1, "status": "transport_or_deadline"}])
+
     def test_stale_or_invalid_observations_never_qualify(self):
         clock = Clock()
         with patch.object(profile.time, "monotonic", clock.now), patch.object(profile.time, "sleep", clock.sleep),                 patch.object(profile, "api", return_value=(200, {"data": {"value": "synthetic-private"}})):
