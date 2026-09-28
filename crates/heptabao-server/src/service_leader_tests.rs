@@ -242,3 +242,78 @@ fn ha_sealed_status_and_lost_quorum_diagnosis_do_not_replace_read_index() -> Tes
     assert_eq!(diagnostic(&mut uninitialized, "GET", "").status, 503);
     Ok(())
 }
+
+#[test]
+fn health_quorum_loss_replies_within_probe_budget_without_admitting_reads() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster =
+        crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &cluster_id)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "secret/data/probe-retained",
+            &token,
+            json!({"data":{"value":"synthetic-retained"}})
+        )
+        .status,
+        200
+    );
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    cluster.isolate_all_peers(true);
+    let started = std::time::Instant::now();
+    let result = service.begin_request_before(
+        ServiceRequest::new("GET", "sys/health", "", "", json!({})),
+        started + Duration::from_secs(12),
+        false,
+    );
+    assert!(
+        started.elapsed() < Duration::from_secs(2),
+        "health consumed the business request budget instead of its probe budget"
+    );
+    let RequestExecution::Complete(response) = result else {
+        return Err("unexpected external health effect".into());
+    };
+    assert_eq!(response.status, 503);
+    assert_eq!(response.body["ha_active"], false);
+    assert_eq!(response.body["ha_application_ready"], false);
+    assert!(cluster.blocked_probes() > 0);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert!(crate::request_deadline::current().is_none());
+    let earlier = std::time::Instant::now();
+    let result = service.begin_request_before(
+        ServiceRequest::new("GET", "sys/health", "", "", json!({})),
+        earlier + Duration::from_millis(30),
+        false,
+    );
+    assert!(earlier.elapsed() < Duration::from_millis(500));
+    assert!(matches!(
+        result,
+        RequestExecution::Complete(Response { status: 503, .. })
+    ));
+    assert!(crate::request_deadline::current().is_none());
+    cluster.isolate_all_peers(false);
+    assert_eq!(
+        call(&mut service, "GET", "sys/health", "", json!({})).status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/probe-retained",
+            &token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    Ok(())
+}

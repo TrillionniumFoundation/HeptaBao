@@ -7,6 +7,7 @@ use heptabao_raft_runtime::RaftRpcService;
 struct Router {
     services: Mutex<BTreeMap<u64, RaftRpcService>>,
     block_append: AtomicBool,
+    block_all: AtomicBool,
     blocked: AtomicU64,
 }
 impl fmt::Debug for Router {
@@ -28,10 +29,11 @@ impl RaftPeerRpc for RpcRouter {
     ) -> BoxFuture<'static, Result<Vec<u8>, RemoteRaftError>> {
         let router = Arc::clone(&self.0);
         Box::pin(async move {
-            if kind == RaftRpcKind::AppendEntries
-                && router
-                    .block_append
-                    .load(std::sync::atomic::Ordering::SeqCst)
+            if router.block_all.load(std::sync::atomic::Ordering::SeqCst)
+                || kind == RaftRpcKind::AppendEntries
+                    && router
+                        .block_append
+                        .load(std::sync::atomic::Ordering::SeqCst)
             {
                 router
                     .blocked
@@ -175,6 +177,11 @@ impl Cluster {
             .block_append
             .store(blocked, std::sync::atomic::Ordering::SeqCst);
     }
+    pub(crate) fn isolate_all_peers(&self, blocked: bool) {
+        self.router
+            .block_all
+            .store(blocked, std::sync::atomic::Ordering::SeqCst);
+    }
     pub(crate) fn blocked_probes(&self) -> u64 {
         self.router
             .blocked
@@ -184,6 +191,7 @@ impl Cluster {
 impl Drop for Cluster {
     fn drop(&mut self) {
         self.block_quorum(false);
+        self.isolate_all_peers(false);
     }
 }
 
