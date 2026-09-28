@@ -321,3 +321,7 @@ impl AuthState {
         })
     }
 }
+
+#[cfg(test)]
+#[path = "auth_wrapping_270_tests.rs"]
+mod openbao270_tests;
