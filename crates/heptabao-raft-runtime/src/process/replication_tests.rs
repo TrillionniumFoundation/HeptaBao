@@ -365,3 +365,102 @@ async fn reopen_publishes_recovered_membership_before_returning()
     std::fs::remove_dir_all(&path)?;
     result
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn stopped_voter_reopens_after_purge_and_reaches_its_own_applied_frontier()
+-> Result<(), Box<dyn std::error::Error>> {
+    let path = std::env::temp_dir().join(format!("heptabao-reopen-purge-{}", std::process::id()));
+    let router = Arc::new(Router::default());
+    let peers = BTreeSet::from([1, 2, 3]);
+    let mut nodes = BTreeMap::new();
+    for id in 1..=3 {
+        let network = RemoteNetworkFactory::new(id, peers.clone(), Arc::new(Arc::clone(&router)))?;
+        let node = ProcessRaftNode::create(path.join(id.to_string()), id, network).await?;
+        router.peers.write().await.insert(id, node.rpc_service());
+        nodes.insert(id, node);
+    }
+    let result = async {
+        let first = nodes.get(&1).ok_or("first node")?;
+        first.initialize_single().await?;
+        leader(first, 1).await?;
+        first.add_learner(2).await?;
+        first.add_learner(3).await?;
+        first.change_membership(peers.clone()).await?;
+        for serial in 1..=18 {
+            let envelope = ReplicatedEnvelope::new(
+                format!("pre-stop-{serial}"),
+                [serial as u8; 32],
+                vec![serial as u8; 12 * 1024],
+            )?;
+            first.replicate(serial, &envelope).await?;
+        }
+        router.paused.write().await.insert(3);
+        router.peers.write().await.remove(&3);
+        let stopped = nodes.remove(&3).ok_or("stopped voter")?;
+        stopped.shutdown().await?;
+        let first = nodes.get(&1).ok_or("first node")?;
+        for serial in 19..=27 {
+            let envelope = ReplicatedEnvelope::new(
+                format!("offline-{serial}"),
+                [serial as u8; 32],
+                vec![serial as u8; 12 * 1024],
+            )?;
+            first.replicate(serial, &envelope).await?;
+        }
+        first.snapshot_observed().await?;
+        let latest = ReplicatedEnvelope::new("after-snapshot", [28; 32], vec![28; 12 * 1024])?;
+        first.replicate(28, &latest).await?;
+        first.ensure_linearizable().await?;
+        let frontier = first
+            .local_leader_observation()?
+            .applied_index
+            .ok_or("leader frontier")?;
+        let network = RemoteNetworkFactory::new(3, peers.clone(), Arc::new(Arc::clone(&router)))?;
+        let restored = ProcessRaftNode::reopen(path.join("3"), 3, network).await?;
+        router.peers.write().await.insert(3, restored.rpc_service());
+        router.paused.write().await.remove(&3);
+        nodes.insert(3, restored);
+        let restored = nodes.get(&3).ok_or("restored voter")?;
+        tokio::time::timeout(Duration::from_secs(10), async {
+            while restored.local_leader_observation()?.applied_index < Some(frontier) {
+                tokio::time::sleep(Duration::from_millis(20)).await;
+            }
+            Ok::<_, RemoteRaftError>(())
+        })
+        .await
+        .map_err(|_| "restored voter's own applied index did not reach leader frontier")??;
+        assert_eq!(
+            restored
+                .latest_envelope()
+                .await?
+                .ok_or("restored envelope")?
+                .digest(),
+            latest.digest()
+        );
+        let current = nodes.get(&1).ok_or("current leader")?;
+        current.transfer_leadership(3).await?;
+        leader(restored, 3).await?;
+        restored.ensure_linearizable().await?;
+        let final_entry =
+            ReplicatedEnvelope::new("after-reopen-transfer", [29; 32], vec![29; 12 * 1024])?;
+        restored.replicate(29, &final_entry).await?;
+        restored.ensure_linearizable().await?;
+        assert_eq!(
+            restored
+                .latest_envelope()
+                .await?
+                .ok_or("new leader publication")?
+                .digest(),
+            final_entry.digest()
+        );
+        Ok::<_, Box<dyn std::error::Error>>(())
+    }
+    .await;
+    router.paused.write().await.clear();
+    router.peers.write().await.clear();
+    for (_, node) in nodes {
+        node.shutdown().await?;
+    }
+    std::fs::remove_dir_all(path)?;
+    result
+}
