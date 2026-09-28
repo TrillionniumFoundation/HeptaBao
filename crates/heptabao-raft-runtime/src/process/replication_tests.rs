@@ -17,6 +17,9 @@ struct Router {
     paused: RwLock<BTreeSet<u64>>,
     largest_append: AtomicUsize,
     largest_entries: AtomicUsize,
+    paced_target: AtomicUsize,
+    paced_timeouts: AtomicUsize,
+    paced_budget_ms: AtomicUsize,
 }
 impl std::fmt::Debug for Router {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -30,7 +33,7 @@ impl RaftPeerRpc for Arc<Router> {
         target: u64,
         kind: RaftRpcKind,
         payload: Vec<u8>,
-        _timeout: Duration,
+        timeout: Duration,
     ) -> BoxFuture<'static, Result<Vec<u8>, RemoteRaftError>> {
         let router = Arc::clone(self);
         Box::pin(async move {
@@ -52,6 +55,19 @@ impl RaftPeerRpc for Arc<Router> {
                 router
                     .largest_entries
                     .fetch_max(request.entries.len(), Ordering::Relaxed);
+                if target as usize == router.paced_target.load(Ordering::SeqCst) {
+                    router
+                        .paced_budget_ms
+                        .fetch_max(timeout.as_millis() as usize, Ordering::SeqCst);
+                    let transfer = Duration::from_micros(1_000 + payload.len() as u64 / 2);
+                    tokio::time::sleep(transfer.min(timeout)).await;
+                    if transfer >= timeout {
+                        router.paced_timeouts.fetch_add(1, Ordering::SeqCst);
+                        return Err(RemoteRaftError::Transport(
+                            "bounded synthetic transfer timeout".into(),
+                        ));
+                    }
+                }
             }
             let peer = router
                 .peers
@@ -460,6 +476,94 @@ async fn stopped_voter_reopens_after_purge_and_reaches_its_own_applied_frontier(
     router.paused.write().await.clear();
     router.peers.write().await.clear();
     for (_, node) in nodes {
+        node.shutdown().await?;
+    }
+    std::fs::remove_dir_all(path)?;
+    result
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn accumulated_replay_uses_small_batches_inside_unchanged_peer_budget()
+-> Result<(), Box<dyn std::error::Error>> {
+    let path = std::env::temp_dir().join(format!("heptabao-paced-replay-{}", std::process::id()));
+    let router = Arc::new(Router::default());
+    let mut nodes = Vec::new();
+    for id in 1..=3 {
+        let network = RemoteNetworkFactory::new(
+            id,
+            BTreeSet::from([1, 2, 3]),
+            Arc::new(Arc::clone(&router)),
+        )?;
+        let node = ProcessRaftNode::create(path.join(id.to_string()), id, network).await?;
+        router.peers.write().await.insert(id, node.rpc_service());
+        nodes.push(node);
+    }
+    let result = async {
+        let first = &nodes[0];
+        first.initialize_single().await?;
+        leader(first, 1).await?;
+        first.add_learner(2).await?;
+        first.add_learner(3).await?;
+        first.change_membership(BTreeSet::from([1, 2, 3])).await?;
+        router.paused.write().await.insert(3);
+        let mut last = None;
+        for serial in 1..=45 {
+            let envelope = ReplicatedEnvelope::new(
+                format!("paced-once-{serial}"),
+                [serial as u8; 32],
+                vec![serial as u8; 8 * 1024],
+            )?;
+            first.replicate(serial, &envelope).await?;
+            last = Some(envelope);
+        }
+        let expected = last.ok_or("last expected envelope")?;
+        let frontier = first
+            .local_leader_observation()?
+            .applied_index
+            .ok_or("leader frontier")?;
+        router.paced_target.store(3, Ordering::SeqCst);
+        router.paused.write().await.clear();
+        let caught_up = tokio::time::timeout(Duration::from_secs(8), async {
+            while nodes[2].local_leader_observation()?.applied_index < Some(frontier) {
+                tokio::time::sleep(Duration::from_millis(20)).await;
+            }
+            Ok::<_, RemoteRaftError>(())
+        })
+        .await;
+        if caught_up.is_err() {
+            assert!(
+                router.paced_timeouts.load(Ordering::SeqCst) > 0,
+                "the failing case must actually exhaust the real supplied RPC budget"
+            );
+        }
+        caught_up.map_err(
+            |_| "fixed RPC budget repeatedly rejected the same accumulated replay batch",
+        )??;
+        assert_eq!(
+            nodes[2]
+                .latest_envelope()
+                .await?
+                .ok_or("replica state")?
+                .digest(),
+            expected.digest()
+        );
+        assert_eq!(
+            router.paced_budget_ms.load(Ordering::SeqCst),
+            150,
+            "replay must not extend the upstream transport budget"
+        );
+        assert_eq!(router.paced_timeouts.load(Ordering::SeqCst), 0);
+        assert!(
+            router.largest_entries.load(Ordering::Relaxed) > 1,
+            "keep useful multi-entry replication rather than one-entry-only dispatch"
+        );
+        Ok::<_, Box<dyn std::error::Error>>(())
+    }
+    .await;
+    router.paced_target.store(0, Ordering::SeqCst);
+    router.paused.write().await.clear();
+    router.peers.write().await.clear();
+    for node in nodes {
         node.shutdown().await?;
     }
     std::fs::remove_dir_all(path)?;
