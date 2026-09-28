@@ -150,7 +150,7 @@ path "acl-template/parameter/{{identity.entity.id}}/item" {
             t.call("injected_" + label + "_write_denied", "POST", "acl-template/team/red/item", 400,
                    {"synthetic": "must-not-publish"}, token=token)
             t.call("injected_" + label + "_write_no_effect", "GET", "acl-template/team/red/item", 200, data=payload)
-            t.call("injected_" + label + "_inspection_rejected", "POST", "sys/capabilities", 400,
+            t.call("injected_" + label + "_inspection_rejected", "POST", "sys/capabilities", 403,
                    {"token": token, "path": "acl-template/team/red/item"})
     t.call("restore_team", "POST", entity_path, 204, {"metadata": {"team": "red"}})
     t.call("remove_direct_membership", "POST", "identity/group/id/" + child, 204, {"member_entity_ids": []})

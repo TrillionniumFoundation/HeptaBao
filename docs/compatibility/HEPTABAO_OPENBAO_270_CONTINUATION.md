@@ -58,9 +58,10 @@ Reference: <https://openbao.org/docs/configuration/storage/pebbledb/>.
 
 A present forbidden wildcard in an Identity ACL substitution must fail the entire
 ACL evaluation, including a templated deny beneath a broad literal grant. The
-pinned 2.7.0 reference reports HTTP 400 for this malformed binding; an ordinary
-policy denial remains HTTP 403. The historical 2.6.2 profile has its separate 403
-contract. A 400/403 union is not used to manufacture differential agreement.
+pinned 2.7.0 reference reports HTTP 400 when the affected token attempts a request;
+root inspection of that target through `sys/capabilities` instead reports HTTP 403
+and discloses no partial capabilities. An ordinary policy denial remains HTTP 403.
+The historical 2.6.2 profile has its separate 403 malformed-request contract. A 400/403 union is not used to manufacture differential agreement.
 
 The candidate returns a fixed redacted error, does not echo Identity metadata,
 and retains negative read/write, unchanged-state, capability-inspection, restart

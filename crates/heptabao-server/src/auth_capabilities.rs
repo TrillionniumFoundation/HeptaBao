@@ -121,14 +121,20 @@ impl AuthState {
             .copied()
             .filter(|capability| *capability != "deny")
         {
-            if self.policy_allows(
-                namespace,
-                path,
-                capability,
-                &target.policies,
-                identity_policies,
-                identity_templates,
-            )? {
+            if self
+                .policy_allows(
+                    namespace,
+                    path,
+                    capability,
+                    &target.policies,
+                    identity_policies,
+                    identity_templates,
+                )
+                // Inspecting an invalid target ACL is a denied introspection,
+                // distinct from that target's own malformed request (HTTP 400).
+                // Do not return a partial capability list or Identity contents.
+                .map_err(|_| denied())?
+            {
                 capabilities.push(capability);
             }
         }

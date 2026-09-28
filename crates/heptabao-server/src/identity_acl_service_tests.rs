@@ -608,7 +608,7 @@ path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["deny"] }
                     json!({"token":f.token,"path":"idtest/peer/item"})
                 )
                 .status,
-                400
+                403
             );
         }
         f.restart()?;
