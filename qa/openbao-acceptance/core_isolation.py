@@ -20,7 +20,10 @@ import tempfile
 import time
 
 from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
-from official_openbao_launcher import BINARY_SHA256, restart_oracle, start_oracle, stop_oracle
+from official_openbao_launcher import (
+    BINARY_SHA256, SUPPORTED_VERSIONS, VERSION, pinned_artifact,
+    restart_oracle, start_oracle, stop_oracle,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -152,7 +155,10 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument("--binary", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--oracle-version", choices=SUPPORTED_VERSIONS, default=VERSION,
+                        help="Exact official release; historical default remains 2.6.2")
     args = parser.parse_args()
+    expected_oracle = pinned_artifact(version=args.oracle_version)
     binary = Path(args.binary).resolve(strict=True)
     output = Path(args.output).resolve()
     if output.exists():
@@ -169,9 +175,12 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
     oracle = None
     candidate_unseal_key = None
     result = {"schema": "heptabao." + profile + "-comparison.v1", "synthetic_only": True,
-              "target_version": "2.6.2", "full_openbao_compatibility": False,
+              "target_version": args.oracle_version, "full_openbao_compatibility": False,
               "independent_qualification": False, "production_authority": False,
-              "candidate_binary_sha256": file_hash(binary), "oracle_binary_sha256": BINARY_SHA256,
+              "candidate_binary_sha256": file_hash(binary),
+              "oracle_binary_sha256": expected_oracle["binary_sha256"],
+              "oracle_artifact_sha256": expected_oracle["artifact_sha256"],
+              "oracle_launcher_source_sha256": file_hash(ROOT / "qa/openbao-acceptance/official_openbao_launcher.py"),
               "cargo_lock_sha256": file_hash(ROOT / "Cargo.lock"),
               "runner_sha256": file_hash(runner_path),
               "launcher_harness_sha256": file_hash(Path(__file__)),
@@ -195,8 +204,9 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
         with socket.socket() as sock:
             sock.bind(("127.0.0.1", 0))
             port = sock.getsockname()[1]
-        oracle = (start_oracle(port, audit_file=True)
-                  if profile == "audit-file-management" else start_oracle(port))
+        oracle = start_oracle(port, audit_file=profile == "audit-file-management",
+                              version=args.oracle_version)
+        result["oracle_storage_backend"] = oracle["storage_backend"]
         reference = Client(oracle["address"], oracle["ca_file"], private_read(oracle["token_file"], 8192).decode().strip())
         # Same ordered requests run independently; no protected operation proxies.
         # Preserve both sides even if one rejects early. Equality of two empty

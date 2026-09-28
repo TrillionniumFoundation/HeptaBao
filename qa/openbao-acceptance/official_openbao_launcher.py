@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Start only a pinned official OpenBao 2.6.2 Linux artifact locally.
+"""Start only an explicitly version-pinned official OpenBao Linux artifact locally.
 
 Set HB_ORACLE_BINARY and HB_ORACLE_ARCHIVE to existing operator-provided files.
 There is no network download, development mode, insecure TLS, or external host.
@@ -36,6 +36,27 @@ PINNED_ARTIFACTS = {
 }
 
 
+# Historical 2.6.2 receipts and default callers retain their original pins.
+# A new minor version must supply an independently verified archive AND binary
+# digest; an unverified architecture is deliberately not admitted by this table.
+PINNED_RELEASES = {
+    VERSION: PINNED_ARTIFACTS,
+    "2.7.0": {
+        ("linux", "amd64"): {
+            "artifact_sha256": "c3ab5de9e778223445487ccbfb16c291bf491642b688f3a3df5aeba23d9b3667",
+            "binary_sha256": "9403c2b121e13fe79b3182051320d2096d10519b597ee587e322dab5e359c51e",
+        },
+    },
+}
+SUPPORTED_VERSIONS = tuple(PINNED_RELEASES)
+
+
+def release_artifacts(version):
+    if not isinstance(version, str) or version not in PINNED_RELEASES:
+        raise BaoError("official_oracle_unsupported_version")
+    return PINNED_RELEASES[version]
+
+
 def _platform_key(system=None, machine=None):
     system = (platform.system() if system is None else system).lower()
     machine = (platform.machine() if machine is None else machine).lower()
@@ -43,13 +64,14 @@ def _platform_key(system=None, machine=None):
     return system, machine
 
 
-def pinned_artifact(system=None, machine=None):
+def pinned_artifact(system=None, machine=None, *, version=VERSION):
     """Return the immutable release pins for the current runnable host.
 
     Unsupported hosts retain the amd64 constants for report/import stability,
     but ``verify_inputs`` rejects execution before it can launch a binary.
     """
-    return PINNED_ARTIFACTS.get(_platform_key(system, machine), PINNED_ARTIFACTS[("linux", "amd64")])
+    artifacts = release_artifacts(version)
+    return dict(artifacts.get(_platform_key(system, machine), artifacts[("linux", "amd64")]))
 
 
 _CURRENT_PIN = pinned_artifact()
@@ -70,10 +92,11 @@ def file_digest(path):
         return stream_digest(handle)
 
 
-def verify_inputs():
-    if _platform_key() not in PINNED_ARTIFACTS:
+def verify_inputs(*, version=VERSION):
+    artifacts = release_artifacts(version)
+    if _platform_key() not in artifacts:
         raise BaoError("official_oracle_unsupported_platform")
-    expected = pinned_artifact()
+    expected = pinned_artifact(version=version)
     binary = Path(os.environ["HB_ORACLE_BINARY"]).resolve(strict=True)
     archive = Path(os.environ["HB_ORACLE_ARCHIVE"]).resolve(strict=True)
     if file_digest(archive) != expected["artifact_sha256"] or file_digest(binary) != expected["binary_sha256"]:
@@ -147,7 +170,8 @@ def stop_oracle(oracle):
 
 def restart_oracle(oracle):
     """Restart the same private synthetic Oracle root without reinitializing it."""
-    binary = verify_inputs()
+    version = oracle.get("version", VERSION)
+    binary = verify_inputs(version=version)
     root = Path(oracle["root"]).resolve(strict=True)
     process = oracle.get("process")
     if process is not None and process.poll() is None:
@@ -189,7 +213,7 @@ def restart_oracle(oracle):
             stop_oracle(oracle)
             raise BaoError("official_oracle_restart_unseal_failed")
     health = client.health()
-    if health["version"] != VERSION:
+    if health["version"] != version:
         stop_oracle(oracle)
         raise BaoError("official_oracle_restart_version_mismatch")
     expected_cluster = oracle.get("cluster_id")
@@ -200,23 +224,40 @@ def restart_oracle(oracle):
     return oracle
 
 
-def start_oracle(port, *, audit_file=False, raft_storage=False):
+def storage_configuration(root, *, version=VERSION, raft_storage=False):
+    """Keep non-HA fixtures non-HA across the removal of file in OpenBao 2.7.
+
+    Reference: https://openbao.org/docs/configuration/storage/pebbledb/
+    A Raft fixture remains an explicit opt-in, not a silent topology change.
+    """
+    release_artifacts(version)
+    if type(raft_storage) is not bool:
+        raise BaoError("official_oracle_invalid_storage_profile")
+    if raft_storage:
+        return {"raft": {"path": str(root / "data"), "node_id": "synthetic-openbao-1"}}
+    backend = "pebbledb" if version == "2.7.0" else "file"
+    return {backend: {"path": str(root / "data")}}
+
+
+def start_oracle(port, *, audit_file=False, raft_storage=False, version=VERSION):
     if type(audit_file) is not bool or type(raft_storage) is not bool:
         raise BaoError("official_oracle_invalid_audit_profile")
     if type(port) is not int or not 1024 <= port <= 65534:
         raise BaoError("official_oracle_invalid_loopback_port")
-    binary = verify_inputs()
-    root = Path(tempfile.mkdtemp(prefix="official-openbao-2.6.2-", dir=os.environ.get("HB_ORACLE_WORK_ROOT")))
+    binary = verify_inputs(version=version)
+    expected = pinned_artifact(version=version)
+    root = Path(tempfile.mkdtemp(prefix="official-openbao-" + version + "-", dir=os.environ.get("HB_ORACLE_WORK_ROOT")))
     root.chmod(0o700)
     old_mask = os.umask(0o077)
     oracle = {"root": str(root), "address": f"https://127.0.0.1:{port}",
               "ca_file": str(root / "ca.crt"), "token_file": str(root / "root.token"),
-              "artifact_sha256": ARTIFACT_SHA256, "binary_sha256": BINARY_SHA256}
+              "version": version, "artifact_sha256": expected["artifact_sha256"],
+              "binary_sha256": expected["binary_sha256"]}
     try:
         certificates(root)
-        storage = ({"raft": {"path": str(root / "data"), "node_id": "synthetic-openbao-1"}}
-                   if raft_storage else {"file": {"path": str(root / "data")}})
-        if raft_storage:
+        storage = storage_configuration(root, version=version, raft_storage=raft_storage)
+        oracle["storage_backend"] = next(iter(storage))
+        if raft_storage or version == "2.7.0":
             (root / "data").mkdir(mode=0o700)
         config = {
             "disable_mlock": True, "ui": False,
@@ -269,13 +310,15 @@ def start_oracle(port, *, audit_file=False, raft_storage=False):
         if client.request("POST", "/v1/sys/unseal", {"key": key}).status != 200:
             raise BaoError("official_oracle_unseal_failed")
         health = Client(oracle["address"], oracle["ca_file"], token).health()
-        if health["version"] != VERSION:
+        if health["version"] != version:
             raise BaoError("official_oracle_live_version_mismatch")
-        identity = {"product": "OpenBao", "version": VERSION, "artifact_sha256": ARTIFACT_SHA256,
-                    "binary_sha256": BINARY_SHA256, "provenance_url": PROVENANCE_URL,
+        identity = {"product": "OpenBao", "version": version,
+                    "artifact_sha256": expected["artifact_sha256"],
+                    "binary_sha256": expected["binary_sha256"],
+                    "provenance_url": "https://github.com/openbao/openbao/releases/tag/v" + version,
                     "endpoint": oracle["address"], "cluster_id": health["cluster_id"],
                     "archive_member_matches_executable": True, "server_mode": "server_not_dev",
-                    "storage": "raft" if raft_storage else "file", "tls_verified": True, "synthetic_only": True,
+                    "storage": oracle["storage_backend"], "tls_verified": True, "synthetic_only": True,
                     "launcher_source_sha256": file_digest(__file__)}
         private_write(root / "oracle-identity.json", identity)
         oracle["identity_file"] = str(root / "oracle-identity.json")
