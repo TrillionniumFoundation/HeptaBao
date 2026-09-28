@@ -25,6 +25,7 @@ pub mod federated_auth;
 pub mod fixture_native_restore;
 pub mod ha;
 mod ha_forward;
+mod ha_observation;
 pub mod ha_state;
 pub mod http;
 pub mod outbound;

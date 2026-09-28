@@ -5198,10 +5198,18 @@ impl Service {
         };
         let known = self.reusable_ha_cursor().cloned();
         let previous_cache = self.ha_read_cache.take();
+        let observation_started = std::time::Instant::now();
         let observed = ha
             .lock_for_request()
             .map_err(|_| Response::error(503, "HA control state is unavailable"))?
             .latest_committed_state_if_changed(known.as_ref())
+            .inspect_err(|error| {
+                crate::ha_observation::report(
+                    crate::ha_observation::Stage::StateRead,
+                    error,
+                    observation_started.elapsed(),
+                )
+            })
             .map_err(|_| Response::error(503, "HA linearizable state is unavailable"))?;
         let committed = match observed {
             crate::ha::CommittedStateRead::Unchanged => {

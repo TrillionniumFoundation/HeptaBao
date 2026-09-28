@@ -510,8 +510,16 @@ impl HaProcess {
             &self.codec,
             known,
             || {
+                let started = std::time::Instant::now();
                 self.block_on_read(node.ensure_linearizable())
                     .map_err(|error| error.to_string())
+                    .inspect_err(|error| {
+                        crate::ha_observation::report(
+                            crate::ha_observation::Stage::ReadIndex,
+                            error,
+                            started.elapsed(),
+                        )
+                    })
             },
             || {
                 self.runtime
