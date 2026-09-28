@@ -1,5 +1,6 @@
 """Independent replacement fixtures must report failures without masking siblings."""
 from pathlib import Path
+import copy
 import unittest
 import yaml
 
@@ -33,10 +34,43 @@ class ReplacementFixtureProgressTests(unittest.TestCase):
         self.assertIn("steps.provider_packages_ready.outcome == 'success'", native)
         self.assertNotIn('oracle_ready', native)
 
+    def assert_bound_oracle_prerequisite(self, step):
+        lanes = {
+            '${{ runner.temp }}/heptabao-official-oracle/bao':
+                ('oracle_ready', '${{ runner.temp }}/heptabao-official-oracle/oracle-official.tar.gz'),
+            '${{ runner.temp }}/heptabao-official-oracle270/bao':
+                ('oracle270_ready', '${{ runner.temp }}/heptabao-official-oracle270/oracle-official.tar.gz'),
+        }
+        binary = step['env']['HB_ORACLE_BINARY']
+        self.assertIn(binary, lanes)
+        prerequisite, archive = lanes[binary]
+        self.assertIn(f"steps.{prerequisite}.outcome == 'success'", step['if'])
+        self.assertEqual(step['env'].get('HB_ORACLE_ARCHIVE'), archive)
+        if prerequisite == 'oracle270_ready':
+            self.assertIn('--oracle-version 2.7.0', step['run'])
+
+    def test_oracle_lanes_cannot_swap_artifacts_or_readiness_requirements(self):
+        for original in self.steps:
+            if 'HB_ORACLE_BINARY' not in original.get('env', {}):
+                continue
+            self.assert_bound_oracle_prerequisite(original)
+            changed = copy.deepcopy(original)
+            changed['env']['HB_ORACLE_ARCHIVE'] = '/unverified/archive.tar.gz'
+            with self.subTest(name=original['name'], change='archive'), self.assertRaises(AssertionError):
+                self.assert_bound_oracle_prerequisite(changed)
+            changed = copy.deepcopy(original)
+            changed['if'] = "${{ !cancelled() && steps.runtime_ready.outcome == 'success' }}"
+            with self.subTest(name=original['name'], change='readiness'), self.assertRaises(AssertionError):
+                self.assert_bound_oracle_prerequisite(changed)
+            changed = copy.deepcopy(original)
+            changed['env']['HB_ORACLE_BINARY'] = '/unverified/bao'
+            with self.subTest(name=original['name'], change='binary'), self.assertRaises(AssertionError):
+                self.assert_bound_oracle_prerequisite(changed)
+
     def test_external_prerequisites_cannot_be_skipped_or_substituted(self):
         for step in self.steps:
             if 'HB_ORACLE_BINARY' in step.get('env', {}):
-                self.assertIn("steps.oracle_ready.outcome == 'success'",step['if'])
+                self.assert_bound_oracle_prerequisite(step)
         for name in ('Exercise PostgreSQL physical storage transactions and crash recovery',
                      'Exercise PostgreSQL durable backend and server initialization recovery',
                      'Exercise actual PostgreSQL SQL and active-session revocation'):
