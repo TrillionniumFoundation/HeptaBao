@@ -723,8 +723,9 @@ impl MutualTlsPeerTransport {
         })
     }
 
-    /// Application forwarding uses one absolute budget, including connect and
-    /// every TLS/frame I/O. Consensus RPCs retain their separate peer timeout.
+    /// One absolute budget includes connect and every TLS/frame I/O. The caller
+    /// supplies its own forwarding or consensus RPC deadline; this transport's
+    /// configured timeout can shorten, but cannot extend, the remaining budget.
     pub fn exchange_before(
         &self,
         peer: &NodeId,

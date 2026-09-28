@@ -182,6 +182,9 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
         payload: Vec<u8>,
         timeout: Duration,
     ) -> BoxFuture<'static, Result<Vec<u8>, RemoteRaftError>> {
+        // Capture the caller's budget before this future can wait to be polled.
+        // Admission, blocking-pool queueing and every socket operation share it.
+        let deadline = Instant::now().checked_add(timeout);
         let local_id = self.local_id;
         let cluster_id = self.cluster_id.clone();
         let target_node = self.peers.get(&target).cloned();
@@ -193,6 +196,10 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
                 return Err(RemoteRaftError::InvalidRpc);
             }
             let target_node = target_node.ok_or(RemoteRaftError::InvalidTopology)?;
+            let deadline = deadline.ok_or(RemoteRaftError::InvalidRpc)?;
+            if Instant::now() >= deadline {
+                return Err(RemoteRaftError::Transport("peer RPC timed out".into()));
+            }
             let request_frame = RaftWireFrame {
                 cluster_id: cluster_id.clone(),
                 role: RAFT_FRAME_REQUEST,
@@ -207,20 +214,31 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
             } else {
                 encode_raft_frame(request_frame)?
             };
-            let permit = tokio::time::timeout(timeout, inflight.acquire_owned())
+            let async_deadline = tokio::time::Instant::from_std(deadline);
+            let permit = tokio::time::timeout_at(async_deadline, inflight.acquire_owned())
                 .await
                 .map_err(|_| RemoteRaftError::Transport("peer RPC admission timed out".into()))?
                 .map_err(|_| RemoteRaftError::Transport("peer RPC admission closed".into()))?;
-            let work = tokio::task::spawn_blocking(move || {
+            // A ready permit can win a timeout poll after the deadline elapsed.
+            if Instant::now() >= deadline {
+                return Err(RemoteRaftError::Transport(
+                    "peer RPC admission timed out".into(),
+                ));
+            }
+            let mut work = QueuedRaftRpc(tokio::task::spawn_blocking(move || {
+                // Keep capacity charged until a running exchange actually ends.
                 let _permit = permit;
                 transport
-                    .exchange(&target_node, &request)
+                    .exchange_before(&target_node, &request, deadline)
                     .map_err(|error| RemoteRaftError::Transport(error.to_string()))
-            });
-            let response = tokio::time::timeout(timeout, work)
+            }));
+            let response = tokio::time::timeout_at(async_deadline, &mut work.0)
                 .await
                 .map_err(|_| RemoteRaftError::Transport("peer RPC timed out".into()))?
                 .map_err(|error| RemoteRaftError::Transport(error.to_string()))??;
+            if Instant::now() >= deadline {
+                return Err(RemoteRaftError::Transport("peer RPC timed out".into()));
+            }
             let response = decode_raft_frame_for_cluster_compatible(
                 &response,
                 &cluster_id,
@@ -234,8 +252,22 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
             {
                 return Err(RemoteRaftError::InvalidRpc);
             }
+            if Instant::now() >= deadline {
+                return Err(RemoteRaftError::Transport("peer RPC timed out".into()));
+            }
             Ok(response.payload)
         })
+    }
+}
+
+// Dropping a JoinHandle detaches its work. Abort cancels an unstarted blocking
+// job instead; a job that already started retains its permit and absolute I/O
+// deadline. This never retries a mutation or treats timeout as proof of no effect.
+struct QueuedRaftRpc<T>(tokio::task::JoinHandle<T>);
+
+impl<T> Drop for QueuedRaftRpc<T> {
+    fn drop(&mut self) {
+        self.0.abort();
     }
 }
 
@@ -3079,3 +3111,7 @@ pub(crate) mod snapshot_test_support;
 #[cfg(test)]
 #[path = "ha_peer_wire_upgrade_tests.rs"]
 mod peer_wire_upgrade_tests;
+
+#[cfg(test)]
+#[path = "ha_rpc_deadline_tests.rs"]
+mod rpc_deadline_tests;
