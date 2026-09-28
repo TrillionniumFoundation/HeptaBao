@@ -108,6 +108,31 @@ Source-bound lexical inventory: `crates/heptabao-raft-runtime`; Cargo SHA-256 `6
 This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
 <!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
 
+## Interrupted snapshot reception
+
+The authenticated peer adapter owns in-memory, bounded receive prefixes; a
+prefix acknowledgement is neither a durable snapshot nor an applied-log
+observation. Before replacing any prefix, the first chunk binds its committed
+vote to the authenticated sender and its transfer identifier to the serialized
+metadata, vote and total length. Malformed prefixes, regressing votes or log
+frontiers, and conflicting content at the same frontier leave admitted progress
+untouched. Whole-snapshot length/CRC verification and OpenRaft's final snapshot
+installation remain mandatory; CRC is transport integrity, not authentication.
+
+A valid restart retires that sender's incomplete transfer. A higher-vote sender
+also retires lower-vote prefixes, so interrupted restarts and leadership changes
+do not permanently consume the four receive slots. Late chunks from retired
+transfers are rejected. Identical first-chunk replay restarts reception after a
+lost acknowledgement, without replaying an application mutation. Allocation grows
+with received bytes rather than preallocating a claimed 128 MiB snapshot.
+
+`interrupted_snapshot_restarts_do_not_exhaust_receive_slots` retains the original
+slot-exhaustion regression. The `process::snapshot_receive_tests` group covers
+malformed-prefix preservation, authenticated sender binding, leadership changes,
+late chunks and identical restart. Real snapshot installation/reopen and local
+applied-frontier checks remain in `process::replication_tests`; these bounded
+checks do not establish full OpenBao compatibility or destructive qualification.
+
 ## State and data model
 
 Each node owns a versioned CRC-protected log generation, persistent vote and committed membership, a versioned state-machine bundle, and a snapshot generation. Store initialization is marked before the first generation is published; interrupted replacement preserves exactly one recoverable predecessor and ambiguous multiple predecessors fail closed. New application entries use the length-prefixed `hbr2` envelope profile (unambiguous `hbr1` entries remain readable): operation identity, semantic digest and ciphertext encoded without plaintext interpretation. Client serial numbers provide OpenRaft state-machine deduplication and must be nonzero. `decode_status` rejects malformed length prefixes and UTF-8 split boundaries with `InvalidEnvelope` before slicing, so hostile Unicode cannot panic the decoder.

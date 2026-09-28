@@ -447,6 +447,9 @@ impl RaftRpcService {
             || request.ordinal >= request.total_chunks
             || total_bytes > MAX_REMOTE_SNAPSHOT_BYTES
             || request.chunk.len() > SNAPSHOT_CHUNK_BYTES
+            || request.chunk.len() > total_bytes
+            || (request.total_chunks == 1 && request.chunk.len() != total_bytes)
+            || (request.total_chunks > 1 && request.chunk.is_empty())
             || crc32(&request.chunk) != request.chunk_crc32
         {
             return Err(RemoteRaftError::InvalidSnapshot);
@@ -456,11 +459,43 @@ impl RaftRpcService {
         let completed = {
             let mut snapshots = self.incoming_snapshots.lock().await;
             if request.ordinal == 0 {
-                if snapshots.len() >= MAX_INCOMING_SNAPSHOTS && !snapshots.contains_key(&key) {
-                    return Err(RemoteRaftError::InvalidSnapshot);
-                }
                 let vote = request.vote.ok_or(RemoteRaftError::InvalidSnapshot)?;
                 let meta = request.meta.ok_or(RemoteRaftError::InvalidSnapshot)?;
+                // Validate the authenticated sender and the complete prefix
+                // identity before releasing any already-admitted receive state.
+                let meta_bytes =
+                    serde_json::to_vec(&meta).map_err(|_| RemoteRaftError::InvalidSnapshot)?;
+                let vote_bytes =
+                    serde_json::to_vec(&vote).map_err(|_| RemoteRaftError::InvalidSnapshot)?;
+                if !vote.committed
+                    || vote.leader_id.node_id != source
+                    || request.transfer_id
+                        != snapshot_transfer_id(&meta_bytes, &vote_bytes, total_bytes)
+                    || (request.total_chunks == 1 && request.whole_crc32 != request.chunk_crc32)
+                    || snapshots.values().any(|pending| {
+                        matches!(
+                            vote.partial_cmp(&pending.vote),
+                            None | Some(std::cmp::Ordering::Less)
+                        ) || (vote == pending.vote
+                            && (meta.last_log_id < pending.meta.last_log_id
+                                || (meta.last_log_id == pending.meta.last_log_id
+                                    && (meta != pending.meta
+                                        || total_bytes != pending.total_bytes
+                                        || request.whole_crc32 != pending.whole_crc32))))
+                    })
+                {
+                    return Err(RemoteRaftError::InvalidSnapshot);
+                }
+                // A restart supersedes this sender's incomplete prefix. A new
+                // leader also retires older-vote streams; late chunks can no
+                // longer append to them. Keep the original aggregate bound.
+                snapshots.retain(|(peer, _), pending| {
+                    *peer != source
+                        && pending.vote.partial_cmp(&vote) != Some(std::cmp::Ordering::Less)
+                });
+                if snapshots.len() >= MAX_INCOMING_SNAPSHOTS {
+                    return Err(RemoteRaftError::InvalidSnapshot);
+                }
                 snapshots.insert(
                     key.clone(),
                     IncomingSnapshot {
@@ -470,7 +505,7 @@ impl RaftRpcService {
                         meta,
                         total_bytes,
                         whole_crc32: request.whole_crc32,
-                        data: Vec::with_capacity(total_bytes),
+                        data: Vec::with_capacity(request.chunk.len()),
                     },
                 );
             } else if request.vote.is_some() || request.meta.is_some() {
