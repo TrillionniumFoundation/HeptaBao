@@ -1585,6 +1585,73 @@ mod service_lock_deadline_tests {
     }
 
     #[test]
+    fn ordinary_expired_execution_still_delivers_503_inside_original_transport_budget()
+    -> Result<(), Box<dyn std::error::Error>> {
+        struct Directory(PathBuf);
+        impl Drop for Directory {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let root = Directory(std::env::temp_dir().join(format!(
+            "heptabao-response-reserve-{}-{}",
+            std::process::id(),
+            u64::from_le_bytes(crypto::random::<8>()?),
+        )));
+        std::fs::create_dir(&root.0)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let service = Arc::new(Mutex::new(Service::new(
+            root.0.join("data"),
+            &root.0.join("audit.jsonl"),
+        )?));
+        let held = service.lock().map_err(|_| "service lock")?;
+        let listener = TcpListener::bind("127.0.0.1:0")?;
+        let mut client = TcpStream::connect(listener.local_addr()?)?;
+        client.set_read_timeout(Some(Duration::from_secs(2)))?;
+        let (socket, _) = listener.accept()?;
+        let deadline = Instant::now() + Duration::from_millis(200);
+        let mut transport = DeadlineStream {
+            stream: socket,
+            deadline,
+        };
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new("GET", "secret/data/synthetic", "", "", json!({})),
+            deadline,
+            false,
+        );
+        assert_eq!(response.status, 503);
+        assert!(response.body.get("data").is_none());
+        // This is the actual production response writer and bounded TCP stream,
+        // not an in-memory renderer that would ignore the transport deadline.
+        write_response(&mut transport, response, false)?;
+        assert!(Instant::now() < deadline);
+        drop(transport);
+        let mut bytes = Vec::new();
+        client.read_to_end(&mut bytes)?;
+        assert!(bytes.starts_with(b"HTTP/1.1 503 "));
+        assert!(
+            bytes
+                .windows(b"service state lock deadline exceeded".len())
+                .any(|window| window == b"service state lock deadline exceeded")
+        );
+        drop(held);
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new("GET", "sys/init", "", "", json!({})),
+            Instant::now() + Duration::from_secs(1),
+            false,
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["initialized"], false);
+        Ok(())
+    }
+
+    #[test]
     fn service_lock_wait_is_bounded_when_another_request_holds_the_writer()
     -> Result<(), Box<dyn std::error::Error>> {
         let lock = Mutex::new(());
