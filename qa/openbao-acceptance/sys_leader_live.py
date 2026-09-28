@@ -303,12 +303,14 @@ def main():
     parser=SafeArgumentParser(description=__doc__)
     parser.add_argument('--binary',type=Path);parser.add_argument('--build-source-commit')
     parser.add_argument('--oracle-only',action='store_true')
+    parser.add_argument('--oracle-version', choices=(ORACLE_VERSION,), default=ORACLE_VERSION,
+                        help='Exact verified reference release; this profile supports only 2.7.0')
     parser.add_argument('--work-parent',required=True,type=Path);parser.add_argument('--output',required=True,type=Path)
     args=parser.parse_args()
     if not args.oracle_only and (args.binary is None or not re.fullmatch('[0-9a-f]{40}',args.build_source_commit or '')):
         parser.error('candidate binary and full build source commit required')
     parent=private_parent(args.work_parent);output=args.output.absolute();admitted=admit_output(output)
-    bao=verify_inputs(version=ORACLE_VERSION);oracle_hash=file_hash(bao);runner_hash=file_hash(Path(__file__))
+    bao=verify_inputs(version=args.oracle_version);oracle_hash=file_hash(bao);runner_hash=file_hash(Path(__file__))
     binary=None if args.oracle_only else args.binary.resolve(strict=True)
     before=None if binary is None else source_identity(ROOT,binary)
     work=Path(tempfile.mkdtemp(prefix='sys-leader-',dir=parent));checks=[];observations=[];samples=[];failure=None

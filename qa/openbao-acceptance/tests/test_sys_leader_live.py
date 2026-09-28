@@ -152,6 +152,35 @@ class LeaderGuards(unittest.TestCase):
             fixture.ready(rejected, 501, expected_version=fixture.ORACLE_VERSION)
         self.assertEqual(rejected.calls, 1)
 
+    def test_cli_rejects_other_oracle_versions_before_any_fixture_access(self):
+        from unittest.mock import patch
+        for version in ("2.6.2", "latest", "2.7.1"):
+            argv = ["sys-leader", "--oracle-only", "--work-parent", "/synthetic/private",
+                    "--output", "/synthetic/private/report.json", "--oracle-version", version]
+            with patch("sys.argv", argv), patch.object(fixture, "private_parent") as parent, \
+                    patch.object(fixture, "verify_inputs") as verify:
+                with self.assertRaises(SystemExit) as error:
+                    fixture.main()
+                self.assertEqual(error.exception.code, 2)
+                parent.assert_not_called()
+                verify.assert_not_called()
+
+    def test_cli_explicit_and_default_oracle_use_exact_artifact_verification(self):
+        from pathlib import Path
+        from unittest.mock import patch
+        for selection in ([], ["--oracle-version", "2.7.0"]):
+            argv = ["sys-leader", "--oracle-only", "--work-parent", "/synthetic/private",
+                    "--output", "/synthetic/private/report.json", *selection]
+            with patch("sys.argv", argv), \
+                    patch.object(fixture, "private_parent", return_value=Path("/synthetic/private")), \
+                    patch.object(fixture, "admit_output"), \
+                    patch.object(fixture, "verify_inputs", side_effect=RuntimeError("artifact-admission")) as verify, \
+                    patch.object(fixture.tempfile, "mkdtemp") as allocate:
+                with self.assertRaisesRegex(RuntimeError, "artifact-admission"):
+                    fixture.main()
+                verify.assert_called_once_with(version="2.7.0")
+                allocate.assert_not_called()
+
     def test_current_non_ha_reference_uses_pebbledb_not_removed_file_storage(self):
         from pathlib import Path
         import json

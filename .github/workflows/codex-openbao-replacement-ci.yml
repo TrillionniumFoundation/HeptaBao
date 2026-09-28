@@ -666,6 +666,7 @@ jobs:
           work="$RUNNER_TEMP/heptabao-leader270-private"
           mkdir -m 700 "$work"
           timeout 600 python qa/openbao-acceptance/sys_leader_live.py \
+            --oracle-version 2.7.0 \
             --binary "$PWD/target/debug/heptabao-server" \
             --build-source-commit "$(git rev-parse HEAD)" \
             --work-parent "$work" \
