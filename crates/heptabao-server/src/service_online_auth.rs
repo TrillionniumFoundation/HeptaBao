@@ -291,7 +291,7 @@ impl Service {
         if let Some(token) = echo_token {
             response.body["auth"]["client_token"] = json!(token.as_str());
         }
-        if let Some(ttl) = wrap_ttl_seconds {
+        if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0) {
             let wrapped = state
                 .auth
                 .wrap_response(namespace, &path, ttl, &response.body, now);
@@ -419,7 +419,7 @@ impl Service {
             Ok(response) => response,
             Err(error) => return auth_error(error),
         };
-        if let Some(ttl) = wrap_ttl_seconds
+        if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0)
             && response.status != 204
             && !response.body.is_null()
         {
@@ -506,7 +506,7 @@ impl Service {
         if !matches!(request.method, "POST" | "PUT") {
             return Some(Response::error(405, "online login requires POST or PUT"));
         }
-        if kind == "oidc" && request.wrap_ttl_seconds.is_some() {
+        if kind == "oidc" && request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Some(Response::error(
                 400,
                 "online login wrapping is not supported",
@@ -621,6 +621,7 @@ impl Service {
             request_now: request.now,
             login_wrapping: request
                 .wrap_ttl_seconds
+                .filter(|ttl| *ttl > 0)
                 .map(|ttl| (request.path.to_owned(), ttl)),
             effect,
         });
@@ -717,6 +718,7 @@ impl Service {
         let wrapping = match &plan.effect {
             OnlineAuthEffect::RemoteJwt(effect) => effect
                 .wrap_ttl_seconds
+                .filter(|ttl| *ttl > 0)
                 .map(|ttl| (effect.path.clone(), ttl)),
             _ => plan.login_wrapping.clone(),
         };

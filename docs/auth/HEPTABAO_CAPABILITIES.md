@@ -91,8 +91,76 @@ contains them. `policy_parameters_live.py` compares these bounded HTTP semantics
 with the checksum-pinned official OpenBao 2.6.2 binary and includes effect
 readback for both denials and operation-specific exclusions.
 
-Identity/entity/group template expansion, wrapping-TTL/MFA/pagination/response-key
-rule attributes, broader path/glob/list/scan combinations and the full namespace
-administration hierarchy remain separate work. This API does not issue a reusable
-execution capability. Independent security and full OpenBao compatibility remain
-open.
+## Live Identity path substitutions
+
+Schema 60 adds bounded `{{ identity.entity.id }}`, entity name/metadata,
+`identity.entity.aliases.<mount-accessor>` id/name/backend metadata/custom metadata,
+and `identity.groups.ids.<id>` or `identity.groups.names.<name>` id/name/metadata
+selectors to ordinary ACL path rules. This is scalar path substitution, not a
+general expression or Go-template engine. The policy is parsed on ingress and
+revalidated on reopen. Missing fields omit that rule rather than turning into a
+wildcard or an empty grant. Substituted `*`, `+`, escaped/traversal paths and nested
+templates never manufacture ACL authority. Literal policy wildcards keep the
+existing deterministic specificity rules.
+
+The normal Service and capability-inspection paths project only the selectors
+needed by the subject's current effective policies, from the same namespace-owned
+Identity records. Alias selection requires the live mount accessor and coherent
+alias/canonical indexes. Group selection requires the subject's verified direct
+or inherited membership; naming a nonmember group is not authorization. Backend
+login metadata and administrator-owned custom alias metadata stay separate.
+Renaming, metadata edits, membership removal, alias deletion, disabled entities
+and restart affect existing service and batch tokens immediately on the next
+current-state authorization. Expanded values are request-local and are cleared
+when Identity is rebound; they are never durable token permissions.
+
+Limits are 2,048 path bytes, 64 directives per rule, 512 bytes per selector and
+4,096 distinct selectors across the effective policy set. Only requested values
+are copied. `auth_acl_template.rs`, `identity_acl_templates.rs`,
+`identity_acl_service_tests.rs` and `policy_templates_live.py` own implementation,
+Service regressions and the separate checksum-pinned native comparison. Generic
+parameter admission and capabilities use the same rendered winning path.
+
+## ACL wrapping TTL constraints
+
+Schema 61 adds integer/whole-second `min_wrapping_ttl` and `max_wrapping_ttl`
+attributes. A rule with both nonzero bounds rejects a minimum above its maximum.
+Zero means an unconstrained bound; absent/zero fields preserve legacy serialized
+rules. Bounds select the same highest-priority path as capabilities and parameters.
+For identical winning paths OpenBao 2.6.2 merges each bound by its shortest nonzero
+value; this is not a maximum-of-minima intersection. A conflict formed by merging
+separate policies denies requests that cannot satisfy both resulting bounds.
+Broad wildcard rules do not override a more-specific default or explicit rule.
+
+Absence and explicit zero are distinct native request facts:
+
+| Rule | No wrapping header | Explicit `0` | Positive TTL |
+|---|---|---|---|
+| Minimum greater than zero | Denied | Denied | Must meet the minimum and any maximum. |
+| Maximum only | Denied | Allowed without a wrapper. | Must not exceed the maximum. |
+| Both zero/absent | Ordinary request | Ordinary request | Existing wrapping envelope applies. |
+
+A maximum-only policy therefore does **not** require confidential wrapped delivery;
+use a positive minimum when that is the intended policy. The native comparison
+retains both cases instead of collapsing zero into absence. HTTP parsing, audit
+fingerprints, request-local Principal metadata and authenticated HA forwarding
+preserve the distinction. Only positive TTLs request actual response capture.
+An old forwarding peer may refuse explicit-zero context but must never downgrade
+it to a context-free request.
+
+Bounds are checked before read/write/delete/list/scan dispatch and again when an
+existing retained actor reauthorizes late work. Generic parameter constraints keep
+their operation-specific scope and remain independently enforced. An admitted
+transactional DELETE may return native 204 with no wrapper because there is no
+payload; effect readback still proves deletion. Capability inspection reports
+capability names, not satisfaction of wrapping or request-parameter conditions.
+`auth_acl_wrapping.rs`, `service_acl_wrapping_tests.rs` and
+`policy_wrapping_ttl_live.py` bind these limited semantics to real entry points.
+GET body bytes are consumed and bounded but ignored as logical fields; positive
+GET parameter tests use query fields, matching the pinned upstream HTTP adapter.
+
+MFA, pagination/response-key attributes, unsupported template forms, complete
+path/glob/list/scan combinations, arbitrary duration precision, positive HEAD
+wrapping, external-effect wrapping envelopes and the full namespace administration
+hierarchy remain separate work. These APIs do not issue reusable execution
+capabilities. Independent security and full OpenBao compatibility remain open.

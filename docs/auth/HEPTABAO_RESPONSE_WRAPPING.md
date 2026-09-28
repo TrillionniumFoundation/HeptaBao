@@ -9,7 +9,7 @@ linked acceptance runners verify selected compatibility and failure cases.
 
 The TLS API accepts `X-Vault-Wrap-TTL` for successful transactional auth/engine
 responses. Supported durations are nonnegative integer seconds or integer `h`,
-`m`, `s` components. Zero disables wrapping; positive TTL must not exceed 32 days.
+`m`, `s` components. Zero disables actual wrapping but remains present request metadata for ACL bounds; positive TTL must not exceed 32 days.
 A successful wrapped response exposes `wrap_info` with an opaque token, accessor,
 original creation path, creation time and TTL. It does not expose the captured
 `data` or `auth` envelope. Auth responses can also identify the wrapped accessor.
@@ -40,7 +40,7 @@ wrapper in header and body is rejected as ambiguous input; this bounded 400 is
 not a claim to reproduce every upstream internal-error response.
 
 The public Rust `ServiceRequest` carries borrowed method/path/namespace/bearer,
-owned JSON body, and `wrap_ttl_seconds: Option<u64>`. `handle_request` uses the
+owned JSON body, and `wrap_ttl_seconds: Option<u64>`. `None` is an absent header; `Some(0)` is an explicit zero header. ACL checks retain that distinction, while only positive values capture a response. `handle_request` uses the
 host clock; `handle_request_at` is for trusted embedding/tests. Existing `handle`
 and `handle_at` remain non-wrapping entry points. Untrusted callers must not set
 server time. The adapter cannot manufacture an authenticated Principal.
@@ -110,9 +110,18 @@ surface coverage. `wrapping_ha.py` covers forwarding, leader loss, quorum fencin
 and restart; `wrapping_upgrade.py` exercises two real binaries and old-reader
 rejection. Both use isolated synthetic state and publish no live credential.
 
-HEAD/DELETE and nontransactional health/leader, initialization, seal/unseal, rekey, snapshot and
+Positive HEAD wrapping and wrapping on nontransactional health/leader, initialization, seal/unseal, rekey, snapshot and
 operator recovery requests with a positive wrapping option fail explicitly before
-the effect. JWT-format wrapping, arbitrary duration precision, all parameter-constrained
-ACL/minimum-maximum wrapping policies, full upstream error equivalence, multi-host
+the effect. Transactional DELETE now follows native ACL admission and may acknowledge with 204 and no wrapper; its empty response does not undo or repeat the committed effect. JWT-format wrapping, arbitrary duration precision, the full parameter/template/TTL ACL combination corpus, full upstream error equivalence, multi-host
 destructive runs and mixed-version upgrades remain unqualified. A passing local
 profile does not change independent, production, migration or release authority.
+
+## Policy-bound request metadata
+
+`min_wrapping_ttl` and `max_wrapping_ttl` are independently schema-61-gated ACL
+fields; they are not restrictions attached to a reusable wrapping token. The
+[current ACL guide](HEPTABAO_CAPABILITIES.md#acl-wrapping-ttl-constraints) specifies
+the native absent/zero distinction and identical-path union. `policy_wrapping_ttl_live.py`
+compares selected real HTTP cases with OpenBao 2.6.2, including denied effects,
+actual unwrap, GET query/body distinctions and positive DELETE readback. This is
+not a complete response-wrapping or cross-version admission receipt.

@@ -747,7 +747,7 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        if wrap_ttl_seconds.is_some() {
+        if wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(501, "plugin catalog responses cannot be wrapped");
         }
         if body.as_object().is_none_or(|object| !object.is_empty()) {
@@ -839,7 +839,7 @@ impl Service {
         if !matches!(*method, "POST" | "PUT") {
             return Response::error(405, "KMS plugin operation requires POST or PUT");
         }
-        if wrap_ttl_seconds.is_some() {
+        if wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(501, "KMS plugin responses cannot be wrapped");
         }
         let Some(principal) = principal else {
@@ -1109,7 +1109,7 @@ impl Service {
             Ok(None) => return None,
             Err(error) => return Some(Response::error(error.status, &error.message)),
         };
-        if request.wrap_ttl_seconds.is_some() {
+        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Some(Response::error(
                 501,
                 "response wrapping is not implemented for authentication plugins",
@@ -1308,7 +1308,7 @@ impl Service {
         {
             return Response::error(e.status, &e.message);
         }
-        if wrap_ttl_seconds.is_some() {
+        if wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(
                 501,
                 "response wrapping is not implemented for external plugins",

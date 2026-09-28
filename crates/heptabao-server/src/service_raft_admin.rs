@@ -170,7 +170,7 @@ impl Service {
                     *now,
                 )
                 .map_err(|e| Response::error(e.status, &e.message))?;
-            if wrap_ttl_seconds.is_some() {
+            if wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
                 return Err(Response::error(
                     501,
                     "consensus administration cannot be response-wrapped",

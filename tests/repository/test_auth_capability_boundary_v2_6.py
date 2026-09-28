@@ -64,8 +64,11 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
             r"Self::dispatch\(\s*&mut transaction,\s*principal\.as_ref\(\)",
         )
         self.assertIn("letmuttransaction=admitted;", compact)
-        self.assertIn("letwrapping_rollback=wrap_ttl_seconds.map(|_|admitted.clone());", compact)
-        dispatch_start = compact.index("letwrapping_rollback=wrap_ttl_seconds.map(|_|admitted.clone());")
+        # Explicit zero retains ACL/header presence but must not create a
+        # response-envelope rollback/capture transaction.
+        self.assertIn("letwrapping_rollback=wrap_ttl_seconds.filter(|ttl|*ttl>0).map(|_|admitted.clone());", compact)
+        self.assertIn("principal.bind_request_wrapping_ttl(wrap_ttl_seconds);", compact)
+        dispatch_start = compact.index("letwrapping_rollback=wrap_ttl_seconds.filter(|ttl|*ttl>0).map(|_|admitted.clone());")
         dispatch_end = compact.index("if admitted.engines.record_root().is_some()".replace(" ", ""), dispatch_start)
         dispatch_block = compact[dispatch_start:dispatch_end]
         self.assertEqual(1, dispatch_block.count("admitted.clone()"))

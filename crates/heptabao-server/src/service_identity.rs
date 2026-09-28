@@ -37,6 +37,15 @@ impl State {
             ));
         }
         self.auth
+            .validate_acl_wrapping_ttl_state()
+            .map_err(|_| Response::error(503, "invalid ACL wrapping TTL state"))?;
+        if self.schema < 61 && self.auth.has_acl_wrapping_ttl_state() {
+            return Err(Response::error(
+                503,
+                "ACL wrapping TTL constraints require schema 61",
+            ));
+        }
+        self.auth
             .validate_acl_template_state()
             .map_err(|_| Response::error(503, "invalid ACL Identity template state"))?;
         if self.schema < 60 && self.auth.has_acl_template_state() {
@@ -537,7 +546,7 @@ impl State {
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
             | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37
             | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52 | 53
-            | 54 | 55 | 56 | 57 | 58 | 59 | CURRENT_STATE_SCHEMA => Ok(()),
+            | 54 | 55 | 56 | 57 | 58 | 59 | 60 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

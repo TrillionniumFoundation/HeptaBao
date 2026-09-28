@@ -51,6 +51,8 @@ pub(crate) use remote::{RemoteJwtConfigPlan, RemoteJwtLoginObservation, RemoteJw
 mod acl;
 #[path = "auth_acl_template.rs"]
 mod acl_template;
+#[path = "auth_acl_wrapping.rs"]
+mod acl_wrapping;
 pub(crate) use acl_template::parse_selector as parse_identity_selector;
 pub(crate) use acl_template::{IdentitySelector, IdentityTemplateValues, TemplateField};
 #[path = "auth_approle_renewal.rs"]
@@ -1284,6 +1286,7 @@ pub(super) struct Principal {
     origin_peer: Option<std::net::IpAddr>,
     identity_policies: BTreeSet<String>,
     identity_templates: IdentityTemplateValues,
+    wrap_ttl_seconds: Option<u64>,
     identity_checked: bool,
     digest: String,
     credential: batch_principal::VerifiedCredential,
@@ -1331,6 +1334,10 @@ struct Rule {
     denied_parameters: acl::ParameterMap,
     #[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
     required_parameters: BTreeSet<String>,
+    #[serde(default, skip_serializing_if = "acl_wrapping::is_zero")]
+    min_wrapping_ttl: u64,
+    #[serde(default, skip_serializing_if = "acl_wrapping::is_zero")]
+    max_wrapping_ttl: u64,
 }
 
 /// Input comparison semantics only; both variants still use the stored strong
@@ -2190,6 +2197,7 @@ impl AuthState {
             origin_peer,
             identity_policies: BTreeSet::new(),
             identity_templates: IdentityTemplateValues::default(),
+            wrap_ttl_seconds: None,
             identity_checked: false,
             digest: id,
             credential: batch_principal::VerifiedCredential::Service(Box::new(token)),
@@ -2296,7 +2304,8 @@ impl AuthState {
             token.policies(),
             &principal.identity_policies,
             &principal.identity_templates,
-        ) {
+        ) && self.wrapping_policy_allows(principal, namespace, path, token.policies())
+        {
             Ok(())
         } else {
             Err(denied())
@@ -2327,9 +2336,6 @@ impl AuthState {
         // OpenBao applies generic allowed/denied/required request parameters
         // only to logical read/create/update/patch operations. Delete, list,
         // scan, renew, revoke and rollback have separate admission semantics.
-        if !matches!(method, "GET" | "HEAD" | "POST" | "PUT" | "PATCH") {
-            return Ok(());
-        }
         validate_path(path, false)?;
         let token = self.check_principal(principal, namespace, now)?;
         if principal
@@ -2339,6 +2345,14 @@ impl AuthState {
         {
             return Ok(());
         }
+        if !self.wrapping_policy_allows(principal, namespace, path, token.policies()) {
+            return Err(denied());
+        }
+        if !matches!(method, "GET" | "HEAD" | "POST" | "PUT" | "PATCH") {
+            return Ok(());
+        }
+        let empty_parameters = acl::ParameterMap::new();
+        let empty_required = BTreeSet::new();
         let mut decision = acl::Decision::default();
         for policy_name in token.policies().iter().chain(&principal.identity_policies) {
             if let Some(policy) = self
@@ -2357,6 +2371,16 @@ impl AuthState {
                         &rule.allowed_parameters,
                         &rule.denied_parameters,
                         &rule.required_parameters,
+                        path,
+                    );
+                }
+            } else if policy_name == "default" {
+                for (pattern, _) in acl::DEFAULT_RULES {
+                    decision.consider_parameters(
+                        pattern,
+                        &empty_parameters,
+                        &empty_parameters,
+                        &empty_required,
                         path,
                     );
                 }
@@ -7574,6 +7598,8 @@ fn parse_json_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
                 "allowed_parameters",
                 "denied_parameters",
                 "required_parameters",
+                "min_wrapping_ttl",
+                "max_wrapping_ttl",
             ],
         )?;
         let capabilities = parse_capability_array(
@@ -7587,6 +7613,7 @@ fn parse_json_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
             parse_parameter_map(config.get("allowed_parameters"))?,
             parse_parameter_map(config.get("denied_parameters"))?,
             parse_required_parameters(config.get("required_parameters"))?,
+            acl_wrapping::Bounds::parse(config)?,
         )?);
     }
     Ok(rules)
@@ -7604,6 +7631,7 @@ fn parse_hcl_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
         let mut allowed = acl::ParameterMap::new();
         let mut denied = acl::ParameterMap::new();
         let mut required = BTreeSet::new();
+        let mut wrapping = serde_json::Map::new();
         let mut seen = BTreeSet::new();
         while tokens.get(cursor) != Some(&Lex::Symbol('}')) {
             let field = take_word(&tokens, &mut cursor)?;
@@ -7624,6 +7652,9 @@ fn parse_hcl_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
                 "required_parameters" => {
                     required = parse_hcl_required_parameters(&tokens, &mut cursor)?;
                 }
+                "min_wrapping_ttl" | "max_wrapping_ttl" => {
+                    wrapping.insert(field, parse_hcl_value_at_depth(&tokens, &mut cursor, 0)?);
+                }
                 _ => return Err(bad("unsupported ACL rule field")),
             }
         }
@@ -7634,6 +7665,7 @@ fn parse_hcl_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
             allowed,
             denied,
             required,
+            acl_wrapping::Bounds::parse(&Value::Object(wrapping))?,
         )?);
     }
     Ok(rules)
@@ -7853,8 +7885,10 @@ fn rule(
     allowed_parameters: acl::ParameterMap,
     denied_parameters: acl::ParameterMap,
     required_parameters: BTreeSet<String>,
+    wrapping: acl_wrapping::Bounds,
 ) -> Result<Rule, AuthError> {
     acl_template::validate_policy_path(&path)?;
+    wrapping.validate()?;
     if capabilities
         .iter()
         .any(|capability| !CAPABILITIES.contains(&capability.as_str()))
@@ -7876,6 +7910,8 @@ fn rule(
         allowed_parameters,
         denied_parameters,
         required_parameters,
+        min_wrapping_ttl: wrapping.min,
+        max_wrapping_ttl: wrapping.max,
     })
 }
 

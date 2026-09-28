@@ -295,7 +295,7 @@ pub(crate) fn encode_wrapped_request_for_cluster(
     validate_direction(source, target)?;
     validate_request_fields(method, path, namespace, token)?;
     validate_client_certificates(client_certificates)?;
-    if ttl == 0 || ttl > 32 * 24 * 3600 {
+    if ttl > 32 * 24 * 3600 {
         return Err("invalid HA wrapping TTL".into());
     }
     encode(
@@ -335,7 +335,7 @@ pub(crate) fn encode_peer_request_for_cluster(
     validate_direction(direction.0, direction.1)?;
     validate_request_fields(method, path, namespace, token)?;
     validate_client_certificates(client_certificates)?;
-    if wrap_ttl_seconds.is_some_and(|ttl| ttl == 0 || ttl > 32 * 24 * 3600) {
+    if wrap_ttl_seconds.is_some_and(|ttl| ttl > 32 * 24 * 3600) {
         return Err("HA wrapping TTL is invalid".into());
     }
     encode(
@@ -371,7 +371,7 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
         || !with_peer && wrapped != request.wrap_ttl_seconds.is_some()
         || request
             .wrap_ttl_seconds
-            .is_some_and(|ttl| ttl == 0 || ttl > 32 * 24 * 3600)
+            .is_some_and(|ttl| ttl > 32 * 24 * 3600)
     {
         return Err("HA wrapping version or TTL mismatch".into());
     }
@@ -839,6 +839,20 @@ mod wrapping_frame_tests {
         assert!(decode_request(&changed).is_err());
         let legacy = encode_request(1, 2, "GET", "secret/data/a", "", "synthetic", &json!({}))?;
         assert!(decode_request(&legacy)?.wrap_ttl_seconds.is_none());
+        let zero = encode_wrapped_request(
+            (1, 2),
+            "GET",
+            "secret/data/a",
+            "",
+            "synthetic",
+            &json!({}),
+            0,
+        )?;
+        assert_eq!(decode_request(&zero)?.wrap_ttl_seconds, Some(0));
+        assert_ne!(zero, legacy);
+        let mut zero_downgrade = zero;
+        zero_downgrade[..5].copy_from_slice(REQUEST_MAGIC);
+        assert!(decode_request(&zero_downgrade).is_err());
         let mut changed = legacy;
         changed[..5].copy_from_slice(WRAPPED_REQUEST_MAGIC);
         assert!(decode_request(&changed).is_err());
@@ -850,7 +864,7 @@ mod wrapping_frame_tests {
                 "",
                 "synthetic",
                 &json!({}),
-                0
+                32 * 24 * 3600 + 1
             )
             .is_err()
         );
@@ -868,7 +882,7 @@ mod peer_frame_tests {
     {
         for peer in ["127.0.0.2", "2001:db8::2"] {
             let peer: std::net::IpAddr = peer.parse().map_err(|_| "bad test peer")?;
-            for ttl in [None, Some(60)] {
+            for ttl in [None, Some(0), Some(60)] {
                 let frame = encode_peer_request_for_cluster(
                     TEST_CLUSTER_ID,
                     (1, 2),

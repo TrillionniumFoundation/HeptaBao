@@ -217,13 +217,16 @@
         "sys/policies/acl/*",
         "sys/capabilities*"
       ],
-      "positive": "Match winning path specificity, identical-pattern union, live policy replacement, and bounded allowed/denied/required request-parameter constraints against official OpenBao 2.6.2 HTTP behavior",
-      "hostile": "Reject malformed or over-bound constraints, absent required fields, unknown fields, denied values, stale policy/identity authority, and mismatched bool/map/numeric values before application effect",
-      "lifecycle": "Persist parameter-constrained policies under schema 58, reject downgrade to schema 57, preserve constraint-free schema-57 state, and recheck original request bodies after provider I/O and HA synchronization",
+      "positive": "Match winning path specificity, identical-pattern union, live policy replacement, and bounded allowed/denied/required request-parameter constraints against official OpenBao 2.6.2 HTTP behavior, sparse live Identity entity/alias/member-group path substitutions, and whole-second wrapping bounds including absent/explicit-zero metadata",
+      "hostile": "Reject malformed or over-bound constraints, absent required fields, unknown fields, denied values, stale policy/identity authority, and mismatched bool/map/numeric values before application effect; reject injected wildcard authority, nonmember-group lookup, stale aliases and denied wrapping bounds without backend effects",
+      "lifecycle": "Independently gate parameters at schema 58, Identity templates at 60 and nonzero wrapping bounds at 61; preserve feature-free earlier states through real reopen, refresh old tokens after Identity changes and recheck retained request context before late effects",
       "implementation": "PARTIAL_RUNTIME",
       "runtime_sources": [
         "crates/heptabao-server/src/auth_acl.rs",
-        "crates/heptabao-server/src/service_capabilities.rs"
+        "crates/heptabao-server/src/service_capabilities.rs",
+        "crates/heptabao-server/src/auth_acl_template.rs",
+        "crates/heptabao-server/src/auth_acl_wrapping.rs",
+        "crates/heptabao-server/src/engines/identity_acl_templates.rs"
       ],
       "contract_sources": [],
       "guides": [
@@ -232,11 +235,13 @@
       "executable_profiles": [
         "qa/openbao-acceptance/core_isolation.py",
         "qa/openbao-acceptance/capabilities_live.py",
-        "qa/openbao-acceptance/policy_parameters_live.py"
+        "qa/openbao-acceptance/policy_parameters_live.py",
+        "qa/openbao-acceptance/policy_templates_live.py",
+        "qa/openbao-acceptance/policy_wrapping_ttl_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
-      "remaining_scope": "Identity/entity/group template expansion, wrapping TTL/MFA/pagination/response-key attributes, complete path/glob/list/scan corpus, security advisories, and independent security admission remain open."
+      "remaining_scope": "MFA/pagination/response-key attributes, unsupported template/duration forms, positive HEAD and external-effect wrapping, complete path/glob/list/scan and physical-fault corpora, security advisories, and independent security admission remain open."
     },
     {
       "surface_id": "HB-SURFACE-IDENTITY",
@@ -273,7 +278,8 @@
         "docs/engines/HEPTABAO_IDENTITY_RUNTIME.md"
       ],
       "executable_profiles": [
-        "qa/openbao-acceptance/identity_live.py"
+        "qa/openbao-acceptance/identity_live.py",
+        "qa/openbao-acceptance/policy_templates_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
@@ -340,7 +346,8 @@
       "executable_profiles": [
         "qa/openbao-acceptance/core_isolation.py",
         "qa/openbao-acceptance/response_wrapping.py",
-        "qa/openbao-acceptance/wrapping_ha.py"
+        "qa/openbao-acceptance/wrapping_ha.py",
+        "qa/openbao-acceptance/policy_wrapping_ttl_live.py"
       ],
       "full_surface_verified": false,
       "independently_admitted": false,
@@ -897,7 +904,7 @@
       ],
       "positive": "Compose bounded password policies and usernames, dynamic/provider statements, static roles and root/static rotation with real PostgreSQL readback",
       "hostile": "Reject malformed policy/template source, missing named policies, stale schema/admission, unapproved providers and ownership-changing SQL output before forbidden effect or delivery",
-      "lifecycle": "Read fixed schema-55 and schema-56 application state without promotion; permit only re-sealing of the committed-operation ledger checkpoint; migrate to current schema 59 only on a current mutation; reject unsupported downgrade while preserving application artifacts and logical frontier; reconcile timeout after actual SQL effect, expiry, rollback and lease revocation.",
+      "lifecycle": "Read fixed schema-55 and schema-56 application state without promotion; permit only re-sealing of the committed-operation ledger checkpoint; migrate to current schema 61 only on a current mutation; reject unsupported downgrade while preserving application artifacts and logical frontier; reconcile timeout after actual SQL effect, expiry, rollback and lease revocation.",
       "implementation": "PARTIAL_RUNTIME",
       "runtime_sources": [
         "crates/heptabao-server/src/service_database.rs",

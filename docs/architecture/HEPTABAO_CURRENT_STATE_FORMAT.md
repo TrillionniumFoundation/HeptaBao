@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **59**. Its source constant is
+The current Service state schema is **61**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -48,7 +48,7 @@ static and root intents retain the generated credential bytes and exact semantic
 digests. A valid schema-55 state with absent generation fields remains readable
 without rewrite and preserves its historical credential shapes. The fixed
 schema-56 candidate publishes schema 56 for this feature; the schema-57 candidate may promote the same legacy state directly to 57; the current
-schema-59 candidate promotes it directly to 59. Fixed ancestors
+schema-61 candidate promotes it directly to 61. Fixed ancestors
 must refuse the first unsupported schema without altering the encrypted record.
 
 ## Read admission and mutation promotion
@@ -114,15 +114,31 @@ must refuse the first unsupported schema without altering the encrypted record.
 | 57 | Bounded PostgreSQL connection `root_rotation_statements` and retained root-rotation statement lists. Empty/absent statement configuration and statement-free intents remain valid schema-56 state; an older reader must reject nonempty lists rather than discard the provider mutation contract. |
 | 58 | Bounded ACL `allowed_parameters`, `denied_parameters` and `required_parameters`. Schema-57 state remains readable only when every policy rule omits these fields; a constraint-bearing state cannot be downgraded or silently stripped. |
 | 59 | Bounded PKI cluster/AIA paths and ACME configuration. Empty/default extension fields preserve older bytes; any nondefault extension state requires schema 59. ACME account/order/challenge/issuance protocol state remains unsupported. |
+| 60 | Bounded Identity ACL path substitutions. Entity, live mount-alias and verified member-group values are projected per request and never copied into token grants. Literal-only policies retain older serialized bytes; nonzero wrapping TTL bounds must be absent. |
+| 61 | Bounded ACL `min_wrapping_ttl` and `max_wrapping_ttl`. Nonzero bounds independently require this reader, even on literal paths without generic parameter constraints. Zero/absent bounds preserve earlier Rule serialization. Request-local absence versus explicit zero is not persisted as a reusable grant. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 
-Schema 59 independently gates `EngineState::has_pki_extension_state()`. A schema-58 ACL-only state remains readable without promotion; adding PKI configuration requires the schema-59 publication boundary. Old readers must refuse it, not discard configuration.
+Schema 61 independently gates `AuthState::has_acl_wrapping_ttl_state()` and
+revalidates all stored bounds. A contradictory individual rule or a duration
+outside the declared whole-second range fails closed. Schema 60 without nonzero
+bounds reopens without promotion; a current mutation publishes 61. Tests use
+actual commit, stop, reopen and unseal, rather than pretending raw JSON supplies
+authenticated KV record-root bindings.
+
+Schema 60 independently gates `AuthState::has_acl_template_state()` and checks
+persisted template grammar on reopen. It does not add a second Identity owner or
+persist expanded names, metadata, memberships or alias values in tokens.
+An old literal-only state retains its bytes; new template-bearing state cannot
+hide under schema 59. Current policy mutation publishes 61, while 60 remains the
+minimum reader for the template feature alone.
+
+Schema 59 independently gates `EngineState::has_pki_extension_state()`. A schema-58 ACL-only state remains readable without promotion; adding PKI configuration requires schema 59 or later; this candidate publishes schema 61. Old readers must refuse it, not discard configuration.
 
 Schema 58 independently gates `AuthState::has_acl_parameter_state()`. Policy
 parameter names and values are bounded and revalidated on reopen. Absent maps and
 sets retain the exact schema-57 policy representation and semantics. A policy
-mutation carrying any parameter constraint publishes the current schema 59 before it can
+mutation carrying any parameter constraint publishes the current schema 61 before it can
 authorize or deny product requests. Older binaries must refuse that encrypted
 state without rewriting policies or backend data.
 
@@ -141,7 +157,7 @@ a schema-55 connection with absent selectors and an empty template remains
 readable and retains the historical native username/password generation path.
 Pure read and unseal do not populate defaults or promote the discriminator.
 
-The first successful current mutation publishes schema 59. A predecessor binary
+The first successful current mutation publishes schema 61. A predecessor binary
 must reject that state before application mutation. The authenticated application
 snapshot (`state.hbs`), journal and seal metadata must remain unchanged, and the
 current reader must recover the same generation, retained-operation count, journal
@@ -558,7 +574,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 59. An authenticated
+it. Initialization and committed mutations use schema 61. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.

@@ -215,6 +215,7 @@ impl AuthState {
             origin_peer,
             identity_policies: BTreeSet::new(),
             identity_templates: IdentityTemplateValues::default(),
+            wrap_ttl_seconds: None,
             identity_checked: false,
             #[cfg(test)]
             request_time: now,

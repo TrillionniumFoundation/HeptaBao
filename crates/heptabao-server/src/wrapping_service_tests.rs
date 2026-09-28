@@ -406,7 +406,7 @@ fn wrapping_invalid_ttl_and_nontransactional_effects_never_dispatch() -> TestRes
     let mut s = f.service()?;
     let (root, _) = start(&mut s)?;
     let before = snapshot(&s)?;
-    for ttl in [0, u64::MAX, 32 * 24 * 3600 + 1] {
+    for ttl in [u64::MAX, 32 * 24 * 3600 + 1] {
         let r = s.handle_request_at(
             ServiceRequest {
                 method: "POST",
@@ -583,5 +583,56 @@ fn wrapping_concurrent_unwrap_releases_payload_at_most_once() -> TestResult {
         .collect::<Result<Vec<_>, _>>()?;
     assert_eq!(results.iter().filter(|&&s| s == 200).count(), 1);
     assert_eq!(results.iter().filter(|&&s| s == 400).count(), 7);
+    Ok(())
+}
+
+#[test]
+fn wrapping_zero_context_is_plain_issuance_but_wrap_endpoint_requires_positive_ttl() -> TestResult {
+    let fixture = Fixture::new()?;
+    let mut service = fixture.service()?;
+    let (root, _) = start(&mut service)?;
+    let before = snapshot(&service)?;
+    let mut request = ServiceRequest::new(
+        "POST",
+        "sys/wrapping/wrap",
+        "",
+        &root,
+        json!({"synthetic":"data"}),
+    );
+    request.wrap_ttl_seconds = Some(0);
+    assert_eq!(service.handle_request_at(request, 100).status, 400);
+    assert_eq!(snapshot(&service)?, before);
+    let mut request = ServiceRequest::new(
+        "POST",
+        "auth/token/create",
+        "",
+        &root,
+        json!({"policies":["default"],"ttl":"10m"}),
+    );
+    request.wrap_ttl_seconds = Some(0);
+    let issued = service.handle_request_at(request, 100);
+    assert_eq!(issued.status, 200);
+    assert!(issued.body.get("wrap_info").is_none_or(Value::is_null));
+    let ordinary = text(&issued.body, "/auth/client_token")?;
+    let lookup = service.handle_at(
+        "GET",
+        "auth/token/lookup-self",
+        "",
+        &ordinary,
+        json!({}),
+        100,
+    );
+    assert_eq!(lookup.status, 200);
+    assert_ne!(snapshot(&service)?, before);
+    assert_eq!(
+        call(
+            &mut service,
+            &root,
+            "auth/token/revoke",
+            json!({"token":ordinary})
+        )
+        .status,
+        204
+    );
     Ok(())
 }

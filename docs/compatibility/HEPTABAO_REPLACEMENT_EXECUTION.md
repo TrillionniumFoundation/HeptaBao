@@ -100,19 +100,19 @@ Existing bounded profiles: `qa/openbao-acceptance/acceptance.py`.
 
 Implementation: `PARTIAL_RUNTIME`. Original work packages: `H08-WP01`, `H08-WP02`, `H08-WP03`, `H08-WP04`, `H08-WP05`, `H08-WP06`, `H08-WP07`, `H08-WP08`, `H08-WP09`, `H08-WP10`.
 API families: `sys/policies/acl/*`; `sys/capabilities*`.
-Runtime source: `crates/heptabao-server/src/auth_acl.rs`, `crates/heptabao-server/src/service_capabilities.rs`.
+Runtime source: `crates/heptabao-server/src/auth_acl.rs`, `crates/heptabao-server/src/service_capabilities.rs`, `crates/heptabao-server/src/auth_acl_template.rs`, `crates/heptabao-server/src/auth_acl_wrapping.rs`, `crates/heptabao-server/src/engines/identity_acl_templates.rs`.
 Separate contracts: none claimed.
 Guides: `docs/auth/HEPTABAO_CAPABILITIES.md`.
 
-**Positive:** Match winning path specificity, identical-pattern union, live policy replacement, and bounded allowed/denied/required request-parameter constraints against official OpenBao 2.6.2 HTTP behavior.
+**Positive:** Match winning path specificity, identical-pattern union, live policy replacement, and bounded allowed/denied/required request-parameter constraints against official OpenBao 2.6.2 HTTP behavior, sparse live Identity entity/alias/member-group path substitutions, and whole-second wrapping bounds including absent/explicit-zero metadata.
 
-**Hostile:** Reject malformed or over-bound constraints, absent required fields, unknown fields, denied values, stale policy/identity authority, and mismatched bool/map/numeric values before application effect.
+**Hostile:** Reject malformed or over-bound constraints, absent required fields, unknown fields, denied values, stale policy/identity authority, and mismatched bool/map/numeric values before application effect; reject injected wildcard authority, nonmember-group lookup, stale aliases and denied wrapping bounds without backend effects.
 
-**Lifecycle:** Persist parameter-constrained policies under schema 58, reject downgrade to schema 57, preserve constraint-free schema-57 state, and recheck original request bodies after provider I/O and HA synchronization.
+**Lifecycle:** Independently gate parameters at schema 58, Identity templates at 60 and nonzero wrapping bounds at 61; preserve feature-free earlier states through real reopen, refresh old tokens after Identity changes and recheck retained request context before late effects.
 
-**Remaining scope:** Identity/entity/group template expansion, wrapping TTL/MFA/pagination/response-key attributes, complete path/glob/list/scan corpus, security advisories, and independent security admission remain open.
+**Remaining scope:** MFA/pagination/response-key attributes, unsupported template/duration forms, positive HEAD and external-effect wrapping, complete path/glob/list/scan and physical-fault corpora, security advisories, and independent security admission remain open.
 
-Existing bounded profiles: `qa/openbao-acceptance/core_isolation.py`, `qa/openbao-acceptance/capabilities_live.py`, `qa/openbao-acceptance/policy_parameters_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/core_isolation.py`, `qa/openbao-acceptance/capabilities_live.py`, `qa/openbao-acceptance/policy_parameters_live.py`, `qa/openbao-acceptance/policy_templates_live.py`, `qa/openbao-acceptance/policy_wrapping_ttl_live.py`.
 
 ### HB-SURFACE-IDENTITY
 
@@ -130,7 +130,7 @@ Guides: `docs/engines/HEPTABAO_IDENTITY_RUNTIME.md`.
 
 **Remaining scope:** Namespace and mount non-interference are release blockers.
 
-Existing bounded profiles: `qa/openbao-acceptance/identity_live.py`.
+Existing bounded profiles: `qa/openbao-acceptance/identity_live.py`, `qa/openbao-acceptance/policy_templates_live.py`.
 
 ### HB-SURFACE-TOKEN
 
@@ -166,7 +166,7 @@ Guides: `docs/auth/HEPTABAO_RESPONSE_WRAPPING.md`.
 
 **Remaining scope:** Single-use and active/standby response-loss behavior require race fixtures.
 
-Existing bounded profiles: `qa/openbao-acceptance/core_isolation.py`, `qa/openbao-acceptance/response_wrapping.py`, `qa/openbao-acceptance/wrapping_ha.py`.
+Existing bounded profiles: `qa/openbao-acceptance/core_isolation.py`, `qa/openbao-acceptance/response_wrapping.py`, `qa/openbao-acceptance/wrapping_ha.py`, `qa/openbao-acceptance/policy_wrapping_ttl_live.py`.
 
 ### HB-SURFACE-LEASE-EXPIRATION
 
@@ -450,7 +450,7 @@ Guides: `docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md`.
 
 **Hostile:** Reject malformed policy/template source, missing named policies, stale schema/admission, unapproved providers and ownership-changing SQL output before forbidden effect or delivery.
 
-**Lifecycle:** Read fixed schema-55 and schema-56 application state without promotion; permit only re-sealing of the committed-operation ledger checkpoint; migrate to current schema 59 only on a current mutation; reject unsupported downgrade while preserving application artifacts and logical frontier; reconcile timeout after actual SQL effect, expiry, rollback and lease revocation..
+**Lifecycle:** Read fixed schema-55 and schema-56 application state without promotion; permit only re-sealing of the committed-operation ledger checkpoint; migrate to current schema 61 only on a current mutation; reject unsupported downgrade while preserving application artifacts and logical frontier; reconcile timeout after actual SQL effect, expiry, rollback and lease revocation..
 
 **Remaining scope:** Bounded provider-role and statement-template dynamic roles, password-policy and username-template generation, explicit password authentication, static roles, root rotation, bounded password-only root_rotation_statements, renew/revoke and transactional rollback are executable. Remaining scope is arbitrary official root SQL parity, connection-pool fields and measured pooling behavior, complete OpenBao field/error/template-helper parity, generic database-plugin capability negotiation, non-PostgreSQL static roles, non-transactional external SQL side effects, multi-host provider faults and independent admission.
 

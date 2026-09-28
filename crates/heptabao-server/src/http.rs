@@ -437,7 +437,7 @@ fn serve_inner(
                         let service_request = ServiceRequest {
                             method: if is_head
                                 && request.path != "sys/leader"
-                                && request.wrap_ttl_seconds.is_none()
+                                && request.wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
                             {
                                 "GET"
                             } else {
@@ -1155,7 +1155,7 @@ fn parse_wrap_ttl(value: &str) -> Result<Option<u64>, ParseError> {
     if total > 32 * 24 * 3600 {
         return Err(invalid());
     }
-    Ok((total != 0).then_some(total))
+    Ok(Some(total))
 }
 
 fn decode_query(value: &str) -> Result<String, ParseError> {
@@ -1652,8 +1652,8 @@ mod wrapping_header_tests {
         for (input, expected) in [
             ("60", Some(60)),
             ("1h30m5s", Some(5405)),
-            ("0s", None),
-            ("0", None),
+            ("0s", Some(0)),
+            ("0", Some(0)),
         ] {
             assert!(parse_wrap_ttl(input).is_ok_and(|actual| actual == expected));
         }
@@ -1672,6 +1672,24 @@ mod wrapping_header_tests {
             assert!(parse_wrap_ttl(input).is_err());
         }
     }
+    #[test]
+    fn wrapping_zero_header_keeps_acl_presence_without_requesting_a_wrapper() {
+        for header in ["0", "0s", "0m0s"] {
+            let request = format!(
+                "GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: {header}\r\n\r\n"
+            );
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|request| request.wrap_ttl_seconds == Some(0))
+            );
+        }
+        let absent = b"GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n\r\n";
+        assert!(
+            read_request(&mut absent.as_slice(), Duration::from_secs(1))
+                .is_ok_and(|request| request.wrap_ttl_seconds.is_none())
+        );
+    }
+
     #[test]
     fn wrapping_headers_are_retained_and_duplicates_or_jwt_reject() {
         let valid =

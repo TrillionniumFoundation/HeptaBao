@@ -41,7 +41,9 @@ use crate::state_record_root::RecordStateRoot;
 // schema 57 adds PostgreSQL root-rotation statement configuration and retained intents.
 // schema 58 adds bounded ACL parameter constraints.
 // schema 59 adds bounded PKI cluster and ACME configuration state.
-const CURRENT_STATE_SCHEMA: u32 = 60;
+// Schema 60 adds current-Identity ACL path substitutions; schema 61 adds bounded
+// ACL wrapping TTL constraints. Both have independent persisted-state fences.
+const CURRENT_STATE_SCHEMA: u32 = 61;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -642,6 +644,8 @@ pub struct ServiceRequest<'a> {
     pub namespace: &'a str,
     pub token: &'a str,
     pub body: Value,
+    /// None means absent; Some(0) is an explicit zero header retained for ACL
+    /// semantics. Only a positive value requests a wrapping-token envelope.
     pub wrap_ttl_seconds: Option<u64>,
     /// Original socket peer, attested by the listener or authenticated HA node.
     /// Trusted Rust embedders may supply it; None never grants a CIDR-bound token.
@@ -1606,8 +1610,10 @@ impl Service {
                 "audit unavailable before entry",
             ));
         }
-        if let Some(ttl) = wrap_ttl_seconds {
-            let validation = if ttl == 0 || ttl > 32 * 24 * 3600 {
+        // Keep Some(0) in authenticated request metadata for ACL comparison;
+        // it is not a request to publish a response-wrapping token.
+        if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0) {
+            let validation = if ttl > 32 * 24 * 3600 {
                 Some((400, "wrapping TTL is outside the bounded service profile"))
             } else if matches!(
                 path,
@@ -1622,7 +1628,7 @@ impl Service {
                 || path.starts_with("sys/storage/")
                 || path.starts_with("sys/internal/recovery/")
                 || path == "sys/internal/capacity"
-                || matches!(method, "HEAD" | "DELETE")
+                || method == "HEAD"
             {
                 Some((
                     501,
@@ -2034,6 +2040,9 @@ impl Service {
             }
             self.state = Some(admitted.clone());
         }
+        if let Some(principal) = principal.as_mut() {
+            principal.bind_request_wrapping_ttl(wrap_ttl_seconds);
+        }
         if let Some(principal) = principal.as_mut()
             && let Err(error) = Self::bind_identity_principal(&admitted, principal, namespace)
         {
@@ -2237,7 +2246,9 @@ impl Service {
         // cloning the complete State for every ordinary request: move the
         // admitted candidate into dispatch and retain a rollback copy only when
         // wrapping was explicitly requested.
-        let wrapping_rollback = wrap_ttl_seconds.map(|_| admitted.clone());
+        let wrapping_rollback = wrap_ttl_seconds
+            .filter(|ttl| *ttl > 0)
+            .map(|_| admitted.clone());
         let mut transaction = admitted;
         let mut approle_secret_consumption = None;
         let mut response = if path == "sys/wrapping/lookup" {
@@ -2251,7 +2262,7 @@ impl Service {
                 },
                 Err(error) => Response::error(error.status, &error.message),
             }
-        } else if path == "sys/wrapping/wrap" && wrap_ttl_seconds.is_none() {
+        } else if path == "sys/wrapping/wrap" && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0) {
             Response::error(400, "endpoint requires response wrapping to be used")
         } else {
             Self::dispatch(
@@ -2315,7 +2326,7 @@ impl Service {
                 data.insert("id".into(), json!(bearer));
             }
         }
-        if let Some(ttl) = wrap_ttl_seconds
+        if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0)
             && (200..300).contains(&response.status)
             && response.status != 204
             && !response.body.is_null()

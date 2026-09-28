@@ -326,3 +326,25 @@ fn acl_schema58_reopens_under_schema59_and_promotes_only_on_mutation() -> TestRe
     );
     Ok(())
 }
+
+#[test]
+fn acl_wrapping_ttl_policy_ingress_accepts_native_attributes() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let response = call(
+        &mut service,
+        "PUT",
+        "sys/policies/acl/wrapping-guard",
+        &token,
+        json!({"policy":r#"path "secret/data/item" { capabilities = ["read"] min_wrapping_ttl = "10s" max_wrapping_ttl = "30s" }"#}),
+    );
+    assert_eq!(
+        response.status, 204,
+        "native wrapping constraints must be admitted"
+    );
+    Ok(())
+}
+
+#[path = "service_acl_wrapping_tests.rs"]
+mod wrapping;

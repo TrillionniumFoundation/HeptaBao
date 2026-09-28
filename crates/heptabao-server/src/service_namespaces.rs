@@ -524,7 +524,7 @@ impl Service {
         if !state.namespace_exists(request.namespace) {
             return Response::error(404, "request namespace not found");
         }
-        if request.wrap_ttl_seconds.is_some() {
+        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(501, "namespace management responses cannot be wrapped");
         }
         let capability = match request.method {

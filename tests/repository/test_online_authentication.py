@@ -22,7 +22,9 @@ class OnlineAuthenticationTests(unittest.TestCase):
         execute=text.index('impl OnlineAuthEffectPlan')
         exchange=text.index('.execute(namespace, *now, *started, &self.outbound, deadline)',execute)
         self.assertLess(execute,exchange)
-        self.assertLess(text.index('wrap_ttl_seconds.is_some()'),consume)
+        # A positive response envelope is rejected before consuming the code;
+        # explicit zero is still ordinary callback transport, not a wrapper.
+        self.assertLess(text.index('wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)'),consume)
         self.assertIn('retry_allowed',text)
     def test_runtime_intercept_follows_existing_admitted_request(self):
         text=(SERVER/'service.rs').read_text()

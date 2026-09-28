@@ -48,6 +48,7 @@ pub(super) struct Decision {
     allowed_parameters: ParameterMap,
     denied_parameters: ParameterMap,
     required_parameters: BTreeSet<String>,
+    wrapping: super::acl_wrapping::Bounds,
 }
 
 impl Decision {
@@ -100,6 +101,30 @@ impl Decision {
         merge_parameter_map(&mut self.allowed_parameters, allowed);
         merge_parameter_map(&mut self.denied_parameters, denied);
         self.required_parameters.extend(required.iter().cloned());
+    }
+
+    pub(super) fn consider_wrapping(
+        &mut self,
+        pattern: &str,
+        bounds: super::acl_wrapping::Bounds,
+        request_path: &str,
+    ) {
+        if !super::path_matches(pattern, request_path) {
+            return;
+        }
+        match self.pattern.as_deref().map(|old| priority(pattern, old)) {
+            Some(Ordering::Less) => return,
+            Some(Ordering::Equal) => {}
+            None | Some(Ordering::Greater) => {
+                self.pattern = Some(pattern.to_owned());
+                self.wrapping = super::acl_wrapping::Bounds::default();
+            }
+        }
+        self.wrapping.merge(bounds);
+    }
+
+    pub(super) fn wrapping_allowed(&self, ttl: Option<u64>) -> bool {
+        self.wrapping.allows(ttl)
     }
 
     pub(super) fn parameters_allowed(&self, body: &Value) -> bool {

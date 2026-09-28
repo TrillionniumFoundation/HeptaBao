@@ -1830,7 +1830,7 @@ impl Service {
                     "database mounts retain provider identities; automatic unmount is not supported",
                 ));
             }
-            if wrap_ttl_seconds.is_some() {
+            if wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
                 return Err(Response::error(
                     501,
                     "database response wrapping requires an external-effect publication envelope",

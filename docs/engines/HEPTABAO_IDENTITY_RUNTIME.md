@@ -258,3 +258,17 @@ The historical wrapping/SSH-OTP increment introduced Service schema 3 and preser
 read-only access to valid older identity-aware schema 2 state. It extends the
 same old-reader rejection rule; it does not make schema downgrade or mixed-version
 rolling HA upgrades safe. See `../auth/HEPTABAO_RESPONSE_WRAPPING.md`.
+
+## ACL projection from current Identity authority
+
+The existing owner now supplies sparse request-local values for schema-60 Identity
+ACL path substitutions. `identity_acl_templates.rs` reads only requested entity,
+live mount-alias and verified member-group fields. `identity_runtime.rs` supplies
+the already-validated direct/inherited membership set; a selector does not create
+membership. Backend alias metadata and custom metadata retain distinct owners.
+The Service refreshes this projection for existing service/batch tokens, late
+actors and capability-inspection targets. Nothing copies expanded Identity paths
+into durable token permissions. See the [current ACL guide](../auth/HEPTABAO_CAPABILITIES.md#live-identity-path-substitutions)
+for grammar, resource limits, failure behavior and the separate native comparison.
+MFA/provider/namespace and independent-admission work is not completed by this
+bounded projection.
