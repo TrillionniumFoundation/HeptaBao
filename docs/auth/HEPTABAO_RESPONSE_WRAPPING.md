@@ -125,3 +125,18 @@ the native absent/zero distinction and identical-path union. `policy_wrapping_tt
 compares selected real HTTP cases with OpenBao 2.6.2, including denied effects,
 actual unwrap, GET query/body distinctions and positive DELETE readback. This is
 not a complete response-wrapping or cross-version admission receipt.
+
+## OpenBao 2.7.0 self-discard
+
+An opaque wrapping credential can discard its own captured response using
+`POST` or `PUT auth/token/revoke-self`. Its only token-operation capability is
+`update` on that exact path; normal token creation, renewal, peer revocation and
+rewrap remain denied. Capability inspection and execution use one predicate.
+
+A successful discard returns 204 with no captured data, auth or replacement
+wrapper. The existing durable writer records removal before success; reopening
+cannot restore the response. A separate live wrapper and the ordinary root
+credential remain unaffected. `auth_wrapping_270_tests.rs`, the Service wrapping
+regression and `wrapping_revoke_self_live.py` retain negative authority, expiry,
+namespace, no-disclosure and restart coverage against the exact official 2.7.0
+binary. This is not a blanket claim that all wrapping variants are compatible.

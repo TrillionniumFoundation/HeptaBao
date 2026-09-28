@@ -4,6 +4,14 @@ HeptaBao is an independent Rust secrets-management implementation project. The c
 
 Do not use this source to protect real secrets. Do not place live credentials, unseal shares, recovery keys, private keys, KMS material or production snapshots in issues, pull requests, CI or ordinary development environments.
 
+## Active replacement target
+
+The active continuation targets **OpenBao 2.7.0**. See
+[the exact-version continuation contract](docs/compatibility/HEPTABAO_OPENBAO_270_CONTINUATION.md)
+for integrated behavior, verified oracle custody, required checks and remaining
+gaps. Historical 2.6.2 inventories and receipts are not relabeled as current
+2.7.0 qualification. Full replacement and production admission remain open.
+
 ## Current repository state
 
 The current workspace contains **46 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.

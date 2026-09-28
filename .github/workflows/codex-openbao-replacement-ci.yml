@@ -655,6 +655,22 @@ jobs:
           done
           test "$failed" -eq 0
 
+      - name: Compare OpenBao 2.7.0 local leader diagnosis and native HA lifecycle
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle270_ready.outcome == 'success' }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle270/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle270/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/heptabao-leader270-private"
+          mkdir -m 700 "$work"
+          timeout 600 python qa/openbao-acceptance/sys_leader_live.py \
+            --binary "$PWD/target/debug/heptabao-server" \
+            --build-source-commit "$(git rev-parse HEAD)" \
+            --work-parent "$work" \
+            --output "$RUNNER_TEMP/heptabao-safe-reports/sys-leader270.json"
+
       - name: Compare KV metadata CAS and enumeration with official OpenBao 2.6.2
         if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash

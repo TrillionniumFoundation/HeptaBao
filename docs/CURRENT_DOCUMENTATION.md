@@ -318,3 +318,13 @@ and local online-auth inputs, both capacity response contracts, unified durable
 maintenance, retained Transit tooling, the actual Kubernetes API/etcd/RBAC gate
 and exact direct-Python-version validation. Source presence and workflow wiring
 are not execution receipts. The separate record-store source is not included.
+
+## Active OpenBao 2.7.0 continuation
+
+The current replacement target and exact-version reference admission are recorded
+in [OpenBao 2.7.0 continuation](compatibility/HEPTABAO_OPENBAO_270_CONTINUATION.md).
+Historical 2.6.2 inventories and receipts retain their original target; they are
+not a completed 2.7.0 denominator. The continuation records wrapping self-discard,
+token orphan revocation, explicit standby leader status, and bounded replay
+batches with local-frontier recovery checks. Source presence and a passing
+bounded profile do not grant whole-product compatibility or production authority.

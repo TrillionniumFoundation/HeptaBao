@@ -233,3 +233,30 @@ the same physical fault lifecycle. Its fixed 118-check denominator and separate
 report schema cannot be satisfied by an older baseline-only receipt. Both the
 wrapper and shared controller hashes are retained and verified; the extension
 does not change the three-host process or Raft control kernel.
+
+## Local recovery evidence and bounded replay batches
+
+A successful business read through a standby can be forwarded to the leader.
+It therefore cannot establish that the standby has replayed or installed its
+own state. The snapshot/rejoin stages now capture the current leader's committed
+index, then poll only the target's local `sys/leader` committed/applied metadata
+until its applied frontier reaches that anchor. The original protected readback
+is still required afterward. Invalid, missing, stale or late metadata fails;
+this diagnostic observation grants no authority to a product read or write.
+Failure reports retain only numeric frontiers and fixed classifications.
+
+A physical-host failure showed an accumulated approximately 705 KB AppendEntries
+batch repeatedly exhausting the actual 150 ms soft RPC budget. The existing
+configured peer timeout cannot extend the smaller upstream budget. Runtime
+replay now packs ordinary batches to a 128 KiB serialized target, leaving the
+768 KiB hard wire and admitted-entry limits unchanged. Large legal entries still
+travel intact as singletons. The real-Raft paced-link regression proves backlog
+progress without extending the supplied budget or reissuing a business mutation;
+mixed-size store tests preserve contiguous prefixes and large-entry admission.
+This does not qualify every network speed or every large singleton.
+
+`ha_multihost_load_live.py` composes 11 mandatory workload checks with the 54
+baseline checks. All 65 must pass for this bounded loaded lifecycle. Historical
+reports created before local-frontier admission must not be used as proof that
+recovered voters actually caught up. Preserve those reports as historical data
+and retain genuine failures alongside later successful runs.

@@ -134,4 +134,36 @@ class LeaderGuards(unittest.TestCase):
         for missing in ('official_raft_http_method_options','official_pebbledb_http_method_tab'):
             self.assertFalse(fixture.complete([row for row in all_rows if row['case']!=missing],oracle_only=True))
 
+
+    def test_exact_release_is_required_at_reference_readiness(self):
+        class Health:
+            def __init__(self, version):
+                self.version = version
+                self.calls = 0
+            def call(self, method, path):
+                self.calls += 1
+                return 501, {"version": self.version}
+        self.assertEqual(fixture.ORACLE_VERSION, "2.7.0")
+        accepted = Health("2.7.0")
+        fixture.ready(accepted, 501, expected_version=fixture.ORACLE_VERSION)
+        self.assertEqual(accepted.calls, 1)
+        rejected = Health("2.6.2")
+        with self.assertRaisesRegex(fixture.FixtureError, "official_health_version_mismatch"):
+            fixture.ready(rejected, 501, expected_version=fixture.ORACLE_VERSION)
+        self.assertEqual(rejected.calls, 1)
+
+    def test_current_non_ha_reference_uses_pebbledb_not_removed_file_storage(self):
+        from pathlib import Path
+        import json
+        import tempfile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "official"
+            with patch.object(fixture, "certificates"), patch.object(fixture, "Endpoint") as endpoint,                     patch.object(fixture, "free_port", return_value=54322):
+                endpoint.return_value.port = 54321
+                endpoint.return_value.address = "https://127.0.0.1:54321"
+                fixture.Official(Path("/synthetic/bao"), root, False)
+            config = json.loads((root / "server.json").read_text())
+            self.assertEqual(config["storage"], {"pebbledb": {"path": str(root / "data")}})
+
 if __name__=='__main__':unittest.main()

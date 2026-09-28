@@ -68,13 +68,59 @@ and retains negative read/write, unchanged-state, capability-inspection, restart
 and root-repair checks. Missing Identity values remain distinct from forbidden
 present substitutions. Existing namespace and token boundaries are unchanged.
 
+## Integrated 2.7.0 continuation behavior
+
+Wrapping credentials now admit exactly `update` on `sys/wrapping/unwrap` and
+`auth/token/revoke-self`. Execution and capability inspection share the same
+path predicate. POST/PUT self-discard removes the wrapper without exposing its
+captured response or affecting a peer wrapper. The original negative authority,
+expiry, namespace, replay and durable restart checks remain applicable.
+`wrapping_revoke_self_live.py` runs independently against both native services.
+
+`auth/token/revoke-orphan` uses the existing service transaction to remove the
+selected stored service-token parent and detach only its direct stored children.
+Grandchild edges, policies, issuance metadata, token lifetimes and unrelated
+credentials remain unchanged. Sudo admission precedes target resolution; missing
+targets and batch tokens remain rejected. `token_revoke_orphan_live.py` requires
+83 distinct observations per side, including native process restart and later
+ordinary subtree revocation. It is not full Token API qualification.
+
+The HA `/sys/leader` response explicitly includes boolean `is_self`, including
+`false` for a standby, matching the 2.7.0 contract. Non-HA responses remain exactly
+`{"ha_enabled":false}`. The endpoint stays a passive local observation: it does
+not consume a bearer use, manufacture read authority, or replace ReadIndex.
+`sys_leader_live.py` selects only the verified 2.7.0 executable and archive,
+checks reference health version, uses PebbleDB for the non-HA reference and Raft
+for the HA reference, then separately exercises candidate HA lifecycle behavior.
+The upstream fields `active_time` and `leader_cluster_address` remain explicitly
+unsupported, rather than fabricated from an unrelated local clock or peer socket.
+
+The repeated physical-host replay failure is now covered by a paced real-Raft
+regression in `process/replication_tests.rs`. Accumulated multi-entry replay uses
+a 128 KiB serialization target while preserving the 768 KiB hard wire limit and
+all existing proposal admission. A legal larger entry is sent intact as a
+singleton. Only a subsequent entry is deferred; none is dropped, split, admitted
+out of order or acknowledged without durable replication. The upstream RPC
+budget is unchanged. A small-batch target does not guarantee progress for every
+large singleton, slow disk, congested link or WAN deployment.
+
+`ha_multihost_live.py` now anchors a committed index and requires the recovering
+node's own passive applied frontier to reach it before declaring catch-up. A
+forwarded secret read is no longer sufficient evidence of local recovery. The
+loaded profile retains all 54 baseline checks plus its 11 load checks; neither
+readiness delays nor retrying business mutations may substitute for those checks.
+Earlier failed campaigns and matched-but-invalid report traces remain evidence,
+not successes that can be inherited by a new source revision.
+
 ## Mandatory CI lane
 
 The immutable head/merge workflow independently acquires 2.7.0 and runs these
-14 selected profiles with `--oracle-version 2.7.0`: core isolation, Identity,
-response wrapping, capabilities, PKI, PKI extension configuration, SSH OTP, file
-audit management, namespaces, ACL parameters, ACL templates, wrapping TTL bounds,
-KV metadata CAS and KV enumeration. Each comparison needs two nonempty complete
+16 selected profiles with `--oracle-version 2.7.0`: core isolation, Identity,
+response wrapping, wrapping-token self-discard, token orphan revocation,
+capabilities, PKI, PKI extension configuration, SSH OTP, file audit management,
+namespaces, ACL parameters, ACL templates, wrapping TTL bounds, KV metadata CAS
+and KV enumeration. A separate required step runs the fixed-version
+`sys_leader_live.py` lifecycle with the same verified 2.7.0 oracle. Each comparison needs two nonempty complete
 passing traces; matching failed prefixes and process success without matching
 cases do not qualify. Any failed profile makes the step fail.
 
@@ -89,9 +135,6 @@ hashes, runner/launcher hashes, target version and actual reference storage back
 A full replacement claim is still prohibited until the complete inventory and
 2.7.0 delta are independently exercised. In particular:
 
-- Wrapping tokens' new `auth/token/revoke-self` authority is not implemented by
-  this continuation. A separate known-red regression preserves the failure;
-  ordinary wrapping and wrapping-TTL profile success does not close it.
 - External keys, the ML-DSA/PQC surfaces, control-group approvals, and the new
   X-Vault consistency-header behavior require their own implementation and exact
   2.7.0 reference evidence. This continuation does not admit them by inference.
