@@ -522,12 +522,26 @@ where
     }
 }
 
+/// Leave a bounded part of the existing transport budget for the JSON reply.
+/// This shortens execution; it never resets or extends the connection deadline,
+/// grants read authority, or cancels an already-started durable/provider effect.
+fn execution_deadline_with_response_reserve(now: Instant, transport_deadline: Instant) -> Instant {
+    let Some(remaining) = transport_deadline.checked_duration_since(now) else {
+        return transport_deadline;
+    };
+    let reserve = (remaining / 4).min(Duration::from_millis(250));
+    transport_deadline - reserve
+}
+
 fn execute_service_request(
     service: &Arc<Mutex<Service>>,
     mut request: ServiceRequest<'_>,
     deadline: Instant,
     forwarded: bool,
 ) -> Response {
+    // The caller retains the original deadline for TLS/frame response writes.
+    // A negative execution result must not consume the last response byte's time.
+    let deadline = execution_deadline_with_response_reserve(Instant::now(), deadline);
     let health_probe = request.path == "sys/health" && matches!(request.method, "GET" | "HEAD");
     let deadline = if health_probe {
         deadline.min(Instant::now() + crate::request_deadline::HEALTH_PROBE_BUDGET)
@@ -1582,6 +1596,31 @@ mod service_lock_deadline_tests {
         assert_eq!(response.status, 200);
         assert_eq!(response.body["initialized"], false);
         Ok(())
+    }
+
+    #[test]
+    fn response_reserve_only_shortens_one_existing_absolute_budget() {
+        let now = Instant::now();
+        for (remaining, reserved) in [
+            (Duration::ZERO, Duration::ZERO),
+            (Duration::from_millis(4), Duration::from_millis(1)),
+            (Duration::from_millis(200), Duration::from_millis(50)),
+            (Duration::from_secs(1), Duration::from_millis(250)),
+            (Duration::from_secs(60), Duration::from_millis(250)),
+        ] {
+            let original = now + remaining;
+            let execute = execution_deadline_with_response_reserve(now, original);
+            assert_eq!(original.duration_since(execute), reserved);
+            assert!(execute >= now && execute <= original);
+        }
+        let past = now - Duration::from_millis(1);
+        assert_eq!(execution_deadline_with_response_reserve(now, past), past);
+        let original = now + Duration::from_secs(1);
+        let late = now + Duration::from_millis(960);
+        assert_eq!(
+            execution_deadline_with_response_reserve(late, original),
+            original - Duration::from_millis(10)
+        );
     }
 
     #[test]

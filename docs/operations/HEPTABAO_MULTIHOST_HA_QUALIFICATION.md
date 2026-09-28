@@ -276,3 +276,20 @@ from monopolizing the Service writer during partition. This does not cancel a
 started durable publication or an external effect, relax quorum, extend any
 caller deadline or certify a hard bound on stalled filesystem I/O. Normal product
 requests retain their existing authority and recovery semantics.
+
+
+### Ordinary JSON response budget
+
+The ordinary HTTP/forwarded Service dispatch now reserves at most 250 ms, and
+at most one quarter of the remaining original transport budget, for response
+serialization and delivery. The execution deadline is shortened; the connection
+and TLS write deadline are never extended. Expired callers still acquire no
+execution or read authority. A started durable or external effect is not
+cancelled or replayed by this response reservation; unknown outcomes remain
+reconcile-only. Native snapshot streaming retains its separate transfer path.
+
+The regression uses the actual production dispatcher, response writer and a
+bounded TCP stream: an unavailable state writer must produce a 503 before the
+original connection deadline, rather than consuming the entire deadline and
+then silently losing that error response. Additional arithmetic cases retain
+zero/expired and short remaining budgets without resetting time.
