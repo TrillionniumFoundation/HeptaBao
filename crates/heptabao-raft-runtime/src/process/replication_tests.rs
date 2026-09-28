@@ -626,3 +626,52 @@ async fn accumulated_replay_uses_small_batches_inside_unchanged_peer_budget()
     std::fs::remove_dir_all(path)?;
     result
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn interrupted_snapshot_restarts_do_not_exhaust_receive_slots()
+-> Result<(), Box<dyn std::error::Error>> {
+    use super::snapshot::{SnapshotChunkAck, SnapshotChunkWire, crc32};
+    let path = std::env::temp_dir().join(format!(
+        "heptabao-snapshot-prefix-restart-{}",
+        std::process::id(),
+    ));
+    let router = Arc::new(Router::default());
+    let network =
+        RemoteNetworkFactory::new(3, BTreeSet::from([1, 2, 3]), Arc::new(Arc::clone(&router)))?;
+    let node = ProcessRaftNode::create(&path, 3, network).await?;
+    let service = node.rpc_service();
+    let result = async {
+        // A sender can obtain a newer snapshot after an interrupted transfer.
+        // None of these prefixes constitutes a complete, installable snapshot.
+        for generation in 0..12_u8 {
+            let request = SnapshotChunkWire {
+                transfer_id: format!("interrupted-{generation}"),
+                ordinal: 0,
+                total_chunks: 2,
+                vote: Some(openraft::Vote::new_committed(1, 1)),
+                meta: Some(openraft::SnapshotMeta {
+                    last_log_id: None,
+                    last_membership: Default::default(),
+                    snapshot_id: format!("synthetic-prefix-{generation}"),
+                }),
+                total_bytes: 64,
+                whole_crc32: crc32(&[generation; 64]),
+                chunk_crc32: crc32(&[generation; 32]),
+                chunk: vec![generation; 32],
+            };
+            let bytes = service
+                .handle(1, RaftRpcKind::SnapshotChunk, serde_json::to_vec(&request)?)
+                .await
+                .map_err(|error| format!("snapshot restart {generation} rejected: {error}"))?;
+            let ack: SnapshotChunkAck = serde_json::from_slice(&bytes)?;
+            assert_eq!(ack.next_ordinal, 1);
+            assert!(!ack.complete && ack.result.is_none());
+            assert_eq!(node.local_leader_observation()?.applied_index, None);
+        }
+        Ok::<_, Box<dyn std::error::Error>>(())
+    }
+    .await;
+    node.shutdown().await?;
+    std::fs::remove_dir_all(path)?;
+    result
+}
