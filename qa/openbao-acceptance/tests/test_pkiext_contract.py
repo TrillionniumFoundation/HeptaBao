@@ -37,7 +37,7 @@ class PkiExtensionContractTests(unittest.TestCase):
 
     def test_schema59_is_independent_and_default_shape_is_omitted(self):
         service = (ROOT / "crates/heptabao-server/src/service.rs").read_text()
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA:\s*u32\s*=\s*59;")
+        self.assertRegex(service, r"CURRENT_STATE_SCHEMA:\s*u32\s*=\s*61;")
         identity = (ROOT / "crates/heptabao-server/src/service_identity.rs").read_text()
         self.assertIn("self.schema < 59 && self.engines.has_pki_extension_state()", identity)
         self.assertIn("PKI cluster or ACME configuration requires schema 59", identity)

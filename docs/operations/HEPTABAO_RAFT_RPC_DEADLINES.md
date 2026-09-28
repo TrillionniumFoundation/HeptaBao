@@ -22,6 +22,24 @@ queued work, and from explicitly cancelled queued work. The endpoint is silent
 and deliberately cannot complete TLS; these tests do not establish mTLS identity
 or consensus correctness. The pre-fix source fails all three assertions.
 
+## Forwarding and consensus listener capacity
+
+The listener has a bounded 4–16 worker pool selected by `max_inflight`.
+`PeerWorkerBudget` reserves two workers from application-forward admission and
+permits the remaining workers to forward. Requests still serialize at the
+existing product state owner; no second writer or application retry is added.
+A saturated forward pool rejects immediately rather than accumulating an
+unbounded queue. Peer handshakes and consensus processing retain their existing
+bounds; the reservation is not a claim of adversarial scheduling fairness.
+
+The prior single forward slot rejected simultaneous traffic from two ordinary
+standbys even when the rest of the listener pool was idle. The first bounded
+physical-host load attempt at source `6eb7e275` failed during healthy concurrent
+writes with `ha_leader_forwarding_failed`; its 21 completed base checks, failure
+report and all three verified process stops are retained. Two production-budget
+regressions fail under the old policy and assert both concurrent standby
+admission and the unchanged consensus reservation after correction.
+
 ## Physical-host load profile
 
 `qa/openbao-acceptance/ha_multihost_load_live.py` composes, rather than replaces,

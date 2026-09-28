@@ -141,6 +141,10 @@ fn default_max_inflight() -> usize {
     64
 }
 
+#[path = "ha_peer_budget.rs"]
+mod peer_budget;
+use peer_budget::PeerWorkerBudget;
+
 struct ParsedPeer {
     id: u64,
     node: NodeId,
@@ -707,14 +711,15 @@ impl HaProcess {
         let identities = Arc::new(identities);
         let ids_by_node = Arc::new(ids_by_node);
         let forward_handler: Arc<Mutex<Option<ForwardHandler>>> = Arc::new(Mutex::new(None));
-        let forward_slots = Arc::new(Semaphore::new(1));
+        let worker_budget = PeerWorkerBudget::for_limit(config.max_inflight);
+        let forward_slots = Arc::new(Semaphore::new(worker_budget.forwarding));
         let mut listener_pool = PeerListener {
             stop: stop.clone(),
             workers: Vec::new(),
         };
         let local_id = config.node_id;
         let cluster_id = config.cluster_id.clone();
-        for worker_id in 0..config.max_inflight.clamp(4, 16) {
+        for worker_id in 0..worker_budget.workers {
             let listener_stop = stop.clone();
             let listener = listener.clone();
             let identities = identities.clone();
@@ -756,8 +761,8 @@ impl HaProcess {
                                         );
                                     }
                                     let legacy_v1 = request.legacy_v1;
-                                    // At most one forward may await the public service mutex.
-                                    // The remaining workers stay available to consensus traffic.
+                                    // Forward admission leaves independent workers for
+                                    // consensus while product requests await the service writer.
                                     let _forward_slot =
                                         forward_slots.clone().try_acquire_owned().map_err(
                                             |_| heptabao_ha_service::HaError::WriterBusy,
