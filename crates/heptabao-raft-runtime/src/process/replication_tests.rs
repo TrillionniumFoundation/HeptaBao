@@ -630,7 +630,7 @@ async fn accumulated_replay_uses_small_batches_inside_unchanged_peer_budget()
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn interrupted_snapshot_restarts_do_not_exhaust_receive_slots()
 -> Result<(), Box<dyn std::error::Error>> {
-    use super::snapshot::{SnapshotChunkAck, SnapshotChunkWire, crc32};
+    use super::snapshot::{SnapshotChunkAck, SnapshotChunkWire, crc32, snapshot_transfer_id};
     let path = std::env::temp_dir().join(format!(
         "heptabao-snapshot-prefix-restart-{}",
         std::process::id(),
@@ -644,16 +644,22 @@ async fn interrupted_snapshot_restarts_do_not_exhaust_receive_slots()
         // A sender can obtain a newer snapshot after an interrupted transfer.
         // None of these prefixes constitutes a complete, installable snapshot.
         for generation in 0..12_u8 {
+            let vote = openraft::Vote::new_committed(1_u64, 1_u64);
+            let meta = openraft::SnapshotMeta {
+                last_log_id: Some(serde_json::from_value(serde_json::json!({
+                    "leader_id": { "term": 1, "node_id": 1 },
+                    "index": u64::from(generation) + 1,
+                }))?),
+                last_membership: Default::default(),
+            };
+            let transfer_id =
+                snapshot_transfer_id(&serde_json::to_vec(&meta)?, &serde_json::to_vec(&vote)?, 64);
             let request = SnapshotChunkWire {
-                transfer_id: format!("interrupted-{generation}"),
+                transfer_id,
                 ordinal: 0,
                 total_chunks: 2,
-                vote: Some(openraft::Vote::new_committed(1, 1)),
-                meta: Some(openraft::SnapshotMeta {
-                    last_log_id: None,
-                    last_membership: Default::default(),
-                    snapshot_id: format!("synthetic-prefix-{generation}"),
-                }),
+                vote: Some(vote),
+                meta: Some(meta),
                 total_bytes: 64,
                 whole_crc32: crc32(&[generation; 64]),
                 chunk_crc32: crc32(&[generation; 32]),
