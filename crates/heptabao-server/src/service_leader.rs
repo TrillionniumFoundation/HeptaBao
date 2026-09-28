@@ -1,5 +1,5 @@
 //! `/sys/leader` is a local, unauthenticated diagnostic endpoint, like the
-//! dedicated OpenBao 2.6.2 HTTP handler. It cannot admit any application effect.
+//! dedicated OpenBao 2.7.0 HTTP handler. It cannot admit any application effect.
 use super::*;
 
 impl Service {
@@ -25,10 +25,10 @@ impl Service {
             Ok(observation) => observation,
             Err(_) => return Response::error(500, "HA leader observation is unavailable"),
         };
-        let mut body = json!({"ha_enabled": true});
-        if observation.leader == Some(observation.local_id) {
-            body["is_self"] = json!(true);
-        }
+        let mut body = json!({
+            "ha_enabled": true,
+            "is_self": observation.leader == Some(observation.local_id),
+        });
         if let Some(address) = observation
             .leader
             .and_then(|leader| process.api_address(leader))

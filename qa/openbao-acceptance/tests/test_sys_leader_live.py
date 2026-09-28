@@ -48,11 +48,12 @@ class LeaderGuards(unittest.TestCase):
         self.assertFalse(fixture.shape(503,{'errors':['forwarding unavailable']},ha=True,sealed=True))
 
     def test_standby_cannot_pass_forwarded_leader_shape_or_fabricated_indexes(self):
-        body={'ha_enabled':True,'leader_address':'https://127.0.0.1:8200',
+        body={'ha_enabled':True,'is_self':False,'leader_address':'https://127.0.0.1:8200',
             'raft_committed_index':10,'raft_applied_index':9}
         self.assertTrue(fixture.shape(200,body,ha=True,is_self=False,address=body['leader_address']))
         self.assertFalse(fixture.shape(200,{**body,'is_self':True},ha=True,is_self=False))
-        self.assertFalse(fixture.shape(200,{**body,'is_self':False},ha=True,is_self=False))
+        self.assertFalse(fixture.shape(200,{k:v for k,v in body.items() if k!='is_self'},ha=True,is_self=False))
+        self.assertFalse(fixture.shape(200,{**body,'is_self':0},ha=True,is_self=False))
         self.assertFalse(fixture.shape(200,{**body,'raft_applied_index':11},ha=True))
         self.assertFalse(fixture.shape(200,{**body,'raft_committed_index':True},ha=True))
         self.assertFalse(fixture.shape(200,{**body,'auth':{'token':'sentinel'}},ha=True))
@@ -67,7 +68,7 @@ class LeaderGuards(unittest.TestCase):
         rows=[];observations=[]
         def check(name,condition):
             self.assertIs(condition,True,name);rows.append({'case':name,'passed':condition})
-        for name,ha in [('official_file',False),('official_raft',True)]:
+        for name,ha in [('official_pebbledb',False),('official_raft',True)]:
             endpoint=FakeLifecycle(ha)
             fixture.lifecycle(endpoint,name,ha,check,observations)
             self.assertTrue(any(token=='' for method,path,token,headers in endpoint.calls if path=='sys/leader'))
@@ -86,9 +87,9 @@ class LeaderGuards(unittest.TestCase):
         def check(name,condition):
             self.assertIs(condition,True,name);rows.append({'case':name,'passed':condition})
         endpoint=FakeLifecycle(False)
-        fixture.http_edges(endpoint,'official_file',False,check,observations)
+        fixture.http_edges(endpoint,'official_pebbledb',False,check,observations)
         self.assertEqual({row['case'] for row in observations},
-            {'official_file_http_'+case[0] for case in fixture.HTTP_EDGE_CASES+fixture.HTTP_INVALID_METHODS})
+            {'official_pebbledb_http_'+case[0] for case in fixture.HTTP_EDGE_CASES+fixture.HTTP_INVALID_METHODS})
         self.assertEqual(len(rows),len(set(row['case'] for row in rows)))
         self.assertTrue(any(query=='sys/leader?list=%GG&list=true&scan=true' for _,query,_,_ in endpoint.calls))
         class Wrong(FakeLifecycle):
@@ -96,9 +97,9 @@ class LeaderGuards(unittest.TestCase):
                 if path=='sys/leader?list=true&scan=true':return 200,{'ha_enabled':False}
                 return super().raw_call(method,path,body,**kwargs)
         with self.assertRaises(AssertionError):
-            fixture.http_edges(Wrong(False),'official_file',False,check,[])
+            fixture.http_edges(Wrong(False),'official_pebbledb',False,check,[])
         all_rows=[]
-        for prefix,ha in [('official_file',False),('official_raft',True)]:
+        for prefix,ha in [('official_pebbledb',False),('official_raft',True)]:
             fixture.lifecycle(FakeLifecycle(ha),prefix,ha,lambda name,ok:all_rows.append({'case':name,'passed':ok}),[])
         all_rows.append({'case':'complete','passed':True})
         self.assertTrue(fixture.complete(all_rows,oracle_only=True))
@@ -109,12 +110,12 @@ class LeaderGuards(unittest.TestCase):
         def check(name,condition):
             self.assertIs(condition,True,name);rows.append({'case':name,'passed':condition})
         endpoint=FakeLifecycle(False)
-        fixture.http_edges(endpoint,'official_file',False,check,observations)
+        fixture.http_edges(endpoint,'official_pebbledb',False,check,observations)
         observed={row['case']:row['status'] for row in observations}
-        self.assertEqual(observed['official_file_http_method_options'],405)
-        self.assertEqual(observed['official_file_http_method_punctuation'],405)
-        self.assertEqual(observed['official_file_http_method_tab'],400)
-        self.assertEqual(observed['official_file_http_method_empty'],400)
+        self.assertEqual(observed['official_pebbledb_http_method_options'],405)
+        self.assertEqual(observed['official_pebbledb_http_method_punctuation'],405)
+        self.assertEqual(observed['official_pebbledb_http_method_tab'],400)
+        self.assertEqual(observed['official_pebbledb_http_method_empty'],400)
         self.assertTrue(any(method==b'BAD\xc3\xa9' for method,_,_,_ in endpoint.calls))
         class RejectedLegal(FakeLifecycle):
             def raw_call(self,method,path,body=None,**kwargs):
@@ -124,13 +125,13 @@ class LeaderGuards(unittest.TestCase):
             def raw_method_status(self,method):return 405
         for wrong in (RejectedLegal(False),AdmittedInvalid(False)):
             with self.assertRaises(AssertionError):
-                fixture.http_edges(wrong,'official_file',False,check,[])
+                fixture.http_edges(wrong,'official_pebbledb',False,check,[])
         all_rows=[]
-        for prefix,ha in [('official_file',False),('official_raft',True)]:
+        for prefix,ha in [('official_pebbledb',False),('official_raft',True)]:
             fixture.lifecycle(FakeLifecycle(ha),prefix,ha,lambda name,ok:all_rows.append({'case':name,'passed':ok}),[])
         all_rows.append({'case':'complete','passed':True})
         self.assertTrue(fixture.complete(all_rows,oracle_only=True))
-        for missing in ('official_raft_http_method_options','official_file_http_method_tab'):
+        for missing in ('official_raft_http_method_options','official_pebbledb_http_method_tab'):
             self.assertFalse(fixture.complete([row for row in all_rows if row['case']!=missing],oracle_only=True))
 
 if __name__=='__main__':unittest.main()

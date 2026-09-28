@@ -28,6 +28,8 @@ from official_openbao_launcher import certificates, oracle_environment, verify_i
 from online_evidence import admit_output, complete_checks, source_identity
 from remote_jwks_live import Instance
 
+ORACLE_VERSION = "2.7.0"
+
 COMMON_PHASES = frozenset({'uninitialized','post','head','initialized','sealed','unsealed',
     'anonymous','invalid_token','namespace_wrap','body_ignored','finite_issued','finite',
     'finite_unchanged','resealed','http_edges'})
@@ -98,7 +100,7 @@ HTTP_INVALID_METHODS = (
 
 
 def complete(rows, *, oracle_only=False):
-    prefixes = ('official_file','official_raft') if oracle_only else ('official_file','official_raft','candidate_file')
+    prefixes = ('official_pebbledb','official_raft') if oracle_only else ('official_pebbledb','official_raft','candidate_file')
     required = {'complete'} | {prefix+'_'+name for prefix in prefixes for name in COMMON_PHASES}
     required |= {prefix+'_http_'+case[0] for prefix in prefixes for case in HTTP_EDGE_CASES}
     required |= {prefix+'_http_'+case[0] for prefix in prefixes for case in HTTP_INVALID_METHODS}
@@ -117,7 +119,8 @@ def shape(status, body, *, ha, sealed=False, is_self=None, address=None, officia
     allowed = ALLOWED | ({'active_time','leader_cluster_address'} if official else set())
     if not set(body).issubset(allowed):return False
     if is_self is True and body.get('is_self') is not True:return False
-    if is_self is False and 'is_self' in body:return False
+    if type(body.get('is_self')) is not bool:return False
+    if is_self is False and body.get('is_self') is not False:return False
     if address is not None and body.get('leader_address')!=address:return False
     for key in ('raft_committed_index','raft_applied_index'):
         if key in body and (type(body[key]) is not int or body[key]<=0):return False
@@ -179,7 +182,7 @@ class Official:
         self.root=root;self.binary=binary;self.process=None;self.log=None
         self.endpoint=Endpoint(free_port(),root/'ca.crt');cluster_port=free_port()
         if self.endpoint.port==cluster_port:raise FixtureError('port_collision')
-        storage='raft' if raft else 'file'
+        storage='raft' if raft else 'pebbledb'
         private_write(root/'server.json',{'disable_mlock':True,'ui':False,
             'api_addr':self.endpoint.address,'cluster_addr':f'https://127.0.0.1:{cluster_port}',
             'storage':{storage:{'path':str(root/'data'),**({'node_id':'leader-probe'} if raft else {})}},
@@ -189,7 +192,7 @@ class Official:
         self.log=(self.root/'server.log').open('ab');os.chmod(self.root/'server.log',0o600)
         self.process=subprocess.Popen([str(self.binary),'server','-config='+str(self.root/'server.json')],
             stdout=self.log,stderr=self.log,env=oracle_environment(self.root))
-        ready(self.endpoint,501)
+        ready(self.endpoint,501,expected_version=ORACLE_VERSION)
     def stop(self):
         if self.process is not None:
             if self.process.poll() is None:self.process.terminate()
@@ -198,11 +201,15 @@ class Official:
         if self.log is not None and not self.log.closed:self.log.close()
 
 
-def ready(endpoint,status):
+def ready(endpoint,status,*,expected_version=None):
     end=time.monotonic()+15
     while time.monotonic()<end:
         try:
-            if endpoint.call('GET','sys/health')[0]==status:return
+            observed,body=endpoint.call('GET','sys/health')
+            if observed==status:
+                if expected_version is not None and body.get('version')!=expected_version:
+                    raise FixtureError('official_health_version_mismatch')
+                return
         except (OSError,http.client.HTTPException):pass
         time.sleep(.05)
     raise FixtureError('readiness_timeout')
@@ -301,7 +308,7 @@ def main():
     if not args.oracle_only and (args.binary is None or not re.fullmatch('[0-9a-f]{40}',args.build_source_commit or '')):
         parser.error('candidate binary and full build source commit required')
     parent=private_parent(args.work_parent);output=args.output.absolute();admitted=admit_output(output)
-    bao=verify_inputs();oracle_hash=file_hash(bao);runner_hash=file_hash(Path(__file__))
+    bao=verify_inputs(version=ORACLE_VERSION);oracle_hash=file_hash(bao);runner_hash=file_hash(Path(__file__))
     binary=None if args.oracle_only else args.binary.resolve(strict=True)
     before=None if binary is None else source_identity(ROOT,binary)
     work=Path(tempfile.mkdtemp(prefix='sys-leader-',dir=parent));checks=[];observations=[];samples=[];failure=None
@@ -311,7 +318,7 @@ def main():
     def stop(signum,frame):raise FixtureError('interrupted')
     handlers={kind:signal.signal(kind,stop) for kind in (signal.SIGINT,signal.SIGTERM)}
     try:
-        for storage in ('file','raft'):
+        for storage in ('pebbledb','raft'):
             instance=Official(bao,work/('official-'+storage),storage=='raft')
             try:
                 instance.start();samples.extend(lifecycle(instance.endpoint,'official_'+storage,storage=='raft',check,observations))
@@ -338,7 +345,7 @@ def main():
     report={'schema':'heptabao.sys-leader-observations.v1','status':'failed' if failure else 'passed','failure':failure,
         'checks':checks,'observations':observations,'source_identity':before,'source_identity_after':after,
         'source_and_binary_unchanged':unchanged,'build_source_commit':args.build_source_commit,
-        'runner_sha256':runner_hash,'runner_unchanged':runner_unchanged,'official_version':'2.6.2',
+        'runner_sha256':runner_hash,'runner_unchanged':runner_unchanged,'official_version':ORACLE_VERSION, 'official_storage_backends':['pebbledb','raft'],
         'official_binary_sha256':oracle_hash,'official_binary_unchanged':oracle_unchanged,
         'retained_failure_work_dir':str(work) if failure else None,'oracle_only':args.oracle_only,
         'unsupported_fields':['active_time','leader_cluster_address'],'candidate_ha_live':binary is not None and failure is None,
