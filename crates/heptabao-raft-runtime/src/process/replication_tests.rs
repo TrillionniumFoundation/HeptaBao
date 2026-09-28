@@ -457,7 +457,18 @@ async fn snapshot_reopen_and_transfer(delay_ms: usize) -> Result<(), Box<dyn std
             )?;
             first.replicate(serial, &envelope).await?;
         }
-        first.snapshot_observed().await?;
+        let snapshot = first.snapshot_observed().await?;
+        // A persisted snapshot is not yet evidence that replay became
+        // impossible. Wait for the actual source log-purge frontier before
+        // reopening the stale voter; otherwise this test can pass via logs.
+        tokio::time::timeout(Duration::from_secs(5), async {
+            while first.membership_observation().await?.purged_index
+                < Some(snapshot.persisted_index)
+            {
+                tokio::time::sleep(Duration::from_millis(20)).await;
+            }
+            Ok::<_, RemoteRaftError>(())
+        }).await.map_err(|_| "source snapshot logs were not purged")??;
         let latest = ReplicatedEnvelope::new("after-snapshot", [28; 32], vec![28; 12 * 1024])?;
         first.replicate(28, &latest).await?;
         first.ensure_linearizable().await?;
