@@ -5,6 +5,7 @@ pub use leader_status::LocalLeaderObservation;
 mod network;
 mod node;
 mod read_deadline;
+mod rpc_observation;
 pub use read_deadline::with_read_index_deadline;
 mod snapshot;
 

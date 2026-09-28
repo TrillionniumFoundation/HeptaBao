@@ -1,6 +1,7 @@
 //! Actual OpenRaft nodes and durable stores over the production bounded RPC
 //! codec. This synthetic loopback deliberately makes no TLS/process claim.
 use super::*;
+use crate::ReplicatedEnvelope;
 use futures::future::BoxFuture;
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::{

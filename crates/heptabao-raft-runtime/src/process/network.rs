@@ -188,12 +188,28 @@ impl RemoteNetwork {
         Req: Serialize,
         Resp: DeserializeOwned,
     {
+        use super::rpc_observation::{RpcAttempt, Stage};
+        let started = std::time::Instant::now();
         let payload =
             serde_json::to_vec(request).map_err(|error| network_error(error.to_string()))?;
-        let response = self.exchange(kind, payload, option.soft_ttl()).await?;
-        let result: Result<Resp, RaftError<TypeConfig>> =
-            serde_json::from_slice(&response).map_err(|error| network_error(error.to_string()))?;
-        result.map_err(|error| RPCError::Unreachable(Unreachable::new(&error)))
+        let observation = RpcAttempt {
+            source: self.source,
+            target: self.target,
+            kind,
+            bytes: payload.len(),
+            budget: option.soft_ttl(),
+            started,
+        };
+        let response = self
+            .exchange(kind, payload, option.soft_ttl())
+            .await
+            .inspect_err(|_| observation.failed(Stage::Transport))?;
+        let result: Result<Resp, RaftError<TypeConfig>> = serde_json::from_slice(&response)
+            .inspect_err(|_| observation.failed(Stage::Decode))
+            .map_err(|error| network_error(error.to_string()))?;
+        result
+            .inspect_err(|_| observation.failed(Stage::RemoteRaft))
+            .map_err(|error| RPCError::Unreachable(Unreachable::new(&error)))
     }
 
     async fn send_snapshot(
