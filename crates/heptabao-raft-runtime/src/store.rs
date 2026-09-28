@@ -22,6 +22,10 @@ use openraft::{EntryPayload, OptionalSend};
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 
+#[path = "store_io.rs"]
+mod blocking_io;
+use blocking_io::with_owned_store;
+
 const MAX_DURABLE_ARTIFACT_BYTES: usize = 128 * 1024 * 1024;
 const ENVELOPE_OVERHEAD_BYTES: usize = 20;
 const COMPACT_STATE_BUNDLE_FORMAT: u16 = 2;
@@ -938,28 +942,32 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
     }
 
     async fn save_vote(&mut self, vote: &VoteOf<TypeConfig>) -> Result<(), io::Error> {
-        let mut state = self.state.lock().await;
+        let owner = self.state.clone().lock_owned().await;
+        let path = log_journal_path(&self.state_path);
         let event = LogJournalEvent::Vote(*vote);
-        append_log_journal(
-            &log_journal_path(&self.state_path),
-            state.journal_epoch,
-            &event,
-        )?;
-        apply_log_journal_event(&mut state, event)
+        with_owned_store(owner, move |state| {
+            append_log_journal(&path, state.journal_epoch, &event)?;
+            apply_log_journal_event(state, event)
+        })
+        .await
     }
 
     async fn save_committed(
         &mut self,
         committed: Option<LogIdOf<TypeConfig>>,
     ) -> Result<(), io::Error> {
-        let mut state = self.state.lock().await;
-        let event = LogJournalEvent::Committed(committed);
-        append_log_journal(
-            &log_journal_path(&self.state_path),
-            state.journal_epoch,
-            &event,
-        )?;
-        apply_log_journal_event(&mut state, event)
+        let owner = self.state.clone().lock_owned().await;
+        let store = self.clone();
+        with_owned_store(owner, move |state| {
+            let event = LogJournalEvent::Committed(committed);
+            append_log_journal(
+                &log_journal_path(&store.state_path),
+                state.journal_epoch,
+                &event,
+            )?;
+            apply_log_journal_event(state, event)
+        })
+        .await
     }
 
     async fn read_committed(&mut self) -> Result<Option<LogIdOf<TypeConfig>>, io::Error> {
@@ -975,63 +983,54 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
         I: IntoIterator<Item = EntryOf<TypeConfig>> + OptionalSend,
         I::IntoIter: OptionalSend,
     {
-        let mut state = self.state.lock().await;
-        let mut serialized = Vec::new();
-        let mut last = state
-            .log
-            .keys()
-            .next_back()
-            .copied()
-            .or_else(|| state.last_purged_log_id.map(|value| value.index));
-        for entry in entries {
-            let index = entry.index();
-            let value =
-                serde_json::to_string(&entry).map_err(|error| invalid(error.to_string()))?;
-            if let Some(existing) = state.log.get(&index) {
-                if existing != &value {
-                    let error = invalid(format!(
-                        "attempted to overwrite log index {index} without truncate"
-                    ));
-                    callback.io_completed(Err(io::Error::new(error.kind(), error.to_string())));
-                    return Err(error);
+        let entries: Vec<_> = entries.into_iter().collect();
+        let owner = self.state.clone().lock_owned().await;
+        let path = log_journal_path(&self.state_path);
+        with_owned_store(owner, move |state| {
+            let result = (|| {
+                let mut serialized = Vec::new();
+                let mut last = state.log.keys().next_back().copied()
+                    .or_else(|| state.last_purged_log_id.map(|value| value.index));
+                for entry in entries {
+                    let index = entry.index();
+                    let value = serde_json::to_string(&entry)
+                        .map_err(|error| invalid(error.to_string()))?;
+                    if let Some(existing) = state.log.get(&index) {
+                        if existing != &value {
+                            return Err(invalid(format!(
+                                "attempted to overwrite log index {index} without truncate"
+                            )));
+                        }
+                        continue;
+                    }
+                    if let Some(previous) = last {
+                        let expected = previous.checked_add(1)
+                            .ok_or_else(|| invalid("log append index overflow"))?;
+                        if index != expected {
+                            return Err(invalid(format!(
+                                "log append would create a hole: expected {expected}, observed {index}"
+                            )));
+                        }
+                    }
+                    last = Some(index);
+                    serialized.push((index, value));
                 }
-                continue;
-            }
-            if let Some(previous) = last {
-                let expected = previous
-                    .checked_add(1)
-                    .ok_or_else(|| invalid("log append index overflow"))?;
-                if index != expected {
-                    let error = invalid(format!(
-                        "log append would create a hole: expected {expected}, observed {index}"
-                    ));
-                    callback.io_completed(Err(io::Error::new(error.kind(), error.to_string())));
-                    return Err(error);
+                if !serialized.is_empty() {
+                    let event = LogJournalEvent::Append(serialized);
+                    append_log_journal(&path, state.journal_epoch, &event)?;
+                    apply_log_journal_event(state, event)?;
                 }
-            }
-            last = Some(index);
-            serialized.push((index, value));
-        }
-        if serialized.is_empty() {
-            callback.io_completed(Ok(()));
-            return Ok(());
-        }
-        let event = LogJournalEvent::Append(serialized);
-        match append_log_journal(
-            &log_journal_path(&self.state_path),
-            state.journal_epoch,
-            &event,
-        ) {
-            Ok(()) => {
-                apply_log_journal_event(&mut state, event)?;
-                callback.io_completed(Ok(()));
                 Ok(())
+            })();
+            // Publish exactly one flush result, including every validation/error
+            // path, and only after the durable write and local publication.
+            // The callback outlives cancellation of the async waiter.
+            match &result {
+                Ok(()) => callback.io_completed(Ok(())),
+                Err(error) => callback.io_completed(Err(io::Error::new(error.kind(), error.to_string()))),
             }
-            Err(error) => {
-                callback.io_completed(Err(io::Error::new(error.kind(), error.to_string())));
-                Err(error)
-            }
-        }
+            result
+        }).await
     }
 
     async fn truncate_after(
@@ -1045,42 +1044,53 @@ impl RaftLogStorage<TypeConfig> for DurableLogStore {
                 .ok_or_else(|| invalid("truncate index overflow"))?,
             None => 0,
         };
-        let mut state = self.state.lock().await;
-        let event = LogJournalEvent::Truncate { start };
-        append_log_journal(
-            &log_journal_path(&self.state_path),
-            state.journal_epoch,
-            &event,
-        )?;
-        apply_log_journal_event(&mut state, event)
+        let owner = self.state.clone().lock_owned().await;
+        let store = self.clone();
+        with_owned_store(owner, move |state| {
+            let event = LogJournalEvent::Truncate { start };
+            append_log_journal(
+                &log_journal_path(&store.state_path),
+                state.journal_epoch,
+                &event,
+            )?;
+            apply_log_journal_event(state, event)
+        })
+        .await
     }
 
     async fn purge(&mut self, log_id: LogIdOf<TypeConfig>) -> Result<(), io::Error> {
-        let mut state = self.state.lock().await;
-        if state.last_purged_log_id.is_some_and(|last| last > log_id) {
-            return Err(invalid("purge log id regressed"));
-        }
-        // A follower may install a snapshot (or receive a purge request after
-        // reconnecting) whose frontier is ahead of the locally retained log.
-        // The Raft storage contract permits advancing the purge marker across
-        // that gap; rejecting it permanently shuts down a node during restart
-        // instead of allowing the subsequent snapshot/log reconciliation.
-        let event = LogJournalEvent::Purge { log_id };
-        append_log_journal(
-            &log_journal_path(&self.state_path),
-            state.journal_epoch,
-            &event,
-        )?;
-        let mut candidate = state.clone();
-        apply_log_journal_event(&mut candidate, event)?;
-        candidate.journal_epoch = candidate
-            .journal_epoch
-            .checked_add(1)
-            .ok_or_else(|| invalid("raft log journal epoch overflow"))?;
-        self.persist(&candidate)?;
-        initialize_log_journal(&log_journal_path(&self.state_path), candidate.journal_epoch)?;
-        *state = candidate;
-        Ok(())
+        let owner = self.state.clone().lock_owned().await;
+        let store = self.clone();
+        with_owned_store(owner, move |state| {
+            if state.last_purged_log_id.is_some_and(|last| last > log_id) {
+                return Err(invalid("purge log id regressed"));
+            }
+            // A follower may install a snapshot (or receive a purge request after
+            // reconnecting) whose frontier is ahead of the locally retained log.
+            // The Raft storage contract permits advancing the purge marker across
+            // that gap; rejecting it permanently shuts down a node during restart
+            // instead of allowing the subsequent snapshot/log reconciliation.
+            let event = LogJournalEvent::Purge { log_id };
+            append_log_journal(
+                &log_journal_path(&store.state_path),
+                state.journal_epoch,
+                &event,
+            )?;
+            let mut candidate = state.clone();
+            apply_log_journal_event(&mut candidate, event)?;
+            candidate.journal_epoch = candidate
+                .journal_epoch
+                .checked_add(1)
+                .ok_or_else(|| invalid("raft log journal epoch overflow"))?;
+            store.persist(&candidate)?;
+            initialize_log_journal(
+                &log_journal_path(&store.state_path),
+                candidate.journal_epoch,
+            )?;
+            *state = candidate;
+            Ok(())
+        })
+        .await
     }
 }
 
@@ -1770,38 +1780,42 @@ impl RaftSnapshotBuilder<TypeConfig> for DurableStateMachine {
     async fn build_snapshot(
         &mut self,
     ) -> Result<SnapshotOf<TypeConfig, Self::SnapshotData>, io::Error> {
-        let mut bundle = self.bundle.lock().await;
-        let checkpoint = GeneratedSnapshotCheckpoint::new(&bundle)?;
-        // Preserve the actual encoded artifact bound, including the current
-        // state, base64 snapshot and frame. No disk or in-memory publication
-        // occurs if serialization/preflight fails.
-        write_json_with_bound(
-            &self.bundle_path,
-            STATE_BUNDLE_MAGIC,
-            &checkpoint,
-            self.artifact_bound(),
-        )?;
-        initialize_state_journal(&state_journal_path(&self.bundle_path))?;
-        let GeneratedSnapshotCheckpoint {
-            format_version,
-            journal_format,
-            generation,
-            current_snapshot,
-            ..
-        } = checkpoint;
-        let meta = current_snapshot.meta.clone();
-        // OpenRaft needs an owned Cursor while the durable store retains its
-        // snapshot. Delay that unavoidable byte copy until after persistence;
-        // the full state itself was borrowed throughout, never cloned.
-        let data = current_snapshot.data.clone();
-        bundle.format_version = format_version;
-        bundle.journal_format = journal_format;
-        bundle.generation = generation;
-        bundle.current_snapshot = Some(current_snapshot);
-        Ok(SnapshotOf::<TypeConfig, Cursor<Vec<u8>>> {
-            meta,
-            snapshot: Cursor::new(data),
+        let owner = self.bundle.clone().lock_owned().await;
+        let store = self.clone();
+        with_owned_store(owner, move |bundle| {
+            let checkpoint = GeneratedSnapshotCheckpoint::new(bundle)?;
+            // Preserve the actual encoded artifact bound, including the current
+            // state, base64 snapshot and frame. No disk or in-memory publication
+            // occurs if serialization/preflight fails.
+            write_json_with_bound(
+                &store.bundle_path,
+                STATE_BUNDLE_MAGIC,
+                &checkpoint,
+                store.artifact_bound(),
+            )?;
+            initialize_state_journal(&state_journal_path(&store.bundle_path))?;
+            let GeneratedSnapshotCheckpoint {
+                format_version,
+                journal_format,
+                generation,
+                current_snapshot,
+                ..
+            } = checkpoint;
+            let meta = current_snapshot.meta.clone();
+            // OpenRaft needs an owned Cursor while the durable store retains its
+            // snapshot. Delay that unavoidable byte copy until after persistence;
+            // the full state itself was borrowed throughout, never cloned.
+            let data = current_snapshot.data.clone();
+            bundle.format_version = format_version;
+            bundle.journal_format = journal_format;
+            bundle.generation = generation;
+            bundle.current_snapshot = Some(current_snapshot);
+            Ok(SnapshotOf::<TypeConfig, Cursor<Vec<u8>>> {
+                meta,
+                snapshot: Cursor::new(data),
+            })
         })
+        .await
     }
 }
 
@@ -1824,8 +1838,9 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
         Strm: Stream<Item = Result<EntryResponder<TypeConfig>, io::Error>> + Unpin + OptionalSend,
     {
         while let Some((entry, responder)) = entries.try_next().await? {
-            let response = {
-                let mut bundle = self.bundle.lock().await;
+            let owner = self.bundle.clone().lock_owned().await;
+            let path = state_journal_path(&self.bundle_path);
+            with_owned_store(owner, move |bundle| {
                 let generation = bundle.next_generation()?;
                 let serialized =
                     serde_json::to_string(&entry).map_err(|error| invalid(error.to_string()))?;
@@ -1833,13 +1848,15 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
                     generation,
                     entry: serialized,
                 };
-                append_state_journal(&state_journal_path(&self.bundle_path), &event)?;
-                apply_state_journal_event(&mut bundle, event)?
-                    .ok_or_else(|| invalid("fresh state-machine event was not applied"))?
-            };
-            if let Some(responder) = responder {
-                responder.send(response);
-            }
+                append_state_journal(&path, &event)?;
+                let response = apply_state_journal_event(bundle, event)?
+                    .ok_or_else(|| invalid("fresh state-machine event was not applied"))?;
+                if let Some(responder) = responder {
+                    responder.send(response);
+                }
+                Ok(())
+            })
+            .await?;
         }
         Ok(())
     }
@@ -1857,39 +1874,44 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
         meta: &SnapshotMetaOf<TypeConfig>,
         snapshot: Self::SnapshotData,
     ) -> Result<(), io::Error> {
-        let data = snapshot.into_inner();
-        let state = MemStoreStateMachine::from_snapshot(&data)?;
-        if state.last_applied_log != meta.last_log_id {
-            return Err(invalid("snapshot last-applied log does not match metadata"));
-        }
-        let state_membership = serde_json::to_vec(&state.last_membership)
-            .map_err(|error| invalid(error.to_string()))?;
-        let meta_membership = serde_json::to_vec(&meta.last_membership)
-            .map_err(|error| invalid(error.to_string()))?;
-        if state_membership != meta_membership {
-            return Err(invalid("snapshot membership does not match metadata"));
-        }
-        let persisted = PersistentSnapshot {
-            meta: meta.clone(),
-            data,
-            encoding: SnapshotEncoding::CompactBase64,
-        };
-        let mut bundle = self.bundle.lock().await;
-        let candidate = PersistentStateBundle {
-            format_version: if state.records_v5.is_some() {
-                3
-            } else {
-                COMPACT_STATE_BUNDLE_FORMAT
-            },
-            journal_format: 1,
-            generation: bundle.next_generation()?,
-            state,
-            current_snapshot: Some(persisted),
-        };
-        self.persist_bundle(&candidate)?;
-        initialize_state_journal(&state_journal_path(&self.bundle_path))?;
-        *bundle = candidate;
-        Ok(())
+        let owner = self.bundle.clone().lock_owned().await;
+        let store = self.clone();
+        let meta = meta.clone();
+        with_owned_store(owner, move |bundle| {
+            let data = snapshot.into_inner();
+            let state = MemStoreStateMachine::from_snapshot(&data)?;
+            if state.last_applied_log != meta.last_log_id {
+                return Err(invalid("snapshot last-applied log does not match metadata"));
+            }
+            let state_membership = serde_json::to_vec(&state.last_membership)
+                .map_err(|error| invalid(error.to_string()))?;
+            let meta_membership = serde_json::to_vec(&meta.last_membership)
+                .map_err(|error| invalid(error.to_string()))?;
+            if state_membership != meta_membership {
+                return Err(invalid("snapshot membership does not match metadata"));
+            }
+            let persisted = PersistentSnapshot {
+                meta: meta.clone(),
+                data,
+                encoding: SnapshotEncoding::CompactBase64,
+            };
+            let candidate = PersistentStateBundle {
+                format_version: if state.records_v5.is_some() {
+                    3
+                } else {
+                    COMPACT_STATE_BUNDLE_FORMAT
+                },
+                journal_format: 1,
+                generation: bundle.next_generation()?,
+                state,
+                current_snapshot: Some(persisted),
+            };
+            store.persist_bundle(&candidate)?;
+            initialize_state_journal(&state_journal_path(&store.bundle_path))?;
+            *bundle = candidate;
+            Ok(())
+        })
+        .await
     }
 
     async fn get_current_snapshot(
