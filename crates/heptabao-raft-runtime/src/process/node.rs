@@ -579,20 +579,35 @@ impl ProcessRaftNode {
         if budget.is_zero() || tokio::time::Instant::now() >= deadline {
             return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
         }
-        let result = tokio::time::timeout_at(
-            deadline,
-            self.raft.ensure_linearizable(ReadPolicy::ReadIndex),
-        )
-        .await;
-        // A ready future can win Tokio's timeout poll even after the clock has
-        // advanced. Do not turn an already elapsed caller budget into success.
-        if tokio::time::Instant::now() >= deadline {
-            return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
+        loop {
+            let result = tokio::time::timeout_at(
+                deadline,
+                self.raft.ensure_linearizable(ReadPolicy::ReadIndex),
+            )
+            .await;
+            // A ready future can win Tokio's timeout poll even after the clock
+            // has advanced. No completed observation can renew the deadline.
+            if tokio::time::Instant::now() >= deadline {
+                return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
+            }
+            match result {
+                Ok(Ok(_)) => return Ok(()),
+                Ok(Err(openraft::errors::RaftError::APIError(
+                    openraft::errors::LinearizableReadError::QuorumNotEnough(_),
+                ))) => {
+                    // A failed probe grants no authority. Only a new ReadIndex
+                    // can establish quorum and its required applied-log fence.
+                    // Do not retry leadership loss, fatal errors or any write.
+                    let pause = tokio::time::Instant::now() + Duration::from_millis(20);
+                    tokio::time::sleep_until(pause.min(deadline)).await;
+                    if tokio::time::Instant::now() >= deadline {
+                        return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
+                    }
+                }
+                Ok(Err(error)) => return Err(RemoteRaftError::Consensus(error.to_string())),
+                Err(_) => return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into())),
+            }
         }
-        result
-            .map_err(|_| RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()))?
-            .map(|_| ())
-            .map_err(|error| RemoteRaftError::Consensus(error.to_string()))
     }
 
     pub async fn trigger_snapshot(&self) -> Result<(), RemoteRaftError> {
