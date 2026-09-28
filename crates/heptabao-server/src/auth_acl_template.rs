@@ -1,7 +1,7 @@
 //! Bounded Identity substitutions for ACL paths, never a general expression engine.
 //! Values are a request-local projection of the current namespace's authoritative
 //! Identity records. They cannot be serialized into a token or reused as a grant.
-use super::{AuthError, bad, validate_path};
+use super::{AuthError, bad, denied, validate_path};
 use std::{borrow::Cow, collections::BTreeMap};
 use zeroize::Zeroize;
 
@@ -173,33 +173,43 @@ pub(super) fn selectors(path: &str) -> Result<Vec<&str>, AuthError> {
         .collect())
 }
 
-pub(super) fn render<'a>(path: &'a str, values: &IdentityTemplateValues) -> Option<Cow<'a, str>> {
+pub(super) fn render<'a>(
+    path: &'a str,
+    values: &IdentityTemplateValues,
+) -> Result<Option<Cow<'a, str>>, AuthError> {
     if !path.contains("{{") && !path.contains("}}") {
-        return Some(Cow::Borrowed(path));
+        return Ok(Some(Cow::Borrowed(path)));
     }
     let mut rendered = String::with_capacity(path.len());
-    for part in parts(path).ok()? {
+    for part in parts(path).map_err(|_| denied())? {
         let value = match part {
             Part::Literal(value) => value,
             Part::Directive(selector) => {
-                let value = values.values.get(selector)?;
-                // Substituted data cannot turn into an ACL wildcard. Literal
-                // policy wildcards remain eligible for normal specificity.
+                let Some(value) = values.values.get(selector) else {
+                    // Missing Identity is common, including on root repair
+                    // tokens and default-policy paths. This is not a present
+                    // but forbidden substitution and may omit just the rule.
+                    return Ok(None);
+                };
+                // GHSA-hr5j-3j78-4vh2: silently omitting a failed template can
+                // delete a deny while retaining a broad grant. An invalid
+                // present substitution fails the entire ACL evaluation,
+                // even when this particular rule would not match the path.
                 if value.contains(['*', '+']) {
-                    return None;
+                    return Err(denied());
                 }
                 value.as_str()
             }
         };
-        if rendered.len().checked_add(value.len())? > MAX_PATH_BYTES {
-            return None;
+        if rendered.len().checked_add(value.len()).ok_or_else(denied)? > MAX_PATH_BYTES {
+            return Err(denied());
         }
         rendered.push_str(value);
     }
     if rendered.contains("}}") || validate_path(&rendered, true).is_err() {
-        return None;
+        return Err(denied());
     }
-    Some(Cow::Owned(rendered))
+    Ok(Some(Cow::Owned(rendered)))
 }
 
 #[cfg(test)]
@@ -270,14 +280,17 @@ mod tests {
             let mut values = IdentityTemplateValues::default();
             values.insert(selector, value);
             assert!(
-                render("secret/{{identity.entity.metadata.team}}/item", &values).is_none(),
+                render("secret/{{identity.entity.metadata.team}}/item", &values).is_err(),
                 "{value:?}"
             );
         }
         let mut values = IdentityTemplateValues::default();
         values.insert(selector, "engineering/team");
         assert_eq!(
-            render("secret/{{identity.entity.metadata.team}}/*", &values).as_deref(),
+            render("secret/{{identity.entity.metadata.team}}/*", &values)
+                .as_ref()
+                .ok()
+                .and_then(|value| value.as_deref()),
             Some("secret/engineering/team/*")
         );
     }
@@ -285,25 +298,36 @@ mod tests {
     #[test]
     fn missing_template_value_omits_only_that_rule_and_rendering_is_single_pass() {
         let mut values = IdentityTemplateValues::default();
-        assert!(render("secret/{{identity.entity.id}}/*", &values).is_none());
+        assert!(
+            render("secret/{{identity.entity.id}}/*", &values).is_ok_and(|value| value.is_none())
+        );
         assert_eq!(
-            render("secret/plain/*", &values).as_deref(),
+            render("secret/plain/*", &values)
+                .as_ref()
+                .ok()
+                .and_then(|value| value.as_deref()),
             Some("secret/plain/*")
         );
         values.insert("identity.entity.id", "e-1");
         assert_eq!(
-            render("secret/prefix-{{ identity.entity.id }}-suffix/*", &values).as_deref(),
+            render("secret/prefix-{{ identity.entity.id }}-suffix/*", &values)
+                .as_ref()
+                .ok()
+                .and_then(|value| value.as_deref()),
             Some("secret/prefix-e-1-suffix/*")
         );
         values.insert("identity.entity.metadata.empty", "");
         assert_eq!(
-            render("secret/a{{identity.entity.metadata.empty}}b", &values).as_deref(),
+            render("secret/a{{identity.entity.metadata.empty}}b", &values)
+                .as_ref()
+                .ok()
+                .and_then(|value| value.as_deref()),
             Some("secret/ab")
         );
         values.insert(
             "identity.entity.metadata.empty",
             &"x".repeat(MAX_PATH_BYTES),
         );
-        assert!(render("secret/{{identity.entity.metadata.empty}}", &values).is_none());
+        assert!(render("secret/{{identity.entity.metadata.empty}}", &values).is_err());
     }
 }

@@ -115,21 +115,23 @@ impl AuthState {
                 vec!["deny"]
             });
         }
-        let mut capabilities: Vec<_> = CAPABILITIES
+        let mut capabilities = Vec::new();
+        for capability in CAPABILITIES
             .iter()
             .copied()
-            .filter(|capability| {
-                *capability != "deny"
-                    && self.policy_allows(
-                        namespace,
-                        path,
-                        capability,
-                        &target.policies,
-                        identity_policies,
-                        identity_templates,
-                    )
-            })
-            .collect();
+            .filter(|capability| *capability != "deny")
+        {
+            if self.policy_allows(
+                namespace,
+                path,
+                capability,
+                &target.policies,
+                identity_policies,
+                identity_templates,
+            )? {
+                capabilities.push(capability);
+            }
+        }
         capabilities.sort_unstable();
         if capabilities.is_empty() {
             capabilities.push("deny");

@@ -535,3 +535,96 @@ fn acl_identity_template_rebinding_clears_old_projection_before_late_completion(
         .authorize_request(&actor, "", "idtest/red/item", "read", 100)?;
     Ok(())
 }
+
+#[test]
+fn acl_identity_forbidden_substitution_cannot_drop_deny_under_a_broad_grant() -> TestResult {
+    for batch in [false, true] {
+        let mut f = TemplateFixture::new(batch)?;
+        f.grant(
+            r#"
+path "idtest/*" { capabilities = ["read", "create", "update"] }
+path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["deny"] }
+"#,
+        );
+        f.seed("idtest/blue/item");
+        f.seed("idtest/peer/item");
+        assert_eq!(f.read("idtest/blue/item"), 403);
+        assert_eq!(f.read("idtest/peer/item"), 200);
+        for value in ["*", "+", "peer*", "a+b"] {
+            update_entity(
+                &mut f.service,
+                "",
+                &f.admin,
+                &f.entity,
+                json!({"metadata":{"team":value}}),
+            );
+            assert_eq!(
+                f.read("idtest/peer/item"),
+                403,
+                "invalid substitution must fail the full ACL evaluation, not erase deny: batch={batch}"
+            );
+            let before = f
+                .service
+                .current_state_digest()
+                .map_err(|_| "state digest")?;
+            assert_eq!(
+                call(
+                    &mut f.service,
+                    "",
+                    &f.token,
+                    "POST",
+                    "idtest/peer/item",
+                    json!({"synthetic":"forbidden"})
+                )
+                .status,
+                403
+            );
+            assert_eq!(
+                f.service
+                    .current_state_digest()
+                    .map_err(|_| "state digest")?,
+                before
+            );
+            assert_eq!(
+                call(
+                    &mut f.service,
+                    "",
+                    &f.admin,
+                    "GET",
+                    "idtest/peer/item",
+                    json!({})
+                )
+                .body["data"],
+                json!({"synthetic":"original"})
+            );
+            assert_eq!(
+                call(
+                    &mut f.service,
+                    "",
+                    &f.admin,
+                    "POST",
+                    "sys/capabilities",
+                    json!({"token":f.token,"path":"idtest/peer/item"})
+                )
+                .status,
+                403
+            );
+        }
+        f.restart()?;
+        assert_eq!(f.read("idtest/peer/item"), 403);
+        update_entity(
+            &mut f.service,
+            "",
+            &f.admin,
+            &f.entity,
+            json!({"metadata":{"team":"blue"}}),
+        );
+        assert_eq!(
+            f.read("idtest/peer/item"),
+            200,
+            "independent root can repair malformed metadata"
+        );
+        assert_eq!(f.read("idtest/blue/item"), 403);
+    }
+    Ok(())
+}

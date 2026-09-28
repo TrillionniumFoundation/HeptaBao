@@ -99,7 +99,14 @@ and `identity.groups.ids.<id>` or `identity.groups.names.<name>` id/name/metadat
 selectors to ordinary ACL path rules. This is scalar path substitution, not a
 general expression or Go-template engine. The policy is parsed on ingress and
 revalidated on reopen. Missing fields omit that rule rather than turning into a
-wildcard or an empty grant. Substituted `*`, `+`, escaped/traversal paths and nested
+wildcard or an empty grant. A **present but forbidden** substitution instead
+fails the complete evaluation with 403, even in an otherwise nonmatching rule;
+it must never silently delete a deny rule while retaining another broad grant.
+This follows the OpenBao 2.7.0 fix for GHSA-hr5j-3j78-4vh2. Bound/path failures
+are also fatal in this bounded implementation. Capabilities, parameter admission,
+wrapping constraints and capability inspection propagate that same distinction.
+Independent root repair remains possible. This is a runtime security minimum,
+not a new wire field; mixed readers and old insecure binaries are not admitted. Substituted `*`, `+`, escaped/traversal paths and nested
 templates never manufacture ACL authority. Literal policy wildcards keep the
 existing deterministic specificity rules.
 

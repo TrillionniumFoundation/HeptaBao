@@ -2304,7 +2304,7 @@ impl AuthState {
             token.policies(),
             &principal.identity_policies,
             &principal.identity_templates,
-        ) && self.wrapping_policy_allows(principal, namespace, path, token.policies())
+        )? && self.wrapping_policy_allows(principal, namespace, path, token.policies())?
         {
             Ok(())
         } else {
@@ -2345,7 +2345,7 @@ impl AuthState {
         {
             return Ok(());
         }
-        if !self.wrapping_policy_allows(principal, namespace, path, token.policies()) {
+        if !self.wrapping_policy_allows(principal, namespace, path, token.policies())? {
             return Err(denied());
         }
         if !matches!(method, "GET" | "HEAD" | "POST" | "PUT" | "PATCH") {
@@ -2362,7 +2362,7 @@ impl AuthState {
             {
                 for rule in &policy.rules {
                     let Some(rendered) =
-                        acl_template::render(&rule.path, &principal.identity_templates)
+                        acl_template::render(&rule.path, &principal.identity_templates)?
                     else {
                         continue;
                     };
@@ -2401,7 +2401,7 @@ impl AuthState {
         policies: &BTreeSet<String>,
         identity_policies: &BTreeSet<String>,
         identity_templates: &IdentityTemplateValues,
-    ) -> bool {
+    ) -> Result<bool, AuthError> {
         let mut decision = acl::Decision::default();
         for policy_name in policies.iter().chain(identity_policies) {
             let explicit = self
@@ -2410,7 +2410,7 @@ impl AuthState {
                 .and_then(|entries| entries.get(policy_name));
             if let Some(policy) = explicit {
                 for rule in &policy.rules {
-                    let Some(rendered) = acl_template::render(&rule.path, identity_templates)
+                    let Some(rendered) = acl_template::render(&rule.path, identity_templates)?
                     else {
                         continue;
                     };
@@ -2427,7 +2427,7 @@ impl AuthState {
                 }
             }
         }
-        decision.allowed()
+        Ok(decision.allowed())
     }
 
     #[cfg(test)]
