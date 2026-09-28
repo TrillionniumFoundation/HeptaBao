@@ -260,3 +260,19 @@ baseline checks. All 65 must pass for this bounded loaded lifecycle. Historical
 reports created before local-frontier admission must not be used as proof that
 recovered voters actually caught up. Preserve those reports as historical data
 and retain genuine failures alongside later successful runs.
+
+## Bounded negative readiness under quorum loss
+
+Health admission and consensus observation use a one-second read budget, clamped
+to any earlier caller deadline. Once authority observation fails, the health path
+does not perform a second application-identity ReadIndex. No cached result can
+replace either check when reporting readiness. If the Service owner is busy or
+unavailable, HTTP returns 503 with negative readiness flags, without inventing
+initialization, seal state, node role or cluster identity.
+
+The existing idle lifecycle pass shares one one-second observation budget across
+its pre-effect checks, preventing repeated full business-request ReadIndex waits
+from monopolizing the Service writer during partition. This does not cancel a
+started durable publication or an external effect, relax quorum, extend any
+caller deadline or certify a hard bound on stalled filesystem I/O. Normal product
+requests retain their existing authority and recovery semantics.

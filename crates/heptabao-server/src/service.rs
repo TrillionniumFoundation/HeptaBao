@@ -1781,6 +1781,9 @@ impl Service {
             return Response::error(404, "namespace not found");
         }
         if path == "sys/health" && matches!(method, "GET" | "HEAD") {
+            let _health_scope = crate::request_deadline::RequestDeadlineScope::enter(
+                std::time::Instant::now() + crate::request_deadline::HEALTH_PROBE_BUDGET,
+            );
             let health_codes = match HealthStatusCodes::from_body(body) {
                 Ok(codes) => codes,
                 Err(message) => return Response::error(400, message),
@@ -5412,10 +5415,13 @@ impl Service {
             && leader.is_some()
             && leader == local
             && ha.ensure_linearizable().is_ok();
-        let application_ready = self
-            .current_state_identity()
-            .ok()
-            .is_some_and(|identity| ha.ensure_application_identity(identity).is_ok());
+        // A failed authority probe cannot be repaired by a second identity
+        // probe. Do not spend another ReadIndex budget after quorum is absent.
+        let application_ready = active
+            && self
+                .current_state_identity()
+                .ok()
+                .is_some_and(|identity| ha.ensure_application_identity(identity).is_ok());
         (true, standby, active, application_ready, leader, local)
     }
 

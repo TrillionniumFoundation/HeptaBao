@@ -7,6 +7,12 @@ use std::rc::Rc;
 use std::sync::{Mutex, MutexGuard, TryLockError};
 use std::time::{Duration, Instant};
 
+// Read-only liveness observations must not monopolize the product writer for
+// a full business-request ReadIndex budget when quorum is absent. This bounds
+// admission/consensus waits, not an already-started filesystem publication.
+pub(crate) const HEALTH_PROBE_BUDGET: Duration = Duration::from_secs(1);
+pub(crate) const IDLE_MAINTENANCE_READ_BUDGET: Duration = Duration::from_secs(1);
+
 thread_local! {
     static DEADLINE: Cell<Option<Instant>> = const { Cell::new(None) };
 }

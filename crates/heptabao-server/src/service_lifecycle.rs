@@ -141,6 +141,13 @@ pub(crate) fn start_lifecycle_worker(
                 };
                 let now = now.as_secs();
                 let pending_provider = {
+                    let _read_scope = crate::request_deadline::RequestDeadlineScope::enter(
+                        std::time::Instant::now()
+                            + crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET,
+                    );
+                    // One absolute read budget covers this idle pass. Timeout
+                    // releases an observation attempt, never a started durable
+                    // effect, and cannot authorize a cached or stale state.
                     let Ok(mut writer) = service.try_lock() else {
                         continue;
                     };

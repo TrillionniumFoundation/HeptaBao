@@ -317,3 +317,59 @@ fn health_quorum_loss_replies_within_probe_budget_without_admitting_reads() -> T
     );
     Ok(())
 }
+
+#[test]
+fn idle_quorum_observation_releases_product_writer_within_maintenance_budget() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster =
+        crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &cluster_id)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "secret/data/idle-retained",
+            &token,
+            json!({"data":{"value":"synthetic-idle"}})
+        )
+        .status,
+        200
+    );
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let service = Arc::new(Mutex::new(service));
+    cluster.isolate_all_peers(true);
+    let worker =
+        crate::service::lifecycle::start_lifecycle_worker(&service, Duration::from_secs(1))?
+            .ok_or("idle worker missing")?;
+    let start = std::time::Instant::now();
+    let became_busy = loop {
+        if service.try_lock().is_err() {
+            break true;
+        }
+        if start.elapsed() >= Duration::from_secs(5) {
+            break false;
+        }
+        std::thread::sleep(Duration::from_millis(10));
+    };
+    let acquired = crate::request_deadline::lock_until(
+        &service,
+        std::time::Instant::now() + Duration::from_secs(2),
+    )
+    .is_ok();
+    cluster.isolate_all_peers(false);
+    drop(worker);
+    assert!(became_busy, "the actual idle writer pass must have run");
+    assert!(
+        acquired,
+        "idle quorum probes monopolized the product writer"
+    );
+    let service = service.lock().map_err(|_| "service lock")?;
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    Ok(())
+}

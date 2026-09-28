@@ -528,15 +528,31 @@ fn execute_service_request(
     deadline: Instant,
     forwarded: bool,
 ) -> Response {
+    let health_probe = request.path == "sys/health" && matches!(request.method, "GET" | "HEAD");
+    let deadline = if health_probe {
+        deadline.min(Instant::now() + crate::request_deadline::HEALTH_PROBE_BUDGET)
+    } else {
+        deadline
+    };
+    let unavailable = |message| {
+        let mut response = Response::error(503, message);
+        if health_probe {
+            // Only a negative readiness result is known without the owner.
+            // Do not invent initialization, seal state, role or cluster identity.
+            response.body["ha_active"] = json!(false);
+            response.body["ha_application_ready"] = json!(false);
+        }
+        response
+    };
     let execution = match lock_until(service, deadline) {
         Ok(mut writer) => writer.begin_request_before(request, deadline, forwarded),
         Err(LockWaitError::Busy) => {
             crate::service::erase_json(&mut request.body);
-            return Response::error(503, "service state lock deadline exceeded");
+            return unavailable("service state lock deadline exceeded");
         }
         Err(LockWaitError::Poisoned) => {
             crate::service::erase_json(&mut request.body);
-            return Response::error(503, "service state is unavailable");
+            return unavailable("service state is unavailable");
         }
     };
     match execution {
@@ -1498,6 +1514,73 @@ mod service_lock_deadline_tests {
         );
         assert_eq!(initialized.status, 200);
         crate::service::erase_json(&mut initialized.body);
+        Ok(())
+    }
+
+    #[test]
+    fn health_busy_writer_returns_negative_readiness_without_inventing_owner_state()
+    -> Result<(), Box<dyn std::error::Error>> {
+        struct Directory(PathBuf);
+        impl Drop for Directory {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let root = Directory(std::env::temp_dir().join(format!(
+            "heptabao-health-writer-{}-{}",
+            std::process::id(),
+            u64::from_le_bytes(crypto::random::<8>()?),
+        )));
+        std::fs::create_dir(&root.0)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let service = Arc::new(Mutex::new(Service::new(
+            root.0.join("data"),
+            &root.0.join("audit.jsonl"),
+        )?));
+        let held = service.lock().map_err(|_| "service lock")?;
+        let start = Instant::now();
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new("GET", "sys/health", "", "", json!({})),
+            start + Duration::from_secs(5),
+            false,
+        );
+        assert!(start.elapsed() < Duration::from_secs(2));
+        assert_eq!(response.status, 503);
+        assert_eq!(response.body["ha_active"], false);
+        assert_eq!(response.body["ha_application_ready"], false);
+        for unknown in [
+            "initialized",
+            "sealed",
+            "standby",
+            "cluster_id",
+            "ha_enabled",
+            "data",
+            "auth",
+        ] {
+            assert!(response.body.get(unknown).is_none());
+        }
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new("POST", "sys/init", "", "", json!({})),
+            Instant::now() + Duration::from_millis(10),
+            false,
+        );
+        assert_eq!(response.status, 503);
+        assert!(response.body.get("ha_active").is_none());
+        drop(held);
+        let response = execute_service_request(
+            &service,
+            ServiceRequest::new("GET", "sys/init", "", "", json!({})),
+            Instant::now() + Duration::from_secs(1),
+            false,
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["initialized"], false);
         Ok(())
     }
 
