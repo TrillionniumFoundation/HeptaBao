@@ -501,6 +501,8 @@ async fn snapshot_reopen_and_transfer(delay_ms: usize) -> Result<(), Box<dyn std
             "catch-up must use the snapshot rather than retained log replay");
         assert_eq!(router.snapshot_timeouts.load(Ordering::SeqCst), 0);
         assert!(router.snapshot_budget_ms.load(Ordering::SeqCst) > delay_ms);
+        assert!(router.snapshot_budget_ms.load(Ordering::SeqCst) <= 1_000,
+            "snapshot transport must retain a finite install budget");
         assert_eq!(
             restored
                 .latest_envelope()

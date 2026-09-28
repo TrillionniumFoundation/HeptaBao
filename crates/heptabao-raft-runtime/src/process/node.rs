@@ -699,6 +699,14 @@ fn production_config() -> Result<Config, RemoteRaftError> {
         heartbeat_interval: 200,
         election_timeout_min: 1_000,
         election_timeout_max: 2_000,
+        // Snapshot segments include transfer, validation and durable install,
+        // not just an empty heartbeat. OpenRaft's inherited 200ms install
+        // default gave this path a 150ms transport budget and could repeat the
+        // same failed transfer forever after the source log had been purged.
+        // Keep this separately bounded; the transport still caps each exchange
+        // at its configured peer timeout and honors cancellation. Ordinary
+        // append/heartbeat, ReadIndex and product request budgets are unchanged.
+        install_snapshot_timeout: 1_000,
         // A single logical state commit can stage dozens of bounded chunks plus
         // one manifest. Snapshotting every three Raft entries would turn the
         // periodic full checkpoint into the dominant write path and erase the
@@ -722,6 +730,9 @@ mod timing_tests {
     -> Result<(), RemoteRaftError> {
         let config = production_config()?;
         assert_eq!(config.heartbeat_interval, 200);
+        assert_eq!(config.install_snapshot_timeout, 1_000);
+        assert!(config.install_snapshot_timeout > config.heartbeat_interval);
+        assert!(config.install_snapshot_timeout <= config.election_timeout_min);
         assert!(config.election_timeout_min >= 5 * config.heartbeat_interval);
         assert!(config.election_timeout_max >= config.election_timeout_min * 2);
         Ok(())

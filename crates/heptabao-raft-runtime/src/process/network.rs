@@ -258,12 +258,24 @@ impl RemoteNetwork {
                 chunk_crc32: crc32(&chunk),
                 chunk,
             };
+            use super::rpc_observation::{RpcAttempt, Stage};
+            let started = std::time::Instant::now();
             let payload =
                 serde_json::to_vec(&request).map_err(|error| network_error(error.to_string()))?;
+            let observation = RpcAttempt {
+                source: self.source,
+                target: self.target,
+                kind: RaftRpcKind::SnapshotChunk,
+                bytes: payload.len(),
+                budget: option.soft_ttl(),
+                started,
+            };
             let response = self
                 .exchange(RaftRpcKind::SnapshotChunk, payload, option.soft_ttl())
-                .await?;
+                .await
+                .inspect_err(|_| observation.failed(Stage::Transport))?;
             let ack: SnapshotChunkAck = serde_json::from_slice(&response)
+                .inspect_err(|_| observation.failed(Stage::Decode))
                 .map_err(|error| network_error(error.to_string()))?;
             if ack.transfer_id != transfer_id || ack.next_ordinal != ordinal + 1 {
                 return Err(network_error(
