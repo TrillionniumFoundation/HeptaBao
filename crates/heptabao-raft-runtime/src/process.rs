@@ -16,3 +16,6 @@ pub use node::ProcessRaftNode;
 
 #[cfg(test)]
 mod replication_tests;
+
+#[cfg(test)]
+mod snapshot_receive_tests;
