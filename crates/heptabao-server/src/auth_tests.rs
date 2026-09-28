@@ -4006,3 +4006,6 @@ fn hcl_parameter_value_recursion_is_bounded_before_tree_construction() {
         }
     }
 }
+
+#[path = "auth_token_revoke_orphan_tests.rs"]
+mod token_revoke_orphan_tests;
