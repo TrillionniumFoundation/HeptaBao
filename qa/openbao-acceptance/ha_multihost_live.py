@@ -488,6 +488,53 @@ def wait_leader(context: ssl.SSLContext, nodes: list[Node], token: str,
     raise FixtureError("stable_leader_timeout")
 
 
+def parsed_local_frontier(body: dict) -> tuple[int, int] | None:
+    """Passive local metadata, never an application-read capability."""
+    committed = body.get("raft_committed_index")
+    applied = body.get("raft_applied_index")
+    if (body.get("ha_enabled") is not True
+            or type(committed) is not int or type(applied) is not int
+            or not 0 < applied <= committed <= (1 << 64) - 1):
+        return None
+    return committed, applied
+
+
+def capture_committed_frontier(context: ssl.SSLContext, node: Node) -> int:
+    status, body = api(context, node, "GET", "sys/leader", timeout=4)
+    observed = parsed_local_frontier(body)
+    if status != 200 or body.get("is_self") is not True or observed is None:
+        raise FixtureError("leader_frontier_anchor_unavailable")
+    return observed[0]
+
+
+def wait_local_frontier(context: ssl.SSLContext, node: Node, required: int,
+                        *, seconds: float = 45, record=None) -> tuple[int, int]:
+    """Wait for this voter itself, not a forwarded secret read, to catch up."""
+    if type(required) is not int or not 0 < required <= (1 << 64) - 1:
+        raise FixtureError("invalid_required_raft_frontier")
+    deadline = time.monotonic() + seconds
+    last = None
+    while time.monotonic() < deadline:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        try:
+            status, body = api(context, node, "GET", "sys/leader", timeout=min(4, remaining))
+            observed = parsed_local_frontier(body) if status == 200 else None
+            if observed is not None:
+                last = observed
+                if observed[1] >= required and time.monotonic() < deadline:
+                    return observed
+        except (OSError, ssl.SSLError, urllib.error.URLError, TimeoutError):
+            pass
+        time.sleep(min(0.1, max(0.0, deadline - time.monotonic())))
+    if record is not None:
+        record("local_raft_frontier_timeout", node=node.node_id, required_index=required,
+               committed_index=last[0] if last else None,
+               applied_index=last[1] if last else None)
+    raise FixtureError(f"node_{node.node_id}_raft_frontier_timeout")
+
+
 def write_once(context: ssl.SSLContext, node: Node, token: str,
                path: str, value: str) -> int:
     status, body = api(context, node, "POST", f"secret/data/{path}",
@@ -934,6 +981,9 @@ test -d "$root/data"
         check("leader_snapshot_trigger", status == 200 and isinstance(snapshot, dict))
         path, value = new_value("after-snapshot")
         write_once(context, initial, root_token, path, value)
+        snapshot_frontier = capture_committed_frontier(context, initial)
+        event("snapshot_catchup_frontier", source=initial.node_id,
+              target=offline.node_id, required_index=snapshot_frontier)
         remote_start(offline, ha=True); started.add(offline)
         wait_listener(context, offline)
         status, _ = api(context, offline, "POST", "sys/unseal", {"key": unseal_key}, timeout=10)
@@ -943,11 +993,13 @@ test -d "$root/data"
         # recovered node; the read is repeatable, but no mutation is retried.
         initial = wait_leader(context, nodes, root_token, seconds=60)
         event("snapshot_rejoin_leader_ready", node=initial.node_id)
+        local_frontier = wait_local_frontier(context, offline, snapshot_frontier, record=event)
         read_exact(
             context, offline, root_token, path, value,
             seconds=90, request_timeout=12,
         )
-        check("remote_snapshot_catchup", True)
+        check("remote_snapshot_catchup", True, required_index=snapshot_frontier,
+              local_committed_index=local_frontier[0], local_applied_index=local_frontier[1])
         if extension is not None:
             stage = "acl_snapshot_authority"
             extension.after_snapshot(offline)
@@ -999,21 +1051,45 @@ test -d "$root/data"
             stage = "acl_failover_authority"
             extension.after_failover([node for node in nodes if node != initial], successor)
 
+        rejoin_frontier = capture_committed_frontier(context, successor)
+        event("old_leader_catchup_frontier", source=successor.node_id,
+              target=initial.node_id, required_index=rejoin_frontier)
         remote_start(initial, ha=True); started.add(initial)
         wait_listener(context, initial)
         status, _ = api(context, initial, "POST", "sys/unseal", {"key": unseal_key}, timeout=10)
         check("old_leader_restarted_and_unsealed", status == 200)
+        local_frontier = wait_local_frontier(context, initial, rejoin_frontier, record=event)
         read_exact(context, initial, root_token, path, value, 45)
-        check("old_leader_caught_up", True)
+        check("old_leader_caught_up", True, required_index=rejoin_frontier,
+              local_committed_index=local_frontier[0], local_applied_index=local_frontier[1])
         if extension is not None:
             stage = "acl_rejoined_authority"
             extension.after_rejoin(initial)
 
         stage = "leadership_transfer"
         current = wait_leader(context, nodes, root_token)
+        transfer_frontier = capture_committed_frontier(context, current)
+        event("leadership_transfer_frontier", source=current.node_id,
+              required_index=transfer_frontier)
         status, body = api(context, current, "POST", "sys/step-down", {}, root_token, 15)
         check("explicit_step_down_accepted_once", status == 204 and body == {})
-        next_leader = wait_leader(context, nodes, root_token, previous=current)
+        try:
+            next_leader = wait_leader(context, nodes, root_token, previous=current)
+        except FixtureError:
+            # Preserve the original failure. These passive observations cannot
+            # retry a transfer, elect a node or grant application authority.
+            for observer in nodes:
+                try:
+                    status, local = api(context, observer, "GET", "sys/leader", timeout=4)
+                    frontier = parsed_local_frontier(local) if status == 200 else None
+                    event("failed_transfer_local_observation", node=observer.node_id,
+                          status=status, is_self=local.get("is_self") is True,
+                          committed_index=frontier[0] if frontier else None,
+                          applied_index=frontier[1] if frontier else None)
+                except (OSError, ssl.SSLError, urllib.error.URLError, TimeoutError):
+                    event("failed_transfer_local_observation", node=observer.node_id,
+                          status="transport_or_deadline")
+            raise
         epochs.append(next_leader.node_id)
         path, value = new_value("after-stepdown")
         write_once(context, next_leader, root_token, path, value)
