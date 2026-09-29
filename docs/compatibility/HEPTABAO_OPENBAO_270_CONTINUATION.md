@@ -115,9 +115,9 @@ not successes that can be inherited by a new source revision.
 ## Mandatory CI lane
 
 The immutable head/merge workflow independently acquires 2.7.0 and runs these
-18 selected profiles with `--oracle-version 2.7.0`: core isolation, Identity,
-response wrapping, wrapping-token self-discard, token orphan revocation,
-consistency-header middleware and actual candidate Raft prerequisites, the product
+19 selected profiles with `--oracle-version 2.7.0`: core isolation, Identity,
+response wrapping, wrapping-token self-discard, token orphan revocation, Transit
+ML-DSA, consistency-header middleware and actual candidate Raft prerequisites, the product
 Python Client and Unix-socket Proxy consistency chain, capabilities, PKI, PKI
 extension configuration, SSH OTP, file audit management,
 namespaces, ACL parameters, ACL templates, wrapping TTL bounds, KV metadata CAS
