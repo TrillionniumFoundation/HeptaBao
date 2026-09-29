@@ -375,3 +375,66 @@ pub(crate) fn test_headers(index: &str, policies: &[&str]) -> Result<Headers, &'
     }
     raw.finish().map_err(|error| error.message)
 }
+
+#[cfg(test)]
+mod duration_format_tests {
+    use super::*;
+
+    #[test]
+    fn consistency270_duration_accepts_fractional_compound_and_small_units() -> Result<(), String> {
+        for (input, nanos) in [
+            ("25.5ms", 25_500_000),
+            ("1s250ms", 1_250_000_000),
+            ("0.5m", 30_000_000_000),
+            ("0h0m0.125s", 125_000_000),
+            ("25000us", 25_000_000),
+            ("25001µs", 25_001_000),
+            ("25002μs", 25_002_000),
+            ("25000001ns", 25_000_001),
+            (".025000001s", 25_000_001),
+            ("+25ms", 25_000_000),
+            ("0", 25_000_000),
+            ("0.000000001s", 25_000_000),
+            ("1.s", 1_000_000_000),
+            ("0.9999999999s", 999_999_999),
+            ("59s999ms999us999ns", 59_999_999_999),
+            ("1m0s", 60_000_000_000),
+        ] {
+            let settings = Settings::checked(Some(input), None, false)?;
+            assert_eq!(settings.wait, Duration::from_nanos(nanos), "{input}");
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn consistency270_duration_rejects_malformed_and_over_budget_values() {
+        for input in [
+            "",
+            "+",
+            "-1s",
+            "1m1ns",
+            "60.000000001s",
+            "1d",
+            "1e3ms",
+            "1 s",
+            "1s ",
+            " 1s",
+            ".s",
+            "1..2s",
+            "1s-2ms",
+            "1ss",
+            "NaNs",
+            "Infms",
+            "184467440737095516160s",
+            "1m1m",
+            "1.5",
+            "1μ",
+        ] {
+            assert!(
+                Settings::checked(Some(input), None, false).is_err(),
+                "{input}"
+            );
+        }
+        assert!(Settings::checked(Some(&"0".repeat(129)), None, false).is_err());
+    }
+}
