@@ -65,7 +65,10 @@ class Trace:
 
 def config_data():
     return {"plugin": "transit", "address": "https://127.0.0.1:1",
-            "token": "(redacted)", "mount_path": "remote-transit"}
+            "token": "(redacted)", "mount_path": "remote-transit",
+            "tls_client_key_bytes": "(redacted)",
+            "tls_client_cert_bytes": "synthetic-public-client-certificate",
+            "tls_ca_cert_bytes": "synthetic-public-ca"}
 
 
 def run_scenarios(client: Client, results: list[dict] | None = None):
@@ -77,7 +80,10 @@ def run_scenarios(client: Client, results: list[dict] | None = None):
     t.call("missing_plugin", "POST", CONFIG, 400, {"verify": False})
     t.call("config_create", "POST", CONFIG, 204,
         {"plugin": "transit", "verify": False, "address": "https://127.0.0.1:1",
-         "token": "synthetic-registry-only", "mount_path": "transit", "namespace": ""})
+         "token": "synthetic-registry-only", "mount_path": "transit", "namespace": "",
+         "tls_client_key_bytes": "synthetic-private-client-key-never-used",
+         "tls_client_cert_bytes": "synthetic-public-client-certificate",
+         "tls_ca_cert_bytes": "synthetic-public-ca"})
     t.call("config_read", "GET", CONFIG, 200,
         data={**config_data(), "mount_path": "transit", "namespace": ""})
     t.call("config_list", "LIST", CONFIGS, 200, data={"keys": ["demo"]})

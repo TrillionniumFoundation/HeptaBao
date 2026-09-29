@@ -413,3 +413,72 @@ fn external_keys270_alias_only_acl_cannot_modify_the_canonical_config() -> TestR
     assert_eq!(readback.body["data"]["mount_path"], "original");
     Ok(())
 }
+
+#[test]
+fn external_keys270_client_private_key_redaction_survives_real_service_reopen() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    let path = "sys/external-keys/configs/client-key";
+    let canary = "synthetic-private-client-key-persistent-canary";
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            path,
+            &admin,
+            json!({
+                "plugin":"transit", "verify":false, "tls_client_key_bytes":canary,
+                "tls_client_cert_bytes":"public-client-certificate"
+            })
+        )
+        .status,
+        204
+    );
+    for phase in 0..2 {
+        if phase == 1 {
+            drop(service);
+            service = root.service()?;
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "sys/unseal",
+                    "",
+                    json!({"key":unseal})
+                )
+                .status,
+                200
+            );
+        }
+        let before = Zeroizing::new(serde_json::to_vec(service.state.as_ref().ok_or("state")?)?);
+        let response = call(&mut service, "GET", path, &admin, json!({}));
+        assert_eq!(response.status, 200);
+        assert!(
+            response.body["data"]["tls_client_key_bytes"] == "(redacted)",
+            "private client key was not redacted"
+        );
+        assert!(
+            !serde_json::to_string(&response.body)?.contains(canary),
+            "response exposed synthetic private key"
+        );
+        assert_eq!(
+            response.body["data"]["tls_client_cert_bytes"],
+            "public-client-certificate"
+        );
+        assert!(
+            before.as_slice() == serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
+            "read changed stored state"
+        );
+    }
+    let reader = limited_token(
+        &mut service,
+        &admin,
+        r#"path "sys/external-keys/configs/client-key" { capabilities = ["read"] }"#,
+    )?;
+    let response = call(&mut service, "GET", path, &reader, json!({}));
+    assert_eq!(response.status, 200);
+    assert!(response.body["data"]["tls_client_key_bytes"] == "(redacted)");
+    assert!(!serde_json::to_string(&response.body)?.contains(canary));
+    Ok(())
+}

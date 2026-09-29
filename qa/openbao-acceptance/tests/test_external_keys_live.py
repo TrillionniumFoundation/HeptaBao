@@ -43,6 +43,17 @@ class ExternalKeysTests(unittest.TestCase):
         self.assertFalse(rows[0]["passed"])
         self.assertNotIn("private-", json.dumps(rows))
 
+    def test_standard_client_key_field_cannot_pass_or_leak_a_report(self):
+        private = "synthetic-private-client-key-canary"
+        expected = external.config_data()
+        self.assertEqual(expected["tls_client_key_bytes"], "(redacted)")
+        rows = []
+        with self.assertRaises(external.ScenarioFailure):
+            external.Trace(Client(200, {"data": {**expected, "tls_client_key_bytes": private}}), rows).call(
+                "tls-key", "GET", external.CONFIG, 200, data=expected)
+        self.assertFalse(rows[0]["passed"])
+        self.assertNotIn(private, json.dumps(rows))
+
     def test_namespace_and_patch_transport_are_explicit(self):
         client = Client(204)
         external.Trace(client, []).call("patch", "PATCH", external.CONFIG, 204,

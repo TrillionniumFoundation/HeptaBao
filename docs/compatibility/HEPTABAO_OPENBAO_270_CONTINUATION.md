@@ -305,6 +305,16 @@ key custody, mount grant consumption, PKI/Transit external signing or encryption
 plugin discovery, HSM operation, all-asset migration, HA, or independent security
 qualification. Those remain replacement blockers; this profile does not bypass them.
 
+The Transit configuration field `tls_client_key_bytes` is redacted together
+with the existing sensitive aliases. Response projection selects sensitive fields
+before cloning any values, avoiding a temporary plaintext private-key copy in the
+response builder. Public client and CA certificate bytes remain readable. Reads
+neither rewrite nor erase encrypted provider configuration, including after reopen.
+The fixed native profile now includes synthetic private/public TLS fields in its
+configuration, ACL-read and restart observations; earlier runner hashes do not
+qualify these additional assertions. Adding these regressions is not a passing
+runtime receipt and does not admit provider verification or cryptographic use.
+
 The native 2.7 HTTP projection distinguishes empty listings (404 with an empty
 errors array) from a named missing config or key (400 with the resource error).
 A repeated canonical grant update is 204; a grant request with an extra terminal
