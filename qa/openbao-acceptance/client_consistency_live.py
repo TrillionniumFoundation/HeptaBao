@@ -106,21 +106,27 @@ PROXY_REQUIRED = frozenset({'bootstrap','proxy_ready','write_index','future_reje
 
 def unix_request(directory,method,path,body=None,headers=()):
     raw=None if body is None else json.dumps(body).encode()
-    connection=http.client.HTTPConnection('localhost',timeout=8)
-    connection.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
-    try:
-        connection.sock.settimeout(8)
-        connection.sock.connect(str(directory/'api.sock'))
-        connection.putrequest(method,'/v1/'+path,skip_accept_encoding=True)
-        connection.putheader('Connection','close')
-        connection.putheader('Content-Length',str(len(raw) if raw else 0))
-        if raw is not None:connection.putheader('Content-Type','application/json')
-        for name,value in headers:connection.putheader(name,value)
-        connection.endheaders(raw)
-        response=connection.getresponse();payload=response.read(65537)
-        if len(payload)>65536:raise FixtureError('proxy_response_bound')
-        return response.status,json.loads(payload) if payload else {},dict((k.lower(),v) for k,v in response.getheaders())
-    finally:connection.close()
+    # The real proxy binds through this same existing directory-handle owner.
+    # Keep the read handle alive through response delivery; do not take a writer
+    # lock, shorten TMPDIR by moving state, or connect through an unchecked alias.
+    with StateDirectory(directory) as binding:
+        connection=http.client.HTTPConnection('localhost',timeout=8)
+        connection.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+        try:
+            connection.sock.settimeout(8)
+            binding.check()
+            connection.sock.connect(f'/proc/self/fd/{binding.fd}/api.sock')
+            binding.check()
+            connection.putrequest(method,'/v1/'+path,skip_accept_encoding=True)
+            connection.putheader('Connection','close')
+            connection.putheader('Content-Length',str(len(raw) if raw else 0))
+            if raw is not None:connection.putheader('Content-Type','application/json')
+            for name,value in headers:connection.putheader(name,value)
+            connection.endheaders(raw)
+            response=connection.getresponse();payload=response.read(65537)
+            if len(payload)>65536:raise FixtureError('proxy_response_bound')
+            return response.status,json.loads(payload) if payload else {},dict((k.lower(),v) for k,v in response.getheaders())
+        finally:connection.close()
 
 
 def proxy_ha(binary,root,t):
