@@ -64,7 +64,7 @@ REQUIRED_CASES = frozenset({
     "schema56_read_does_not_rewrite_state",
     "schema56_root_statement_field_is_empty",
     "invalid_api_statements_fail_atomically",
-    "candidate_promotes_root_statements_to_current_current_schema",
+    "candidate_promotes_root_statements_to_current_schema",
     "configured_statement_order_round_trips",
     "omitted_root_statements_preserve",
     "null_root_statements_clear",
@@ -518,7 +518,7 @@ def run(
             )
         check("invalid_api_statements_fail_atomically", invalid_ok)
         check(
-            "candidate_promotes_root_statements_to_current_current_schema",
+            "candidate_promotes_root_statements_to_current_schema",
             legacy_instance.call(
                 "POST",
                 "database/config/local",

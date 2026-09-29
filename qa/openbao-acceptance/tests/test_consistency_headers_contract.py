@@ -38,3 +38,10 @@ class ConsistencyHeaderContractTests(unittest.TestCase):
         with self.assertRaises(profile.FixtureError):trace.check("complete",False)
         self.assertEqual(trace.checks,[{"case":"complete","passed":False}])
         self.assertFalse(complete_checks(trace.checks,len(profile.COMMON_REQUIRED),required_cases=profile.COMMON_REQUIRED))
+
+    def test_native_comparison_is_mandatory_in_the_27_lane(self):
+        root=Path(__file__).resolve().parents[3]
+        workflow=(root/".github/workflows/codex-openbao-replacement-ci.yml").read_text()
+        loop=next(line for line in workflow.splitlines() if "for profile in core_isolation" in line)
+        self.assertIn("consistency_headers_live",loop.split())
+        self.assertIn("--oracle-version 2.7.0",workflow)

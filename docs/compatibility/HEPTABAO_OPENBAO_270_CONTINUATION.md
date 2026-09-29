@@ -115,9 +115,9 @@ not successes that can be inherited by a new source revision.
 ## Mandatory CI lane
 
 The immutable head/merge workflow independently acquires 2.7.0 and runs these
-16 selected profiles with `--oracle-version 2.7.0`: core isolation, Identity,
+17 selected profiles with `--oracle-version 2.7.0`: core isolation, Identity,
 response wrapping, wrapping-token self-discard, token orphan revocation,
-capabilities, PKI, PKI extension configuration, SSH OTP, file audit management,
+consistency-header middleware and actual candidate Raft prerequisites, capabilities, PKI, PKI extension configuration, SSH OTP, file audit management,
 namespaces, ACL parameters, ACL templates, wrapping TTL bounds, KV metadata CAS
 and KV enumeration. A separate required step runs the fixed-version
 `sys_leader_live.py` lifecycle with the same verified 2.7.0 oracle. Each comparison needs two nonempty complete
@@ -130,14 +130,63 @@ remain separate. The workflow does not waive failed gates or use continue-on-err
 Reports include exact candidate commit/tree, worktree cleanliness, binary/archive
 hashes, runner/launcher hashes, target version and actual reference storage backend.
 
+## Consistency middleware and transport continuation
+
+`http_consistency.rs` validates `X-Vault-Index` and ordered `X-Vault-Inconsistent`
+values before logical, leader or snapshot dispatch. Indices decode from the
+2.7 JSON/base64 envelope; foreign clusters are ignored, duplicate indices and
+unsupported policy combinations fail with 400. Unsupported authentication
+headers and ambiguous token/framing duplicates remain rejected.
+
+On a standby, the native `heptabao-raft-v1:<u64>` prerequisite must be no greater
+than both committed and locally applied indices. `fail` returns 429 with
+`Retry-After: 1`; `await-state` waits without holding either the application or
+HA mutex; explicit forwarding uses the existing authenticated execution path.
+All paths retain the original request deadline and response reserve. A watermark
+never authenticates a caller, materializes application state, grants ReadIndex
+permission, or authorizes retry of an uncertain business effect.
+
+The listener accepts `consistency_max_index_wait` (bounded whole-number ms/s/m,
+25 ms minimum and 60 s maximum), `consistency_fallback_behavior` (`fail` or
+`forward-active-node`) and `consistency_missing_header_forward`. These are native
+JSON settings, not a claim to accept every upstream HCL/duration representation.
+
+Successful active responses may carry an index only after current-owner linear
+observation; failure to obtain this optional metadata cannot convert an already
+committed operation into a failed mutation. The header contains only server-
+encoded cluster/index metadata. HA `HBFQ4` explicitly negotiates the `HBFS2`
+response sidecar; directions, cluster identity and index types remain validated
+inside the existing mTLS transport. HBFQ1–3 requests keep their original HBFS1
+response shape. The explicit legacy-v1 rolling mode still omits metadata rather
+than inventing an index. No blind fallback/replay is added for unknown versions.
+
+`consistency_headers_live.py` requires 49 independent middleware observations
+for each of native HeptaBao, official 2.7 PebbleDB and official 2.7 Raft, plus a
+separate candidate three-process lifecycle. That lifecycle checks forwarded write
+indices, future-index rejection, bounded waiting, authorization and finite-use
+preservation, wrapping, restart with a local applied frontier, handoff and quorum
+loss. It is not an independent OpenBao multi-node or physical-host qualification.
+Native binary snapshots retain their existing transport contract; general mixed-
+version client/Agent/Proxy behavior and all backend index formats remain broader
+than these checks. Tests must actually execute on the reported immutable source;
+the existence of this profile is not a passing receipt.
+
+The PostgreSQL migration profiles now derive the expected current schema from
+`git show <exact-build-commit>:crates/heptabao-server/src/service.rs`, never from
+the candidate's observed capacity reply. They still require unchanged legacy
+read state/frontier, a real mutation promoting the schema, old-reader refusal,
+unchanged application artifacts after refusal, and successful current-reader
+reopen. Their legacy schema-55/schema-56 commit/tree pins are unchanged.
+
 ## Explicit remaining blockers
 
 A full replacement claim is still prohibited until the complete inventory and
 2.7.0 delta are independently exercised. In particular:
 
-- External keys, the ML-DSA/PQC surfaces, control-group approvals, and the new
-  X-Vault consistency-header behavior require their own implementation and exact
-  2.7.0 reference evidence. This continuation does not admit them by inference.
+- External keys, the ML-DSA/PQC surfaces and control-group approvals still require
+  their own implementation and exact 2.7.0 reference evidence. The consistency
+  middleware now has a real implementation and a required native comparison;
+  its bounded profile does not establish general client or storage compatibility.
 - General upstream plugin compatibility, complete provider and directory-service
   semantics, namespace key custody/delegation, and full PKI/SSH/JWT/OIDC behavior
   remain broader than the selected passing profiles.
