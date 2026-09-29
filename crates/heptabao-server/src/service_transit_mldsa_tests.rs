@@ -1,7 +1,7 @@
 //! Real Linux durable owner lifecycle, using disposable synthetic state only.
 use super::tests::{Root, bootstrap, call};
 use super::*;
-use base64::{Engine as _, engine::general_purpose::STANDARD};
+use base64::engine::general_purpose::STANDARD;
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
 #[test]
@@ -57,6 +57,9 @@ fn mldsa270_service_promotes_only_on_write_fences_legacy_and_reopens_signatures(
     let state = service.state.as_ref().ok_or("state")?;
     assert_eq!(state.schema, 62);
     assert!(state.engines.has_mldsa_state());
+    let mut future = state.clone();
+    future.schema = CURRENT_STATE_SCHEMA + 1;
+    assert!(future.validate_format().is_err());
     let mut disguised = state.clone();
     disguised.schema = 61;
     let denied = disguised
