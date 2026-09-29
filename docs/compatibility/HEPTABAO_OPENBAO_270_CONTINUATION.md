@@ -151,9 +151,10 @@ permission, or authorizes retry of an uncertain business effect.
 The listener accepts `consistency_max_index_wait` as a bounded nonnegative
 string duration: decimal fractions, consecutive components and the ns/us/µs/μs/
 ms/s/m/h units are supported, along with a leading plus and bare zero. Examples
-include `25.5ms`, `1s250ms` and `0.5m`. Parsing uses checked integer nanoseconds
-and truncates each component's fractional nanosecond; it does not round up a
-resource budget. Negative, malformed, over-128-byte and over-60-second values
+include `25.5ms`, `1s250ms` and `0.5m`. Fraction conversion follows Go's bounded
+significant-digit and IEEE-754 nanosecond conversion, including boundary rounding;
+whole components and the final budget use checked integer nanoseconds. The limit
+is rechecked after conversion. Negative, malformed, over-128-byte and over-60-second values
 fail before listener startup. The existing 25 ms minimum and 60 s maximum are
 unchanged. Numeric JSON values, nonzero unitless strings and arbitrary HCL are
 still outside this native JSON profile. `consistency_fallback_behavior` remains

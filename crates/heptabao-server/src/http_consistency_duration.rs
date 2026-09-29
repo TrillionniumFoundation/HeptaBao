@@ -1,4 +1,4 @@
-//! Bounded listener duration syntax; no floating-point budget inflation.
+//! Go-compatible listener duration syntax with checked nanosecond budget bounds.
 //! This parser does not change transport deadlines or authorize request retries.
 use std::time::Duration;
 
@@ -49,12 +49,25 @@ pub(super) fn parse(raw: &str) -> Result<Duration, &'static str> {
             "h" => 3_600_000_000_000,
             _ => return Err(INVALID),
         };
-        // Work from right to left to floor the fraction at nanosecond precision.
-        // Each carry is smaller than unit; the maximum intermediate is 10*unit.
-        // This is exact even for fractions longer than machine integers can hold.
-        let fractional_nanos = fraction.bytes().rev().fold(0_u64, |carry, digit| {
-            (u64::from(digit - b'0') * unit + carry) / 10
-        });
+        // Match Go time.ParseDuration's bounded significant fraction and IEEE
+        // conversion, including its nanosecond rounding at unit boundaries.
+        // Whole components and the final 60-second budget remain checked integers.
+        let mut significant = 0_u64;
+        let mut scale = 1_f64;
+        for digit in fraction.bytes() {
+            if significant > (i64::MAX as u64) / 10 {
+                break;
+            }
+            let next = significant * 10 + u64::from(digit - b'0');
+            if next > (1_u64 << 63) {
+                break;
+            }
+            significant = next;
+            scale *= 10.0;
+        }
+        // Input length bounds scale below 10^128; unit <= 3.6e12 and the
+        // fraction is at most one, so this finite conversion cannot overflow.
+        let fractional_nanos = (significant as f64 * (unit as f64 / scale)) as u64;
         let segment = whole
             .checked_mul(unit)
             .and_then(|value| value.checked_add(fractional_nanos))
