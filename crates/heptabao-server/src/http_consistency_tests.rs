@@ -264,3 +264,78 @@ fn consistency270_configuration_rejects_unbounded_or_unknown_fallbacks() {
     assert!(consistency::Settings::checked(Some("1s"), Some("await-state"), false).is_err());
     assert!(consistency::Settings::checked(Some("25ms"), Some("fail"), false).is_ok());
 }
+
+// Model headers and body arriving in separate TLS records. Rejecting an index
+// must not leave a bounded ordinary body unread when the response socket closes.
+struct SplitRejectedBody {
+    header: std::io::Cursor<Vec<u8>>,
+    body: std::io::Cursor<Vec<u8>>,
+    body_reads: usize,
+}
+impl Read for SplitRejectedBody {
+    fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
+        if self.header.position() < self.header.get_ref().len() as u64 {
+            self.header.read(bytes)
+        } else {
+            self.body_reads += 1;
+            self.body.read(bytes)
+        }
+    }
+}
+fn rejected_body(path: &str, framing: &str) -> SplitRejectedBody {
+    SplitRejectedBody {
+        header: std::io::Cursor::new(format!(
+            "POST /v1/{path} HTTP/1.1\r\nHost: localhost\r\nX-Vault-Index: invalid\r\n{framing}\r\n"
+        ).into_bytes()),
+        body: std::io::Cursor::new(b"BAD!trailing-must-not-be-consumed".to_vec()),
+        body_reads: 0,
+    }
+}
+
+#[test]
+fn rejected_consistency_body_is_discarded_without_json_or_next_request_parsing() {
+    let mut input = rejected_body("secret/data/rejected", "Content-Length: 4\r\n");
+    let result = read_request(&mut input, Duration::from_secs(1));
+    assert_eq!(result.err().map(|error| error.status), Some(400));
+    assert_eq!(input.body.position(), 4);
+    assert_eq!(input.body_reads, 1);
+}
+
+#[test]
+fn rejected_consistency_body_never_reads_unbounded_or_ambiguous_framing() {
+    for framing in [
+        "",
+        "Content-Length: 0\r\n",
+        "Content-Length: -1\r\n",
+        "Content-Length: invalid\r\n",
+        "Content-Length: 262145\r\n",
+        "Content-Length: 4\r\nTransfer-Encoding: chunked\r\n",
+        "Content-Length: 4\r\nExpect: 100-continue\r\n",
+    ] {
+        let mut input = rejected_body("secret/data/rejected", framing);
+        assert_eq!(
+            read_request(&mut input, Duration::from_secs(1))
+                .err()
+                .map(|error| error.status),
+            Some(400)
+        );
+        assert_eq!(input.body_reads, 0);
+    }
+}
+
+#[test]
+fn rejected_consistency_body_keeps_native_snapshot_upload_unread() {
+    for path in [
+        "sys/storage/raft/snapshot",
+        "sys/storage/raft/snapshot-force",
+    ] {
+        let mut input = rejected_body(path, "Content-Length: 4\r\n");
+        assert_eq!(
+            read_request_mode(&mut input, Duration::from_secs(1), true)
+                .err()
+                .map(|error| error.status),
+            Some(400)
+        );
+        assert_eq!(input.body_reads, 0);
+    }
+}
