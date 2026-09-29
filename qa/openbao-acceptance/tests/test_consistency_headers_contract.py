@@ -9,7 +9,7 @@ from online_evidence import complete_checks
 
 class ConsistencyHeaderContractTests(unittest.TestCase):
     def test_common_cases_and_real_ha_have_fixed_complete_denominators(self):
-        self.assertEqual(len(profile.COMMON_REQUIRED),52)
+        self.assertEqual(len(profile.COMMON_REQUIRED),58)
         self.assertEqual(len(profile.VALID_HEADERS),12)
         self.assertEqual(len(profile.INVALID_HEADERS),12)
         for required in (profile.COMMON_REQUIRED,profile.HA_REQUIRED):
