@@ -155,3 +155,46 @@ authorization URL to a trusted terminal; do not capture it in shared logs.
 all protocol/state limits and the distinction from a complete bao CLI or web UI.
 
 Implementation owner: `heptabao/oidc_login.py`; tests: `tests/test_oidc_login.py`.
+
+## Explicit OpenBao 2.7 consistency metadata
+
+`Client.request(..., consistency_index=index, inconsistent=("await-state", "fail"))`
+transmits one bounded `X-Vault-Index` and two separate ordered
+`X-Vault-Inconsistent` fields. Supported sequences are absent, `fail`,
+`forward-active-node`, `await-state`, or `await-state` followed by one of the
+first two. Comma-separated, duplicate and reversed pairs fail before network
+dispatch. No arbitrary header or bearer forwarding API is added.
+
+`Response.consistency_index` preserves received bytes. Absence is `None`, not
+proof of replica progress. Duplicate or malformed response metadata yields
+`None` and `consistency_valid=False` without changing the acknowledged status
+or body: never replay a mutation because its optional metadata is unusable.
+Do not send a dependent request requiring a prerequisite without a usable index.
+Indices are never implicitly carried between requests, persisted, combined, or
+interpreted as authentication or read authority. The caller chooses the intended
+same origin and namespace for dependent requests.
+
+`Response.retry_after_seconds` retains bounded delta-seconds values, not HTTP-date
+values. Neither it nor a 429 triggers a retry or sleep. The configured TLS roots,
+hostname verification, namespace binding, no redirects, and timeout contract are
+unchanged. Python's immutable metadata is not a memory-zeroization claim.
+
+The Linux Unix-socket proxy admits only these additional prerequisite fields and
+preserves ordered policy headers. Valid response indices and bounded Retry-After
+are returned; invalid indices are withheld. Incoming tokens, namespaces, wrap TTL,
+and unlisted routes remain forbidden. A prerequisite cannot change the configured
+bearer or origin. The CLI has no new index flags/files; full CLI parity is open.
+
+With the verified 2.7 archive and binary environment, run:
+
+```sh
+python qa/openbao-acceptance/client_consistency_live.py \
+  --binary /absolute/heptabao-server --oracle-version 2.7.0 \
+  --output /private/evidence/client-consistency.json
+```
+
+The runner uses independent candidate, PebbleDB and Raft reference processes,
+the existing 28-case Raft lifecycle through the product Client, and a real proxy
+subprocess against a three-node candidate. The proxy fixture supplies an admitted
+synthetic sink; it does not claim Agent login/renewal-loop execution. Local input
+refusals are distinguished from HTTP observations. Failed runs remain evidence.

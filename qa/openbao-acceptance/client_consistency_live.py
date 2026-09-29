@@ -6,6 +6,11 @@ Local input refusals are not relabeled as HTTP observations.
 """
 from __future__ import annotations
 import json
+import hashlib
+import http.client
+import socket
+import subprocess
+import time
 import os
 from pathlib import Path
 import shutil
@@ -23,6 +28,10 @@ from official_openbao_launcher import verify_inputs
 from online_evidence import admit_output, complete_checks, source_identity
 sys.path.insert(0, str(ROOT/'clients/python'))
 from heptabao.transport import Client, BaoError
+from heptabao.agent import AgentConfig
+from heptabao.private_state import StateDirectory
+from native_snapshot_ha_live import SaveCluster
+from consistency_headers_live import encoded, response_index
 
 COMMON = frozenset({'initialize','unseal','mount','write','index_not_auth','restart_unseal',
     'restart_read','finite_issue','finite_unchanged','stopped','complete'} |
@@ -91,6 +100,101 @@ def common(instance,endpoint,t):
     if value.get('data',{}).get('data')!={'fixture':'retained'}: raise FixtureError('restart_readback')
 
 
+PROXY_REQUIRED = frozenset({'bootstrap','proxy_ready','write_index','future_rejected',
+    'rejected_write_unchanged','await_forward','forward_exactly_once','read_index',
+    'incoming_token_rejected','await_fail','await_bound','stopped','socket_removed','complete'})
+
+def unix_request(directory,method,path,body=None,headers=()):
+    raw=None if body is None else json.dumps(body).encode()
+    connection=http.client.HTTPConnection('localhost',timeout=8)
+    connection.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
+    try:
+        connection.sock.settimeout(8)
+        connection.sock.connect(str(directory/'api.sock'))
+        connection.putrequest(method,'/v1/'+path,skip_accept_encoding=True)
+        connection.putheader('Connection','close')
+        connection.putheader('Content-Length',str(len(raw) if raw else 0))
+        if raw is not None:connection.putheader('Content-Type','application/json')
+        for name,value in headers:connection.putheader(name,value)
+        connection.endheaders(raw)
+        response=connection.getresponse();payload=response.read(65537)
+        if len(payload)>65536:raise FixtureError('proxy_response_bound')
+        return response.status,json.loads(payload) if payload else {},dict((k.lower(),v) for k,v in response.getheaders())
+    finally:connection.close()
+
+
+def proxy_ha(binary,root,t):
+    cluster=SaveCluster(binary,root);process=None;log=None;socket_dir=None
+    try:
+        cluster.bootstrap();leader=cluster.leader()
+        standby=next(n for n in cluster.nodes if n is not leader)
+        t.check('bootstrap',True)
+        ca=root/'ca.crt'; endpoint=Endpoint(leader.http_port,ca)
+        path='secret/data/client-proxy-consistency'
+        state=root/'proxy-state';state.mkdir(mode=0o700)
+        socket_dir=Path(tempfile.mkdtemp(prefix='hb-px-'))
+        agent=AgentConfig('https://127.0.0.1:'+str(standby.http_port),str(ca),
+            str(root/'unused-role-id'),str(root/'unused-secret-id'),str(state))
+        agent.validate()
+        # Supply a synthetic, already admitted sink. This tests the normal proxy
+        # process and token_snapshot, not AppRole login or an agent renewal loop.
+        with StateDirectory(state,writer=True) as directory:
+            raw=(cluster.root_token+'\n').encode();directory.write('token',raw)
+            directory.publish('state.json',{'schema':1,'phase':'ready','binding':agent.binding(),
+                'generation':1,'authentications':1,'observed_wall':time.time()-1,
+                'expires_at':time.time()+120,'token_sha256':hashlib.sha256(raw).hexdigest()})
+        private_write(root/'agent.json',agent.__dict__,replace=False)
+        private_write(root/'proxy.json',{'agent_config':str(root/'agent.json'),'socket_dir':str(socket_dir),
+            'allow_effects':True,'timeout':5,'max_runtime_seconds':60,'max_requests':12,
+            'routes':[{'method':method,'path':path,'effectful':method=='POST'} for method in ('GET','POST')]},replace=False)
+        log=(root/'proxy.log').open('wb')
+        env=os.environ.copy();env['PYTHONPATH']=str(ROOT/'clients/python')
+        process=subprocess.Popen([sys.executable,'-m','heptabao.proxy','--config',str(root/'proxy.json')],
+            stdout=log,stderr=log,env=env)
+        deadline=time.monotonic()+8
+        while not (socket_dir/'api.sock').exists():
+            if process.poll() is not None or time.monotonic()>=deadline:raise FixtureError('proxy_not_ready')
+            time.sleep(.02)
+        t.check('proxy_ready',True)
+        status,value,h=unix_request(socket_dir,'POST',path,{'data':{'fixture':'first'},'options':{'cas':0}})
+        index,_=response_index(h,cluster.cluster_id);t.check('write_index',status==200 and bool(index))
+        future=[('X-Vault-Index',encoded({'cluster':cluster.cluster_id,'value':'heptabao-raft-v1:'+str(2**64-1)}))]
+        status,_,h=unix_request(socket_dir,'POST',path,{'data':{'fixture':'forbidden'},'options':{'cas':1}},future)
+        t.check('future_rejected',status==429 and h.get('retry-after')=='1')
+        direct=Client(endpoint.address,str(ca),cluster.root_token)
+        value=direct.request('GET','/v1/'+path).body
+        t.check('rejected_write_unchanged',value.get('data',{}).get('metadata',{}).get('version')==1
+                and value.get('data',{}).get('data')=={'fixture':'first'})
+        status,_,h=unix_request(socket_dir,'POST',path,{'data':{'fixture':'second'},'options':{'cas':1}},
+            future+[('X-Vault-Inconsistent','await-state'),('X-Vault-Inconsistent','forward-active-node')])
+        index,_=response_index(h,cluster.cluster_id);t.check('await_forward',status==200)
+        value=direct.request('GET','/v1/'+path).body
+        t.check('forward_exactly_once',value.get('data',{}).get('metadata',{}).get('version')==2
+                and value.get('data',{}).get('data')=={'fixture':'second'})
+        status,value,h=unix_request(socket_dir,'GET',path,headers=[('X-Vault-Index',index)])
+        response_index(h,cluster.cluster_id)
+        t.check('read_index',status==200 and value.get('data',{}).get('data')=={'fixture':'second'})
+        status,value,_=unix_request(socket_dir,'GET',path,headers=[('X-Vault-Token','synthetic-incoming')])
+        t.check('incoming_token_rejected',status==503 and not value.get('data'))
+        begin=time.monotonic()
+        status,_,h=unix_request(socket_dir,'GET',path,headers=future+
+            [('X-Vault-Inconsistent','await-state'),('X-Vault-Inconsistent','fail')])
+        t.check('await_fail',status==429 and h.get('retry-after')=='1')
+        t.check('await_bound',.020<=time.monotonic()-begin<2)
+        process.terminate();process.wait(timeout=8)
+        t.check('stopped',process.returncode==0)
+        t.check('socket_removed',not (socket_dir/'api.sock').exists())
+        t.check('complete',True)
+    finally:
+        if process is not None and process.poll() is None:
+            process.terminate()
+            try:process.wait(timeout=8)
+            except subprocess.TimeoutExpired:process.kill();process.wait(timeout=5)
+        if log is not None:log.close()
+        cluster.close()
+        if socket_dir is not None:shutil.rmtree(socket_dir)
+
+
 def main():
     os.umask(0o077)
     p=SafeArgumentParser(description=__doc__)
@@ -123,6 +227,10 @@ def main():
         try: candidate_ha(binary,work/'candidate-ha',t)
         except Exception as error: failures['candidate_ha']=str(error) if isinstance(error,FixtureError) else type(error).__name__
         if not complete_checks(t.checks,len(HA_REQUIRED),required_cases=HA_REQUIRED):failures.setdefault('candidate_ha','incomplete_trace')
+        t=Trace();traces['proxy_ha']=t
+        try:proxy_ha(binary,work/'proxy-ha',t)
+        except Exception as error:failures['proxy_ha']=str(error) if isinstance(error,FixtureError) else type(error).__name__
+        if not complete_checks(t.checks,len(PROXY_REQUIRED),required_cases=PROXY_REQUIRED):failures.setdefault('proxy_ha','incomplete_trace')
     finally:
         for k,h in handlers.items(): signal.signal(k,h)
     after=source_identity(ROOT,binary)
