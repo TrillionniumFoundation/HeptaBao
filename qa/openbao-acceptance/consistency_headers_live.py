@@ -25,6 +25,10 @@ from online_evidence import admit_output, complete_checks, source_identity
 from sys_leader_live import Endpoint, Official, Instance
 
 VERSION = "2.7.0"
+REQUEST_TIMEOUT = 8
+# Match the established sys_leader_live reference initialization budget.
+# This is one request, never an init retry; the candidate's own deadline remains.
+INITIALIZATION_TIMEOUT = 15
 MOUNT = "consistency-data"
 PATH = MOUNT + "/data/retained"
 
@@ -63,7 +67,7 @@ INVALID_HEADERS = (
 )
 COMMON_REQUIRED = frozenset({"initialize","unseal","mount","write","finite_issue",
     "finite_rejected","finite_unchanged","write_rejected","write_absent","index_is_not_auth",
-    "restart_unseal","restart_retained","complete"}
+    "restart_unseal","restart_retained","wrap_once","unwrap_once","unwrap_replay_denied","complete"}
     | {"valid_"+name for name,_ in VALID_HEADERS}
     | {"invalid_"+name+"_"+route for name,_ in INVALID_HEADERS for route in ("logical","leader")})
 HA_REQUIRED = frozenset({"bootstrap","write_index","forwarded_write_index","forwarded_write_once",
@@ -74,9 +78,9 @@ HA_REQUIRED = frozenset({"bootstrap","write_index","forwarded_write_index","forw
     "post_handoff_read","partitioned_watermark_not_authority","healed_read","stopped","complete"})
 
 
-def call(endpoint, method, path, token="", body=None, headers=()):
+def call(endpoint, method, path, token="", body=None, headers=(), *, timeout=REQUEST_TIMEOUT):
     raw = None if body is None else json.dumps(body).encode()
-    connection = http.client.HTTPSConnection("127.0.0.1",endpoint.port,context=endpoint.context,timeout=8)
+    connection = http.client.HTTPSConnection("127.0.0.1",endpoint.port,context=endpoint.context,timeout=timeout)
     try:
         connection.putrequest(method,"/v1/"+path,skip_host=True,skip_accept_encoding=True)
         connection.putheader("Host","localhost")
@@ -98,8 +102,8 @@ class Trace:
     def check(self,name,condition):
         self.checks.append({"case":name,"passed":condition is True})
         if condition is not True: raise FixtureError(name)
-    def request(self,name,endpoint,method,path,expected,token="",body=None,headers=()):
-        status,value,metadata=call(endpoint,method,path,token,body,headers)
+    def request(self,name,endpoint,method,path,expected,token="",body=None,headers=(), *, timeout=REQUEST_TIMEOUT):
+        status,value,metadata=call(endpoint,method,path,token,body,headers,timeout=timeout)
         self.statuses.append({"case":name,"status":status})
         self.check(name,status==expected)
         return value,metadata
@@ -121,7 +125,7 @@ class RestartableOfficial(Official):
 
 
 def common(instance,endpoint,trace):
-    value,_=trace.request("initialize",endpoint,"POST","sys/init",200,body={"secret_shares":1,"secret_threshold":1})
+    value,_=trace.request("initialize",endpoint,"POST","sys/init",200,body={"secret_shares":1,"secret_threshold":1},timeout=INITIALIZATION_TIMEOUT)
     token,key=value["root_token"],value["keys_base64"][0]
     trace.request("unseal",endpoint,"POST","sys/unseal",200,body={"key":key})
     trace.request("mount",endpoint,"POST","sys/mounts/"+MOUNT,204,token,{"type":"kv","options":{"version":"2"}})
@@ -144,6 +148,12 @@ def common(instance,endpoint,trace):
     trace.request("write_rejected",endpoint,"POST",MOUNT+"/data/rejected",400,token,{"data":{"fixture":"must-not-commit"}},bad)
     trace.request("write_absent",endpoint,"GET",MOUNT+"/data/rejected",404,token)
     trace.request("index_is_not_auth",endpoint,"GET",PATH,403,"synthetic-invalid",headers=VALID_HEADERS[4][1])
+    wrapped,_=trace.request("wrap_once",endpoint,"POST","sys/wrapping/wrap",200,token,
+        {"fixture":"single-use"},[("X-Vault-Wrap-TTL","60s")])
+    wrapping=wrapped["wrap_info"]["token"]
+    value,_=trace.request("unwrap_once",endpoint,"POST","sys/wrapping/unwrap",200,wrapping,{})
+    if value.get("data")!={"fixture":"single-use"}:raise FixtureError("wrong_wrapped_readback")
+    trace.request("unwrap_replay_denied",endpoint,"POST","sys/wrapping/unwrap",400,wrapping,{})
     instance.stop();instance.start()
     trace.request("restart_unseal",endpoint,"POST","sys/unseal",200,body={"key":key})
     value,_=trace.request("restart_retained",endpoint,"GET",PATH,200,token,headers=VALID_HEADERS[10][1])
@@ -192,7 +202,7 @@ def candidate_ha(binary,root,t):
         if value.get("data"):raise FixtureError("wrapping_disclosed")
         value,_=t.request("unwrap_once",current(standby),"POST","sys/wrapping/unwrap",200,wrapping,{})
         if value.get("data")!={"fixture":"wrapped"}:raise FixtureError("wrapped_value_changed")
-        t.request("unwrap_replay_denied",current(leader),"POST","sys/wrapping/unwrap",403,wrapping,{})
+        t.request("unwrap_replay_denied",current(leader),"POST","sys/wrapping/unwrap",400,wrapping,{})
         value,_=t.request("finite_issue",current(leader),"POST","auth/token/create",200,token,{"policies":["default"],"num_uses":2,"ttl":600})
         limited=value["auth"]["client_token"]
         t.request("finite_rejected",current(standby),"GET","auth/token/lookup-self",429,limited,headers=future)
@@ -256,6 +266,7 @@ def main():
     report={"schema":"heptabao.consistency270-live.v1","status":"failed" if failures else "passed",
         "failures":failures,"checks":{k:v.checks for k,v in traces.items()},"status_traces":{k:v.statuses for k,v in traces.items()},
         "source_identity":before,"source_identity_after":after,"oracle_version":VERSION,
+        "request_timeout_seconds":REQUEST_TIMEOUT,"initialization_timeout_seconds":INITIALIZATION_TIMEOUT,
         "oracle_binary_sha256":oracle_hash,"oracle_archive_sha256":file_hash(Path(os.environ["HB_ORACLE_ARCHIVE"])),
         "runner_sha256":file_hash(Path(__file__)),"common_status_traces_match":matched,
         "retained_failure_work_dir":str(work) if failures else None,

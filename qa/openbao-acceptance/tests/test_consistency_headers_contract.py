@@ -9,7 +9,7 @@ from online_evidence import complete_checks
 
 class ConsistencyHeaderContractTests(unittest.TestCase):
     def test_common_cases_and_real_ha_have_fixed_complete_denominators(self):
-        self.assertEqual(len(profile.COMMON_REQUIRED),49)
+        self.assertEqual(len(profile.COMMON_REQUIRED),52)
         self.assertEqual(len(profile.VALID_HEADERS),12)
         self.assertEqual(len(profile.INVALID_HEADERS),12)
         for required in (profile.COMMON_REQUIRED,profile.HA_REQUIRED):
@@ -45,3 +45,12 @@ class ConsistencyHeaderContractTests(unittest.TestCase):
         loop=next(line for line in workflow.splitlines() if "for profile in core_isolation" in line)
         self.assertIn("consistency_headers_live",loop.split())
         self.assertIn("--oracle-version 2.7.0",workflow)
+
+    def test_initialization_budget_does_not_relax_normal_request_or_wait_bounds(self):
+        self.assertEqual(profile.INITIALIZATION_TIMEOUT,15)
+        self.assertEqual(profile.REQUEST_TIMEOUT,8)
+        source=Path(profile.__file__).read_text()
+        self.assertIn('timeout=INITIALIZATION_TIMEOUT)',source)
+        self.assertIn('.020<=time.monotonic()-start<2',source)
+        self.assertIn('"unwrap_replay_denied",endpoint,"POST","sys/wrapping/unwrap",400',source)
+        self.assertIn('"unwrap_replay_denied",current(leader),"POST","sys/wrapping/unwrap",400',source)

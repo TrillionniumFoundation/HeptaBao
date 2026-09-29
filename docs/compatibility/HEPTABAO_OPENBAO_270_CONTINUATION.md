@@ -160,7 +160,7 @@ inside the existing mTLS transport. HBFQ1–3 requests keep their original HBFS1
 response shape. The explicit legacy-v1 rolling mode still omits metadata rather
 than inventing an index. No blind fallback/replay is added for unknown versions.
 
-`consistency_headers_live.py` requires 49 independent middleware observations
+`consistency_headers_live.py` requires 52 independent middleware observations
 for each of native HeptaBao, official 2.7 PebbleDB and official 2.7 Raft, plus a
 separate candidate three-process lifecycle. That lifecycle checks forwarded write
 indices, future-index rejection, bounded waiting, authorization and finite-use
