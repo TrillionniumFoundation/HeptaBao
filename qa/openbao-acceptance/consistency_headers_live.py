@@ -69,7 +69,8 @@ COMMON_REQUIRED = frozenset({"initialize","unseal","mount","write","finite_issue
     "finite_rejected","finite_unchanged","write_rejected","write_absent","index_is_not_auth",
     "restart_unseal","restart_retained","wrap_once","unwrap_once","unwrap_replay_denied","complete"}
     | {"valid_"+name for name,_ in VALID_HEADERS}
-    | {"invalid_"+name+"_"+route for name,_ in INVALID_HEADERS for route in ("logical","leader")})
+    | {"invalid_"+name+"_"+route for name,_ in INVALID_HEADERS for route in ("logical","leader")}
+    | {prefix+label for label in ("one_ms", "ten_ms", "twenty_ms") for prefix in ("split_body_", "split_absent_")})
 HA_REQUIRED = frozenset({"bootstrap","write_index","forwarded_write_index","forwarded_write_once",
     "future_fail","future_write_fail","future_write_absent","await_fail","await_bounded",
     "future_forward","forward_index","future_forward_not_auth","wrapped_forward","unwrap_once",
@@ -78,7 +79,7 @@ HA_REQUIRED = frozenset({"bootstrap","write_index","forwarded_write_index","forw
     "post_handoff_read","partitioned_watermark_not_authority","healed_read","stopped","complete"})
 
 
-def call(endpoint, method, path, token="", body=None, headers=(), *, timeout=REQUEST_TIMEOUT):
+def call(endpoint, method, path, token="", body=None, headers=(), *, timeout=REQUEST_TIMEOUT, body_delay=0):
     raw = None if body is None else json.dumps(body).encode()
     connection = http.client.HTTPSConnection("127.0.0.1",endpoint.port,context=endpoint.context,timeout=timeout)
     try:
@@ -90,7 +91,12 @@ def call(endpoint, method, path, token="", body=None, headers=(), *, timeout=REQ
             connection.putheader("Content-Type","application/json")
             connection.putheader("Content-Length",str(len(raw)))
         for name,value in headers: connection.putheader(name,value)
-        connection.endheaders(raw)
+        if body_delay:
+            connection.endheaders()
+            time.sleep(body_delay)
+            if raw is not None: connection.send(raw)
+        else:
+            connection.endheaders(raw)
         response=connection.getresponse(); payload=response.read(65537)
         if len(payload)>65536: raise FixtureError("oversize_response")
         return response.status, json.loads(payload) if payload else {}, dict((k.lower(),v) for k,v in response.getheaders())
@@ -102,8 +108,13 @@ class Trace:
     def check(self,name,condition):
         self.checks.append({"case":name,"passed":condition is True})
         if condition is not True: raise FixtureError(name)
-    def request(self,name,endpoint,method,path,expected,token="",body=None,headers=(), *, timeout=REQUEST_TIMEOUT):
-        status,value,metadata=call(endpoint,method,path,token,body,headers,timeout=timeout)
+    def request(self,name,endpoint,method,path,expected,token="",body=None,headers=(), *, timeout=REQUEST_TIMEOUT, body_delay=0):
+        try:
+            status,value,metadata=call(endpoint,method,path,token,body,headers,timeout=timeout,body_delay=body_delay)
+        except (OSError, http.client.HTTPException) as error:
+            # HTTP exception text can contain an arbitrary server status line.
+            # Bind only the known case and exception class, never that text.
+            raise FixtureError(name+"."+type(error).__name__) from None
         self.statuses.append({"case":name,"status":status})
         self.check(name,status==expected)
         return value,metadata
@@ -147,6 +158,11 @@ def common(instance,endpoint,trace):
     trace.check("finite_unchanged",status==200 and value.get("data",{}).get("num_uses")==2)
     trace.request("write_rejected",endpoint,"POST",MOUNT+"/data/rejected",400,token,{"data":{"fixture":"must-not-commit"}},bad)
     trace.request("write_absent",endpoint,"GET",MOUNT+"/data/rejected",404,token)
+    for label,delay in (("one_ms",.001),("ten_ms",.01),("twenty_ms",.02)):
+        path=MOUNT+"/data/rejected-"+label
+        trace.request("split_body_"+label,endpoint,"POST",path,400,token,
+            {"data":{"fixture":"must-not-commit"}},bad,body_delay=delay)
+        trace.request("split_absent_"+label,endpoint,"GET",path,404,token)
     trace.request("index_is_not_auth",endpoint,"GET",PATH,403,"synthetic-invalid",headers=VALID_HEADERS[4][1])
     wrapped,_=trace.request("wrap_once",endpoint,"POST","sys/wrapping/wrap",200,token,
         {"fixture":"single-use"},[("X-Vault-Wrap-TTL","60s")])

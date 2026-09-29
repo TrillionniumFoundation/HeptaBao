@@ -435,7 +435,16 @@ fn serve_inner(
                     let _ = write_response(&mut stream, response, false);
                     return;
                 }
-                let parsed = read_request_mode(&mut stream, timeout, true);
+                // Parsing and a bounded rejected-body discard must leave time for
+                // the negative response inside the original accepted connection.
+                stream.sock.deadline =
+                    execution_deadline_with_response_reserve(Instant::now(), deadline);
+                let read_budget = stream
+                    .sock
+                    .deadline
+                    .saturating_duration_since(Instant::now());
+                let parsed = read_request_mode(&mut stream, read_budget, true);
+                stream.sock.deadline = deadline;
                 let (reply, head) = match parsed {
                     Ok(mut request) => {
                         request.client_certificates =
@@ -517,7 +526,7 @@ fn serve_inner(
                             WireRejection::ParseRejected,
                             error.status,
                             error.message,
-                            deadline,
+                            execution_deadline_with_response_reserve(Instant::now(), deadline),
                         );
                         if error.empty_errors && response.status == error.status {
                             response.body = json!({"errors": []});
@@ -797,6 +806,37 @@ fn read_request(reader: &mut impl Read, timeout: Duration) -> Result<Request, Pa
     read_request_mode(reader, timeout, false)
 }
 
+// Only discard an unambiguous, already bounded ordinary body. This operation
+// has no JSON decoding, credentials, storage owner or authority to execute.
+fn discard_rejected_consistency_body(
+    reader: &mut impl Read,
+    headers: &BTreeMap<String, Zeroizing<String>>,
+    already_received: usize,
+    started: Instant,
+    timeout: Duration,
+) {
+    if headers.contains_key("transfer-encoding") || headers.contains_key("expect") {
+        return;
+    }
+    let Some(length) = headers
+        .get("content-length")
+        .filter(|value| !value.is_empty() && value.bytes().all(|byte| byte.is_ascii_digit()))
+        .and_then(|value| value.parse::<usize>().ok())
+        .filter(|length| *length <= MAX_BODY && already_received <= *length)
+    else {
+        return;
+    };
+    let mut remaining = length - already_received;
+    let mut discard = Zeroizing::new([0_u8; 4096]);
+    while remaining != 0 && started.elapsed() < timeout {
+        let bound = remaining.min(discard.len());
+        match reader.read(&mut discard[..bound]) {
+            Ok(0) | Err(_) => return,
+            Ok(count) => remaining -= count,
+        }
+    }
+}
+
 fn read_request_mode(
     reader: &mut impl Read,
     timeout: Duration,
@@ -872,7 +912,30 @@ fn read_request_mode(
             return Err(bad("duplicate headers are not supported"));
         }
     }
-    let consistency = consistency_headers.finish()?;
+    let consistency = match consistency_headers.finish() {
+        Ok(value) => value,
+        Err(error) => {
+            // An ordinary request body can arrive in a separate TLS record.
+            // Closing with those bytes unread can truncate the 400 response.
+            // Never enter logical parsing/authentication, inspect the body, or
+            // read a native snapshot upload before its own admission boundary.
+            let native_upload = native_wire
+                && matches!(
+                    target[4..].split('?').next(),
+                    Some("sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force")
+                );
+            if !native_upload {
+                discard_rejected_consistency_body(
+                    reader,
+                    &map,
+                    bytes.len().saturating_sub(header_end),
+                    start,
+                    timeout,
+                );
+            }
+            return Err(error);
+        }
+    };
     if !map.contains_key("host") {
         return Err(bad("Host header is required"));
     }

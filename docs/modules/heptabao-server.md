@@ -683,3 +683,22 @@ The tests cover live ACL changes for service and batch callers, namespace seal,
 request expiry, renewal-requester isolation, unrelated committed writes and
 subtractive cleanup after requester revocation. They do not execute a provider,
 prove the corresponding new live race matrix or establish full OpenBao parity.
+
+## Bounded ordinary-body rejection at the TLS boundary
+
+A semantic consistency-header rejection discards only the outstanding bytes of
+an unambiguous ordinary `Content-Length` body, up to the existing 256 KiB bound,
+before returning its fixed error. This prevents an already rejected small body
+arriving in a second TLS record from being left unread when the socket closes.
+Discard bytes are zeroized and never parsed as JSON, authenticated, persisted,
+logged, forwarded or interpreted as another request. Missing/invalid length,
+transfer encoding, `Expect`, oversized bodies and native snapshot upload routes
+are not drained by this path; their existing refusal/admission boundaries stay.
+
+The accepted connection retains one absolute transport deadline. Parsing uses
+the existing bounded response reserve (at most 250 ms), restores the original
+write deadline, and bounds the parse-rejection writer wait inside that deadline.
+No request, mutation or provider effect is retried. The fixed consistency profile
+requires three additional split-header/body requests and three independent
+absence readbacks per native service. Transport diagnostics name only the case
+and exception class, never an arbitrary HTTP status line or response body.
