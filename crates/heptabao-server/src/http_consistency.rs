@@ -12,6 +12,9 @@ use std::fmt;
 const INDEX_PREFIX: &str = "heptabao-raft-v1:";
 const MAX_INDEX: usize = 12 * 1024;
 
+#[path = "http_consistency_duration.rs"]
+mod duration;
+
 #[derive(Default, Serialize)]
 pub(crate) struct IndexValue {
     pub(crate) cluster: String,
@@ -135,25 +138,7 @@ impl Settings {
         };
         let wait = match wait {
             None => Duration::from_millis(25),
-            Some(value) => {
-                let (number, multiplier) = if let Some(number) = value.strip_suffix("ms") {
-                    (number, 1_u64)
-                } else if let Some(number) = value.strip_suffix('s') {
-                    (number, 1_000)
-                } else if let Some(number) = value.strip_suffix('m') {
-                    (number, 60_000)
-                } else {
-                    return Err("consistency_max_index_wait requires ms, s or m units".into());
-                };
-                let millis = number
-                    .parse::<u64>()
-                    .ok()
-                    .filter(|_| !number.is_empty() && number.bytes().all(|b| b.is_ascii_digit()))
-                    .and_then(|number| number.checked_mul(multiplier))
-                    .filter(|millis| *millis <= 60_000)
-                    .ok_or("consistency_max_index_wait exceeds the bounded listener budget")?;
-                Duration::from_millis(millis.max(25))
-            }
+            Some(value) => duration::parse(value)?.max(Duration::from_millis(25)),
         };
         Ok(Self {
             wait,

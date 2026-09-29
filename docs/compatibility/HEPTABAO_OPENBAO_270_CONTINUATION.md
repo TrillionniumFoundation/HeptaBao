@@ -148,10 +148,18 @@ All paths retain the original request deadline and response reserve. A watermark
 never authenticates a caller, materializes application state, grants ReadIndex
 permission, or authorizes retry of an uncertain business effect.
 
-The listener accepts `consistency_max_index_wait` (bounded whole-number ms/s/m,
-25 ms minimum and 60 s maximum), `consistency_fallback_behavior` (`fail` or
-`forward-active-node`) and `consistency_missing_header_forward`. These are native
-JSON settings, not a claim to accept every upstream HCL/duration representation.
+The listener accepts `consistency_max_index_wait` as a bounded nonnegative
+string duration: decimal fractions, consecutive components and the ns/us/µs/μs/
+ms/s/m/h units are supported, along with a leading plus and bare zero. Examples
+include `25.5ms`, `1s250ms` and `0.5m`. Parsing uses checked integer nanoseconds
+and truncates each component's fractional nanosecond; it does not round up a
+resource budget. Negative, malformed, over-128-byte and over-60-second values
+fail before listener startup. The existing 25 ms minimum and 60 s maximum are
+unchanged. Numeric JSON values, nonzero unitless strings and arbitrary HCL are
+still outside this native JSON profile. `consistency_fallback_behavior` remains
+`fail` or `forward-active-node`; `consistency_missing_header_forward` is unchanged.
+The parser adds no retry, changes no Raft deadline, and cannot extend a caller's
+original transport deadline or response reserve.
 
 Successful active responses may carry an index only after current-owner linear
 observation; failure to obtain this optional metadata cannot convert an already
