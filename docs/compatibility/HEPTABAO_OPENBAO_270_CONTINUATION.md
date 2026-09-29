@@ -115,9 +115,11 @@ not successes that can be inherited by a new source revision.
 ## Mandatory CI lane
 
 The immutable head/merge workflow independently acquires 2.7.0 and runs these
-17 selected profiles with `--oracle-version 2.7.0`: core isolation, Identity,
+18 selected profiles with `--oracle-version 2.7.0`: core isolation, Identity,
 response wrapping, wrapping-token self-discard, token orphan revocation,
-consistency-header middleware and actual candidate Raft prerequisites, capabilities, PKI, PKI extension configuration, SSH OTP, file audit management,
+consistency-header middleware and actual candidate Raft prerequisites, the product
+Python Client and Unix-socket Proxy consistency chain, capabilities, PKI, PKI
+extension configuration, SSH OTP, file audit management,
 namespaces, ACL parameters, ACL templates, wrapping TTL bounds, KV metadata CAS
 and KV enumeration. A separate required step runs the fixed-version
 `sys_leader_live.py` lifecycle with the same verified 2.7.0 oracle. Each comparison needs two nonempty complete
@@ -177,6 +179,34 @@ the candidate's observed capacity reply. They still require unchanged legacy
 read state/frontier, a real mutation promoting the schema, old-reader refusal,
 unchanged application artifacts after refusal, and successful current-reader
 reopen. Their legacy schema-55/schema-56 commit/tree pins are unchanged.
+
+## Product Python Client and Proxy consistency evidence
+
+`client_consistency_live.py` now executes 35 checks each against native HeptaBao,
+official 2.7 PebbleDB and official 2.7 Raft; the unchanged 28-case candidate Raft
+lifecycle enters through the product HTTPS Client. A further 14 checks launch the
+normal Unix-socket Proxy process with an admitted synthetic sink and a three-node
+candidate. Ordered headers, response indices and Retry-After survive actual TLS
+and proxy hops; future-index writes have independent unchanged-version readback,
+and explicit forwarding commits once. This fixture does not execute an Agent
+login/renewal loop and does not establish physical-host or full CLI compatibility.
+
+The SDK retains optional response metadata without turning an acknowledged
+mutation into a retry. No cross-request index cache or new bearer authority is
+introduced. See `clients/python/README.md` for caller responsibilities when a
+response index is absent or invalid. All local refusals are recorded separately
+from HTTP observations, and each required trace has an explicit fixed denominator.
+
+The full-workspace run at `5e816021` exposed a test-start race: the selected
+follower's committed frontier changed from 4 to 5 while processing pending initial
+membership. `Cluster::new` had awaited only the leader. The consistency regression
+now waits for that exact initial leader commit to be both committed and applied
+on its actual standby before starting the measured request. A deterministic
+precondition test rejects incomplete, missing, ahead and wrong-leader observations.
+The middleware's original wait/transport limits and both exact unchanged-frontier
+assertions remain; application digest, durable generation and audit sequence are
+also required to remain unchanged. No production consensus code or timeout is
+changed by this fixture correction. The earlier failed run remains evidence.
 
 ## Explicit remaining blockers
 

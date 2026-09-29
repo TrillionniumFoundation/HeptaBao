@@ -118,6 +118,65 @@ impl Service {
 mod tests {
     use super::*;
     use crate::http::consistency;
+    fn at_initial_standby_frontier(
+        seen: &heptabao_raft_runtime::LocalLeaderObservation,
+        leader: u64,
+        committed: u64,
+    ) -> bool {
+        seen.local_id != leader
+            && seen.leader == Some(leader)
+            && seen.committed_index == Some(committed)
+            && seen.applied_index == Some(committed)
+    }
+
+    #[test]
+    fn consistency270_fixture_rejects_incomplete_membership_frontiers() {
+        use heptabao_raft_runtime::LocalLeaderObservation;
+        let ready = LocalLeaderObservation {
+            local_id: 2,
+            leader: Some(1),
+            committed_index: Some(5),
+            applied_index: Some(5),
+        };
+        assert!(at_initial_standby_frontier(&ready, 1, 5));
+        // Reproduce the actual failed full-workspace observation: the leader
+        // had committed final membership 5 while this replica still reported 4.
+        for observed in [
+            LocalLeaderObservation {
+                committed_index: Some(4),
+                applied_index: Some(4),
+                ..ready
+            },
+            LocalLeaderObservation {
+                applied_index: Some(4),
+                ..ready
+            },
+            LocalLeaderObservation {
+                committed_index: None,
+                ..ready
+            },
+            LocalLeaderObservation {
+                leader: None,
+                ..ready
+            },
+            LocalLeaderObservation {
+                leader: Some(2),
+                ..ready
+            },
+            LocalLeaderObservation {
+                local_id: 1,
+                ..ready
+            },
+            LocalLeaderObservation {
+                committed_index: Some(6),
+                applied_index: Some(6),
+                ..ready
+            },
+        ] {
+            assert!(!at_initial_standby_frontier(&observed, 1, 5));
+        }
+    }
+
     #[cfg(target_os = "linux")]
     #[test]
     fn consistency270_real_raft_wait_rejects_before_token_use_or_application_effect()
@@ -141,6 +200,35 @@ mod tests {
         let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
         let cluster =
             crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &cluster_id)?;
+        // Cluster::new waits for the leader's final membership and ReadIndex,
+        // not this follower's application of that commit. Anchor that exact
+        // setup commit before measuring whether the middleware changes state.
+        // This is fixture setup only: the 1s transport, 25ms wait, 750ms response
+        // bound, and exact unchanged-frontier assertions below are unchanged.
+        let leader = cluster.processes[0]
+            .lock()
+            .map_err(|_| "raft")?
+            .leader_status()?;
+        assert_eq!(leader.leader, Some(leader.local_id));
+        let initial_commit = leader.committed_index.ok_or("initial membership commit")?;
+        assert_eq!(leader.applied_index, Some(initial_commit));
+        let setup_deadline = Instant::now() + Duration::from_secs(15);
+        loop {
+            let seen = cluster.processes[1]
+                .lock()
+                .map_err(|_| "raft")?
+                .leader_status()?;
+            if at_initial_standby_frontier(&seen, leader.local_id, initial_commit) {
+                break;
+            }
+            if Instant::now() >= setup_deadline {
+                return Err("initial standby membership did not converge".into());
+            }
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        let state_before = service.current_state_digest().map_err(|_| "state digest")?;
+        let generation_before = service.durable.as_ref().ok_or("durable")?.generation();
+        let audit_before = service.audit_sequence;
         service.ha = Some(Arc::clone(&cluster.processes[1]));
         let shared = Arc::new(Mutex::new(service));
         let index = consistency::IndexValue::for_raft(&cluster_id, u64::MAX)
@@ -151,6 +239,11 @@ mod tests {
             .lock()
             .map_err(|_| "raft")?
             .leader_status()?;
+        assert!(at_initial_standby_frontier(
+            &before,
+            leader.local_id,
+            initial_commit
+        ));
         let start = Instant::now();
         let result = consistency::admit(
             &shared,
@@ -167,8 +260,18 @@ mod tests {
             .leader_status()?;
         assert_eq!(before.committed_index, after.committed_index);
         assert_eq!(before.applied_index, after.applied_index);
+        assert_eq!(before.leader, after.leader);
         // Restore the preexisting standalone owner only for independent token readback.
         let mut service = shared.lock().map_err(|_| "service")?;
+        assert_eq!(
+            service.current_state_digest().map_err(|_| "state digest")?,
+            state_before
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation_before
+        );
+        assert_eq!(service.audit_sequence, audit_before);
         service.ha = None;
         let lookup = call(
             &mut service,
