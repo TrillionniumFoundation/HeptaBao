@@ -1256,3 +1256,7 @@ mod auto_rotation_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "transit_mldsa_tests.rs"]
+mod mldsa_tests;
