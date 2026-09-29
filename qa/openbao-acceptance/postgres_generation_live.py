@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
 sys.path.insert(0, str(ROOT / "qa/single-node"))
 from database_config_completion_live import source_identity
+from candidate_state_schema import expected_schema
 from postgres_live import Postgres
 from smoke import Instance
 
@@ -218,6 +219,7 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
         expected_binary_sha256: str, expected_legacy_sha256: str) -> int:
     os.umask(0o077)
     before = source_identity(ROOT)
+    current_schema = expected_schema(ROOT, build_source_commit)
     binary_hash, legacy_hash, runner_hash = (
         digest(binary), digest(legacy_binary), digest(Path(__file__))
     )
@@ -441,7 +443,7 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
         current_schema_ledger = durable_ledger_digest(legacy_data_root)
         require(
             current_schema_application != schema55_application
-            and current_schema_frontier["state_schema"] == 59,
+            and current_schema_frontier["state_schema"] == current_schema,
             "current_schema_state_not_published",
         )
 
@@ -453,7 +455,7 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
         legacy_instance.stop()
         downgrade_application = durable_application_snapshot(legacy_data_root)
         downgrade_ledger = durable_ledger_digest(legacy_data_root)
-        durable_reopen_observations["schema59_old_reader_refusal"] = {
+        durable_reopen_observations["current_schema_old_reader_refusal"] = {
             "application_artifacts_unchanged": (
                 downgrade_application == current_schema_application
             ),
@@ -760,6 +762,7 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
             "build_source_commit": build_source_commit,
             "legacy_source_commit": legacy_source_commit,
             "runner_sha256": runner_hash,
+            "expected_current_state_schema": current_schema,
             "provider_sql_sha256": digest(ROOT / "bootstrap/postgresql/provider.sql"),
             "baseline_sql_sha256": digest(baseline),
             "upgrade_sql_sha256": digest(upgrade),
@@ -788,6 +791,7 @@ def run(binary: Path, legacy_binary: Path, postgres_bin: Path, work: Path, outpu
             "build_source_commit": build_source_commit,
             "legacy_source_commit": legacy_source_commit,
             "runner_sha256": runner_hash,
+            "expected_current_state_schema": current_schema,
             "checks": checks,
             "check_count": len(checks),
             "durable_reopen_observations": durable_reopen_observations,

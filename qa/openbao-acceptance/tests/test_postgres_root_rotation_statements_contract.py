@@ -118,7 +118,7 @@ class RootRotationStatementsContractTests(unittest.TestCase):
         self.assertIn('"ledger_checkpoint_resealed_or_materialized"', profile)
         self.assertIn('"failed_downgrade_preserves_logical_frontier"', profile)
         self.assertIn("revoke_status == 204 and retired_status in (400, 404)", profile)
-        self.assertIn("capacity_frontier(legacy_instance) == schema59_frontier", profile)
+        self.assertIn("capacity_frontier(legacy_instance) == current_schema_frontier", profile)
         self.assertIn("def sql_dollar_literal(value: str)", profile)
         self.assertIn("sql_dollar_literal(direct_statements)", profile)
         self.assertIn("Quoted-New-'\\\\-Password-2", profile)

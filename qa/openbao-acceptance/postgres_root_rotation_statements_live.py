@@ -2,7 +2,7 @@
 """Exercise bounded PostgreSQL root-rotation statements on real PostgreSQL 17.
 
 The profile uses a new private loopback cluster and synthetic identities. It
-covers the exact schema-56 to current schema-59 boundary while the root-statement feature remains fenced at schema 57, fresh and owner-only forward
+covers the exact schema-56 to current schema pinned by the candidate source boundary while the root-statement feature remains fenced at schema 57, fresh and owner-only forward
 provider installation, password and SCRAM paths, idempotency, restart, and
 negative SQL grammar cases. It is scoped evidence, not arbitrary SQL parity.
 """
@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
 sys.path.insert(0, str(ROOT / "qa/single-node"))
 from database_config_completion_live import source_identity
+from candidate_state_schema import expected_schema
 from postgres_live import Postgres
 from smoke import Instance
 
@@ -63,14 +64,14 @@ REQUIRED_CASES = frozenset({
     "schema56_read_does_not_rewrite_state",
     "schema56_root_statement_field_is_empty",
     "invalid_api_statements_fail_atomically",
-    "candidate_promotes_root_statements_to_current_schema59",
+    "candidate_promotes_root_statements_to_current_current_schema",
     "configured_statement_order_round_trips",
     "omitted_root_statements_preserve",
     "null_root_statements_clear",
     "reconfigured_root_statements_restore_order",
-    "schema56_binary_rejects_schema59",
+    "schema56_binary_rejects_current_schema",
     "failed_downgrade_preserves_state",
-    "candidate_reopens_schema59",
+    "candidate_reopens_current_schema",
     "failed_downgrade_preserves_logical_frontier",
     "custom_root_rotation",
     "old_manager_password_denied",
@@ -233,6 +234,7 @@ def run(
 ) -> int:
     os.umask(0o077)
     before = source_identity(ROOT)
+    current_schema = expected_schema(ROOT, build_source_commit)
     binary_hash = digest(binary)
     legacy_hash = digest(legacy_binary)
     runner_hash = digest(Path(__file__))
@@ -516,7 +518,7 @@ def run(
             )
         check("invalid_api_statements_fail_atomically", invalid_ok)
         check(
-            "candidate_promotes_root_statements_to_current_schema59",
+            "candidate_promotes_root_statements_to_current_current_schema",
             legacy_instance.call(
                 "POST",
                 "database/config/local",
@@ -557,48 +559,48 @@ def run(
                 .get("data", {}).get("root_rotation_statements") == CUSTOM_STATEMENTS,
         )
 
-        schema59_frontier = capacity_frontier(legacy_instance)
+        current_schema_frontier = capacity_frontier(legacy_instance)
         legacy_instance.stop()
-        schema59_application = durable_application_snapshot(data_root)
-        schema59_ledger = durable_ledger_digest(data_root)
+        current_schema_application = durable_application_snapshot(data_root)
+        current_schema_ledger = durable_ledger_digest(data_root)
         require(
-            schema59_application != schema56_application
-            and schema59_frontier["state_schema"] == 59,
-            "schema59_state_not_published",
+            current_schema_application != schema56_application
+            and current_schema_frontier["state_schema"] == current_schema,
+            "current_schema_state_not_published",
         )
 
         legacy_instance.binary = legacy_binary
         legacy_instance.start()
         check(
-            "schema56_binary_rejects_schema59",
+            "schema56_binary_rejects_current_schema",
             legacy_instance.call("POST", "sys/unseal", {"key": legacy_key})[0] == 503,
         )
         legacy_instance.stop()
         downgrade_application = durable_application_snapshot(data_root)
         downgrade_ledger = durable_ledger_digest(data_root)
-        durable_reopen_observations["schema59_old_reader_refusal"] = {
+        durable_reopen_observations["current_schema_old_reader_refusal"] = {
             "application_artifacts_unchanged": (
-                downgrade_application == schema59_application
+                downgrade_application == current_schema_application
             ),
-            "frontier_before": schema59_frontier,
+            "frontier_before": current_schema_frontier,
             "ledger_checkpoint_resealed_or_materialized": (
-                downgrade_ledger != schema59_ledger
+                downgrade_ledger != current_schema_ledger
             ),
         }
         check(
             "failed_downgrade_preserves_state",
-            downgrade_application == schema59_application,
+            downgrade_application == current_schema_application,
         )
 
         legacy_instance.binary = binary
         legacy_instance.start()
         check(
-            "candidate_reopens_schema59",
+            "candidate_reopens_current_schema",
             legacy_instance.call("POST", "sys/unseal", {"key": legacy_key})[0] == 200,
         )
         check(
             "failed_downgrade_preserves_logical_frontier",
-            capacity_frontier(legacy_instance) == schema59_frontier,
+            capacity_frontier(legacy_instance) == current_schema_frontier,
         )
         old_manager = pg.manager_password
         check(
@@ -731,6 +733,7 @@ def run(
             "binary_sha256": binary_hash,
             "legacy_binary_sha256": legacy_hash,
             "runner_sha256": runner_hash,
+            "expected_current_state_schema": current_schema,
             "provider_sql_sha256": digest(ROOT / "bootstrap/postgresql/provider.sql"),
             "upgrade_sql_sha256": digest(
                 ROOT / "bootstrap/postgresql/upgrade_v6_root_rotation_statements.sql"
@@ -742,7 +745,7 @@ def run(
             "check_count": len(checks),
             "durable_reopen_observations": durable_reopen_observations,
             "real_postgresql_executed": True,
-            "schema56_to_schema59_upgrade": True,
+            "schema56_to_current_schema_upgrade": {"from": 56, "to": current_schema},
             "bounded_root_rotation_statements": True,
             "arbitrary_sql_supported": False,
             "full_openbao_compatibility": False,
@@ -766,6 +769,7 @@ def run(
             "binary_sha256": binary_hash,
             "legacy_binary_sha256": legacy_hash,
             "runner_sha256": runner_hash,
+            "expected_current_state_schema": current_schema,
             "checks": checks,
             "check_count": len(checks),
             "durable_reopen_observations": durable_reopen_observations,
