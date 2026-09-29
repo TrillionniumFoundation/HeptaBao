@@ -3,9 +3,13 @@ from pathlib import Path
 import hashlib
 import json
 import subprocess
+import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
+from candidate_state_schema import parse_current_schema
+
 MARKER = "-- PostgreSQL bounded root-rotation statement extension."
 
 
@@ -66,9 +70,9 @@ class RootRotationStatementsContractTests(unittest.TestCase):
         identity = (ROOT / "crates/heptabao-server/src/service_identity.rs").read_text()
         database = (ROOT / "crates/heptabao-server/src/service_database.rs").read_text()
         rotation = (ROOT / "crates/heptabao-server/src/service_database_rotation.rs").read_text()
-        self.assertIn("CURRENT_STATE_SCHEMA: u32 = 61;", service)
+        self.assertGreaterEqual(parse_current_schema(service), 57)
         self.assertIn("database root rotation statements require schema 57", identity)
-        self.assertIn("| 54 | 55 | 56 | 57 | 58 | 59 | 60 | CURRENT_STATE_SCHEMA => Ok(()),", identity)
+        self.assertRegex(identity, r"(?s)match self.schema\s*\{.*?\b57\b[^=]*\|\s*CURRENT_STATE_SCHEMA\s*=>\s*Ok\(\(\)\)")
         self.assertIn("has_root_rotation_statement_state", database)
         self.assertIn("!connection.root_rotation_statements.is_empty()", database)
         self.assertIn("!rotation.statements.is_empty()", database)

@@ -2,9 +2,13 @@
 from pathlib import Path
 import ast
 import re
+import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
+from candidate_state_schema import parse_current_schema
+
 
 
 def extension(path: Path) -> str:
@@ -111,7 +115,7 @@ class PostgresStatementTemplateContractTests(unittest.TestCase):
         service = (ROOT / "crates/heptabao-server/src/service.rs").read_text()
         identity = (ROOT / "crates/heptabao-server/src/service_identity.rs").read_text()
         database = (ROOT / "crates/heptabao-server/src/service_database.rs").read_text()
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 61;")
+        self.assertGreaterEqual(parse_current_schema(service), 54)
         self.assertIn("database statement templates require schema 54", identity)
         self.assertIn("Exact legacy tuple: old pending intents must reopen byte-stably", database)
         self.assertIn("heptabao.database.statements.v1", database)

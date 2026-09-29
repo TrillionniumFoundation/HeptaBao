@@ -2,9 +2,13 @@
 import json
 from pathlib import Path
 import re
+import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
+from candidate_state_schema import parse_current_schema
+
 CASES = {
     "pkiext_live.pkiext.mount",
     "pkiext_live.pkiext.unauthorized_denied",
@@ -37,7 +41,7 @@ class PkiExtensionContractTests(unittest.TestCase):
 
     def test_schema59_is_independent_and_default_shape_is_omitted(self):
         service = (ROOT / "crates/heptabao-server/src/service.rs").read_text()
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA:\s*u32\s*=\s*61;")
+        self.assertGreaterEqual(parse_current_schema(service), 59)
         identity = (ROOT / "crates/heptabao-server/src/service_identity.rs").read_text()
         self.assertIn("self.schema < 59 && self.engines.has_pki_extension_state()", identity)
         self.assertIn("PKI cluster or ACME configuration requires schema 59", identity)

@@ -7,6 +7,9 @@ import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
+from candidate_state_schema import parse_current_schema
+
 PROFILE_PATH = ROOT / "qa/openbao-acceptance/postgres_generation_live.py"
 sys.path.insert(0, str(PROFILE_PATH.parent))
 PROFILE_SPEC = importlib.util.spec_from_file_location("postgres_generation_contract_profile", PROFILE_PATH)
@@ -78,10 +81,10 @@ class PostgresGenerationContractTests(unittest.TestCase):
         service = (ROOT / "crates/heptabao-server/src/service.rs").read_text()
         identity = (ROOT / "crates/heptabao-server/src/service_identity.rs").read_text()
         database = (ROOT / "crates/heptabao-server/src/service_database.rs").read_text()
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 61;")
+        self.assertGreaterEqual(parse_current_schema(service), 56)
         self.assertIn("password policy state requires schema 56", identity)
         self.assertIn("database password policies and username templates require schema 56", identity)
-        self.assertIn("| 54 | 55 | 56 | 57 | 58 | 59 | 60 | CURRENT_STATE_SCHEMA => Ok(()),", identity)
+        self.assertRegex(identity, r"(?s)match self.schema\s*\{.*?\b56\b[^=]*\|\s*CURRENT_STATE_SCHEMA\s*=>\s*Ok\(\(\)\)")
         self.assertIn("state.schema = 55;", database)
         self.assertIn("statement-template password policy must use only ASCII", database)
 

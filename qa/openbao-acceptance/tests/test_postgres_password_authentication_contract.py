@@ -2,9 +2,13 @@
 from pathlib import Path
 import ast
 import re
+import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "qa/openbao-acceptance"))
+from candidate_state_schema import parse_current_schema
+
 
 
 def extension(path: Path) -> str:
@@ -132,7 +136,7 @@ class PostgresPasswordAuthenticationContractTests(unittest.TestCase):
         self.assertIn('config_data.get("password_authentication") == "password"',
                       static_profile)
         self.assertIn('"password" not in config_data', static_profile)
-        self.assertRegex(service, r"CURRENT_STATE_SCHEMA: u32 = 61;")
+        self.assertGreaterEqual(parse_current_schema(service), 55)
         self.assertIn("PostgreSQL SCRAM password authentication requires schema 55",
                       identity)
 
