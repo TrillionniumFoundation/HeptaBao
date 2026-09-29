@@ -8,7 +8,7 @@ import re
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "clients/python"))
 from heptabao.transport import (BaoError, Client, Response, SafeArgumentParser,
     MAX_BODY, canonical, digest, decode_json, private_read, private_json,
-    private_write, endpoint, key_path, NoRedirect)
+    private_write, private_write_text, endpoint, key_path, NoRedirect)
 
 
 def distinct_endpoints(left: Client, left_health: dict, right: Client, right_health: dict):

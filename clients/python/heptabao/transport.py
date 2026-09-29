@@ -105,6 +105,26 @@ def private_json(path: str | Path):
 
 
 def private_write(path: str | Path, value, *, replace: bool = True):
+    """Publish canonical JSON through the common durable private-file boundary."""
+    _private_write_bytes(path, canonical(value) + b"\n", replace=replace)
+
+
+def private_write_text(path: str | Path, value: str, *, replace: bool = True):
+    """Publish exact UTF-8 text, not a JSON string or an in-place truncation.
+
+    Only caller-owned private fixture data belongs here. This is filesystem
+    isolation, not encryption or protection from processes with the same UID.
+    """
+    if not isinstance(value, str):
+        raise BaoError("private_text_requires_string")
+    try:
+        raw = value.encode("utf-8")
+    except UnicodeError:
+        raise BaoError("private_text_requires_utf8") from None
+    _private_write_bytes(path, raw, replace=replace)
+
+
+def _private_write_bytes(path: str | Path, raw: bytes, *, replace: bool):
     """Durable 0600 publication in an existing owner-only directory, without symlinks."""
     path = Path(path).absolute()
     if not hasattr(os, "O_NOFOLLOW"):
@@ -127,7 +147,7 @@ def private_write(path: str | Path, value, *, replace: bool = True):
         fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
                      0o600, dir_fd=directory)
         with os.fdopen(fd, "wb") as handle:
-            handle.write(canonical(value) + b"\n")
+            handle.write(raw)
             handle.flush()
             os.fsync(handle.fileno())
         if replace:

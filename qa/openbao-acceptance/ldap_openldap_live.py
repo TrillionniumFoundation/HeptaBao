@@ -5,6 +5,7 @@ import argparse, platform, grp, hashlib, json, os, pwd, re, secrets, shutil, soc
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT/"qa/single-node"))
 from smoke import Instance
+from bao_http import private_write_text
 
 def port():
     with socket.socket() as s:s.bind(("127.0.0.1",0));return s.getsockname()[1]
@@ -19,7 +20,8 @@ def password_hash(secret):
         raise RuntimeError("ldap_password_hash_failed")
     return "{CRYPT}"+value
 def private(path,text):
-    path.write_text(text);path.chmod(0o600)
+    # Reuse the descriptor-bound, fsync-before-rename publication boundary.
+    private_write_text(path, text)
 
 def openldap_paths():
     """Resolve test-only prerequisites without installing a system daemon.
