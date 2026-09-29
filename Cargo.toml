@@ -1,6 +1,6 @@
 [workspace]
 members = ["crates/*"]
-exclude = ["vendor/bcrypt-0.19.3", "vendor/qrcode-0.14.1"]
+exclude = ["vendor/bcrypt-0.19.3"]
 resolver = "3"
 
 [workspace.package]
