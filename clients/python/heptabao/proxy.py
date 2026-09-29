@@ -16,6 +16,7 @@ import sys
 import threading
 import time
 
+from .consistency import Metadata, InvalidConsistency, validate_index
 from .agent import AgentConfig
 from .private_state import StateDirectory, token_snapshot, read_trusted_ca
 from .transport import BaoError, Client, SafeArgumentParser, canonical, decode_json, key_path, private_json
@@ -66,7 +67,7 @@ def _remaining(end):
     return remaining
 
 
-def read_request(stream,end):
+def read_request(stream,end,*,with_consistency=False):
     raw=bytearray()
     while b'\r\n\r\n' not in raw:
         stream.settimeout(_remaining(end))
@@ -83,13 +84,26 @@ def read_request(stream,end):
     method,target,_=first
     if not target.startswith('/v1/') or key_path(target[4:])!=target[4:]:raise BaoError('proxy_canonical_path_required')
     headers={}
+    indices=[]; behaviors=[]
     allowed={'host','content-length','content-type','accept','connection','user-agent'}
     for line in lines[1:]:
         if ':' not in line or line.startswith((' ','\t')):raise BaoError('proxy_header_framing')
         name,val=line.split(':',1);name=name.lower()
+        if name in ('x-vault-index','x-vault-inconsistent'):
+            if any(ord(c)<32 or ord(c)==127 for c in val):
+                raise BaoError('proxy_header_rejected')
+            target_values = indices if name == 'x-vault-index' else behaviors
+            target_values.append(val.strip())
+            if len(indices)>1 or len(behaviors)>2:
+                raise BaoError('proxy_consistency_header_count')
+            continue
         if name not in allowed or name in headers or any(ord(c)<32 or ord(c)==127 for c in val):
             raise BaoError('proxy_header_rejected')
         headers[name]=val.strip()
+    try:
+        metadata = Metadata(indices[0] if indices else None, tuple(behaviors))
+    except InvalidConsistency as error:
+        raise BaoError(str(error)) from None
     if not headers.get('host') or headers.get('connection','close').lower()!='close':
         raise BaoError('proxy_host_and_close_required')
     length=headers.get('content-length','0')
@@ -104,12 +118,18 @@ def read_request(stream,end):
     if body and headers.get('content-type','').lower()!='application/json':raise BaoError('proxy_json_body_required')
     data=decode_json(body) if body else None
     if data is not None and not isinstance(data,dict):raise BaoError('proxy_json_object_required')
+    if with_consistency:
+        return method,target[4:],data,metadata
+    if metadata.headers():
+        raise BaoError('proxy_consistency_context_required')
     return method,target[4:],data
 
 
-def forward(config,agent_config,method,path,payload,*,client_factory=Client,deadline=None):
+def forward(config,agent_config,method,path,payload,*,client_factory=Client,deadline=None,consistency=None):
     if not any(row['method']==method and row['path']==path for row in config['routes']):
         raise BaoError('proxy_route_not_admitted')
+    if consistency is not None and not isinstance(consistency, Metadata):
+        raise BaoError('invalid_consistency_metadata')
     if deadline is not None:
         _remaining(deadline)
     # No persisted session cache; every request observes the current sink generation.
@@ -121,15 +141,28 @@ def forward(config,agent_config,method,path,payload,*,client_factory=Client,dead
         token,_=token_snapshot(directory,time.time(),binding)
     timeout = config['timeout'] if deadline is None else min(config['timeout'], _remaining(deadline))
     client=client_factory(agent_config.address,agent_config.ca_file,token,agent_config.namespace,timeout,trusted_ca_pem=trusted_ca)
+    if consistency is not None:
+        return client.request(method,'/v1/'+path,payload,consistency_index=consistency.index,
+                              inconsistent=consistency.behavior)
     return client.request(method,'/v1/'+path,payload)
 
 
-def send_response(stream,status,body,end,head=False):
+def send_response(stream,status,body,end,head=False,*,consistency_index=None,retry_after_seconds=None):
     raw=canonical(body) if body else b''
     if len(raw)>MAX_RESPONSE:raise BaoError('proxy_response_limit')
     if not 100<=status<=599:raise BaoError('proxy_response_status')
+    try:
+        validate_index(consistency_index)
+    except InvalidConsistency as error:
+        raise BaoError(str(error)) from None
+    index_header = '' if consistency_index is None else f'X-Vault-Index: {consistency_index}\r\n'
+    retry_header = ''
+    if retry_after_seconds is not None:
+        if type(retry_after_seconds) is not int or not 0<=retry_after_seconds<=86400:
+            raise BaoError('proxy_invalid_retry_after')
+        retry_header = f'Retry-After: {retry_after_seconds}\r\n'
     header=(f'HTTP/1.1 {status} Response\r\nContent-Type: application/json\r\nContent-Length: {len(raw)}\r\n'
-            'Connection: close\r\nCache-Control: no-store\r\n\r\n').encode('ascii')
+            f'{index_header}{retry_header}Connection: close\r\nCache-Control: no-store\r\n\r\n').encode('ascii')
     stream.settimeout(_remaining(end));stream.sendall(header+(b'' if head else raw))
 
 
@@ -164,9 +197,11 @@ def serve(config,agent_config,stop):
                     if uid!=os.geteuid():continue
                     end=time.monotonic()+config['timeout']
                     try:
-                        method,path,body=read_request(stream,end)
-                        response=forward(config,agent_config,method,path,body,deadline=end)
-                        send_response(stream,response.status,response.body,end,method=='HEAD')
+                        method,path,body,metadata=read_request(stream,end,with_consistency=True)
+                        response=forward(config,agent_config,method,path,body,deadline=end,consistency=metadata)
+                        send_response(stream,response.status,response.body,end,method=='HEAD',
+                                      consistency_index=response.consistency_index if response.consistency_valid else None,
+                                      retry_after_seconds=response.retry_after_seconds)
                     except (BaoError,OSError,ValueError,TypeError):
                         try:send_response(stream,503,{'errors':['request rejected or outcome unknown; do not retry effects blindly']},end)
                         except (BaoError,OSError):pass

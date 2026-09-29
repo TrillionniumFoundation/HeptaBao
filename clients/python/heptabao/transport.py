@@ -15,6 +15,7 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
+from .consistency import Metadata, InvalidConsistency, HTTPSHandler, response_index, retry_after
 
 MAX_BODY = 16 * 1024 * 1024
 
@@ -185,6 +186,9 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 class Response:
     status: int
     body: dict
+    consistency_index: str | None = None
+    consistency_valid: bool = True
+    retry_after_seconds: int | None = None
 
     def data(self) -> dict:
         value = self.body.get("data")
@@ -217,7 +221,7 @@ class Client:
                 context = ssl.create_default_context(cadata=trusted_ca_pem.decode("ascii"))
             context.minimum_version = ssl.TLSVersion.TLSv1_2
             self._opener = urllib.request.build_opener(
-                urllib.request.ProxyHandler({}), NoRedirect(), urllib.request.HTTPSHandler(context=context))
+                urllib.request.ProxyHandler({}), NoRedirect(), HTTPSHandler(context=context))
         except (OSError, ssl.SSLError, UnicodeError):
             raise BaoError("ca_configuration_invalid") from None
 
@@ -236,7 +240,12 @@ class Client:
         return cls(address, ca, token, os.environ.get(prefix + "_NAMESPACE", ""))
 
     def request(self, method: str, path: str, payload=None, *, token: str | None = None,
-                wrap_ttl: str | None = None, content_type: str = "application/json") -> Response:
+                wrap_ttl: str | None = None, content_type: str = "application/json",
+                consistency_index: str | None = None, inconsistent=None) -> Response:
+        try:
+            metadata = Metadata(consistency_index, inconsistent)
+        except InvalidConsistency as error:
+            raise BaoError(str(error)) from None
         if method not in ("GET", "HEAD", "LIST", "POST", "PUT", "PATCH", "DELETE", "SCAN"):
             raise BaoError("invalid_request_method")
         if not path.startswith("/v1/") or len(path) > 8192 or any(ord(c) < 33 or ord(c) == 127 for c in path):
@@ -260,6 +269,8 @@ class Client:
                 raise BaoError("request_size_limit")
             headers["Content-Type"] = content_type
         request = urllib.request.Request(self.address + path, data=raw, headers=headers, method=method)
+        if metadata.headers():
+            request.heptabao_consistency = metadata
         try:
             try:
                 response = self._opener.open(request, timeout=self.timeout)
@@ -269,13 +280,15 @@ class Client:
                 status = response.code
                 if 300 <= status < 400:
                     raise BaoError("redirect_rejected")
+                index, index_valid = response_index(response.headers)
+                retry_seconds = retry_after(response.headers)
                 body = response.read(MAX_BODY + 1)
                 if len(body) > MAX_BODY:
                     raise BaoError("response_size_limit")
             decoded = decode_json(body) if body else {}
             if not isinstance(decoded, dict):
                 raise BaoError("response_object_required")
-            return Response(status, decoded)
+            return Response(status, decoded, index, index_valid, retry_seconds)
         except BaoError:
             raise
         except (OSError, urllib.error.URLError, ValueError):
