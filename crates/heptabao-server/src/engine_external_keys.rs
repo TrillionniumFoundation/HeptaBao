@@ -507,6 +507,7 @@ impl Registry {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use zeroize::Zeroizing;
 
     type TestResult = std::result::Result<(), Box<dyn std::error::Error>>;
 
