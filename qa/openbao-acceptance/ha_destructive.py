@@ -7,6 +7,7 @@ full linearizability proof, power-cut evidence, or rolling-version-upgrade evide
 from __future__ import annotations
 
 import argparse
+from contextlib import ExitStack
 import hashlib
 import json
 import os
@@ -62,10 +63,28 @@ def openssl(*arguments: str) -> None:
                    stderr=subprocess.DEVNULL)
 
 
+def free_ports(count: int) -> tuple[int, ...]:
+    """Select one bounded loopback batch while all selected sockets stay bound.
+
+    This prevents reuse within our own batch, not another process taking a port
+    after release. Actual bind/start failures still fail the campaign; no node
+    initialization or business request is retried.
+    """
+    if type(count) is not int or not 1 <= count <= 64:
+        raise FixtureError("invalid_ephemeral_port_count")
+    with ExitStack() as handles:
+        ports = []
+        for _ in range(count):
+            sock = handles.enter_context(socket.socket())
+            sock.bind(("127.0.0.1", 0))
+            ports.append(int(sock.getsockname()[1]))
+        if len(set(ports)) != count:
+            raise FixtureError("ephemeral_port_collision")
+        return tuple(ports)
+
+
 def free_port() -> int:
-    with socket.socket() as sock:
-        sock.bind(("127.0.0.1", 0))
-        return int(sock.getsockname()[1])
+    return free_ports(1)[0]
 
 
 def checked_binary(path: Path, expected: str) -> str:
@@ -78,11 +97,16 @@ def checked_binary(path: Path, expected: str) -> str:
 
 
 class Node:
-    def __init__(self, node_id: int, binary: Path, root: Path, context: ssl.SSLContext):
+    def __init__(self, node_id: int, binary: Path, root: Path, context: ssl.SSLContext,
+                 *, ports: tuple[int, int] | None = None):
         self.node_id, self.binary, self.root = node_id, binary, root
         self.context = context
         self.ha_config = root / "ha.json"
-        self.http_port, self.raft_port = free_port(), free_port()
+        selected = free_ports(2) if ports is None else ports
+        if (len(selected) != 2 or len(set(selected)) != 2
+                or any(type(port) is not int or not 1 <= port <= 65535 for port in selected)):
+            raise FixtureError("invalid_node_port_pair")
+        self.http_port, self.raft_port = selected
         self.process = None
         self.log = None
         self.started_pids: list[int] = []
@@ -223,10 +247,11 @@ class Cluster:
         ca_key.chmod(0o600)
         context = ssl.create_default_context(cafile=str(ca_cert))
         peers = {}
+        ports = iter(free_ports(2 * len(self.NODE_IDS)))
         for number in self.NODE_IDS:
             root = self.root / f"node-{number}"
             root.mkdir(mode=0o700)
-            node = Node(number, self.binary, root, context)
+            node = Node(number, self.binary, root, context, ports=(next(ports), next(ports)))
             self.nodes.append(node)
             key, cert, csr = root / "tls.key", root / "tls.crt", root / "tls.csr"
             openssl("req", "-new", "-newkey", "rsa:2048", "-nodes", "-keyout", str(key),

@@ -263,3 +263,14 @@ options and full field/error parity remain unqualified. Nonempty derivation
 contexts, prehash/signature options and unsupported fields are explicitly refused;
 they are not silently mapped onto pure signing. See the schema-62 format contract
 for old-reader refusal, retained key material and mutation-only promotion.
+
+## Local qualification port selection
+
+The three-node fixture selects its six API/Raft ports as one bounded batch, with
+all selection sockets simultaneously bound until the batch is complete. A port
+freed by an earlier node can no longer be selected again for a later node in the
+same fixture. The duplicate-port check remains. All handles close on success or
+partial allocation failure, and malformed counts are rejected before allocation.
+This is not a cross-process port lease: an actual later bind/start failure still
+fails the campaign. It does not replay initialization or application mutations,
+change any HTTP/HA deadline, or admit a failed earlier campaign as passing.
