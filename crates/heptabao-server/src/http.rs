@@ -2015,3 +2015,7 @@ mod wrapping_header_tests {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "http_consistency_tests.rs"]
+mod consistency_tests;
