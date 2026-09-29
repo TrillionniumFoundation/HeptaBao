@@ -4,7 +4,7 @@ use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 use chacha20poly1305::{AeadInPlace, KeyInit, XChaCha20Poly1305, XNonce};
 use ring::{
     aead,
-    rand::{SecureRandom, SystemRandom},
+    rand::{SecureRandom, SystemRandom, generate},
     signature::{self, KeyPair},
 };
 use sha2::{Digest as RustDigest, Sha224, Sha256, Sha384, Sha512};
@@ -1009,10 +1009,9 @@ fn encrypt(
     }
     let material = stored_material(&version.material)?;
     let (nonce, ciphertext) = if xchacha {
-        let mut nonce = [0; 24];
-        SystemRandom::new()
-            .fill(&mut nonce)
-            .map_err(|_| error(503, "system entropy is unavailable"))?;
+        let nonce = generate::<[u8; 24]>(&SystemRandom::new())
+            .map_err(|_| error(503, "system entropy is unavailable"))?
+            .expose();
         let associated = associated_data(body)?;
         let ciphertext = xchacha20_encrypt(&material, &nonce, &associated, plaintext)?;
         (nonce.to_vec(), ciphertext)
@@ -1022,10 +1021,9 @@ fn encrypt(
             aead::UnboundKey::new(algorithm, &material)
                 .map_err(|_| error(500, "stored encryption key is invalid"))?,
         );
-        let mut nonce = [0; 12];
-        SystemRandom::new()
-            .fill(&mut nonce)
-            .map_err(|_| error(503, "system entropy is unavailable"))?;
+        let nonce = generate::<[u8; 12]>(&SystemRandom::new())
+            .map_err(|_| error(503, "system entropy is unavailable"))?
+            .expose();
         let mut ciphertext = Zeroizing::new(plaintext.to_vec());
         key.seal_in_place_append_tag(
             aead::Nonce::assume_unique_for_key(nonce),
@@ -1060,8 +1058,9 @@ fn decrypt(
     }
     let material = stored_material(&version.material)?;
     if xchacha {
-        let mut nonce = [0; 24];
-        nonce.copy_from_slice(&ciphertext[..24]);
+        let nonce: [u8; 24] = ciphertext[..24]
+            .try_into()
+            .map_err(|_| bad("invalid ciphertext"))?;
         return xchacha20_decrypt(
             &material,
             &nonce,
@@ -1074,12 +1073,11 @@ fn decrypt(
         aead::UnboundKey::new(algorithm, &material)
             .map_err(|_| error(500, "stored encryption key is invalid"))?,
     );
-    let mut nonce = [0; 12];
-    nonce.copy_from_slice(&ciphertext[..12]);
+    let nonce = &ciphertext[..12];
     let associated = associated_data(body)?;
     let mut raw_payload = ciphertext[12..].to_vec();
     if let Ok(plaintext) = key.open_in_place(
-        aead::Nonce::assume_unique_for_key(nonce),
+        aead::Nonce::try_assume_unique_for_key(nonce).map_err(|_| bad("invalid ciphertext"))?,
         aead::Aad::from(associated),
         &mut raw_payload,
     ) {
@@ -1091,7 +1089,7 @@ fn decrypt(
     let mut legacy_payload = ciphertext[12..].to_vec();
     let plaintext = key
         .open_in_place(
-            aead::Nonce::assume_unique_for_key(nonce),
+            aead::Nonce::try_assume_unique_for_key(nonce).map_err(|_| bad("invalid ciphertext"))?,
             aead::Aad::from(legacy_aad(namespace, mount, name, body)?),
             &mut legacy_payload,
         )

@@ -6576,7 +6576,7 @@ impl AuthState {
         let name = account_key.as_ref();
         reject_unknown(body, &["password", "totp_code", "username"])?;
         let password = match body.get("password") {
-            None | Some(Value::Null) => "",
+            None | Some(Value::Null) => return Err(err(500, "missing password")),
             Some(value) => value
                 .as_str()
                 .ok_or_else(|| bad("password must be a string"))?,

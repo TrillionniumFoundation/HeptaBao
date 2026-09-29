@@ -125,6 +125,25 @@ fn userpass_empty_or_null_general_update_preserves_verifier_and_can_update_other
 }
 
 #[test]
+fn userpass_login_missing_null_and_empty_share_error_without_mutation() {
+    let (mut state, root) = configured();
+    account_write(
+        &mut state,
+        &root,
+        "alice",
+        json!({"password":"existing compatible credential"}),
+    )
+    .unwrap();
+    let before = serde_json::to_vec(&state).unwrap();
+    for body in [json!({}), json!({"password":null}), json!({"password":""})] {
+        let error = account_login(&mut state, "alice", body).err().unwrap();
+        assert_eq!(error.status, 500);
+        assert_eq!(error.message, "missing password");
+        assert_eq!(serde_json::to_vec(&state).unwrap(), before);
+    }
+}
+
+#[test]
 fn userpass_dedicated_reset_requires_existing_user_and_nonempty_replacement() {
     let (mut state, root) = configured();
     let before = provider_renewal::state_revision(&state).unwrap();
