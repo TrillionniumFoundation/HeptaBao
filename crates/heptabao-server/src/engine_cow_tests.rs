@@ -35,6 +35,7 @@ fn fixed_legacy_mounts_and_payloads_keep_identical_serialized_bytes() -> TestRes
             mounts: BTreeMap::from([("legacy/".into(), decoded)]),
             mount_epochs: BTreeMap::new(),
             identity: identity::IdentityState::default(),
+            external_keys: external_keys::Registry::default(),
         };
         let mut state = EngineState {
             records: None,
@@ -193,5 +194,61 @@ fn mount_configuration_and_removal_are_isolated_from_retained_snapshot() -> Test
     call(&mut state, "DELETE", "sys/mounts/secret", json!({}))?;
     assert!(mount(&state, "secret/").is_err());
     assert_eq!(serde_json::to_vec(&snapshot)?, old_bytes);
+    Ok(())
+}
+
+#[test]
+fn external_keys270_copy_on_write_preserves_old_snapshot_and_peer_namespace() -> TestResult {
+    let mut state = EngineState::default();
+    let path = "sys/external-keys/configs/demo";
+    for namespace in ["", "team"] {
+        let response = state
+            .handle(
+                namespace,
+                "POST",
+                path,
+                &json!({"plugin":"transit", "verify":false, "mount_path":"original"}),
+                100,
+            )?
+            .ok_or("missing external key response")?;
+        assert_eq!(response.status, 204);
+    }
+    let snapshot = state.clone();
+    let snapshot_bytes = serde_json::to_vec(&snapshot)?;
+    let peer_bytes = serde_json::to_vec(state.namespaces.get("team").ok_or("peer namespace")?)?;
+    assert_eq!(
+        call(
+            &mut state,
+            "PATCH",
+            path,
+            json!({"verify":false, "mount_path":"updated"})
+        )?
+        .status,
+        204
+    );
+    assert!(
+        serde_json::to_vec(&snapshot)? == snapshot_bytes,
+        "old registry snapshot changed"
+    );
+    assert!(
+        serde_json::to_vec(state.namespaces.get("team").ok_or("peer namespace")?)? == peer_bytes,
+        "peer namespace registry changed"
+    );
+    let before = serde_json::to_vec(&state)?;
+    assert!(
+        state
+            .handle(
+                "",
+                "PATCH",
+                path,
+                &json!({"verify":false, "oversized":"x".repeat(65 * 1024)}),
+                100
+            )
+            .is_err()
+    );
+    assert!(
+        serde_json::to_vec(&state)? == before,
+        "rejected patch changed registry state"
+    );
     Ok(())
 }

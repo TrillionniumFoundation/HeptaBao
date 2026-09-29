@@ -44,7 +44,8 @@ use crate::state_record_root::RecordStateRoot;
 // Schema 60 adds current-Identity ACL path substitutions; schema 61 adds bounded
 // ACL wrapping TTL constraints. Both have independent persisted-state fences.
 // Schema 62 adds Transit ML-DSA seed keys under the existing encrypted engine owner.
-const CURRENT_STATE_SCHEMA: u32 = 62;
+// Schema 63 adds the namespace-scoped External Keys registry.
+const CURRENT_STATE_SCHEMA: u32 = 63;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -7096,3 +7097,7 @@ mod ha_initial_anchor_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "service_transit_mldsa_tests.rs"]
 mod transit_mldsa_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_external_keys_tests.rs"]
+mod external_keys_tests;

@@ -14,6 +14,8 @@ use std::{
 };
 use zeroize::Zeroize;
 
+#[path = "engine_external_keys.rs"]
+mod external_keys;
 mod identity;
 #[path = "engine_identity.rs"]
 mod identity_projection;
@@ -157,6 +159,8 @@ struct NamespaceState {
     mount_epochs: BTreeMap<String, u64>,
     #[serde(default)]
     identity: identity::IdentityState,
+    #[serde(default, skip_serializing_if = "external_keys::Registry::is_empty")]
+    external_keys: external_keys::Registry,
 }
 
 impl Default for NamespaceState {
@@ -177,6 +181,7 @@ impl Default for NamespaceState {
             ]),
             mount_epochs: BTreeMap::new(),
             identity: identity::IdentityState::default(),
+            external_keys: external_keys::Registry::default(),
         }
     }
 }
@@ -491,6 +496,19 @@ fn list_keys<'a>(
 impl EngineState {
     pub(crate) fn lease_clock(&self) -> u64 {
         self.lease_clock
+    }
+
+    pub(crate) fn has_external_key_state(&self) -> bool {
+        self.namespaces
+            .values()
+            .any(|namespace| !namespace.external_keys.is_empty())
+    }
+
+    pub(crate) fn validate_external_key_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            namespace.external_keys.validate()?;
+        }
+        Ok(())
     }
     pub(crate) fn known_namespaces(&self) -> BTreeSet<String> {
         self.namespaces
@@ -1102,7 +1120,7 @@ impl EngineState {
             .next()
             .unwrap_or(path)
             .trim_start_matches('/');
-        if identity::owns(path) {
+        if identity::owns(path) || external_keys::owns(path) {
             return Some(match method {
                 "GET" | "HEAD" => "read",
                 "LIST" => "list",
@@ -1188,6 +1206,22 @@ impl EngineState {
             map.insert(key.into(), Value::String(value.into()));
         }
         let method = kv_request_method(method, &params);
+
+        if external_keys::owns(path) {
+            let mut candidate = self
+                .namespaces
+                .get(namespace)
+                .map(|state| state.external_keys.clone())
+                .unwrap_or_default();
+            let response = candidate.handle(method, path, &params)?;
+            if response.mutated {
+                self.namespaces
+                    .entry(namespace.into())
+                    .or_default()
+                    .external_keys = candidate;
+            }
+            return Ok(Some(response));
+        }
 
         if identity::owns(path) {
             let mut candidate = self

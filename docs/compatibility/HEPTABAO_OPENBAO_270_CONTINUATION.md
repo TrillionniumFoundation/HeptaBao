@@ -222,10 +222,13 @@ changed by this fixture correction. The earlier failed run remains evidence.
 A full replacement claim is still prohibited until the complete inventory and
 2.7.0 delta are independently exercised. In particular:
 
-- External keys, the ML-DSA/PQC surfaces and control-group approvals still require
-  their own implementation and exact 2.7.0 reference evidence. The consistency
-  middleware now has a real implementation and a required native comparison;
-  its bounded profile does not establish general client or storage compatibility.
+- The namespace-scoped External Keys registry now has durable CRUD, redaction,
+  patch, grant and schema-63 fencing, but `verify=true`, actual KMS client use and
+  Transit/PKI consumers still require the external-effect chain and exact 2.7.0
+  reference evidence. Transit ML-DSA has the bounded implementation described
+  below; broader PQC and control-group approvals remain open. The consistency
+  middleware has a real implementation and a required native comparison, but its
+  bounded profile does not establish general client or storage compatibility.
 - General upstream plugin compatibility, complete provider and directory-service
   semantics, namespace key custody/delegation, and full PKI/SSH/JWT/OIDC behavior
   remain broader than the selected passing profiles.
@@ -274,3 +277,36 @@ partial allocation failure, and malformed counts are rejected before allocation.
 This is not a cross-process port lease: an actual later bind/start failure still
 fails the campaign. It does not replay initialization or application mutations,
 change any HTTP/HA deadline, or admit a failed earlier campaign as passing.
+
+## External Keys registry continuation
+
+The namespace-scoped `sys/external-keys/configs` routes persist config values,
+key mappings and mount-path grants through the existing EngineState and Service
+transaction. Populated registry state independently requires schema 63. Empty
+registries are omitted from serialization, preserving earlier feature-free
+representations. Config deletion removes mappings and grants, never provider keys.
+
+The route parser matches complete path segments: `configsdemo` is not an alias
+for `configs/demo`. ACL admission and the resource effect therefore refer to the
+same path. Rejected application effects leave the registry unchanged, while an
+accepted finite-use bearer remains consumed even when later ACL or handler checks
+reject the request. That consumption must survive process restart.
+
+`external_keys_live.py` runs the fixed 62-case profile against independent native
+candidate and verified official 2.7.0 processes. It observes config/key CRUD,
+merge patch, redacted reads, idempotent grants, path-alias refusal, finite-token
+ACL denial, namespace separation, restart and cascade deletion. The required 2.7
+CI lane includes this profile; failure bodies and credentials are not report data.
+
+This is explicit `verify=false` registry behavior only. The default `verify=true`
+path remains refused until provider verification is connected through an admitted
+external-effect owner. Persisting a mapping or a grant is not evidence of provider
+key custody, mount grant consumption, PKI/Transit external signing or encryption,
+plugin discovery, HSM operation, all-asset migration, HA, or independent security
+qualification. Those remain replacement blockers; this profile does not bypass them.
+
+The native 2.7 HTTP projection distinguishes empty listings (404 with an empty
+errors array) from a named missing config or key (400 with the resource error).
+A repeated canonical grant update is 204; a grant request with an extra terminal
+slash is rejected with 400. Both forms remain explicit comparison cases rather
+than accepting a union of statuses or normalizing away the failing request.

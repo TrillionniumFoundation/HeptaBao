@@ -55,8 +55,13 @@ fn mldsa270_service_promotes_only_on_write_fences_legacy_and_reopens_signatures(
         200
     );
     let state = service.state.as_ref().ok_or("state")?;
-    assert_eq!(state.schema, 62);
+    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     assert!(state.engines.has_mldsa_state());
+    let mut schema62 = state.clone();
+    schema62.schema = 62;
+    schema62
+        .validate_format()
+        .map_err(|_| "schema 62 ML-DSA validation")?;
     let mut future = state.clone();
     future.schema = CURRENT_STATE_SCHEMA + 1;
     assert!(future.validate_format().is_err());
