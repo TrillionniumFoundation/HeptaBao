@@ -649,6 +649,42 @@ def openssl(*args: str) -> None:
     checked_run(["openssl", *args], timeout=60)
 
 
+def create_fixture_ca(key: Path, certificate: Path) -> None:
+    # Some OpenSSL-compatible hosts omit these identifiers unless explicitly
+    # requested. Strict verifiers must stay enabled on every orchestrator.
+    openssl("req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
+            "-keyout", str(key), "-out", str(certificate),
+            "-subj", "/CN=HeptaBao Synthetic Multi-Host HA CA",
+            "-addext", "basicConstraints=critical,CA:TRUE",
+            "-addext", "keyUsage=critical,keyCertSign,cRLSign",
+            "-addext", "subjectKeyIdentifier=hash",
+            "-addext", "authorityKeyIdentifier=keyid:always")
+    key.chmod(0o600)
+    certificate.chmod(0o600)
+
+
+def create_fixture_node_certificate(node: Node, directory: Path,
+                                    ca_key: Path, ca_cert: Path) -> tuple[Path, Path]:
+    key, csr, cert, ext = (directory / name for name in ("tls.key", "tls.csr", "tls.crt", "tls.ext"))
+    openssl("req", "-new", "-newkey", "rsa:2048", "-nodes",
+            "-keyout", str(key), "-out", str(csr),
+            "-subj", f"/CN={node.server_name}")
+    key.chmod(0o600)
+    ext.write_text(
+        "basicConstraints=critical,CA:FALSE\n"
+        "keyUsage=critical,digitalSignature,keyEncipherment\n"
+        "extendedKeyUsage=serverAuth,clientAuth\n"
+        "subjectKeyIdentifier=hash\n"
+        "authorityKeyIdentifier=keyid:always\n"
+        f"subjectAltName=DNS:{node.server_name},IP:{node.ip}\n"
+    )
+    openssl("x509", "-req", "-in", str(csr), "-CA", str(ca_cert),
+            "-CAkey", str(ca_key), "-CAcreateserial", "-out", str(cert),
+            "-days", "2", "-sha256", "-extfile", str(ext))
+    cert.chmod(0o600)
+    return key, cert
+
+
 def parse_node(text: str, node_id: int, api_port: int, raft_port: int) -> Node:
     parts = text.split(",", 2)
     if len(parts) != 3:
@@ -778,12 +814,7 @@ def main(*, extension=None) -> int:
         report["candidate_payload_bytes"] = payload.stat().st_size
 
         stage = "fixture_ca"
-        openssl("req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
-                "-keyout", str(ca_key), "-out", str(ca_cert),
-                "-subj", "/CN=HeptaBao Synthetic Multi-Host HA CA",
-                "-addext", "basicConstraints=critical,CA:TRUE",
-                "-addext", "keyUsage=critical,keyCertSign,cRLSign")
-        ca_key.chmod(0o600)
+        create_fixture_ca(ca_key, ca_cert)
         context = ssl.create_default_context(cafile=str(ca_cert))
         peers: dict[str, dict] = {}
         node_files: dict[Node, Path] = {}
@@ -809,21 +840,7 @@ hostname
             node_dir = work / node.name
             node_dir.mkdir(mode=0o700)
             node_files[node] = node_dir
-            key, csr, cert, ext = (node_dir / name for name in ("tls.key", "tls.csr", "tls.crt", "tls.ext"))
-            openssl("req", "-new", "-newkey", "rsa:2048", "-nodes",
-                    "-keyout", str(key), "-out", str(csr),
-                    "-subj", f"/CN={node.server_name}")
-            key.chmod(0o600)
-            ext.write_text(
-                "basicConstraints=critical,CA:FALSE\n"
-                "keyUsage=critical,digitalSignature,keyEncipherment\n"
-                "extendedKeyUsage=serverAuth,clientAuth\n"
-                f"subjectAltName=DNS:{node.server_name},IP:{node.ip}\n"
-            )
-            openssl("x509", "-req", "-in", str(csr), "-CA", str(ca_cert),
-                    "-CAkey", str(ca_key), "-CAcreateserial", "-out", str(cert),
-                    "-days", "2", "-sha256", "-extfile", str(ext))
-            cert.chmod(0o600)
+            key, cert = create_fixture_node_certificate(node, node_dir, ca_key, ca_cert)
             fingerprint = hashlib.sha256(ssl.PEM_cert_to_DER_cert(cert.read_text())).hexdigest()
             peers[str(node.node_id)] = {
                 "node_name": node.name,
