@@ -310,3 +310,11 @@ errors array) from a named missing config or key (400 with the resource error).
 A repeated canonical grant update is 204; a grant request with an extra terminal
 slash is rejected with 400. Both forms remain explicit comparison cases rather
 than accepting a union of statuses or normalizing away the failing request.
+
+`ha_multihost_external_keys_live.py` composes the unchanged physical-host lifecycle
+with 30 registry/ACL observations: standby forwarding, every node's local applied
+frontier, snapshot catch-up, post-SIGKILL mapping replacement and grant deletion,
+old-leader rejoin, quorum recovery and cleanup. The extension requires all baseline
+checks as well as its own nonoverlapping checks. No business mutation is retried.
+This is a native same-version HeptaBao HA profile, not an OpenBao-to-HeptaBao
+migration, a physical power-cut test or an external KMS cryptographic-use claim.

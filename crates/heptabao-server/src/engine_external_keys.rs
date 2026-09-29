@@ -617,15 +617,14 @@ mod tests {
             .status,
             204
         );
-        assert_eq!(
-            call(
+        assert!(
+            !call(
                 &mut registry,
                 "PUT",
                 "sys/external-keys/configs/demo/keys/key1/grants/pki",
                 json!({}),
             )?
-            .mutated,
-            false
+            .mutated
         );
         let trailing = call(
             &mut registry,
