@@ -53,6 +53,8 @@ mod audit_rotation;
 mod backup_restore;
 #[path = "service_capabilities.rs"]
 mod capabilities;
+#[path = "service_consistency.rs"]
+mod consistency;
 #[path = "service_database.rs"]
 mod database;
 #[path = "service_epoch_activation.rs"]
@@ -415,6 +417,7 @@ fn replay_epoch_is_zero(value: &u64) -> bool {
 pub struct Response {
     pub status: u16,
     pub body: Value,
+    pub(crate) consistency_index: Option<crate::http::consistency::ResponseIndex>,
 }
 impl Drop for Response {
     fn drop(&mut self) {
@@ -427,10 +430,15 @@ impl Response {
         Self {
             status,
             body: json!({"errors":[message]}),
+            consistency_index: None,
         }
     }
     fn ok(body: Value) -> Self {
-        Self { status: 200, body }
+        Self {
+            status: 200,
+            body,
+            consistency_index: None,
+        }
     }
 }
 
@@ -1524,7 +1532,7 @@ impl Service {
         &mut self,
         fingerprint: &str,
         now: u64,
-        response: Response,
+        mut response: Response,
     ) -> Response {
         if self
             .audit_event("response", fingerprint, now, Some(response.status))
@@ -1536,6 +1544,7 @@ impl Service {
                 "response audit failed; outcome unknown; authoritative recovery required",
             );
         }
+        self.stamp_consistency_index(&mut response);
         response
     }
 
@@ -1850,6 +1859,7 @@ impl Service {
                 health_codes,
             );
             return Response {
+                consistency_index: None,
                 status,
                 // OpenBao 2.6.2 removed the legacy performance_standby and last_wal response fields.
                 // Keep this health response aligned with that release.
@@ -2146,6 +2156,7 @@ impl Service {
             return match ha.lock_for_request() {
                 Ok(ha) => match ha.step_down() {
                     Ok(_) => Response {
+                        consistency_index: None,
                         status: 204,
                         body: Value::Null,
                     },
@@ -2224,6 +2235,7 @@ impl Service {
                 return Response::error(503, "operating system randomness unavailable");
             }
             return Response {
+                consistency_index: None,
                 status: 204,
                 body: Value::Null,
             };
@@ -2260,6 +2272,7 @@ impl Service {
                 .lookup_wrapping_request(token, namespace, method, body, now)
             {
                 Ok(value) => Response {
+                    consistency_index: None,
                     status: value.status,
                     body: value.body,
                 },
@@ -2341,6 +2354,7 @@ impl Service {
             {
                 Ok(wrapped) => {
                     response = Response {
+                        consistency_index: None,
                         status: wrapped.status,
                         body: wrapped.body,
                     };
@@ -2493,6 +2507,7 @@ impl Service {
                 request.now,
             ) {
                 Ok(mut response) => Response {
+                    consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
                 },
@@ -2607,6 +2622,7 @@ impl Service {
                 (Some(from), Some(to)) => {
                     return match state.auth.remount_mount(namespace, from, to, cas_revision) {
                         Ok(response) => Response {
+                            consistency_index: None,
                             status: response.status,
                             body: response.body,
                         },
@@ -2628,6 +2644,7 @@ impl Service {
                     }
                     return match state.engines.remount(namespace, from, to, cas_revision) {
                         Ok(mut response) => Response {
+                            consistency_index: None,
                             status: response.status,
                             body: std::mem::take(&mut response.body),
                         },
@@ -2734,6 +2751,7 @@ impl Service {
                     state.engines = engines;
                 }
                 return Response {
+                    consistency_index: None,
                     status: response.status,
                     body: response.body,
                 };
@@ -2800,6 +2818,7 @@ impl Service {
                     state.engines = engines;
                 }
                 Response {
+                    consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
                 }
@@ -3892,6 +3911,7 @@ impl Service {
             );
         }
         Response {
+            consistency_index: None,
             status: 204,
             body: Value::Null,
         }
@@ -4132,6 +4152,7 @@ impl Service {
                 Ok(_) => {}
                 Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                     return Err(Response {
+                        consistency_index: None,
                         status: 503,
                         body: json!({
                             "errors":["state-format metadata migration outcome unknown; retry unseal after durable reconciliation"],
@@ -4319,6 +4340,7 @@ impl Service {
                 }
                 self.rekey = None;
                 return Response {
+                    consistency_index: None,
                     status: 204,
                     body: Value::Null,
                 };
@@ -4716,6 +4738,7 @@ impl Service {
                     }
                 })),
                 ReconciliationStatus::Unknown => Response {
+                    consistency_index: None,
                     status: 404,
                     body: json!({"errors":["recovery reference is unknown"]}),
                 },
@@ -5171,6 +5194,7 @@ impl Service {
             Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                 self.recovery_required = true;
                 Err(Response {
+                    consistency_index: None,
                     status: 503,
                     body: json!({"errors":["durable outcome unknown; do not blindly retry"],"recovery_reference":recovery_reference}),
                 })
@@ -5616,6 +5640,7 @@ impl Service {
                     }
                 }
                 Response {
+                    consistency_index: None,
                     status: 204,
                     body: Value::Null,
                 }

@@ -8,6 +8,10 @@ const REQUEST_MAGIC: &[u8; 5] = b"HBFQ1";
 const WRAPPED_REQUEST_MAGIC: &[u8; 5] = b"HBFQ2";
 const PEER_REQUEST_MAGIC: &[u8; 5] = b"HBFQ3";
 const RESPONSE_MAGIC: &[u8; 5] = b"HBFS1";
+// Versioned negotiation: only HBFQ4 clients receive the HBFS2 index sidecar.
+// Older frames and their strict decoding remain unchanged; no mutation replay.
+const INDEX_REQUEST_MAGIC: &[u8; 5] = b"HBFQ4";
+const INDEX_RESPONSE_MAGIC: &[u8; 5] = b"HBFS2";
 const MAX_FORWARD_FRAME_BYTES: usize = 1024 * 1024;
 const MAX_METHOD_BYTES: usize = 8;
 const MAX_PATH_BYTES: usize = 8192;
@@ -40,6 +44,8 @@ pub(crate) struct ForwardRequest {
     /// admitted the pre-cluster-bound HBFQ1 wire after mTLS peer identity.
     #[serde(skip)]
     pub legacy_v1: bool,
+    #[serde(skip)]
+    pub index_response: bool,
 }
 
 impl fmt::Debug for ForwardRequest {
@@ -138,6 +144,8 @@ pub(crate) struct ForwardResponse {
     pub target: u64,
     pub status: u16,
     pub body: Value,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub consistency_index: Option<u64>,
 }
 
 impl fmt::Debug for ForwardResponse {
@@ -162,6 +170,7 @@ pub(crate) fn is_forward_request(encoded: &[u8]) -> bool {
     encoded.starts_with(REQUEST_MAGIC)
         || encoded.starts_with(WRAPPED_REQUEST_MAGIC)
         || encoded.starts_with(PEER_REQUEST_MAGIC)
+        || encoded.starts_with(INDEX_REQUEST_MAGIC)
 }
 
 #[cfg(test)]
@@ -205,6 +214,7 @@ pub(crate) fn encode_request_with_client_certificates(
 }
 
 #[allow(clippy::too_many_arguments)]
+#[cfg(test)]
 pub(crate) fn encode_request_for_cluster(
     cluster_id: &str,
     source: u64,
@@ -279,6 +289,7 @@ pub(crate) fn encode_wrapped_request_with_client_certificates(
 }
 
 #[allow(clippy::too_many_arguments)]
+#[cfg(test)]
 pub(crate) fn encode_wrapped_request_for_cluster(
     cluster_id: &str,
     direction: (u64, u64),
@@ -319,6 +330,7 @@ pub(crate) fn encode_wrapped_request_for_cluster(
 /// HBFQ3 is accepted only through the peer-authenticated listener. The source
 /// node attests this socket IP together with the complete request inside mTLS.
 #[allow(clippy::too_many_arguments)]
+#[cfg(test)]
 pub(crate) fn encode_peer_request_for_cluster(
     cluster_id: &str,
     direction: (u64, u64),
@@ -356,19 +368,64 @@ pub(crate) fn encode_peer_request_for_cluster(
     )
 }
 
+/// Index-capable forwarding keeps the complete authority tuple and explicitly
+/// negotiates response metadata. Unknown versions fail before handler admission.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn encode_index_request_for_cluster(
+    cluster_id: &str,
+    direction: (u64, u64),
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: &Value,
+    wrap_ttl_seconds: Option<u64>,
+    client_certificates: Option<&[Vec<u8>]>,
+    origin_peer: Option<std::net::IpAddr>,
+) -> Result<Vec<u8>, String> {
+    validate_cluster_id(cluster_id)?;
+    validate_direction(direction.0, direction.1)?;
+    validate_request_fields(method, path, namespace, token)?;
+    validate_client_certificates(client_certificates)?;
+    if wrap_ttl_seconds.is_some_and(|ttl| ttl > 32 * 24 * 3600) {
+        return Err("HA wrapping TTL is invalid".into());
+    }
+    encode(
+        INDEX_REQUEST_MAGIC,
+        &ForwardRequestRef {
+            cluster_id,
+            source: direction.0,
+            target: direction.1,
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            client_certificates,
+            origin_peer,
+        },
+    )
+}
+
 pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
+    let index_response = encoded.starts_with(INDEX_REQUEST_MAGIC);
     let with_peer = encoded.starts_with(PEER_REQUEST_MAGIC);
     let wrapped = encoded.starts_with(WRAPPED_REQUEST_MAGIC);
-    let magic = if with_peer {
+    let magic = if index_response {
+        INDEX_REQUEST_MAGIC
+    } else if with_peer {
         PEER_REQUEST_MAGIC
     } else if wrapped {
         WRAPPED_REQUEST_MAGIC
     } else {
         REQUEST_MAGIC
     };
-    let request: ForwardRequest = decode(magic, encoded)?;
-    if with_peer != request.origin_peer.is_some()
-        || !with_peer && wrapped != request.wrap_ttl_seconds.is_some()
+    let mut request: ForwardRequest = decode(magic, encoded)?;
+    request.index_response = index_response;
+    if !index_response
+        && (with_peer != request.origin_peer.is_some()
+            || !with_peer && wrapped != request.wrap_ttl_seconds.is_some())
         || request
             .wrap_ttl_seconds
             .is_some_and(|ttl| ttl > 32 * 24 * 3600)
@@ -459,6 +516,7 @@ pub(crate) fn decode_request_for_cluster_compatible(
                 client_certificates: None,
                 origin_peer: None,
                 legacy_v1: true,
+                index_response: false,
             })
         }
         Err(error) => Err(error),
@@ -495,12 +553,63 @@ pub(crate) fn encode_response_for_cluster(
             target,
             status,
             body: body.clone(),
+            consistency_index: None,
         },
     )
 }
 
+pub(crate) fn encode_index_response_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    response: &crate::Response,
+) -> Result<Vec<u8>, String> {
+    validate_cluster_id(cluster_id)?;
+    validate_direction(source, target)?;
+    if !(100..=599).contains(&response.status) {
+        return Err("HA forward response status is invalid".into());
+    }
+    let consistency_index = response
+        .consistency_index
+        .as_ref()
+        .map(|index| {
+            index
+                .raft_index_for_cluster(cluster_id)
+                .ok_or_else(|| "HA response index cluster or value is invalid".to_owned())
+        })
+        .transpose()?;
+    encode(
+        INDEX_RESPONSE_MAGIC,
+        &ForwardResponse {
+            cluster_id: cluster_id.to_owned(),
+            source,
+            target,
+            status: response.status,
+            body: response.body.clone(),
+            consistency_index,
+        },
+    )
+}
+
+pub(crate) fn decode_index_response_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<ForwardResponse, String> {
+    let response: ForwardResponse = decode(INDEX_RESPONSE_MAGIC, encoded)?;
+    validate_direction(response.source, response.target)?;
+    validate_cluster_id(&response.cluster_id)?;
+    if response.cluster_id != expected_cluster_id || !(100..=599).contains(&response.status) {
+        return Err("HA index response identity or status is invalid".into());
+    }
+    Ok(response)
+}
+
+#[cfg(test)]
 pub(crate) fn decode_response(encoded: &[u8]) -> Result<ForwardResponse, String> {
     let response: ForwardResponse = decode(RESPONSE_MAGIC, encoded)?;
+    if response.consistency_index.is_some() {
+        return Err("HA response index requires negotiated version".into());
+    }
     validate_direction(response.source, response.target)?;
     validate_cluster_id(&response.cluster_id)?;
     if !(100..=599).contains(&response.status) {
@@ -509,6 +618,7 @@ pub(crate) fn decode_response(encoded: &[u8]) -> Result<ForwardResponse, String>
     Ok(response)
 }
 
+#[cfg(test)]
 pub(crate) fn decode_response_for_cluster(
     encoded: &[u8],
     expected_cluster_id: &str,
@@ -558,6 +668,7 @@ pub(crate) fn decode_legacy_response_for_transition(
         target: response.target,
         status: response.status,
         body: std::mem::take(&mut response.body),
+        consistency_index: None,
     })
 }
 
@@ -923,6 +1034,56 @@ mod peer_frame_tests {
         let mut falsely_upgraded = old;
         falsely_upgraded[..5].copy_from_slice(PEER_REQUEST_MAGIC);
         assert!(decode_request(&falsely_upgraded).is_err());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod consistency270_tests {
+    use super::*;
+    #[test]
+    fn consistency270_forward_roundtrip_negotiates_index_and_retains_authority_tuple()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let bytes = encode_index_request_for_cluster(
+            "synthetic",
+            (1, 2),
+            "POST",
+            "secret/data/key",
+            "team",
+            "synthetic-token",
+            &serde_json::json!({"data":{"fixture":true}}),
+            Some(30),
+            None,
+            Some("127.0.0.1".parse()?),
+        )?;
+        assert!(is_forward_request(&bytes));
+        let request = decode_request_for_cluster(&bytes, "synthetic")?;
+        assert!(request.index_response && !request.legacy_v1);
+        assert_eq!(request.origin_peer, Some("127.0.0.1".parse()?));
+        assert_eq!(request.wrap_ttl_seconds, Some(30));
+        assert_eq!(request.namespace, "team");
+        assert_eq!(request.token, "synthetic-token");
+        assert!(decode_request_for_cluster(&bytes, "another-cluster").is_err());
+        let response = crate::Response {
+            status: 204,
+            body: Value::Null,
+            consistency_index: crate::http::consistency::IndexValue::for_raft("synthetic", 42)
+                .wire(),
+        };
+        let bytes = encode_index_response_for_cluster("synthetic", 2, 1, &response)?;
+        assert!(decode_response_for_cluster(&bytes, "synthetic").is_err());
+        let received = decode_index_response_for_cluster(&bytes, "synthetic")?;
+        assert_eq!(received.consistency_index, Some(42));
+        assert_eq!(received.status, 204);
+        assert!(decode_index_response_for_cluster(&bytes, "another-cluster").is_err());
+        assert!(encode_index_response_for_cluster("another-cluster", 2, 1, &response).is_err());
+        let old = encode_response_for_cluster("synthetic", 2, 1, 204, &Value::Null)?;
+        assert!(
+            decode_response_for_cluster(&old, "synthetic")?
+                .consistency_index
+                .is_none()
+        );
+        assert!(decode_index_response_for_cluster(&old, "synthetic").is_err());
         Ok(())
     }
 }

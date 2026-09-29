@@ -127,6 +127,7 @@ impl OpenLdapEffectPlan {
 
 fn openldap_outcome_unknown(lease_id: &str) -> Response {
     Response {
+        consistency_index: None,
         status: 503,
         body: json!({
             "errors":["OpenLDAP provider outcome is unknown; durable intent retained"],
@@ -430,6 +431,7 @@ impl Service {
                 self.state = Some(state);
                 let mut response = response;
                 return Response {
+                    consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
                 };
@@ -486,6 +488,7 @@ impl Service {
                     self.state = Some(state);
                 }
                 Response {
+                    consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
                 }
@@ -625,6 +628,7 @@ impl Service {
             response.body["lease_duration"] = json!(plan.inner.expires_at.saturating_sub(now));
         }
         Response {
+            consistency_index: None,
             status: response.status,
             body: std::mem::take(&mut response.body),
         }

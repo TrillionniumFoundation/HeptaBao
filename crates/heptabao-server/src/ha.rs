@@ -33,11 +33,8 @@ use crate::{
     ha_forward::{
         ForwardRequest, decode_legacy_response_for_transition,
         decode_request_for_cluster_compatible as decode_forward_request,
-        decode_response_for_cluster as decode_forward_response,
         encode_legacy_request_for_transition, encode_legacy_response_for_transition,
-        encode_request_for_cluster as encode_forward_request,
-        encode_response_for_cluster as encode_forward_response, encode_wrapped_request_for_cluster,
-        is_forward_request,
+        encode_response_for_cluster as encode_forward_response, is_forward_request,
     },
     ha_state::{
         ClusterStateCodec, CommittedStateDescriptor, MAX_REPLICATED_STATE_CHUNKS,
@@ -761,6 +758,7 @@ impl HaProcess {
                                         );
                                     }
                                     let legacy_v1 = request.legacy_v1;
+                                    let index_response = request.index_response;
                                     // Forward admission leaves independent workers for
                                     // consensus while product requests await the service writer.
                                     let _forward_slot =
@@ -779,6 +777,13 @@ impl HaProcess {
                                             source,
                                             response.status,
                                             &response.body,
+                                        )
+                                    } else if index_response {
+                                        crate::ha_forward::encode_index_response_for_cluster(
+                                            &listener_cluster_id,
+                                            local_id,
+                                            source,
+                                            &response,
                                         )
                                     } else {
                                         encode_forward_response(
@@ -999,8 +1004,8 @@ impl HaProcess {
             encode_legacy_request_for_transition(
                 local, leader, method, path, namespace, token, body,
             )?
-        } else if let Some(peer) = origin_peer {
-            crate::ha_forward::encode_peer_request_for_cluster(
+        } else {
+            crate::ha_forward::encode_index_request_for_cluster(
                 &self.cluster_id,
                 (local, leader),
                 method,
@@ -1010,33 +1015,8 @@ impl HaProcess {
                 body,
                 wrap_ttl_seconds,
                 client_certificates,
-                peer,
+                origin_peer,
             )?
-        } else {
-            match wrap_ttl_seconds {
-                Some(ttl) => encode_wrapped_request_for_cluster(
-                    &self.cluster_id,
-                    (local, leader),
-                    method,
-                    path,
-                    namespace,
-                    token,
-                    body,
-                    ttl,
-                    client_certificates,
-                )?,
-                None => encode_forward_request(
-                    &self.cluster_id,
-                    local,
-                    leader,
-                    method,
-                    path,
-                    namespace,
-                    token,
-                    body,
-                    client_certificates,
-                )?,
-            }
         });
         let response = zeroize::Zeroizing::new(
             self.forward_transport
@@ -1046,7 +1026,7 @@ impl HaProcess {
         let mut response = if legacy_v1 {
             decode_legacy_response_for_transition(&response, &self.cluster_id)?
         } else {
-            decode_forward_response(&response, &self.cluster_id)?
+            crate::ha_forward::decode_index_response_for_cluster(&response, &self.cluster_id)?
         };
         if response.source != leader || response.target != local {
             return Err("HA forward response direction is invalid".into());
@@ -1055,6 +1035,9 @@ impl HaProcess {
             return Err("HA forwarding deadline exceeded; outcome may be committed".into());
         }
         Ok(Response {
+            consistency_index: response.consistency_index.and_then(|index| {
+                crate::http::consistency::IndexValue::for_raft(&self.cluster_id, index).wire()
+            }),
             status: response.status,
             body: std::mem::take(&mut response.body),
         })

@@ -35,6 +35,7 @@ fn legacy_owner_write(
         .map_err(|_| "legacy owner commit")?;
     service.state = Some(state);
     Ok(Response {
+        consistency_index: None,
         status: response.status,
         body: std::mem::take(&mut response.body),
     })

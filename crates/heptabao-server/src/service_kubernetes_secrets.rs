@@ -86,6 +86,7 @@ impl KubernetesTokenEffectPlan {
 
 fn outcome_unknown(lease_id: &str) -> Response {
     Response {
+        consistency_index: None,
         status: 503,
         body: json!({
             "errors":["Kubernetes TokenRequest outcome indeterminate; durable intent retained"],
@@ -300,6 +301,7 @@ impl Service {
                     self.state = Some(state);
                 }
                 Response {
+                    consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
                 }
@@ -456,6 +458,7 @@ impl Service {
             response.body["lease_duration"] = json!(remaining);
         }
         Response {
+            consistency_index: None,
             status: response.status,
             body: std::mem::take(&mut response.body),
         }
@@ -485,6 +488,7 @@ impl Service {
 
 fn post_provider_completion_failure(lease_id: &str) -> Response {
     Response {
+        consistency_index: None,
         status: 503,
         body: json!({
             "errors":["Kubernetes token was observed but local lease completion was not established; durable reconciliation state retained"],
@@ -497,6 +501,7 @@ fn post_provider_completion_failure(lease_id: &str) -> Response {
 
 fn retired_kubernetes_response(lease_id: &str) -> Response {
     Response {
+        consistency_index: None,
         status: 503,
         body: json!({
             "errors":["Kubernetes token observed after lease authority expired or was revoked; credential withheld"],

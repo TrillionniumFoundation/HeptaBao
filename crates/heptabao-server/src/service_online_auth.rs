@@ -308,6 +308,7 @@ impl Service {
         }
         self.state = Some(state);
         Response {
+            consistency_index: None,
             status: response.status,
             body: response.body,
         }
@@ -444,6 +445,7 @@ impl Service {
             self.state = Some(state);
         }
         Response {
+            consistency_index: None,
             status: response.status,
             body: response.body,
         }
@@ -747,6 +749,7 @@ impl Service {
                 self.state = Some(state);
             }
             return Response {
+                consistency_index: None,
                 status: response.status,
                 body: response.body,
             };
@@ -858,6 +861,7 @@ impl Service {
             erase_json(&mut issued.body);
             if callback {
                 return consumed_oidc_error(Response {
+                    consistency_index: None,
                     status: 503,
                     body: json!({
                         "errors":["OIDC session consumed; token publication failed"],
@@ -871,6 +875,7 @@ impl Service {
         }
         self.state = Some(state);
         Response {
+            consistency_index: None,
             status: issued.status,
             body: issued.body,
         }

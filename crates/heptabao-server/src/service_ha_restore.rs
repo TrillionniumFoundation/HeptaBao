@@ -159,6 +159,7 @@ impl Service {
             self.recovery_required = true;
             self.ha_read_cache = None;
             return Err(Response {
+                consistency_index: None,
                 status: 503,
                 body: json!({
                     "errors":["native HA restore committed after response deadline; reconcile before retry"],

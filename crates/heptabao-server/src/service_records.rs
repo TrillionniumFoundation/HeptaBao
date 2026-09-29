@@ -623,6 +623,7 @@ impl Service {
             Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                 self.recovery_required = true;
                 Err(Response {
+                    consistency_index: None,
                     status: 503,
                     body: json!({"errors":["record durable outcome unknown; do not blindly retry"],"recovery_reference":recovery_reference}),
                 })
@@ -839,6 +840,7 @@ impl Service {
             ServiceError::OutcomeUnknown { recovery_reference } => {
                 self.recovery_required = true;
                 Response {
+                    consistency_index: None,
                     status: 503,
                     body: json!({"errors":["record durable outcome unknown; reopen and reconcile; do not blindly retry"],
                     "recovery_reference":recovery_reference,"recovery_required":true,"retry_allowed":false}),

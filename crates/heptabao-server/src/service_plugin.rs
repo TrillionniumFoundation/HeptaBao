@@ -1264,6 +1264,7 @@ impl Service {
             return error;
         }
         Response {
+            consistency_index: None,
             status: issued.status,
             body: issued.body,
         }

@@ -16,7 +16,11 @@ impl Service {
         {
             body["recovery_reference"] = json!(reference);
         }
-        Response { status: 503, body }
+        Response {
+            consistency_index: None,
+            status: 503,
+            body,
+        }
     }
 
     /// Root-namespace operator observation, behind ordinary request/result
@@ -147,6 +151,7 @@ mod tests {
         assert_eq!(refused.body["retry_allowed"], false);
         assert_eq!(refused.body["recovery_required"], true);
         let unknown = Service::ha_committed_local_failure(Response {
+            consistency_index: None,
             status: 503,
             body: json!({"recovery_reference":"synthetic-reference", "unexpected":"must-not-propagate"}),
         });

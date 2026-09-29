@@ -28,6 +28,8 @@ use zeroize::{Zeroize, Zeroizing};
 #[path = "http_snapshot.rs"]
 mod snapshot;
 
+#[path = "http_consistency.rs"]
+pub(crate) mod consistency;
 #[path = "http_leader.rs"]
 mod leader;
 
@@ -62,6 +64,12 @@ pub struct Config {
     pub max_connections: usize,
     #[serde(default = "default_timeout")]
     pub timeout_seconds: u64,
+    #[serde(default)]
+    pub consistency_max_index_wait: Option<String>,
+    #[serde(default)]
+    pub consistency_fallback_behavior: Option<String>,
+    #[serde(default)]
+    pub consistency_missing_header_forward: bool,
     #[serde(default = "default_rate_limit_per_second")]
     pub rate_limit_per_second: u32,
     #[serde(default = "default_rate_limit_burst")]
@@ -231,6 +239,11 @@ fn serve_inner(
     if config.tls_client_auth_optional && config.tls_client_ca_file.is_none() {
         return Err("optional TLS client authentication requires a client CA bundle".into());
     }
+    let consistency_settings = consistency::Settings::checked(
+        config.consistency_max_index_wait.as_deref(),
+        config.consistency_fallback_behavior.as_deref(),
+        config.consistency_missing_header_forward,
+    )?;
     let limiter = Arc::new(Mutex::new(RateLimiter::new(
         config.rate_limit_per_second,
         config.rate_limit_burst,
@@ -434,7 +447,15 @@ fn serve_inner(
                             });
                         let is_head = request.method == "HEAD";
                         let native_snapshot = request.native_snapshot.take();
-                        let service_request = ServiceRequest {
+                        // Index admission precedes logical dispatch and any snapshot body I/O.
+                        // It never authenticates the caller or creates permission to retry.
+                        let consistency = consistency::admit(
+                            &service,
+                            &request.consistency,
+                            consistency_settings,
+                            deadline,
+                        );
+                        let mut service_request = ServiceRequest {
                             method: if is_head
                                 && request.path != "sys/leader"
                                 && request.wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
@@ -451,7 +472,21 @@ fn serve_inner(
                             origin_peer: Some(peer),
                             client_certificates: request.client_certificates.take(),
                         };
-                        let reply = if let Some(native) = native_snapshot {
+                        let reply = if let Err(response) = &consistency {
+                            let mut rejected = audited_wire_rejection(
+                                &service,
+                                &attempt_id,
+                                WireRejection::ParseRejected,
+                                response.status,
+                                "consistency prerequisite was not satisfied",
+                                execution_deadline_with_response_reserve(Instant::now(), deadline),
+                            );
+                            if rejected.status == response.status {
+                                rejected.body = response.body.clone();
+                            }
+                            crate::service::erase_json(&mut service_request.body);
+                            snapshot::NativeReply::Json(rejected)
+                        } else if let Some(native) = native_snapshot {
                             snapshot::execute(
                                 &service,
                                 service_request,
@@ -459,6 +494,12 @@ fn serve_inner(
                                 &mut stream,
                                 deadline,
                             )
+                        } else if matches!(consistency, Ok(true)) {
+                            snapshot::NativeReply::Json(consistency::forward(
+                                &service,
+                                service_request,
+                                deadline,
+                            ))
                         } else {
                             snapshot::NativeReply::Json(execute_service_request(
                                 &service,
@@ -717,6 +758,7 @@ impl Drop for SecretJson {
     }
 }
 struct Request {
+    consistency: consistency::Headers,
     native_snapshot: Option<snapshot::NativeRequest>,
     method: String,
     path: String,
@@ -807,6 +849,7 @@ fn read_request_mode(
         return Err(bad("unsupported HTTP method or version"));
     }
     let mut map = BTreeMap::new();
+    let mut consistency_headers = consistency::RawHeaders::default();
     for (count, line) in lines.enumerate() {
         if count >= 100 || line.starts_with([' ', '\t']) {
             return Err(bad("invalid header framing"));
@@ -819,6 +862,9 @@ fn read_request_mode(
             return Err(bad("invalid header bytes"));
         }
         let name = name.to_ascii_lowercase();
+        if consistency_headers.push(&name, value.trim())? {
+            continue;
+        }
         if map
             .insert(name, Zeroizing::new(value.trim().to_owned()))
             .is_some()
@@ -826,6 +872,7 @@ fn read_request_mode(
             return Err(bad("duplicate headers are not supported"));
         }
     }
+    let consistency = consistency_headers.finish()?;
     if !map.contains_key("host") {
         return Err(bad("Host header is required"));
     }
@@ -971,6 +1018,7 @@ fn read_request_mode(
     if leader_route {
         leader::validate_selectors(&method, &target)?;
         return Ok(Request {
+            consistency,
             native_snapshot: None,
             method,
             path: "sys/leader".to_owned(),
@@ -1133,6 +1181,7 @@ fn read_request_mode(
         None
     };
     Ok(Request {
+        consistency,
         native_snapshot,
         method,
         path: path.to_owned(),
@@ -1243,9 +1292,18 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
     } else {
         ""
     };
+    let index = if status == response.status {
+        response
+            .consistency_index
+            .as_ref()
+            .map(|index| format!("X-Vault-Index: {}\r\n", index.as_str()))
+            .unwrap_or_default()
+    } else {
+        String::new()
+    };
     write!(
         writer,
-        "HTTP/1.1 {status} {reason}\r\nContent-Type: application/json\r\nContent-Length: {}\r\n{retry_after}Connection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
+        "HTTP/1.1 {status} {reason}\r\nContent-Type: application/json\r\nContent-Length: {}\r\n{retry_after}{index}Connection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
         bytes.len()
     )?;
     if !head {
@@ -1393,7 +1451,7 @@ mod tests {
             payload.len()
         );
         assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
-        for header in ["X-Vault-MFA", "X-Vault-Policy-Override", "X-Vault-Index"] {
+        for header in ["X-Vault-MFA", "X-Vault-Policy-Override"] {
             let request = format!(
                 "GET /v1/secret/data/a HTTP/1.1\r\nHost: localhost\r\n{header}: synthetic\r\n\r\n"
             );
@@ -1727,6 +1785,7 @@ mod service_lock_deadline_tests {
                     assert_eq!(crate::request_deadline::current(), Some(deadline));
                     *value = result + 1;
                     Response {
+                        consistency_index: None,
                         status: 200,
                         body: json!({"data":{"completed":true}}),
                     }
@@ -1788,6 +1847,7 @@ mod service_lock_deadline_tests {
                     worker_finished.store(true, Ordering::Release);
                     *value = observed;
                     Response {
+                        consistency_index: None,
                         status: 200,
                         body: json!({"data":{"completed":true}}),
                     }

@@ -6,6 +6,7 @@ impl Service {
     pub(super) fn leader_response(&self, method: &str) -> Response {
         if method != "GET" {
             return Response {
+                consistency_index: None,
                 status: 405,
                 body: json!({"errors": []}),
             };

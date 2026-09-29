@@ -638,6 +638,7 @@ impl Service {
                     }
                     self.state = Some(state);
                     Response {
+                        consistency_index: None,
                         status: 204,
                         body: Value::Null,
                     }

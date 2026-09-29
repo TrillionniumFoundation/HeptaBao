@@ -85,3 +85,182 @@ fn consistency270_does_not_relax_duplicate_tokens_or_framing() {
         501
     );
 }
+
+fn parsed(headers: &str) -> consistency::Headers {
+    let wire = format!("GET /v1/secret/data/fixture HTTP/1.1\r\nHost: localhost\r\n{headers}\r\n");
+    read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+        .unwrap_or_else(|_| unreachable!("synthetic headers must parse"))
+        .consistency
+}
+
+#[test]
+fn consistency270_index_is_a_prerequisite_not_read_authority() {
+    use consistency::{Decision, IndexValue, Observation, Settings};
+    let index = IndexValue::for_raft("synthetic", 12)
+        .wire()
+        .unwrap_or_else(|| unreachable!("synthetic index"));
+    let h = |policy: &str| parsed(&format!("X-Vault-Index: {}\r\n{policy}", index.as_str()));
+    let mut seen = Observation {
+        cluster: "synthetic".into(),
+        standby: true,
+        committed: Some(12),
+        applied: Some(11),
+    };
+    let default = Settings::default();
+    assert_eq!(h("").decide(Some(&seen), default, false), Decision::Reject);
+    assert_eq!(
+        h("X-Vault-Inconsistent: forward-active-node\r\n").decide(Some(&seen), default, false),
+        Decision::Forward
+    );
+    let await_fail = h("X-Vault-Inconsistent: await-state\r\n");
+    assert_eq!(
+        await_fail.decide(Some(&seen), default, false),
+        Decision::Await
+    );
+    assert_eq!(
+        await_fail.decide(Some(&seen), default, true),
+        Decision::Reject
+    );
+    let await_forward =
+        h("X-Vault-Inconsistent: await-state\r\nX-Vault-Inconsistent: forward-active-node\r\n");
+    assert_eq!(
+        await_forward.decide(Some(&seen), default, true),
+        Decision::Forward
+    );
+    seen.applied = Some(12);
+    assert_eq!(
+        h("").decide(Some(&seen), default, false),
+        Decision::Continue
+    );
+    seen.committed = Some(11);
+    assert_eq!(h("").decide(Some(&seen), default, false), Decision::Reject);
+    seen.standby = false;
+    assert_eq!(
+        h("").decide(Some(&seen), default, false),
+        Decision::Continue
+    );
+    seen.standby = true;
+    seen.cluster = "different-cluster".into();
+    assert_eq!(
+        h("").decide(Some(&seen), default, false),
+        Decision::Continue
+    );
+    assert_eq!(h("").decide(None, default, false), Decision::Continue);
+}
+
+#[test]
+fn consistency270_missing_foreign_and_unknown_index_keep_distinct_semantics() {
+    use consistency::{Decision, Observation, Settings};
+    let seen = Observation {
+        cluster: "synthetic".into(),
+        standby: true,
+        committed: Some(1),
+        applied: Some(1),
+    };
+    let configured = Settings::checked(Some("25ms"), Some("forward-active-node"), true)
+        .unwrap_or_else(|_| unreachable!("valid setting"));
+    assert_eq!(
+        parsed("").decide(Some(&seen), configured, false),
+        Decision::Forward
+    );
+    assert_eq!(
+        parsed("X-Vault-Inconsistent: fail\r\n").decide(Some(&seen), configured, false),
+        Decision::Continue
+    );
+    let unknown = STANDARD.encode(br#"{"cluster":"synthetic","value":"opaque-backend-value"}"#);
+    assert_eq!(
+        parsed(&format!("X-Vault-Index: {unknown}\r\n")).decide(Some(&seen), configured, false),
+        Decision::Continue
+    );
+    let wait = parsed(&format!(
+        "X-Vault-Index: {unknown}\r\nX-Vault-Inconsistent: await-state\r\n"
+    ));
+    assert_eq!(wait.decide(Some(&seen), configured, false), Decision::Await);
+    assert_eq!(
+        wait.decide(Some(&seen), configured, true),
+        Decision::Forward
+    );
+    for value in [
+        "heptabao-raft-v1:01",
+        "heptabao-raft-v1:+1",
+        "heptabao-raft-v1:18446744073709551616",
+    ] {
+        let index = consistency::IndexValue {
+            cluster: "synthetic".into(),
+            value: value.into(),
+        };
+        assert!(index.raft_index().is_none());
+    }
+}
+
+#[test]
+fn consistency270_decoder_matches_null_unknown_and_case_insensitive_fields() {
+    for json in [
+        "null",
+        "{}",
+        r#"{"unknown":[1,2],"CLUSTER":"synthetic","value":null}"#,
+        r#"{"cluster":"old","cluster":null,"value":"opaque"}"#,
+    ] {
+        assert_eq!(
+            status(
+                &format!("X-Vault-Index: {}\r\n", STANDARD.encode(json)),
+                "sys/leader"
+            ),
+            200
+        );
+    }
+    for json in ["7", "false", r#"{"value":7}"#, "{} {}"] {
+        assert_eq!(
+            status(
+                &format!("X-Vault-Index: {}\r\n", STANDARD.encode(json)),
+                "sys/leader"
+            ),
+            400
+        );
+    }
+}
+
+#[test]
+fn consistency270_http_response_projects_only_server_encoded_index()
+-> Result<(), Box<dyn std::error::Error>> {
+    let index = consistency::IndexValue::for_raft("synthetic", 42)
+        .wire()
+        .ok_or("index")?;
+    let wire_index = index.as_str().to_owned();
+    let mut bytes = Vec::new();
+    write_response(
+        &mut bytes,
+        Response {
+            status: 200,
+            body: json!({"data":{"synthetic":true}}),
+            consistency_index: Some(index),
+        },
+        false,
+    )?;
+    let text = String::from_utf8(bytes)?;
+    assert_eq!(text.matches("X-Vault-Index:").count(), 1);
+    assert!(text.contains(&format!("X-Vault-Index: {wire_index}\r\n")));
+    let mut bytes = Vec::new();
+    write_response(
+        &mut bytes,
+        Response {
+            status: 429,
+            body: json!({"errors":[]}),
+            consistency_index: None,
+        },
+        true,
+    )?;
+    let text = String::from_utf8(bytes)?;
+    assert!(text.contains("Retry-After: 1\r\n"));
+    assert!(!text.contains("X-Vault-Index:"));
+    assert!(text.ends_with("\r\n\r\n"));
+    Ok(())
+}
+
+#[test]
+fn consistency270_configuration_rejects_unbounded_or_unknown_fallbacks() {
+    assert!(consistency::Settings::checked(Some("60001ms"), None, false).is_err());
+    assert!(consistency::Settings::checked(Some("-1s"), None, false).is_err());
+    assert!(consistency::Settings::checked(Some("1s"), Some("await-state"), false).is_err());
+    assert!(consistency::Settings::checked(Some("25ms"), Some("fail"), false).is_ok());
+}

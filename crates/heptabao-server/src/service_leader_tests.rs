@@ -215,7 +215,11 @@ fn ha_sealed_status_and_lost_quorum_diagnosis_do_not_replace_read_index() -> Tes
     );
     assert!(matches!(
         result,
-        RequestExecution::Complete(Response { status: 503, .. })
+        RequestExecution::Complete(Response {
+            consistency_index: None,
+            status: 503,
+            ..
+        })
     ));
     assert_eq!(
         service.durable.as_ref().ok_or("durable")?.generation(),
@@ -296,7 +300,11 @@ fn health_quorum_loss_replies_within_probe_budget_without_admitting_reads() -> T
     assert!(earlier.elapsed() < Duration::from_millis(500));
     assert!(matches!(
         result,
-        RequestExecution::Complete(Response { status: 503, .. })
+        RequestExecution::Complete(Response {
+            consistency_index: None,
+            status: 503,
+            ..
+        })
     ));
     assert!(crate::request_deadline::current().is_none());
     cluster.isolate_all_peers(false);

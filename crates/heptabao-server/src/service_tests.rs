@@ -3122,7 +3122,11 @@ fn http_request_deadline_scope_restores_and_expired_request_cannot_initialize()
         );
         assert!(matches!(
             response,
-            RequestExecution::Complete(Response { status: 503, .. })
+            RequestExecution::Complete(Response {
+                consistency_index: None,
+                status: 503,
+                ..
+            })
         ));
         assert_eq!(crate::request_deadline::current(), Some(previous));
         assert!(service.seal.is_none());
@@ -3182,7 +3186,11 @@ fn original_http_deadline_bounds_a_contended_ha_lock_without_poisoning_next_requ
             std::time::Instant::now() + Duration::from_secs(1),
             false,
         ),
-        RequestExecution::Complete(Response { status: 200, .. })
+        RequestExecution::Complete(Response {
+            consistency_index: None,
+            status: 200,
+            ..
+        })
     ));
     assert!(crate::request_deadline::current().is_none());
     Ok(())
