@@ -112,17 +112,17 @@ fn mldsa270_service_promotes_only_on_write_fences_legacy_and_reopens_signatures(
     );
     assert_eq!(verified.status, 200);
     assert_eq!(verified.body["data"]["valid"], true);
-    assert_eq!(
-        call(
-            &mut service,
-            "POST",
-            "mlfixture/keys/test/config",
-            &admin,
-            json!({"min_decryption_version":2})
-        )
-        .status,
-        204
+    let configured = call(
+        &mut service,
+        "POST",
+        "mlfixture/keys/test/config",
+        &admin,
+        json!({"min_decryption_version":2}),
     );
+    assert_eq!(configured.status, 200);
+    assert_eq!(configured.body["data"]["type"], "mldsa-44");
+    assert_eq!(configured.body["data"]["latest_version"], 2);
+    assert_eq!(configured.body["data"]["min_decryption_version"], 2);
     assert_eq!(
         call(
             &mut service,

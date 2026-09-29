@@ -86,7 +86,7 @@ fn mldsa270_rotation_retains_old_signatures_and_enforces_minimum_versions() -> T
         103,
     )?;
     assert_eq!(valid.body["data"]["valid"], true);
-    reopened.handle(
+    let configured = reopened.handle(
         "",
         "transit",
         "POST",
@@ -94,6 +94,11 @@ fn mldsa270_rotation_retains_old_signatures_and_enforces_minimum_versions() -> T
         &json!({"min_decryption_version":2}),
         104,
     )?;
+    assert_eq!(configured.status, 200);
+    assert!(configured.mutated);
+    assert_eq!(configured.body["data"]["type"], "mldsa-44");
+    assert_eq!(configured.body["data"]["latest_version"], 2);
+    assert_eq!(configured.body["data"]["min_decryption_version"], 2);
     assert!(
         reopened
             .handle(

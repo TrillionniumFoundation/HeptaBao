@@ -448,7 +448,10 @@ impl Transit {
         }
         let key = self.keys.get_mut(name).ok_or_else(not_found)?;
         match operation {
-            "config" => key.configure(body)?,
+            "config" => {
+                key.configure(body)?;
+                return Ok(ok(key.descriptor(name)?, true));
+            }
             "rotate" => {
                 reject_unknown(body, &[])?;
                 key.alive()?;

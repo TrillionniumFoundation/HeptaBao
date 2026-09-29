@@ -101,8 +101,12 @@ def run_after_restart(client, rows):
             result = t.call(kind + ".restart_verify." + label, "POST", "mlfixture/verify/" + kind,
                             200, {"input": message, "signature": signature})
             t.check(kind + ".restart_valid." + label, result["data"]["valid"] is True)
-        t.call(kind + ".minimum_version", "POST", "mlfixture/keys/" + kind + "/config",
-               204, {"min_decryption_version": 2})
+        configured = t.call(kind + ".minimum_version", "POST",
+                            "mlfixture/keys/" + kind + "/config", 200,
+                            {"min_decryption_version": 2})["data"]
+        t.check(kind + ".minimum_version_readback",
+                configured["type"] == kind and configured["latest_version"] == 2
+                and configured["min_decryption_version"] == 2)
         t.call(kind + ".retired_signature_denied", "POST", "mlfixture/verify/" + kind,
                400, {"input": message, "signature": old})
         result = t.call(kind + ".current_signature_retained", "POST", "mlfixture/verify/" + kind,
