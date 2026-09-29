@@ -2,6 +2,7 @@
 import importlib.util
 import os
 from pathlib import Path
+import ssl
 import sys
 import tempfile
 import unittest
@@ -25,6 +26,9 @@ class SmokeTlsPermissionTests(unittest.TestCase):
                 finally:
                     os.umask(previous)
                 self.assertIsNone(node.process)
+                self.assertGreaterEqual(node.context.minimum_version, ssl.TLSVersion.TLSv1_2)
+                self.assertTrue(node.context.check_hostname)
+                self.assertEqual(node.context.verify_mode, ssl.CERT_REQUIRED)
                 for name in ('ca.crt', 'tls.crt'):
                     path = node.root / name
                     self.assertEqual(path.stat().st_mode & 0o777, 0o644)

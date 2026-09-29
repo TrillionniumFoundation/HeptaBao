@@ -50,8 +50,9 @@ class Instance:
         # group-writable CA must not become an admitted client trust root.
         (root / "ca.crt").chmod(0o644)
         (root / "tls.crt").chmod(0o644)
-        self.context = ssl.create_default_context(cafile=str(root / "ca.crt"))
-        self.context.minimum_version = ssl.TLSVersion.TLSv1_2
+        context = ssl.create_default_context(cafile=str(root / "ca.crt"))
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        self.context = context
         self.client = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=self.context))
         private_write(root / "server.json", json.dumps({
             "listen": f"127.0.0.1:{self.port}", "data_dir": str(root / "data"),
