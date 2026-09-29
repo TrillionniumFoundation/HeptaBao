@@ -43,7 +43,8 @@ use crate::state_record_root::RecordStateRoot;
 // schema 59 adds bounded PKI cluster and ACME configuration state.
 // Schema 60 adds current-Identity ACL path substitutions; schema 61 adds bounded
 // ACL wrapping TTL constraints. Both have independent persisted-state fences.
-const CURRENT_STATE_SCHEMA: u32 = 61;
+// Schema 62 adds Transit ML-DSA seed keys under the existing encrypted engine owner.
+const CURRENT_STATE_SCHEMA: u32 = 62;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -7091,3 +7092,7 @@ mod acl_parameter_tests;
 #[cfg(test)]
 #[path = "ha_initial_anchor_tests.rs"]
 mod ha_initial_anchor_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "service_transit_mldsa_tests.rs"]
+mod transit_mldsa_tests;

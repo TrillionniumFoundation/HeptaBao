@@ -163,7 +163,7 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
          versioned_scenario_runners=None, required_oracle_version=None) -> int:
     if profile not in ("core-isolation", "identity-live", "response-wrapping", "capabilities-live",
                         "ssh-otp-live", "pki-live", "pkiext-live", "audit-file-management", "namespace-tree", "kv-metadata-cas-live",
-                        "kv-enumeration-live", "policy-parameters-live", "policy-templates-live", "policy-wrapping-ttl-live", "wrapping-self-revoke270", "token-revoke-orphan270"):
+                        "kv-enumeration-live", "policy-parameters-live", "policy-templates-live", "policy-wrapping-ttl-live", "wrapping-self-revoke270", "token-revoke-orphan270", "transit-mldsa270"):
         raise ValueError("unknown local comparison profile")
     runner_path = Path(__file__) if runner_path is None else Path(runner_path)
     parser = SafeArgumentParser(description=__doc__)

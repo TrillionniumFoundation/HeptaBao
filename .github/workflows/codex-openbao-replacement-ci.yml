@@ -643,7 +643,7 @@ jobs:
           reports="$RUNNER_TEMP/heptabao-safe-reports/openbao270"
           mkdir -m 700 "$reports"
           failed=0
-          for profile in core_isolation identity_live response_wrapping wrapping_revoke_self_live token_revoke_orphan_live consistency_headers_live client_consistency_live capabilities_live pki_live pkiext_live ssh_otp_live audit_file_live namespace_tree_live policy_parameters_live policy_templates_live policy_wrapping_ttl_live kv_metadata_cas_live kv_enumeration_live; do
+          for profile in core_isolation identity_live response_wrapping wrapping_revoke_self_live token_revoke_orphan_live transit_mldsa_live consistency_headers_live client_consistency_live capabilities_live pki_live pkiext_live ssh_otp_live audit_file_live namespace_tree_live policy_parameters_live policy_templates_live policy_wrapping_ttl_live kv_metadata_cas_live kv_enumeration_live; do
             if timeout 360 python "qa/openbao-acceptance/$profile.py" \
                 --oracle-version 2.7.0 --binary "$binary" --output "$reports/$profile.json"; then
               printf 'profile=%s version=2.7.0 process_exit=0 scope=bounded_not_independent\n' "$profile"

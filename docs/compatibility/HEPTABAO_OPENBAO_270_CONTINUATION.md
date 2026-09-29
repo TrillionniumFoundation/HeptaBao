@@ -240,3 +240,26 @@ Keep raw failures alongside successful reruns. Bind each result to the source an
 binary actually executed; a later documentation-only commit is not a new runtime
 qualification. Publish only safe reports, never service state, keys, root tokens,
 unseal material, credential-bearing logs, or private fixture contents.
+
+## Transit ML-DSA implementation scope
+
+The existing Transit owner now implements generated `mldsa-44`, `mldsa-65` and
+`mldsa-87` seeds, raw Base64 public-key descriptors, randomized pure signatures,
+verification, rotation, retained-version policy and explicit signing-seed export.
+The public-key export does not make the seed exportable. Private export and all
+cryptographic requests still enter the existing ACL/audit/namespace transaction.
+`transit_mldsa_live.py` independently exercises fresh native services and restart
+against the checksum-pinned official 2.7.0 executable. Only an actually completed
+report at its recorded source counts; adding the runner is not a passing receipt.
+
+The dependency is exact-pinned RustCrypto `ml-dsa` 0.1.1, with `zeroize`, `alloc`
+and `rand_core`, plus the already pinned system entropy dependency. Its upstream
+documentation explicitly states that the implementation has not been independently
+audited: <https://docs.rs/ml-dsa/0.1.1/ml_dsa/>. This is not independent security
+admission. No OpenBao implementation source was translated for this addition.
+
+Key import, certificate chains, PKI ML-DSA, PQC TLS, external-mu/context/hash
+options and full field/error parity remain unqualified. Nonempty derivation
+contexts, prehash/signature options and unsupported fields are explicitly refused;
+they are not silently mapped onto pure signing. See the schema-62 format contract
+for old-reader refusal, retained key material and mutation-only promotion.

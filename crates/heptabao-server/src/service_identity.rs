@@ -6,6 +6,16 @@ use crate::auth::{AuthError, AuthResponse};
 
 impl State {
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        if self.schema < 62 && self.engines.has_mldsa_state() {
+            return Err(Response::error(
+                503,
+                "Transit ML-DSA keys require schema 62",
+            ));
+        }
+        self.engines
+            .validate_mldsa_state()
+            .map_err(|_| Response::error(503, "invalid Transit ML-DSA state"))?;
+
         self.engines
             .validate_record_mode()
             .map_err(|e| Response::error(503, &e.message))?;

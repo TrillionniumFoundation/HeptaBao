@@ -12,6 +12,8 @@ use sha3::{Sha3_224, Sha3_256, Sha3_384, Sha3_512};
 
 const MAX_INPUT_BYTES: usize = 4 * 1024 * 1024;
 use zeroize::Zeroizing;
+#[path = "transit_mldsa.rs"]
+mod mldsa;
 const MAX_BATCH: usize = 256;
 const MAX_ENCRYPTIONS_PER_VERSION: u64 = 1 << 32;
 
@@ -82,6 +84,7 @@ impl KeyVersion {
     fn generate(kind: &str, now: u64) -> Result<Self> {
         let material = match kind {
             "aes128-gcm96" => random_bytes(16)?,
+            "mldsa-44" | "mldsa-65" | "mldsa-87" => random_bytes(32)?,
             "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305" | "hmac" => {
                 random_bytes(32)?
             }
@@ -141,6 +144,11 @@ impl Key {
                 let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
                     .map_err(|_| error(500, "stored signing key is invalid"))?;
                 json!({"creation_time":timestamp(version.created_at),"public_key":BASE64.encode(pair.public_key().as_ref())})
+            } else if mldsa::is_kind(&self.kind) {
+                let material = stored_material(&version.material)?;
+                json!({"creation_time":timestamp(version.created_at),
+                    "public_key":BASE64.encode(mldsa::public(&self.kind, &material)?),
+                    "name":"", "certificate_chain":Value::Null})
             } else {
                 json!(version.created_at)
             };
@@ -155,7 +163,7 @@ impl Key {
             "min_decryption_version":self.min_decryption_version,"min_encryption_version":self.min_encryption_version,
             "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":false,
             "derived":false,"convergent_encryption":false,"supports_derivation":false,
-            "supports_encryption":encryption,"supports_decryption":encryption,"supports_signing":self.kind=="ed25519",
+            "supports_encryption":encryption,"supports_decryption":encryption,"supports_signing":self.kind=="ed25519" || mldsa::is_kind(&self.kind),
             "supports_hmac":true,"imported_key":false,"auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0}),
         )
     }
@@ -484,10 +492,13 @@ impl Transit {
         let name = parts[1];
         let key = self.keys.get(name).ok_or_else(not_found)?;
         key.alive()?;
-        if !key.exportable {
+        let mldsa_key = mldsa::is_kind(&key.kind);
+        let public_export = mldsa_key && kind == "public-key";
+        if !key.exportable && !public_export {
             return Err(error(403, "key is not exportable"));
         }
         if kind != "hmac-key"
+            && !(mldsa_key && matches!(kind, "public-key" | "signing-key"))
             && !(kind == "encryption-key"
                 && matches!(
                     key.kind.as_str(),
@@ -519,16 +530,19 @@ impl Transit {
                     && selected.is_none_or(|number| **version == number)
             })
             .map(|(version, value)| {
-                (
-                    version.to_string(),
-                    json!(if kind == "hmac-key" {
-                        &value.hmac_material
-                    } else {
-                        &value.material
-                    }),
-                )
+                let encoded = if public_export {
+                    BASE64.encode(mldsa::public(
+                        &key.kind,
+                        &stored_material(&value.material)?,
+                    )?)
+                } else if kind == "hmac-key" {
+                    value.hmac_material.clone()
+                } else {
+                    value.material.clone()
+                };
+                Ok((version.to_string(), json!(&*Zeroizing::new(encoded))))
             })
-            .collect();
+            .collect::<Result<serde_json::Map<String, Value>>>()?;
         Ok(ok(
             json!({"name":name,"type":key.kind,"keys":Value::Object(keys)}),
             false,
@@ -798,9 +812,15 @@ fn handle_crypto(
             let version = key.selected_version(body)?;
             let material =
                 stored_material(&key.versions.get(&version).ok_or_else(not_found)?.material)?;
-            let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
-                .map_err(|_| error(500, "stored signing key is invalid"))?;
-            json!({"signature":format!("vault:v{version}:{}", BASE64.encode(pair.sign(&decode_field(body, "input")?).as_ref())),"key_version":version})
+            let input = decode_field(body, "input")?;
+            let signature = if mldsa::is_kind(&key.kind) {
+                mldsa::sign(&key.kind, &material, &input)?
+            } else {
+                let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
+                    .map_err(|_| error(500, "stored signing key is invalid"))?;
+                pair.sign(&input).as_ref().to_vec()
+            };
+            json!({"signature":format!("vault:v{version}:{}", BASE64.encode(signature)),"key_version":version})
         }
         "verify" => {
             let input = decode_field(body, "input")?;
@@ -819,11 +839,18 @@ fn handle_crypto(
                 let (version, bytes) = parse_wrapped(string(body, "signature")?)?;
                 let version = key.decrypt_version(version)?;
                 let material = stored_material(&version.material)?;
-                let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
-                    .map_err(|_| error(500, "stored signing key is invalid"))?;
-                signature::UnparsedPublicKey::new(&signature::ED25519, pair.public_key().as_ref())
+                if mldsa::is_kind(&key.kind) {
+                    mldsa::verify(&key.kind, &material, &input, &bytes)?
+                } else {
+                    let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
+                        .map_err(|_| error(500, "stored signing key is invalid"))?;
+                    signature::UnparsedPublicKey::new(
+                        &signature::ED25519,
+                        pair.public_key().as_ref(),
+                    )
                     .verify(&input, &bytes)
                     .is_ok()
+                }
             };
             json!({"valid":valid})
         }
@@ -833,6 +860,19 @@ fn handle_crypto(
 }
 
 fn signing_options(key: &Key, body: &Value, path_algorithm: &str) -> Result<()> {
+    if mldsa::is_kind(&key.kind) {
+        if optional_bool(body, "prehashed")?.unwrap_or(false)
+            || body.get("signature_algorithm").is_some()
+            || body.get("marshaling_algorithm").is_some()
+            || select_algorithm(path_algorithm, body, "hash_algorithm", "sha2-256")? != "sha2-256"
+        {
+            return Err(error(
+                501,
+                "only pure ML-DSA without signature options is implemented",
+            ));
+        }
+        return Ok(());
+    }
     if key.kind != "ed25519" {
         return Err(bad("key does not support Ed25519 signing"));
     }

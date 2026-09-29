@@ -1052,6 +1052,25 @@ impl EngineState {
         })
     }
 
+    pub(crate) fn has_mldsa_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_mldsa_state())
+        })
+        })
+    }
+
+    pub(crate) fn validate_mldsa_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            for mount in namespace.mounts.values() {
+                if let Backend::Transit(engine) = &mount.backend {
+                    engine.validate_mldsa_state()?;
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn has_auto_rotate_keys(&self) -> bool {
         self.namespaces.values().any(|state| {
             state.mounts.values().any(|mount| {

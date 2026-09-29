@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **61**. Its source constant is
+The current Service state schema is **62**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -48,7 +48,7 @@ static and root intents retain the generated credential bytes and exact semantic
 digests. A valid schema-55 state with absent generation fields remains readable
 without rewrite and preserves its historical credential shapes. The fixed
 schema-56 candidate publishes schema 56 for this feature; the schema-57 candidate may promote the same legacy state directly to 57; the current
-schema-61 candidate promotes it directly to 61. Fixed ancestors
+schema-62 candidate promotes it directly to 62. Fixed ancestors
 must refuse the first unsupported schema without altering the encrypted record.
 
 ## Read admission and mutation promotion
@@ -130,15 +130,15 @@ Schema 60 independently gates `AuthState::has_acl_template_state()` and checks
 persisted template grammar on reopen. It does not add a second Identity owner or
 persist expanded names, metadata, memberships or alias values in tokens.
 An old literal-only state retains its bytes; new template-bearing state cannot
-hide under schema 59. Current policy mutation publishes 61, while 60 remains the
+hide under schema 59. Current policy mutation publishes 62, while 60 remains the
 minimum reader for the template feature alone.
 
-Schema 59 independently gates `EngineState::has_pki_extension_state()`. A schema-58 ACL-only state remains readable without promotion; adding PKI configuration requires schema 59 or later; this candidate publishes schema 61. Old readers must refuse it, not discard configuration.
+Schema 59 independently gates `EngineState::has_pki_extension_state()`. A schema-58 ACL-only state remains readable without promotion; adding PKI configuration requires schema 59 or later; this candidate publishes schema 62. Old readers must refuse it, not discard configuration.
 
 Schema 58 independently gates `AuthState::has_acl_parameter_state()`. Policy
 parameter names and values are bounded and revalidated on reopen. Absent maps and
 sets retain the exact schema-57 policy representation and semantics. A policy
-mutation carrying any parameter constraint publishes the current schema 61 before it can
+mutation carrying any parameter constraint publishes the current schema 62 before it can
 authorize or deny product requests. Older binaries must refuse that encrypted
 state without rewriting policies or backend data.
 
@@ -157,7 +157,7 @@ a schema-55 connection with absent selectors and an empty template remains
 readable and retains the historical native username/password generation path.
 Pure read and unseal do not populate defaults or promote the discriminator.
 
-The first successful current mutation publishes schema 61. A predecessor binary
+The first successful current mutation publishes schema 62. A predecessor binary
 must reject that state before application mutation. The authenticated application
 snapshot (`state.hbs`), journal and seal metadata must remain unchanged, and the
 current reader must recover the same generation, retained-operation count, journal
@@ -574,7 +574,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 61. An authenticated
+it. Initialization and committed mutations use schema 62. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -754,3 +754,20 @@ blocked; two failed implementations do not demonstrate compatibility.
 This contract grants no full OpenBao compatibility, independent qualification,
 production, migration or release authority. Hardware custody, independent review,
 multi-host destructive tests and operational admission remain external evidence.
+
+## Schema 62: native Transit ML-DSA seed versions
+
+Schema 62 retains `mldsa-44`, `mldsa-65` and `mldsa-87` versions in the existing
+Transit key owner. Each `material` is a Base64-encoded 32-byte seed; there is no
+second file, plaintext key store, subprocess or external signing service.
+The HMAC material retains its existing independent 32-byte owner. Expanded keys
+exist only during a cryptographic operation and use the dependency's zeroizing
+Drop implementation. Stored seeds are checked for exact length, version bounds
+and absence of encryption counters before any state is admitted.
+
+`EngineState::has_mldsa_state` includes soft-deleted keys and all namespaces and
+mounts. State bearing such keys cannot hide under schema 61 or older, even when
+its ordinary request path is unavailable. A feature-free schema-61 state remains
+readable without promotion; the first successful mutation publishes schema 62.
+An older binary must refuse the new schema without modifying application state.
+This is a native state-format increment, not OpenBao asset-import qualification.
