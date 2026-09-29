@@ -57,6 +57,16 @@ class CoreIsolationHarnessTests(unittest.TestCase):
                 allocate.assert_called_once()
             self.assertFalse((parent / 'report.json').exists())
 
+    def test_invalid_side_contract_configuration_is_rejected_before_fixture(self):
+        with patch.object(core_isolation.tempfile, "mkdtemp") as allocate:
+            with self.assertRaisesRegex(ValueError, "oracle scenario runner"):
+                core_isolation.main(oracle_scenario_runner=object())
+            with self.assertRaisesRegex(ValueError, "oracle restart runner requires"):
+                core_isolation.main(oracle_restart_runner=lambda *_: None)
+            with self.assertRaisesRegex(ValueError, "bounded printable"):
+                core_isolation.main(contract_divergences=("invalid\nmetadata",))
+            allocate.assert_not_called()
+
     def test_binary_binding_hashes_file_bytes(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "synthetic"

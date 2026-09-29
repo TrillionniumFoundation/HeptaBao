@@ -54,6 +54,30 @@ class ExternalKeysTests(unittest.TestCase):
         self.assertFalse(rows[0]["passed"])
         self.assertNotIn(private, json.dumps(rows))
 
+    def test_oracle_plaintext_contract_does_not_weaken_candidate_projection(self):
+        self.assertEqual(external.config_data()["tls_client_key_bytes"], "(redacted)")
+        self.assertEqual(
+            external.config_data(client_key=external.PRIVATE_TLS_CANARY)["tls_client_key_bytes"],
+            external.PRIVATE_TLS_CANARY,
+        )
+        rows = []
+        external.Trace(Client(200, {"data": external.config_data(
+            client_key=external.PRIVATE_TLS_CANARY)}), rows).call(
+                "oracle-tls-key", "GET", external.CONFIG, 200,
+                data=external.config_data(client_key=external.PRIVATE_TLS_CANARY))
+        self.assertTrue(rows[0]["passed"])
+        self.assertNotIn(external.PRIVATE_TLS_CANARY, json.dumps(rows))
+
+    def test_main_binds_distinct_exact_side_contracts(self):
+        with patch.object(external, "compare", return_value=0) as compare:
+            self.assertEqual(external.main(), 0)
+        arguments = compare.call_args.kwargs
+        self.assertIs(arguments["scenario_runner"], external.run_scenarios)
+        self.assertIs(arguments["oracle_scenario_runner"], external.run_oracle_scenarios)
+        self.assertIs(arguments["restart_runner"], external.run_after_restart)
+        self.assertIs(arguments["oracle_restart_runner"], external.run_oracle_after_restart)
+        self.assertTrue(arguments["contract_divergences"])
+
     def test_namespace_and_patch_transport_are_explicit(self):
         client = Client(204)
         external.Trace(client, []).call("patch", "PATCH", external.CONFIG, 204,

@@ -305,15 +305,23 @@ key custody, mount grant consumption, PKI/Transit external signing or encryption
 plugin discovery, HSM operation, all-asset migration, HA, or independent security
 qualification. Those remain replacement blockers; this profile does not bypass them.
 
-The Transit configuration field `tls_client_key_bytes` is redacted together
-with the existing sensitive aliases. Response projection selects sensitive fields
-before cloning any values, avoiding a temporary plaintext private-key copy in the
-response builder. Public client and CA certificate bytes remain readable. Reads
-neither rewrite nor erase encrypted provider configuration, including after reopen.
-The fixed native profile now includes synthetic private/public TLS fields in its
-configuration, ACL-read and restart observations; earlier runner hashes do not
-qualify these additional assertions. Adding these regressions is not a passing
-runtime receipt and does not admit provider verification or cryptographic use.
+The Transit configuration field `tls_client_key_bytes` is a deliberate security
+hardening divergence. The checksum-pinned official OpenBao 2.7.0 executable echoes
+the submitted synthetic value on reads; HeptaBao returns `(redacted)` together with
+the existing sensitive aliases. HeptaBao response projection selects sensitive
+fields before cloning any values, avoiding a temporary plaintext private-key copy
+in the response builder. Public client and CA certificate bytes remain readable.
+Reads neither rewrite nor erase encrypted provider configuration, including after
+reopen. The comparison runner therefore uses distinct exact side contracts and
+normalizes only the nonsecret pass/status observation. It records the divergence
+in the report; it does not accept either value on either side or call the responses
+identical. A caller depending on private-key readback is not compatible and must
+rotate/import through a deployment-owned secret path instead.
+
+The fixed native profile includes synthetic private/public TLS fields in initial,
+ACL-read and restart observations. Earlier runner hashes do not qualify these
+assertions. Adding the regressions is not a passing runtime receipt and does not
+admit provider verification or cryptographic use.
 
 The native 2.7 HTTP projection distinguishes empty listings (404 with an empty
 errors array) from a named missing config or key (400 with the resource error).

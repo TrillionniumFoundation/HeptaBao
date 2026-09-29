@@ -159,8 +159,10 @@ def select_scenario_runner(default_runner, version, versioned_runners=None):
 
 
 def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-isolation",
+         oracle_scenario_runner=None, oracle_restart_runner=None,
          scope="selected_cubbyhole_and_acl_behavior_only", runner_path=None,
-         versioned_scenario_runners=None, required_oracle_version=None) -> int:
+         versioned_scenario_runners=None, required_oracle_version=None,
+         contract_divergences=()) -> int:
     if profile not in ("core-isolation", "identity-live", "response-wrapping", "capabilities-live",
                         "ssh-otp-live", "pki-live", "pkiext-live", "audit-file-management", "namespace-tree", "kv-metadata-cas-live",
                         "kv-enumeration-live", "policy-parameters-live", "policy-templates-live", "policy-wrapping-ttl-live", "wrapping-self-revoke270", "token-revoke-orphan270", "transit-mldsa270", "external-keys270"):
@@ -169,6 +171,20 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument("--binary", required=True)
     parser.add_argument("--output", required=True)
+    if oracle_scenario_runner is not None and not callable(oracle_scenario_runner):
+        raise ValueError("oracle scenario runner must be callable")
+    if oracle_restart_runner is not None and not callable(oracle_restart_runner):
+        raise ValueError("oracle restart runner must be callable")
+    if oracle_restart_runner is not None and restart_runner is None:
+        raise ValueError("oracle restart runner requires a candidate restart runner")
+    if not isinstance(contract_divergences, (tuple, list)) or any(
+        not isinstance(value, str)
+        or not value
+        or len(value) > 512
+        or any(ord(character) < 0x20 or ord(character) > 0x7e for character in value)
+        for value in contract_divergences
+    ):
+        raise ValueError("contract divergences must be bounded printable strings")
     if required_oracle_version is not None and required_oracle_version not in SUPPORTED_VERSIONS:
         raise ValueError("unknown required oracle version")
     versions = (required_oracle_version,) if required_oracle_version else SUPPORTED_VERSIONS
@@ -205,7 +221,8 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
               "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
               "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True).strip(),
               "source_worktree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
-              "started_at_unix": time.time(), "cases": {}, "scope": scope}
+              "started_at_unix": time.time(), "cases": {}, "scope": scope,
+              "contract_divergences": list(contract_divergences)}
     if profile == "audit-file-management":
         result["audit_api_profile"] = "deployment_owned_file_v2"
         result["supersedes_candidate_only_idempotent_enable_profile"] = True
@@ -233,7 +250,10 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
         for name, client in (("candidate", candidate), ("oracle", reference)):
             result["cases"][name] = []
             try:
-                scenario_runner(client, result["cases"][name])
+                side_runner = scenario_runner
+                if name == "oracle" and oracle_scenario_runner is not None:
+                    side_runner = oracle_scenario_runner
+                side_runner(client, result["cases"][name])
             except (ScenarioFailure, BaoError) as error:
                 result["side_failures"][name] = str(error)
             except Exception as error:
@@ -255,7 +275,10 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
                             oracle["ca_file"],
                             private_read(oracle["token_file"], 8192).decode().strip(),
                         )
-                    restart_runner(restarted, result["cases"][name])
+                    side_restart = restart_runner
+                    if name == "oracle" and oracle_restart_runner is not None:
+                        side_restart = oracle_restart_runner
+                    side_restart(restarted, result["cases"][name])
                 except (ScenarioFailure, BaoError) as error:
                     result["side_failures"][name] = str(error)
                 except Exception as error:
