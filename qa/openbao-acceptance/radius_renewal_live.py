@@ -41,11 +41,13 @@ ADAPTATION = {
 
 
 def radius_md5(data=b""):
-    # RADIUS packet authentication is specified in terms of MD5. This is a
-    # protocol compatibility primitive, never a password verifier or generic
-    # security hash. The protocol cannot be changed to another digest.
+    # QA RADIUS wire primitive: RFC 2865 sections 3 and 5.2 require MD5 for
+    # Response-Authenticator and PAP hiding; RFC 3579 section 3.2 requires
+    # HMAC-MD5 for Message-Authenticator. This is never password storage.
+    # https://www.rfc-editor.org/rfc/rfc2865.html
+    # https://www.rfc-editor.org/rfc/rfc3579.html
+    # Keep the rule-specific annotation immediately before this protocol call.
     # codeql[py/weak-sensitive-data-hashing]
-    # lgtm[py/weak-sensitive-data-hashing]
     return hashlib.md5(data, usedforsecurity=False)
 
 

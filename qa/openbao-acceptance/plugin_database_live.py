@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import hmac
 import json
 import os
 import stat
@@ -30,6 +29,16 @@ CORPUS_CASE_IDS = (
 )
 
 
+FINGERPRINT_ITERATIONS = 600_000
+
+
+def password_fingerprint(password: str, salt: bytes) -> str:
+    """QA-only transport proof; never used for PostgreSQL authentication."""
+    return hashlib.pbkdf2_hmac(
+        "sha256", password.encode("utf-8"), salt, FINGERPRINT_ITERATIONS, dklen=32
+    ).hex()
+
+
 def make_exec(path: Path, text: str) -> str:
     path.write_text(text, encoding="utf-8")
     path.chmod(stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
@@ -38,7 +47,7 @@ def make_exec(path: Path, text: str) -> str:
 
 def configure(instance: smoke.Instance, root: Path):
     provider_state = root / "database-plugin-state.json"
-    fingerprint_key = os.urandom(32)
+    fingerprint_salt = os.urandom(32)
     wrapper = root / "database-sandbox-wrapper.py"
     plugin = root / "database-plugin.py"
     wrapper_sha = make_exec(
@@ -57,9 +66,10 @@ os.execv(v("--heptabao-plugin"),[v("--heptabao-plugin")])
     plugin_sha = make_exec(
         plugin,
         f"""#!{sys.executable}
-import hashlib,hmac,json,os,struct,sys
+import hashlib,json,os,struct,sys
 STATE={str(provider_state)!r}
-FINGERPRINT_KEY={fingerprint_key!r}
+FINGERPRINT_SALT={fingerprint_salt!r}
+FINGERPRINT_ITERATIONS={FINGERPRINT_ITERATIONS}
 r=sys.stdin.buffer.read(1048588)
 if len(r)<11 or r[:4]!=b"HBP1" or r[4:6]!=b"\\x00\\x01":
     raise SystemExit(65)
@@ -117,9 +127,10 @@ if action=="issue":
         "request_digest":digest,
         "expires":expires,
         "active":True,
-        "password_hmac_sha256":hmac.new(
-            FINGERPRINT_KEY, password.encode(), hashlib.sha256
-        ).hexdigest(),
+        "password_transport_pbkdf2_sha256":hashlib.pbkdf2_hmac(
+            "sha256", password.encode("utf-8"), FINGERPRINT_SALT,
+            FINGERPRINT_ITERATIONS, dklen=32
+        ).hex(),
     }}
 elif action=="renew":
     if (
@@ -178,14 +189,14 @@ emit({{
     ]
     config_path.write_text(json.dumps(config))
     config_path.chmod(0o600)
-    return plugin, provider_state, plugin.read_bytes(), plugin_sha, fingerprint_key
+    return plugin, provider_state, plugin.read_bytes(), plugin_sha, fingerprint_salt
 
 
 def run(binary: Path, root: Path):
     os.umask(0o077)
     root.mkdir(mode=0o700, parents=True, exist_ok=False)
     instance = smoke.Instance(binary, root / "server")
-    plugin, provider_state, original_plugin, plugin_sha, fingerprint_key = configure(
+    plugin, provider_state, original_plugin, plugin_sha, fingerprint_salt = configure(
         instance, root
     )
     passed = []
@@ -274,20 +285,17 @@ def run(binary: Path, root: Path):
         lease_id = issued["lease_id"]
         credential = issued["data"]
         provider = json.loads(provider_state.read_text())
-        # A fresh per-run keyed HMAC proves exact transport to the synthetic
-        # provider. It is not a password verifier or persisted credential.
-        # codeql[py/weak-sensitive-data-hashing]
-        # lgtm[py/weak-sensitive-data-hashing]
-        password_transport_hmac = hmac.new(
-            fingerprint_key,
-            credential["password"].encode(),
-            hashlib.sha256,
-        ).hexdigest()
+        # QA-only proof of exact credential transport to the synthetic provider.
+        # An independent random salt and PBKDF2 work factor apply on both sides;
+        # neither the fingerprint nor its salt enters database authentication.
+        password_transport_fingerprint = password_fingerprint(
+            credential["password"], fingerprint_salt
+        )
         check(
             "issued_secret_matches_plugin_digest",
             provider.get("active") is True
             and provider.get("username") == credential["username"]
-            and provider.get("password_hmac_sha256") == password_transport_hmac,
+            and provider.get("password_transport_pbkdf2_sha256") == password_transport_fingerprint,
         )
         issue_seq = provider["seq"]
 
