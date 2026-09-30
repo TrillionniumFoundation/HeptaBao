@@ -16,7 +16,7 @@ import tarfile
 import tempfile
 import time
 
-from bao_http import BaoError, Client, private_write
+from bao_http import BaoError, Client, private_json, private_write
 
 VERSION = "2.6.2"
 # The release publishes independent archives for Linux amd64 and arm64.  Keep
@@ -237,6 +237,47 @@ def storage_configuration(root, *, version=VERSION, raft_storage=False):
         return {"raft": {"path": str(root / "data"), "node_id": "synthetic-openbao-1"}}
     backend = "pebbledb" if version == "2.7.0" else "file"
     return {backend: {"path": str(root / "data")}}
+
+
+def verify_selected_oracle(oracle, health, *, version=VERSION, raft_storage=False):
+    """Bind a runner's live reference to the selected pins and actual fixture config.
+
+    This is local artifact/fixture custody, never independent Oracle admission.
+    A selected version must not inherit a historical receipt or storage backend.
+    """
+    artifacts = release_artifacts(version)
+    if _platform_key() not in artifacts:
+        raise BaoError("official_oracle_unsupported_platform")
+    expected = pinned_artifact(version=version)
+    root = Path(oracle["root"])
+    storage = storage_configuration(root, version=version, raft_storage=raft_storage)
+    backend = next(iter(storage))
+    receipt = private_json(oracle["identity_file"])
+    configuration = private_json(root / "server.json")
+    if not isinstance(receipt, dict) or not isinstance(configuration, dict):
+        raise BaoError("official_oracle_selected_identity_mismatch")
+    if (
+        oracle.get("version") != version
+        or oracle.get("storage_backend") != backend
+        or configuration.get("storage") != storage
+        or health.get("version") != version
+        or not isinstance(health.get("cluster_id"), str)
+        or not health["cluster_id"]
+        or oracle.get("cluster_id") != health["cluster_id"]
+        or receipt.get("product") != "OpenBao"
+        or receipt.get("version") != version
+        or receipt.get("cluster_id") != health["cluster_id"]
+        or receipt.get("endpoint") != oracle.get("address")
+        or receipt.get("storage") != backend
+        or receipt.get("provenance_url") != "https://github.com/openbao/openbao/releases/tag/v" + version
+        or receipt.get("archive_member_matches_executable") is not True
+        or receipt.get("tls_verified") is not True
+        or receipt.get("synthetic_only") is not True
+        or receipt.get("server_mode") != "server_not_dev"
+        or any(oracle.get(name) != value or receipt.get(name) != value for name, value in expected.items())
+    ):
+        raise BaoError("official_oracle_selected_identity_mismatch")
+    return receipt
 
 
 def start_oracle(port, *, audit_file=False, raft_storage=False, version=VERSION):

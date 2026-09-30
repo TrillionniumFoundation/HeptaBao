@@ -2,6 +2,15 @@
 
 ## Implementation boundary
 
+The bounded live KV rehearsal, Transit re-encryption and snapshot-inspection
+runners accept `--oracle-version 2.6.2` or `--oracle-version 2.7.0`; omission keeps
+the historical 2.6.2 profile. They bind the selected immutable artifact, live
+health and actual fixture backend rather than inheriting an earlier receipt.
+The 2.7 non-HA source is PebbleDB, while snapshot inspection uses explicit Raft.
+See the [2.7 continuation contract](../compatibility/HEPTABAO_OPENBAO_270_CONTINUATION.md)
+for required execution and unchanged admission limits. No version selector
+expands the asset adapters or certifies a migration.
+
 This guide describes the Python HTTPS transfer tool. The separate Rust `heptabao-migration` crate now offers explicit authenticated v2 migration checkpoints as well as legacy checksum checkpoints; this tool does not invoke that crate. Its live-transfer checkpoint and the Rust protocol journal must not be treated as one implementation or one security receipt. See `docs/modules/heptabao-migration.md` for the Rust profile/key/no-downgrade contracts.
 
 The Rust crate also exposes a bounded, inspection-only validator for OpenBao

@@ -381,3 +381,96 @@ fn idle_quorum_observation_releases_product_writer_within_maintenance_budget() -
     );
     Ok(())
 }
+
+#[test]
+fn cluster_address_uses_explicit_current_leader_and_stays_passive_across_handoff() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster =
+        crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &cluster_id)?;
+    for node in 1..=3 {
+        cluster.configure_api_address(node, &format!("https://api-{node}.example:8200"))?;
+        cluster
+            .configure_cluster_address(node, &format!("https://cluster-{node}.example:8201/"))?;
+    }
+    let before = service
+        .current_state_identity()
+        .map_err(|_| "state identity")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let audit = fs::read(root.path.join("audit.jsonl"))?;
+    for (index, process) in cluster.processes.iter().enumerate() {
+        service.ha = Some(Arc::clone(process));
+        let response = diagnostic(&mut service, "GET", "invalid");
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["is_self"], index == 0);
+        assert_eq!(
+            response.body["leader_address"],
+            "https://api-1.example:8200"
+        );
+        assert_eq!(
+            response.body["leader_cluster_address"],
+            "https://cluster-1.example:8201"
+        );
+        assert!(response.body.get("active_time").is_none());
+    }
+    let successor = cluster.processes[0].lock().map_err(|_| "HA")?.step_down()?;
+    // The old leader's own passive view must use its actual successor; the
+    // diagnostic does not force a follower catch-up or resolve via ReadIndex.
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    let response = diagnostic(&mut service, "GET", "");
+    assert_eq!(response.status, 200);
+    assert_eq!(response.body["is_self"], false);
+    assert_eq!(
+        response.body["leader_address"],
+        format!("https://api-{successor}.example:8200")
+    );
+    assert_eq!(
+        response.body["leader_cluster_address"],
+        format!("https://cluster-{successor}.example:8201")
+    );
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "state identity")?,
+        before
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(fs::read(root.path.join("audit.jsonl"))?, audit);
+    assert!(service.ha_read_cache.is_none());
+    // No origin is revealed while sealed, even when the same Raft term survives.
+    service.ha = None;
+    assert_eq!(
+        call(&mut service, "POST", "sys/seal", &token, json!({})).status,
+        204
+    );
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    assert_eq!(
+        diagnostic(&mut service, "GET", "").body,
+        json!({"errors": ["Vault is sealed"]})
+    );
+    Ok(())
+}
+
+#[test]
+fn configured_cluster_address_is_not_returned_without_an_observed_leader() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    bootstrap(&mut service)?;
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster = crate::ha::snapshot_test_support::Cluster::uninitialized(
+        &root.path.join("raft"),
+        &cluster_id,
+    )?;
+    cluster.configure_api_address(1, "https://api.example:8200")?;
+    cluster.configure_cluster_address(1, "https://cluster.example:8201")?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    let response = diagnostic(&mut service, "GET", "");
+    assert_eq!(response.status, 200);
+    assert_eq!(response.body, json!({"ha_enabled": true, "is_self": false}));
+    Ok(())
+}

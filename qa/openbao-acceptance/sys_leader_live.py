@@ -2,7 +2,8 @@
 """Public local leader diagnosis: pinned official lifecycle + real candidate HA.
 
 This samples local Raft observations, never claims quorum/read authority from
-sys/leader. Candidate active_time and cluster API address remain unsupported.
+sys/leader. Candidate cluster addresses are explicitly configured native mTLS
+forwarding origins; active_time remains unsupported.
 """
 from __future__ import annotations
 import http.client
@@ -17,6 +18,7 @@ import ssl
 import subprocess
 import tempfile
 import time
+from urllib.parse import urlsplit
 
 from bao_http import SafeArgumentParser, private_write
 from core_isolation import ROOT, file_hash
@@ -37,7 +39,7 @@ HA_PHASES = frozenset({'ha_initial','ha_finite_issued','ha_standby_finite','ha_u
     'ha_reads_unchanged','ha_restarted_sealed','ha_reunsealed','ha_quorum_lost',
     'ha_partition_diagnostic','ha_partition_read_rejected','ha_recovered','ha_step_down',
     'ha_successor','ha_successor_changed','ha_value_retained','ha_cleanup','plaintext_absent'})
-ALLOWED = frozenset({'ha_enabled','is_self','leader_address','raft_committed_index','raft_applied_index'})
+ALLOWED = frozenset({'ha_enabled','is_self','leader_address','leader_cluster_address','raft_committed_index','raft_applied_index'})
 
 # Exact outer-middleware/dedicated-handler observations. Status 200 means the
 # normal leader response for the current lifecycle (HA sealed is then 503).
@@ -109,19 +111,29 @@ def complete(rows, *, oracle_only=False):
     return (complete_checks(rows, required_cases=frozenset(required)) and rows[-1]['case']=='complete')
 
 
-def shape(status, body, *, ha, sealed=False, is_self=None, address=None, official=False):
+def shape(status, body, *, ha, sealed=False, is_self=None, address=None, cluster_address=None, official=False):
     if not ha:
         return status==200 and body=={'ha_enabled':False}
     if sealed:
         return status==503 and body=={'errors':['Vault is sealed']}
     if status!=200 or not isinstance(body,dict) or body.get('ha_enabled') is not True:
         return False
-    allowed = ALLOWED | ({'active_time','leader_cluster_address'} if official else set())
+    allowed = ALLOWED | ({'active_time'} if official else set())
     if not set(body).issubset(allowed):return False
     if is_self is True and body.get('is_self') is not True:return False
     if type(body.get('is_self')) is not bool:return False
     if is_self is False and body.get('is_self') is not False:return False
     if address is not None and body.get('leader_address')!=address:return False
+    if cluster_address is not None and body.get('leader_cluster_address')!=cluster_address:return False
+    if 'leader_cluster_address' in body and not official:
+        value=body['leader_cluster_address']
+        if not isinstance(value,str) or len(value)>2048 or not value.isascii() or any(ord(c)<=32 or ord(c)==127 for c in value):return False
+        try:
+            parsed=urlsplit(value)
+            if parsed.scheme!='https' or not parsed.hostname or parsed.username is not None or parsed.password is not None:return False
+            if parsed.path or parsed.query or parsed.fragment or any(c in parsed.netloc for c in ('\\','%')):return False
+            if parsed.port is None or parsed.port==0:return False
+        except ValueError:return False
     for key in ('raft_committed_index','raft_applied_index'):
         if key in body and (type(body[key]) is not int or body[key]<=0):return False
     if body.get('raft_applied_index',0)>body.get('raft_committed_index',0):return False
@@ -245,22 +257,35 @@ def lifecycle(endpoint,prefix,ha,check,observations):
     return [token.encode(),key.encode(),limited.encode()]
 
 
+class LeaderCluster(SaveCluster):
+    def configure(self):
+        super().configure()
+        # The real peer listener accepts authenticated native forwarding frames.
+        # Directed partition proxies are transport instrumentation, not the
+        # advertised endpoint; neither public API nor socket inference is used.
+        for node in self.nodes:
+            self.peers[str(node.node_id)]['cluster_address'] = f'https://127.0.0.1:{node.raft_port}'
+
+
 def candidate_ha(binary,root,check,observations,samples):
     cluster=None
     try:
-        cluster=SaveCluster(binary,root);cluster.bootstrap();leader=cluster.leader()
+        cluster=LeaderCluster(binary,root);cluster.bootstrap();leader=cluster.leader()
         endpoints={n.node_id:Endpoint(n.http_port,cluster.root/'ca.crt') for n in cluster.nodes}
         def all_views(current,phase):
             for node in cluster.nodes:
                 endpoint=endpoints[node.node_id]
                 status,body=endpoint.call('GET')
                 check(phase+'_'+str(node.node_id),shape(status,body,ha=True,is_self=node is current,
-                      address=endpoints[current.node_id].address))
+                      address=endpoints[current.node_id].address,
+                      cluster_address=f'https://127.0.0.1:{current.raft_port}'))
                 check(phase+'_indexes_'+str(node.node_id),type(body.get('raft_applied_index')) is int
                       and type(body.get('raft_committed_index')) is int)
                 observations.append({'case':phase+'_'+str(node.node_id),'status':status,
                     'fields':sorted(body),'is_self':body.get('is_self',False),
-                    'applied_index':body.get('raft_applied_index'),'committed_index':body.get('raft_committed_index')})
+                    'applied_index':body.get('raft_applied_index'),'committed_index':body.get('raft_committed_index'),
+                    'leader_cluster_address':body.get('leader_cluster_address'),
+                    'expected_cluster_address':f'https://127.0.0.1:{current.raft_port}'})
             check(phase,True)
         all_views(leader,'ha_initial')
         marker='retained-leader-diagnostic'
@@ -270,7 +295,8 @@ def candidate_ha(binary,root,check,observations,samples):
         limited=issued['auth']['client_token'];before=capacity(leader,cluster.root_token)
         standby=next(n for n in cluster.nodes if n is not leader)
         status,body=endpoints[standby.node_id].call('GET',token=limited)
-        check('ha_standby_finite',shape(status,body,ha=True,is_self=False,address=endpoints[leader.node_id].address))
+        check('ha_standby_finite',shape(status,body,ha=True,is_self=False,address=endpoints[leader.node_id].address,
+              cluster_address=f'https://127.0.0.1:{leader.raft_port}'))
         check('ha_reads_unchanged',capacity(leader,cluster.root_token)==before)
         status,body=leader.call('POST','auth/token/lookup',{'token':limited},token=cluster.root_token)
         check('ha_uses_unchanged',status==200 and body.get('data',{}).get('num_uses')==2)
@@ -352,7 +378,7 @@ def main():
         'runner_sha256':runner_hash,'runner_unchanged':runner_unchanged,'official_version':ORACLE_VERSION, 'official_storage_backends':['pebbledb','raft'],
         'official_binary_sha256':oracle_hash,'official_binary_unchanged':oracle_unchanged,
         'retained_failure_work_dir':str(work) if failure else None,'oracle_only':args.oracle_only,
-        'unsupported_fields':['active_time','leader_cluster_address'],'candidate_ha_live':binary is not None and failure is None,
+        'unsupported_fields':['active_time'],'candidate_ha_live':binary is not None and failure is None,
         'diagnostic_grants_read_authority':False,'ha_uninitialized_process_covered':False,
         'full_openbao_compatibility':False,'independent_qualification':False,'production_authority':False}
     if admit_output(output)!=admitted:raise ValueError('report_parent_changed')

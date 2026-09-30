@@ -181,7 +181,9 @@ fn unix_relative_recursive_cleanup_stays_on_held_directory_and_never_follows_sym
 #[cfg(target_os = "macos")]
 #[test]
 fn darwin_root_owned_var_alias_is_normalized_but_later_symlinks_remain_denied() -> TestResult {
-    let path = std::env::temp_dir().join(format!(
+    // This fixture specifically exercises Apple's root-owned /var alias.
+    // Caller-selected TMPDIR may point to an external development disk.
+    let path = PathBuf::from("/var/tmp").join(format!(
         "heptabao-darwin-alias-{}-{}",
         std::process::id(),
         NEXT.fetch_add(1, Ordering::Relaxed)

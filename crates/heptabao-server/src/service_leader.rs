@@ -36,14 +36,20 @@ impl Service {
         {
             body["leader_address"] = json!(address);
         }
+        if let Some(address) = observation
+            .leader
+            .and_then(|leader| process.cluster_address(leader))
+        {
+            body["leader_cluster_address"] = json!(address);
+        }
         if let Some(index) = observation.committed_index.filter(|index| *index != 0) {
             body["raft_committed_index"] = json!(index);
         }
         if let Some(index) = observation.applied_index.filter(|index| *index != 0) {
             body["raft_applied_index"] = json!(index);
         }
-        // No fabricated active_time or OpenBao cluster API address. The Raft
-        // peer socket is a different protocol, not a leader_cluster_address.
+        // active_time requires a serialized application-active lifecycle event.
+        // A local metrics sample or the request clock is not that event.
         Response::ok(body)
     }
 }

@@ -264,7 +264,15 @@ requires `ha_application_ready`: the local logical-state digest must match the
 committed Raft application envelope after a successful ReadIndex. `sys/leader`
 is a separate anonymous local diagnostic; it samples Raft metrics without
 ReadIndex, forwarding, token consumption or audit writes and remains available
-during quorum loss. Its response does not grant authority for protected reads.
+during quorum loss. Its response does not grant authority for protected reads. The optional
+`leader_cluster_address` is the observed leader's explicitly configured
+`peers[node].cluster_address`, parsed as an HTTPS origin independently of
+`api_address` and the transport socket. Missing advertisement and unknown local
+leader omit it; seal rejects the whole HA diagnostic. Handoff selects the new
+leader's configured value. This origin identifies the native mTLS forwarding
+listener, which also accepts Raft frames; it does not claim OpenBao cluster-wire
+interoperability. `active_time` stays unsupported pending a term-bound,
+application-active publication lifecycle, rather than a request-time estimate.
 Audit writes request and response events with timestamp, keyed route/principal
 fingerprint, sequence, previous MAC and current HMAC. Framing rejections entering
 `handle_wire_rejection` produce redacted service audit records. Failures before
@@ -354,7 +362,14 @@ voter per process. The server crate now depends on `heptabao-ha-service` and
 
 The HA config requires `node_id`, `cluster_id`, `raft_dir`, `listen`, `ca_file`,
 `cert_file`, `key_file`, `replication_key_file` and `peers`. Each peer supplies
-`node_name`, `address`, `server_name` and `certificate_sha256`. Optional
+`node_name`, `address`, `server_name` and `certificate_sha256`. Optional peer
+`api_address` advertises the public HTTPS API origin and `cluster_address`
+advertises the native mTLS request-forwarding HTTPS origin. Both reject userinfo,
+paths, queries, fragments, control characters, invalid authorities and zero
+ports before process startup. `cluster_address` is diagnostic metadata only;
+operators must configure the actual reachable forwarding listener consistently
+on every node. It never changes enrolled socket routing, ALPN or certificate
+pins, and omission preserves existing configuration behavior. Optional
 `bootstrap`, `peer_timeout_ms` (default 750, range 50–5000),
 `forward_timeout_ms` (default 15000, range 1000–60000), and `max_inflight`
 (default 64) are validated before entry; `listen` must use a nonzero statically enrolled port
@@ -783,3 +798,16 @@ No request, mutation or provider effect is retried. The fixed consistency profil
 requires three additional split-header/body requests and three independent
 absence readbacks per native service. Transport diagnostics name only the case
 and exception class, never an arbitrary HTTP status line or response body.
+
+### Transit precomputed ML-DSA input
+
+`engines/transit_mldsa.rs` dispatches pure messages or exact 64-byte externally
+computed mu to the existing pinned RustCrypto owner. The public external-mu
+profile is signing-only; pure verification checks its original message. The
+request parser enforces the required prehashed flag and retained-version policy,
+while ordinary non-derived ML-DSA hash/prehashed/context options do not change
+pure-message processing. No new persistent discriminator or private key owner is
+introduced. The continuation contract records the precise status codes and
+remaining import/certificate/HashML-DSA gaps. Engine and real Service reopen tests
+verify preprocessing interoperability, unchanged state on errors, rotation and
+old-version rejection; the live profile requires both independent native services.

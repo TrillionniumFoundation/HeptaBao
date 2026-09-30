@@ -84,6 +84,38 @@ fn mldsa270_service_promotes_only_on_write_fences_legacy_and_reopens_signatures(
         json!({"input":input}),
     );
     assert_eq!(signed.status, 200);
+    let descriptor = call(
+        &mut service,
+        "GET",
+        "mlfixture/keys/test",
+        &admin,
+        json!({}),
+    );
+    let public = STANDARD.decode(
+        descriptor.body["data"]["keys"]["1"]["public_key"]
+            .as_str()
+            .ok_or("public")?,
+    )?;
+    let message = STANDARD.decode(&input)?;
+    use sha3::digest::{ExtendableOutput, Update, XofReader};
+    let mut hash = sha3::Shake256::default();
+    hash.update(&public);
+    let mut tr = [0u8; 64];
+    hash.finalize_xof().read(&mut tr);
+    let mut hash = sha3::Shake256::default();
+    hash.update(&tr);
+    hash.update(&[0, 0]);
+    hash.update(&message);
+    let mut mu = [0u8; 64];
+    hash.finalize_xof().read(&mut mu);
+    let mu_signed = call(
+        &mut service,
+        "POST",
+        "mlfixture/sign/test/mldsa-mu",
+        &admin,
+        json!({"input":STANDARD.encode(mu),"prehashed":true}),
+    );
+    assert_eq!(mu_signed.status, 200);
     assert_eq!(
         call(
             &mut service,
@@ -117,6 +149,15 @@ fn mldsa270_service_promotes_only_on_write_fences_legacy_and_reopens_signatures(
     );
     assert_eq!(verified.status, 200);
     assert_eq!(verified.body["data"]["valid"], true);
+    let mu_verified = call(
+        &mut service,
+        "POST",
+        "mlfixture/verify/test",
+        &admin,
+        json!({"input":input,"signature":mu_signed.body["data"]["signature"]}),
+    );
+    assert_eq!(mu_verified.status, 200);
+    assert_eq!(mu_verified.body["data"]["valid"], true);
     let configured = call(
         &mut service,
         "POST",

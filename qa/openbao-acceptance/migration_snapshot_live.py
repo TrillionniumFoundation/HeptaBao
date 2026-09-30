@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inspect a real OpenBao 2.6.2 Raft snapshot without restoring it.
+"""Inspect a real explicitly pinned OpenBao Raft snapshot without restoring it.
 
 The fixture starts the pinned single-node OpenBao oracle, obtains its snapshot
 through the official ``bao operator raft snapshot save`` command, and feeds
@@ -25,12 +25,13 @@ import tarfile
 
 from bao_http import Client
 from official_openbao_launcher import (
-    BINARY_SHA256,
+    SUPPORTED_VERSIONS,
     VERSION,
     oracle_cli_environment,
     start_oracle,
     stop_oracle,
     verify_inputs,
+    verify_selected_oracle,
 )
 
 
@@ -102,7 +103,7 @@ def authentic_member_digests(snapshot: Path) -> tuple[str, str, int]:
     )
 
 
-def run_fixture(inspector: Path, work: Path) -> dict:
+def run_fixture(inspector: Path, work: Path, *, oracle_version=VERSION) -> dict:
     if not inspector.is_absolute() or not work.is_absolute() or work.exists():
         raise RuntimeError("inspector and a new absolute work directory are required")
     work.mkdir(mode=0o700, parents=False)
@@ -114,17 +115,16 @@ def run_fixture(inspector: Path, work: Path) -> dict:
     checks: list[str] = []
     snapshot = work / "raft.snap"
     try:
-        oracle = start_oracle(free_port(), raft_storage=True)
+        oracle = start_oracle(free_port(), raft_storage=True, version=oracle_version)
         token = Path(oracle["token_file"]).read_text(encoding="ascii").strip()
         # A health read proves that the snapshot command is talking to the
         # same pinned, TLS-verified oracle returned by the launcher.
         health = Client(oracle["address"], oracle["ca_file"], token).health()
-        if health.get("version") != VERSION:
-            raise RuntimeError("official oracle version mismatch")
-        checks.append("official_openbao_2_6_2_tls_oracle_ready")
+        oracle_identity = verify_selected_oracle(oracle, health, version=oracle_version, raft_storage=True)
+        checks.append("official_openbao_" + oracle_version.replace(".", "_") + "_tls_oracle_ready")
 
         environment = oracle_cli_environment(oracle, token)
-        official_binary = verify_inputs()
+        official_binary = verify_inputs(version=oracle_version)
         saved = subprocess.run(
             [str(official_binary), "operator", "raft", "snapshot", "save", str(snapshot)],
             cwd=work,
@@ -185,8 +185,10 @@ def run_fixture(inspector: Path, work: Path) -> dict:
             "status": "passed",
             "checks": checks,
             "count": len(checks),
-            "official_openbao_version": VERSION,
-            "official_binary_sha256": BINARY_SHA256,
+            "official_openbao_version": oracle_version,
+            "official_storage_backend": oracle_identity["storage"],
+            "official_binary_sha256": oracle_identity["binary_sha256"],
+            "official_archive_sha256": oracle_identity["artifact_sha256"],
             "official_snapshot_sha256": file_digest(snapshot),
             "candidate_inspector_sha256": file_digest(inspector),
             "inspection_only": True,
@@ -195,7 +197,7 @@ def run_fixture(inspector: Path, work: Path) -> dict:
             "migration_authority": False,
             "full_format_migration": False,
             "production_authority": False,
-            "scope": "authentic OpenBao 2.6.2 snapshot format and integrity inspection only",
+            "scope": "authentic OpenBao " + oracle_version + " snapshot format and integrity inspection only",
         }
     finally:
         if oracle is not None:
@@ -207,13 +209,14 @@ def run_fixture(inspector: Path, work: Path) -> dict:
         shutil.rmtree(work, ignore_errors=True)
 
 
-def main() -> int:
+def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inspector", type=Path, required=True)
     parser.add_argument("--work-dir", type=Path, required=True)
-    args = parser.parse_args()
+    parser.add_argument("--oracle-version", choices=SUPPORTED_VERSIONS, default=VERSION)
+    args = parser.parse_args(argv)
     try:
-        report = run_fixture(args.inspector.resolve(strict=True), args.work_dir)
+        report = run_fixture(args.inspector.resolve(strict=True), args.work_dir, oracle_version=args.oracle_version)
     except Exception as error:
         print(f"migration snapshot live fixture failed: {type(error).__name__}", file=sys.stderr)
         return 1

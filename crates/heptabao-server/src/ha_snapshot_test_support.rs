@@ -134,6 +134,7 @@ impl Cluster {
                 cluster_id: cluster_id.to_owned(),
                 peers: Arc::new(peers.clone()),
                 api_addresses: BTreeMap::new(),
+                cluster_addresses: BTreeMap::new(),
                 forward_transport,
                 forward_timeout: Duration::from_secs(1),
                 emit_legacy_peer_v1: false,
@@ -168,6 +169,17 @@ impl Cluster {
                 .lock()
                 .map_err(|_| "HA poisoned")?
                 .api_addresses
+                .insert(node, origin.clone());
+        }
+        Ok(())
+    }
+    pub(crate) fn configure_cluster_address(&self, node: u64, origin: &str) -> Result<(), String> {
+        let origin = parse_cluster_address(origin)?;
+        for process in &self.processes {
+            process
+                .lock()
+                .map_err(|_| "HA poisoned")?
+                .cluster_addresses
                 .insert(node, origin.clone());
         }
         Ok(())

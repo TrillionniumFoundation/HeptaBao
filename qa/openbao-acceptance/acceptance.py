@@ -577,11 +577,12 @@ def main(argv=None):
     parser.add_argument("--candidate-prefix", default="HB_CANDIDATE")
     parser.add_argument("--oracle-prefix", default="HB_ORACLE")
     parser.add_argument("--oracle-identity-file")
+    parser.add_argument("--oracle-version", choices=("2.6.2", "2.7.0"), default="2.6.2")
     parser.add_argument("--allow-test-writes", action="store_true")
     parser.add_argument("--modules", default="core,kv,token,transit,pki,totp,userpass,approle,wrapping,edge_tls,system,operations")
     parser.add_argument("--output", help="0600 JSON in an existing 0700 directory")
     args = parser.parse_args(argv)
-    report = {"schema": "heptabao.live-acceptance.v1", "target": "OpenBao 2.6.2",
+    report = {"schema": "heptabao.live-acceptance.v1", "target": "OpenBao " + args.oracle_version,
               "observed_at_unix": time.time(),
               "tool_source_sha256": hashlib.sha256(Path(__file__).read_bytes() + Path(__file__).with_name("bao_http.py").read_bytes()).hexdigest(),
               "full_openbao_compatibility": False, "production_qualified": False,
@@ -603,7 +604,8 @@ def main(argv=None):
             oracle = Client.from_env(args.oracle_prefix)
             health = oracle.health()
             distinct_endpoints(candidate, candidate_health, oracle, health)
-            report["oracle"] = verify_oracle_identity(private_json(args.oracle_identity_file), oracle, health)
+            report["oracle"] = verify_oracle_identity(private_json(args.oracle_identity_file), oracle, health,
+                                                     version=args.oracle_version)
             report["oracle"]["endpoint"] = oracle.address
             report["oracle"]["cluster_id_digest"] = digest(health["cluster_id"])
         run_id = secrets.token_hex(8)

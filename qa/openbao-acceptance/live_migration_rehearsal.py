@@ -20,6 +20,7 @@ from pathlib import Path
 
 from bao_http import BaoError, Client, SafeArgumentParser, digest, private_read, private_write
 import migrate_kv2 as migration
+from official_openbao_launcher import SUPPORTED_VERSIONS, VERSION, verify_selected_oracle
 
 
 def load_module(name, filename):
@@ -61,7 +62,7 @@ class LoseOneAcknowledgement:
         return response
 
 
-def run(binary, launcher_path, work_dir, oracle_port):
+def run(binary, launcher_path, work_dir, oracle_port, *, oracle_version=VERSION):
     os.umask(0o077)
     work_dir.mkdir(mode=0o700, parents=True, exist_ok=False)
     launcher = load_module("external_verified_oracle_launcher", launcher_path)
@@ -73,6 +74,7 @@ def run(binary, launcher_path, work_dir, oracle_port):
     stage = "initialization"
     report = {"schema": "heptabao.live-migration-rehearsal.v1", "synthetic_only": True,
               "started_at_unix": time.time(),
+              "target_openbao_version": oracle_version,
               "full_format_migration": False, "production_authority": False, "source_cutover": False,
               "candidate_binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
               "tool_source_sha256": hashlib.sha256(Path(migration.__file__).read_bytes()).hexdigest()}
@@ -88,7 +90,7 @@ def run(binary, launcher_path, work_dir, oracle_port):
         instance.start()
         check("restart_unseal", instance.call("POST", "sys/unseal", {"key": unseal})[0] == 200)
     try:
-        oracle = launcher.start_oracle(port=oracle_port)
+        oracle = launcher.start_oracle(port=oracle_port, version=oracle_version)
         instance = smoke.Instance(binary, work_dir / "candidate")
         instance.start()
         status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
@@ -106,10 +108,12 @@ def run(binary, launcher_path, work_dir, oracle_port):
         os.environ.pop("HB_TARGET_NAMESPACE", None)
         source, target = Client.from_env("HB_SOURCE"), Client.from_env("HB_TARGET")
         source_health, target_health = source.health(), target.health()
-        check("real_distinct_source_and_target", source_health["version"] == "2.6.2"
+        oracle_identity = verify_selected_oracle(oracle, source_health, version=oracle_version)
+        check("real_distinct_source_and_target", source_health["version"] == oracle_version
               and source_health["cluster_id"] != target_health["cluster_id"])
         report["source"] = {"version": source_health["version"], "artifact_sha256": oracle["artifact_sha256"],
                             "binary_sha256": oracle["binary_sha256"], "cluster_digest": digest(source_health["cluster_id"]),
+                            "storage_backend": oracle_identity["storage"],
                             "tls_verified": True, "mode": "server_not_dev"}
         report["target"] = {"version": target_health["version"], "cluster_digest": digest(target_health["cluster_id"]), "tls_verified": True}
         stage = "source_mount"
@@ -324,6 +328,7 @@ def run(binary, launcher_path, work_dir, oracle_port):
         instance.stop()
         check("rollback_target_process_fenced_before_source_reactivation", instance.process is None)
         launcher.restart_oracle(oracle)
+        verify_selected_oracle(oracle, source.health(), version=oracle_version)
         source = Client.from_env("HB_SOURCE")
         for key, record in zip(keys, original):
             check(
@@ -348,6 +353,7 @@ def run(binary, launcher_path, work_dir, oracle_port):
               and migration.read_metadata(source, source_mount, keys[0])["current_version"] == len(original[0]["versions"]) + 1)
         launcher.stop_oracle(oracle)
         launcher.restart_oracle(oracle)
+        verify_selected_oracle(oracle, source.health(), version=oracle_version)
         results["rollback_resume_after_source_restart"] = run_tool(rollback_apply)
         for record in post_cutover:
             meta = migration.verify_target(source, source_mount, record, len(record["versions"]))
@@ -421,8 +427,10 @@ def main(argv=None):
     parser.add_argument("--oracle-launcher", type=Path, required=True)
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--oracle-port", type=int, default=28500)
+    parser.add_argument("--oracle-version", choices=SUPPORTED_VERSIONS, default=VERSION)
     args = parser.parse_args(argv)
-    return run(args.binary.resolve(), args.oracle_launcher.resolve(), args.work_dir.resolve(), args.oracle_port)
+    return run(args.binary.resolve(), args.oracle_launcher.resolve(), args.work_dir.resolve(), args.oracle_port,
+               oracle_version=args.oracle_version)
 
 
 if __name__ == "__main__":

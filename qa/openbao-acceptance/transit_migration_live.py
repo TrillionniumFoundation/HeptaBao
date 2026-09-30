@@ -11,15 +11,16 @@ import subprocess
 import sys
 import tempfile
 
-from bao_http import BaoError, Client, SafeArgumentParser, private_write, private_json
-from official_openbao_launcher import start_oracle, stop_oracle, file_digest, private_text, BINARY_SHA256
+from bao_http import BaoError, Client, SafeArgumentParser, private_write, private_json, private_read
+from official_openbao_launcher import (SUPPORTED_VERSIONS, VERSION, start_oracle, stop_oracle,
+                                      file_digest, private_text, verify_selected_oracle)
 from heptabao.private_state import StateDirectory
 from heptabao.transit_migration import TransitMigrator, client_for
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def run(binary, output):
+def run(binary, output, *, oracle_version=VERSION):
     checks = []
     def check(name, condition):
         if not condition:
@@ -38,8 +39,9 @@ def run(binary, output):
             with socket.socket() as sock:
                 sock.bind(('127.0.0.1', 0))
                 port = sock.getsockname()[1]
-            oracle = start_oracle(port)
-            source = Client(oracle['address'], oracle['ca_file'], Path(oracle['token_file']).read_text().strip())
+            oracle = start_oracle(port, version=oracle_version)
+            source = Client(oracle['address'], oracle['ca_file'], private_read(oracle['token_file']).decode('ascii').strip())
+            oracle_identity = verify_selected_oracle(oracle, source.health(), version=oracle_version)
             instance = smoke.Instance(binary.resolve(), root / 'candidate')
             instance.start()
             status, init = instance.call('POST', 'sys/init', {'secret_shares': 1, 'secret_threshold': 1})
@@ -129,7 +131,9 @@ def run(binary, output):
                 check('pending_resume_no_new_effect', before == after)
             result = {'schema': 'heptabao.transit-migration-live.v1', 'status': 'passed_scoped_reencryption',
                       'checks': checks, 'count': len(checks), 'candidate_binary_sha256': file_digest(binary),
-                      'oracle_binary_sha256': BINARY_SHA256, 'full_format_migration': False,
+                      'oracle_version': oracle_version, 'oracle_storage_backend': oracle_identity['storage'],
+                      'oracle_binary_sha256': oracle_identity['binary_sha256'],
+                      'oracle_archive_sha256': oracle_identity['artifact_sha256'], 'full_format_migration': False,
                       'source_cutover': False, 'independent_qualification': False}
             private_write(output, result, replace=False)
             return result
@@ -145,12 +149,13 @@ def main(argv=None):
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument('--binary', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--oracle-version', choices=SUPPORTED_VERSIONS, default=VERSION)
     args = parser.parse_args(argv)
     if os.path.lexists(args.output):
         raise BaoError('output_already_exists')
     with StateDirectory(args.output.absolute().parent):
         pass
-    result = run(args.binary, args.output)
+    result = run(args.binary, args.output, oracle_version=args.oracle_version)
     print(json.dumps({key: result[key] for key in ('status', 'count', 'full_format_migration')}))
     return 0
 

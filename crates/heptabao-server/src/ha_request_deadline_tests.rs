@@ -79,6 +79,7 @@ pub(crate) fn process_with_api(
             .into_iter()
             .map(|address| (1, address))
             .collect(),
+        cluster_addresses: BTreeMap::new(),
         forward_transport,
         forward_timeout: Duration::from_secs(1),
         emit_legacy_peer_v1: false,

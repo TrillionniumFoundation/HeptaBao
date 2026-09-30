@@ -773,7 +773,15 @@ fn handle_crypto(
             mutated,
         });
     }
-    reject_context(body)?;
+    if mldsa::is_kind(&key.kind) && matches!(operation, "sign" | "verify") {
+        // Context is a key-derivation parameter, not a FIPS 204 signature
+        // context. Native ML-DSA keys are not derived; 2.7 ignores this string.
+        if body.get("context").is_some_and(|value| !value.is_string()) {
+            return Err(bad("context must be a string"));
+        }
+    } else {
+        reject_context(body)?;
+    }
     let data = match operation {
         "encrypt" => {
             if body.get("type").is_some_and(|kind| kind != &key.kind) {
@@ -811,13 +819,17 @@ fn handle_crypto(
             json!({"hmac":format!("vault:v{version}:{}", BASE64.encode(tag))})
         }
         "sign" => {
-            signing_options(key, body, algorithm)?;
+            let external_mu = signing_options(key, body, algorithm)?;
             let version = key.selected_version(body)?;
             let material =
                 stored_material(&key.versions.get(&version).ok_or_else(not_found)?.material)?;
             let input = decode_field(body, "input")?;
             let signature = if mldsa::is_kind(&key.kind) {
-                mldsa::sign(&key.kind, &material, &input)?
+                if external_mu {
+                    mldsa::sign_mu(&key.kind, &material, &input)?
+                } else {
+                    mldsa::sign(&key.kind, &material, &input)?
+                }
             } else {
                 let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
                     .map_err(|_| error(500, "stored signing key is invalid"))?;
@@ -838,7 +850,10 @@ fn handle_crypto(
                 let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
                 hmac_verify(algorithm, &material, &input, &tag)?
             } else {
-                signing_options(key, body, algorithm)?;
+                let external_mu = signing_options(key, body, algorithm)?;
+                if external_mu {
+                    return Err(bad("ML-DSA external mu is not supported for verification"));
+                }
                 let (version, bytes) = parse_wrapped(string(body, "signature")?)?;
                 let version = key.decrypt_version(version)?;
                 let material = stored_material(&version.material)?;
@@ -862,19 +877,38 @@ fn handle_crypto(
     Ok(ok(data, matches!(operation, "encrypt" | "rewrap")))
 }
 
-fn signing_options(key: &Key, body: &Value, path_algorithm: &str) -> Result<()> {
+// True selects the provider's external-mu API; false preserves pure signing.
+fn signing_options(key: &Key, body: &Value, path_algorithm: &str) -> Result<bool> {
     if mldsa::is_kind(&key.kind) {
-        if optional_bool(body, "prehashed")?.unwrap_or(false)
-            || body.get("signature_algorithm").is_some()
-            || body.get("marshaling_algorithm").is_some()
-            || select_algorithm(path_algorithm, body, "hash_algorithm", "sha2-256")? != "sha2-256"
-        {
-            return Err(error(
-                501,
-                "only pure ML-DSA without signature options is implemented",
-            ));
+        if body.get("signature_algorithm").is_some() || body.get("marshaling_algorithm").is_some() {
+            return Err(error(501, "ML-DSA signature options are not implemented"));
         }
-        return Ok(());
+        let algorithm = select_algorithm(path_algorithm, body, "hash_algorithm", "none")?;
+        let prehashed = optional_bool(body, "prehashed")?.unwrap_or(false);
+        if algorithm == "mldsa-mu" {
+            if !prehashed {
+                return Err(bad("ML-DSA external mu requires prehashed=true"));
+            }
+            return Ok(true);
+        }
+        if !matches!(
+            algorithm,
+            "none"
+                | "sha1"
+                | "sha2-224"
+                | "sha2-256"
+                | "sha2-384"
+                | "sha2-512"
+                | "sha3-224"
+                | "sha3-256"
+                | "sha3-384"
+                | "sha3-512"
+        ) {
+            return Err(bad("unsupported hash algorithm"));
+        }
+        // ML-DSA owns its pure-message hash. These generic Transit options
+        // do not turn a pure input into HashML-DSA or an externally computed mu.
+        return Ok(false);
     }
     if key.kind != "ed25519" {
         return Err(bad("key does not support Ed25519 signing"));
@@ -896,7 +930,7 @@ fn signing_options(key: &Key, body: &Value, path_algorithm: &str) -> Result<()> 
             "explicit hash selection is not implemented for Ed25519",
         ));
     }
-    Ok(())
+    Ok(false)
 }
 
 fn select_algorithm<'a>(

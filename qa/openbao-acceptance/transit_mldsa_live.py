@@ -5,6 +5,7 @@ Only case labels, status codes and predicates reach reports. Seeds, signatures
 and fixture bearers remain inside each service's private test lifetime.
 """
 import base64
+import hashlib
 from pathlib import Path
 from core_isolation import ScenarioFailure, main as compare
 
@@ -72,13 +73,48 @@ def run_scenarios(client, rows=None):
             result = t.call(kind + ".verify." + label, "POST", "mlfixture/verify/" + kind,
                             200, {"input": message_value, "signature": sigs[0]})
             t.check(kind + ".verified." + label, result["data"]["valid"] is valid)
+        # FIPS 204 pure preprocessing, independently computed from this side's
+        # public key. Signature and seed bytes never enter the report.
+        tr = hashlib.shake_256(raw(public)).digest(64)
+        mu = hashlib.shake_256(tr + b"\x00\x00" + raw(message)).digest(64)
+        mu_input = base64.b64encode(mu).decode()
+        result = t.call(kind + ".mu_sign", "POST", "mlfixture/sign/" + kind,
+                        200, {"input": mu_input, "prehashed": True,
+                              "hash_algorithm": "mldsa-mu"})["data"]
+        mu_signature = result["signature"]
+        t.check(kind + ".mu_signature_shape", result["key_version"] == 1
+                and mu_signature.startswith("vault:v1:")
+                and len(raw(mu_signature[9:])) == signature_len)
+        result = t.call(kind + ".mu_verify_original", "POST", "mlfixture/verify/" + kind,
+                        200, {"input": message, "signature": mu_signature})
+        t.check(kind + ".mu_original_valid", result["data"]["valid"] is True)
+        result = t.call(kind + ".mu_verify_changed", "POST", "mlfixture/verify/" + kind,
+                        200, {"input": base64.b64encode(b"changed").decode(),
+                              "signature": mu_signature})
+        t.check(kind + ".mu_changed_invalid", result["data"]["valid"] is False)
+        t.call(kind + ".mu_verification_not_supported", "POST", "mlfixture/verify/" + kind,
+               400, {"input": mu_input, "prehashed": True,
+                     "hash_algorithm": "mldsa-mu", "signature": mu_signature})
+        t.call(kind + ".mu_requires_prehashed", "POST", "mlfixture/sign/" + kind,
+               400, {"input": mu_input, "hash_algorithm": "mldsa-mu"})
+        for length in (63, 65):
+            t.call(kind + ".mu_length_" + str(length), "POST", "mlfixture/sign/" + kind,
+                   500, {"input": base64.b64encode(bytes(length)).decode(),
+                         "hash_algorithm": "mldsa-mu", "prehashed": True})
+        result = t.call(kind + ".pure_options_ignored", "POST", "mlfixture/sign/" + kind,
+                        200, {"input": message, "hash_algorithm": "sha2-512",
+                              "prehashed": True, "context": "non-derived-context"})["data"]
+        result = t.call(kind + ".pure_verify_default", "POST", "mlfixture/verify/" + kind,
+                        200, {"input": message, "signature": result["signature"],
+                              "context": "different-ignored-context"})
+        t.check(kind + ".pure_options_no_hash_or_derivation", result["data"]["valid"] is True)
         t.call(kind + ".rotate", "POST", path + "/rotate", 200, {})
         result = t.call(kind + ".sign_rotated", "POST", "mlfixture/sign/" + kind,
                         200, {"input": message})["data"]
         t.check(kind + ".rotated_version", result["key_version"] == 2
                 and result["signature"].startswith("vault:v2:"))
         t.call(kind + ".bad_base64", "POST", "mlfixture/sign/" + kind, 400, {"input": "!"})
-        contexts.append((kind, message, sigs[0], result["signature"]))
+        contexts.append((kind, message, sigs[0], result["signature"], mu_signature))
     t.call("least_privilege_policy", "POST", "sys/policies/acl/mlfixture-signer", 204,
            {"policy": 'path "mlfixture/sign/*" { capabilities=["update"] }'})
     issued = t.call("least_privilege_token", "POST", "auth/token/create", 200,
@@ -96,8 +132,8 @@ def run_after_restart(client, rows):
     if not contexts or len(contexts) != len(KINDS):
         raise ScenarioFailure("mldsa270.restart_context_missing")
     t = Trace(client, rows)
-    for kind, message, old, new in contexts:
-        for label, signature in (("old", old), ("new", new)):
+    for kind, message, old, new, mu_signature in contexts:
+        for label, signature in (("old", old), ("new", new), ("mu", mu_signature)):
             result = t.call(kind + ".restart_verify." + label, "POST", "mlfixture/verify/" + kind,
                             200, {"input": message, "signature": signature})
             t.check(kind + ".restart_valid." + label, result["data"]["valid"] is True)
@@ -118,7 +154,7 @@ def run_after_restart(client, rows):
 def main():
     return compare(scenario_runner=run_scenarios, restart_runner=run_after_restart,
                    profile="transit-mldsa270", required_oracle_version="2.7.0",
-                   scope="pure_mldsa_generation_rotation_export_sign_verify_acl_and_native_restart",
+                   scope="mldsa_pure_and_external_mu_signing_rotation_export_acl_and_native_restart",
                    runner_path=Path(__file__))
 
 

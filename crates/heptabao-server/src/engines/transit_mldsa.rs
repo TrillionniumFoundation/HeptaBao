@@ -40,6 +40,34 @@ fn verify_for<P: MlDsaParams>(material: &[u8], input: &[u8], bytes: &[u8]) -> Re
         .verify_with_context(input, b"", &signature))
 }
 
+// The caller owns FIPS 204 preprocessing in the external-mu profile. Use the
+// pinned provider's precomputed-mu API; never hash the 64-byte value again.
+fn sign_mu_for<P: MlDsaParams>(material: &[u8], input: &[u8]) -> Result<Vec<u8>> {
+    let mu = Zeroizing::new(
+        ml_dsa::common::array::Array::<u8, ml_dsa::common::typenum::U64>::try_from(input)
+            .map_err(|_| error(500, "ML-DSA external mu must be exactly 64 bytes"))?,
+    );
+    let pair = signing_key::<P>(material)?;
+    let signature = pair
+        .expanded_key()
+        .sign_mu_randomized(&mu, &mut getrandom::SysRng)
+        .map_err(|_| error(503, "ML-DSA signing entropy is unavailable"))?;
+    Ok(signature.encode().to_vec())
+}
+
+#[cfg(test)]
+fn verify_mu_for<P: MlDsaParams>(material: &[u8], input: &[u8], bytes: &[u8]) -> Result<bool> {
+    let mu = Zeroizing::new(
+        ml_dsa::common::array::Array::<u8, ml_dsa::common::typenum::U64>::try_from(input)
+            .map_err(|_| error(500, "ML-DSA external mu must be exactly 64 bytes"))?,
+    );
+    let pair = signing_key::<P>(material)?;
+    let Ok(signature) = ml_dsa::Signature::<P>::try_from(bytes) else {
+        return Ok(false);
+    };
+    Ok(pair.verifying_key().verify_mu(&mu, &signature))
+}
+
 macro_rules! dispatch {
     ($kind:expr, $function:ident, $($argument:expr),+) => {
         match $kind {
@@ -59,6 +87,14 @@ pub(super) fn sign(kind: &str, material: &[u8], input: &[u8]) -> Result<Vec<u8>>
 }
 pub(super) fn verify(kind: &str, material: &[u8], input: &[u8], bytes: &[u8]) -> Result<bool> {
     dispatch!(kind, verify_for, material, input, bytes)
+}
+
+pub(super) fn sign_mu(kind: &str, material: &[u8], input: &[u8]) -> Result<Vec<u8>> {
+    dispatch!(kind, sign_mu_for, material, input)
+}
+#[cfg(test)]
+pub(super) fn verify_mu(kind: &str, material: &[u8], input: &[u8], bytes: &[u8]) -> Result<bool> {
+    dispatch!(kind, verify_mu_for, material, input, bytes)
 }
 
 impl Transit {

@@ -75,6 +75,10 @@ pub struct HaPeerConfig {
     /// Deployment-advertised HTTPS API origin; never inferred from the Raft socket.
     #[serde(default)]
     pub api_address: Option<String>,
+    /// Deployment-advertised native mTLS request-forwarding origin. This is
+    /// separate from the public API and is never inferred from a Raft socket.
+    #[serde(default)]
+    pub cluster_address: Option<String>,
     pub server_name: String,
     pub certificate_sha256: String,
     /// Optional overlap pin for bounded leaf-certificate rotation. During a
@@ -149,6 +153,7 @@ struct ParsedPeer {
     certificate_sha256: [u8; 32],
     certificate_sha256_next: Option<[u8; 32]>,
     api_address: Option<String>,
+    cluster_address: Option<String>,
 }
 
 #[derive(Clone)]
@@ -577,6 +582,7 @@ pub struct HaProcess {
     cluster_id: String,
     peers: Arc<BTreeMap<u64, NodeId>>,
     api_addresses: BTreeMap<u64, String>,
+    cluster_addresses: BTreeMap<u64, String>,
     forward_transport: MutualTlsPeerTransport,
     forward_timeout: Duration,
     emit_legacy_peer_v1: bool,
@@ -606,6 +612,14 @@ impl HaProcess {
             .iter()
             .filter_map(|peer| {
                 peer.api_address
+                    .as_ref()
+                    .map(|address| (peer.id, address.clone()))
+            })
+            .collect();
+        let cluster_addresses = parsed_peers
+            .iter()
+            .filter_map(|peer| {
+                peer.cluster_address
                     .as_ref()
                     .map(|address| (peer.id, address.clone()))
             })
@@ -885,6 +899,7 @@ impl HaProcess {
             cluster_id: config.cluster_id,
             peers,
             api_addresses,
+            cluster_addresses,
             forward_transport,
             forward_timeout,
             emit_legacy_peer_v1,
@@ -1056,6 +1071,10 @@ impl HaProcess {
 
     pub(crate) fn api_address(&self, node_id: u64) -> Option<&str> {
         self.api_addresses.get(&node_id).map(String::as_str)
+    }
+
+    pub(crate) fn cluster_address(&self, node_id: u64) -> Option<&str> {
+        self.cluster_addresses.get(&node_id).map(String::as_str)
     }
 
     pub fn leader(&self) -> Result<Option<u64>, String> {
@@ -1840,6 +1859,11 @@ fn parse_peers(config: &HaProcessConfig) -> Result<Vec<ParsedPeer>, String> {
             .as_deref()
             .map(parse_api_address)
             .transpose()?;
+        let cluster_address = peer
+            .cluster_address
+            .as_deref()
+            .map(parse_cluster_address)
+            .transpose()?;
         if !names.insert(node.clone())
             || !digests.insert(certificate_sha256)
             || certificate_sha256_next.is_some_and(|digest| !digests.insert(digest))
@@ -1853,6 +1877,7 @@ fn parse_peers(config: &HaProcessConfig) -> Result<Vec<ParsedPeer>, String> {
             certificate_sha256,
             certificate_sha256_next,
             api_address,
+            cluster_address,
         });
     }
     Ok(peers)
@@ -1871,6 +1896,13 @@ fn parse_api_address(address: &str) -> Result<String, String> {
         return Err("HA peer API address must be an HTTPS origin".into());
     }
     Ok(target.origin)
+}
+
+fn parse_cluster_address(address: &str) -> Result<String, String> {
+    // An explicitly advertised native forwarding origin is an operator-owned
+    // diagnostic value. Parsing performs no DNS or network request, and it
+    // never changes the enrolled peer transport, pins or routing authority.
+    parse_api_address(address).map_err(|_| "invalid HA peer cluster address".to_owned())
 }
 
 fn build_mutual_tls(config: &HaProcessConfig) -> Result<MutualTlsConfigs, String> {
@@ -2670,6 +2702,7 @@ mod tests {
         }))
         .map_err(|_| "old peer configuration")?;
         assert!(old.api_address.is_none());
+        assert!(old.cluster_address.is_none());
         assert!(old.certificate_sha256_next.is_none());
         let rotating: HaPeerConfig = serde_json::from_value(serde_json::json!({
             "node_name":"node-1", "address":"127.0.0.1:8201",
@@ -2678,6 +2711,57 @@ mod tests {
         }))
         .map_err(|_| "rotating peer configuration")?;
         assert_eq!(rotating.certificate_sha256_next, Some("22".repeat(32)));
+        Ok(())
+    }
+
+    #[test]
+    fn advertised_cluster_address_is_explicit_https_origin_with_no_network_effects()
+    -> Result<(), String> {
+        for (input, expected) in [
+            (
+                "https://Cluster.Example:8201/",
+                "https://cluster.example:8201",
+            ),
+            ("https://127.0.0.1:18201", "https://127.0.0.1:18201"),
+            ("https://[::1]:8201", "https://[::1]:8201"),
+        ] {
+            assert_eq!(parse_cluster_address(input)?, expected);
+        }
+        for input in [
+            "http://cluster.example:8201",
+            "https://cluster.example:0",
+            "https://user@cluster.example:8201",
+            "https://cluster.example:8201?token=secret",
+            "https://cluster.example:8201/#fragment",
+            "https://cluster.example:8201/v1/sys/leader",
+            "https://cluster.example:8201/%0d%0aLocation:x",
+            "https://cluster.example:8201\r\nLocation: x",
+            "https://cluster.example:8201\\@other.example",
+        ] {
+            assert_eq!(
+                parse_cluster_address(input),
+                Err("invalid HA peer cluster address".to_owned())
+            );
+        }
+        let admitted: HaPeerConfig = serde_json::from_value(serde_json::json!({
+            "node_name":"node-1", "address":"127.0.0.1:18201",
+            "server_name":"node-1.example", "certificate_sha256":"11".repeat(32),
+            "api_address":"https://api.example:8200",
+            "cluster_address":"https://cluster.example:8201/",
+        }))
+        .map_err(|_| "explicit cluster configuration")?;
+        assert_eq!(
+            admitted
+                .cluster_address
+                .as_deref()
+                .map(parse_cluster_address)
+                .transpose()?,
+            Some("https://cluster.example:8201".to_owned())
+        );
+        // The advertised value is not a transport endpoint: the enrolled socket
+        // and TLS name remain exactly the separately configured peer identity.
+        assert_eq!(admitted.address.to_string(), "127.0.0.1:18201");
+        assert_eq!(admitted.server_name, "node-1.example");
         Ok(())
     }
 
@@ -2772,6 +2856,7 @@ mod tests {
                     HaPeerConfig {
                         node_name: "node-1".into(),
                         api_address: None,
+                        cluster_address: None,
                         address: "127.0.0.1:8201".parse().map_err(|_| "peer address")?,
                         server_name: "node-1.example.internal".into(),
                         certificate_sha256: "11".repeat(32),
@@ -2783,6 +2868,7 @@ mod tests {
                     HaPeerConfig {
                         node_name: "node-2".into(),
                         api_address: None,
+                        cluster_address: None,
                         address: "127.0.0.1:8202".parse().map_err(|_| "peer address")?,
                         server_name: "node-2.example.internal".into(),
                         certificate_sha256: "22".repeat(32),
@@ -2794,6 +2880,7 @@ mod tests {
                     HaPeerConfig {
                         node_name: "node-3".into(),
                         api_address: None,
+                        cluster_address: None,
                         address: "127.0.0.1:8203".parse().map_err(|_| "peer address")?,
                         server_name: "node-3.example.internal".into(),
                         certificate_sha256: "33".repeat(32),

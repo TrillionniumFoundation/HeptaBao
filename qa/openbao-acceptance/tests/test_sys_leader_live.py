@@ -58,11 +58,26 @@ class LeaderGuards(unittest.TestCase):
         self.assertFalse(fixture.shape(200,{**body,'raft_committed_index':True},ha=True))
         self.assertFalse(fixture.shape(200,{**body,'auth':{'token':'sentinel'}},ha=True))
 
-    def test_known_unsupported_fields_only_allowed_for_official_observation(self):
+    def test_active_time_stays_unsupported_for_candidate_observation(self):
         body={'ha_enabled':True,'is_self':True,'active_time':'2026-01-01T00:00:00Z',
             'leader_cluster_address':'https://127.0.0.1:8201'}
         self.assertTrue(fixture.shape(200,body,ha=True,official=True))
         self.assertFalse(fixture.shape(200,body,ha=True))
+
+    def test_cluster_address_must_be_the_explicit_leader_forwarding_origin(self):
+        body={'ha_enabled':True,'is_self':False,'leader_address':'https://127.0.0.1:8200',
+            'leader_cluster_address':'https://127.0.0.1:8201'}
+        expected=body['leader_cluster_address']
+        self.assertTrue(fixture.shape(200,body,ha=True,is_self=False,cluster_address=expected))
+        self.assertFalse(fixture.shape(200,{**body,'leader_cluster_address':body['leader_address']},
+            ha=True,cluster_address=expected))
+        self.assertFalse(fixture.shape(200,{k:v for k,v in body.items() if k!='leader_cluster_address'},
+            ha=True,cluster_address=expected))
+        for invalid in (None,False,8201,'http://127.0.0.1:8201','https://user@127.0.0.1:8201',
+                'https://127.0.0.1:8201?token=secret','https://127.0.0.1:8201\r\nheader:x',
+                'https://127.0.0.1:0','https://127.0.0.1:65536','https://127.0.0.1',
+                'https://127.0.0.1:8201/path','https://127.0.0.1:8201#fragment'):
+            self.assertFalse(fixture.shape(200,{**body,'leader_cluster_address':invalid},ha=True))
 
     def test_actual_lifecycle_generates_unique_complete_phase_names_without_credentials_in_rows(self):
         rows=[];observations=[]

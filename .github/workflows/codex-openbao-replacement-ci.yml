@@ -681,6 +681,38 @@ jobs:
             --work-parent "$work" \
             --output "$RUNNER_TEMP/heptabao-safe-reports/sys-leader270.json"
 
+      - name: Exercise OpenBao 2.7.0 bounded corpus and migration boundaries
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle270_ready.outcome == 'success' }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle270/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle270/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          binary="$PWD/target/debug/heptabao-server"
+          work="$RUNNER_TEMP/heptabao-migration270-private"
+          reports="$RUNNER_TEMP/heptabao-safe-reports/migration270"
+          mkdir -m 700 "$work" "$reports"
+          cargo +1.98.0 build --locked -p heptabao-migration --bin inspect-openbao-snapshot
+          timeout 300 python qa/openbao-acceptance/migration_snapshot_live.py \
+            --oracle-version 2.7.0 \
+            --inspector "$PWD/target/debug/inspect-openbao-snapshot" \
+            --work-dir "$work/snapshot" > "$reports/snapshot.json"
+          timeout 300 python qa/openbao-acceptance/transit_migration_live.py \
+            --oracle-version 2.7.0 --binary "$binary" --output "$reports/transit.json"
+          timeout 300 python qa/openbao-acceptance/run_official_comparison.py \
+            --oracle-version 2.7.0 --binary "$binary" --candidate-source "$PWD" \
+            --work-dir "$work/comparison"
+          cp "$work/comparison/comparison-bound.json" "$reports/comparison.json"
+          timeout 300 python qa/openbao-acceptance/live_migration_rehearsal.py \
+            --oracle-version 2.7.0 --binary "$binary" \
+            --oracle-launcher "$PWD/qa/openbao-acceptance/official_openbao_launcher.py" \
+            --work-dir "$work/kv"
+          cp "$work/kv/live-migration-result.json" "$reports/kv.json"
+          # These bounded profiles do not admit all-asset migration or production cutover.
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git diff --exit-code
+
       - name: Compare KV metadata CAS and enumeration with official OpenBao 2.6.2
         if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle_ready.outcome == 'success' }}
         shell: bash

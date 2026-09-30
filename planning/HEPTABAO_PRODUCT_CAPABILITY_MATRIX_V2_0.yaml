@@ -274,7 +274,7 @@ modules:
   source: crates/heptabao-token/src/lib.rs
   guide: docs/modules/heptabao-token.md
 - crate: heptabao-server
-  domain: runnable TLS encrypted secrets service with bounded online Kubernetes/OIDC identity, root-only capacity observation and recovery-safe journal compaction
+  domain: runnable TLS encrypted secrets service with bounded online Kubernetes/OIDC identity, root-only capacity observation, recovery-safe journal compaction and explicit native leader cluster-address diagnosis
   state: IMPLEMENTED_REVIEW_REQUIRED
   documentation_standard: V3
   source: crates/heptabao-server/src/lib.rs
@@ -296,3 +296,7 @@ claims:
   migration_authority: false
   release_authority: false
   authority_effect: NONE
+
+# OpenBao 2.7 continuation: Transit pure ML-DSA and signing-only external-mu
+# share the existing encrypted key owner. Refer to the exact continuation and
+# executable tests; HashML-DSA, key import and full replacement remain open.

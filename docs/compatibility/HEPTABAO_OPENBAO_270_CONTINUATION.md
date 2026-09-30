@@ -92,8 +92,28 @@ not consume a bearer use, manufacture read authority, or replace ReadIndex.
 `sys_leader_live.py` selects only the verified 2.7.0 executable and archive,
 checks reference health version, uses PebbleDB for the non-HA reference and Raft
 for the HA reference, then separately exercises candidate HA lifecycle behavior.
-The upstream fields `active_time` and `leader_cluster_address` remain explicitly
-unsupported, rather than fabricated from an unrelated local clock or peer socket.
+`leader_cluster_address` now uses only the observed leader's optional explicit
+`peers[node].cluster_address`: a deployment-advertised native mTLS request-
+forwarding HTTPS origin. The public [OpenBao HA configuration contract](https://openbao.org/docs/configuration/#high-availability-parameters)
+identifies the cluster address as the advertised request-forwarding endpoint.
+Missing configuration or an unknown local leader omits
+that field. It is never inferred from `api_address`, a peer socket, a TLS server
+name or the request's Host header. The native peer listener multiplexes forwarding
+and Raft frames; this diagnostic value does not claim OpenBao cluster-wire
+interoperability. The real candidate fixture advertises that listener separately
+from its public API and directed fault-injection proxies, and requires the exact
+current leader's advertised value before and after handoff.
+
+`active_time` remains explicitly unsupported. Native Raft metrics expose a
+current leader snapshot, while application activation also requires unseal,
+bootstrap admission, a successful ReadIndex and an exact local application
+identity. A first diagnostic read, first metrics-watch notification or request
+clock cannot timestamp that earlier lifecycle event. Closing this blocker needs
+one serialized active-publication event bound to the actual local Raft term and
+application-ready transition, with invalidation on seal, fence, leadership loss
+and process restart; it must also handle leadership changes with no HTTP requests.
+The diagnostic endpoint must continue to sample that result without starting a
+ReadIndex or consuming a token.
 
 The repeated physical-host replay failure is now covered by a paced real-Raft
 regression in `process/replication_tests.rs`. Accumulated multi-entry replay uses
@@ -265,10 +285,10 @@ documentation explicitly states that the implementation has not been independent
 audited: <https://docs.rs/ml-dsa/0.1.1/ml_dsa/>. This is not independent security
 admission. No OpenBao implementation source was translated for this addition.
 
-Key import, certificate chains, PKI ML-DSA, PQC TLS, external-mu/context/hash
-options and full field/error parity remain unqualified. Nonempty derivation
-contexts, prehash/signature options and unsupported fields are explicitly refused;
-they are not silently mapped onto pure signing. See the schema-62 format contract
+Key import, certificate chains, PKI ML-DSA, PQC TLS, HashML-DSA and full
+field/error parity remain unqualified. The external-mu signing and pure-option
+contracts below are distinct from HashML-DSA and derived keys. Unsupported
+signature/marshaling options and unknown fields remain explicitly refused. See the schema-62 format contract
 for old-reader refusal, retained key material and mutation-only promotion.
 
 ## Local qualification port selection
@@ -352,3 +372,46 @@ old-leader rejoin, quorum recovery and cleanup. The extension requires all basel
 checks as well as its own nonoverlapping checks. No business mutation is retried.
 This is a native same-version HeptaBao HA profile, not an OpenBao-to-HeptaBao
 migration, a physical power-cut test or an external KMS cryptographic-use claim.
+
+## Selected-version bounded migration and corpus runners
+
+`run_official_comparison.py`, `live_migration_rehearsal.py`,
+`transit_migration_live.py` and `migration_snapshot_live.py` now accept
+`--oracle-version 2.7.0`; their omitted-option default remains 2.6.2. Each selected
+reference must match the exact archive/executable pins, live version and cluster,
+private identity receipt and actual fixture storage configuration. The non-HA
+2.7 reference uses PebbleDB; snapshot inspection explicitly selects Raft. KV
+rollback restarts retain and recheck that same reference identity and backend.
+
+The required 2.7 CI lane executes these four bounded runners separately from the
+historical runs. The existing scoped acceptance cases and module selection are
+unchanged; this executes their behavior on the selected reference without
+relabelling historical reports or changing the frozen 2.6.2 surface denominator.
+Snapshot evidence identifies the selected version in its readiness case and
+remains inspection-only. KV transfer, append-only reverse delta and Transit
+re-encryption retain their existing asset, uncertainty, writer-fencing and
+authority limits. Adding a version selector or CI step is not a passing runtime
+receipt, full-asset migration, snapshot conversion or production admission.
+
+## ML-DSA external-mu signing continuation
+
+The native Transit signer accepts `hash_algorithm=mldsa-mu` only with
+`prehashed=true` and an exact 64-byte decoded input. It passes that input directly
+to the pinned RustCrypto precomputed-mu randomized signer, preserving the existing
+encrypted seed owner, ACL, audit, version policy and response framing. Incorrect
+lengths return the fixed redacted HTTP 500 observed on the verified 2.7.0 oracle;
+a missing/false `prehashed` is 400. There is no raw-byte hashing fallback.
+
+The 2.7.0 public verify endpoint rejects `mldsa-mu` with 400. A precomputed-mu
+signature is instead verified against its original message through the pure
+verify path. The native API retains exactly that distinction. For generated,
+non-derived ML-DSA keys the generic recognized hash, `prehashed` and string
+`context` fields do not alter pure signing or verification, matching the native
+reference. This is not support for HashML-DSA or a FIPS 204 signature context.
+
+The extended `transit_mldsa_live.py` profile independently computes FIPS 204 mu
+from each service's public key and the synthetic original message. It requires
+pure verification, changed-message rejection, invalid-length and option failures,
+actual restart and version retirement for all three parameter sets. Reports keep
+only case labels, statuses and predicates. Earlier 97-case runner hashes do not
+qualify the added observations; this text is not a passing execution receipt.
