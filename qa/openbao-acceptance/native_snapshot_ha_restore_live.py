@@ -28,7 +28,7 @@ from official_openbao_launcher import pinned_artifact, verify_inputs
 from online_evidence import admit_output, complete_checks, source_identity
 from provider_renewal_upgrade import durable_manifest
 from radius_renewal_ha import GatedRadius, profile_configuration
-from radius_renewal_live import SECRET, USERNAME, PASSWORD
+from radius_renewal_live import RADIUS_MATERIAL, USERNAME, PAP_VALUE
 
 LEGACY_BUILD = 'fa61fa7eadd2c76a8fbcca7e9356ec678004c0aa'
 LEGACY_HARNESS = '33593f6404b8755496d2cacb64322da3658aa8d6'
@@ -102,7 +102,7 @@ def registered_mount(response, name, expected_kind):
 
 
 def radius_credentials():
-    return {'username':USERNAME.decode('ascii'),'password':PASSWORD.decode('ascii')}
+    return {'username':USERNAME.decode('ascii'),'password':PAP_VALUE.decode('ascii')}
 
 
 def late_denied(response):
@@ -326,7 +326,7 @@ def run(binary, legacy, bao, work, checks, observations):
                 node.call('GET','sys/mounts',token=token),'external-ldap','ldap'))
         check('openldap_registry_retained',True)
         verify('final_all_hashes')
-        samples += [token.encode(),cluster.unseal_key.encode(),SECRET,PASSWORD]
+        samples += [token.encode(),cluster.unseal_key.encode(),RADIUS_MATERIAL,PAP_VALUE]
         cluster.close(); provider.close()
         check('processes_stopped',all(n.process is None for n in cluster.nodes))
         files = [p for n in cluster.nodes for base in (n.data_dir,n.root/'raft') for p in base.rglob('*') if p.is_file()]

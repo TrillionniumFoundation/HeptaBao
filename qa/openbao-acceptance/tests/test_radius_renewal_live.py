@@ -1,6 +1,4 @@
 """RADIUS renewal harness keeps protocol checks strict and receipts secret-free."""
-import hashlib
-import hmac
 import json
 from pathlib import Path
 import struct
@@ -12,17 +10,18 @@ from bao_http import Response
 from core_isolation import ScenarioFailure, successful_comparison
 from radius_renewal_live import (native_config_matches, native_period_matches,
     run_native_parameter_scenarios, complete_scenarios)
-from radius_renewal_live import (ADAPTATION, PASSWORD, SECRET, USERNAME,
-    md5, message_authenticator, pap_packet_response, renewal_token_shape, wrapped_renewal_shape, run_scenarios)
+from radius_renewal_live import (ADAPTATION, PAP_VALUE, RADIUS_MATERIAL, USERNAME,
+    WRONG_PAP_VALUE, md5, message_authenticator, pap_packet_response, renewal_token_shape,
+    wrapped_renewal_shape, run_scenarios)
 
 
-def request_packet(*, with_ma=True, bad_ma=False, password=PASSWORD):
+def request_packet(*, with_ma=True, bad_ma=False, pap_value=PAP_VALUE):
     authenticator = bytes(range(16))
-    padded = password + b"\0" * (-len(password) % 16)
+    padded = pap_value + b"\0" * (-len(pap_value) % 16)
     encrypted = bytearray()
     previous = authenticator
     for start in range(0, len(padded), 16):
-        chunk = bytes(a ^ b for a, b in zip(padded[start:start + 16], md5(SECRET, previous)))
+        chunk = bytes(a ^ b for a, b in zip(padded[start:start + 16], md5(RADIUS_MATERIAL, previous)))
         encrypted.extend(chunk)
         previous = chunk
     attributes = bytes([1, 2 + len(USERNAME)]) + USERNAME
@@ -95,11 +94,11 @@ class RadiusRenewalTests(unittest.TestCase):
                 reply, observation = pap_packet_response(request, require_ma=with_ma, allow=allow)
                 self.assertEqual(reply[0], 2 if allow else 3)
                 self.assertEqual(reply[1], request[1])
-                self.assertEqual(reply[4:20], md5(reply[:4], request[4:20], reply[20:], SECRET))
+                self.assertEqual(reply[4:20], md5(reply[:4], request[4:20], reply[20:], RADIUS_MATERIAL))
                 signed = bytearray(reply)
                 signed[4:20] = request[4:20]
                 signed[22:] = b"\0" * 16
-                self.assertEqual(reply[22:], hmac.new(SECRET, signed, hashlib.md5).digest())
+                self.assertEqual(reply[22:], message_authenticator(signed))
                 self.assertEqual(observation, {"credentials_valid": True, "message_authenticator_present": with_ma, "accepted": allow})
 
     def test_candidate_requires_ma_and_oracle_adapter_rejects_invalid_present_ma(self):
@@ -110,7 +109,7 @@ class RadiusRenewalTests(unittest.TestCase):
                 pap_packet_response(request_packet(bad_ma=True), require_ma=require_ma, allow=True)
 
     def test_valid_authenticator_cannot_hide_incorrect_pap_credentials(self):
-        reply, observation = pap_packet_response(request_packet(password=b"wrong-synthetic-password"), require_ma=True, allow=True)
+        reply, observation = pap_packet_response(request_packet(pap_value=WRONG_PAP_VALUE), require_ma=True, allow=True)
         self.assertEqual(reply[0], 3)
         self.assertIs(observation["credentials_valid"], False)
         self.assertIs(observation["accepted"], False)

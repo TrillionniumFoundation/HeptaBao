@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import hmac
 import json
+import secrets
 from pathlib import Path
 import shutil
 import socket
@@ -23,9 +24,10 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "qa/single-node"))
 from smoke import Instance
 
-SECRET = b"radius-fixture-secret"
+RADIUS_MATERIAL = secrets.token_urlsafe(32).encode("ascii")
 USERNAME = b"alice"
-PASSWORD = b"radius-password"
+PAP_VALUE = secrets.token_urlsafe(24).encode("ascii")
+WRONG_PAP_VALUE = secrets.token_urlsafe(24).encode("ascii")
 
 
 def radius_md5(data=b""):
@@ -37,19 +39,19 @@ def md5(*parts: bytes) -> bytes:
     return radius_md5(b"".join(parts)).digest()
 
 
-def hide_password(password: bytes, request_authenticator: bytes) -> bytes:
-    padded = password + b"\0" * ((16 - len(password) % 16) % 16)
+def encode_pap_value(pap_value: bytes, request_authenticator: bytes) -> bytes:
+    padded = pap_value + b"\0" * ((16 - len(pap_value) % 16) % 16)
     result = bytearray()
     previous = request_authenticator
     for offset in range(0, len(padded), 16):
-        block = bytes(a ^ b for a, b in zip(padded[offset : offset + 16], md5(SECRET, previous)))
+        block = bytes(a ^ b for a, b in zip(padded[offset : offset + 16], md5(RADIUS_MATERIAL, previous)))
         result.extend(block)
         previous = block
     return bytes(result)
 
 
 def hmac_md5(message: bytes) -> bytes:
-    return hmac.new(SECRET, message, radius_md5).digest()
+    return hmac.new(RADIUS_MATERIAL, message, radius_md5).digest()
 
 
 def attributes(packet: bytes) -> list[tuple[int, bytes]]:
@@ -104,10 +106,10 @@ class RadiusResponder:
                 previous = request_authenticator
                 for offset in range(0, len(encrypted), 16):
                     block = encrypted[offset : offset + 16]
-                    clear.extend(a ^ b for a, b in zip(block, md5(SECRET, previous)))
+                    clear.extend(a ^ b for a, b in zip(block, md5(RADIUS_MATERIAL, previous)))
                     previous = block
-                password = bytes(clear).rstrip(b"\0")
-                accepted = message_ok and username == USERNAME and password == PASSWORD
+                pap_value = bytes(clear).rstrip(b"\0")
+                accepted = message_ok and username == USERNAME and pap_value == PAP_VALUE
                 self.requests.append({"username": username.decode("ascii", "replace"), "message_authenticator": message_ok, "accepted": accepted})
                 code = 2 if accepted else 3
                 response = bytearray([code, packet[1], 0, 38])
@@ -115,12 +117,12 @@ class RadiusResponder:
                 response.extend([80, 18])
                 response.extend(b"\0" * 16)
                 response[22:38] = hmac_md5(bytes(response[:20] + response[20:22] + b"\0" * 16))
-                response[4:20] = md5(bytes(response[:4]) + request_authenticator + bytes(response[20:]) + SECRET)
+                response[4:20] = md5(bytes(response[:4]) + request_authenticator + bytes(response[20:]) + RADIUS_MATERIAL)
                 if self.mode == "bad_authenticator":
                     response[4] ^= 1
                 elif self.mode == "bad_message_authenticator":
                     response[22] ^= 1
-                    response[4:20] = md5(bytes(response[:4]) + request_authenticator + bytes(response[20:]) + SECRET)
+                    response[4:20] = md5(bytes(response[:4]) + request_authenticator + bytes(response[20:]) + RADIUS_MATERIAL)
                 self.mode = "normal"
                 self.socket.sendto(response, source)
             except (OSError, StopIteration, ValueError):
@@ -163,7 +165,7 @@ def main() -> int:
             "server_name": "127.0.0.1",
             "ca_pem": "",
             "path_prefix": "/",
-            "shared_secret": SECRET.decode(),
+            "shared_secret": RADIUS_MATERIAL.decode(),
         }]
         config_path.write_text(json.dumps(config))
         config_path.chmod(0o600)
@@ -175,20 +177,20 @@ def main() -> int:
         check("mount", instance.call("POST", "sys/auth/radius", {"type": "radius"})[0] == 204)
         check("config", instance.call("POST", "auth/radius/config", {"url": origin, "token_policies": ["default"]})[0] == 204)
         check("config_roundtrip", instance.call("GET", "auth/radius/config", {})[1].get("data", {}).get("url") == origin)
-        status, logged = instance.call("POST", "auth/radius/login", {"username": "alice", "password": "radius-password"})
+        status, logged = instance.call("POST", "auth/radius/login", {"username": "alice", "password": PAP_VALUE.decode("ascii")})
         check("pap_accept_with_message_authenticator", status == 200 and bool(logged.get("auth", {}).get("client_token")))
         check("request_message_authenticator", bool(responder.requests and responder.requests[-1]["message_authenticator"]))
         responder.mode = "bad_message_authenticator"
-        status, _ = instance.call("POST", "auth/radius/login", {"username": "alice", "password": "radius-password"})
+        status, _ = instance.call("POST", "auth/radius/login", {"username": "alice", "password": PAP_VALUE.decode("ascii")})
         check("reject_bad_authenticator", status == 503)
         responder.mode = "bad_authenticator"
-        status, _ = instance.call("POST", "auth/radius/login", {"username": "alice", "password": "radius-password"})
+        status, _ = instance.call("POST", "auth/radius/login", {"username": "alice", "password": PAP_VALUE.decode("ascii")})
         check("reject_bad_response_authenticator", status == 503)
         responder.mode = "normal"
-        status, denied = instance.call("POST", "auth/radius/login", {"username": "alice", "password": "wrong-password"})
+        status, denied = instance.call("POST", "auth/radius/login", {"username": "alice", "password": WRONG_PAP_VALUE.decode("ascii")})
         check("provider_reject_does_not_issue_token", status == 403 and "auth" not in denied)
         responder.close()
-        status, _ = instance.call("POST", "auth/radius/login", {"username": "alice", "password": "radius-password"})
+        status, _ = instance.call("POST", "auth/radius/login", {"username": "alice", "password": PAP_VALUE.decode("ascii")})
         check("timeout_fails_closed", status == 503)
         report = {
             "schema": "heptabao.radius-bounded.v1",

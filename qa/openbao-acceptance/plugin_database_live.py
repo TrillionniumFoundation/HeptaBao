@@ -57,7 +57,7 @@ os.execv(v("--heptabao-plugin"),[v("--heptabao-plugin")])
     plugin_sha = make_exec(
         plugin,
         f"""#!{sys.executable}
-import hashlib,hmac,json,os,struct,sys
+import hashlib,json,os,struct,sys
 STATE={str(provider_state)!r}
 FINGERPRINT_KEY={fingerprint_key!r}
 r=sys.stdin.buffer.read(1048588)
@@ -117,7 +117,9 @@ if action=="issue":
         "request_digest":digest,
         "expires":expires,
         "active":True,
-        "password_hmac_sha256":hmac.new(FINGERPRINT_KEY,password.encode(),hashlib.sha256).hexdigest(),
+        "password_keyed_blake2b":hashlib.blake2b(
+            password.encode(), key=FINGERPRINT_KEY, digest_size=32
+        ).hexdigest(),
     }}
 elif action=="renew":
     if (
@@ -276,11 +278,11 @@ def run(binary: Path, root: Path):
             "issued_secret_matches_plugin_digest",
             provider.get("active") is True
             and provider.get("username") == credential["username"]
-            and provider.get("password_hmac_sha256")
-            == hmac.new(
-                fingerprint_key,
+            and provider.get("password_keyed_blake2b")
+            == hashlib.blake2b(
                 credential["password"].encode(),
-                hashlib.sha256,
+                key=fingerprint_key,
+                digest_size=32,
             ).hexdigest(),
         )
         issue_seq = provider["seq"]

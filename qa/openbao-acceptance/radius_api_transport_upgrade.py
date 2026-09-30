@@ -17,7 +17,7 @@ from core_isolation import ROOT, ScenarioFailure, file_hash
 from identity_upgrade import validate_binary_pins
 from online_evidence import admit_output, source_identity
 from provider_renewal_upgrade import durable_manifest
-from radius_native_live import NativeRadius, Trace as NativeTrace, SECRET, PASSWORD, config_matches
+from radius_native_live import NativeRadius, Trace as NativeTrace, RADIUS_MATERIAL, PAP_VALUE, config_matches
 from radius_renewal_live import renewal_token_shape
 from remote_jwks_live import Instance
 
@@ -102,7 +102,7 @@ def prepare_legacy(instance, provider, cases):
             'path "auth/token/create" { capabilities = ["update", "sudo"] }\n'
             'path "auth/token/create-orphan" { capabilities = ["update", "sudo"] }')
     t.call('legacy.policy','PUT','sys/policies/acl/upgrade-reader',{'policy':policy},expected=204)
-    config={'host':'127.0.0.1','port':provider.port,'secret':SECRET.decode(),
+    config={'host':'127.0.0.1','port':provider.port,'secret':RADIUS_MATERIAL.decode(),
             'token_ttl':300,'token_max_ttl':3600,'token_policies':['upgrade-reader']}
     tokens={}
     for name,mount in [('direct',MOUNT),('port_direct',PORT_MOUNT)]:
@@ -137,13 +137,13 @@ def run_upgrade(instance, provider, second, candidate, legacy, settings, cases):
     t.check('current.old_config_shape',config_matches(data,**{k:v for k,v in config.items() if k!='secret'})
             and 'api_transport' not in data)
     t.check('current.pure_reads_preserve_store',durable_manifest(store)==before)
-    t.call('partial.secret','POST',CONFIG_PATH,{'secret':SECRET.decode()},expected=204)
+    t.call('partial.secret','POST',CONFIG_PATH,{'secret':RADIUS_MATERIAL.decode()},expected=204)
     t.call('partial.token','POST',CONFIG_PATH,{'token_ttl':240,'token_policies':['upgrade-reader']},expected=204)
     no_enrollment=dict(settings,outbound_endpoints=[])
     restart(instance,candidate,no_enrollment,t,'partial.no_enrollment',key)
     ttl=t.ttl('partial.before',direct);before,cursor=durable_manifest(store),provider.count()
     rejected=t.call('partial.login_rejected','POST','auth/'+MOUNT+'/login',
-                    {'username':'alice','password':PASSWORD.decode()},token='',expected=400)
+                    {'username':'alice','password':PAP_VALUE.decode()},token='',expected=400)
     renewals(t,'partial.still_enrolled',direct,expected=400,contact=None)
     renewals(t,'partial.other_mount_still_enrolled',tokens['port_direct'],expected=400,contact=None)
     unchanged=durable_manifest(store)==before
@@ -207,7 +207,7 @@ def run_upgrade(instance, provider, second, candidate, legacy, settings, cases):
         t.check('recovery.'+label+'.value',value.get('data',{}).get('data')=={'synthetic':True})
     renewals(t,'recovery.renew',direct)
     instance.stop()
-    secrets=[SECRET.decode(),second.secret.decode(),PASSWORD.decode(),key,instance.token,
+    secrets=[RADIUS_MATERIAL.decode(),second.secret.decode(),PAP_VALUE.decode(),key,instance.token,
              *(auth['client_token'] for auth in tokens.values())]
     files=[p for p in store.rglob('*') if p.is_file()]+[instance.root/'server.log',instance.root/'audit.jsonl']
     t.check('plaintext_credentials_absent',all(secret.encode() not in p.read_bytes()

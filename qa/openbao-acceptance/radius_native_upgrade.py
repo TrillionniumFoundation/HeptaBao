@@ -16,7 +16,7 @@ import time
 from bao_http import Client, SafeArgumentParser, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from identity_upgrade import validate_binary_pins
-from radius_renewal_live import RadiusResponder, configuration, SECRET, USERNAME, PASSWORD
+from radius_renewal_live import RadiusResponder, configuration, RADIUS_MATERIAL, USERNAME, PAP_VALUE
 from radius_renewal_live import renewal_token_shape
 from online_evidence import admit_output, source_identity
 from provider_renewal_upgrade import durable_manifest
@@ -77,7 +77,7 @@ def prepare_legacy(instance, responder, cases):
     t.call("legacy.config", config_path, config, expected=204)
     t.call("legacy.write", "secret/data/radius-upgrade", {"data": {"synthetic": True}})
     original = t.call("legacy.login", login_path,
-                     {"username": USERNAME.decode(), "password": PASSWORD.decode()}, token="", provider=True).get("auth", {})
+                     {"username": USERNAME.decode(), "password": PAP_VALUE.decode()}, token="", provider=True).get("auth", {})
     t.check("legacy.token_shape", all(isinstance(original.get(k), str) and original[k]
                                      for k in ("client_token", "accessor", "entity_id")))
     t.check("legacy.renewable_finite", original.get("renewable") is True and original.get("lease_duration") == 120)
@@ -140,7 +140,7 @@ def run_upgrade(instance, responder, candidate, legacy, cases):
     old = t.call("current.old_lookup_after_period_renewal", "auth/token/lookup-self", method="GET", token=original["client_token"]).get("data", {})
     t.check("current.renewal_does_not_rewrite_old_issue_parameters", "period" not in old and old.get("explicit_max_ttl") == 0)
     native = t.call("current.new_periodic_login", prepared["login_path"],
-                    {"username": USERNAME.decode(), "password": PASSWORD.decode()}, token="", provider=True).get("auth", {})
+                    {"username": USERNAME.decode(), "password": PAP_VALUE.decode()}, token="", provider=True).get("auth", {})
     t.check("current.new_periodic_shape", native.get("renewable") is True and native.get("lease_duration") == 60
             and native.get("entity_id") == original["entity_id"]
             and isinstance(native.get("client_token"), str) and bool(native["client_token"])
@@ -198,7 +198,7 @@ def run_upgrade(instance, responder, candidate, legacy, cases):
         t.call("recovery." + label + ".generic_renew", "auth/token/renew-self", {"increment": 300}, token=child)
     t.check("recovery.children_never_contact_provider", responder.count() == calls)
     instance.stop()
-    sensitive = [PASSWORD, SECRET, key.encode(), instance.token.encode(), original["client_token"].encode(),
+    sensitive = [PAP_VALUE, RADIUS_MATERIAL, key.encode(), instance.token.encode(), original["client_token"].encode(),
                  native["client_token"].encode(), *[value.encode() for value in children.values()]]
     files = [p for p in store.rglob("*") if p.is_file()] + [instance.root / "server.log", instance.root / "audit.jsonl"]
     t.check("plaintext_credentials_absent", all(secret not in path.read_bytes()
@@ -244,7 +244,7 @@ def main():
         responder = RadiusResponder(require_ma=True)
         config["outbound_endpoints"] = [{"origin": "radius://127.0.0.1:" + str(responder.port),
             "address": "127.0.0.1:" + str(responder.port), "server_name": "127.0.0.1", "ca_pem": "",
-            "path_prefix": "/", "shared_secret": SECRET.decode()}]
+            "path_prefix": "/", "shared_secret": RADIUS_MATERIAL.decode()}]
         private_write(config_path, config)
         run_upgrade(instance, responder, candidate, legacy, result["cases"])
         result["status"] = "passed"

@@ -13,7 +13,7 @@ from identity_upgrade import validate_binary_pins
 from online_evidence import admit_output, source_identity
 from provider_renewal_upgrade import durable_manifest
 from radius_cidrs_live import SourceClient, Trace
-from radius_native_live import NativeRadius, SECRET, PASSWORD
+from radius_native_live import NativeRadius, RADIUS_MATERIAL, PAP_VALUE
 from remote_jwks_live import Instance
 
 LEGACY_SOURCE='7c10621a6ecc50d3945b70c4be234164284718b6'
@@ -40,7 +40,7 @@ def prepare_legacy(instance,provider,cases):
     t.call('upgrade.legacy.mount','POST','sys/auth/radius',{'type':'radius'},status=204)
     policy='path "auth/token/create" { capabilities = ["update", "sudo"] } path "auth/token/create-orphan" { capabilities = ["update", "sudo"] }'
     t.call('upgrade.legacy.policy','PUT','sys/policies/acl/cidr-issuer',{'policy':policy},status=204)
-    t.config('upgrade.legacy.config',{'host':'127.0.0.1','port':provider.port,'secret':SECRET.decode(),'token_ttl':300,'token_max_ttl':3600,'token_policies':['cidr-issuer']})
+    t.config('upgrade.legacy.config',{'host':'127.0.0.1','port':provider.port,'secret':RADIUS_MATERIAL.decode(),'token_ttl':300,'token_max_ttl':3600,'token_policies':['cidr-issuer']})
     old=t.login('upgrade.legacy.login');t.bounds('upgrade.legacy.lookup',old,[])
     t.call('upgrade.legacy.other_source','GET','auth/token/lookup-self',token=old['client_token'],source='127.0.0.2')
     t.check('upgrade.legacy.complete',True);return t,key,old
@@ -86,7 +86,7 @@ def run_upgrade(instance,provider,candidate,legacy,cases):
     t.renew_all('upgrade.recover.renew',direct)
     t.call('upgrade.recover.child_rejected','GET','auth/token/lookup-self',token=children['child']['client_token'],source='127.0.0.2',status=403)
     t.call('upgrade.recover.orphan_unconstrained','GET','auth/token/lookup-self',token=children['orphan']['client_token'],source='127.0.0.2')
-    t.check('upgrade.receipt_no_secrets',not any(value in json.dumps(cases) for value in [SECRET.decode(),PASSWORD.decode(),*t.tokens]))
+    t.check('upgrade.receipt_no_secrets',not any(value in json.dumps(cases) for value in [RADIUS_MATERIAL.decode(),PAP_VALUE.decode(),*t.tokens]))
     t.check('upgrade.complete',True)
 
 MILESTONES={'upgrade.legacy.complete','upgrade.current.pure_reads_unchanged','upgrade.current.second_restart_unchanged','upgrade.bound.old_unconstrained','upgrade.child.other_source','upgrade.orphan.other_source','upgrade.clear.issued_snapshot.snapshot','upgrade.downgrade.no_application_change','upgrade.recover.snapshot.snapshot','upgrade.recover.rejected','upgrade.recover.renew.accessor.shape','upgrade.receipt_no_secrets','upgrade.complete'}

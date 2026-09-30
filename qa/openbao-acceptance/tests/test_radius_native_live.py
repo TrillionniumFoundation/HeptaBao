@@ -10,7 +10,7 @@ import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from bao_http import Response
 from core_isolation import ScenarioFailure
-from radius_native_live import Trace,config_matches,complete_scenarios,MILESTONES,pap_response,md5,token_policy_shape,NativeRadius,PASSWORD
+from radius_native_live import Trace,config_matches,complete_scenarios,MILESTONES,pap_response,md5,token_policy_shape,NativeRadius,PAP_VALUE
 
 class Provider:
     def count(self):return 0
@@ -87,7 +87,7 @@ class NativeRadiusTests(unittest.TestCase):
                 cursor=provider.count()
                 self.assertEqual(provider.peer_observation(cursor),{'request_count':0,'peer_family':0,'peer_loopback':False})
                 with socket.socket(family,socket.SOCK_DGRAM) as client:
-                    client.settimeout(2);client.sendto(packet(password=PASSWORD),address);reply,_=client.recvfrom(4097)
+                    client.settimeout(2);client.sendto(packet(password=PAP_VALUE),address);reply,_=client.recvfrom(4097)
                 self.assertEqual(reply[0],2)
                 self.assertTrue(provider.observed(cursor,accepted=True))
                 self.assertEqual(provider.peer_observation(cursor),{'request_count':1,'peer_family':version,'peer_loopback':True})

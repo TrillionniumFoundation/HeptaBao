@@ -20,7 +20,7 @@ class HaRestoreGuards(unittest.TestCase):
         import json
         value=f.radius_credentials()
         self.assertEqual(json.loads(json.dumps(value)),value)
-        self.assertEqual(value['password'].encode(),f.PASSWORD)
+        self.assertEqual(value['password'].encode(),f.PAP_VALUE)
         self.assertEqual(value['username'].encode(),f.USERNAME)
 
     def test_named_phases_cannot_be_skipped_duplicated_or_forged(self):

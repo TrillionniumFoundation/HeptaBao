@@ -18,7 +18,7 @@ from core_isolation import ROOT, ScenarioFailure, file_hash
 from online_evidence import admit_output, source_identity
 from official_openbao_launcher import start_oracle,stop_oracle,restart_oracle,BINARY_SHA256
 from radius_cidrs_live import SourceClient
-from radius_native_live import NativeRadius,SECRET,PASSWORD
+from radius_native_live import NativeRadius,RADIUS_MATERIAL,PAP_VALUE
 from ldap_native_live import NativeDirectory,configuration as ldap_config
 from kubernetes_renewal_live import Reviewer,configuration as kube_config,role,assertion
 from remote_jwks_live import Instance,signing_key
@@ -36,14 +36,14 @@ class Trace:
 
 def run_scenarios(t,side,radius,directory,reviewer,ca,restart):
     private,jwk=signing_key('ES256','wrap-kube');reviewer.presented=assertion(private,jwk)
-    configs={'radius':{'host':'127.0.0.1','port':radius.port,'secret':SECRET.decode(),'token_ttl':120,'token_bound_cidrs':['127.0.0.1']},'ldap':ldap_config(side,directory,ca,token_ttl=120),'kubernetes':kube_config(side,reviewer,private,ca)}
-    t.sensitive.extend([SECRET.decode(),PASSWORD.decode(),directory.user_password,directory.admin_password,reviewer.reviewer,reviewer.presented])
+    configs={'radius':{'host':'127.0.0.1','port':radius.port,'secret':RADIUS_MATERIAL.decode(),'token_ttl':120,'token_bound_cidrs':['127.0.0.1']},'ldap':ldap_config(side,directory,ca,token_ttl=120),'kubernetes':kube_config(side,reviewer,private,ca)}
+    t.sensitive.extend([RADIUS_MATERIAL.decode(),PAP_VALUE.decode(),directory.user_password,directory.admin_password,reviewer.reviewer,reviewer.presented])
     for kind,config in configs.items():
         t.call(kind+'.mount','POST','sys/auth/'+kind,{'type':kind},expected=204)
         t.call(kind+'.config','POST','auth/'+kind+'/config',config,expected=204)
         if kind=='kubernetes':t.call(kind+'.role','POST','auth/kubernetes/role/app',role(token_policies=['default'],token_ttl=120,token_max_ttl=600),expected=204)
         path='auth/'+kind+'/login'+('/alice' if kind=='ldap' else '')
-        body={'username':'alice','password':PASSWORD.decode()} if kind=='radius' else {'password':directory.user_password} if kind=='ldap' else {'role':'app','jwt':reviewer.presented}
+        body={'username':'alice','password':PAP_VALUE.decode()} if kind=='radius' else {'password':directory.user_password} if kind=='ldap' else {'role':'app','jwt':reviewer.presented}
         before=radius.count() if kind=='radius' else directory.cursor() if kind=='ldap' else len(reviewer.calls)
         result=t.call(kind+'.wrapped','POST',path,body,token='',wrap='60s');wrap=result.get('wrap_info',{});wrapper=wrap.get('token')
         observed=radius.count()==before+1 and radius.observed(before,accepted=True) if kind=='radius' else directory.observed(before,search=True) if kind=='ldap' else len(reviewer.calls)==before+1 and reviewer.request_valid

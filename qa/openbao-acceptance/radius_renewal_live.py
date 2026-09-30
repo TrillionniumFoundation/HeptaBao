@@ -12,6 +12,7 @@ import hmac
 import importlib.util
 import json
 import os
+import secrets
 from pathlib import Path
 import shutil
 import socket
@@ -26,9 +27,10 @@ from core_isolation import ROOT, ScenarioFailure, file_hash, successful_comparis
 from online_evidence import source_identity
 from official_openbao_launcher import BINARY_SHA256, start_oracle, stop_oracle, restart_oracle
 
-SECRET = b"synthetic-radius-renewal-shared-secret"
+RADIUS_MATERIAL = secrets.token_urlsafe(32).encode("ascii")
 USERNAME = b"alice"
-PASSWORD = b"synthetic-radius-renewal-password"
+PAP_VALUE = secrets.token_urlsafe(24).encode("ascii")
+WRONG_PAP_VALUE = secrets.token_urlsafe(24).encode("ascii")
 ADAPTATION = {
     "candidate": "url API field; endpoint, UDP address and shared secret enrolled in server configuration",
     "oracle": "host, port and secret API fields",
@@ -49,7 +51,7 @@ def md5(*parts):
 
 
 def message_authenticator(packet):
-    return hmac.new(SECRET, packet, radius_md5).digest()
+    return hmac.new(RADIUS_MATERIAL, packet, radius_md5).digest()
 
 
 def pap_packet_response(packet: bytes, *, require_ma: bool, allow: bool):
@@ -86,9 +88,9 @@ def pap_packet_response(packet: bytes, *, require_ma: bool, allow: bool):
     previous = packet[4:20]
     for offset in range(0, len(encrypted), 16):
         block = encrypted[offset:offset + 16]
-        clear.extend(a ^ b for a, b in zip(block, md5(SECRET, previous)))
+        clear.extend(a ^ b for a, b in zip(block, md5(RADIUS_MATERIAL, previous)))
         previous = block
-    credentials_valid = (values.get(1) == USERNAME and hmac.compare_digest(bytes(clear).rstrip(b"\0"), PASSWORD))
+    credentials_valid = (values.get(1) == USERNAME and hmac.compare_digest(bytes(clear).rstrip(b"\0"), PAP_VALUE))
     clear[:] = b"\0" * len(clear)
     accepted = credentials_valid and allow
     response = bytearray([2 if accepted else 3, packet[1], 0, 38])
@@ -96,7 +98,7 @@ def pap_packet_response(packet: bytes, *, require_ma: bool, allow: bool):
     response.extend([80, 18])
     response.extend(b"\0" * 16)
     response[22:] = message_authenticator(response)
-    response[4:20] = md5(response[:4], packet[4:20], response[20:], SECRET)
+    response[4:20] = md5(response[:4], packet[4:20], response[20:], RADIUS_MATERIAL)
     return bytes(response), {"credentials_valid": credentials_valid, "message_authenticator_present": present, "accepted": accepted}
 
 
@@ -151,7 +153,7 @@ def configuration(side, responder, policies):
     common = {"token_policies": policies, "token_ttl": 60, "token_max_ttl": 600}
     if side == "candidate":
         return dict(common, url=f"radius://127.0.0.1:{responder.port}")
-    return dict(common, host="127.0.0.1", port=responder.port, secret=SECRET.decode(), dial_timeout=2, read_timeout=2)
+    return dict(common, host="127.0.0.1", port=responder.port, secret=RADIUS_MATERIAL.decode(), dial_timeout=2, read_timeout=2)
 
 
 def renewal_token_shape(auth, target, *, via_accessor):
@@ -192,7 +194,7 @@ def run_scenarios(client, responder, configure, restart, results=None):
         call(case, "POST", "auth/radius/config", configure(policies), expected=204)
 
     def login(case):
-        body = call(case, "POST", "auth/radius/login", {"username": USERNAME.decode(), "password": PASSWORD.decode()}, provider=True)
+        body = call(case, "POST", "auth/radius/login", {"username": USERNAME.decode(), "password": PAP_VALUE.decode()}, provider=True)
         auth = body.get("auth", {})
         valid = isinstance(auth.get("client_token"), str) and bool(auth["client_token"]) and isinstance(auth.get("accessor"), str) and bool(auth["accessor"])
         check(case + ".credentials_present", valid)
@@ -281,7 +283,7 @@ def run_finite_lifetime_scenarios(client, provider, configure, update_limits, re
     configure(mount, 60, 120)
     check("initial_config", True)
     issued = call("login", "POST", "auth/" + mount + '/login',
-                  {"username": USERNAME.decode(), "password": PASSWORD.decode()}, token="", contact=True)["auth"]
+                  {"username": USERNAME.decode(), "password": PAP_VALUE.decode()}, token="", contact=True)["auth"]
     raw, accessor = issued["client_token"], issued["accessor"]
     check("initial_ttl60", issued.get("lease_duration") == 60)
     data = call("lookup_initial", "GET", "auth/token/lookup-self", token=raw)["data"]
@@ -372,7 +374,7 @@ def run_native_parameter_scenarios(client, responder, configure, restart, result
 
     def login(name, path, expected_ttl):
         auth = call(name, "auth/" + path + "/login",
-                    {"username": USERNAME.decode(), "password": PASSWORD.decode()},
+                    {"username": USERNAME.decode(), "password": PAP_VALUE.decode()},
                     token="", provider=True)["auth"]
         check(name + ".ttl", auth.get("lease_duration") == expected_ttl)
         return auth
@@ -540,7 +542,7 @@ def main():
         cfg["lifecycle_interval_seconds"] = 0
         cfg["outbound_endpoints"] = [{"origin": f"radius://127.0.0.1:{candidate_udp.port}",
             "address": f"127.0.0.1:{candidate_udp.port}", "server_name": "127.0.0.1",
-            "ca_pem": "", "path_prefix": "/", "shared_secret": SECRET.decode()}]
+            "ca_pem": "", "path_prefix": "/", "shared_secret": RADIUS_MATERIAL.decode()}]
         (instance.root / "server.json").write_text(json.dumps(cfg))
         instance.start()
         status, init = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})

@@ -18,7 +18,7 @@ from online_evidence import admit_output,source_identity
 from provider_renewal_upgrade import durable_manifest
 from radius_native_live import NativeRadius
 from radius_native_upgrade import Trace as RadiusTrace
-from radius_renewal_live import RadiusResponder,SECRET,PASSWORD,renewal_token_shape
+from radius_renewal_live import RadiusResponder,RADIUS_MATERIAL,PAP_VALUE,renewal_token_shape
 from remote_jwks_live import Instance
 
 LEGACY_SOURCE='b100de4c55739f716f81e7f018cf86c1e6db0672'
@@ -50,7 +50,7 @@ def enroll(instance,legacy_provider,native_provider=None):
     def endpoint(provider):
         return {'origin':f'radius://127.0.0.1:{provider.port}','address':f'127.0.0.1:{provider.port}',
                 'server_name':'127.0.0.1','ca_pem':'','path_prefix':'/'}
-    settings['outbound_endpoints']=[dict(endpoint(legacy_provider),shared_secret=SECRET.decode())]
+    settings['outbound_endpoints']=[dict(endpoint(legacy_provider),shared_secret=RADIUS_MATERIAL.decode())]
     if native_provider is not None:settings['outbound_endpoints'].append(endpoint(native_provider))
     private_write(instance.root/'server.json',settings,replace=True)
 
@@ -77,7 +77,7 @@ def prepare_legacy(instance,provider,cases):
         config={'url':f'radius://127.0.0.1:{provider.port}','token_policies':['default','upgrade-reader'],
                 'token_ttl':300,'token_max_ttl':600,'token_period':period,'token_explicit_max_ttl':cap}
         t.call('legacy.'+label+'.config','auth/'+mount+'/config',config,expected=204);configs[label]=config
-        auth=t.call('legacy.'+label+'.login','auth/'+mount+'/login',{'username':'alice','password':PASSWORD.decode()},token='',provider=True).get('auth',{})
+        auth=t.call('legacy.'+label+'.login','auth/'+mount+'/login',{'username':'alice','password':PAP_VALUE.decode()},token='',provider=True).get('auth',{})
         t.check('legacy.'+label+'.shape',auth_shape(auth) and auth.get('lease_duration')==300);tokens[label]=auth
         data=t.call('legacy.'+label+'.lookup','auth/token/lookup-self',method='GET',token=auth['client_token']).get('data',{})
         t.check('legacy.'+label+'.issued_parameters',data.get('period')==(period or None) and data.get('explicit_max_ttl')==cap)
@@ -126,7 +126,7 @@ def run_upgrade(instance,legacy_provider,native_provider,candidate,legacy,cases)
     data=native.call('native.config_read','auth/radius-native/config',method='GET').get('data',{})
     native.check('native.secret_redacted','secret' not in data and NATIVE_SECRET.decode() not in json.dumps(data))
     native.call('native.user_absent','auth/radius-native/users/alice',method='GET',expected=404)
-    auth=native.call('native.login_without_map','auth/radius-native/login',{'username':'alice','password':PASSWORD.decode()},token='',provider=True).get('auth',{})
+    auth=native.call('native.login_without_map','auth/radius-native/login',{'username':'alice','password':PAP_VALUE.decode()},token='',provider=True).get('auth',{})
     native.check('native.shape',auth_shape(auth) and auth.get('lease_duration')==300 and set(auth.get('token_policies',[]))=={'default','upgrade-reader','native-fallback'} and auth['entity_id']!=tokens['finite']['entity_id']);tokens['native']=auth
     for via,path,payload,actor in [('self','auth/token/renew-self',{},auth['client_token']),('token','auth/token/renew',{'token':auth['client_token']},None),('accessor','auth/token/renew-accessor',{'accessor':auth['accessor']},None)]:
         response=native.call('native.'+via+'.renew',path,dict(payload,increment=300),token=actor,provider=True)
@@ -161,7 +161,7 @@ def run_upgrade(instance,legacy_provider,native_provider,candidate,legacy,cases)
         t.call('recovery.'+label+'.renew_without_provider','auth/token/renew-self',{'increment':300},token=tokens[label]['client_token'])
     t.check('recovery.children_no_provider_dependency',legacy_provider.count()==legacy_cursor and native_provider.count()==native_cursor)
     instance.stop()
-    secrets=[SECRET.decode(),NATIVE_SECRET.decode(),PASSWORD.decode(),key,instance.token,*(auth['client_token'] for auth in tokens.values())]
+    secrets=[RADIUS_MATERIAL.decode(),NATIVE_SECRET.decode(),PAP_VALUE.decode(),key,instance.token,*(auth['client_token'] for auth in tokens.values())]
     files=[p for p in store.rglob('*') if p.is_file()]+[instance.root/'server.log',instance.root/'audit.jsonl']
     t.check('plaintext_credentials_absent',all(secret.encode() not in path.read_bytes() for path in files if path.exists() for secret in secrets))
     t.check('complete',True)

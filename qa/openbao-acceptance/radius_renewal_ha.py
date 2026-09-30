@@ -21,7 +21,7 @@ import urllib.error
 from bao_http import SafeArgumentParser
 from ha_destructive import Cluster, FixtureError
 from online_evidence import admit_output, source_identity, publish
-from radius_renewal_live import SECRET, USERNAME, PASSWORD, pap_packet_response
+from radius_renewal_live import RADIUS_MATERIAL, USERNAME, PAP_VALUE, pap_packet_response
 
 ROOT = Path(__file__).resolve().parents[2]
 GATE_BUDGET_SECONDS = 2.7
@@ -109,10 +109,10 @@ def profile_configuration(port, *, native=False):
     if native:
         # Keep the same three-second wire deadline as the legacy fault profile.
         # API credentials do not create an ambient DNS route or process secret.
-        config.update(host="127.0.0.1", port=port, secret=SECRET.decode(),
+        config.update(host="127.0.0.1", port=port, secret=RADIUS_MATERIAL.decode(),
                       read_timeout=3, dial_timeout=3)
     else:
-        endpoint["shared_secret"] = SECRET.decode()
+        endpoint["shared_secret"] = RADIUS_MATERIAL.decode()
         config["url"] = endpoint["origin"]
     return endpoint, config
 
@@ -243,7 +243,7 @@ def authority_denied(status, body, phase):
 def run(binary, root, checks, observations, inherited, *, native=False):
     cluster = None
     provider = GatedRadius(native=native)
-    sensitive = [SECRET, PASSWORD]
+    sensitive = [RADIUS_MATERIAL, PAP_VALUE]
 
     def check(name, passed):
         checks.append({"case": name, "passed": passed is True})
@@ -274,7 +274,7 @@ def run(binary, root, checks, observations, inherited, *, native=False):
 
         def login(node, label):
             status, body = node.call("POST", "auth/radius/login", {
-                "username": USERNAME.decode(), "password": PASSWORD.decode()})
+                "username": USERNAME.decode(), "password": PAP_VALUE.decode()})
             token = body.get("auth", {}).get("client_token")
             check(label + "_login", status == 200 and isinstance(token, str) and bool(token))
             sensitive.append(token.encode())

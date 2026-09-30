@@ -21,7 +21,7 @@ from bao_http import Client, Response, SafeArgumentParser, private_read, private
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from official_openbao_launcher import start_oracle, stop_oracle, restart_oracle, BINARY_SHA256
 from online_evidence import admit_output, source_identity
-from radius_native_live import NativeRadius, SECRET, PASSWORD
+from radius_native_live import NativeRadius, RADIUS_MATERIAL, PAP_VALUE
 from radius_renewal_live import renewal_token_shape, wrapped_renewal_shape
 from remote_jwks_live import Instance
 
@@ -67,7 +67,7 @@ class Trace:
         return response.body
     def config(self,name,body):return self.call(name,'POST','auth/radius/config',body,status=204)
     def login(self,name,*,source='127.0.0.1',status=200,pap=1):
-        body=self.call(name,'POST','auth/radius/login',{'username':'alice','password':PASSWORD.decode()},token='',source=source,status=status,pap=pap)
+        body=self.call(name,'POST','auth/radius/login',{'username':'alice','password':PAP_VALUE.decode()},token='',source=source,status=status,pap=pap)
         auth=body.get('auth',{})
         if status==200:
             self.check(name+'.issued',bool(auth.get('client_token')) and bool(auth.get('accessor')) and auth.get('renewable') is True)
@@ -90,7 +90,7 @@ def run_scenarios(trace,restart):
     rules='path "cidr-kv/*" { capabilities = ["create", "read", "update"] } path "auth/token/create" { capabilities = ["update", "sudo"] } path "auth/token/create-orphan" { capabilities = ["update", "sudo"] }'
     c('policy','PUT','sys/policies/acl/cidr-user',{'policy':rules},status=204)
     c('seed','POST','cidr-kv/item',{'value':'synthetic'},status=204)
-    t.config('config',{'host':'127.0.0.1','port':t.provider.port,'secret':SECRET.decode(),'token_ttl':120,'token_max_ttl':600,'token_policies':['cidr-user'],'token_bound_cidrs':['127.0.0.1/32']})
+    t.config('config',{'host':'127.0.0.1','port':t.provider.port,'secret':RADIUS_MATERIAL.decode(),'token_ttl':120,'token_max_ttl':600,'token_policies':['cidr-user'],'token_bound_cidrs':['127.0.0.1/32']})
     original=t.login('allowed.login');t.bounds('allowed.lookup',original,['127.0.0.1'],source='127.0.0.2')
     t.login('denied.login',source='127.0.0.2',status=403,pap=0)
     for name,method,path,body in [('lookup','GET','auth/token/lookup-self',None),('read','GET','cidr-kv/item',None),('write','POST','cidr-kv/item',{'value':'denied'}),('renew','POST','auth/token/renew-self',{'increment':300})]:
@@ -137,7 +137,7 @@ def run_scenarios(trace,restart):
     t.bounds('restart.old_snapshot',original,['127.0.0.1']);t.bounds('restart.v6_snapshot',v6,['::1'])
     c('restart.reject','GET','auth/token/lookup-self',token=original['client_token'],source='127.0.0.2',status=403)
     t.renew_all('restart.old_renew',original);t.renew_all('restart.v6_renew',v6,self_source='::1')
-    t.check('receipt.no_sensitive_values',not any(secret in json.dumps(t.rows) for secret in [SECRET.decode(),PASSWORD.decode(),*t.tokens]))
+    t.check('receipt.no_sensitive_values',not any(secret in json.dumps(t.rows) for secret in [RADIUS_MATERIAL.decode(),PAP_VALUE.decode(),*t.tokens]))
     t.check('complete',True)
 
 MILESTONES={'denied.login','denied.read','denied.write','denied.renew','actor_scope.accessor.shape','child.other_source','orphan.other_source','changed.old_renew.self.shape','wrapped.no_publication','finite.second','finite.exhausted','parse.mapped_prefix.canonical','v6.renew.self.shape','clear.cross_family','restart.old_renew.self.shape','restart.v6_renew.self.shape','receipt.no_sensitive_values','complete'}

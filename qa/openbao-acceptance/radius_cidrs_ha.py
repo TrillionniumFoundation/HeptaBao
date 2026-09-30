@@ -13,7 +13,7 @@ from core_isolation import ROOT, file_hash
 from online_evidence import admit_output, source_identity
 from ha_destructive import Cluster, FixtureError
 from radius_cidrs_live import SourceClient, Trace
-from radius_native_live import NativeRadius, SECRET, PASSWORD
+from radius_native_live import NativeRadius, RADIUS_MATERIAL, PAP_VALUE
 from ldap_cidrs_live import Trace as LdapTrace
 from ldap_native_live import NativeDirectory, configuration as ldap_configuration
 
@@ -80,8 +80,8 @@ def run(binary,root,rows,inherited,diagnostics,*,ldap=False):
             provider_secrets=[provider.admin_password,provider.user_password]
         else:
             provider=NativeRadius(require_ma=True)
-            config={'host':'127.0.0.1','port':provider.port,'secret':SECRET.decode()}
-            provider_secrets=[SECRET.decode(),PASSWORD.decode()]
+            config={'host':'127.0.0.1','port':provider.port,'secret':RADIUS_MATERIAL.decode()}
+            provider_secrets=[RADIUS_MATERIAL.decode(),PAP_VALUE.decode()]
         for node in cluster.nodes:
             path=node.root/'server.json';settings=json.loads(path.read_text());settings['outbound_endpoints']=[];settings['lifecycle_interval_seconds']=0
             private_write(path,settings,replace=True)

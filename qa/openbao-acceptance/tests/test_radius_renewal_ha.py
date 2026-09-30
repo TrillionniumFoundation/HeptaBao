@@ -3,12 +3,11 @@ from pathlib import Path
 import sys
 import unittest
 import struct
-import hmac
-import hashlib
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from radius_renewal_ha import authority_denied, profile_configuration, native_nas_valid
-from radius_renewal_live import SECRET, USERNAME, PASSWORD, md5, radius_md5, pap_packet_response
+from radius_renewal_live import (PAP_VALUE, RADIUS_MATERIAL, USERNAME, md5,
+    message_authenticator, pap_packet_response)
 
 
 class RenewalFaultClassification(unittest.TestCase):
@@ -18,23 +17,23 @@ class RenewalFaultClassification(unittest.TestCase):
                                   "server_name":"127.0.0.1", "ca_pem":"", "path_prefix":"/"})
         self.assertNotIn("shared_secret", endpoint)
         self.assertNotIn("url", config)
-        self.assertEqual((config["host"],config["port"],config["secret"]), ("127.0.0.1",18120,SECRET.decode()))
+        self.assertEqual((config["host"],config["port"],config["secret"]), ("127.0.0.1",18120,RADIUS_MATERIAL.decode()))
         self.assertEqual((config["read_timeout"],config["dial_timeout"]),(3,3))
         legacy_endpoint, legacy_config = profile_configuration(18120)
-        self.assertEqual(legacy_endpoint["shared_secret"],SECRET.decode())
+        self.assertEqual(legacy_endpoint["shared_secret"],RADIUS_MATERIAL.decode())
         self.assertEqual(legacy_config,{"url":legacy_endpoint["origin"],"token_policies":["default"],
                                        "token_ttl":120,"token_max_ttl":600})
 
     def test_native_nas_additions_remain_covered_by_strict_packet_authentication(self):
-        authenticator=bytes(range(16));padded=PASSWORD+b"\0"*((-len(PASSWORD))%16)
+        authenticator=bytes(range(16));padded=PAP_VALUE+b"\0"*((-len(PAP_VALUE))%16)
         encrypted=bytearray();previous=authenticator
         for offset in range(0,len(padded),16):
-            block=bytes(a^b for a,b in zip(padded[offset:offset+16],md5(SECRET,previous)))
+            block=bytes(a^b for a,b in zip(padded[offset:offset+16],md5(RADIUS_MATERIAL,previous)))
             encrypted.extend(block);previous=block
         attrs=bytes([1,len(USERNAME)+2])+USERNAME+bytes([2,len(encrypted)+2])+encrypted
         attrs+=bytes([5,6])+struct.pack("!I",10)+bytes([80,18])+b"\0"*16
         packet=bytearray([1,7])+struct.pack("!H",20+len(attrs))+authenticator+attrs
-        packet[-16:]=hmac.new(SECRET,packet,radius_md5).digest()
+        packet[-16:]=message_authenticator(packet)
         reply, observation=pap_packet_response(packet,require_ma=True,allow=True)
         self.assertEqual(observation,{"credentials_valid":True,"message_authenticator_present":True,"accepted":True})
         self.assertEqual(reply[0],2);self.assertTrue(native_nas_valid(packet))

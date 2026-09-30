@@ -24,7 +24,7 @@ from bao_http import Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from official_openbao_launcher import start_oracle, stop_oracle, restart_oracle, BINARY_SHA256
 from online_evidence import admit_output, source_identity
-from radius_renewal_live import SECRET, PASSWORD, md5, radius_md5, renewal_token_shape, wrapped_renewal_shape
+from radius_renewal_live import RADIUS_MATERIAL, PAP_VALUE, md5, radius_md5, renewal_token_shape, wrapped_renewal_shape
 from remote_jwks_live import Instance
 
 ADAPTATION = {
@@ -73,7 +73,7 @@ def pap_response(packet, *, require_ma, secret, username, password, allow, nas_p
 
 class NativeRadius:
     def __init__(self, *, require_ma, dual_stack=False):
-        self.require_ma=require_ma;self.secret=SECRET;self.username=b'alice';self.nas_port=10;self.nas_identifier=None;self.allow=True
+        self.require_ma=require_ma;self.secret=RADIUS_MATERIAL;self.username=b'alice';self.nas_port=10;self.nas_identifier=None;self.allow=True
         self.requests=[];self.peers=[];self.lock=threading.Lock();self.stopped=threading.Event()
         self.sockets=[]
         try:
@@ -97,7 +97,7 @@ class NativeRadius:
                 ready,_,_=select.select(self.sockets,[],[],.2)
                 for provider_socket in ready:
                     packet,source=provider_socket.recvfrom(4097)
-                    response,observed=pap_response(packet,require_ma=self.require_ma,secret=self.secret,username=self.username,password=PASSWORD,allow=self.allow,nas_port=self.nas_port,nas_identifier=self.nas_identifier)
+                    response,observed=pap_response(packet,require_ma=self.require_ma,secret=self.secret,username=self.username,password=PAP_VALUE,allow=self.allow,nas_port=self.nas_port,nas_identifier=self.nas_identifier)
                     peer=ipaddress.ip_address(source[0]);peer=peer.ipv4_mapped if isinstance(peer,ipaddress.IPv6Address) and peer.ipv4_mapped else peer
                     with self.lock:
                         self.requests.append(observed);self.peers.append({'family':peer.version,'loopback':peer.is_loopback})
@@ -142,7 +142,7 @@ class Trace:
     def config(self,name,body,expected=204):return self.call(name,'POST','auth/radius/config',body,expected=expected)
     def read(self,name):return self.call(name,'GET','auth/radius/config').get('data',{})
     def login(self,name,path='auth/radius/login',body=None,policies=None,expected=200,username='alice'):
-        body={'username':username,'password':PASSWORD.decode()} if body is None else body
+        body={'username':username,'password':PAP_VALUE.decode()} if body is None else body
         auth=self.call(name,'POST',path,body,token='',expected=expected,contact=expected==200).get('auth',{})
         if expected==200:
             token=auth.get('client_token');self.check(name+'.token',isinstance(token,str) and bool(token) and isinstance(auth.get('entity_id'),str) and bool(auth['entity_id']))
@@ -259,7 +259,7 @@ def run_api_transport_scenarios(trace):
         for label,host,family in [('dns','localhost',None),('ipv6','::1',6)]:
             prefix='transport.'+label
             t.call(prefix+'.config','POST','auth/radius-transport/config',{
-                'host':host,'port':provider.port,'secret':SECRET.decode(),'token_ttl':120,'token_max_ttl':600},expected=204)
+                'host':host,'port':provider.port,'secret':RADIUS_MATERIAL.decode(),'token_ttl':120,'token_max_ttl':600},expected=204)
             data=t.call(prefix+'.read','GET','auth/radius-transport/config').get('data',{})
             t.check(prefix+'.readback',config_matches(data,host=host,port=provider.port) and 'api_transport' not in data)
             def peer(name,cursor):
@@ -367,7 +367,7 @@ def run_scenarios(trace,restart):
         ('body_precedence','ignored',{'username':'alice'},'alice'),
     ]:
         provider.username=username.encode();cursor=provider.count()
-        auth=login(label,path='auth/radius/login/'+path,body=dict(extra,password=PASSWORD.decode()),
+        auth=login(label,path='auth/radius/login/'+path,body=dict(extra,password=PAP_VALUE.decode()),
                    username=username,policies=['base','default'] if username=='alice' else ['base','default','mapped'])
         check(label+'.pap_once',provider.count()==cursor+1)
         check(label+'.metadata_policy',auth.get('metadata',{}).get('policies')==('' if username=='alice' else 'mapped'))
@@ -398,7 +398,7 @@ def run_scenarios(trace,restart):
     check('denied.no_wrapper_or_extension',not rejected.get('auth') and not rejected.get('wrap_info') and type(before) is int and type(after) is int and 0<after<=before)
     provider.allow=True
     config('timeout.zero',{'read_timeout':0});cursor=provider.count()
-    call('timeout.zero_denied','POST','auth/radius/login',{'username':'alice','password':PASSWORD.decode()},token='',expected=400)
+    call('timeout.zero_denied','POST','auth/radius/login',{'username':'alice','password':PAP_VALUE.decode()},token='',expected=400)
     check('timeout.zero_no_packet',provider.count()==cursor)
     config('timeout.restore',{'read_timeout':3})
     restart();check('restart.same_store',True)
@@ -411,7 +411,7 @@ def run_scenarios(trace,restart):
     check('identity.alias',any(alias.get('name')=='alice' for alias in entity.get('aliases',[])))
     run_no_default_scenarios(trace,restart)
     run_api_transport_scenarios(trace)
-    check('receipt.no_sensitive_values',not any(secret in json.dumps(trace.rows) for secret in [SECRET.decode(),PASSWORD.decode(),provider.secret.decode(),*trace.tokens]))
+    check('receipt.no_sensitive_values',not any(secret in json.dumps(trace.rows) for secret in [RADIUS_MATERIAL.decode(),PAP_VALUE.decode(),provider.secret.decode(),*trace.tokens]))
     check('complete',True)
 
 
