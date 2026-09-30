@@ -1103,6 +1103,26 @@ fn read_request_mode(
     if !native_snapshot && bytes.len() != header_end + length {
         return Err(bad("pipelining and trailing bytes are not supported"));
     }
+    // Public UI preflight has no PATCH operation. Its JSON media boundary is
+    // still evaluated before dispatch, after ordinary framing/size fences.
+    if method == "PATCH"
+        && (route == "sys/internal/ui/mounts" || route.starts_with("sys/internal/ui/mounts/"))
+    {
+        if length == 0 {
+            return Err(bad("PATCH requires a JSON body"));
+        }
+        if !map
+            .get("content-type")
+            .is_some_and(|value| value.split(';').next() == Some("application/merge-patch+json"))
+        {
+            return Err(ParseError {
+                status: 415,
+                message: "PATCH requires merge-patch JSON",
+                empty_errors: false,
+                health_head: None,
+            });
+        }
+    }
     if leader_route {
         leader::validate_selectors(&method, &target)?;
         return Ok(Request {
@@ -2305,3 +2325,7 @@ mod wrapping_header_tests {
 #[cfg(test)]
 #[path = "http_consistency_tests.rs"]
 mod consistency_tests;
+
+#[cfg(test)]
+#[path = "http_ui_mounts_tests.rs"]
+mod ui_mounts_tests;

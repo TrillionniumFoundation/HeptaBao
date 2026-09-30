@@ -68,7 +68,9 @@ impl AuthState {
         validate_path(mount.trim_end_matches('/'), false)?;
         let token = self.check_principal(principal, namespace, now)?;
         if token.is_wrapping() {
-            return Ok(false);
+            // The wrapping policy exposes only its control mounts. This does
+            // not authorize their data endpoints or an engine secret read.
+            return Ok(matches!(mount, "sys/" | "cubbyhole/" | "auth/token/"));
         }
         if token.is_root() {
             return Ok(true);

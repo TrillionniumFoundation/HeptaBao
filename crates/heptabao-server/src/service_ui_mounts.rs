@@ -53,7 +53,8 @@ impl Service {
         };
         match visible(&mount) {
             Ok(true) => {
-                descriptor["path"] = Value::String(mount);
+                descriptor["path"] =
+                    Value::String(mount.strip_prefix("auth/").unwrap_or(&mount).to_owned());
                 Response::ok(json!({"data":descriptor}))
             }
             Ok(false) => Response::error(403, "mount preflight access denied"),

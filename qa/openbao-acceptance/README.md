@@ -309,7 +309,7 @@ accepted; this is not full-instance or rolling-upgrade qualification.
 
 ## OpenBao 2.7 KV CLI mount preflight
 
-`mount_discovery_live.py` checks 160 fixed requests and predicates per side using
+`mount_discovery_live.py` checks 169 fixed requests and predicates per side using
 the pinned official 2.7.0 executable, including actual `bao kv` commands. Its
 fixtures explicitly align enabled mounts, then exercise policy-based mount
 visibility, denied data access, finite token uses, wrapping tokens and method
@@ -324,7 +324,8 @@ python qa/openbao-acceptance/mount_discovery_live.py \
 ```
 
 The output directory must already be owned by the caller with mode `0700`.
-Credentials, response values and CLI output are kept in memory; receipts contain
+Response values and CLI output stay in memory; launchers keep credentials in
+private fixture files. Receipts contain
 only fixed case labels, statuses, exit codes and predicates. On a failed run,
 private service fixtures remain for diagnosis; owned service processes are
 stopped before publishing the report.

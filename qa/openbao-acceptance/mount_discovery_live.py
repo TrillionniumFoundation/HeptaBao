@@ -26,7 +26,7 @@ from official_openbao_launcher import (
 
 ROOT = Path(__file__).resolve().parents[2]
 MARKER = "synthetic-mount-discovery270"
-CASE_COUNT = 160
+CASE_COUNT = 169
 POLICIES = {
     "exact": 'path "discovery-v2/data/item" { capabilities = ["read"] }',
     "sibling": 'path "discovery-v2/data/other" { capabilities = ["read"] }',
@@ -129,12 +129,24 @@ def run_scenarios(client, rows, cli_env, cli_binary):
     wrapped = t.call("wrapper.create", "POST", "sys/wrapping/wrap", 200,
                      {"value": MARKER}, wrap_ttl="60s")["wrap_info"]["token"]
     data = t.call("wrapper.collection", "GET", "sys/internal/ui/mounts", 200, token=wrapped)
-    t.check("wrapper.no_metadata", data["data"] == {"auth": {}, "secret": {}})
+    t.check("wrapper.only_control_metadata", set(data["data"]["auth"]) == {"token/"}
+            and set(data["data"]["secret"]) == {"cubbyhole/", "sys/"})
+    for suffix, path, kind in (("sys", "sys/", "system"), ("cubbyhole", "cubbyhole/", "cubbyhole"),
+                               ("auth/token", "token/", "token")):
+        data = t.call("wrapper.control." + suffix, "GET", "sys/internal/ui/mounts/" + suffix, 200, token=wrapped)
+        t.check("wrapper.control.shape." + suffix, data["data"]["path"] == path and data["data"]["type"] == kind)
     t.call("wrapper.single", "GET", "sys/internal/ui/mounts/discovery-v2", 403, token=wrapped)
     unwrapped = t.call("wrapper.unwrap", "POST", "sys/wrapping/unwrap", 200, token=wrapped)
     t.check("wrapper.not_consumed", unwrapped["data"] == {"value": MARKER})
     for method in ("POST", "PUT", "PATCH", "DELETE", "LIST", "HEAD"):
         t.call("method." + method, method, "sys/internal/ui/mounts/discovery-v2", 400 if method == "PATCH" else 405)
+    for label, content_type, payload, expected in (
+        ("json_body", "application/json", {}, 415),
+        ("merge_body", "application/merge-patch+json", {}, 405),
+        ("merge_empty", "application/merge-patch+json", None, 400),
+    ):
+        response = client.request("PATCH", "/v1/sys/internal/ui/mounts/discovery-v2", payload, content_type=content_type)
+        t.check("method.PATCH." + label, response.status == expected, status=response.status)
     for name in ("deny", "ui", "sibling"):
         t.call("data.denied." + name, "GET", "discovery-v2/data/item", 403, token=tokens[name])
     for method in ("POST", "DELETE"):
@@ -193,6 +205,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--oracle-version", choices=("2.7.0",), default="2.7.0")
     args = parser.parse_args()
     binary = Path(args.binary).resolve(strict=True)
     output = Path(args.output).resolve()
