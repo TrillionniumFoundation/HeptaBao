@@ -836,8 +836,14 @@ writes withhold the result conservatively. Post-entry uncertainty never causes
 a blind provider retry. Plaintext observation buffers are erased on rejection.
 
 This is a bounded native encrypt/decrypt format increment. Its local ciphertext
-envelope and production OpenBao 2.7 consumer interoperability require independent
-black-box comparison. Batch/rewrap/sign/verify/HMAC/data-key and PKI/PKCS#11
+version selects a reference; the unchanged remote Base64 payload is prefixed with
+that mapping's fixed remote version for provider decryption. The production CLI
+`external_transit_consumer_live.py` requires bilateral readback against the pinned
+2.7.0 AES remote-provider/external-consumer wire contract. Completed exact-source
+and expected/before/after binary-hash reports are bounded black-box observations;
+the runner alone is not passing or independent qualification evidence. The
+candidate signing-capability flag remains false and differs from the official
+external descriptor until actual external signing is implemented. Batch/rewrap/sign/verify/HMAC/data-key and PKI/PKCS#11
 consumers, API TLS overrides and full external-asset migration remain unsupported.
 Read the [native consumer contract](../modules/heptabao-server.md#bounded-native-external-keys-transit-consumption)
 for transport and input bounds and the real remote-Service test scope.

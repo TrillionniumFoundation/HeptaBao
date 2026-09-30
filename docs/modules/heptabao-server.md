@@ -863,12 +863,17 @@ caller ACL/parameter policy and the current mapping/grant again before reading
 credentials. The remote provider pins the configured positive remote key
 version. The local ciphertext carries its own Transit version followed by the
 remote ciphertext Base64 payload; it does not nest the remote `vault:vN:` string.
-Decryption resolves that local version and restores the fixed remote prefix. Local minimum encryption/decryption
+Decryption resolves that local version and restores the fixed remote prefix.
+Local minimum encryption/decryption
 versions select the corresponding reference; a later reference does not rewrite
 old ciphertext. Registry mappings should be rotated by creating a new mapping,
 then rotating the consumer reference, rather than overwriting a fixed mapping.
-This HeptaBao envelope is not claimed to be the exact OpenBao 2.7 external-key
-ciphertext encoding without an independently admitted black-box comparison.
+The payload representation follows the observed checksum-pinned official 2.7.0
+AES remote-provider contract. `external_transit_consumer_live.py` requires actual
+bilateral decryption rather than accepting multiple possible wire encodings.
+A completed report binds the executed production binary hash and build commit/tree
+separately from the QA source identity; recorded binding remains non-independent
+qualification evidence.
 
 Native remote Transit requires immutable deployment-enrolled HTTPS origin,
 address, CA, SNI name and path prefix. Registry parameters cannot cause DNS
@@ -886,7 +891,10 @@ original affine caller capability, namespace incarnation/seal, cluster and
 activation, deadline, mount incarnation, HTTPS enrollment, optional KMS host/key
 binding and the entire durable StateIdentity plus durable generation and the HA
 committed/applied frontier. Content equality alone cannot fence deletion/restoration
-ABA. The whole-state comparison is
+ABA. Verified registry publication also retains an active provider host at the
+same admitted manifest generation through durable and in-memory publication;
+revocation and same-host upgrades after execution withhold the old result.
+The whole-state comparison is
 conservative: an unrelated committed write also withholds a delayed result.
 Grant removal/recreation, mapping/config replacement, local key disable/delete,
 mount disable/recreate and policy changes cannot publish a result from the old
@@ -913,3 +921,26 @@ OpenBao parity. The normal workspace test lane executes these tests. Optional pr
 disable/revoke/replace binding tests run only on Linux, where the existing sealed
 executable/sandbox runner can be admitted; native verified HTTPS crypto tests
 also run on macOS. This does not add a path-execution fallback on macOS.
+
+`external_transit_consumer_live.py` starts three fresh verified HTTPS processes:
+the checksum-pinned official 2.7.0 ordinary Transit provider, an independent
+official external consumer, and the production HeptaBao CLI configured with
+exact deployment-enrolled egress. It requires the official descriptor field set
+and string-valued version references, both directions of ciphertext/AAD readback,
+fixed remote versions, explicit reference rotation, minimum-version policy,
+per-consumption grants, local/remote namespace isolation and encrypted restart.
+It also checks immutable deployment-CA refusal against real TLS and no remote
+crypto entry. API TLS override/skip-verify refusals are explicit candidate security
+contracts, separate from the official API-owned CA configuration. Candidate registry
+setup uses `verify=false` because its admitted native egress, actual provider crypto
+and independent readback are the consumer evidence; it does not qualify the process
+KMS verification interface. No protected operation is satisfied by a synthetic ack.
+The separate required 2.7 CI step executes the complete ordered denominator; an empty,
+partial, duplicate, reordered or failed trace cannot pass. Reports contain public
+identity/hash/status observations and keep credentials/plaintext/ciphertext private.
+
+The official external descriptor advertises `supports_signing=true`; the bounded
+candidate truthfully reports false until a real external signing consumer is
+implemented. The runner requires these exact side-specific flags and records the
+capability difference; its encrypt/decrypt pass does not establish full descriptor
+parity or signing interoperability.

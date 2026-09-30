@@ -664,6 +664,27 @@ jobs:
           done
           test "$failed" -eq 0
 
+      - name: Compare actual OpenBao 2.7.0 external Transit consumers
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle270_ready.outcome == 'success' }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle270/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle270/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-safe-reports/external-transit270"
+          mkdir -p "$reports"
+          chmod 700 "$reports"
+          binary="$PWD/target/debug/heptabao-server"
+          digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          timeout 600 python qa/openbao-acceptance/external_transit_consumer_live.py \
+            --oracle-version 2.7.0 \
+            --binary "$binary" \
+            --build-source-commit "$EXPECTED_SOURCE" \
+            --build-source-tree "$(git rev-parse 'HEAD^{tree}')" \
+            --expected-binary-sha256 "$digest" \
+            --output "$reports/comparison.json"
+
       - name: Compare OpenBao 2.7.0 local leader diagnosis and native HA lifecycle
         if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle270_ready.outcome == 'success' }}
         shell: bash
