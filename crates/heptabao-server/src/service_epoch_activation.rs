@@ -31,6 +31,7 @@ impl Service {
                     // We cannot retract the committed authority. Fail closed
                     // until reopen instead of keeping the old activation live.
                     self.recovery_required = true;
+                    self.ha_activation = None;
                     self.ha_read_cache = None;
                 }
                 Err(Response::error(503, error))

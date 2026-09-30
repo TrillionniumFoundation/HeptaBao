@@ -212,6 +212,7 @@ impl Service {
                     .is_err()
                 {
                     self.recovery_required = true;
+                    self.ha_activation = None;
                     return NativeSnapshotAdmission::Execute(RequestExecution::Complete(
                         Response::error(503, "snapshot redirect response audit unavailable"),
                     ));

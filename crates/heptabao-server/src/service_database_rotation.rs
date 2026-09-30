@@ -770,7 +770,7 @@ impl DatabaseState {
     }
 }
 
-fn unix_rfc3339(seconds: u64) -> Result<String, Response> {
+pub(in crate::service) fn unix_rfc3339(seconds: u64) -> Result<String, Response> {
     let seconds =
         i64::try_from(seconds).map_err(|_| failure("rotation timestamp exceeds range"))?;
     let days = seconds.div_euclid(86_400);
@@ -1872,6 +1872,7 @@ impl Service {
             .is_err()
         {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Err("database rotation result audit unavailable");
         }
         if !completed {

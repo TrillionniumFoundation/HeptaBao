@@ -19,6 +19,7 @@ mod rotation;
 mod statements;
 #[path = "service_database_username.rs"]
 mod username;
+pub(super) use rotation::unix_rfc3339;
 pub(super) use rotation::{
     DatabaseRotationMaintenance, DatabaseRotationObservation, DatabaseRotationPlan,
 };
@@ -2972,6 +2973,7 @@ impl Service {
     ) -> Response {
         if results.len() > plan.plans.len() {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Response::error(
                 503,
                 "database prefix revocation result count exceeds the staged batch",
@@ -3374,6 +3376,7 @@ impl Service {
             .is_err()
         {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Err("provider result audit unavailable");
         }
         if !completed {

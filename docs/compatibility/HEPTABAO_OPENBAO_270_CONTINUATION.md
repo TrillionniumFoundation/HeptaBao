@@ -104,16 +104,24 @@ interoperability. The real candidate fixture advertises that listener separately
 from its public API and directed fault-injection proxies, and requires the exact
 current leader's advertised value before and after handoff.
 
-`active_time` remains explicitly unsupported. Native Raft metrics expose a
-current leader snapshot, while application activation also requires unseal,
-bootstrap admission, a successful ReadIndex and an exact local application
-identity. A first diagnostic read, first metrics-watch notification or request
-clock cannot timestamp that earlier lifecycle event. Closing this blocker needs
-one serialized active-publication event bound to the actual local Raft term and
-application-ready transition, with invalidation on seal, fence, leadership loss
-and process restart; it must also handle leadership changes with no HTTP requests.
-The diagnostic endpoint must continue to sample that result without starting a
-ReadIndex or consuming a token.
+`active_time` now has a native process-local activation lifecycle. A serialized
+Service transition publishes its UTC RFC3339 timestamp only after unseal,
+bootstrap admission, ReadIndex and authenticated application state/identity
+converge in the same true Raft term. A dedicated bounded HA worker performs this
+read-only activation while idle, including configurations which disable expiry
+maintenance. It cannot publish the first application anchor. Timestamp stability
+is bound to this event; diagnostic requests and their clocks cannot create it.
+Seal, recovery/audit fences, authority failure, lost leadership, a changed term
+and process restart invalidate the event. A standby omits a local active time,
+and an invalid host clock omits time without a later diagnostic inventing it.
+The public pinned 2.7.0 executable observations verify non-HA omission, active
+UTC-string shape, repeated-read stability, unsealed standby omission and a changed
+time after reseal/unseal.
+The candidate real-Raft regression covers the serialized gate, term transition,
+fences, restart and worker stop/drop; the live three-process fixture additionally
+requires stable activation, reseal/unseal replacement and successor replacement.
+These are implementation and development validation anchors, not independent
+qualification or full replacement/production authority.
 
 The repeated physical-host replay failure is now covered by a paced real-Raft
 regression in `process/replication_tests.rs`. Accumulated multi-entry replay uses

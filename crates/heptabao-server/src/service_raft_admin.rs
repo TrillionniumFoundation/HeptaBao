@@ -586,6 +586,7 @@ impl Service {
             .is_err()
         {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Err("autopilot result audit failed");
         }
         result.map_err(|_| "autopilot transition indeterminate")?;

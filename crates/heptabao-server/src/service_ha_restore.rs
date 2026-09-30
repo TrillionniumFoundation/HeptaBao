@@ -157,6 +157,7 @@ impl Service {
         let published_generation = self.durable.as_ref().ok_or_else(invalid)?.generation();
         if deadline().is_err() {
             self.recovery_required = true;
+            self.ha_activation = None;
             self.ha_read_cache = None;
             return Err(Response {
                 consistency_index: None,

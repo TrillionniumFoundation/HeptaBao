@@ -3,7 +3,7 @@
 use super::*;
 
 impl Service {
-    pub(super) fn leader_response(&self, method: &str) -> Response {
+    pub(super) fn leader_response(&mut self, method: &str) -> Response {
         if method != "GET" {
             return Response {
                 consistency_index: None,
@@ -11,20 +11,28 @@ impl Service {
                 body: json!({"errors": []}),
             };
         }
-        let Some(process) = self.ha.as_ref() else {
+        let Some(process) = self.ha.as_ref().cloned() else {
             // Upstream checks HA availability before seal/initialization.
+            self.ha_activation = None;
             return Response::ok(json!({"ha_enabled": false}));
         };
         if self.state.is_none() {
+            self.ha_activation = None;
             return Response::error(503, "Vault is sealed");
         }
         let process = match process.lock_for_request() {
             Ok(process) => process,
-            Err(_) => return Response::error(503, "HA process lock is unavailable"),
+            Err(_) => {
+                self.ha_activation = None;
+                return Response::error(503, "HA process lock is unavailable");
+            }
         };
         let observation = match process.leader_status() {
             Ok(observation) => observation,
-            Err(_) => return Response::error(500, "HA leader observation is unavailable"),
+            Err(_) => {
+                self.ha_activation = None;
+                return Response::error(500, "HA leader observation is unavailable");
+            }
         };
         let mut body = json!({
             "ha_enabled": true,
@@ -48,8 +56,23 @@ impl Service {
         if let Some(index) = observation.applied_index.filter(|index| *index != 0) {
             body["raft_applied_index"] = json!(index);
         }
-        // active_time requires a serialized application-active lifecycle event.
-        // A local metrics sample or the request clock is not that event.
+        let key = ha_activation::ActivationKey::from_observation(observation);
+        if !self.ha_activation_permitted()
+            || key.is_none()
+            || self
+                .ha_activation
+                .as_ref()
+                .is_some_and(|activation| key.is_none_or(|key| !activation.matches(key)))
+        {
+            self.ha_activation = None;
+        }
+        if let Some(time) = key.and_then(|key| {
+            self.ha_activation
+                .as_ref()
+                .and_then(|activation| activation.active_time(key))
+        }) {
+            body["active_time"] = json!(time);
+        }
         Response::ok(body)
     }
 }

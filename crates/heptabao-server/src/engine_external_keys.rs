@@ -293,6 +293,148 @@ fn encode_provider_request(value: &impl Serialize) -> Result<SecretValue> {
 }
 
 impl Registry {
+    // Resolve authority before cloning any provider credential. Grant paths are
+    // namespace-relative; callers must provide the actual owning mount path.
+    pub(super) fn require_consumer(
+        &self,
+        reference: &str,
+        mount: &str,
+    ) -> Result<(&SecretJson, &SecretJson)> {
+        let (config_name, key_name) = reference
+            .split_once(':')
+            .filter(|(config, key)| valid_name(config) && valid_name(key))
+            .ok_or_else(|| bad("external_key_ref must be config:key"))?;
+        let config = self
+            .configs
+            .get(config_name)
+            .ok_or_else(|| bad("external key reference is unavailable"))?;
+        let key = config
+            .keys
+            .get(key_name)
+            .ok_or_else(|| bad("external key reference is unavailable"))?;
+        if !key.grants.contains(&canonical_grant(mount)?) {
+            return Err(bad("external key has no grant for this mount"));
+        }
+        if config.plugin != "transit" {
+            return Err(error(
+                501,
+                "external key provider consumption is not implemented",
+            ));
+        }
+        Ok((&config.values, &key.values))
+    }
+
+    pub(super) fn transit_consumer_request(
+        &self,
+        reference: &str,
+        mount: &str,
+        operation: &str,
+        mut body: SecretJson,
+    ) -> Result<SecretValue> {
+        let (config, key) = self.require_consumer(reference, mount)?;
+        reject_unknown(
+            config,
+            &[
+                "address",
+                "token",
+                "namespace",
+                "mount_path",
+                "tls_server_name",
+                "tls_skip_verify",
+                "tls_ca_cert_bytes",
+                "tls_client_cert_bytes",
+                "tls_client_key_bytes",
+            ],
+        )?;
+        reject_unknown(key, &["name", "version", "disable_prehashing"])?;
+        // Native egress trust is host-enrolled, never selected or weakened by
+        // encrypted API parameters. Other TLS options await a qualified lane.
+        if optional_bool(config, "tls_skip_verify")?.unwrap_or(false) {
+            return Err(bad("external Transit requires verified TLS"));
+        }
+        for field in [
+            "tls_server_name",
+            "tls_ca_cert_bytes",
+            "tls_client_cert_bytes",
+            "tls_client_key_bytes",
+        ] {
+            if config
+                .get(field)
+                .is_some_and(|value| value.as_str() != Some(""))
+            {
+                return Err(error(
+                    501,
+                    "external Transit TLS options require deployment enrollment",
+                ));
+            }
+        }
+        let address = config
+            .get("address")
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("external Transit address must be a string"))
+            })
+            .transpose()?
+            .unwrap_or("https://127.0.0.1:8200")
+            .trim_end_matches('/');
+        let target = crate::outbound::Target::parse(address, "https")
+            .map_err(|_| bad("invalid external Transit address"))?;
+        if target.path != "/" {
+            return Err(bad("external Transit address must be an HTTPS origin"));
+        }
+        let remote_mount = config
+            .get("mount_path")
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("external Transit mount must be a string"))
+            })
+            .transpose()?
+            .unwrap_or("transit");
+        let remote_mount = canonical_grant(remote_mount)?;
+        let name = string(key, "name")?;
+        if !valid_name(name) {
+            return Err(bad("invalid remote Transit key name"));
+        }
+        let version = optional_u64(key, "version")?
+            .filter(|version| *version > 0)
+            .ok_or_else(|| bad("remote Transit key requires a positive fixed version"))?;
+        let namespace = config
+            .get("namespace")
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("remote namespace must be a string"))
+            })
+            .transpose()?
+            .unwrap_or("");
+        if !namespace.is_empty() {
+            let _ = canonical_grant(namespace)?;
+        }
+        let token = string(config, "token")?;
+        if token.is_empty()
+            || token.len() > 32 * 1024
+            || !token.bytes().all(|byte| byte.is_ascii_graphic())
+        {
+            return Err(bad("invalid remote Transit token"));
+        }
+        if operation == "encrypt" {
+            body["key_version"] = json!(version);
+        } else {
+            // The public local version selects the registry reference. Its
+            // opaque Base64 payload is the remote ciphertext, not a nested
+            // remote version string; the fixed mapping supplies that prefix.
+            let payload = string(&body, "ciphertext")?;
+            body["ciphertext"] = json!(format!("vault:v{version}:{payload}"));
+        }
+        let envelope = SecretJson(
+            json!({"url":format!("{address}/v1/{remote_mount}{operation}/{name}"),
+            "token":token,"namespace":namespace,"remote_version":version,"body":&*body}),
+        );
+        encode_provider_request(&*envelope)
+    }
+
     pub(super) fn is_empty(&self) -> bool {
         self.configs.is_empty()
     }

@@ -12,6 +12,13 @@ This package implements a durable three-voter OpenRaft consensus core for HeptaB
 
 `replicate` borrows a sealed `ReplicatedEnvelope` and a nonzero client serial; the envelope binds a 1–128-byte ASCII operation ID (alphanumeric plus `-_.:`), a nonzero 32-byte digest and 1 byte–1 MiB of opaque sealed bytes. `next_production_client_serial` obtains serial allocation from durable state rather than process uptime. After a lost response, reconcile the operation binding before retrying. `ensure_linearizable` is an awaited ReadIndex barrier, not a cached leader observation. `applied_state`/`latest_envelope` read local state and require the caller to establish the needed authority barrier first.
 
+`ProcessRaftNode::local_leader_observation` samples one local metrics snapshot,
+including the actual consensus `term`, local id, actual local leader role, remembered
+current leader and committed/
+applied indexes. This passive snapshot performs no RPC or ReadIndex and cannot
+authorize application access. The server binds its separately gated application
+activation event to this term; observing a new term alone cannot publish a time.
+
 The `ApplicationRequest` state machine also accepts typed record Stage/Publish/Prune
 commands. Staging stores bounded sealed objects but does not change the application
 root. Publish validates the expected typed base and complete referenced closure;

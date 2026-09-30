@@ -1699,6 +1699,68 @@ fn read_json_response_status(
 }
 
 impl Outbound {
+    pub(crate) fn same_https_enrollment(&self, other: &Self, url: &str) -> bool {
+        match (self.endpoint(url, "https"), other.endpoint(url, "https")) {
+            (Ok((left, _)), Ok((right, _))) => {
+                left.address == right.address
+                    && left.server_name == right.server_name
+                    && left.path_prefix == right.path_prefix
+                    && Arc::ptr_eq(&left.tls, &right.tls)
+            }
+            _ => false,
+        }
+    }
+
+    /// One native External Keys Transit operation. Trust/address are supplied
+    /// only by immutable deployment enrollment. No redirects or retries.
+    pub(crate) fn post_external_transit(
+        &self,
+        url: &str,
+        token: &str,
+        namespace: &str,
+        value: &Value,
+    ) -> Result<Value, &'static str> {
+        if token.is_empty()
+            || token.len() > 32 * 1024
+            || !token.bytes().all(|byte| byte.is_ascii_graphic())
+            || namespace.len() > 1024
+            || !namespace.bytes().all(|byte| byte.is_ascii_graphic())
+        {
+            return Err("external Transit rejected before entry: invalid header");
+        }
+        let body = Zeroizing::new(
+            serde_json::to_vec(value)
+                .map_err(|_| "external Transit rejected before entry: invalid JSON")?,
+        );
+        if body.len() > MAX_DOCUMENT {
+            return Err("external Transit rejected before entry: request bound");
+        }
+        let (endpoint, target) = self
+            .endpoint(url, "https")
+            .map_err(|_| "external Transit rejected before entry: route not enrolled")?;
+        let socket = endpoint
+            .connect()
+            .map_err(|_| "external Transit rejected before entry: connection unavailable")?;
+        let mut stream = endpoint
+            .tls(socket)
+            .map_err(|_| "external Transit rejected before entry: TLS identity rejected")?;
+        let head = Zeroizing::new(format!(
+            "POST {} HTTP/1.1\r\nHost: {}\r\nContent-Type: application/json\r\nX-Vault-Token: {}\r\nX-Vault-Namespace: {}\r\nContent-Length: {}\r\nAccept: application/json\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n",
+            target.path,
+            target.authority,
+            token,
+            namespace,
+            body.len()
+        ));
+        stream
+            .write_all(head.as_bytes())
+            .and_then(|()| stream.write_all(&body))
+            .and_then(|()| stream.flush())
+            .map_err(|_| "external Transit unknown after entry; no blind retry")?;
+        read_json_response_status(&mut stream, &[200])
+            .map_err(|_| "external Transit unknown after entry; readback required; no blind retry")
+    }
+
     /// One host-enrolled TokenReview request. No credential may choose its own
     /// network origin, CA, address, method or path; no automatic HTTP retry.
     pub(crate) fn post_json_bearer(

@@ -45,7 +45,8 @@ use crate::state_record_root::RecordStateRoot;
 // ACL wrapping TTL constraints. Both have independent persisted-state fences.
 // Schema 62 adds Transit ML-DSA seed keys under the existing encrypted engine owner.
 // Schema 63 adds the namespace-scoped External Keys registry.
-const CURRENT_STATE_SCHEMA: u32 = 63;
+// Schema 64 adds reference-only external Transit versions; no local key material.
+const CURRENT_STATE_SCHEMA: u32 = 64;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -61,6 +62,10 @@ mod consistency;
 mod database;
 #[path = "service_epoch_activation.rs"]
 mod epoch_activation;
+#[path = "service_external_transit.rs"]
+mod external_transit;
+#[path = "service_ha_activation.rs"]
+mod ha_activation;
 #[path = "service_ha_read.rs"]
 mod ha_read;
 #[path = "service_identity.rs"]
@@ -98,6 +103,7 @@ mod raft_admin;
 mod records;
 #[path = "service_state_store.rs"]
 mod state_store;
+pub(crate) use ha_activation::start_ha_activation_worker;
 pub(crate) use lifecycle::start_lifecycle_worker;
 
 #[path = "service_leases.rs"]
@@ -750,6 +756,7 @@ enum ExternalEffectPlan {
     PluginRead(plugin::PluginReadPlan),
     PluginKms(plugin::PluginKmsPlan),
     ExternalKey(plugin::ExternalKeyPlan),
+    ExternalTransit(external_transit::ExternalTransitPlan),
     KubernetesToken(kubernetes_secret::KubernetesTokenEffectPlan),
     OpenLdap(openldap_secret::OpenLdapEffectPlan),
     SnapshotTransfer(Box<snapshot_transfer::SnapshotTransferPlan>),
@@ -765,6 +772,7 @@ pub(crate) enum ExternalEffectResult {
     PluginRead(Result<Value, Response>),
     PluginKms(Result<plugin::PluginKmsObservation, Response>),
     ExternalKey(Result<(), Response>),
+    ExternalTransit(Result<external_transit::Observation, Response>),
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
     OpenLdap(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
@@ -814,6 +822,9 @@ impl PendingExternalRequest {
             ExternalEffectPlan::PluginKms(plan) => ExternalEffectResult::PluginKms(plan.execute()),
             ExternalEffectPlan::ExternalKey(plan) => {
                 ExternalEffectResult::ExternalKey(plan.execute())
+            }
+            ExternalEffectPlan::ExternalTransit(plan) => {
+                ExternalEffectResult::ExternalTransit(plan.execute())
             }
             ExternalEffectPlan::KubernetesToken(plan) => {
                 ExternalEffectResult::KubernetesToken(plan.execute())
@@ -865,6 +876,7 @@ pub struct Service {
     pending_plugin_read: Option<plugin::PluginReadPlan>,
     pending_plugin_kms: Option<plugin::PluginKmsPlan>,
     pending_external_key: Option<plugin::ExternalKeyPlan>,
+    pending_external_transit: Option<external_transit::ExternalTransitPlan>,
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
@@ -903,6 +915,7 @@ pub struct Service {
     record_root: Option<RecordStateRoot>,
     record_writes_since_gc: u64,
     ha_read_cache: Option<ha_read::HaReadCache>,
+    ha_activation: Option<ha_activation::LeaderActivation>,
     kv_read_only_dispatches: u64,
     seal: Option<SealMetadata>,
     unseal_shares: BTreeMap<u8, SecretShare>,
@@ -1209,6 +1222,7 @@ impl Service {
             pending_plugin_read: None,
             pending_plugin_kms: None,
             pending_external_key: None,
+            pending_external_transit: None,
             pending_kubernetes_token: None,
             pending_openldap_effect: None,
             pending_snapshot_transfer: None,
@@ -1247,6 +1261,7 @@ impl Service {
             record_root: None,
             record_writes_since_gc: 0,
             ha_read_cache: None,
+            ha_activation: None,
             kv_read_only_dispatches: 0,
             seal,
             unseal_shares: BTreeMap::new(),
@@ -1297,6 +1312,7 @@ impl Service {
             .is_err()
         {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Response::error(503, "wire rejection response audit unavailable");
         }
         response
@@ -1523,6 +1539,10 @@ impl Service {
                 self.finalize_external_key(plan, result)
             }
             (
+                ExternalEffectPlan::ExternalTransit(plan),
+                ExternalEffectResult::ExternalTransit(result),
+            ) => self.finalize_external_transit(plan, result),
+            (
                 ExternalEffectPlan::KubernetesToken(plan),
                 ExternalEffectResult::KubernetesToken(result),
             ) => self.finalize_kubernetes_token(plan, result),
@@ -1535,6 +1555,7 @@ impl Service {
             ) => self.finalize_snapshot_transfer(*plan, result),
             _ => {
                 self.recovery_required = true;
+                self.ha_activation = None;
                 Response::error(503, "external request observation type mismatch")
             }
         };
@@ -1552,6 +1573,7 @@ impl Service {
             .is_err()
         {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Response::error(
                 503,
                 "response audit failed; outcome unknown; authoritative recovery required",
@@ -1602,6 +1624,7 @@ impl Service {
             || self.pending_plugin_read.is_some()
             || self.pending_plugin_kms.is_some()
             || self.pending_external_key.is_some()
+            || self.pending_external_transit.is_some()
             || self.pending_kubernetes_token.is_some()
             || self.pending_openldap_effect.is_some()
             || self.pending_snapshot_transfer.is_some()
@@ -1668,6 +1691,7 @@ impl Service {
                     .is_err()
                 {
                     self.recovery_required = true;
+                    self.ha_activation = None;
                     return RequestExecution::Complete(Response::error(
                         503,
                         "wrapping rejection audit unavailable",
@@ -1694,6 +1718,7 @@ impl Service {
             {
                 self.recovery_required =
                     self.initialized() || postgres_pending_exists(&self.data_dir).unwrap_or(true);
+                self.ha_activation = None;
                 return RequestExecution::Complete(Response::error(
                     503,
                     "initialization response audit unavailable",
@@ -1725,6 +1750,7 @@ impl Service {
         let plugin_read = self.pending_plugin_read.take();
         let plugin_kms = self.pending_plugin_kms.take();
         let external_key = self.pending_external_key.take();
+        let external_transit = self.pending_external_transit.take();
         let kubernetes_token = self.pending_kubernetes_token.take();
         let openldap = self.pending_openldap_effect.take();
         let snapshot_transfer = self.pending_snapshot_transfer.take();
@@ -1737,11 +1763,13 @@ impl Service {
             + usize::from(plugin_read.is_some())
             + usize::from(plugin_kms.is_some())
             + usize::from(external_key.is_some())
+            + usize::from(external_transit.is_some())
             + usize::from(kubernetes_token.is_some())
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
         if staged > 1 {
             self.recovery_required = true;
+            self.ha_activation = None;
             return RequestExecution::Complete(self.audit_completed_response(
                 &fingerprint,
                 now,
@@ -1759,6 +1787,7 @@ impl Service {
             .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead))
             .or_else(|| plugin_kms.map(ExternalEffectPlan::PluginKms))
             .or_else(|| external_key.map(ExternalEffectPlan::ExternalKey))
+            .or_else(|| external_transit.map(ExternalEffectPlan::ExternalTransit))
             .or_else(|| kubernetes_token.map(ExternalEffectPlan::KubernetesToken))
             .or_else(|| openldap.map(ExternalEffectPlan::OpenLdap))
             .or_else(|| {
@@ -2179,6 +2208,9 @@ impl Service {
         if Self::kubernetes_secret_handles(&admitted, namespace, path) {
             return self.kubernetes_secret_route(admitted, principal, &request);
         }
+        if admitted.engines.external_transit_handles(namespace, path) {
+            return self.stage_external_transit(&admitted, principal, &request);
+        }
         if Self::plugin_kms_handles(path) {
             return self.plugin_kms_route(&admitted, principal, &request);
         }
@@ -2265,6 +2297,7 @@ impl Service {
                 return Response::error(403, "permission denied");
             }
             self.state = None;
+            self.ha_activation = None;
             self.record_root = None;
             self.record_writes_since_gc = 0;
             self.ha_read_cache = None;
@@ -3322,6 +3355,7 @@ impl Service {
         };
         if pending_exists {
             self.recovery_required = true;
+            self.ha_activation = None;
         }
         if self.initialized() {
             // Another Service may have published initialization after this
@@ -3593,6 +3627,7 @@ impl Service {
                     .is_err()
             {
                 self.recovery_required = postgres_pending_exists(&self.data_dir).unwrap_or(true);
+                self.ha_activation = None;
                 return (
                     Response::error(
                         503,
@@ -3602,6 +3637,7 @@ impl Service {
                 );
             }
             self.recovery_required = true;
+            self.ha_activation = None;
             let pending = match load_postgres_pending(&self.data_dir, secret, shares, threshold) {
                 Ok(value) => value,
                 Err(error) => return (error, false),
@@ -3644,6 +3680,7 @@ impl Service {
         self.seal = Some(seal);
         self.durable_profile = durable_profile;
         self.state = None;
+        self.ha_activation = None;
         self.record_root = None;
         self.record_writes_since_gc = 0;
         self.ha_read_cache = None;
@@ -3653,6 +3690,7 @@ impl Service {
         self.rekey = None;
         if !parent_synced {
             self.recovery_required = true;
+            self.ha_activation = None;
             if recovery_secret.is_some() {
                 return (
                     Response::error(
@@ -3810,6 +3848,7 @@ impl Service {
         self.seal = Some(pending.seal);
         self.durable_profile = Some(pending.profile);
         self.state = None;
+        self.ha_activation = None;
         self.record_root = None;
         self.record_writes_since_gc = 0;
         self.ha_read_cache = None;
@@ -3819,6 +3858,7 @@ impl Service {
         self.rekey = None;
         if !parent_synced {
             self.recovery_required = true;
+            self.ha_activation = None;
             return (
                 Response::error(
                     503,
@@ -3956,6 +3996,7 @@ impl Service {
         // while its directory sync failed, so absence alone is not an acknowledgement.
         if sync(&self.data_dir).is_err() {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Response::error(
                 503,
                 "initialization acknowledgement outcome unknown; directory sync failed",
@@ -4049,6 +4090,7 @@ impl Service {
                 Ok(value) => Zeroizing::new(value),
                 Err(_) => {
                     self.state = None;
+                    self.ha_activation = None;
                     self.record_root = None;
                     self.record_writes_since_gc = 0;
                     self.ha_read_cache = None;
@@ -4060,6 +4102,7 @@ impl Service {
             seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
             if persist_seal_metadata(&self.data_dir, &seal).is_err() {
                 self.state = None;
+                self.ha_activation = None;
                 self.record_root = None;
                 self.record_writes_since_gc = 0;
                 self.ha_read_cache = None;
@@ -4104,6 +4147,7 @@ impl Service {
         self.unseal_shares.clear();
         if self.rotate_unseal_nonce().is_err() {
             self.state = None;
+            self.ha_activation = None;
             self.record_root = None;
             self.record_writes_since_gc = 0;
             self.ha_read_cache = None;
@@ -4117,6 +4161,7 @@ impl Service {
     fn activate_barrier(&mut self, key: &[u8; 32]) -> Result<(), Response> {
         self.durable = None;
         self.state = None;
+        self.ha_activation = None;
         self.record_root = None;
         self.record_writes_since_gc = 0;
         self.ha_read_cache = None;
@@ -4242,6 +4287,7 @@ impl Service {
         self.recovery_required = false;
         if let Err(error) = self.synchronize_ha_after_unseal() {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Err(error);
         }
         Ok(())
@@ -4713,6 +4759,7 @@ impl Service {
         self.rekey = None;
         if delete_pending_rekey(&self.data_dir).is_err() {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Response::error(
                 503,
                 "verified seal promoted but pending marker cleanup failed; restart required",
@@ -4812,6 +4859,7 @@ impl Service {
             let previous_epoch = durable.replay_epoch();
             if next_state.replay_epoch != previous_epoch {
                 self.recovery_required = true;
+                self.ha_activation = None;
                 return Response::error(503, "replay epoch metadata requires recovery");
             }
             let Some(current_epoch) = previous_epoch.checked_add(1) else {
@@ -4832,12 +4880,14 @@ impl Service {
             self.state = Some(next_state);
             let Some(durable) = self.durable.as_ref() else {
                 self.recovery_required = true;
+                self.ha_activation = None;
                 return Response::error(503, "replay retirement lost durable owner");
             };
             if durable.replay_epoch() != current_epoch
                 || durable.retired_through_generation() != retired_through_generation
             {
                 self.recovery_required = true;
+                self.ha_activation = None;
                 return Response::error(503, "replay retirement did not converge locally");
             }
             return Response::ok(json!({
@@ -4876,6 +4926,7 @@ impl Service {
             };
             if fenced {
                 self.recovery_required = true;
+                self.ha_activation = None;
             }
             return match result {
                 Ok(outcome) => Response::ok(json!({
@@ -5110,6 +5161,7 @@ impl Service {
                 // Never continue admitting observations from the old epoch.
                 if epoch_transition {
                     self.recovery_required = true;
+                    self.ha_activation = None;
                 }
                 return Err(Response::error(503, &error));
             }
@@ -5126,6 +5178,7 @@ impl Service {
             Err(error) => {
                 if self.ha.is_some() {
                     self.recovery_required = true;
+                    self.ha_activation = None;
                     return Err(Self::ha_committed_local_failure(error));
                 }
                 Err(error)
@@ -5239,11 +5292,13 @@ impl Service {
             && durable.replay_epoch() == target_replay_epoch;
         if durable.recovery_required() || epoch_advanced_without_state {
             self.recovery_required = true;
+            self.ha_activation = None;
         }
         match result {
             Ok(_) => Ok(()),
             Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                 self.recovery_required = true;
+                self.ha_activation = None;
                 Err(Response {
                     consistency_index: None,
                     status: 503,
@@ -5258,6 +5313,9 @@ impl Service {
             )),
             Err(_) => {
                 self.recovery_required |= durable.recovery_required();
+                if self.recovery_required {
+                    self.ha_activation = None;
+                }
                 Err(Response::error(
                     503,
                     "durable state rejected; no response released",
@@ -5271,6 +5329,22 @@ impl Service {
     }
 
     fn sync_from_ha_with_anchor(&mut self, allow_initial_anchor: bool) -> Result<(), Response> {
+        let before = self.local_activation_key();
+        let result = self.sync_from_ha_with_anchor_inner(allow_initial_anchor);
+        if result.is_ok() {
+            // This is the serialized application activation publication point,
+            // after ReadIndex, authenticated materialization and local admission.
+            self.publish_ha_activation_after_sync(before);
+        } else {
+            self.ha_activation = None;
+        }
+        result
+    }
+
+    fn sync_from_ha_with_anchor_inner(
+        &mut self,
+        allow_initial_anchor: bool,
+    ) -> Result<(), Response> {
         let Some(ha) = self.ha.as_ref().cloned() else {
             return Ok(());
         };
@@ -5359,6 +5433,7 @@ impl Service {
         }
         if let Err(error) = self.validate_loaded_capacity(&state, None) {
             self.recovery_required = true;
+            self.ha_activation = None;
             self.ha_read_cache = None;
             return Err(Self::ha_committed_local_failure(error));
         }
@@ -5457,6 +5532,7 @@ impl Service {
         );
         if let Err(error) = result {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Err(Self::ha_committed_local_failure(error));
         }
         self.state = Some(state);
@@ -5465,26 +5541,39 @@ impl Service {
         self.recovery_required = false;
         if let Err(error) = self.cache_verified_ha_state(&committed) {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Err(error);
         }
         Ok(())
     }
 
-    fn ha_observation(&self) -> (bool, bool, bool, bool, Option<u64>, Option<u64>) {
-        let Some(ha) = self.ha.as_ref() else {
+    fn ha_observation(&mut self) -> (bool, bool, bool, bool, Option<u64>, Option<u64>) {
+        let Some(ha) = self.ha.as_ref().cloned() else {
+            self.ha_activation = None;
             return (false, false, true, true, None, None);
         };
         let Ok(ha) = ha.lock_for_request() else {
+            self.ha_activation = None;
             return (true, false, false, false, None, None);
         };
         let local = match ha.local_id() {
             Ok(local) => Some(local),
-            Err(_) => return (true, false, false, false, None, None),
+            Err(_) => {
+                self.ha_activation = None;
+                return (true, false, false, false, None, None);
+            }
         };
         let leader = match ha.leader() {
             Ok(leader) => leader,
-            Err(_) => return (true, false, false, false, None, local),
+            Err(_) => {
+                self.ha_activation = None;
+                return (true, false, false, false, None, local);
+            }
         };
+        let before = ha
+            .leader_status()
+            .ok()
+            .and_then(ha_activation::ActivationKey::from_observation);
         let standby = leader.is_some() && leader != local;
         let active = ha.bootstrap_ready()
             && leader.is_some()
@@ -5497,6 +5586,12 @@ impl Service {
                 .current_state_identity()
                 .ok()
                 .is_some_and(|identity| ha.ensure_application_identity(identity).is_ok());
+        let after = ha
+            .leader_status()
+            .ok()
+            .and_then(ha_activation::ActivationKey::from_observation);
+        drop(ha);
+        self.record_ha_activation(before, after, application_ready);
         (true, standby, active, application_ready, leader, local)
     }
 
@@ -5804,6 +5899,7 @@ impl Service {
             self.audit_previous,
         ) {
             self.audit_failed = true;
+            self.ha_activation = None;
             return Err(error);
         }
         if let Err(error) = self
@@ -5812,12 +5908,14 @@ impl Service {
             .and_then(|()| self.audit.sync_all())
         {
             self.audit_failed = true;
+            self.ha_activation = None;
             return Err(error);
         }
         if let Some(url) = self.audit_http_url.as_deref() {
             let value = serde_json::to_value(&record)?;
             if self.outbound.post_audit_json(url, &value).is_err() {
                 self.audit_failed = true;
+                self.ha_activation = None;
                 return Err(std::io::Error::other(
                     "mandatory HTTP audit collector unavailable",
                 ));
@@ -7139,3 +7237,7 @@ mod transit_mldsa_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "service_external_keys_tests.rs"]
 mod external_keys_tests;
+
+#[cfg(test)]
+#[path = "service_external_transit_tests.rs"]
+mod external_transit_tests;

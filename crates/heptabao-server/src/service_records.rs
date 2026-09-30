@@ -551,6 +551,7 @@ impl Service {
                 // Publication may have committed despite a missing response.
                 if activation.is_some() {
                     self.recovery_required = true;
+                    self.ha_activation = None;
                 }
                 return Err(Response::error(
                     503,
@@ -567,6 +568,7 @@ impl Service {
                     .and_then(|durable| context.after_commit(&receipt, durable.generation()));
                 if let Err(error) = gated {
                     self.recovery_required = true;
+                    self.ha_activation = None;
                     self.ha_read_cache = None;
                     return Err(Self::ha_committed_local_failure(Response::error(
                         503, error,
@@ -580,6 +582,7 @@ impl Service {
         if let Err(error) = result {
             if self.ha.is_some() {
                 self.recovery_required = true;
+                self.ha_activation = None;
                 return Err(Self::ha_committed_local_failure(error));
             }
             return Err(error);
@@ -591,6 +594,7 @@ impl Service {
         // appear rolled back. Fence and require reload instead.
         if let Err(error) = state.engines.clear_published_record_objects(&plan.root.kv1) {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Err(engine_error(error));
         }
         self.record_writes_since_gc = self.record_writes_since_gc.saturating_add(1);
@@ -617,11 +621,13 @@ impl Service {
         if durable.recovery_required() || (result.is_err() && durable.replay_epoch() != prior_epoch)
         {
             self.recovery_required = true;
+            self.ha_activation = None;
         }
         match result {
             Ok(()) => Ok(()),
             Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                 self.recovery_required = true;
+                self.ha_activation = None;
                 Err(Response {
                     consistency_index: None,
                     status: 503,
@@ -789,6 +795,7 @@ impl Service {
         self.install_received_record_state(state, plan)?;
         if let Err(error) = self.cache_verified_ha_records(&committed) {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Err(error);
         }
         self.recovery_required = false;
@@ -806,6 +813,7 @@ impl Service {
         // Raft already owns this state; a local limit is not a pre-entry rejection.
         if let Err(error) = self.validate_loaded_capacity(&state, Some(&plan.root)) {
             self.recovery_required = true;
+            self.ha_activation = None;
             self.ha_read_cache = None;
             return Err(Self::ha_committed_local_failure(error));
         }
@@ -814,11 +822,13 @@ impl Service {
             Ok(value) => format!("hasync-record-{}", hex(&value)),
             Err(error) => {
                 self.recovery_required = true;
+                self.ha_activation = None;
                 return Err(Response::error(503, error));
             }
         };
         if let Err(error) = self.persist_record_plan_local(&plan, &operation, true) {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Err(Self::ha_committed_local_failure(error));
         }
         self.record_root = Some(plan.root);
@@ -839,6 +849,7 @@ impl Service {
             }
             ServiceError::OutcomeUnknown { recovery_reference } => {
                 self.recovery_required = true;
+                self.ha_activation = None;
                 Response {
                     consistency_index: None,
                     status: 503,
@@ -848,6 +859,7 @@ impl Service {
             }
             _ => {
                 self.recovery_required = true;
+                self.ha_activation = None;
                 Response::error(
                     503,
                     "record durable validation failed; reopen and reconcile",
@@ -860,6 +872,7 @@ impl Service {
         let result = self.collect_record_objects_if_due();
         if result.as_ref().is_err_and(|error| error.status == 503) {
             self.recovery_required = true;
+            self.ha_activation = None;
         }
         result
     }
@@ -930,6 +943,9 @@ impl Service {
                     .collect(),
             ) {
                 self.recovery_required |= durable.recovery_required();
+                if self.recovery_required {
+                    self.ha_activation = None;
+                }
                 return Err(self.record_storage_error(error));
             }
         }

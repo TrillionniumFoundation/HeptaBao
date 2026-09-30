@@ -375,6 +375,7 @@ fn serve_inner(
         &service,
         Duration::from_secs(config.lifecycle_interval_seconds),
     )?;
+    let _ha_activation = crate::service::start_ha_activation_worker(&service)?;
     let connections = Arc::new(AtomicUsize::new(0));
     eprintln!(
         "HeptaBao {} TLS listener ready at {}",

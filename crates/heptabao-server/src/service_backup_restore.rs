@@ -418,6 +418,7 @@ impl Service {
             Err(_) => {
                 if durable.recovery_required() {
                     self.recovery_required = true;
+                    self.ha_activation = None;
                 }
                 return Response::error(
                     503,

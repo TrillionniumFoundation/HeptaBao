@@ -134,6 +134,8 @@ mod tests {
         use heptabao_raft_runtime::LocalLeaderObservation;
         let ready = LocalLeaderObservation {
             local_id: 2,
+            term: 1,
+            local_is_leader: false,
             leader: Some(1),
             committed_index: Some(5),
             applied_index: Some(5),

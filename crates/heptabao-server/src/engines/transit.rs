@@ -12,6 +12,8 @@ use sha3::{Sha3_224, Sha3_256, Sha3_384, Sha3_512};
 
 const MAX_INPUT_BYTES: usize = 4 * 1024 * 1024;
 use zeroize::Zeroizing;
+#[path = "transit_external.rs"]
+mod external;
 #[path = "transit_mldsa.rs"]
 mod mldsa;
 const MAX_BATCH: usize = 256;
@@ -43,6 +45,8 @@ struct KeyVersion {
     hmac_material: String,
     created_at: u64,
     encryptions: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    external_key_ref: Option<String>,
 }
 
 impl Drop for KeyVersion {
@@ -101,6 +105,7 @@ impl KeyVersion {
             hmac_material: BASE64.encode(random_bytes(32)?),
             created_at: now,
             encryptions: 0,
+            external_key_ref: None,
         })
     }
 }
@@ -122,7 +127,19 @@ impl Key {
         }
         let auto_rotate_period = auto_rotate_period(body.get("auto_rotate_period"))?;
         let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
-        let version = KeyVersion::generate(kind, now)?;
+        let version = if kind == "external-key" {
+            external::new_version(body, now)?
+        } else {
+            if body.get("external_key_ref").is_some() {
+                return Err(bad("external_key_ref requires type external-key"));
+            }
+            KeyVersion::generate(kind, now)?
+        };
+        if kind == "external-key" && (exportable || auto_rotate_period != 0) {
+            return Err(bad(
+                "external keys cannot be exported or automatically rotated",
+            ));
+        }
         Ok(Self {
             kind: kind.into(),
             latest_version: 1,
@@ -137,6 +154,9 @@ impl Key {
     }
 
     fn descriptor(&self, name: &str) -> Result<Value> {
+        if self.kind == "external-key" {
+            return external::descriptor(self, name);
+        }
         let mut versions = serde_json::Map::new();
         for (number, version) in &self.versions {
             let value = if self.kind == "ed25519" {
@@ -211,6 +231,18 @@ impl Key {
                 "auto_rotate_period",
             ],
         )?;
+        if self.kind == "external-key"
+            && (optional_bool(body, "exportable")?.unwrap_or(false)
+                || body
+                    .get("auto_rotate_period")
+                    .map(|value| auto_rotate_period(Some(value)))
+                    .transpose()?
+                    .is_some_and(|period| period != 0))
+        {
+            return Err(bad(
+                "external keys cannot be exported or automatically rotated",
+            ));
+        }
         let requested_auto_rotate_period = body
             .get("auto_rotate_period")
             .map(|value| auto_rotate_period(Some(value)))
@@ -409,6 +441,7 @@ impl Transit {
                     "exportable",
                     "allow_plaintext_backup",
                     "auto_rotate_period",
+                    "external_key_ref",
                 ],
             )?;
             if let Some(key) = self.keys.get(name) {
@@ -432,6 +465,15 @@ impl Transit {
                         "use the key config endpoint to change auto_rotate_period",
                     ));
                 }
+                if let Some(reference) = body.get("external_key_ref") {
+                    let current = key
+                        .versions
+                        .get(&key.latest_version)
+                        .and_then(|version| version.external_key_ref.as_deref());
+                    if reference.as_str() != current {
+                        return Err(bad("use rotation to change an external key reference"));
+                    }
+                }
                 return Ok(ok(key.descriptor(name)?, false));
             }
             self.keys.insert(name.into(), Key::new(body, now)?);
@@ -453,7 +495,14 @@ impl Transit {
                 return Ok(ok(key.descriptor(name)?, true));
             }
             "rotate" => {
-                reject_unknown(body, &[])?;
+                reject_unknown(
+                    body,
+                    if key.kind == "external-key" {
+                        &["external_key_ref"]
+                    } else {
+                        &[]
+                    },
+                )?;
                 key.alive()?;
                 if key.versions.len() >= 10_000 {
                     return Err(bad("key version retention limit reached"));
@@ -462,8 +511,21 @@ impl Transit {
                     .latest_version
                     .checked_add(1)
                     .ok_or_else(|| bad("key version limit reached"))?;
-                key.versions
-                    .insert(next, KeyVersion::generate(&key.kind, now)?);
+                let version = if key.kind == "external-key" {
+                    if body.get("external_key_ref").is_some() {
+                        external::new_version(body, now)?
+                    } else {
+                        let reference = key
+                            .versions
+                            .get(&key.latest_version)
+                            .and_then(|version| version.external_key_ref.as_deref())
+                            .ok_or_else(|| error(503, "external key reference is unavailable"))?;
+                        external::new_version(&json!({"external_key_ref":reference}), now)?
+                    }
+                } else {
+                    KeyVersion::generate(&key.kind, now)?
+                };
+                key.versions.insert(next, version);
                 key.latest_version = next;
             }
             "soft-delete" => {
@@ -578,8 +640,14 @@ impl Transit {
         if !matches!(bits, 128 | 256 | 512) {
             return Err(bad("data key bits must be 128, 256 or 512"));
         }
-        let plaintext = random_bytes((bits / 8) as usize)?;
         let key = self.keys.get_mut(name).ok_or_else(not_found)?;
+        if key.kind == "external-key" {
+            return Err(error(
+                501,
+                "external key data-key generation is not implemented",
+            ));
+        }
+        let plaintext = random_bytes((bits / 8) as usize)?;
         let mut data = encrypt(key, namespace, mount, name, body, &plaintext)?;
         if mode == "plaintext" {
             let encoded = Zeroizing::new(BASE64.encode(plaintext));
@@ -615,6 +683,12 @@ fn handle_crypto(
     algorithm: &str,
     body: &Value,
 ) -> Result<EngineResponse> {
+    if key.kind == "external-key" {
+        return Err(error(
+            501,
+            "external key operations require the audited external-effect dispatcher",
+        ));
+    }
     let allowed: &[&str] = match operation {
         "encrypt" => &[
             "plaintext",

@@ -58,11 +58,17 @@ class LeaderGuards(unittest.TestCase):
         self.assertFalse(fixture.shape(200,{**body,'raft_committed_index':True},ha=True))
         self.assertFalse(fixture.shape(200,{**body,'auth':{'token':'sentinel'}},ha=True))
 
-    def test_active_time_stays_unsupported_for_candidate_observation(self):
+    def test_active_time_requires_valid_utc_event_on_candidate_local_active_node(self):
         body={'ha_enabled':True,'is_self':True,'active_time':'2026-01-01T00:00:00Z',
             'leader_cluster_address':'https://127.0.0.1:8201'}
         self.assertTrue(fixture.shape(200,body,ha=True,official=True))
-        self.assertFalse(fixture.shape(200,body,ha=True))
+        self.assertTrue(fixture.shape(200,body,ha=True))
+        self.assertFalse(fixture.shape(200,{**body,'is_self':False},ha=True))
+        for invalid in (None,False,1,'','0001-01-01T00:00:00Z','2026-02-30T00:00:00Z',
+                '2026-01-01T00:00:00','2026-01-01T00:00:00+08:00',
+                '2026-01-01T00:00:00.1234567890Z','2026-01-01T00:00:00Z\n'):
+            self.assertFalse(fixture.shape(200,{**body,'active_time':invalid},ha=True))
+        self.assertTrue(fixture.shape(200,{**body,'active_time':'2026-01-01T00:00:00.123456789Z'},ha=True))
 
     def test_cluster_address_must_be_the_explicit_leader_forwarding_origin(self):
         body={'ha_enabled':True,'is_self':False,'leader_address':'https://127.0.0.1:8200',

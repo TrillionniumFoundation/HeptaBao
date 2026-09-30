@@ -153,7 +153,7 @@ fn external_keys270_registry_is_durable_and_schema_fenced() -> TestResult {
     );
     assert_eq!(created.status, 204);
     let state = service.state.as_ref().ok_or("state")?;
-    assert_eq!(state.schema, 63);
+    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     assert!(state.engines.has_external_key_state());
 
     let config = call(
@@ -908,5 +908,238 @@ fn external_keys270_missing_or_disabled_provider_fails_closed_without_publicatio
         );
         assert!(provider.trace()?.is_empty(), "scenario={scenario}");
     }
+    Ok(())
+}
+
+#[test]
+fn external_keys270_verified_result_is_withheld_after_grant_delete_restore_aba() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let provider = VerificationProvider::install(&root.path)?;
+    service.install_kms_plugins(vec![provider.config("transit", true)])?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    let config = "sys/external-keys/configs/aba";
+    let key = "sys/external-keys/configs/aba/keys/signing";
+    let grant = "sys/external-keys/configs/aba/keys/signing/grants/transit";
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            config,
+            &admin,
+            json!({"plugin":"transit","verify":false})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            key,
+            &admin,
+            json!({"verify":false,"name":"original","version":1})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(&mut service, "POST", grant, &admin, json!({})).status,
+        204
+    );
+    let identity = service
+        .current_state_identity()
+        .map_err(|response| format!("identity status {}", response.status))?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let pending = stage_external_key(
+        &mut service,
+        &admin,
+        key,
+        json!({"name":"replacement","version":2}),
+    )?;
+    let observation = pending.execute();
+    assert_eq!(
+        provider.trace()?.len(),
+        1,
+        "provider did not actually execute"
+    );
+    assert_eq!(
+        call(&mut service, "DELETE", grant, &admin, json!({})).status,
+        204
+    );
+    assert_eq!(
+        call(&mut service, "POST", grant, &admin, json!({})).status,
+        204
+    );
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|response| format!("identity status {}", response.status))?,
+        identity,
+        "fixture did not restore identical content"
+    );
+    assert!(service.durable.as_ref().ok_or("durable")?.generation() > generation);
+    let withheld = service.finish_external_request(pending, observation);
+    assert_eq!(
+        withheld.status, 503,
+        "stale provider result survived a durable ABA"
+    );
+    assert_eq!(
+        call(&mut service, "GET", key, &admin, json!({})).body["data"]["version"],
+        1
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let mapping = call(&mut service, "GET", key, &admin, json!({}));
+    assert_eq!(mapping.body["data"]["name"], "original");
+    assert_eq!(mapping.body["data"]["version"], 1);
+    assert_eq!(
+        provider.trace()?.len(),
+        1,
+        "restart replayed a provider effect"
+    );
+    Ok(())
+}
+#[test]
+fn external_keys270_verified_result_is_withheld_after_raft_term_cycle_without_state_change()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let provider = VerificationProvider::install(&root.path)?;
+    service.install_kms_plugins(vec![provider.config("transit", true)])?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    let config = "sys/external-keys/configs/term-cycle";
+    let key = "sys/external-keys/configs/term-cycle/keys/signing";
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            config,
+            &admin,
+            json!({"plugin":"transit","verify":false})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            key,
+            &admin,
+            json!({"verify":false,"name":"original","version":1})
+        )
+        .status,
+        204
+    );
+    let cluster_id = service.state.as_ref().ok_or("state")?.cluster_id.clone();
+    let cluster =
+        crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &cluster_id)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    service.sync_from_ha().map_err(|response| {
+        format!(
+            "initial anchor status {}: {}",
+            response.status,
+            response.body["errors"][0]
+                .as_str()
+                .unwrap_or("unclassified")
+        )
+    })?;
+    let identity = service
+        .current_state_identity()
+        .map_err(|response| format!("identity status {}", response.status))?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let frontier = service
+        .consistency_observation()
+        .map_err(|response| format!("frontier status {}", response.status))?
+        .ok_or("frontier")?;
+    let pending = stage_external_key(
+        &mut service,
+        &admin,
+        key,
+        json!({"name":"replacement","version":2}),
+    )?;
+    let observation = pending.execute();
+    assert_eq!(
+        provider.trace()?.len(),
+        1,
+        "provider did not actually execute"
+    );
+    // Both transitions are genuine quorum elections. The original Service,
+    // unseal activation and durable owner remain the same throughout.
+    let successor = cluster.processes[0].lock().map_err(|_| "HA")?.step_down()?;
+    assert_ne!(successor, 1);
+    let returned = cluster.processes[(successor - 1) as usize]
+        .lock()
+        .map_err(|_| "HA")?
+        .step_down()?;
+    assert_eq!(
+        returned, 1,
+        "fixture did not return authority to the same process"
+    );
+    service
+        .sync_from_ha()
+        .map_err(|response| format!("sync status {}", response.status))?;
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|response| format!("identity status {}", response.status))?,
+        identity
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation,
+        "fixture changed local publication"
+    );
+    let current = service
+        .consistency_observation()
+        .map_err(|response| format!("frontier status {}", response.status))?
+        .ok_or("frontier")?;
+    assert_ne!(
+        (current.committed, current.applied),
+        (frontier.committed, frontier.applied),
+        "fixture did not advance real Raft frontier"
+    );
+    let withheld = service.finish_external_request(pending, observation);
+    assert_eq!(
+        withheld.status, 503,
+        "stale result survived Raft authority loss and return"
+    );
+    assert_eq!(
+        call(&mut service, "GET", key, &admin, json!({})).body["data"]["version"],
+        1
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let mapping = call(&mut service, "GET", key, &admin, json!({}));
+    assert_eq!(mapping.body["data"]["name"], "original");
+    assert_eq!(mapping.body["data"]["version"], 1);
+    assert_eq!(
+        provider.trace()?.len(),
+        1,
+        "restart replayed provider effect"
+    );
     Ok(())
 }

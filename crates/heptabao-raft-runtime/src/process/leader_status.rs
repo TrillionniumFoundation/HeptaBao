@@ -6,6 +6,10 @@ use openraft::async_runtime::WatchReceiver;
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct LocalLeaderObservation {
     pub local_id: u64,
+    /// The real consensus term, never an application clock or local counter.
+    pub term: u64,
+    /// Role and remembered leader identity are separate local observations.
+    pub local_is_leader: bool,
     pub leader: Option<u64>,
     pub committed_index: Option<u64>,
     pub applied_index: Option<u64>,
@@ -22,6 +26,8 @@ impl ProcessRaftNode {
         }
         Ok(LocalLeaderObservation {
             local_id: self.id,
+            term: metrics.current_term,
+            local_is_leader: metrics.state == openraft::ServerState::Leader,
             leader: metrics.current_leader,
             committed_index: metrics.local_committed.as_ref().map(|log| log.index),
             applied_index: metrics.last_applied.as_ref().map(|log| log.index),

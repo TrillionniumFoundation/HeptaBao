@@ -82,7 +82,7 @@ modules:
   source: crates/heptabao-ha-service/src/lib.rs
   guide: docs/modules/heptabao-ha-service.md
 - crate: heptabao-raft-runtime
-  domain: durable Raft replication with deadline-adaptive contiguous replay prefixes, applied-frontier recovery and bounded snapshots
+  domain: durable Raft replication with deadline-adaptive contiguous replay prefixes, applied-frontier recovery and bounded snapshots, passive true-term and actual-role observation
   state: IMPLEMENTED_REVIEW_REQUIRED
   documentation_standard: V3
   source: crates/heptabao-raft-runtime/src/lib.rs
@@ -274,7 +274,7 @@ modules:
   source: crates/heptabao-token/src/lib.rs
   guide: docs/modules/heptabao-token.md
 - crate: heptabao-server
-  domain: runnable TLS encrypted secrets service with bounded online Kubernetes/OIDC identity, root-only capacity observation, recovery-safe journal compaction and explicit native leader cluster-address diagnosis
+  domain: runnable TLS encrypted secrets service with bounded online Kubernetes/OIDC identity, root-only capacity observation, recovery-safe journal compaction and explicit native leader cluster-address diagnosis, term-bound application activation lifecycle, schema-fenced remote Transit reference consumption through enrolled TLS and staged authority
   state: IMPLEMENTED_REVIEW_REQUIRED
   documentation_standard: V3
   source: crates/heptabao-server/src/lib.rs

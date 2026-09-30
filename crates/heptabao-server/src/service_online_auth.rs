@@ -816,6 +816,7 @@ impl Service {
                 .finish_oidc_observation(&namespace, &mount, *exchange, observed),
             _ => {
                 self.recovery_required = true;
+                self.ha_activation = None;
                 return Response::error(503, "online authentication observation type mismatch");
             }
         };

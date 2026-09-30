@@ -6,7 +6,7 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **63**. Its source constant is
+The current Service state schema is **64**. Its source constant is
 `CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -48,7 +48,7 @@ static and root intents retain the generated credential bytes and exact semantic
 digests. A valid schema-55 state with absent generation fields remains readable
 without rewrite and preserves its historical credential shapes. The fixed
 schema-56 candidate publishes schema 56 for this feature; the schema-57 candidate may promote the same legacy state directly to 57; the current
-schema-63 candidate promotes it directly to 63. Fixed ancestors
+schema-64 candidate promotes it directly to 64. Fixed ancestors
 must refuse the first unsupported schema without altering the encrypted record.
 
 ## Read admission and mutation promotion
@@ -117,14 +117,15 @@ must refuse the first unsupported schema without altering the encrypted record.
 | 60 | Bounded Identity ACL path substitutions. Entity, live mount-alias and verified member-group values are projected per request and never copied into token grants. Literal-only policies retain older serialized bytes; nonzero wrapping TTL bounds must be absent. |
 | 61 | Bounded ACL `min_wrapping_ttl` and `max_wrapping_ttl`. Nonzero bounds independently require this reader, even on literal paths without generic parameter constraints. Zero/absent bounds preserve earlier Rule serialization. Request-local absence versus explicit zero is not persisted as a reusable grant. |
 | 62 | Native Transit `mldsa-44`, `mldsa-65` and `mldsa-87` seed versions. Feature-free schema-61 state remains readable; any retained ML-DSA version requires schema 62 or later. |
-| 63 | Namespace-scoped External Keys config, key-mapping and mount-grant registry. Empty registries preserve earlier NamespaceState serialization; any retained registry entry requires schema 63. |
+| 63 | Namespace-scoped External Keys config, key-mapping and mount-grant registry. Empty registries preserve earlier NamespaceState serialization; any retained registry entry requires schema 63. Transit external-key versions and references must be absent. |
+| 64 | Bounded remote Transit external-key versions with exact registry references, no local cryptographic material and per-consumption namespace/mount grants. Any retained external-key version or reference requires this reader. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 
 Schema 61 independently gates `AuthState::has_acl_wrapping_ttl_state()` and
 revalidates all stored bounds. A contradictory individual rule or a duration
 outside the declared whole-second range fails closed. Schema 60 without nonzero
-bounds reopens without promotion; a current mutation publishes 61. Tests use
+bounds reopens without promotion; a current mutation publishes 64. Tests use
 actual commit, stop, reopen and unseal, rather than pretending raw JSON supplies
 authenticated KV record-root bindings.
 
@@ -132,15 +133,15 @@ Schema 60 independently gates `AuthState::has_acl_template_state()` and checks
 persisted template grammar on reopen. It does not add a second Identity owner or
 persist expanded names, metadata, memberships or alias values in tokens.
 An old literal-only state retains its bytes; new template-bearing state cannot
-hide under schema 59. Current policy mutation publishes 63, while 60 remains the
+hide under schema 59. Current policy mutation publishes 64, while 60 remains the
 minimum reader for the template feature alone.
 
-Schema 59 independently gates `EngineState::has_pki_extension_state()`. A schema-58 ACL-only state remains readable without promotion; adding PKI configuration requires schema 59 or later; this candidate publishes schema 63. Old readers must refuse it, not discard configuration.
+Schema 59 independently gates `EngineState::has_pki_extension_state()`. A schema-58 ACL-only state remains readable without promotion; adding PKI configuration requires schema 59 or later; this candidate publishes schema 64. Old readers must refuse it, not discard configuration.
 
 Schema 58 independently gates `AuthState::has_acl_parameter_state()`. Policy
 parameter names and values are bounded and revalidated on reopen. Absent maps and
 sets retain the exact schema-57 policy representation and semantics. A policy
-mutation carrying any parameter constraint publishes the current schema 63 before it can
+mutation carrying any parameter constraint publishes the current schema 64 before it can
 authorize or deny product requests. Older binaries must refuse that encrypted
 state without rewriting policies or backend data.
 
@@ -159,7 +160,7 @@ a schema-55 connection with absent selectors and an empty template remains
 readable and retains the historical native username/password generation path.
 Pure read and unseal do not populate defaults or promote the discriminator.
 
-The first successful current mutation publishes schema 63. A predecessor binary
+The first successful current mutation publishes schema 64. A predecessor binary
 must reject that state before application mutation. The authenticated application
 snapshot (`state.hbs`), journal and seal metadata must remain unchanged, and the
 current reader must recover the same generation, retained-operation count, journal
@@ -576,7 +577,7 @@ is encrypted with its owner and zeroized when dropped. Resetting to a plaintext
 password removes it and installs a fresh PBKDF credential with `bcrypt_72`.
 
 Opening a valid older record for a pure read is not permission to silently rewrite
-it. Initialization and committed mutations use schema 63. An authenticated
+it. Initialization and committed mutations use schema 64. An authenticated
 finite-use token decrement is itself a mutation, even when the requested action
 is later denied. Such a request can promote the stored format. Failure before
 publication does not make the candidate transaction authoritative.
@@ -770,7 +771,8 @@ and absence of encryption counters before any state is admitted.
 `EngineState::has_mldsa_state` includes soft-deleted keys and all namespaces and
 mounts. State bearing such keys cannot hide under schema 61 or older, even when
 its ordinary request path is unavailable. A feature-free schema-61 state remains
-readable without promotion; the first successful mutation publishes schema 62.
+readable without promotion; the schema-62 increment first published schema 62.
+The current candidate publishes schema 64 on successful mutation.
 An older binary must refuse the new schema without modifying application state.
 This is a native state-format increment, not OpenBao asset-import qualification.
 
@@ -790,8 +792,52 @@ publishes no registry bytes. Config deletion removes its mappings and grants but
 cannot claim that an external KMS key was destroyed. Grants are namespace-local,
 canonical trailing-slash mount paths and idempotent.
 
-This schema increment admits the registry owner only. `verify=true`, actual KMS
-client creation, Transit/PKI external-key consumers, reply-loss recovery and exact
-2.7 native differential evidence remain separate execution gates until the
-provider call is staged outside the Service writer and current config, grant,
-mount incarnation and caller authority are rechecked before result delivery.
+This schema increment admits the registry owner. The current candidate stages
+`verify=true` through the admitted KMS provider outside the Service writer and
+fences publication with the original caller authority, durable identity and
+monotonic generation/HA frontier. Provider verification alone does not admit
+cryptographic consumption or establish OpenBao provider interoperability. The
+bounded Transit consumer has the distinct schema-64 contract below; PKI and
+other consumers, generic provider interoperability and full external-asset
+migration remain separate execution gates.
+
+
+## Schema 64: bounded native remote Transit consumption
+
+Schema 64 retains `external-key` versions in the existing Transit mount owner.
+Each version stores an exact `external_key_ref` in `config:key` form, creation
+time, and empty local `material`/`hmac` strings. It never stores the external
+cryptographic private key locally. The complete state validator rejects an
+external reference on a local key type, nonempty local material, malformed
+reference/version metadata and unsupported external export, backup, derivation
+or automatic-rotation state. Soft-deleted keys, every retained version and all
+namespaces/mounts participate in the fence; route visibility cannot hide them
+under schema 63 or older. Feature-free schema-63 state remains readable without
+rewrite. Accepted initialization and mutation publish schema 64 through the
+existing encrypted opaque-owner/record-root pipeline.
+
+Single-item encryption/decryption requires the caller's current ACL/parameter
+policy and a current namespace-relative grant to the actual consumer mount.
+Credentials and fixed remote key versions are read from the namespace registry
+only after admission. Explicit reference rotation retains the older version's
+reference for minimum-version policy and old ciphertext decryption. Config, key
+and grant deletion never claims destruction of the remote provider key.
+
+The effect enters only the exact deployment-enrolled HTTPS address, CA, SNI and
+path. Registry/API fields cannot select a new socket address or weaken TLS. An
+optional deployment KMS host/key binding supplies an additional active-state and
+manifest-generation fence. Remote I/O runs outside the Service writer and
+returns bounded cryptographic data; a `verified=true` acknowledgment is not a
+cryptographic result. Completion checks original affine caller authority,
+namespace/mount incarnation, seal/activation, deadline, transport/provider
+binding, whole StateIdentity, durable generation and HA committed/applied
+frontier before result delivery. Delete/restore ABA or unrelated committed
+writes withhold the result conservatively. Post-entry uncertainty never causes
+a blind provider retry. Plaintext observation buffers are erased on rejection.
+
+This is a bounded native encrypt/decrypt format increment. Its local ciphertext
+envelope and production OpenBao 2.7 consumer interoperability require independent
+black-box comparison. Batch/rewrap/sign/verify/HMAC/data-key and PKI/PKCS#11
+consumers, API TLS overrides and full external-asset migration remain unsupported.
+Read the [native consumer contract](../modules/heptabao-server.md#bounded-native-external-keys-transit-consumption)
+for transport and input bounds and the real remote-Service test scope.

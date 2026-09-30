@@ -3,9 +3,10 @@
 
 This samples local Raft observations, never claims quorum/read authority from
 sys/leader. Candidate cluster addresses are explicitly configured native mTLS
-forwarding origins; active_time remains unsupported.
+forwarding origins; active_time samples a term-bound application activation event.
 """
 from __future__ import annotations
+import datetime
 import http.client
 import json
 import os
@@ -38,8 +39,10 @@ COMMON_PHASES = frozenset({'uninitialized','post','head','initialized','sealed',
 HA_PHASES = frozenset({'ha_initial','ha_finite_issued','ha_standby_finite','ha_uses_unchanged',
     'ha_reads_unchanged','ha_restarted_sealed','ha_reunsealed','ha_quorum_lost',
     'ha_partition_diagnostic','ha_partition_read_rejected','ha_recovered','ha_step_down',
-    'ha_successor','ha_successor_changed','ha_value_retained','ha_cleanup','plaintext_absent'})
-ALLOWED = frozenset({'ha_enabled','is_self','leader_address','leader_cluster_address','raft_committed_index','raft_applied_index'})
+    'ha_successor','ha_successor_changed','ha_value_retained','ha_cleanup','plaintext_absent',
+    'ha_activation_stable','ha_activation_seal','ha_activation_sealed_diagnostic',
+    'ha_activation_unseal','ha_activation_reunseal','ha_activation_changed','ha_activation_successor_stable'})
+ALLOWED = frozenset({'ha_enabled','is_self','leader_address','leader_cluster_address','raft_committed_index','raft_applied_index','active_time'})
 
 # Exact outer-middleware/dedicated-handler observations. Status 200 means the
 # normal leader response for the current lifecycle (HA sealed is then 503).
@@ -118,7 +121,7 @@ def shape(status, body, *, ha, sealed=False, is_self=None, address=None, cluster
         return status==503 and body=={'errors':['Vault is sealed']}
     if status!=200 or not isinstance(body,dict) or body.get('ha_enabled') is not True:
         return False
-    allowed = ALLOWED | ({'active_time'} if official else set())
+    allowed = ALLOWED
     if not set(body).issubset(allowed):return False
     if is_self is True and body.get('is_self') is not True:return False
     if type(body.get('is_self')) is not bool:return False
@@ -134,6 +137,12 @@ def shape(status, body, *, ha, sealed=False, is_self=None, address=None, cluster
             if parsed.path or parsed.query or parsed.fragment or any(c in parsed.netloc for c in ('\\','%')):return False
             if parsed.port is None or parsed.port==0:return False
         except ValueError:return False
+    if 'active_time' in body:
+        value=body['active_time']
+        if not isinstance(value,str) or not re.fullmatch(r'[1-9][0-9]{3}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,9})?Z',value):return False
+        try:datetime.datetime.fromisoformat(value)
+        except ValueError:return False
+        if not official and body['is_self'] is not True:return False
     for key in ('raft_committed_index','raft_applied_index'):
         if key in body and (type(body[key]) is not int or body[key]<=0):return False
     if body.get('raft_applied_index',0)>body.get('raft_committed_index',0):return False
@@ -288,6 +297,9 @@ def candidate_ha(binary,root,check,observations,samples):
                     'expected_cluster_address':f'https://127.0.0.1:{current.raft_port}'})
             check(phase,True)
         all_views(leader,'ha_initial')
+        initial_time=endpoints[leader.node_id].call('GET')[1].get('active_time')
+        repeated=endpoints[leader.node_id].call('GET')[1].get('active_time')
+        check('ha_activation_stable',isinstance(initial_time,str) and repeated==initial_time)
         marker='retained-leader-diagnostic'
         cluster.write(leader,'leader-diagnostic',marker)
         status,issued=leader.call('POST','auth/token/create',{'policies':['default'],'num_uses':2,'ttl':600},token=cluster.root_token)
@@ -305,6 +317,13 @@ def candidate_ha(binary,root,check,observations,samples):
         check('ha_restarted_sealed',shape(status,body,ha=True,sealed=True))
         check('ha_reunsealed',standby.call('POST','sys/unseal',{'key':cluster.unseal_key})[0]==200)
         leader=cluster.leader()
+        before_seal=endpoints[leader.node_id].call('GET')[1].get('active_time')
+        check('ha_activation_seal',leader.call('POST','sys/seal',{},token=cluster.root_token)[0]==204)
+        check('ha_activation_sealed_diagnostic',shape(*endpoints[leader.node_id].call('GET'),ha=True,sealed=True))
+        check('ha_activation_unseal',leader.call('POST','sys/unseal',{'key':cluster.unseal_key})[0]==200)
+        leader=cluster.leader()
+        after_unseal=endpoints[leader.node_id].call('GET')[1].get('active_time')
+        check('ha_activation_reunseal',isinstance(after_unseal,str) and after_unseal!=before_seal)
         for link in cluster.links.values():link.set_blocked(True)
         time.sleep(3)
         check('ha_quorum_lost',all(inactive_health(*n.call('GET','sys/health')) for n in cluster.nodes))
@@ -319,6 +338,9 @@ def candidate_ha(binary,root,check,observations,samples):
         check('ha_step_down',leader.call('POST','sys/step-down',{},token=cluster.root_token)[0]==204)
         successor=cluster.leader();check('ha_successor_changed',successor.node_id!=leader.node_id)
         all_views(successor,'ha_successor')
+        successor_time=endpoints[successor.node_id].call('GET')[1].get('active_time')
+        check('ha_activation_changed',isinstance(successor_time,str) and successor_time!=after_unseal)
+        check('ha_activation_successor_stable',endpoints[successor.node_id].call('GET')[1].get('active_time')==successor_time)
         for node in cluster.nodes:cluster.read(node,'leader-diagnostic',marker)
         check('ha_value_retained',True)
         samples.extend([cluster.root_token.encode(),cluster.unseal_key.encode(),limited.encode()])
@@ -378,7 +400,7 @@ def main():
         'runner_sha256':runner_hash,'runner_unchanged':runner_unchanged,'official_version':ORACLE_VERSION, 'official_storage_backends':['pebbledb','raft'],
         'official_binary_sha256':oracle_hash,'official_binary_unchanged':oracle_unchanged,
         'retained_failure_work_dir':str(work) if failure else None,'oracle_only':args.oracle_only,
-        'unsupported_fields':['active_time'],'candidate_ha_live':binary is not None and failure is None,
+        'unsupported_fields':[],'candidate_ha_live':binary is not None and failure is None,
         'diagnostic_grants_read_authority':False,'ha_uninitialized_process_covered':False,
         'full_openbao_compatibility':False,'independent_qualification':False,'production_authority':False}
     if admit_output(output)!=admitted:raise ValueError('report_parent_changed')

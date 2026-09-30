@@ -349,6 +349,14 @@ pub(crate) fn external_key_verification_route(method: &str, path: &str) -> bool 
     external_keys::verification_path(path) && matches!(method, "POST" | "PUT" | "PATCH")
 }
 
+pub(crate) struct ExternalTransitRequest {
+    pub(crate) request: SecretValue,
+    pub(crate) operation: &'static str,
+    pub(crate) local_version: u64,
+    pub(crate) mount: String,
+    pub(crate) mount_incarnation: u64,
+}
+
 pub(crate) struct ExternalKeyVerification {
     pub(crate) candidate: EngineState,
     pub(crate) plugin_id: String,
@@ -514,6 +522,97 @@ fn list_keys<'a>(
 impl EngineState {
     pub(crate) fn lease_clock(&self) -> u64 {
         self.lease_clock
+    }
+
+    pub(crate) fn has_external_transit_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_external_state()))
+        })
+    }
+
+    pub(crate) fn validate_external_transit_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            for mount in namespace.mounts.values() {
+                if let Backend::Transit(engine) = &mount.backend {
+                    engine.validate_external_state()?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn external_transit_handles(&self, namespace: &str, path: &str) -> bool {
+        let path = path
+            .split('?')
+            .next()
+            .unwrap_or(path)
+            .trim_start_matches('/');
+        self.namespaces.get(namespace).is_some_and(|state| {
+            state.mounts.iter().any(|(mount_path, mount)| {
+                path.strip_prefix(mount_path.as_str())
+                    .is_some_and(|relative| {
+                        matches!(&mount.backend,
+                    Backend::Transit(engine) if engine.external_handles(relative))
+                    })
+            })
+        })
+    }
+
+    pub(crate) fn external_transit_mount_current(
+        &self,
+        namespace: &str,
+        path: &str,
+        incarnation: u64,
+    ) -> bool {
+        self.namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(path))
+            .is_some_and(|mount| {
+                mount.incarnation == incarnation && matches!(mount.backend, Backend::Transit(_))
+            })
+    }
+
+    pub(crate) fn prepare_external_transit(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> Result<Option<ExternalTransitRequest>> {
+        let path = path.trim_start_matches('/');
+        if path.contains('?') {
+            return Err(bad("external Transit query parameters are not implemented"));
+        }
+        let Some(state) = self.namespaces.get(namespace) else {
+            return Ok(None);
+        };
+        let Some((mount_path, mount)) = state
+            .mounts
+            .iter()
+            .find(|(mount_path, _)| path.starts_with(mount_path.as_str()))
+        else {
+            return Ok(None);
+        };
+        let Backend::Transit(engine) = &mount.backend else {
+            return Ok(None);
+        };
+        let Some(plan) = engine.prepare_external(method, &path[mount_path.len()..], body)? else {
+            return Ok(None);
+        };
+        let request = state.external_keys.transit_consumer_request(
+            &plan.reference,
+            mount_path,
+            plan.operation,
+            plan.body,
+        )?;
+        Ok(Some(ExternalTransitRequest {
+            request,
+            operation: plan.operation,
+            local_version: plan.local_version,
+            mount: mount_path.clone(),
+            mount_incarnation: mount.incarnation,
+        }))
     }
 
     pub(crate) fn has_external_key_state(&self) -> bool {
@@ -1376,6 +1475,14 @@ impl EngineState {
                     &params,
                 )
                 .map(Some);
+        }
+        if let Backend::Transit(engine) = &mount.backend
+            && let Some(reference) =
+                engine.requested_external_reference(method, relative, &params)?
+        {
+            state
+                .external_keys
+                .require_consumer(reference, &mount_path)?;
         }
         let response = match &mut mount.backend {
             Backend::Database | Backend::RabbitMq => {

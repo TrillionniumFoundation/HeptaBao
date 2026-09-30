@@ -63,6 +63,7 @@ impl Service {
             .is_err()
         {
             self.recovery_required = true;
+            self.ha_activation = None;
             return Err("lifecycle result audit unavailable; recovery required");
         }
         result.map_err(|_| "lifecycle commit failed; no success inferred")?;

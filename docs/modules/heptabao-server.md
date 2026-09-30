@@ -92,6 +92,12 @@ rechecks identity/group policy, live ACL, token/ancestor expiry or revocation,
 namespace seal/incarnation, deployment host identity and the original deadline.
 Secret results additionally bind the durable mount incarnation, not only its
 reusable path and plugin name. Rejected result values are erased before return.
+External Keys verification and native external Transit also retain the existing
+durable generation and replica-local committed/applied frontier beside content
+identity. Delete/restore of identical registry data, or loss and return of the
+same Raft leader, cannot release an earlier provider result. The generation fence
+uses existing owners and adds no effect replay or independent persistence root.
+
 
 This preserves a legitimate finite token's last admitted use without granting
 another use, and applies the existing batch-token checker rather than creating
@@ -271,8 +277,23 @@ during quorum loss. Its response does not grant authority for protected reads. T
 leader omit it; seal rejects the whole HA diagnostic. Handoff selects the new
 leader's configured value. This origin identifies the native mTLS forwarding
 listener, which also accepts Raft frames; it does not claim OpenBao cluster-wire
-interoperability. `active_time` stays unsupported pending a term-bound,
-application-active publication lifecycle, rather than a request-time estimate.
+interoperability. On the local active node, optional `active_time` is a UTC
+RFC3339 timestamp of the serialized application activation publication. That
+publication follows unseal, bootstrap readiness, ReadIndex, authenticated state
+materialization and an exact committed application identity; both sides of the
+gate must name the same real Raft term and actual local leader role; a remembered
+leader id alone is insufficient. Ordinary synchronization
+and active-health admission share this event. An independent HA worker also
+completes read-only activation while idle, even when expiry maintenance is disabled;
+it uses the existing one-second idle read budget, skips a busy Service writer and
+is stopped/joined with the listener. It cannot create the first application anchor.
+The event is process-local, stable across repeated diagnosis and successful reads
+or mutations in the same term, and cleared on seal, recovery/audit fence, authority
+failure, leadership loss, term change and restart. A standby never advertises a
+local activation time. Diagnosis only invalidates mismatched local metadata and
+reads an already published event; it never timestamps a metrics notification or
+request, calls ReadIndex, or admits an effect. Invalid host-clock ranges omit the
+timestamp without inventing time or retimestamping the completed event.
 Audit writes request and response events with timestamp, keyed route/principal
 fingerprint, sequence, previous MAC and current HMAC. Framing rejections entering
 `handle_wire_rejection` produce redacted service audit records. Failures before
@@ -816,3 +837,79 @@ introduced. The continuation contract records the precise status codes and
 remaining import/certificate/HashML-DSA gaps. Engine and real Service reopen tests
 verify preprocessing interoperability, unchanged state on errors, rotation and
 old-version rejection; the live profile requires both independent native services.
+
+## Bounded native External Keys Transit consumption
+
+The public contract consulted is OpenBao 2.7 documentation for
+[Transit external-key creation](https://openbao.org/docs/api/secret/transit/),
+[namespace-relative grants](https://openbao.org/docs/api/system/external-keys/),
+and the [remote Transit provider](https://openbao.org/docs/api/system/external-keys/plugins/transit/).
+No upstream implementation source is used by this increment.
+
+Schema 64 adds optional `external_key_ref` metadata on Transit versions. An
+`external-key` version owns an exact `config:key` reference, creation time and
+empty local material/HMAC strings. It cannot export key material, enable
+plaintext backups, use derivation/convergent encryption or enable auto-rotation.
+The schema reader rejects external references on local key types, local material
+on external versions, malformed reference/version metadata and schema 63 or
+older state containing the new metadata. State without external Transit keys
+remains readable at schema 63; ordinary writes promote through the existing
+opaque-owner/record-root commit pipeline. No separate storage owner is added.
+
+Single-item `encrypt` and `decrypt` run as a native Service external effect.
+Creation and explicit reference rotation require a current registry mapping and
+a grant to the actual mount path in the same namespace. Every consumption checks
+caller ACL/parameter policy and the current mapping/grant again before reading
+credentials. The remote provider pins the configured positive remote key
+version. The local ciphertext carries its own Transit version followed by the
+remote ciphertext Base64 payload; it does not nest the remote `vault:vN:` string.
+Decryption resolves that local version and restores the fixed remote prefix. Local minimum encryption/decryption
+versions select the corresponding reference; a later reference does not rewrite
+old ciphertext. Registry mappings should be rotated by creating a new mapping,
+then rotating the consumer reference, rather than overwriting a fixed mapping.
+This HeptaBao envelope is not claimed to be the exact OpenBao 2.7 external-key
+ciphertext encoding without an independently admitted black-box comparison.
+
+Native remote Transit requires immutable deployment-enrolled HTTPS origin,
+address, CA, SNI name and path prefix. Registry parameters cannot cause DNS
+resolution, choose a new socket address, broaden an enrolled path or weaken TLS.
+Only canonical explicit-port HTTPS origins are accepted in this bounded lane.
+`tls_skip_verify=true` is refused; nonempty API TLS override parameters are
+refused until a qualified transport lane exists. A deployment-enrolled KMS host
+named `transit`, when present, supplies an additional enabled/capability/active-host and manifest-generation
+binding fence. Its verification response is never used as cryptographic output.
+The native built-in consumer works without such a process plugin only when the
+exact HTTPS route is separately deployment-enrolled.
+
+The Service releases its writer before I/O. Completion rechecks the retained
+original affine caller capability, namespace incarnation/seal, cluster and
+activation, deadline, mount incarnation, HTTPS enrollment, optional KMS host/key
+binding and the entire durable StateIdentity plus durable generation and the HA
+committed/applied frontier. Content equality alone cannot fence deletion/restoration
+ABA. The whole-state comparison is
+conservative: an unrelated committed write also withholds a delayed result.
+Grant removal/recreation, mapping/config replacement, local key disable/delete,
+mount disable/recreate and policy changes cannot publish a result from the old
+state. A verified remote response must contain the operation's bounded crypto
+result and fixed remote version; `verified=true` alone is refused. Remote error,
+malformed output or post-entry delivery veto reports an unknown remote outcome
+with no blind retry. Request and response audit stay on the original Service
+path, and the plaintext result is erased on a delivery veto.
+
+Plaintext is bounded at 64 KiB and associated data at 4 KiB within the existing
+128 KiB outbound document and 256 KiB HTTP body bounds. Batch operations,
+rewrap, sign/verify/HMAC, data-key generation, PKCS#11/PKI consumers, API transport
+overrides and generic Go KMS/plugin interoperability remain unsupported here.
+No compatibility, migration, qualification, release or production authority is
+asserted by this increment.
+
+`service_external_transit_tests.rs` runs a separate real HeptaBao Service with
+its ordinary AES-GCM Transit owner behind verified local TLS. It verifies
+remote ciphertext decryption/readback, fixed remote versions, reference rotation,
+minimum-version policy and encrypted restart, then withholds actual crypto
+results after authority/state changes. The HTTP framing fixture is local test
+transport; it does not qualify a networked production deployment or independent
+OpenBao parity. The normal workspace test lane executes these tests. Optional process-plugin
+disable/revoke/replace binding tests run only on Linux, where the existing sealed
+executable/sandbox runner can be admitted; native verified HTTPS crypto tests
+also run on macOS. This does not add a path-execution fallback on macOS.

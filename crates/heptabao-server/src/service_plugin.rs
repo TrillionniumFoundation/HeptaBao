@@ -181,7 +181,7 @@ impl PluginResponseAuthority {
             .as_secs()
     }
 
-    fn deadline_expired(&self) -> bool {
+    pub(super) fn deadline_expired(&self) -> bool {
         self.deadline
             .is_some_and(|deadline| std::time::Instant::now() >= deadline)
     }
@@ -206,6 +206,15 @@ pub(crate) struct PluginKmsObservation {
     value: Value,
 }
 
+// Content identity alone cannot distinguish deletion followed by restoration.
+// Retain the existing durable generation and replica-local frontier as a second,
+// monotonic publication fence; this is metadata, not another state owner.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(super) struct PublicationGeneration {
+    local: u64,
+    raft: Option<(u64, u64)>,
+}
+
 pub(super) struct ExternalKeyPlan {
     pub(super) plugin_id: String,
     host: SharedKmsPlugin,
@@ -215,6 +224,7 @@ pub(super) struct ExternalKeyPlan {
     key_name: Option<String>,
     authority: PluginResponseAuthority,
     expected_identity: crate::state_record_root::StateIdentity,
+    expected_generation: PublicationGeneration,
     candidate: State,
 }
 
@@ -1050,6 +1060,27 @@ impl Service {
         Response::error(500, "KMS plugin was not dispatched")
     }
 
+    pub(super) fn external_effect_generation(&self) -> Result<PublicationGeneration, Response> {
+        let local = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "external effect durable owner is unavailable"))?
+            .generation();
+        let raft = match self.consistency_observation()? {
+            Some(observed) => Some(observed.committed.zip(observed.applied).ok_or_else(|| {
+                Response::error(503, "external effect HA frontier is unavailable")
+            })?),
+            None if self.ha.is_some() => {
+                return Err(Response::error(
+                    503,
+                    "external effect HA observation is unavailable",
+                ));
+            }
+            None => None,
+        };
+        Ok(PublicationGeneration { local, raft })
+    }
+
     pub(super) fn stage_external_key_verification(
         &mut self,
         state: State,
@@ -1099,6 +1130,10 @@ impl Service {
             Ok(identity) => identity,
             Err(error) => return error,
         };
+        let expected_generation = match self.external_effect_generation() {
+            Ok(generation) => generation,
+            Err(error) => return error,
+        };
         let mut candidate = state;
         candidate.schema = CURRENT_STATE_SCHEMA;
         candidate.engines = verification.candidate.into();
@@ -1122,6 +1157,7 @@ impl Service {
             key_name: verification.key_name,
             authority,
             expected_identity,
+            expected_generation,
             candidate,
         });
         Response::error(500, "external key verification was not dispatched")
@@ -1153,7 +1189,11 @@ impl Service {
             Ok(identity) => identity,
             Err(error) => return error,
         };
-        if current != plan.expected_identity {
+        let generation = match self.external_effect_generation() {
+            Ok(generation) => generation,
+            Err(error) => return error,
+        };
+        if current != plan.expected_identity || generation != plan.expected_generation {
             return Response::error(
                 503,
                 "external key verification result withheld after state changed",
