@@ -71,6 +71,27 @@ fn canonical_grant(value: &str) -> Result<String> {
     Ok(format!("{value}/"))
 }
 
+// Validate the exact JSON wire-size without making a disposable plaintext
+// serialization of provider credentials or private-key parameters.
+#[derive(Default)]
+struct EncodedSize(usize);
+
+impl std::io::Write for EncodedSize {
+    fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+        let size = self
+            .0
+            .checked_add(bytes.len())
+            .filter(|size| *size <= MAX_VALUE_BYTES)
+            .ok_or_else(|| std::io::Error::other("external key parameter bound"))?;
+        self.0 = size;
+        Ok(bytes.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
+}
+
 fn validate_values(value: &Value) -> Result<()> {
     let Some(object) = value.as_object() else {
         return Err(bad("external key parameters must be an object"));
@@ -79,7 +100,7 @@ fn validate_values(value: &Value) -> Result<()> {
         || object.keys().any(|key| {
             key.is_empty() || key.len() > MAX_NAME_BYTES || key.chars().any(char::is_control)
         })
-        || serde_json::to_vec(value).map_or(true, |bytes| bytes.len() > MAX_VALUE_BYTES)
+        || serde_json::to_writer(EncodedSize::default(), value).is_err()
     {
         return Err(bad("external key parameters exceed bounded storage limits"));
     }
@@ -104,7 +125,7 @@ fn reject_provider_verification(body: &Value) -> Result<()> {
     Ok(())
 }
 
-fn filtered_values(body: &Value, excluded: &[&str]) -> Result<Value> {
+fn filtered_values(body: &Value, excluded: &[&str]) -> Result<SecretJson> {
     let object = body
         .as_object()
         .ok_or_else(|| bad("external key request body must be an object"))?;
@@ -113,25 +134,29 @@ fn filtered_values(body: &Value, excluded: &[&str]) -> Result<Value> {
         .filter(|(key, _)| !excluded.contains(&key.as_str()))
         .map(|(key, value)| (key.clone(), value.clone()))
         .collect();
-    let value = Value::Object(values);
+    let value = SecretJson(Value::Object(values));
     validate_values(&value)?;
     Ok(value)
 }
 
 fn merge_patch(target: &mut Value, patch: &Value) {
     let Value::Object(patch) = patch else {
-        *target = patch.clone();
+        let discarded = SecretJson(std::mem::replace(target, patch.clone()));
+        drop(discarded);
         return;
     };
     if !target.is_object() {
-        *target = json!({});
+        let discarded = SecretJson(std::mem::replace(target, json!({})));
+        drop(discarded);
     }
     let Value::Object(target) = target else {
         return;
     };
     for (key, value) in patch {
         if value.is_null() {
-            target.remove(key);
+            if let Some(discarded) = target.remove(key) {
+                drop(SecretJson(discarded));
+            }
         } else {
             merge_patch(target.entry(key.clone()).or_insert(Value::Null), value);
         }
@@ -328,7 +353,7 @@ impl Registry {
                     name.to_owned(),
                     ConfigEntry {
                         plugin: plugin.to_owned(),
-                        values: SecretJson(values),
+                        values,
                         keys,
                     },
                 );
@@ -347,14 +372,14 @@ impl Registry {
                     Some(_) => return Err(bad("plugin must be transit or pkcs11")),
                 };
                 let patch = filtered_values(body, &["plugin", "verify"])?;
-                let mut values = entry.values.0.clone();
+                let mut values = entry.values.clone();
                 merge_patch(&mut values, &patch);
                 validate_values(&values)?;
                 self.configs.insert(
                     name.to_owned(),
                     ConfigEntry {
                         plugin,
-                        values: SecretJson(values),
+                        values,
                         keys: entry.keys,
                     },
                 );
@@ -419,13 +444,9 @@ impl Registry {
                     .get(key_name)
                     .map(|entry| entry.grants.clone())
                     .unwrap_or_default();
-                config.keys.insert(
-                    key_name.to_owned(),
-                    KeyEntry {
-                        values: SecretJson(values),
-                        grants,
-                    },
-                );
+                config
+                    .keys
+                    .insert(key_name.to_owned(), KeyEntry { values, grants });
                 Ok(empty(true))
             }
             "PATCH" => {
@@ -438,10 +459,10 @@ impl Registry {
                     .get_mut(key_name)
                     .ok_or_else(|| error(400, &format!("key \"{key_name}\" not found")))?;
                 let patch = filtered_values(body, &["verify"])?;
-                let mut values = key.values.0.clone();
+                let mut values = key.values.clone();
                 merge_patch(&mut values, &patch);
                 validate_values(&values)?;
-                key.values = SecretJson(values);
+                key.values = values;
                 Ok(empty(true))
             }
             "DELETE" => {
@@ -791,5 +812,100 @@ mod tests {
                 .is_none()
         );
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod parameter_lifetime_tests {
+    use super::*;
+
+    #[test]
+    fn encoded_bound_counts_utf8_and_json_escaping_without_a_payload_buffer() {
+        for value in [
+            json!({"token":"synthetic"}),
+            json!({"control":String::from_utf8(vec![0, 10, 34, 92]).expect("synthetic UTF-8")}),
+            json!({"nested":{"text":"é中\n\u{0000}\"\\"},"array":[true,null,1]}),
+        ] {
+            let mut size = EncodedSize::default();
+            assert!(serde_json::to_writer(&mut size, &value).is_ok());
+            assert_eq!(
+                size.0,
+                serde_json::to_vec(&value).expect("synthetic JSON").len()
+            );
+            assert!(validate_values(&value).is_ok());
+        }
+    }
+
+    #[test]
+    fn encoded_bound_accepts_exact_limit_and_rejects_one_extra_byte() {
+        // Twelve JSON bytes surround this synthetic token value.
+        let exact = SecretJson(json!({"token":"x".repeat(MAX_VALUE_BYTES - 12)}));
+        let too_large = SecretJson(json!({"token":"x".repeat(MAX_VALUE_BYTES - 11)}));
+        assert!(validate_values(&exact).is_ok());
+        assert!(validate_values(&too_large).is_err());
+    }
+
+    #[test]
+    fn merge_patch_removal_and_type_replacement_preserve_json_semantics() {
+        let mut value = SecretJson(
+            json!({"token":"old synthetic","nested":{"drop":"old synthetic","keep":1},"scalar":"old synthetic"}),
+        );
+        let patch = SecretJson(
+            json!({"token":"new synthetic","nested":{"drop":null},"scalar":{"child":"new synthetic"}}),
+        );
+        merge_patch(&mut value, &patch);
+        assert_eq!(
+            *value,
+            json!({"token":"new synthetic","nested":{"keep":1},"scalar":{"child":"new synthetic"}})
+        );
+        merge_patch(&mut value, &json!({"nested":null,"scalar":false}));
+        assert_eq!(*value, json!({"token":"new synthetic","scalar":false}));
+    }
+
+    #[test]
+    fn rejected_config_and_key_patches_preserve_the_installed_parameters() {
+        let mut registry = Registry::default();
+        let config = "sys/external-keys/configs/lifetime";
+        let key = "sys/external-keys/configs/lifetime/keys/key1";
+        assert!(
+            registry
+                .handle(
+                    "POST",
+                    config,
+                    &json!({"plugin":"transit","verify":false,"token":"original synthetic"})
+                )
+                .is_ok()
+        );
+        assert!(
+            registry
+                .handle(
+                    "POST",
+                    key,
+                    &json!({"verify":false,"name":"original","version":1})
+                )
+                .is_ok()
+        );
+        let oversized = SecretJson(json!({"verify":false,"token":"x".repeat(MAX_VALUE_BYTES)}));
+        for method in ["POST", "PATCH"] {
+            let mut config_body = oversized.clone();
+            config_body
+                .as_object_mut()
+                .expect("synthetic object")
+                .insert("plugin".into(), json!("transit"));
+            assert!(registry.handle(method, config, &config_body).is_err());
+            assert!(registry.handle(method, key, &oversized).is_err());
+            let installed = &registry.configs["lifetime"];
+            assert_eq!(installed.values["token"], "original synthetic");
+            assert_eq!(installed.keys["key1"].values["name"], "original");
+            assert_eq!(installed.keys["key1"].values["version"], 1);
+        }
+    }
+
+    #[test]
+    fn filtered_parameters_are_guarded_and_do_not_persist_control_fields() {
+        let body =
+            json!({"plugin":"transit","verify":false,"token":"synthetic","namespace":"team/"});
+        let filtered = filtered_values(&body, &["plugin", "verify"]).expect("synthetic parameters");
+        assert_eq!(*filtered, json!({"token":"synthetic","namespace":"team/"}));
     }
 }

@@ -482,3 +482,73 @@ fn external_keys270_client_private_key_redaction_survives_real_service_reopen() 
     assert!(!serde_json::to_string(&response.body)?.contains(canary));
     Ok(())
 }
+
+#[test]
+fn external_keys270_oversized_patch_preserves_durable_config_key_and_grant() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    let config = "sys/external-keys/configs/limit";
+    let key = "sys/external-keys/configs/limit/keys/key1";
+    let grant = "sys/external-keys/configs/limit/keys/key1/grants/pki";
+    assert_eq!(call(&mut service, "POST", config, &admin,
+        json!({"plugin":"transit","verify":false,"token":"original synthetic","namespace":"before/"})).status, 204);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            key,
+            &admin,
+            json!({"verify":false,"name":"before","version":1})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(&mut service, "POST", grant, &admin, json!({})).status,
+        204
+    );
+    let before = service.state_digest;
+    for path in [config, key] {
+        let rejected = call(
+            &mut service,
+            "PATCH",
+            path,
+            &admin,
+            json!({"verify":false,"token":"x".repeat(64 * 1024),"namespace":"uncommitted/"}),
+        );
+        assert_eq!(rejected.status, 400);
+        assert_eq!(service.state_digest, before);
+    }
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let configuration = call(&mut service, "GET", config, &admin, json!({}));
+    assert_eq!(configuration.status, 200);
+    assert_eq!(configuration.body["data"]["namespace"], "before/");
+    assert_eq!(configuration.body["data"]["token"], "(redacted)");
+    let mapping = call(&mut service, "GET", key, &admin, json!({}));
+    assert_eq!(mapping.status, 200);
+    assert_eq!(mapping.body["data"]["name"], "before");
+    assert_eq!(mapping.body["data"]["version"], 1);
+    let grants = call(
+        &mut service,
+        "LIST",
+        "sys/external-keys/configs/limit/keys/key1/grants",
+        &admin,
+        json!({}),
+    );
+    assert_eq!(grants.status, 200);
+    assert_eq!(grants.body["data"]["keys"], json!(["pki/"]));
+    Ok(())
+}
