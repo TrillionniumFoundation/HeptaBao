@@ -1,10 +1,12 @@
 import base64
 import importlib.util
 from pathlib import Path
+import sys
 import unittest
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec, padding, rsa
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 SPEC = importlib.util.spec_from_file_location("transit_asymmetric_live", Path(__file__).resolve().parents[1] / "transit_asymmetric_live.py")
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
