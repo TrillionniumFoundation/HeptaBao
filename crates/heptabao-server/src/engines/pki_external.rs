@@ -3,6 +3,9 @@
 //! publishes only after its original request and durable generation fences.
 use super::*;
 use ring::signature::{ED25519, UnparsedPublicKey};
+#[path = "pki_external_leaf.rs"]
+mod leaf;
+use leaf::{ConsumptionMaterial, ConsumptionTemplate, CrlSet, LeafPublic};
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
@@ -11,6 +14,10 @@ pub(super) struct ExternalState {
     root: Option<ExternalKey>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     intermediate: Option<ExternalCsr>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    crls: Option<CrlSet>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    issued_public: BTreeMap<String, LeafPublic>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -40,6 +47,8 @@ impl ExternalState {
     }
     pub(super) fn clear_root(&mut self) {
         self.root = None;
+        self.crls = None;
+        self.issued_public.clear();
     }
 }
 
@@ -56,12 +65,18 @@ pub(crate) struct ExternalPkiTemplate {
     key_name: String,
     issuer_name: String,
     dns_san: bool,
+    generated_at: u64,
+    consumption: Option<ConsumptionTemplate>,
+    bound_public: Option<[u8; 32]>,
 }
 
 pub(crate) struct ExternalPkiMaterial {
     template: ExternalPkiTemplate,
     public_key: [u8; 32],
     pub(crate) tbs: Vec<u8>,
+    extra_tbs: Vec<Vec<u8>>,
+    root_crls: Option<CrlSet>,
+    consumption: Option<ConsumptionMaterial>,
 }
 
 fn reference_valid(reference: &str) -> bool {
@@ -173,7 +188,7 @@ fn external_serial() -> Result<String> {
     Ok(bytes.iter().map(|byte| format!("{byte:02x}")).collect())
 }
 
-fn formatted_serial(serial: &str) -> String {
+pub(super) fn formatted_serial(serial: &str) -> String {
     serial
         .as_bytes()
         .as_chunks::<2>()
@@ -228,6 +243,9 @@ fn external_root_tbs(spec: CertificateSpec<'_>, dns_san: bool) -> Result<Vec<u8>
 
 impl ExternalPkiTemplate {
     pub(crate) fn materialize(self, public_key: [u8; 32]) -> Result<ExternalPkiMaterial> {
+        if self.is_consumption() {
+            return self.materialize_consumption(public_key);
+        }
         let tbs = if self.operation == "root" {
             external_root_tbs(
                 CertificateSpec {
@@ -246,19 +264,35 @@ impl ExternalPkiTemplate {
         } else {
             csr_info(&self.common_name, &public_key, self.dns_san)
         };
+        let root_crls = (self.operation == "root").then(|| CrlSet::empty(self.generated_at));
+        let extra_tbs = root_crls
+            .as_ref()
+            .map(|crls| crls.tbs(&self.common_name, &public_key))
+            .transpose()?
+            .unwrap_or_default();
         Ok(ExternalPkiMaterial {
             template: self,
             public_key,
             tbs,
+            extra_tbs,
+            root_crls,
+            consumption: None,
         })
     }
 }
 
 impl ExternalPkiMaterial {
-    pub(crate) fn verify(&self, signature: &[u8]) -> Result<()> {
+    pub(crate) fn tbs_parts(&self) -> impl Iterator<Item = &Vec<u8>> {
+        std::iter::once(&self.tbs).chain(self.extra_tbs.iter())
+    }
+    pub(crate) fn verify_at(&self, index: usize, signature: &[u8]) -> Result<()> {
+        let tbs = self
+            .tbs_parts()
+            .nth(index)
+            .ok_or_else(|| bad("external PKI signature index"))?;
         if signature.len() != 64
             || UnparsedPublicKey::new(&ED25519, &self.public_key)
-                .verify(&self.tbs, signature)
+                .verify(tbs, signature)
                 .is_err()
         {
             return Err(error(
@@ -273,6 +307,8 @@ impl ExternalPkiMaterial {
 impl Pki {
     pub(in crate::engines) fn external_handles(&self, path: &str) -> bool {
         matches!(path, "root/generate/kms" | "intermediate/generate/kms")
+            || self.external.root.is_some()
+                && (path.starts_with("issue/") || matches!(path, "revoke" | "crl/rotate"))
     }
 
     pub(in crate::engines) fn has_external_state(&self) -> bool {
@@ -286,7 +322,7 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<Option<ExternalPkiTemplate>> {
-        if !self.external_handles(path) {
+        if !matches!(path, "root/generate/kms" | "intermediate/generate/kms") {
             return Ok(None);
         }
         if !write_method(method) {
@@ -359,15 +395,35 @@ impl Pki {
             key_name: optional_name(body, "key_name")?,
             issuer_name: optional_name(body, "issuer_name")?,
             dns_san: valid_domain(common_name),
+            generated_at: now,
+            consumption: None,
+            bound_public: None,
         }))
     }
 
     pub(in crate::engines) fn publish_external(
         &mut self,
-        material: ExternalPkiMaterial,
-        signature: &[u8],
+        mut material: ExternalPkiMaterial,
+        signatures: &[Zeroizing<Vec<u8>>],
+        now: u64,
     ) -> Result<EngineResponse> {
-        material.verify(signature)?;
+        if signatures.len() != material.tbs_parts().count() {
+            return Err(bad("external PKI incomplete signing effects"));
+        }
+        for (index, signature) in signatures.iter().enumerate() {
+            material.verify_at(index, signature)?;
+        }
+        if material.consumption.is_some() {
+            return self.publish_consumption(material, signatures, now);
+        }
+        let mut root_crls = material.root_crls.take();
+        if let Some(crls) = root_crls.as_mut() {
+            crls.sign(
+                &material.template.common_name,
+                &material.public_key,
+                &signatures[1..],
+            )?;
+        }
         let template = material.template;
         let key = ExternalKey {
             reference: template.reference,
@@ -378,7 +434,7 @@ impl Pki {
             issuer_name: template.issuer_name,
             dns_san: template.dns_san,
         };
-        let encoded = signed_der(&material.tbs, signature);
+        let encoded = signed_der(&material.tbs, &signatures[0]);
         if template.operation == "root" {
             if self.root.is_some() {
                 return Err(bad("PKI root already exists"));
@@ -396,6 +452,7 @@ impl Pki {
                 not_after: template.not_after,
             });
             self.external.root = Some(key);
+            self.external.crls = root_crls;
             Ok(ok(response, true))
         } else {
             if self.external.intermediate.is_some() {
@@ -516,8 +573,11 @@ mod tests {
         // default preserves those exact signed bytes after a current reopen.
         legacy.dns_san = false;
         let material = legacy.materialize(public)?;
-        let signature = pair.sign(&material.tbs);
-        pki.publish_external(material, signature.as_ref())?;
+        let signatures = material
+            .tbs_parts()
+            .map(|tbs| Zeroizing::new(pair.sign(tbs).as_ref().to_vec()))
+            .collect::<Vec<_>>();
+        pki.publish_external(material, &signatures, 100)?;
         let mut encoded = serde_json::to_value(&pki).map_err(|_| bad("test encode"))?;
         assert!(
             encoded["external"]["root"].get("dns_san").is_none(),

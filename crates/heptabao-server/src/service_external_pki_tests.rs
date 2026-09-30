@@ -2,6 +2,8 @@
 //! certificates, signatures, input, credentials or serialized secret state.
 use super::*;
 use x509_parser::prelude::*;
+#[path = "service_external_pki_leaf_tests.rs"]
+mod leaf_tests;
 
 fn pki_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, String)> {
     let (root, mut service, unseal, admin) = remote.fixture()?;
@@ -61,6 +63,349 @@ fn decode_pem(text: &str) -> TestResult<Vec<u8>> {
     )?)
 }
 
+fn leaf_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, String)> {
+    let (root, mut service, unseal, admin) = pki_fixture(remote)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/root/generate/kms",
+            &admin,
+            body()
+        )
+        .status
+            == 200,
+        "external root and CRL publication"
+    );
+    assert!(call(&mut service,"POST","external-ca/roles/leaf",&admin,json!({
+        "allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"30m","generate_lease":true,"key_type":"ed25519"
+    })).status==200,"bounded Ed25519 leaf role");
+    Ok((root, service, unseal, admin))
+}
+
+fn crl_bytes(service: &mut Service, admin: &str, delta: bool) -> TestResult<Vec<u8>> {
+    let response = call(
+        service,
+        "GET",
+        if delta {
+            "external-ca/crl/delta"
+        } else {
+            "external-ca/crl"
+        },
+        admin,
+        json!({}),
+    );
+    assert!(response.status == 200, "cached external CRL read");
+    Ok(BASE64.decode(
+        response.body["__heptabao_pki_crl"]
+            .as_str()
+            .ok_or("CRL transport envelope")?,
+    )?)
+}
+
+fn verify_crl(public: &[u8], der: &[u8], number: u64, revoked: usize, delta: bool) -> TestResult {
+    let (tail, crl) = CertificateRevocationList::from_der(der).map_err(|_| "CRL DER parse")?;
+    assert!(tail.is_empty(), "canonical CRL DER");
+    ring::signature::UnparsedPublicKey::new(&ring::signature::ED25519, public)
+        .verify(
+            crl.tbs_cert_list.as_ref(),
+            crl.signature_value.data.as_ref(),
+        )
+        .map_err(|_| "actual remote CRL signature")?;
+    assert!(
+        crl.crl_number()
+            .is_some_and(|n| n.to_string() == number.to_string()),
+        "exact monotonic CRL number"
+    );
+    assert!(
+        crl.iter_revoked_certificates().count() == revoked,
+        "exact CRL revocation projection"
+    );
+    assert!(
+        crl.extensions().len() == if delta { 3 } else { 2 },
+        "exact full and delta extensions"
+    );
+    assert!(
+        crl.next_update().ok_or("CRL next update")?.timestamp() - crl.last_update().timestamp()
+            == 72 * 3600,
+        "CRL expiry 72 hours"
+    );
+    Ok(())
+}
+
+#[test]
+fn external_pki270_actual_leaf_private_output_root_full_delta_crls_and_revoke_restart() -> TestResult
+{
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
+    let descriptor = call(
+        &mut *remote.service.lock().map_err(|_| "remote lock")?,
+        "GET",
+        "transit/keys/remote",
+        &remote.admin,
+        json!({}),
+    );
+    let public = BASE64.decode(
+        descriptor.body["data"]["keys"]["2"]["public_key"]
+            .as_str()
+            .ok_or("remote public key")?,
+    )?;
+    let before = remote.calls()?;
+    verify_crl(
+        &public,
+        &crl_bytes(&mut service, &admin, false)?,
+        1,
+        0,
+        false,
+    )?;
+    verify_crl(&public, &crl_bytes(&mut service, &admin, true)?, 2, 0, true)?;
+    assert!(remote.calls()? == before, "CRL read uses the signed cache");
+    let issued = call(
+        &mut service,
+        "POST",
+        "external-ca/issue/leaf",
+        &admin,
+        json!({"common_name":"leaf.example.test","ttl":"10m"}),
+    );
+    assert!(issued.status == 200, "genuine external leaf issue");
+    assert!(
+        remote.calls()? == before + 2,
+        "one metadata read and one leaf sign"
+    );
+    let data = &issued.body["data"];
+    assert!(
+        data.as_object().is_some_and(|data| data.len() == 8),
+        "exact official leaf fields"
+    );
+    assert!(
+        issued.body["lease_id"]
+            .as_str()
+            .is_some_and(|id| !id.is_empty()),
+        "original lease owner retained"
+    );
+    let der = decode_pem(data["certificate"].as_str().ok_or("leaf certificate")?)?;
+    let (_, leaf) = parse_x509_certificate(&der).map_err(|_| "leaf DER")?;
+    ring::signature::UnparsedPublicKey::new(&ring::signature::ED25519, &public)
+        .verify(
+            leaf.tbs_certificate.as_ref(),
+            leaf.signature_value.data.as_ref(),
+        )
+        .map_err(|_| "actual external CA leaf signature")?;
+    assert!(
+        leaf.extensions().len() == 5 && !leaf.is_ca(),
+        "exact default Ed leaf extensions"
+    );
+    let usage = leaf
+        .key_usage()
+        .map_err(|_| "leaf key usage")?
+        .ok_or("leaf key usage")?;
+    assert!(
+        usage.value.digital_signature()
+            && usage.value.key_encipherment()
+            && usage.value.key_agreement(),
+        "official default leaf usage"
+    );
+    let private = zeroize::Zeroizing::new(decode_pem(
+        data["private_key"]
+            .as_str()
+            .ok_or("single leaf private output")?,
+    )?);
+    let pair =
+        ring::signature::Ed25519KeyPair::from_pkcs8(&private).map_err(|_| "leaf private output")?;
+    assert!(
+        ring::signature::KeyPair::public_key(&pair).as_ref()
+            == leaf.public_key().subject_public_key.data.as_ref(),
+        "private output belongs to this leaf"
+    );
+    let serial = data["serial_number"].as_str().ok_or("leaf serial")?;
+    let read = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert!(
+        read.status == 200
+            && read.body["data"]["certificate"] == data["certificate"]
+            && read.body["data"].get("private_key").is_none(),
+        "durable certificate readback omits private material"
+    );
+    let before = remote.calls()?;
+    let revoked = call(
+        &mut service,
+        "POST",
+        "external-ca/revoke",
+        &admin,
+        json!({"serial_number":serial}),
+    );
+    assert!(
+        revoked.status == 200 && revoked.body["data"]["state"] == "revoked",
+        "external leaf revoke contract"
+    );
+    assert!(
+        remote.calls()? == before + 3,
+        "metadata plus full and delta CRL effects"
+    );
+    let full = crl_bytes(&mut service, &admin, false)?;
+    let delta = crl_bytes(&mut service, &admin, true)?;
+    verify_crl(&public, &full, 3, 1, false)?;
+    verify_crl(&public, &delta, 4, 0, true)?;
+    let state = serde_json::to_value(service.state.as_ref().ok_or("state")?)?;
+    let state_text = serde_json::to_string(&state)?;
+    assert!(
+        !state_text.contains(data["private_key"].as_str().ok_or("leaf private key")?)
+            && !state_text.contains(&BASE64.encode(&*private)),
+        "no durable leaf or CA private material"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+    assert!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "encrypted external PKI restart"
+    );
+    assert!(
+        crl_bytes(&mut reopened, &admin, false)? == full
+            && crl_bytes(&mut reopened, &admin, true)? == delta,
+        "CRL signed bytes retain exact restart identity"
+    );
+    let rotated = call(
+        &mut reopened,
+        "GET",
+        "external-ca/crl/rotate",
+        &admin,
+        json!({}),
+    );
+    assert!(
+        rotated.status == 200 && rotated.body["data"]["success"] == true,
+        "GET explicit CRL rotation"
+    );
+    verify_crl(
+        &public,
+        &crl_bytes(&mut reopened, &admin, false)?,
+        5,
+        1,
+        false,
+    )?;
+    Ok(())
+}
+
+#[test]
+fn external_pki270_leaf_sign_result_grant_aba_and_owner_authority_fence_private_release()
+-> TestResult {
+    for mutation in ["grant-aba", "role-delete", "owner-revoke"] {
+        let remote = RemoteTransit::new_kind("ed25519")?;
+        let (_root, mut service, _unseal, admin) = leaf_fixture(&remote)?;
+        let _last_use = limited_token(
+            &mut service,
+            &admin,
+            "path \"external-ca/issue/leaf\" { capabilities = [\"update\"] }",
+        )?;
+        let created = call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &admin,
+            json!({"policies":["scoped"],"no_default_policy":true}),
+        );
+        assert!(created.status == 200, "live durable leaf owner fixture");
+        let token = created.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("owner token")?
+            .to_owned();
+        let pending = match service.begin_at_mode(RequestDispatch {
+            method: "POST",
+            path: "external-ca/issue/leaf",
+            namespace: "",
+            token: &token,
+            body: json!({"common_name":"leaf.example.test","ttl":"10m"}),
+            now: 100,
+            allow_forward: true,
+            enforce_namespace: false,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        }) {
+            RequestExecution::External(pending) => *pending,
+            RequestExecution::Complete(_) => return Err("leaf effect did not stage".into()),
+        };
+        let observation = pending.execute();
+        assert!(
+            matches!(&observation, ExternalEffectResult::ExternalPki(Ok(_))),
+            "actual remote leaf signature before authority change"
+        );
+        let before = remote.calls()?;
+        if mutation == "grant-aba" {
+            for method in ["DELETE", "POST"] {
+                assert!(
+                    call(
+                        &mut service,
+                        method,
+                        "sys/external-keys/configs/remote/keys/v2/grants/external-ca",
+                        &admin,
+                        json!({})
+                    )
+                    .status
+                        == 204,
+                    "grant ABA mutation"
+                );
+            }
+        } else if mutation == "role-delete" {
+            assert!(
+                call(
+                    &mut service,
+                    "DELETE",
+                    "external-ca/roles/leaf",
+                    &admin,
+                    json!({})
+                )
+                .status
+                    == 204,
+                "role revocation"
+            );
+        } else {
+            assert!(
+                call(
+                    &mut service,
+                    "POST",
+                    "auth/token/revoke",
+                    &admin,
+                    json!({"token":token})
+                )
+                .status
+                    == 204,
+                "original leaf owner revocation"
+            );
+        }
+        let response = service.finish_external_request(pending, observation);
+        assert!(
+            response.status >= 400 && response.body.get("data").is_none(),
+            "stale leaf result never releases private output"
+        );
+        assert!(
+            remote.calls()? == before,
+            "authority failure never retries provider"
+        );
+        let value = serde_json::to_value(&service.state.as_ref().ok_or("state")?.engines)?;
+        assert!(
+            value["namespaces"][""]["mounts"]["external-ca/"]["backend"]["Pki"]["issued"]
+                .as_object()
+                .is_some_and(|issued| issued.is_empty()),
+            "failed leaf has no durable certificate or lease"
+        );
+    }
+    Ok(())
+}
+
 #[test]
 fn external_pki270_dns_common_name_has_exact_san_and_text_common_name_has_none() -> TestResult {
     use x509_parser::extensions::{GeneralName, ParsedExtension};
@@ -117,8 +462,8 @@ fn external_pki270_dns_common_name_has_exact_san_and_text_common_name_has_none()
                 }
             }
             assert!(
-                remote.calls()? == 2,
-                "one metadata and genuine sign operation"
+                remote.calls()? == if route.starts_with("root") { 4 } else { 2 },
+                "one metadata read and complete real signing effects"
             );
             drop(service);
             let mut reopened = root.service()?;
@@ -169,8 +514,8 @@ fn external_pki270_real_remote_root_and_csr_have_bound_public_keys_and_restart()
             "external PKI local private key forbidden"
         );
         assert!(
-            remote.calls()? == 2,
-            "one metadata read and one actual sign, without retry"
+            remote.calls()? == if route.starts_with("root") { 4 } else { 2 },
+            "one metadata read and complete actual signatures, without retry"
         );
         let public = call(
             &mut *remote.service.lock().map_err(|_| "remote lock")?,

@@ -1375,7 +1375,41 @@ fn decode_query(value: &str) -> Result<String, ParseError> {
 }
 
 fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io::Result<()> {
-    let mut bytes = Zeroizing::new(if response.status == 204 {
+    // Only this closed, bounded CRL transport envelope can select a raw public
+    // body. The content types are constants and never come from provider JSON.
+    let raw_crl = if response.status == 200
+        && response
+            .body
+            .as_object()
+            .is_some_and(|body| body.len() == 2)
+        && response.body["pem"].is_boolean()
+    {
+        response.body["__heptabao_pki_crl"]
+            .as_str()
+            .and_then(|text| {
+                use base64::Engine as _;
+                let base64 = base64::engine::general_purpose::STANDARD;
+                if text.len() > 1024 * 1024 {
+                    return None;
+                }
+                let bytes = base64.decode(text).ok()?;
+                (bytes.len() <= 512 * 1024 && base64.encode(&bytes) == text).then_some(bytes)
+            })
+    } else {
+        None
+    };
+    let content_type = if raw_crl.is_some() {
+        if response.body["pem"] == true {
+            "application/x-pem-file"
+        } else {
+            "application/pkix-crl"
+        }
+    } else {
+        "application/json"
+    };
+    let mut bytes = Zeroizing::new(if let Some(raw) = raw_crl {
+        raw
+    } else if response.status == 204 {
         Vec::new()
     } else {
         serde_json::to_vec(&response.body)?
@@ -1416,7 +1450,7 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
     };
     write!(
         writer,
-        "HTTP/1.1 {status} {reason}\r\nContent-Type: application/json\r\nContent-Length: {}\r\n{retry_after}{index}Connection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
+        "HTTP/1.1 {status} {reason}\r\nContent-Type: {content_type}\r\nContent-Length: {}\r\n{retry_after}{index}Connection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
         bytes.len()
     )?;
     if !head {
@@ -1427,6 +1461,49 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn external_pki_crl_transport_is_bounded_and_has_a_closed_content_type() -> io::Result<()> {
+        use base64::Engine as _;
+        let der = [0x30, 0x00];
+        let encoded = base64::engine::general_purpose::STANDARD.encode(der);
+        let response = || Response {
+            status: 200,
+            consistency_index: None,
+            body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
+        };
+        let mut wire = Vec::new();
+        write_response(&mut wire, response(), false)?;
+        assert!(
+            wire.windows(b"Content-Type: application/pkix-crl".len())
+                .any(|bytes| bytes == b"Content-Type: application/pkix-crl"),
+            "closed CRL MIME type"
+        );
+        assert!(wire.ends_with(&der), "raw CRL bytes are preserved");
+        let mut head = Vec::new();
+        write_response(&mut head, response(), true)?;
+        assert!(
+            head.ends_with(b"\r\n\r\n") && !head.ends_with(&der),
+            "HEAD has no raw CRL payload"
+        );
+        let mut rejected = Vec::new();
+        write_response(
+            &mut rejected,
+            Response {
+                status: 200,
+                consistency_index: None,
+                body: json!({"__heptabao_pki_crl":encoded,"pem":"text/html"}),
+            },
+            false,
+        )?;
+        assert!(
+            rejected
+                .windows(b"Content-Type: application/json".len())
+                .any(|bytes| bytes == b"Content-Type: application/json"),
+            "untrusted content type stays JSON"
+        );
+        Ok(())
+    }
+
     #[test]
     fn capacity_guard_config_requires_explicit_fixture_feature() {
         let value = json!({

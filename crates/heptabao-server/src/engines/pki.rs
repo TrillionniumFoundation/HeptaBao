@@ -224,6 +224,7 @@ impl Pki {
             }
         }
         self.validate_external_state()?;
+        self.validate_external_consumption(clock)?;
         for (name, role) in &self.roles {
             valid_name(name)?;
             role.validate()?;
@@ -439,6 +440,12 @@ impl Pki {
             self.external.clear_root();
             return Ok(empty(changed));
         }
+        if method == "GET"
+            && let Some(response) = self.external_crl_read(path, now)?
+        {
+            reject_unknown(body, &[])?;
+            return Ok(response);
+        }
         if path == "cert/ca" && method == "GET" {
             reject_unknown(body, &[])?;
             let root = self.root.as_ref().ok_or_else(not_found)?;
@@ -545,6 +552,7 @@ impl Pki {
             let before = self.issued.len();
             self.issued
                 .retain(|_, cert| cert.expires.saturating_add(buffer) > now);
+            self.reconcile_external_leaf_projections();
             return Ok(empty(before != self.issued.len()));
         }
         Err(error(404, "PKI path is not implemented"))
@@ -674,15 +682,15 @@ impl Pki {
         }
     }
 
-    pub(super) fn issue(
-        &mut self,
+    fn prepare_leaf(
+        &self,
         mount: &str,
         role_name: &str,
         body: &Value,
         owner: &LeaseOwner,
         owner_expires: Option<u64>,
         now: u64,
-    ) -> Result<EngineResponse> {
+    ) -> Result<LeafTemplate> {
         reject_unknown(body, &["common_name", "alt_names", "ip_sans", "ttl"])?;
         let root = self
             .root
@@ -726,6 +734,45 @@ impl Pki {
         if ttl == 0 {
             return Err(error(403, "issuer no longer has a live PKI lease window"));
         }
+        let serial = random_serial()?;
+        let path = format!("{mount}issue/{role_name}");
+        let lease_id = format!("{path}/{serial}");
+        if self.issued.contains_key(&serial) || self.issued.values().any(|v| v.lease_id == lease_id)
+        {
+            return Err(error(503, "PKI serial collision"));
+        }
+        Ok(LeafTemplate {
+            serial,
+            path,
+            lease_id,
+            owner: owner.clone(),
+            owner_expires,
+            leased: role.generate_lease,
+            common_name: common_name.into(),
+            alt_names,
+            ip_sans,
+            issued: now,
+            not_before: now.saturating_sub(60).max(root.not_before),
+            expires: now
+                .checked_add(ttl)
+                .ok_or_else(|| bad("PKI lease TTL overflow"))?,
+        })
+    }
+
+    pub(super) fn issue(
+        &mut self,
+        mount: &str,
+        role_name: &str,
+        body: &Value,
+        owner: &LeaseOwner,
+        owner_expires: Option<u64>,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        let prepared = self.prepare_leaf(mount, role_name, body, owner, owner_expires, now)?;
+        let root = self
+            .root
+            .as_ref()
+            .ok_or_else(|| error(503, "PKI root is not configured"))?;
         if root.pkcs8.is_empty() {
             return Err(error(
                 501,
@@ -742,66 +789,71 @@ impl Pki {
             .map_err(|_| error(503, "PKI leaf key generation failed"))?;
         let root_pair = Ed25519KeyPair::from_pkcs8(&root.pkcs8)
             .map_err(|_| error(500, "stored PKI root key is invalid"))?;
-        let serial = random_serial()?;
-        let not_before = now.saturating_sub(60).max(root.not_before);
-        let expires = now
-            .checked_add(ttl)
-            .ok_or_else(|| bad("PKI lease TTL overflow"))?;
         let certificate_der = certificate_der(
             &root_pair,
             CertificateSpec {
-                serial: &serial,
+                serial: &prepared.serial,
                 issuer_cn: &root.common_name,
-                subject_cn: common_name,
+                subject_cn: &prepared.common_name,
                 public_key: leaf.public_key().as_ref(),
-                not_before,
-                not_after: expires,
+                not_before: prepared.not_before,
+                not_after: prepared.expires,
                 is_ca: false,
-                alt_names: &alt_names,
-                ip_sans: &ip_sans,
+                alt_names: &prepared.alt_names,
+                ip_sans: &prepared.ip_sans,
             },
         )?;
-        let path = format!("{mount}issue/{role_name}");
-        let lease_id = format!("{path}/{serial}");
-        if self.issued.contains_key(&serial) || self.issued.values().any(|v| v.lease_id == lease_id)
-        {
-            return Err(error(503, "PKI serial collision"));
+        self.publish_leaf(prepared, certificate_der, &leaf_pkcs8, false)
+    }
+
+    fn publish_leaf(
+        &mut self,
+        prepared: LeafTemplate,
+        certificate_der: Vec<u8>,
+        leaf_pkcs8: &[u8],
+        external: bool,
+    ) -> Result<EngineResponse> {
+        let root = self
+            .root
+            .as_ref()
+            .ok_or_else(|| error(503, "PKI root is not configured"))?;
+        if self.issued.contains_key(&prepared.serial) || self.issued.len() >= MAX_ISSUED {
+            return Err(error(503, "PKI issuance state changed"));
         }
-        let private_key = pem("PRIVATE KEY", &leaf_pkcs8);
         let certificate = pem("CERTIFICATE", &certificate_der);
         let issuing_ca = pem("CERTIFICATE", &root.certificate_der);
+        let ttl = prepared.expires.saturating_sub(prepared.issued);
+        let mut data = json!({
+            "certificate":certificate, "issuing_ca":issuing_ca,
+            "private_key":pem("PRIVATE KEY",leaf_pkcs8), "private_key_type":"ed25519",
+            "serial_number":prepared.serial, "expiration":prepared.expires,
+        });
+        if external {
+            data["serial_number"] = json!(external::formatted_serial(&prepared.serial));
+            data["ca_chain"] = json!([issuing_ca]);
+            data["not_before"] = json!(prepared.not_before);
+        }
+        let response = EngineResponse {
+            status: 200,
+            body: json!({"request_id":"", "lease_id":if prepared.leased {prepared.lease_id.clone()} else {String::new()},
+                "renewable":false,"lease_duration":if prepared.leased {ttl} else {0},"data":data}),
+            mutated: true,
+        };
         self.issued.insert(
-            serial.clone(),
+            prepared.serial.clone(),
             IssuedCertificate {
-                leased: role.generate_lease,
-                lease_id: lease_id.clone(),
-                owner: owner.clone(),
-                path,
-                issued: now,
-                expires,
+                leased: prepared.leased,
+                lease_id: prepared.lease_id,
+                owner: prepared.owner,
+                path: prepared.path,
+                issued: prepared.issued,
+                expires: prepared.expires,
                 revoked_at: None,
-                common_name: common_name.into(),
+                common_name: prepared.common_name,
                 certificate_der,
             },
         );
-        Ok(EngineResponse {
-            status: 200,
-            body: json!({
-                "request_id":"",
-                "lease_id": if role.generate_lease { lease_id } else { String::new() },
-                "renewable": false,
-                "lease_duration": if role.generate_lease { ttl } else { 0 },
-                "data": {
-                    "certificate": certificate,
-                    "issuing_ca": issuing_ca,
-                    "private_key": private_key,
-                    "private_key_type": "ed25519",
-                    "serial_number": serial,
-                    "expiration": expires,
-                }
-            }),
-            mutated: true,
-        })
+        Ok(response)
     }
 
     fn crl_der(&self, root: &RootCa, now: u64) -> Result<Vec<u8>> {
@@ -1134,6 +1186,22 @@ fn serial_bytes(value: &str) -> Result<Vec<u8>> {
                 .map_err(|_| bad("invalid certificate serial number"))
         })
         .collect()
+}
+
+#[derive(Clone)]
+struct LeafTemplate {
+    serial: String,
+    path: String,
+    lease_id: String,
+    owner: LeaseOwner,
+    owner_expires: Option<u64>,
+    leased: bool,
+    common_name: String,
+    alt_names: Vec<String>,
+    ip_sans: Vec<IpAddr>,
+    issued: u64,
+    not_before: u64,
+    expires: u64,
 }
 
 struct CertificateSpec<'a> {

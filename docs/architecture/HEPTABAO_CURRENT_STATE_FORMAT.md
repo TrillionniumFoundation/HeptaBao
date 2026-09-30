@@ -879,9 +879,48 @@ frontier. Unrelated writes also withhold a delayed result. Unknown entered
 outcomes require readback; no automatic signing retry occurs. The existing
 encrypted record-owner commit and request/response audit pipeline remain owners.
 
-This increment is bounded to direct Ed25519 root certificates and intermediate
-CSRs. External leaf issuance, CRLs, non-Ed25519 issuers and multi-issuer lifecycle
-remain explicit unfinished lanes. The pinned 2.7 direct-root blackbox rejects an
+External Ed25519 leaf issuance uses the same typed lease owner, namespace,
+capacity, role/domain/SAN and actor-expiry limits as internal issuance. Its
+temporary local leaf PKCS8 buffer is zeroized and released once only after the
+complete signed result passes the original publication fences. The external CA
+never gains local private material. After encrypted publication and the original
+response audit, delivery rechecks the same caller, host and immutable admission
+clock plus a separate exact own-publication state/generation checkpoint. A slow
+commit or audit cannot renew certificate validity: remaining TTL is recomputed
+at that final boundary. An expired or fenced result erases its temporary private
+body while the committed public certificate remains available for readback;
+signing and publication are never replayed. An `external-pki-delivery-veto`
+audit event records the negative status and original path digest after the
+planned-success response event. Failure to write that negative event closes
+recovery and withholds delivery. This final negative audit contains no private
+payload and does not start another success-audit/clock-check cycle.
+Durable leaf public-key/SAN projections bind
+each retained certificate to its exact reconstructed DER and real CA signature.
+
+Root generation additionally signs and retains a full CRL and an empty delta CRL.
+Revocation and explicit GET `crl/rotate` sign a fresh full/delta pair in one
+bounded effect group. Their numbers are monotonic pairs (initially 1/2), their
+expiry is 72 hours, and deltaBase is the matching full number. Every signature
+must verify before the single encrypted state publication; a valid root or full
+CRL followed by a synthetic acknowledgement publishes no partial group. Cached
+public CRL reads do not enter the remote signer. Readers verify the exact CRL DER,
+public authority, sequence and retained revocations. The strict prior external
+state decoder rejects the added `crls` and `issued_public` fields; it cannot
+silently drop them. Legacy states without these fields remain readable and need
+an explicit authorized rebuild before serving an external CRL. These bounded
+Ed25519 flows do not qualify other issuer algorithms, multiple issuer selection,
+background CRL rebuilding, unified CRLs or the observed official KMS CSR behavior.
+Existing lease/token owner revocation can change a retained certificate without
+a signing dispatch. A cache missing an unexpired revoked certificate, or a cache
+past its signed expiry, returns 503 until an explicit authorized rotate rebuilds
+both CRLs. Public reads cannot silently serve that stale cache or initiate a
+remote signing retry.
+
+Direct Ed25519 root comparison and native strongly bound intermediate CSR checks
+have a separate bounded profile. The leaf/full/delta CRL profile must complete
+its predeclared fresh three-process trace on the integrated source and binary
+before its implementation has runtime qualification. Non-Ed25519 issuers and
+multi-issuer lifecycle remain unfinished lanes. The pinned 2.7 direct-root blackbox rejects an
 old fixed mapping after provider rotation with 400 before signing; this differs
 from the already-created issuer's issuance path, which has a separate 500 result.
 No full PKI, migration or production authority follows from this increment.

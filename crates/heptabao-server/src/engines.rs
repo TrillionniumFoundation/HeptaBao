@@ -577,6 +577,7 @@ impl EngineState {
         path: &str,
         body: &Value,
         now: u64,
+        owner: Option<&crate::auth::ResolvedLeaseOwner>,
     ) -> Result<Option<ExternalPkiRequest>> {
         if path.contains('?') {
             return Err(bad("external PKI query parameters are not implemented"));
@@ -594,9 +595,24 @@ impl EngineState {
         let Backend::Pki(engine) = &mount.backend else {
             return Ok(None);
         };
-        let Some(template) =
-            engine.prepare_external(method, &path[mount_path.len()..], body, now)?
-        else {
+        if let Some(owner) = owner {
+            owner
+                .owner
+                .validate_scope(namespace, crate::auth::ServiceOwnerProfile::DigestAlphabet)
+                .map_err(|_| error(403, "credential owner scope mismatch"))?;
+        }
+        let relative = &path[mount_path.len()..];
+        let template = engine
+            .prepare_external(method, relative, body, now)?
+            .or(engine.prepare_external_consumption(
+                method,
+                relative,
+                body,
+                mount_path,
+                owner,
+                now.max(self.lease_clock),
+            )?);
+        let Some(template) = template else {
             return Ok(None);
         };
         // This is an admitted plan, not a provider signature or an entered call.
@@ -609,7 +625,7 @@ impl EngineState {
                 SecretJson(json!({"input":"","prehashed":false,"signature_algorithm":"pkcs1v15"})),
             )
             .map_err(|cause| {
-                if cause.status == 500 {
+                if cause.status == 500 && !template.is_consumption() {
                     error(400, "external PKI reference or grant is unavailable")
                 } else {
                     cause
@@ -629,7 +645,8 @@ impl EngineState {
         mount_path: &str,
         incarnation: u64,
         material: ExternalPkiMaterial,
-        signature: &[u8],
+        signatures: &[zeroize::Zeroizing<Vec<u8>>],
+        now: u64,
     ) -> Result<EngineResponse> {
         let mount = self
             .namespaces
@@ -642,7 +659,9 @@ impl EngineState {
         let Backend::Pki(engine) = &mut mount.backend else {
             return Err(error(503, "external PKI mount type changed"));
         };
-        engine.publish_external(material, signature)
+        let response = engine.publish_external(material, signatures, now.max(self.lease_clock))?;
+        self.lease_clock = self.lease_clock.max(now);
+        Ok(response)
     }
 
     pub(crate) fn lease_clock(&self) -> u64 {

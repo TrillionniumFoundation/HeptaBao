@@ -673,6 +673,7 @@ struct RemoteTransit {
     ca: String,
     stop: Arc<AtomicBool>,
     ack_only: Arc<AtomicBool>,
+    ack_at_call: Arc<std::sync::atomic::AtomicUsize>,
     trace: Arc<Mutex<Vec<String>>>,
     thread: Option<thread::JoinHandle<()>>,
 }
@@ -784,6 +785,8 @@ impl RemoteTransit {
         let service = Arc::new(Mutex::new(service));
         let stop = Arc::new(AtomicBool::new(false));
         let ack_only = Arc::new(AtomicBool::new(false));
+        let ack_at_call = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let ack_at = Arc::clone(&ack_at_call);
         let trace = Arc::new(Mutex::new(Vec::new()));
         let (remote, stopped, ack, trace_clone) = (
             Arc::clone(&service),
@@ -856,21 +859,23 @@ impl RemoteTransit {
                 if let Ok(mut trace) = trace_clone.lock() {
                     trace.push(path.to_owned());
                 }
-                let response = if ack.load(Ordering::SeqCst) {
-                    Response::ok(json!({"verified":true}))
-                } else {
-                    let Ok(mut service) = remote.lock() else {
-                        continue;
+                let call_number = trace_clone.lock().map(|trace| trace.len()).unwrap_or(0);
+                let response =
+                    if ack.load(Ordering::SeqCst) || ack_at.load(Ordering::SeqCst) == call_number {
+                        Response::ok(json!({"verified":true}))
+                    } else {
+                        let Ok(mut service) = remote.lock() else {
+                            continue;
+                        };
+                        service.handle_at(
+                            method,
+                            path.strip_prefix("/v1/").unwrap_or(path),
+                            headers.get("x-vault-namespace").map_or("", String::as_str),
+                            headers.get("x-vault-token").map_or("", String::as_str),
+                            body,
+                            100,
+                        )
                     };
-                    service.handle_at(
-                        method,
-                        path.strip_prefix("/v1/").unwrap_or(path),
-                        headers.get("x-vault-namespace").map_or("", String::as_str),
-                        headers.get("x-vault-token").map_or("", String::as_str),
-                        body,
-                        100,
-                    )
-                };
                 let Ok(encoded) = serde_json::to_vec(&response.body) else {
                     continue;
                 };
@@ -893,6 +898,7 @@ impl RemoteTransit {
             ca,
             stop,
             ack_only,
+            ack_at_call,
             trace,
             thread: Some(thread),
         })

@@ -1431,14 +1431,17 @@ impl Service {
     /// provider effect may be returned as an owned external plan after its
     /// intent has been durably committed.
     pub(crate) fn begin_request(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
-        let now = self.native_snapshot_clock.map_or_else(
+        let started = std::time::Instant::now();
+        let observed = self.native_snapshot_clock.map_or_else(
             || {
                 SystemTime::now()
                     .duration_since(UNIX_EPOCH)
-                    .map_or(0, |duration| duration.as_secs())
+                    .unwrap_or(Duration::ZERO)
             },
-            |(_, observed)| observed.as_secs(),
+            |(_, observed)| observed,
         );
+        let now = observed.as_secs();
+        let _publication_clock = external_pki::PublicationClockScope::enter(observed, started);
         let ServiceRequest {
             method,
             path,
@@ -1470,9 +1473,12 @@ impl Service {
     }
 
     pub(crate) fn begin_forwarded(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
-        let now = SystemTime::now()
+        let started = std::time::Instant::now();
+        let observed = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .map_or(0, |duration| duration.as_secs());
+            .unwrap_or(Duration::ZERO);
+        let now = observed.as_secs();
+        let _publication_clock = external_pki::PublicationClockScope::enter(observed, started);
         let ServiceRequest {
             method,
             path,
@@ -1554,8 +1560,18 @@ impl Service {
                 ExternalEffectPlan::ExternalTransit(plan),
                 ExternalEffectResult::ExternalTransit(result),
             ) => self.finalize_external_transit(plan, result),
-            (ExternalEffectPlan::ExternalPki(plan), ExternalEffectResult::ExternalPki(result)) => {
-                self.finalize_external_pki(plan, result)
+            (
+                ExternalEffectPlan::ExternalPki(mut plan),
+                ExternalEffectResult::ExternalPki(result),
+            ) => {
+                let response = self.finalize_external_pki(&mut plan, result);
+                let response =
+                    self.audit_completed_response(&pending.fingerprint, pending.now, response);
+                return self.complete_external_pki_delivery(
+                    &mut plan,
+                    response,
+                    &pending.fingerprint,
+                );
             }
             (
                 ExternalEffectPlan::KubernetesToken(plan),
@@ -1589,6 +1605,7 @@ impl Service {
         {
             self.recovery_required = true;
             self.ha_activation = None;
+            erase_json(&mut response.body);
             return Response::error(
                 503,
                 "response audit failed; outcome unknown; authoritative recovery required",
