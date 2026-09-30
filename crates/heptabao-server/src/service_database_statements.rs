@@ -674,6 +674,7 @@ impl DatabaseEffectPlan {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::runtime_secret;
 
     type ParseTestResult = Result<(), &'static str>;
 
@@ -686,8 +687,14 @@ mod tests {
             ],
             ..DatabaseStatements::default()
         };
+        let password = runtime_secret("database-statement-render");
         let rendered = statements
-            .render("issue", "role", "secret", "2026-09-26 12:00:00+0000")
+            .render(
+                "issue",
+                "role",
+                password.as_str(),
+                "2026-09-26 12:00:00+0000",
+            )
             .map_err(|_| "render failed")?;
         assert_eq!(rendered.len(), 2);
         assert!(rendered[0].starts_with("DO $$"));
@@ -748,12 +755,23 @@ mod tests {
             creation: vec!["CREATE ROLE \"{{name}}\" LOGIN".into()],
             ..DatabaseStatements::default()
         };
+        let empty_password = String::new();
         let renewed = statements
-            .render("renew", "role", "", "2026-09-26 12:00:00+0000")
+            .render(
+                "renew",
+                "role",
+                empty_password.as_str(),
+                "2026-09-26 12:00:00+0000",
+            )
             .map_err(|_| "renew render failed")?;
         assert_eq!(renewed.len(), 1);
         let revoked = statements
-            .render("revoke", "role", "", "1970-01-01 00:00:00+0000")
+            .render(
+                "revoke",
+                "role",
+                empty_password.as_str(),
+                "1970-01-01 00:00:00+0000",
+            )
             .map_err(|_| "revoke render failed")?;
         assert_eq!(revoked.len(), 1);
         Ok(())

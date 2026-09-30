@@ -4,15 +4,14 @@
 //! system at test execution time. This keeps protocol tests exact without
 //! embedding reusable cryptographic material in the source tree.
 
-use ring::rand::{SecureRandom, SystemRandom};
+use ring::rand::{SecureRandom, SystemRandom, generate};
 use zeroize::Zeroizing;
 
 pub(crate) fn random_bytes<const N: usize>() -> [u8; N] {
-    let mut bytes = [0_u8; N];
-    if SystemRandom::new().fill(&mut bytes).is_err() {
-        std::process::abort();
+    match generate::<[u8; N]>(&SystemRandom::new()) {
+        Ok(value) => value.expose(),
+        Err(_) => std::process::abort(),
     }
-    bytes
 }
 
 pub(crate) fn random_ascii(length: usize) -> Zeroizing<String> {
@@ -30,4 +29,16 @@ pub(crate) fn random_ascii(length: usize) -> Zeroizing<String> {
 pub(crate) fn runtime_secret(label: &str) -> Zeroizing<String> {
     let suffix = random_ascii(32);
     Zeroizing::new(format!("{label}-{}", suffix.as_str()))
+}
+
+pub(crate) fn postgresql_scram_vectors() -> serde_json::Value {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("testdata/postgresql_scram_vectors.json");
+    match std::fs::read_to_string(path)
+        .ok()
+        .and_then(|text| serde_json::from_str(&text).ok())
+    {
+        Some(value) => value,
+        None => std::process::abort(),
+    }
 }

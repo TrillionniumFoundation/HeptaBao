@@ -3495,10 +3495,15 @@ mod tests {
     #[test]
     fn postgres_scram_verifier_matches_known_vector_and_persisted_pairing()
     -> Result<(), TestFailure> {
+        let vectors = crate::test_support::postgresql_scram_vectors();
+        let vector = vectors.get("verifier").ok_or(TestFailure)?;
+        let salt_values: Vec<u8> =
+            serde_json::from_value(vector["salt"].clone()).map_err(|_| TestFailure)?;
         let salt: [u8; POSTGRESQL_SCRAM_SALT_BYTES] =
-            core::array::from_fn(|index| u8::try_from(index).unwrap_or(0));
-        let expected = "SCRAM-SHA-256$4096:AAECAwQFBgcICQoLDA0ODw==$ONYbSJBXtKl6bP6PVqw8pm9e7EiacprLnoUQPFS80Hw=:IPOtHuGJ2HifEQg74W2XXqqCrCyQG55GbPRHa6g6n9w=";
-        let verifier = postgresql_scram_verifier_with_salt("correct horse battery staple", &salt)?;
+            salt_values.try_into().map_err(|_| TestFailure)?;
+        let expected = vector["expected"].as_str().ok_or(TestFailure)?;
+        let password = vector["password"].as_str().ok_or(TestFailure)?;
+        let verifier = postgresql_scram_verifier_with_salt(password, &salt)?;
         assert_eq!(verifier.0, expected);
         assert!(valid_postgresql_scram_verifier(expected));
         for invalid in [

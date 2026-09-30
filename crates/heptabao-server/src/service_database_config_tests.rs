@@ -2,6 +2,7 @@
 //! here. The live TLS database_config_completion profile supplies actual I/O.
 use super::super::tests::{Root, bootstrap, call};
 use super::*;
+use crate::test_support::runtime_secret;
 use std::time::{Duration, Instant};
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
@@ -54,7 +55,8 @@ fn stage(
     token: &str,
     started: Instant,
 ) -> TestResult<PendingExternalRequest> {
-    stage_body(service, token, started, config("synthetic-replacement"))
+    let password = runtime_secret("database-config-stage");
+    stage_body(service, token, started, config(password.as_str()))
 }
 
 fn setup(service: &mut Service, root: &str, extra: Value) -> TestResult<String> {
@@ -195,7 +197,7 @@ fn database_config_completion_preserves_single_use_batch_and_unrelated_commits()
                     "POST",
                     "database/config/local",
                     &token,
-                    config("other")
+                    config(runtime_secret("database-config-rejected").as_str())
                 )
                 .status,
                 403
