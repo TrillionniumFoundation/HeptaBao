@@ -33,10 +33,10 @@ class ProviderFixtureIsolationTests(unittest.TestCase):
     def test_database_fixture_uses_keyed_credential_fingerprint(self) -> None:
         value = source("plugin_database_live.py")
         self.assertIn("fingerprint_key = os.urandom(32)", value)
-        self.assertIn("password_keyed_blake2b", value)
-        self.assertIn("hashlib.blake2b(", value)
-        self.assertIn("key=FINGERPRINT_KEY", value)
-        self.assertNotIn("password_hmac_sha256", value)
+        self.assertIn("password_hmac_sha256", value)
+        self.assertIn("hmac.new(", value)
+        self.assertIn("FINGERPRINT_KEY, password.encode(), hashlib.sha256", value)
+        self.assertNotIn("password_keyed_blake2b", value)
         self.assertNotIn("password_sha256", value)
 
     def test_recovery_observes_durable_and_external_terminal_state(self) -> None:
