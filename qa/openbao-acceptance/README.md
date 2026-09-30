@@ -329,3 +329,25 @@ private fixture files. Receipts contain
 only fixed case labels, statuses, exit codes and predicates. On a failed run,
 private service fixtures remain for diagnosis; owned service processes are
 stopped before publishing the report.
+
+## OpenBao 2.7 derived Transit contract
+
+`transit_derived_live.py` compares 2,859 fixed requests and predicates per side
+for ordinary, derived and convergent AES-128, AES-256, ChaCha20 and XChaCha20
+keys against the checksum-pinned official 2.7.0 executable. The profile includes
+exported synthetic-key checks using maintained HKDF, HMAC and AEAD primitives.
+Reports contain labels, statuses and predicates; exported keys, plaintexts and
+ciphertexts remain in memory. This profile runs with the same original
+360-second outer limit as the other required 2.7.0 comparisons.
+
+Passing this legacy contract does not establish cryptographic safety. A separate
+fresh official 2.7.0 AES comparison observed the same nonce and ciphertext body
+when only AAD changed, with different tags and correct AAD authentication. The
+legacy nonce derivation omits AAD. NIST SP 800-38D section 8 requires IV
+uniqueness across distinct inputs under the same key; this behavior remains a
+security blocker. Preserve existing ciphertext reads while evaluating explicit
+safer write versions. Full compatibility, independent security qualification
+and production authority remain false.
+
+References: [OpenBao Transit API](https://openbao.org/docs/api/secret/transit/)
+and [NIST SP 800-38D](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf).
