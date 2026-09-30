@@ -1143,3 +1143,165 @@ fn external_keys270_verified_result_is_withheld_after_raft_term_cycle_without_st
     );
     Ok(())
 }
+
+#[derive(Clone, Copy)]
+enum HostAuthorityChange {
+    Revoke,
+    CompatibleUpgrade,
+}
+
+fn verified_result_is_withheld_after_host_change(change: HostAuthorityChange) -> TestResult {
+    use heptabao_plugin_contracts::PluginRegistry;
+    use heptabao_plugin_host::{PluginHostState, PluginManifest};
+
+    let root = Root::new();
+    let mut service = root.service()?;
+    let provider = VerificationProvider::install(&root.path)?;
+    service.install_kms_plugins(vec![provider.config("transit", true)])?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    let config = "sys/external-keys/configs/host-authority";
+    let key = "sys/external-keys/configs/host-authority/keys/signing";
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            config,
+            &admin,
+            json!({"plugin":"transit","verify":false})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            key,
+            &admin,
+            json!({"verify":false,"name":"original","version":1})
+        )
+        .status,
+        204
+    );
+    let identity = service
+        .current_state_identity()
+        .map_err(|response| format!("identity status {}", response.status))?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let host = service.kms_plugins.get("transit").cloned().ok_or("host")?;
+    let binding = service.kms_keys.get("transit").cloned().ok_or("binding")?;
+    let host_generation = host
+        .lock()
+        .map_err(|_| "host lock")?
+        .manifest()
+        .descriptor()
+        .generation();
+    let pending = stage_external_key(
+        &mut service,
+        &admin,
+        key,
+        json!({"name":"replacement","version":2}),
+    )?;
+    let observation = pending.execute();
+    assert!(matches!(
+        &observation,
+        ExternalEffectResult::ExternalKey(Ok(()))
+    ));
+    assert_eq!(provider.trace()?.len(), 1, "provider did not execute once");
+    {
+        let mut current = host.lock().map_err(|_| "host lock")?;
+        match change {
+            HostAuthorityChange::Revoke => {
+                current.revoke();
+                assert_eq!(current.state(), PluginHostState::Revoked);
+                assert_eq!(
+                    current.manifest().descriptor().generation(),
+                    host_generation
+                );
+            }
+            HostAuthorityChange::CompatibleUpgrade => {
+                let manifest = current.manifest().clone();
+                let descriptor = manifest.descriptor();
+                let id = descriptor.id().clone();
+                let mut registry = PluginRegistry::default();
+                registry.register(descriptor.clone())?;
+                registry.upgrade(
+                    &id,
+                    descriptor.replacement(
+                        descriptor.command().clone(),
+                        *descriptor.checksum(),
+                        descriptor.protocol_version(),
+                    )?,
+                )?;
+                current.upgrade(PluginManifest::new(
+                    registry.get(&id)?.clone(),
+                    manifest.sandbox().clone(),
+                    manifest.limits(),
+                    manifest.operations().clone(),
+                    manifest.environment_allowlist().clone(),
+                )?)?;
+                assert_eq!(current.state(), PluginHostState::Active);
+                assert!(current.manifest().descriptor().generation() > host_generation);
+            }
+        }
+    }
+    assert!(Arc::ptr_eq(
+        service.kms_plugins.get("transit").ok_or("host")?,
+        &host
+    ));
+    let current_binding = service.kms_keys.get("transit").ok_or("binding")?;
+    assert!(current_binding.enabled);
+    assert_eq!(current_binding.key_id, binding.key_id);
+    assert_eq!(current_binding.key_version, binding.key_version);
+    assert_eq!(current_binding.capabilities, binding.capabilities);
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|response| format!("identity status {}", response.status))?,
+        identity,
+        "fixture changed Service content"
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    let withheld = service.finish_external_request(pending, observation);
+    assert_eq!(
+        withheld.status, 503,
+        "stale result survived host authority change"
+    );
+    let mapping = call(&mut service, "GET", key, &admin, json!({}));
+    assert_eq!(mapping.body["data"]["name"], "original");
+    assert_eq!(mapping.body["data"]["version"], 1);
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let mapping = call(&mut service, "GET", key, &admin, json!({}));
+    assert_eq!(mapping.body["data"]["name"], "original");
+    assert_eq!(mapping.body["data"]["version"], 1);
+    assert_eq!(
+        provider.trace()?.len(),
+        1,
+        "restart replayed provider effect"
+    );
+    Ok(())
+}
+
+#[test]
+fn external_keys270_verified_result_is_withheld_after_host_revoke() -> TestResult {
+    verified_result_is_withheld_after_host_change(HostAuthorityChange::Revoke)
+}
+
+#[test]
+fn external_keys270_verified_result_is_withheld_after_host_compatible_upgrade() -> TestResult {
+    verified_result_is_withheld_after_host_change(HostAuthorityChange::CompatibleUpgrade)
+}
