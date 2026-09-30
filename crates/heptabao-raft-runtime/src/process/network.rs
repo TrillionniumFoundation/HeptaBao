@@ -133,6 +133,7 @@ impl RaftNetworkFactory<TypeConfig> for RemoteNetworkFactory {
             target,
             peers: self.peers.clone(),
             transport: self.transport.clone(),
+            append_payload_target: crate::replication_bounds::TARGET_APPEND_RPC_BYTES,
         }
     }
 }
@@ -142,6 +143,9 @@ pub struct RemoteNetwork {
     target: u64,
     peers: Arc<BTreeSet<u64>>,
     transport: Arc<dyn RaftPeerRpc>,
+    // A timeout on a backlog must not replay the same oversized batch forever.
+    // This target is local to this peer; the hard wire limit and RPC TTL stay fixed.
+    append_payload_target: usize,
 }
 
 impl std::fmt::Debug for RemoteNetwork {
@@ -307,11 +311,49 @@ impl RaftNetworkV2<TypeConfig> for RemoteNetwork {
 
     async fn append_entries(
         &mut self,
-        request: AppendEntriesRequest<TypeConfig>,
+        mut request: AppendEntriesRequest<TypeConfig>,
         option: RPCOption,
     ) -> Result<AppendEntriesResponse<TypeConfig>, RPCError<TypeConfig>> {
-        self.rpc(RaftRpcKind::AppendEntries, &request, &option)
+        let entries = std::mem::take(&mut request.entries);
+        let mut bytes = serde_json::to_vec(&request)
+            .map_err(|error| network_error(error.to_string()))?
+            .len();
+        let mut keep = 0;
+        for entry in &entries {
+            let entry_bytes = serde_json::to_vec(entry)
+                .map_err(|error| network_error(error.to_string()))?
+                .len();
+            let next = bytes.saturating_add(entry_bytes + usize::from(keep != 0));
+            // Always retain a legal singleton, including accepted entries larger
+            // than the soft batching target. Preserve a contiguous log prefix.
+            if keep != 0 && next > self.append_payload_target {
+                break;
+            }
+            bytes = next;
+            keep += 1;
+        }
+        let shortened = keep < entries.len();
+        request.entries = entries;
+        request.entries.truncate(keep);
+        let last_sent = request.entries.last().map(|entry| entry.log_id);
+        let started = std::time::Instant::now();
+        match self
+            .rpc(RaftRpcKind::AppendEntries, &request, &option)
             .await
+        {
+            Ok(AppendEntriesResponse::Success) if shortened => {
+                // OpenRaft must retry the suffix: Success would falsely confirm
+                // entries that never crossed the authenticated peer transport.
+                Ok(AppendEntriesResponse::PartialSuccess(last_sent))
+            }
+            Ok(response) => Ok(response),
+            Err(error) => {
+                if request.entries.len() > 1 && started.elapsed() >= option.soft_ttl() {
+                    self.append_payload_target = (self.append_payload_target / 2).max(16 * 1024);
+                }
+                Err(error)
+            }
+        }
     }
 
     async fn vote(
@@ -575,4 +617,99 @@ fn network_error(message: impl Into<String>) -> RPCError<TypeConfig> {
 
 fn remote_network_error(error: RemoteRaftError) -> RPCError<TypeConfig> {
     network_error(error.to_string())
+}
+
+#[cfg(test)]
+mod append_prefix_tests {
+    use super::*;
+    use openraft::alias::EntryOf;
+    use openraft::{EntryPayload, LogId};
+
+    #[derive(Debug, Default)]
+    struct Recorder {
+        received: Mutex<Vec<AppendEntriesRequest<TypeConfig>>>,
+    }
+
+    impl RaftPeerRpc for Arc<Recorder> {
+        fn exchange(
+            &self,
+            _source: u64,
+            _target: u64,
+            _kind: RaftRpcKind,
+            payload: Vec<u8>,
+            _timeout: Duration,
+        ) -> BoxFuture<'static, Result<Vec<u8>, RemoteRaftError>> {
+            let recorder = self.clone();
+            Box::pin(async move {
+                let request =
+                    serde_json::from_slice(&payload).map_err(|_| RemoteRaftError::InvalidRpc)?;
+                recorder.received.lock().await.push(request);
+                let response: Result<AppendEntriesResponse<TypeConfig>, RaftError<TypeConfig>> =
+                    Ok(AppendEntriesResponse::Success);
+                serde_json::to_vec(&response).map_err(|_| RemoteRaftError::InvalidRpc)
+            })
+        }
+    }
+
+    fn log_id(index: u64) -> openraft::alias::LogIdOf<TypeConfig> {
+        LogId {
+            leader_id: openraft::impls::leader_id_adv::LeaderId {
+                term: 2,
+                node_id: 1,
+            },
+            index,
+        }
+    }
+
+    #[tokio::test]
+    async fn successful_shortened_request_confirms_only_actual_contiguous_prefix()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let recorder = Arc::new(Recorder::default());
+        let mut factory =
+            RemoteNetworkFactory::new(1, BTreeSet::from([1, 2, 3]), Arc::new(recorder.clone()))?;
+        let mut network = factory.new_client(2, &()).await;
+        network.append_payload_target = 18 * 1024;
+        let vote = VoteOf::<TypeConfig>::new_committed(2, 1);
+        let entries = (6..=8)
+            .map(|index| EntryOf::<TypeConfig> {
+                log_id: log_id(index),
+                payload: EntryPayload::Normal(
+                    openraft_memstore::ClientRequest {
+                        client: "synthetic-prefix".into(),
+                        serial: index,
+                        status: "x".repeat(8 * 1024),
+                    }
+                    .into(),
+                ),
+            })
+            .collect();
+        let response = network
+            .append_entries(
+                AppendEntriesRequest {
+                    vote,
+                    prev_log_id: Some(log_id(5)),
+                    entries,
+                    leader_commit: Some(log_id(8)),
+                },
+                RPCOption::new(Duration::from_millis(150)),
+            )
+            .await?;
+        assert!(
+            matches!(response, AppendEntriesResponse::PartialSuccess(Some(id)) if id == log_id(7))
+        );
+        let received = recorder.received.lock().await;
+        assert_eq!(received.len(), 1);
+        assert_eq!(received[0].vote, vote);
+        assert_eq!(received[0].prev_log_id, Some(log_id(5)));
+        assert_eq!(received[0].leader_commit, Some(log_id(8)));
+        assert_eq!(
+            received[0]
+                .entries
+                .iter()
+                .map(|entry| entry.log_id)
+                .collect::<Vec<_>>(),
+            vec![log_id(6), log_id(7)]
+        );
+        Ok(())
+    }
 }
