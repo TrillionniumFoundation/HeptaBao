@@ -858,6 +858,14 @@ private material, inconsistent public keys/certificates, unknown external key
 fields and external PKI state in schema 64 or earlier. Existing issued-certificate
 lease-owner, namespace, time and cardinality checks remain mandatory.
 
+The retained `dns_san` public-metadata bit distinguishes legacy no-SAN DER from
+new DNS-CN generation. New DNS common names add exactly one noncritical DNS SAN
+to a root or CSR extensionRequest; a text CN such as `Synthetic Direct External
+Root` adds none. DER reconstruction uses this retained semantic bit, so a reader
+does not reinterpret an already signed legacy object. The strict prior external
+key decoder rejects the added field. Changing the bit without a corresponding
+valid signed document is rejected by exact reconstruction and real verification.
+
 Direct `root/generate/kms` and `intermediate/generate/kms` run through the Service
 stage/execute/finalize boundary. An authorized namespace-local registry grant
 selects one fixed provider version. The metadata GET and DER-signing PUT use only

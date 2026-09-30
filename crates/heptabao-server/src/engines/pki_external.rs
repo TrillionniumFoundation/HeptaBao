@@ -22,6 +22,8 @@ struct ExternalKey {
     issuer_id: String,
     key_name: String,
     issuer_name: String,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    dns_san: bool,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -53,6 +55,7 @@ pub(crate) struct ExternalPkiTemplate {
     issuer_id: String,
     key_name: String,
     issuer_name: String,
+    dns_san: bool,
 }
 
 pub(crate) struct ExternalPkiMaterial {
@@ -125,12 +128,34 @@ fn optional_name(body: &Value, field: &str) -> Result<String> {
     Ok(name.into())
 }
 
-fn csr_info(common_name: &str, public_key: &[u8; 32]) -> Vec<u8> {
+pub(super) fn common_name_valid(value: &str) -> bool {
+    !value.is_empty() && value.len() <= 253 && !value.chars().any(char::is_control)
+}
+
+fn dns_san_extension(common_name: &str) -> Vec<u8> {
+    extension(
+        &[0x55, 0x1d, 0x11],
+        false,
+        &seq(&[context_primitive(2, common_name.as_bytes())]),
+    )
+}
+
+fn csr_info(common_name: &str, public_key: &[u8; 32], dns_san: bool) -> Vec<u8> {
+    let attributes = if dns_san {
+        // [0] is the IMPLICIT attribute set. Each extensionRequest attribute
+        // contains a SET with one canonical Extensions sequence.
+        seq(&[
+            oid(&[0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x09, 0x0e]),
+            set(&[seq(&[dns_san_extension(common_name)])]),
+        ])
+    } else {
+        Vec::new()
+    };
     seq(&[
         integer(&[0]),
         name(common_name),
         seq(&[algorithm_ed25519(), bit_string(public_key, 0)]),
-        context_explicit(0, &[]),
+        context_explicit(0, &attributes),
     ])
 }
 
@@ -160,9 +185,9 @@ fn formatted_serial(serial: &str) -> String {
 }
 
 // The pinned 2.7 direct-root blackbox has exactly KeyUsage, BasicConstraints,
-// SKI and AKI, without an implicit CN-as-DNS SAN. SHA-1 here is solely the
+// SKI and AKI, plus a DNS SAN when the CN is a valid DNS name. SHA-1 is solely the
 // standard public-key identifier construction, never a signature algorithm.
-fn external_root_tbs(spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
+fn external_root_tbs(spec: CertificateSpec<'_>, dns_san: bool) -> Result<Vec<u8>> {
     let CertificateSpec {
         serial,
         issuer_cn,
@@ -176,7 +201,7 @@ fn external_root_tbs(spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
         return Err(bad("external PKI public key length"));
     }
     let key_id = ring::digest::digest(&ring::digest::SHA1_FOR_LEGACY_USE_ONLY, public_key);
-    let extensions = vec![
+    let mut extensions = vec![
         extension(&[0x55, 0x1d, 0x0f], true, &bit_string(&[0x06], 1)),
         extension(&[0x55, 0x1d, 0x13], true, &seq(&[boolean(true)])),
         extension(&[0x55, 0x1d, 0x0e], false, &octet_string(key_id.as_ref())),
@@ -186,6 +211,9 @@ fn external_root_tbs(spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
             &seq(&[context_primitive(0, key_id.as_ref())]),
         ),
     ];
+    if dns_san {
+        extensions.push(dns_san_extension(subject_cn));
+    }
     Ok(seq(&[
         context_explicit(0, &integer(&[2])),
         integer(&serial_bytes(serial)?),
@@ -201,19 +229,22 @@ fn external_root_tbs(spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
 impl ExternalPkiTemplate {
     pub(crate) fn materialize(self, public_key: [u8; 32]) -> Result<ExternalPkiMaterial> {
         let tbs = if self.operation == "root" {
-            external_root_tbs(CertificateSpec {
-                serial: &self.serial,
-                issuer_cn: &self.common_name,
-                subject_cn: &self.common_name,
-                public_key: &public_key,
-                not_before: self.not_before,
-                not_after: self.not_after,
-                is_ca: true,
-                alt_names: &[],
-                ip_sans: &[],
-            })?
+            external_root_tbs(
+                CertificateSpec {
+                    serial: &self.serial,
+                    issuer_cn: &self.common_name,
+                    subject_cn: &self.common_name,
+                    public_key: &public_key,
+                    not_before: self.not_before,
+                    not_after: self.not_after,
+                    is_ca: true,
+                    alt_names: &[],
+                    ip_sans: &[],
+                },
+                self.dns_san,
+            )?
         } else {
-            csr_info(&self.common_name, &public_key)
+            csr_info(&self.common_name, &public_key, self.dns_san)
         };
         Ok(ExternalPkiMaterial {
             template: self,
@@ -307,7 +338,7 @@ impl Pki {
             return Err(bad("invalid external PKI reference"));
         }
         let common_name = string(body, "common_name")?;
-        if !valid_common_name(common_name) {
+        if !common_name_valid(common_name) {
             return Err(bad("invalid PKI common name"));
         }
         let ttl = ttl_field(body, "ttl", DEFAULT_ROOT_TTL)?;
@@ -327,6 +358,7 @@ impl Pki {
             issuer_id: identifier()?,
             key_name: optional_name(body, "key_name")?,
             issuer_name: optional_name(body, "issuer_name")?,
+            dns_san: valid_domain(common_name),
         }))
     }
 
@@ -344,6 +376,7 @@ impl Pki {
             issuer_id: template.issuer_id,
             key_name: template.key_name,
             issuer_name: template.issuer_name,
+            dns_san: template.dns_san,
         };
         let encoded = signed_der(&material.tbs, signature);
         if template.operation == "root" {
@@ -405,30 +438,39 @@ impl Pki {
                 .root
                 .as_ref()
                 .ok_or_else(|| bad("external PKI root missing"))?;
+            if key.dns_san && !valid_domain(&root.common_name) {
+                return Err(bad("external PKI DNS SAN subject is invalid"));
+            }
             if !root.pkcs8.is_empty() {
                 return Err(bad("external PKI must not contain local private key"));
             }
-            let tbs = external_root_tbs(CertificateSpec {
-                serial: &root.serial,
-                issuer_cn: &root.common_name,
-                subject_cn: &root.common_name,
-                public_key: &key.public_key,
-                not_before: root.not_before,
-                not_after: root.not_after,
-                is_ca: true,
-                alt_names: &[],
-                ip_sans: &[],
-            })?;
+            let tbs = external_root_tbs(
+                CertificateSpec {
+                    serial: &root.serial,
+                    issuer_cn: &root.common_name,
+                    subject_cn: &root.common_name,
+                    public_key: &key.public_key,
+                    not_before: root.not_before,
+                    not_after: root.not_after,
+                    is_ca: true,
+                    alt_names: &[],
+                    ip_sans: &[],
+                },
+                key.dns_san,
+            )?;
             validate_signed_der(&key.public_key, &tbs, &root.certificate_der)?;
         }
         if let Some(csr) = &self.external.intermediate {
             validate_key(&csr.key)?;
-            if !valid_common_name(&csr.common_name) {
+            if !common_name_valid(&csr.common_name) {
                 return Err(bad("invalid external CSR subject"));
+            }
+            if csr.key.dns_san && !valid_domain(&csr.common_name) {
+                return Err(bad("external CSR DNS SAN subject is invalid"));
             }
             validate_signed_der(
                 &csr.key.public_key,
-                &csr_info(&csr.common_name, &csr.key.public_key),
+                &csr_info(&csr.common_name, &csr.key.public_key, csr.key.dns_san),
                 &csr.csr_der,
             )?;
         }
@@ -449,4 +491,48 @@ fn validate_signed_der(public_key: &[u8; 32], tbs: &[u8], document: &[u8]) -> Re
         return Err(bad("invalid external PKI document or signature"));
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn external_pki_legacy_no_san_state_retains_its_signed_semantics() -> Result<()> {
+        let pair = Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
+            .map_err(|_| bad("test provider key generation"))?;
+        let pair = Ed25519KeyPair::from_pkcs8(pair.as_ref())
+            .map_err(|_| bad("test provider key decode"))?;
+        let public: [u8; 32] = pair
+            .public_key()
+            .as_ref()
+            .try_into()
+            .map_err(|_| bad("test provider public decode"))?;
+        let mut pki = Pki::default();
+        let mut legacy = pki.prepare_external("POST", "root/generate/kms", &json!({
+            "external_key_ref":"provider:fixed", "common_name":"legacy-ca.example.test", "ttl":"1h"
+        }), 100)?.ok_or_else(|| bad("test template"))?;
+        // The old schema-65 writer had no CN-as-DNS SAN. The retained false
+        // default preserves those exact signed bytes after a current reopen.
+        legacy.dns_san = false;
+        let material = legacy.materialize(public)?;
+        let signature = pair.sign(&material.tbs);
+        pki.publish_external(material, signature.as_ref())?;
+        let mut encoded = serde_json::to_value(&pki).map_err(|_| bad("test encode"))?;
+        assert!(
+            encoded["external"]["root"].get("dns_san").is_none(),
+            "legacy metadata shape unchanged"
+        );
+        let reopened: Pki =
+            serde_json::from_value(encoded.clone()).map_err(|_| bad("test reopen"))?;
+        reopened.validate("", "legacy/", 100)?;
+        encoded["external"]["root"]["dns_san"] = json!(true);
+        let altered: Pki =
+            serde_json::from_value(encoded).map_err(|_| bad("test altered decode"))?;
+        assert!(
+            altered.validate("", "legacy/", 100).is_err(),
+            "SAN semantic substitution rejected"
+        );
+        Ok(())
+    }
 }

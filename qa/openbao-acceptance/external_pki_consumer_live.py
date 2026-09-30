@@ -8,6 +8,7 @@ multi-issuer migration or production/release authority.
 """
 from __future__ import annotations
 import base64
+import copy
 import importlib.util
 import json
 import os
@@ -50,6 +51,11 @@ EXPECTED_CASES=expected_cases()
 def trace_complete(rows):
     return isinstance(rows,list) and tuple(row.get("case") for row in rows)==EXPECTED_CASES and all(row.get("passed") is True for row in rows)
 
+def scoped_client(client,namespace):
+    scoped=copy.copy(client)
+    scoped.namespace=namespace
+    return scoped
+
 def sign_entries(remote):
     count=0
     for line in (Path(remote["root"])/"audit.jsonl").read_text().splitlines():
@@ -65,7 +71,7 @@ def validate_crypto(data,kind,public):
         expected={"certificate","expiration","issuer_id","issuer_name","issuing_ca","key_id","key_name","serial_number"}
         exact=set(data)==expected and data["key_name"]==data["issuer_name"]=="" and data["certificate"]==data["issuing_ca"]
         exact &= tuple((extension.oid.dotted_string,extension.critical) for extension in document.extensions)==(
-            ("2.5.29.15",True),("2.5.29.19",True),("2.5.29.14",False),("2.5.29.35",False))
+            ("2.5.29.15",True),("2.5.29.19",True),("2.5.29.14",False),("2.5.29.35",False),("2.5.29.17",False))
         constraints=document.extensions.get_extension_for_class(x509.BasicConstraints).value
         usage=document.extensions.get_extension_for_class(x509.KeyUsage).value
         ski=document.extensions.get_extension_for_class(x509.SubjectKeyIdentifier).value.digest
@@ -79,36 +85,51 @@ def validate_crypto(data,kind,public):
     else:
         document=x509.load_pem_x509_csr(data["csr"].encode())
         verified=public.verify(document.signature,document.tbs_certrequest_bytes)
-        exact=set(data)=={"csr","key_id"} and len(document.extensions)==0
+        exact=set(data)=={"csr","key_id"} and tuple((extension.oid.dotted_string,extension.critical) for extension in document.extensions)==(("2.5.29.17",False),)
+    common_name=document.subject.get_attributes_for_oid(x509.NameOID.COMMON_NAME)
+    exact &= len(common_name)==1 and document.extensions.get_extension_for_class(x509.SubjectAlternativeName).value.get_values_for_type(x509.DNSName)==[common_name[0].value]
     actual=document.public_key().public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw)
     expected_public=public.public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw)
     return bool(exact),actual==expected_public,verified is None
 
-def run(binary,rows):
+def run(binary,rows,*,oracle_contract=False):
     smoke_spec=importlib.util.spec_from_file_location("external_pki_native_smoke",ROOT/"qa/single-node/smoke.py")
     smoke=importlib.util.module_from_spec(smoke_spec);smoke_spec.loader.exec_module(smoke)
     private_root=Path(tempfile.mkdtemp(prefix="heptabao-external-pki270-"));private_root.chmod(0o700)
-    instances=[];native=None;t=shared.Trace(rows);result={}
+    instances=[];native=None;contract_consumer=None;t=shared.Trace(rows);result={}
     try:
         remote=start_oracle(shared.free_port(),version=VERSION,audit_file=True);instances.append(remote)
         official=start_oracle(shared.free_port(),version=VERSION);instances.append(official)
         r,o=shared.oracle_client(remote),shared.oracle_client(official)
         remote_token=private_read(remote["token_file"],8192).decode().strip()
         ca=Path(remote["ca_file"]).read_text()
-        native=smoke.Instance(binary,private_root/"candidate");shared.native_configuration(native,remote,ca);native.start()
-        status,initialized=native.call("POST","sys/init",{"secret_shares":1,"secret_threshold":1})
-        if status!=200:raise shared.Failure("candidate_init")
-        native.token,unseal=initialized["root_token"],initialized["keys_base64"][0]
-        if native.call("POST","sys/unseal",{"key":unseal})[0]!=200:raise shared.Failure("candidate_unseal")
-        c=Client(native.address,str(native.root/"ca.crt"),native.token)
+        if oracle_contract:
+            # Only the explicit QA preflight caller selects this branch. Every
+            # request still reaches a fresh real official HTTPS process; no
+            # init, cryptographic response or readback is synthesized.
+            contract_consumer=start_oracle(shared.free_port(),version=VERSION,audit_file=True)
+            instances.append(contract_consumer)
+            c=shared.oracle_client(contract_consumer)
+            audit_root=Path(contract_consumer["root"])
+            candidate_token=private_read(contract_consumer["token_file"],8192).decode().strip()
+            unseal=private_read(audit_root/"unseal.key",8192).decode().strip()
+        else:
+            native=smoke.Instance(binary,private_root/"candidate");shared.native_configuration(native,remote,ca);native.start()
+            status,initialized=native.call("POST","sys/init",{"secret_shares":1,"secret_threshold":1})
+            if status!=200:raise shared.Failure("candidate_init")
+            native.token,unseal=initialized["root_token"],initialized["keys_base64"][0]
+            if native.call("POST","sys/unseal",{"key":unseal})[0]!=200:raise shared.Failure("candidate_unseal")
+            c=Client(native.address,str(native.root/"ca.crt"),native.token)
+            audit_root=native.root;candidate_token=native.token
         clients={"candidate":c,"official":o};identities={}
         for side,client in (("remote",r),("official",o),("candidate",c)):
             health=client.health()
             t.check(side+".health",health.get("initialized") is True and health.get("sealed") is False
-                and (side=="candidate" or health.get("version")==VERSION))
+                and (side=="candidate" and not oracle_contract or health.get("version")==VERSION))
             identities[side]={key:health[key] for key in ("cluster_id","version")}
         t.check("distinct_process_clusters",len({identity["cluster_id"] for identity in identities.values()})==3)
-        t.check("oracle.selected_backend",remote["storage_backend"]==official["storage_backend"]=="pebbledb")
+        t.check("oracle.selected_backend",remote["storage_backend"]==official["storage_backend"]=="pebbledb"
+            and (not oracle_contract or contract_consumer["storage_backend"]=="pebbledb"))
         t.call("remote.mount",r,"POST","sys/mounts/transit",204,{"type":"transit"})
         t.call("remote.key",r,"POST","transit/keys/ca",200,{"type":"ed25519"})
         descriptor=r.request("GET","/v1/transit/keys/ca")
@@ -116,13 +137,14 @@ def run(binary,rows):
         raw=base64.b64decode(value,validate=True)
         t.check("remote.public_key",descriptor.status==200 and len(raw)==32 and base64.b64encode(raw).decode()==value,descriptor.status)
         public=ed25519.Ed25519PublicKey.from_public_bytes(raw)
-        configurations={side:{"plugin":"transit","verify":side=="official","address":remote["address"],"token":remote_token,"mount_path":"transit"}
+        configurations={side:{"plugin":"transit","verify":side=="official" or oracle_contract,"address":remote["address"],"token":remote_token,"mount_path":"transit"}
             for side in clients}
         configurations["official"]["tls_ca_cert_bytes"]=ca
+        if oracle_contract:configurations["candidate"]["tls_ca_cert_bytes"]=ca
         certificates={}
         for side,client in clients.items():
             t.call(side+".config",client,"POST",CONFIG,204,configurations[side])
-            mapping={"name":"ca","version":1,"verify":side=="official"}
+            mapping={"name":"ca","version":1,"verify":side=="official" or oracle_contract}
             t.call(side+".mapping",client,"POST",CONFIG+"/keys/fixed",204,mapping)
             for kind in ("root","csr"):
                 mount="pki-"+kind;prefix=side+"."+kind+"."
@@ -150,16 +172,17 @@ def run(binary,rows):
             t.call(side+".namespace_config",client,"POST",CONFIG,204,configurations[side],namespace="team")
             t.call(side+".namespace_mapping",client,"POST",CONFIG+"/keys/fixed",204,mapping,namespace="team")
             t.call(side+".namespace_grant",client,"POST",CONFIG+"/keys/fixed/grants/pki",204,namespace="team")
-            response=client.request("POST","/v1/pki/root/generate/kms",body,namespace="team")
+            response=scoped_client(client,"team").request("POST","/v1/pki/root/generate/kms",body)
             t.check(side+".namespace_generate",response.status==200,response.status)
             exact,spki,verified=validate_crypto(response.body.get("data",{}),"root",public)
             t.check(side+".namespace_signature",exact and spki and verified)
             response=client.request("GET","/v1/pki-root/cert/ca")
             t.check(side+".root_readback",response.status==200 and response.body.get("data",{}).get("certificate")==certificates[side],response.status)
-            if side=="candidate":shared.restart_candidate(native,unseal,remote,ca)
+            if side=="candidate" and not oracle_contract:shared.restart_candidate(native,unseal,remote,ca)
             else:
                 from official_openbao_launcher import restart_oracle
-                stop_oracle(official);restart_oracle(official)
+                selected=contract_consumer if side=="candidate" else official
+                stop_oracle(selected);restart_oracle(selected)
             t.check(side+".restart_health",client.health()["cluster_id"]==identities[side]["cluster_id"])
             response=client.request("GET","/v1/pki-root/cert/ca")
             t.check(side+".restart_root_readback",response.status==200 and response.body.get("data",{}).get("certificate")==certificates[side],response.status)
@@ -173,9 +196,10 @@ def run(binary,rows):
             t.check(prefix+"old_fixed_rejected",response.status==400,response.status)
             t.check(prefix+"no_certificate","certificate" not in response.body.get("data",{}))
             t.check(prefix+"no_sign",sign_entries(remote)==before)
-        audit=(native.root/"audit.jsonl").read_text()
-        t.check("candidate.audit_no_credentials",all(secret not in audit for secret in (remote_token,native.token,unseal)))
-        result.update(identities=identities,oracle_storage_backends={"remote":remote["storage_backend"],"official":official["storage_backend"]})
+        audit=(audit_root/"audit.jsonl").read_text()
+        t.check("candidate.audit_no_credentials",all(secret not in audit for secret in (remote_token,candidate_token,unseal)))
+        result.update(identities=identities,oracle_only_contract=oracle_contract,
+            oracle_storage_backends={"remote":remote["storage_backend"],"official":official["storage_backend"]})
     finally:
         native_handle=None if native is None else native.process
         if native is not None:native.stop()

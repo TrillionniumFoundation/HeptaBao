@@ -62,6 +62,93 @@ fn decode_pem(text: &str) -> TestResult<Vec<u8>> {
 }
 
 #[test]
+fn external_pki270_dns_common_name_has_exact_san_and_text_common_name_has_none() -> TestResult {
+    use x509_parser::extensions::{GeneralName, ParsedExtension};
+    for (common_name, dns) in [
+        ("synthetic-preflight-ca.example.test", true),
+        ("Synthetic Direct External Root", false),
+    ] {
+        for route in ["root/generate/kms", "intermediate/generate/kms"] {
+            let remote = RemoteTransit::new_kind("ed25519")?;
+            let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+            let response = call(
+                &mut service,
+                "POST",
+                &format!("external-ca/{route}"),
+                &admin,
+                json!({"external_key_ref":"remote:v2","common_name":common_name,"ttl":"1h"}),
+            );
+            assert!(response.status == 200, "PKI subject generation");
+            let root_route = route.starts_with("root");
+            let field = if root_route { "certificate" } else { "csr" };
+            let der = decode_pem(
+                response.body["data"][field]
+                    .as_str()
+                    .ok_or("PKI document")?,
+            )?;
+            if root_route {
+                let (_, cert) = parse_x509_certificate(&der).map_err(|_| "root DER")?;
+                let san = cert.subject_alternative_name().map_err(|_| "root SAN")?;
+                assert!(
+                    san.as_ref().is_some_and(
+                        |san| san.value.general_names == [GeneralName::DNSName(common_name)]
+                    ) == dns,
+                    "root exact DNS SAN contract"
+                );
+                assert!(
+                    cert.extensions().len() == if dns { 5 } else { 4 },
+                    "root exact extension count"
+                );
+                if !dns {
+                    assert!(san.is_none(), "text root excludes DNS SAN");
+                }
+            } else {
+                let (_, csr) = X509CertificationRequest::from_der(&der).map_err(|_| "CSR DER")?;
+                let extensions = csr
+                    .requested_extensions()
+                    .map(|extensions| extensions.collect::<Vec<_>>());
+                if dns {
+                    assert!(
+                        matches!(extensions.as_deref(), Some([ParsedExtension::SubjectAlternativeName(san)]) if san.general_names == [GeneralName::DNSName(common_name)]),
+                        "CSR exact DNS SAN contract"
+                    );
+                } else {
+                    assert!(extensions.is_none(), "text CSR excludes extensionRequest");
+                }
+            }
+            assert!(
+                remote.calls()? == 2,
+                "one metadata and genuine sign operation"
+            );
+            drop(service);
+            let mut reopened = root.service()?;
+            assert!(
+                call(
+                    &mut reopened,
+                    "POST",
+                    "sys/unseal",
+                    "",
+                    json!({"key":unseal})
+                )
+                .status
+                    == 200,
+                "SAN metadata encrypted restart"
+            );
+            assert!(
+                reopened
+                    .state
+                    .as_ref()
+                    .ok_or("SAN state")?
+                    .validate_format()
+                    .is_ok(),
+                "SAN metadata retains exact DER authority"
+            );
+        }
+    }
+    Ok(())
+}
+
+#[test]
 fn external_pki270_real_remote_root_and_csr_have_bound_public_keys_and_restart() -> TestResult {
     for route in ["root/generate/kms", "intermediate/generate/kms"] {
         let remote = RemoteTransit::new_kind("ed25519")?;
@@ -141,7 +228,10 @@ fn external_pki270_real_remote_root_and_csr_have_bound_public_keys_and_restart()
                 .map_err(|_| "CSR actual cryptographic signature invalid")?;
         }
         let state = service.state.as_ref().ok_or("state missing")?;
-        assert!(state.schema == 65, "external PKI writer schema fence");
+        assert!(
+            state.schema == CURRENT_STATE_SCHEMA,
+            "external PKI writer schema fence"
+        );
         let mut downgraded = state.clone();
         downgraded.schema = 64;
         assert!(

@@ -11,6 +11,16 @@ MODULE=importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 
 class ExternalPkiContractTests(unittest.TestCase):
+    def test_namespace_uses_transport_scope_without_mutating_original_client(self):
+        class Transport:
+            namespace="original"
+            def request(self,method,path,body=None,*,token=None):
+                return self.namespace,method,path,body,token
+        original=Transport()
+        actual=MODULE.scoped_client(original,"team").request("POST","/v1/pki/root/generate/kms",{})
+        self.assertEqual(("team","POST","/v1/pki/root/generate/kms",{},None),actual)
+        self.assertEqual("original",original.namespace)
+
     def test_complete_ordered_unique_denominator_is_required(self):
         cases=MODULE.EXPECTED_CASES
         self.assertEqual(85,len(cases))

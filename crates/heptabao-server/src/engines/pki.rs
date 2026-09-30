@@ -205,8 +205,11 @@ impl Pki {
             return Err(bad("enabled PKI ACME requires a configured cluster path"));
         }
         if let Some(root) = &self.root {
-            if !valid_common_name(&root.common_name)
-                || root.pkcs8.is_empty() && !self.has_external_state()
+            if !(if root.pkcs8.is_empty() {
+                external::common_name_valid(&root.common_name)
+            } else {
+                valid_common_name(&root.common_name)
+            }) || root.pkcs8.is_empty() && !self.has_external_state()
                 || root.pkcs8.len() > 4096
                 || root.certificate_der.is_empty()
                 || root.certificate_der.len() > 64 * 1024
