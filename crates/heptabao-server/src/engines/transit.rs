@@ -15,6 +15,8 @@ use sha3::{Sha3_224, Sha3_256, Sha3_384, Sha3_512};
 
 const MAX_INPUT_BYTES: usize = 4 * 1024 * 1024;
 use zeroize::Zeroizing;
+#[path = "transit_asymmetric.rs"]
+mod asymmetric;
 #[path = "transit_external.rs"]
 mod external;
 #[path = "transit_mldsa.rs"]
@@ -99,6 +101,7 @@ impl KeyVersion {
             "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305" | "hmac" => {
                 random_bytes(32)?
             }
+            kind if asymmetric::is_kind(kind) => asymmetric::generate(kind)?,
             "ed25519" => Zeroizing::new(
                 signature::Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
                     .map_err(|_| error(503, "key generation failed"))?
@@ -171,6 +174,10 @@ impl Key {
                 let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
                     .map_err(|_| error(500, "stored signing key is invalid"))?;
                 json!({"creation_time":timestamp(version.created_at),"public_key":BASE64.encode(pair.public_key().as_ref())})
+            } else if asymmetric::is_kind(&self.kind) {
+                json!({"creation_time":timestamp(version.created_at),
+                    "public_key":asymmetric::public(&stored_material(&version.material)?)?,
+                    "name":"", "certificate_chain":Value::Null})
             } else if mldsa::is_kind(&self.kind) {
                 let material = stored_material(&version.material)?;
                 json!({"creation_time":timestamp(version.created_at),
@@ -180,6 +187,17 @@ impl Key {
                 json!(version.created_at)
             };
             versions.insert(number.to_string(), value);
+        }
+        if asymmetric::is_kind(&self.kind) {
+            let encryption = asymmetric::is_rsa(&self.kind);
+            return Ok(
+                json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
+                "min_decryption_version":self.min_decryption_version,"min_encryption_version":self.min_encryption_version,
+                "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":false,
+                "derived":false,"supports_derivation":false,"supports_encryption":encryption,
+                "supports_decryption":encryption,"supports_signing":true,"imported_key":false,
+                "auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0}),
+            );
         }
         let encryption = matches!(
             self.kind.as_str(),
@@ -322,6 +340,15 @@ fn auto_rotate_period(value: Option<&Value>) -> Result<u64> {
 }
 
 impl Transit {
+    pub(super) fn has_asymmetric_state(&self) -> bool {
+        self.keys.values().any(|key| {
+            matches!(
+                key.kind.as_str(),
+                "ecdsa-p256" | "ecdsa-p384" | "ecdsa-p521" | "rsa-2048" | "rsa-3072" | "rsa-4096"
+            )
+        })
+    }
+
     pub(super) fn contains(&self, name: &str) -> bool {
         self.keys.contains_key(name)
     }
@@ -565,11 +592,16 @@ impl Transit {
         let key = self.keys.get(name).ok_or_else(not_found)?;
         key.alive()?;
         let mldsa_key = mldsa::is_kind(&key.kind);
-        let public_export = mldsa_key && kind == "public-key";
+        let asymmetric_key = asymmetric::is_kind(&key.kind);
+        let public_export = (mldsa_key || asymmetric_key) && kind == "public-key";
         if !key.exportable && !public_export {
             return Err(error(403, "key is not exportable"));
         }
+        if asymmetric_key && kind == "encryption-key" && !asymmetric::is_rsa(&key.kind) {
+            return Err(bad("key type does not support encryption key export"));
+        }
         if kind != "hmac-key"
+            && !(asymmetric_key && matches!(kind, "public-key" | "signing-key" | "encryption-key"))
             && !(mldsa_key && matches!(kind, "public-key" | "signing-key"))
             && !(kind == "encryption-key"
                 && matches!(
@@ -602,7 +634,14 @@ impl Transit {
                     && selected.is_none_or(|number| **version == number)
             })
             .map(|(version, value)| {
-                let encoded = if public_export {
+                let encoded = if asymmetric_key && kind != "hmac-key" {
+                    asymmetric::export(
+                        &key.kind,
+                        &stored_material(&value.material)?,
+                        public_export,
+                    )?
+                    .to_string()
+                } else if public_export {
                     BASE64.encode(mldsa::public(
                         &key.kind,
                         &stored_material(&value.material)?,
@@ -857,10 +896,27 @@ fn handle_crypto(
             mutated,
         });
     }
-    if (key.kind == "ed25519" || mldsa::is_kind(&key.kind))
-        && matches!(operation, "sign" | "verify")
+    if (key.kind == "ed25519" || mldsa::is_kind(&key.kind) || asymmetric::is_kind(&key.kind))
+        && (matches!(operation, "sign" | "verify")
+            || (asymmetric::is_rsa(&key.kind)
+                && matches!(operation, "encrypt" | "decrypt" | "rewrap")))
     {
         validate_signing_context(body)?;
+        if asymmetric::is_rsa(&key.kind) && matches!(operation, "encrypt" | "decrypt" | "rewrap") {
+            if !associated_data(body)?.is_empty() {
+                return Err(bad("RSA encryption does not support associated data"));
+            }
+            if body
+                .get("nonce")
+                .is_some_and(|value| value.as_str() != Some(""))
+                || optional_bool(body, "convergent_encryption")?.unwrap_or(false)
+            {
+                return Err(error(
+                    501,
+                    "caller-supplied nonces and convergent encryption are not implemented",
+                ));
+            }
+        }
     } else {
         reject_context(body)?;
     }
@@ -901,12 +957,22 @@ fn handle_crypto(
             json!({"hmac":format!("vault:v{version}:{}", BASE64.encode(tag))})
         }
         "sign" => {
-            let external_mu = signing_options(key, body, algorithm)?;
-            let version = key.selected_version(body)?;
+            let external_mu = if asymmetric::is_kind(&key.kind) {
+                false
+            } else {
+                signing_options(key, body, algorithm)?
+            };
+            let version = if asymmetric::is_kind(&key.kind) {
+                asymmetric::selected_signing_version(key, body)?
+            } else {
+                key.selected_version(body)?
+            };
             let material =
                 stored_material(&key.versions.get(&version).ok_or_else(not_found)?.material)?;
             let input = decode_field(body, "input")?;
-            let signature = if mldsa::is_kind(&key.kind) {
+            let signature = if asymmetric::is_kind(&key.kind) {
+                asymmetric::sign(&key.kind, &material, body, algorithm, &input)?
+            } else if mldsa::is_kind(&key.kind) {
                 if external_mu {
                     mldsa::sign_mu(&key.kind, &material, &input)?
                 } else {
@@ -932,7 +998,11 @@ fn handle_crypto(
                 let algorithm = select_algorithm(algorithm, body, "algorithm", "sha2-256")?;
                 hmac_verify(algorithm, &material, &input, &tag)?
             } else {
-                let external_mu = signing_options(key, body, algorithm)?;
+                let external_mu = if asymmetric::is_kind(&key.kind) {
+                    false
+                } else {
+                    signing_options(key, body, algorithm)?
+                };
                 if external_mu {
                     return Err(bad("ML-DSA external mu is not supported for verification"));
                 }
@@ -940,7 +1010,9 @@ fn handle_crypto(
                     parse_wrapped_with(string(body, "signature")?, signature_encoding(body)?)?;
                 let version = key.decrypt_version(version)?;
                 let material = stored_material(&version.material)?;
-                if mldsa::is_kind(&key.kind) {
+                if asymmetric::is_kind(&key.kind) {
+                    asymmetric::verify(&key.kind, &material, body, algorithm, &input, &bytes)?
+                } else if mldsa::is_kind(&key.kind) {
                     mldsa::verify(&key.kind, &material, &input, &bytes)?
                 } else {
                     let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
@@ -1166,6 +1238,20 @@ fn encrypt(
     body: &Value,
     plaintext: &[u8],
 ) -> Result<Value> {
+    if asymmetric::is_rsa(&key.kind) {
+        let number = key.selected_version(body)?;
+        let version = key.versions.get_mut(&number).ok_or_else(not_found)?;
+        if version.encryptions >= MAX_ENCRYPTIONS_PER_VERSION {
+            return Err(bad(
+                "key version reached its encryption limit; rotate the key",
+            ));
+        }
+        let ciphertext = asymmetric::encrypt(&stored_material(&version.material)?, plaintext)?;
+        version.encryptions += 1;
+        return Ok(
+            json!({"ciphertext":format!("vault:v{number}:{}",BASE64.encode(ciphertext)),"key_version":number}),
+        );
+    }
     let xchacha = key.kind == "xchacha20-poly1305";
     let algorithm = (!xchacha).then(|| aead_algorithm(&key.kind)).transpose()?;
     let version_number = key.selected_version(body)?;
@@ -1219,6 +1305,11 @@ fn decrypt(
     name: &str,
     body: &Value,
 ) -> Result<Zeroizing<Vec<u8>>> {
+    if asymmetric::is_rsa(&key.kind) {
+        let (number, ciphertext) = parse_wrapped(string(body, "ciphertext")?)?;
+        let version = key.decrypt_version(number)?;
+        return asymmetric::decrypt(&stored_material(&version.material)?, &ciphertext);
+    }
     let xchacha = key.kind == "xchacha20-poly1305";
     let algorithm = (!xchacha).then(|| aead_algorithm(&key.kind)).transpose()?;
     let (version_number, mut ciphertext) = parse_wrapped(string(body, "ciphertext")?)?;
@@ -1476,3 +1567,7 @@ mod auto_rotation_tests {
 #[cfg(test)]
 #[path = "transit_mldsa_tests.rs"]
 mod mldsa_tests;
+
+#[cfg(test)]
+#[path = "transit_asymmetric_tests.rs"]
+mod asymmetric_tests;
