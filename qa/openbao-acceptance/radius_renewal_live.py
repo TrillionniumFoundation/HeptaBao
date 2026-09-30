@@ -45,6 +45,7 @@ def radius_md5(data=b""):
     # protocol compatibility primitive, never a password verifier or generic
     # security hash. The protocol cannot be changed to another digest.
     # codeql[py/weak-sensitive-data-hashing]
+    # lgtm[py/weak-sensitive-data-hashing]
     return hashlib.md5(data, usedforsecurity=False)
 
 

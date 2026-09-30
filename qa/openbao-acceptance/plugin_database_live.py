@@ -274,19 +274,20 @@ def run(binary: Path, root: Path):
         lease_id = issued["lease_id"]
         credential = issued["data"]
         provider = json.loads(provider_state.read_text())
+        # A fresh per-run keyed HMAC proves exact transport to the synthetic
+        # provider. It is not a password verifier or persisted credential.
+        # codeql[py/weak-sensitive-data-hashing]
+        # lgtm[py/weak-sensitive-data-hashing]
+        password_transport_hmac = hmac.new(
+            fingerprint_key,
+            credential["password"].encode(),
+            hashlib.sha256,
+        ).hexdigest()
         check(
             "issued_secret_matches_plugin_digest",
             provider.get("active") is True
             and provider.get("username") == credential["username"]
-            and provider.get("password_hmac_sha256")
-            # A fresh per-run HMAC proves exact transport to the synthetic
-            # provider. It is not a password verifier or persisted credential.
-            # codeql[py/weak-sensitive-data-hashing]
-            == hmac.new(
-                fingerprint_key,
-                credential["password"].encode(),
-                hashlib.sha256,
-            ).hexdigest(),
+            and provider.get("password_hmac_sha256") == password_transport_hmac,
         )
         issue_seq = provider["seq"]
 
