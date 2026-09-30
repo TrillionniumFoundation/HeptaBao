@@ -246,3 +246,29 @@ Real network fault evidence is separately described in
 ## Independent module closure dossier
 
 The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-raft-runtime.md).
+
+## Deadline-bound replay prefixes
+
+A remote peer starts with the existing 128 KiB AppendEntries batching target.
+Only a multi-entry RPC failure that actually exhausts the supplied soft deadline
+halves that peer's target, down to 16 KiB. Instant offline errors leave the target
+unchanged. Each request preserves a contiguous prefix, its vote, previous log ID
+and leader commit. A legal singleton remains intact even above the soft target;
+the original hard wire/proposal limits and caller RPC deadline remain enforced.
+
+If the peer durably accepts a shortened request, the adapter returns OpenRaft
+`PartialSuccess` with the last actually sent log ID. It never confirms the omitted
+suffix. Existing conflict, higher-vote and partial-success responses retain their
+original meaning. This changes internal consensus replication batches, not
+application retry authority or the physical campaign's applied-frontier check.
+
+The paced real-Raft regression
+`failed_replay_adapts_contiguous_prefix_without_acknowledging_unsent_suffix`
+exhausts the unchanged 150 ms budget on an accumulated prefix and requires all
+nodes to reach the final applied frontier and exact application digest. The
+recording-transport regression
+`successful_shortened_request_confirms_only_actual_contiguous_prefix` confirms
+that entries 6 and 7 are sent and acknowledged while entry 8 remains pending.
+Actual physical-host success still requires a receipt at the executed source;
+this mechanism alone does not guarantee progress for a slow large singleton or
+qualify WAN, power-loss or production operation.

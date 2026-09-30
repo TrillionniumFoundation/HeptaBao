@@ -82,7 +82,7 @@ modules:
   source: crates/heptabao-ha-service/src/lib.rs
   guide: docs/modules/heptabao-ha-service.md
 - crate: heptabao-raft-runtime
-  domain: durable three-voter consensus, ReadIndex and restart recovery
+  domain: durable Raft replication with deadline-adaptive contiguous replay prefixes, applied-frontier recovery and bounded snapshots
   state: IMPLEMENTED_REVIEW_REQUIRED
   documentation_standard: V3
   source: crates/heptabao-raft-runtime/src/lib.rs

@@ -121,7 +121,13 @@ a 128 KiB serialization target while preserving the 768 KiB hard wire limit and
 all existing proposal admission. A legal larger entry is sent intact as a
 singleton. Only a subsequent entry is deferred; none is dropped, split, admitted
 out of order or acknowledged without durable replication. The upstream RPC
-budget is unchanged. A small-batch target does not guarantee progress for every
+budget is unchanged. A remote peer now halves its soft prefix target, down to
+16 KiB, only after a multi-entry RPC actually exhausts that budget. Successful
+shortened requests return PartialSuccess for the last actually sent entry; an
+unsent suffix is never acknowledged. Instant offline failures, singletons, wire
+limits and application retry rules retain their existing behavior. The real-Raft
+regression requires the final applied frontier and exact digest after repeated
+150 ms failures. A small-batch target does not guarantee progress for every
 large singleton, slow disk, congested link or WAN deployment.
 
 `ha_multihost_live.py` now anchors a committed index and requires the recovering
