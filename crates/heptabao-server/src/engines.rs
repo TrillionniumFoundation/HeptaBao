@@ -5,6 +5,7 @@
 //! Namespace, mount and resource identifiers are separate map dimensions. No
 //! delimiter-concatenated value is ever used as a storage identity.
 
+use heptabao_domain::SecretValue;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::{
@@ -340,6 +341,23 @@ impl std::fmt::Debug for EngineResponse {
     }
 }
 
+pub(crate) fn external_key_verification_route(method: &str, path: &str) -> bool {
+    let path = path
+        .split_once('?')
+        .map_or(path, |(path, _)| path)
+        .trim_start_matches('/');
+    external_keys::verification_path(path) && matches!(method, "POST" | "PUT" | "PATCH")
+}
+
+pub(crate) struct ExternalKeyVerification {
+    pub(crate) candidate: EngineState,
+    pub(crate) plugin_id: String,
+    pub(crate) action: &'static str,
+    pub(crate) config_name: String,
+    pub(crate) key_name: Option<String>,
+    pub(crate) request: SecretValue,
+}
+
 #[derive(Clone, Debug)]
 pub struct EngineError {
     pub status: u16,
@@ -510,6 +528,71 @@ impl EngineState {
         }
         Ok(())
     }
+    pub(crate) fn prepare_external_key_verification(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> Result<Option<ExternalKeyVerification>> {
+        let (path, query) = path.split_once('?').unwrap_or((path, ""));
+        let path = path.trim_start_matches('/');
+        if !external_keys::verification_path(path) || !matches!(method, "POST" | "PUT" | "PATCH") {
+            return Ok(None);
+        }
+        let mut params = SecretJson(body.clone());
+        if params.is_null() {
+            *params = json!({});
+        }
+        let map = params
+            .as_object_mut()
+            .ok_or_else(|| bad("request body must be an object"))?;
+        for pair in query.split('&').filter(|pair| !pair.is_empty()) {
+            let (key, value) = pair
+                .split_once('=')
+                .ok_or_else(|| bad("invalid query parameter"))?;
+            if map.contains_key(key) {
+                return Err(bad("duplicate request parameter"));
+            }
+            map.insert(key.into(), Value::String(value.into()));
+        }
+        if !external_keys::verify_requested(&params)? {
+            return Ok(None);
+        }
+        let current = self
+            .namespaces
+            .get(namespace)
+            .map(|state| state.external_keys.clone())
+            .unwrap_or_default();
+        let mut registry = current;
+        params
+            .as_object_mut()
+            .ok_or_else(|| bad("request body must be an object"))?
+            .insert("verify".into(), Value::Bool(false));
+        let response = registry.handle(method, path, &params)?;
+        if !response.mutated || response.status != 204 {
+            return Err(error(
+                503,
+                "external key verification candidate was not a mutation",
+            ));
+        }
+        let provider = registry.provider_verification(namespace, path)?;
+        let mut candidate = self.clone();
+        candidate
+            .namespaces
+            .entry(namespace.into())
+            .or_default()
+            .external_keys = registry;
+        Ok(Some(ExternalKeyVerification {
+            candidate,
+            plugin_id: provider.plugin_id,
+            action: provider.action,
+            config_name: provider.config_name,
+            key_name: provider.key_name,
+            request: provider.request,
+        }))
+    }
+
     pub(crate) fn known_namespaces(&self) -> BTreeSet<String> {
         self.namespaces
             .keys()

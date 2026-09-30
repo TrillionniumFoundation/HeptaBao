@@ -1,7 +1,132 @@
 //! OpenBao 2.7 External Keys registry on the existing durable owner.
 use super::tests::{Root, bootstrap, call, limited_token};
 use super::*;
-type TestResult = Result<(), Box<dyn std::error::Error>>;
+type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+use sha2::{Digest, Sha256};
+use std::os::unix::fs::PermissionsExt;
+
+struct VerificationProvider {
+    plugin_path: PathBuf,
+    plugin_sha256: String,
+    sandbox_path: PathBuf,
+    sandbox_sha256: String,
+    trace_path: PathBuf,
+}
+
+impl VerificationProvider {
+    fn install(root: &Path) -> TestResult<Self> {
+        let directory = root.join("external-key-verification-provider");
+        fs::create_dir_all(&directory)?;
+        fs::set_permissions(&directory, fs::Permissions::from_mode(0o700))?;
+        let plugin_path = directory.join("plugin");
+        let sandbox_path = directory.join("sandbox.py");
+        let trace_path = directory.join("trace.jsonl");
+        let plugin = b"#!/bin/sh\nexit 0\n";
+        let trace_literal = serde_json::to_string(
+            trace_path
+                .to_str()
+                .ok_or_else(|| io::Error::other("provider trace path is not UTF-8"))?,
+        )?;
+        let sandbox = concat!(
+            "#!/usr/bin/python3\n",
+            "import json, struct, sys\n",
+            "TRACE = __TRACE__\n",
+            "data = sys.stdin.buffer.read()\n",
+            "if len(data) < 11 or data[:4] != b'HBP1': sys.exit(2)\n",
+            "length = struct.unpack('>I', data[7:11])[0]\n",
+            "payload = data[11:]\n",
+            "if length != len(payload): sys.exit(3)\n",
+            "request = json.loads(payload.decode('utf-8'))\n",
+            "action = request.get('action')\n",
+            "if action not in ('verify_config', 'verify_key'): sys.exit(4)\n",
+            "values = request.get('values') or {}\n",
+            "config_values = request.get('config_values') or {}\n",
+            "key_values = request.get('key_values') or {}\n",
+            "reject = bool(values.get('provider_reject') or config_values.get('provider_reject') or key_values.get('provider_reject'))\n",
+            "response = {'verified': not reject, 'namespace': request.get('namespace'), 'action': action, 'plugin': request.get('plugin'), 'config': request.get('config')}\n",
+            "if action == 'verify_key': response['key'] = request.get('key')\n",
+            "with open(TRACE, 'a', encoding='utf-8') as output:\n",
+            "    output.write(json.dumps({'action': action, 'config': request.get('config'), 'key': request.get('key')}, separators=(',', ':')) + '\\n')\n",
+            "encoded = json.dumps(response, separators=(',', ':')).encode('utf-8')\n",
+            "sys.stdout.buffer.write(b'HBR1' + struct.pack('>I', len(encoded)) + encoded)\n",
+        )
+        .replace("__TRACE__", &trace_literal);
+        fs::write(&plugin_path, plugin)?;
+        fs::write(&sandbox_path, sandbox.as_bytes())?;
+        fs::set_permissions(&plugin_path, fs::Permissions::from_mode(0o700))?;
+        fs::set_permissions(&sandbox_path, fs::Permissions::from_mode(0o700))?;
+        Ok(Self {
+            plugin_sha256: hex(&Sha256::digest(plugin)),
+            sandbox_sha256: hex(&Sha256::digest(sandbox.as_bytes())),
+            plugin_path,
+            sandbox_path,
+            trace_path,
+        })
+    }
+
+    fn config(&self, id: &str, enabled: bool) -> PluginKmsConfig {
+        PluginKmsConfig {
+            id: id.to_owned(),
+            command: self.plugin_path.to_string_lossy().into_owned(),
+            command_sha256: self.plugin_sha256.clone(),
+            sandbox_provider_id: "external_keys_test_sandbox".into(),
+            sandbox_command: self.sandbox_path.to_string_lossy().into_owned(),
+            sandbox_command_sha256: self.sandbox_sha256.clone(),
+            sandbox_profile_id: "external_keys_test_profile".into(),
+            key_id: "external_keys_test_key".into(),
+            key_version: 1,
+            capabilities: vec!["wrap".into()],
+            enabled,
+            maximum_request_bytes: 256 * 1024,
+            maximum_response_bytes: 1024 * 1024,
+            timeout_ms: 5_000,
+        }
+    }
+
+    fn trace(&self) -> TestResult<Vec<Value>> {
+        if !self.trace_path.exists() {
+            return Ok(Vec::new());
+        }
+        fs::read_to_string(&self.trace_path)?
+            .lines()
+            .map(|line| serde_json::from_str(line).map_err(Into::into))
+            .collect()
+    }
+}
+
+fn stage_external_key(
+    service: &mut Service,
+    token: &str,
+    path: &'static str,
+    body: Value,
+) -> TestResult<PendingExternalRequest> {
+    match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path,
+        namespace: "",
+        token,
+        body,
+        now: 100,
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    }) {
+        RequestExecution::External(pending) => {
+            if !matches!(pending.effect, ExternalEffectPlan::ExternalKey(_)) {
+                return Err("request staged the wrong external effect".into());
+            }
+            Ok(*pending)
+        }
+        RequestExecution::Complete(response) => Err(format!(
+            "external key verification did not stage: {}",
+            response.status
+        )
+        .into()),
+    }
+}
 
 #[test]
 fn external_keys270_registry_is_durable_and_schema_fenced() -> TestResult {
@@ -550,5 +675,238 @@ fn external_keys270_oversized_patch_preserves_durable_config_key_and_grant() -> 
     );
     assert_eq!(grants.status, 200);
     assert_eq!(grants.body["data"]["keys"], json!(["pki/"]));
+    Ok(())
+}
+
+#[test]
+fn external_keys270_verify_true_uses_admitted_provider_before_atomic_publication() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let provider = VerificationProvider::install(&root.path)?;
+    service.install_kms_plugins(vec![provider.config("transit", true)])?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+
+    let config = "sys/external-keys/configs/verified";
+    let key = "sys/external-keys/configs/verified/keys/signing";
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            config,
+            &admin,
+            json!({
+                "plugin":"transit",
+                "address":"https://kms.invalid",
+                "token":"synthetic-provider-credential"
+            })
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            key,
+            &admin,
+            json!({"name":"remote-signing-key","version":7})
+        )
+        .status,
+        204
+    );
+    let trace = provider.trace()?;
+    assert_eq!(trace.len(), 2);
+    assert_eq!(
+        trace[0],
+        json!({"action":"verify_config","config":"verified","key":null})
+    );
+    assert_eq!(
+        trace[1],
+        json!({"action":"verify_key","config":"verified","key":"signing"})
+    );
+    assert!(!fs::read_to_string(&provider.trace_path)?.contains("synthetic-provider-credential"));
+
+    let readback = call(&mut service, "GET", config, &admin, json!({}));
+    assert_eq!(readback.status, 200);
+    assert_eq!(readback.body["data"]["token"], "(redacted)");
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/external-keys/configs/verified/keys/signing/grants/pki",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        provider.trace()?.len(),
+        2,
+        "grant mutation contacted provider"
+    );
+
+    drop(service);
+    let mut service = root.service()?;
+    service.install_kms_plugins(vec![provider.config("transit", true)])?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let mapping = call(&mut service, "GET", key, &admin, json!({}));
+    assert_eq!(mapping.status, 200);
+    assert_eq!(mapping.body["data"]["name"], "remote-signing-key");
+    assert_eq!(mapping.body["data"]["version"], 7);
+    assert_eq!(
+        provider.trace()?.len(),
+        2,
+        "reopen replayed provider effect"
+    );
+    Ok(())
+}
+
+#[test]
+fn external_keys270_provider_rejection_and_state_race_never_publish_candidate() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let provider = VerificationProvider::install(&root.path)?;
+    service.install_kms_plugins(vec![provider.config("transit", true)])?;
+    let (_, admin) = bootstrap(&mut service)?;
+
+    let before = service.state_digest;
+    let rejected = call(
+        &mut service,
+        "POST",
+        "sys/external-keys/configs/rejected",
+        &admin,
+        json!({"plugin":"transit","provider_reject":true}),
+    );
+    assert_eq!(rejected.status, 503);
+    assert_eq!(service.state_digest, before);
+    assert_ne!(
+        call(
+            &mut service,
+            "GET",
+            "sys/external-keys/configs/rejected",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(provider.trace()?.len(), 1);
+
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/external-keys/configs/unverified",
+            &admin,
+            json!({"plugin":"transit","verify":false,"provider_reject":true})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        provider.trace()?.len(),
+        1,
+        "verify=false contacted provider"
+    );
+
+    let pending = stage_external_key(
+        &mut service,
+        &admin,
+        "sys/external-keys/configs/stale",
+        json!({"plugin":"transit","token":"stale-candidate-secret"}),
+    )?;
+    let observation = pending.execute();
+    assert_eq!(provider.trace()?.len(), 2);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/external-keys/configs/concurrent",
+            &admin,
+            json!({"plugin":"transit","verify":false})
+        )
+        .status,
+        204
+    );
+    let withheld = service.finish_external_request(pending, observation);
+    assert_eq!(withheld.status, 503);
+    assert!(
+        withheld.body["errors"][0]
+            .as_str()
+            .is_some_and(|message| message.contains("state changed"))
+    );
+    assert_ne!(
+        call(
+            &mut service,
+            "GET",
+            "sys/external-keys/configs/stale",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/external-keys/configs/concurrent",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    Ok(())
+}
+
+#[test]
+fn external_keys270_missing_or_disabled_provider_fails_closed_without_publication() -> TestResult {
+    for scenario in ["missing", "disabled"] {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let provider = VerificationProvider::install(&root.path)?;
+        if scenario == "disabled" {
+            service.install_kms_plugins(vec![provider.config("transit", false)])?;
+        }
+        let (_, admin) = bootstrap(&mut service)?;
+        let before = service.state_digest;
+        let response = call(
+            &mut service,
+            "POST",
+            "sys/external-keys/configs/blocked",
+            &admin,
+            json!({"plugin":"transit","token":"must-not-persist"}),
+        );
+        assert_eq!(
+            response.status,
+            if scenario == "missing" { 501 } else { 403 }
+        );
+        assert_eq!(service.state_digest, before, "scenario={scenario}");
+        assert_ne!(
+            call(
+                &mut service,
+                "GET",
+                "sys/external-keys/configs/blocked",
+                &admin,
+                json!({})
+            )
+            .status,
+            200,
+            "scenario={scenario}"
+        );
+        assert!(provider.trace()?.is_empty(), "scenario={scenario}");
+    }
     Ok(())
 }

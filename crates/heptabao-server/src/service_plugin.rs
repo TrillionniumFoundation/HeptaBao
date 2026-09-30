@@ -187,6 +187,12 @@ impl PluginResponseAuthority {
     }
 }
 
+impl Drop for PluginResponseAuthority {
+    fn drop(&mut self) {
+        erase_json(&mut self.body);
+    }
+}
+
 pub(super) struct PluginKmsPlan {
     pub plugin_id: String,
     pub key_binding: KmsKeyBinding,
@@ -198,6 +204,18 @@ pub(super) struct PluginKmsPlan {
 
 pub(crate) struct PluginKmsObservation {
     value: Value,
+}
+
+pub(super) struct ExternalKeyPlan {
+    pub(super) plugin_id: String,
+    host: SharedKmsPlugin,
+    request: SecretValue,
+    action: &'static str,
+    config_name: String,
+    key_name: Option<String>,
+    authority: PluginResponseAuthority,
+    expected_identity: crate::state_record_root::StateIdentity,
+    candidate: State,
 }
 
 pub(super) struct PluginReadPlan {
@@ -582,6 +600,58 @@ impl PluginAuthPlan {
         Ok(PluginAuthObservation {
             alias: alias.to_owned(),
         })
+    }
+}
+
+// Even a rejected provider response may contain echoed credential fields.
+struct VerificationResponse(Value);
+impl Drop for VerificationResponse {
+    fn drop(&mut self) {
+        erase_json(&mut self.0);
+    }
+}
+
+impl ExternalKeyPlan {
+    pub(super) fn execute(&self) -> Result<(), Response> {
+        if self.authority.deadline_expired() {
+            return Err(Response::error(
+                503,
+                "external key request deadline expired before entry",
+            ));
+        }
+        let mut host = self.host.try_lock().map_err(|_| {
+            Response::error(503, "external key KMS plugin host busy or unavailable")
+        })?;
+        let response = host
+            .invoke(
+                PluginOperation::Read,
+                &self.request,
+                &SecretEnvironment::new(),
+            )
+            .map_err(kms_failure)?;
+        let value =
+            VerificationResponse(crate::auth::parse_strict_json(response.expose()).map_err(
+                |_| Response::error(503, "external key KMS plugin returned invalid JSON"),
+            )?);
+        let object = value.0.as_object().ok_or_else(|| {
+            Response::error(503, "external key KMS plugin response must be an object")
+        })?;
+        let expected_fields = if self.key_name.is_some() { 6 } else { 5 };
+        if object.len() != expected_fields
+            || object.get("verified").and_then(Value::as_bool) != Some(true)
+            || object.get("namespace").and_then(Value::as_str)
+                != Some(self.authority.namespace.as_str())
+            || object.get("action").and_then(Value::as_str) != Some(self.action)
+            || object.get("plugin").and_then(Value::as_str) != Some(self.plugin_id.as_str())
+            || object.get("config").and_then(Value::as_str) != Some(self.config_name.as_str())
+            || self.key_name.as_deref() != object.get("key").and_then(Value::as_str)
+        {
+            return Err(Response::error(
+                503,
+                "external key KMS plugin verification response mismatch",
+            ));
+        }
+        Ok(())
     }
 }
 
@@ -978,6 +1048,148 @@ impl Service {
             authority,
         });
         Response::error(500, "KMS plugin was not dispatched")
+    }
+
+    pub(super) fn stage_external_key_verification(
+        &mut self,
+        state: State,
+        principal: Option<Principal>,
+        request: &RequestView<'_>,
+        verification: crate::engines::ExternalKeyVerification,
+    ) -> Response {
+        let Some(principal) = principal else {
+            return Response::error(403, "missing client token");
+        };
+        let Some(capability) =
+            state
+                .engines
+                .required_capability(request.namespace, request.method, request.path)
+        else {
+            return Response::error(404, "external key route not found");
+        };
+        if let Err(error) = state.auth.authorize_request(
+            &principal,
+            request.namespace,
+            request.path,
+            capability,
+            request.now,
+        ) {
+            return Response::error(error.status, &error.message);
+        }
+        if self.pending_external_key.is_some() {
+            return Response::error(503, "another external key verification is pending");
+        }
+        let Some(host) = self.kms_plugins.get(&verification.plugin_id).cloned() else {
+            return Response::error(
+                501,
+                "external key verification requires an admitted KMS provider",
+            );
+        };
+        if !self
+            .kms_keys
+            .get(&verification.plugin_id)
+            .is_some_and(|key| key.enabled)
+        {
+            return Response::error(403, "external key KMS provider is disabled");
+        }
+        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
+            return Response::error(501, "external key verification responses cannot be wrapped");
+        }
+        let expected_identity = match self.current_state_identity() {
+            Ok(identity) => identity,
+            Err(error) => return error,
+        };
+        let mut candidate = state;
+        candidate.schema = CURRENT_STATE_SCHEMA;
+        candidate.engines = verification.candidate.into();
+        if let Err(error) = candidate.validate_format() {
+            return error;
+        }
+        let authority = PluginResponseAuthority::new(
+            principal,
+            &candidate,
+            request,
+            capability,
+            false,
+            &self.unseal_nonce,
+        );
+        self.pending_external_key = Some(ExternalKeyPlan {
+            plugin_id: verification.plugin_id,
+            host,
+            request: verification.request,
+            action: verification.action,
+            config_name: verification.config_name,
+            key_name: verification.key_name,
+            authority,
+            expected_identity,
+            candidate,
+        });
+        Response::error(500, "external key verification was not dispatched")
+    }
+
+    pub(super) fn finalize_external_key(
+        &mut self,
+        mut plan: ExternalKeyPlan,
+        result: Result<(), Response>,
+    ) -> Response {
+        if let Err(error) = result {
+            return error;
+        }
+        if let Err(error) = self.validate_plugin_response(&mut plan.authority) {
+            return error;
+        }
+        let host_current = self
+            .kms_plugins
+            .get(&plan.plugin_id)
+            .is_some_and(|host| Arc::ptr_eq(host, &plan.host));
+        let enabled = self
+            .kms_keys
+            .get(&plan.plugin_id)
+            .is_some_and(|key| key.enabled);
+        if !host_current || !enabled {
+            return Response::error(503, "external key KMS host changed before publication");
+        }
+        let current = match self.current_state_identity() {
+            Ok(identity) => identity,
+            Err(error) => return error,
+        };
+        if current != plan.expected_identity {
+            return Response::error(
+                503,
+                "external key verification result withheld after state changed",
+            );
+        }
+        let _deadline_scope = plan
+            .authority
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        let mut candidate = plan.candidate;
+        if candidate.engines.record_root().is_none() {
+            let key = match crypto::random::<32>() {
+                Ok(key) => key,
+                Err(error) => return Response::error(503, error),
+            };
+            candidate.engines = match candidate
+                .engines
+                .migrate_kv1_records(crate::state_records::AddressKey::from_bytes(key))
+            {
+                Ok(engines) => engines.into(),
+                Err(error) => return Response::error(error.status, &error.message),
+            };
+        }
+        let record_plan = match self.prepare_record_plan(&candidate) {
+            Ok(record_plan) => record_plan,
+            Err(error) => return error,
+        };
+        if let Err(error) = self.commit_record_plan(&candidate, record_plan) {
+            return error;
+        }
+        self.state = Some(candidate);
+        Response {
+            consistency_index: None,
+            status: 204,
+            body: Value::Null,
+        }
     }
 
     pub(super) fn finalize_plugin_kms(

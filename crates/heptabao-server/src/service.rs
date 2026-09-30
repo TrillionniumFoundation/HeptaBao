@@ -749,6 +749,7 @@ enum ExternalEffectPlan {
     PluginAuth(plugin::PluginAuthPlan),
     PluginRead(plugin::PluginReadPlan),
     PluginKms(plugin::PluginKmsPlan),
+    ExternalKey(plugin::ExternalKeyPlan),
     KubernetesToken(kubernetes_secret::KubernetesTokenEffectPlan),
     OpenLdap(openldap_secret::OpenLdapEffectPlan),
     SnapshotTransfer(Box<snapshot_transfer::SnapshotTransferPlan>),
@@ -763,6 +764,7 @@ pub(crate) enum ExternalEffectResult {
     PluginAuth(Result<plugin::PluginAuthObservation, Response>),
     PluginRead(Result<Value, Response>),
     PluginKms(Result<plugin::PluginKmsObservation, Response>),
+    ExternalKey(Result<(), Response>),
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
     OpenLdap(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
@@ -810,6 +812,9 @@ impl PendingExternalRequest {
                 ExternalEffectResult::PluginRead(plan.execute())
             }
             ExternalEffectPlan::PluginKms(plan) => ExternalEffectResult::PluginKms(plan.execute()),
+            ExternalEffectPlan::ExternalKey(plan) => {
+                ExternalEffectResult::ExternalKey(plan.execute())
+            }
             ExternalEffectPlan::KubernetesToken(plan) => {
                 ExternalEffectResult::KubernetesToken(plan.execute())
             }
@@ -859,6 +864,7 @@ pub struct Service {
     pending_plugin_auth: Option<plugin::PluginAuthPlan>,
     pending_plugin_read: Option<plugin::PluginReadPlan>,
     pending_plugin_kms: Option<plugin::PluginKmsPlan>,
+    pending_external_key: Option<plugin::ExternalKeyPlan>,
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
@@ -1202,6 +1208,7 @@ impl Service {
             pending_plugin_auth: None,
             pending_plugin_read: None,
             pending_plugin_kms: None,
+            pending_external_key: None,
             pending_kubernetes_token: None,
             pending_openldap_effect: None,
             pending_snapshot_transfer: None,
@@ -1512,6 +1519,9 @@ impl Service {
             (ExternalEffectPlan::PluginKms(plan), ExternalEffectResult::PluginKms(result)) => {
                 self.finalize_plugin_kms(plan, result)
             }
+            (ExternalEffectPlan::ExternalKey(plan), ExternalEffectResult::ExternalKey(result)) => {
+                self.finalize_external_key(plan, result)
+            }
             (
                 ExternalEffectPlan::KubernetesToken(plan),
                 ExternalEffectResult::KubernetesToken(result),
@@ -1591,6 +1601,7 @@ impl Service {
             || self.pending_plugin_auth.is_some()
             || self.pending_plugin_read.is_some()
             || self.pending_plugin_kms.is_some()
+            || self.pending_external_key.is_some()
             || self.pending_kubernetes_token.is_some()
             || self.pending_openldap_effect.is_some()
             || self.pending_snapshot_transfer.is_some()
@@ -1713,6 +1724,7 @@ impl Service {
         let plugin_auth = self.pending_plugin_auth.take();
         let plugin_read = self.pending_plugin_read.take();
         let plugin_kms = self.pending_plugin_kms.take();
+        let external_key = self.pending_external_key.take();
         let kubernetes_token = self.pending_kubernetes_token.take();
         let openldap = self.pending_openldap_effect.take();
         let snapshot_transfer = self.pending_snapshot_transfer.take();
@@ -1724,6 +1736,7 @@ impl Service {
             + usize::from(plugin_auth.is_some())
             + usize::from(plugin_read.is_some())
             + usize::from(plugin_kms.is_some())
+            + usize::from(external_key.is_some())
             + usize::from(kubernetes_token.is_some())
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
@@ -1745,6 +1758,7 @@ impl Service {
             .or_else(|| plugin_auth.map(ExternalEffectPlan::PluginAuth))
             .or_else(|| plugin_read.map(ExternalEffectPlan::PluginRead))
             .or_else(|| plugin_kms.map(ExternalEffectPlan::PluginKms))
+            .or_else(|| external_key.map(ExternalEffectPlan::ExternalKey))
             .or_else(|| kubernetes_token.map(ExternalEffectPlan::KubernetesToken))
             .or_else(|| openldap.map(ExternalEffectPlan::OpenLdap))
             .or_else(|| {
@@ -2075,6 +2089,40 @@ impl Service {
             )
         {
             return Response::error(error.status, &error.message);
+        }
+        // Do not inspect stored provider parameters or disclose candidate
+        // validation/existence failures until this exact route is authorized.
+        if crate::engines::external_key_verification_route(method, path) {
+            let Some(principal) = principal.as_ref() else {
+                return Response::error(403, "missing client token");
+            };
+            let Some(capability) = admitted
+                .engines
+                .required_capability(namespace, method, path)
+            else {
+                return Response::error(404, "external key route not found");
+            };
+            if let Err(error) = admitted
+                .auth
+                .authorize_request(principal, namespace, path, capability, now)
+            {
+                return Response::error(error.status, &error.message);
+            }
+        }
+        let external_key_verification = match admitted
+            .engines
+            .prepare_external_key_verification(namespace, method, path, body)
+        {
+            Ok(value) => value,
+            Err(error) => return Response::error(error.status, &error.message),
+        };
+        if let Some(verification) = external_key_verification {
+            return self.stage_external_key_verification(
+                admitted,
+                principal,
+                &request,
+                verification,
+            );
         }
         if namespaces::owns(path) {
             return self.namespace_route(admitted, principal.as_ref(), &request);

@@ -2,10 +2,12 @@
 //!
 //! Registry state is namespace-scoped and is published only through the existing
 //! `EngineState` copy-on-write transaction. Provider verification and key use are
-//! deliberately separate external-effect operations; a caller must set
-//! `verify=false` until a deployment-owned KMS provider is admitted.
+//! deliberately separate external-effect operations. `verify=true` is staged
+//! here but can be published only by the Service-owned KMS dispatcher after
+//! provider success and a fresh authority/state fence check.
 
 use super::*;
+use heptabao_domain::SecretValue;
 
 const PREFIX: &str = "sys/external-keys";
 const MAX_CONFIGS: usize = 256;
@@ -42,6 +44,24 @@ struct KeyEntry {
 
 pub(super) fn owns(path: &str) -> bool {
     path == PREFIX || path.starts_with("sys/external-keys/")
+}
+
+// Only config and key mutations request verification. Grant writes are
+// local registry changes and must never be decorated with a verify field.
+pub(super) fn verification_path(path: &str) -> bool {
+    let Some(rest) = path.strip_prefix("sys/external-keys/configs/") else {
+        return false;
+    };
+    let mut segments = rest.split('/');
+    let config = segments.next().unwrap_or_default();
+    if !valid_name(config) {
+        return false;
+    }
+    match segments.next() {
+        None => true,
+        Some("keys") => segments.next().is_some_and(valid_name) && segments.next().is_none(),
+        Some(_) => false,
+    }
 }
 
 fn valid_name(value: &str) -> bool {
@@ -107,7 +127,7 @@ fn validate_values(value: &Value) -> Result<()> {
     Ok(())
 }
 
-fn verify_requested(body: &Value) -> Result<bool> {
+pub(super) fn verify_requested(body: &Value) -> Result<bool> {
     match body.get("verify") {
         None => Ok(true),
         Some(Value::Bool(value)) => Ok(*value),
@@ -229,9 +249,114 @@ fn method_error() -> EngineError {
     error(405, "unsupported external key method")
 }
 
+pub(super) struct ProviderVerification {
+    pub(super) plugin_id: String,
+    pub(super) action: &'static str,
+    pub(super) config_name: String,
+    pub(super) key_name: Option<String>,
+    pub(super) request: SecretValue,
+}
+
+#[derive(Serialize)]
+struct ConfigVerificationRequest<'a> {
+    action: &'static str,
+    namespace: &'a str,
+    plugin: &'a str,
+    config: &'a str,
+    values: &'a SecretJson,
+}
+
+#[derive(Serialize)]
+struct KeyVerificationRequest<'a> {
+    action: &'static str,
+    namespace: &'a str,
+    plugin: &'a str,
+    config: &'a str,
+    key: &'a str,
+    config_values: &'a SecretJson,
+    key_values: &'a SecretJson,
+}
+
+// Serialization failures and size rejections retain a zeroizing owner too.
+fn encode_provider_request(value: &impl Serialize) -> Result<SecretValue> {
+    let mut bytes = zeroize::Zeroizing::new(Vec::new());
+    serde_json::to_writer(&mut *bytes, value)
+        .map_err(|_| error(500, "external key provider request encoding failed"))?;
+    if bytes.is_empty() || bytes.len() > heptabao_domain::MAX_SECRET_BYTES {
+        return Err(error(
+            413,
+            "external key provider request exceeds runtime bound",
+        ));
+    }
+    SecretValue::new(std::mem::take(&mut *bytes))
+        .map_err(|_| error(413, "external key provider request exceeds runtime bound"))
+}
+
 impl Registry {
     pub(super) fn is_empty(&self) -> bool {
         self.configs.is_empty()
+    }
+
+    pub(super) fn provider_verification(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Result<ProviderVerification> {
+        let suffix = path
+            .strip_prefix("sys/external-keys/configs/")
+            .ok_or_else(|| bad("external key verification path is invalid"))?;
+        let segments = suffix.split('/').collect::<Vec<_>>();
+        let config_name = segments.first().copied().unwrap_or_default();
+        if !valid_name(config_name) {
+            return Err(bad("invalid external key config name"));
+        }
+        let config = self
+            .configs
+            .get(config_name)
+            .ok_or_else(|| error(503, "external key verification candidate is missing"))?;
+        let (action, key_name, encoded) = match segments.as_slice() {
+            [_] => (
+                "verify_config",
+                None,
+                encode_provider_request(&ConfigVerificationRequest {
+                    action: "verify_config",
+                    namespace,
+                    plugin: &config.plugin,
+                    config: config_name,
+                    values: &config.values,
+                })?,
+            ),
+            [_, "keys", key_name] if valid_name(key_name) => {
+                let key = config.keys.get(*key_name).ok_or_else(|| {
+                    error(
+                        503,
+                        "external key verification candidate mapping is missing",
+                    )
+                })?;
+                (
+                    "verify_key",
+                    Some((*key_name).to_owned()),
+                    encode_provider_request(&KeyVerificationRequest {
+                        action: "verify_key",
+                        namespace,
+                        plugin: &config.plugin,
+                        config: config_name,
+                        key: key_name,
+                        config_values: &config.values,
+                        key_values: &key.values,
+                    })?,
+                )
+            }
+            _ => return Err(bad("external key verification path is not a config or key")),
+        };
+        let request = encoded;
+        Ok(ProviderVerification {
+            plugin_id: config.plugin.clone(),
+            action,
+            config_name: config_name.to_owned(),
+            key_name,
+            request,
+        })
     }
 
     pub(super) fn validate(&self) -> Result<()> {
@@ -909,6 +1034,151 @@ mod parameter_lifetime_tests {
             json!({"plugin":"transit","verify":false,"token":"synthetic","namespace":"team/"});
         let filtered = filtered_values(&body, &["plugin", "verify"])?;
         assert_eq!(*filtered, json!({"token":"synthetic","namespace":"team/"}));
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod verification_candidate_tests {
+    use super::*;
+    type TestResult = std::result::Result<(), Box<dyn std::error::Error>>;
+
+    #[test]
+    fn external_keys_verification_selects_only_complete_config_and_key_paths() {
+        for path in [
+            "sys/external-keys/configs/demo",
+            "sys/external-keys/configs/demo/keys/key1",
+        ] {
+            assert!(verification_path(path));
+        }
+        for path in [
+            "sys/external-keys/configsdemo",
+            "sys/external-keys/configs/",
+            "sys/external-keys/configs/demo/keys",
+            "sys/external-keys/configs/demo/keys/",
+            "sys/external-keys/configs/demo/keys/key1/grants/pki",
+            "sys/external-keys/configs/demo/keys/key1/grants",
+            "sys/external-keys/configs/demo/",
+        ] {
+            assert!(!verification_path(path), "{path}");
+        }
+    }
+
+    #[test]
+    fn external_keys_candidate_verifies_merged_values_without_publishing_or_changing_grants()
+    -> TestResult {
+        let mut state = EngineState::default();
+        let config = "sys/external-keys/configs/demo";
+        let key = "sys/external-keys/configs/demo/keys/key1";
+        for namespace in ["", "team"] {
+            for (path, body) in [
+                (
+                    config,
+                    json!({"plugin":"transit","verify":false,
+                    "address":"https://kms.example:443","token":"synthetic","nested":{"keep":1,"drop":2}}),
+                ),
+                (key, json!({"verify":false,"name":"remote","version":1})),
+                (
+                    "sys/external-keys/configs/demo/keys/key1/grants/pki",
+                    json!({}),
+                ),
+            ] {
+                let result = state
+                    .handle(namespace, "POST", path, &body, 100)?
+                    .ok_or("response")?;
+                assert_eq!(result.status, 204);
+            }
+        }
+        let before = zeroize::Zeroizing::new(serde_json::to_vec(&state)?);
+        let verified = state
+            .prepare_external_key_verification(
+                "",
+                "PATCH",
+                config,
+                &json!({"nested":{"drop":null},"mount_path":"remote"}),
+            )?
+            .ok_or("candidate")?;
+        assert_eq!(serde_json::to_vec(&state)?, *before);
+        let request = SecretJson(crate::auth::parse_strict_json(verified.request.expose())?);
+        assert_eq!(request["action"], "verify_config");
+        assert_eq!(request["namespace"], "");
+        assert_eq!(request["values"]["nested"], json!({"keep":1}));
+        assert_eq!(request["values"]["token"], "synthetic");
+        assert!(request["values"].get("verify").is_none());
+        let registry = &verified.candidate.namespaces[""].external_keys;
+        assert_eq!(
+            registry.configs["demo"].keys["key1"].grants,
+            BTreeSet::from(["pki/".to_owned()])
+        );
+        assert_eq!(
+            serde_json::to_vec(&verified.candidate.namespaces["team"])?,
+            serde_json::to_vec(&state.namespaces["team"])?
+        );
+        let key_candidate = state
+            .prepare_external_key_verification(
+                "team",
+                "PATCH",
+                key,
+                &json!({"verify":true,"version":2}),
+            )?
+            .ok_or("key candidate")?;
+        let request = SecretJson(crate::auth::parse_strict_json(
+            key_candidate.request.expose(),
+        )?);
+        assert_eq!(request["action"], "verify_key");
+        assert_eq!(request["namespace"], "team");
+        assert_eq!(request["key_values"]["name"], "remote");
+        assert_eq!(request["key_values"]["version"], 2);
+        assert_eq!(request["config_values"]["token"], "synthetic");
+        assert_eq!(serde_json::to_vec(&state)?, *before);
+        Ok(())
+    }
+
+    #[test]
+    fn external_keys_grants_and_explicit_unverified_requests_never_stage_provider_io() -> TestResult
+    {
+        let state = EngineState::default();
+        for (method, path, body) in [
+            (
+                "POST",
+                "sys/external-keys/configs/demo/keys/key1/grants/pki",
+                json!({}),
+            ),
+            ("DELETE", "sys/external-keys/configs/demo", json!({})),
+            (
+                "POST",
+                "sys/external-keys/configs/demo",
+                json!({"plugin":"transit","verify":false}),
+            ),
+            ("GET", "sys/external-keys/configs/demo", json!({})),
+        ] {
+            assert!(
+                state
+                    .prepare_external_key_verification("", method, path, &body)?
+                    .is_none()
+            );
+        }
+        assert!(
+            state
+                .prepare_external_key_verification(
+                    "",
+                    "POST",
+                    "sys/external-keys/configs/demo",
+                    &json!({"plugin":"transit","verify":"false"})
+                )
+                .is_err()
+        );
+        assert!(
+            state
+                .prepare_external_key_verification(
+                    "",
+                    "POST",
+                    "sys/external-keys/configs/demo",
+                    &json!({"plugin":"transit","token":"x".repeat(70_000)})
+                )
+                .is_err()
+        );
+        assert!(state.namespaces.is_empty());
         Ok(())
     }
 }

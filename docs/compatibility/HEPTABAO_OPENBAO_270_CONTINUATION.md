@@ -131,6 +131,9 @@ The ACL template comparison is moved from the historical lane into this required
 remain separate. The workflow does not waive failed gates or use continue-on-error.
 Reports include exact candidate commit/tree, worktree cleanliness, binary/archive
 hashes, runner/launcher hashes, target version and actual reference storage backend.
+A separate candidate-native required step runs
+`external_keys_provider_live.py`; it is not counted as upstream differential evidence
+and cannot convert the false replacement or production-authority claims.
 
 ## Consistency middleware and transport continuation
 
@@ -223,9 +226,10 @@ A full replacement claim is still prohibited until the complete inventory and
 2.7.0 delta are independently exercised. In particular:
 
 - The namespace-scoped External Keys registry now has durable CRUD, redaction,
-  patch, grant and schema-63 fencing, but `verify=true`, actual KMS client use and
-  Transit/PKI consumers still require the external-effect chain and exact 2.7.0
-  reference evidence. Transit ML-DSA has the bounded implementation described
+  patch, grant and schema-63 fencing. Default `verify=true` is connected to an
+  admitted checksum-bound KMS provider through the Service external-effect owner,
+  but OpenBao provider interoperability, actual Transit/PKI key consumption and
+  exact 2.7.0 consumer evidence remain blockers. Transit ML-DSA has the bounded implementation described
   below; broader PQC and control-group approvals remain open. The consistency
   middleware has a real implementation and a required native comparison, but its
   bounded profile does not establish general client or storage compatibility.
@@ -298,12 +302,24 @@ merge patch, redacted reads, idempotent grants, path-alias refusal, finite-token
 ACL denial, namespace separation, restart and cascade deletion. The required 2.7
 CI lane includes this profile; failure bodies and credentials are not report data.
 
-This is explicit `verify=false` registry behavior only. The default `verify=true`
-path remains refused until provider verification is connected through an admitted
-external-effect owner. Persisting a mapping or a grant is not evidence of provider
-key custody, mount grant consumption, PKI/Transit external signing or encryption,
-plugin discovery, HSM operation, all-asset migration, HA, or independent security
-qualification. Those remain replacement blockers; this profile does not bypass them.
+The differential `external_keys_live.py` profile remains explicit `verify=false`
+registry behavior because it does not provision an upstream provider. Candidate
+`verify=true` requests instead prepare an unpublished copy-on-write state, invoke an
+admitted checksum- and sandbox-bound KMS provider outside the Service writer, and
+publish only after the original authority, namespace incarnation, activation nonce,
+host binding and exact durable state identity are revalidated. Provider rejection,
+disablement, checksum drift, timeout/unknown outcome, revocation, sealing or an
+intervening state change withholds the candidate. Grants and `verify=false` never
+enter the provider. Reopen preserves accepted mappings without replaying effects.
+
+`external_keys_provider_live.py` exercises that candidate-native process boundary,
+including config and key verification, failure before and after provider entry,
+host fencing, restart and credential non-disclosure. It deliberately reports false
+for OpenBao provider interoperability and Transit/PKI consumption. Persisting a
+verified mapping or a grant is therefore not evidence of mount grant consumption,
+PKI/Transit external signing or encryption, plugin discovery, HSM operation,
+all-asset migration, HA, or independent security qualification. Those remain
+replacement blockers; this profile does not bypass them.
 
 The Transit configuration field `tls_client_key_bytes` is a deliberate security
 hardening divergence. The checksum-pinned official OpenBao 2.7.0 executable echoes
