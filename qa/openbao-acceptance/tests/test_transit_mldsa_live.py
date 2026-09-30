@@ -36,6 +36,28 @@ class MldsaProfileTests(unittest.TestCase):
         rows=[{"case":"mldsa270.create","status":501,"passed":False}]
         self.assertFalse(core_isolation.successful_comparison({"candidate":rows,"oracle":rows},{}))
 
+    def test_options_case_set_keeps_exact_rejections_and_all_wire_formats(self):
+        cases = list(profile.signing_options_cases())
+        self.assertEqual(len({case[0] for case in cases}), len(cases))
+        wire = next(case for case in cases if case[0] == "pki_wire")
+        self.assertEqual(wire[1], {"key_version":"1", "prehashed":False, "signature_algorithm":"pkcs1v15"})
+        self.assertEqual(wire[2], 200)
+        self.assertTrue(any(options.get("marshaling_algorithm") == "jws" and status == 200 for _,options,status,_ in cases))
+        for field, value in (("marshaling_algorithm", None), ("marshaling_algorithm", "garbage"), ("hash_algorithm", "garbage"), ("prehashed", 2)):
+            self.assertTrue(any(field in options and options[field] == value and status == 400 for _,options,status,_ in cases))
+
+    def test_options_fail_on_matching_status_but_invalid_actual_signature(self):
+        class Client:
+            def request(self, *args, **kwargs):
+                if "/sign/" in args[1]:
+                    return SimpleNamespace(status=200, body={"data":{"signature":"vault:v1:" + "AA==", "key_version":1}})
+                return SimpleNamespace(status=200, body={"data":{"valid":False}})
+        rows=[]
+        with self.assertRaisesRegex(profile.ScenarioFailure, "ed25519.options.pki_wire.valid"):
+            profile.run_signing_options(profile.Trace(Client(),rows), "ed25519", "eA==", "vault:v1:AA==", 64)
+        self.assertEqual(rows[-1], {"case":"mldsa270.ed25519.options.pki_wire.valid", "passed":False})
+        self.assertNotIn("vault:v1:", json.dumps(rows))
+
     def test_old_oracle_rejected_before_allocation(self):
         with tempfile.TemporaryDirectory() as root:
             args=["mldsa270","--binary",sys.executable,"--output",root+"/report.json","--oracle-version","2.6.2"]

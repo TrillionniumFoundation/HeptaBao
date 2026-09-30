@@ -1,6 +1,9 @@
 use super::*;
 use ::hmac::{Hmac, Mac};
-use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use base64::{
+    Engine as _,
+    engine::general_purpose::{GeneralPurpose, STANDARD as BASE64, URL_SAFE_NO_PAD as BASE64_URL},
+};
 use chacha20poly1305::{AeadInPlace, KeyInit, XChaCha20Poly1305, XNonce};
 use ring::{
     aead,
@@ -65,10 +68,14 @@ fn random_bytes(length: usize) -> Result<Zeroizing<Vec<u8>>> {
 }
 
 fn decode(value: &str) -> Result<Zeroizing<Vec<u8>>> {
+    decode_with(value, &BASE64)
+}
+
+fn decode_with(value: &str, encoding: &GeneralPurpose) -> Result<Zeroizing<Vec<u8>>> {
     if value.len() > MAX_INPUT_BYTES * 4 / 3 + 4 {
         return Err(error(413, "cryptographic input exceeds the supported size"));
     }
-    BASE64
+    encoding
         .decode(value)
         .map(Zeroizing::new)
         .map_err(|_| bad("invalid base64 input"))
@@ -910,7 +917,7 @@ fn handle_crypto(
                     .map_err(|_| error(500, "stored signing key is invalid"))?;
                 pair.sign(&input).as_ref().to_vec()
             };
-            json!({"signature":format!("vault:v{version}:{}", BASE64.encode(signature)),"key_version":version})
+            json!({"signature":format!("vault:v{version}:{}", signature_encoding(body)?.encode(signature)),"key_version":version})
         }
         "verify" => {
             let input = decode_field(body, "input")?;
@@ -929,7 +936,8 @@ fn handle_crypto(
                 if external_mu {
                     return Err(bad("ML-DSA external mu is not supported for verification"));
                 }
-                let (version, bytes) = parse_wrapped(string(body, "signature")?)?;
+                let (version, bytes) =
+                    parse_wrapped_with(string(body, "signature")?, signature_encoding(body)?)?;
                 let version = key.decrypt_version(version)?;
                 let material = stored_material(&version.material)?;
                 if mldsa::is_kind(&key.kind) {
@@ -954,58 +962,76 @@ fn handle_crypto(
 
 // True selects the provider's external-mu API; false preserves pure signing.
 fn signing_options(key: &Key, body: &Value, path_algorithm: &str) -> Result<bool> {
-    if mldsa::is_kind(&key.kind) {
-        if body.get("signature_algorithm").is_some() || body.get("marshaling_algorithm").is_some() {
-            return Err(error(501, "ML-DSA signature options are not implemented"));
-        }
-        let algorithm = select_algorithm(path_algorithm, body, "hash_algorithm", "none")?;
-        let prehashed = optional_bool(body, "prehashed")?.unwrap_or(false);
-        if algorithm == "mldsa-mu" {
-            if !prehashed {
-                return Err(bad("ML-DSA external mu requires prehashed=true"));
-            }
-            return Ok(true);
-        }
-        if !matches!(
-            algorithm,
-            "none"
-                | "sha1"
-                | "sha2-224"
-                | "sha2-256"
-                | "sha2-384"
-                | "sha2-512"
-                | "sha3-224"
-                | "sha3-256"
-                | "sha3-384"
-                | "sha3-512"
-        ) {
-            return Err(bad("unsupported hash algorithm"));
-        }
-        // ML-DSA owns its pure-message hash. These generic Transit options
-        // do not turn a pure input into HashML-DSA or an externally computed mu.
-        return Ok(false);
-    }
-    if key.kind != "ed25519" {
+    signature_encoding(body)?;
+    if key.kind != "ed25519" && !mldsa::is_kind(&key.kind) {
         return Err(bad("key does not support Ed25519 signing"));
     }
-    if optional_bool(body, "prehashed")?.unwrap_or(false) {
-        return Err(error(501, "Ed25519ph is not implemented"));
+    let algorithm = signing_hash_algorithm(path_algorithm, body)?;
+    let prehashed = signing_prehashed(body)?;
+    if mldsa::is_kind(&key.kind) && algorithm == "mldsa-mu" {
+        if !prehashed {
+            return Err(bad("ML-DSA external mu requires prehashed=true"));
+        }
+        return Ok(true);
     }
-    if body.get("signature_algorithm").is_some() || body.get("marshaling_algorithm").is_some() {
-        return Err(error(
-            501,
-            "signature algorithm options are not implemented for Ed25519",
-        ));
+    if !matches!(
+        algorithm,
+        "none"
+            | "sha1"
+            | "sha2-224"
+            | "sha2-256"
+            | "sha2-384"
+            | "sha2-512"
+            | "sha3-224"
+            | "sha3-256"
+            | "sha3-384"
+            | "sha3-512"
+    ) {
+        return Err(bad("unsupported hash algorithm"));
     }
-    // Ed25519 owns its hash algorithm; the OpenBao default argument is accepted.
-    let algorithm = select_algorithm(path_algorithm, body, "hash_algorithm", "sha2-256")?;
-    if algorithm != "sha2-256" {
-        return Err(error(
-            501,
-            "explicit hash selection is not implemented for Ed25519",
-        ));
-    }
+    // These key types own their pure-message hash. Generic hash/prehashed
+    // arguments do not select Ed25519ph or HashML-DSA. signature_algorithm
+    // selects RSA padding only and is ignored for these non-RSA keys, including
+    // the pkcs1v15 argument sent by the official external PKI consumer.
     Ok(false)
+}
+
+fn signature_encoding(body: &Value) -> Result<&'static GeneralPurpose> {
+    match body.get("marshaling_algorithm") {
+        None => Ok(&BASE64),
+        Some(Value::String(value)) if value == "asn1" => Ok(&BASE64),
+        Some(Value::String(value)) if value == "jws" => Ok(&BASE64_URL),
+        _ => Err(bad("unsupported signature marshaling algorithm")),
+    }
+}
+
+// Signing routes capture the path algorithm ahead of the body field. Keep
+// this compatibility rule separate from encryption and HMAC parsing.
+fn signing_hash_algorithm<'a>(path: &'a str, body: &'a Value) -> Result<&'a str> {
+    if !path.is_empty() {
+        return Ok(path);
+    }
+    match body.get("hash_algorithm") {
+        None | Some(Value::Null) => Ok("none"),
+        Some(Value::String(value)) if value.is_empty() => Ok("none"),
+        Some(Value::String(value)) => Ok(value),
+        _ => Err(bad("algorithm must be a string")),
+    }
+}
+
+fn signing_prehashed(body: &Value) -> Result<bool> {
+    match body.get("prehashed") {
+        None | Some(Value::Null) => Ok(false),
+        Some(Value::Bool(value)) => Ok(*value),
+        Some(Value::String(value)) => match value.as_str() {
+            "1" | "t" | "T" | "true" | "TRUE" | "True" => Ok(true),
+            "" | "0" | "f" | "F" | "false" | "FALSE" | "False" => Ok(false),
+            _ => Err(bad("expected a boolean parameter")),
+        },
+        Some(Value::Number(value)) if value.as_f64() == Some(0.0) => Ok(false),
+        Some(Value::Number(value)) if value.as_f64() == Some(1.0) => Ok(true),
+        _ => Err(bad("expected a boolean parameter")),
+    }
 }
 
 fn select_algorithm<'a>(
@@ -1207,6 +1233,10 @@ fn decrypt(
 }
 
 fn parse_wrapped(input: &str) -> Result<(u64, Zeroizing<Vec<u8>>)> {
+    parse_wrapped_with(input, &BASE64)
+}
+
+fn parse_wrapped_with(input: &str, encoding: &GeneralPurpose) -> Result<(u64, Zeroizing<Vec<u8>>)> {
     let rest = input
         .strip_prefix("vault:v")
         .ok_or_else(|| bad("invalid versioned cryptographic value"))?;
@@ -1221,7 +1251,7 @@ fn parse_wrapped(input: &str) -> Result<(u64, Zeroizing<Vec<u8>>)> {
         .ok()
         .filter(|v| *v > 0)
         .ok_or_else(|| bad("invalid cryptographic key version"))?;
-    Ok((version, decode(data)?))
+    Ok((version, decode_with(data, encoding)?))
 }
 
 fn hmac_tag(name: &str, material: &[u8], input: &[u8]) -> Result<Vec<u8>> {

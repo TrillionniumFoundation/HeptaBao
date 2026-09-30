@@ -398,7 +398,6 @@ fn mldsa270_external_mu_rejects_malformed_length_options_and_conflicts_without_m
     for body in [
         json!({"input":BASE64.encode([0u8;64]),"hash_algorithm":"mldsa-mu"}),
         json!({"input":BASE64.encode([0u8;64]),"hash_algorithm":"mldsa-mu","prehashed":false}),
-        json!({"input":BASE64.encode([0u8;64]),"hash_algorithm":"mldsa-mu","prehashed":"true"}),
     ] {
         assert_eq!(
             transit
@@ -416,13 +415,13 @@ fn mldsa270_external_mu_rejects_malformed_length_options_and_conflicts_without_m
                 "transit",
                 "POST",
                 "sign/test/mldsa-mu",
-                &json!({"input":BASE64.encode([0u8;64]),"hash_algorithm":"none","prehashed":true}),
+                &json!({"input":BASE64.encode([0u8;63]),"hash_algorithm":"none","prehashed":true}),
                 101
             )
             .err()
-            .ok_or("conflict accepted")?
+            .ok_or("path-selected mu length accepted")?
             .status,
-        400
+        500
     );
     let batch = transit.handle("", "transit", "POST", "sign/test/mldsa-mu", &json!({"prehashed":true,"batch_input":[{"input":BASE64.encode([0u8;64]),"reference":"valid"},{"input":BASE64.encode([0u8;63]),"reference":"invalid"}]}), 102)?;
     assert_eq!(batch.status, 400);
@@ -488,5 +487,231 @@ fn mldsa270_pure_signing_ignores_generic_hash_prehashed_and_derivation_context()
             .status,
         400
     );
+    Ok(())
+}
+
+#[test]
+fn non_rsa_pki_wire_options_keep_pure_signatures_valid_across_reopen() -> TestResult {
+    for kind in ["ed25519", "mldsa-44", "mldsa-65", "mldsa-87"] {
+        let mut transit = Transit::default();
+        transit.handle(
+            "",
+            "transit",
+            "POST",
+            "keys/test",
+            &json!({"type":kind}),
+            100,
+        )?;
+        let input = BASE64.encode(b"synthetic external PKI TBS bytes");
+        for rsa_padding in [
+            json!("pkcs1v15"),
+            json!("pss"),
+            json!("garbage"),
+            json!(""),
+            Value::Null,
+            json!(false),
+            json!(7),
+        ] {
+            let signed = transit.handle("", "transit", "POST", "sign/test", &json!({"input":input,"key_version":"1","prehashed":false,"signature_algorithm":rsa_padding}), 101)?;
+            assert_eq!(signed.status, 200);
+            assert!(!signed.mutated);
+            let mut reopened: Transit = serde_json::from_value(serde_json::to_value(&transit)?)?;
+            let signature = &signed.body["data"]["signature"];
+            let valid = reopened.handle(
+                "",
+                "transit",
+                "POST",
+                "verify/test",
+                &json!({"input":input,"signature":signature}),
+                102,
+            )?;
+            assert_eq!(valid.body["data"]["valid"], true);
+            let changed = reopened.handle(
+                "",
+                "transit",
+                "POST",
+                "verify/test",
+                &json!({"input":BASE64.encode(b"changed TBS"),"signature":signature}),
+                102,
+            )?;
+            assert_eq!(changed.body["data"]["valid"], false);
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn non_rsa_jws_uses_unpadded_url_encoding_and_verifies_actual_signature_bytes() -> TestResult {
+    for (kind, length) in [
+        ("ed25519", 64),
+        ("mldsa-44", 2420),
+        ("mldsa-65", 3309),
+        ("mldsa-87", 4627),
+    ] {
+        let mut transit = Transit::default();
+        transit.handle(
+            "",
+            "transit",
+            "POST",
+            "keys/test",
+            &json!({"type":kind}),
+            100,
+        )?;
+        let message = b"synthetic JWS message";
+        let signed = transit.handle(
+            "",
+            "transit",
+            "POST",
+            "sign/test",
+            &json!({"input":BASE64.encode(message),"marshaling_algorithm":"jws"}),
+            101,
+        )?;
+        let signature = signed.body["data"]["signature"]
+            .as_str()
+            .ok_or("signature")?;
+        let payload = signature.strip_prefix("vault:v1:").ok_or("prefix")?;
+        assert!(!payload.contains('='));
+        let (version, bytes) = parse_wrapped_with(signature, &BASE64_URL)?;
+        assert_eq!(version, 1);
+        assert_eq!(bytes.len(), length);
+        assert_eq!(payload, BASE64_URL.encode(&*bytes));
+        let key = transit.keys.get("test").ok_or("key")?;
+        let material = stored_material(&key.versions.get(&1).ok_or("version")?.material)?;
+        if kind == "ed25519" {
+            let pair = signature::Ed25519KeyPair::from_pkcs8(&material).map_err(|_| "pair")?;
+            signature::UnparsedPublicKey::new(&signature::ED25519, pair.public_key().as_ref())
+                .verify(message, &bytes)
+                .map_err(|_| "invalid JWS Ed25519 signature")?;
+        } else {
+            assert!(mldsa::verify(kind, &material, message, &bytes)?);
+            assert!(!mldsa::verify(kind, &material, b"changed", &bytes)?);
+        }
+        let valid = transit.handle("", "transit", "POST", "verify/test", &json!({"input":BASE64.encode(message),"signature":signature,"marshaling_algorithm":"jws"}), 102)?;
+        assert_eq!(valid.body["data"]["valid"], true);
+        let changed = transit.handle("", "transit", "POST", "verify/test", &json!({"input":BASE64.encode(b"changed"),"signature":signature,"marshaling_algorithm":"jws"}), 102)?;
+        assert_eq!(changed.body["data"]["valid"], false);
+        // Force the URL-only alphabet in an invalid signature. The default
+        // parser must reject its encoding independently of randomized bytes.
+        let invalid = format!("vault:v1:{}", BASE64_URL.encode(vec![0xff; length]));
+        assert_eq!(
+            transit
+                .handle(
+                    "",
+                    "transit",
+                    "POST",
+                    "verify/test",
+                    &json!({"input":BASE64.encode(message),"signature":invalid}),
+                    102
+                )
+                .err()
+                .ok_or("URL encoding accepted as standard")?
+                .status,
+            400
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn non_rsa_options_reject_bad_values_and_preserve_hash_and_mu_boundaries() -> TestResult {
+    for kind in ["ed25519", "mldsa-44", "mldsa-65", "mldsa-87"] {
+        let mut transit = Transit::default();
+        transit.handle(
+            "",
+            "transit",
+            "POST",
+            "keys/test",
+            &json!({"type":kind}),
+            100,
+        )?;
+        let input = BASE64.encode(b"synthetic pure input");
+        for prehashed in [
+            Value::Null,
+            json!(true),
+            json!(false),
+            json!("true"),
+            json!("false"),
+            json!(""),
+            json!(0),
+            json!(1),
+        ] {
+            for hash in [Value::Null, json!(""), json!("none"), json!("sha2-512")] {
+                let signed = transit.handle(
+                    "",
+                    "transit",
+                    "POST",
+                    "sign/test",
+                    &json!({"input":input,"hash_algorithm":hash,"prehashed":prehashed}),
+                    101,
+                )?;
+                let valid = transit.handle(
+                    "",
+                    "transit",
+                    "POST",
+                    "verify/test",
+                    &json!({"input":input,"signature":signed.body["data"]["signature"]}),
+                    102,
+                )?;
+                assert_eq!(valid.body["data"]["valid"], true);
+            }
+        }
+        let before = Zeroizing::new(serde_json::to_vec(&transit)?);
+        for (field, bad_value) in [
+            ("marshaling_algorithm", json!("")),
+            ("marshaling_algorithm", Value::Null),
+            ("marshaling_algorithm", json!(false)),
+            ("hash_algorithm", json!("garbage")),
+            ("hash_algorithm", json!(7)),
+            ("prehashed", json!("garbage")),
+            ("prehashed", json!(2)),
+        ] {
+            let mut body = json!({"input":input,"signature":"vault:v1:AA=="});
+            body[field] = bad_value;
+            for operation in ["sign/test", "verify/test"] {
+                let mut request = body.clone();
+                if operation == "sign/test" {
+                    request.as_object_mut().ok_or("object")?.remove("signature");
+                }
+                assert_eq!(
+                    transit
+                        .handle("", "transit", "POST", operation, &request, 103)
+                        .err()
+                        .ok_or("bad option accepted")?
+                        .status,
+                    400
+                );
+            }
+            assert_eq!(*before, *Zeroizing::new(serde_json::to_vec(&transit)?));
+        }
+        if kind != "ed25519" {
+            let key = transit.keys.get("test").ok_or("key")?;
+            let seed = stored_material(&key.versions.get(&1).ok_or("version")?.material)?;
+            let mu = fips204_mu(&mldsa::public(kind, &seed)?, b"synthetic pure input");
+            let signed = transit.handle("", "transit", "POST", "sign/test/mldsa-mu", &json!({"input":BASE64.encode(mu),"hash_algorithm":"none","prehashed":"true","marshaling_algorithm":"jws"}), 104)?;
+            let valid = transit.handle("", "transit", "POST", "verify/test", &json!({"input":input,"signature":signed.body["data"]["signature"],"marshaling_algorithm":"jws"}), 105)?;
+            assert_eq!(valid.body["data"]["valid"], true);
+            let pure = transit.handle(
+                "",
+                "transit",
+                "POST",
+                "sign/test/none",
+                &json!({"input":input,"hash_algorithm":"mldsa-mu","prehashed":true}),
+                106,
+            )?;
+            assert_eq!(
+                transit
+                    .handle(
+                        "",
+                        "transit",
+                        "POST",
+                        "verify/test",
+                        &json!({"input":input,"signature":pure.body["data"]["signature"]}),
+                        107
+                    )?
+                    .body["data"]["valid"],
+                true
+            );
+        }
+    }
     Ok(())
 }

@@ -40,6 +40,61 @@ def raw(value):
         raise ScenarioFailure("mldsa270.invalid_encoding") from None
 
 
+
+def signing_options_cases():
+    yield "pki_wire", {"key_version": "1", "prehashed": False,
+                       "signature_algorithm": "pkcs1v15"}, 200, ""
+    for index, value in enumerate(("pkcs1v15", "pss", "garbage", "", None, False, 7)):
+        yield "rsa_padding_ignored." + str(index), {"signature_algorithm": value}, 200, ""
+    for index, value in enumerate(("asn1", "jws", "garbage", "", None, False, 7)):
+        yield "marshaling." + str(index), {"marshaling_algorithm": value}, (200 if index < 2 else 400), ""
+    for prehashed in (False, True):
+        for index, value in enumerate(("none", "sha2-256", "sha2-512", "sha1", "garbage", "")):
+            yield "hash." + str(prehashed) + "." + str(index), {"prehashed": prehashed, "hash_algorithm": value}, (400 if value == "garbage" else 200), ""
+    for index, value in enumerate((None, False, 7)):
+        yield "hash_type." + str(index), {"hash_algorithm": value}, (200 if value is None else 400), ""
+    for index, value in enumerate((None, "true", "false", "TRUE", "t", "1", "0", "", "garbage", 0, 1, 2, -1, 1.5, [], {})):
+        yield "prehashed_type." + str(index), {"prehashed": value}, (400 if index in (8, 11, 12, 13, 14, 15) else 200), ""
+    for label, options, suffix in (("path_only", {}, "/sha2-256"),
+                                   ("path_over_body", {"hash_algorithm": "sha2-512"}, "/sha2-256"),
+                                   ("path_over_empty", {"hash_algorithm": ""}, "/sha2-256"),
+                                   ("path_over_null", {"hash_algorithm": None}, "/sha2-256"),
+                                   ("path_over_invalid", {"hash_algorithm": "garbage"}, "/none")):
+        yield label, options, 200, suffix
+
+
+def run_signing_options(t, kind, message, baseline, signature_len):
+    for label, options, status, suffix in signing_options_cases():
+        name = kind + ".options." + label
+        result = t.call(name + ".sign", "POST", "mlfixture/sign/" + kind + suffix,
+                        status, dict(options, input=message))
+        signature = result.get("data", {}).get("signature", baseline)
+        verified = t.call(name + ".verify", "POST", "mlfixture/verify/" + kind + suffix,
+                          status, dict(options, input=message, signature=signature))
+        if status != 200:
+            continue
+        t.check(name + ".valid", verified["data"]["valid"] is True)
+        t.check(name + ".version", result["data"]["key_version"] == 1
+                and signature.startswith("vault:v1:"))
+        if options.get("marshaling_algorithm") == "jws":
+            payload = signature[9:]
+            decoded = base64.b64decode(payload + "=" * (-len(payload) % 4), altchars=b"-_", validate=True)
+            t.check(name + ".encoding", len(decoded) == signature_len
+                    and base64.urlsafe_b64encode(decoded).decode().rstrip("=") == payload)
+            # An all-0xff signature forces the URL-only alphabet, so the
+            # standard parser rejection does not depend on randomized bytes.
+            invalid = "vault:v1:" + base64.urlsafe_b64encode(bytes([255]) * signature_len).decode().rstrip("=")
+            t.call(name + ".standard_encoding_rejected", "POST", "mlfixture/verify/" + kind,
+                   400, {"input": message, "signature": invalid})
+        else:
+            ordinary = t.call(name + ".ordinary_verify", "POST", "mlfixture/verify/" + kind,
+                              200, {"input": message, "signature": signature})
+            t.check(name + ".pure_message", ordinary["data"]["valid"] is True)
+        changed = t.call(name + ".changed_verify", "POST", "mlfixture/verify/" + kind + suffix,
+                         200, dict(options, input=base64.b64encode(b"changed options message").decode(), signature=signature))
+        t.check(name + ".changed_invalid", changed["data"]["valid"] is False)
+
+
 def run_scenarios(client, rows=None):
     rows = [] if rows is None else rows
     t = Trace(client, rows)
@@ -73,6 +128,7 @@ def run_scenarios(client, rows=None):
             result = t.call(kind + ".verify." + label, "POST", "mlfixture/verify/" + kind,
                             200, {"input": message_value, "signature": sigs[0]})
             t.check(kind + ".verified." + label, result["data"]["valid"] is valid)
+        run_signing_options(t, kind, message, sigs[0], signature_len)
         # FIPS 204 pure preprocessing, independently computed from this side's
         # public key. Signature and seed bytes never enter the report.
         tr = hashlib.shake_256(raw(public)).digest(64)
@@ -92,6 +148,19 @@ def run_scenarios(client, rows=None):
                         200, {"input": base64.b64encode(b"changed").decode(),
                               "signature": mu_signature})
         t.check(kind + ".mu_changed_invalid", result["data"]["valid"] is False)
+        extra = t.call(kind + ".mu_pki_jws_string_prehashed", "POST", "mlfixture/sign/" + kind + "/mldsa-mu",
+                       200, {"input": mu_input, "hash_algorithm": "none", "prehashed": "true",
+                             "signature_algorithm": "pkcs1v15", "marshaling_algorithm": "jws"})["data"]
+        result = t.call(kind + ".mu_pki_jws_verify_original", "POST", "mlfixture/verify/" + kind,
+                        200, {"input": message, "signature": extra["signature"], "marshaling_algorithm": "jws"})
+        t.check(kind + ".mu_pki_jws_original_valid", result["data"]["valid"] is True)
+        t.call(kind + ".mu_path_precedes_body_length", "POST", "mlfixture/sign/" + kind + "/mldsa-mu",
+               500, {"input": base64.b64encode(bytes(63)).decode(), "hash_algorithm": "none", "prehashed": True})
+        result = t.call(kind + ".pure_path_precedes_body_mu", "POST", "mlfixture/sign/" + kind + "/none",
+                        200, {"input": message, "hash_algorithm": "mldsa-mu", "prehashed": True})
+        result = t.call(kind + ".pure_path_verify", "POST", "mlfixture/verify/" + kind,
+                        200, {"input": message, "signature": result["data"]["signature"]})
+        t.check(kind + ".pure_path_original_valid", result["data"]["valid"] is True)
         t.call(kind + ".mu_verification_not_supported", "POST", "mlfixture/verify/" + kind,
                400, {"input": mu_input, "prehashed": True,
                      "hash_algorithm": "mldsa-mu", "signature": mu_signature})
@@ -119,6 +188,10 @@ def run_scenarios(client, rows=None):
                 and result["signature"].startswith("vault:v2:"))
         t.call(kind + ".bad_base64", "POST", "mlfixture/sign/" + kind, 400, {"input": "!"})
         contexts.append((kind, message, sigs[0], result["signature"], mu_signature))
+    t.call("ed25519.options.create", "POST", "mlfixture/keys/ed25519", 200, {"type": "ed25519"})
+    message = base64.b64encode(b"synthetic:ed25519").decode()
+    signed = t.call("ed25519.options.baseline", "POST", "mlfixture/sign/ed25519", 200, {"input": message})
+    run_signing_options(t, "ed25519", message, signed["data"]["signature"], 64)
     t.call("least_privilege_policy", "POST", "sys/policies/acl/mlfixture-signer", 204,
            {"policy": 'path "mlfixture/sign/*" { capabilities=["update"] }'})
     issued = t.call("least_privilege_token", "POST", "auth/token/create", 200,
@@ -158,7 +231,7 @@ def run_after_restart(client, rows):
 def main():
     return compare(scenario_runner=run_scenarios, restart_runner=run_after_restart,
                    profile="transit-mldsa270", required_oracle_version="2.7.0",
-                   scope="mldsa_pure_and_external_mu_signing_rotation_export_acl_and_native_restart",
+                   scope="non_rsa_pki_wire_signing_options_and_mldsa_pure_external_mu_rotation_export_acl_native_restart",
                    runner_path=Path(__file__))
 
 
