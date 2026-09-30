@@ -147,6 +147,38 @@ fn unix_relative_symlinks_hardlinks_and_fifo_are_rejected_without_target_changes
 }
 
 #[test]
+fn unix_relative_recursive_cleanup_stays_on_held_directory_and_never_follows_symlinks() -> TestResult
+{
+    let root = Root::new()?;
+    let original = root.0.join("original");
+    fs::create_dir(&original)?;
+    fs::create_dir(original.join("retired"))?;
+    fs::create_dir(original.join("retired/nested"))?;
+    fs::write(original.join("retired/state"), b"state")?;
+    fs::write(original.join("retired/nested/journal"), b"journal")?;
+    fs::write(root.0.join("sentinel"), b"unchanged")?;
+    symlink(root.0.join("sentinel"), original.join("retired/link"))?;
+    let owner = ExclusiveDirectory::open(&original)?;
+
+    let moved = root.0.join("moved");
+    fs::rename(&original, &moved)?;
+    fs::create_dir(&original)?;
+    fs::create_dir(original.join("retired"))?;
+    fs::write(original.join("retired/replacement"), b"replacement")?;
+
+    owner.remove_file_in_directory("retired", "state")?;
+    assert!(!moved.join("retired/state").exists());
+    owner.remove_directory_all("retired")?;
+    assert!(!moved.join("retired").exists());
+    assert_eq!(fs::read(root.0.join("sentinel"))?, b"unchanged");
+    assert_eq!(
+        fs::read(original.join("retired/replacement"))?,
+        b"replacement"
+    );
+    Ok(())
+}
+
+#[test]
 fn unix_relative_intermediate_symlink_is_not_authority() -> TestResult {
     let root = Root::new()?;
     let original = root.0.join("original");

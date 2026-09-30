@@ -501,10 +501,10 @@ fn postgres_partial_retired_cleanup_cannot_recreate_an_active_pending_initializa
     File::open(&data_dir)?.sync_all()?;
     let parent = ExclusiveDirectory::open(&root.path)?;
     parent.sync_all()?;
-    let mut retired_name = None;
-    retire_postgres_pending(&pending, &parent, |retired| {
-        retired_name = retired.file_name().map(|name| name.to_os_string());
-        fs::remove_file(retired.join("state.hbs"))?;
+    let mut retired_name: Option<String> = None;
+    retire_postgres_pending(&pending, &parent, |parent, retired| {
+        retired_name = Some(retired.to_owned());
+        parent.remove_file_in_directory(retired, "state.hbs")?;
         Err(io::Error::other("injected recursive cleanup failure"))
     })?;
     assert!(!pending.exists());

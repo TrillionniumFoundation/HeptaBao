@@ -599,10 +599,9 @@ impl InitializationStage {
             ));
         }
         File::open(&self.path)?.sync_all()?;
-        fs::rename(
-            anchored_initialization_leaf(parent, &self.path)?,
-            anchored_initialization_leaf(parent, &pending)?,
-        )?;
+        let source = initialization_leaf_name(parent, &self.path)?;
+        let target = initialization_leaf_name(parent, &pending)?;
+        parent.rename(source, target)?;
         self.path = pending;
         self.retain_on_drop = true;
         parent.sync_all().map_err(io::Error::other)
@@ -5999,14 +5998,6 @@ fn initialization_leaf_name<'a>(
         .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "invalid initialization leaf"))
 }
 
-fn anchored_initialization_leaf(parent: &ExclusiveDirectory, path: &Path) -> io::Result<PathBuf> {
-    let name = path
-        .file_name()
-        .and_then(|name| name.to_str())
-        .ok_or_else(|| io::Error::other("invalid initialization leaf"))?;
-    parent.leaf_path(name).map_err(io::Error::other)
-}
-
 fn verify_initialization_parent(parent: &ExclusiveDirectory) -> io::Result<()> {
     parent.verify().map_err(io::Error::other)?;
     let metadata = fs::symlink_metadata(parent.original_path())?;
@@ -6032,29 +6023,26 @@ fn postgres_pending_exists(data_dir: &Path) -> Result<bool, &'static str> {
 }
 
 fn cleanup_postgres_pending(path: &Path, parent: &ExclusiveDirectory) -> io::Result<()> {
-    retire_postgres_pending(path, parent, |retired| fs::remove_dir_all(retired))
+    retire_postgres_pending(path, parent, |parent, retired| {
+        parent.remove_directory_all(retired)
+    })
 }
 
 fn retire_postgres_pending(
     path: &Path,
     parent: &ExclusiveDirectory,
-    cleanup: impl FnOnce(&Path) -> io::Result<()>,
+    cleanup: impl FnOnce(&ExclusiveDirectory, &str) -> io::Result<()>,
 ) -> io::Result<()> {
     verify_initialization_parent(parent)?;
-    let name = path
-        .file_name()
-        .and_then(|name| name.to_str())
-        .ok_or_else(|| io::Error::other("invalid pending initialization leaf"))?;
+    let name = initialization_leaf_name(parent, path)?;
     let suffix = hex(&crypto::random::<8>().map_err(io::Error::other)?);
-    let retired = parent
-        .leaf_path(&format!("{name}.retired-{suffix}"))
-        .map_err(io::Error::other)?;
-    fs::rename(anchored_initialization_leaf(parent, path)?, &retired)?;
+    let retired = format!("{name}.retired-{suffix}");
+    parent.rename(name, &retired)?;
     // Do not touch any retired artifact before the removal from the active
     // pending namespace is durable. A crash may then retain encrypted debris,
     // but can never make recovery require a half-deleted active candidate.
     parent.sync_all().map_err(io::Error::other)?;
-    let _ = cleanup(&retired);
+    let _ = cleanup(parent, &retired);
     Ok(())
 }
 
