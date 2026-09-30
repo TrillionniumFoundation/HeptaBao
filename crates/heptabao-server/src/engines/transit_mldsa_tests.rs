@@ -106,7 +106,7 @@ fn mldsa270_rotation_retains_old_signatures_and_enforces_minimum_versions() -> T
                 "transit",
                 "POST",
                 "verify/test",
-                &json!({"input":input,"signature":signed.body["data"]["signature"]}),
+                &json!({"input":input,"signature":signed.body["data"]["signature"],"key_version":2}),
                 105
             )
             .is_err()
@@ -522,7 +522,7 @@ fn non_rsa_pki_wire_options_keep_pure_signatures_valid_across_reopen() -> TestRe
                 "transit",
                 "POST",
                 "verify/test",
-                &json!({"input":input,"signature":signature}),
+                &json!({"input":input,"signature":signature,"key_version":"1","prehashed":false,"signature_algorithm":rsa_padding}),
                 102,
             )?;
             assert_eq!(valid.body["data"]["valid"], true);

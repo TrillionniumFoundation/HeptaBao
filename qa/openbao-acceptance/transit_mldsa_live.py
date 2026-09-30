@@ -222,6 +222,8 @@ def run_after_restart(client, rows):
                 and configured["min_decryption_version"] == 2)
         t.call(kind + ".retired_signature_denied", "POST", "mlfixture/verify/" + kind,
                400, {"input": message, "signature": old})
+        t.call(kind + ".retired_signature_version_hint_ignored", "POST", "mlfixture/verify/" + kind,
+               400, {"input": message, "signature": old, "key_version": "2"})
         result = t.call(kind + ".current_signature_retained", "POST", "mlfixture/verify/" + kind,
                         200, {"input": message, "signature": new})
         t.check(kind + ".current_valid", result["data"]["valid"] is True)

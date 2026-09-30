@@ -750,6 +750,7 @@ fn handle_crypto(
         ],
         "verify" => &[
             "input",
+            "key_version",
             "signature",
             "hmac",
             "algorithm",
