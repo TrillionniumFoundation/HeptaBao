@@ -7,7 +7,7 @@ publish = false
 
 [features]
 default = []
-fixture-native-restore-faults = ["dep:rustix"]
+fixture-native-restore-faults = ["rustix/net", "rustix/process"]
 fixture-capacity-limit = []
 
 [dependencies]
@@ -47,10 +47,11 @@ tokio = { version = "=1.53.1", default-features = false, features = ["rt-multi-t
 
 [target.'cfg(target_os = "linux")'.dependencies]
 cross-krb5 = { version = "=0.5.0", default-features = false }
-rustix = { version = "=1.1.4", optional = true, features = ["net", "process"] }
 
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.189"
+# Safe descriptor-relative filesystem operations, including macOS audit rotation.
+rustix = { version = "=1.1.4", features = ["fs"] }
 
 [lints]
 workspace = true

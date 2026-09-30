@@ -5,11 +5,14 @@ use super::{check_private_file, verify_audit_from};
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use ring::{digest, hmac};
 use serde::{Deserialize, Serialize};
+#[cfg(test)]
+use std::fs::OpenOptions;
 use std::{
-    fs::{self, File, OpenOptions},
+    fs::{self, File},
     io::{self, Read, Seek, SeekFrom, Write},
     path::{Path, PathBuf},
 };
+
 const MAX_SEGMENT_BYTES: u64 = 32 * 1024 * 1024;
 const MAX_MANIFEST_BYTES: u64 = 128 * 1024;
 const STAGING_MAGIC: &[u8] = b"heptabao-audit-manifest-staging-v1\n";
@@ -100,44 +103,38 @@ impl AuditRotation {
             })
             .ok_or_else(|| invalid("invalid audit filename"))?
             .to_owned();
-        let directory = open_directory(
-            path.parent()
-                .ok_or_else(|| invalid("invalid audit parent"))?,
+        let parent = path
+            .parent()
+            .ok_or_else(|| invalid("invalid audit parent"))?;
+        let directory = open_directory(parent)?;
+        // This is a diagnostic display path, never filesystem authority. Every
+        // active/key/sidecar operation below is relative to `directory` itself.
+        let access = display_directory(&directory, parent);
+        let writer = open_child(
+            &directory,
+            Path::new(&format!("{name}.rotation-lock")),
+            ChildMode::WriterLock,
         )?;
-        let access = descriptor_path(&directory)?;
-        let writer = private_options(true)
-            .create(true)
-            .read(true)
-            .write(true)
-            .open(access.join(format!("{name}.rotation-lock")))?;
         check_private_file(&writer)?;
         lock_writer(&writer)?;
-        let active_path = access.join(&name);
-        let audit = match private_options(false)
-            .append(true)
-            .read(true)
-            .open(&active_path)
-        {
+        let active_path = Path::new(&name);
+        let audit = match open_child(&directory, active_path, ChildMode::Append) {
             Ok(file) => file,
             Err(error) if error.kind() == io::ErrorKind::NotFound => {
                 // The active inode is never removed by rotation. Its absence
                 // beside an established key/checkpoint is data loss, not a new log.
-                if fs::symlink_metadata(access.join(format!("{name}.hmac-key"))).is_ok()
-                    || fs::symlink_metadata(access.join(format!("{name}.rotation.json"))).is_ok()
+                if child_exists(&directory, Path::new(&format!("{name}.hmac-key")))?
+                    || child_exists(&directory, Path::new(&format!("{name}.rotation.json")))?
                 {
                     return Err(invalid("established audit activity file is missing"));
                 }
-                private_options(true)
-                    .create_new(true)
-                    .append(true)
-                    .read(true)
-                    .open(&active_path)?
+                open_child(&directory, active_path, ChildMode::CreateAppend)?
             }
             Err(error) => return Err(error),
         };
         check_private_file(&audit)?;
-        if fs::symlink_metadata(access.join(format!("{name}.rotation.json"))).is_ok()
-            && fs::symlink_metadata(access.join(format!("{name}.hmac-key"))).is_err()
+        if child_exists(&directory, Path::new(&format!("{name}.rotation.json")))?
+            && !child_exists(&directory, Path::new(&format!("{name}.hmac-key")))?
         {
             return Err(invalid("audit checkpoint has no authentication key"));
         }
@@ -166,11 +163,31 @@ impl AuditRotation {
         self.access.join(&self.name)
     }
 
+    pub(super) fn open_key(&self, create_new: bool) -> io::Result<File> {
+        open_child(
+            &self.directory,
+            &self.sidecar("hmac-key"),
+            if create_new {
+                ChildMode::CreateNew
+            } else {
+                ChildMode::Read
+            },
+        )
+    }
+
+    pub(super) fn verify_key_identity(&self, key: &File) -> io::Result<()> {
+        verify_identity(key, &self.directory, &self.sidecar("hmac-key"))
+    }
+
+    pub(super) fn sync_directory(&self) -> io::Result<()> {
+        self.directory.sync_all()
+    }
+
     pub(super) fn config(&self) -> AuditConfig {
         self.config
     }
     fn sidecar(&self, suffix: &str) -> PathBuf {
-        self.access.join(format!("{}.{suffix}", self.name))
+        PathBuf::from(format!("{}.{suffix}", self.name))
     }
     fn segment_path(&self, id: u64) -> PathBuf {
         self.sidecar(&format!("segment-{id:020}.jsonl"))
@@ -187,7 +204,7 @@ impl AuditRotation {
         key: &hmac::Key,
     ) -> io::Result<(u64, [u8; 32])> {
         self.verify_active_identity(audit)?;
-        match open_read(&self.sidecar("rotation.json")) {
+        match open_read(&self.directory, &self.sidecar("rotation.json")) {
             Ok(mut file) => {
                 self.manifest = decode_manifest(&mut file, key)?;
                 self.manifest_exists = true;
@@ -275,11 +292,7 @@ impl AuditRotation {
             end,
         };
         let path = self.segment_path(id);
-        match private_options(true)
-            .create_new(true)
-            .write(true)
-            .open(&path)
-        {
+        match open_child(&self.directory, &path, ChildMode::CreateNew) {
             Ok(mut file) => {
                 file.write_all(&bytes)?;
                 file.sync_all()?;
@@ -288,7 +301,7 @@ impl AuditRotation {
             Err(e) if e.kind() == io::ErrorKind::AlreadyExists => {
                 // Resume only an exact prefix of the independently authenticated
                 // active stream. Arbitrary occupants are never deleted/overwritten.
-                let mut file = private_options(false).read(true).append(true).open(&path)?;
+                let mut file = open_child(&self.directory, &path, ChildMode::Append)?;
                 check_private_file(&file)?;
                 let prefix = read_bounded(&mut file, MAX_SEGMENT_BYTES)?;
                 if !bytes.starts_with(&prefix) {
@@ -328,12 +341,10 @@ impl AuditRotation {
             .generation
             .checked_add(1)
             .ok_or_else(|| invalid("audit generation exhausted"))?;
-        for entry in fs::read_dir(&self.access)? {
-            let entry = entry?;
-            if !entry.file_name().to_string_lossy().starts_with(&prefix) {
+        for path in directory_entries(&self.directory)? {
+            if !path.as_os_str().to_string_lossy().starts_with(&prefix) {
                 continue;
             }
-            let path = entry.path();
             if self
                 .manifest
                 .segments
@@ -350,7 +361,7 @@ impl AuditRotation {
                 return Err(invalid("unexplained audit archive generation"));
             }
             let bytes = read_bounded(audit, MAX_SEGMENT_BYTES)?;
-            let mut orphan = open_read(&path)?;
+            let mut orphan = open_read(&self.directory, &path)?;
             let copied = read_bounded(&mut orphan, MAX_SEGMENT_BYTES)?;
             if bytes.is_empty() || !bytes.starts_with(&copied) {
                 return Err(invalid("unexplained audit archive content"));
@@ -399,7 +410,7 @@ impl AuditRotation {
         Ok(())
     }
     fn verify_segment(&self, segment: &Segment, key: &hmac::Key) -> io::Result<()> {
-        let mut file = open_read(&self.segment_path(segment.id))?;
+        let mut file = open_read(&self.directory, &self.segment_path(segment.id))?;
         let bytes = read_bounded(&mut file, MAX_SEGMENT_BYTES)?;
         if bytes.len() as u64 != segment.length || sha256(&bytes) != segment.digest {
             return Err(invalid(
@@ -419,11 +430,11 @@ impl AuditRotation {
         }
         for segment in &self.manifest.garbage {
             let path = self.segment_path(segment.id);
-            match open_read(&path) {
+            match open_read(&self.directory, &path) {
                 Ok(file) => {
                     self.verify_segment(segment, key)?;
-                    verify_identity(&file, &path)?;
-                    fs::remove_file(&path)?;
+                    verify_identity(&file, &self.directory, &path)?;
+                    remove_child(&self.directory, &path)?;
                     self.directory.sync_all()?;
                 }
                 Err(e) if e.kind() == io::ErrorKind::NotFound => {}
@@ -441,12 +452,12 @@ impl AuditRotation {
         // also upgrades a legacy checkpoint that did not carry configuration.
         manifest.config = Some(self.config);
         let target = self.sidecar("rotation.json");
-        match open_read(&target) {
+        match open_read(&self.directory, &target) {
             Ok(mut file) => {
                 if !self.manifest_exists || decode_manifest(&mut file, key)? != self.manifest {
                     return Err(invalid("audit manifest changed outside its writer"));
                 }
-                verify_identity(&file, &target)?;
+                verify_identity(&file, &self.directory, &target)?;
             }
             Err(e) if e.kind() == io::ErrorKind::NotFound && !self.manifest_exists => {}
             Err(e) => return Err(e),
@@ -461,15 +472,12 @@ impl AuditRotation {
             return Err(invalid("audit manifest exceeds bound"));
         }
         let stage = self.sidecar("rotation.tmp");
-        let mut file = private_options(true)
-            .write(true)
-            .create_new(true)
-            .open(&stage)?;
+        let mut file = open_child(&self.directory, &stage, ChildMode::CreateNew)?;
         file.write_all(STAGING_MAGIC)?;
         file.write_all(&bytes)?;
         file.sync_all()?;
-        verify_identity(&file, &stage)?;
-        fs::rename(&stage, &target)?;
+        verify_identity(&file, &self.directory, &stage)?;
+        rename_child(&self.directory, &stage, &target)?;
         self.directory.sync_all()?;
         self.manifest = manifest;
         self.manifest_exists = true;
@@ -477,7 +485,7 @@ impl AuditRotation {
     }
     fn discard_staging(&self) -> io::Result<()> {
         let path = self.sidecar("rotation.tmp");
-        let mut file = match open_read(&path) {
+        let mut file = match open_read(&self.directory, &path) {
             Ok(file) => file,
             Err(e) if e.kind() == io::ErrorKind::NotFound => return Ok(()),
             Err(e) => return Err(e),
@@ -487,12 +495,12 @@ impl AuditRotation {
         if bytes[..prefix_length] != STAGING_MAGIC[..prefix_length] {
             return Err(invalid("unrecognized file occupies audit staging path"));
         }
-        verify_identity(&file, &path)?;
-        fs::remove_file(path)?;
+        verify_identity(&file, &self.directory, &path)?;
+        remove_child(&self.directory, &path)?;
         self.directory.sync_all()
     }
     fn verify_active_identity(&self, audit: &File) -> io::Result<()> {
-        verify_identity(audit, &self.active_path())
+        verify_identity(audit, &self.directory, Path::new(&self.name))
     }
     fn crash_point(&self, _point: &str) -> io::Result<()> {
         #[cfg(test)]
@@ -547,69 +555,182 @@ fn read_bounded(file: &mut File, maximum: u64) -> io::Result<Vec<u8>> {
     }
     Ok(bytes)
 }
-fn open_read(path: &Path) -> io::Result<File> {
-    let file = private_options(false).read(true).open(path)?;
-    check_private_file(&file)?;
-    Ok(file)
+// Keep names separate from display paths: POSIX *at operations must never
+// receive an absolute path, traversal, or a multi-component relative path.
+fn validate_child(path: &Path) -> io::Result<()> {
+    let mut components = path.components();
+    if !matches!(components.next(), Some(std::path::Component::Normal(name)) if name == path.as_os_str())
+        || components.next().is_some()
+        || path.as_os_str().is_empty()
+    {
+        return Err(invalid("audit child must be one relative filename"));
+    }
+    Ok(())
 }
+
+#[derive(Clone, Copy)]
+enum ChildMode {
+    Read,
+    Append,
+    CreateAppend,
+    WriterLock,
+    CreateNew,
+}
+
+fn open_child(directory: &File, path: &Path, mode: ChildMode) -> io::Result<File> {
+    validate_child(path)?;
+    #[cfg(unix)]
+    {
+        use rustix::fs::{Mode, OFlags, openat};
+        let access = match mode {
+            ChildMode::Read => OFlags::RDONLY,
+            ChildMode::Append => OFlags::RDWR | OFlags::APPEND,
+            ChildMode::CreateAppend => {
+                OFlags::RDWR | OFlags::APPEND | OFlags::CREATE | OFlags::EXCL
+            }
+            ChildMode::WriterLock => OFlags::RDWR | OFlags::CREATE,
+            ChildMode::CreateNew => OFlags::WRONLY | OFlags::CREATE | OFlags::EXCL,
+        };
+        let fd = openat(
+            directory,
+            path,
+            access | OFlags::NOFOLLOW | OFlags::CLOEXEC | OFlags::NONBLOCK,
+            Mode::RUSR | Mode::WUSR,
+        )?;
+        let file = File::from(fd);
+        check_private_file(&file)?;
+        Ok(file)
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = (directory, mode);
+        Err(invalid(
+            "audit rotation requires descriptor-relative Unix filesystem operations",
+        ))
+    }
+}
+
+fn open_read(directory: &File, path: &Path) -> io::Result<File> {
+    open_child(directory, path, ChildMode::Read)
+}
+
+fn child_exists(directory: &File, path: &Path) -> io::Result<bool> {
+    validate_child(path)?;
+    #[cfg(unix)]
+    {
+        match rustix::fs::statat(directory, path, rustix::fs::AtFlags::SYMLINK_NOFOLLOW) {
+            Ok(_) => Ok(true),
+            Err(rustix::io::Errno::NOENT) => Ok(false),
+            Err(error) => Err(error.into()),
+        }
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = directory;
+        Err(invalid("unsupported audit filesystem"))
+    }
+}
+
+fn directory_entries(directory: &File) -> io::Result<Vec<PathBuf>> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::ffi::OsStrExt;
+        // read_from opens an independent stream from the directory descriptor;
+        // repeated inventory checks do not inherit an earlier iteration offset.
+        let mut entries = Vec::new();
+        for entry in rustix::fs::Dir::read_from(directory)? {
+            let entry = entry?;
+            let name = entry.file_name().to_bytes();
+            if name != b"." && name != b".." {
+                entries.push(PathBuf::from(std::ffi::OsStr::from_bytes(name)));
+            }
+        }
+        Ok(entries)
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = directory;
+        Err(invalid("unsupported audit filesystem"))
+    }
+}
+
+fn remove_child(directory: &File, path: &Path) -> io::Result<()> {
+    validate_child(path)?;
+    #[cfg(unix)]
+    {
+        rustix::fs::unlinkat(directory, path, rustix::fs::AtFlags::empty())?;
+        Ok(())
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = directory;
+        Err(invalid("unsupported audit filesystem"))
+    }
+}
+
+fn rename_child(directory: &File, old: &Path, new: &Path) -> io::Result<()> {
+    validate_child(old)?;
+    validate_child(new)?;
+    #[cfg(unix)]
+    {
+        rustix::fs::renameat(directory, old, directory, new)?;
+        Ok(())
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = directory;
+        Err(invalid("unsupported audit filesystem"))
+    }
+}
+
+#[cfg(test)]
 fn private_options(create: bool) -> OpenOptions {
-    let options = OpenOptions::new();
-    #[cfg(target_os = "linux")]
+    let mut options = OpenOptions::new();
+    #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        let mut options = options;
-        // These values differ between Linux x86_64 and aarch64. Never copy
-        // numeric O_* flags from the build host into target filesystem code.
         options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
         if create {
             options.mode(0o600);
         }
-        options
     }
-    #[cfg(not(target_os = "linux"))]
-    {
-        let _ = create;
-        options
-    }
+    #[cfg(not(unix))]
+    let _ = create;
+    options
 }
-fn descriptor_path(file: &File) -> io::Result<PathBuf> {
+
+fn display_directory(file: &File, original: &Path) -> PathBuf {
     #[cfg(target_os = "linux")]
     {
         use std::os::fd::AsRawFd;
-        Ok(PathBuf::from(format!("/proc/self/fd/{}", file.as_raw_fd())))
+        let _ = original;
+        PathBuf::from(format!("/proc/self/fd/{}", file.as_raw_fd()))
     }
     #[cfg(not(target_os = "linux"))]
     {
         let _ = file;
-        Err(invalid(
-            "audit rotation requires Linux descriptor anchoring",
-        ))
+        original.to_owned()
     }
 }
+
 fn open_directory(path: &Path) -> io::Result<File> {
     if !path.is_absolute() {
         return Err(invalid("audit directory must be absolute"));
     }
-    #[cfg(target_os = "linux")]
+    #[cfg(unix)]
     {
-        use std::{
-            os::unix::fs::{OpenOptionsExt, PermissionsExt},
-            path::Component,
-        };
-        let mut options = OpenOptions::new();
-        options
-            .read(true)
-            .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC);
-        let mut current = options.open("/")?;
+        use rustix::fs::{Mode, OFlags, open, openat};
+        use std::{os::unix::fs::PermissionsExt, path::Component};
+        let flags = OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC;
+        let mut current = open("/", flags, Mode::empty())?;
         for component in path.components() {
             match component {
                 Component::RootDir => {}
-                Component::Normal(name) => {
-                    current = options.open(descriptor_path(&current)?.join(name))?
-                }
+                Component::Normal(name) => current = openat(&current, name, flags, Mode::empty())?,
                 _ => return Err(invalid("noncanonical audit directory")),
             }
         }
+        let current = File::from(current);
         if current.metadata()?.permissions().mode() & 0o022 != 0 {
             return Err(invalid(
                 "audit directory must not be writable by group or others",
@@ -617,10 +738,10 @@ fn open_directory(path: &Path) -> io::Result<File> {
         }
         Ok(current)
     }
-    #[cfg(not(target_os = "linux"))]
+    #[cfg(not(unix))]
     {
         Err(invalid(
-            "audit rotation requires Linux descriptor anchoring",
+            "audit rotation requires descriptor-relative Unix filesystem operations",
         ))
     }
 }
@@ -642,24 +763,30 @@ fn lock_writer(file: &File) -> io::Result<()> {
         }
     }
 }
-fn verify_identity(file: &File, path: &Path) -> io::Result<()> {
+fn verify_identity(file: &File, directory: &File, path: &Path) -> io::Result<()> {
     check_private_file(file)?;
-    let named = fs::symlink_metadata(path)?;
-    if !named.is_file() || named.file_type().is_symlink() {
-        return Err(invalid("audit pathname is unsafe"));
-    }
+    validate_child(path)?;
     #[cfg(unix)]
     {
-        use std::os::unix::fs::MetadataExt;
-        let opened = file.metadata()?;
-        if opened.dev() != named.dev() || opened.ino() != named.ino() {
+        use rustix::fs::{AtFlags, FileType, fstat, statat};
+        let named = statat(directory, path, AtFlags::SYMLINK_NOFOLLOW)?;
+        if FileType::from_raw_mode(named.st_mode) != FileType::RegularFile {
+            return Err(invalid("audit pathname is unsafe"));
+        }
+        let opened = fstat(file)?;
+        if opened.st_dev != named.st_dev || opened.st_ino != named.st_ino {
             return Err(invalid("audit file identity changed"));
         }
+        Ok(())
     }
-    Ok(())
+    #[cfg(not(unix))]
+    {
+        let _ = directory;
+        Err(invalid("unsupported audit filesystem"))
+    }
 }
 
-#[cfg(all(test, target_os = "linux"))]
+#[cfg(all(test, unix))]
 mod tests {
     use super::super::{Service, private_directory};
     use super::*;
@@ -670,7 +797,7 @@ mod tests {
     struct Root(PathBuf);
     impl Root {
         fn new() -> io::Result<Self> {
-            let path = std::env::temp_dir().join(format!(
+            let path = std::env::temp_dir().canonicalize()?.join(format!(
                 "heptabao-audit-rotation-{}-{}",
                 std::process::id(),
                 NEXT.fetch_add(1, Ordering::Relaxed)
@@ -756,7 +883,7 @@ mod tests {
         let mut service = root.service(2)?;
         assert_eq!(fs::read(root.path())?, original);
         requests(&mut service, 1);
-        let first = service.audit_rotation.segment_path(1);
+        let first = root.0.join(service.audit_rotation.segment_path(1));
         assert_eq!(fs::read(first)?, original);
         drop(service);
         assert_eq!(root.service(2)?.audit_sequence, 22);
@@ -793,8 +920,8 @@ mod tests {
         let mut service = root.service(2)?;
         requests(&mut service, 2);
         let bytes = fs::read(root.path())?;
-        let archive = service.audit_rotation.segment_path(1);
-        let stage = service.audit_rotation.sidecar("rotation.tmp");
+        let archive = root.0.join(service.audit_rotation.segment_path(1));
+        let stage = root.0.join(service.audit_rotation.sidecar("rotation.tmp"));
         let mut file = private_options(true)
             .write(true)
             .create_new(true)
@@ -824,8 +951,8 @@ mod tests {
         let mut service = root.service(2)?;
         requests(&mut service, 2);
         rotate(&mut service)?;
-        let archive = service.audit_rotation.segment_path(1);
-        let checkpoint = service.audit_rotation.sidecar("rotation.json");
+        let archive = root.0.join(service.audit_rotation.segment_path(1));
+        let checkpoint = root.0.join(service.audit_rotation.sidecar("rotation.json"));
         let archive_bytes = fs::read(&archive)?;
         let checkpoint_bytes = fs::read(&checkpoint)?;
         drop(service);
@@ -858,7 +985,7 @@ mod tests {
         requests(&mut service, 2);
         let destination = root.0.join("unrelated");
         fs::write(&destination, b"do not change")?;
-        let archive = service.audit_rotation.segment_path(1);
+        let archive = root.0.join(service.audit_rotation.segment_path(1));
         symlink(&destination, &archive)?;
         assert!(rotate(&mut service).is_err());
         assert_eq!(fs::read(&destination)?, b"do not change");
@@ -926,7 +1053,7 @@ mod tests {
         let mut service = root.service_with_config(config)?;
         requests(&mut service, 2);
         rotate(&mut service)?;
-        let checkpoint = service.audit_rotation.sidecar("rotation.json");
+        let checkpoint = root.0.join(service.audit_rotation.sidecar("rotation.json"));
         let checkpoint_text = fs::read_to_string(&checkpoint)?;
         assert!(checkpoint_text.contains("segment_bytes"));
         assert!(checkpoint_text.contains("retained_segments"));
@@ -1058,6 +1185,6 @@ mod tests {
     }
 }
 
-#[cfg(all(test, target_os = "linux"))]
+#[cfg(all(test, unix))]
 #[path = "audit_platform_tests.rs"]
 mod platform_tests;

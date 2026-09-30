@@ -1170,7 +1170,7 @@ impl Service {
         }
         let (mut audit_rotation, mut audit) = AuditRotation::open(audit_path, audit_config)
             .map_err(|_| "cannot safely open audit rotation files")?;
-        let audit_key = load_audit_key(&audit_rotation.active_path(), &audit)?;
+        let audit_key = load_audit_key(&audit_rotation, &audit)?;
         let (audit_sequence, audit_previous) = audit_rotation
             .recover(&mut audit, &audit_key)
             .map_err(|_| "audit verification or rotation recovery failed")?;
@@ -6715,21 +6715,9 @@ fn check_private_file(file: &File) -> Result<(), std::io::Error> {
     Ok(())
 }
 
-fn load_audit_key(audit_path: &Path, audit: &File) -> Result<hmac::Key, &'static str> {
+fn load_audit_key(rotation: &AuditRotation, audit: &File) -> Result<hmac::Key, &'static str> {
     use std::io::Read;
-    let name = audit_path
-        .file_name()
-        .ok_or("invalid audit path")?
-        .to_string_lossy();
-    let key_path = audit_path.with_file_name(format!("{name}.hmac-key"));
-    let mut options = OpenOptions::new();
-    options.read(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
-    }
-    let material = match options.open(&key_path) {
+    let material = match rotation.open_key(false) {
         Ok(mut file) => {
             check_private_file(&file).map_err(|_| "audit key must be a private regular file")?;
             if file
@@ -6743,6 +6731,9 @@ fn load_audit_key(audit_path: &Path, audit: &File) -> Result<hmac::Key, &'static
             let mut material = Zeroizing::new([0_u8; 32]);
             file.read_exact(material.as_mut())
                 .map_err(|_| "cannot read audit key")?;
+            rotation
+                .verify_key_identity(&file)
+                .map_err(|_| "audit key identity changed")?;
             material
         }
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
@@ -6752,23 +6743,17 @@ fn load_audit_key(audit_path: &Path, audit: &File) -> Result<hmac::Key, &'static
                 );
             }
             let material = Zeroizing::new(crypto::random::<32>()?);
-            let mut options = OpenOptions::new();
-            options.write(true).create_new(true);
-            #[cfg(unix)]
-            {
-                use std::os::unix::fs::OpenOptionsExt;
-                options
-                    .mode(0o600)
-                    .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
-            }
-            let mut file = options
-                .open(&key_path)
+            let mut file = rotation
+                .open_key(true)
                 .map_err(|_| "cannot exclusively create audit key")?;
             file.write_all(material.as_ref())
                 .and_then(|()| file.sync_all())
                 .map_err(|_| "cannot persist audit key")?;
-            File::open(audit_path.parent().ok_or("invalid audit parent")?)
-                .and_then(|file| file.sync_all())
+            rotation
+                .verify_key_identity(&file)
+                .map_err(|_| "audit key identity changed")?;
+            rotation
+                .sync_directory()
                 .map_err(|_| "cannot sync audit directory")?;
             material
         }

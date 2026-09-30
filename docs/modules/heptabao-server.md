@@ -471,15 +471,45 @@ and independent operational qualification are not established by this increment.
 
 ## Audit target-ABI boundary
 
-The audit rotation implementation uses the pinned `libc` target definitions for
-`O_DIRECTORY`, `O_NOFOLLOW`, `O_CLOEXEC` and `O_NONBLOCK`. Linux x86_64 numeric
-flags are not portable to Linux aarch64. The private-file, directory-descriptor,
-symlink, permissions and nonblocking protections are retained, not disabled.
-`audit_platform_tests.rs` exercises real directories and regular files, leaf and
-intermediate symlinks, and group/world-writable audit roots. Run these source
-tests on both Linux architectures as part of the existing all-target workspace
-gate; an x86_64 run alone is not aarch64 qualification. Non-Linux durable storage
-remains explicitly unsupported by this implementation profile.
+The audit rotation owner uses the pinned `rustix` 1.1.4 safe descriptor-relative
+filesystem API on Unix, with target-specific `O_DIRECTORY`, `O_NOFOLLOW`,
+`O_CLOEXEC` and `O_NONBLOCK` definitions. An absolute parent is traversed one
+component at a time from an opened root directory; intermediate and final
+symlinks and group/world-writable audit roots are refused. Child operations
+accept only one exact relative filename, not an absolute path, traversal,
+normalized trailing component or separator-bearing name.
+
+Active files, the writer lock, HMAC key, authenticated manifest, staging file,
+retained segments and garbage collection all use the held parent descriptor.
+Reads/creates use `openat`, identity checks use `fstat`/no-follow `fstatat`,
+publication uses same-directory `renameat`, and removal uses `unlinkat`.
+Directory inventory opens an independent descriptor-relative iteration each
+time. The displayed audit path is diagnostic only: its Linux `/proc/self/fd`
+spelling is retained for API continuity, while macOS displays the configured
+parent. Neither display path is used as filesystem authority, and renaming or
+replacing the original parent cannot redirect key loading or rotation writes.
+
+Private regular-file permissions, single-link admission, both exclusive writer
+locks, the stable active inode, authenticated manifest format, retention bounds,
+file/directory synchronization and the existing interruption-recovery protocol
+remain unchanged. HMAC key creation is exclusive and key identity is rechecked
+before use. Missing active/key state is not silently reinitialized. No unsafe
+Rust, global working-directory change or pathname fallback is introduced.
+
+`audit_platform_tests.rs` includes real leaf/intermediate symlink, hardlink,
+FIFO, permissions, invalid-leaf, repeated inventory, rename/replacement and
+anchored HMAC-key regressions. The existing rotation tests execute on Unix,
+including macOS, rather than being Linux-only: five abrupt subprocess-exit
+boundaries, authenticated retention/reopen, competing writers, missing files,
+foreign occupants and active-inode replacement remain required. FIFO creation
+uses the system `mkfifo` utility only in the private test fixture; production
+refusal uses the same nonblocking descriptor-relative opener on both systems.
+
+This removes the audit owner's Linux-only anchoring restriction. It does not
+qualify unrelated storage/HA owners on macOS, every Unix platform, physical
+power loss, disk-full/torn writes, all OpenBao file-audit behavior or independent
+security. Linux x86_64, Linux aarch64 and macOS results remain separately bound
+to the actual source and binary tested. Other non-Unix platforms are refused.
 
 ## Live Identity authorization boundary
 
