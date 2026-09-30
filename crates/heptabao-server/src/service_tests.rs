@@ -3221,3 +3221,70 @@ fn leader_metadata_uses_only_the_explicit_advertised_api_origin()
     }
     Ok(())
 }
+
+#[cfg(unix)]
+#[test]
+fn initialization_stage_publishes_prepared_directory_through_held_parent()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    private_directory(&root.path)?;
+    let target = root.path.join("data");
+    let parent = ExclusiveDirectory::open(&root.path)?;
+    let mut stage = InitializationStage::create(&target)?;
+    fs::write(stage.path.join("prepared"), b"synthetic-candidate")?;
+    assert!(stage.publish(&target, &parent)?);
+    assert!(stage.retain_on_drop);
+    assert_eq!(fs::read(target.join("prepared"))?, b"synthetic-candidate");
+    drop(stage);
+    assert!(target.is_dir());
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn initialization_stage_rejects_target_outside_its_parent() -> Result<(), Box<dyn std::error::Error>>
+{
+    let root = Root::new();
+    let other = Root::new();
+    private_directory(&root.path)?;
+    private_directory(&other.path)?;
+    let target = root.path.join("data");
+    let parent = ExclusiveDirectory::open(&root.path)?;
+    let mut stage = InitializationStage::create(&target)?;
+    fs::write(stage.path.join("prepared"), b"synthetic-candidate")?;
+    assert!(stage.publish(&other.path.join("data"), &parent).is_err());
+    assert!(!stage.retain_on_drop);
+    assert_eq!(
+        fs::read(stage.path.join("prepared"))?,
+        b"synthetic-candidate"
+    );
+    assert!(!target.exists());
+    assert!(!other.path.join("data").exists());
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn initialization_stage_rejects_dangling_target_without_replacing_it()
+-> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::symlink;
+    let root = Root::new();
+    private_directory(&root.path)?;
+    let target = root.path.join("data");
+    let parent = ExclusiveDirectory::open(&root.path)?;
+    let mut stage = InitializationStage::create(&target)?;
+    fs::write(stage.path.join("prepared"), b"synthetic-candidate")?;
+    symlink("missing-synthetic-target", &target)?;
+    let error = stage
+        .publish(&target, &parent)
+        .err()
+        .ok_or("unexpected publication")?;
+    assert_eq!(error.kind(), io::ErrorKind::AlreadyExists);
+    assert!(fs::symlink_metadata(&target)?.file_type().is_symlink());
+    assert_eq!(
+        fs::read(stage.path.join("prepared"))?,
+        b"synthetic-candidate"
+    );
+    assert!(!stage.retain_on_drop);
+    Ok(())
+}

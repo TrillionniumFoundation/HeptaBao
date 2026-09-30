@@ -4,16 +4,38 @@
 
 ## Current API semantics and runtime integration
 
-`ExclusiveDirectory::open(root)` owns one Linux directory descriptor and exclusive writer lock. `root` must be an existing absolute directory. The guard is deliberately not cloneable: keep it alive for every operation and use `access_path()` or `leaf_path(name)`, never reconstruct paths through the original pathname. Leaf names are bounded to 240 bytes and reject separators/traversal. `verify()` checks the original directory identity; `sync_all()` persists directory metadata.
+`ExclusiveDirectory::open(root)` owns one Unix directory descriptor and exclusive
+writer lock. `root` must be an existing absolute directory; every path component
+is opened without following symlinks, with pre/open/post device/inode checks.
+The owner is deliberately not cloneable. New consumers use `open_file`,
+`entry_exists`, `remove_file`, `rename` and independent streaming `entries`
+operations on that held descriptor, never reconstruct authority from the original
+pathname. `FileAccess` distinguishes Read, Write, Append and exclusive CreateNew;
+Write does not implicitly truncate. Opened leaves must be singly linked regular
+files; creation is mode 0600. Names remain flat, bounded to 240 bytes and reject
+separators/traversal. `verify()` checks the held directory identity, and
+`sync_all()` synchronizes that same handle even after pathname replacement.
 
-`RootIdentityChanged`, `UnsafeRoot`, `WriterBusy` and `InvalidLeafName` fail closed; no other-platform fallback exists (`UnsupportedPlatform`). Writer acquisition retries at most 64 ms to tolerate fork/exec descriptor inheritance, not to take over a live owner. Dropping the guard releases the lock. This package is in the current server dependency closure, protecting the `durable-service` storage root; the server audit rotation code implements its own directory/descriptor fencing and does not call this guard. This crate has no independent HTTP route. Restore or repair must keep the descriptor fence and never delete a live lock to force admission.
+`access_path()` is a fallible `Result<&Path, DirectoryGuardError>` compatibility
+API for legacy Linux consumers only. It verifies the `/proc/self/fd` identity;
+`leaf_path(name)` depends on it. Those adapters return `UnsupportedPlatform` on
+non-Linux rather than falling back to ambient paths. They are not required by
+the Unix relative operations. Non-Unix acquisition remains unsupported.
+
+`RootIdentityChanged`, `UnsafeRoot`, `WriterBusy` and `InvalidLeafName` fail closed.
+Writer acquisition retains the bounded 64 ms fork/exec inheritance retry, not a
+live-owner takeover. Dropping the owner releases the lock. Current native
+`durable-service::FileBackend` operations and ordinary server initialization
+publication use this owner; the server audit implementation has its own Unix
+directory fence. Legacy journal/store consumers are not thereby ported. Repair
+must never delete or bypass a live writer lock to force admission.
 
 Current executable checks (source anchors, not a pass receipt):
 
 - `root_is_descriptor_bound_and_leaf_names_are_closed` — `crates/heptabao-filesystem-guard/src/lib.rs`.
 - `symlink_root_is_rejected` — `crates/heptabao-filesystem-guard/src/lib.rs`.
 
-Run `cargo +1.98.0 test --locked -p heptabao-filesystem-guard --all-targets`. Exercise descriptor replacement, competing writers and fsync failure on Linux; successful unit tests do not qualify a target filesystem.
+Run `cargo +1.98.0 test --locked -p heptabao-filesystem-guard --all-targets`. Exercise descriptor replacement, competing writers and fsync failure on each Unix target; successful unit tests do not qualify a target filesystem.
 
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
@@ -23,7 +45,7 @@ Run `cargo +1.98.0 test --locked -p heptabao-filesystem-guard --all-targets`. Ex
 
 ## Purpose and non-goals
 
-Owns a Linux directory descriptor, validates root identity, provides bounded descriptor-relative leaf access and retains an exclusive writer fence for object lifetime.
+Owns a Unix directory descriptor, validates root identity, provides bounded descriptor-relative leaf access and retains an exclusive writer fence for object lifetime.
 
 This crate does not by itself grant qualification, compatibility, production, migration or release authority. It must not be used to infer behavior outside the currently declared profile.
 

@@ -614,16 +614,18 @@ impl InitializationStage {
         parent: &ExclusiveDirectory,
     ) -> Result<bool, io::Error> {
         verify_initialization_parent(parent)?;
-        if final_path.exists() {
+        let source = initialization_leaf_name(parent, &self.path)?;
+        let target = initialization_leaf_name(parent, final_path)?;
+        // Inspect the held directory without following a dangling target link.
+        if parent.entry_exists(target)? {
             return Err(io::Error::new(
                 io::ErrorKind::AlreadyExists,
                 "initialization target appeared before publication",
             ));
         }
-        fs::rename(
-            anchored_initialization_leaf(parent, &self.path)?,
-            anchored_initialization_leaf(parent, final_path)?,
-        )?;
+        // Use the existing exclusive parent's Unix rename operation. A /proc
+        // access path is neither required nor substituted with an ambient path.
+        parent.rename(source, target)?;
         self.retain_on_drop = true;
         Ok(parent.sync_all().is_ok() && verify_initialization_parent(parent).is_ok())
     }
@@ -5980,6 +5982,21 @@ fn sync_initialization_parent(data_dir: &Path) -> io::Result<()> {
         return Err(io::Error::other("initialization parent is unsafe"));
     }
     File::open(parent)?.sync_all()
+}
+
+fn initialization_leaf_name<'a>(
+    parent: &ExclusiveDirectory,
+    path: &'a Path,
+) -> io::Result<&'a str> {
+    if path.parent() != Some(parent.original_path()) {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "initialization leaf is outside the held parent",
+        ));
+    }
+    path.file_name()
+        .and_then(|name| name.to_str())
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "invalid initialization leaf"))
 }
 
 fn anchored_initialization_leaf(parent: &ExclusiveDirectory, path: &Path) -> io::Result<PathBuf> {

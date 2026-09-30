@@ -14,6 +14,32 @@ with explicit CA verification. The current contract and bounded comparison
 profile are in `docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md`; none of these source
 changes asserts whole-surface OpenBao, HA or historical-upgrade qualification.
 
+## Initialization publication and Unix platform boundary
+
+Ordinary filesystem initialization prepares the encrypted durable candidate in
+one private sibling directory before publishing any active state. Publication
+uses the existing `ExclusiveDirectory` parent owner: both source and target must
+be immediate children of that exact parent, target existence is checked without
+following symlinks, and the rename is descriptor-relative on Unix. A dangling
+target symlink is an existing entry, not permission to overwrite it. No original
+pathname or `/proc/self/fd` fallback replaces the held directory authority.
+
+The existing parent identity checks, exclusive writer lifetime, retained-stage
+flag and post-rename directory synchronization remain the publication boundary.
+A successful rename followed by a failed sync remains an uncertain publication;
+it is not permission to mint another candidate or retry the mutation blindly.
+The three `initialization_stage_*` tests in `service_tests.rs` cover normal
+publication, an outside-parent target and a dangling target link. The existing
+`init_seal_wrong_key_root_policy_kv_restart_and_no_plaintext_disk` test covers the
+ordinary Service lifecycle beyond publication.
+
+This is not a whole-platform qualification. PostgreSQL pending-candidate
+retention/retirement still uses the legacy Linux path adapter; snapshot transfer,
+legacy single-node journal/store adapters and migration require separate Unix
+completion. The strict synthetic certificates in `qa/single-node/smoke.py`
+explicitly carry SKI/AKI, and certificate verification errors fail startup
+immediately without weakening hostname, CA or TLS-version verification.
+
 ## Native namespace API scope
 
 Namespace CRUD reuses the existing encrypted `NamespaceRegistry` and journal,
