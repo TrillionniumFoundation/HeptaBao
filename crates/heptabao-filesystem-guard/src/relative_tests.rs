@@ -1,7 +1,7 @@
 use super::{DirectoryGuardError, ExclusiveDirectory, FileAccess};
 use std::{
     fs,
-    io::{self, Read, Write},
+    io::{self, Read, Seek, SeekFrom, Write},
     os::unix::fs::symlink,
     path::PathBuf,
     sync::atomic::{AtomicU64, Ordering},
@@ -135,6 +135,7 @@ fn unix_relative_symlinks_hardlinks_and_fifo_are_rejected_without_target_changes
             FileAccess::Write,
             FileAccess::Append,
             FileAccess::CreateNew,
+            FileAccess::CreateNewReadWrite,
         ] {
             assert!(owner.open_file(leaf, mode).is_err(), "{leaf}");
         }
@@ -176,5 +177,45 @@ fn unix_legacy_proc_path_api_has_no_original_path_fallback() -> TestResult {
         .open_file("valid", FileAccess::CreateNew)?
         .write_all(b"relative")?;
     assert_eq!(read(&owner, "valid")?, b"relative");
+    Ok(())
+}
+
+#[test]
+fn unix_private_read_write_file_survives_unlink_without_named_state() -> TestResult {
+    use std::os::unix::fs::MetadataExt;
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let mut file = owner.open_file("transfer-fixture", FileAccess::CreateNewReadWrite)?;
+    assert_eq!(file.metadata()?.mode() & 0o777, 0o600);
+    assert!(
+        owner
+            .open_file("transfer-fixture", FileAccess::CreateNewReadWrite)
+            .is_err()
+    );
+    file.write_all(b"synthetic-transfer")?;
+    owner.remove_file("transfer-fixture")?;
+    assert_eq!(file.metadata()?.nlink(), 0);
+    assert!(!owner.entry_exists("transfer-fixture")?);
+    file.seek(SeekFrom::Start(0))?;
+    let mut bytes = Vec::new();
+    file.read_to_end(&mut bytes)?;
+    assert_eq!(bytes, b"synthetic-transfer");
+    Ok(())
+}
+
+#[test]
+fn unix_read_directory_handle_rejects_symlink_ancestors_without_taking_writer_lock() -> TestResult {
+    let root = Root::new()?;
+    let owner = ExclusiveDirectory::open(&root.0)?;
+    let reader = super::open_absolute_directory_no_symlinks(&root.0)?;
+    assert!(reader.metadata()?.is_dir());
+    assert!(matches!(
+        ExclusiveDirectory::open(&root.0),
+        Err(DirectoryGuardError::WriterBusy)
+    ));
+    let parent = Root::new()?;
+    symlink(&root.0, parent.0.join("alias"))?;
+    assert!(super::open_absolute_directory_no_symlinks(&parent.0.join("alias")).is_err());
+    owner.verify()?;
     Ok(())
 }

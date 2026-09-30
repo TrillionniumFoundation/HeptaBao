@@ -34,11 +34,33 @@ publication, an outside-parent target and a dangling target link. The existing
 ordinary Service lifecycle beyond publication.
 
 This is not a whole-platform qualification. PostgreSQL pending-candidate
-retention/retirement still uses the legacy Linux path adapter; snapshot transfer,
-legacy single-node journal/store adapters and migration require separate Unix
-completion. The strict synthetic certificates in `qa/single-node/smoke.py`
+retention/retirement still uses the legacy Linux path adapter; legacy single-node
+journal/store adapters and migration require separate Unix completion. The strict synthetic certificates in `qa/single-node/smoke.py`
 explicitly carry SKI/AKI, and certificate verification errors fail startup
 immediately without weakening hostname, CA or TLS-version verification.
+
+## Native snapshot transfer files
+
+The native snapshot spool uses a read-only, no-symlink-traversal Unix parent
+handle and a separately locked private child directory. The child is created at
+mode 0700 and bound by device/inode to the held parent; a public or differently
+owned child is rejected. Reads of committed `seal.json` use `openat` on that
+parent with no-follow/nonblocking flags and retain ownership, permissions,
+single-link, size and deadline checks. No archive-supplied filename is opened.
+
+Temporary transfer files are exclusive mode-0600 read/write creations through
+the spool owner, immediately unlinked while the descriptor remains open. The
+existing single-transfer lease, cancellation, timeout and archive byte limits
+are unchanged. Reopen cleanup accepts only the exact synthetic transfer-name
+shape and regular singly linked files; symlinks, hard links and foreign names
+are not followed or adopted. Parent replacement fences new leases, seal reads
+and rewind/publication checks. There is no ambient temporary-directory fallback.
+
+`service_snapshot_transfer_tests.rs` exercises native round-trip/restore,
+authorization, cancellation, expiration, strict cleanup and public/replaced-root
+rejection. The adjacent HA tests retain epoch and stale-provider-result fences.
+Passing same-product snapshot tests is not OpenBao snapshot-format migration or
+independent durability qualification.
 
 ## Native namespace API scope
 

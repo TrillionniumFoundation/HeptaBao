@@ -268,8 +268,13 @@ fn validate_leaf(name: &str) -> Result<(), DirectoryGuardError> {
     Ok(())
 }
 
+/// Open a read-only Unix directory handle with no symlink traversal.
+///
+/// This primitive does not acquire a writer lock. It supports read-only parent
+/// custody for a separately fenced snapshot spool; it must not replace the
+/// `ExclusiveDirectory` owner for durable-state writes.
 #[cfg(unix)]
-fn open_absolute_directory_no_symlinks(path: &Path) -> Result<File, DirectoryGuardError> {
+pub fn open_absolute_directory_no_symlinks(path: &Path) -> Result<File, DirectoryGuardError> {
     use rustix::fs::{Mode, OFlags, open, openat};
     let mut components = path.components();
     if components.next() != Some(Component::RootDir) {

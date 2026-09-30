@@ -1,14 +1,11 @@
 //! Private descriptor-backed transfer files; no ambient temporary directory.
-use heptabao_filesystem_guard::ExclusiveDirectory;
-#[cfg(target_os = "linux")]
-use std::os::{
-    fd::AsRawFd,
-    unix::fs::{MetadataExt, OpenOptionsExt},
-};
-#[cfg(target_os = "linux")]
+use heptabao_filesystem_guard::{ExclusiveDirectory, FileAccess};
+#[cfg(unix)]
+use std::os::unix::fs::MetadataExt;
+#[cfg(unix)]
 use std::path::PathBuf;
 use std::{
-    fs::{self, File, OpenOptions},
+    fs::{self, File},
     io::{self, Read, Seek, SeekFrom, Write},
     path::Path,
     sync::{
@@ -20,13 +17,13 @@ use std::{
 
 pub(crate) const MAX_NATIVE_STATE: u64 = 130 * 1024 * 1024;
 pub(crate) const MAX_NATIVE_ARCHIVE: u64 = MAX_NATIVE_STATE + 1024 * 1024;
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 const DIRECTORY: &str = ".snapshot-transfer";
 
 pub(crate) struct SnapshotSpool {
-    #[cfg(target_os = "linux")]
+    #[cfg(unix)]
     parent: File,
-    #[cfg(target_os = "linux")]
+    #[cfg(unix)]
     original: PathBuf,
     directory: ExclusiveDirectory,
     busy: AtomicBool,
@@ -42,40 +39,40 @@ fn guard(error: impl std::fmt::Display) -> io::Error {
 
 impl SnapshotSpool {
     pub(crate) fn open(path: &Path) -> io::Result<Arc<Self>> {
-        #[cfg(not(target_os = "linux"))]
+        #[cfg(not(unix))]
         {
             let _ = path;
             Err(invalid())
         }
-        #[cfg(target_os = "linux")]
+        #[cfg(unix)]
         {
             if !path.is_absolute() {
                 return Err(invalid());
             }
-            let parent = OpenOptions::new()
-                .read(true)
-                .custom_flags(libc::O_NOFOLLOW | libc::O_DIRECTORY | libc::O_CLOEXEC)
-                .open(path)?;
-            let anchored = PathBuf::from(format!("/proc/self/fd/{}", parent.as_raw_fd()));
-            let child = anchored.join(DIRECTORY);
-            match fs::create_dir(&child) {
-                Ok(()) => {
-                    use std::os::unix::fs::PermissionsExt;
-                    fs::set_permissions(&child, fs::Permissions::from_mode(0o700))?;
-                }
-                Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {}
-                Err(error) => return Err(error),
+            use rustix::fs::{Mode, OFlags, mkdirat, openat};
+            let parent = heptabao_filesystem_guard::open_absolute_directory_no_symlinks(path)
+                .map_err(guard)?;
+            match mkdirat(&parent, DIRECTORY, Mode::RWXU) {
+                Ok(()) => {}
+                Err(rustix::io::Errno::EXIST) => {}
+                Err(error) => return Err(error.into()),
             }
-            if fs::symlink_metadata(&child)?.file_type().is_symlink() {
+            let child = File::from(openat(
+                &parent,
+                DIRECTORY,
+                OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+                Mode::empty(),
+            )?);
+            let anchored_child = child.metadata()?;
+            if anchored_child.mode() & 0o077 != 0
+                || anchored_child.uid() != parent.metadata()?.uid()
+            {
                 return Err(invalid());
             }
-            // The guard rejects every symlink ancestor, including /proc's
-            // descriptor links. Acquire through the original absolute path,
-            // then bind it to the child created through our held parent.
+            // The separately locked spool must be the exact child opened from
+            // our read-only parent. The durable-state writer remains untouched.
             let directory = ExclusiveDirectory::open(path.join(DIRECTORY)).map_err(guard)?;
-            let anchored_child = fs::symlink_metadata(&child)?;
             if !anchored_child.is_dir()
-                || anchored_child.file_type().is_symlink()
                 || anchored_child.dev() != directory.identity().device()
                 || anchored_child.ino() != directory.identity().inode()
             {
@@ -90,9 +87,8 @@ impl SnapshotSpool {
             spool.verify()?;
             // Only interrupted create-before-unlink leaves can survive a crash.
             // No authority or arbitrary application filename is ever removed.
-            for entry in fs::read_dir(spool.directory.access_path().map_err(guard)?)? {
-                let entry = entry?;
-                let name = entry.file_name();
+            for name in spool.directory.entries()? {
+                let name = name?;
                 let Some(name) = name.to_str() else {
                     return Err(invalid());
                 };
@@ -101,11 +97,10 @@ impl SnapshotSpool {
                 }) {
                     return Err(invalid());
                 }
-                let metadata = entry.metadata()?;
-                if !metadata.is_file() || metadata.nlink() != 1 || entry.file_type()?.is_symlink() {
-                    return Err(invalid());
-                }
-                fs::remove_file(spool.directory.leaf_path(name).map_err(guard)?)?;
+                // open_file rejects symlinks, hard links and non-regular files.
+                let file = spool.directory.open_file(name, FileAccess::Read)?;
+                spool.directory.remove_file(name)?;
+                drop(file);
             }
             Ok(spool)
         }
@@ -113,7 +108,7 @@ impl SnapshotSpool {
 
     fn verify(&self) -> io::Result<()> {
         self.directory.verify().map_err(guard)?;
-        #[cfg(target_os = "linux")]
+        #[cfg(unix)]
         {
             let held = self.parent.metadata()?;
             let current = fs::symlink_metadata(&self.original)?;
@@ -159,12 +154,12 @@ impl SnapshotLease {
         &self,
         deadline: Instant,
     ) -> io::Result<zeroize::Zeroizing<Vec<u8>>> {
-        #[cfg(not(target_os = "linux"))]
+        #[cfg(not(unix))]
         {
             let _ = deadline;
             Err(invalid())
         }
-        #[cfg(target_os = "linux")]
+        #[cfg(unix)]
         {
             const LIMIT: usize = 64 * 1024;
             self.spool.verify()?;
@@ -174,12 +169,15 @@ impl SnapshotLease {
                     "snapshot transfer deadline exceeded",
                 ));
             }
-            let path = PathBuf::from(format!("/proc/self/fd/{}", self.spool.parent.as_raw_fd()))
-                .join("seal.json");
-            let file = OpenOptions::new()
-                .read(true)
-                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK)
-                .open(path)?;
+            let file = File::from(rustix::fs::openat(
+                &self.spool.parent,
+                "seal.json",
+                rustix::fs::OFlags::RDONLY
+                    | rustix::fs::OFlags::NOFOLLOW
+                    | rustix::fs::OFlags::CLOEXEC
+                    | rustix::fs::OFlags::NONBLOCK,
+                rustix::fs::Mode::empty(),
+            )?);
             let metadata = file.metadata()?;
             if !metadata.is_file()
                 || metadata.nlink() != 1
@@ -213,23 +211,14 @@ impl SnapshotLease {
         self.spool.verify()?;
         let nonce = crate::crypto::random::<16>().map_err(|_| invalid())?;
         let suffix: String = nonce.iter().map(|byte| format!("{byte:02x}")).collect();
-        let path = self
+        let name = format!("transfer-{suffix}");
+        let file = self
             .spool
             .directory
-            .leaf_path(&format!("transfer-{suffix}"))
-            .map_err(guard)?;
-        let mut options = OpenOptions::new();
-        options.read(true).write(true).create_new(true);
-        #[cfg(target_os = "linux")]
-        {
-            options
-                .mode(0o600)
-                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
-        }
-        let file = options.open(&path)?;
+            .open_file(&name, FileAccess::CreateNewReadWrite)?;
         // Open descriptor is the capability. Cancel, panic, reset, timeout and
         // process death all close it; there is no named uploaded state to adopt.
-        if fs::remove_file(&path).is_err() {
+        if self.spool.directory.remove_file(&name).is_err() {
             drop(file);
             return Err(invalid());
         }

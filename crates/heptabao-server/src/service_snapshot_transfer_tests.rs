@@ -208,7 +208,7 @@ fn spool_reopen_cleans_only_owned_interrupted_leaves_and_never_follows_links() -
     assert!(SnapshotSpool::open(&service.data_dir).is_err());
     assert_eq!(fs::read(&foreign)?, b"do not delete");
     fs::remove_file(foreign)?;
-    #[cfg(target_os = "linux")]
+    #[cfg(unix)]
     {
         let outside = root.path.join("outside");
         fs::write(&outside, b"outside")?;
@@ -958,5 +958,45 @@ fn native_seal_reader_rejects_linked_nonprivate_and_oversized_metadata() -> Test
         assert!(!service.recovery_required);
     }
     assert!(!download(&mut service, &token)?.is_empty());
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn snapshot_spool_rejects_public_directory_and_replaced_parent() -> TestResult {
+    use std::os::unix::fs::PermissionsExt;
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    drop(pending(&mut service, "POST", &token)?);
+    let directory = service.data_dir.join(".snapshot-transfer");
+    service.snapshot_spool = None;
+    fs::set_permissions(&directory, fs::Permissions::from_mode(0o755))?;
+    assert!(SnapshotSpool::open(&service.data_dir).is_err());
+    fs::set_permissions(&directory, fs::Permissions::from_mode(0o700))?;
+    let spool = SnapshotSpool::open(&service.data_dir)?;
+    let held = spool.lease()?;
+    assert!(spool.lease().is_err());
+    let mut file = held.file(32, Instant::now() + Duration::from_secs(10))?;
+    file.write_all(b"private-transfer")?;
+    file.rewind_checked()?;
+    let mut bytes = Vec::new();
+    file.read_to_end(&mut bytes)?;
+    assert_eq!(bytes, b"private-transfer");
+    assert!(fs::read_dir(&directory)?.next().is_none());
+    let moved = root.path.join("moved-data");
+    fs::rename(&service.data_dir, &moved)?;
+    fs::create_dir(&service.data_dir)?;
+    assert!(spool.lease().is_err());
+    assert!(
+        held.file(32, Instant::now() + Duration::from_secs(10))
+            .is_err()
+    );
+    assert!(
+        held.read_seal_metadata(Instant::now() + Duration::from_secs(10))
+            .is_err()
+    );
+    assert!(file.rewind_checked().is_err());
+    assert!(fs::read_dir(&service.data_dir)?.next().is_none());
     Ok(())
 }

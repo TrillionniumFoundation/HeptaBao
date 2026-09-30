@@ -10,6 +10,7 @@ pub enum FileAccess {
     Write,
     Append,
     CreateNew,
+    CreateNewReadWrite,
 }
 
 fn leaf(path: &Path) -> io::Result<&str> {
@@ -33,6 +34,7 @@ impl ExclusiveDirectory {
                 FileAccess::Write => OFlags::WRONLY,
                 FileAccess::Append => OFlags::WRONLY | OFlags::APPEND,
                 FileAccess::CreateNew => OFlags::WRONLY | OFlags::CREATE | OFlags::EXCL,
+                FileAccess::CreateNewReadWrite => OFlags::RDWR | OFlags::CREATE | OFlags::EXCL,
             };
             let file = File::from(openat(
                 &self.handle,

@@ -10,7 +10,8 @@ is opened without following symlinks, with pre/open/post device/inode checks.
 The owner is deliberately not cloneable. New consumers use `open_file`,
 `entry_exists`, `remove_file`, `rename` and independent streaming `entries`
 operations on that held descriptor, never reconstruct authority from the original
-pathname. `FileAccess` distinguishes Read, Write, Append and exclusive CreateNew;
+pathname. `FileAccess` distinguishes Read, Write, Append, exclusive CreateNew and
+CreateNewReadWrite for a private unlinked snapshot transfer;
 Write does not implicitly truncate. Opened leaves must be singly linked regular
 files; creation is mode 0600. Names remain flat, bounded to 240 bytes and reject
 separators/traversal. `verify()` checks the held directory identity, and
@@ -21,6 +22,12 @@ API for legacy Linux consumers only. It verifies the `/proc/self/fd` identity;
 `leaf_path(name)` depends on it. Those adapters return `UnsupportedPlatform` on
 non-Linux rather than falling back to ambient paths. They are not required by
 the Unix relative operations. Non-Unix acquisition remains unsupported.
+
+`open_absolute_directory_no_symlinks` exposes the same Unix component traversal
+as a read-only directory handle without a writer lock. Snapshot parent custody
+uses it alongside, not instead of, the existing durable writer. The spool has its
+own `ExclusiveDirectory` and a single-transfer lease. This primitive never grants
+durable-write authorization or permits competing writers.
 
 `RootIdentityChanged`, `UnsafeRoot`, `WriterBusy` and `InvalidLeafName` fail closed.
 Writer acquisition retains the bounded 64 ms fork/exec inheritance retry, not a
