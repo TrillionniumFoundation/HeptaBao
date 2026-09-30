@@ -820,20 +820,19 @@ mod parameter_lifetime_tests {
     use super::*;
 
     #[test]
-    fn encoded_bound_counts_utf8_and_json_escaping_without_a_payload_buffer() {
+    fn encoded_bound_counts_utf8_and_json_escaping_without_a_payload_buffer()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
         for value in [
             json!({"token":"synthetic"}),
-            json!({"control":String::from_utf8(vec![0, 10, 34, 92]).expect("synthetic UTF-8")}),
+            json!({"control":String::from_utf8(vec![0, 10, 34, 92])?}),
             json!({"nested":{"text":"é中\n\u{0000}\"\\"},"array":[true,null,1]}),
         ] {
             let mut size = EncodedSize::default();
             assert!(serde_json::to_writer(&mut size, &value).is_ok());
-            assert_eq!(
-                size.0,
-                serde_json::to_vec(&value).expect("synthetic JSON").len()
-            );
+            assert_eq!(size.0, serde_json::to_vec(&value)?.len());
             assert!(validate_values(&value).is_ok());
         }
+        Ok(())
     }
 
     #[test]
@@ -863,7 +862,8 @@ mod parameter_lifetime_tests {
     }
 
     #[test]
-    fn rejected_config_and_key_patches_preserve_the_installed_parameters() {
+    fn rejected_config_and_key_patches_preserve_the_installed_parameters()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
         let mut registry = Registry::default();
         let config = "sys/external-keys/configs/lifetime";
         let key = "sys/external-keys/configs/lifetime/keys/key1";
@@ -890,7 +890,7 @@ mod parameter_lifetime_tests {
             let mut config_body = oversized.clone();
             config_body
                 .as_object_mut()
-                .expect("synthetic object")
+                .ok_or("synthetic object")?
                 .insert("plugin".into(), json!("transit"));
             assert!(registry.handle(method, config, &config_body).is_err());
             assert!(registry.handle(method, key, &oversized).is_err());
@@ -899,13 +899,16 @@ mod parameter_lifetime_tests {
             assert_eq!(installed.keys["key1"].values["name"], "original");
             assert_eq!(installed.keys["key1"].values["version"], 1);
         }
+        Ok(())
     }
 
     #[test]
-    fn filtered_parameters_are_guarded_and_do_not_persist_control_fields() {
+    fn filtered_parameters_are_guarded_and_do_not_persist_control_fields()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
         let body =
             json!({"plugin":"transit","verify":false,"token":"synthetic","namespace":"team/"});
-        let filtered = filtered_values(&body, &["plugin", "verify"]).expect("synthetic parameters");
+        let filtered = filtered_values(&body, &["plugin", "verify"])?;
         assert_eq!(*filtered, json!({"token":"synthetic","namespace":"team/"}));
+        Ok(())
     }
 }
