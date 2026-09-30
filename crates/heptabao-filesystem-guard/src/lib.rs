@@ -268,15 +268,74 @@ fn validate_leaf(name: &str) -> Result<(), DirectoryGuardError> {
     Ok(())
 }
 
+/// Normalize only the fixed root-owned macOS compatibility aliases.
+///
+/// Every other path is returned unchanged, and every later component remains
+/// subject to the caller's no-symlink descriptor walk.
+#[cfg(target_os = "macos")]
+pub fn normalize_root_owned_system_alias(path: &Path) -> Result<PathBuf, DirectoryGuardError> {
+    let mut components = path.components();
+    if components.next() != Some(Component::RootDir) {
+        return Err(DirectoryGuardError::RootMustBeAbsolute);
+    }
+    let Some(Component::Normal(first)) = components.next() else {
+        return Ok(path.to_path_buf());
+    };
+    let target = match first.to_str() {
+        Some("var") => Path::new("private/var"),
+        Some("tmp") => Path::new("private/tmp"),
+        Some("etc") => Path::new("private/etc"),
+        _ => return Ok(path.to_path_buf()),
+    };
+
+    // macOS exposes these three fixed compatibility aliases at the filesystem
+    // root. They are not user-selected path redirections: require the root and
+    // alias to remain root-owned, the root to be non-writable by group/other,
+    // and the link text to match the platform contract exactly. The subsequent
+    // descriptor walk starts at /private and still refuses every later symlink.
+    let root_metadata = fs::symlink_metadata("/").map_err(DirectoryGuardError::Io)?;
+    if !root_metadata.is_dir() || root_metadata.uid() != 0 || root_metadata.mode() & 0o022 != 0 {
+        return Err(DirectoryGuardError::UnsafeRoot);
+    }
+    let alias = Path::new("/").join(first);
+    let alias_metadata = fs::symlink_metadata(&alias).map_err(DirectoryGuardError::Io)?;
+    if alias_metadata.uid() != 0 || !alias_metadata.file_type().is_symlink() {
+        return Err(DirectoryGuardError::UnsafeRoot);
+    }
+    let observed = fs::read_link(&alias).map_err(DirectoryGuardError::Io)?;
+    let absolute_target = Path::new("/").join(target);
+    if observed != target && observed != absolute_target {
+        return Err(DirectoryGuardError::UnsafeRoot);
+    }
+
+    let mut normalized = absolute_target;
+    for component in components {
+        let Component::Normal(name) = component else {
+            return Err(DirectoryGuardError::UnsafeRoot);
+        };
+        normalized.push(name);
+    }
+    Ok(normalized)
+}
+
+/// Return an absolute path unchanged on platforms without macOS root aliases.
+#[cfg(not(target_os = "macos"))]
+pub fn normalize_root_owned_system_alias(path: &Path) -> Result<PathBuf, DirectoryGuardError> {
+    Ok(path.to_path_buf())
+}
+
 /// Open a read-only Unix directory handle with no symlink traversal.
 ///
 /// This primitive does not acquire a writer lock. It supports read-only parent
 /// custody for a separately fenced snapshot spool; it must not replace the
-/// `ExclusiveDirectory` owner for durable-state writes.
+/// `ExclusiveDirectory` owner for durable-state writes. On macOS, only the
+/// fixed root-owned `/var`, `/tmp`, and `/etc` compatibility aliases are
+/// normalized before the descriptor walk.
 #[cfg(unix)]
 pub fn open_absolute_directory_no_symlinks(path: &Path) -> Result<File, DirectoryGuardError> {
     use rustix::fs::{Mode, OFlags, open, openat};
-    let mut components = path.components();
+    let walk_path = normalize_root_owned_system_alias(path)?;
+    let mut components = walk_path.components();
     if components.next() != Some(Component::RootDir) {
         return Err(DirectoryGuardError::RootMustBeAbsolute);
     }

@@ -553,11 +553,14 @@ foreign occupants and active-inode replacement remain required. FIFO creation
 uses the system `mkfifo` utility only in the private test fixture; production
 refusal uses the same nonblocking descriptor-relative opener on both systems.
 
-This removes the audit owner's Linux-only anchoring restriction. It does not
-qualify unrelated storage/HA owners on macOS, every Unix platform, physical
-power loss, disk-full/torn writes, all OpenBao file-audit behavior or independent
-security. Linux x86_64, Linux aarch64 and macOS results remain separately bound
-to the actual source and binary tested. Other non-Unix platforms are refused.
+This removes the audit owner's Linux-only anchoring restriction. The same
+narrow root-owned macOS alias normalization is now shared by audit rotation and
+federated replay-root admission; the durable directory owner and private QA
+publishers use the identical rule. This does not qualify every storage/HA owner
+on every Unix platform, physical power loss, disk-full/torn writes, all OpenBao
+file-audit behavior or independent security. Linux x86_64, Linux aarch64 and
+macOS results remain separately bound to the actual source and binary tested.
+Other non-Unix platforms are refused.
 
 ## Live Identity authorization boundary
 

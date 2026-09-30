@@ -3,6 +3,7 @@
 //! through an opened directory and obsolete segments require authenticated receipts.
 use super::{check_private_file, verify_audit_from};
 use base64::{Engine as _, engine::general_purpose::STANDARD};
+use heptabao_filesystem_guard::normalize_root_owned_system_alias;
 use ring::{digest, hmac};
 use serde::{Deserialize, Serialize};
 #[cfg(test)]
@@ -724,9 +725,10 @@ fn open_directory(path: &Path) -> io::Result<File> {
     {
         use rustix::fs::{Mode, OFlags, open, openat};
         use std::{os::unix::fs::PermissionsExt, path::Component};
+        let walk_path = normalize_root_owned_system_alias(path).map_err(io::Error::other)?;
         let flags = OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC;
         let mut current = open("/", flags, Mode::empty())?;
-        for component in path.components() {
+        for component in walk_path.components() {
             match component {
                 Component::RootDir => {}
                 Component::Normal(name) => current = openat(&current, name, flags, Mode::empty())?,

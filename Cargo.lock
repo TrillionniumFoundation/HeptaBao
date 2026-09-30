@@ -1029,6 +1029,7 @@ version = "0.1.0"
 name = "heptabao-p0-server"
 version = "0.1.0"
 dependencies = [
+ "heptabao-filesystem-guard",
  "heptabao-protocol",
  "zeroize",
 ]

@@ -16,6 +16,7 @@ import stat
 import tempfile
 
 from bao_http import Client, SafeArgumentParser, private_read, private_write
+from heptabao.private_state import _descriptor_walk_path
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from official_openbao_launcher import verify_inputs, start_oracle, stop_oracle, restart_oracle
 from online_evidence import admit_output, source_identity
@@ -178,12 +179,13 @@ def run_scenarios(client,restart,rows):
 
 
 def private_parent(path):
-    path=path.absolute()
-    for part in [path,*path.parents]:
+    original=path.absolute()
+    checked=_descriptor_walk_path(original)
+    for part in [checked,*checked.parents]:
         if not stat.S_ISDIR(part.lstat().st_mode):raise ValueError('unsafe_work_parent')
-    if path.stat().st_uid!=os.getuid() or stat.S_IMODE(path.stat().st_mode)!=0o700:
+    if checked.stat().st_uid!=os.getuid() or stat.S_IMODE(checked.stat().st_mode)!=0o700:
         raise ValueError('private_work_parent_required')
-    return path
+    return original
 
 
 def free_port():

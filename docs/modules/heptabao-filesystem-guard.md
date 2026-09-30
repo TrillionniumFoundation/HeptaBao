@@ -7,6 +7,10 @@
 `ExclusiveDirectory::open(root)` owns one Unix directory descriptor and exclusive
 writer lock. `root` must be an existing absolute directory; every path component
 is opened without following symlinks, with pre/open/post device/inode checks.
+On macOS, the fixed compatibility aliases `/var`, `/tmp` and `/etc` are first
+normalized to `/private/...` only after verifying that `/` is root-owned and not
+group/world-writable and that the alias is the exact root-owned platform link.
+No caller-selected or later symlink is admitted.
 The owner is deliberately not cloneable. New consumers use `open_file`,
 `entry_exists`, `remove_file`, `rename` and independent streaming `entries`
 operations on that held descriptor, never reconstruct authority from the original
@@ -23,11 +27,14 @@ API for legacy Linux consumers only. It verifies the `/proc/self/fd` identity;
 non-Linux rather than falling back to ambient paths. They are not required by
 the Unix relative operations. Non-Unix acquisition remains unsupported.
 
-`open_absolute_directory_no_symlinks` exposes the same Unix component traversal
-as a read-only directory handle without a writer lock. Snapshot parent custody
-uses it alongside, not instead of, the existing durable writer. The spool has its
-own `ExclusiveDirectory` and a single-transfer lease. This primitive never grants
-durable-write authorization or permits competing writers.
+`normalize_root_owned_system_alias` exposes that narrow platform normalization to
+other descriptor walkers; non-macOS paths are returned unchanged. It is not a
+general canonicalization or symlink-following API. `open_absolute_directory_no_symlinks`
+then exposes the same Unix component traversal as a read-only directory handle
+without a writer lock. Snapshot parent custody uses it alongside, not instead of,
+the existing durable writer. The spool has its own `ExclusiveDirectory` and a
+single-transfer lease. This primitive never grants durable-write authorization or
+permits competing writers.
 
 `RootIdentityChanged`, `UnsafeRoot`, `WriterBusy` and `InvalidLeafName` fail closed.
 Writer acquisition retains the bounded 64 ms fork/exec inheritance retry, not a
@@ -41,6 +48,7 @@ Current executable checks (source anchors, not a pass receipt):
 
 - `root_is_descriptor_bound_and_leaf_names_are_closed` — `crates/heptabao-filesystem-guard/src/lib.rs`.
 - `symlink_root_is_rejected` — `crates/heptabao-filesystem-guard/src/lib.rs`.
+- `darwin_root_owned_var_alias_is_normalized_but_later_symlinks_remain_denied` — `crates/heptabao-filesystem-guard/src/relative_tests.rs`.
 
 Run `cargo +1.98.0 test --locked -p heptabao-filesystem-guard --all-targets`. Exercise descriptor replacement, competing writers and fsync failure on each Unix target; successful unit tests do not qualify a target filesystem.
 
@@ -174,7 +182,8 @@ Diagnostics use stable typed error classes and opaque correlation identities. Op
 
 ## Known gaps
 
-- Current profile is Linux-local-filesystem only.
+- Current local-filesystem behavior is exercised on Linux and macOS; other Unix
+  kernels and filesystems are not inferred from those runs.
 - Network filesystem semantics are not claimed.
 - Kernel power-cut and storage-controller qualification remain external.
 

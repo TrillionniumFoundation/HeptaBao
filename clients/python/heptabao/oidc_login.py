@@ -20,6 +20,7 @@ import sys
 import time
 import urllib.parse
 import webbrowser
+from .private_state import _descriptor_walk_path
 from .transport import BaoError, Client, SafeArgumentParser, canonical, endpoint, key_path
 
 MAX_CALLBACK_HEAD = 8192
@@ -168,6 +169,7 @@ assumption that the upstream operation did not happen is permitted.
         self.directory = None; self.file = None; self.name = None
         if not path.is_absolute() or any(part in (".", "..") for part in path.parts):
             raise BaoError("absolute_output_path_required")
+        path = _descriptor_walk_path(path)
         try:
             directory = os.open("/", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
             self.directory = directory

@@ -26,6 +26,7 @@ import tempfile
 import time
 
 from bao_http import Client, SafeArgumentParser, private_write
+from heptabao.private_state import _descriptor_walk_path
 from core_isolation import ROOT, ScenarioFailure, file_hash
 from official_openbao_launcher import verify_inputs, oracle_environment
 from online_evidence import admit_output, source_identity
@@ -75,14 +76,15 @@ def complete(checks, *, postgres=False):
 
 
 def private_parent(path):
-    path = path.absolute()
-    for item in [path, *path.parents]:
+    original = path.absolute()
+    checked = _descriptor_walk_path(original)
+    for item in [checked, *checked.parents]:
         mode = item.lstat().st_mode
         if not stat.S_ISDIR(mode) or stat.S_ISLNK(mode): raise ValueError('unsafe_work_parent')
-    info = path.stat()
+    info = checked.stat()
     if info.st_uid != os.getuid() or stat.S_IMODE(info.st_mode) != 0o700:
         raise ValueError('private_work_parent_required')
-    return path
+    return original
 
 
 def new_file(path):

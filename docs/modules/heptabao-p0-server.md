@@ -6,7 +6,7 @@
 
 `P0Server::new(credentials, audit)` owns development credentials and an `AuditSink`. `handle(envelope, now: MonotonicTick)` consumes a protocol `RequestEnvelope`, validates its process-local monotonic deadline, and serializes the in-memory init/seal/KV state. `DevelopmentCredentials::new` rejects weak or equal root/unseal credentials. This prototype is not the `heptabao-server` executable and has no durable KV, TLS listener or production token model.
 
-Request-audit failure prevents dispatch. Response-audit failure after a committed mutation returns an explicit recovery reference; a client must not repeat the effect. `FileAuditSink::create_new` requires an absolute new non-symlink path and does not supply the runnable service's authenticated rotating audit. All state is lost when the prototype is dropped; operate only with synthetic values and use the current server runbook for the actual process.
+Request-audit failure prevents dispatch. Response-audit failure after a committed mutation returns an explicit recovery reference; a client must not repeat the effect. `FileAuditSink::create_new` requires an absolute new non-symlink path and reuses `heptabao-filesystem-guard` for the same narrowly verified macOS root aliases as the product owners; all later symlinks remain refused. It does not supply the runnable service's authenticated rotating audit. All state is lost when the prototype is dropped; operate only with synthetic values and use the current server runbook for the actual process.
 
 The separate `src/main.rs` development listener bounds connections to 32, tracks request identifiers in a 4096-entry bounded set and uses an absolute response-write deadline; partial writes cannot refresh that deadline. Worker-spawn failure releases admission capacity and is audited, and delivery failure retains the classified operation/commit metadata. A busy `try_lock` path returns 503 and the response drain is bounded. These prototype mechanics do not replace the runnable server's TLS `DeadlineStream`.
 
@@ -45,6 +45,7 @@ The source is a bounded foundation component. Technical tests establish only the
 ## Dependency contract
 
 Direct HeptaBao dependencies:
+- `heptabao-filesystem-guard`
 - `heptabao-protocol`
 
 Reverse HeptaBao dependants:

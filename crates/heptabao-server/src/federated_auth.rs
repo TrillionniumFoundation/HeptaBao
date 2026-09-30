@@ -19,6 +19,7 @@ use std::path::{Component, Path, PathBuf};
 use zeroize::Zeroize;
 
 use base64::Engine;
+use heptabao_filesystem_guard::normalize_root_owned_system_alias;
 use ring::{digest, hmac, signature};
 use serde::de::{self, MapAccess, Visitor};
 use serde::{Deserialize, Deserializer};
@@ -997,6 +998,7 @@ fn validate_root(path: &Path) -> Result<(), AuthError> {
     if !path.is_absolute() {
         return Err(AuthError::InvalidRoot);
     }
+    let path = normalize_root_owned_system_alias(path).map_err(|_| AuthError::InvalidRoot)?;
     let mut current = PathBuf::new();
     for component in path.components() {
         match component {

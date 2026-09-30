@@ -7,11 +7,12 @@ import re
 import stat
 import subprocess
 from bao_http import private_write
+from heptabao.private_state import _descriptor_walk_path
 
 
 def admit_output(path: Path) -> tuple[int, int]:
     """Reject existing/linked outputs before allocating a synthetic service."""
-    path = path.absolute()
+    path = _descriptor_walk_path(path.absolute())
     for parent in (path.parent, *path.parent.parents):
         if not stat.S_ISDIR(parent.lstat().st_mode):
             raise ValueError("report_directory_not_regular")

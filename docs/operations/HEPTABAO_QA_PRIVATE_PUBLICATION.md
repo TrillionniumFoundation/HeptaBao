@@ -35,6 +35,8 @@ PYTHONPATH=clients/python python -m unittest discover \
   -s clients/python/tests -p test_private_text_publication.py
 ```
 
-Use a canonical private `TMPDIR` when testing descriptor-anchored clients on
-systems whose default temporary-directory prefix is a symbolic link. Do not
-relax the existing path guards to make an unsuitable test environment pass.
+On macOS, descriptor-bound clients accept the platform's fixed root-owned
+`/var`, `/tmp` and `/etc` aliases only after exact owner, mode and link-target
+verification, then walk `/private/...` without following later links. Arbitrary
+caller-controlled aliases remain rejected. A custom `TMPDIR` is therefore not a
+substitute for the same descriptor and private-mode checks.

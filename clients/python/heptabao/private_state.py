@@ -1,8 +1,11 @@
-"""Descriptor-bound Linux/POSIX state publication. Same-UID processes are trusted.
+"""Descriptor-bound POSIX state publication. Same-UID processes are trusted.
 
-The final directory must already be 0700 and caller-owned. No component may be a
-symlink. Atomic rename, fsync and a single-writer flock implement crash-safe local
-publication; this is not encryption or protection from root/the same OS user.
+The final directory must already be 0700 and caller-owned. User-controlled path
+components may not be symlinks. On macOS only the fixed root-owned system aliases
+``/var``, ``/tmp`` and ``/etc`` are normalized to ``/private`` before the
+descriptor walk. Atomic rename, fsync and a single-writer flock implement
+crash-safe local publication; this is not encryption or protection from root or
+the same OS user.
 """
 from __future__ import annotations
 import fcntl
@@ -11,6 +14,7 @@ import os
 from pathlib import Path
 import secrets
 import stat
+import sys
 from .transport import BaoError, canonical, decode_json
 
 MAX_STATE = 65536
@@ -22,10 +26,39 @@ def _name(value: str) -> str:
     return value
 
 
+_DARWIN_ROOT_ALIASES = {
+    'var': 'private/var',
+    'tmp': 'private/tmp',
+    'etc': 'private/etc',
+}
+
+
+def _descriptor_walk_path(path: Path) -> Path:
+    if sys.platform != 'darwin' or len(path.parts) < 2:
+        return path
+    first = path.parts[1]
+    target = _DARWIN_ROOT_ALIASES.get(first)
+    if target is None:
+        return path
+    alias = Path('/') / first
+    try:
+        root_info = os.stat('/', follow_symlinks=False)
+        alias_info = os.lstat(alias)
+        link = os.readlink(alias)
+    except OSError:
+        raise BaoError('private_state_directory_open_failed') from None
+    if (root_info.st_uid != 0 or stat.S_IMODE(root_info.st_mode) & 0o022
+            or alias_info.st_uid != 0 or not stat.S_ISLNK(alias_info.st_mode)
+            or link not in (target, '/' + target)):
+        raise BaoError('private_state_directory_open_failed')
+    return Path('/') / target / Path(*path.parts[2:])
+
+
 def _open_directory(path: str | Path) -> int:
     path = Path(path)
     if not path.is_absolute() or '..' in path.parts:
         raise BaoError('absolute_private_directory_required')
+    path = _descriptor_walk_path(path)
     fd = None
     try:
         fd = os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)

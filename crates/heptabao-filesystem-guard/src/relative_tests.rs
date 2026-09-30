@@ -178,6 +178,39 @@ fn unix_relative_recursive_cleanup_stays_on_held_directory_and_never_follows_sym
     Ok(())
 }
 
+#[cfg(target_os = "macos")]
+#[test]
+fn darwin_root_owned_var_alias_is_normalized_but_later_symlinks_remain_denied() -> TestResult {
+    let path = std::env::temp_dir().join(format!(
+        "heptabao-darwin-alias-{}-{}",
+        std::process::id(),
+        NEXT.fetch_add(1, Ordering::Relaxed)
+    ));
+    assert_eq!(
+        path.components().nth(1),
+        Some(std::path::Component::Normal("var".as_ref()))
+    );
+    fs::create_dir(&path)?;
+    let result = (|| -> TestResult {
+        let owner = ExclusiveDirectory::open(&path)?;
+        owner
+            .open_file("bound", FileAccess::CreateNew)?
+            .write_all(b"system-alias")?;
+        assert_eq!(read(&owner, "bound")?, b"system-alias");
+
+        let nested = path.join("nested");
+        fs::create_dir(&nested)?;
+        symlink(&nested, path.join("redirected"))?;
+        assert!(matches!(
+            ExclusiveDirectory::open(path.join("redirected")),
+            Err(DirectoryGuardError::UnsafeRoot)
+        ));
+        Ok(())
+    })();
+    let _ = fs::remove_dir_all(&path);
+    result
+}
+
 #[test]
 fn unix_relative_intermediate_symlink_is_not_authority() -> TestResult {
     let root = Root::new()?;
