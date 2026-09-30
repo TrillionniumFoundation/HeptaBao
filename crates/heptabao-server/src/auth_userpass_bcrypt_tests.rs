@@ -407,10 +407,7 @@ fn decoded_salt_adapter_matches_normal_library_for_periodic_salts_and_password_b
     for length in [1, 2, 4, 8, 16] {
         let source = random_bytes::<16>();
         let salt = source[..length].to_vec();
-        let mut expanded = [0u8; 16];
-        for (position, value) in expanded.iter_mut().enumerate() {
-            *value = salt[position % length];
-        }
+        let expanded = core::array::from_fn(|position| salt[position % length]);
         for password_length in [5, 71, 72, 1025] {
             let password = random_ascii(password_length);
             let incorrect = runtime_secret("bcrypt-boundary-incorrect");

@@ -1,6 +1,7 @@
 use super::records::{DurableReader, existing_plan};
 use super::tests::{Root, bootstrap, call};
 use super::*;
+use crate::test_support::{random_bytes, runtime_secret};
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
@@ -9,8 +10,9 @@ fn bcrypt_import_alone_requires38_and_survives_authenticated_reopen_and_backup()
     let directory = Root::new();
     let mut service = directory.service()?;
     let (key, admin) = bootstrap(&mut service)?;
+    let password = runtime_secret("bcrypt-service-import");
     let hashed = Zeroizing::new(
-        bcrypt::hash_with_salt("imported credential", 5, [7; 16])?
+        bcrypt::hash_with_salt(password.as_bytes(), 5, random_bytes::<16>())?
             .format_for_version(bcrypt::Version::TwoB),
     );
     assert_eq!(
@@ -46,7 +48,7 @@ fn bcrypt_import_alone_requires38_and_survives_authenticated_reopen_and_backup()
         "POST",
         "auth/userpass/login/imported",
         "",
-        json!({"password":"imported credential"}),
+        json!({"password":password.as_str()}),
     );
     assert_eq!(issued.status, 200);
     let token = issued.body["auth"]["client_token"]
@@ -78,7 +80,7 @@ fn bcrypt_import_alone_requires38_and_survives_authenticated_reopen_and_backup()
             "POST",
             "auth/userpass/login/imported",
             "",
-            json!({"password":"imported credential"})
+            json!({"password":password.as_str()})
         )
         .status,
         200

@@ -21,6 +21,11 @@ fn user_password() -> &'static str {
         .as_str()
 }
 
+fn empty_runtime() -> &'static str {
+    static EMPTY: OnceLock<String> = OnceLock::new();
+    EMPTY.get_or_init(String::new).as_str()
+}
+
 fn options() -> LdapNativeOptions<'static> {
     LdapNativeOptions {
         bind_dn: "cn=manager,dc=test",
@@ -276,10 +281,10 @@ fn empty_manager_or_user_credentials_do_not_send_anonymous_bind() {
         let mut username = "alice";
         let mut password = user_password();
         match field {
-            0 => config.bind_dn = "",
-            1 => config.bind_password = "",
-            2 => username = "",
-            _ => password = "",
+            0 => config.bind_dn = empty_runtime(),
+            1 => config.bind_password = empty_runtime(),
+            2 => username = empty_runtime(),
+            _ => password = empty_runtime(),
         }
         let mut exchange = Exchange::new(&[]);
         assert!(authenticate_exchange(&mut exchange, &config, username, password).is_err());
@@ -540,7 +545,7 @@ fn configuration_validation_rejects_unsupported_filters_without_credentials_or_i
         assert!(config.validate_configuration().is_err());
     }
     config.user_filter = DEFAULT_USER_FILTER;
-    config.bind_password = "";
+    config.bind_password = empty_runtime();
     assert!(config.validate_configuration().is_err());
 }
 
