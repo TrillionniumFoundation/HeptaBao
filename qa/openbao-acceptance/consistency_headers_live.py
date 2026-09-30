@@ -22,7 +22,7 @@ from ha_destructive import FixtureError
 from native_snapshot_ha_live import SaveCluster
 from official_openbao_launcher import oracle_environment, verify_inputs
 from online_evidence import admit_output, complete_checks, source_identity
-from sys_leader_live import Endpoint, Official, Instance
+from sys_leader_live import Endpoint, Official, Instance, ready
 
 VERSION = "2.7.0"
 REQUEST_TIMEOUT = 8
@@ -139,6 +139,8 @@ def common(instance,endpoint,trace):
     value,_=trace.request("initialize",endpoint,"POST","sys/init",200,body={"secret_shares":1,"secret_threshold":1},timeout=INITIALIZATION_TIMEOUT)
     token,key=value["root_token"],value["keys_base64"][0]
     trace.request("unseal",endpoint,"POST","sys/unseal",200,body={"key":key})
+    # Unsealed is not yet active: wait on a read-only health probe, never retry a mutation.
+    ready(endpoint,200)
     trace.request("mount",endpoint,"POST","sys/mounts/"+MOUNT,204,token,{"type":"kv","options":{"version":"2"}})
     trace.request("write",endpoint,"POST",PATH,200,token,{"data":{"fixture":"retained"}})
     for name,headers in VALID_HEADERS:
@@ -172,6 +174,7 @@ def common(instance,endpoint,trace):
     trace.request("unwrap_replay_denied",endpoint,"POST","sys/wrapping/unwrap",400,wrapping,{})
     instance.stop();instance.start()
     trace.request("restart_unseal",endpoint,"POST","sys/unseal",200,body={"key":key})
+    ready(endpoint,200)
     value,_=trace.request("restart_retained",endpoint,"GET",PATH,200,token,headers=VALID_HEADERS[10][1])
     if value.get("data",{}).get("data")!={"fixture":"retained"}:raise FixtureError("restart_wrong_readback")
     trace.check("complete",True)

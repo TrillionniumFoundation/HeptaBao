@@ -20,7 +20,7 @@ import tempfile
 
 from consistency_headers_live import (Trace, RestartableOfficial, Instance, Endpoint,
     VALID_HEADERS, INVALID_HEADERS, HA_REQUIRED, candidate_ha, VERSION,
-    REQUEST_TIMEOUT, INITIALIZATION_TIMEOUT)
+    REQUEST_TIMEOUT, INITIALIZATION_TIMEOUT, ready)
 from core_isolation import ROOT, file_hash
 from bao_http import SafeArgumentParser, private_write
 from ha_destructive import FixtureError
@@ -73,6 +73,7 @@ def common(instance,endpoint,t):
         body={'secret_shares':1,'secret_threshold':1},timeout=INITIALIZATION_TIMEOUT)
     token,key=value['root_token'],value['keys_base64'][0]
     t.request('unseal',endpoint,'POST','sys/unseal',200,body={'key':key})
+    ready(endpoint,200)
     t.request('mount',endpoint,'POST','sys/mounts/client-consistency',204,token,
               {'type':'kv','options':{'version':'2'}})
     path='client-consistency/data/retained'
@@ -96,6 +97,7 @@ def common(instance,endpoint,t):
     t.request('index_not_auth',endpoint,'GET',path,403,'synthetic-invalid',headers=VALID_HEADERS[4][1])
     instance.stop();instance.start()
     t.request('restart_unseal',endpoint,'POST','sys/unseal',200,body={'key':key})
+    ready(endpoint,200)
     value,_=t.request('restart_read',endpoint,'GET',path,200,token,headers=VALID_HEADERS[10][1])
     if value.get('data',{}).get('data')!={'fixture':'retained'}: raise FixtureError('restart_readback')
 
