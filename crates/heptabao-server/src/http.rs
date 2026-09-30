@@ -468,6 +468,8 @@ fn serve_inner(
                         let mut service_request = ServiceRequest {
                             method: if is_head
                                 && request.path != "sys/leader"
+                                && request.path != "sys/internal/ui/mounts"
+                                && !request.path.starts_with("sys/internal/ui/mounts/")
                                 && request.wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
                             {
                                 "GET"
