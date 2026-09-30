@@ -103,11 +103,15 @@ def run_scenarios(client, rows=None):
                          "hash_algorithm": "mldsa-mu", "prehashed": True})
         result = t.call(kind + ".pure_options_ignored", "POST", "mlfixture/sign/" + kind,
                         200, {"input": message, "hash_algorithm": "sha2-512",
-                              "prehashed": True, "context": "non-derived-context"})["data"]
+                              "prehashed": True, "context": base64.b64encode(b"non-derived-context").decode()})["data"]
         result = t.call(kind + ".pure_verify_default", "POST", "mlfixture/verify/" + kind,
                         200, {"input": message, "signature": result["signature"],
-                              "context": "different-ignored-context"})
+                              "context": base64.b64encode(b"different-ignored-context").decode()})
         t.check(kind + ".pure_options_no_hash_or_derivation", result["data"]["valid"] is True)
+        t.call(kind + ".invalid_context_sign", "POST", "mlfixture/sign/" + kind,
+               400, {"input": message, "context": "non-derived-context"})
+        t.call(kind + ".invalid_context_verify", "POST", "mlfixture/verify/" + kind,
+               400, {"input": message, "signature": sigs[0], "context": "!"})
         t.call(kind + ".rotate", "POST", path + "/rotate", 200, {})
         result = t.call(kind + ".sign_rotated", "POST", "mlfixture/sign/" + kind,
                         200, {"input": message})["data"]

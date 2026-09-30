@@ -64,6 +64,8 @@ Current named source scenarios:
 
 - `quorum_loss_and_operation_id_conflict_fail_closed` — `crates/heptabao-ha-service/src/lib.rs`.
 - `authenticated_peer_replay_is_rejected_after_restart` — `crates/heptabao-ha-service/src/lib.rs`.
+- `accepted_peer_socket_restores_blocking_io_with_original_timeouts` — `crates/heptabao-ha-service/src/lib.rs`.
+- `accepted_peer_frame_waits_for_delayed_bytes_after_nonblocking_accept` — `crates/heptabao-ha-service/src/lib.rs`.
 - `tls_endpoint_and_pinned_client_identity_are_strict` — `crates/heptabao-ha-service/src/lib.rs`.
 
 Run `cargo +1.98.0 test --locked -p heptabao-ha-service --all-targets`. These are source anchors; a current test receipt is separate.
@@ -80,6 +82,14 @@ The server now provides a concrete `heptabao-raft-runtime` adapter with one vote
 The endpoint admission rejects port zero and unspecified addresses; configured loopback,
 private and routable peer addresses remain valid. The mutual-TLS client and accepted server sockets enable TCP_NODELAY while retaining
 bounded framing, certificate identity checks and configured read/write timeouts.
+Each accepted server connection explicitly restores blocking I/O before TLS;
+this removes nonblocking mode inherited from a BSD/macOS listener without
+changing that listener's mode or either configured timeout. A partial TLS
+handshake can then wait within its existing I/O budget. Mode configuration
+failure rejects the connection before authentication or handler entry. The
+portable regressions force the inherited mode on every platform, check that an
+idle read waits for its finite timeout, retain a nonblocking listener, and read
+an actual delayed bounded frame.
 The consuming server runs a fixed bounded peer worker pool rather than placing
 all consensus and forwarded-client work behind one serial TLS receiver. These
 changes do not supply membership policy, remote key custody or independent HA

@@ -76,7 +76,7 @@ modules:
   source: crates/heptabao-ha-contracts/src/lib.rs
   guide: docs/modules/heptabao-ha-contracts.md
 - crate: heptabao-ha-service
-  domain: authenticated HA service routing, peer transport and replay fencing
+  domain: authenticated HA service routing, peer transport with portable bounded accepted-socket I/O and replay fencing
   state: IMPLEMENTED_REVIEW_REQUIRED
   documentation_standard: V3
   source: crates/heptabao-ha-service/src/lib.rs

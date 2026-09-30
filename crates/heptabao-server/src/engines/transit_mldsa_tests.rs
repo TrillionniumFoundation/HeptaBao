@@ -447,9 +447,30 @@ fn mldsa270_pure_signing_ignores_generic_hash_prehashed_and_derivation_context()
     let input = BASE64.encode(b"synthetic pure message, not a caller hash");
     for algorithm in ["none", "sha2-256", "sha2-512"] {
         for prehashed in [false, true] {
-            let signed = transit.handle("", "transit", "POST", "sign/test", &json!({"input":input,"hash_algorithm":algorithm,"prehashed":prehashed,"context":"ignored-context"}), 101)?;
-            let verified = transit.handle("", "transit", "POST", "verify/test", &json!({"input":input,"signature":signed.body["data"]["signature"],"context":"different-context"}), 102)?;
+            let signed = transit.handle("", "transit", "POST", "sign/test", &json!({"input":input,"hash_algorithm":algorithm,"prehashed":prehashed,"context":BASE64.encode(b"ignored-context")}), 101)?;
+            let verified = transit.handle("", "transit", "POST", "verify/test", &json!({"input":input,"signature":signed.body["data"]["signature"],"context":BASE64.encode(b"different-context")}), 102)?;
             assert_eq!(verified.body["data"]["valid"], true);
+        }
+    }
+    let before = serde_json::to_value(&transit)?;
+    for operation in ["sign/test", "verify/test"] {
+        for context in [json!("!"), json!("non-derived-context"), json!(17)] {
+            assert_eq!(
+                transit
+                    .handle(
+                        "",
+                        "transit",
+                        "POST",
+                        operation,
+                        &json!({"input":input,"context":context}),
+                        103
+                    )
+                    .err()
+                    .ok_or("malformed context accepted")?
+                    .status,
+                400
+            );
+            assert_eq!(serde_json::to_value(&transit)?, before);
         }
     }
     assert_eq!(

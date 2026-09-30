@@ -775,9 +775,10 @@ fn handle_crypto(
     }
     if mldsa::is_kind(&key.kind) && matches!(operation, "sign" | "verify") {
         // Context is a key-derivation parameter, not a FIPS 204 signature
-        // context. Native ML-DSA keys are not derived; 2.7 ignores this string.
-        if body.get("context").is_some_and(|value| !value.is_string()) {
-            return Err(bad("context must be a string"));
+        // context. Native ML-DSA keys are not derived, but the generic API
+        // still validates the Base64 encoding before ignoring decoded bytes.
+        if body.get("context").is_some() {
+            let _context = decode_field(body, "context")?;
         }
     } else {
         reject_context(body)?;

@@ -101,13 +101,13 @@ fn mldsa270_service_promotes_only_on_write_fences_legacy_and_reopens_signatures(
     let mut hash = sha3::Shake256::default();
     hash.update(&public);
     let mut tr = [0u8; 64];
-    hash.finalize_xof().read(&mut tr);
+    XofReader::read(&mut hash.finalize_xof(), &mut tr);
     let mut hash = sha3::Shake256::default();
     hash.update(&tr);
     hash.update(&[0, 0]);
     hash.update(&message);
     let mut mu = [0u8; 64];
-    hash.finalize_xof().read(&mut mu);
+    XofReader::read(&mut hash.finalize_xof(), &mut mu);
     let mu_signed = call(
         &mut service,
         "POST",

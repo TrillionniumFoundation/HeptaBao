@@ -801,6 +801,11 @@ and exception class, never an arbitrary HTTP status line or response body.
 
 ### Transit precomputed ML-DSA input
 
+For ML-DSA signing and verification, the generic key-derivation context remains
+Base64 validated even though non-derived keys ignore its decoded bytes. Invalid
+encoding returns 400 without modifying retained keys.
+
+
 `engines/transit_mldsa.rs` dispatches pure messages or exact 64-byte externally
 computed mu to the existing pinned RustCrypto owner. The public external-mu
 profile is signing-only; pure verification checks its original message. The

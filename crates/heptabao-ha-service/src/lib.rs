@@ -862,11 +862,7 @@ where
         return Err(HaError::InvalidCluster);
     }
     let (stream, _) = listener.accept().map_err(|_| HaError::Transport)?;
-    stream
-        .set_nodelay(true)
-        .and_then(|()| stream.set_read_timeout(Some(timeout)))
-        .and_then(|()| stream.set_write_timeout(Some(timeout)))
-        .map_err(|_| HaError::Transport)?;
+    configure_accepted_peer_stream(&stream, timeout)?;
     let connection =
         rustls::ServerConnection::new(server_config).map_err(|_| HaError::Transport)?;
     let mut tls = rustls::StreamOwned::new(connection, stream);
@@ -882,6 +878,19 @@ where
     let request = read_bounded_frame(&mut tls)?;
     let response = handler(peer, request)?;
     write_bounded_frame(&mut tls, &response)
+}
+
+fn configure_accepted_peer_stream(stream: &TcpStream, timeout: Duration) -> Result<(), HaError> {
+    // BSD/macOS accept can inherit the listener's nonblocking mode. These
+    // synchronous TLS/frame reads require blocking I/O with the existing finite
+    // socket timeouts; otherwise a normal partial handshake is WouldBlock.
+    // Restoring this connection's mode does not change the listener's mode.
+    stream
+        .set_nonblocking(false)
+        .and_then(|()| stream.set_nodelay(true))
+        .and_then(|()| stream.set_read_timeout(Some(timeout)))
+        .and_then(|()| stream.set_write_timeout(Some(timeout)))
+        .map_err(|_| HaError::Transport)
 }
 
 fn require_raft_alpn(
@@ -1794,6 +1803,69 @@ mod tests {
             identify_peer_certificate_chain(&identities, &oversized),
             Err(HaError::PeerAuthenticationFailed)
         );
+    }
+
+    #[test]
+    fn accepted_peer_socket_restores_blocking_io_with_original_timeouts() -> Result<(), HaError> {
+        let listener = TcpListener::bind("127.0.0.1:0").map_err(|_| HaError::Io)?;
+        listener.set_nonblocking(true).map_err(|_| HaError::Io)?;
+        let _client = TcpStream::connect(listener.local_addr().map_err(|_| HaError::Io)?)
+            .map_err(|_| HaError::Io)?;
+        let (mut stream, _) = listener.accept().map_err(|_| HaError::Io)?;
+        // Force the inherited BSD/macOS state on every platform, so Linux CI
+        // cannot pass merely because its accepted socket starts blocking.
+        stream.set_nonblocking(true).map_err(|_| HaError::Io)?;
+        assert!(
+            stream
+                .read(&mut [0])
+                .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
+        );
+        let timeout = Duration::from_millis(80);
+        configure_accepted_peer_stream(&stream, timeout)?;
+        assert_eq!(
+            stream.read_timeout().map_err(|_| HaError::Io)?,
+            Some(timeout)
+        );
+        assert_eq!(
+            stream.write_timeout().map_err(|_| HaError::Io)?,
+            Some(timeout)
+        );
+        assert!(stream.nodelay().map_err(|_| HaError::Io)?);
+        let started = Instant::now();
+        assert!(stream.read(&mut [0]).is_err_and(|error| {
+            matches!(
+                error.kind(),
+                io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut
+            )
+        }));
+        assert!(started.elapsed() >= Duration::from_millis(40));
+        assert!(started.elapsed() < Duration::from_secs(2));
+        assert!(
+            listener
+                .accept()
+                .is_err_and(|error| error.kind() == io::ErrorKind::WouldBlock)
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn accepted_peer_frame_waits_for_delayed_bytes_after_nonblocking_accept() -> Result<(), HaError>
+    {
+        let listener = TcpListener::bind("127.0.0.1:0").map_err(|_| HaError::Io)?;
+        listener.set_nonblocking(true).map_err(|_| HaError::Io)?;
+        let mut client = TcpStream::connect(listener.local_addr().map_err(|_| HaError::Io)?)
+            .map_err(|_| HaError::Io)?;
+        let (mut stream, _) = listener.accept().map_err(|_| HaError::Io)?;
+        stream.set_nonblocking(true).map_err(|_| HaError::Io)?;
+        configure_accepted_peer_stream(&stream, Duration::from_millis(500))?;
+        let sender = thread::spawn(move || {
+            thread::sleep(Duration::from_millis(30));
+            write_bounded_frame(&mut client, b"synthetic-peer-frame")
+        });
+        let received = read_bounded_frame(&mut stream);
+        sender.join().map_err(|_| HaError::Io)??;
+        assert_eq!(received, Ok(b"synthetic-peer-frame".to_vec()));
+        Ok(())
     }
 
     #[test]
