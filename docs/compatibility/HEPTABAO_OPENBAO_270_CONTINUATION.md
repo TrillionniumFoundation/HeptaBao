@@ -134,6 +134,27 @@ bounded TCP response writer. Its component lane controls filesystem latency;
 the separate three-process TLS lane exercises the original physical storage.
 These bounds govern authority waits, not arbitrarily stalled filesystem I/O.
 
+GET/HEAD `/sys/health` is now an anonymous diagnostic dispatch before request
+and response audit. The pinned public 2.7.0 executable, with a declarative file
+audit device, produced no health audit events in either PebbleDB or single-node
+Raft observations; an ordinary authenticated mounts request produced both audit
+events, and a finite-use bearer retained both uses after health. Native probes
+retain the existing one-second ReadIndex/readiness budget, an earlier caller
+deadline, authenticated application catch-up and namespace/status-code validation.
+Known GET/HEAD health parameter rejections also skip audit and preserve HEAD body
+suppression; other framing, quota and consistency rejections retain wire audit.
+Health ignores the wrapping TTL header, including malformed values, matching
+the pinned public 2.7.0 observations. It never publishes a wrapping token;
+ordinary API wrapping validation is unchanged. Invalid status codes retain the
+native bounded 400 rejection instead of reproducing the reference's disconnected
+response for an active code of 99. A failed mandatory audit remains fenced with 503;
+diagnostics do not retry the device or restore authority. Business requests
+continue to require both signed audit events. The real-Raft regression keeps
+the original 30 ms caller deadline and 500 ms response assertion, rejects reads
+during quorum loss, and verifies that neither GET nor HEAD appends audit.
+These are development compatibility observations, not production authority or
+independent replacement qualification.
+
 The repeated physical-host replay failure is now covered by a paced real-Raft
 regression in `process/replication_tests.rs`. Accumulated multi-entry replay uses
 a 128 KiB serialization target while preserving the 768 KiB hard wire limit and

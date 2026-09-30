@@ -123,6 +123,173 @@ fn leader_never_consumes_limited_tokens_or_mutates_audit_and_application() -> Te
 }
 
 #[test]
+fn health_get_and_head_never_consume_tokens_or_append_audit() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    let issued = call(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &root_token,
+        json!({"policies": ["default"], "num_uses": 2, "ttl": 600}),
+    );
+    assert_eq!(issued.status, 200);
+    let token = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("token")?
+        .to_owned();
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let sequence = service.audit_sequence;
+    let audit = fs::read(root.path.join("audit.jsonl"))?;
+    for method in ["GET", "HEAD"] {
+        for credential in ["", "invalid", root_token.as_str(), token.as_str()] {
+            let response = call(&mut service, method, "sys/health", credential, json!({}));
+            assert_eq!(response.status, 200);
+            assert!(response.consistency_index.is_none());
+            assert_eq!(response.body["initialized"], true);
+            assert_eq!(response.body["sealed"], false);
+        }
+    }
+    assert_eq!(
+        service.audit_sequence, sequence,
+        "health appended audit events"
+    );
+    assert!(fs::read(root.path.join("audit.jsonl"))? == audit);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    let lookup = call(
+        &mut service,
+        "POST",
+        "auth/token/lookup",
+        &root_token,
+        json!({"token": token}),
+    );
+    assert_eq!(lookup.status, 200);
+    assert_eq!(lookup.body["data"]["num_uses"], 2);
+    assert_eq!(service.audit_sequence, sequence + 2);
+    assert_eq!(
+        call(&mut service, "GET", "sys/mounts", &root_token, json!({})).status,
+        200
+    );
+    assert_eq!(service.audit_sequence, sequence + 4);
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/private",
+            "invalid",
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert_eq!(service.audit_sequence, sequence + 6);
+    Ok(())
+}
+
+#[test]
+fn health_diagnostic_preserves_lifecycle_validation_and_audit_fences() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    for (body, expected) in [(json!({}), 501), (json!({"uninitcode": 204}), 204)] {
+        let sequence = service.audit_sequence;
+        let response = call(&mut service, "GET", "sys/health", "invalid", body);
+        assert_eq!(response.status, expected);
+        assert_eq!(response.body["initialized"], false);
+        assert_eq!(service.audit_sequence, sequence);
+    }
+    let (_, token) = bootstrap(&mut service)?;
+    let audit = fs::read(root.path.join("audit.jsonl"))?;
+    for (namespace, body, wrap, expected) in [
+        ("", json!({"activecode": 201}), None, 201),
+        ("", json!({"standbyok": "true"}), None, 400),
+        ("", json!({"perfstandbyok": 1}), None, 400),
+        ("", json!({"activecode": 99}), None, 400),
+        ("", json!({"activecode": "201"}), None, 400),
+        ("../invalid", json!({}), None, 400),
+        ("absent", json!({}), None, 404),
+        ("", json!({}), Some(0), 200),
+        ("", json!({}), Some(60), 200),
+        ("", json!({}), Some(32 * 24 * 3600 + 1), 200),
+    ] {
+        for method in ["GET", "HEAD"] {
+            let response = service.begin_at_mode(RequestDispatch {
+                method,
+                path: "sys/health",
+                namespace,
+                token: "invalid",
+                body: body.clone(),
+                now: 100,
+                allow_forward: true,
+                enforce_namespace: true,
+                wrap_ttl_seconds: wrap,
+                origin_peer: None,
+                client_certificates: None,
+            });
+            assert!(
+                matches!(response, RequestExecution::Complete(Response { status, consistency_index: None, .. }) if status == expected)
+            );
+        }
+    }
+    assert!(fs::read(root.path.join("audit.jsonl"))? == audit);
+    service.recovery_required = true;
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/health",
+            "",
+            json!({"activecode": 201})
+        )
+        .status,
+        503
+    );
+    service.recovery_required = false;
+    // A real failed write to the mandatory device establishes its persistent
+    // fence. Diagnostics report failure without trying that device again.
+    let writable_audit = std::mem::replace(
+        &mut service.audit,
+        fs::File::open(root.path.join("audit.jsonl"))?,
+    );
+    assert_eq!(
+        call(&mut service, "GET", "sys/mounts", &token, json!({})).status,
+        503
+    );
+    assert!(service.audit_failed);
+    assert_eq!(
+        call(&mut service, "HEAD", "sys/health", "", json!({})).status,
+        503
+    );
+    assert!(service.audit_failed);
+    assert!(fs::read(root.path.join("audit.jsonl"))? == audit);
+    // Restore this test's device to exercise the subsequent sealed lifecycle.
+    // Production does not repair the fence by issuing a diagnostic request.
+    service.audit = writable_audit;
+    service.audit_failed = false;
+    assert_eq!(
+        call(&mut service, "POST", "sys/seal", &token, json!({})).status,
+        204
+    );
+    let sealed_audit = fs::read(root.path.join("audit.jsonl"))?;
+    for method in ["GET", "HEAD"] {
+        let response = call(
+            &mut service,
+            method,
+            "sys/health",
+            "",
+            json!({"sealedcode": 499}),
+        );
+        assert_eq!(response.status, 499);
+        assert_eq!(response.body["sealed"], true);
+    }
+    assert!(fs::read(root.path.join("audit.jsonl"))? == sealed_audit);
+    Ok(())
+}
+
+#[test]
 fn standby_leader_observation_is_local_and_does_not_admit_read_authority() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
@@ -268,10 +435,11 @@ fn health_quorum_loss_replies_within_probe_budget_without_admitting_reads() -> T
         200
     );
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let audit = fs::read(root.path.join("audit.jsonl"))?;
     cluster.isolate_all_peers(true);
     let started = std::time::Instant::now();
     let result = service.begin_request_before(
-        ServiceRequest::new("GET", "sys/health", "", "", json!({})),
+        ServiceRequest::new("HEAD", "sys/health", "", "", json!({})),
         started + Duration::from_secs(12),
         false,
     );
@@ -307,6 +475,7 @@ fn health_quorum_loss_replies_within_probe_budget_without_admitting_reads() -> T
         })
     ));
     assert!(crate::request_deadline::current().is_none());
+    assert!(fs::read(root.path.join("audit.jsonl"))? == audit);
     cluster.isolate_all_peers(false);
     assert_eq!(
         call(&mut service, "GET", "sys/health", "", json!({})).status,

@@ -1635,6 +1635,35 @@ impl Service {
                 "external request dispatch state is unavailable",
             ));
         }
+        // Public health probes bypass audit and bearer-use admission. Keep the
+        // existing health handler: unlike /sys/leader, readiness still requires
+        // its bounded ReadIndex and authenticated application catch-up.
+        if path == "sys/health" && matches!(method, "GET" | "HEAD") {
+            let response = if self.audit_failed {
+                // Observation does not retry a failed mandatory device or
+                // restore the read authority which that failure fenced.
+                Response::error(503, "audit unavailable before entry")
+            } else {
+                self.handle_inner(RequestView {
+                    method,
+                    path,
+                    namespace,
+                    token,
+                    body: &body,
+                    now,
+                    admission_started,
+                    allow_forward,
+                    enforce_namespace,
+                    // The dedicated health diagnostic ignores wrapping TTL.
+                    // It never publishes a wrapped response or bearer token.
+                    wrap_ttl_seconds: None,
+                    origin_peer,
+                    client_certificates: client_certificates.as_deref(),
+                })
+            };
+            erase_json(&mut body);
+            return RequestExecution::Complete(response);
+        }
         // Audit binds the original client path. Canonical route resolution
         // happens only after leader synchronization; the response retains
         // this same fingerprint even when routing adds a KV root separator.

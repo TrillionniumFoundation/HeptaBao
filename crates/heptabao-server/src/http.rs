@@ -521,18 +521,25 @@ fn serve_inner(
                         (reply, is_head)
                     }
                     Err(error) => {
-                        let mut response = audited_wire_rejection(
-                            &service,
-                            &attempt_id,
-                            WireRejection::ParseRejected,
-                            error.status,
-                            error.message,
-                            execution_deadline_with_response_reserve(Instant::now(), deadline),
-                        );
+                        let mut response = if error.health_head.is_some() {
+                            Response::error(error.status, error.message)
+                        } else {
+                            audited_wire_rejection(
+                                &service,
+                                &attempt_id,
+                                WireRejection::ParseRejected,
+                                error.status,
+                                error.message,
+                                execution_deadline_with_response_reserve(Instant::now(), deadline),
+                            )
+                        };
                         if error.empty_errors && response.status == error.status {
                             response.body = json!({"errors": []});
                         }
-                        (snapshot::NativeReply::Json(response), false)
+                        (
+                            snapshot::NativeReply::Json(response),
+                            error.health_head == Some(true),
+                        )
                     }
                 };
                 let _ = reply.write(&mut stream, head);
@@ -784,6 +791,17 @@ struct ParseError {
     // The dedicated leader handler's global selector rejection has no logical
     // error message. Do not replace an audit failure with this empty shape.
     empty_errors: bool,
+    // A semantic rejection after valid method/route/header admission can still
+    // belong to the public health diagnostic. None retains mandatory wire audit.
+    health_head: Option<bool>,
+}
+impl ParseError {
+    fn with_health_context(mut self, method: &str, route: &str) -> Self {
+        if route == "sys/health" && matches!(method, "GET" | "HEAD") {
+            self.health_head = Some(method == "HEAD");
+        }
+        self
+    }
 }
 impl From<io::Error> for ParseError {
     fn from(_: io::Error) -> Self {
@@ -791,6 +809,7 @@ impl From<io::Error> for ParseError {
             status: 400,
             message: "incomplete or timed out HTTP request",
             empty_errors: false,
+            health_head: None,
         }
     }
 }
@@ -799,6 +818,7 @@ fn bad(message: &'static str) -> ParseError {
         status: 400,
         message,
         empty_errors: false,
+        health_head: None,
     }
 }
 
@@ -940,6 +960,7 @@ fn read_request_mode(
     if !map.contains_key("host") {
         return Err(bad("Host header is required"));
     }
+    let route = target[4..].split('?').next().unwrap_or_default();
     if !leader_route
         && map.keys().any(|name| {
             (name.starts_with("x-vault-") || name.starts_with("x-bao-"))
@@ -957,6 +978,7 @@ fn read_request_mode(
             status: 501,
             message: "requested OpenBao header semantics are not implemented",
             empty_errors: false,
+            health_head: None,
         });
     }
     if !leader_route
@@ -968,9 +990,11 @@ fn read_request_mode(
             status: 501,
             message: "only opaque response wrapping tokens are supported",
             empty_errors: false,
+            health_head: None,
         });
     }
-    let wrap_ttl_seconds = if leader_route {
+    let health_probe = route == "sys/health" && matches!(method.as_str(), "GET" | "HEAD");
+    let wrap_ttl_seconds = if leader_route || health_probe {
         None
     } else {
         map.get("x-vault-wrap-ttl")
@@ -978,7 +1002,6 @@ fn read_request_mode(
             .transpose()?
             .flatten()
     };
-    let route = target[4..].split('?').next().unwrap_or_default();
     let snapshot_route = matches!(
         route,
         "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
@@ -1029,6 +1052,7 @@ fn read_request_mode(
             status: 413,
             message: "request body exceeds limit",
             empty_errors: false,
+            health_head: None,
         });
     }
     let raw_namespace = if leader_route {
@@ -1037,7 +1061,7 @@ fn read_request_mode(
         map.get("x-vault-namespace").map_or("", |s| s.as_str())
     };
     if raw_namespace == "/" || raw_namespace.contains("//") {
-        return Err(bad("ambiguous namespace segments"));
+        return Err(bad("ambiguous namespace segments").with_health_context(&method, route));
     }
     let namespace = raw_namespace
         .strip_suffix('/')
@@ -1130,12 +1154,15 @@ fn read_request_mode(
             Value::String(authorization.to_string()),
         );
     }
+    let invalid_query = |message| bad(message).with_health_context(&method, path);
     for pair in query.split('&').filter(|v| !v.is_empty()) {
         let (key, value) = pair
             .split_once('=')
-            .ok_or_else(|| bad("query parameters require values"))?;
-        let key = decode_query(key)?;
-        let value = Zeroizing::new(decode_query(value)?);
+            .ok_or_else(|| invalid_query("query parameters require values"))?;
+        let key = decode_query(key).map_err(|error| error.with_health_context(&method, path))?;
+        let value = Zeroizing::new(
+            decode_query(value).map_err(|error| error.with_health_context(&method, path))?,
+        );
         if !matches!(
             key.as_str(),
             "version"
@@ -1152,12 +1179,12 @@ fn read_request_mode(
                 | "standbycode"
                 | "activecode"
         ) {
-            return Err(bad(
+            return Err(invalid_query(
                 "unsupported query parameter; request fields belong in JSON body",
             ));
         }
         if object.contains_key(&key) {
-            return Err(bad("duplicate body/query parameter"));
+            return Err(invalid_query("duplicate body/query parameter"));
         }
         let parsed = if key == "limit" {
             // Endpoints that declare this field validate its type. KV v1
@@ -1169,7 +1196,7 @@ fn read_request_mode(
             json!(
                 value
                     .parse::<u64>()
-                    .map_err(|_| bad("invalid numeric query"))?
+                    .map_err(|_| invalid_query("invalid numeric query"))?
             )
         } else if matches!(
             key.as_str(),
@@ -1179,7 +1206,7 @@ fn read_request_mode(
                 .parse::<u16>()
                 .ok()
                 .filter(|status| (100..=999).contains(status))
-                .ok_or_else(|| bad("invalid health status code"))?;
+                .ok_or_else(|| invalid_query("invalid health status code"))?;
             json!(status)
         } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
             && matches!(value.as_str(), "true" | "1")
@@ -1190,12 +1217,12 @@ fn read_request_mode(
         {
             Value::Bool(false)
         } else if matches!(key.as_str(), "standbyok" | "perfstandbyok") {
-            return Err(bad("invalid health boolean query"));
+            return Err(invalid_query("invalid health boolean query"));
         } else if method == "GET" && matches!(key.as_str(), "list" | "scan") {
             Value::Bool(match value.as_str() {
                 "true" | "True" | "TRUE" | "t" | "T" | "1" => true,
                 "" | "false" | "False" | "FALSE" | "f" | "F" | "0" => false,
-                _ => return Err(bad("invalid list or scan query")),
+                _ => return Err(invalid_query("invalid list or scan query")),
             })
         } else if key == "after" {
             Value::String(value.to_string())
@@ -1210,7 +1237,7 @@ fn read_request_mode(
         let list = object.get("list") == Some(&Value::Bool(true));
         let scan = object.get("scan") == Some(&Value::Bool(true));
         if list && scan {
-            return Err(bad("list and scan are mutually exclusive"));
+            return Err(invalid_query("list and scan are mutually exclusive"));
         }
         if list {
             object.remove("list");
@@ -2220,6 +2247,57 @@ mod wrapping_header_tests {
         for query in ["activecode=99", "sealedcode=1000", "standbycode=nope"] {
             let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
             assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        }
+    }
+
+    #[test]
+    fn only_health_semantic_rejections_skip_wire_audit_and_retain_head() {
+        for method in ["GET", "HEAD"] {
+            for (target, headers, status) in [
+                ("sys/health?standbyok=maybe", "", 400),
+                ("sys/health?activecode=99", "", 400),
+                ("sys/health?sealedcode=1000", "", 400),
+                ("sys/health", "X-Vault-Namespace: a//b\r\n", 400),
+            ] {
+                let wire =
+                    format!("{method} /v1/{target} HTTP/1.1\r\nHost: localhost\r\n{headers}\r\n");
+                assert!(
+                    read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                        .is_err_and(|error| error.status == status
+                            && error.health_head == Some(method == "HEAD"))
+                );
+            }
+        }
+        for method in ["GET", "HEAD"] {
+            for ttl in ["invalid", "60", "0", "999999999999999999999999999999"] {
+                let wire = format!(
+                    "{method} /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: {ttl}\r\n\r\n"
+                );
+                assert!(
+                    read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                        .is_ok_and(|request| request.wrap_ttl_seconds.is_none())
+                );
+            }
+        }
+        // Other methods/routes and malformed framing retain mandatory wire
+        // rejection audit; an untrusted request line alone does not exempt it.
+        for wire in [
+            "POST /v1/sys/health?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n",
+            "GET /v1/sys/healthy?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n",
+            "GET /v1/secret/data/private?activecode=99 HTTP/1.1\r\nHost: localhost\r\n\r\n",
+            "GET /v1/secret/data/private HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: invalid\r\n\r\n",
+            "GET /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-Format: jwt\r\n\r\n",
+            "GET /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nX-Vault-Index: malformed\r\n\r\n",
+            "GET /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nContent-Length: 262145\r\n\r\n",
+            "POST /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: invalid\r\n\r\n",
+            "GET /v1/sys/health?activecode=99 HTTP/1.1\r\n\r\n",
+            "GET /v1/sys/health HTTP/1.1\r\nHost: a\r\nHost: b\r\n\r\n",
+            "GET /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nTransfer-Encoding: chunked\r\n\r\n",
+        ] {
+            assert!(
+                read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                    .is_err_and(|error| error.health_head.is_none())
+            );
         }
     }
 }
