@@ -35,11 +35,15 @@ class Instance:
             "-keyout", str(root / "ca.key"), "-out", str(root / "ca.crt"),
             "-subj", "/CN=HeptaBao Synthetic Test CA", "-addext", "basicConstraints=critical,CA:TRUE",
             "-addext", "keyUsage=critical,keyCertSign,cRLSign",
+            "-addext", "subjectKeyIdentifier=hash",
+            "-addext", "authorityKeyIdentifier=keyid:always",
         ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         subprocess.run(["openssl", "req", "-new", "-newkey", "rsa:2048", "-nodes",
                         "-keyout", str(root / "tls.key"), "-out", str(root / "tls.csr"),
                         "-subj", "/CN=localhost"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        private_write(root / "leaf.ext", "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n")
+        # Do not depend on the host openssl/LibreSSL default extension policy.
+        # Python 3.13+ verifies RFC 5280 identifiers strictly by default.
+        private_write(root / "leaf.ext", "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\nsubjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid:always\n")
         subprocess.run(["openssl", "x509", "-req", "-in", str(root / "tls.csr"),
                         "-CA", str(root / "ca.crt"), "-CAkey", str(root / "ca.key"), "-CAcreateserial",
                         "-out", str(root / "tls.crt"), "-days", "2", "-sha256", "-extfile", str(root / "leaf.ext")],
@@ -73,7 +77,12 @@ class Instance:
                 status, _ = self.call("GET", "sys/health")
                 if status in (200, 501, 503):
                     return
-            except (OSError, urllib.error.URLError):
+            except ssl.SSLCertVerificationError:
+                raise RuntimeError("TLS certificate verification failed during startup") from None
+            except urllib.error.URLError as error:
+                if isinstance(error.reason, ssl.SSLCertVerificationError):
+                    raise RuntimeError("TLS certificate verification failed during startup") from None
+            except OSError:
                 pass
             time.sleep(0.05)
         raise RuntimeError("TLS listener did not become ready")
