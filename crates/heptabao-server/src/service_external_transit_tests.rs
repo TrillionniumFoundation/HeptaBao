@@ -731,7 +731,7 @@ impl RemoteTransit {
             json!({"common_name":"external.test","ttl":"48h"}),
             now,
         );
-        assert_eq!(ca_response.status, 200, "{:?}", ca_response.body);
+        assert_eq!(ca_response.status, 200, "fixture CA status");
         let ca = ca_response.body["data"]["certificate"]
             .as_str()
             .ok_or("CA")?
@@ -757,7 +757,7 @@ impl RemoteTransit {
             json!({"common_name":"external.test","ttl":"12h"}),
             now,
         );
-        assert_eq!(leaf.status, 200, "{:?}", leaf.body);
+        assert_eq!(leaf.status, 200, "fixture TLS certificate status");
         let certificates = rustls_pemfile::certs(&mut BufReader::new(
             leaf.body["data"]["certificate"]
                 .as_str()
@@ -947,7 +947,7 @@ impl RemoteTransit {
             ),
         ] {
             let response = call(&mut service, "POST", path, &admin, body);
-            assert_eq!(response.status, status, "{path}: {:?}", response.body);
+            assert_eq!(response.status, status, "fixture setup: {path}");
         }
         Ok((root, service, unseal, admin))
     }
@@ -1006,7 +1006,7 @@ fn external_transit270_real_remote_encrypt_decrypt_version_rotation_and_restart(
         &admin,
         json!({"plaintext":plaintext,"associated_data":BASE64.encode(b"aad")}),
     );
-    assert_eq!(encrypted.status, 200, "{:?}", encrypted.body);
+    assert_eq!(encrypted.status, 200, "external encryption status");
     let ciphertext = encrypted.body["data"]["ciphertext"]
         .as_str()
         .ok_or("ciphertext")?
@@ -1306,7 +1306,10 @@ fn delayed_result_fences(remote: &RemoteTransit, operation: &str, body: &Value) 
             }
             _ => return Err("mutation".into()),
         };
-        assert!(response.status < 300, "{mutation}: {:?}", response.body);
+        assert!(
+            response.status < 300,
+            "fixture authority change: {mutation}"
+        );
         let response = service.finish_external_request(pending, result);
         assert!(response.status >= 400, "{mutation}");
         assert!(response.body.get("data").is_none(), "{mutation}");
@@ -1536,7 +1539,7 @@ fn external_transit270_last_token_use_is_retained_and_policy_recheck_vetoes() ->
         &token,
         json!({"plaintext":BASE64.encode(b"last use")}),
     );
-    assert_eq!(response.status, 200, "{:?}", response.body);
+    assert_eq!(response.status, 200, "finite-use external response status");
     let before = remote.calls()?;
     assert_eq!(
         call(
