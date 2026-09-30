@@ -1805,13 +1805,31 @@ mod tests {
         );
     }
 
+    // Client connect completion does not guarantee that a nonblocking
+    // listener has already queued the final handshake. Bound fixture setup
+    // separately from the unchanged socket/frame timeouts under test.
+    fn accept_ready_test_peer(listener: &TcpListener) -> Result<TcpStream, HaError> {
+        let deadline = Instant::now() + Duration::from_millis(500);
+        loop {
+            match listener.accept() {
+                Ok((stream, _)) => return Ok(stream),
+                Err(error)
+                    if error.kind() == io::ErrorKind::WouldBlock && Instant::now() < deadline =>
+                {
+                    thread::sleep(Duration::from_millis(1));
+                }
+                Err(_) => return Err(HaError::Io),
+            }
+        }
+    }
+
     #[test]
     fn accepted_peer_socket_restores_blocking_io_with_original_timeouts() -> Result<(), HaError> {
         let listener = TcpListener::bind("127.0.0.1:0").map_err(|_| HaError::Io)?;
         listener.set_nonblocking(true).map_err(|_| HaError::Io)?;
         let _client = TcpStream::connect(listener.local_addr().map_err(|_| HaError::Io)?)
             .map_err(|_| HaError::Io)?;
-        let (mut stream, _) = listener.accept().map_err(|_| HaError::Io)?;
+        let mut stream = accept_ready_test_peer(&listener)?;
         // Force the inherited BSD/macOS state on every platform, so Linux CI
         // cannot pass merely because its accepted socket starts blocking.
         stream.set_nonblocking(true).map_err(|_| HaError::Io)?;
@@ -1855,7 +1873,7 @@ mod tests {
         listener.set_nonblocking(true).map_err(|_| HaError::Io)?;
         let mut client = TcpStream::connect(listener.local_addr().map_err(|_| HaError::Io)?)
             .map_err(|_| HaError::Io)?;
-        let (mut stream, _) = listener.accept().map_err(|_| HaError::Io)?;
+        let mut stream = accept_ready_test_peer(&listener)?;
         stream.set_nonblocking(true).map_err(|_| HaError::Io)?;
         configure_accepted_peer_stream(&stream, Duration::from_millis(500))?;
         let sender = thread::spawn(move || {
