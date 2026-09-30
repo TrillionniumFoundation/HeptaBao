@@ -89,6 +89,8 @@ mod openldap_secret;
 mod plugin;
 #[path = "service_snapshot_transfer.rs"]
 mod snapshot_transfer;
+#[path = "service_ui_mounts.rs"]
+mod ui_mounts;
 #[path = "service_workflows.rs"]
 mod workflows;
 pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, PluginSecretConfig};
@@ -2694,6 +2696,9 @@ impl Service {
         origin_peer: Option<std::net::IpAddr>,
         approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
     ) -> Response {
+        if path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/") {
+            return Self::ui_mounts_route(state, principal, namespace, method, path, now);
+        }
         if let Some(principal) = principal
             && let Err(error) = state.auth.authorize_request_parameters(
                 principal,

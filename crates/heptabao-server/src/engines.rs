@@ -1416,6 +1416,30 @@ impl EngineState {
         Ok(changed)
     }
 
+    pub(crate) fn ui_secret_mounts(&self, namespace: &str) -> BTreeMap<String, Value> {
+        let fallback = CowNamespace::default();
+        let state = self.namespaces.get(namespace).unwrap_or(&fallback);
+        let mut mounts: BTreeMap<String, Value> = state
+            .mounts
+            .iter()
+            .map(|(name, mount)| (name.clone(), mount.descriptor()))
+            .collect();
+        mounts.insert("cubbyhole/".into(), cubbyhole_descriptor());
+        for (path, kind, description) in [
+            (
+                "sys/",
+                "system",
+                "system endpoints used for control, policy and debugging",
+            ),
+            ("identity/", "identity", "identity store"),
+        ] {
+            mounts.insert(path.into(), json!({"type":kind,"description":description,
+                "options":Value::Null,"local":false,"seal_wrap":false,"external_entropy_access":false,
+                "config":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false}}));
+        }
+        mounts
+    }
+
     pub fn required_capability(
         &self,
         namespace: &str,

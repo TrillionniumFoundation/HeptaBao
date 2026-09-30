@@ -79,6 +79,8 @@ mod jwt_renewal;
 mod ldap_native;
 #[path = "auth_ldap_renewal.rs"]
 mod ldap_renewal;
+#[path = "auth_mount_visibility.rs"]
+mod mount_visibility;
 use ldap_native::{LdapNativeConfig, LdapNativeUser};
 #[path = "auth_native_token.rs"]
 mod native_token;
