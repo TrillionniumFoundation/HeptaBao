@@ -48,6 +48,11 @@ def signing_options_cases():
         yield "rsa_padding_ignored." + str(index), {"signature_algorithm": value}, 200, ""
     for index, value in enumerate(("asn1", "jws", "garbage", "", None, False, 7)):
         yield "marshaling." + str(index), {"marshaling_algorithm": value}, (200 if index < 2 else 400), ""
+    salts = ("auto", "hash", "ignored", "", None, False, True, 0, 1, 17,
+             -1, -2, -3, "17", "-1", "-2", "-3", 2.0, 2.5, [], {},
+             "AUTO", "HASH", "+17", " 17 ")
+    for index, value in enumerate(salts):
+        yield "salt_length." + str(index), {"salt_length": value}, (200 if index in (0, 1, 5, 6, 7, 8, 9, 10, 13, 14, 21, 22, 23) else 400), ""
     for prehashed in (False, True):
         for index, value in enumerate(("none", "sha2-256", "sha2-512", "sha1", "garbage", "")):
             yield "hash." + str(prehashed) + "." + str(index), {"prehashed": prehashed, "hash_algorithm": value}, (400 if value == "garbage" else 200), ""

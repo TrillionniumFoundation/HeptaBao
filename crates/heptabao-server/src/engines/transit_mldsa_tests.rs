@@ -813,3 +813,98 @@ fn non_rsa_context_validates_base64_and_never_changes_pure_message_signatures() 
     }
     Ok(())
 }
+
+#[test]
+fn non_rsa_salt_length_validates_api_syntax_and_ignores_rsa_pss_semantics() -> TestResult {
+    for kind in ["ed25519", "mldsa-44", "mldsa-65", "mldsa-87"] {
+        let mut transit = Transit::default();
+        transit.handle(
+            "",
+            "transit",
+            "POST",
+            "keys/test",
+            &json!({"type":kind}),
+            100,
+        )?;
+        let input = BASE64.encode(b"synthetic salt option message");
+        let baseline = transit.handle(
+            "",
+            "transit",
+            "POST",
+            "sign/test",
+            &json!({"input":input}),
+            101,
+        )?;
+        for salt in [
+            json!("auto"),
+            json!("hash"),
+            json!("AUTO"),
+            json!("HASH"),
+            json!(false),
+            json!(true),
+            json!(0),
+            json!(1),
+            json!(17),
+            json!(-1),
+            json!("17"),
+            json!("-1"),
+            json!("+17"),
+        ] {
+            let signed = transit.handle(
+                "",
+                "transit",
+                "POST",
+                "sign/test",
+                &json!({"input":input,"salt_length":salt}),
+                102,
+            )?;
+            let valid = transit.handle("", "transit", "POST", "verify/test", &json!({"input":input,"signature":signed.body["data"]["signature"],"salt_length":salt}), 103)?;
+            assert_eq!(valid.body["data"]["valid"], true);
+            let ordinary = transit.handle(
+                "",
+                "transit",
+                "POST",
+                "verify/test",
+                &json!({"input":input,"signature":signed.body["data"]["signature"]}),
+                104,
+            )?;
+            assert_eq!(ordinary.body["data"]["valid"], true);
+            let changed = transit.handle("", "transit", "POST", "verify/test", &json!({"input":BASE64.encode(b"changed"),"signature":signed.body["data"]["signature"],"salt_length":salt}), 105)?;
+            assert_eq!(changed.body["data"]["valid"], false);
+        }
+        let before = Zeroizing::new(serde_json::to_vec(&transit)?);
+        for salt in [
+            Value::Null,
+            json!(""),
+            json!("ignored"),
+            json!(-2),
+            json!(-3),
+            json!("-2"),
+            json!("-3"),
+            json!(2.0),
+            json!(2.5),
+            json!([]),
+            json!({}),
+            json!(" 17 "),
+        ] {
+            assert_eq!(
+                transit
+                    .handle(
+                        "",
+                        "transit",
+                        "POST",
+                        "sign/test",
+                        &json!({"input":input,"salt_length":salt}),
+                        106
+                    )
+                    .err()
+                    .ok_or("bad sign salt accepted")?
+                    .status,
+                400
+            );
+            assert_eq!(transit.handle("", "transit", "POST", "verify/test", &json!({"input":input,"signature":baseline.body["data"]["signature"],"salt_length":salt}), 107).err().ok_or("bad verify salt accepted")?.status, 400);
+            assert_eq!(*before, *Zeroizing::new(serde_json::to_vec(&transit)?));
+        }
+    }
+    Ok(())
+}

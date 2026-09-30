@@ -43,7 +43,7 @@ class MldsaProfileTests(unittest.TestCase):
         self.assertEqual(wire[1], {"key_version":"1", "prehashed":False, "signature_algorithm":"pkcs1v15"})
         self.assertEqual(wire[2], 200)
         self.assertTrue(any(options.get("marshaling_algorithm") == "jws" and status == 200 for _,options,status,_ in cases))
-        for field, value in (("marshaling_algorithm", None), ("marshaling_algorithm", "garbage"), ("hash_algorithm", "garbage"), ("prehashed", 2)):
+        for field, value in (("marshaling_algorithm", None), ("marshaling_algorithm", "garbage"), ("hash_algorithm", "garbage"), ("prehashed", 2), ("salt_length", None), ("salt_length", "ignored"), ("salt_length", -2), ("salt_length", 2.0)):
             self.assertTrue(any(field in options and options[field] == value and status == 400 for _,options,status,_ in cases))
 
     def test_options_fail_on_matching_status_but_invalid_actual_signature(self):

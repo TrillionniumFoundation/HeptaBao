@@ -744,6 +744,7 @@ fn handle_crypto(
             "prehashed",
             "signature_algorithm",
             "marshaling_algorithm",
+            "salt_length",
             "reference",
             "batch_input",
             "partial_failure_response_code",
@@ -759,6 +760,7 @@ fn handle_crypto(
             "prehashed",
             "signature_algorithm",
             "marshaling_algorithm",
+            "salt_length",
             "reference",
             "batch_input",
             "partial_failure_response_code",
@@ -970,9 +972,33 @@ fn validate_signing_context(body: &Value) -> Result<()> {
     }
 }
 
+// The API parses RSA-PSS salt options before ignoring them for non-RSA keys.
+// Preserve that syntax check without selecting a different signature scheme.
+fn validate_signing_salt_length(body: &Value) -> Result<()> {
+    let Some(value) = body.get("salt_length") else {
+        return Ok(());
+    };
+    let valid = match value {
+        Value::String(value) => {
+            value.eq_ignore_ascii_case("auto")
+                || value.eq_ignore_ascii_case("hash")
+                || value.parse::<i64>().is_ok_and(|salt| salt >= -1)
+        }
+        Value::Number(value) => value.as_i64().is_some_and(|salt| salt >= -1),
+        Value::Bool(_) => true,
+        _ => false,
+    };
+    if valid {
+        Ok(())
+    } else {
+        Err(bad("invalid signature salt length"))
+    }
+}
+
 // True selects the provider's external-mu API; false preserves pure signing.
 fn signing_options(key: &Key, body: &Value, path_algorithm: &str) -> Result<bool> {
     signature_encoding(body)?;
+    validate_signing_salt_length(body)?;
     if key.kind != "ed25519" && !mldsa::is_kind(&key.kind) {
         return Err(bad("key does not support Ed25519 signing"));
     }
