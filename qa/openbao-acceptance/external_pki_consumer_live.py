@@ -92,7 +92,7 @@ def validate_crypto(data,kind,public):
     expected_public=public.public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw)
     return bool(exact),actual==expected_public,verified is None
 
-def run(binary,rows,*,oracle_contract=False):
+def run(binary,rows,*,oracle_contract=False,compare_official_csr=True,include_native_csr=True,observe_provider_signs=False):
     smoke_spec=importlib.util.spec_from_file_location("external_pki_native_smoke",ROOT/"qa/single-node/smoke.py")
     smoke=importlib.util.module_from_spec(smoke_spec);smoke_spec.loader.exec_module(smoke)
     private_root=Path(tempfile.mkdtemp(prefix="heptabao-external-pki270-"));private_root.chmod(0o700)
@@ -146,7 +146,8 @@ def run(binary,rows,*,oracle_contract=False):
             t.call(side+".config",client,"POST",CONFIG,204,configurations[side])
             mapping={"name":"ca","version":1,"verify":side=="official" or oracle_contract}
             t.call(side+".mapping",client,"POST",CONFIG+"/keys/fixed",204,mapping)
-            for kind in ("root","csr"):
+            kinds=("root","csr") if (side=="candidate" and include_native_csr or side=="official" and compare_official_csr) else ("root",)
+            for kind in kinds:
                 mount="pki-"+kind;prefix=side+"."+kind+"."
                 route="root/generate/kms" if kind=="root" else "intermediate/generate/kms"
                 body={"external_key_ref":"provider:fixed","common_name":"synthetic-external-ca.example.test"}
@@ -156,8 +157,14 @@ def run(binary,rows,*,oracle_contract=False):
                 t.call(prefix+"missing_grant",client,"POST",mount+"/"+route,400,body)
                 t.check(prefix+"missing_grant_no_sign",sign_entries(remote)==before)
                 t.call(prefix+"grant",client,"POST",CONFIG+"/keys/fixed/grants/"+mount,204)
+                before=sign_entries(remote)
                 response=client.request("POST","/v1/"+mount+"/"+route,body)
                 t.check(prefix+"generate",response.status==200,response.status)
+                if observe_provider_signs:
+                    observed=sign_entries(remote)-before
+                    expected=3 if kind=="root" and (side=="official" or oracle_contract) else 1
+                    try:t.check(prefix+"provider_sign_exact",observed==expected)
+                    finally:rows[-1].update(observed_provider_sign_entries=observed,expected_provider_sign_entries=expected)
                 data=response.body.get("data",{})
                 exact,spki,verified=validate_crypto(data,kind,public)
                 t.check(prefix+"exact_response",exact)
@@ -172,8 +179,14 @@ def run(binary,rows,*,oracle_contract=False):
             t.call(side+".namespace_config",client,"POST",CONFIG,204,configurations[side],namespace="team")
             t.call(side+".namespace_mapping",client,"POST",CONFIG+"/keys/fixed",204,mapping,namespace="team")
             t.call(side+".namespace_grant",client,"POST",CONFIG+"/keys/fixed/grants/pki",204,namespace="team")
+            before=sign_entries(remote)
             response=scoped_client(client,"team").request("POST","/v1/pki/root/generate/kms",body)
             t.check(side+".namespace_generate",response.status==200,response.status)
+            if observe_provider_signs:
+                observed=sign_entries(remote)-before
+                expected=3 if side=="official" or oracle_contract else 1
+                try:t.check(side+".namespace_provider_sign_exact",observed==expected)
+                finally:rows[-1].update(observed_provider_sign_entries=observed,expected_provider_sign_entries=expected)
             exact,spki,verified=validate_crypto(response.body.get("data",{}),"root",public)
             t.check(side+".namespace_signature",exact and spki and verified)
             response=client.request("GET","/v1/pki-root/cert/ca")

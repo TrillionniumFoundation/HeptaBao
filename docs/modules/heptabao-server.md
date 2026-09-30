@@ -981,9 +981,23 @@ registry reference, with no local external private key. See the schema-65 sectio
 of [the state-format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md)
 for reader/writer, original-authority and stale-publication fences.
 
-`external_pki_consumer_live.py` fixes 85 ordered, unique checks on three fresh
-processes, including an official external consumer and independent public-key
-signature validation. It binds candidate build commit/tree and before/after
-binary hashes separately from QA source identity, includes owned-process cleanup
-in the denominator and leaves broader authority false. External leaf issuance,
-CRLs, other signing types and multi-issuer lifecycle are still unfinished.
+The original `external_pki_consumer_live.py` keeps its 85 ordered checks. Fresh
+pinned-2.7 blackboxes fail its official-CSR remote-binding predicates: the KMS CSR
+is valid against its own SPKI but does not match the selected provider key and
+does not enter the provider Sign endpoint. Both legacy and issuers paths exhibit
+this difference; local self-verification does not qualify remote binding.
+
+`external_pki_root_consumer_live.py` declares a separate complete 81-case trace
+on three fresh processes. It compares both external roots and separately proves
+the native CSR's fixed remote SPKI, real signature and one provider Sign entry.
+Per-root Sign-entry checks are exact for each implementation: pinned 2.7 enters
+Sign three times, while the bounded native root enters once and does not yet
+implement external CRL generation. Both root signatures still require actual
+verification with the selected provider SPKI; extra calls do not substitute for
+that predicate or establish CRL parity.
+Root and native-CSR verdicts are separate. It binds candidate build commit/tree
+and before/after binary hashes separately from QA source identity, includes
+owned-process cleanup in the denominator and leaves broader authority false.
+It does not reuse a failed 85-case prefix or qualify the official CSR difference.
+External leaf issuance, CRLs, other signing types and multi-issuer lifecycle
+are still unfinished.

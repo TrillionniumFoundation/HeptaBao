@@ -685,7 +685,7 @@ jobs:
             --expected-binary-sha256 "$digest" \
             --output "$reports/comparison.json"
 
-      - name: Compare actual OpenBao 2.7.0 direct external PKI roots and CSRs
+      - name: Compare OpenBao 2.7.0 external roots and verify native remote-bound CSRs
         if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle270_ready.outcome == 'success' }}
         shell: bash
         env:
@@ -698,7 +698,7 @@ jobs:
           chmod 700 "$reports"
           binary="$PWD/target/debug/heptabao-server"
           digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
-          timeout 600 python qa/openbao-acceptance/external_pki_consumer_live.py \
+          timeout 600 python qa/openbao-acceptance/external_pki_root_consumer_live.py \
             --oracle-version 2.7.0 \
             --binary "$binary" \
             --build-source-commit "$EXPECTED_SOURCE" \
