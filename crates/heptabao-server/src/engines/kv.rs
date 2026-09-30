@@ -1,5 +1,9 @@
 use super::*;
 
+#[cfg(test)]
+#[path = "kv_version_array_tests.rs"]
+mod version_array_tests;
+
 const MAX_RETAINED_VERSIONS: u64 = 10_000;
 
 fn metadata_cas_disabled(value: &bool) -> bool {
@@ -562,17 +566,13 @@ impl Kv2 {
             .ok_or_else(|| bad("versions must be a nonempty integer array"))?;
         let versions = versions
             .iter()
-            .map(|v| {
-                v.as_u64()
-                    .filter(|n| *n > 0)
-                    .ok_or_else(|| bad("version numbers must be positive integers"))
-            })
+            .map(wire_version)
             .collect::<Result<Vec<_>>>()?;
         let Some(entry) = self.entries.get_mut(resource) else {
             return Ok(empty(false));
         };
         let mut changed = false;
-        for number in versions {
+        for number in versions.into_iter().flatten() {
             if let Some(version) = entry.versions.get_mut(&number) {
                 if version.destroyed {
                     continue;
@@ -731,6 +731,69 @@ impl Kv2 {
                 mutated: true,
             })
         }
+    }
+}
+
+// The pinned public 2.7 API accepts signed integer wire values, including the
+// string arrays emitted by `bao kv delete/undelete/destroy`. Resolve every
+// element before changing any version. Nonpositive numbers select no version.
+fn wire_version(value: &Value) -> Result<Option<u64>> {
+    let number = match value {
+        Value::Number(number) => number.as_i64(),
+        Value::String(text) => wire_integer_text(text),
+        Value::Bool(value) => Some(i64::from(*value)),
+        Value::Null => Some(0),
+        _ => None,
+    }
+    .ok_or_else(|| bad("version numbers must be signed integers"))?;
+    Ok(u64::try_from(number).ok().filter(|number| *number > 0))
+}
+
+fn wire_integer_text(text: &str) -> Option<i64> {
+    if text.is_empty() {
+        return Some(0);
+    }
+    let (negative, digits) = if let Some(digits) = text.strip_prefix('-') {
+        (true, digits)
+    } else {
+        (false, text.strip_prefix('+').unwrap_or(text))
+    };
+    let (radix, digits, prefix) = match digits.as_bytes() {
+        [b'0', b'x' | b'X', ..] => (16, &digits[2..], true),
+        [b'0', b'b' | b'B', ..] => (2, &digits[2..], true),
+        [b'0', b'o' | b'O', ..] => (8, &digits[2..], true),
+        [b'0', _, ..] => (8, &digits[1..], true),
+        _ => (10, digits, false),
+    };
+    let mut magnitude = 0_u64;
+    let mut saw_digit = false;
+    let mut underscore = false;
+    for (position, byte) in digits.bytes().enumerate() {
+        if byte == b'_' {
+            if underscore || (!saw_digit && !(position == 0 && prefix)) {
+                return None;
+            }
+            underscore = true;
+            continue;
+        }
+        let digit = char::from(byte).to_digit(radix)?;
+        magnitude = magnitude
+            .checked_mul(u64::from(radix))?
+            .checked_add(u64::from(digit))?;
+        saw_digit = true;
+        underscore = false;
+    }
+    if !saw_digit || underscore {
+        return None;
+    }
+    if negative && magnitude == (1_u64 << 63) {
+        return Some(i64::MIN);
+    }
+    let magnitude = i64::try_from(magnitude).ok()?;
+    if negative {
+        magnitude.checked_neg()
+    } else {
+        Some(magnitude)
     }
 }
 
