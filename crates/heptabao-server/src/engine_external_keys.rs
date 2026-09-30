@@ -7,7 +7,51 @@
 //! provider success and a fresh authority/state fence check.
 
 use super::*;
+use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 use heptabao_domain::SecretValue;
+use sha2::{Digest, Sha224, Sha256, Sha384, Sha512};
+use sha3::{Sha3_224, Sha3_256, Sha3_384, Sha3_512};
+use zeroize::Zeroizing;
+
+fn prehash_transit_input(body: &mut SecretJson, disable_prehashing: bool) -> Result<()> {
+    let prehashed = optional_bool(body, "prehashed")?.unwrap_or(false);
+    let algorithm = body
+        .get("hash_algorithm")
+        .and_then(Value::as_str)
+        .unwrap_or("none");
+    if disable_prehashing && prehashed && algorithm != "none" {
+        return Err(error(
+            500,
+            "external signing cannot hash prehashed input when prehashing is disabled",
+        ));
+    }
+    if disable_prehashing || prehashed || matches!(algorithm, "none" | "mldsa-mu") {
+        return Ok(());
+    }
+    let input = Zeroizing::new(
+        BASE64
+            .decode(string(body, "input")?)
+            .map_err(|_| bad("invalid external signing input"))?,
+    );
+    let digest = Zeroizing::new(match algorithm {
+        "sha1" => ring::digest::digest(&ring::digest::SHA1_FOR_LEGACY_USE_ONLY, &input)
+            .as_ref()
+            .to_vec(),
+        "sha2-224" => Sha224::digest(&input).to_vec(),
+        "sha2-256" => Sha256::digest(&input).to_vec(),
+        "sha2-384" => Sha384::digest(&input).to_vec(),
+        "sha2-512" => Sha512::digest(&input).to_vec(),
+        "sha3-224" => Sha3_224::digest(&input).to_vec(),
+        "sha3-256" => Sha3_256::digest(&input).to_vec(),
+        "sha3-384" => Sha3_384::digest(&input).to_vec(),
+        "sha3-512" => Sha3_512::digest(&input).to_vec(),
+        _ => return Err(bad("unsupported external signing hash algorithm")),
+    });
+    wipe_json(&mut body["input"]);
+    body["input"] = json!(BASE64.encode(&*digest));
+    body["prehashed"] = json!(true);
+    Ok(())
+}
 
 const PREFIX: &str = "sys/external-keys";
 const MAX_CONFIGS: usize = 256;
@@ -331,7 +375,15 @@ impl Registry {
         operation: &str,
         mut body: SecretJson,
     ) -> Result<SecretValue> {
-        let (config, key) = self.require_consumer(reference, mount)?;
+        let (config, key) = self.require_consumer(reference, mount).map_err(|cause| {
+            if matches!(operation, "sign" | "verify") && cause.status == 400 {
+                // Official external signing wraps an unavailable mapping/grant
+                // as an operation error; authorization still fails before entry.
+                error(500, "external signing reference or grant is unavailable")
+            } else {
+                cause
+            }
+        })?;
         reject_unknown(
             config,
             &[
@@ -419,14 +471,25 @@ impl Registry {
         {
             return Err(bad("invalid remote Transit token"));
         }
-        if operation == "encrypt" {
+        if matches!(operation, "sign" | "verify") {
+            prehash_transit_input(
+                &mut body,
+                optional_bool(key, "disable_prehashing")?.unwrap_or(false),
+            )?;
+        }
+        if matches!(operation, "encrypt" | "sign") {
             body["key_version"] = json!(version);
-        } else {
+        } else if operation == "decrypt" {
             // The public local version selects the registry reference. Its
             // opaque Base64 payload is the remote ciphertext, not a nested
             // remote version string; the fixed mapping supplies that prefix.
             let payload = string(&body, "ciphertext")?;
             body["ciphertext"] = json!(format!("vault:v{version}:{payload}"));
+        } else if operation == "verify" {
+            let payload = string(&body, "signature")?;
+            body["signature"] = json!(format!("vault:v{version}:{payload}"));
+        } else {
+            return Err(bad("invalid external Transit operation"));
         }
         let envelope = SecretJson(
             json!({"url":format!("{address}/v1/{remote_mount}{operation}/{name}"),

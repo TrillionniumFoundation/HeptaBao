@@ -15,6 +15,7 @@ SPEC.loader.exec_module(MODULE)
 
 class ExternalConsumerContractTests(unittest.TestCase):
     def test_exact_denominator_rejects_empty_missing_reordered_duplicate_and_failed_traces(self):
+        self.assertEqual(1981, len(MODULE.EXPECTED_CASES))
         rows = [{"case": case, "passed": True} for case in MODULE.EXPECTED_CASES]
         self.assertEqual(len(MODULE.EXPECTED_CASES), len(set(MODULE.EXPECTED_CASES)))
         self.assertTrue(MODULE.trace_complete(rows))
@@ -39,18 +40,35 @@ class ExternalConsumerContractTests(unittest.TestCase):
         self.assertEqual(MODULE.DESCRIPTOR_FIELDS, frozenset(MODULE.INITIAL_DESCRIPTOR))
         self.assertEqual({"1": "provider:fixed1"}, MODULE.INITIAL_DESCRIPTOR["keys"])
         self.assertNotIn("external_key_ref", MODULE.INITIAL_DESCRIPTOR)
-        self.assertFalse(MODULE.INITIAL_DESCRIPTOR["supports_signing"])
+        self.assertTrue(MODULE.INITIAL_DESCRIPTOR["supports_signing"])
         self.assertTrue(MODULE.descriptor_matches(MODULE.INITIAL_DESCRIPTOR))
         official = {**MODULE.INITIAL_DESCRIPTOR, "supports_signing": True}
         self.assertTrue(MODULE.descriptor_matches(official, "official"))
-        self.assertFalse(MODULE.descriptor_matches(official, "candidate"))
-        self.assertFalse(MODULE.descriptor_matches(MODULE.INITIAL_DESCRIPTOR, "official"))
+        self.assertTrue(MODULE.descriptor_matches(official, "candidate"))
+        self.assertTrue(MODULE.descriptor_matches(MODULE.INITIAL_DESCRIPTOR, "official"))
+        unsigned = {**MODULE.INITIAL_DESCRIPTOR,"supports_signing":False}
+        self.assertFalse(MODULE.descriptor_matches(unsigned,"candidate"))
+        self.assertFalse(MODULE.descriptor_matches(unsigned,"official"))
         self.assertFalse(MODULE.descriptor_matches(MODULE.INITIAL_DESCRIPTOR, "unknown"))
         for key, wrong in (("min_available_version", False), ("latest_version", True),
                 ("supports_encryption", 1), ("keys", {"1": {"external_key_ref": "provider:fixed1"}})):
             changed = copy.deepcopy(MODULE.INITIAL_DESCRIPTOR)
             changed[key] = wrong
             self.assertFalse(MODULE.descriptor_matches(changed))
+
+    def test_crypto_valid_boolean_and_signature_encoding_are_exact(self):
+        self.assertTrue(MODULE.crypto_boolean({"valid":True},True))
+        self.assertTrue(MODULE.crypto_boolean({"valid":False},False))
+        for invalid in ({"valid":1},{"valid":0},{"valid":"true"},{"valid":True,"extra":0},{},None):
+            self.assertFalse(MODULE.crypto_boolean(invalid,True))
+        raw = bytes(range(64))
+        standard=base64.b64encode(raw).decode()
+        jws=base64.urlsafe_b64encode(raw).decode().rstrip("=")
+        self.assertEqual(standard,MODULE.signature_payload("vault:v1:"+standard,1))
+        self.assertEqual(jws,MODULE.signature_payload("vault:v1:"+jws,1,True))
+        for payload in ("",jws+"=",standard):
+            with self.assertRaises(MODULE.Failure):
+                MODULE.signature_payload("vault:v1:"+payload,1,True)
 
     def test_negative_status_is_not_a_union_or_any_failure(self):
         rows = []

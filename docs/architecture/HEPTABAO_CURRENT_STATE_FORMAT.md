@@ -816,7 +816,7 @@ under schema 63 or older. Feature-free schema-63 state remains readable without
 rewrite. Accepted initialization and mutation publish schema 64 through the
 existing encrypted opaque-owner/record-root pipeline.
 
-Single-item encryption/decryption requires the caller's current ACL/parameter
+Single-item encryption/decryption/signing/verification requires the caller's current ACL/parameter
 policy and a current namespace-relative grant to the actual consumer mount.
 Credentials and fixed remote key versions are read from the namespace registry
 only after admission. Explicit reference rotation retains the older version's
@@ -835,15 +835,15 @@ frontier before result delivery. Delete/restore ABA or unrelated committed
 writes withhold the result conservatively. Post-entry uncertainty never causes
 a blind provider retry. Plaintext observation buffers are erased on rejection.
 
-This is a bounded native encrypt/decrypt format increment. Its local ciphertext
+This is a bounded native encrypt/decrypt/sign/verify format increment. Its local ciphertext
 version selects a reference; the unchanged remote Base64 payload is prefixed with
 that mapping's fixed remote version for provider decryption. The production CLI
 `external_transit_consumer_live.py` requires bilateral readback against the pinned
 2.7.0 AES remote-provider/external-consumer wire contract. Completed exact-source
 and expected/before/after binary-hash reports are bounded black-box observations;
 the runner alone is not passing or independent qualification evidence. The
-candidate signing-capability flag remains false and differs from the official
-external descriptor until actual external signing is implemented. Batch/rewrap/sign/verify/HMAC/data-key and PKI/PKCS#11
+extended profile requires actual remote signatures and bilateral verification
+before the identical signing-capability flag can be treated as observed parity. Batch/rewrap/HMAC/data-key and PKI/PKCS#11
 consumers, API TLS overrides and full external-asset migration remain unsupported.
 Read the [native consumer contract](../modules/heptabao-server.md#bounded-native-external-keys-transit-consumption)
 for transport and input bounds and the real remote-Service test scope.

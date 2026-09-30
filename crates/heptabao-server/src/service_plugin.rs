@@ -441,6 +441,8 @@ pub(super) fn admit_kms_plugins(configs: Vec<PluginKmsConfig>) -> Result<KmsPlug
                 "wrap" => KmsCapability::Wrap,
                 "unwrap" => KmsCapability::Unwrap,
                 "generate_data_key" => KmsCapability::GenerateDataKey,
+                "sign" => KmsCapability::Sign,
+                "verify" => KmsCapability::Verify,
                 _ => return Err("unsupported KMS capability".into()),
             };
             capabilities.insert(capability);

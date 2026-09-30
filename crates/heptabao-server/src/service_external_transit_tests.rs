@@ -14,6 +14,657 @@ use std::thread;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+fn typed_signing_options_contract(
+    remote: &RemoteTransit,
+    service: &mut Service,
+    admin: &str,
+    input: &str,
+    retained: &str,
+) -> TestResult {
+    let contexts = vec![
+        (Value::Null, 200),
+        (json!(1234), 200),
+        (json!(12345678), 200),
+        (json!(10000000000000000000u64), 200),
+        (json!(1234.0), 400),
+        (json!(1e19), 400),
+        (json!(true), 400),
+        (json!(false), 400),
+        (json!([]), 400),
+        (json!({}), 400),
+        (json!("YWJj"), 200),
+        (json!(""), 200),
+        (json!("%%%%"), 400),
+    ];
+    let salts = vec![
+        (Value::Null, 400),
+        (json!("auto"), 200),
+        (json!("hash"), 200),
+        (json!("AUTO"), 200),
+        (json!("HASH"), 200),
+        (json!(true), 200),
+        (json!(false), 200),
+        (json!(0), 200),
+        (json!(1), 200),
+        (json!(17), 200),
+        (json!(-1), 200),
+        (json!("17"), 200),
+        (json!("-1"), 200),
+        (json!("+17"), 200),
+        (json!(""), 400),
+        (json!("ignored"), 400),
+        (json!(-2), 400),
+        (json!(-3), 400),
+        (json!("-2"), 400),
+        (json!("-3"), 400),
+        (json!(2.0), 400),
+        (json!(2.5), 400),
+        (json!([]), 400),
+        (json!({}), 400),
+        (json!(" 17 "), 400),
+    ];
+    for (field, cases) in [("context", contexts), ("salt_length", salts)] {
+        for (value, status) in cases {
+            let mut body = json!({"input":input});
+            body[field] = value;
+            let before = remote.calls()?;
+            let signed = call(service, "POST", "consumer/sign/local", admin, body.clone());
+            assert_eq!(signed.status, status, "{field}");
+            body["signature"] = if status == 200 {
+                signed.body["data"]["signature"].clone()
+            } else {
+                json!(retained)
+            };
+            let verified = call(service, "POST", "consumer/verify/local", admin, body);
+            assert_eq!(verified.status, status, "{field}");
+            if status == 200 {
+                assert_eq!(verified.body["data"], json!({"valid":true}));
+            } else {
+                assert_eq!(remote.calls()?, before);
+            }
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn external_transit270_signing_registry_grant_rejection_is_500_before_provider_entry() -> TestResult
+{
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (_root, mut service, _unseal, admin) = remote.fixture()?;
+    let input = BASE64.encode(b"grant-bound signature");
+    let signed = call(
+        &mut service,
+        "POST",
+        "consumer/sign/local",
+        &admin,
+        json!({"input":input}),
+    );
+    assert_eq!(signed.status, 200);
+    let signature = signed.body["data"]["signature"].clone();
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/external-keys/configs/remote/keys/v1/grants/consumer",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    let before = remote.calls()?;
+    for operation in ["sign", "verify"] {
+        let denied = call(
+            &mut service,
+            "POST",
+            &format!("consumer/{operation}/local"),
+            &admin,
+            if operation == "sign" {
+                json!({"input":input})
+            } else {
+                json!({"input":input,"signature":signature})
+            },
+        );
+        assert_eq!(denied.status, 500, "{operation}");
+        assert!(denied.body.get("data").is_none());
+    }
+    assert_eq!(remote.calls()?, before);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/external-keys/configs/remote/keys/v1/grants/consumer",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    let verified = call(
+        &mut service,
+        "POST",
+        "consumer/verify/local",
+        &admin,
+        json!({"input":input,"signature":signature}),
+    );
+    assert_eq!(verified.status, 200);
+    assert_eq!(verified.body["data"], json!({"valid":true}));
+    Ok(())
+}
+
+#[test]
+fn external_transit270_sign_verify_original_last_use_principal_and_strict_input_bounds()
+-> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (_root, mut service, _unseal, admin) = remote.fixture()?;
+    let input = BASE64.encode(b"last-use signature input");
+    let token = limited_token(
+        &mut service,
+        &admin,
+        "path \"consumer/sign/local\" { capabilities = [\"update\"] }",
+    )?;
+    let signed = call(
+        &mut service,
+        "POST",
+        "consumer/sign/local",
+        &token,
+        json!({"input":input}),
+    );
+    assert_eq!(signed.status, 200);
+    let signature = signed.body["data"]["signature"].clone();
+    let before = remote.calls()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "consumer/sign/local",
+            &token,
+            json!({"input":input})
+        )
+        .status,
+        403
+    );
+    assert_eq!(remote.calls()?, before);
+    let token = limited_token(
+        &mut service,
+        &admin,
+        "path \"consumer/verify/local\" { capabilities = [\"update\"] }",
+    )?;
+    let verified = call(
+        &mut service,
+        "POST",
+        "consumer/verify/local",
+        &token,
+        json!({"input":input,"signature":signature}),
+    );
+    assert_eq!(verified.status, 200);
+    assert_eq!(verified.body["data"], json!({"valid":true}));
+    let before = remote.calls()?;
+    for body in [
+        json!({"input":BASE64.encode(vec![0;65537])}),
+        json!({"input":"%%"}),
+        json!({"input":input,"context":"%%"}),
+        json!({"input":input,"prehashed":"not-a-boolean"}),
+        json!({"input":input,"hash_algorithm":"invalid"}),
+    ] {
+        assert!(call(&mut service, "POST", "consumer/sign/local", &admin, body).status >= 400);
+    }
+    assert_eq!(remote.calls()?, before);
+    let pending = staged_path(
+        &mut service,
+        &admin,
+        "consumer/sign/local",
+        json!({"input":input}),
+    )?;
+    let result = pending.execute();
+    assert!(matches!(
+        &result,
+        ExternalEffectResult::ExternalTransit(Ok(_))
+    ));
+    fs::remove_file(_root.path.join("audit.jsonl"))?;
+    fs::create_dir(_root.path.join("audit.jsonl"))?;
+    let response = service.finish_external_request(pending, result);
+    assert_eq!(response.status, 503);
+    assert!(response.body.get("data").is_none());
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn external_transit270_optional_host_sign_verify_grants_are_explicit_and_independent() -> TestResult
+{
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let input = BASE64.encode(b"explicit external signing capabilities");
+    let signature = call(
+        &mut *remote.service.lock().map_err(|_| "remote lock")?,
+        "POST",
+        "transit/sign/remote",
+        &remote.admin,
+        json!({"input":input,"key_version":1}),
+    );
+    let signature = signature.body["data"]["signature"].clone();
+    for capabilities in [
+        vec!["wrap".into(), "unwrap".into()],
+        vec!["sign".into()],
+        vec!["verify".into()],
+    ] {
+        let can_sign = capabilities.iter().any(|value| value == "sign");
+        let can_verify = capabilities.iter().any(|value| value == "verify");
+        let (_root, mut service, _unseal, admin) =
+            remote.fixture_kms_capabilities(Some(true), Some(capabilities))?;
+        let before = remote.calls()?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "consumer/sign/local",
+                &admin,
+                json!({"input":input})
+            )
+            .status,
+            if can_sign { 200 } else { 403 }
+        );
+        let verified = call(
+            &mut service,
+            "POST",
+            "consumer/verify/local",
+            &admin,
+            json!({"input":input,"signature":signature}),
+        );
+        assert_eq!(verified.status, if can_verify { 200 } else { 403 });
+        if can_verify {
+            assert_eq!(verified.body["data"], json!({"valid":true}));
+        }
+        assert_eq!(
+            remote.calls()? - before,
+            usize::from(can_sign) + usize::from(can_verify)
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn external_transit270_real_remote_sign_verify_all_mldsa_ed25519_and_prehashing() -> TestResult {
+    use sha2::{Digest, Sha256, Sha512};
+    let message = b"real external cryptographic signing and readback";
+    let input = BASE64.encode(message);
+    for kind in ["ed25519", "mldsa-44", "mldsa-65", "mldsa-87"] {
+        let remote = RemoteTransit::new_kind(kind)?;
+        let (root, mut service, unseal, admin) = remote.fixture()?;
+        let mut retained = String::new();
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "consumer/keys/local",
+                &admin,
+                json!({})
+            )
+            .body["data"]["supports_signing"],
+            true
+        );
+        for disable_prehashing in [false, true] {
+            assert_eq!(call(&mut service, "POST", "sys/external-keys/configs/remote/keys/v1", &admin,
+                json!({"verify":false,"name":"remote","version":2,"disable_prehashing":disable_prehashing})).status,204);
+            for algorithm in ["default", "none", "sha2-256", "sha2-512"] {
+                let mut body = json!({"input":input});
+                if algorithm != "default" {
+                    body["hash_algorithm"] = json!(algorithm);
+                }
+                let signed = call(
+                    &mut service,
+                    "POST",
+                    "consumer/sign/local",
+                    &admin,
+                    body.clone(),
+                );
+                assert_eq!(signed.status, 200, "{kind}/{algorithm}");
+                assert_eq!(signed.body["data"]["key_version"], 1);
+                let signature = signed.body["data"]["signature"]
+                    .as_str()
+                    .ok_or("signature")?;
+                retained = signature.into();
+                let payload = signature
+                    .strip_prefix("vault:v1:")
+                    .ok_or("local signature version")?;
+                assert_eq!(
+                    BASE64.decode(payload)?.len(),
+                    match kind {
+                        "ed25519" => 64,
+                        "mldsa-44" => 2420,
+                        "mldsa-65" => 3309,
+                        _ => 4627,
+                    }
+                );
+                let remote_input = if !disable_prehashing && algorithm == "sha2-256" {
+                    BASE64.encode(Sha256::digest(message))
+                } else if !disable_prehashing && algorithm == "sha2-512" {
+                    BASE64.encode(Sha512::digest(message))
+                } else {
+                    input.clone()
+                };
+                let direct = call(
+                    &mut *remote.service.lock().map_err(|_| "remote lock")?,
+                    "POST",
+                    "transit/verify/remote",
+                    &remote.admin,
+                    json!({"input":remote_input,"signature":format!("vault:v2:{payload}")}),
+                );
+                assert_eq!(direct.status, 200);
+                assert_eq!(direct.body["data"], json!({"valid":true}));
+                body["signature"] = json!(signature);
+                let verified = call(
+                    &mut service,
+                    "POST",
+                    "consumer/verify/local",
+                    &admin,
+                    body.clone(),
+                );
+                assert_eq!(verified.status, 200);
+                assert_eq!(verified.body["data"], json!({"valid":true}));
+                body["input"] = json!(BASE64.encode(b"changed message"));
+                let invalid = call(&mut service, "POST", "consumer/verify/local", &admin, body);
+                assert_eq!(invalid.status, 200);
+                assert_eq!(invalid.body["data"], json!({"valid":false}));
+            }
+            for prehashed in [json!(true), json!("TRUE")] {
+                for algorithm in ["none", "sha2-256", "sha2-512"] {
+                    let body = json!({"input":BASE64.encode(Sha256::digest(message)),"prehashed":prehashed,"hash_algorithm":algorithm});
+                    let before = remote.calls()?;
+                    let signed = call(
+                        &mut service,
+                        "POST",
+                        "consumer/sign/local",
+                        &admin,
+                        body.clone(),
+                    );
+                    let rejected = disable_prehashing && algorithm != "none";
+                    assert_eq!(signed.status, if rejected { 500 } else { 200 });
+                    let signature = if rejected {
+                        json!(retained)
+                    } else {
+                        signed.body["data"]["signature"].clone()
+                    };
+                    let verified = call(
+                        &mut service,
+                        "POST",
+                        "consumer/verify/local",
+                        &admin,
+                        json!({"signature":signature,
+                        "input":body["input"],"prehashed":body["prehashed"],"hash_algorithm":algorithm}),
+                    );
+                    assert_eq!(verified.status, if rejected { 500 } else { 200 });
+                    if rejected {
+                        assert_eq!(remote.calls()?, before);
+                    } else {
+                        assert_eq!(verified.body["data"], json!({"valid":true}));
+                    }
+                }
+            }
+        }
+        for hint in [
+            json!(0),
+            json!(1),
+            json!(2),
+            json!("2"),
+            Value::Null,
+            json!(false),
+        ] {
+            let verified = call(
+                &mut service,
+                "POST",
+                "consumer/verify/local",
+                &admin,
+                json!({"input":input,"signature":retained,"key_version":hint}),
+            );
+            assert_eq!(verified.status, 200);
+            assert_eq!(verified.body["data"], json!({"valid":true}));
+        }
+        typed_signing_options_contract(&remote, &mut service, &admin, &input, &retained)?;
+        for option in [Value::Null, json!(false), json!(true), json!(17)] {
+            let signed = call(
+                &mut service,
+                "POST",
+                "consumer/sign/local",
+                &admin,
+                json!({"input":input,"signature_algorithm":option}),
+            );
+            assert_eq!(signed.status, 200);
+            let verified = call(
+                &mut service,
+                "POST",
+                "consumer/verify/local",
+                &admin,
+                json!({"input":input,"signature":signed.body["data"]["signature"],"signature_algorithm":option}),
+            );
+            assert_eq!(verified.status, 200);
+            assert_eq!(verified.body["data"], json!({"valid":true}));
+        }
+        let jws = call(
+            &mut service,
+            "POST",
+            "consumer/sign/local/none",
+            &admin,
+            json!({"input":input,"prehashed":"TRUE","marshaling_algorithm":"jws","signature_algorithm":"pkcs1v15","context":BASE64.encode(b"ignored non-derived context")}),
+        );
+        assert_eq!(jws.status, 200);
+        let jws_signature = jws.body["data"]["signature"].clone();
+        let verified = call(
+            &mut service,
+            "POST",
+            "consumer/verify/local/none",
+            &admin,
+            json!({"input":input,"signature":jws_signature,"marshaling_algorithm":"jws"}),
+        );
+        assert_eq!(verified.status, 200);
+        assert_eq!(verified.body["data"], json!({"valid":true}));
+        for length in [63, 65] {
+            assert_eq!(call(&mut service,"POST","consumer/sign/local",&admin,
+                json!({"input":BASE64.encode(vec![0;length]),"hash_algorithm":"mldsa-mu","prehashed":true})).status,500);
+        }
+        if kind != "ed25519" {
+            use sha3::digest::{ExtendableOutput, Update, XofReader};
+            let metadata = call(
+                &mut *remote.service.lock().map_err(|_| "remote lock")?,
+                "GET",
+                "transit/keys/remote",
+                &remote.admin,
+                json!({}),
+            );
+            let public = BASE64.decode(
+                metadata.body["data"]["keys"]["2"]["public_key"]
+                    .as_str()
+                    .ok_or("public key")?,
+            )?;
+            let mut tr_hash = sha3::Shake256::default();
+            Update::update(&mut tr_hash, &public);
+            let mut tr = [0; 64];
+            XofReader::read(&mut tr_hash.finalize_xof(), &mut tr);
+            let mut mu_hash = sha3::Shake256::default();
+            Update::update(&mut mu_hash, &tr);
+            Update::update(&mut mu_hash, &[0, 0]);
+            Update::update(&mut mu_hash, message);
+            let mut mu = [0; 64];
+            XofReader::read(&mut mu_hash.finalize_xof(), &mut mu);
+            let before = remote.calls()?;
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "consumer/sign/local",
+                    &admin,
+                    json!({"input":BASE64.encode(mu),"hash_algorithm":"mldsa-mu","prehashed":true})
+                )
+                .status,
+                500
+            );
+            assert_eq!(remote.calls()?, before);
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "sys/external-keys/configs/remote/keys/v1",
+                    &admin,
+                    json!({"verify":false,"name":"remote","version":2,"disable_prehashing":false})
+                )
+                .status,
+                204
+            );
+            let signed = call(
+                &mut service,
+                "POST",
+                "consumer/sign/local",
+                &admin,
+                json!({"input":BASE64.encode(mu),"hash_algorithm":"mldsa-mu","prehashed":true}),
+            );
+            assert_eq!(signed.status, 200);
+            let verified = call(
+                &mut service,
+                "POST",
+                "consumer/verify/local",
+                &admin,
+                json!({"input":input,"signature":signed.body["data"]["signature"]}),
+            );
+            assert_eq!(verified.status, 200);
+            assert_eq!(verified.body["data"], json!({"valid":true}));
+            assert_eq!(call(&mut service,"POST","consumer/verify/local",&admin,json!({"input":BASE64.encode(mu),"signature":signed.body["data"]["signature"],"hash_algorithm":"mldsa-mu","prehashed":true})).status,400);
+        } else {
+            assert_eq!(call(&mut service,"POST","consumer/sign/local",&admin,json!({"input":BASE64.encode([0;64]),"hash_algorithm":"mldsa-mu","prehashed":true})).status,500);
+        }
+        // Restart verifies the retained raw-mode signature under its original
+        // prehash policy, after the separate enabled-prehash mu positive control.
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/external-keys/configs/remote/keys/v1",
+                &admin,
+                json!({"verify":false,"name":"remote","version":2,"disable_prehashing":true})
+            )
+            .status,
+            204
+        );
+        drop(service);
+        let mut reopened = root.service()?;
+        reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+        assert_eq!(
+            call(
+                &mut reopened,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":unseal})
+            )
+            .status,
+            200
+        );
+        let verified = call(
+            &mut reopened,
+            "POST",
+            "consumer/verify/local",
+            &admin,
+            json!({"input":input,"signature":retained,"hash_algorithm":"sha2-512"}),
+        );
+        assert_eq!(verified.status, 200);
+        assert_eq!(verified.body["data"], json!({"valid":true}));
+        let encoded = serde_json::to_value(&reopened.state.as_ref().ok_or("state")?.engines)?;
+        let version = &encoded["namespaces"][""]["mounts"]["consumer/"]["backend"]["Transit"]["keys"]
+            ["local"]["versions"]["1"];
+        assert_eq!(version["material"], "");
+        assert_eq!(version["hmac_material"], "");
+        assert!(!fs::read_to_string(root.path.join("audit.jsonl"))?.contains(&input));
+    }
+    Ok(())
+}
+
+#[test]
+fn external_transit270_sign_and_verify_delay_share_all_original_authority_fences() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let input = BASE64.encode(b"actual withheld signing operation");
+    let signature = call(
+        &mut *remote.service.lock().map_err(|_| "remote lock")?,
+        "POST",
+        "transit/sign/remote",
+        &remote.admin,
+        json!({"input":input,"key_version":1}),
+    );
+    let signature = signature.body["data"]["signature"]
+        .as_str()
+        .ok_or("signature")?;
+    delayed_result_fences(&remote, "sign", &json!({"input":input}))?;
+    delayed_result_fences(
+        &remote,
+        "verify",
+        &json!({"input":input,"signature":signature}),
+    )?;
+    Ok(())
+}
+
+#[test]
+fn external_transit270_complete_remote_bad_cipher_and_aad_rejections_are_safe_and_fenced()
+-> TestResult {
+    let remote = RemoteTransit::new()?;
+    let (_root, mut service, _unseal, admin) = remote.fixture()?;
+    let cipher = call(
+        &mut service,
+        "POST",
+        "consumer/encrypt/local",
+        &admin,
+        json!({"plaintext":BASE64.encode(b"synthetic rejection input"),"associated_data":BASE64.encode(b"required aad")}),
+    );
+    let cipher = cipher.body["data"]["ciphertext"].clone();
+    for body in [
+        json!({"ciphertext":cipher}),
+        json!({"ciphertext":cipher,"associated_data":BASE64.encode(b"wrong aad")}),
+        json!({"ciphertext":format!("vault:v1:{}",BASE64.encode([0;28]))}),
+    ] {
+        let response = call(&mut service, "POST", "consumer/decrypt/local", &admin, body);
+        assert_eq!(response.status, 400);
+        assert_eq!(
+            response.body,
+            json!({"errors":["external Transit provider rejected request"]})
+        );
+    }
+    let pending = staged_path(
+        &mut service,
+        &admin,
+        "consumer/decrypt/local",
+        json!({"ciphertext":cipher}),
+    )?;
+    let result = pending.execute();
+    assert!(matches!(
+        &result,
+        ExternalEffectResult::ExternalTransit(Ok(_))
+    ));
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/external-keys/configs/remote/keys/v1/grants/consumer",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/external-keys/configs/remote/keys/v1/grants/consumer",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    let response = service.finish_external_request(pending, result);
+    assert_eq!(response.status, 503);
+    assert!(response.body.get("data").is_none());
+    Ok(())
+}
+
 struct RemoteTransit {
     _root: Root,
     service: Arc<Mutex<Service>>,
@@ -28,6 +679,9 @@ struct RemoteTransit {
 
 impl RemoteTransit {
     fn new() -> TestResult<Self> {
+        Self::new_kind("aes256-gcm96")
+    }
+    fn new_kind(kind: &str) -> TestResult<Self> {
         let root = Root::new();
         let mut service = root.service()?;
         let (_, admin) = bootstrap(&mut service)?;
@@ -37,7 +691,7 @@ impl RemoteTransit {
                 "POST",
                 "transit/keys/remote",
                 &admin,
-                json!({"type":"aes256-gcm96"})
+                json!({"type":kind})
             )
             .status,
             200
@@ -251,11 +905,22 @@ impl RemoteTransit {
         self.fixture_kms(None)
     }
     fn fixture_kms(&self, enabled: Option<bool>) -> TestResult<(Root, Service, String, String)> {
+        self.fixture_kms_capabilities(enabled, None)
+    }
+    fn fixture_kms_capabilities(
+        &self,
+        enabled: Option<bool>,
+        capabilities: Option<Vec<String>>,
+    ) -> TestResult<(Root, Service, String, String)> {
         let root = Root::new();
         let mut service = root.service()?;
         service.install_outbound_endpoints(vec![self.endpoint()])?;
         if let Some(enabled) = enabled {
-            service.install_kms_plugins(vec![native_kms_binding(&root, enabled)?])?;
+            let mut binding = native_kms_binding(&root, enabled)?;
+            if let Some(capabilities) = capabilities {
+                binding.capabilities = capabilities;
+            }
+            service.install_kms_plugins(vec![binding])?;
         }
         let (unseal, admin) = bootstrap(&mut service)?;
         for (path, body, status) in [
@@ -300,9 +965,18 @@ impl Drop for RemoteTransit {
 }
 
 fn staged(service: &mut Service, token: &str, body: Value) -> TestResult<PendingExternalRequest> {
+    staged_path(service, token, "consumer/encrypt/local", body)
+}
+
+fn staged_path(
+    service: &mut Service,
+    token: &str,
+    path: &str,
+    body: Value,
+) -> TestResult<PendingExternalRequest> {
     match service.begin_at_mode(RequestDispatch {
         method: "POST",
-        path: "consumer/encrypt/local",
+        path,
         namespace: "",
         token,
         body,
@@ -449,6 +1123,14 @@ fn external_transit270_real_remote_encrypt_decrypt_version_rotation_and_restart(
 fn external_transit270_delayed_results_fence_registry_grant_mount_key_and_policy_changes()
 -> TestResult {
     let remote = RemoteTransit::new()?;
+    delayed_result_fences(
+        &remote,
+        "encrypt",
+        &json!({"plaintext":BASE64.encode(b"withheld")}),
+    )
+}
+
+fn delayed_result_fences(remote: &RemoteTransit, operation: &str, body: &Value) -> TestResult {
     for mutation in [
         "grant",
         "mapping",
@@ -466,10 +1148,11 @@ fn external_transit270_delayed_results_fence_registry_grant_mount_key_and_policy
         "key-delete",
     ] {
         let (_root, mut service, _unseal, admin) = remote.fixture()?;
-        let pending = staged(
+        let pending = staged_path(
             &mut service,
             &admin,
-            json!({"plaintext":BASE64.encode(b"withheld")}),
+            &format!("consumer/{operation}/local"),
+            body.clone(),
         )?;
         let result = pending.execute();
         assert!(
@@ -754,16 +1437,25 @@ fn external_transit270_synthetic_verification_ack_is_never_crypto_success() -> T
     let remote = RemoteTransit::new()?;
     let (_root, mut service, _unseal, admin) = remote.fixture()?;
     remote.ack_only.store(true, Ordering::SeqCst);
-    let response = call(
-        &mut service,
-        "POST",
-        "consumer/encrypt/local",
-        &admin,
-        json!({"plaintext":BASE64.encode(b"secret")}),
-    );
-    assert_eq!(response.status, 503);
-    assert!(response.body.get("data").is_none());
-    assert_eq!(remote.calls()?, 1);
+    for (path, body) in [
+        (
+            "consumer/encrypt/local",
+            json!({"plaintext":BASE64.encode(b"secret")}),
+        ),
+        (
+            "consumer/sign/local",
+            json!({"input":BASE64.encode(b"sign input")}),
+        ),
+        (
+            "consumer/verify/local",
+            json!({"input":"","signature":format!("vault:v1:{}",BASE64.encode([0;64]))}),
+        ),
+    ] {
+        let response = call(&mut service, "POST", path, &admin, body);
+        assert_eq!(response.status, 503);
+        assert!(response.body.get("data").is_none());
+    }
+    assert_eq!(remote.calls()?, 3);
     Ok(())
 }
 
@@ -809,7 +1501,6 @@ fn external_transit270_schema_owner_contains_references_and_no_local_material() 
     for (path, body) in [
         ("consumer/export/encryption-key/local", json!({})),
         ("consumer/datakey/plaintext/local", json!({})),
-        ("consumer/sign/local", json!({"input":""})),
         ("consumer/hmac/local", json!({"input":""})),
     ] {
         assert!(

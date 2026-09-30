@@ -4,6 +4,7 @@
 use super::plugin::{KmsKeyBinding, PluginResponseAuthority, SharedKmsPlugin};
 use super::*;
 use base64::engine::general_purpose::STANDARD as BASE64;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD as BASE64_URL;
 use heptabao_domain::SecretValue;
 use heptabao_kms_contracts::KmsCapability;
 use heptabao_plugin_host::PluginHostState;
@@ -34,6 +35,7 @@ impl Drop for SensitiveJson {
 
 pub(crate) struct Observation {
     data: Value,
+    rejected: bool,
 }
 impl Drop for Observation {
     fn drop(&mut self) {
@@ -79,7 +81,15 @@ impl ExternalTransitPlan {
             .outbound
             .post_external_transit(&self.url, token, namespace, &envelope.0["body"])
             .map_err(|message| Response::error(503, message))?;
-        let response = SensitiveJson(response);
+        let response = match response {
+            crate::outbound::ExternalTransitResponse::Crypto(value) => SensitiveJson(value),
+            crate::outbound::ExternalTransitResponse::Rejected => {
+                return Ok(Observation {
+                    data: Value::Null,
+                    rejected: true,
+                });
+            }
+        };
         let data = response.0.get("data").and_then(Value::as_object)
             .ok_or_else(|| Response::error(503,"external Transit unknown after entry: missing cryptographic result; no blind retry"))?;
         let result = match self.operation {
@@ -139,6 +149,52 @@ impl ExternalTransitPlan {
                 }
                 json!({"plaintext":plaintext})
             }
+            "sign" => {
+                if data
+                    .keys()
+                    .any(|key| !matches!(key.as_str(), "signature" | "key_version"))
+                    || data
+                        .get("key_version")
+                        .is_some_and(|value| value.as_u64() != Some(remote_version))
+                {
+                    return Err(Response::error(
+                        503,
+                        "external Transit unknown after entry: signature binding mismatch; no blind retry",
+                    ));
+                }
+                let signature = data.get("signature").and_then(Value::as_str)
+                    .ok_or_else(|| Response::error(503, "external Transit unknown after entry: signature missing; no blind retry"))?;
+                let prefix = format!("vault:v{remote_version}:");
+                let payload = signature.strip_prefix(&prefix).filter(|value| !value.is_empty())
+                    .ok_or_else(|| Response::error(503, "external Transit unknown after entry: signature version mismatch; no blind retry"))?;
+                let encoding = if envelope.0["body"]["marshaling_algorithm"] == "jws" {
+                    &BASE64_URL
+                } else {
+                    &BASE64
+                };
+                let bytes = Zeroizing::new(encoding.decode(payload).map_err(|_| {
+                    Response::error(
+                        503,
+                        "external Transit unknown after entry: invalid signature; no blind retry",
+                    )
+                })?);
+                if bytes.is_empty() || bytes.len() > 16 * 1024 {
+                    return Err(Response::error(
+                        503,
+                        "external Transit unknown after entry: signature bound; no blind retry",
+                    ));
+                }
+                json!({"signature":format!("vault:v{}:{}", self.local_version, payload), "key_version":self.local_version})
+            }
+            "verify" => {
+                if data.len() != 1 || data.get("valid").and_then(Value::as_bool).is_none() {
+                    return Err(Response::error(
+                        503,
+                        "external Transit unknown after entry: verification result mismatch; no blind retry",
+                    ));
+                }
+                json!({"valid":data["valid"]})
+            }
             _ => {
                 return Err(Response::error(
                     503,
@@ -146,7 +202,10 @@ impl ExternalTransitPlan {
                 ));
             }
         };
-        Ok(Observation { data: result })
+        Ok(Observation {
+            data: result,
+            rejected: false,
+        })
     }
 }
 
@@ -213,10 +272,12 @@ impl Service {
             self.kms_keys.get("transit"),
         ) {
             (Some(host), Some(binding)) => {
-                let capability = if plan.operation == "encrypt" {
-                    KmsCapability::Wrap
-                } else {
-                    KmsCapability::Unwrap
+                let capability = match plan.operation {
+                    "encrypt" => KmsCapability::Wrap,
+                    "decrypt" => KmsCapability::Unwrap,
+                    "sign" => KmsCapability::Sign,
+                    "verify" => KmsCapability::Verify,
+                    _ => return Response::error(503, "invalid external Transit operation"),
                 };
                 if !binding.enabled || !binding.capabilities.contains(&capability) {
                     return Response::error(
@@ -318,6 +379,15 @@ impl Service {
                 "external Transit result withheld after authority/state changed; remote outcome unknown; no blind retry",
             );
         }
-        Response::ok(json!({"data":std::mem::take(&mut observation.data)}))
+        if observation.rejected {
+            let status = if matches!(plan.operation, "sign" | "verify") {
+                500
+            } else {
+                400
+            };
+            Response::error(status, "external Transit provider rejected request")
+        } else {
+            Response::ok(json!({"data":std::mem::take(&mut observation.data)}))
+        }
     }
 }

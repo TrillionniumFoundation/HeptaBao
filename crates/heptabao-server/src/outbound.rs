@@ -1583,6 +1583,13 @@ fn read_json_response_status(
     stream: &mut impl Read,
     accepted: &[u16],
 ) -> Result<Value, &'static str> {
+    read_json_response_with_status(stream, accepted).map(|(_, value)| value)
+}
+
+fn read_json_response_with_status(
+    stream: &mut impl Read,
+    accepted: &[u16],
+) -> Result<(u16, Value), &'static str> {
     let mut budget = 16 * 1024;
     let status = line(stream, &mut budget)?;
     let status = std::str::from_utf8(&status).map_err(|_| "invalid outbound HTTP status")?;
@@ -1599,6 +1606,9 @@ fn read_json_response_status(
     {
         return Err("outbound HTTP status rejected; redirects forbidden");
     }
+    let code = code
+        .parse::<u16>()
+        .map_err(|_| "invalid outbound HTTP status")?;
     let mut headers = BTreeMap::new();
     loop {
         let l = line(stream, &mut budget)?;
@@ -1695,7 +1705,14 @@ fn read_json_response_status(
         _ => return Err("unsupported outbound transfer encoding"),
     }
     // The same duplicate-key rejecting parser used by the public HTTP boundary.
-    crate::auth::parse_strict_json(&body).map_err(|_| "invalid or ambiguous outbound JSON")
+    crate::auth::parse_strict_json(&body)
+        .map(|value| (code, value))
+        .map_err(|_| "invalid or ambiguous outbound JSON")
+}
+
+pub(crate) enum ExternalTransitResponse {
+    Crypto(Value),
+    Rejected,
 }
 
 impl Outbound {
@@ -1719,7 +1736,7 @@ impl Outbound {
         token: &str,
         namespace: &str,
         value: &Value,
-    ) -> Result<Value, &'static str> {
+    ) -> Result<ExternalTransitResponse, &'static str> {
         if token.is_empty()
             || token.len() > 32 * 1024
             || !token.bytes().all(|byte| byte.is_ascii_graphic())
@@ -1757,8 +1774,19 @@ impl Outbound {
             .and_then(|()| stream.write_all(&body))
             .and_then(|()| stream.flush())
             .map_err(|_| "external Transit unknown after entry; no blind retry")?;
-        read_json_response_status(&mut stream, &[200])
-            .map_err(|_| "external Transit unknown after entry; readback required; no blind retry")
+        let (status, mut response) = read_json_response_with_status(&mut stream, &[200, 400])
+            .map_err(
+                |_| "external Transit unknown after entry; readback required; no blind retry",
+            )?;
+        if status == 400 {
+            // Only a complete, bounded, unambiguous response over the enrolled
+            // authenticated TLS route is a known rejection. The provider's
+            // error text may contain secrets and is never returned or logged.
+            crate::service::erase_json(&mut response);
+            Ok(ExternalTransitResponse::Rejected)
+        } else {
+            Ok(ExternalTransitResponse::Crypto(response))
+        }
     }
 
     /// One host-enrolled TokenReview request. No credential may choose its own
@@ -1834,6 +1862,29 @@ pub(crate) fn form_component(value: &str) -> String {
 mod tests {
     use super::*;
     use crate::test_support::{random_ascii, random_bytes, runtime_secret};
+
+    #[test]
+    fn external_transit_completed_rejection_requires_complete_strict_http_and_json()
+    -> Result<(), &'static str> {
+        let message = "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 16\r\n\r\n{\"errors\":[\"x\"]}";
+        let (status, body) = read_json_response_with_status(&mut message.as_bytes(), &[200, 400])?;
+        assert_eq!(status, 400);
+        assert_eq!(body, serde_json::json!({"errors":["x"]}));
+        assert!(read_json_response(&mut message.as_bytes()).is_err());
+        for malformed in [
+            "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 15\r\n\r\n{\"errors\":",
+            "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 2\r\nContent-Length: 2\r\n\r\n{}",
+            "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 2\r\nTransfer-Encoding: chunked\r\n\r\n{}",
+            "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 13\r\n\r\n{\"x\":1,\"x\":2}",
+            "HTTP/1.1 302 Found\r\nContent-Type: application/json\r\nContent-Length: 2\r\n\r\n{}",
+            "HTTP/1.1 500 Internal Server Error\r\nContent-Type: application/json\r\nContent-Length: 2\r\n\r\n{}",
+        ] {
+            assert!(
+                read_json_response_with_status(&mut malformed.as_bytes(), &[200, 400]).is_err()
+            );
+        }
+        Ok(())
+    }
     #[test]
     fn egress_never_accepts_ambiguous_or_unenrolled_destinations() {
         for url in [

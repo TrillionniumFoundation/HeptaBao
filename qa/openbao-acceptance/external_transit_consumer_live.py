@@ -43,7 +43,7 @@ INITIAL_DESCRIPTOR = {"allow_plaintext_backup": False, "auto_rotate_period": 0,
     "min_available_version": 0, "min_decryption_version": 1, "min_encryption_version": 0,
     "name": "local", "soft_deleted": False, "supports_decryption": True,
     "supports_derivation": False, "supports_encryption": True,
-    "supports_signing": False, "type": "external-key"}
+    "supports_signing": True, "type": "external-key"}
 
 
 class Failure(Exception):
@@ -90,8 +90,245 @@ def expected_cases():
         "candidate.remote_restart_decrypt", "official.remote_restart_decrypt",
         "candidate.wrong_deployment_ca_restart", "candidate.wrong_deployment_ca_refused",
         "candidate.wrong_deployment_ca_no_crypto_entry", "candidate.correct_ca_restart",
-        "candidate.correct_ca_readback", "candidate.audit_no_credentials_or_plaintext", "candidate.binary_after_hash"]
+        "candidate.correct_ca_readback"]
+    cases += signing_cases()
+    cases += [side + ".crypto_rejection." + field for side in ("candidate", "official")
+        for field in ("missing_aad", "wrong_aad", "bad_framed_cipher", "aes_sign_unsupported", "aes_verify_unsupported")]
+    cases += ["candidate.audit_no_credentials_or_plaintext", "candidate.binary_after_hash"]
     return tuple(cases)
+
+
+SIGN_KINDS = ("ed25519", "mldsa-44", "mldsa-65", "mldsa-87")
+SIGN_VARIANTS = ("default", "none", "sha256", "sha512", "prehashed", "jws", "path_none")
+CONTEXT_OPTIONS = (("null", None, 200), ("int4", 1234, 200), ("int8", 12345678, 200),
+    ("int20", 10**19, 200), ("float", 1234.0, 400), ("exponent", 1e19, 400),
+    ("true", True, 400), ("false", False, 400), ("array", [], 400), ("object", {}, 400),
+    ("valid", "YWJj", 200), ("empty", "", 200), ("invalid", "%%%%", 400))
+SALT_OPTIONS = (("absent", None, 200), ("auto", "auto", 200), ("hash", "hash", 200),
+    ("upper_auto", "AUTO", 200), ("upper_hash", "HASH", 200), ("true", True, 200),
+    ("false", False, 200), ("int0", 0, 200), ("int1", 1, 200), ("int17", 17, 200),
+    ("intminus1", -1, 200), ("string17", "17", 200), ("stringminus1", "-1", 200),
+    ("stringplus17", "+17", 200), ("null", None, 400), ("empty", "", 400), ("invalid", "ignored", 400),
+    ("intminus2", -2, 400), ("intminus3", -3, 400), ("stringminus2", "-2", 400),
+    ("stringminus3", "-3", 400), ("float2", 2.0, 400), ("fraction", 2.5, 400),
+    ("array", [], 400), ("object", {}, 400), ("spaced", " 17 ", 400))
+
+
+def signing_cases():
+    cases = []
+    for kind in SIGN_KINDS:
+        cases += [f"signing.{kind}.remote." + name for name in ("key", "rotate", "latest2")]
+        for disabled in (False, True):
+            name = kind + ("-raw" if disabled else "-auto")
+            for side in ("candidate", "official"):
+                cases += [f"signing.{name}.{side}." + field for field in ("mapping", "grant", "create", "descriptor")]
+            for variant in SIGN_VARIANTS:
+                for side in ("candidate", "official"):
+                    cases += [f"signing.{name}.{variant}.{side}." + field for field in ("sign", "remote_verify",
+                        "remote_other_version_invalid", "own_verify", "cross_verify", "tampered_input_invalid")]
+            for side in ("candidate", "official"):
+                if not disabled:
+                    cases += [f"signing.{name}.{side}.typed.{field}.{option}." + operation
+                        for field, options in (("context", CONTEXT_OPTIONS), ("salt_length", SALT_OPTIONS))
+                        for option, _value, _status in options for operation in ("sign", "verify")]
+                if disabled:
+                    cases += [f"signing.{name}.{side}.disabled_prehash.{algorithm}.{typed}." + operation
+                        for algorithm in ("sha256", "sha512") for typed in ("bool", "string") for operation in ("sign", "verify")]
+                cases += [f"signing.{name}.{side}.mu." + field for field in ("length63", "length65", "sign", "verify")]
+            for side in ("candidate", "official"):
+                cases += [f"signing.{name}.{side}.signature_algorithm.{option}." + field
+                    for option in ("null", "false", "true", "integer") for field in ("sign", "verify")]
+            for side in ("candidate", "official"):
+                cases += [f"signing.{name}.{side}." + field for field in ("rotate_mapping", "rotate_grant",
+                    "rotate_reference", "v2_sign", "v2_remote_verify", "verify_old_hint2", "minimum_config", "minimum_rejects_old",
+                    "minimum_current_verify", "grant_remove", "grant_removed_sign", "grant_removed_verify", "grant_restore")]
+    return cases
+
+
+def crypto_boolean(data, expected):
+    return (type(data) is dict and data.keys() == {"valid"}
+        and type(data["valid"]) is bool and data["valid"] is expected)
+
+
+def signature_payload(signature, version, jws=False):
+    if not isinstance(signature, str) or not signature.startswith(f"vault:v{version}:"):
+        raise Failure("signature_version_contract")
+    payload = signature.split(":", 2)[2]
+    try:
+        if jws:
+            if not re.fullmatch(r"[A-Za-z0-9_-]+", payload):
+                raise ValueError()
+            raw = base64.b64decode(payload + "=" * (-len(payload) % 4), altchars=b"-_", validate=True)
+            canonical = base64.urlsafe_b64encode(raw).decode().rstrip("=")
+        else:
+            raw = base64.b64decode(payload, validate=True)
+            canonical = base64.b64encode(raw).decode()
+    except (ValueError, TypeError):
+        raise Failure("signature_base64_contract") from None
+    if not 1 <= len(raw) <= 16 * 1024 or canonical != payload:
+        raise Failure("signature_bound_or_canonical_encoding_contract")
+    return payload
+
+
+def run_signing(t, r, clients, ciphertexts):
+    import hashlib
+    for kind in SIGN_KINDS:
+        t.call(f"signing.{kind}.remote.key", r, "POST", "transit/keys/" + kind, 200, {"type": kind})
+        t.call(f"signing.{kind}.remote.rotate", r, "POST", "transit/keys/" + kind + "/rotate", 200, {})
+        latest = r.request("GET", "/v1/transit/keys/" + kind)
+        t.check(f"signing.{kind}.remote.latest2", latest.status == 200 and latest.body.get("data", {}).get("latest_version") == 2, latest.status)
+        for disabled in (False, True):
+            name = kind + ("-raw" if disabled else "-auto")
+            ref = "provider:" + name
+            for side, client in clients.items():
+                label = f"signing.{name}.{side}."
+                mapping = {"name": kind, "version": 2, "disable_prehashing": disabled}
+                if side == "candidate":
+                    mapping["verify"] = False
+                t.call(label + "mapping", client, "POST", CONFIG + "/keys/" + name, 204, mapping)
+                t.call(label + "grant", client, "POST", CONFIG + "/keys/" + name + "/grants/consumer", 204)
+                t.call(label + "create", client, "POST", "consumer/keys/" + name, 200,
+                    {"type": "external-key", "external_key_ref": ref})
+                descriptor = client.request("GET", "/v1/consumer/keys/" + name)
+                t.check(label + "descriptor", descriptor.status == 200 and
+                    descriptor_matches(descriptor.body.get("data"), side, name, ref), descriptor.status)
+            retained = {}
+            for variant in SIGN_VARIANTS:
+                message = base64.b64decode(PLAIN)
+                body = {"input": PLAIN}
+                suffix = ""
+                remote_input = PLAIN
+                if variant == "none":
+                    body["hash_algorithm"] = "none"
+                elif variant in ("sha256", "sha512"):
+                    body["hash_algorithm"] = "sha2-256" if variant == "sha256" else "sha2-512"
+                    if not disabled:
+                        remote_input = base64.b64encode(getattr(hashlib, variant)(message).digest()).decode()
+                elif variant == "prehashed":
+                    body.update(input=base64.b64encode(hashlib.sha256(message).digest()).decode(), prehashed=True,
+                        hash_algorithm="none" if disabled else "sha2-256")
+                    remote_input = body["input"]
+                elif variant == "jws":
+                    body.update(marshaling_algorithm="jws", prehashed="TRUE", signature_algorithm="pkcs1v15", context=AAD)
+                elif variant == "path_none":
+                    body["hash_algorithm"] = "sha2-512"
+                    suffix = "/none"
+                for side, client in clients.items():
+                    label = f"signing.{name}.{variant}.{side}."
+                    signed = client.request("POST", "/v1/consumer/sign/" + name + suffix, body)
+                    data = signed.body.get("data", {})
+                    t.check(label + "sign", signed.status == 200 and set(data) == {"signature", "key_version"}
+                        and type(data.get("key_version")) is int and data["key_version"] == 1, signed.status)
+                    signature = data["signature"]
+                    payload = signature_payload(signature, 1, variant == "jws")
+                    direct_body = {"input": remote_input, "signature": "vault:v2:" + payload}
+                    if variant == "jws":
+                        direct_body["marshaling_algorithm"] = "jws"
+                    direct = r.request("POST", "/v1/transit/verify/" + kind, direct_body)
+                    t.check(label + "remote_verify", direct.status == 200 and crypto_boolean(direct.body.get("data"), True), direct.status)
+                    wrong = r.request("POST", "/v1/transit/verify/" + kind, {**direct_body, "signature": "vault:v1:" + payload})
+                    t.check(label + "remote_other_version_invalid", wrong.status == 200 and crypto_boolean(wrong.body.get("data"), False), wrong.status)
+                    verified_body = {**body, "signature": signature}
+                    for field, verifier in (("own_verify", client), ("cross_verify", clients["official" if side == "candidate" else "candidate"])):
+                        verified = verifier.request("POST", "/v1/consumer/verify/" + name + suffix, verified_body)
+                        t.check(label + field, verified.status == 200 and crypto_boolean(verified.body.get("data"), True), verified.status)
+                    changed = bytearray(base64.b64decode(body["input"]))
+                    changed[0] ^= 1
+                    invalid = client.request("POST", "/v1/consumer/verify/" + name + suffix,
+                        {**verified_body, "input": base64.b64encode(changed).decode()})
+                    t.check(label + "tampered_input_invalid", invalid.status == 200 and crypto_boolean(invalid.body.get("data"), False), invalid.status)
+                    if variant == "default":
+                        retained[side] = signature
+            for side, client in clients.items():
+                if not disabled:
+                    for field, options in (("context", CONTEXT_OPTIONS), ("salt_length", SALT_OPTIONS)):
+                        for option, value, status in options:
+                            label = f"signing.{name}.{side}.typed.{field}.{option}."
+                            body = {"input": PLAIN, **({field: value} if option != "absent" else {})}
+                            signed = client.request("POST", "/v1/consumer/sign/" + name, body)
+                            data = signed.body.get("data", {})
+                            t.check(label + "sign", signed.status == status and (status != 200 or
+                                (set(data) == {"signature", "key_version"} and type(data.get("key_version")) is int
+                                and data["key_version"] == 1)), signed.status)
+                            signature = data["signature"] if status == 200 else retained[side]
+                            if status == 200:
+                                signature_payload(signature, 1)
+                            verified = client.request("POST", "/v1/consumer/verify/" + name, {**body, "signature": signature})
+                            t.check(label + "verify", verified.status == status and
+                                (status != 200 or crypto_boolean(verified.body.get("data"), True)), verified.status)
+                if disabled:
+                    for algorithm in ("sha256", "sha512"):
+                        for typed, prehashed in (("bool", True), ("string", "TRUE")):
+                            label = f"signing.{name}.{side}.disabled_prehash.{algorithm}.{typed}."
+                            body = {"input": base64.b64encode(getattr(hashlib, algorithm)(base64.b64decode(PLAIN)).digest()).decode(),
+                                "hash_algorithm": "sha2-256" if algorithm == "sha256" else "sha2-512", "prehashed": prehashed}
+                            t.call(label + "sign", client, "POST", "consumer/sign/" + name, 500, body)
+                            t.call(label + "verify", client, "POST", "consumer/verify/" + name, 500,
+                                {**body, "signature": retained[side]})
+                label = f"signing.{name}.{side}.mu."
+                for length in (63, 65):
+                    t.call(label + "length" + str(length), client, "POST", "consumer/sign/" + name, 500,
+                        {"input": base64.b64encode(bytes(length)).decode(), "hash_algorithm": "mldsa-mu", "prehashed": True})
+                if kind == "ed25519" or disabled:
+                    t.call(label + "sign", client, "POST", "consumer/sign/" + name, 500,
+                        {"input": base64.b64encode(bytes(64)).decode(), "hash_algorithm": "mldsa-mu", "prehashed": True})
+                    t.call(label + "verify", client, "POST", "consumer/verify/" + name, 400,
+                        {"input": base64.b64encode(bytes(64)).decode(), "signature": retained[side], "hash_algorithm": "mldsa-mu", "prehashed": True})
+                else:
+                    public = base64.b64decode(latest.body["data"]["keys"]["2"]["public_key"], validate=True)
+                    tr = hashlib.shake_256(public).digest(64)
+                    mu = hashlib.shake_256(tr + b"\x00\x00" + base64.b64decode(PLAIN)).digest(64)
+                    signed = client.request("POST", "/v1/consumer/sign/" + name,
+                        {"input": base64.b64encode(mu).decode(), "hash_algorithm": "mldsa-mu", "prehashed": True})
+                    t.check(label + "sign", signed.status == 200 and type(signed.body.get("data", {}).get("key_version")) is int
+                        and signed.body.get("data", {}).get("key_version") == 1, signed.status)
+                    verified = client.request("POST", "/v1/consumer/verify/" + name, {"input": PLAIN, "signature": signed.body["data"]["signature"]})
+                    t.check(label + "verify", verified.status == 200 and crypto_boolean(verified.body.get("data"), True), verified.status)
+            for side, client in clients.items():
+                for option_name, option in (("null", None), ("false", False), ("true", True), ("integer", 17)):
+                    label = f"signing.{name}.{side}.signature_algorithm.{option_name}."
+                    signed = client.request("POST", "/v1/consumer/sign/" + name, {"input": PLAIN, "signature_algorithm": option})
+                    t.check(label + "sign", signed.status == 200 and type(signed.body.get("data", {}).get("key_version")) is int
+                        and signed.body.get("data", {}).get("key_version") == 1, signed.status)
+                    verified = client.request("POST", "/v1/consumer/verify/" + name, {"input": PLAIN,
+                        "signature": signed.body["data"]["signature"], "signature_algorithm": option})
+                    t.check(label + "verify", verified.status == 200 and crypto_boolean(verified.body.get("data"), True), verified.status)
+            for side, client in clients.items():
+                label = f"signing.{name}.{side}."
+                rotated = name + "-v1"
+                mapping = {"name": kind, "version": 1}
+                if side == "candidate":
+                    mapping["verify"] = False
+                t.call(label + "rotate_mapping", client, "POST", CONFIG + "/keys/" + rotated, 204, mapping)
+                t.call(label + "rotate_grant", client, "POST", CONFIG + "/keys/" + rotated + "/grants/consumer", 204)
+                t.call(label + "rotate_reference", client, "POST", "consumer/keys/" + name + "/rotate", 200,
+                    {"external_key_ref": "provider:" + rotated})
+                signed = client.request("POST", "/v1/consumer/sign/" + name, {"input": PLAIN})
+                data = signed.body.get("data", {})
+                t.check(label + "v2_sign", signed.status == 200 and type(data.get("key_version")) is int and data["key_version"] == 2, signed.status)
+                payload = signature_payload(data["signature"], 2)
+                direct = r.request("POST", "/v1/transit/verify/" + kind, {"input": PLAIN, "signature": "vault:v1:" + payload})
+                t.check(label + "v2_remote_verify", direct.status == 200 and crypto_boolean(direct.body.get("data"), True), direct.status)
+                old = client.request("POST", "/v1/consumer/verify/" + name, {"input": PLAIN, "signature": retained[side], "key_version": 2})
+                t.check(label + "verify_old_hint2", old.status == 200 and crypto_boolean(old.body.get("data"), True), old.status)
+                t.call(label + "minimum_config", client, "POST", "consumer/keys/" + name + "/config", 200,
+                    {"min_encryption_version": 2, "min_decryption_version": 2})
+                t.call(label + "minimum_rejects_old", client, "POST", "consumer/verify/" + name, 400,
+                    {"input": PLAIN, "signature": retained[side], "key_version": 2})
+                verified = client.request("POST", "/v1/consumer/verify/" + name, {"input": PLAIN, "signature": data["signature"]})
+                t.check(label + "minimum_current_verify", verified.status == 200 and crypto_boolean(verified.body.get("data"), True), verified.status)
+                grant = CONFIG + "/keys/" + rotated + "/grants/consumer"
+                t.call(label + "grant_remove", client, "DELETE", grant, 204)
+                t.call(label + "grant_removed_sign", client, "POST", "consumer/sign/" + name, 500, {"input": PLAIN})
+                t.call(label + "grant_removed_verify", client, "POST", "consumer/verify/" + name, 500, {"input": PLAIN, "signature": data["signature"]})
+                t.call(label + "grant_restore", client, "POST", grant, 204)
+    for side, client in clients.items():
+        for field, body in (("missing_aad", {"ciphertext": ciphertexts[side, 2]}),
+            ("wrong_aad", {"ciphertext": ciphertexts[side, 2], "associated_data": base64.b64encode(b"wrong aad").decode()}),
+            ("bad_framed_cipher", {"ciphertext": "vault:v2:" + base64.b64encode(bytes(28)).decode()})):
+            t.call(side + ".crypto_rejection." + field, client, "POST", "consumer/decrypt/local", 400, body)
+        t.call(side + ".crypto_rejection.aes_sign_unsupported", client, "POST", "consumer/sign/local", 500, {"input": PLAIN})
+        t.call(side + ".crypto_rejection.aes_verify_unsupported", client, "POST", "consumer/verify/local", 500, {"input": PLAIN, "signature": "vault:v2:" + base64.b64encode(bytes(64)).decode()})
 
 
 EXPECTED_CASES = expected_cases()
@@ -102,12 +339,12 @@ def trace_complete(rows):
         and all(row.get("passed") is True for row in rows))
 
 
-def descriptor_matches(value, side="candidate"):
+def descriptor_matches(value, side="candidate", name="local", reference="provider:fixed1"):
     # Python's bool is an int subclass; JSON number/boolean distinctions are
     # part of the descriptor contract, not interchangeable normalization.
     if side not in ("candidate", "official"):
         return False
-    expected_descriptor = {**INITIAL_DESCRIPTOR, "supports_signing": side == "official"}
+    expected_descriptor = {**INITIAL_DESCRIPTOR, "name": name, "keys": {"1": reference}}
     return (type(value) is dict and value.keys() == expected_descriptor.keys()
         and all(type(value[key]) is type(expected) and value[key] == expected
             for key, expected in expected_descriptor.items()))
@@ -377,6 +614,7 @@ def run(binary, rows):
         t.check("candidate.correct_ca_restart", c.health()["cluster_id"] == identities["candidate"]["cluster_id"])
         data = c.request("POST", "/v1/consumer/decrypt/local", {"ciphertext": ciphertexts["official", 2], "associated_data": AAD})
         t.check("candidate.correct_ca_readback", data.status == 200 and data.body.get("data") == {"plaintext": PLAIN}, data.status)
+        run_signing(t, r, clients, ciphertexts)
         audit = (native.root / "audit.jsonl").read_bytes()
         t.check("candidate.audit_no_credentials_or_plaintext", all(value.encode() not in audit
             for value in (remote_token, native.token, PLAIN, AAD, base64.b64decode(PLAIN).decode())))
@@ -415,10 +653,9 @@ def main():
         "full_openbao_compatibility": False, "compatibility_claim": False,
         "independent_qualification": False, "production_authority": False,
         "migration_authority": False, "release_authority": False,
-        "scope": "single_aes_remote_transit_external_consumers_bilateral_ciphertext_readback",
+        "scope": "single_aes_ed25519_mldsa_remote_transit_bilateral_crypto_readback",
         "candidate_registry_verify": False, "official_registry_verify": True,
-        "descriptor_signing_capability": {"candidate": False, "official": True},
-        "deliberate_capability_differences": ["candidate external consumer implements encryption/decryption only; official advertises signing"],
+        "descriptor_signing_capability": {"candidate": True, "official": True},
         "candidate_transport_authority": "production_cli_deployment_enrolled_https",
         "build_source_commit": args.build_source_commit, "build_source_tree": args.build_source_tree,
         "expected_binary_sha256": args.expected_binary_sha256,

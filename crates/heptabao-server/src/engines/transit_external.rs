@@ -49,7 +49,7 @@ pub(super) fn descriptor(key: &Key, name: &str) -> Result<Value> {
         "min_encryption_version":key.min_encryption_version,"deletion_allowed":key.deletion_allowed,
         "exportable":false,"allow_plaintext_backup":false,"derived":false,
         "supports_derivation":false,"supports_encryption":true,"supports_decryption":true,
-        "supports_signing":false,"imported_key":false,"auto_rotate_period":0,
+        "supports_signing":true,"imported_key":false,"auto_rotate_period":0,
         "soft_deleted":key.deleted,"min_available_version":0}))
 }
 
@@ -85,6 +85,79 @@ fn split_ciphertext(ciphertext: &str) -> Result<(u64, Zeroizing<Vec<u8>>)> {
         return Err(error(413, "external ciphertext exceeds bound"));
     }
     Ok((version, payload))
+}
+
+fn split_signature(signature: &str, body: &Value) -> Result<(u64, Zeroizing<Vec<u8>>)> {
+    if signature.len() > 16 * 1024 * 4 / 3 + 32 {
+        return Err(error(413, "external signature exceeds bound"));
+    }
+    let (version, bytes) = parse_wrapped_with(signature, signature_encoding(body)?)?;
+    if version == 0 || bytes.is_empty() || bytes.len() > 16 * 1024 {
+        return Err(bad("invalid external signature"));
+    }
+    Ok((version, bytes))
+}
+
+fn signing_body(body: &Value, path_algorithm: &str) -> Result<SecretJson> {
+    if string(body, "input")?.len() > MAX_EXTERNAL_PLAINTEXT * 4 / 3 + 4
+        || decode_field(body, "input")?.len() > MAX_EXTERNAL_PLAINTEXT
+    {
+        return Err(error(413, "external signing input exceeds 64 KiB bound"));
+    }
+    // External keys are not derived. Like ordinary non-derived signing, an
+    // ignored derivation context still has to be valid Base64.
+    validate_signing_context(body)?;
+    let prehashed = signing_prehashed(body)?;
+    validate_signing_salt_length(body)?;
+    signature_encoding(body)?;
+    let mut remote = SecretJson(json!({"input":string(body,"input")?}));
+    if !path_algorithm.is_empty() || body.get("hash_algorithm").is_some() {
+        let algorithm = signing_hash_algorithm(path_algorithm, body)?;
+        if !matches!(
+            algorithm,
+            "none"
+                | "sha1"
+                | "sha2-224"
+                | "sha2-256"
+                | "sha2-384"
+                | "sha2-512"
+                | "sha3-224"
+                | "sha3-256"
+                | "sha3-384"
+                | "sha3-512"
+                | "mldsa-mu"
+        ) {
+            return Err(bad("unsupported external signing hash algorithm"));
+        }
+        if algorithm == "mldsa-mu" && !prehashed {
+            return Err(bad("external ML-DSA mu requires prehashed input"));
+        }
+        if algorithm == "mldsa-mu" && decode_field(body, "input")?.len() != 64 {
+            return Err(error(
+                500,
+                "external ML-DSA mu must contain exactly 64 bytes",
+            ));
+        }
+        remote["hash_algorithm"] = json!(algorithm);
+    }
+    for field in [
+        "prehashed",
+        "signature_algorithm",
+        "marshaling_algorithm",
+        "salt_length",
+    ] {
+        if let Some(value) = body.get(field) {
+            if field == "prehashed" {
+                remote[field] = json!(prehashed);
+                continue;
+            }
+            if !matches!(field, "signature_algorithm" | "salt_length") && !value.is_string() {
+                return Err(bad("external signing option must be a string"));
+            }
+            remote[field] = value.clone();
+        }
+    }
+    Ok(remote)
 }
 
 impl Transit {
@@ -208,7 +281,11 @@ impl Transit {
         if !matches!(method, "POST" | "PUT") {
             return Err(unsupported());
         }
-        let (operation, name) = path.split_once('/').ok_or_else(not_found)?;
+        let (operation, rest) = path.split_once('/').ok_or_else(not_found)?;
+        let (name, algorithm) = rest.split_once('/').unwrap_or((rest, ""));
+        if !algorithm.is_empty() && !matches!(operation, "sign" | "verify") {
+            return Err(not_found());
+        }
         let key = self.keys.get(name).ok_or_else(not_found)?;
         key.alive()?;
         let (operation, local_version, mut remote_body) = match operation {
@@ -248,6 +325,40 @@ impl Transit {
                     version,
                     SecretJson(json!({"ciphertext":BASE64.encode(&*payload)})),
                 )
+            }
+            "sign" | "verify" => {
+                reject_unknown(
+                    body,
+                    &[
+                        "input",
+                        "key_version",
+                        "signature",
+                        "context",
+                        "prehashed",
+                        "hash_algorithm",
+                        "signature_algorithm",
+                        "marshaling_algorithm",
+                        "salt_length",
+                    ],
+                )?;
+                let mut remote = signing_body(body, algorithm)?;
+                if operation == "sign" {
+                    if body.get("signature").is_some() {
+                        return Err(bad("signature is only accepted for verification"));
+                    }
+                    ("sign", key.selected_version(body)?, remote)
+                } else {
+                    if remote.get("hash_algorithm").and_then(Value::as_str) == Some("mldsa-mu") {
+                        return Err(bad("external ML-DSA mu verification is not supported"));
+                    }
+                    // The signature prefix selects its retained version. A
+                    // caller's generic key_version hint never revives an old
+                    // signature or overrides that selection.
+                    let (version, bytes) = split_signature(string(body, "signature")?, body)?;
+                    key.decrypt_version(version)?;
+                    remote["signature"] = json!(signature_encoding(body)?.encode(&*bytes));
+                    ("verify", version, remote)
+                }
             }
             _ => return Err(error(501, "external key operation is not implemented")),
         };

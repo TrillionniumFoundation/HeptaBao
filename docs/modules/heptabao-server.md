@@ -856,7 +856,7 @@ older state containing the new metadata. State without external Transit keys
 remains readable at schema 63; ordinary writes promote through the existing
 opaque-owner/record-root commit pipeline. No separate storage owner is added.
 
-Single-item `encrypt` and `decrypt` run as a native Service external effect.
+Single-item `encrypt`, `decrypt`, `sign` and `verify` run as a native Service external effect.
 Creation and explicit reference rotation require a current registry mapping and
 a grant to the actual mount path in the same namespace. Every consumption checks
 caller ACL/parameter policy and the current mapping/grant again before reading
@@ -899,14 +899,29 @@ conservative: an unrelated committed write also withholds a delayed result.
 Grant removal/recreation, mapping/config replacement, local key disable/delete,
 mount disable/recreate and policy changes cannot publish a result from the old
 state. A verified remote response must contain the operation's bounded crypto
-result and fixed remote version; `verified=true` alone is refused. Remote error,
-malformed output or post-entry delivery veto reports an unknown remote outcome
-with no blind retry. Request and response audit stay on the original Service
+result and fixed remote version; `verified=true` alone is refused. A complete,
+bounded, unambiguous HTTP 400 over the enrolled TLS route is a captured rejection
+that passes through the same original authority/state completion fences and
+returns fixed local text: 400 for encrypt/decrypt and 500 for provider
+sign/verify rejection, as observed on the selected official contract. Missing registry references or mount grants likewise reject sign/verify with 500 before provider entry; encrypt/decrypt retain their 400 contract. Provider error bodies are erased and never returned
+or logged. Other remote statuses, malformed/truncated output and post-entry
+delivery veto report an unknown remote outcome with no blind retry. Request and response audit stay on the original Service
 path, and the plaintext result is erased on a delivery veto.
 
-Plaintext is bounded at 64 KiB and associated data at 4 KiB within the existing
-128 KiB outbound document and 256 KiB HTTP body bounds. Batch operations,
-rewrap, sign/verify/HMAC, data-key generation, PKCS#11/PKI consumers, API transport
+Plaintext and signing input are bounded at 64 KiB, signatures at 16 KiB and
+associated data at 4 KiB within the existing 128 KiB outbound document and
+256 KiB HTTP body bounds. Signature prefixes select the retained local reference
+and reconstruct its fixed remote version, including local/remote version numbers
+that differ. Standard padded Base64 and request-selected unpadded URL-safe JWS
+encoding have distinct strict contracts. Explicit digest inputs are hashed once
+when provider prehashing is enabled; `prehashed` inputs and a mapping with
+`disable_prehashing=true` retain their original bytes. Combining disabled prehashing with `prehashed=true` and an explicit SHA or ML-DSA mu algorithm rejects signing with 500 before provider entry; the raw `none` and enabled-prehash ML-DSA mu paths retain their distinct contracts. Both preprocessing buffers
+and replaced plaintext fields are zeroized. A deployment KMS host requires an
+explicit independent `sign` or `verify` capability for those operations; old default
+wrap/unwrap/data-key grants do not imply either signing grant.
+Context and salt-length options share the ordinary native signing validators,
+with exact observed scalar conversion and rejection rules before provider entry.
+Batch operations, rewrap/HMAC, data-key generation, PKCS#11/PKI consumers, API transport
 overrides and generic Go KMS/plugin interoperability remain unsupported here.
 No compatibility, migration, qualification, release or production authority is
 asserted by this increment.
@@ -939,8 +954,17 @@ The separate required 2.7 CI step executes the complete ordered denominator; an 
 partial, duplicate, reordered or failed trace cannot pass. Reports contain public
 identity/hash/status observations and keep credentials/plaintext/ciphertext private.
 
-The official external descriptor advertises `supports_signing=true`; the bounded
-candidate truthfully reports false until a real external signing consumer is
-implemented. The runner requires these exact side-specific flags and records the
-capability difference; its encrypt/decrypt pass does not establish full descriptor
-parity or signing interoperability.
+The runner requires an identical external descriptor including actual signing
+capability. Its ordered trace retains the original 135-case encrypt/decrypt
+requirements and adds actual Ed25519/ML-DSA-44/65/87 remote signature readback,
+bilateral verification, changed-input refusal, fixed versions, reference rotation,
+minimum-version policy, per-consumption signing grants and known crypto rejection.
+It tests default/none, SHA-256/SHA-512 preprocessing, prehashed inputs, JWS and
+path algorithm selection with provider prehashing enabled and disabled. It also
+requires ignored verification hints to preserve signature-prefix retirement,
+ignored non-RSA signature option types and valid external ML-DSA mu signatures
+that verify against independently preprocessed original messages. Malformed mu
+lengths return the observed 500 and external-mu verification is refused with 400. Only a
+completed report bound to the new executed production binary establishes this
+extended profile; earlier encrypt/decrypt receipts do not attest the signing
+increment. Every wider qualification and production authority remains false.
