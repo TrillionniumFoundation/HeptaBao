@@ -1277,9 +1277,21 @@ fn transit_datakey_export_random_and_unsupported_modes_are_explicit() -> TestRes
         random.body["data"]["random_bytes"].as_str().map(str::len),
         Some(32)
     );
+    let rsa = request(
+        &mut state,
+        "",
+        "POST",
+        "transit/keys/rsa",
+        json!({"type":"rsa-2048"}),
+        3,
+    )?;
+    assert_eq!(rsa.status, 200);
+    let descriptor = request(&mut state, "", "GET", "transit/keys/rsa", json!({}), 3)?;
+    assert_eq!(descriptor.body["data"]["type"], "rsa-2048");
+    assert_eq!(descriptor.body["data"]["supports_signing"], true);
+    assert_eq!(descriptor.body["data"]["supports_encryption"], true);
     for (path, body) in [
         ("transit/keys/derived", json!({"derived":true})),
-        ("transit/keys/rsa", json!({"type":"rsa-2048"})),
         (
             "transit/encrypt/key",
             json!({"plaintext":"","nonce":BASE64.encode([0u8;12])}),
