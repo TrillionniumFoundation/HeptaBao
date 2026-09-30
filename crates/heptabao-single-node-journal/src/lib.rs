@@ -68,7 +68,7 @@ impl<A: JournalAuthenticator> FileDurableJournal<A> {
         authenticator: A,
     ) -> Result<Self, FileJournalError<A::Error>> {
         let root = ExclusiveDirectory::open(root).map_err(map_directory_guard_error)?;
-        if !directory_is_empty(root.access_path())? {
+        if !directory_is_empty(root.access_path().map_err(map_directory_guard_error)?)? {
             return Err(FileJournalError::DirectoryNotEmpty);
         }
         let mut marker = encode_marker(&domain, authenticator.authenticator_id())?;
@@ -154,20 +154,32 @@ impl<A: JournalAuthenticator> FileDurableJournal<A> {
         })
     }
 
-    fn marker_path(&self) -> PathBuf {
-        self.root.access_path().join(MARKER_NAME)
+    fn marker_path(&self) -> Result<PathBuf, FileJournalError<A::Error>> {
+        Ok(self
+            .root
+            .access_path()
+            .map_err(map_directory_guard_error)?
+            .join(MARKER_NAME))
     }
 
-    fn tail_path(&self) -> PathBuf {
-        self.root.access_path().join(TAIL_NAME)
+    fn tail_path(&self) -> Result<PathBuf, FileJournalError<A::Error>> {
+        Ok(self
+            .root
+            .access_path()
+            .map_err(map_directory_guard_error)?
+            .join(TAIL_NAME))
     }
 
-    fn entry_path(&self, sequence: JournalSequence) -> PathBuf {
-        self.root.access_path().join(entry_file_name(sequence))
+    fn entry_path(&self, sequence: JournalSequence) -> Result<PathBuf, FileJournalError<A::Error>> {
+        Ok(self
+            .root
+            .access_path()
+            .map_err(map_directory_guard_error)?
+            .join(entry_file_name(sequence)))
     }
 
     fn validate_marker(&self) -> Result<(), FileJournalError<A::Error>> {
-        let bytes = read_regular_file(&self.marker_path(), MAX_CONTROL_FILE_BYTES)
+        let bytes = read_regular_file(&self.marker_path()?, MAX_CONTROL_FILE_BYTES)
             .map_err(map_marker_error)?;
         let marker = decode_marker(&bytes).map_err(|_| FileJournalError::MarkerMismatch)?;
         if marker.domain != self.domain.as_str()
@@ -179,9 +191,9 @@ impl<A: JournalAuthenticator> FileDurableJournal<A> {
     }
 
     fn read_optional_tail(&self) -> Result<Option<JournalTail>, FileJournalError<A::Error>> {
-        match fs::symlink_metadata(self.tail_path()) {
+        match fs::symlink_metadata(self.tail_path()?) {
             Ok(_) => {
-                let bytes = read_regular_file(&self.tail_path(), MAX_CONTROL_FILE_BYTES)?;
+                let bytes = read_regular_file(&self.tail_path()?, MAX_CONTROL_FILE_BYTES)?;
                 decode_tail(&bytes)
                     .map(Some)
                     .map_err(|_| FileJournalError::CorruptJournal)
@@ -193,7 +205,9 @@ impl<A: JournalAuthenticator> FileDurableJournal<A> {
 
     fn validate_layout(&self) -> Result<Option<JournalSequence>, FileJournalError<A::Error>> {
         let mut sequences = BTreeSet::new();
-        for entry in fs::read_dir(self.root.access_path()).map_err(FileJournalError::Io)? {
+        for entry in fs::read_dir(self.root.access_path().map_err(map_directory_guard_error)?)
+            .map_err(FileJournalError::Io)?
+        {
             let entry = entry.map_err(FileJournalError::Io)?;
             let file_type = entry.file_type().map_err(FileJournalError::Io)?;
             let name = entry.file_name();
@@ -266,7 +280,7 @@ impl<A: JournalAuthenticator> FileDurableJournal<A> {
         let maximum = MAX_JOURNAL_PAYLOAD_BYTES
             .checked_add(ENTRY_OVERHEAD_BOUND)
             .ok_or(FileJournalError::CorruptJournal)?;
-        let bytes = read_regular_file(&self.entry_path(sequence), maximum)?;
+        let bytes = read_regular_file(&self.entry_path(sequence)?, maximum)?;
         let record = decode_entry(&bytes).map_err(|_| FileJournalError::CorruptJournal)?;
         if record.sequence != sequence || record.previous_tag != expected_previous_tag {
             return Err(FileJournalError::ChainMismatch);

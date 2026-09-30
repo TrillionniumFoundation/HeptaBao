@@ -66,7 +66,7 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         integrity: P,
     ) -> Result<Self, FileStoreError<P::Error>> {
         let root = ExclusiveDirectory::open(root).map_err(map_directory_guard_error)?;
-        if !directory_is_empty(root.access_path())? {
+        if !directory_is_empty(root.access_path().map_err(map_directory_guard_error)?)? {
             return Err(FileStoreError::DirectoryNotEmpty);
         }
         Ok(Self {
@@ -107,8 +107,13 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         integrity: P,
     ) -> Result<Self, FileStoreError<P::Error>> {
         let root = ExclusiveDirectory::open(root).map_err(map_directory_guard_error)?;
-        reject_unresolved_temporary_artifacts(root.access_path())?;
-        let marker_path = root.access_path().join(MARKER_NAME);
+        reject_unresolved_temporary_artifacts(
+            root.access_path().map_err(map_directory_guard_error)?,
+        )?;
+        let marker_path = root
+            .access_path()
+            .map_err(map_directory_guard_error)?
+            .join(MARKER_NAME);
         match fs::symlink_metadata(&marker_path) {
             Ok(_) => return Err(FileStoreError::AlreadyInitialized),
             Err(error) if error.kind() == io::ErrorKind::NotFound => {}
@@ -146,9 +151,9 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
     fn read_optional_current_record(
         &self,
     ) -> Result<Option<CurrentRecord>, FileStoreError<P::Error>> {
-        match fs::symlink_metadata(self.current_path()) {
+        match fs::symlink_metadata(self.current_path()?) {
             Ok(_) => {
-                let bytes = read_regular_file(&self.current_path(), MAX_CONTROL_FILE_BYTES)?;
+                let bytes = read_regular_file(&self.current_path()?, MAX_CONTROL_FILE_BYTES)?;
                 decode_current(&bytes)
                     .map(Some)
                     .map_err(|_| FileStoreError::CorruptState)
@@ -187,7 +192,8 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         self.root.verify().map_err(map_directory_guard_error)?;
         match self.current {
             None => {
-                if !directory_is_empty(self.root.access_path())? {
+                if !directory_is_empty(self.root.access_path().map_err(map_directory_guard_error)?)?
+                {
                     return Err(FileStoreError::UnexpectedInitializedState);
                 }
                 Ok(())
@@ -210,20 +216,32 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         }
     }
 
-    fn marker_path(&self) -> PathBuf {
-        self.root.access_path().join(MARKER_NAME)
+    fn marker_path(&self) -> Result<PathBuf, FileStoreError<P::Error>> {
+        Ok(self
+            .root
+            .access_path()
+            .map_err(map_directory_guard_error)?
+            .join(MARKER_NAME))
     }
 
-    fn current_path(&self) -> PathBuf {
-        self.root.access_path().join(CURRENT_NAME)
+    fn current_path(&self) -> Result<PathBuf, FileStoreError<P::Error>> {
+        Ok(self
+            .root
+            .access_path()
+            .map_err(map_directory_guard_error)?
+            .join(CURRENT_NAME))
     }
 
-    fn bundle_path(&self, generation: Generation) -> PathBuf {
-        self.root.access_path().join(bundle_file_name(generation))
+    fn bundle_path(&self, generation: Generation) -> Result<PathBuf, FileStoreError<P::Error>> {
+        Ok(self
+            .root
+            .access_path()
+            .map_err(map_directory_guard_error)?
+            .join(bundle_file_name(generation)))
     }
 
     fn validate_marker(&self) -> Result<(), FileStoreError<P::Error>> {
-        let bytes = read_regular_file(&self.marker_path(), MAX_CONTROL_FILE_BYTES)
+        let bytes = read_regular_file(&self.marker_path()?, MAX_CONTROL_FILE_BYTES)
             .map_err(map_marker_read_error)?;
         let decoded = decode_marker(&bytes).map_err(|_| FileStoreError::MarkerMismatch)?;
         if decoded.domain != self.domain.as_str()
@@ -246,7 +264,7 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
     }
 
     fn read_current_record(&self) -> Result<CurrentRecord, FileStoreError<P::Error>> {
-        let bytes = read_regular_file(&self.current_path(), MAX_CONTROL_FILE_BYTES)
+        let bytes = read_regular_file(&self.current_path()?, MAX_CONTROL_FILE_BYTES)
             .map_err(map_current_read_error)?;
         decode_current(&bytes).map_err(|_| FileStoreError::CorruptState)
     }
@@ -258,7 +276,7 @@ impl<P: IntegrityProvider> FileGenerationStore<P> {
         let maximum = heptabao_storage_api::MAX_OPAQUE_STATE_BYTES
             .checked_add(BUNDLE_OVERHEAD_BOUND)
             .ok_or(FileStoreError::CorruptState)?;
-        let bytes = read_regular_file(&self.bundle_path(generation), maximum)?;
+        let bytes = read_regular_file(&self.bundle_path(generation)?, maximum)?;
         let mut bundle = decode_bundle(&bytes).map_err(|_| FileStoreError::CorruptState)?;
         if bundle.generation != generation
             || bundle.domain != self.domain.as_str()
@@ -345,8 +363,10 @@ where
 
     fn recover_commit(&mut self, intent: CommitIntent) -> Result<CommitRecovery, Self::Error> {
         self.root.verify().map_err(map_directory_guard_error)?;
-        reject_unresolved_temporary_artifacts(self.root.access_path())?;
-        let marker_exists = self.regular_file_exists(&self.marker_path())?;
+        reject_unresolved_temporary_artifacts(
+            self.root.access_path().map_err(map_directory_guard_error)?,
+        )?;
+        let marker_exists = self.regular_file_exists(&self.marker_path()?)?;
         let disk_current = self.read_optional_current_record()?;
         if intent.previous().is_some() {
             if !marker_exists {
@@ -382,7 +402,7 @@ where
                 Ok(CommitRecovery::Committed(intent.receipt()))
             }
             Some(record) if Some(record.generation) == intent.previous() => {
-                if !self.regular_file_exists(&self.bundle_path(intent.committed()))? {
+                if !self.regular_file_exists(&self.bundle_path(intent.committed())?)? {
                     self.current = Some(record.generation);
                     return Ok(CommitRecovery::NotCommitted);
                 }
@@ -404,7 +424,7 @@ where
                 Ok(CommitRecovery::Committed(intent.receipt()))
             }
             None if intent.previous().is_none() => {
-                if !self.regular_file_exists(&self.bundle_path(intent.committed()))? {
+                if !self.regular_file_exists(&self.bundle_path(intent.committed())?)? {
                     self.current = None;
                     return Ok(CommitRecovery::NotCommitted);
                 }

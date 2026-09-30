@@ -8,6 +8,9 @@ publish = false
 [dependencies]
 libc = "=0.2.189"
 
+[target.'cfg(unix)'.dependencies]
+rustix = { version = "=1.1.4", features = ["fs"] }
+
 [lib]
 path = "src/lib.rs"
 doctest = false

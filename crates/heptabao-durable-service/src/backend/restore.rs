@@ -66,7 +66,9 @@ impl FileBackend {
         self.verify()?;
         let temporary = self.write_temp(leaf, bytes)?;
         self.verify()?;
-        fs::rename(temporary, self.path(leaf)?).map_err(|_| BackendError::OutcomeUnknown)?;
+        self.directory
+            .rename(temporary, leaf)
+            .map_err(|_| BackendError::OutcomeUnknown)?;
         self.directory
             .sync_all()
             .map_err(|_| BackendError::OutcomeUnknown)?;
@@ -133,16 +135,14 @@ impl FileBackend {
         // Publication is already durable. Cleanup cannot invalidate it. Orphan
         // stages are sealed, ignored without HBR1, and replaced by the next txn.
         for leaf in OLD.into_iter().chain(NEW) {
-            if let Ok(path) = self.path(leaf) {
-                let _ = fs::remove_file(path);
-            }
+            let _ = self.directory.remove_file(leaf);
         }
         let _ = self.directory.sync_all();
         Ok(())
     }
 
     fn commitment(&self, leaf: &str) -> Result<ArtifactCommitment, BackendError> {
-        let (mut file, length) = self.open_artifact(leaf, nofollow_options().read(true))?;
+        let (mut file, length) = self.open_artifact(leaf, FileAccess::Read)?;
         let mut hasher = Sha256::new();
         hasher.update((HASH_DOMAIN.len() as u64).to_le_bytes());
         hasher.update(HASH_DOMAIN);

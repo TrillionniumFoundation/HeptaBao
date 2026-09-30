@@ -90,7 +90,7 @@ impl SnapshotSpool {
             spool.verify()?;
             // Only interrupted create-before-unlink leaves can survive a crash.
             // No authority or arbitrary application filename is ever removed.
-            for entry in fs::read_dir(spool.directory.access_path())? {
+            for entry in fs::read_dir(spool.directory.access_path().map_err(guard)?)? {
                 let entry = entry?;
                 let name = entry.file_name();
                 let Some(name) = name.to_str() else {

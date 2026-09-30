@@ -6,12 +6,10 @@
 //! replay, and crash recovery; this module only gives those bytes durable
 //! storage and a writer fence.
 
-use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory};
+use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory, FileAccess};
 use std::fmt;
-use std::fs::{self, File, OpenOptions};
+use std::fs::{self, File};
 use std::io::{Read, Write};
-#[cfg(target_os = "linux")]
-use std::os::unix::fs::OpenOptionsExt;
 use std::path::{Path, PathBuf};
 
 /// Maximum encoded size of one physical artifact.  The service applies the
@@ -280,7 +278,7 @@ impl FileBackend {
     pub fn open(root: impl AsRef<Path>) -> Result<Self, BackendError> {
         let root = validate_root(root.as_ref(), false)?;
         let directory = ExclusiveDirectory::open(&root).map_err(map_guard_error)?;
-        cleanup_stale_temps(directory.access_path())?;
+        cleanup_stale_temps(&directory)?;
         Ok(Self {
             directory,
             #[cfg(test)]
@@ -296,9 +294,9 @@ impl FileBackend {
         let requested = root.as_ref();
         let root = validate_root(requested, true)?;
         let directory = ExclusiveDirectory::open(&root).map_err(map_guard_error)?;
-        let access_path = directory.access_path().to_path_buf();
-        cleanup_stale_temps(&access_path)?;
-        if fs::read_dir(&access_path)
+        cleanup_stale_temps(&directory)?;
+        if directory
+            .entries()
             .map_err(|_| BackendError::Io)?
             .next()
             .transpose()
@@ -326,18 +324,9 @@ impl FileBackend {
         self.directory.verify().map_err(map_guard_error)
     }
 
-    fn path(&self, leaf: &str) -> Result<PathBuf, BackendError> {
-        self.directory.leaf_path(leaf).map_err(map_guard_error)
-    }
-
-    fn open_artifact(
-        &self,
-        leaf: &str,
-        options: &mut OpenOptions,
-    ) -> Result<(File, usize), BackendError> {
+    fn open_artifact(&self, leaf: &str, access: FileAccess) -> Result<(File, usize), BackendError> {
         self.verify()?;
-        let path = self.path(leaf)?;
-        let file = options.open(path).map_err(|error| {
+        let file = self.directory.open_file(leaf, access).map_err(|error| {
             if error.kind() == std::io::ErrorKind::NotFound {
                 BackendError::MissingArtifact
             } else {
@@ -358,7 +347,7 @@ impl FileBackend {
     }
 
     fn read_artifact(&self, leaf: &str) -> Result<Vec<u8>, BackendError> {
-        let (file, length) = self.open_artifact(leaf, nofollow_options().read(true))?;
+        let (file, length) = self.open_artifact(leaf, FileAccess::Read)?;
         let mut bytes = Vec::with_capacity(length);
         file.take((MAX_BACKEND_ARTIFACT_BYTES + 1) as u64)
             .read_to_end(&mut bytes)
@@ -384,27 +373,25 @@ impl FileBackend {
         if bytes.len() > MAX_BACKEND_ARTIFACT_BYTES {
             return Err(BackendError::Capacity);
         }
-        let target = self.path(leaf)?;
-        let temporary = target.with_extension("tmp");
+        let temporary = Path::new(leaf).with_extension("tmp");
         // The exclusive writer fence makes a previous writer's temporary
         // leaf disposable. Unlink it rather than truncate it: stale symlinks
         // and hard links must never redirect a write to another file.
-        match fs::remove_file(&temporary) {
+        match self.directory.remove_file(&temporary) {
             Ok(()) => {}
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
             Err(_) => return Err(BackendError::Io),
         }
-        let mut file = nofollow_options()
-            .write(true)
-            .create_new(true)
-            .open(&temporary)
+        let mut file = self
+            .directory
+            .open_file(&temporary, FileAccess::CreateNew)
             .map_err(|_| BackendError::Io)?;
         if file
             .write_all(bytes)
             .and_then(|()| file.sync_all())
             .is_err()
         {
-            let _ = fs::remove_file(&temporary);
+            let _ = self.directory.remove_file(&temporary);
             return Err(BackendError::Io);
         }
         Ok(temporary)
@@ -419,11 +406,12 @@ impl FileBackend {
         self.verify()?;
         if require_absent {
             for leaf in [SNAPSHOT_LEAF, LEDGER_LEAF, JOURNAL_LEAF] {
-                let path = self.path(leaf)?;
-                match fs::symlink_metadata(path) {
-                    Ok(_) => return Err(BackendError::RootNotEmpty),
-                    Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
-                    Err(_) => return Err(BackendError::Io),
+                if self
+                    .directory
+                    .entry_exists(leaf)
+                    .map_err(|_| BackendError::Io)?
+                {
+                    return Err(BackendError::RootNotEmpty);
                 }
             }
         }
@@ -431,27 +419,27 @@ impl FileBackend {
         let ledger = match self.write_temp(LEDGER_LEAF, &replacement.ledger) {
             Ok(path) => path,
             Err(error) => {
-                let _ = fs::remove_file(snapshot);
+                let _ = self.directory.remove_file(snapshot);
                 return Err(error);
             }
         };
         let journal = match self.write_temp(JOURNAL_LEAF, &replacement.journal) {
             Ok(path) => path,
             Err(error) => {
-                let _ = fs::remove_file(snapshot);
-                let _ = fs::remove_file(ledger);
+                let _ = self.directory.remove_file(snapshot);
+                let _ = self.directory.remove_file(ledger);
                 return Err(error);
             }
         };
         let targets = [
-            (snapshot, self.path(SNAPSHOT_LEAF)?),
-            (ledger, self.path(LEDGER_LEAF)?),
-            (journal, self.path(JOURNAL_LEAF)?),
+            (snapshot, SNAPSHOT_LEAF),
+            (ledger, LEDGER_LEAF),
+            (journal, JOURNAL_LEAF),
         ];
         for (published, (temporary, target)) in targets.iter().enumerate() {
-            if fs::rename(temporary, target).is_err() {
+            if self.directory.rename(temporary, target).is_err() {
                 for (remaining, _) in targets.iter().skip(published) {
-                    let _ = fs::remove_file(remaining);
+                    let _ = self.directory.remove_file(remaining);
                 }
                 if published != 0 {
                     return Err(BackendError::OutcomeUnknown);
@@ -493,8 +481,7 @@ impl DurableBackend for FileBackend {
         if next > MAX_BACKEND_ARTIFACT_BYTES {
             return Err(BackendError::Capacity);
         }
-        let (mut file, current_len) =
-            self.open_artifact(JOURNAL_LEAF, nofollow_options().append(true))?;
+        let (mut file, current_len) = self.open_artifact(JOURNAL_LEAF, FileAccess::Append)?;
         if current_len != expected_len {
             return Err(BackendError::StaleWriter);
         }
@@ -523,8 +510,7 @@ impl DurableBackend for FileBackend {
         if new_len > expected_len || expected_len > MAX_BACKEND_ARTIFACT_BYTES {
             return Err(BackendError::Capacity);
         }
-        let (file, current_len) =
-            self.open_artifact(JOURNAL_LEAF, nofollow_options().write(true))?;
+        let (file, current_len) = self.open_artifact(JOURNAL_LEAF, FileAccess::Write)?;
         if current_len != expected_len {
             return Err(BackendError::StaleWriter);
         }
@@ -626,30 +612,16 @@ fn map_guard_error(error: DirectoryGuardError) -> BackendError {
     }
 }
 
-fn cleanup_stale_temps(access_path: &Path) -> Result<(), BackendError> {
+fn cleanup_stale_temps(directory: &ExclusiveDirectory) -> Result<(), BackendError> {
     for leaf in ["state.tmp", "ledger.tmp", "journal.tmp"] {
-        let path = access_path.join(leaf);
-        match fs::symlink_metadata(&path) {
-            Ok(_) => fs::remove_file(path).map_err(|_| BackendError::Io)?,
+        // Unlink the leaf itself, including a stale symlink, never its target.
+        match directory.remove_file(leaf) {
+            Ok(()) => {}
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
             Err(_) => return Err(BackendError::Io),
         }
     }
     Ok(())
-}
-
-#[cfg(target_os = "linux")]
-fn nofollow_options() -> OpenOptions {
-    let mut options = OpenOptions::new();
-    // Nonblocking open lets descriptor metadata reject a FIFO without waiting
-    // for a peer. It has no effect on the regular files accepted above.
-    options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
-    options
-}
-
-#[cfg(not(target_os = "linux"))]
-fn nofollow_options() -> OpenOptions {
-    OpenOptions::new()
 }
 
 #[cfg(test)]
