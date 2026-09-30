@@ -483,8 +483,8 @@ Active files, the writer lock, HMAC key, authenticated manifest, staging file,
 retained segments and garbage collection all use the held parent descriptor.
 Reads/creates use `openat`, identity checks use `fstat`/no-follow `fstatat`,
 publication uses same-directory `renameat`, and removal uses `unlinkat`.
-Directory inventory opens an independent descriptor-relative iteration each
-time. The displayed audit path is diagnostic only: its Linux `/proc/self/fd`
+Directory inventory opens an independent descriptor-relative stream each
+time and retains only the current filename, not a complete directory listing. The displayed audit path is diagnostic only: its Linux `/proc/self/fd`
 spelling is retained for API continuity, while macOS displays the configured
 parent. Neither display path is used as filesystem authority, and renaming or
 replacing the original parent cannot redirect key loading or rotation writes.

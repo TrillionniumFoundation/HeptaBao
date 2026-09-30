@@ -143,14 +143,17 @@ fn target_abi_relative_operations_stay_in_the_opened_directory() -> TestResult {
     fs::write(original.join("first"), b"replacement first")?;
     fs::write(original.join("second"), b"replacement second")?;
     for _ in 0..3 {
-        assert_eq!(directory_entries(&directory)?, vec![PathBuf::from("first")]);
+        assert_eq!(
+            directory_entries(&directory)?.collect::<io::Result<Vec<_>>>()?,
+            vec![PathBuf::from("first")]
+        );
     }
     rename_child(&directory, Path::new("first"), Path::new("second"))?;
     verify_identity(&file, &directory, Path::new("second"))?;
     assert!(verify_identity(&file, &directory, Path::new("first")).is_err());
     assert_eq!(fs::read(moved.join("second"))?, b"anchored");
     remove_child(&directory, Path::new("second"))?;
-    assert!(directory_entries(&directory)?.is_empty());
+    assert!(directory_entries(&directory)?.next().is_none());
     assert_eq!(fs::read(original.join("first"))?, b"replacement first");
     assert_eq!(fs::read(original.join("second"))?, b"replacement second");
     Ok(())

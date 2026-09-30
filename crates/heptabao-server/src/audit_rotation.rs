@@ -342,6 +342,7 @@ impl AuditRotation {
             .checked_add(1)
             .ok_or_else(|| invalid("audit generation exhausted"))?;
         for path in directory_entries(&self.directory)? {
+            let path = path?;
             if !path.as_os_str().to_string_lossy().starts_with(&prefix) {
                 continue;
             }
@@ -631,27 +632,29 @@ fn child_exists(directory: &File, path: &Path) -> io::Result<bool> {
     }
 }
 
-fn directory_entries(directory: &File) -> io::Result<Vec<PathBuf>> {
-    #[cfg(unix)]
-    {
-        use std::os::unix::ffi::OsStrExt;
-        // read_from opens an independent stream from the directory descriptor;
-        // repeated inventory checks do not inherit an earlier iteration offset.
-        let mut entries = Vec::new();
-        for entry in rustix::fs::Dir::read_from(directory)? {
-            let entry = entry?;
-            let name = entry.file_name().to_bytes();
-            if name != b"." && name != b".." {
-                entries.push(PathBuf::from(std::ffi::OsStr::from_bytes(name)));
-            }
+#[cfg(unix)]
+fn directory_entries(directory: &File) -> io::Result<impl Iterator<Item = io::Result<PathBuf>>> {
+    use std::os::unix::ffi::OsStrExt;
+    // Use an independent stream on every inventory check and retain only one
+    // entry at a time. Unrelated directory occupants must not force a full
+    // pathname inventory allocation before authenticated segment validation.
+    Ok(rustix::fs::Dir::read_from(directory)?.filter_map(|entry| {
+        let entry = match entry {
+            Ok(entry) => entry,
+            Err(error) => return Some(Err(error.into())),
+        };
+        let name = entry.file_name().to_bytes();
+        if name == b"." || name == b".." {
+            None
+        } else {
+            Some(Ok(PathBuf::from(std::ffi::OsStr::from_bytes(name))))
         }
-        Ok(entries)
-    }
-    #[cfg(not(unix))]
-    {
-        let _ = directory;
-        Err(invalid("unsupported audit filesystem"))
-    }
+    }))
+}
+
+#[cfg(not(unix))]
+fn directory_entries(_directory: &File) -> io::Result<std::iter::Empty<io::Result<PathBuf>>> {
+    Err(invalid("unsupported audit filesystem"))
 }
 
 fn remove_child(directory: &File, path: &Path) -> io::Result<()> {
