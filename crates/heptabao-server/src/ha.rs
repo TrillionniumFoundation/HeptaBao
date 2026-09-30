@@ -1166,12 +1166,17 @@ impl HaProcess {
             .map_err(|_| "snapshot completion unobserved".into())
     }
 
-    // Capture the synchronous request scope before entering Tokio. A task-local
-    // copy reaches nested admin ReadIndex calls and cannot leak to Raft workers.
-    // This does not timeout or cancel the surrounding mutation/maintenance.
+    // ReadIndex retains a quarter of the existing execution budget for required
+    // completion (including response audit). HTTP separately keeps its original
+    // reply-write reserve. Only async read gates get this earlier bound; this
+    // neither extends the parent nor cancels surrounding writes/maintenance.
     fn block_on_read<F: std::future::Future>(&self, operation: F) -> F::Output {
         match crate::request_deadline::current() {
             Some(deadline) => {
+                let now = Instant::now();
+                let deadline = deadline
+                    .checked_duration_since(now)
+                    .map_or(deadline, |remaining| deadline - remaining / 4);
                 self.runtime
                     .block_on(heptabao_raft_runtime::with_read_index_deadline(
                         deadline, operation,

@@ -1813,6 +1813,90 @@ mod service_lock_deadline_tests {
     }
 
     #[test]
+    fn quorum_read_deadline_retains_time_for_mandatory_audit_and_tcp_rejection()
+    -> Result<(), Box<dyn std::error::Error>> {
+        struct Directory(PathBuf);
+        impl Drop for Directory {
+            fn drop(&mut self) {
+                let _ = std::fs::remove_dir_all(&self.0);
+            }
+        }
+        let root = Directory(std::env::temp_dir().join(format!(
+            "heptabao-quorum-reply-{}-{}",
+            std::process::id(),
+            u64::from_le_bytes(crypto::random::<8>()?),
+        )));
+        std::fs::create_dir(&root.0)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            std::fs::set_permissions(&root.0, std::fs::Permissions::from_mode(0o700))?;
+        }
+        let mut service = Service::new(root.0.join("data"), &root.0.join("audit.jsonl"))?;
+        let cluster = crate::ha::snapshot_test_support::Cluster::new(
+            &root.0.join("raft"),
+            "quorum-reply-audit",
+        )?;
+        let process = cluster.processes[0].lock().map_err(|_| "HA lock")?;
+        process.ensure_linearizable()?;
+        cluster.isolate_all_peers(true);
+        let listener = TcpListener::bind("127.0.0.1:0")?;
+        let mut client = TcpStream::connect(listener.local_addr()?)?;
+        client.set_read_timeout(Some(Duration::from_secs(2)))?;
+        let (socket, _) = listener.accept()?;
+        let started = Instant::now();
+        let deadline = started + Duration::from_secs(5);
+        let execution = execution_deadline_with_response_reserve(started, deadline);
+        let _scope = RequestDeadlineScope::enter(execution);
+        let error = process
+            .ensure_linearizable()
+            .err()
+            .ok_or("quorum read succeeded")?;
+        assert!(error.contains("linearizable read deadline exceeded"));
+        assert!(cluster.blocked_probes() > 0);
+        assert!(started.elapsed() >= Duration::from_secs(3));
+        assert_eq!(crate::request_deadline::current(), Some(execution));
+        eprintln!(
+            "quorum-reply: stage=read_index elapsed_ms={}",
+            started.elapsed().as_millis()
+        );
+        // The live failure completed mandatory response fsync after its read
+        // deadline and exhausted the 5s transport. Model that completion latency
+        // here, then use actual signed audit fsyncs and the production TCP writer.
+        std::thread::sleep(Duration::from_millis(350));
+        let response = service.handle_wire_rejection(
+            &[42; 16],
+            WireRejection::ParseRejected,
+            503,
+            "synthetic quorum read rejected",
+        );
+        assert_eq!(response.status, 503);
+        assert!(response.body.get("data").is_none());
+        let audit = std::fs::read_to_string(root.0.join("audit.jsonl"))?;
+        assert_eq!(audit.lines().count(), 2);
+        eprintln!(
+            "quorum-reply: stage=audit_complete elapsed_ms={}",
+            started.elapsed().as_millis()
+        );
+        let mut transport = DeadlineStream {
+            stream: socket,
+            deadline,
+        };
+        write_response(&mut transport, response, false)?;
+        assert!(Instant::now() < deadline);
+        drop(transport);
+        let mut bytes = Vec::new();
+        client.read_to_end(&mut bytes)?;
+        assert!(bytes.starts_with(b"HTTP/1.1 503 "));
+        assert!(
+            bytes
+                .windows(b"synthetic quorum read rejected".len())
+                .any(|window| window == b"synthetic quorum read rejected")
+        );
+        Ok(())
+    }
+
+    #[test]
     fn service_lock_wait_is_bounded_when_another_request_holds_the_writer()
     -> Result<(), Box<dyn std::error::Error>> {
         let lock = Mutex::new(());

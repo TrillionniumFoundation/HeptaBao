@@ -123,6 +123,17 @@ requires stable activation, reseal/unseal replacement and successor replacement.
 These are implementation and development validation anchors, not independent
 qualification or full replacement/production authority.
 
+ReadIndex now retains one quarter of the synchronous request's remaining
+execution budget for required completion, including response audit. The outer
+HTTP connection deadline and its existing reply-write reserve remain unchanged;
+only the async read gate receives the earlier child deadline. It neither renews
+read authority nor cancels an already-started durable/provider/audit effect.
+The real-Raft regression models the original five-second connection and a
+350 ms completion delay, writes signed audit records and uses the production
+bounded TCP response writer. Its component lane controls filesystem latency;
+the separate three-process TLS lane exercises the original physical storage.
+These bounds govern authority waits, not arbitrarily stalled filesystem I/O.
+
 The repeated physical-host replay failure is now covered by a paced real-Raft
 regression in `process/replication_tests.rs`. Accumulated multi-entry replay uses
 a 128 KiB serialization target while preserving the 768 KiB hard wire limit and
