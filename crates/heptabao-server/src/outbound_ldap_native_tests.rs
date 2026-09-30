@@ -1,14 +1,30 @@
 #![allow(clippy::unwrap_used)]
 use super::*;
+use crate::test_support::{random_ascii, runtime_secret};
 use std::io::Cursor;
+use std::sync::OnceLock;
 
 const GROUP_FILTER: &str =
     "(|(memberUid={{.Username}})(member={{.UserDN}})(uniqueMember={{.UserDN}}))";
 
+fn manager_password() -> &'static str {
+    static VALUE: OnceLock<Zeroizing<String>> = OnceLock::new();
+    VALUE
+        .get_or_init(|| runtime_secret("ldap-manager-bind"))
+        .as_str()
+}
+
+fn user_password() -> &'static str {
+    static VALUE: OnceLock<Zeroizing<String>> = OnceLock::new();
+    VALUE
+        .get_or_init(|| runtime_secret("ldap-user-bind"))
+        .as_str()
+}
+
 fn options() -> LdapNativeOptions<'static> {
     LdapNativeOptions {
         bind_dn: "cn=manager,dc=test",
-        bind_password: "synthetic-manager-password",
+        bind_password: manager_password(),
         user_dn: "ou=people,dc=test",
         user_attr: "uid",
         user_filter: DEFAULT_USER_FILTER,
@@ -221,14 +237,10 @@ fn filter_depth_nodes_wire_and_expansion_have_bounds() {
 #[test]
 fn full_exchange_binds_user_then_manager_and_preserves_directory_case() {
     let mut exchange = Exchange::new(&success());
-    let observed = authenticate_exchange(
-        &mut exchange,
-        &options(),
-        "requested-name",
-        "synthetic-user-password",
-    )
-    .unwrap()
-    .unwrap();
+    let observed =
+        authenticate_exchange(&mut exchange, &options(), "requested-name", user_password())
+            .unwrap()
+            .unwrap();
     assert_eq!(observed.alias, "DirectoryAlias");
     assert_eq!(observed.groups, BTreeSet::from(["Engineering".to_owned()]));
     assert_eq!(
@@ -250,7 +262,7 @@ fn username_alias_and_empty_user_filter_preserve_requested_values() {
         &mut Exchange::new(&success()),
         &options,
         "RequestedName",
-        "synthetic",
+        user_password(),
     )
     .unwrap()
     .unwrap();
@@ -262,7 +274,7 @@ fn empty_manager_or_user_credentials_do_not_send_anonymous_bind() {
     for field in 0..4 {
         let mut config = options();
         let mut username = "alice";
-        let mut password = "synthetic-user-password";
+        let mut password = user_password();
         match field {
             0 => config.bind_dn = "",
             1 => config.bind_password = "",
@@ -276,7 +288,7 @@ fn empty_manager_or_user_credentials_do_not_send_anonymous_bind() {
     let mut config = options();
     config.group_filter = "(member:unsupported:={{.UserDN}})";
     let mut exchange = Exchange::new(&[]);
-    assert!(authenticate_exchange(&mut exchange, &config, "alice", "synthetic").is_err());
+    assert!(authenticate_exchange(&mut exchange, &config, "alice", user_password()).is_err());
     assert!(exchange.written.is_empty());
 }
 
@@ -294,7 +306,7 @@ fn zero_or_multiple_users_never_reach_user_bind() {
         responses.push(result(2, 0x65, 0));
         let mut exchange = Exchange::new(&responses);
         assert_eq!(
-            authenticate_exchange(&mut exchange, &options(), "alice", "synthetic").unwrap(),
+            authenticate_exchange(&mut exchange, &options(), "alice", user_password()).unwrap(),
             None
         );
         assert_eq!(exchange.requests(), vec![(1, 0x60), (2, 0x63)]);
@@ -315,7 +327,9 @@ fn missing_multivalue_or_duplicate_user_attribute_is_rejected() {
             result(2, 0x65, 0),
         ];
         let mut exchange = Exchange::new(&responses);
-        assert!(authenticate_exchange(&mut exchange, &options(), "alice", "synthetic").is_err());
+        assert!(
+            authenticate_exchange(&mut exchange, &options(), "alice", user_password()).is_err()
+        );
         assert_eq!(exchange.requests(), vec![(1, 0x60), (2, 0x63)]);
     }
 }
@@ -326,7 +340,7 @@ fn authentication_denial_is_distinct_from_protocol_or_manager_failure() {
     responses[3] = result(3, 0x61, 49);
     let mut exchange = Exchange::new(&responses);
     assert_eq!(
-        authenticate_exchange(&mut exchange, &options(), "alice", "synthetic").unwrap(),
+        authenticate_exchange(&mut exchange, &options(), "alice", user_password()).unwrap(),
         None
     );
     assert_eq!(exchange.requests().len(), 3);
@@ -346,7 +360,7 @@ fn authentication_denial_is_distinct_from_protocol_or_manager_failure() {
                 &mut Exchange::new(&responses),
                 &options(),
                 "alice",
-                "synthetic"
+                user_password()
             )
             .is_err()
         );
@@ -363,7 +377,7 @@ fn absent_group_base_or_filter_skips_search_but_rebinds_manager() {
             config.group_filter = "";
         }
         let mut exchange = Exchange::new(&success()[..5]);
-        let observed = authenticate_exchange(&mut exchange, &config, "alice", "synthetic")
+        let observed = authenticate_exchange(&mut exchange, &config, "alice", user_password())
             .unwrap()
             .unwrap();
         assert!(observed.groups.is_empty());
@@ -433,8 +447,9 @@ fn response_entry_value_and_cumulative_byte_limits_are_enforced() {
 
 #[test]
 fn bind_message_id_changes_in_place_in_zeroizing_request() {
-    let password = "p".repeat(1024);
-    let request: Zeroizing<Vec<u8>> = bind_request(4, "cn=manager,dc=test", &password).unwrap();
+    let password = random_ascii(1024);
+    let request: Zeroizing<Vec<u8>> =
+        bind_request(4, "cn=manager,dc=test", password.as_str()).unwrap();
     let mut outer = 0;
     let body = ber_take(&request, &mut outer, 0x30).unwrap();
     let mut inner = 0;
@@ -462,7 +477,7 @@ fn unenrolled_origin_cannot_enable_native_ldap_network_access() {
                 &options(),
                 None,
                 "alice",
-                "synthetic"
+                user_password()
             )
             .is_err()
     );
@@ -473,7 +488,7 @@ fn unenrolled_origin_cannot_enable_native_ldap_network_access() {
                 &options(),
                 None,
                 "alice",
-                "synthetic"
+                user_password()
             )
             .is_err()
     );
@@ -488,9 +503,10 @@ fn username_alias_does_not_require_directory_alias_attribute() {
         let mut responses = success();
         responses[1] = entry(2, "uid=alice,dc=test", &attrs);
         let mut exchange = Exchange::new(&responses);
-        let observed = authenticate_exchange(&mut exchange, &config, "RequestedName", "synthetic")
-            .unwrap()
-            .unwrap();
+        let observed =
+            authenticate_exchange(&mut exchange, &config, "RequestedName", user_password())
+                .unwrap()
+                .unwrap();
         assert_eq!(observed.alias, "RequestedName");
         assert_eq!(exchange.requests().len(), 5);
     }
@@ -499,7 +515,7 @@ fn username_alias_does_not_require_directory_alias_attribute() {
     responses.insert(2, entry(2, "uid=other,dc=test", &[]));
     let mut exchange = Exchange::new(&responses);
     assert_eq!(
-        authenticate_exchange(&mut exchange, &config, "RequestedName", "synthetic").unwrap(),
+        authenticate_exchange(&mut exchange, &config, "RequestedName", user_password()).unwrap(),
         None
     );
     assert_eq!(exchange.requests(), vec![(1, 0x60), (2, 0x63)]);
@@ -537,7 +553,7 @@ fn legacy_transport_remains_enrollment_only_and_explicit_transport_never_falls_b
             &options(),
             None,
             "alice",
-            "synthetic"
+            user_password()
         ),
         Err("outbound origin is not host-enrolled")
     );
@@ -551,7 +567,7 @@ fn legacy_transport_remains_enrollment_only_and_explicit_transport_never_falls_b
             &options(),
             Some(&transport),
             "alice",
-            "synthetic"
+            user_password()
         ),
         Err("invalid LDAP CA PEM contents")
     );

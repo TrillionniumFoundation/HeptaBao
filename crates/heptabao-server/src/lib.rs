@@ -36,6 +36,8 @@ mod request_deadline;
 mod service;
 mod snapshot_archive;
 mod snapshot_file;
+#[cfg(test)]
+mod test_support;
 mod valkey_wire;
 pub use service::ServiceRequest;
 pub use service::{AuditConfig, AuditSocketConfig, AuditSyslogConfig};

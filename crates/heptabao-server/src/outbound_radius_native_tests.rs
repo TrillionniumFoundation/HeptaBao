@@ -1,9 +1,25 @@
 #![allow(clippy::unwrap_used)]
 use super::*;
+use crate::test_support::{random_ascii, random_bytes, runtime_secret};
+use std::sync::OnceLock;
+
+fn radius_key() -> &'static str {
+    static VALUE: OnceLock<Zeroizing<String>> = OnceLock::new();
+    VALUE
+        .get_or_init(|| runtime_secret("radius-native-key"))
+        .as_str()
+}
+
+fn user_password() -> &'static str {
+    static VALUE: OnceLock<Zeroizing<String>> = OnceLock::new();
+    VALUE
+        .get_or_init(|| runtime_secret("radius-native-password"))
+        .as_str()
+}
 
 fn options() -> RadiusNativeOptions<'static> {
     RadiusNativeOptions {
-        secret: "synthetic-durable-secret",
+        secret: radius_key(),
         nas_port: 10,
         nas_identifier: "",
         dial_timeout: 10,
@@ -46,7 +62,7 @@ fn signed_response(request: &[u8], secret: &[u8], code: u8) -> Vec<u8> {
     response[4..20].copy_from_slice(&signature);
     response
 }
-fn verify_request(request: &[u8], secret: &[u8]) {
+fn verify_request(request: &[u8], secret: &[u8], expected_password: &[u8]) {
     assert_eq!(request[0], 1);
     assert_eq!(
         usize::from(u16::from_be_bytes([request[2], request[3]])),
@@ -65,8 +81,8 @@ fn verify_request(request: &[u8], secret: &[u8]) {
         clear.extend(chunk.iter().zip(mask.iter()).map(|(a, b)| a ^ b));
         previous = chunk;
     }
-    assert_eq!(&clear[..9], b"synthetic");
-    assert!(clear[9..].iter().all(|b| *b == 0));
+    assert_eq!(&clear[..expected_password.len()], expected_password);
+    assert!(clear[expected_password.len()..].iter().all(|b| *b == 0));
 }
 fn server() -> UdpSocket {
     let socket = UdpSocket::bind("127.0.0.1:0").unwrap();
@@ -91,17 +107,18 @@ fn native_config_bounds_and_zero_timeouts_are_explicit() {
     config.read_timeout = 10;
     config.dial_timeout = 61;
     assert!(config.validate_configuration().is_err());
-    for secret in ["", "synthetic\0secret"] {
+    let invalid_secret = format!("{}\0invalid", radius_key());
+    for secret in ["", invalid_secret.as_str()] {
         let mut c = options();
         c.secret = secret;
         assert!(c.validate_configuration().is_err());
     }
-    let max_secret = "s".repeat(256);
+    let max_secret = random_ascii(256);
     let mut c = options();
-    c.secret = &max_secret;
+    c.secret = max_secret.as_str();
     assert!(c.validate_configuration().is_ok());
-    let long_secret = "s".repeat(257);
-    c.secret = &long_secret;
+    let long_secret = random_ascii(257);
+    c.secret = long_secret.as_str();
     assert!(c.validate_configuration().is_err());
     let max_nas = "n".repeat(253);
     let mut c = options();
@@ -123,14 +140,14 @@ fn nas_attributes_are_included_in_request_signature_and_integer_cast_is_exact() 
     ] {
         let packet = radius_access_request_with_nas(
             1,
-            &[7; 16],
+            &random_bytes(),
             b"alice",
-            b"synthetic",
-            b"secret",
+            user_password().as_bytes(),
+            radius_key().as_bytes(),
             Some((value, "synthetic-nas")),
         )
         .unwrap();
-        verify_request(&packet, b"secret");
+        verify_request(&packet, radius_key().as_bytes(), user_password().as_bytes());
         let rows = attrs(&packet);
         assert_eq!(
             rows.iter().find(|r| r.0 == 5).unwrap().1,
@@ -144,10 +161,10 @@ fn nas_attributes_are_included_in_request_signature_and_integer_cast_is_exact() 
     }
     let packet = radius_access_request_with_nas(
         1,
-        &[7; 16],
+        &random_bytes(),
         b"alice",
-        b"synthetic",
-        b"secret",
+        user_password().as_bytes(),
+        radius_key().as_bytes(),
         Some((0, "")),
     )
     .unwrap();
@@ -155,7 +172,14 @@ fn nas_attributes_are_included_in_request_signature_and_integer_cast_is_exact() 
         attrs(&packet).iter().map(|r| r.0).collect::<Vec<_>>(),
         vec![1, 2, 5, 80]
     );
-    let legacy = radius_access_request(1, &[7; 16], b"alice", b"synthetic", b"secret").unwrap();
+    let legacy = radius_access_request(
+        1,
+        &random_bytes(),
+        b"alice",
+        user_password().as_bytes(),
+        radius_key().as_bytes(),
+    )
+    .unwrap();
     assert_eq!(
         attrs(&legacy).iter().map(|r| r.0).collect::<Vec<_>>(),
         vec![1, 2, 80]
@@ -165,12 +189,18 @@ fn nas_attributes_are_included_in_request_signature_and_integer_cast_is_exact() 
 #[test]
 fn maximum_native_packet_is_preallocated_and_out_of_bounds_fields_fail() {
     let user = vec![b'u'; 253];
-    let password = vec![b'p'; 128];
-    let secret = vec![b's'; 256];
+    let password = random_ascii(128);
+    let secret = random_ascii(256);
     let nas = "n".repeat(253);
-    let packet =
-        radius_access_request_with_nas(3, &[7; 16], &user, &password, &secret, Some((10, &nas)))
-            .unwrap();
+    let packet = radius_access_request_with_nas(
+        3,
+        &random_bytes(),
+        &user,
+        password.as_bytes(),
+        secret.as_bytes(),
+        Some((10, &nas)),
+    )
+    .unwrap();
     assert_eq!(packet.len(), 20 + 255 + 130 + 6 + 255 + 18);
     assert!(packet.len() <= 4096);
     assert_eq!(packet.capacity(), packet.len());
@@ -178,10 +208,10 @@ fn maximum_native_packet_is_preallocated_and_out_of_bounds_fields_fail() {
     assert!(
         radius_access_request_with_nas(
             3,
-            &[7; 16],
+            &random_bytes(),
             &user,
-            &password,
-            &secret,
+            password.as_bytes(),
+            secret.as_bytes(),
             Some((10, &too_long))
         )
         .is_err()
@@ -196,7 +226,7 @@ fn empty_process_secret_is_enrolled_but_legacy_cannot_send() {
     assert!(outbound.radius_endpoint(&origin(address)).is_ok());
     assert!(
         outbound
-            .radius_authenticate(&origin(address), "alice", "synthetic")
+            .radius_authenticate(&origin(address), "alice", user_password())
             .is_err()
     );
     socket
@@ -207,7 +237,8 @@ fn empty_process_secret_is_enrolled_but_legacy_cannot_send() {
 
 #[test]
 fn native_uses_durable_secret_without_process_secret_fallback() {
-    for process_secret in ["", "different-process-secret"] {
+    let different_process_secret = runtime_secret("radius-process-key");
+    for process_secret in ["", different_process_secret.as_str()] {
         let socket = server();
         let address = socket.local_addr().unwrap();
         let outbound = outbound(address, process_secret);
@@ -215,19 +246,22 @@ fn native_uses_durable_secret_without_process_secret_fallback() {
             let mut request = [0; 4096];
             let (size, peer) = socket.recv_from(&mut request).unwrap();
             let request = &request[..size];
-            verify_request(request, b"synthetic-durable-secret");
+            verify_request(request, radius_key().as_bytes(), user_password().as_bytes());
             socket
-                .send_to(
-                    &signed_response(request, b"synthetic-durable-secret", 2),
-                    peer,
-                )
+                .send_to(&signed_response(request, radius_key().as_bytes(), 2), peer)
                 .unwrap();
         });
         let mut config = options();
         config.dial_timeout = 0;
         assert!(
             outbound
-                .radius_authenticate_native(&origin(address), &config, false, "alice", "synthetic")
+                .radius_authenticate_native(
+                    &origin(address),
+                    &config,
+                    false,
+                    "alice",
+                    user_password()
+                )
                 .unwrap()
         );
         worker.join().unwrap();
@@ -244,7 +278,7 @@ fn native_read_zero_and_invalid_configuration_never_send() {
     let start = Instant::now();
     assert!(
         outbound
-            .radius_authenticate_native(&origin(address), &config, false, "alice", "synthetic")
+            .radius_authenticate_native(&origin(address), &config, false, "alice", user_password())
             .is_err()
     );
     assert!(start.elapsed() < Duration::from_millis(500));
@@ -252,7 +286,7 @@ fn native_read_zero_and_invalid_configuration_never_send() {
     config.secret = "";
     assert!(
         outbound
-            .radius_authenticate_native(&origin(address), &config, false, "alice", "synthetic")
+            .radius_authenticate_native(&origin(address), &config, false, "alice", user_password())
             .is_err()
     );
     socket
@@ -271,7 +305,7 @@ fn native_deadline_is_configured_and_never_retries_unknown_outcome() {
     let start = Instant::now();
     assert!(
         outbound
-            .radius_authenticate_native(&origin(address), &config, false, "alice", "synthetic")
+            .radius_authenticate_native(&origin(address), &config, false, "alice", user_password())
             .is_err()
     );
     assert!(start.elapsed() >= Duration::from_millis(900));
@@ -294,14 +328,20 @@ fn default_ten_second_budget_accepts_a_response_after_legacy_three_seconds() {
         std::thread::sleep(Duration::from_secs(4));
         socket
             .send_to(
-                &signed_response(&request[..size], b"synthetic-durable-secret", 2),
+                &signed_response(&request[..size], radius_key().as_bytes(), 2),
                 peer,
             )
             .unwrap();
     });
     assert!(
         outbound
-            .radius_authenticate_native(&origin(address), &options(), false, "alice", "synthetic")
+            .radius_authenticate_native(
+                &origin(address),
+                &options(),
+                false,
+                "alice",
+                user_password()
+            )
             .unwrap()
     );
     worker.join().unwrap();
@@ -326,7 +366,7 @@ fn native_response_validation_remains_strict_and_reject_is_not_transport_success
             let request = &request[..size];
             let mut reply = signed_response(
                 request,
-                b"synthetic-durable-secret",
+                radius_key().as_bytes(),
                 if mode == "reject" { 3 } else { 2 },
             );
             match mode {
@@ -337,7 +377,7 @@ fn native_response_validation_remains_strict_and_reject_is_not_transport_success
                         &reply[..4],
                         &request[4..20],
                         &reply[20..],
-                        b"synthetic-durable-secret",
+                        radius_key().as_bytes(),
                     ]);
                     reply[4..20].copy_from_slice(&sig);
                 }
@@ -345,8 +385,7 @@ fn native_response_validation_remains_strict_and_reject_is_not_transport_success
                 "missing-message-authenticator" => {
                     reply.truncate(20);
                     reply[3] = 20;
-                    let sig =
-                        md5_parts(&[&reply[..4], &request[4..20], b"synthetic-durable-secret"]);
+                    let sig = md5_parts(&[&reply[..4], &request[4..20], radius_key().as_bytes()]);
                     reply[4..20].copy_from_slice(&sig);
                 }
                 "oversize" => reply.resize(4097, 0),
@@ -359,7 +398,7 @@ fn native_response_validation_remains_strict_and_reject_is_not_transport_success
             &options(),
             false,
             "alice",
-            "synthetic",
+            user_password(),
         );
         if mode == "reject" {
             assert!(!result.unwrap());
@@ -382,7 +421,7 @@ fn native_cannot_discover_or_redirect_to_an_unenrolled_origin() {
                 &options(),
                 false,
                 "alice",
-                "synthetic"
+                user_password()
             )
             .is_err()
     );
@@ -393,7 +432,7 @@ fn native_cannot_discover_or_redirect_to_an_unenrolled_origin() {
                 &options(),
                 false,
                 "alice",
-                "synthetic"
+                user_password()
             )
             .is_err()
     );
@@ -474,17 +513,21 @@ fn assert_api_accepts(socket: UdpSocket, url: String) {
     let worker = std::thread::spawn(move || {
         let mut request = [0; 4096];
         let (size, peer) = socket.recv_from(&mut request).unwrap();
-        verify_request(&request[..size], b"synthetic-durable-secret");
+        verify_request(
+            &request[..size],
+            radius_key().as_bytes(),
+            user_password().as_bytes(),
+        );
         socket
             .send_to(
-                &signed_response(&request[..size], b"synthetic-durable-secret", 2),
+                &signed_response(&request[..size], radius_key().as_bytes(), 2),
                 peer,
             )
             .unwrap();
     });
     assert!(
         Outbound::default()
-            .radius_authenticate_native(&url, &options(), true, "alice", "synthetic")
+            .radius_authenticate_native(&url, &options(), true, "alice", user_password())
             .unwrap()
     );
     worker.join().unwrap();
@@ -500,7 +543,7 @@ fn api_ipv4_uses_durable_secret_without_process_enrollment() {
             &options(),
             false,
             "alice",
-            "synthetic"
+            user_password()
         ),
         Err("RADIUS endpoint is not host-enrolled")
     );
@@ -540,7 +583,7 @@ fn api_read_zero_does_not_parse_target_or_send_packets() {
             &config,
             true,
             "alice",
-            "synthetic"
+            user_password()
         ),
         Err("RADIUS operation deadline exceeded")
     );
@@ -548,7 +591,7 @@ fn api_read_zero_does_not_parse_target_or_send_packets() {
     let address = socket.local_addr().unwrap();
     assert!(
         Outbound::default()
-            .radius_authenticate_native(&origin(address), &config, true, "alice", "synthetic")
+            .radius_authenticate_native(&origin(address), &config, true, "alice", user_password())
             .is_err()
     );
     socket
@@ -568,7 +611,7 @@ fn post_send_timeout_never_selects_a_second_resolved_address() {
             &addresses,
             &options(),
             "alice",
-            "synthetic",
+            user_password(),
             deadline,
             deadline
         )
@@ -576,7 +619,11 @@ fn post_send_timeout_never_selects_a_second_resolved_address() {
     );
     let mut packet = [0; 4096];
     let (size, _) = first.recv_from(&mut packet).unwrap();
-    verify_request(&packet[..size], b"synthetic-durable-secret");
+    verify_request(
+        &packet[..size],
+        radius_key().as_bytes(),
+        user_password().as_bytes(),
+    );
     for socket in [first, second] {
         socket
             .set_read_timeout(Some(Duration::from_millis(20)))
@@ -596,7 +643,7 @@ fn expired_dial_budget_is_not_replaced_with_remaining_read_budget() {
             &addresses,
             &options(),
             "alice",
-            "synthetic",
+            user_password(),
             deadline,
             dial_deadline
         ),
@@ -617,18 +664,15 @@ fn api_reject_and_invalid_message_authenticator_keep_strict_response_contract() 
             let mut request = [0; 4096];
             let (size, peer) = socket.recv_from(&mut request).unwrap();
             let request = &request[..size];
-            let mut reply = signed_response(
-                request,
-                b"synthetic-durable-secret",
-                if reject { 3 } else { 2 },
-            );
+            let mut reply =
+                signed_response(request, radius_key().as_bytes(), if reject { 3 } else { 2 });
             if !reject {
                 reply[22] ^= 1;
                 let signature = md5_parts(&[
                     &reply[..4],
                     &request[4..20],
                     &reply[20..],
-                    b"synthetic-durable-secret",
+                    radius_key().as_bytes(),
                 ]);
                 reply[4..20].copy_from_slice(&signature);
             }
@@ -639,7 +683,7 @@ fn api_reject_and_invalid_message_authenticator_keep_strict_response_contract() 
             &options(),
             true,
             "alice",
-            "synthetic",
+            user_password(),
         );
         if reject {
             assert_eq!(result, Ok(false));

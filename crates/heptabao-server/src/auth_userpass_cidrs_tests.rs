@@ -1,5 +1,13 @@
 use super::*;
-const PASSWORD: &str = "synthetic source credential";
+use crate::test_support::runtime_secret;
+use std::sync::OnceLock;
+
+fn fixture_password() -> &'static str {
+    static VALUE: OnceLock<Zeroizing<String>> = OnceLock::new();
+    VALUE
+        .get_or_init(|| runtime_secret("userpass-cidr-fixture"))
+        .as_str()
+}
 fn write(state: &mut AuthState, root: &Principal, body: Value) -> Result<AuthResponse, AuthError> {
     state
         .handle(
@@ -37,10 +45,11 @@ fn get(state: &AuthState) -> &User {
 #[test]
 fn userpass_cidr_alias_presence_partial_null_and_atomic_errors() {
     let (mut state, _, root) = setup();
+    let replacement = runtime_secret("userpass-cidr-replacement");
     write(
         &mut state,
         &root,
-        json!({"password":PASSWORD,"bound_cidrs":["127.0.0.1/32"]}),
+        json!({"password":fixture_password(),"bound_cidrs":["127.0.0.1/32"]}),
     )
     .unwrap();
     assert_eq!(get(&state).token_bound_cidrs, ["127.0.0.1"]);
@@ -72,7 +81,7 @@ fn userpass_cidr_alias_presence_partial_null_and_atomic_errors() {
         write(
             &mut state,
             &root,
-            json!({"password":"replacement","token_bound_cidrs":{"ip":"127.0.0.1"}})
+            json!({"password":replacement.as_str(),"token_bound_cidrs":{"ip":"127.0.0.1"}})
         )
         .err()
         .unwrap()
@@ -80,9 +89,9 @@ fn userpass_cidr_alias_presence_partial_null_and_atomic_errors() {
         400
     );
     assert_eq!(provider_renewal::state_revision(&state).unwrap(), before);
-    assert!(login(&mut state, PASSWORD, Some("::1")).is_ok());
+    assert!(login(&mut state, fixture_password(), Some("::1")).is_ok());
     assert_eq!(
-        login(&mut state, "replacement", Some("::1"))
+        login(&mut state, replacement.as_str(), Some("::1"))
             .err()
             .unwrap()
             .status,
@@ -93,16 +102,17 @@ fn userpass_cidr_alias_presence_partial_null_and_atomic_errors() {
 #[test]
 fn userpass_password_precedes_source_check_and_denial_is_not_a_mutation() {
     let (mut state, _, root) = setup();
+    let wrong = runtime_secret("userpass-cidr-wrong");
     write(
         &mut state,
         &root,
-        json!({"password":PASSWORD,"token_bound_cidrs":["127.0.0.1"]}),
+        json!({"password":fixture_password(),"token_bound_cidrs":["127.0.0.1"]}),
     )
     .unwrap();
     for (password, peer, status) in [
-        (PASSWORD, None, 403),
-        (PASSWORD, Some("127.0.0.2"), 403),
-        ("wrong", Some("127.0.0.2"), 400),
+        (fixture_password(), None, 403),
+        (fixture_password(), Some("127.0.0.2"), 403),
+        (wrong.as_str(), Some("127.0.0.2"), 400),
     ] {
         let before = provider_renewal::state_revision(&state).unwrap();
         assert_eq!(
@@ -111,7 +121,7 @@ fn userpass_password_precedes_source_check_and_denial_is_not_a_mutation() {
         );
         assert_eq!(provider_renewal::state_revision(&state).unwrap(), before);
     }
-    let response = login(&mut state, PASSWORD, Some("::ffff:127.0.0.1")).unwrap();
+    let response = login(&mut state, fixture_password(), Some("::ffff:127.0.0.1")).unwrap();
     let raw = response.body["auth"]["client_token"].as_str().unwrap();
     assert_eq!(state.tokens[&hash(raw)].bound_cidrs, ["127.0.0.1"]);
     assert_eq!(
@@ -127,8 +137,8 @@ fn userpass_password_precedes_source_check_and_denial_is_not_a_mutation() {
 #[test]
 fn userpass_issued_cidr_survives_config_clear_and_root_manages_target_without_source_rebinding() {
     let (mut state, raw_root, root) = setup();
-    write(&mut state,&root,json!({"password":PASSWORD,"token_bound_cidrs":["127.0.0.1"],"token_ttl":120,"token_max_ttl":600})).unwrap();
-    let response = login(&mut state, PASSWORD, Some("127.0.0.1")).unwrap();
+    write(&mut state,&root,json!({"password":fixture_password(),"token_bound_cidrs":["127.0.0.1"],"token_ttl":120,"token_max_ttl":600})).unwrap();
+    let response = login(&mut state, fixture_password(), Some("127.0.0.1")).unwrap();
     let raw = response.body["auth"]["client_token"]
         .as_str()
         .unwrap()
@@ -179,7 +189,7 @@ fn userpass_issued_cidr_survives_config_clear_and_root_manages_target_without_so
             .status,
         403
     );
-    assert!(login(&mut reopened, PASSWORD, Some("127.0.0.2")).is_ok());
+    assert!(login(&mut reopened, fixture_password(), Some("127.0.0.2")).is_ok());
 }
 
 #[test]
@@ -188,7 +198,7 @@ fn userpass_cidr_format_rejects_ambiguous_alias_and_bounded_ldap_owner() {
     write(
         &mut state,
         &root,
-        json!({"password":PASSWORD,"token_bound_cidrs":["127.0.0.1"]}),
+        json!({"password":fixture_password(),"token_bound_cidrs":["127.0.0.1"]}),
     )
     .unwrap();
     let mut wire = serde_json::to_value(&state).unwrap();
@@ -203,7 +213,7 @@ fn userpass_cidr_format_rejects_ambiguous_alias_and_bounded_ldap_owner() {
                 "",
                 "POST",
                 "auth/directory/users/user",
-                &json!({"password":PASSWORD,"token_bound_cidrs":[]}),
+                &json!({"password":fixture_password(),"token_bound_cidrs":[]}),
                 100
             )
             .err()

@@ -1,4 +1,5 @@
 use super::*;
+use crate::test_support::runtime_secret;
 
 fn request(
     state: &mut AuthState,
@@ -26,6 +27,8 @@ fn login(state: &mut AuthState, name: &str, password: &str) -> Result<AuthRespon
 #[test]
 fn fresh_userpass_has_one_canonical_account_for_crud_reset_policy_and_login() {
     let (mut state, _, root) = setup();
+    let original = runtime_secret("userpass-name-original");
+    let replacement = runtime_secret("userpass-name-replacement");
     assert!(state.has_userpass_name_modes());
     let before = serde_json::to_vec(&state).unwrap();
     let missing = request(
@@ -46,12 +49,12 @@ fn fresh_userpass_has_one_canonical_account_for_crud_reset_policy_and_login() {
         Some(&root),
         "POST",
         "auth/userpass/users/MiXeD",
-        json!({"username":"ignored","password":"original"}),
+        json!({"username":"ignored","password":original.as_str()}),
         100,
     )
     .unwrap();
     for name in ["mixed", "MIXED", "mIxEd"] {
-        let result = login(&mut state, name, "original").unwrap();
+        let result = login(&mut state, name, original.as_str()).unwrap();
         assert_eq!(result.body["auth"]["metadata"]["username"], "mixed");
         assert_eq!(result.login_identity.unwrap().alias, "mixed");
         let raw = result.body["auth"]["client_token"].as_str().unwrap();
@@ -76,15 +79,18 @@ fn fresh_userpass_has_one_canonical_account_for_crud_reset_policy_and_login() {
         Some(&root),
         "POST",
         "auth/userpass/users/MIXED/password",
-        json!({"password":"replacement"}),
+        json!({"password":replacement.as_str()}),
         100,
     )
     .unwrap();
     assert_eq!(
-        login(&mut state, "mixed", "original").err().unwrap().status,
+        login(&mut state, "mixed", original.as_str())
+            .err()
+            .unwrap()
+            .status,
         400
     );
-    assert!(login(&mut state, "MiXeD", "replacement").is_ok());
+    assert!(login(&mut state, "MiXeD", replacement.as_str()).is_ok());
     request(
         &mut state,
         Some(&root),
@@ -95,7 +101,9 @@ fn fresh_userpass_has_one_canonical_account_for_crud_reset_policy_and_login() {
     )
     .unwrap();
     assert_eq!(
-        login(&mut state, "mixed", "replacement").unwrap().body["auth"]["policies"],
+        login(&mut state, "mixed", replacement.as_str())
+            .unwrap()
+            .body["auth"]["policies"],
         json!(["default", "named"])
     );
     assert_eq!(state.users[""].len(), 1);
@@ -122,7 +130,7 @@ fn fresh_userpass_has_one_canonical_account_for_crud_reset_policy_and_login() {
     assert_eq!(missing.body, json!({"errors": []}));
     assert!(!missing.mutated);
     assert_eq!(
-        login(&mut state, "mixed", "replacement")
+        login(&mut state, "mixed", replacement.as_str())
             .err()
             .unwrap()
             .status,
@@ -133,12 +141,13 @@ fn fresh_userpass_has_one_canonical_account_for_crud_reset_policy_and_login() {
 #[test]
 fn fresh_userpass_mfa_replay_counter_is_shared_across_case_variants() {
     let (mut state, _, root) = setup();
+    let password = runtime_secret("userpass-name-mfa");
     request(
         &mut state,
         Some(&root),
         "POST",
         "auth/userpass/users/Alice",
-        json!({"password":"password"}),
+        json!({"password":password.as_str()}),
         100,
     )
     .unwrap();
@@ -165,7 +174,7 @@ fn fresh_userpass_mfa_replay_counter_is_shared_across_case_variants() {
         None,
         "POST",
         "auth/userpass/login/ALICE",
-        json!({"password":"password","totp_code":code}),
+        json!({"password":password.as_str(),"totp_code":code}),
         100,
     )
     .unwrap();
@@ -177,7 +186,7 @@ fn fresh_userpass_mfa_replay_counter_is_shared_across_case_variants() {
             None,
             "POST",
             "auth/userpass/login/Alice",
-            json!({"password":"password","totp_code":code}),
+            json!({"password":password.as_str(),"totp_code":code}),
             100
         )
         .err()
@@ -196,12 +205,14 @@ fn fresh_userpass_mfa_replay_counter_is_shared_across_case_variants() {
         100,
     )
     .unwrap();
-    assert!(login(&mut state, "Alice", "password").is_ok());
+    assert!(login(&mut state, "Alice", password.as_str()).is_ok());
 }
 
 #[test]
 fn absent_mode_preserves_case_distinct_credentials_and_exact_issued_renewal_source() {
     let (mut state, _, root) = setup();
+    let upper = runtime_secret("userpass-name-upper");
+    let lower = runtime_secret("userpass-name-lower");
     // Format-unit legacy shape only; the actual upgrade QA uses an old binary.
     state
         .auth_mounts
@@ -210,7 +221,7 @@ fn absent_mode_preserves_case_distinct_credentials_and_exact_issued_renewal_sour
         .get_mut("userpass")
         .unwrap()
         .userpass_name_mode = None;
-    for (name, password) in [("Alice", "upper password"), ("alice", "lower password")] {
+    for (name, password) in [("Alice", upper.as_str()), ("alice", lower.as_str())] {
         request(
             &mut state,
             Some(&root),
@@ -221,14 +232,14 @@ fn absent_mode_preserves_case_distinct_credentials_and_exact_issued_renewal_sour
         )
         .unwrap();
     }
-    let issued = login(&mut state, "Alice", "upper password").unwrap();
+    let issued = login(&mut state, "Alice", upper.as_str()).unwrap();
     let raw = issued.body["auth"]["client_token"]
         .as_str()
         .unwrap()
         .to_owned();
     assert_eq!(issued.body["auth"]["metadata"]["username"], "Alice");
     assert_eq!(
-        login(&mut state, "Alice", "lower password")
+        login(&mut state, "Alice", lower.as_str())
             .err()
             .unwrap()
             .status,
@@ -238,7 +249,7 @@ fn absent_mode_preserves_case_distinct_credentials_and_exact_issued_renewal_sour
     let wire = Zeroizing::new(serde_json::to_vec(&state).unwrap());
     state = serde_json::from_slice(&wire).unwrap();
     assert!(!state.has_userpass_name_modes());
-    assert!(login(&mut state, "Alice", "upper password").is_ok());
+    assert!(login(&mut state, "Alice", upper.as_str()).is_ok());
     let prior = state.tokens[&hash(&raw)].expires_at;
     request(
         &mut state,
@@ -260,13 +271,14 @@ fn absent_mode_preserves_case_distinct_credentials_and_exact_issued_renewal_sour
     .unwrap();
     assert_eq!(result.status, 204);
     assert_eq!(state.tokens[&hash(&raw)].expires_at, prior);
-    assert!(login(&mut state, "alice", "lower password").is_ok());
+    assert!(login(&mut state, "alice", lower.as_str()).is_ok());
     state.validate_userpass_name_modes().unwrap();
 }
 
 #[test]
 fn name_mode_is_preserved_by_mount_reconfiguration_and_remount_and_validated_on_load() {
     let (mut state, _, root) = setup();
+    let password = runtime_secret("userpass-name-remount");
     mount_auth(&mut state, &root, "", "staff", "userpass");
     for (path, body) in [
         (
@@ -282,7 +294,7 @@ fn name_mode_is_preserved_by_mount_reconfiguration_and_remount_and_validated_on_
         Some(&root),
         "POST",
         "auth/staff/users/Mixed",
-        json!({"password":"password"}),
+        json!({"password":password.as_str()}),
         100,
     )
     .unwrap();

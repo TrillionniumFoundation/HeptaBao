@@ -1,4 +1,5 @@
 use super::*;
+use crate::test_support::runtime_secret;
 
 fn certificate_issuer() -> (AuthState, Principal, Vec<u8>, String) {
     let (mut state, _, root) = setup();
@@ -368,6 +369,7 @@ fn certificate_legacy_child_fields_do_not_override_known_token_api_origin() {
 #[test]
 fn token_api_orphan_unmount_independence_is_not_specific_to_certificate_auth() {
     let (mut state, _, root) = setup();
+    let password = runtime_secret("certificate-renewal-userpass");
     let mut issuers = Vec::new();
     for (namespace, mount) in [("", "people"), ("", "people-other"), ("team", "people")] {
         mount_auth(&mut state, &root, namespace, mount, "userpass");
@@ -386,11 +388,10 @@ fn token_api_orphan_unmount_independence_is_not_specific_to_certificate_auth() {
             namespace,
             "POST",
             &format!("auth/{mount}/users/alice"),
-            json!({"password": "synthetic-userpass-password", "token_policies": ["issuer"], "token_ttl": 300}),
+            json!({"password": password.as_str(), "token_policies": ["issuer"], "token_ttl": 300}),
             100,
         );
-        let login =
-            userpass_login(&mut state, namespace, mount, "synthetic-userpass-password").unwrap();
+        let login = userpass_login(&mut state, namespace, mount, password.as_str()).unwrap();
         issuers.push(
             login.body["auth"]["client_token"]
                 .as_str()

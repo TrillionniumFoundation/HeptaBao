@@ -1771,6 +1771,7 @@ pub(crate) fn form_component(value: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::{random_ascii, random_bytes, runtime_secret};
     #[test]
     fn egress_never_accepts_ambiguous_or_unenrolled_destinations() {
         for url in [
@@ -1862,13 +1863,15 @@ mod tests {
     #[test]
     fn radius_pap_packet_encrypts_password_and_validates_response_authenticator()
     -> Result<(), &'static str> {
-        let request_authenticator = [7u8; 16];
+        let request_authenticator = random_bytes();
+        let password = runtime_secret("radius-pap-password");
+        let shared_key = runtime_secret("radius-pap-shared-key");
         let request = radius_access_request(
             9,
             &request_authenticator,
             b"alice",
-            b"password",
-            b"shared-secret",
+            password.as_bytes(),
+            shared_key.as_bytes(),
         )
         .map_err(|_| "bounded RADIUS request")?;
         assert_eq!(request[0], 1);
@@ -1887,16 +1890,16 @@ mod tests {
             &response[..4],
             &request_authenticator,
             &response[20..],
-            b"shared-secret",
+            shared_key.as_bytes(),
         ]);
         response[4..20].copy_from_slice(&authenticator);
         assert!(
-            radius_response_accepted(&response, 9, &request_authenticator, b"shared-secret")
+            radius_response_accepted(&response, 9, &request_authenticator, shared_key.as_bytes(),)
                 .is_err()
         );
         response[4] ^= 1;
         assert!(
-            radius_response_accepted(&response, 9, &request_authenticator, b"shared-secret")
+            radius_response_accepted(&response, 9, &request_authenticator, shared_key.as_bytes(),)
                 .is_err()
         );
 
@@ -1906,24 +1909,24 @@ mod tests {
         response.extend_from_slice(&[0u8; 16]);
         let mut signed = response.clone();
         signed[4..20].copy_from_slice(&request_authenticator);
-        let message_authenticator = hmac_md5(b"shared-secret", &signed);
+        let message_authenticator = hmac_md5(shared_key.as_bytes(), &signed);
         response[22..38].copy_from_slice(&message_authenticator);
         let response_authenticator = md5_parts(&[
             &response[..4],
             &request_authenticator,
             &response[20..],
-            b"shared-secret",
+            shared_key.as_bytes(),
         ]);
         response[4..20].copy_from_slice(&response_authenticator);
         assert!(radius_response_accepted(
             &response,
             9,
             &request_authenticator,
-            b"shared-secret"
+            shared_key.as_bytes(),
         )?);
         response[22] ^= 1;
         assert!(
-            radius_response_accepted(&response, 9, &request_authenticator, b"shared-secret")
+            radius_response_accepted(&response, 9, &request_authenticator, shared_key.as_bytes(),)
                 .is_err()
         );
         Ok(())
@@ -1938,6 +1941,9 @@ mod tests {
         server
             .set_read_timeout(Some(Duration::from_secs(3)))
             .map_err(|_| "set test RADIUS timeout")?;
+        let shared_key = runtime_secret("radius-udp-shared-key");
+        let fixture_key = shared_key.to_string();
+        let password = runtime_secret("radius-udp-password");
         let thread = std::thread::spawn(move || -> Result<(), &'static str> {
             let mut request = [0u8; 4096];
             let (size, source) = server
@@ -1950,7 +1956,7 @@ mod tests {
             let mut signed = request.to_vec();
             signed[request.len() - 16..].fill(0);
             if request[request.len() - 16..]
-                .ct_eq(&hmac_md5(b"shared-secret", &signed))
+                .ct_eq(&hmac_md5(fixture_key.as_bytes(), &signed))
                 .unwrap_u8()
                 != 1
             {
@@ -1962,12 +1968,12 @@ mod tests {
             response.extend_from_slice(&[0u8; 16]);
             let mut signed = response.clone();
             signed[4..20].copy_from_slice(&request[4..20]);
-            response[22..38].copy_from_slice(&hmac_md5(b"shared-secret", &signed));
+            response[22..38].copy_from_slice(&hmac_md5(fixture_key.as_bytes(), &signed));
             let authenticator = md5_parts(&[
                 &response[..4],
                 &request[4..20],
                 &response[20..],
-                b"shared-secret",
+                fixture_key.as_bytes(),
             ]);
             response[4..20].copy_from_slice(&authenticator);
             server
@@ -1981,7 +1987,7 @@ mod tests {
             server_name: "127.0.0.1".into(),
             ca_pem: String::new(),
             path_prefix: "/".into(),
-            shared_secret: "shared-secret".into(),
+            shared_secret: shared_key.to_string(),
         }])?;
         let debug = format!(
             "{:?}",
@@ -1991,19 +1997,14 @@ mod tests {
                 server_name: "127.0.0.1".into(),
                 ca_pem: String::new(),
                 path_prefix: "/".into(),
-                shared_secret: "shared-secret".into(),
+                shared_secret: shared_key.to_string(),
             }
         );
-        assert!(!debug.contains("shared-secret"));
-        assert!(
-            outbound
-                .radius_endpoint(&format!("radius://127.0.0.1:{}", address.port()))
-                .is_ok()
-        );
+        assert!(!debug.contains(shared_key.as_str()));
         assert!(outbound.radius_authenticate(
             &format!("radius://127.0.0.1:{}", address.port()),
             "alice",
-            "password"
+            password.as_str(),
         )?);
         thread
             .join()
@@ -2021,7 +2022,7 @@ mod tests {
             server_name: "127.0.0.1".into(),
             ca_pem: String::new(),
             path_prefix: "/".into(),
-            shared_secret: "shared-secret".into(),
+            shared_secret: shared_key.to_string(),
         }])?;
         timeout_server
             .set_read_timeout(Some(Duration::from_millis(1)))
@@ -2029,7 +2030,7 @@ mod tests {
         let _ = outbound.radius_authenticate(
             &format!("radius://127.0.0.1:{}", timeout_address.port()),
             "alice",
-            "password",
+            password.as_str(),
         );
         Ok(())
     }
@@ -2037,14 +2038,17 @@ mod tests {
     #[test]
     fn ldap_simple_bind_framing_is_bounded_and_result_codes_are_exact() -> Result<(), &'static str>
     {
+        let password = runtime_secret("ldap-simple-bind-password");
+        let maximum_password = random_ascii(1024);
+        let oversized_password = random_ascii(1025);
         let request = ldap_bind_request(
             b"uid=alice,ou=people,dc=example,dc=test",
-            b"synthetic-password",
+            password.as_bytes(),
         )?;
         assert_eq!(request.first().copied(), Some(0x30));
-        assert!(ldap_bind_request(b"uid=synthetic", &[b'p'; 1024]).is_ok());
-        assert!(ldap_bind_request(b"uid=synthetic", &[b'p'; 1025]).is_err());
-        assert!(ldap_bind_request(&[b'd'; 1025], b"synthetic-password").is_err());
+        assert!(ldap_bind_request(b"uid=synthetic", maximum_password.as_bytes()).is_ok());
+        assert!(ldap_bind_request(b"uid=synthetic", oversized_password.as_bytes()).is_err());
+        assert!(ldap_bind_request(&[b'd'; 1025], password.as_bytes()).is_err());
         assert!(request.windows(3).any(|window| window == b"\x02\x01\x03"));
         assert!(
             request

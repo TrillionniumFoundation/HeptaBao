@@ -1,9 +1,10 @@
 use super::*;
+use crate::test_support::{random_ascii, random_bytes, runtime_secret};
 use userpass_bcrypt::ImportedBcrypt;
 
 fn hash(password: &str) -> Zeroizing<String> {
     Zeroizing::new(
-        bcrypt::hash_with_salt(password, 5, [7; 16])
+        bcrypt::hash_with_salt(password, 5, random_bytes())
             .unwrap()
             .format_for_version(bcrypt::Version::TwoB),
     )
@@ -53,7 +54,9 @@ fn user<'a>(state: &'a AuthState, name: &str) -> &'a User {
 
 #[test]
 fn bcrypt_import_go_header_variants_are_verified_by_library_and_bad_tails_cannot_authenticate() {
-    let h = hash("imported credential");
+    let password = runtime_secret("bcrypt-imported");
+    let incorrect = runtime_secret("bcrypt-incorrect");
+    let h = hash(password.as_str());
     let alphabet = b"./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let salt_last = alphabet
         .iter()
@@ -80,8 +83,8 @@ fn bcrypt_import_go_header_variants_are_verified_by_library_and_bad_tails_cannot
         salt_variant,
     ] {
         let imported = ImportedBcrypt::new(&value).unwrap();
-        assert!(imported.verify(b"imported credential"));
-        assert!(!imported.verify(b"incorrect credential"));
+        assert!(imported.verify(password.as_bytes()));
+        assert!(!imported.verify(incorrect.as_bytes()));
     }
     for value in [
         h[..59].to_owned(),
@@ -90,8 +93,8 @@ fn bcrypt_import_go_header_variants_are_verified_by_library_and_bad_tails_cannot
         format!("{}短", &h[..59]),
     ] {
         let imported = ImportedBcrypt::new(&value).unwrap();
-        assert!(!imported.verify(b"imported credential"));
-        assert!(!imported.verify(b"incorrect credential"));
+        assert!(!imported.verify(password.as_bytes()));
+        assert!(!imported.verify(incorrect.as_bytes()));
     }
     for value in [
         format!("$3a{}", &h[3..]),
@@ -107,8 +110,12 @@ fn bcrypt_import_go_header_variants_are_verified_by_library_and_bad_tails_cannot
 #[test]
 fn imported_and_pbkdf_credentials_switch_explicitly_without_fallback_and_preserve_issued_tokens() {
     let (mut state, root) = configured();
-    let password = "a".repeat(72);
-    let h = hash(&password);
+    let password = random_ascii(72);
+    let suffix = random_ascii(953);
+    let extended = Zeroizing::new(format!("{}{}", password.as_str(), suffix.as_str()));
+    let wrong = runtime_secret("bcrypt-wrong");
+    let new_plaintext = runtime_secret("bcrypt-new-plaintext");
+    let h = hash(password.as_str());
     write(
         &mut state,
         &root,
@@ -123,12 +130,15 @@ fn imported_and_pbkdf_credentials_switch_explicitly_without_fallback_and_preserv
     assert!(state.has_userpass_password_semantics());
     state.validate_userpass_password_semantics().unwrap();
     let issued =
-        login(&mut state, "alice", &"a".repeat(1025)).unwrap().body["auth"]["client_token"]
+        login(&mut state, "alice", extended.as_str()).unwrap().body["auth"]["client_token"]
             .as_str()
             .unwrap()
             .to_owned();
     assert_eq!(
-        login(&mut state, "alice", "wrong").err().unwrap().status,
+        login(&mut state, "alice", wrong.as_str())
+            .err()
+            .unwrap()
+            .status,
         400
     );
     let before = Zeroizing::new(serde_json::to_vec(user(&state, "alice")).unwrap());
@@ -151,7 +161,7 @@ fn imported_and_pbkdf_credentials_switch_explicitly_without_fallback_and_preserv
         &mut state,
         &root,
         "alice/password",
-        json!({"password":"new plaintext"}),
+        json!({"password":new_plaintext.as_str()}),
     )
     .unwrap();
     assert!(user(&state, "alice").imported_bcrypt.is_none());
@@ -164,7 +174,7 @@ fn imported_and_pbkdf_credentials_switch_explicitly_without_fallback_and_preserv
         login(&mut state, "alice", &password).err().unwrap().status,
         400
     );
-    assert!(login(&mut state, "alice", "new plaintext").is_ok());
+    assert!(login(&mut state, "alice", new_plaintext.as_str()).is_ok());
     assert!(state.authenticate(&issued, 100).is_ok());
     write(
         &mut state,
@@ -175,7 +185,7 @@ fn imported_and_pbkdf_credentials_switch_explicitly_without_fallback_and_preserv
     .unwrap();
     assert!(login(&mut state, "alice", &password).is_ok());
     assert_eq!(
-        login(&mut state, "alice", "new plaintext")
+        login(&mut state, "alice", new_plaintext.as_str())
             .err()
             .unwrap()
             .status,
@@ -186,12 +196,22 @@ fn imported_and_pbkdf_credentials_switch_explicitly_without_fallback_and_preserv
 #[test]
 fn bcrypt_input_combinations_and_invalid_replacements_are_atomic() {
     let (mut state, root) = configured();
-    let h = hash("imported credential");
+    let imported_password = runtime_secret("bcrypt-combination-imported");
+    let plaintext = runtime_secret("bcrypt-combination-plaintext");
+    let original = runtime_secret("bcrypt-combination-original");
+    let replacement = runtime_secret("bcrypt-combination-replacement");
+    let h = hash(imported_password.as_str());
     for (name, body) in [
         ("one", json!({"password":"","password_hash":h.as_str()})),
         ("two", json!({"password":null,"password_hash":h.as_str()})),
-        ("three", json!({"password":"plaintext","password_hash":""})),
-        ("four", json!({"password":"plaintext","password_hash":null})),
+        (
+            "three",
+            json!({"password":plaintext.as_str(),"password_hash":""}),
+        ),
+        (
+            "four",
+            json!({"password":plaintext.as_str(),"password_hash":null}),
+        ),
     ] {
         write(&mut state, &root, name, body).unwrap();
         assert!(
@@ -199,17 +219,23 @@ fn bcrypt_input_combinations_and_invalid_replacements_are_atomic() {
                 &mut state,
                 name,
                 if matches!(name, "one" | "two") {
-                    "imported credential"
+                    imported_password.as_str()
                 } else {
-                    "plaintext"
+                    plaintext.as_str()
                 }
             )
             .is_ok()
         );
     }
-    write(&mut state, &root, "alice", json!({"password":"original"})).unwrap();
+    write(
+        &mut state,
+        &root,
+        "alice",
+        json!({"password":original.as_str()}),
+    )
+    .unwrap();
     for body in [
-        json!({"password":"replacement","password_hash":h.as_str()}),
+        json!({"password":replacement.as_str(),"password_hash":h.as_str()}),
         json!({"password_hash":"invalid"}),
         json!({"password_hash":h.as_str(),"token_ttl":"invalid"}),
     ] {
@@ -222,7 +248,7 @@ fn bcrypt_input_combinations_and_invalid_replacements_are_atomic() {
             400
         );
         assert_eq!(provider_renewal::state_revision(&state).unwrap(), before);
-        assert!(login(&mut state, "alice", "original").is_ok());
+        assert!(login(&mut state, "alice", original.as_str()).is_ok());
     }
     for body in [
         json!({}),
@@ -256,8 +282,16 @@ fn bcrypt_input_combinations_and_invalid_replacements_are_atomic() {
 #[test]
 fn legacy_long_pbkdf_and_bounded_ldap_do_not_adopt_hash_import_implicitly() {
     let (mut state, root) = configured();
-    write(&mut state, &root, "alice", json!({"password":"initial"})).unwrap();
-    let long = "l".repeat(1000);
+    let initial = runtime_secret("bcrypt-legacy-initial");
+    let imported_password = runtime_secret("bcrypt-legacy-imported");
+    write(
+        &mut state,
+        &root,
+        "alice",
+        json!({"password":initial.as_str()}),
+    )
+    .unwrap();
+    let long = random_ascii(1000);
     let account = state
         .users_at_mut(AuthScope {
             namespace: "",
@@ -280,9 +314,9 @@ fn legacy_long_pbkdf_and_bounded_ldap_do_not_adopt_hash_import_implicitly() {
             serde_json::to_vec(user(&state, "alice")).unwrap(),
             before.as_slice()
         );
-        assert!(login(&mut state, "alice", &long).is_ok());
+        assert!(login(&mut state, "alice", long.as_str()).is_ok());
         assert_eq!(
-            login(&mut state, "alice", &(long.clone() + "x"))
+            login(&mut state, "alice", &format!("{}x", long.as_str()))
                 .err()
                 .unwrap()
                 .status,
@@ -290,7 +324,7 @@ fn legacy_long_pbkdf_and_bounded_ldap_do_not_adopt_hash_import_implicitly() {
         );
     }
     mount_auth(&mut state, &root, "", "directory", "ldap");
-    let h = hash("imported credential");
+    let h = hash(imported_password.as_str());
     let before = provider_renewal::state_revision(&state).unwrap();
     assert_eq!(
         state
@@ -313,7 +347,8 @@ fn legacy_long_pbkdf_and_bounded_ldap_do_not_adopt_hash_import_implicitly() {
 #[test]
 fn imported_credentials_are_redacted_zeroized_and_reject_ambiguous_storage() {
     let (mut state, root) = configured();
-    let h = hash("imported credential");
+    let imported_password = runtime_secret("bcrypt-redaction-imported");
+    let h = hash(imported_password.as_str());
     let mut imported = ImportedBcrypt::new(&h).unwrap();
     assert_eq!(format!("{imported:?}"), "ImportedBcrypt([REDACTED])");
     imported.zeroize();
@@ -341,8 +376,10 @@ fn imported_credentials_are_redacted_zeroized_and_reject_ambiguous_storage() {
 
 #[test]
 fn imported_go_variable_salts_use_the_existing_bcrypt_kernel_and_survive_serialization() {
-    let password = b"synthetic-variable-salt-password";
-    let standard = bcrypt::hash_with_salt(password, 5, [b'4'; 16])
+    let password = runtime_secret("bcrypt-variable-salt");
+    let different = runtime_secret("bcrypt-variable-salt-different");
+    let periodic = random_bytes::<1>()[0];
+    let standard = bcrypt::hash_with_salt(password.as_bytes(), 5, [periodic; 16])
         .unwrap()
         .format_for_version(bcrypt::Version::TwoB);
     for length in [1, 4, 7, 10, 13, 16] {
@@ -352,46 +389,49 @@ fn imported_go_variable_salts_use_the_existing_bcrypt_kernel_and_survive_seriali
             &base64::alphabet::BCRYPT,
             base64::engine::general_purpose::NO_PAD,
         )
-        .encode(vec![b'4'; length]);
+        .encode(vec![periodic; length]);
         let salt = format!("{encoded}{}", "\r\n".repeat((22 - encoded.len()) / 2));
         assert_eq!(salt.len(), 22);
         let value = format!("{}{}{}", &standard[..7], salt, &standard[29..]);
         let imported = ImportedBcrypt::new(&value).unwrap();
-        assert!(imported.verify(password));
-        assert!(!imported.verify(b"different credential"));
+        assert!(imported.verify(password.as_bytes()));
+        assert!(!imported.verify(different.as_bytes()));
         let encoded = Zeroizing::new(serde_json::to_vec(&imported).unwrap());
         let reopened: ImportedBcrypt = serde_json::from_slice(&encoded).unwrap();
-        assert!(reopened.verify(password));
+        assert!(reopened.verify(password.as_bytes()));
     }
 }
 
 #[test]
 fn decoded_salt_adapter_matches_normal_library_for_periodic_salts_and_password_boundaries() {
     for length in [1, 2, 4, 8, 16] {
-        let salt: Vec<u8> = (0..length).map(|i| i as u8).collect();
+        let source = random_bytes::<16>();
+        let salt = source[..length].to_vec();
         let mut expanded = [0u8; 16];
         for (position, value) in expanded.iter_mut().enumerate() {
             *value = salt[position % length];
         }
-        for password in [
-            b"short".to_vec(),
-            vec![b'x'; 71],
-            vec![b'x'; 72],
-            vec![b'x'; 1025],
-        ] {
-            let standard = bcrypt::hash_with_salt(&password, 5, expanded)
+        for password_length in [5, 71, 72, 1025] {
+            let password = random_ascii(password_length);
+            let incorrect = runtime_secret("bcrypt-boundary-incorrect");
+            let standard = bcrypt::hash_with_salt(password.as_bytes(), 5, expanded)
                 .unwrap()
                 .format_for_version(bcrypt::Version::TwoB);
             assert!(
-                bcrypt::verify_with_decoded_salt(&password, 5, &salt, &standard.as_bytes()[29..])
-                    .unwrap()
+                bcrypt::verify_with_decoded_salt(
+                    password.as_bytes(),
+                    5,
+                    &salt,
+                    &standard.as_bytes()[29..],
+                )
+                .unwrap()
             );
             assert!(
                 !bcrypt::verify_with_decoded_salt(
-                    b"incorrect",
+                    incorrect.as_bytes(),
                     5,
                     &salt,
-                    &standard.as_bytes()[29..]
+                    &standard.as_bytes()[29..],
                 )
                 .unwrap()
             );
@@ -401,17 +441,24 @@ fn decoded_salt_adapter_matches_normal_library_for_periodic_salts_and_password_b
 
 #[test]
 fn decoded_salt_bounds_and_go_padding_reject_before_verification_without_pbkdf_fallback() {
-    let h = hash("imported credential");
+    let password = runtime_secret("bcrypt-decoded-bounds");
+    let salt = random_bytes::<16>();
+    let oversized_salt = random_bytes::<17>();
+    let h = hash(password.as_str());
     for cost in [0, 4, 13, 31, u32::MAX] {
         assert!(
-            bcrypt::verify_with_decoded_salt(b"password", cost, &[1; 16], &[b'.'; 31]).is_err()
+            bcrypt::verify_with_decoded_salt(password.as_bytes(), cost, &salt, &[b'.'; 31])
+                .is_err()
         );
     }
-    for salt in [&[][..], &[0u8; 17][..]] {
-        assert!(bcrypt::verify_with_decoded_salt(b"password", 5, salt, &[b'.'; 31]).is_err());
+    for invalid_salt in [&[][..], oversized_salt.as_slice()] {
+        assert!(
+            bcrypt::verify_with_decoded_salt(password.as_bytes(), 5, invalid_salt, &[b'.'; 31])
+                .is_err()
+        );
     }
     for expected in [&[][..], &[b'.'; 30][..], &[b'.'; 32][..]] {
-        assert!(bcrypt::verify_with_decoded_salt(b"password", 5, &[1; 16], expected).is_err());
+        assert!(bcrypt::verify_with_decoded_salt(password.as_bytes(), 5, &salt, expected).is_err());
     }
     for salt in [
         "\r\n".repeat(11),
@@ -422,7 +469,7 @@ fn decoded_salt_bounds_and_go_padding_reject_before_verification_without_pbkdf_f
         assert!(
             !ImportedBcrypt::new(&value)
                 .unwrap()
-                .verify(b"imported credential")
+                .verify(password.as_bytes())
         );
     }
 }

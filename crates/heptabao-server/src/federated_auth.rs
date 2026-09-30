@@ -1092,6 +1092,7 @@ fn digest_bytes(bytes: &[u8]) -> [u8; 32] {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::{random_bytes, runtime_secret};
     use base64::engine::general_purpose::URL_SAFE_NO_PAD;
     use ring::signature::{Ed25519KeyPair, KeyPair};
     use serde_json::json;
@@ -1233,19 +1234,32 @@ mod tests {
     #[test]
     fn mfa_is_channel_bound_and_persistently_single_use() {
         let root = root("mfa");
-        let mut replay = PersistentReplayLedger::open(&root, [5; 32]).unwrap();
-        let verifier = MfaVerifier::new([6; 32], 10).unwrap();
-        let proof =
-            MfaProof::sign("alice", "totp-1", 1000, 1100, [9; 16], [10; 32], [6; 32]).unwrap();
+        let replay_key = random_bytes();
+        let verifier_key = random_bytes();
+        let proof_nonce = random_bytes();
+        let channel = random_bytes();
+        let wrong_channel = random_bytes();
+        let mut replay = PersistentReplayLedger::open(&root, replay_key).unwrap();
+        let verifier = MfaVerifier::new(verifier_key, 10).unwrap();
+        let proof = MfaProof::sign(
+            "alice",
+            "totp-1",
+            1000,
+            1100,
+            proof_nonce,
+            channel,
+            verifier_key,
+        )
+        .unwrap();
         assert_eq!(
-            verifier.verify_and_record(&proof, "alice", [11; 32], 1050, &mut replay),
+            verifier.verify_and_record(&proof, "alice", wrong_channel, 1050, &mut replay),
             Err(AuthError::InvalidMfaProof)
         );
         verifier
-            .verify_and_record(&proof, "alice", [10; 32], 1050, &mut replay)
+            .verify_and_record(&proof, "alice", channel, 1050, &mut replay)
             .unwrap();
         assert_eq!(
-            verifier.verify_and_record(&proof, "alice", [10; 32], 1050, &mut replay),
+            verifier.verify_and_record(&proof, "alice", channel, 1050, &mut replay),
             Err(AuthError::ReplayDetected)
         );
         drop(replay);
@@ -1306,29 +1320,60 @@ mod tests {
         let short_hash = |s: &str| {
             URL_SAFE_NO_PAD.encode(&digest::digest(&digest::SHA256, s.as_bytes()).as_ref()[..16])
         };
+        let nonce = runtime_secret("oidc-nonce");
+        let wrong_nonce = runtime_secret("oidc-wrong-nonce");
+        let access_token = runtime_secret("oidc-access-token");
+        let wrong_access_token = runtime_secret("oidc-wrong-access-token");
+        let authorization_code = runtime_secret("oidc-authorization-code");
+        let wrong_authorization_code = runtime_secret("oidc-wrong-authorization-code");
         let original = json!({"iss":"https://issuer.example:443","sub":"alice","aud":"client",
-            "iat":100,"exp":400,"nonce":"nonce","acr":"urn:example:loa:2",
-            "amr":["pwd","otp"],"at_hash":short_hash("access"),"c_hash":short_hash("code")});
+            "iat":100,"exp":400,"nonce":nonce.as_str(),"acr":"urn:example:loa:2",
+            "amr":["pwd","otp"],"at_hash":short_hash(access_token.as_str()),
+            "c_hash":short_hash(authorization_code.as_str())});
         let encoded = sign(&original);
         let verified = verifier
-            .verify_oidc(&encoded, 110, "nonce", "access", "code")
+            .verify_oidc(
+                &encoded,
+                110,
+                nonce.as_str(),
+                access_token.as_str(),
+                authorization_code.as_str(),
+            )
             .unwrap();
         assert_eq!(verified.acr.as_deref(), Some("urn:example:loa:2"));
         assert_eq!(verified.amr, BTreeSet::from(["otp".into(), "pwd".into()]));
         assert!(verifier.verify(&encoded, 110).is_err()); // original JWT still requires jti
         assert!(
             verifier
-                .verify_oidc(&encoded, 110, "other", "access", "code")
+                .verify_oidc(
+                    &encoded,
+                    110,
+                    wrong_nonce.as_str(),
+                    access_token.as_str(),
+                    authorization_code.as_str(),
+                )
                 .is_err()
         );
         assert!(
             verifier
-                .verify_oidc(&encoded, 110, "nonce", "changed", "code")
+                .verify_oidc(
+                    &encoded,
+                    110,
+                    nonce.as_str(),
+                    wrong_access_token.as_str(),
+                    authorization_code.as_str(),
+                )
                 .is_err()
         );
         assert!(
             verifier
-                .verify_oidc(&encoded, 110, "nonce", "access", "changed")
+                .verify_oidc(
+                    &encoded,
+                    110,
+                    nonce.as_str(),
+                    access_token.as_str(),
+                    wrong_authorization_code.as_str(),
+                )
                 .is_err()
         );
         for (field, value) in [
@@ -1343,7 +1388,13 @@ mod tests {
             bad[field] = value;
             assert!(
                 verifier
-                    .verify_oidc(&sign(&bad), 110, "nonce", "access", "code")
+                    .verify_oidc(
+                        &sign(&bad),
+                        110,
+                        nonce.as_str(),
+                        access_token.as_str(),
+                        authorization_code.as_str(),
+                    )
                     .is_err(),
                 "{field}"
             );
@@ -1353,7 +1404,13 @@ mod tests {
         multiple["azp"] = json!("client");
         assert!(
             verifier
-                .verify_oidc(&sign(&multiple), 110, "nonce", "access", "code")
+                .verify_oidc(
+                    &sign(&multiple),
+                    110,
+                    nonce.as_str(),
+                    access_token.as_str(),
+                    authorization_code.as_str(),
+                )
                 .is_ok()
         );
         for value in [json!("otp"), json!(["pwd", 7])] {
@@ -1361,7 +1418,13 @@ mod tests {
             malformed["amr"] = value;
             assert!(
                 verifier
-                    .verify_oidc(&sign(&malformed), 110, "nonce", "access", "code")
+                    .verify_oidc(
+                        &sign(&malformed),
+                        110,
+                        nonce.as_str(),
+                        access_token.as_str(),
+                        authorization_code.as_str(),
+                    )
                     .is_err()
             );
         }

@@ -1,5 +1,6 @@
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 use super::*;
+use crate::test_support::runtime_secret;
 
 #[path = "auth_approle_defaults_tests.rs"]
 mod approle_defaults_tests;
@@ -2648,10 +2649,13 @@ fn userpass_login(
 #[test]
 fn custom_userpass_mounts_isolate_credentials_namespaces_and_real_acl_paths() {
     let (mut state, _, root) = setup();
+    let staff_password = runtime_secret("custom-userpass-staff");
+    let external_password = runtime_secret("custom-userpass-external");
+    let other_password = runtime_secret("custom-userpass-other");
     for (ns, mount, password) in [
-        ("team", "staff", "synthetic-staff-password"),
-        ("team", "external/users", "synthetic-external-password"),
-        ("other", "staff", "synthetic-other-password"),
+        ("team", "staff", staff_password.as_str()),
+        ("team", "external/users", external_password.as_str()),
+        ("other", "staff", other_password.as_str()),
     ] {
         mount_auth(&mut state, &root, ns, mount, "userpass");
         call(
@@ -2664,19 +2668,19 @@ fn custom_userpass_mounts_isolate_credentials_namespaces_and_real_acl_paths() {
             100,
         );
     }
-    assert!(userpass_login(&mut state, "team", "staff", "synthetic-staff-password").is_ok());
-    assert!(userpass_login(&mut state, "team", "staff", "synthetic-external-password").is_err());
-    assert!(userpass_login(&mut state, "other", "staff", "synthetic-staff-password").is_err());
+    assert!(userpass_login(&mut state, "team", "staff", staff_password.as_str()).is_ok());
+    assert!(userpass_login(&mut state, "team", "staff", external_password.as_str()).is_err());
+    assert!(userpass_login(&mut state, "other", "staff", staff_password.as_str()).is_err());
     assert!(
         userpass_login(
             &mut state,
             "team",
             "external/users",
-            "synthetic-external-password"
+            external_password.as_str()
         )
         .is_ok()
     );
-    assert!(userpass_login(&mut state, "team", "userpass", "synthetic-staff-password").is_err());
+    assert!(userpass_login(&mut state, "team", "userpass", staff_password.as_str()).is_err());
 
     put_policy(
         &mut state,
@@ -2731,15 +2735,16 @@ fn custom_userpass_mounts_isolate_credentials_namespaces_and_real_acl_paths() {
     );
 
     let persisted = serde_json::to_vec(&state).unwrap();
-    assert!(!String::from_utf8_lossy(&persisted).contains("synthetic-staff-password"));
+    assert!(!String::from_utf8_lossy(&persisted).contains(staff_password.as_str()));
     let mut state: AuthState = serde_json::from_slice(&persisted).unwrap();
-    assert!(userpass_login(&mut state, "team", "staff", "synthetic-staff-password").is_ok());
-    assert!(userpass_login(&mut state, "other", "staff", "synthetic-staff-password").is_err());
+    assert!(userpass_login(&mut state, "team", "staff", staff_password.as_str()).is_ok());
+    assert!(userpass_login(&mut state, "other", "staff", staff_password.as_str()).is_err());
 }
 
 #[test]
 fn disabling_auth_mount_revokes_its_tokens_and_children_and_erases_credentials() {
     let (mut state, root_raw, root) = setup();
+    let shared_password = runtime_secret("userpass-unmount-shared");
     put_policy(
         &mut state,
         &root,
@@ -2755,17 +2760,17 @@ fn disabling_auth_mount_revokes_its_tokens_and_children_and_erases_credentials()
             "team",
             "POST",
             &format!("auth/{mount}/users/alice"),
-            json!({"password":"synthetic-shared-password","token_policies":["issuer"]}),
+            json!({"password":shared_password.as_str(),"token_policies":["issuer"]}),
             100,
         );
     }
-    let raw = userpass_login(&mut state, "team", "staff", "synthetic-shared-password")
+    let raw = userpass_login(&mut state, "team", "staff", shared_password.as_str())
         .unwrap()
         .body["auth"]["client_token"]
         .as_str()
         .unwrap()
         .to_owned();
-    let other = userpass_login(&mut state, "team", "other", "synthetic-shared-password")
+    let other = userpass_login(&mut state, "team", "other", shared_password.as_str())
         .unwrap()
         .body["auth"]["client_token"]
         .as_str()
@@ -2793,8 +2798,8 @@ fn disabling_auth_mount_revokes_its_tokens_and_children_and_erases_credentials()
     assert!(state.authenticate(&other, 103).is_ok());
     assert!(state.authenticate(&root_raw, 103).is_ok());
     mount_auth(&mut state, &root, "team", "staff", "userpass");
-    assert!(userpass_login(&mut state, "team", "staff", "synthetic-shared-password").is_err());
-    assert!(userpass_login(&mut state, "team", "other", "synthetic-shared-password").is_ok());
+    assert!(userpass_login(&mut state, "team", "staff", shared_password.as_str()).is_err());
+    assert!(userpass_login(&mut state, "team", "other", shared_password.as_str()).is_ok());
 }
 
 #[test]
@@ -2921,16 +2926,17 @@ fn custom_approle_mounts_isolate_role_ids_secret_ids_and_tidy() {
 #[test]
 fn legacy_fixed_auth_state_survives_upgrade_and_unmount_fences_unattributed_tokens() {
     let (mut state, root_raw, root) = setup();
+    let legacy_password = runtime_secret("legacy-userpass-upgrade");
     call(
         &mut state,
         &root,
         "team",
         "POST",
         "auth/userpass/users/alice",
-        json!({"password":"synthetic-legacy-password"}),
+        json!({"password":legacy_password.as_str()}),
         100,
     );
-    let legacy_raw = userpass_login(&mut state, "team", "userpass", "synthetic-legacy-password")
+    let legacy_raw = userpass_login(&mut state, "team", "userpass", legacy_password.as_str())
         .unwrap()
         .body["auth"]["client_token"]
         .as_str()
@@ -2946,7 +2952,7 @@ fn legacy_fixed_auth_state_survives_upgrade_and_unmount_fences_unattributed_toke
     }
     let mut state: AuthState = serde_json::from_value(old).unwrap();
     assert!(state.authenticate(&legacy_raw, 101).is_ok());
-    assert!(userpass_login(&mut state, "team", "userpass", "synthetic-legacy-password").is_ok());
+    assert!(userpass_login(&mut state, "team", "userpass", legacy_password.as_str()).is_ok());
     let directly_issued = token(
         &mut state,
         &root,
@@ -2967,7 +2973,7 @@ fn legacy_fixed_auth_state_survives_upgrade_and_unmount_fences_unattributed_toke
     assert!(state.authenticate(&root_raw, 103).is_ok());
     assert!(state.authenticate(&directly_issued, 103).is_ok());
     mount_auth(&mut state, &root, "team", "userpass", "userpass");
-    assert!(userpass_login(&mut state, "team", "userpass", "synthetic-legacy-password").is_err());
+    assert!(userpass_login(&mut state, "team", "userpass", legacy_password.as_str()).is_err());
 }
 
 #[test]
