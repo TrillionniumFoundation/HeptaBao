@@ -14,7 +14,7 @@ class ExternalPkiRootContractTests(unittest.TestCase):
         rows=[{"case":case,"passed":True} for case in MODULE.EXPECTED_CASES]
         for row in rows:
             if row["case"].endswith("provider_sign_exact"):
-                count=3 if row["case"].startswith("official.") else 1
+                count=1 if ".csr." in row["case"] else 3
                 row.update(observed_provider_sign_entries=count,expected_provider_sign_entries=count)
         return rows
 
@@ -41,7 +41,7 @@ class ExternalPkiRootContractTests(unittest.TestCase):
 
     def test_sign_count_metadata_is_required_without_a_native_official_union(self):
         rows=self.rows()
-        for bad_count in (0,2,3,None):
+        for bad_count in (0,1,2,None):
             bad=[dict(row,observed_provider_sign_entries=bad_count) if row["case"]=="candidate.root.provider_sign_exact" else row for row in rows]
             self.assertFalse(MODULE.trace_complete(bad))
 

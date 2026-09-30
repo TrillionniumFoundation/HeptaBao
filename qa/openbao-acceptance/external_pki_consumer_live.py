@@ -162,7 +162,7 @@ def run(binary,rows,*,oracle_contract=False,compare_official_csr=True,include_na
                 t.check(prefix+"generate",response.status==200,response.status)
                 if observe_provider_signs:
                     observed=sign_entries(remote)-before
-                    expected=3 if kind=="root" and (side=="official" or oracle_contract) else 1
+                    expected=3 if kind=="root" else 1
                     try:t.check(prefix+"provider_sign_exact",observed==expected)
                     finally:rows[-1].update(observed_provider_sign_entries=observed,expected_provider_sign_entries=expected)
                 data=response.body.get("data",{})
@@ -184,7 +184,7 @@ def run(binary,rows,*,oracle_contract=False,compare_official_csr=True,include_na
             t.check(side+".namespace_generate",response.status==200,response.status)
             if observe_provider_signs:
                 observed=sign_entries(remote)-before
-                expected=3 if side=="official" or oracle_contract else 1
+                expected=3
                 try:t.check(side+".namespace_provider_sign_exact",observed==expected)
                 finally:rows[-1].update(observed_provider_sign_entries=observed,expected_provider_sign_entries=expected)
             exact,spki,verified=validate_crypto(response.body.get("data",{}),"root",public)

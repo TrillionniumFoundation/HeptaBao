@@ -44,7 +44,7 @@ def trace_complete(rows,expected=EXPECTED_CASES,*,oracle_contract=False):
     if not isinstance(rows,list) or tuple(row.get("case") for row in rows)!=expected or not all(row.get("passed") is True for row in rows):return False
     for row in rows:
         if row["case"].endswith("provider_sign_exact"):
-            count=3 if row["case"].startswith("official.") or oracle_contract and ".csr." not in row["case"] else 1
+            count=1 if ".csr." in row["case"] else 3
             if row.get("observed_provider_sign_entries")!=count or row.get("expected_provider_sign_entries")!=count:return False
     return True
 
