@@ -17,7 +17,7 @@ import time
 
 from bao_http import Client, SafeArgumentParser, private_write
 from core_isolation import ROOT, file_hash
-from official_openbao_launcher import start_oracle, stop_oracle
+from official_openbao_launcher import SUPPORTED_VERSIONS, VERSION, start_oracle, stop_oracle
 
 
 def main():
@@ -25,6 +25,7 @@ def main():
     parser.add_argument('--binary',required=True)
     parser.add_argument('--output',required=True)
     parser.add_argument('--oracle',action='store_true')
+    parser.add_argument('--oracle-version',choices=SUPPORTED_VERSIONS,default=VERSION)
     parser.add_argument('--client-python')
     args=parser.parse_args()
     root=Path(tempfile.mkdtemp(prefix='bao-operational-'));root.chmod(0o700)
@@ -35,10 +36,11 @@ def main():
     env=os.environ.copy()
     if args.client_python:env.pop('PYTHONPATH',None)
     else:env['PYTHONPATH']=str(ROOT/'clients/python')
-    report={'schema':'heptabao.operational-process-evidence.v1','cases':cases,'status':'failed',
+    report={'schema':'heptabao.operational-process-evidence.v2','cases':cases,'status':'failed',
             'synthetic_only':True,'independent_qualification':False,'production_authority':False,
             'actual_pam_or_sshd_login':False,'full_agent_proxy_compatibility':False,
-            'target':'official-openbao-2.6.2' if args.oracle else 'heptabao-candidate',
+            'target':'official-openbao-'+args.oracle_version if args.oracle else 'heptabao-candidate',
+            'oracle_version':args.oracle_version,
             'client_distribution':'installed-wheel' if args.client_python else 'source',
             'candidate_binary_sha256':file_hash(Path(args.binary)),
             'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
@@ -92,7 +94,7 @@ def main():
     try:
         if args.oracle:
             with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
-            oracle=start_oracle(port)
+            oracle=start_oracle(port,version=args.oracle_version)
             address,ca=oracle['address'],oracle['ca_file']
             token=Path(oracle['token_file']).read_text().strip()
             report['oracle_identity']=json.loads(Path(oracle['identity_file']).read_text())
@@ -168,6 +170,77 @@ def main():
         check('agent.pending_restart_blocked',resumed.returncode==2)
         check('agent.crash_has_no_published_token',not (root/'crash-agent'/'token').exists())
         check('agent.crash_diagnostics_redacted',all(v.encode() not in killed.stdout+killed.stderr+resumed.stdout+resumed.stderr for v in secret_values))
+        # Role-ID-only uses the same executable and durable transaction. No
+        # SecretID is issued or configured for this role, and source CIDRs keep
+        # the server's bind_secret_id=false admission appropriately constrained.
+        role_only='auth/agent-approle/role/role-only'
+        check('role_only.setup',call('POST',role_only,{'bind_secret_id':False,
+              'token_bound_cidrs':['127.0.0.1/32'],'token_policies':['default','agent-reader'],
+              'token_ttl':'8s','token_max_ttl':'120s'}).status==204)
+        role_only_id=call('GET',role_only+'/role-id').data()['role_id']
+        (root/'role-only').mkdir(mode=0o700)
+        rolecfg={**cfg,'role_id_file':secret_file('role-only-id',role_only_id),
+                 'state_dir':str(root/'role-only')}
+        del rolecfg['secret_id_file']
+        private_write(root/'role-only.json',rolecfg,replace=False)
+        def role_state():return json.loads((root/'role-only'/'state.json').read_text())
+        role_agent=spawn('role-only','heptabao.agent',['--config',str(root/'role-only.json')])
+        check('role_only.real_login_ready',wait_for(lambda:role_state().get('phase')=='ready'))
+        role_initial=role_state();role_token=(root/'role-only'/'token').read_text().strip()
+        secret_values.append(role_token)
+        check('role_only.private_sink',(root/'role-only'/'token').stat().st_mode&0o777==0o600)
+        check('role_only.checkpoint_contains_no_secrets',all(v not in (root/'role-only'/'state.json').read_text() for v in secret_values))
+        check('role_only.real_secret_read',rootclient.request('GET','/v1/apps/data/item',token=role_token).data().get('data')=={'value':marker})
+        check('role_only.real_renewal',wait_for(lambda:role_state().get('phase')=='ready' and
+              role_state().get('expires_at',0)>role_initial['expires_at']))
+        check('role_only.renewal_keeps_same_token',(root/'role-only'/'token').read_text().strip()==role_token)
+        check('role_only.revoke',call('POST','auth/token/revoke',{'token':role_token}).status==204)
+        check('role_only.revoked_bearer_denied',rootclient.request('GET','/v1/apps/data/item',token=role_token).status==403)
+        check('role_only.confirmed_denial_reauthenticates',wait_for(lambda:role_state().get('phase')=='ready'
+              and role_state().get('authentications')==2))
+        replacement=(root/'role-only'/'token').read_text().strip();secret_values.append(replacement)
+        check('role_only.reauthentication_publishes_new_token',replacement!=role_token)
+        check('role_only.reauthenticated_secret_read',rootclient.request('GET','/v1/apps/data/item',token=replacement).data().get('data')=={'value':marker})
+        role_agent.terminate();role_agent.wait(timeout=6)
+        check('role_only.graceful_stop_invalidates_sink',role_state().get('phase')=='stopped' and not (root/'role-only'/'token').exists())
+        # The original role still requires a SecretID: omission must cause real
+        # server denial and a persistent pending fence, never a fallback login.
+        (root/'role-only-denied').mkdir(mode=0o700)
+        deniedcfg={**rolecfg,'role_id_file':cfg['role_id_file'],'state_dir':str(root/'role-only-denied')}
+        private_write(root/'role-only-denied.json',deniedcfg,replace=False)
+        denied=subprocess.run([client_python,'-m','heptabao.agent','--config',str(root/'role-only-denied.json'),'--once'],
+                              env=env,cwd=root,capture_output=True,timeout=8,check=False)
+        check('role_only.secret_required_denied',denied.returncode==2)
+        denied_state=json.loads((root/'role-only-denied'/'state.json').read_text())
+        check('role_only.denial_preserves_pending',denied_state['phase']=='auth_pending' and denied_state['authentications']==1)
+        check('role_only.denial_has_no_published_token',not (root/'role-only-denied'/'token').exists())
+        def accessors():
+            response=call('LIST','auth/token/accessors')
+            if response.status!=200:raise AssertionError('role_only.accessor_inventory')
+            return set(response.data()['keys'])
+        before_denied_restart=accessors()
+        denied_restart=subprocess.run([client_python,'-m','heptabao.agent','--config',str(root/'role-only-denied.json'),'--once'],
+                                      env=env,cwd=root,capture_output=True,timeout=8,check=False)
+        check('role_only.denied_restart_blocked',denied_restart.returncode==2)
+        check('role_only.denied_restart_does_not_issue_token',accessors()==before_denied_restart)
+        check('role_only.denial_diagnostics_redacted',all(v.encode() not in denied.stdout+denied.stderr+
+              denied_restart.stdout+denied_restart.stderr for v in secret_values))
+        (root/'role-only-crash').mkdir(mode=0o700)
+        private_write(root/'role-only-crash.json',{**rolecfg,'state_dir':str(root/'role-only-crash')},replace=False)
+        before_crash=accessors()
+        role_crash=subprocess.run([client_python,'-c',crashcode,'--config',str(root/'role-only-crash.json'),'--once'],
+                                  env=env,cwd=root,capture_output=True,timeout=8,check=False)
+        check('role_only.real_post_login_crash',role_crash.returncode==73)
+        after_crash=accessors()
+        check('role_only.crash_issued_exactly_one_token',len(after_crash-before_crash)==1 and before_crash<=after_crash)
+        check('role_only.crash_preserves_pending',json.loads((root/'role-only-crash'/'state.json').read_text())['phase']=='auth_pending')
+        role_restart=subprocess.run([client_python,'-m','heptabao.agent','--config',str(root/'role-only-crash.json'),'--once'],
+                                    env=env,cwd=root,capture_output=True,timeout=8,check=False)
+        check('role_only.pending_restart_blocked',role_restart.returncode==2)
+        check('role_only.pending_restart_does_not_issue_token',accessors()==after_crash)
+        check('role_only.crash_has_no_published_token',not (root/'role-only-crash'/'token').exists())
+        check('role_only.crash_diagnostics_redacted',all(v.encode() not in role_crash.stdout+role_crash.stderr+
+              role_restart.stdout+role_restart.stderr for v in secret_values))
         check('ssh.mount',call('POST','sys/mounts/ssh-op',{'type':'ssh'}).status==204)
         check('ssh.role',call('POST','ssh-op/roles/local',{'key_type':'otp','default_user':'deploy',
                                                        'allowed_users':'deploy','cidr_list':'127.0.0.0/8'}).status==204)

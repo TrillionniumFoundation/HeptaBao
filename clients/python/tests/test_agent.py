@@ -45,6 +45,79 @@ class AgentTests(unittest.TestCase):
         agent=Agent(self.config,state,client_factory=self.fake,wall=self.clock,monotonic=self.clock)
         return agent,state
 
+    def test_optional_secret_id_configuration_keeps_required_paths_private(self):
+        config_file = self.root / 'agent.json'
+        raw = dataclasses.asdict(self.config)
+        del raw['secret_id_file']
+        for absent in (True, False):
+            if not absent:
+                raw['secret_id_file'] = None
+            config_file.write_bytes(canonical(raw))
+            config_file.chmod(0o600)
+            loaded = AgentConfig.load(str(config_file))
+            self.assertIsNone(loaded.secret_id_file)
+            self.assertEqual(loaded.role_id_file, self.config.role_id_file)
+        for invalid in ('', 'relative', False, 1, []):
+            with self.subTest(invalid=invalid):
+                config_file.write_bytes(canonical({**raw, 'secret_id_file': invalid}))
+                with self.assertRaises(BaoError):
+                    AgentConfig.load(str(config_file))
+
+    def test_role_id_only_login_renewal_and_revocation_reauthentication(self):
+        self.config = dataclasses.replace(self.config, secret_id_file=None)
+        # An unavailable SecretID pathname cannot participate in this mode.
+        (self.root / 'secret').unlink()
+        agent, state = self.open()
+        self.fake.token()
+        self.assertEqual(agent.step(), 'authenticated')
+        self.assertEqual(self.fake.calls[0][2], {'role_id': 'synthetic-role'})
+        self.assertEqual(self.fake.calls[0][3], {'token': ''})
+        self.clock.now = 131
+        self.fake.token()
+        self.assertEqual(agent.step(), 'renewed')
+        self.assertEqual(state.json('state.json')['expires_at'], 191)
+        self.clock.now = 162
+        self.fake.queued.append(Response(403, {'errors': ['denied']}))
+        self.assertEqual(agent.step(), 'reauthenticate')
+        self.assertFalse((self.store / 'token').exists())
+        self.fake.token('new-role-only-token')
+        self.assertEqual(agent.step(), 'authenticated')
+        self.assertEqual(state.json('state.json')['authentications'], 2)
+        self.assertEqual(self.fake.calls[-2][2], {'role_id': 'synthetic-role'})
+
+    def test_role_id_only_server_denial_stays_pending_across_restart(self):
+        self.config = dataclasses.replace(self.config, secret_id_file=None)
+        agent, state = self.open()
+        self.fake.queued.append(Response(400, {'errors': ['secret ID required']}))
+        with self.assertRaises(BaoError):
+            agent.step()
+        self.assertEqual(state.json('state.json')['phase'], 'auth_pending')
+        self.assertEqual(state.json('state.json')['authentications'], 1)
+        self.assertFalse((self.store / 'token').exists())
+        with self.assertRaises(BaoError):
+            agent.step()
+        state.close()
+        with self.assertRaisesRegex(BaoError, 'pending_or_invalid'):
+            self.open()
+        self.assertEqual(len(self.fake.calls), 1)
+
+    def test_role_id_only_owner_check_and_mode_change_do_not_bypass_state_fences(self):
+        self.config = dataclasses.replace(self.config, secret_id_file=None)
+        agent, state = self.open()
+        (self.root / 'role').chmod(0o644)
+        with self.assertRaises(BaoError):
+            agent.step()
+        self.assertEqual(self.fake.calls, [])
+        self.assertIsNone(state.read('state.json', optional=True))
+        (self.root / 'role').chmod(0o600)
+        self.fake.token()
+        agent.step()
+        state.close()
+        self.config = dataclasses.replace(self.config, secret_id_file=str(self.root / 'secret'))
+        with self.assertRaisesRegex(BaoError, 'pending_or_invalid'):
+            self.open()
+        self.assertEqual(len(self.fake.calls), 2)
+
     def test_real_private_sink_checkpoint_and_resumption(self):
         agent,state=self.open(); self.fake.token()
         self.assertEqual(agent.step(),'authenticated')

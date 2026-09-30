@@ -24,7 +24,7 @@ class AgentConfig:
     address: str
     ca_file: str
     role_id_file: str
-    secret_id_file: str
+    secret_id_file: str | None
     state_dir: str
     namespace: str = ''
     auth_mount: str = 'auth/approle'
@@ -42,7 +42,7 @@ class AgentConfig:
         if not isinstance(value, dict) or set(value) - fields:
             raise BaoError('invalid_agent_configuration')
         try:
-            result = cls(**value)
+            result = cls(**{'secret_id_file': None, **value})
             result.validate()
             return result
         except (TypeError, ValueError):
@@ -52,11 +52,14 @@ class AgentConfig:
         if endpoint(self.address) != self.address.rstrip('/'):
             # Normalize only an absent standard port, not paths or credentials.
             endpoint(self.address)
-        for value in (self.ca_file, self.role_id_file, self.secret_id_file, self.state_dir):
+        credential_paths = [self.role_id_file]
+        if self.secret_id_file is not None:
+            credential_paths.append(self.secret_id_file)
+        for value in (self.ca_file, self.state_dir, *credential_paths):
             if not isinstance(value, str) or not Path(value).is_absolute() or '..' in Path(value).parts:
                 raise BaoError('agent_requires_absolute_file_paths')
         reserved = {str(Path(self.state_dir) / name) for name in ('state.json', 'token', '.agent.lock')}
-        if self.role_id_file == self.secret_id_file or {self.role_id_file, self.secret_id_file} & reserved:
+        if len(credential_paths) != len(set(credential_paths)) or set(credential_paths) & reserved:
             raise BaoError('agent_credential_paths_conflict')
         if not isinstance(self.namespace, str) or self.namespace.startswith('/') or self.namespace.endswith('/'):
             if self.namespace != '':
@@ -237,11 +240,13 @@ class Agent:
             return 'renewed'
         if self.state['authentications'] >= self.config.max_authentications:
             raise BaoError('agent_authentication_budget_exhausted')
-        role, secret = _secret(self.config.role_id_file), _secret(self.config.secret_id_file)
+        credentials = {'role_id': _secret(self.config.role_id_file)}
+        if self.config.secret_id_file is not None:
+            credentials['secret_id'] = _secret(self.config.secret_id_file)
         self._checkpoint('auth_pending', authentications=self.state['authentications'] + 1)
         self.directory.remove('token')
         response = self._client('heptabao-unauthenticated').request('POST', '/v1/' + self.config.auth_mount + '/login',
-                                                                {'role_id': role, 'secret_id': secret}, token='')
+                                                                credentials, token='')
         self._admit_token(response, now, mono)
         return 'authenticated'
 

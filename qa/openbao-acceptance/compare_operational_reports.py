@@ -8,7 +8,7 @@ failed, dirty-source, non-boolean and re-scoped observations cannot pass.
 import json
 import re
 from bao_http import SafeArgumentParser, private_json, private_write
-from official_openbao_launcher import BINARY_SHA256, ARTIFACT_SHA256
+from official_openbao_launcher import BINARY_SHA256, ARTIFACT_SHA256, SUPPORTED_VERSIONS, VERSION, pinned_artifact
 
 CANDIDATE_ONLY = {'server.init','server.unseal','idle.tune','idle.issue','idle.wrap',
                   'idle.no_request_commits_observed','idle.expired_lease_missing','idle.expired_wrapping_denied'}
@@ -28,10 +28,50 @@ EXPECTED_COMMON = {'setup.kv_mount','setup.kv_write','setup.policy','setup.auth_
         f'helper.diagnostics_{i}' for i in range(1,10)}
 
 
+# Historical v1 retains its exact denominator and original 2.6.2 identity.
+ROLE_ID_ONLY_CASES = {
+    'role_only.checkpoint_contains_no_secrets',
+    'role_only.confirmed_denial_reauthenticates',
+    'role_only.crash_diagnostics_redacted',
+    'role_only.crash_has_no_published_token',
+    'role_only.crash_issued_exactly_one_token',
+    'role_only.crash_preserves_pending',
+    'role_only.denial_diagnostics_redacted',
+    'role_only.denial_has_no_published_token',
+    'role_only.denial_preserves_pending',
+    'role_only.denied_restart_blocked',
+    'role_only.denied_restart_does_not_issue_token',
+    'role_only.graceful_stop_invalidates_sink',
+    'role_only.pending_restart_blocked',
+    'role_only.pending_restart_does_not_issue_token',
+    'role_only.private_sink',
+    'role_only.real_login_ready',
+    'role_only.real_post_login_crash',
+    'role_only.real_renewal',
+    'role_only.real_secret_read',
+    'role_only.reauthenticated_secret_read',
+    'role_only.reauthentication_publishes_new_token',
+    'role_only.renewal_keeps_same_token',
+    'role_only.revoke',
+    'role_only.revoked_bearer_denied',
+    'role_only.secret_required_denied',
+    'role_only.setup',
+}
+EXPECTED_COMMON_V2 = EXPECTED_COMMON | ROLE_ID_ONLY_CASES
+
+
 def compare(candidate, oracle):
     if not isinstance(candidate,dict) or not isinstance(oracle,dict):raise ValueError('report_object_required')
-    for report,target in [(candidate,'heptabao-candidate'),(oracle,'official-openbao-2.6.2')]:
-        if (report.get('schema')!='heptabao.operational-process-evidence.v1' or report.get('target')!=target
+    schema = candidate.get('schema')
+    if schema != oracle.get('schema') or schema not in ('heptabao.operational-process-evidence.v1', 'heptabao.operational-process-evidence.v2'):
+        raise ValueError('report_schema_mismatch')
+    version = VERSION if schema.endswith('.v1') else candidate.get('oracle_version')
+    if (version not in SUPPORTED_VERSIONS or (schema.endswith('.v2') and oracle.get('oracle_version') != version)
+            or (schema.endswith('.v1') and any(r.get('oracle_version', VERSION) != VERSION for r in (candidate, oracle)))):
+        raise ValueError('oracle_version_mismatch')
+    expected_common = EXPECTED_COMMON if schema.endswith('.v1') else EXPECTED_COMMON_V2
+    for report,target in [(candidate,'heptabao-candidate'),(oracle,'official-openbao-'+version)]:
+        if (report.get('schema')!=schema or report.get('target')!=target
                 or report.get('status')!='passed' or report.get('source_dirty') is not False
                 or report.get('synthetic_only') is not True or report.get('independent_qualification') is not False
                 or report.get('production_authority') is not False
@@ -47,8 +87,9 @@ def compare(candidate, oracle):
     for key in ('source_commit','source_tree','candidate_binary_sha256','runner_sha256','client_distribution'):
         if not candidate.get(key) or candidate.get(key)!=oracle.get(key):raise ValueError('candidate_pair_mismatch')
     identity=oracle.get('oracle_identity',{})
-    if (identity.get('version')!='2.6.2' or identity.get('binary_sha256')!=BINARY_SHA256
-            or identity.get('artifact_sha256')!=ARTIFACT_SHA256 or identity.get('tls_verified') is not True):
+    pins = pinned_artifact(version=version)
+    if (identity.get('version')!=version or identity.get('binary_sha256')!=pins['binary_sha256']
+            or identity.get('artifact_sha256')!=pins['artifact_sha256'] or identity.get('tls_verified') is not True):
         raise ValueError('oracle_identity_mismatch')
     def rows(report,expected):
         entries=report.get('cases')
@@ -58,9 +99,10 @@ def compare(candidate, oracle):
             if not isinstance(row,dict) or row.get('passed') is not True:raise ValueError('case_not_true')
             names.append(row.get('case'))
         if set(names)!=expected or len(names)!=len(set(names)):raise ValueError('case_inventory_changed')
-    rows(candidate,EXPECTED_COMMON|CANDIDATE_ONLY);rows(oracle,EXPECTED_COMMON)
+    rows(candidate,expected_common|CANDIDATE_ONLY);rows(oracle,expected_common)
     return {'schema':'heptabao.operational-profile-comparison.v1','matched':True,
-            'common_observations':len(EXPECTED_COMMON),'candidate_only_observations':len(CANDIDATE_ONLY),
+            'oracle_version':version,'profile_schema':schema,
+            'common_observations':len(expected_common),'candidate_only_observations':len(CANDIDATE_ONLY),
             'source_commit':candidate['source_commit'],'source_tree':candidate['source_tree'],
             'candidate_binary_sha256':candidate['candidate_binary_sha256'],
             'scope':'selected_AppRole_agent_Unix_proxy_SSH_helper_workflows_only',

@@ -21,6 +21,43 @@ class OperationalReportTests(unittest.TestCase):
         return candidate,oracle
     def test_fixed_complete_profile_matches_without_qualification(self):
         result=comparison.compare(*self.pair());self.assertTrue(result['matched']);self.assertFalse(result['full_openbao_compatibility'])
+    def versioned_pair(self, version):
+        c, o = self.pair()
+        for report, expected in ((c, comparison.EXPECTED_COMMON_V2 | comparison.CANDIDATE_ONLY),
+                                 (o, comparison.EXPECTED_COMMON_V2)):
+            report['schema'] = 'heptabao.operational-process-evidence.v2'
+            report['oracle_version'] = version
+            report['cases'] = [{'case': n, 'passed': True} for n in sorted(expected)]
+        o['target'] = 'official-openbao-' + version
+        o['oracle_identity'] = {'version': version, **comparison.pinned_artifact(version=version), 'tls_verified': True}
+        return c, o
+
+    def test_extended_profile_requires_pinned_selected_version_and_every_new_case(self):
+        for version in comparison.SUPPORTED_VERSIONS:
+            c, o = self.versioned_pair(version)
+            result = comparison.compare(c, o)
+            self.assertEqual(result['oracle_version'], version)
+            self.assertEqual(result['common_observations'], len(comparison.EXPECTED_COMMON_V2))
+            o['cases'] = [row for row in o['cases'] if row['case'] != 'role_only.real_renewal']
+            with self.assertRaises(ValueError):
+                comparison.compare(c, o)
+
+    def test_version_schema_and_pin_relabeling_cannot_pass(self):
+        for key, value in (('oracle_version', '2.6.2'), ('schema', 'heptabao.operational-process-evidence.v1'),
+                           ('target', 'official-openbao-2.6.2')):
+            c, o = self.versioned_pair('2.7.0')
+            o[key] = value
+            with self.assertRaises(ValueError):
+                comparison.compare(c, o)
+        c, o = self.versioned_pair('2.7.0')
+        o['oracle_identity'].update(comparison.pinned_artifact(version='2.6.2'))
+        with self.assertRaises(ValueError):
+            comparison.compare(c, o)
+        c, o = self.pair()
+        c['oracle_version'] = o['oracle_version'] = '2.7.0'
+        with self.assertRaises(ValueError):
+            comparison.compare(c, o)
+
     def test_empty_duplicate_or_missing_cases_reject(self):
         for action in ['empty','duplicate','missing']:
             c,o=self.pair()

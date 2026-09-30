@@ -76,6 +76,15 @@ Example (paths are placeholders to substitute in an isolated environment):
 heptabao-agent --config /etc/heptabao/agent.json
 ```
 
+`secret_id_file` may be omitted or set to JSON `null` for a role configured with
+`bind_secret_id=false`. In that mode the agent reads only the private RoleID file
+and sends a login body containing only `role_id`; it does not issue a SecretID,
+open a substitute credential path or fall back after server denial. The server
+remains responsible for its role constraints, including configured source CIDRs.
+A configured SecretID path still requires an absolute owner-only regular file.
+Changing between these modes changes the durable binding and requires a reviewed
+fresh/reconciled state directory, rather than adopting an existing token sink.
+
 The AppRole must issue non-root renewable **service** tokens with unlimited uses,
 finite TTL and the `default` self-lookup/renewal permissions (or equivalent).
 The agent verifies these using the actual issued token before publishing it.
@@ -221,16 +230,25 @@ python qa/openbao-acceptance/agent_proxy_helper_live.py \
 
 Run `compare_operational_reports.py --candidate ... --oracle ... --output ...`
 against fresh clean-source reports from the same candidate and client distribution.
-It requires the fixed 50 common observations plus 8 separately labeled candidate
-checks, rejects failed/empty/duplicate/non-boolean results, and never admits full
+Current v2 reports require 76 common observations plus 8 separately labeled
+candidate checks. Historical v1 reports retain their original 50 observations
+and 2.6.2 identity; v1 and v2 cannot be mixed or relabeled. Comparison rejects
+failed/empty/duplicate/non-boolean results, and never admits full
 compatibility or independent provenance from caller-supplied report metadata.
 
-The optional `--oracle` mode uses only checksum-pinned official OpenBao 2.6.2
-binary/archive supplied to the existing Oracle launcher. The same distributable
+The optional `--oracle` mode defaults to checksum-pinned official OpenBao 2.6.2,
+preserving the historical selection. Pass `--oracle-version 2.7.0` to both the
+candidate and oracle runs to exercise the independently pinned 2.7.0 binary/archive
+through the existing launcher. The report records the selected version, and the
+comparison checks that release's actual archive/binary identity. No prior report
+is upgraded by changing its label. The same distributable
 Agent/proxy/helper executables are exercised on both services. Candidate-only
 idle audit checks are identified separately, never counted as upstream parity.
 The fixture kills a real post-login client process before token publication and
-checks the ordinary executable refuses to repeat its pending login. Negative
+checks the ordinary executable refuses to repeat its pending login. The role-ID-only
+lane independently exercises actual login, renewal, revocation followed by bounded
+reauthentication, SecretID-required role denial, and post-login crash/restart.
+Live token-accessor inventories prove pending restarts do not issue another token. Negative
 cases include root-header injection, namespace changes, real policy revocation,
 wrong host/user/role, bad CA, second writers, clock drift and secret-free diagnostics.
 `idle_lifecycle_ha.py` additionally kills the leader after issuing short-lived
