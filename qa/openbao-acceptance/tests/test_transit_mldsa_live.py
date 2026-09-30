@@ -58,6 +58,18 @@ class MldsaProfileTests(unittest.TestCase):
         self.assertEqual(rows[-1], {"case":"mldsa270.ed25519.options.pki_wire.valid", "passed":False})
         self.assertNotIn("vault:v1:", json.dumps(rows))
 
+    def test_context_cannot_pass_with_status_only_and_invalid_real_signature(self):
+        class Client:
+            def request(self, *args, **kwargs):
+                if "/sign/" in args[1]:
+                    return SimpleNamespace(status=200, body={"data":{"signature":"vault:v1:AA=="}})
+                return SimpleNamespace(status=200, body={"data":{"valid":False}})
+        rows=[]
+        with self.assertRaisesRegex(profile.ScenarioFailure, "ed25519.context.0.valid"):
+            profile.run_signing_context(profile.Trace(Client(),rows), "ed25519", "eA==", "vault:v1:AA==")
+        self.assertEqual(rows[-1], {"case":"mldsa270.ed25519.context.0.valid", "passed":False})
+        self.assertNotIn("vault:v1:", json.dumps(rows))
+
     def test_old_oracle_rejected_before_allocation(self):
         with tempfile.TemporaryDirectory() as root:
             args=["mldsa270","--binary",sys.executable,"--output",root+"/report.json","--oracle-version","2.6.2"]

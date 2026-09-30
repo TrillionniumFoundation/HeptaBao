@@ -715,3 +715,101 @@ fn non_rsa_options_reject_bad_values_and_preserve_hash_and_mu_boundaries() -> Te
     }
     Ok(())
 }
+
+#[test]
+fn non_rsa_context_validates_base64_and_never_changes_pure_message_signatures() -> TestResult {
+    for kind in ["ed25519", "mldsa-44", "mldsa-65", "mldsa-87"] {
+        let mut transit = Transit::default();
+        transit.handle(
+            "",
+            "transit",
+            "POST",
+            "keys/test",
+            &json!({"type":kind}),
+            100,
+        )?;
+        let input = BASE64.encode(b"synthetic context message");
+        let baseline = transit.handle(
+            "",
+            "transit",
+            "POST",
+            "sign/test",
+            &json!({"input":input}),
+            101,
+        )?;
+        for context in [
+            json!(BASE64.encode(b"ignored context")),
+            json!(""),
+            Value::Null,
+            json!(1234),
+            json!(12345678),
+            json!(10000000000000000000u64),
+        ] {
+            let signed = transit.handle(
+                "",
+                "transit",
+                "POST",
+                "sign/test",
+                &json!({"input":input,"context":context}),
+                102,
+            )?;
+            let valid = transit.handle("", "transit", "POST", "verify/test", &json!({"input":input,"signature":signed.body["data"]["signature"],"context":BASE64.encode(b"different ignored context")}), 103)?;
+            assert_eq!(valid.body["data"]["valid"], true);
+            let changed = transit.handle("", "transit", "POST", "verify/test", &json!({"input":BASE64.encode(b"changed"),"signature":signed.body["data"]["signature"],"context":context}), 104)?;
+            assert_eq!(changed.body["data"]["valid"], false);
+        }
+        let before = Zeroizing::new(serde_json::to_vec(&transit)?);
+        for context in [
+            json!("!"),
+            json!("non-derived-context"),
+            json!(false),
+            json!(true),
+            json!(0),
+            json!(17),
+            json!(1234.0),
+            json!(1e19),
+            json!([]),
+            json!({}),
+        ] {
+            assert_eq!(
+                transit
+                    .handle(
+                        "",
+                        "transit",
+                        "POST",
+                        "sign/test",
+                        &json!({"input":input,"context":context}),
+                        105
+                    )
+                    .err()
+                    .ok_or("bad sign context accepted")?
+                    .status,
+                400
+            );
+            assert_eq!(transit.handle("", "transit", "POST", "verify/test", &json!({"input":input,"signature":baseline.body["data"]["signature"],"context":context}), 105).err().ok_or("bad verify context accepted")?.status, 400);
+            assert_eq!(*before, *Zeroizing::new(serde_json::to_vec(&transit)?));
+        }
+    }
+    let mut transit = Transit::default();
+    transit.handle(
+        "",
+        "transit",
+        "POST",
+        "keys/test",
+        &json!({"type":"aes256-gcm96"}),
+        100,
+    )?;
+    for field in ["context", "nonce"] {
+        let mut body = json!({"plaintext":BASE64.encode(b"synthetic plaintext")});
+        body[field] = json!(BASE64.encode(b"unchanged unsupported encryption input"));
+        assert_eq!(
+            transit
+                .handle("", "transit", "POST", "encrypt/test", &body, 101)
+                .err()
+                .ok_or("encryption scope changed")?
+                .status,
+            501
+        );
+    }
+    Ok(())
+}

@@ -855,13 +855,10 @@ fn handle_crypto(
             mutated,
         });
     }
-    if mldsa::is_kind(&key.kind) && matches!(operation, "sign" | "verify") {
-        // Context is a key-derivation parameter, not a FIPS 204 signature
-        // context. Native ML-DSA keys are not derived, but the generic API
-        // still validates the Base64 encoding before ignoring decoded bytes.
-        if body.get("context").is_some() {
-            let _context = decode_field(body, "context")?;
-        }
+    if (key.kind == "ed25519" || mldsa::is_kind(&key.kind))
+        && matches!(operation, "sign" | "verify")
+    {
+        validate_signing_context(body)?;
     } else {
         reject_context(body)?;
     }
@@ -959,6 +956,18 @@ fn handle_crypto(
         _ => return Err(unsupported()),
     };
     Ok(ok(data, matches!(operation, "encrypt" | "rewrap")))
+}
+
+// Context describes generic key derivation, not Ed25519/ML-DSA signing.
+// These native keys are not derived. Validate the public API's Base64 field,
+// including its observed numeric-string conversion, before ignoring bytes.
+fn validate_signing_context(body: &Value) -> Result<()> {
+    match body.get("context") {
+        None | Some(Value::Null) => Ok(()),
+        Some(Value::String(value)) => decode(value).map(|_| ()),
+        Some(Value::Number(value)) => decode(&value.to_string()).map(|_| ()),
+        _ => Err(bad("context must be base64")),
+    }
 }
 
 // True selects the provider's external-mu API; false preserves pure signing.

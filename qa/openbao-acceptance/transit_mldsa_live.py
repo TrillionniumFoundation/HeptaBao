@@ -95,6 +95,36 @@ def run_signing_options(t, kind, message, baseline, signature_len):
         t.check(name + ".changed_invalid", changed["data"]["valid"] is False)
 
 
+
+def run_signing_context(t, kind, message, baseline):
+    values = ((base64.b64encode(b"synthetic ignored context").decode(), 200),
+              ("!", 400), ("non-derived-context", 400), ("", 200), (None, 200),
+              (False, 400), (True, 400), (0, 400), (7, 400), (17, 400),
+              (1234, 200), ([], 400), ({}, 400), (1234.0, 400),
+              (12345678, 200), (1e19, 400), (10**19, 200), (-1234, 400))
+    for index, (context, status) in enumerate(values):
+        name = kind + ".context." + str(index)
+        result = t.call(name + ".sign", "POST", "mlfixture/sign/" + kind,
+                        status, {"input": message, "context": context})
+        signature = result.get("data", {}).get("signature", baseline)
+        verified = t.call(name + ".verify", "POST", "mlfixture/verify/" + kind,
+                          status, {"input": message, "signature": signature, "context": context})
+        if status != 200:
+            continue
+        t.check(name + ".valid", verified["data"]["valid"] is True)
+        default = t.call(name + ".default_verify", "POST", "mlfixture/verify/" + kind,
+                         200, {"input": message, "signature": signature})
+        t.check(name + ".pure_message", default["data"]["valid"] is True)
+        different = t.call(name + ".different_context_verify", "POST", "mlfixture/verify/" + kind,
+                           200, {"input": message, "signature": signature,
+                                 "context": base64.b64encode(b"different ignored context").decode()})
+        t.check(name + ".context_is_not_derivation", different["data"]["valid"] is True)
+        changed = t.call(name + ".changed_verify", "POST", "mlfixture/verify/" + kind,
+                         200, {"input": base64.b64encode(b"changed context message").decode(),
+                               "signature": signature, "context": context})
+        t.check(name + ".changed_invalid", changed["data"]["valid"] is False)
+
+
 def run_scenarios(client, rows=None):
     rows = [] if rows is None else rows
     t = Trace(client, rows)
@@ -129,6 +159,7 @@ def run_scenarios(client, rows=None):
                             200, {"input": message_value, "signature": sigs[0]})
             t.check(kind + ".verified." + label, result["data"]["valid"] is valid)
         run_signing_options(t, kind, message, sigs[0], signature_len)
+        run_signing_context(t, kind, message, sigs[0])
         # FIPS 204 pure preprocessing, independently computed from this side's
         # public key. Signature and seed bytes never enter the report.
         tr = hashlib.shake_256(raw(public)).digest(64)
@@ -192,6 +223,7 @@ def run_scenarios(client, rows=None):
     message = base64.b64encode(b"synthetic:ed25519").decode()
     signed = t.call("ed25519.options.baseline", "POST", "mlfixture/sign/ed25519", 200, {"input": message})
     run_signing_options(t, "ed25519", message, signed["data"]["signature"], 64)
+    run_signing_context(t, "ed25519", message, signed["data"]["signature"])
     t.call("least_privilege_policy", "POST", "sys/policies/acl/mlfixture-signer", 204,
            {"policy": 'path "mlfixture/sign/*" { capabilities=["update"] }'})
     issued = t.call("least_privilege_token", "POST", "auth/token/create", 200,
