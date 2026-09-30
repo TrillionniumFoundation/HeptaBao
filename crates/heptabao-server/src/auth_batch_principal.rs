@@ -210,6 +210,9 @@ impl AuthState {
         self.check_batch_claims(&claims, claims.namespace(), now)?;
         token_cidrs::check(claims.bound_cidrs(), origin_peer)?;
         Ok(Principal {
+            admission: PrincipalAdmission::Operation {
+                finite_use_consumed: false,
+            },
             digest: claims.token_digest().to_owned(),
             credential: VerifiedCredential::Batch(Box::new(claims)),
             origin_peer,

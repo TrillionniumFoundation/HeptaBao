@@ -10,8 +10,8 @@ impl Service {
         path: &str,
         now: u64,
     ) -> Response {
-        if !matches!(method, "GET" | "HEAD") {
-            return Response::error(405, "mount discovery requires GET or HEAD");
+        if method != "GET" {
+            return Response::error(405, "mount discovery requires GET");
         }
         let suffix = path.strip_prefix("sys/internal/ui/mounts").unwrap_or("");
         let mut mounts = state.engines.ui_secret_mounts(namespace);

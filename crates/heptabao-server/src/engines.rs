@@ -1424,7 +1424,9 @@ impl EngineState {
             .iter()
             .map(|(name, mount)| (name.clone(), mount.descriptor()))
             .collect();
-        mounts.insert("cubbyhole/".into(), cubbyhole_descriptor());
+        let mut cubbyhole = cubbyhole_descriptor();
+        cubbyhole["options"] = Value::Null;
+        mounts.insert("cubbyhole/".into(), cubbyhole);
         for (path, kind, description) in [
             (
                 "sys/",

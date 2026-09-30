@@ -2127,6 +2127,8 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
+        let mount_metadata =
+            path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/");
         let public_login = admitted.auth.is_public_login(namespace, method, path);
         let mut principal = if token.is_empty()
             || path == "sys/wrapping/lookup"
@@ -2135,7 +2137,14 @@ impl Service {
         {
             None
         } else {
-            match admitted.auth.authenticate_from(token, now, origin_peer) {
+            let authenticated = if mount_metadata {
+                admitted
+                    .auth
+                    .authenticate_mount_metadata_from(token, now, origin_peer)
+            } else {
+                admitted.auth.authenticate_from(token, now, origin_peer)
+            };
+            match authenticated {
                 Ok(principal) => Some(principal),
                 Err(error) => return Response::error(error.status, &error.message),
             }
@@ -2155,7 +2164,8 @@ impl Service {
         {
             return error;
         }
-        if let Some(principal) = principal.as_ref()
+        if !mount_metadata
+            && let Some(principal) = principal.as_ref()
             && let Err(error) = admitted.auth.authorize_request_parameters(
                 principal,
                 namespace,
@@ -7295,3 +7305,7 @@ mod external_keys_tests;
 #[cfg(test)]
 #[path = "service_external_transit_tests.rs"]
 mod external_transit_tests;
+
+#[cfg(test)]
+#[path = "service_ui_mounts_tests.rs"]
+mod ui_mounts_tests;

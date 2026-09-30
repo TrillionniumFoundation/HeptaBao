@@ -23,6 +23,34 @@ fn intersects_mount(pattern: &str, mount: &str) -> bool {
 }
 
 impl AuthState {
+    /// The public preflight validates the bearer without consuming its finite
+    /// use. This affine capability is explicitly barred from data operations.
+    pub(crate) fn authenticate_mount_metadata_from(
+        &self,
+        raw: &str,
+        now: u64,
+        origin_peer: Option<std::net::IpAddr>,
+    ) -> Result<Principal, AuthError> {
+        if raw.starts_with("hvb.") {
+            let mut principal = self.batch_principal(raw, now, origin_peer)?;
+            principal.admission = PrincipalAdmission::MountMetadata;
+            return Ok(principal);
+        }
+        if raw.len() > 256 || !raw.starts_with("hvs.") {
+            return Err(denied());
+        }
+        let id = hash(raw);
+        let token = self.active_token(&id, now, true)?;
+        token_cidrs::check(&token.bound_cidrs, origin_peer)?;
+        Ok(Self::request_principal(
+            id,
+            token.clone(),
+            now,
+            origin_peer,
+            PrincipalAdmission::MountMetadata,
+        ))
+    }
+
     pub(crate) fn ui_auth_mounts(&self, namespace: &str) -> BTreeMap<String, Value> {
         self.effective_auth_mounts(namespace)
             .into_iter()

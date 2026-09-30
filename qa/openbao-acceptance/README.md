@@ -306,3 +306,25 @@ rejected downgrade and recovery, generic child/orphan renewal without PAP, and
 credential absence from encrypted state and diagnostics. Reopen comparisons
 exclude only the rebuilt root replay ledger. Only fresh fixture stores are
 accepted; this is not full-instance or rolling-upgrade qualification.
+
+## OpenBao 2.7 KV CLI mount preflight
+
+`mount_discovery_live.py` checks 160 fixed requests and predicates per side using
+the pinned official 2.7.0 executable, including actual `bao kv` commands. Its
+fixtures explicitly align enabled mounts, then exercise policy-based mount
+visibility, denied data access, finite token uses, wrapping tokens and method
+rejection. The original bootstrap catalogs remain in the receipt. Only discovery
+needed by KV CLI routing is compared; full mount metadata fields, mount listing
+visibility tuning and browser UI remain separate requirements. The comparison
+never sets full compatibility, production or independent qualification flags.
+
+```sh
+python qa/openbao-acceptance/mount_discovery_live.py \
+  --binary /private/custody/heptabao-server --output /private/reports/mount-discovery270.json
+```
+
+The output directory must already be owned by the caller with mode `0700`.
+Credentials, response values and CLI output are kept in memory; receipts contain
+only fixed case labels, statuses, exit codes and predicates. On a failed run,
+private service fixtures remain for diagnosis; owned service processes are
+stopped before publishing the report.

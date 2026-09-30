@@ -1284,7 +1284,13 @@ impl Drop for Token {
 
 /// An affine capability owned by exactly one service dispatcher invocation.
 /// It is non-cloneable, non-serializable and never crosses the public API.
+enum PrincipalAdmission {
+    Operation { finite_use_consumed: bool },
+    MountMetadata,
+}
+
 pub(super) struct Principal {
+    admission: PrincipalAdmission,
     origin_peer: Option<std::net::IpAddr>,
     identity_policies: BTreeSet<String>,
     identity_templates: IdentityTemplateValues,
@@ -1310,8 +1316,12 @@ impl Principal {
         self.credential.policies()
     }
     pub(super) fn consumed_use(&self) -> bool {
-        self.service_token()
-            .is_some_and(|token| token.uses_remaining.is_some())
+        matches!(
+            self.admission,
+            PrincipalAdmission::Operation {
+                finite_use_consumed: true
+            }
+        )
     }
 }
 
@@ -2186,6 +2196,9 @@ impl AuthState {
             token.clone(),
             now,
             origin_peer,
+            PrincipalAdmission::Operation {
+                finite_use_consumed: false,
+            },
         )))
     }
 
@@ -2194,8 +2207,10 @@ impl AuthState {
         token: Token,
         _now: u64,
         origin_peer: Option<std::net::IpAddr>,
+        admission: PrincipalAdmission,
     ) -> Principal {
         Principal {
+            admission,
             origin_peer,
             identity_policies: BTreeSet::new(),
             identity_templates: IdentityTemplateValues::default(),
@@ -2240,7 +2255,16 @@ impl AuthState {
             token.cubbyhole = cubbyhole::TokenCubbyhole::default();
             token.wrapping = None;
         }
-        Ok(Self::request_principal(id, request_token, now, origin_peer))
+        let finite_use_consumed = request_token.uses_remaining.is_some();
+        Ok(Self::request_principal(
+            id,
+            request_token,
+            now,
+            origin_peer,
+            PrincipalAdmission::Operation {
+                finite_use_consumed,
+            },
+        ))
     }
 
     fn check_principal<'a>(
@@ -2281,6 +2305,9 @@ impl AuthState {
         capability: &str,
         now: u64,
     ) -> Result<(), AuthError> {
+        if matches!(principal.admission, PrincipalAdmission::MountMetadata) {
+            return Err(denied());
+        }
         validate_path(path, false)?;
         if !CAPABILITIES.contains(&capability) || capability == "deny" {
             return Err(denied());
