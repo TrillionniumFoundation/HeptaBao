@@ -12,6 +12,10 @@ use ring::{
 use std::net::{IpAddr, SocketAddr};
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "pki_external.rs"]
+mod external;
+pub(crate) use external::{ExternalPkiMaterial, ExternalPkiTemplate};
+
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;
 const MAX_TTL: u64 = 10 * 365 * 24 * 3600;
@@ -83,6 +87,8 @@ pub(super) struct Pki {
     #[serde(default, skip_serializing_if = "AcmeConfig::is_default")]
     acme: Box<AcmeConfig>,
     root: Option<RootCa>,
+    #[serde(default, skip_serializing_if = "external::ExternalState::is_empty")]
+    external: Box<external::ExternalState>,
     roles: BTreeMap<String, Role>,
     pub(super) issued: BTreeMap<String, IssuedCertificate>,
 }
@@ -150,6 +156,7 @@ impl Default for Pki {
             aia_path: String::new(),
             acme: Box::new(AcmeConfig::default()),
             root: None,
+            external: Box::default(),
             roles: BTreeMap::new(),
             issued: BTreeMap::new(),
         }
@@ -199,7 +206,7 @@ impl Pki {
         }
         if let Some(root) = &self.root {
             if !valid_common_name(&root.common_name)
-                || root.pkcs8.is_empty()
+                || root.pkcs8.is_empty() && !self.has_external_state()
                 || root.pkcs8.len() > 4096
                 || root.certificate_der.is_empty()
                 || root.certificate_der.len() > 64 * 1024
@@ -209,8 +216,11 @@ impl Pki {
             {
                 return Err(bad("invalid PKI root state"));
             }
-            Ed25519KeyPair::from_pkcs8(&root.pkcs8).map_err(|_| bad("invalid PKI root key"))?;
+            if !root.pkcs8.is_empty() {
+                Ed25519KeyPair::from_pkcs8(&root.pkcs8).map_err(|_| bad("invalid PKI root key"))?;
+            }
         }
+        self.validate_external_state()?;
         for (name, role) in &self.roles {
             valid_name(name)?;
             role.validate()?;
@@ -423,6 +433,7 @@ impl Pki {
             }
             reject_unknown(body, &[])?;
             let changed = self.root.take().is_some();
+            self.external.clear_root();
             return Ok(empty(changed));
         }
         if path == "cert/ca" && method == "GET" {
@@ -712,6 +723,12 @@ impl Pki {
         if ttl == 0 {
             return Err(error(403, "issuer no longer has a live PKI lease window"));
         }
+        if root.pkcs8.is_empty() {
+            return Err(error(
+                501,
+                "external PKI leaf issuance requires a qualified signing lane",
+            ));
+        }
         let leaf_pkcs8 = Zeroizing::new(
             Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
                 .map_err(|_| error(503, "PKI leaf key generation failed"))?
@@ -785,6 +802,12 @@ impl Pki {
     }
 
     fn crl_der(&self, root: &RootCa, now: u64) -> Result<Vec<u8>> {
+        if root.pkcs8.is_empty() {
+            return Err(error(
+                501,
+                "external PKI CRL requires a qualified signing lane",
+            ));
+        }
         let pair = Ed25519KeyPair::from_pkcs8(&root.pkcs8)
             .map_err(|_| error(500, "stored PKI root key is invalid"))?;
         let mut revoked = Vec::new();
@@ -1123,6 +1146,16 @@ struct CertificateSpec<'a> {
 }
 
 fn certificate_der(signer: &Ed25519KeyPair, spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
+    let tbs = certificate_tbs(spec)?;
+    let signature = signer.sign(&tbs);
+    Ok(seq(&[
+        tbs,
+        algorithm_ed25519(),
+        bit_string(signature.as_ref(), 0),
+    ]))
+}
+
+fn certificate_tbs(spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
     let CertificateSpec {
         serial,
         issuer_cn,
@@ -1174,12 +1207,7 @@ fn certificate_der(signer: &Ed25519KeyPair, spec: CertificateSpec<'_>) -> Result
         seq(&[algorithm_ed25519(), bit_string(public_key, 0)]),
         context_explicit(3, &seq(&extensions)),
     ]);
-    let signature = signer.sign(&tbs);
-    Ok(seq(&[
-        tbs,
-        algorithm_ed25519(),
-        bit_string(signature.as_ref(), 0),
-    ]))
+    Ok(tbs)
 }
 
 fn extension(oid_value: &[u8], critical: bool, value_der: &[u8]) -> Vec<u8> {

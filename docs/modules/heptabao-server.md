@@ -968,3 +968,22 @@ lengths return the observed 500 and external-mu verification is refused with 400
 completed report bound to the new executed production binary establishes this
 extended profile; earlier encrypt/decrypt receipts do not attest the signing
 increment. Every wider qualification and production authority remains false.
+
+## Bounded direct external PKI generation
+
+The public [OpenBao 2.7 PKI API](https://openbao.org/docs/api/secret/pki/) and
+checksum-pinned binary blackboxes define the direct KMS root and CSR wire lane.
+Native DER construction separates to-be-signed bytes from signature assembly;
+a separate remote Transit actually signs them over deployment-enrolled TLS.
+The native consumer verifies the actual Ed25519 signature and fixed-version
+SPKI before publishing a root or CSR. Schema 65 retains public metadata and a
+registry reference, with no local external private key. See the schema-65 section
+of [the state-format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md)
+for reader/writer, original-authority and stale-publication fences.
+
+`external_pki_consumer_live.py` fixes 85 ordered, unique checks on three fresh
+processes, including an official external consumer and independent public-key
+signature validation. It binds candidate build commit/tree and before/after
+binary hashes separately from QA source identity, includes owned-process cleanup
+in the denominator and leaves broader authority false. External leaf issuance,
+CRLs, other signing types and multi-issuer lifecycle are still unfinished.

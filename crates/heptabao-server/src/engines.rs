@@ -28,6 +28,7 @@ mod kv1_records;
 mod leases;
 pub(crate) mod openldap;
 mod pki;
+pub(crate) use pki::{ExternalPkiMaterial, ExternalPkiTemplate};
 mod ssh;
 mod totp;
 mod transit;
@@ -357,6 +358,13 @@ pub(crate) struct ExternalTransitRequest {
     pub(crate) mount_incarnation: u64,
 }
 
+pub(crate) struct ExternalPkiRequest {
+    pub(crate) request: SecretValue,
+    pub(crate) template: ExternalPkiTemplate,
+    pub(crate) mount: String,
+    pub(crate) mount_incarnation: u64,
+}
+
 pub(crate) struct ExternalKeyVerification {
     pub(crate) candidate: EngineState,
     pub(crate) plugin_id: String,
@@ -520,6 +528,123 @@ fn list_keys<'a>(
 }
 
 impl EngineState {
+    pub(crate) fn has_external_pki_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Pki(engine) if engine.has_external_state()))
+        })
+    }
+
+    pub(crate) fn has_asymmetric_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_asymmetric_state()))
+        })
+    }
+
+    pub(crate) fn external_pki_handles(&self, namespace: &str, path: &str) -> bool {
+        let path = path
+            .split('?')
+            .next()
+            .unwrap_or(path)
+            .trim_start_matches('/');
+        self.namespaces.get(namespace).is_some_and(|state| {
+            state.mounts.iter().any(|(mount_path, mount)| {
+                path.strip_prefix(mount_path.as_str()).is_some_and(|relative|
+                matches!(&mount.backend, Backend::Pki(engine) if engine.external_handles(relative)))
+            })
+        })
+    }
+
+    pub(crate) fn external_pki_mount_current(
+        &self,
+        namespace: &str,
+        path: &str,
+        incarnation: u64,
+    ) -> bool {
+        self.namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(path))
+            .is_some_and(|mount| {
+                mount.incarnation == incarnation && matches!(&mount.backend, Backend::Pki(_))
+            })
+    }
+
+    pub(crate) fn prepare_external_pki(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<ExternalPkiRequest>> {
+        if path.contains('?') {
+            return Err(bad("external PKI query parameters are not implemented"));
+        }
+        let Some(state) = self.namespaces.get(namespace) else {
+            return Ok(None);
+        };
+        let Some((mount_path, mount)) = state
+            .mounts
+            .iter()
+            .find(|(mount_path, _)| path.starts_with(mount_path.as_str()))
+        else {
+            return Ok(None);
+        };
+        let Backend::Pki(engine) = &mount.backend else {
+            return Ok(None);
+        };
+        let Some(template) =
+            engine.prepare_external(method, &path[mount_path.len()..], body, now)?
+        else {
+            return Ok(None);
+        };
+        // This is an admitted plan, not a provider signature or an entered call.
+        let request = state
+            .external_keys
+            .transit_consumer_request(
+                &template.reference,
+                mount_path,
+                "sign",
+                SecretJson(json!({"input":"","prehashed":false,"signature_algorithm":"pkcs1v15"})),
+            )
+            .map_err(|cause| {
+                if cause.status == 500 {
+                    error(400, "external PKI reference or grant is unavailable")
+                } else {
+                    cause
+                }
+            })?;
+        Ok(Some(ExternalPkiRequest {
+            request,
+            template,
+            mount: mount_path.clone(),
+            mount_incarnation: mount.incarnation,
+        }))
+    }
+
+    pub(crate) fn publish_external_pki(
+        &mut self,
+        namespace: &str,
+        mount_path: &str,
+        incarnation: u64,
+        material: ExternalPkiMaterial,
+        signature: &[u8],
+    ) -> Result<EngineResponse> {
+        let mount = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|state| state.mounts.get_mut(mount_path))
+            .ok_or_else(|| error(503, "external PKI mount disappeared"))?;
+        if mount.incarnation != incarnation {
+            return Err(error(503, "external PKI mount changed"));
+        }
+        let Backend::Pki(engine) = &mut mount.backend else {
+            return Err(error(503, "external PKI mount type changed"));
+        };
+        engine.publish_external(material, signature)
+    }
+
     pub(crate) fn lease_clock(&self) -> u64 {
         self.lease_clock
     }

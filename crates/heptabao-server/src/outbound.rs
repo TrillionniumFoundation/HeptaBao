@@ -1737,6 +1737,39 @@ impl Outbound {
         namespace: &str,
         value: &Value,
     ) -> Result<ExternalTransitResponse, &'static str> {
+        self.request_external_transit("POST", url, token, namespace, Some(value))
+    }
+
+    pub(crate) fn get_external_transit(
+        &self,
+        url: &str,
+        token: &str,
+        namespace: &str,
+    ) -> Result<ExternalTransitResponse, &'static str> {
+        self.request_external_transit("GET", url, token, namespace, None)
+    }
+
+    pub(crate) fn put_external_transit(
+        &self,
+        url: &str,
+        token: &str,
+        namespace: &str,
+        value: &Value,
+    ) -> Result<ExternalTransitResponse, &'static str> {
+        self.request_external_transit("PUT", url, token, namespace, Some(value))
+    }
+
+    fn request_external_transit(
+        &self,
+        method: &'static str,
+        url: &str,
+        token: &str,
+        namespace: &str,
+        value: Option<&Value>,
+    ) -> Result<ExternalTransitResponse, &'static str> {
+        if !matches!(method, "GET" | "POST" | "PUT") {
+            return Err("invalid external Transit method");
+        }
         if token.is_empty()
             || token.len() > 32 * 1024
             || !token.bytes().all(|byte| byte.is_ascii_graphic())
@@ -1746,8 +1779,11 @@ impl Outbound {
             return Err("external Transit rejected before entry: invalid header");
         }
         let body = Zeroizing::new(
-            serde_json::to_vec(value)
-                .map_err(|_| "external Transit rejected before entry: invalid JSON")?,
+            value
+                .map(serde_json::to_vec)
+                .transpose()
+                .map_err(|_| "external Transit rejected before entry: invalid JSON")?
+                .unwrap_or_default(),
         );
         if body.len() > MAX_DOCUMENT {
             return Err("external Transit rejected before entry: request bound");
@@ -1762,7 +1798,8 @@ impl Outbound {
             .tls(socket)
             .map_err(|_| "external Transit rejected before entry: TLS identity rejected")?;
         let head = Zeroizing::new(format!(
-            "POST {} HTTP/1.1\r\nHost: {}\r\nContent-Type: application/json\r\nX-Vault-Token: {}\r\nX-Vault-Namespace: {}\r\nContent-Length: {}\r\nAccept: application/json\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n",
+            "{} {} HTTP/1.1\r\nHost: {}\r\nContent-Type: application/json\r\nX-Vault-Token: {}\r\nX-Vault-Namespace: {}\r\nContent-Length: {}\r\nAccept: application/json\r\nAccept-Encoding: identity\r\nConnection: close\r\n\r\n",
+            method,
             target.path,
             target.authority,
             token,

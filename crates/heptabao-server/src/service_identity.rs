@@ -6,6 +6,18 @@ use crate::auth::{AuthError, AuthResponse};
 
 impl State {
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        if self.schema < 65 && self.engines.has_asymmetric_state() {
+            return Err(Response::error(
+                503,
+                "asymmetric Transit keys require schema 65",
+            ));
+        }
+        if self.schema < 65 && self.engines.has_external_pki_state() {
+            return Err(Response::error(
+                503,
+                "PKI external roots and CSR keys require schema 65",
+            ));
+        }
         if self.schema < 64 && self.engines.has_external_transit_state() {
             return Err(Response::error(
                 503,
@@ -575,7 +587,7 @@ impl State {
             4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
             | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37
             | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52 | 53
-            | 54 | 55 | 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 | CURRENT_STATE_SCHEMA => Ok(()),
+            | 54 | 55 | 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 | 64 | CURRENT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

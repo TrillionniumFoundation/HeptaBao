@@ -825,6 +825,10 @@ impl RemoteTransit {
                     .first()
                     .and_then(|line| line.split_whitespace().nth(1))
                     .unwrap_or("");
+                let method = lines
+                    .first()
+                    .and_then(|line| line.split_whitespace().next())
+                    .unwrap_or("");
                 let headers = lines
                     .iter()
                     .filter_map(|line| line.split_once(':'))
@@ -841,7 +845,12 @@ impl RemoteTransit {
                 if stream.read_exact(&mut bytes).is_err() {
                     continue;
                 }
-                let Ok(body) = crate::auth::parse_strict_json(&bytes) else {
+                let parsed = if bytes.is_empty() {
+                    Ok(json!({}))
+                } else {
+                    crate::auth::parse_strict_json(&bytes)
+                };
+                let Ok(body) = parsed else {
                     continue;
                 };
                 if let Ok(mut trace) = trace_clone.lock() {
@@ -854,7 +863,7 @@ impl RemoteTransit {
                         continue;
                     };
                     service.handle_at(
-                        "POST",
+                        method,
                         path.strip_prefix("/v1/").unwrap_or(path),
                         headers.get("x-vault-namespace").map_or("", String::as_str),
                         headers.get("x-vault-token").map_or("", String::as_str),
@@ -955,6 +964,9 @@ impl RemoteTransit {
         Ok(self.trace.lock().map_err(|_| "trace lock")?.len())
     }
 }
+
+#[path = "service_external_pki_tests.rs"]
+mod external_pki_tests;
 impl Drop for RemoteTransit {
     fn drop(&mut self) {
         self.stop.store(true, Ordering::SeqCst);
@@ -1467,7 +1479,7 @@ fn external_transit270_schema_owner_contains_references_and_no_local_material() 
     let remote = RemoteTransit::new()?;
     let (_root, mut service, _unseal, admin) = remote.fixture()?;
     let state = service.state.as_ref().ok_or("state")?;
-    assert_eq!(state.schema, 64);
+    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let encoded = serde_json::to_value(&state.engines)?;
     let version = &encoded["namespaces"][""]["mounts"]["consumer/"]["backend"]["Transit"]["keys"]["local"]
         ["versions"]["1"];

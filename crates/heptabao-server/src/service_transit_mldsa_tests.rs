@@ -193,3 +193,110 @@ fn mldsa270_service_promotes_only_on_write_fences_legacy_and_reopens_signatures(
     );
     Ok(())
 }
+
+#[test]
+fn asymmetric270_service_promotes_schema65_fences_disguised64_and_reopens_true_signatures()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/asymfixture",
+            &admin,
+            json!({"type":"transit"})
+        )
+        .status,
+        204
+    );
+    let mut legacy = service.state.clone().ok_or("state")?;
+    legacy.schema = 64;
+    legacy
+        .validate_format()
+        .map_err(|_| "ordinary schema64 validation")?;
+    service
+        .commit_state(&legacy)
+        .map_err(|_| "schema64 commit")?;
+    service.state = Some(legacy);
+    let input = STANDARD.encode(b"synthetic durable asymmetric signature");
+    let mut signatures = Vec::new();
+    for kind in [
+        "ecdsa-p256",
+        "ecdsa-p384",
+        "ecdsa-p521",
+        "rsa-2048",
+        "rsa-3072",
+        "rsa-4096",
+    ] {
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                &format!("asymfixture/keys/{kind}"),
+                &admin,
+                json!({"type":kind})
+            )
+            .status,
+            200
+        );
+        let signed = call(
+            &mut service,
+            "POST",
+            &format!("asymfixture/sign/{kind}"),
+            &admin,
+            json!({"input":input}),
+        );
+        assert_eq!(signed.status, 200);
+        signatures.push((kind, signed.body["data"]["signature"].clone()));
+    }
+    let state = service.state.as_ref().ok_or("state")?;
+    assert_eq!(state.schema, 65);
+    assert!(state.engines.has_asymmetric_state());
+    let mut disguised = state.clone();
+    disguised.schema = 64;
+    assert_eq!(
+        disguised
+            .validate_format()
+            .err()
+            .ok_or("missing schema fence")?
+            .status,
+        503
+    );
+    let mut future = state.clone();
+    future.schema = 66;
+    assert_eq!(
+        future
+            .validate_format()
+            .err()
+            .ok_or("missing future schema fence")?
+            .status,
+        503
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    for (kind, signature) in signatures {
+        let verified = call(
+            &mut service,
+            "POST",
+            &format!("asymfixture/verify/{kind}"),
+            &admin,
+            json!({"input":input,"signature":signature}),
+        );
+        assert_eq!(verified.status, 200);
+        assert_eq!(verified.body["data"]["valid"], true);
+    }
+    Ok(())
+}

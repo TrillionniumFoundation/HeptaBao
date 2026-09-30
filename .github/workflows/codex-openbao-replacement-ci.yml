@@ -652,7 +652,7 @@ jobs:
           reports="$RUNNER_TEMP/heptabao-safe-reports/openbao270"
           mkdir -m 700 "$reports"
           failed=0
-          for profile in core_isolation identity_live response_wrapping wrapping_revoke_self_live token_revoke_orphan_live transit_mldsa_live external_keys_live consistency_headers_live client_consistency_live capabilities_live pki_live pkiext_live ssh_otp_live audit_file_live namespace_tree_live policy_parameters_live policy_templates_live policy_wrapping_ttl_live kv_metadata_cas_live kv_enumeration_live; do
+          for profile in core_isolation identity_live response_wrapping wrapping_revoke_self_live token_revoke_orphan_live transit_mldsa_live transit_asymmetric_live external_keys_live consistency_headers_live client_consistency_live capabilities_live pki_live pkiext_live ssh_otp_live audit_file_live namespace_tree_live policy_parameters_live policy_templates_live policy_wrapping_ttl_live kv_metadata_cas_live kv_enumeration_live; do
             if timeout 360 python "qa/openbao-acceptance/$profile.py" \
                 --oracle-version 2.7.0 --binary "$binary" --output "$reports/$profile.json"; then
               printf 'profile=%s version=2.7.0 process_exit=0 scope=bounded_not_independent\n' "$profile"
@@ -678,6 +678,27 @@ jobs:
           binary="$PWD/target/debug/heptabao-server"
           digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
           timeout 600 python qa/openbao-acceptance/external_transit_consumer_live.py \
+            --oracle-version 2.7.0 \
+            --binary "$binary" \
+            --build-source-commit "$EXPECTED_SOURCE" \
+            --build-source-tree "$(git rev-parse 'HEAD^{tree}')" \
+            --expected-binary-sha256 "$digest" \
+            --output "$reports/comparison.json"
+
+      - name: Compare actual OpenBao 2.7.0 direct external PKI roots and CSRs
+        if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle270_ready.outcome == 'success' }}
+        shell: bash
+        env:
+          HB_ORACLE_BINARY: ${{ runner.temp }}/heptabao-official-oracle270/bao
+          HB_ORACLE_ARCHIVE: ${{ runner.temp }}/heptabao-official-oracle270/oracle-official.tar.gz
+        run: |
+          set -euo pipefail
+          reports="$RUNNER_TEMP/heptabao-safe-reports/external-pki270"
+          mkdir -p "$reports"
+          chmod 700 "$reports"
+          binary="$PWD/target/debug/heptabao-server"
+          digest="$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          timeout 600 python qa/openbao-acceptance/external_pki_consumer_live.py \
             --oracle-version 2.7.0 \
             --binary "$binary" \
             --build-source-commit "$EXPECTED_SOURCE" \
