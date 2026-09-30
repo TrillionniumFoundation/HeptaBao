@@ -1234,10 +1234,7 @@ fn transit_datakey_export_random_and_unsupported_modes_are_explicit() -> TestRes
         json!({"ciphertext":datakey.body["data"]["ciphertext"]}),
         2,
     )?;
-    assert_eq!(
-        decrypted.body["data"]["plaintext"],
-        datakey.body["data"]["plaintext"]
-    );
+    assert!(decrypted.body["data"]["plaintext"] == datakey.body["data"]["plaintext"]);
     let wrapped = request(
         &mut state,
         "",
@@ -1290,20 +1287,61 @@ fn transit_datakey_export_random_and_unsupported_modes_are_explicit() -> TestRes
     assert_eq!(descriptor.body["data"]["type"], "rsa-2048");
     assert_eq!(descriptor.body["data"]["supports_signing"], true);
     assert_eq!(descriptor.body["data"]["supports_encryption"], true);
-    for (path, body) in [
-        ("transit/keys/derived", json!({"derived":true})),
-        (
-            "transit/encrypt/key",
-            json!({"plaintext":"","nonce":BASE64.encode([0u8;12])}),
-        ),
-    ] {
-        assert_eq!(
-            request(&mut state, "", "POST", path, body, 3)
-                .err()
-                .map(|e| e.status),
-            Some(501)
-        );
-    }
+    request(
+        &mut state,
+        "",
+        "POST",
+        "transit/keys/derived",
+        json!({"derived":true}),
+        3,
+    )?;
+    let context = BASE64.encode(b"synthetic derived datakey context");
+    let derived = request(
+        &mut state,
+        "",
+        "POST",
+        "transit/datakey/plaintext/derived",
+        json!({"bits":256,"context":context}),
+        3,
+    )?;
+    let decrypted = request(
+        &mut state,
+        "",
+        "POST",
+        "transit/decrypt/derived",
+        json!({"ciphertext":derived.body["data"]["ciphertext"],"context":context}),
+        3,
+    )?;
+    assert!(decrypted.body["data"]["plaintext"] == derived.body["data"]["plaintext"]);
+    assert!(
+        request(
+            &mut state,
+            "",
+            "POST",
+            "transit/datakey/plaintext/derived",
+            json!({"bits":256}),
+            3,
+        )
+        .err()
+        .is_some_and(|error| error.status == 400)
+    );
+    let encrypted = request(
+        &mut state,
+        "",
+        "POST",
+        "transit/encrypt/key",
+        json!({"plaintext":"","nonce":BASE64.encode([0u8;12])}),
+        3,
+    )?;
+    let decrypted = request(
+        &mut state,
+        "",
+        "POST",
+        "transit/decrypt/key",
+        json!({"ciphertext":encrypted.body["data"]["ciphertext"]}),
+        3,
+    )?;
+    assert!(decrypted.body["data"]["plaintext"] == "");
     Ok(())
 }
 

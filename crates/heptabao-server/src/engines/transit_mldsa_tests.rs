@@ -428,7 +428,7 @@ fn mldsa270_external_mu_rejects_malformed_length_options_and_conflicts_without_m
     assert!(batch.body["data"]["batch_results"][0]["signature"].is_string());
     assert!(batch.body["data"]["batch_results"][1]["error"].is_string());
     assert!(!batch.mutated);
-    assert_eq!(*before, *Zeroizing::new(serde_json::to_vec(&transit)?));
+    assert!(*before == *Zeroizing::new(serde_json::to_vec(&transit)?));
     Ok(())
 }
 
@@ -681,7 +681,7 @@ fn non_rsa_options_reject_bad_values_and_preserve_hash_and_mu_boundaries() -> Te
                     400
                 );
             }
-            assert_eq!(*before, *Zeroizing::new(serde_json::to_vec(&transit)?));
+            assert!(*before == *Zeroizing::new(serde_json::to_vec(&transit)?));
         }
         if kind != "ed25519" {
             let key = transit.keys.get("test").ok_or("key")?;
@@ -787,7 +787,7 @@ fn non_rsa_context_validates_base64_and_never_changes_pure_message_signatures() 
                 400
             );
             assert_eq!(transit.handle("", "transit", "POST", "verify/test", &json!({"input":input,"signature":baseline.body["data"]["signature"],"context":context}), 105).err().ok_or("bad verify context accepted")?.status, 400);
-            assert_eq!(*before, *Zeroizing::new(serde_json::to_vec(&transit)?));
+            assert!(*before == *Zeroizing::new(serde_json::to_vec(&transit)?));
         }
     }
     let mut transit = Transit::default();
@@ -802,14 +802,16 @@ fn non_rsa_context_validates_base64_and_never_changes_pure_message_signatures() 
     for field in ["context", "nonce"] {
         let mut body = json!({"plaintext":BASE64.encode(b"synthetic plaintext")});
         body[field] = json!(BASE64.encode(b"unchanged unsupported encryption input"));
-        assert_eq!(
-            transit
-                .handle("", "transit", "POST", "encrypt/test", &body, 101)
-                .err()
-                .ok_or("encryption scope changed")?
-                .status,
-            501
-        );
+        let encrypted = transit.handle("", "transit", "POST", "encrypt/test", &body, 101)?;
+        let decrypted = transit.handle(
+            "",
+            "transit",
+            "POST",
+            "decrypt/test",
+            &json!({"ciphertext":encrypted.body["data"]["ciphertext"]}),
+            102,
+        )?;
+        assert!(decrypted.body["data"]["plaintext"] == body["plaintext"]);
     }
     Ok(())
 }
@@ -903,7 +905,7 @@ fn non_rsa_salt_length_validates_api_syntax_and_ignores_rsa_pss_semantics() -> T
                 400
             );
             assert_eq!(transit.handle("", "transit", "POST", "verify/test", &json!({"input":input,"signature":baseline.body["data"]["signature"],"salt_length":salt}), 107).err().ok_or("bad verify salt accepted")?.status, 400);
-            assert_eq!(*before, *Zeroizing::new(serde_json::to_vec(&transit)?));
+            assert!(*before == *Zeroizing::new(serde_json::to_vec(&transit)?));
         }
     }
     Ok(())

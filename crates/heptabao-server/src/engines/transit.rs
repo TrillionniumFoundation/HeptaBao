@@ -7,7 +7,7 @@ use base64::{
 use chacha20poly1305::{AeadInPlace, KeyInit, XChaCha20Poly1305, XNonce};
 use ring::{
     aead,
-    rand::{SecureRandom, SystemRandom, generate},
+    rand::{SecureRandom, SystemRandom},
     signature::{self, KeyPair},
 };
 use sha2::{Digest as RustDigest, Sha224, Sha256, Sha384, Sha512};
@@ -21,6 +21,8 @@ mod asymmetric;
 mod external;
 #[path = "transit_mldsa.rs"]
 mod mldsa;
+#[path = "transit_symmetric.rs"]
+mod symmetric;
 const MAX_BATCH: usize = 256;
 const MAX_ENCRYPTIONS_PER_VERSION: u64 = 1 << 32;
 
@@ -33,6 +35,10 @@ pub(super) struct Transit {
 #[derive(Clone, Serialize, Deserialize)]
 struct Key {
     kind: String,
+    #[serde(default, skip_serializing_if = "symmetric::is_false")]
+    derived: bool,
+    #[serde(default, skip_serializing_if = "symmetric::is_false")]
+    convergent_encryption: bool,
     latest_version: u64,
     min_decryption_version: u64,
     min_encryption_version: u64,
@@ -127,13 +133,23 @@ impl Key {
             .map(|v| v.as_str().ok_or_else(|| bad("key type must be a string")))
             .transpose()?
             .unwrap_or("aes256-gcm96");
-        for flag in ["derived", "convergent_encryption", "allow_plaintext_backup"] {
-            if optional_bool(body, flag)?.unwrap_or(false) {
-                return Err(error(
-                    501,
-                    "derived keys, convergent encryption and plaintext backups are not implemented",
-                ));
-            }
+        let derived = symmetric::flag(body, "derived")?;
+        let convergent_encryption = symmetric::flag(body, "convergent_encryption")?;
+        if convergent_encryption && !derived {
+            return Err(bad("convergent encryption requires key derivation"));
+        }
+        if (derived || convergent_encryption) && !symmetric::is_kind(kind) {
+            return Err(error(
+                if kind == "ed25519" && !convergent_encryption {
+                    501
+                } else {
+                    500
+                },
+                "key derivation is unsupported for this key type",
+            ));
+        }
+        if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false) {
+            return Err(error(501, "plaintext key backups are not implemented"));
         }
         let auto_rotate_period = auto_rotate_period(body.get("auto_rotate_period"))?;
         let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
@@ -152,6 +168,8 @@ impl Key {
         }
         Ok(Self {
             kind: kind.into(),
+            derived,
+            convergent_encryption,
             latest_version: 1,
             min_decryption_version: 1,
             min_encryption_version: 0,
@@ -169,6 +187,9 @@ impl Key {
         }
         let mut versions = serde_json::Map::new();
         for (number, version) in &self.versions {
+            if symmetric::is_kind(&self.kind) && *number < self.min_decryption_version {
+                continue;
+            }
             let value = if self.kind == "ed25519" {
                 let material = stored_material(&version.material)?;
                 let pair = signature::Ed25519KeyPair::from_pkcs8(&material)
@@ -203,14 +224,27 @@ impl Key {
             self.kind.as_str(),
             "aes128-gcm96" | "aes256-gcm96" | "chacha20-poly1305" | "xchacha20-poly1305"
         );
-        Ok(
-            json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
+        let mut descriptor = json!({"name":name,"type":self.kind,"keys":versions,"latest_version":self.latest_version,
             "min_decryption_version":self.min_decryption_version,"min_encryption_version":self.min_encryption_version,
             "deletion_allowed":self.deletion_allowed,"exportable":self.exportable,"allow_plaintext_backup":false,
-            "derived":false,"convergent_encryption":false,"supports_derivation":false,
+            "derived":self.derived,"convergent_encryption":self.convergent_encryption,"supports_derivation":symmetric::is_kind(&self.kind),
             "supports_encryption":encryption,"supports_decryption":encryption,"supports_signing":self.kind=="ed25519" || mldsa::is_kind(&self.kind),
-            "supports_hmac":true,"imported_key":false,"auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0}),
-        )
+            "supports_hmac":true,"imported_key":false,"auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0});
+        if symmetric::is_kind(&self.kind) {
+            let fields = descriptor
+                .as_object_mut()
+                .ok_or_else(|| error(500, "key descriptor encoding failed"))?;
+            fields.remove("supports_hmac");
+            if !self.derived {
+                fields.remove("convergent_encryption");
+            } else {
+                fields.insert("kdf".into(), json!("hkdf_sha256"));
+            }
+            if self.convergent_encryption {
+                fields.insert("convergent_encryption_version".into(), json!(-1));
+            }
+        }
+        Ok(descriptor)
     }
 
     fn alive(&self) -> Result<()> {
@@ -222,9 +256,16 @@ impl Key {
 
     fn selected_version(&self, body: &Value) -> Result<u64> {
         self.alive()?;
-        let version = optional_u64(body, "key_version")?
-            .filter(|v| *v != 0)
-            .unwrap_or(self.latest_version);
+        let requested = if symmetric::is_kind(&self.kind) {
+            symmetric::version(body)?
+        } else {
+            optional_u64(body, "key_version")?.unwrap_or(0)
+        };
+        let version = if requested == 0 {
+            self.latest_version
+        } else {
+            requested
+        };
         let minimum = self.min_encryption_version.max(1);
         if version < minimum || !self.versions.contains_key(&version) {
             return Err(bad(
@@ -424,8 +465,9 @@ impl Transit {
             if self.disable_upsert {
                 return Err(bad("key does not exist and upsert is disabled"));
             }
-            reject_context(body)?;
-            self.keys.insert(name.into(), Key::new(body, now)?);
+            let mut creation = SecretJson(body.clone());
+            creation["derived"] = json!(symmetric::upsert_derived(body)?);
+            self.keys.insert(name.into(), Key::new(&creation, now)?);
         }
         let key = self.keys.get_mut(name).ok_or_else(not_found)?;
         key.alive()?;
@@ -482,12 +524,17 @@ impl Transit {
                 if body.get("type").is_some_and(|v| v != &key.kind) {
                     return Err(bad("key already exists with a different immutable type"));
                 }
-                for flag in ["derived", "convergent_encryption", "allow_plaintext_backup"] {
-                    if optional_bool(body, flag)?.unwrap_or(false) {
-                        return Err(error(501, "requested key feature is not implemented"));
-                    }
+                let requested_derived = symmetric::flag(body, "derived")?;
+                let requested_convergent = symmetric::flag(body, "convergent_encryption")?;
+                if requested_convergent && !requested_derived {
+                    return Err(bad("convergent encryption requires key derivation"));
                 }
-                if optional_bool(body, "exportable")?
+                if optional_bool(body, "allow_plaintext_backup")?.unwrap_or(false) {
+                    return Err(error(501, "plaintext key backups are not implemented"));
+                }
+                if symmetric::is_kind(&key.kind) {
+                    symmetric::flag(body, "exportable")?;
+                } else if optional_bool(body, "exportable")?
                     .is_some_and(|exportable| exportable != key.exportable)
                 {
                     return Err(bad("use the key config endpoint to change exportability"));
@@ -681,7 +728,6 @@ impl Transit {
         if name.contains('/') {
             return Err(bad("transit key names cannot contain path separators"));
         }
-        reject_context(body)?;
         let bits = optional_u64(body, "bits")?.unwrap_or(256);
         if !matches!(bits, 128 | 256 | 512) {
             return Err(bad("data key bits must be 128, 256 or 512"));
@@ -771,6 +817,7 @@ fn handle_crypto(
             "input",
             "key_version",
             "algorithm",
+            "context",
             "reference",
             "batch_input",
             "partial_failure_response_code",
@@ -812,6 +859,7 @@ fn handle_crypto(
             .as_array()
             .filter(|items| !items.is_empty() && items.len() <= MAX_BATCH)
             .ok_or_else(|| bad("batch_input must contain between 1 and 256 items"))?;
+        symmetric::batch_context(key, operation, items)?;
         let partial_code = optional_u64(body, "partial_failure_response_code")?.unwrap_or(400);
         if !(200..=599).contains(&partial_code) {
             return Err(bad(
@@ -883,7 +931,7 @@ fn handle_crypto(
             }
             responses.push(value);
         }
-        let status = if failed == 0 {
+        let status = if failed == 0 || (symmetric::is_kind(&key.kind) && operation == "rewrap") {
             200
         } else if failed == items.len() {
             400
@@ -917,6 +965,20 @@ fn handle_crypto(
                 ));
             }
         }
+    } else if symmetric::is_kind(&key.kind)
+        && (operation == "hmac" || (operation == "verify" && body.get("hmac").is_some()))
+    {
+        // HMAC has separate per-version key material and ignores AEAD context.
+        if operation == "verify"
+            && body
+                .get("context")
+                .is_some_and(|value| value.is_array() || value.is_object())
+        {
+            return Err(bad("context must be scalar"));
+        }
+    } else if symmetric::is_kind(&key.kind) && matches!(operation, "encrypt" | "decrypt" | "rewrap")
+    {
+        symmetric::context(key, body)?;
     } else {
         reject_context(body)?;
     }
@@ -1186,7 +1248,7 @@ fn associated_data(body: &Value) -> Result<Vec<u8>> {
 }
 
 fn legacy_aad(namespace: &str, mount: &str, name: &str, body: &Value) -> Result<Vec<u8>> {
-    let associated = associated_data(body)?;
+    let associated = symmetric::associated_data(body)?;
     // A JSON tuple is unambiguous even when namespace/path contain delimiters.
     // This remains a read-only migration path for pre-OpenBao-compatibility
     // HeptaBao ciphertexts. New ciphertexts use the raw caller AAD below.
@@ -1254,6 +1316,7 @@ fn encrypt(
     }
     let xchacha = key.kind == "xchacha20-poly1305";
     let algorithm = (!xchacha).then(|| aead_algorithm(&key.kind)).transpose()?;
+    let context = symmetric::context(key, body)?;
     let version_number = key.selected_version(body)?;
     let version = key
         .versions
@@ -1264,31 +1327,48 @@ fn encrypt(
             "key version reached its encryption limit; rotate the key",
         ));
     }
-    let material = stored_material(&version.material)?;
-    let (nonce, ciphertext) = if xchacha {
-        let nonce = generate::<[u8; 24]>(&SystemRandom::new())
-            .map_err(|_| error(503, "system entropy is unavailable"))?
-            .expose();
-        let associated = associated_data(body)?;
-        let ciphertext = xchacha20_encrypt(&material, &nonce, &associated, plaintext)?;
-        (nonce.to_vec(), ciphertext)
+    let master = stored_material(&version.material)?;
+    let material = symmetric::material(
+        &key.kind,
+        key.derived,
+        key.convergent_encryption,
+        &master,
+        &context,
+    )?;
+    let key_len = symmetric::key_len(&key.kind);
+    let nonce = symmetric::nonce(
+        key.convergent_encryption,
+        &material,
+        key_len,
+        plaintext,
+        if xchacha { 24 } else { 12 },
+    )?;
+    let associated = symmetric::associated_data(body)?;
+    let encryption_key = material
+        .get(..key_len)
+        .ok_or_else(|| error(500, "stored encryption key is invalid"))?;
+    let ciphertext = if xchacha {
+        let nonce: [u8; 24] = nonce
+            .as_slice()
+            .try_into()
+            .map_err(|_| error(500, "nonce generation failed"))?;
+        xchacha20_encrypt(encryption_key, &nonce, &associated, plaintext)?
     } else {
         let algorithm = algorithm.ok_or_else(|| error(500, "AEAD algorithm is unavailable"))?;
-        let key = aead::LessSafeKey::new(
-            aead::UnboundKey::new(algorithm, &material)
+        let cipher = aead::LessSafeKey::new(
+            aead::UnboundKey::new(algorithm, encryption_key)
                 .map_err(|_| error(500, "stored encryption key is invalid"))?,
         );
-        let nonce = generate::<[u8; 12]>(&SystemRandom::new())
-            .map_err(|_| error(503, "system entropy is unavailable"))?
-            .expose();
         let mut ciphertext = Zeroizing::new(plaintext.to_vec());
-        key.seal_in_place_append_tag(
-            aead::Nonce::assume_unique_for_key(nonce),
-            aead::Aad::from(associated_data(body)?),
-            &mut *ciphertext,
-        )
-        .map_err(|_| error(500, "encryption failed"))?;
-        (nonce.to_vec(), ciphertext.to_vec())
+        cipher
+            .seal_in_place_append_tag(
+                aead::Nonce::try_assume_unique_for_key(&nonce)
+                    .map_err(|_| error(500, "nonce generation failed"))?,
+                aead::Aad::from(associated),
+                &mut *ciphertext,
+            )
+            .map_err(|_| error(500, "encryption failed"))?;
+        ciphertext.to_vec()
     };
     let mut wrapped = nonce;
     wrapped.extend_from_slice(&ciphertext);
@@ -1318,27 +1398,38 @@ fn decrypt(
     if ciphertext.len() < nonce_len + 16 {
         return Err(bad("invalid ciphertext"));
     }
-    let material = stored_material(&version.material)?;
+    let context = symmetric::context(key, body)?;
+    let master = stored_material(&version.material)?;
+    let material = symmetric::material(
+        &key.kind,
+        key.derived,
+        key.convergent_encryption,
+        &master,
+        &context,
+    )?;
+    let encryption_key = material
+        .get(..symmetric::key_len(&key.kind))
+        .ok_or_else(|| error(500, "stored encryption key is invalid"))?;
     if xchacha {
         let nonce: [u8; 24] = ciphertext[..24]
             .try_into()
             .map_err(|_| bad("invalid ciphertext"))?;
         return xchacha20_decrypt(
-            &material,
+            encryption_key,
             &nonce,
-            &associated_data(body)?,
+            &symmetric::associated_data(body)?,
             &mut ciphertext[24..],
         );
     }
     let algorithm = algorithm.ok_or_else(|| error(500, "AEAD algorithm is unavailable"))?;
-    let key = aead::LessSafeKey::new(
-        aead::UnboundKey::new(algorithm, &material)
+    let cipher = aead::LessSafeKey::new(
+        aead::UnboundKey::new(algorithm, encryption_key)
             .map_err(|_| error(500, "stored encryption key is invalid"))?,
     );
     let nonce = &ciphertext[..12];
-    let associated = associated_data(body)?;
+    let associated = symmetric::associated_data(body)?;
     let mut raw_payload = ciphertext[12..].to_vec();
-    if let Ok(plaintext) = key.open_in_place(
+    if let Ok(plaintext) = cipher.open_in_place(
         aead::Nonce::try_assume_unique_for_key(nonce).map_err(|_| bad("invalid ciphertext"))?,
         aead::Aad::from(associated),
         &mut raw_payload,
@@ -1346,10 +1437,14 @@ fn decrypt(
         return Ok(Zeroizing::new(plaintext.to_vec()));
     }
 
+    if key.derived {
+        return Err(bad("ciphertext authentication failed"));
+    }
+
     // Keep already-persisted HeptaBao ciphertexts readable while all new
     // ciphertexts follow OpenBao's portable raw-AAD contract.
     let mut legacy_payload = ciphertext[12..].to_vec();
-    let plaintext = key
+    let plaintext = cipher
         .open_in_place(
             aead::Nonce::try_assume_unique_for_key(nonce).map_err(|_| bad("invalid ciphertext"))?,
             aead::Aad::from(legacy_aad(namespace, mount, name, body)?),
@@ -1571,3 +1666,7 @@ mod mldsa_tests;
 #[cfg(test)]
 #[path = "transit_asymmetric_tests.rs"]
 mod asymmetric_tests;
+
+#[cfg(test)]
+#[path = "transit_symmetric_tests.rs"]
+mod symmetric_tests;
