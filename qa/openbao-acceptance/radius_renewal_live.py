@@ -41,8 +41,10 @@ ADAPTATION = {
 
 
 def radius_md5(data=b""):
-    # RADIUS packet authentication is specified in terms of MD5. Mark the
-    # constructor non-security so it cannot be mistaken for a password hash.
+    # RADIUS packet authentication is specified in terms of MD5. This is a
+    # protocol compatibility primitive, never a password verifier or generic
+    # security hash. The protocol cannot be changed to another digest.
+    # codeql[py/weak-sensitive-data-hashing]
     return hashlib.md5(data, usedforsecurity=False)
 
 

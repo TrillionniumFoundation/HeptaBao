@@ -57,7 +57,7 @@ os.execv(v("--heptabao-plugin"),[v("--heptabao-plugin")])
     plugin_sha = make_exec(
         plugin,
         f"""#!{sys.executable}
-import hashlib,json,os,struct,sys
+import hashlib,hmac,json,os,struct,sys
 STATE={str(provider_state)!r}
 FINGERPRINT_KEY={fingerprint_key!r}
 r=sys.stdin.buffer.read(1048588)
@@ -117,8 +117,8 @@ if action=="issue":
         "request_digest":digest,
         "expires":expires,
         "active":True,
-        "password_keyed_blake2b":hashlib.blake2b(
-            password.encode(), key=FINGERPRINT_KEY, digest_size=32
+        "password_hmac_sha256":hmac.new(
+            FINGERPRINT_KEY, password.encode(), hashlib.sha256
         ).hexdigest(),
     }}
 elif action=="renew":
@@ -278,11 +278,14 @@ def run(binary: Path, root: Path):
             "issued_secret_matches_plugin_digest",
             provider.get("active") is True
             and provider.get("username") == credential["username"]
-            and provider.get("password_keyed_blake2b")
-            == hashlib.blake2b(
+            and provider.get("password_hmac_sha256")
+            # A fresh per-run HMAC proves exact transport to the synthetic
+            # provider. It is not a password verifier or persisted credential.
+            # codeql[py/weak-sensitive-data-hashing]
+            == hmac.new(
+                fingerprint_key,
                 credential["password"].encode(),
-                key=fingerprint_key,
-                digest_size=32,
+                hashlib.sha256,
             ).hexdigest(),
         )
         issue_seq = provider["seq"]
