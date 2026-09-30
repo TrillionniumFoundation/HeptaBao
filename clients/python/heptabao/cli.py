@@ -2,7 +2,10 @@
 
 Every response is published into a new owner-only file. No shell execution,
 redirect following, credential caching, environment-token fallback or blind
-mutation retry is performed. This is not the full OpenBao CLI/Agent/Proxy.
+mutation retry is performed by this legacy mode. The separate `kv` entry point
+prints requested values and accepts explicit BAO/VAULT environment configuration.
+Use `heptabao kv --help` for the KV command family.
+This is not the full OpenBao CLI/Agent/Proxy.
 """
 from __future__ import annotations
 
@@ -141,7 +144,11 @@ def prepare(args):
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = parser().parse_args(argv)
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if arguments and arguments[0] == "kv":
+        from .kv_cli import main as kv_main
+        return kv_main(arguments[1:])
+    args = parser().parse_args(arguments)
     dispatched, received = False, False
     try:
         client, method, path, payload, ttl = prepare(args)

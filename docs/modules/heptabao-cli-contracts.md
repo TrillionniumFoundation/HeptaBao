@@ -4,7 +4,16 @@ Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_
 
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
-Current runtime distinction: The actual bounded CLI now lives in `clients/python`; this Rust crate remains a standalone invocation model, not full OpenBao CLI compatibility.
+Current runtime distinction: The actual bounded CLI now lives in `clients/python`;
+this Rust crate remains a standalone invocation model, not full OpenBao CLI
+compatibility. The Python `kv` entry point performs actual KV v1/v2 commands,
+mount discovery, CAS-protected updates and requested-value output through the
+shared HTTPS Client. The older nine private-output commands retain their grammar
+and publication boundary. The [runtime capability matrix](../compatibility/HEPTABAO_PYTHON_KV_CLI_270.md)
+names the implemented scope, output/credential differences and open commands.
+`clients/python/tests/test_kv_cli.py` covers command/authority/uncertainty guards;
+`test_kv_cli_tls.py` runs original synthetic HTTPS subprocess regressions. Those
+tests do not substitute for an exact binary's official/native black-box receipt.
 
 ## Purpose and non-goals
 

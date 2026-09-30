@@ -28,7 +28,7 @@ response can contain a secret, so it goes to the specified new private file, not
 stdout. The response directory must already be caller-owned with mode 0700 and
 the destination must not exist. Credentials are supplied by an owner-only file,
 never a raw `--token` argument. No implicit environment bearer fallback is used
-by the CLI. Reads using finite-use credentials can still consume their use count.
+by the legacy CLI mode. Reads using finite-use credentials can still consume their use count.
 
 ## Commands and semantics
 
@@ -36,7 +36,7 @@ by the CLI. Reads using finite-use credentials can still consume their use count
 `wrapping-lookup` issue explicit HTTPS requests. Mutating commands, and reads that
 request wrapping, require `--allow-write`. JSON input is a private file supplied
 with `--input`, or piped stdin with `--input -`; interactive secret entry and
-arbitrary key=value argv parsing are intentionally absent. `read`/`write` accept
+arbitrary key=value argv parsing are absent from these legacy commands. `read`/`write` accept
 `--wrap-ttl`; `wrap` requires `--ttl`. Global options precede the subcommand.
 
 Self `unwrap` and `wrapping-lookup` take a wrapping-token file and reject a second
@@ -44,6 +44,85 @@ bearer. `rewrap` instead requires an ordinary explicitly authorized caller plus 
 wrapping-token file. `capabilities` supports self inspection or an explicit target
 bearer/accessor file; the selector does not itself authorize inspection. Existing
 credential/lease APIs can be called with `write` using reviewed private JSON.
+
+## OpenBao-style KV entry point
+
+`heptabao kv <command> [flags] <path> [data]` (or `python -m heptabao kv`)
+adds actual KV v1/v2 operations through the same HTTPS Client. This entry point
+prints the requested value to stdout; keep the receiving terminal or pipe private.
+Do not collect secret stdout, argv, credentials or response bodies in receipts.
+The nine legacy commands above keep their private-file output, write-admission
+and original exit behavior.
+
+```sh
+heptabao kv get -address=https://localhost:8200 -ca-cert=/private/ca.crt \
+  -token-file=/private/scoped.token -mount=secret -field=value example
+heptabao kv put -address=https://localhost:8200 -ca-cert=/private/ca.crt \
+  -token-file=/private/scoped.token -mount=secret -cas=0 example @/private/data.json
+```
+
+Supported operations are `get`, `put`, `patch`, `list`, `delete`, `undelete`,
+`destroy`, `rollback`, and `metadata get|put|delete`. Mount discovery calls the
+public `sys/internal/ui/mounts/<path>` preflight and validates its KV type, mount
+boundary and version before any data request. A failed discovery never guesses
+v1 or falls back to privileged `sys/mounts`. `-mount` separates the mount and key;
+without it, the mount may contain multiple path segments. `list` accepts a folder
+ending in one slash, or an empty folder with an explicit mount.
+
+`get -version=N` reads that version. A KV v2 deleted/destroyed version's 404
+response with valid returned metadata is printed successfully when no field is
+requested, matching the pinned CLI. A selected field or genuinely missing key
+retains the API error exit 2; no data value is invented. `put -cas=0` creates only; positive CAS
+values require that current version. `patch -method=patch` uses merge-patch;
+`patch -method=rw` reads once, updates in memory and writes with the observed CAS.
+The default patch method falls back to the CAS-protected read/write method only
+on a known HTTP 403 policy refusal. A timeout, disconnect, 5xx or explicit
+`-method=patch` never triggers fallback. Repeated `-remove-data=key` removes keys,
+including a removal-only patch. `delete -versions=1,2`, `undelete -versions=N`
+and `destroy -versions=N` operate on exact versions. `rollback -version=N`
+reads current and historical values and writes the historical value as a new
+CAS-protected version; an unreadable/deleted current value is refused.
+
+Metadata put preserves omitted settings. It accepts `-max-versions`,
+`-cas-required[=true|false]`, `-delete-version-after`, and repeated
+`-custom-metadata=key=value`. This scope does not implement metadata patch.
+`-format=table|json|yaml` selects output except `metadata delete`, which refuses
+that flag and ignores the format environment, matching the pinned command help. JSON preserves the response envelope
+except list, which prints its keys array. YAML quotes strings and map keys to
+preserve JSON types. `-field` on get/put/patch/delete selects the data field before formatting.
+Default/table prints the raw value without a newline; JSON prints the typed
+JSON value without a trailing newline, and YAML prints a typed scalar with a
+newline. This reflects the pinned 2.7.0 executable's field/format observations.
+
+Data arguments accept literal `key=value`, a private JSON object file `@file`,
+JSON from piped `-`, or exact UTF-8 `key=@file` / `key=-`. Prefer private files or
+stdin for secrets; literal values in argv can be visible in shell history and
+process listings. Token arguments always reference an owner-only, no-follow file,
+never a raw bearer value. The new KV mode also accepts `BAO_TOKEN` or
+`VAULT_TOKEN` from an explicitly configured process environment. Do not log that
+environment. `-token-file` overrides environment credentials; `BAO_TOKEN_FILE`
+(`VAULT_TOKEN_FILE`) is the private-file extension, and `BAO_TOKEN_PATH`
+(`VAULT_TOKEN_PATH`) is used when no token value/file is selected. There is no
+implicit home token helper, login, shell or credential cache.
+
+The flags `-address`, `-ca-cert`, `-namespace`, `-format` and `-timeout` override
+`BAO_ADDR`, `BAO_CACERT`, `BAO_NAMESPACE`, `BAO_FORMAT` and
+`BAO_CLIENT_TIMEOUT`, respectively. Nonempty `BAO_` values precede `VAULT_`
+fallbacks. Explicit empty `-namespace=` selects the root namespace. A CA and
+HTTPS origin remain required. Timeout accepts seconds, `ms`, `s` or `m`, with
+the shared finite maximum of 60 seconds; KV defaults to 60s. Namespace canonical
+validation, TLS hostname checking, disabled redirects and disabled ambient proxies
+are unchanged. This CLI retains the shared per-socket deadline limitation.
+
+KV exit 0 means the operation succeeded and output was written; local input or
+selection failures exit 1, and HTTP/TLS/transport failures exit 2, following the
+public OpenBao command convention. Errors print fixed diagnostic codes and status
+metadata only. No error body, input, bearer or target is printed. Unknown write
+outcomes must be reconciled before another invocation. Full table byte layout,
+wrap flags, client TLS certificates, TLS name overrides, proxy/discovery settings,
+MFA and policy-output flags, enable-versioning, token helpers and the remaining
+bao command tree remain open. Unsupported flags are refused before transport.
+See the [scoped command matrix and provenance](../../docs/compatibility/HEPTABAO_PYTHON_KV_CLI_270.md).
 
 ## SDK boundary
 
@@ -85,7 +164,8 @@ Exit 0 means an HTTP 2xx response was received and privately stored; exit 1 mean
 a received non-2xx response was privately stored; exit 2 means parsing, transport
 or publication failed. Neither 0 nor receipt of a lease proves host SSH login,
 external-provider success, production acceptance or complete compatibility.
-Only fixed safe codes/status metadata appear on stdout/stderr. Python immutable
+In the legacy mode, only fixed safe codes/status metadata appear on stdout/stderr.
+The separate KV mode prints the requested data described above. Python immutable
 strings and interpreter copies are not guaranteed to be memory-zeroized; deployment
 must account for process isolation, dumps and swap separately.
 
