@@ -12,7 +12,9 @@ impl State {
         if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
             return self.schema;
         }
-        let required = if self.auth.has_jwt_pem_keyset_state() {
+        let required = if self.engines.has_transit_byok_state() {
+            TRANSIT_BYOK_STATE_SCHEMA
+        } else if self.auth.has_jwt_pem_keyset_state() {
             JWT_PEM_KEYSET_STATE_SCHEMA
         } else if self.auth.has_jwt_user_claim_state() {
             JWT_USER_CLAIM_STATE_SCHEMA
@@ -34,6 +36,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < TRANSIT_BYOK_STATE_SCHEMA
+            && (self.engines.has_transit_byok_state()
+                || previous.is_some_and(|state| state.schema >= TRANSIT_BYOK_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "Transit imports and wrapping keys require schema 70",
             ));
         }
         if self.schema < JWT_PEM_KEYSET_STATE_SCHEMA
@@ -83,6 +94,21 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+            return Err(Response::error(
+                503,
+                "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < TRANSIT_BYOK_STATE_SCHEMA && self.engines.has_transit_byok_state() {
+            return Err(Response::error(
+                503,
+                "Transit imports and wrapping keys require schema 70",
+            ));
+        }
+        self.engines
+            .validate_transit_byok_state()
+            .map_err(|_| Response::error(503, "invalid Transit imported key state"))?;
         if self.schema < JWT_PEM_KEYSET_STATE_SCHEMA && self.auth.has_jwt_pem_keyset_state() {
             return Err(Response::error(503, "JWT PEM keyset requires schema 69"));
         }
@@ -756,7 +782,8 @@ impl State {
             | AAD_BOUND_STATE_SCHEMA
             | TYPED_PKI_STATE_SCHEMA
             | JWT_USER_CLAIM_STATE_SCHEMA
-            | JWT_PEM_KEYSET_STATE_SCHEMA => Ok(()),
+            | JWT_PEM_KEYSET_STATE_SCHEMA
+            | TRANSIT_BYOK_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

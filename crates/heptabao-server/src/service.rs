@@ -55,7 +55,8 @@ const TYPED_PKI_STATE_SCHEMA: u32 = 67;
 // Custom JWT identity claims activate an irreversible reader requirement.
 const JWT_USER_CLAIM_STATE_SCHEMA: u32 = 68;
 const JWT_PEM_KEYSET_STATE_SCHEMA: u32 = 69;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = JWT_PEM_KEYSET_STATE_SCHEMA;
+const TRANSIT_BYOK_STATE_SCHEMA: u32 = 70;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = TRANSIT_BYOK_STATE_SCHEMA;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -2579,6 +2580,7 @@ impl Service {
         // before record preflight. Ordinary legacy reads retain their original
         // schema until a proven logical mutation, as before.
         if admitted.engines.has_aad_bound_convergent_state()
+            || admitted.engines.has_transit_byok_state()
             || admitted.auth.has_jwt_user_claim_state()
             || admitted.auth.has_jwt_pem_keyset_state()
         {
@@ -7392,3 +7394,7 @@ mod kv_versioning_tests;
 #[cfg(test)]
 #[path = "service_ui_mounts_tests.rs"]
 mod ui_mounts_tests;
+
+#[cfg(test)]
+#[path = "service_transit_byok_tests.rs"]
+mod transit_byok_tests;

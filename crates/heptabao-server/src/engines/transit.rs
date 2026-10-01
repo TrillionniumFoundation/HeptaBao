@@ -17,6 +17,8 @@ const MAX_INPUT_BYTES: usize = 4 * 1024 * 1024;
 use zeroize::Zeroizing;
 #[path = "transit_asymmetric.rs"]
 mod asymmetric;
+#[path = "transit_byok.rs"]
+mod byok;
 #[path = "transit_external.rs"]
 mod external;
 #[path = "transit_mldsa.rs"]
@@ -30,11 +32,15 @@ const MAX_ENCRYPTIONS_PER_VERSION: u64 = 1 << 32;
 pub(super) struct Transit {
     keys: BTreeMap<String, Key>,
     disable_upsert: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    wrapping_key: Option<byok::WrappingKey>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Key {
     kind: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    byok: Option<byok::ImportPolicy>,
     #[serde(default, skip_serializing_if = "symmetric::is_false")]
     derived: bool,
     #[serde(default, skip_serializing_if = "symmetric::is_false")]
@@ -182,6 +188,7 @@ impl Key {
         version.heptabao_convergent_version = mode;
         Ok(Self {
             kind: kind.into(),
+            byok: None,
             derived,
             convergent_encryption,
             convergent_write_min_version: if mode.is_some() { 1 } else { 0 },
@@ -245,6 +252,7 @@ impl Key {
             "derived":self.derived,"convergent_encryption":self.convergent_encryption,"supports_derivation":symmetric::is_kind(&self.kind),
             "supports_encryption":encryption,"supports_decryption":encryption,"supports_signing":self.kind=="ed25519" || mldsa::is_kind(&self.kind),
             "supports_hmac":true,"imported_key":false,"auto_rotate_period":self.auto_rotate_period,"soft_deleted":self.deleted,"min_available_version":0});
+        descriptor["imported_key"] = json!(byok::imported_key(self));
         if symmetric::is_kind(&self.kind) {
             let fields = descriptor
                 .as_object_mut()
@@ -384,6 +392,9 @@ impl Key {
             return Err(error(501, "plaintext backup is not implemented"));
         }
         if let Some(period) = requested_auto_rotate_period {
+            if period != 0 {
+                byok::rotation_allowed(self)?;
+            }
             self.auto_rotate_period = period;
         }
         Ok(())
@@ -404,6 +415,7 @@ impl Key {
         if now < due {
             return Ok(false);
         }
+        byok::rotation_allowed(self)?;
         let next = self
             .latest_version
             .checked_add(1)
@@ -417,6 +429,7 @@ impl Key {
         version.heptabao_convergent_version = mode;
         self.versions.insert(next, version);
         self.latest_version = next;
+        byok::native_rotation_completed(self);
         Ok(true)
     }
 }
@@ -540,6 +553,9 @@ impl Transit {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        if path == "wrapping_key" {
+            return self.wrapping(method, body);
+        }
         if path == "config/keys" {
             if method == "GET" {
                 return Ok(ok(json!({"disable_upsert":self.disable_upsert}), false));
@@ -611,6 +627,16 @@ impl Transit {
     ) -> Result<EngineResponse> {
         let (name, operation) = rest.split_once('/').unwrap_or((rest, ""));
         valid_path(name)?;
+        if matches!(operation, "import" | "import_version") {
+            if !write_method(method) {
+                return Err(unsupported());
+            }
+            return if operation == "import" {
+                self.import(name, body, now)
+            } else {
+                self.import_version(name, body, now)
+            };
+        }
         if operation.is_empty() {
             if method == "GET" {
                 return Ok(ok(
@@ -725,6 +751,7 @@ impl Transit {
                     },
                 )?;
                 key.alive()?;
+                byok::rotation_allowed(key)?;
                 let requested_mode = symmetric::requested_mode(body)?;
                 let previous_mode = key
                     .versions
@@ -761,6 +788,7 @@ impl Transit {
                 }
                 key.versions.insert(next, version);
                 key.latest_version = next;
+                byok::native_rotation_completed(key);
             }
             "soft-delete" => {
                 reject_unknown(body, &[])?;

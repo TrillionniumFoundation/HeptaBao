@@ -7,8 +7,8 @@ in retained increment notes. Exact source remains authoritative.
 ## Source and authoritative ownership
 
 The current Service state schema is **65**. This is the ordinary writer schema,
-with conditional sticky feature floors 66–69. `CURRENT_STATE_SCHEMA` and
-`MAX_SUPPORTED_STATE_SCHEMA` (69) are in
+with conditional sticky feature floors 66–70. `CURRENT_STATE_SCHEMA` and
+`MAX_SUPPORTED_STATE_SCHEMA` (70) are in
 `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -979,3 +979,36 @@ encrypted protected-file preservation and fresh immutable candidate runtime
 qualification are separate required evidence; scoped source tests cannot
 substitute for those results. See the [JWT key guide](../auth/HEPTABAO_REMOTE_JWT_KEYS.md)
 for the bounded input, algorithm and authentication contract.
+
+
+## Schema 70: Transit wrapping custody and wrapped AES imports
+
+Ordinary Transit mounts and generated keys omit the new optional fields and
+retain their exact historical encoding. A lazily generated mount-owned RSA-4096
+wrapping private key, or an imported-key policy, requires schema 70 in any
+namespace. The public wrapping endpoint exposes only its SPKI public key.
+Private PKCS8 custody and AES material remain within the existing encrypted
+Service state transaction; this does not introduce a separate key store.
+
+The bounded import envelope combines RSA-OAEP (the same selected digest for
+OAEP and MGF1) with maintained RFC 5649 AES-256 key unwrapping. SHA256 is the
+default wrapping digest; the explicit SHA1/224/256/384/512 choices follow the
+pinned public 2.7 contract. This compatibility support does not recommend SHA1
+for new applications or qualify independent cryptographic security.
+
+The minimum implemented lanes are non-derived AES128/256 imports, appended
+import versions, and allowed native rotation. Rotation is disabled by default.
+After an allowed native rotation the retained policy changes `imported_key` to
+false and refuses further imported versions through the live key API. Wrapping
+custody and the policy are preserved by the authenticated state encoding.
+Removing their last active mount or namespace does not lower the sticky 70 floor.
+Publication and both local/HA snapshot restore protect active and retired 70
+against incoming schemas below 70, while the complete schema 69 PEM decoder
+remains present. Ordinary fresh states continue to use 65. Unknown schema values
+remain rejected rather than normalized into a supported format.
+
+Public-only imports, explicit version replacement, derived imports, imported
+RSA/EC/Ed25519/ML-DSA/HMAC keys, BYOK export and plaintext key backups remain
+unfinished. Actual prior 69-reader refusal and fresh immutable native/2.7
+comparison are separate qualification requirements; native scoped tests and
+official-only observations do not substitute for them.
