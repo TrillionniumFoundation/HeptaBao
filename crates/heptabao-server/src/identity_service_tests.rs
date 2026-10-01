@@ -1356,3 +1356,195 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
     assert!(reopened.state.as_ref().ok_or("state")?.schema == AAD_BOUND_STATE_SCHEMA);
     Ok(())
 }
+
+#[test]
+fn identity_lookup_missing_alias_returns204_only_after_authorized_valid_scoped_request()
+-> TestResult {
+    let fixture = Fixture::new()?;
+    let mut service = fixture.service()?;
+    let (admin, _) = bootstrap(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "POST",
+            "sys/auth/lookup",
+            json!({"type":"jwt"})
+        )
+        .status
+            == 204,
+        "real auth accessor admission"
+    );
+    let accessor = service
+        .state
+        .as_ref()
+        .ok_or("state")?
+        .auth
+        .mount_accessor("", "lookup")?;
+    let missing = json!({"alias_name":"not-yet-bound","alias_mount_accessor":accessor});
+    let before = owner_store::serialize_owner(&service.state.as_ref().ok_or("state")?.engines)?;
+    let absent = call(
+        &mut service,
+        "",
+        &admin,
+        "POST",
+        "identity/lookup/entity",
+        missing.clone(),
+    );
+    assert!(
+        absent.status == 204 && absent.body.get("data").is_none(),
+        "authorized missing alias has exact empty204 wire response"
+    );
+    let after = owner_store::serialize_owner(&service.state.as_ref().ok_or("state")?.engines)?;
+    assert!(
+        before.as_slice() == after.as_slice(),
+        "absence cannot create an entity or alias"
+    );
+    assert!(
+        call(
+            &mut service,
+            "",
+            "",
+            "POST",
+            "identity/lookup/entity",
+            missing.clone()
+        )
+        .status
+            == 403,
+        "anonymous caller is not converted to no-content"
+    );
+    let policy = r#"path "secret/data/irrelevant" { capabilities = ["read"] }"#;
+    assert!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "POST",
+            "sys/policies/acl/lookup-denied",
+            json!({"policy":policy})
+        )
+        .status
+            == 204,
+        "restricted policy"
+    );
+    let issued = call(
+        &mut service,
+        "",
+        &admin,
+        "POST",
+        "auth/token/create",
+        json!({"policies":["lookup-denied"]}),
+    );
+    assert!(issued.status == 200, "restricted token issuance");
+    let token = zeroize::Zeroizing::new(text(&issued.body, "/auth/client_token")?);
+    assert!(
+        call(
+            &mut service,
+            "",
+            &token,
+            "POST",
+            "identity/lookup/entity",
+            missing.clone()
+        )
+        .status
+            == 403,
+        "live ACL denial precedes missing alias projection"
+    );
+    for bad in [
+        json!({}),
+        json!({"alias_name":"missing"}),
+        json!({"alias_name":"missing","alias_mount_accessor":7}),
+        json!({"alias_name":"bad\nname","alias_mount_accessor":accessor}),
+        json!({"alias_name":"missing","alias_mount_accessor":accessor,"id":"other"}),
+        json!({"alias_name":"missing","alias_mount_accessor":accessor,"extra":true}),
+    ] {
+        assert!(
+            call(
+                &mut service,
+                "",
+                &admin,
+                "POST",
+                "identity/lookup/entity",
+                bad
+            )
+            .status
+                == 400,
+            "invalid or ambiguous selectors remain errors"
+        );
+    }
+    let entity = call(
+        &mut service,
+        "",
+        &admin,
+        "POST",
+        "identity/entity",
+        json!({"name":"known-root"}),
+    );
+    assert!(entity.status == 200, "entity admission");
+    let id = text(&entity.body, "/data/id")?;
+    let created = call(
+        &mut service,
+        "",
+        &admin,
+        "POST",
+        "identity/entity-alias",
+        json!({"name":"known-user","mount_accessor":accessor,"canonical_id":id}),
+    );
+    assert!(
+        created.status == 200,
+        "alias bound to the admitted auth accessor"
+    );
+    let present = json!({"alias_name":"known-user","alias_mount_accessor":accessor});
+    let found = call(
+        &mut service,
+        "",
+        &admin,
+        "POST",
+        "identity/lookup/entity",
+        present.clone(),
+    );
+    assert!(
+        found.status == 200 && found.body["data"]["id"] == id,
+        "existing alias still returns its entity"
+    );
+    assert!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "POST",
+            "sys/namespaces/tenant",
+            json!({})
+        )
+        .status
+            == 200,
+        "namespace admission"
+    );
+    let isolated = call(
+        &mut service,
+        "tenant",
+        &admin,
+        "POST",
+        "identity/lookup/entity",
+        present,
+    );
+    assert!(
+        isolated.status == 204 && isolated.body.get("data").is_none(),
+        "other namespace cannot disclose root alias binding"
+    );
+    assert!(
+        call(
+            &mut service,
+            "tenant",
+            &token,
+            "POST",
+            "identity/lookup/entity",
+            missing
+        )
+        .status
+            == 403,
+        "cross-namespace restricted caller is not missing-alias success"
+    );
+    Ok(())
+}

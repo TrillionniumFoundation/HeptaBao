@@ -799,6 +799,17 @@ fn handle_entity_lookup(
             "alias_mount_accessor",
         ],
     )?;
+    // Validate the complete selector before projecting an absent alias; a
+    // malformed or ambiguous request remains an error even when no alias exists.
+    let mut selector_count = 0;
+    for field in ["id", "name", "alias_id", "alias_name"] {
+        if optional_string(body, field)?.is_some() {
+            selector_count += 1;
+        }
+    }
+    if selector_count != 1 {
+        return Err(bad("exactly one identity selector is required"));
+    }
     let mut matches = Vec::new();
     if let Some(id) = optional_string(body, "id")? {
         matches.push(id.to_owned());
@@ -828,10 +839,9 @@ fn handle_entity_lookup(
             .ok_or_else(|| bad("alias_mount_accessor is required with alias_name"))?;
         valid_alias_name(alias_name, "alias name")?;
         valid_identifier(accessor, "mount accessor")?;
-        let alias_id = state
-            .alias_keys
-            .get(&alias_key(accessor, alias_name))
-            .ok_or_else(not_found)?;
+        let Some(alias_id) = state.alias_keys.get(&alias_key(accessor, alias_name)) else {
+            return Ok(empty(false));
+        };
         matches.push(
             state
                 .aliases

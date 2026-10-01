@@ -172,7 +172,7 @@ fn jwt_user_claim_rs256_custom_alias_and_default_sub_are_distinct() -> TestResul
         "selected verified claim owns alias"
     );
     assert!(
-        alias(&mut service, &admin, "", "jwtcustom", "original-sub")?.status == 404,
+        alias(&mut service, &admin, "", "jwtcustom", "original-sub")?.status == 204,
         "registered subject does not substitute for selected alias"
     );
     assert!(
@@ -251,7 +251,7 @@ fn jwt_user_claim_missing_nonstring_and_wrong_signature_publish_nothing() -> Tes
         "wrong RSA signature rejects identity claim"
     );
     assert!(
-        alias(&mut service, &admin, "", "jwtcustom", "selected-user")?.status == 404,
+        alias(&mut service, &admin, "", "jwtcustom", "selected-user")?.status == 204,
         "failed signature creates no alias"
     );
     Ok(())
@@ -699,7 +699,7 @@ fn jwt_user_claim_remote_role_edit_vetoes_captured_completion() -> TestResult {
         "role fence retains current auth state"
     );
     assert!(
-        alias(&mut service, &admin, "", "remote", "selected-user")?.status == 404,
+        alias(&mut service, &admin, "", "remote", "selected-user")?.status == 204,
         "veto creates no identity alias"
     );
     Ok(())
@@ -849,7 +849,7 @@ fn jwt_user_claim_role_validation_preserves_previous_selector_and_subject_bindin
         "bound_subject remains registered sub rather than selected alias"
     );
     assert!(
-        alias(&mut service, &admin, "", "jwtcustom", "selected-user")?.status == 404,
+        alias(&mut service, &admin, "", "jwtcustom", "selected-user")?.status == 204,
         "failed registered subject binding creates no alias"
     );
     Ok(())

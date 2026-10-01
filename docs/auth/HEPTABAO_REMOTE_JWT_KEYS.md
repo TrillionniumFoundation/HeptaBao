@@ -185,8 +185,10 @@ use the separate OIDC mount profile; remote JWT discovery does not activate them
 JSON-pointer user selection, arbitrary claim mapping, external-group sync and
 complete JWT/OIDC API parity remain open. Custom-claim JWTs currently still
 require a registered `sub`; this increment does not claim the no-`sub` profile.
-OpenBao 2.7.0 returns 204 for an absent Identity alias lookup, while the native
-lookup currently returns 404. Omitted `role_type` follows the native JWT profile;
+A valid authorized absent Identity alias lookup returns an empty 204, following
+the separately observed OpenBao 2.7.0 representation. Invalid selectors and
+caller authorization remain errors; existing namespace routing is unchanged.
+Omitted `role_type` follows the native JWT profile;
 the public OpenBao API documents an OIDC default. These independent wire/API
 differences remain outside this selector implementation. OpenBao's remote
 key cache may retain an old key until refresh; this candidate's per-login fresh
