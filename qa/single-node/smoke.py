@@ -149,6 +149,8 @@ def run(binary: Path, root: Path, keep_running: bool):
         check("wrong_unseal_denied", instance.call("POST", "sys/unseal", {"key": "00" * 32})[0] >= 400)
         check("unseal", instance.call("POST", "sys/unseal", {"key": key})[0] == 200)
         check("active_health", instance.call("GET", "sys/health")[0] == 200)
+        check("root_kv_mount_enabled", instance.call("POST", "sys/mounts/secret",
+              {"type": "kv", "options": {"version": "2"}})[0] == 204)
         audit_path = root / "audit.jsonl"
         audit_before = len(audit_path.read_bytes().splitlines())
         leaked_token = "wire-token-must-not-appear"
@@ -188,6 +190,8 @@ def run(binary: Path, root: Path, keep_running: bool):
         check("unsupported_mfa_fails_closed", instance.call("GET", "secret/data/item", extra_headers={"X-Vault-MFA": "synthetic"})[0] == 501)
         check("secret_query_rejected", instance.call("POST", "smoke-totp/keys/leak?url=synthetic", {})[0] == 400)
         check("namespace_create", instance.call("POST", "sys/namespaces/isolated", {})[0] == 200)
+        check("namespace_kv_mount_enabled", instance.call("POST", "sys/mounts/secret",
+              {"type": "kv", "options": {"version": "2"}}, namespace="isolated")[0] == 204)
         # Equal path suffixes in distinct namespaces must not share bytes.
         check("namespace_write", instance.call("POST", "secret/data/item", {"data": {"value": "different"}}, namespace="isolated")[0] == 200)
         check("namespace_isolation", instance.call("GET", "secret/data/item")[1]["data"]["data"]["value"] == marker)
