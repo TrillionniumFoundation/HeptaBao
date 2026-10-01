@@ -335,7 +335,9 @@ class OperatorContracts(unittest.TestCase):
             value = profile.build_custody(binary, path, self.root)
             self.assertEqual(value["source_identity"], source)
             for field, changed in (("source_identity_before", self.actual["qa_source"]),
-                                   ("source_identity_after", self.actual["cli_source"]), ("binary_sha256", "wrong"), ("exit", 1)):
+                                   ("source_identity_after", self.actual["cli_source"]), ("binary_sha256", "wrong"), ("exit", 1),
+                                   ("exit", False), ("source_identity_before", {**source, "source_dirty": 0}),
+                                   ("source_identity_after", {**source, "source_dirty": 0})):
                 bad = deepcopy(receipt); bad[field] = changed
                 profile.private_write(path, bad)
                 with self.assertRaises(ValueError): profile.build_custody(binary, path, self.root)

@@ -106,11 +106,31 @@ fn install(service: &mut Service, root: &str) {
 fn pem_der(value: &str, label: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     let begin = format!("-----BEGIN {label}-----");
     let end = format!("-----END {label}-----");
+    let value = value.strip_suffix('\n').unwrap_or(value);
     let body = value
         .strip_prefix(&format!("{begin}\n"))
-        .and_then(|v| v.strip_suffix(&format!("{end}\n")))
+        .and_then(|v| v.strip_suffix(&end))
         .ok_or("bad pem")?;
     Ok(BASE64.decode(body.lines().collect::<String>())?)
+}
+
+#[test]
+fn pem_der_accepts_canonical_and_public_footer_without_final_lf() -> TestResult {
+    let public = "-----BEGIN X509 CRL-----\nMAA=\n-----END X509 CRL-----";
+    assert_eq!(pem_der(public, "X509 CRL")?, vec![0x30, 0x00]);
+    assert_eq!(
+        pem_der(&format!("{public}\n"), "X509 CRL")?,
+        vec![0x30, 0x00]
+    );
+    for malformed in [
+        format!("{public}\n\n"),
+        public.replace("-----END X509 CRL-----", "-----END CERTIFICATE-----"),
+        public.replace("-----BEGIN X509 CRL-----", "-----BEGIN CERTIFICATE-----"),
+        public.replace('\n', "\r\n"),
+    ] {
+        assert!(pem_der(&malformed, "X509 CRL").is_err());
+    }
+    Ok(())
 }
 
 #[test]

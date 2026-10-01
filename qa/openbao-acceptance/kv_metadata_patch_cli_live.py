@@ -106,9 +106,12 @@ def cli_identity(root: Path) -> dict:
 def build_custody(binary: Path, receipt: Path, source: Path) -> dict:
     value = json.loads(private_read(receipt, 2 * 1024 * 1024))
     actual = git_identity(source)
+    before, after = value.get("source_identity_before"), value.get("source_identity_after")
     if (actual["source_dirty"] or value.get("schema") != "heptabao.immutable-runtime-build-custody.v1"
-            or value.get("source_identity_before") != actual or value.get("source_identity_after") != actual
-            or value.get("source_unchanged") is not True or value.get("exit") != 0
+            or not isinstance(before, dict) or not isinstance(after, dict)
+            or before.get("source_dirty") is not False or after.get("source_dirty") is not False
+            or before != actual or after != actual
+            or value.get("source_unchanged") is not True or type(value.get("exit")) is not int or value.get("exit") != 0
             or value.get("binary_sha256") != file_hash(binary)):
         raise ValueError("candidate_build_custody_mismatch")
     return {"source_identity": actual, "binary_sha256": file_hash(binary), "receipt_sha256": file_hash(receipt)}
