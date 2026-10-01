@@ -167,6 +167,26 @@ struct NamespaceState {
     external_keys: external_keys::Registry,
 }
 
+impl NamespaceState {
+    fn initialized_empty() -> Self {
+        Self {
+            mounts: BTreeMap::new(),
+            mount_epochs: BTreeMap::new(),
+            identity: identity::IdentityState::default(),
+            external_keys: external_keys::Registry::default(),
+        }
+    }
+
+    fn is_pristine(&self) -> bool {
+        self.mounts.is_empty()
+            && self.mount_epochs.is_empty()
+            && self.identity.is_pristine()
+            && self.external_keys.is_empty()
+    }
+}
+
+// Persisted pre-existing graphs may omit a namespace entry. Their historical
+// implicit mounts remain readable. New initialization uses explicit empty entries.
 impl Default for NamespaceState {
     fn default() -> Self {
         Self {
@@ -530,6 +550,31 @@ fn list_keys<'a>(
 }
 
 impl EngineState {
+    /// New installations have no implicitly enabled secret engines. Keeping the
+    /// root entry explicit also prevents legacy readers from adding their defaults.
+    pub(crate) fn initialized_empty() -> Self {
+        let mut engines = Self::default();
+        engines.ensure_empty_namespace("");
+        engines
+    }
+
+    /// Only a newly registered namespace calls this; existing owners are retained.
+    pub(crate) fn ensure_empty_namespace(&mut self, namespace: &str) {
+        self.namespaces
+            .entry(namespace.into())
+            .or_insert_with(|| CowNamespace(Arc::new(NamespaceState::initialized_empty())));
+    }
+
+    /// Remove a pristine explicit entry together with its namespace catalog owner.
+    /// Mount/identity frontiers and registry configuration are never discarded.
+    pub(crate) fn remove_empty_namespace(&mut self, namespace: &str) -> Result<()> {
+        if namespace.is_empty() || !self.namespace_is_empty(namespace) {
+            return Err(error(409, "namespace contains engine ownership"));
+        }
+        self.namespaces.remove(namespace);
+        Ok(())
+    }
+
     pub(crate) fn has_transit_byok_state(&self) -> bool {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount|
@@ -917,12 +962,13 @@ impl EngineState {
             .collect()
     }
 
-    /// Conservative deletion fence: a namespace that ever materialized engine
-    /// state must be cleaned through the owning engine before its catalog entry
-    /// can be removed. This prevents namespace deletion from silently dropping
-    /// secret, identity or lease state.
+    /// Newly registered explicit empty namespaces are deletable. Any materialized
+    /// owner, including mount incarnations or an allocated identity frontier,
+    /// remains protected even after its visible objects have been removed.
     pub(crate) fn namespace_is_empty(&self, namespace: &str) -> bool {
-        !self.namespaces.contains_key(namespace)
+        self.namespaces
+            .get(namespace)
+            .is_none_or(|state| state.is_pristine())
     }
 
     /// The caller must authorize this capability under the same service lock used
@@ -1570,18 +1616,7 @@ impl EngineState {
         let mut cubbyhole = cubbyhole_descriptor();
         cubbyhole["options"] = Value::Null;
         mounts.insert("cubbyhole/".into(), cubbyhole);
-        for (path, kind, description) in [
-            (
-                "sys/",
-                "system",
-                "system endpoints used for control, policy and debugging",
-            ),
-            ("identity/", "identity", "identity store"),
-        ] {
-            mounts.insert(path.into(), json!({"type":kind,"description":description,
-                "options":Value::Null,"local":false,"seal_wrap":false,"external_entropy_access":false,
-                "config":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false}}));
-        }
+        add_virtual_control_mounts(&mut mounts);
         mounts
     }
 
@@ -1721,13 +1756,14 @@ impl EngineState {
             }
             let fallback = CowNamespace::default();
             let state = self.namespaces.get(namespace).unwrap_or(&fallback);
-            let mut mounts: serde_json::Map<String, Value> = state
+            let mut mounts: BTreeMap<String, Value> = state
                 .mounts
                 .iter()
                 .map(|(name, mount)| (name.clone(), mount.descriptor()))
                 .collect();
             mounts.insert("cubbyhole/".into(), cubbyhole_descriptor());
-            return Ok(Some(ok(Value::Object(mounts), false)));
+            add_virtual_control_mounts(&mut mounts);
+            return Ok(Some(ok(Value::Object(mounts.into_iter().collect()), false)));
         }
 
         if let Some(mount_path) = path.strip_prefix("sys/mounts/") {
@@ -1827,6 +1863,24 @@ impl EngineState {
                 .insert(mount_path, mount);
         }
         Ok(Some(response))
+    }
+}
+
+fn add_virtual_control_mounts(mounts: &mut BTreeMap<String, Value>) {
+    for (path, kind, description) in [
+        (
+            "sys/",
+            "system",
+            "system endpoints used for control, policy and debugging",
+        ),
+        ("identity/", "identity", "identity store"),
+    ] {
+        mounts.insert(
+            path.into(),
+            json!({"type":kind,"description":description,
+        "options":Value::Null,"local":false,"seal_wrap":false,"external_entropy_access":false,
+        "config":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false}}),
+        );
     }
 }
 

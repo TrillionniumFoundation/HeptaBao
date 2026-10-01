@@ -117,12 +117,14 @@ fn exhausted_local_operation_budget_rejects_before_new_state_effect()
         let before = service
             .current_state_digest()
             .map_err(|_| "digest unavailable")?;
+        // The empty installation's first known state mutation is mount enable.
+        // Keep the original one-operation ceiling already exhausted by init.
         let result = service.handle_at(
             "POST",
-            "secret/data/capacity",
+            "sys/mounts/capacity",
             "",
             token,
-            json!({"data": {"value": "must-not-commit"}}),
+            json!({"type":"kv","options":{"version":"2"}}),
             100,
         );
         assert_eq!(result.status, 507);
@@ -167,6 +169,7 @@ fn replay_retirement_is_root_only_and_state_commits_continue_in_new_epoch()
                 .status,
             200
         );
+        super::tests::provision_fixture_mounts(&mut service, "", token);
         let retire = "sys/storage/raft/replay-retire";
         assert_eq!(
             service

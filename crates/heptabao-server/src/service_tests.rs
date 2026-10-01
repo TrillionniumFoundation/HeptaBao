@@ -717,6 +717,43 @@ pub(super) fn call(
 pub(super) fn bootstrap(
     service: &mut Service,
 ) -> Result<(String, String), Box<dyn std::error::Error>> {
+    let result = bootstrap_unmounted(service)?;
+    provision_fixture_mounts(service, "", &result.1);
+    Ok(result)
+}
+
+// Tests that exercise existing secret engines explicitly provision their
+// prerequisite mounts. Production initialization and Default remain distinct.
+pub(super) fn provision_fixture_mounts(service: &mut Service, namespace: &str, token: &str) {
+    for (path, body) in [
+        (
+            "secret",
+            json!({"type":"kv","options":{"version":"2"},"description":"Versioned secrets"}),
+        ),
+        (
+            "transit",
+            json!({"type":"transit","description":"Cryptographic operations"}),
+        ),
+    ] {
+        assert_eq!(
+            service
+                .handle_at(
+                    "POST",
+                    &format!("sys/mounts/{path}"),
+                    namespace,
+                    token,
+                    body,
+                    100
+                )
+                .status,
+            204
+        );
+    }
+}
+
+pub(super) fn bootstrap_unmounted(
+    service: &mut Service,
+) -> Result<(String, String), Box<dyn std::error::Error>> {
     let response = call(
         service,
         "PUT",
@@ -1213,6 +1250,7 @@ fn shamir_threshold_unseal_and_online_rekey_preserve_the_barrier_key()
     assert_eq!(unsealed.status, 200);
     assert_eq!(unsealed.body["sealed"], false);
 
+    provision_fixture_mounts(&mut service, "", &root_token);
     assert_eq!(
         call(
             &mut service,
@@ -1386,6 +1424,7 @@ fn verified_rekey_survives_response_loss_restart_and_cancel()
         assert_eq!(response.status, 200);
     }
     assert!(service.state.is_some());
+    provision_fixture_mounts(&mut service, "", &root_token);
     assert_eq!(
         call(
             &mut service,

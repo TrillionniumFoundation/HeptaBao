@@ -600,7 +600,7 @@ mod tests {
     #[test]
     fn record_migration_status_is_idempotent_and_cannot_bypass_ha_admission()
     -> Result<(), Box<dyn std::error::Error>> {
-        use super::super::tests::{Root, bootstrap, call};
+        use super::super::tests::{Root, bootstrap_unmounted as bootstrap, call};
         let root = Root::new();
         let mut service = root.service()?;
         let (_, token) = bootstrap(&mut service)?;
@@ -609,6 +609,17 @@ mod tests {
                 .record_migration_status()
                 .map_err(|_| "legacy status")?
                 .is_none()
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/mounts/secret",
+                &token,
+                json!({"type":"kv","options":{"version":"2"}})
+            )
+            .status,
+            204
         );
         assert_eq!(
             call(

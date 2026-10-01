@@ -3623,7 +3623,7 @@ impl Service {
             replay_epoch: 0,
             namespaces: namespaces::NamespaceRegistry::default().into(),
             auth: auth.into(),
-            engines: EngineState::default().into(),
+            engines: EngineState::initialized_empty().into(),
             database: database::DatabaseState::default().into(),
             raft_admin: raft_admin::RaftAdminState::default().into(),
         };
@@ -7399,3 +7399,7 @@ mod ui_mounts_tests;
 #[cfg(test)]
 #[path = "service_transit_byok_tests.rs"]
 mod transit_byok_tests;
+
+#[cfg(test)]
+#[path = "service_default_mount_tests.rs"]
+mod default_mount_tests;

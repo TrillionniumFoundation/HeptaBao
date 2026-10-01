@@ -681,6 +681,7 @@ impl Service {
                 if let Err(error) = state.auth.initialize_fresh_namespace_auth(&target) {
                     return Response::error(error.status, &error.message);
                 }
+                state.engines.ensure_empty_namespace(&target);
                 state.schema = state.writer_schema();
                 if let Err(error) = state.validate_format() {
                     return error;
@@ -731,6 +732,9 @@ impl Service {
                     return error;
                 }
                 state.auth.remove_fresh_namespace_auth_defaults(&target);
+                if let Err(error) = state.engines.remove_empty_namespace(&target) {
+                    return Response::error(error.status, &error.message);
+                }
                 state.schema = state.writer_schema();
                 if let Err(error) = state.validate_format() {
                     return error;

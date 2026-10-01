@@ -227,6 +227,7 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
         .status,
         200
     );
+    super::super::tests::provision_fixture_mounts(&mut service, "team", &token);
     assert_eq!(
         service
             .handle_at(

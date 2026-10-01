@@ -261,6 +261,22 @@ fn update_entity(s: &mut Service, ns: &str, admin: &str, id: &str, body: Value) 
     );
 }
 fn read_fixture(s: &mut Service, ns: &str, admin: &str) {
+    let mounts = call(s, ns, admin, "GET", "sys/mounts", json!({}));
+    assert_eq!(mounts.status, 200);
+    if mounts.body["data"].get("secret/").is_none() {
+        assert_eq!(
+            call(
+                s,
+                ns,
+                admin,
+                "POST",
+                "sys/mounts/secret",
+                json!({"type":"kv","options":{"version":"2"}})
+            )
+            .status,
+            204
+        );
+    }
     policy(
         s,
         ns,
@@ -787,6 +803,9 @@ fn identity_schema_promotes_before_a_mutating_response_and_survives_reopen() -> 
     // Materialize an exact schema-1 fixture to model the previously supported
     // on-disk format; no runtime API permits downgrading this discriminator.
     let mut legacy = s.state.clone().ok_or("state")?;
+    // Construct the supported historical implicit engine representation for
+    // this schema-one input, without dispatching a current mount publication.
+    legacy.engines = EngineState::default().into();
     legacy.schema = 1;
     legacy.auth.remove_name_modes_for_legacy_format_test();
     legacy.auth.omit_lease_metadata_for_legacy_fixture();
@@ -886,6 +905,9 @@ fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestR
             .remove("auth_provenance");
     }
     legacy.auth = serde_json::from_value::<AuthState>(encoded_auth)?.into();
+    // Construct the supported historical implicit engine representation for
+    // this schema-one input, without dispatching a current mount publication.
+    legacy.engines = EngineState::default().into();
     legacy.schema = 1;
     legacy.auth.remove_name_modes_for_legacy_format_test();
     legacy.auth.omit_lease_metadata_for_legacy_fixture();

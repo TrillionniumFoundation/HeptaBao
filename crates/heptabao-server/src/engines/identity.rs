@@ -1545,6 +1545,19 @@ fn not_found() -> super::EngineError {
 }
 
 impl IdentityState {
+    /// Deleting all visible objects does not reset identifier ownership.
+    pub(super) fn is_pristine(&self) -> bool {
+        self.next_id == 0
+            && self.entities.is_empty()
+            && self.entity_names.is_empty()
+            && self.aliases.is_empty()
+            && self.alias_keys.is_empty()
+            && self.groups.is_empty()
+            && self.group_names.is_empty()
+            && self.group_aliases.is_empty()
+            && self.group_alias_keys.is_empty()
+    }
+
     fn allocate_id(&mut self, prefix: char) -> Result<String> {
         let next = self
             .next_id

@@ -235,7 +235,7 @@ mod tests {
     -> Result<(), Box<dyn std::error::Error>> {
         let root = Root::new();
         let mut service = root.service()?;
-        let (_, token) = bootstrap(&mut service)?;
+        let (_, token) = super::super::tests::bootstrap_unmounted(&mut service)?;
         let generation = service
             .durable
             .as_ref()

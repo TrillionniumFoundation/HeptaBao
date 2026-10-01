@@ -1043,7 +1043,7 @@ mod tests {
     fn first_dispatch_mutation_publishes_one_atomic_root_and_reopens() -> TestResult {
         let directory = Root::new();
         let mut service = directory.service()?;
-        let (key, token) = bootstrap(&mut service)?;
+        let (key, token) = super::super::tests::bootstrap_unmounted(&mut service)?;
         assert!(service.record_root.is_none());
         let before = service.durable.as_ref().ok_or("durable")?.generation();
         assert_eq!(

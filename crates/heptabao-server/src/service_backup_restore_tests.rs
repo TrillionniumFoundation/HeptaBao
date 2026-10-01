@@ -309,7 +309,7 @@ fn owner_format_backup_restore_preserves_legacy_format_without_forcing_record_mi
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, token) = bootstrap(&mut service)?;
+    let (_, token) = super::super::tests::bootstrap_unmounted(&mut service)?;
     assert!(service.record_root.is_none());
     let backup = archive(&service)?;
     let before = state_record(&service)?;

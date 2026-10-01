@@ -176,10 +176,29 @@ impl Service {
 
 #[cfg(test)]
 mod tests {
-    use super::super::tests::{Root, bootstrap, call};
+    use super::super::tests::{Root, bootstrap_unmounted, call};
     use super::*;
 
     type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+    fn bootstrap(service: &mut Service) -> TestResult<(String, String)> {
+        let result = bootstrap_unmounted(service)?;
+        assert!(service.record_root.is_none());
+        let mut state = service.state.clone().ok_or("state")?;
+        state.engines.handle(
+            "",
+            "POST",
+            "sys/mounts/secret",
+            &json!({"type":"kv","options":{"version":"2"}}),
+            100,
+        )?;
+        service
+            .commit_state(&state)
+            .map_err(|_| "V4 fixture mount publication")?;
+        service.state = Some(state);
+        assert!(service.record_root.is_none());
+        Ok(result)
+    }
 
     fn verified(service: &Service) -> TestResult<CommittedApplicationState> {
         let state = service.state.as_ref().ok_or("missing state")?;

@@ -68,6 +68,17 @@ fn bootstrap(service: &mut Service) -> Result<(String, String), Box<dyn std::err
         call(service, "", "POST", "sys/unseal", json!({"key":key})).status,
         200
     );
+    assert_eq!(
+        call(
+            service,
+            &root,
+            "POST",
+            "sys/mounts/secret",
+            json!({"type":"kv","options":{"version":"2"}})
+        )
+        .status,
+        204
+    );
     Ok((root, key))
 }
 fn token(

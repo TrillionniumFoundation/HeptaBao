@@ -1,5 +1,5 @@
 use super::owner_store::{self, STATE_STORAGE_FORMAT};
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, bootstrap_unmounted as bootstrap, call};
 use super::*;
 
 fn current_manifest(
@@ -26,6 +26,17 @@ fn legacy_owner_write(
 ) -> Result<Response, Box<dyn std::error::Error>> {
     assert!(service.record_root.is_none());
     let mut state = service.state.clone().ok_or("state")?;
+    // Mount and write belong to this constructed V4 candidate, preserving the
+    // original single publication and its exact generation/owner assertions.
+    if path.starts_with("secret/") && !state.engines.ui_secret_mounts("").contains_key("secret/") {
+        state.engines.handle(
+            "",
+            "POST",
+            "sys/mounts/secret",
+            &json!({"type":"kv","options":{"version":"2"}}),
+            100,
+        )?;
+    }
     let mut response = state
         .engines
         .handle("", "PUT", path, &body, 100)?

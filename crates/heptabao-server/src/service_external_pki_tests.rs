@@ -1156,7 +1156,21 @@ fn external_pki270_namespace_registry_and_remote_namespace_cannot_cross_authorit
                 == 200,
             "remote namespace create"
         );
-        // This native test fixture creates each namespace with a Transit mount.
+        // Namespace creation is engine-empty. Explicitly provision its provider.
+        assert!(
+            provider
+                .handle_at(
+                    "POST",
+                    "sys/mounts/transit",
+                    "provider-team",
+                    &remote.admin,
+                    json!({"type":"transit"}),
+                    100
+                )
+                .status
+                == 204,
+            "remote namespace Transit mount"
+        );
         assert!(
             provider
                 .handle_at(

@@ -1190,6 +1190,9 @@ mod tests {
         assert!(state.validate_format().is_err());
         let (auth, _) = AuthState::bootstrap(100)?;
         state.auth = auth.into();
+        // This final control is an auth-only historical schema-four input.
+        // Current fixture mount frontiers are separate state-format features.
+        state.engines = EngineState::default().into();
         state.auth.remove_name_modes_for_legacy_format_test();
         state.auth.omit_lease_metadata_for_legacy_fixture();
         state.schema = 4;
