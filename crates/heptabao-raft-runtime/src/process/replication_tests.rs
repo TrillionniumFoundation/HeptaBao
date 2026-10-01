@@ -570,7 +570,6 @@ async fn accumulated_replay_uses_small_batches_inside_unchanged_peer_budget()
         first.change_membership(BTreeSet::from([1, 2, 3])).await?;
         router.paused.write().await.insert(3);
         let mut last = None;
-        let mut last_receipt_index = None;
         for serial in 1..=45 {
             let envelope = ReplicatedEnvelope::new(
                 format!("paced-once-{serial}"),
@@ -578,24 +577,11 @@ async fn accumulated_replay_uses_small_batches_inside_unchanged_peer_budget()
                 vec![serial as u8; 8 * 1024],
             )?;
             let receipt = first.replicate(serial, &envelope).await?;
-            last_receipt_index = Some(receipt.log_index);
-            eprintln!(
-                "frontier_diagnostic stage=ack serial={} receipt_index={} leader_applied={:?}",
-                serial,
-                receipt.log_index,
-                first.local_leader_observation()?.applied_index
-            );
-            last = Some(envelope);
+            last = Some((envelope, receipt.log_index));
         }
-        let expected = last.ok_or("last expected envelope")?;
-        let frontier = first
-            .local_leader_observation()?
-            .applied_index
-            .ok_or("leader frontier")?;
-        eprintln!(
-            "frontier_diagnostic stage=wait last_receipt={:?} sampled_frontier={}",
-            last_receipt_index, frontier
-        );
+        // Passive leader metrics may still precede the client-write acknowledgement.
+        // Catch up through the actual last committed envelope, including its suffix.
+        let (expected, frontier) = last.ok_or("last expected envelope")?;
         router.paced_target.store(3, Ordering::SeqCst);
         router.paused.write().await.clear();
         let caught_up = tokio::time::timeout(Duration::from_secs(8), async {
@@ -614,19 +600,14 @@ async fn accumulated_replay_uses_small_batches_inside_unchanged_peer_budget()
         caught_up.map_err(
             |_| "fixed RPC budget repeatedly rejected the same accumulated replay batch",
         )??;
-        let observed = nodes[2].latest_envelope().await?.ok_or("replica state")?;
-        let fixture_ordinal = observed
-            .operation_id()
-            .strip_prefix("paced-once-")
-            .and_then(|serial| serial.parse::<u64>().ok());
-        eprintln!(
-            "frontier_diagnostic stage=exit last_receipt={:?} sampled_frontier={} follower_applied={:?} fixture_ordinal={:?}",
-            last_receipt_index,
-            frontier,
-            nodes[2].local_leader_observation()?.applied_index,
-            fixture_ordinal
+        assert_eq!(
+            nodes[2]
+                .latest_envelope()
+                .await?
+                .ok_or("replica state")?
+                .digest(),
+            expected.digest()
         );
-        assert_eq!(observed.digest(), expected.digest());
         assert_eq!(
             router.paced_budget_ms.load(Ordering::SeqCst),
             150,
@@ -676,7 +657,6 @@ async fn failed_replay_adapts_contiguous_prefix_without_acknowledging_unsent_suf
         first.change_membership(BTreeSet::from([1, 2, 3])).await?;
         router.paused.write().await.insert(3);
         let mut last = None;
-        let mut last_receipt_index = None;
         for serial in 1..=20 {
             let envelope = ReplicatedEnvelope::new(
                 format!("paced-once-{serial}"),
@@ -684,24 +664,11 @@ async fn failed_replay_adapts_contiguous_prefix_without_acknowledging_unsent_suf
                 vec![serial as u8; 8 * 1024],
             )?;
             let receipt = first.replicate(serial, &envelope).await?;
-            last_receipt_index = Some(receipt.log_index);
-            eprintln!(
-                "frontier_diagnostic stage=ack serial={} receipt_index={} leader_applied={:?}",
-                serial,
-                receipt.log_index,
-                first.local_leader_observation()?.applied_index
-            );
-            last = Some(envelope);
+            last = Some((envelope, receipt.log_index));
         }
-        let expected = last.ok_or("last expected envelope")?;
-        let frontier = first
-            .local_leader_observation()?
-            .applied_index
-            .ok_or("leader frontier")?;
-        eprintln!(
-            "frontier_diagnostic stage=wait last_receipt={:?} sampled_frontier={}",
-            last_receipt_index, frontier
-        );
+        // Passive leader metrics may still precede the client-write acknowledgement.
+        // Catch up through the actual last committed envelope, including its suffix.
+        let (expected, frontier) = last.ok_or("last expected envelope")?;
         router
             .paced_max_append_bytes
             .store(32 * 1024, Ordering::SeqCst);
@@ -723,19 +690,14 @@ async fn failed_replay_adapts_contiguous_prefix_without_acknowledging_unsent_suf
         caught_up.map_err(
             |_| "fixed RPC budget repeatedly rejected the same accumulated replay batch",
         )??;
-        let observed = nodes[2].latest_envelope().await?.ok_or("replica state")?;
-        let fixture_ordinal = observed
-            .operation_id()
-            .strip_prefix("paced-once-")
-            .and_then(|serial| serial.parse::<u64>().ok());
-        eprintln!(
-            "frontier_diagnostic stage=exit last_receipt={:?} sampled_frontier={} follower_applied={:?} fixture_ordinal={:?}",
-            last_receipt_index,
-            frontier,
-            nodes[2].local_leader_observation()?.applied_index,
-            fixture_ordinal
+        assert_eq!(
+            nodes[2]
+                .latest_envelope()
+                .await?
+                .ok_or("replica state")?
+                .digest(),
+            expected.digest()
         );
-        assert_eq!(observed.digest(), expected.digest());
         assert_eq!(
             router.paced_budget_ms.load(Ordering::SeqCst),
             150,
@@ -753,6 +715,106 @@ async fn failed_replay_adapts_contiguous_prefix_without_acknowledging_unsent_suf
     }
     .await;
     router.paced_target.store(0, Ordering::SeqCst);
+    router.paused.write().await.clear();
+    router.peers.write().await.clear();
+    for node in nodes {
+        node.shutdown().await?;
+    }
+    std::fs::remove_dir_all(path)?;
+    result
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn retained_passive_frontier_does_not_cover_later_acknowledged_suffix()
+-> Result<(), Box<dyn std::error::Error>> {
+    let path = std::env::temp_dir().join(format!("heptabao-ack-frontier-{}", std::process::id()));
+    let router = Arc::new(Router::default());
+    let mut nodes = Vec::new();
+    for id in 1..=3 {
+        let network = RemoteNetworkFactory::new(
+            id,
+            BTreeSet::from([1, 2, 3]),
+            Arc::new(Arc::clone(&router)),
+        )?;
+        let node = ProcessRaftNode::create(path.join(id.to_string()), id, network).await?;
+        router.peers.write().await.insert(id, node.rpc_service());
+        nodes.push(node);
+    }
+    let result = async {
+        let first = &nodes[0];
+        first.initialize_single().await?;
+        leader(first, 1).await?;
+        first.add_learner(2).await?;
+        first.add_learner(3).await?;
+        first.change_membership(BTreeSet::from([1, 2, 3])).await?;
+        let mut prefix = None;
+        for serial in 1..=19 {
+            let envelope = ReplicatedEnvelope::new(
+                format!("ack-frontier-{serial}"),
+                [serial as u8; 32],
+                vec![serial as u8; 8 * 1024],
+            )?;
+            let receipt = first.replicate(serial, &envelope).await?;
+            prefix = Some((envelope, receipt.log_index));
+        }
+        let (prefix, prefix_index) = prefix.ok_or("acknowledged prefix")?;
+        tokio::time::timeout(Duration::from_secs(8), async {
+            while first.local_leader_observation()?.applied_index < Some(prefix_index)
+                || nodes[2].local_leader_observation()?.applied_index < Some(prefix_index)
+            {
+                tokio::time::sleep(Duration::from_millis(20)).await;
+            }
+            Ok::<_, RemoteRaftError>(())
+        })
+        .await
+        .map_err(|_| "acknowledged prefix was not applied")??;
+        router.paused.write().await.insert(3);
+        // This is a real retained observation, rather than a fabricated receipt/index.
+        let retained_frontier = first
+            .local_leader_observation()?
+            .applied_index
+            .ok_or("retained leader frontier")?;
+        let suffix = ReplicatedEnvelope::new("ack-frontier-20", [20; 32], vec![20; 8 * 1024])?;
+        let receipt = first.replicate(20, &suffix).await?;
+        let follower_frontier = nodes[2].local_leader_observation()?.applied_index;
+        assert_eq!(retained_frontier, prefix_index);
+        assert!(retained_frontier < receipt.log_index);
+        assert!(
+            follower_frontier >= Some(retained_frontier),
+            "the old passive-metrics target already admits this incomplete prefix"
+        );
+        assert!(
+            follower_frontier < Some(receipt.log_index),
+            "the actual suffix acknowledgement must not admit the incomplete prefix"
+        );
+        assert_eq!(
+            nodes[2]
+                .latest_envelope()
+                .await?
+                .ok_or("replica prefix")?
+                .digest(),
+            prefix.digest()
+        );
+        router.paused.write().await.clear();
+        tokio::time::timeout(Duration::from_secs(8), async {
+            while nodes[2].local_leader_observation()?.applied_index < Some(receipt.log_index) {
+                tokio::time::sleep(Duration::from_millis(20)).await;
+            }
+            Ok::<_, RemoteRaftError>(())
+        })
+        .await
+        .map_err(|_| "acknowledged suffix was not applied")??;
+        assert_eq!(
+            nodes[2]
+                .latest_envelope()
+                .await?
+                .ok_or("replica suffix")?
+                .digest(),
+            suffix.digest()
+        );
+        Ok::<_, Box<dyn std::error::Error>>(())
+    }
+    .await;
     router.paused.write().await.clear();
     router.peers.write().await.clear();
     for node in nodes {
