@@ -696,7 +696,7 @@ def main():
         "source_worktree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
         "source_binary_binding": "recorded_not_independently_attested",
         "started_at_unix": time.time(), "cases": rows, "required_case_count": len(EXPECTED_CASES),
-        "deliberate_transport_differences": ["candidate refuses API TLS trust overrides and skip-verify; only immutable deployment enrollment is authoritative"]}
+        "deliberate_transport_differences": ["candidate accepts API CA/SNI only as assertions of immutable deployment enrollment; additional trust roots, mismatched SNI and skip-verify are refused; mutual TLS API values remain unsupported"]}
     try:
         Trace(rows).check("candidate.binary_before_hash", result["actual_binary_sha256_before"] == args.expected_binary_sha256)
         result.update(run(binary, rows))
