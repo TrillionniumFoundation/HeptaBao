@@ -72,7 +72,7 @@ class RootRotationStatementsContractTests(unittest.TestCase):
         rotation = (ROOT / "crates/heptabao-server/src/service_database_rotation.rs").read_text()
         self.assertGreaterEqual(parse_current_schema(service), 57)
         self.assertIn("database root rotation statements require schema 57", identity)
-        self.assertRegex(identity, r"(?s)match self.schema\s*\{.*?\b57\b[^=]*\|\s*CURRENT_STATE_SCHEMA\s*\|\s*AAD_BOUND_STATE_SCHEMA\s*\|\s*TYPED_PKI_STATE_SCHEMA\s*=>\s*Ok\(\(\)\)")
+        self.assertRegex(identity, r"(?s)match self.schema\s*\{.*?\b57\b[^=]*\|\s*CURRENT_STATE_SCHEMA\s*\|\s*AAD_BOUND_STATE_SCHEMA\s*\|\s*TYPED_PKI_STATE_SCHEMA\s*\|\s*JWT_USER_CLAIM_STATE_SCHEMA\s*=>\s*Ok\(\(\)\)")
         self.assertIn("has_root_rotation_statement_state", database)
         self.assertIn("!connection.root_rotation_statements.is_empty()", database)
         self.assertIn("!rotation.statements.is_empty()", database)
