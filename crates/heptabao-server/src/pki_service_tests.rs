@@ -66,6 +66,15 @@ fn start(service: &mut Service) -> Result<(String, String), Box<dyn std::error::
     Ok((root, key))
 }
 fn install(service: &mut Service, root: &str) {
+    install_with_key_type(service, root, None);
+}
+fn install_with_key_type(service: &mut Service, root: &str, key_type: Option<&str>) {
+    let mut root_body = json!({"common_name":"ca.example.test","ttl":"48h"});
+    let mut role_body = json!({"allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"2h","generate_lease":true});
+    if let Some(key_type) = key_type {
+        root_body["key_type"] = json!(key_type);
+        role_body["key_type"] = json!(key_type);
+    }
     assert_eq!(
         call(
             service,
@@ -84,22 +93,14 @@ fn install(service: &mut Service, root: &str) {
             root,
             "POST",
             "pki/root/generate/internal",
-            json!({"common_name":"ca.example.test","ttl":"48h"}),
+            root_body,
             100
         )
         .status,
         200
     );
     assert_eq!(
-        call(
-            service,
-            root,
-            "POST",
-            "pki/roles/web",
-            json!({"allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"2h","generate_lease":true}),
-            100
-        )
-        .status,
+        call(service, root, "POST", "pki/roles/web", role_body, 100).status,
         200
     );
 }
@@ -442,12 +443,44 @@ fn pki_extension_protocol_routes_remain_explicitly_unsupported() -> TestResult {
 }
 
 #[test]
-fn pki_default_shape_remains_readable_as_schema57_without_new_fields() -> TestResult {
+fn pki_new_default_typed_shape_requires_schema72_and_rejects_legacy_labels() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;
     let (root, _) = start(&mut s)?;
     install(&mut s, &root);
+    let role = call(&mut s, &root, "GET", "pki/roles/web", json!({}), 101);
+    assert_eq!(role.status, 200);
+    assert_eq!(role.body["data"]["key_type"], "rsa");
+    assert_eq!(role.body["data"]["key_bits"], 2048);
     let state = s.state.as_ref().ok_or("state")?;
+    assert!(state.engines.has_local_typed_pki_state());
+    assert_eq!(state.schema, LOCAL_TYPED_PKI_STATE_SCHEMA);
+    assert_eq!(state.writer_schema(), LOCAL_TYPED_PKI_STATE_SCHEMA);
+    assert!(state.validate_format().is_ok());
+    for schema in [57, 59, CURRENT_STATE_SCHEMA] {
+        let mut disguised = state.clone();
+        disguised.schema = schema;
+        let rejected = disguised
+            .validate_format()
+            .err()
+            .ok_or("typed local key admitted as historical PKI shape")?;
+        assert_eq!(rejected.status, 503);
+        assert_eq!(
+            rejected.body["errors"][0],
+            "typed local PKI keys require schema 72"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn pki_default_shape_remains_readable_as_schema57_without_new_fields() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, _) = start(&mut s)?;
+    install_with_key_type(&mut s, &root, Some("ed25519"));
+    let state = s.state.as_ref().ok_or("state")?;
+    assert!(!state.engines.has_local_typed_pki_state());
     assert!(!state.engines.has_pki_extension_state());
     let encoded = serde_json::to_value(&state.engines)?;
     let text = encoded.to_string();
@@ -469,7 +502,7 @@ fn pki_extension_state_requires_schema59_independently() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;
     let (root, _) = start(&mut s)?;
-    install(&mut s, &root);
+    install_with_key_type(&mut s, &root, Some("ed25519"));
     assert_eq!(
         call(
             &mut s,
@@ -483,6 +516,7 @@ fn pki_extension_state_requires_schema59_independently() -> TestResult {
         200
     );
     let state = s.state.as_ref().ok_or("state")?;
+    assert!(!state.engines.has_local_typed_pki_state());
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     assert!(state.engines.has_pki_extension_state());
     assert!(state.validate_format().is_ok());
