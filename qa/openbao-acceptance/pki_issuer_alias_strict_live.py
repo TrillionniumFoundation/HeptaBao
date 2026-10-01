@@ -223,7 +223,9 @@ def main():
                     except Exception: pass
             do_GET=dispatch; do_POST=dispatch; do_PUT=dispatch
         proxy=ThreadingHTTPServer(('127.0.0.1',port()),Proxy); proxy.daemon_threads=True
-        context=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER); context.load_cert_chain(str(tls/'tls.crt'),str(tls/'tls.key'))
+        context=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.minimum_version=ssl.TLSVersion.TLSv1_2
+        context.load_cert_chain(str(tls/'tls.crt'),str(tls/'tls.key'))
         proxy.socket=context.wrap_socket(proxy.socket,server_side=True)
         thread=threading.Thread(target=proxy.serve_forever,daemon=True); thread.start()
         if a.mode=='oracle':
