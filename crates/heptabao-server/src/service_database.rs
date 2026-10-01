@@ -2620,7 +2620,7 @@ impl Service {
         execute.unwrap_or_else(|e| e)
     }
     fn publish_database(&mut self, mut state: State) -> Result<(), Response> {
-        state.schema = CURRENT_STATE_SCHEMA;
+        state.schema = state.writer_schema();
         state.validate_format()?;
         self.commit_state(&state)?;
         self.state = Some(state);

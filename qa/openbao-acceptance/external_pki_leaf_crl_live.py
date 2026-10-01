@@ -21,7 +21,7 @@ import urllib.request
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
-from bao_http import Client, SafeArgumentParser, private_read, private_write
+from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
 from official_openbao_launcher import file_digest, pinned_artifact, start_oracle, stop_oracle, restart_oracle
 import external_transit_consumer_live as shared
 
@@ -36,7 +36,15 @@ def bounded_native_instance(smoke,binary,root):
         def call(self,method,path,body=None,*,token=None):
             selected=self.token if token is None else token
             client=Client(self.address,str(self.root/"ca.crt"),selected or "synthetic-uninitialized-client",timeout=HTTP_TIMEOUT_SECONDS)
-            response=client.request(method,"/v1/"+path,body,token=selected)
+            try:response=client.request(method,"/v1/"+path,body,token=selected)
+            except BaoError as error:
+                # The inherited startup poll distinguishes unavailable TLS
+                # listeners from certificate rejection using the original
+                # exception. Preserve that distinction for its health read.
+                cause=error.__context__
+                if method=="GET" and path=="sys/health" and str(error)=="transport_read_failed" and isinstance(cause,(OSError,urllib.error.URLError)):
+                    raise cause
+                raise
             return response.status,response.body
     return BoundedInstance(binary,root)
 

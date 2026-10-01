@@ -291,7 +291,7 @@ impl Service {
         match dispatch {
             crate::engines::kubernetes::Dispatch::Immediate(mut response) => {
                 if response.mutated {
-                    state.schema = CURRENT_STATE_SCHEMA;
+                    state.schema = state.writer_schema();
                     if let Err(error) = state.validate_format() {
                         return error;
                     }
@@ -308,7 +308,7 @@ impl Service {
             }
             crate::engines::kubernetes::Dispatch::External(plan) => {
                 let plan = *plan;
-                state.schema = CURRENT_STATE_SCHEMA;
+                state.schema = state.writer_schema();
                 if let Err(error) = state.validate_format() {
                     return error;
                 }
@@ -412,7 +412,7 @@ impl Service {
             Ok(response) => response,
             Err(_) => return post_provider_completion_failure(&plan.inner.lease_id),
         };
-        state.schema = CURRENT_STATE_SCHEMA;
+        state.schema = state.writer_schema();
         if state.validate_format().is_err() || self.commit_state(&state).is_err() {
             return post_provider_completion_failure(&plan.inner.lease_id);
         }

@@ -520,7 +520,7 @@ fn wrapping_format_rejects_legacy_rebinding_and_critical_record_tampering() -> T
     );
     assert_eq!(response.status, 200);
     let current = serde_json::to_value(s.state.as_ref().ok_or("state")?)?;
-    for version in [1, 2, CURRENT_STATE_SCHEMA + 1] {
+    for version in [1, 2, AAD_BOUND_STATE_SCHEMA + 1] {
         let mut candidate = current.clone();
         candidate["schema"] = json!(version);
         assert!(

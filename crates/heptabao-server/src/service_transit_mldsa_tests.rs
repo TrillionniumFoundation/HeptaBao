@@ -63,7 +63,7 @@ fn mldsa270_service_promotes_only_on_write_fences_legacy_and_reopens_signatures(
         .validate_format()
         .map_err(|_| "schema 62 ML-DSA validation")?;
     let mut future = state.clone();
-    future.schema = CURRENT_STATE_SCHEMA + 1;
+    future.schema = AAD_BOUND_STATE_SCHEMA + 1;
     assert!(future.validate_format().is_err());
     let mut disguised = state.clone();
     disguised.schema = 61;
@@ -265,7 +265,7 @@ fn asymmetric270_service_promotes_schema65_fences_disguised64_and_reopens_true_s
         503
     );
     let mut future = state.clone();
-    future.schema = 66;
+    future.schema = AAD_BOUND_STATE_SCHEMA + 1;
     assert_eq!(
         future
             .validate_format()

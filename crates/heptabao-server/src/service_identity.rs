@@ -5,7 +5,53 @@ use super::*;
 use crate::auth::{AuthError, AuthResponse};
 
 impl State {
+    /// Preserve unknown schemas for admission to reject; never normalize them
+    /// into an older supported format. The all-namespace scan also finds safe
+    /// material introduced by the current candidate before its first commit.
+    pub(super) fn writer_schema(&self) -> u32 {
+        if self.schema == 0 || self.schema > AAD_BOUND_STATE_SCHEMA {
+            return self.schema;
+        }
+        let required = if self.engines.has_aad_bound_convergent_state() {
+            AAD_BOUND_STATE_SCHEMA
+        } else {
+            CURRENT_STATE_SCHEMA
+        };
+        self.schema.max(required)
+    }
+
+    pub(super) fn validate_publication_schema(
+        &self,
+        previous: Option<&State>,
+    ) -> Result<(), Response> {
+        if self.schema == 0 || self.schema > AAD_BOUND_STATE_SCHEMA {
+            return Err(Response::error(
+                503,
+                "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < AAD_BOUND_STATE_SCHEMA
+            && (self.engines.has_aad_bound_convergent_state()
+                || previous.is_some_and(|state| state.schema >= AAD_BOUND_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "AAD-bound convergent keys require schema 66",
+            ));
+        }
+        Ok(())
+    }
+
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        if self.schema < AAD_BOUND_STATE_SCHEMA && self.engines.has_aad_bound_convergent_state() {
+            return Err(Response::error(
+                503,
+                "AAD-bound convergent keys require schema 66",
+            ));
+        }
+        self.engines
+            .validate_aad_bound_convergent_state()
+            .map_err(|_| Response::error(503, "invalid AAD-bound convergent key state"))?;
         if self.schema < 65 && self.engines.has_asymmetric_state() {
             return Err(Response::error(
                 503,
@@ -584,10 +630,69 @@ impl State {
                 Ok(())
             }
             3 if pre_database && !self.auth.has_remote_jwt_state() => Ok(()),
-            4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21
-            | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37
-            | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52 | 53
-            | 54 | 55 | 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 | 64 | CURRENT_STATE_SCHEMA => Ok(()),
+            4
+            | 5
+            | 6
+            | 7
+            | 8
+            | 9
+            | 10
+            | 11
+            | 12
+            | 13
+            | 14
+            | 15
+            | 16
+            | 17
+            | 18
+            | 19
+            | 20
+            | 21
+            | 22
+            | 23
+            | 24
+            | 25
+            | 26
+            | 27
+            | 28
+            | 29
+            | 30
+            | 31
+            | 32
+            | 33
+            | 34
+            | 35
+            | 36
+            | 37
+            | 38
+            | 39
+            | 40
+            | 41
+            | 42
+            | 43
+            | 44
+            | 45
+            | 46
+            | 47
+            | 48
+            | 49
+            | 50
+            | 51
+            | 52
+            | 53
+            | 54
+            | 55
+            | 56
+            | 57
+            | 58
+            | 59
+            | 60
+            | 61
+            | 62
+            | 63
+            | 64
+            | CURRENT_STATE_SCHEMA
+            | AAD_BOUND_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

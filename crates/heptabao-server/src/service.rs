@@ -47,7 +47,10 @@ use crate::state_record_root::RecordStateRoot;
 // Schema 63 adds the namespace-scoped External Keys registry.
 // Schema 64 adds reference-only external Transit versions; no local key material.
 // Schema 65 adds EC/RSA Transit keys and public-key-only external PKI roots/CSR state.
+// Ordinary writers retain the exact schema-65 durable contract. Explicit
+// AAD-bound convergent material activates schema 66 irreversibly for this store.
 const CURRENT_STATE_SCHEMA: u32 = 65;
+const AAD_BOUND_STATE_SCHEMA: u32 = 66;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -2110,7 +2113,7 @@ impl Service {
         // token can be rejected/consumed. Observed expiry cannot be undone by
         // a later clock rollback, process restart, or HA leader change.
         if !owner_manifest_migration && Self::reconcile_lease_owners(&mut admitted, now) {
-            admitted.schema = CURRENT_STATE_SCHEMA;
+            admitted.schema = admitted.writer_schema();
             if let Err(error) = self.commit_state(&admitted) {
                 return error;
             }
@@ -2126,7 +2129,7 @@ impl Service {
             && (path.starts_with("sys/wrapping/") || admitted.auth.is_wrapping_token(token))
             && admitted.auth.advance_wrapping_clock(now)
         {
-            admitted.schema = CURRENT_STATE_SCHEMA;
+            admitted.schema = admitted.writer_schema();
             if let Err(error) = self.commit_state(&admitted) {
                 return error;
             }
@@ -2167,7 +2170,7 @@ impl Service {
             }
         };
         if principal.as_ref().is_some_and(Principal::consumed_use) {
-            admitted.schema = CURRENT_STATE_SCHEMA;
+            admitted.schema = admitted.writer_schema();
             if let Err(error) = self.commit_state(&admitted) {
                 return error;
             }
@@ -2546,6 +2549,12 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
+        // The first safe-key mutation needs the new schema before record
+        // preflight. Ordinary legacy reads retain their original schema until
+        // a proven logical mutation, as before.
+        if admitted.engines.has_aad_bound_convergent_state() {
+            admitted.schema = admitted.writer_schema();
+        }
         if admitted.engines.record_root().is_some() {
             let mut plan = match self.prepare_record_plan(&admitted) {
                 Ok(plan) => plan,
@@ -2556,7 +2565,7 @@ impl Service {
                 Err(error) => return error,
             };
             if plan.identity != current {
-                admitted.schema = CURRENT_STATE_SCHEMA;
+                admitted.schema = admitted.writer_schema();
                 plan = match self.prepare_record_plan(&admitted) {
                     Ok(plan) => plan,
                     Err(error) => return error,
@@ -2575,8 +2584,8 @@ impl Service {
         match classify_request_effect(method, before_digest, serialized_digest) {
             RequestEffectClass::PureRead => {}
             RequestEffectClass::DurableMutation | RequestEffectClass::SideEffectingRead => {
-                if admitted.schema != CURRENT_STATE_SCHEMA {
-                    admitted.schema = CURRENT_STATE_SCHEMA;
+                if admitted.schema != admitted.writer_schema() {
+                    admitted.schema = admitted.writer_schema();
                 }
                 if let Err(error) = admitted.validate_format() {
                     return error;
@@ -3257,6 +3266,7 @@ impl Service {
         next_digest: [u8; 32],
         allow_legacy_migration: bool,
     ) -> Result<(), Response> {
+        state.validate_publication_schema(self.state.as_ref())?;
         if state.engines.record_root().is_some() {
             let plan = self.prepare_record_plan(state)?;
             return self.commit_record_plan(state, plan);
@@ -4948,7 +4958,7 @@ impl Service {
             };
             let retired_requests = durable.retained_request_count();
             let retired_through_generation = durable.generation();
-            next_state.schema = CURRENT_STATE_SCHEMA;
+            next_state.schema = next_state.writer_schema();
             next_state.replay_epoch = current_epoch;
 
             // The epoch marker is part of the authoritative application state.
@@ -5156,6 +5166,7 @@ impl Service {
         target_replay_epoch: u64,
         allow_legacy_migration: bool,
     ) -> Result<(), Response> {
+        state.validate_publication_schema(self.state.as_ref())?;
         let durable = self
             .durable
             .as_ref()
@@ -5350,6 +5361,7 @@ impl Service {
         target_replay_epoch: u64,
         batch: OwnerBatchInput,
     ) -> Result<(), Response> {
+        state.validate_publication_schema(self.state.as_ref())?;
         let durable = self
             .durable
             .as_mut()

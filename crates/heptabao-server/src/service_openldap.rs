@@ -209,7 +209,7 @@ impl Service {
             .engines
             .openldap_prepare_effect(&namespace, &mount, &lease_id, now, force_revoke)
             .map_err(|_| "cannot reconstruct OpenLDAP provider intent")?;
-        next.schema = CURRENT_STATE_SCHEMA;
+        next.schema = next.writer_schema();
         next.validate_format()
             .map_err(|_| "OpenLDAP maintenance state validation failed")?;
         let fingerprint =
@@ -424,7 +424,7 @@ impl Service {
                     Ok(response) => response,
                     Err(error) => return Response::error(error.status, &error.message),
                 };
-                state.schema = CURRENT_STATE_SCHEMA;
+                state.schema = state.writer_schema();
                 if let Err(error) = self.commit_state(&state) {
                     return error;
                 }
@@ -445,7 +445,7 @@ impl Service {
                         Ok(plan) => plan,
                         Err(error) => return Response::error(error.status, &error.message),
                     };
-                state.schema = CURRENT_STATE_SCHEMA;
+                state.schema = state.writer_schema();
                 if let Err(error) = self.commit_state(&state) {
                     return error;
                 }
@@ -478,7 +478,7 @@ impl Service {
         match dispatch {
             openldap::Dispatch::Immediate(mut response) => {
                 if response.mutated {
-                    state.schema = CURRENT_STATE_SCHEMA;
+                    state.schema = state.writer_schema();
                     if let Err(error) = state.validate_format() {
                         return error;
                     }
@@ -495,7 +495,7 @@ impl Service {
             }
             openldap::Dispatch::External(plan) => {
                 let plan = *plan;
-                state.schema = CURRENT_STATE_SCHEMA;
+                state.schema = state.writer_schema();
                 if let Err(error) = state.validate_format() {
                     return error;
                 }
@@ -608,7 +608,7 @@ impl Service {
             Ok(response) => response,
             Err(_) => return openldap_outcome_unknown(&plan.inner.lease_id),
         };
-        state.schema = CURRENT_STATE_SCHEMA;
+        state.schema = state.writer_schema();
         if state.validate_format().is_err() || self.commit_state(&state).is_err() {
             return openldap_outcome_unknown(&plan.inner.lease_id);
         }
@@ -670,7 +670,7 @@ impl Service {
             )
             .is_ok()
         {
-            state.schema = CURRENT_STATE_SCHEMA;
+            state.schema = state.writer_schema();
             if state.validate_format().is_ok() && self.commit_state(&state).is_ok() {
                 self.state = Some(state);
             }

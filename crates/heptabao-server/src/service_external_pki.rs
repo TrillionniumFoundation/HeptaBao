@@ -568,7 +568,7 @@ impl Service {
             Ok(value) => value,
             Err(cause) => return Response::error(cause.status, &cause.message),
         };
-        candidate.schema = CURRENT_STATE_SCHEMA;
+        candidate.schema = candidate.writer_schema();
         if let Err(cause) = candidate.validate_format() {
             erase_json(&mut response.body);
             return cause;

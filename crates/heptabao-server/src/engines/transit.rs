@@ -39,6 +39,8 @@ struct Key {
     derived: bool,
     #[serde(default, skip_serializing_if = "symmetric::is_false")]
     convergent_encryption: bool,
+    #[serde(default, skip_serializing_if = "symmetric::is_zero")]
+    convergent_write_min_version: u64,
     latest_version: u64,
     min_decryption_version: u64,
     min_encryption_version: u64,
@@ -58,6 +60,8 @@ struct KeyVersion {
     encryptions: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     external_key_ref: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    heptabao_convergent_version: Option<symmetric::ConvergentMode>,
 }
 
 impl Drop for KeyVersion {
@@ -122,6 +126,7 @@ impl KeyVersion {
             created_at: now,
             encryptions: 0,
             external_key_ref: None,
+            heptabao_convergent_version: None,
         })
     }
 }
@@ -153,7 +158,7 @@ impl Key {
         }
         let auto_rotate_period = auto_rotate_period(body.get("auto_rotate_period"))?;
         let exportable = optional_bool(body, "exportable")?.unwrap_or(false);
-        let version = if kind == "external-key" {
+        let mut version = if kind == "external-key" {
             external::new_version(body, now)?
         } else {
             if body.get("external_key_ref").is_some() {
@@ -166,13 +171,23 @@ impl Key {
                 "external keys cannot be exported or automatically rotated",
             ));
         }
+        let mode = symmetric::requested_mode(body)?;
+        if mode.is_some()
+            && (!symmetric::is_kind(kind) || !derived || !convergent_encryption || exportable)
+        {
+            return Err(bad(
+                "AAD-bound convergent keys must be derived, convergent, symmetric and non-exportable",
+            ));
+        }
+        version.heptabao_convergent_version = mode;
         Ok(Self {
             kind: kind.into(),
             derived,
             convergent_encryption,
+            convergent_write_min_version: if mode.is_some() { 1 } else { 0 },
             latest_version: 1,
             min_decryption_version: 1,
-            min_encryption_version: 0,
+            min_encryption_version: if mode.is_some() { 1 } else { 0 },
             deletion_allowed: false,
             exportable,
             auto_rotate_period,
@@ -244,6 +259,20 @@ impl Key {
                 fields.insert("convergent_encryption_version".into(), json!(-1));
             }
         }
+        if self.convergent_write_min_version != 0 {
+            descriptor["heptabao_convergent_version"] = json!(1);
+            descriptor["heptabao_convergent_min_encryption_version"] =
+                json!(self.convergent_write_min_version);
+            descriptor["heptabao_convergent_versions"] = json!(
+                self.versions
+                    .iter()
+                    .map(|(number, version)| (
+                        number.to_string(),
+                        u8::from(version.heptabao_convergent_version.is_some())
+                    ))
+                    .collect::<BTreeMap<_, _>>()
+            );
+        }
         Ok(descriptor)
     }
 
@@ -313,6 +342,20 @@ impl Key {
             .get("auto_rotate_period")
             .map(|value| auto_rotate_period(Some(value)))
             .transpose()?;
+        if self.convergent_write_min_version != 0 {
+            if optional_u64(body, "min_encryption_version")?
+                .is_some_and(|value| value < self.convergent_write_min_version)
+            {
+                return Err(bad(
+                    "AAD-bound convergent encryption floor cannot be lowered",
+                ));
+            }
+            if optional_bool(body, "exportable")?.unwrap_or(false) {
+                return Err(bad(
+                    "AAD-bound convergent keys cannot export unversioned material",
+                ));
+            }
+        }
         if let Some(value) = optional_u64(body, "min_decryption_version")? {
             self.min_decryption_version = value.max(1);
         }
@@ -365,8 +408,14 @@ impl Key {
             .latest_version
             .checked_add(1)
             .ok_or_else(|| bad("key version limit reached"))?;
-        self.versions
-            .insert(next, KeyVersion::generate(&self.kind, now)?);
+        let mode = self
+            .versions
+            .get(&self.latest_version)
+            .ok_or_else(|| error(500, "latest transit key version is missing"))?
+            .heptabao_convergent_version;
+        let mut version = KeyVersion::generate(&self.kind, now)?;
+        version.heptabao_convergent_version = mode;
+        self.versions.insert(next, version);
         self.latest_version = next;
         Ok(true)
     }
@@ -381,6 +430,80 @@ fn auto_rotate_period(value: Option<&Value>) -> Result<u64> {
 }
 
 impl Transit {
+    pub(super) fn has_aad_bound_convergent_state(&self) -> bool {
+        self.keys.values().any(|key| {
+            key.convergent_write_min_version != 0
+                || key
+                    .versions
+                    .values()
+                    .any(|version| version.heptabao_convergent_version.is_some())
+        })
+    }
+
+    pub(super) fn validate_aad_bound_convergent_state(&self) -> Result<()> {
+        for key in self.keys.values() {
+            let floor = key.convergent_write_min_version;
+            let has_mode = key
+                .versions
+                .values()
+                .any(|version| version.heptabao_convergent_version.is_some());
+            if has_mode != (floor != 0)
+                || floor > key.latest_version
+                || (floor != 0
+                    && (key.min_encryption_version < floor
+                        || !key.versions.contains_key(&floor)
+                        || key.versions.keys().next_back() != Some(&key.latest_version)))
+            {
+                return Err(bad("invalid AAD-bound convergent write floor"));
+            }
+            for (number, version) in &key.versions {
+                symmetric::validate_mode(key, version.heptabao_convergent_version)?;
+                if floor != 0 && *number >= floor && version.heptabao_convergent_version.is_none() {
+                    return Err(bad("AAD-bound convergent versions cannot be downgraded"));
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn validate_aad_bound_convergent_restore(
+        &self,
+        target: Option<&Self>,
+    ) -> Result<()> {
+        for (name, current) in &self.keys {
+            if current.convergent_write_min_version == 0 {
+                continue;
+            }
+            let restored = target
+                .and_then(|engine| engine.keys.get(name))
+                .ok_or_else(|| bad("protected convergent key cannot be removed by restore"))?;
+            if restored.kind != current.kind
+                || restored.convergent_write_min_version < current.convergent_write_min_version
+            {
+                return Err(bad(
+                    "protected convergent key mode cannot be downgraded by restore",
+                ));
+            }
+            for (number, version) in &current.versions {
+                if version.heptabao_convergent_version.is_none() {
+                    continue;
+                }
+                let replacement = restored.versions.get(number).ok_or_else(|| {
+                    bad("protected convergent key version cannot be removed by restore")
+                })?;
+                if replacement.heptabao_convergent_version != version.heptabao_convergent_version
+                    || replacement.material != version.material
+                    || replacement.encryptions < version.encryptions
+                {
+                    return Err(bad(
+                        "protected convergent key version cannot be replaced or rewound by restore",
+                    ));
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(super) fn has_asymmetric_state(&self) -> bool {
         self.keys.values().any(|key| {
             matches!(
@@ -462,6 +585,11 @@ impl Transit {
             return Err(bad("unexpected transit path suffix"));
         }
         if operation == "encrypt" && !self.keys.contains_key(name) {
+            if body.get("heptabao_convergent_version").is_some() {
+                return Err(bad(
+                    "AAD-bound convergent keys require explicit key creation",
+                ));
+            }
             if self.disable_upsert {
                 return Err(bad("key does not exist and upsert is disabled"));
             }
@@ -514,6 +642,7 @@ impl Transit {
                     "type",
                     "derived",
                     "convergent_encryption",
+                    "heptabao_convergent_version",
                     "exportable",
                     "allow_plaintext_backup",
                     "auto_rotate_period",
@@ -523,6 +652,17 @@ impl Transit {
             if let Some(key) = self.keys.get(name) {
                 if body.get("type").is_some_and(|v| v != &key.kind) {
                     return Err(bad("key already exists with a different immutable type"));
+                }
+                if let Some(requested) = symmetric::requested_mode(body)?
+                    && key
+                        .versions
+                        .get(&key.latest_version)
+                        .and_then(|version| version.heptabao_convergent_version)
+                        != Some(requested)
+                {
+                    return Err(bad(
+                        "use explicit rotation to upgrade convergent encryption",
+                    ));
                 }
                 let requested_derived = symmetric::flag(body, "derived")?;
                 let requested_convergent = symmetric::flag(body, "convergent_encryption")?;
@@ -581,10 +721,18 @@ impl Transit {
                     if key.kind == "external-key" {
                         &["external_key_ref"]
                     } else {
-                        &[]
+                        &["heptabao_convergent_version"]
                     },
                 )?;
                 key.alive()?;
+                let requested_mode = symmetric::requested_mode(body)?;
+                let previous_mode = key
+                    .versions
+                    .get(&key.latest_version)
+                    .ok_or_else(|| error(500, "latest transit key version is missing"))?
+                    .heptabao_convergent_version;
+                let mode = requested_mode.or(previous_mode);
+                symmetric::validate_mode(key, mode)?;
                 if key.versions.len() >= 10_000 {
                     return Err(bad("key version retention limit reached"));
                 }
@@ -592,7 +740,7 @@ impl Transit {
                     .latest_version
                     .checked_add(1)
                     .ok_or_else(|| bad("key version limit reached"))?;
-                let version = if key.kind == "external-key" {
+                let mut version = if key.kind == "external-key" {
                     if body.get("external_key_ref").is_some() {
                         external::new_version(body, now)?
                     } else {
@@ -606,6 +754,11 @@ impl Transit {
                 } else {
                     KeyVersion::generate(&key.kind, now)?
                 };
+                version.heptabao_convergent_version = mode;
+                if mode.is_some() && key.convergent_write_min_version == 0 {
+                    key.convergent_write_min_version = next;
+                    key.min_encryption_version = next;
+                }
                 key.versions.insert(next, version);
                 key.latest_version = next;
             }
@@ -638,6 +791,12 @@ impl Transit {
         let name = parts[1];
         let key = self.keys.get(name).ok_or_else(not_found)?;
         key.alive()?;
+        if key.convergent_write_min_version != 0 {
+            return Err(error(
+                403,
+                "AAD-bound convergent keys cannot export unversioned material",
+            ));
+        }
         let mldsa_key = mldsa::is_kind(&key.kind);
         let asymmetric_key = asymmetric::is_kind(&key.kind);
         let public_export = (mldsa_key || asymmetric_key) && kind == "public-key";
@@ -1318,6 +1477,11 @@ fn encrypt(
     let algorithm = (!xchacha).then(|| aead_algorithm(&key.kind)).transpose()?;
     let context = symmetric::context(key, body)?;
     let version_number = key.selected_version(body)?;
+    if version_number < key.convergent_write_min_version {
+        return Err(bad(
+            "key version is below the AAD-bound convergent write floor",
+        ));
+    }
     let version = key
         .versions
         .get_mut(&version_number)
@@ -1332,18 +1496,21 @@ fn encrypt(
         &key.kind,
         key.derived,
         key.convergent_encryption,
+        version.heptabao_convergent_version,
         &master,
         &context,
     )?;
     let key_len = symmetric::key_len(&key.kind);
+    let associated = symmetric::associated_data(body)?;
     let nonce = symmetric::nonce(
         key.convergent_encryption,
+        version.heptabao_convergent_version,
         &material,
         key_len,
         plaintext,
+        &associated,
         if xchacha { 24 } else { 12 },
     )?;
-    let associated = symmetric::associated_data(body)?;
     let encryption_key = material
         .get(..key_len)
         .ok_or_else(|| error(500, "stored encryption key is invalid"))?;
@@ -1404,6 +1571,7 @@ fn decrypt(
         &key.kind,
         key.derived,
         key.convergent_encryption,
+        version.heptabao_convergent_version,
         &master,
         &context,
     )?;
@@ -1670,3 +1838,7 @@ mod asymmetric_tests;
 #[cfg(test)]
 #[path = "transit_symmetric_tests.rs"]
 mod symmetric_tests;
+
+#[cfg(test)]
+#[path = "transit_convergent_aad_tests.rs"]
+mod convergent_aad_tests;

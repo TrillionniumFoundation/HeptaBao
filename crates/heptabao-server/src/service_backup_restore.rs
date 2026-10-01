@@ -120,7 +120,7 @@ impl Service {
             if rewrite {
                 state.replay_epoch = resources.replay_epoch();
                 root.replay_epoch = state.replay_epoch;
-                state.schema = CURRENT_STATE_SCHEMA;
+                state.schema = state.writer_schema();
                 root.state_schema = state.schema;
             }
             let bytes = root
@@ -219,7 +219,7 @@ impl Service {
             logical_rewrite = true;
         }
         if logical_rewrite {
-            state.schema = CURRENT_STATE_SCHEMA;
+            state.schema = state.writer_schema();
             state.validate_format()?;
         }
         if logical_rewrite || needs_rewrite {
@@ -279,6 +279,23 @@ impl Service {
     ) -> Result<PreparedSnapshotRestore, Response> {
         let (state, bytes, _) = Self::load_state_from_resources(&prepared)
             .map_err(|_| Response::error(400, "snapshot application state is invalid"))?;
+        if let Some(current) = &self.state {
+            if current.schema >= AAD_BOUND_STATE_SCHEMA && state.schema < AAD_BOUND_STATE_SCHEMA {
+                return Err(Response::error(
+                    400,
+                    "snapshot would downgrade AAD-bound convergent encryption",
+                ));
+            }
+            current
+                .engines
+                .validate_aad_bound_convergent_restore(&state.engines)
+                .map_err(|_| {
+                    Response::error(
+                        400,
+                        "snapshot would downgrade AAD-bound convergent encryption",
+                    )
+                })?;
+        }
         if state.engines.has_openldap_mount() || !state.database.is_empty() {
             return Err(Response::error(
                 409,

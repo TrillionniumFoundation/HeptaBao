@@ -301,7 +301,7 @@ impl Service {
                 Err(error) => return auth_error(error),
             };
         }
-        state.schema = CURRENT_STATE_SCHEMA;
+        state.schema = state.writer_schema();
         if let Err(error) = self.commit_state(&state) {
             erase_json(&mut response.body);
             return error;
@@ -437,7 +437,7 @@ impl Service {
         // schema or append a durable generation. Finite-use admission already
         // committed before staging and is never rolled back by this shortcut.
         if response.mutated {
-            state.schema = CURRENT_STATE_SCHEMA;
+            state.schema = state.writer_schema();
             if let Err(error) = self.commit_state(&state) {
                 erase_json(&mut response.body);
                 return error;
@@ -594,7 +594,7 @@ impl Service {
                     Ok(exchange) => exchange,
                     Err(error) => return Some(auth_error(error)),
                 };
-            state.schema = CURRENT_STATE_SCHEMA;
+            state.schema = state.writer_schema();
             // Critical order: one-use session removal is replicated and durable
             // before the global Service writer is released for code exchange.
             if let Err(error) = self.commit_state(&state) {
@@ -742,7 +742,7 @@ impl Service {
                 Err(error) => return auth_error(error),
             };
             if response.mutated {
-                state.schema = CURRENT_STATE_SCHEMA;
+                state.schema = state.writer_schema();
                 if let Err(error) = self.commit_state(&state) {
                     return error;
                 }
@@ -857,7 +857,7 @@ impl Service {
                 Err(error) => return auth_error(error),
             };
         }
-        state.schema = CURRENT_STATE_SCHEMA;
+        state.schema = state.writer_schema();
         if let Err(error) = self.commit_state(&state) {
             erase_json(&mut issued.body);
             if callback {
@@ -1186,7 +1186,7 @@ mod tests {
         assert!(state.validate_format().is_err());
         state.schema = CURRENT_STATE_SCHEMA;
         assert!(state.validate_format().is_ok());
-        state.schema = CURRENT_STATE_SCHEMA + 1;
+        state.schema = AAD_BOUND_STATE_SCHEMA + 1;
         assert!(state.validate_format().is_err());
         let (auth, _) = AuthState::bootstrap(100)?;
         state.auth = auth.into();

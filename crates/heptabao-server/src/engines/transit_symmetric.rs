@@ -5,6 +5,39 @@
 use super::*;
 use ring::hkdf;
 
+// A HeptaBao extension, never an alias for an OpenBao convergent version.
+// Absence preserves the existing OpenBao-compatible key derivation verbatim.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub(super) enum ConvergentMode {
+    #[serde(rename = "aad-bound-v1")]
+    AadBoundV1,
+}
+
+pub(super) fn is_zero(value: &u64) -> bool {
+    *value == 0
+}
+
+pub(super) fn requested_mode(body: &Value) -> Result<Option<ConvergentMode>> {
+    match body.get("heptabao_convergent_version") {
+        None => Ok(None),
+        Some(Value::Number(value)) if value.as_u64() == Some(1) => {
+            Ok(Some(ConvergentMode::AadBoundV1))
+        }
+        _ => Err(bad("heptabao_convergent_version must be integer 1")),
+    }
+}
+
+pub(super) fn validate_mode(key: &Key, mode: Option<ConvergentMode>) -> Result<()> {
+    if mode.is_some()
+        && (!is_kind(&key.kind) || !key.derived || !key.convergent_encryption || key.exportable)
+    {
+        return Err(bad(
+            "AAD-bound convergent keys must be derived, convergent, symmetric and non-exportable",
+        ));
+    }
+    Ok(())
+}
+
 pub(super) fn is_false(value: &bool) -> bool {
     !*value
 }
@@ -144,11 +177,15 @@ pub(super) fn material(
     kind: &str,
     derived: bool,
     convergent: bool,
+    mode: Option<ConvergentMode>,
     master: &[u8],
     context: &[u8],
 ) -> Result<Zeroizing<Vec<u8>>> {
     if master.len() != key_len(kind) {
         return Err(error(500, "stored encryption key is invalid"));
+    }
+    if mode.is_some() && (!derived || !convergent) {
+        return Err(error(500, "invalid AAD-bound convergent key mode"));
     }
     if !derived {
         return Ok(Zeroizing::new(master.to_vec()));
@@ -156,9 +193,26 @@ pub(super) fn material(
     let length = key_len(kind) + if convergent { 32 } else { 0 };
     let salt = hkdf::Salt::new(hkdf::HKDF_SHA256, &[]);
     let prk = salt.extract(master);
-    let info = [context];
+    let kind_length = (kind.len() as u64).to_be_bytes();
+    let context_length = (context.len() as u64).to_be_bytes();
+    let bound_info = [
+        b"HeptaBao/Transit/convergent/aad-bound/v1/kdf\0".as_slice(),
+        kind_length.as_slice(),
+        kind.as_bytes(),
+        context_length.as_slice(),
+        context,
+    ];
+    let legacy_info = [context];
+    let info: &[&[u8]] = if mode.is_some() {
+        if !convergent {
+            return Err(error(500, "invalid AAD-bound convergent key mode"));
+        }
+        &bound_info
+    } else {
+        &legacy_info
+    };
     let output = prk
-        .expand(&info, Length(length))
+        .expand(info, Length(length))
         .map_err(|_| error(500, "key derivation failed"))?;
     let mut material = Zeroizing::new(vec![0; length]);
     output
@@ -169,11 +223,16 @@ pub(super) fn material(
 
 pub(super) fn nonce(
     convergent: bool,
+    mode: Option<ConvergentMode>,
     material: &[u8],
     key_len: usize,
     plaintext: &[u8],
+    associated_data: &[u8],
     length: usize,
 ) -> Result<Vec<u8>> {
+    if mode.is_some() && !convergent {
+        return Err(error(500, "invalid AAD-bound convergent key mode"));
+    }
     if !convergent {
         return Ok(random_bytes(length)?.to_vec());
     }
@@ -181,7 +240,18 @@ pub(super) fn nonce(
         .get(key_len..)
         .filter(|key| key.len() == 32)
         .ok_or_else(|| error(500, "stored convergent key is invalid"))?;
-    let tag = Zeroizing::new(hmac_tag("sha2-256", nonce_key, plaintext)?);
+    let tag = if mode.is_some() {
+        let key = ring::hmac::Key::new(ring::hmac::HMAC_SHA256, nonce_key);
+        let mut context = ring::hmac::Context::with_key(&key);
+        context.update(b"HeptaBao/Transit/convergent/aad-bound/v1/nonce\0");
+        context.update(&(associated_data.len() as u64).to_be_bytes());
+        context.update(associated_data);
+        context.update(&(plaintext.len() as u64).to_be_bytes());
+        context.update(plaintext);
+        Zeroizing::new(context.sign().as_ref().to_vec())
+    } else {
+        Zeroizing::new(hmac_tag("sha2-256", nonce_key, plaintext)?)
+    };
     tag.get(..length)
         .map(|nonce| nonce.to_vec())
         .ok_or_else(|| error(500, "nonce derivation failed"))

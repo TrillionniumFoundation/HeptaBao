@@ -66,3 +66,17 @@ Pinned native/official live comparison, actual old-program read/write proof, and
 final integrated-head qualification remain separate required evidence. Unit tests
 are not those qualifications. The first Service fixture's raw-query helper error
 is retained; its corrected test passes the HTTP parser's decoded version field.
+
+## Pinned Bao tune defaults
+
+A later real 2.7 CLI run exposed a native 400 before conversion: the official
+command sends empty string `default_lease_ttl` and `max_lease_ttl`, plus
+`force_no_cache: false`, alongside `options.version: "2"`. Typed TLS capture and
+fresh native/official replay observed native 400 retaining KV1 versus official
+200 becoming KV2. The failed full trace remains failed.
+
+KV tune now accepts only these neutral defaults. Nonempty, numeric or null TTLs
+and a non-false or non-boolean cache flag still return 400 before publication.
+This does not implement nondefault KV mount lease or cache settings. Other
+engine tuning retains its existing validation. The successor requires a fresh
+same-source production run; earlier API/Python prefixes cannot qualify it.

@@ -530,6 +530,44 @@ fn list_keys<'a>(
 }
 
 impl EngineState {
+    pub(crate) fn has_aad_bound_convergent_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_aad_bound_convergent_state())))
+    }
+
+    pub(crate) fn validate_aad_bound_convergent_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            for mount in namespace.mounts.values() {
+                if let Backend::Transit(engine) = &mount.backend {
+                    engine.validate_aad_bound_convergent_state()?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn validate_aad_bound_convergent_restore(&self, target: &Self) -> Result<()> {
+        for (namespace_name, namespace) in &self.namespaces {
+            for (mount_name, mount) in &namespace.mounts {
+                if let Backend::Transit(current) = &mount.backend {
+                    if !current.has_aad_bound_convergent_state() {
+                        continue;
+                    }
+                    let restored = target
+                        .namespaces
+                        .get(namespace_name)
+                        .and_then(|namespace| namespace.mounts.get(mount_name))
+                        .and_then(|mount| match &mount.backend {
+                            Backend::Transit(engine) => Some(engine),
+                            _ => None,
+                        });
+                    current.validate_aad_bound_convergent_restore(restored)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn has_external_pki_state(&self) -> bool {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount|
@@ -1804,6 +1842,38 @@ fn handle_mounts(
                 ],
             )?;
             engine.tune(&tune)?;
+        } else if matches!(
+            mount.backend,
+            Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
+        ) {
+            reject_unknown(
+                body,
+                &[
+                    "description",
+                    "options",
+                    "cas_revision",
+                    "default_lease_ttl",
+                    "max_lease_ttl",
+                    "force_no_cache",
+                ],
+            )?;
+            // Pinned Bao enable-versioning sends these neutral tune defaults.
+            // Accept their unchanged meaning without claiming nondefault TTL or
+            // caching configuration on a KV engine.
+            for field in ["default_lease_ttl", "max_lease_ttl"] {
+                if body
+                    .get(field)
+                    .is_some_and(|value| value.as_str() != Some(""))
+                {
+                    return Err(bad("nondefault KV lease tuning is not implemented"));
+                }
+            }
+            if body
+                .get("force_no_cache")
+                .is_some_and(|value| value.as_bool() != Some(false))
+            {
+                return Err(bad("nondefault KV cache tuning is not implemented"));
+            }
         } else {
             reject_unknown(body, &["description", "options", "cas_revision"])?;
         }

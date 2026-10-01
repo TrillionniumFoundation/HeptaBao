@@ -190,7 +190,7 @@ impl Service {
         {
             return Err(invalid());
         }
-        state.schema = CURRENT_STATE_SCHEMA;
+        state.schema = state.writer_schema();
         state.replay_epoch = next_epoch;
         state.auth.discard_restored_oidc_sessions();
         state.validate_format()?;

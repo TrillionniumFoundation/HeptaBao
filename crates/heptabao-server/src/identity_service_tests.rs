@@ -60,6 +60,52 @@ fn bootstrap(s: &mut Service) -> Result<(String, String), Box<dyn std::error::Er
 }
 
 #[test]
+fn aad_bound_convergent_schema66_fences_old_formats_and_all_namespace_state() -> TestResult {
+    for namespace in ["", "tenant"] {
+        let fixture = Fixture::new()?;
+        let mut service = fixture.service()?;
+        let (admin, _) = bootstrap(&mut service)?;
+        assert!(
+            call(
+                &mut service,
+                namespace,
+                &admin,
+                "POST",
+                "sys/mounts/safe",
+                json!({"type":"transit"})
+            )
+            .status
+                == 204
+        );
+        assert!(
+            call(
+                &mut service,
+                namespace,
+                &admin,
+                "POST",
+                "safe/keys/key",
+                json!({"derived":true,"convergent_encryption":true,"heptabao_convergent_version":1})
+            )
+            .status
+                == 200
+        );
+        let state = service.state.clone().ok_or("state")?;
+        assert!(state.validate_format().is_ok());
+        let mut old = state.clone();
+        old.schema = 65;
+        let refusal = old.validate_format().err().ok_or("missing schema gate")?;
+        assert!(
+            refusal.status == 503
+                && refusal.body["errors"][0] == "AAD-bound convergent keys require schema 66"
+        );
+        let encoded = Zeroizing::new(serde_json::to_vec(&state)?);
+        let restored: State = serde_json::from_slice(&encoded)?;
+        assert!(restored.validate_format().is_ok());
+    }
+    Ok(())
+}
+
+#[test]
 fn each_nullable_identity_metadata_owner_independently_requires_schema47() -> TestResult {
     let root = Fixture::new()?;
     let mut service = root.service()?;
@@ -649,7 +695,7 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
     {
         assert!(token.get("entity_id").is_none());
     }
-    for schema in [0, CURRENT_STATE_SCHEMA + 1, u32::MAX] {
+    for schema in [0, AAD_BOUND_STATE_SCHEMA + 1, u32::MAX] {
         value["schema"] = json!(schema);
         assert!(
             serde_json::from_value::<State>(value.clone())?
@@ -1134,3 +1180,177 @@ fn existing_wrapper_expiry_observation_remains_durable_across_clock_rollback() -
 
 #[path = "identity_acl_service_tests.rs"]
 mod acl_templates;
+
+#[test]
+fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_removal() -> TestResult {
+    let fixture = Fixture::new()?;
+    let mut service = fixture.service()?;
+    let (admin, unseal) = bootstrap(&mut service)?;
+    assert!(service.state.as_ref().ok_or("state")?.schema == CURRENT_STATE_SCHEMA);
+    assert!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "POST",
+            "sys/namespaces/tenant",
+            json!({})
+        )
+        .status
+            == 200
+    );
+    assert!(
+        call(
+            &mut service,
+            "tenant",
+            &admin,
+            "POST",
+            "sys/mounts/safe",
+            json!({"type":"transit"})
+        )
+        .status
+            == 204
+    );
+    assert!(
+        call(
+            &mut service,
+            "tenant",
+            &admin,
+            "POST",
+            "safe/keys/key",
+            json!({"derived":true,"convergent_encryption":true,"heptabao_convergent_version":1})
+        )
+        .status
+            == 200
+    );
+    let protected = service.state.clone().ok_or("state")?;
+    assert!(protected.schema == AAD_BOUND_STATE_SCHEMA);
+    // Namespace deletion first requires its runtime owners to be cleaned.
+    assert!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "DELETE",
+            "sys/namespaces/tenant",
+            json!({})
+        )
+        .status
+            == 409
+    );
+    assert!(
+        call(
+            &mut service,
+            "tenant",
+            &admin,
+            "DELETE",
+            "sys/mounts/safe",
+            json!({})
+        )
+        .status
+            == 204
+    );
+    // The existing empty engine-owner cleanup policy still refuses this used
+    // namespace. Deleting a fresh empty namespace exercises the successful
+    // namespace candidate path after all safe material has been removed.
+    assert!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "DELETE",
+            "sys/namespaces/tenant",
+            json!({})
+        )
+        .status
+            == 409
+    );
+    assert!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "POST",
+            "sys/namespaces/empty",
+            json!({})
+        )
+        .status
+            == 200
+    );
+    assert!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "DELETE",
+            "sys/namespaces/empty",
+            json!({})
+        )
+        .status
+            == 200
+    );
+    let retired = service.state.clone().ok_or("state")?;
+    assert!(!retired.engines.has_aad_bound_convergent_state());
+    assert!(
+        retired.schema == AAD_BOUND_STATE_SCHEMA
+            && retired.writer_schema() == AAD_BOUND_STATE_SCHEMA
+    );
+    let mut downgrade = retired.clone();
+    downgrade.schema = CURRENT_STATE_SCHEMA;
+    assert!(downgrade.validate_format().is_ok());
+    assert!(
+        service
+            .prepare_record_plan(&downgrade)
+            .err()
+            .is_some_and(|response| response.status == 503
+                && response.body["errors"][0] == "AAD-bound convergent keys require schema 66")
+    );
+    for unknown in [0, AAD_BOUND_STATE_SCHEMA + 1, u32::MAX] {
+        let mut state = retired.clone();
+        state.schema = unknown;
+        assert!(state.writer_schema() == unknown);
+        assert!(state.validate_format().is_err());
+        assert!(state.validate_publication_schema(Some(&retired)).is_err());
+    }
+    assert!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "POST",
+            "sys/mounts/ordinary",
+            json!({"type":"kv"})
+        )
+        .status
+            == 204
+    );
+    assert!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "POST",
+            "ordinary/value",
+            json!({"synthetic":"value"})
+        )
+        .status
+            == 204
+    );
+    assert!(service.state.as_ref().ok_or("state")?.schema == AAD_BOUND_STATE_SCHEMA);
+    drop(service);
+    let mut reopened = fixture.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "",
+            "",
+            "POST",
+            "sys/unseal",
+            json!({"key":unseal})
+        )
+        .status
+            == 200
+    );
+    assert!(reopened.state.as_ref().ok_or("state")?.schema == AAD_BOUND_STATE_SCHEMA);
+    Ok(())
+}

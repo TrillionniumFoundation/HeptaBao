@@ -1155,7 +1155,7 @@ impl Service {
             Err(error) => return error,
         };
         let mut candidate = state;
-        candidate.schema = CURRENT_STATE_SCHEMA;
+        candidate.schema = candidate.writer_schema();
         candidate.engines = verification.candidate.into();
         if let Err(error) = candidate.validate_format() {
             return error;
@@ -1539,7 +1539,7 @@ impl Service {
             erase_json(&mut issued.body);
             return error;
         }
-        state.schema = CURRENT_STATE_SCHEMA;
+        state.schema = state.writer_schema();
         if let Err(error) = self.commit_state(&state) {
             erase_json(&mut issued.body);
             return error;

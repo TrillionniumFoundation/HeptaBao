@@ -245,6 +245,7 @@ impl Service {
     }
 
     pub(super) fn prepare_record_plan(&self, state: &State) -> Result<RecordPlan, Response> {
+        state.validate_publication_schema(self.state.as_ref())?;
         let key = state.engines.record_address_key().ok_or_else(unavailable)?;
         let kv1 = state.engines.record_root().ok_or_else(unavailable)?;
         let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
@@ -433,6 +434,7 @@ impl Service {
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         mut restore_fault: Option<crate::fixture_native_restore::NativeRestoreFaultContext>,
     ) -> Result<(), Response> {
+        state.validate_publication_schema(self.state.as_ref())?;
         state.validate_format()?;
         if state.schema != plan.root.state_schema
             || state.cluster_id != plan.root.cluster_id

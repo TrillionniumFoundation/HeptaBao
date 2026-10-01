@@ -30,6 +30,7 @@ pub(super) fn new_version(body: &Value, now: u64) -> Result<KeyVersion> {
         created_at: now,
         encryptions: 0,
         external_key_ref: Some(reference.into()),
+        heptabao_convergent_version: None,
     })
 }
 

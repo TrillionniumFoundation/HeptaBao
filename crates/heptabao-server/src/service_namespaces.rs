@@ -617,7 +617,7 @@ impl Service {
             if let Err(error) = state.namespaces.set_sealed(&target, sealed) {
                 return error;
             }
-            state.schema = CURRENT_STATE_SCHEMA;
+            state.schema = state.writer_schema();
             if let Err(error) = state.validate_format() {
                 return error;
             }
@@ -681,7 +681,7 @@ impl Service {
                 if let Err(error) = state.auth.initialize_fresh_namespace_auth(&target) {
                     return Response::error(error.status, &error.message);
                 }
-                state.schema = CURRENT_STATE_SCHEMA;
+                state.schema = state.writer_schema();
                 if let Err(error) = state.validate_format() {
                     return error;
                 }
@@ -699,7 +699,7 @@ impl Service {
                 if let Err(error) = state.namespaces.patch(&target, request.body) {
                     return error;
                 }
-                state.schema = CURRENT_STATE_SCHEMA;
+                state.schema = state.writer_schema();
                 if let Err(error) = state.validate_format() {
                     return error;
                 }
@@ -731,7 +731,7 @@ impl Service {
                     return error;
                 }
                 state.auth.remove_fresh_namespace_auth_defaults(&target);
-                state.schema = CURRENT_STATE_SCHEMA;
+                state.schema = state.writer_schema();
                 if let Err(error) = state.validate_format() {
                     return error;
                 }

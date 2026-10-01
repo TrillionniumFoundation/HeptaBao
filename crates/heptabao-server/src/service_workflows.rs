@@ -585,7 +585,7 @@ impl Service {
                             definition,
                         },
                     );
-                    state.schema = CURRENT_STATE_SCHEMA;
+                    state.schema = state.writer_schema();
                     if let Err(error) = state.validate_format() {
                         return error;
                     }
@@ -629,7 +629,7 @@ impl Service {
                         return Response::error(409, "workflow CAS version mismatch");
                     }
                     state.namespaces.workflows.remove(request.namespace, path);
-                    state.schema = CURRENT_STATE_SCHEMA;
+                    state.schema = state.writer_schema();
                     if let Err(error) = state.validate_format() {
                         return error;
                     }
@@ -724,7 +724,7 @@ impl Service {
                 || !state.raft_admin.ptr_eq(&previous.raft_admin)
         });
         if changed {
-            state.schema = CURRENT_STATE_SCHEMA;
+            state.schema = state.writer_schema();
             if let Err(error) = state.validate_format() {
                 return error;
             }

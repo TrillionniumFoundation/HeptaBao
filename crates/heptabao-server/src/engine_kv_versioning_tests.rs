@@ -383,3 +383,65 @@ fn record_conversion_capacity_refusal_preserves_source_graph_and_mount() -> Test
     }
     Ok(())
 }
+
+#[test]
+fn pinned_bao_neutral_tune_defaults_convert_legacy_and_record_mounts() -> TestResult {
+    let legacy = populate()?;
+    let record = legacy
+        .clone()
+        .migrate_kv1_records(AddressKey::from_bytes([71; 32]))?;
+    for mut state in [legacy, record] {
+        let old = state.namespaces[""].mounts["raw/"].clone();
+        let request = json!({"default_lease_ttl":"", "max_lease_ttl":"", "force_no_cache":false,
+            "options":{"version":"2"}});
+        let result = tune(&mut state, request.clone())?;
+        assert_eq!(result.status, 200);
+        assert!(result.mutated);
+        let converted = &state.namespaces[""].mounts["raw/"];
+        assert_eq!(converted.revision, old.revision + 1);
+        assert_eq!(converted.incarnation, old.incarnation);
+        assert_eq!(converted.description, old.description);
+        assert_eq!(
+            call(&mut state, "", "GET", "raw/data/leaf", json!({}), 101)?.body["data"]["data"],
+            json!({"value":"leaf", "typed":{"flag":true,"array":[1,null]}})
+        );
+        let stable = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| "serialize")?;
+        let root = state.record_root();
+        let repeat = tune(&mut state, request)?;
+        assert_eq!(repeat.status, 204);
+        assert!(!repeat.mutated);
+        assert_eq!(state.record_root(), root);
+        assert_eq!(
+            crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| "serialize")?,
+            stable
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn kv_nondefault_or_malformed_tune_defaults_cannot_publish_conversion() -> TestResult {
+    let mut state = populate()?.migrate_kv1_records(AddressKey::from_bytes([72; 32]))?;
+    let stable = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+        .map_err(|_| "serialize")?;
+    let root = state.record_root();
+    for field in ["default_lease_ttl", "max_lease_ttl", "force_no_cache"] {
+        for value in [json!("1h"), json!("0"), json!(0), json!(null), json!(true)] {
+            let mut request = json!({"options":{"version":"2"}});
+            request[field] = value;
+            assert_eq!(
+                tune(&mut state, request).err().ok_or("rejection")?.status,
+                400
+            );
+            assert_eq!(state.record_root(), root);
+            assert_eq!(
+                crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+                    .map_err(|_| "serialize")?,
+                stable
+            );
+        }
+    }
+    Ok(())
+}

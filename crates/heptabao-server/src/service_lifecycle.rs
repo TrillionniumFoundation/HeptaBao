@@ -52,7 +52,7 @@ impl Service {
         let fingerprint = self.request_fingerprint("INTERNAL", "lifecycle/expiry", "", "");
         self.audit_event("lifecycle-request", &fingerprint, now, None)
             .map_err(|_| "lifecycle request audit unavailable")?;
-        next.schema = CURRENT_STATE_SCHEMA;
+        next.schema = next.writer_schema();
         let result = self.commit_state(&next);
         if result.is_ok() {
             self.state = Some(next);

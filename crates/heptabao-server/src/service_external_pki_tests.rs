@@ -136,8 +136,98 @@ fn verify_crl(public: &[u8], der: &[u8], number: u64, revoked: usize, delta: boo
 #[test]
 fn external_pki270_actual_leaf_private_output_root_full_delta_crls_and_revoke_restart() -> TestResult
 {
+    exercise_external_pki270_leaf_crls_with_schema(false)
+}
+
+#[test]
+fn external_pki270_aad_bound_schema_keeps_real_root_leaf_crls_private_binding_and_restart()
+-> TestResult {
+    exercise_external_pki270_leaf_crls_with_schema(true)
+}
+
+fn exercise_external_pki270_leaf_crls_with_schema(safe_schema: bool) -> TestResult {
     let remote = RemoteTransit::new_kind("ed25519")?;
-    let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
+    let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+    let expected_schema = if safe_schema { 66 } else { 65 };
+    let safe_ciphertext = if safe_schema {
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "sys/mounts/safe",
+                &admin,
+                json!({"type":"transit"})
+            )
+            .status
+                == 204,
+            "mixed safe Transit mount admission"
+        );
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "safe/keys/key",
+                &admin,
+                json!({"type":"aes128-gcm96","derived":true,"convergent_encryption":true,
+                       "heptabao_convergent_version":1})
+            )
+            .status
+                == 200,
+            "actual opt-in key precedes remote PKI publication"
+        );
+        let encrypted = call(
+            &mut service,
+            "POST",
+            "safe/encrypt/key",
+            &admin,
+            json!({"plaintext":BASE64.encode(b"synthetic mixed safe PKI plaintext"),
+                   "context":BASE64.encode(b"synthetic mixed safe PKI context"),
+                   "associated_data":BASE64.encode(b"synthetic mixed safe PKI AAD")}),
+        );
+        assert!(encrypted.status == 200, "real AES128 opt-in encryption");
+        Some(
+            encrypted.body["data"]["ciphertext"]
+                .as_str()
+                .ok_or("mixed safe ciphertext")?
+                .to_owned(),
+        )
+    } else {
+        None
+    };
+    let before_root = remote.calls()?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/root/generate/kms",
+            &admin,
+            body()
+        )
+        .status
+            == 200,
+        "mixed schema actual external root generation"
+    );
+    assert!(
+        remote.calls()? == before_root + 4,
+        "root metadata plus certificate, full CRL and delta CRL signatures"
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/roles/leaf",
+            &admin,
+            json!({"allowed_domains":["example.test"],"allow_subdomains":true,
+                   "max_ttl":"30m","generate_lease":true,"key_type":"ed25519"})
+        )
+        .status
+            == 200,
+        "mixed schema bounded leaf role"
+    );
+    assert!(
+        service.state.as_ref().ok_or("mixed root state")?.schema == expected_schema,
+        "ordinary PKI stays65 and mixed opt-in PKI retains66"
+    );
     let descriptor = call(
         &mut *remote.service.lock().map_err(|_| "remote lock")?,
         "GET",
@@ -150,6 +240,38 @@ fn external_pki270_actual_leaf_private_output_root_full_delta_crls_and_revoke_re
             .as_str()
             .ok_or("remote public key")?,
     )?;
+    let retained_root = call(
+        &mut service,
+        "GET",
+        "external-ca/cert/ca",
+        &admin,
+        json!({}),
+    );
+    assert!(retained_root.status == 200, "mixed schema root readback");
+    let root_der = decode_pem(
+        retained_root.body["data"]["certificate"]
+            .as_str()
+            .ok_or("mixed root certificate")?,
+    )?;
+    let (tail, root_certificate) =
+        parse_x509_certificate(&root_der).map_err(|_| "mixed root DER")?;
+    assert!(
+        tail.is_empty()
+            && root_certificate.is_ca()
+            && root_certificate
+                .public_key()
+                .subject_public_key
+                .data
+                .as_ref()
+                == public,
+        "mixed schema root DER and SPKI remain provider-bound"
+    );
+    ring::signature::UnparsedPublicKey::new(&ring::signature::ED25519, &public)
+        .verify(
+            root_certificate.tbs_certificate.as_ref(),
+            root_certificate.signature_value.data.as_ref(),
+        )
+        .map_err(|_| "mixed schema actual root signature")?;
     let before = remote.calls()?;
     verify_crl(
         &public,
@@ -259,7 +381,20 @@ fn external_pki270_actual_leaf_private_output_root_full_delta_crls_and_revoke_re
     let delta = crl_bytes(&mut service, &admin, true)?;
     verify_crl(&public, &full, 3, 1, false)?;
     verify_crl(&public, &delta, 4, 0, true)?;
-    let state = serde_json::to_value(service.state.as_ref().ok_or("state")?)?;
+    let retained_state = service.state.as_ref().ok_or("state")?;
+    assert!(
+        retained_state.schema == expected_schema && retained_state.validate_format().is_ok(),
+        "mixed schema real leaf and CRL publication retain authenticated format"
+    );
+    if safe_schema {
+        let mut downgraded = retained_state.clone();
+        downgraded.schema = 65;
+        assert!(
+            downgraded.validate_format().is_err(),
+            "safe material plus external PKI cannot enter legacy65 format"
+        );
+    }
+    let state = serde_json::to_value(retained_state)?;
     let state_text = serde_json::to_string(&state)?;
     assert!(
         !state_text.contains(data["private_key"].as_str().ok_or("leaf private key")?)
@@ -286,6 +421,41 @@ fn external_pki270_actual_leaf_private_output_root_full_delta_crls_and_revoke_re
             && crl_bytes(&mut reopened, &admin, true)? == delta,
         "CRL signed bytes retain exact restart identity"
     );
+    assert!(
+        reopened
+            .state
+            .as_ref()
+            .ok_or("mixed reopened state")?
+            .schema
+            == expected_schema,
+        "mixed schema encrypted restart preserves the exact writer contract"
+    );
+    if let Some(ciphertext) = safe_ciphertext {
+        let descriptor = call(&mut reopened, "GET", "safe/keys/key", &admin, json!({}));
+        assert!(
+            descriptor.status == 200
+                && descriptor.body["data"]["heptabao_convergent_version"] == 1
+                && descriptor.body["data"]["heptabao_convergent_min_encryption_version"] == 1
+                && descriptor.body["data"]["heptabao_convergent_versions"] == json!({"1":1}),
+            "mixed PKI restart retains the safe mode and per-version floor"
+        );
+        let decrypted = call(
+            &mut reopened,
+            "POST",
+            "safe/decrypt/key",
+            &admin,
+            json!({"ciphertext":ciphertext,
+                   "context":BASE64.encode(b"synthetic mixed safe PKI context"),
+                   "associated_data":BASE64.encode(b"synthetic mixed safe PKI AAD")}),
+        );
+        assert!(
+            decrypted.status == 200
+                && decrypted.body["data"]["plaintext"]
+                    == BASE64.encode(b"synthetic mixed safe PKI plaintext"),
+            "safe AES128 ciphertext decrypts after the complete real PKI workflow"
+        );
+    }
+    let before_rotate = remote.calls()?;
     let rotated = call(
         &mut reopened,
         "GET",
@@ -297,6 +467,10 @@ fn external_pki270_actual_leaf_private_output_root_full_delta_crls_and_revoke_re
         rotated.status == 200 && rotated.body["data"]["success"] == true,
         "GET explicit CRL rotation"
     );
+    assert!(
+        remote.calls()? == before_rotate + 3,
+        "mixed restart rotate has metadata and exactly two CRL signing effects"
+    );
     verify_crl(
         &public,
         &crl_bytes(&mut reopened, &admin, false)?,
@@ -304,6 +478,17 @@ fn external_pki270_actual_leaf_private_output_root_full_delta_crls_and_revoke_re
         1,
         false,
     )?;
+    verify_crl(
+        &public,
+        &crl_bytes(&mut reopened, &admin, true)?,
+        6,
+        0,
+        true,
+    )?;
+    assert!(
+        reopened.state.as_ref().ok_or("mixed rotated state")?.schema == expected_schema,
+        "explicit CRL rotation cannot downgrade the mixed writer schema"
+    );
     Ok(())
 }
 

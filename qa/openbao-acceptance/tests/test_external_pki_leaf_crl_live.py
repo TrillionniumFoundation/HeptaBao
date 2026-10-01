@@ -2,16 +2,80 @@ import importlib.util
 from datetime import datetime,timezone
 from pathlib import Path
 import sys
+import ssl
+import tempfile
 import unittest
-from unittest.mock import patch
+import urllib.error
+from unittest.mock import Mock,patch
 
 ROOT=Path(__file__).resolve().parents[3]
 RUNNER=ROOT/"qa/openbao-acceptance/external_pki_leaf_crl_live.py"
 sys.path.insert(0,str(RUNNER.parent))
 SPEC=importlib.util.spec_from_file_location("external_pki_leaf_crl_contract",RUNNER)
 MODULE=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(MODULE)
+SMOKE_SPEC=importlib.util.spec_from_file_location("pki_readiness_smoke",ROOT/"qa/single-node/smoke.py")
+SMOKE=importlib.util.module_from_spec(SMOKE_SPEC);SMOKE_SPEC.loader.exec_module(SMOKE)
 
 class ExternalPkiLeafCrlContractTests(unittest.TestCase):
+    def readiness_instance(self,root):
+        def initialize(native,binary,private):
+            native.root=private;native.binary=binary;native.address="https://127.0.0.1:1234";native.token=""
+        with patch.object(SMOKE.Instance,"__init__",initialize):
+            return MODULE.bounded_native_instance(SMOKE,Path("binary"),root)
+
+    def wrapped_transport_error(self,cause,code="transport_read_failed"):
+        try:raise cause
+        except Exception:raise MODULE.BaoError(code) from None
+
+    def test_original_startup_poll_handles_connection_refused_with_two_second_reads(self):
+        with tempfile.TemporaryDirectory() as directory:
+            native=self.readiness_instance(Path(directory));response=Mock(status=501,body={"sealed":True})
+            attempts=0
+            def request(*args,**kwargs):
+                nonlocal attempts
+                attempts+=1
+                if attempts==1:self.wrapped_transport_error(urllib.error.URLError(ConnectionRefusedError()))
+                return response
+            with patch.object(MODULE,"Client") as client,patch.object(SMOKE.subprocess,"Popen") as spawn,patch.object(SMOKE.time,"sleep") as sleep:
+                spawn.return_value.poll.return_value=None
+                client.return_value.request.side_effect=request
+                try:native.start()
+                finally:native.stop()
+                self.assertEqual(2,attempts)
+                self.assertEqual(2,client.call_args.kwargs["timeout"])
+                sleep.assert_called_once_with(0.05)
+
+    def test_original_startup_rejects_certificate_failure_without_poll_retry(self):
+        for cause in (ssl.SSLCertVerificationError("synthetic verification failure"),urllib.error.URLError(ssl.SSLCertVerificationError("synthetic verification failure"))):
+            with self.subTest(cause_type=type(cause).__name__),tempfile.TemporaryDirectory() as directory:
+                native=self.readiness_instance(Path(directory))
+                with patch.object(MODULE,"Client") as client,patch.object(SMOKE.subprocess,"Popen") as spawn,patch.object(SMOKE.time,"sleep") as sleep:
+                    spawn.return_value.poll.return_value=None
+                    client.return_value.request.side_effect=lambda *args,**kwargs:self.wrapped_transport_error(cause)
+                    try:
+                        with self.assertRaisesRegex(RuntimeError,"TLS certificate verification failed"):
+                            native.start()
+                    finally:native.stop()
+                    self.assertEqual(1,client.return_value.request.call_count)
+                    sleep.assert_not_called()
+
+    def test_business_write_and_other_reads_keep_original_unknown_outcome(self):
+        with tempfile.TemporaryDirectory() as directory:
+            native=self.readiness_instance(Path(directory))
+            for method,path,code in (("POST","sys/unseal","transport_outcome_unknown"),("GET","pki/cert/serial","transport_read_failed")):
+                with self.subTest(method=method,path=path),patch.object(MODULE,"Client") as client:
+                    client.return_value.request.side_effect=lambda *args,**kwargs:self.wrapped_transport_error(OSError(),code)
+                    with self.assertRaises(MODULE.BaoError):native.call(method,path,{})
+                    self.assertEqual(1,client.return_value.request.call_count)
+
+    def test_health_validation_failure_is_not_translated_to_readiness_unavailable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            native=self.readiness_instance(Path(directory))
+            with patch.object(MODULE,"Client") as client:
+                client.return_value.request.side_effect=lambda *args,**kwargs:self.wrapped_transport_error(ValueError())
+                with self.assertRaises(MODULE.BaoError):native.call("GET","sys/health")
+                self.assertEqual(1,client.return_value.request.call_count)
+
     def test_successor_native_control_uses_explicit_two_second_transport(self):
         class Instance:
             def __init__(self,binary,root):

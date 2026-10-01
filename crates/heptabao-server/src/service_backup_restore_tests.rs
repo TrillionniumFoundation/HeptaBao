@@ -395,3 +395,158 @@ fn capacity_guard_restore_checks_v4_and_v5_before_prepare_and_commit() -> TestRe
     }
     Ok(())
 }
+
+#[test]
+fn aad_bound_convergent_backups_preserve_versions_floor_and_invocation_counters() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/safe",
+            &token,
+            json!({"type":"transit"})
+        )
+        .status
+            == 204
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "safe/keys/key",
+            &token,
+            json!({"derived":true,"convergent_encryption":true})
+        )
+        .status
+            == 200
+    );
+    let legacy = archive(&service)?;
+    let mut legacy_stream = Zeroizing::new(Vec::new());
+    let legacy_length = service
+        .durable
+        .as_ref()
+        .ok_or("durable")?
+        .export_backup_to(&mut *legacy_stream)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "safe/keys/key/rotate",
+            &token,
+            json!({"heptabao_convergent_version":1})
+        )
+        .status
+            == 200
+    );
+    let input = json!({"plaintext":STANDARD.encode(b"synthetic message"),"context":STANDARD.encode(b"synthetic context"),"associated_data":STANDARD.encode(b"synthetic AAD")});
+    let cipher = call(
+        &mut service,
+        "POST",
+        "safe/encrypt/key",
+        &token,
+        input.clone(),
+    );
+    assert!(cipher.status == 200);
+    let backup = archive(&service)?;
+    let before = state_record(&service)?;
+    for streaming in [false, true] {
+        let rejected = if streaming {
+            service.prepare_snapshot_restore_from_reader(
+                &mut io::Cursor::new(&*legacy_stream),
+                legacy_length,
+            )
+        } else {
+            service.prepare_snapshot_restore(&legacy)
+        };
+        assert!(rejected.err().is_some_and(|error| error.status == 400
+            && error.body["errors"][0]
+                == "snapshot would downgrade AAD-bound convergent encryption"));
+        assert!(state_record(&service)? == before);
+    }
+    let principal = actor(&mut service, &token)?;
+    let prepared = service
+        .prepare_snapshot_restore(&backup)
+        .map_err(|_| "safe prepare")?;
+    let body = json!({});
+    assert!(
+        service
+            .commit_snapshot_restore(prepared, &principal, &request(&token, &body))
+            .status
+            == 200
+    );
+    let descriptor = call(&mut service, "GET", "safe/keys/key", &token, json!({}));
+    assert!(
+        descriptor.status == 200
+            && descriptor.body["data"]["heptabao_convergent_versions"] == json!({"1":0,"2":1})
+            && descriptor.body["data"]["heptabao_convergent_min_encryption_version"] == 2
+    );
+    let decrypted = call(
+        &mut service,
+        "POST",
+        "safe/decrypt/key",
+        &token,
+        json!({"ciphertext":cipher.body["data"]["ciphertext"],"context":input["context"],"associated_data":input["associated_data"]}),
+    );
+    assert!(decrypted.status == 200 && decrypted.body["data"]["plaintext"] == input["plaintext"]);
+    assert!(call(&mut service, "POST", "safe/encrypt/key", &token, input).status == 200);
+    let before = state_record(&service)?;
+    let rejected = service
+        .prepare_snapshot_restore(&backup)
+        .err()
+        .ok_or("counter downgrade accepted")?;
+    assert!(
+        rejected.status == 400
+            && rejected.body["errors"][0]
+                == "snapshot would downgrade AAD-bound convergent encryption"
+    );
+    assert!(state_record(&service)? == before);
+    Ok(())
+}
+
+#[test]
+fn aad_bound_schema66_backup_cannot_restore65_after_last_safe_mount_is_deleted() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let legacy = archive(&service)?;
+    assert!(service.state.as_ref().ok_or("state")?.schema == CURRENT_STATE_SCHEMA);
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/safe",
+            &token,
+            json!({"type":"transit"})
+        )
+        .status
+            == 204
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "safe/keys/key",
+            &token,
+            json!({"derived":true,"convergent_encryption":true,"heptabao_convergent_version":1})
+        )
+        .status
+            == 200
+    );
+    assert!(call(&mut service, "DELETE", "sys/mounts/safe", &token, json!({})).status == 204);
+    let state = service.state.as_ref().ok_or("state")?;
+    assert!(
+        !state.engines.has_aad_bound_convergent_state() && state.schema == AAD_BOUND_STATE_SCHEMA
+    );
+    let before = state_record(&service)?;
+    assert!(
+        service
+            .prepare_snapshot_restore(&legacy)
+            .err()
+            .is_some_and(|response| response.status == 400)
+    );
+    assert!(state_record(&service)? == before);
+    Ok(())
+}
