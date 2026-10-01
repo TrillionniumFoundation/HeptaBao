@@ -1025,3 +1025,23 @@ TLS Arc/address/SNI/path/CA set. Any intervening change withholds the result
 without replay. Registry values stay inside the existing encrypted owner; no
 schema or private-key owner is introduced. This bounded implementation does not
 add mutual TLS or establish full replacement or production authority.
+
+## Bounded internal root output formats
+
+`root/generate/internal` accepts `format=pem`, `der` and `pem_bundle`. PEM and
+internal bundle responses contain the single self-signed certificate with no
+final LF; DER responses encode the same certificate bytes as canonical standard
+base64. `issuing_ca` uses the selected representation. Internal generation does
+not export CA private material and ignores its known `private_key_format`
+parameter; the pinned official-only 22-case observer covers eight scalar values.
+Empty, unknown or non-string certificate formats fail before key generation or
+state publication. Other root-generation options remain bounded by the existing
+handler. Stored DER, legacy Ed ownership and conditional schema 72 are unchanged.
+
+The source tests require actual maintained-provider self-signature verification,
+selected Ed/EC/RSA public algorithms, tampered-signature rejection, stored-key
+public binding, serde preservation and encrypted Service reopen/readback. These
+are separate from the immutable official-only observation. No candidate runtime
+comparison, full PKI compatibility or production authority is established by this
+source increment. Subject/SAN/time/signature options and multiple local issuers
+remain separate work.

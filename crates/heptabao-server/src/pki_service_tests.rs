@@ -535,3 +535,138 @@ fn pki_extension_state_requires_schema59_independently() -> TestResult {
     }
     Ok(())
 }
+
+#[test]
+fn pki_root_formats_preserve_acl_and_encrypted_restart_public_der() -> TestResult {
+    let f = Fixture::new()?;
+    let mut s = f.service()?;
+    let (root, key) = start(&mut s)?;
+    let root = zeroize::Zeroizing::new(root);
+    let key = zeroize::Zeroizing::new(key);
+    let mut expected = Vec::new();
+    for (index, format) in ["pem", "der", "pem_bundle"].into_iter().enumerate() {
+        let mount = format!("rootfmt{index}");
+        assert!(
+            call(
+                &mut s,
+                &root,
+                "POST",
+                &format!("sys/mounts/{mount}"),
+                json!({"type":"pki"}),
+                100
+            )
+            .status
+                == 204,
+            "format fixture mount failed"
+        );
+        let body = json!({"common_name":"formats.example.test", "ttl":"1h", "key_type":"ed25519", "format":format, "private_key_format":"unknown-internal-format"});
+        let before = zeroize::Zeroizing::new(serde_json::to_vec(s.state.as_ref().ok_or("state")?)?);
+        let denied = call(
+            &mut s,
+            "invalid-format-token",
+            "POST",
+            &format!("{mount}/root/generate/internal"),
+            body.clone(),
+            100,
+        );
+        assert!(
+            denied.status == 403,
+            "format route bypassed caller authorization"
+        );
+        let invalid = call(
+            &mut s,
+            &root,
+            "POST",
+            &format!("{mount}/root/generate/internal"),
+            json!({"common_name":"formats.example.test", "key_type":"ed25519", "format":null}),
+            100,
+        );
+        assert!(invalid.status == 400, "invalid format did not reject");
+        let after = zeroize::Zeroizing::new(serde_json::to_vec(s.state.as_ref().ok_or("state")?)?);
+        assert!(
+            before.as_slice() == after.as_slice(),
+            "denial published state"
+        );
+        let generated = call(
+            &mut s,
+            &root,
+            "POST",
+            &format!("{mount}/root/generate/internal"),
+            body,
+            100,
+        );
+        assert!(generated.status == 200, "internal format generation failed");
+        assert!(
+            generated.body["data"].get("private_key").is_none(),
+            "internal generation exposes private field"
+        );
+        let certificate = text(&generated.body, "/data/certificate")?;
+        let issuing_ca = text(&generated.body, "/data/issuing_ca")?;
+        assert!(
+            certificate == issuing_ca,
+            "response CA does not match certificate"
+        );
+        let der = if format == "der" {
+            BASE64.decode(&certificate)?
+        } else {
+            assert!(!certificate.ends_with('\n'), "internal PEM has final LF");
+            pem_der(&certificate, "CERTIFICATE")?
+        };
+        let cert = openssl::x509::X509::from_der(&der)?;
+        let public = cert.public_key()?;
+        assert!(cert.verify(&public)?, "root actual signature invalid");
+        let read = call(
+            &mut s,
+            "",
+            "GET",
+            &format!("{mount}/cert/ca"),
+            json!({}),
+            100,
+        );
+        assert!(read.status == 200, "anonymous CA read failed");
+        assert!(
+            pem_der(&text(&read.body, "/data/certificate")?, "CERTIFICATE")? == der,
+            "CA read does not match original DER"
+        );
+        expected.push((mount, der));
+    }
+    drop(s);
+    let mut s = f.service()?;
+    assert!(
+        call(
+            &mut s,
+            "",
+            "POST",
+            "sys/unseal",
+            json!({"key":key.as_str()}),
+            101
+        )
+        .status
+            == 200,
+        "format fixture reopen failed"
+    );
+    for (mount, der) in expected {
+        let read = call(
+            &mut s,
+            "",
+            "GET",
+            &format!("{mount}/cert/ca"),
+            json!({}),
+            101,
+        );
+        assert!(read.status == 200, "restarted CA read failed");
+        let actual = pem_der(&text(&read.body, "/data/certificate")?, "CERTIFICATE")?;
+        assert!(actual == der, "encrypted restart changed stored DER");
+        let cert = openssl::x509::X509::from_der(&actual)?;
+        let public = cert.public_key()?;
+        assert!(
+            cert.verify(&public)?,
+            "restarted root actual signature invalid"
+        );
+        assert!(
+            read.body["data"].get("private_key").is_none(),
+            "restarted public read exposes private field"
+        );
+    }
+    Ok(())
+}

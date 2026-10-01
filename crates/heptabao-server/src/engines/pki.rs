@@ -29,6 +29,40 @@ const DEFAULT_LEAF_TTL: u64 = 24 * 3600;
 const MAX_ACME_LIST: usize = 64;
 const MAX_ACME_CONFIG_STRING: usize = 2048;
 
+#[derive(Clone, Copy)]
+enum RootOutputFormat {
+    Pem,
+    Der,
+    PemBundle,
+}
+
+impl RootOutputFormat {
+    fn from_body(body: &Value) -> Result<Self> {
+        match body.get("format") {
+            None => Ok(Self::Pem),
+            Some(Value::String(value)) if value == "pem" => Ok(Self::Pem),
+            Some(Value::String(value)) if value == "der" => Ok(Self::Der),
+            Some(Value::String(value)) if value == "pem_bundle" => Ok(Self::PemBundle),
+            _ => Err(bad("invalid PKI root certificate format")),
+        }
+    }
+
+    fn certificate(self, certificate_der: &[u8]) -> String {
+        match self {
+            Self::Der => BASE64.encode(certificate_der),
+            Self::Pem | Self::PemBundle => {
+                // Internal generation never exports the CA private key. Its
+                // bundle is the single self-signed certificate, with no final LF.
+                let mut certificate = pem("CERTIFICATE", certificate_der);
+                if certificate.ends_with('\n') {
+                    certificate.pop();
+                }
+                certificate
+            }
+        }
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 struct AcmeConfig {
     #[serde(default)]
@@ -433,8 +467,21 @@ impl Pki {
             if !write_method(method) {
                 return Err(unsupported());
             }
-            reject_unknown(body, &["common_name", "ttl", "key_type", "key_bits"])?;
+            reject_unknown(
+                body,
+                &[
+                    "common_name",
+                    "ttl",
+                    "key_type",
+                    "key_bits",
+                    "format",
+                    "private_key_format",
+                ],
+            )?;
             let kind = LocalKeyKind::from_body(body)?;
+            let output_format = RootOutputFormat::from_body(body)?;
+            // This internal route never exports private material. The known
+            // private_key_format parameter is ignored, as in the pinned oracle.
             if self.root.is_some() {
                 return Err(bad("PKI root already exists"));
             }
@@ -468,7 +515,7 @@ impl Pki {
                     ip_sans: &[],
                 },
             )?;
-            let certificate = pem("CERTIFICATE", &certificate_der);
+            let certificate = output_format.certificate(&certificate_der);
             let (pkcs8, local_material) = if kind == LocalKeyKind::Ed25519 {
                 (material.private_der()?.to_vec(), None)
             } else {
@@ -1754,3 +1801,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "pki_root_format_tests.rs"]
+mod root_format_tests;
