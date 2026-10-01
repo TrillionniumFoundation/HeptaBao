@@ -6,8 +6,9 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The ordinary Service writer schema is **65**, with conditional sticky feature
-floors 66–69. `CURRENT_STATE_SCHEMA` and `MAX_SUPPORTED_STATE_SCHEMA` (69) are in
+The current Service state schema is **65**. This is the ordinary writer schema,
+with conditional sticky feature floors 66–69. `CURRENT_STATE_SCHEMA` and
+`MAX_SUPPORTED_STATE_SCHEMA` (69) are in
 `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
