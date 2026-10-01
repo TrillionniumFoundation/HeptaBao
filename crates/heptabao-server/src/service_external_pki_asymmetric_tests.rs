@@ -229,6 +229,18 @@ fn external_pki270_all_six_remote_keys_root_leaf_crl_encrypted_restart_and_schem
                 .ok_or("root certificate")?
                 .as_bytes(),
         )?;
+        let canonical_root = cert.to_pem()?;
+        let root_response = generated.body["data"]["certificate"]
+            .as_str()
+            .ok_or("root response PEM")?;
+        assert!(
+            root_response.as_bytes()
+                == canonical_root
+                    .strip_suffix(b"\n")
+                    .ok_or("canonical root LF")?
+                && generated.body["data"]["issuing_ca"].as_str() == Some(root_response),
+            "external root response has the exact official PEM representation"
+        );
         assert!(
             cert.verify(&public)?,
             "remote root actual signature verified"
@@ -285,6 +297,45 @@ fn external_pki270_all_six_remote_keys_root_leaf_crl_encrypted_restart_and_schem
         assert!(
             leaf.public_key()?.public_key_to_der()? == private.public_key_to_der()?,
             "returned standard private key bound to leaf"
+        );
+        let canonical_leaf = leaf.to_pem()?;
+        let canonical_private = zeroize::Zeroizing::new(private.private_key_to_pem_pkcs8()?);
+        assert!(
+            data["certificate"]
+                .as_str()
+                .ok_or("leaf response PEM")?
+                .as_bytes()
+                == canonical_leaf
+                    .strip_suffix(b"\n")
+                    .ok_or("canonical leaf LF")?
+                && data["private_key"]
+                    .as_str()
+                    .ok_or("private response PEM")?
+                    .as_bytes()
+                    == canonical_private
+                        .strip_suffix(b"\n")
+                        .ok_or("canonical private LF")?
+                && data["issuing_ca"].as_str() == Some(root_response)
+                && data["ca_chain"].as_array().is_some_and(
+                    |chain| chain.len() == 1 && chain[0].as_str() == Some(root_response)
+                ),
+            "all six external algorithms retain exact response PEM and original private binding"
+        );
+        let read = call(
+            &mut service,
+            "GET",
+            &format!(
+                "external-ca/cert/{}",
+                data["serial_number"].as_str().ok_or("readback serial")?
+            ),
+            &admin,
+            json!({}),
+        );
+        assert!(
+            read.status == 200
+                && read.body["data"]["certificate"] == data["certificate"]
+                && read.body["data"].get("private_key").is_none(),
+            "issued certificate equals its public stored response without a private key"
         );
         let serial = data["serial_number"]
             .as_str()
@@ -345,6 +396,19 @@ fn external_pki270_all_six_remote_keys_root_leaf_crl_encrypted_restart_and_schem
                 .schema
                 == 67,
             "typed restart sticky67"
+        );
+        let read = call(
+            &mut reopened,
+            "GET",
+            &format!("external-ca/cert/{serial}"),
+            &admin,
+            json!({}),
+        );
+        assert!(
+            read.status == 200
+                && read.body["data"]["certificate"] == data["certificate"]
+                && read.body["data"].get("private_key").is_none(),
+            "all six encrypted restarts retain the exact issued public certificate"
         );
         assert!(
             crl_bytes(&mut reopened, &admin, false)? == full

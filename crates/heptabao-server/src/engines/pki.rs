@@ -805,9 +805,22 @@ impl Pki {
         if self.issued.contains_key(&prepared.serial) || self.issued.len() >= MAX_ISSUED {
             return Err(error(503, "PKI issuance state changed"));
         }
-        let certificate = pem("CERTIFICATE", &certificate_der);
-        let issuing_ca = pem("CERTIFICATE", &root.certificate_der);
-        let private_key = leaf_private_key_pem(leaf_pkcs8)?;
+        let certificate = if external {
+            public::stored_pem("CERTIFICATE", &certificate_der)
+        } else {
+            pem("CERTIFICATE", &certificate_der)
+        };
+        let issuing_ca = if external {
+            public::stored_pem("CERTIFICATE", &root.certificate_der)
+        } else {
+            pem("CERTIFICATE", &root.certificate_der)
+        };
+        let mut private_key = leaf_private_key_pem(leaf_pkcs8)?;
+        // OpenBao's external issuance bundle omits the canonical final LF.
+        // Remove it in the existing zeroizing response owner, not a new clone.
+        if external && private_key.ends_with('\n') {
+            private_key.pop();
+        }
         let ttl = prepared.expires.saturating_sub(prepared.issued);
         let mut data = json!({
             "certificate":certificate, "issuing_ca":issuing_ca,

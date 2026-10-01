@@ -482,7 +482,7 @@ impl Pki {
             if self.root.is_some() {
                 return Err(bad("PKI root already exists"));
             }
-            let certificate = pem("CERTIFICATE", &encoded);
+            let certificate = public::stored_pem("CERTIFICATE", &encoded);
             let response = json!({"certificate":certificate,"issuing_ca":certificate,
                 "serial_number":formatted_serial(&template.serial),"expiration":template.not_after,
                 "key_id":key.key_id,"key_name":key.key_name,"issuer_id":key.issuer_id,"issuer_name":key.issuer_name});

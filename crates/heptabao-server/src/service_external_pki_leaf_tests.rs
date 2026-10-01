@@ -537,3 +537,104 @@ fn external_pki270_leaf_owner_and_each_consumption_grant_are_required_before_ent
     );
     Ok(())
 }
+
+#[test]
+fn external_pki270_ed_response_pem_matches_issue_read_and_encrypted_restart() -> TestResult {
+    use openssl::{pkey::PKey, x509::X509};
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+    let generated = call(
+        &mut service,
+        "POST",
+        "external-ca/root/generate/kms",
+        &admin,
+        body(),
+    );
+    assert!(
+        generated.status == 200,
+        "actual Ed provider root publication"
+    );
+    let root_pem = generated.body["data"]["certificate"]
+        .as_str()
+        .ok_or("root response")?;
+    let root_cert = X509::from_pem(root_pem.as_bytes())?;
+    let canonical_root = root_cert.to_pem()?;
+    assert!(
+        root_pem.as_bytes()
+            == canonical_root
+                .strip_suffix(b"\n")
+                .ok_or("canonical root LF")?
+            && generated.body["data"]["issuing_ca"].as_str() == Some(root_pem),
+        "Ed root bundle omits exactly its canonical final LF"
+    );
+    assert!(call(&mut service,"POST","external-ca/roles/leaf",&admin,
+        json!({"allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"30m","generate_lease":true,"key_type":"ed25519"})).status == 200,
+        "actual leaf role");
+    let issued = call(
+        &mut service,
+        "POST",
+        "external-ca/issue/leaf",
+        &admin,
+        json!({"common_name":"leaf.example.test","ttl":"10m"}),
+    );
+    assert!(issued.status == 200, "actual Ed remote-signed leaf");
+    let data = &issued.body["data"];
+    let leaf_pem = data["certificate"].as_str().ok_or("leaf response")?;
+    let leaf_cert = X509::from_pem(leaf_pem.as_bytes())?;
+    let private_pem = data["private_key"].as_str().ok_or("private response")?;
+    let private = PKey::private_key_from_pem(private_pem.as_bytes())?;
+    let root_public = root_cert.public_key()?;
+    let canonical_leaf = leaf_cert.to_pem()?;
+    let canonical_private = zeroize::Zeroizing::new(private.private_key_to_pem_pkcs8()?);
+    assert!(
+        leaf_pem.as_bytes()
+            == canonical_leaf
+                .strip_suffix(b"\n")
+                .ok_or("canonical leaf LF")?
+            && private_pem.as_bytes()
+                == canonical_private
+                    .strip_suffix(b"\n")
+                    .ok_or("canonical private LF")?
+            && data["issuing_ca"].as_str() == Some(root_pem)
+            && data["ca_chain"]
+                .as_array()
+                .is_some_and(|chain| chain.len() == 1 && chain[0].as_str() == Some(root_pem))
+            && leaf_cert.public_key()?.public_key_to_der()? == private.public_key_to_der()?
+            && leaf_cert.verify(&root_public)?,
+        "Ed response representation preserves exact certificate and private-key binding"
+    );
+    let route = format!(
+        "external-ca/cert/{}",
+        data["serial_number"].as_str().ok_or("readback serial")?
+    );
+    let read = call(&mut service, "GET", &route, &admin, json!({}));
+    assert!(
+        read.status == 200
+            && read.body["data"]["certificate"] == data["certificate"]
+            && read.body["data"].get("private_key").is_none(),
+        "Ed public read equals its exact issued PEM"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+    assert!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "Ed encrypted restart"
+    );
+    let read = call(&mut reopened, "GET", &route, &admin, json!({}));
+    assert!(
+        read.status == 200
+            && read.body["data"]["certificate"] == data["certificate"]
+            && read.body["data"].get("private_key").is_none(),
+        "Ed restart retains exact public certificate only"
+    );
+    Ok(())
+}
