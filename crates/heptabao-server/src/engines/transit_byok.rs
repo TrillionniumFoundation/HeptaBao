@@ -109,9 +109,10 @@ fn target_length(kind: &str) -> Result<usize> {
 }
 
 fn imported_version(material: Zeroizing<Vec<u8>>, now: u64) -> Result<KeyVersion> {
+    let hmac_material = Zeroizing::new(random_bytes(32)?);
     Ok(KeyVersion {
         material: BASE64.encode(material),
-        hmac_material: BASE64.encode(random_bytes(32)?),
+        hmac_material: BASE64.encode(hmac_material),
         created_at: now,
         encryptions: 0,
         external_key_ref: None,
