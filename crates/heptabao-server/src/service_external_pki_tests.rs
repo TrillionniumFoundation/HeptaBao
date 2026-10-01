@@ -210,13 +210,21 @@ fn external_pki270_actual_leaf_private_output_root_full_delta_crls_and_revoke_re
             .as_str()
             .ok_or("single leaf private output")?,
     )?);
-    let pair =
-        ring::signature::Ed25519KeyPair::from_pkcs8(&private).map_err(|_| "leaf private output")?;
+    let pair = openssl::pkey::PKey::private_key_from_der(&private)
+        .map_err(|_| "standard leaf private output")?;
     assert!(
-        ring::signature::KeyPair::public_key(&pair).as_ref()
-            == leaf.public_key().subject_public_key.data.as_ref(),
+        pair.raw_public_key()?.as_slice() == leaf.public_key().subject_public_key.data.as_ref(),
         "private output belongs to this leaf"
     );
+    let message = b"synthetic issued leaf private consumer proof";
+    let mut signer = openssl::sign::Signer::new_without_digest(&pair)?;
+    let signature = zeroize::Zeroizing::new(signer.sign_oneshot_to_vec(message)?);
+    ring::signature::UnparsedPublicKey::new(
+        &ring::signature::ED25519,
+        leaf.public_key().subject_public_key.data.as_ref(),
+    )
+    .verify(message, &signature)
+    .map_err(|_| "issued standard private key performs leaf-bound signing")?;
     let serial = data["serial_number"].as_str().ok_or("leaf serial")?;
     let read = call(
         &mut service,

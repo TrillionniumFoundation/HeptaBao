@@ -27,6 +27,18 @@ import external_transit_consumer_live as shared
 
 ROOT=Path(__file__).resolve().parents[2]
 VERSION="2.7.0"
+HTTP_TIMEOUT_SECONDS=2
+
+def bounded_native_instance(smoke,binary,root):
+    # This successor tightens the former native control 10s / Client 15s
+    # defaults. Its runner digest and explicit scopes identify the new budget.
+    class BoundedInstance(smoke.Instance):
+        def call(self,method,path,body=None,*,token=None):
+            selected=self.token if token is None else token
+            client=Client(self.address,str(self.root/"ca.crt"),selected or "synthetic-uninitialized-client",timeout=HTTP_TIMEOUT_SECONDS)
+            response=client.request(method,"/v1/"+path,body,token=selected)
+            return response.status,response.body
+    return BoundedInstance(binary,root)
 
 def expected_cases():
     cases=["candidate.binary_before_hash","remote.health","official.health","candidate.health","distinct_process_clusters",
@@ -160,12 +172,12 @@ def run(binary,rows,*,oracle_contract=False):
             c=shared.oracle_client(contract_consumer);audit_root=Path(contract_consumer["root"])
             native_token=private_read(contract_consumer["token_file"],8192).decode().strip()
         else:
-            native=smoke.Instance(binary,private_root/"candidate");shared.native_configuration(native,remote,ca);native.start()
+            native=bounded_native_instance(smoke,binary,private_root/"candidate");shared.native_configuration(native,remote,ca);native.start()
             status,initialized=native.call("POST","sys/init",{"secret_shares":1,"secret_threshold":1})
             if status!=200:raise shared.Failure("candidate_init")
             native.token,unseal=initialized["root_token"],initialized["keys_base64"][0]
             if native.call("POST","sys/unseal",{"key":unseal})[0]!=200:raise shared.Failure("candidate_unseal")
-            c=Client(native.address,str(native.root/"ca.crt"),native.token);audit_root=native.root;native_token=native.token
+            c=Client(native.address,str(native.root/"ca.crt"),native.token,timeout=HTTP_TIMEOUT_SECONDS);audit_root=native.root;native_token=native.token
         clients={"candidate":c,"official":o};identities={}
         for side,client in (("remote",r),("official",o),("candidate",c)):
             health=client.health();t.check(side+".health",health.get("initialized") is True and health.get("sealed") is False and (side=="candidate" and not oracle_contract or health.get("version")==VERSION))
@@ -230,7 +242,7 @@ def run(binary,rows,*,oracle_contract=False):
             else:
                 native.stop();native.start()
                 if native.call("POST","sys/unseal",{"key":unseal})[0]!=200:raise shared.Failure("candidate_restart_unseal")
-                client=Client(native.address,str(native.root/"ca.crt"),native.token)
+                client=Client(native.address,str(native.root/"ca.crt"),native.token,timeout=HTTP_TIMEOUT_SECONDS)
             prefix=side+".";t.check(prefix+"restart_health",client.health()["cluster_id"]==identities[side]["cluster_id"])
             read=client.request("GET","/v1/pki/cert/"+documents[side]["serial_number"])
             t.check(prefix+"restart_leaf_readback",read.status==200 and read.body["data"]["certificate"]==documents[side]["certificate"] and "private_key" not in read.body["data"],read.status)
@@ -266,6 +278,8 @@ def main():
         "source_commit":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),
         "source_worktree_dirty":bool(subprocess.check_output(["git","status","--porcelain"],cwd=ROOT)),
         "runner_sha256":file_digest(__file__),"cargo_lock_sha256":file_digest(ROOT/"Cargo.lock"),
+        "http_timeout_seconds":HTTP_TIMEOUT_SECONDS,"native_fixture_control_timeout_seconds":HTTP_TIMEOUT_SECONDS,
+        "budget_revision":"successor_tightens_native_client_15s_and_control_10s_to_2s",
         "source_binary_binding":"recorded_not_independently_attested","started_at_unix":time.time(),"required_case_count":len(EXPECTED_CASES),"cases":rows}
     try:
         shared.Trace(rows).check("candidate.binary_before_hash",report["actual_binary_sha256_before"]==args.expected_binary_sha256)

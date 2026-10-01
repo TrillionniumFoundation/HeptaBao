@@ -822,10 +822,11 @@ impl Pki {
         }
         let certificate = pem("CERTIFICATE", &certificate_der);
         let issuing_ca = pem("CERTIFICATE", &root.certificate_der);
+        let private_key = leaf_private_key_pem(leaf_pkcs8)?;
         let ttl = prepared.expires.saturating_sub(prepared.issued);
         let mut data = json!({
             "certificate":certificate, "issuing_ca":issuing_ca,
-            "private_key":pem("PRIVATE KEY",leaf_pkcs8), "private_key_type":"ed25519",
+            "private_key":private_key.as_str(), "private_key_type":"ed25519",
             "serial_number":prepared.serial, "expiration":prepared.expires,
         });
         if external {
@@ -1389,6 +1390,30 @@ fn context_explicit(tag: u8, value: &[u8]) -> Vec<u8> {
 fn context_primitive(tag: u8, value: &[u8]) -> Vec<u8> {
     der(0x80 | tag, value)
 }
+// Ring generates OneAsymmetricKey (PKCS8 v2). Export PrivateKeyInfo with the
+// maintained provider so consumers accepting standard PKCS8 can load the leaf.
+// Only the response encoding changes; bind the exporter to the original key.
+fn leaf_private_key_pem(pkcs8: &[u8]) -> Result<Zeroizing<String>> {
+    let original = Ed25519KeyPair::from_pkcs8(pkcs8)
+        .map_err(|_| error(503, "PKI leaf private key export failed"))?;
+    let provider = openssl::pkey::PKey::private_key_from_der(pkcs8)
+        .map_err(|_| error(503, "PKI leaf private key export failed"))?;
+    let public = provider
+        .raw_public_key()
+        .map_err(|_| error(503, "PKI leaf private key export failed"))?;
+    if public.as_slice() != original.public_key().as_ref() {
+        return Err(error(503, "PKI leaf private key export failed"));
+    }
+    let encoded = Zeroizing::new(
+        provider
+            .private_key_to_pem_pkcs8()
+            .map_err(|_| error(503, "PKI leaf private key export failed"))?,
+    );
+    let text = std::str::from_utf8(&encoded)
+        .map_err(|_| error(503, "PKI leaf private key export failed"))?;
+    Ok(Zeroizing::new(text.to_owned()))
+}
+
 fn pem(label: &str, der: &[u8]) -> String {
     let encoded = BASE64.encode(der);
     let mut out = format!("-----BEGIN {label}-----\n");
@@ -1403,6 +1428,33 @@ fn pem(label: &str, der: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn pki_leaf_private_export_is_standard_pkcs8_with_original_public_key()
+    -> std::result::Result<(), Box<dyn std::error::Error>> {
+        let document = Zeroizing::new(
+            Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
+                .map_err(|_| "temporary key generation")?
+                .as_ref()
+                .to_vec(),
+        );
+        let original =
+            Ed25519KeyPair::from_pkcs8(&document).map_err(|_| "original temporary key")?;
+        let exported = leaf_private_key_pem(&document)?;
+        let loaded = openssl::pkey::PKey::private_key_from_pem(exported.as_bytes())?;
+        assert!(
+            loaded.raw_public_key()?.as_slice() == original.public_key().as_ref(),
+            "standard private export preserves the original leaf public key"
+        );
+        let message = b"synthetic PKCS8 consumer proof";
+        let signature = original.sign(message);
+        let mut verifier = openssl::sign::Verifier::new_without_digest(&loaded)?;
+        assert!(
+            verifier.verify_oneshot(signature.as_ref(), message)?,
+            "exported private key verifies the original leaf signature"
+        );
+        Ok(())
+    }
 
     #[test]
     fn internal_root_issue_revoke_and_crl_are_der_structured()

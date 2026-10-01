@@ -3,6 +3,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[3]
 RUNNER=ROOT/"qa/openbao-acceptance/external_pki_leaf_crl_live.py"
@@ -11,6 +12,24 @@ SPEC=importlib.util.spec_from_file_location("external_pki_leaf_crl_contract",RUN
 MODULE=importlib.util.module_from_spec(SPEC);SPEC.loader.exec_module(MODULE)
 
 class ExternalPkiLeafCrlContractTests(unittest.TestCase):
+    def test_successor_native_control_uses_explicit_two_second_transport(self):
+        class Instance:
+            def __init__(self,binary,root):
+                self.root=Path(root);self.address="https://127.0.0.1:1234";self.token=""
+        class Smoke:pass
+        Smoke.Instance=Instance
+        with patch.object(MODULE,"Client") as client:
+            client.return_value.request.return_value.status=501
+            client.return_value.request.return_value.body={"sealed":True}
+            native=MODULE.bounded_native_instance(Smoke,Path("binary"),Path("private"))
+            self.assertEqual((501,{"sealed":True}),native.call("GET","sys/health"))
+            self.assertEqual(2,client.call_args.kwargs["timeout"])
+            self.assertEqual("",client.return_value.request.call_args.kwargs["token"])
+            native.token="synthetic-authenticated-token"
+            native.call("POST","sys/unseal",{"key":"synthetic-unseal-input"})
+            self.assertEqual(2,client.call_args.kwargs["timeout"])
+            self.assertTrue(native.token==client.return_value.request.call_args.kwargs["token"])
+
     def rows(self):
         rows=[{"case":case,"passed":True} for case in MODULE.EXPECTED_CASES]
         for row in rows:
