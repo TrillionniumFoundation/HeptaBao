@@ -154,8 +154,7 @@ fn jwt_user_claim_rs256_custom_alias_and_default_sub_are_distinct() -> TestResul
     let configured = role(&mut service, &admin, "", "jwtcustom", "custom", "username");
     assert!(
         configured.status == 204,
-        "custom user_claim must be admitted, observed status {}",
-        configured.status
+        "custom user_claim must be admitted"
     );
     let custom = login(
         &mut service,

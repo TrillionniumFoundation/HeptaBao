@@ -417,8 +417,7 @@ fn external_pki270_public_crl_expiry_survives_clock_rollback_and_encrypted_resta
         let rollback = service.handle_at("GET", path, "", "", json!({}), 101);
         assert!(
             rollback.status == 503 && rollback.body.get("data").is_none(),
-            "observed expiry cannot be reversed by clock rollback (status={})",
-            rollback.status
+            "observed expiry cannot be reversed by clock rollback"
         );
     }
     assert!(

@@ -14,9 +14,9 @@ import socket
 import subprocess
 import sys
 import tempfile
+import time
 import threading
 import unittest
-import warnings
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -160,20 +160,31 @@ class KVRealTLSTests(unittest.TestCase):
                     connection.close()
 
     def test_explicit_tls12_floor_rejects_tls11_with_peer_protocol_alert(self):
-        context = ssl.create_default_context(cafile=str(self.ca))
-        # Deliberate legacy-client negative probe. Its warning suppression is
-        # limited to constructing the prohibited client, never the TLS server.
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", DeprecationWarning)
-            context.minimum_version = ssl.TLSVersion.TLSv1_1
-            context.maximum_version = ssl.TLSVersion.TLSv1_1
-        context.set_ciphers("ALL:@SECLEVEL=0")
+        # RFC 4346 sections 6.2.1 and 7.4.1.2: a complete TLS 1.1
+        # ClientHello with an empty session and one ordinary cipher suite.
+        # Send only this negative handshake packet; no legacy TLS context,
+        # key exchange, credentials, or application data is constructed.
+        hello = b"\x03\x02" + int(time.time()).to_bytes(4, "big") + os.urandom(28) + b"\x00\x00\x02\x00\x2f\x01\x00"
+        handshake = b"\x01" + len(hello).to_bytes(3, "big") + hello
+        record = b"\x16\x03\x02" + len(handshake).to_bytes(2, "big") + handshake
         with socket.create_connection(("127.0.0.1", self.server.server_port), timeout=1) as raw:
-            with self.assertRaises(ssl.SSLError) as rejected:
-                context.wrap_socket(raw, server_hostname="localhost")
-        # This proves the owned peer rejected the ClientHello, rather than a
-        # client-local no-ciphers/no-protocols configuration failure.
-        self.assertEqual(rejected.exception.reason, "TLSV1_ALERT_PROTOCOL_VERSION")
+            deadline = time.monotonic() + 1
+            raw.sendall(record)
+            def receive_exact(size):
+                received = bytearray()
+                while len(received) < size:
+                    remaining = deadline - time.monotonic()
+                    self.assertTrue(remaining > 0, "negative handshake retains its one-second deadline")
+                    raw.settimeout(remaining)
+                    block = raw.recv(size - len(received))
+                    self.assertTrue(bool(block), "peer must return a complete TLS alert")
+                    received.extend(block)
+                return bytes(received)
+            header = receive_exact(5)
+            self.assertTrue(header[0] == 21 and header[1:3] in (b"\x03\x01", b"\x03\x02", b"\x03\x03"))
+            self.assertEqual(int.from_bytes(header[3:], "big"), 2)
+            # RFC 4346 section 7.2: fatal(2), protocol_version(70).
+            self.assertTrue(receive_exact(2) == b"\x02\x46")
         self.assertEqual(self.server.methods, [])
 
     def test_mount_redirect_is_never_followed_and_discloses_no_bearer(self):
