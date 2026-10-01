@@ -2,7 +2,7 @@
 //! Provider observations are injected here; the real OIDC issuer fixture tests
 //! authorization-code exchange and signed ID tokens over verified TLS.
 use super::online_auth::OnlineAuthObservation;
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, bootstrap_unmounted, call};
 use super::*;
 use crate::auth::OidcLoginObservation;
 
@@ -10,9 +10,11 @@ type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 fn prepared(root: &Root) -> TestResult<(Service, String, String, Value)> {
     let mut service = root.service()?;
-    let (key, _) = bootstrap(&mut service)?;
+    // Construct the pre-record schema-20 input before any fixture mount publication.
+    let (key, _) = bootstrap_unmounted(&mut service)?;
     let (auth, admin, body) = AuthState::oidc_test_fixture();
     let mut state = service.state.clone().ok_or("state")?;
+    assert!(state.engines.record_root().is_none());
     state.auth = auth.into();
     state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 20;

@@ -1,4 +1,4 @@
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, bootstrap, bootstrap_unmounted, call};
 use serde_json::json;
 
 #[test]
@@ -6,8 +6,10 @@ fn system_defaults_and_token_grants_each_require_schema_thirty_three()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    // This schema-32 input predates the record root created by mount setup writes.
+    let (_, admin) = bootstrap_unmounted(&mut service)?;
     let mut state = service.state.clone().ok_or("state")?;
+    assert!(state.engines.record_root().is_none());
     state.auth.remove_name_modes_for_legacy_format_test();
     state.schema = 32;
     assert_eq!(
@@ -53,6 +55,27 @@ fn system_defaults_and_token_grants_each_require_schema_thirty_three()
     grant_only.auth.omit_lease_metadata_for_legacy_fixture();
     grant_only.schema = 32;
     assert!(grant_only.validate_format().is_ok());
+    Ok(())
+}
+
+#[test]
+fn explicit_fixture_mount_publication_requires_record_format()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    bootstrap(&mut service)?;
+    let mut state = service.state.clone().ok_or("state")?;
+    // Normal mount setup is a real write and publishes an authenticated record root.
+    assert!(state.engines.record_root().is_some());
+    state.auth.remove_name_modes_for_legacy_format_test();
+    state.auth.omit_lease_metadata_for_legacy_fixture();
+    state.schema = 32;
+    let rejected = state
+        .validate_format()
+        .err()
+        .ok_or("record root admitted")?;
+    assert_eq!(rejected.status, 503);
+    assert_eq!(rejected.body["errors"][0], "record KV1 requires schema 36");
     Ok(())
 }
 
