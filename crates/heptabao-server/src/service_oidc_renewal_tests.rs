@@ -20,7 +20,9 @@ fn prepared(root: &Root) -> TestResult<(Service, String, String, Value)> {
     state
         .validate_format()
         .map_err(|_| "legacy pending state")?;
-    service.commit_state(&state).map_err(|_| "pending commit")?;
+    // Authenticated historical input construction only; a live writer cannot downgrade.
+    super::tests::commit_legacy_state_fixture(&mut service, &state)
+        .map_err(|_| "pending fixture commit")?;
     service.state = Some(state);
     Ok((service, key, admin, body))
 }

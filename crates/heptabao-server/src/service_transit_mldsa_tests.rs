@@ -23,7 +23,9 @@ fn mldsa270_service_promotes_only_on_write_fences_legacy_and_reopens_signatures(
     let mut legacy = service.state.clone().ok_or("state")?;
     legacy.schema = 61;
     legacy.validate_format().map_err(|_| "legacy validation")?;
-    service.commit_state(&legacy).map_err(|_| "legacy commit")?;
+    // The empty Transit mount is an ordinary, bounded historical writer input.
+    super::tests::commit_legacy_state_fixture(&mut service, &legacy)
+        .map_err(|_| "legacy fixture commit")?;
     service.state = Some(legacy);
     drop(service);
     let mut service = root.service()?;
@@ -216,9 +218,9 @@ fn asymmetric270_service_promotes_schema65_fences_disguised64_and_reopens_true_s
     legacy
         .validate_format()
         .map_err(|_| "ordinary schema64 validation")?;
-    service
-        .commit_state(&legacy)
-        .map_err(|_| "schema64 commit")?;
+    // Create the old empty-mount input before introducing asymmetric key material.
+    super::tests::commit_legacy_state_fixture(&mut service, &legacy)
+        .map_err(|_| "schema64 fixture commit")?;
     service.state = Some(legacy);
     let input = STANDARD.encode(b"synthetic durable asymmetric signature");
     let mut signatures = Vec::new();
