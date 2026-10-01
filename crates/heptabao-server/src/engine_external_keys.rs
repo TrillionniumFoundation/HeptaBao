@@ -399,17 +399,12 @@ impl Registry {
             ],
         )?;
         reject_unknown(key, &["name", "version", "disable_prehashing"])?;
-        // Native egress trust is host-enrolled, never selected or weakened by
-        // encrypted API parameters. Other TLS options await a qualified lane.
+        // Native egress trust remains deployment-enrolled. API CA/SNI assert
+        // that profile at Service staging; they never select a new TLS profile.
         if optional_bool(config, "tls_skip_verify")?.unwrap_or(false) {
             return Err(bad("external Transit requires verified TLS"));
         }
-        for field in [
-            "tls_server_name",
-            "tls_ca_cert_bytes",
-            "tls_client_cert_bytes",
-            "tls_client_key_bytes",
-        ] {
+        for field in ["tls_client_cert_bytes", "tls_client_key_bytes"] {
             if config
                 .get(field)
                 .is_some_and(|value| value.as_str() != Some(""))
@@ -420,6 +415,24 @@ impl Registry {
                 ));
             }
         }
+        let tls_server_name = config
+            .get("tls_server_name")
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("external Transit SNI must be a string"))
+            })
+            .transpose()?
+            .unwrap_or("");
+        let tls_ca_cert_bytes = config
+            .get("tls_ca_cert_bytes")
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("external Transit CA must be a string"))
+            })
+            .transpose()?
+            .unwrap_or("");
         let address = config
             .get("address")
             .map(|value| {
@@ -493,7 +506,8 @@ impl Registry {
         }
         let envelope = SecretJson(
             json!({"url":format!("{address}/v1/{remote_mount}{operation}/{name}"),
-            "token":token,"namespace":namespace,"remote_version":version,"body":&*body}),
+            "token":token,"namespace":namespace,"remote_version":version,"body":&*body,
+            "tls_server_name":tls_server_name,"tls_ca_cert_bytes":tls_ca_cert_bytes}),
         );
         encode_provider_request(&*envelope)
     }

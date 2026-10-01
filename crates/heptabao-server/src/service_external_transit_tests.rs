@@ -1676,16 +1676,17 @@ fn external_transit270_invalid_input_size_tls_override_and_versions_fail_before_
         400
     );
     assert_eq!(call(&mut service,"PATCH","sys/external-keys/configs/remote",&admin,json!({"verify":false,"tls_skip_verify":false,"tls_ca_cert_bytes":"registry cannot enlarge trust"})).status,204);
-    assert_eq!(
-        call(
-            &mut service,
-            "POST",
-            "consumer/encrypt/local",
-            &admin,
-            json!({"plaintext":""})
-        )
-        .status,
-        501
+    let refused = call(
+        &mut service,
+        "POST",
+        "consumer/encrypt/local",
+        &admin,
+        json!({"plaintext":""}),
+    );
+    assert_eq!(refused.status, 503);
+    assert!(
+        refused.body.get("data").is_none(),
+        "untrusted CA returned consumer result"
     );
     assert_eq!(remote.calls()?, 0);
     Ok(())
@@ -1878,3 +1879,6 @@ fn external_transit270_optional_kms_disable_and_revocation_cannot_bypass_native_
     }
     Ok(())
 }
+
+#[path = "service_external_key_native_tests.rs"]
+mod native_verification_tests;

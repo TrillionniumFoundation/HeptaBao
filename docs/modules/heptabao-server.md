@@ -879,8 +879,10 @@ Native remote Transit requires immutable deployment-enrolled HTTPS origin,
 address, CA, SNI name and path prefix. Registry parameters cannot cause DNS
 resolution, choose a new socket address, broaden an enrolled path or weaken TLS.
 Only canonical explicit-port HTTPS origins are accepted in this bounded lane.
-`tls_skip_verify=true` is refused; nonempty API TLS override parameters are
-refused until a qualified transport lane exists. A deployment-enrolled KMS host
+`tls_skip_verify=true` is refused. Optional API CA values assert the complete
+canonical DER fingerprint set already enrolled for that origin; optional SNI
+must equal its enrolled server name. Neither adds trust roots or changes the
+socket/host. Nonempty mutual TLS certificate/key values remain unsupported. A deployment-enrolled KMS host
 named `transit`, when present, supplies an additional enabled/capability/active-host and manifest-generation
 binding fence. Its verification response is never used as cryptographic output.
 The native built-in consumer works without such a process plugin only when the
@@ -1004,3 +1006,22 @@ observations do not inherit these production qualification receipts. New exact
 custody comparison and actual schema-66 predecessor refusal are required for
 the typed-SPKI increment. Multiple issuers and full PKI remain open; full OpenBao
 compatibility, migration, production and independent authority remain false.
+
+## Bounded native Transit parameter verification
+
+With no registered KMS host or key binding, `plugin=transit` config/mapping
+`verify=true` uses the original External Keys publication owner to validate
+closed native parameters and existing HTTPS enrollment. A registered disabled,
+revoked or incomplete KMS binding cannot fall back to this path. Native
+verification sends no remote operation and makes no claim that a remote key or
+version exists; real consumer encryption, signatures and public-key binding
+remain separate mandatory checks. Public pinned 2.7 black-box observation,
+including an actual TLS-proxy read positive control, records this separation.
+
+The original principal/ACL, namespace, deadline, unseal activation, whole state
+identity, durable generation and Raft frontier remain captured before staging.
+Publication additionally retains absence of a KMS owner and the exact enrolled
+TLS Arc/address/SNI/path/CA set. Any intervening change withholds the result
+without replay. Registry values stay inside the existing encrypted owner; no
+schema or private-key owner is introduced. This bounded implementation does not
+add mutual TLS or establish full replacement or production authority.

@@ -264,6 +264,13 @@ impl Service {
                 "external Transit rejected before entry: HTTPS route is not deployment-enrolled",
             );
         }
+        if let Err(message) = self.outbound.validate_external_transit_tls(
+            url,
+            envelope.0["tls_server_name"].as_str().unwrap_or(""),
+            envelope.0["tls_ca_cert_bytes"].as_str().unwrap_or(""),
+        ) {
+            return Response::error(503, message);
+        }
         // Built-in Transit uses verified native egress. If a deployment also
         // enrolled a KMS host under this identifier, its disable/capability
         // binding remains an additional authority fence; it is never an ack.

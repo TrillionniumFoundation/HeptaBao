@@ -383,6 +383,13 @@ impl Service {
                 "external PKI rejected before entry: HTTPS route is not deployment-enrolled",
             );
         }
+        if let Err(message) = self.outbound.validate_external_transit_tls(
+            sign_url,
+            envelope.0["tls_server_name"].as_str().unwrap_or(""),
+            envelope.0["tls_ca_cert_bytes"].as_str().unwrap_or(""),
+        ) {
+            return Response::error(503, message);
+        }
         let provider_binding = match (
             self.kms_plugins.get("transit"),
             self.kms_keys.get("transit"),

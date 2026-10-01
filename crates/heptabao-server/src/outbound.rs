@@ -81,6 +81,7 @@ pub(crate) struct Endpoint {
 pub(crate) struct Outbound {
     endpoints: BTreeMap<String, Endpoint>,
     radius_endpoints: BTreeMap<String, RadiusEndpoint>,
+    ca_fingerprints: BTreeMap<String, BTreeSet<[u8; 32]>>,
 }
 
 #[derive(Clone)]
@@ -147,6 +148,7 @@ impl Outbound {
         }
         let mut endpoints = BTreeMap::new();
         let mut radius_endpoints = BTreeMap::new();
+        let mut fingerprints = BTreeMap::new();
         for config in configs {
             let scheme = if config.origin.starts_with("postgresql://") {
                 "postgresql"
@@ -203,10 +205,11 @@ impl Outbound {
                 continue;
             }
             let mut roots = RootCertStore::empty();
+            let mut ca_fingerprints = BTreeSet::new();
             for cert in rustls_pemfile::certs(&mut config.ca_pem.as_bytes()) {
-                roots
-                    .add(cert.map_err(|_| "invalid outbound CA")?)
-                    .map_err(|_| "invalid outbound CA")?;
+                let cert = cert.map_err(|_| "invalid outbound CA")?;
+                ca_fingerprints.insert(certificate_fingerprint(cert.as_ref())?);
+                roots.add(cert).map_err(|_| "invalid outbound CA")?;
             }
             if roots.is_empty() {
                 return Err("empty outbound CA set");
@@ -225,6 +228,7 @@ impl Outbound {
                 path_prefix: config.path_prefix,
                 tls: Arc::new(tls),
             };
+            fingerprints.insert(target.origin.clone(), ca_fingerprints);
             if endpoints.insert(target.origin, endpoint).is_some() {
                 return Err("duplicate outbound origin");
             }
@@ -232,6 +236,7 @@ impl Outbound {
         Ok(Self {
             endpoints,
             radius_endpoints,
+            ca_fingerprints: fingerprints,
         })
     }
     pub fn endpoint(&self, url: &str, scheme: &str) -> Result<(Endpoint, Target), &'static str> {
@@ -1715,13 +1720,72 @@ pub(crate) enum ExternalTransitResponse {
     Rejected,
 }
 
+fn certificate_fingerprint(der: &[u8]) -> Result<[u8; 32], &'static str> {
+    let certificate =
+        openssl::x509::X509::from_der(der).map_err(|_| "invalid enrolled certificate DER")?;
+    let canonical = certificate
+        .to_der()
+        .map_err(|_| "invalid enrolled certificate DER")?;
+    if canonical != der {
+        return Err("noncanonical enrolled certificate DER");
+    }
+    let mut result = [0u8; 32];
+    result.copy_from_slice(ring::digest::digest(&ring::digest::SHA256, der).as_ref());
+    Ok(result)
+}
+
+fn transit_ca_fingerprints(pem: &str) -> Result<BTreeSet<[u8; 32]>, &'static str> {
+    if pem.len() > 64 * 1024 {
+        return Err("external Transit CA exceeds enrollment bound");
+    }
+    let mut result = BTreeSet::new();
+    for item in rustls_pemfile::read_all(&mut pem.as_bytes()) {
+        match item.map_err(|_| "external Transit CA is invalid")? {
+            rustls_pemfile::Item::X509Certificate(cert) => {
+                result.insert(certificate_fingerprint(cert.as_ref())?);
+            }
+            _ => return Err("external Transit CA contains unsupported PEM material"),
+        }
+    }
+    if result.is_empty() {
+        return Err("external Transit CA is empty");
+    }
+    Ok(result)
+}
+
 impl Outbound {
+    /// API TLS values can assert the deployment profile, never widen its trust.
+    pub(crate) fn validate_external_transit_tls(
+        &self,
+        url: &str,
+        server_name: &str,
+        ca_pem: &str,
+    ) -> Result<(), &'static str> {
+        let (endpoint, target) = self.endpoint(url, "https")?;
+        let enrolled_ca = self
+            .ca_fingerprints
+            .get(&target.origin)
+            .ok_or("external Transit enrolled CA identity missing")?;
+        if !server_name.is_empty() && server_name != endpoint.server_name {
+            return Err("external Transit SNI differs from deployment enrollment");
+        }
+        if !ca_pem.is_empty() && transit_ca_fingerprints(ca_pem)? != *enrolled_ca {
+            return Err("external Transit CA differs from deployment enrollment");
+        }
+        Ok(())
+    }
+
     pub(crate) fn same_https_enrollment(&self, other: &Self, url: &str) -> bool {
         match (self.endpoint(url, "https"), other.endpoint(url, "https")) {
-            (Ok((left, _)), Ok((right, _))) => {
+            (Ok((left, target)), Ok((right, _))) => {
                 left.address == right.address
                     && left.server_name == right.server_name
                     && left.path_prefix == right.path_prefix
+                    && self
+                        .ca_fingerprints
+                        .get(&target.origin)
+                        .zip(other.ca_fingerprints.get(&target.origin))
+                        .is_some_and(|(left, right)| left == right)
                     && Arc::ptr_eq(&left.tls, &right.tls)
             }
             _ => false,

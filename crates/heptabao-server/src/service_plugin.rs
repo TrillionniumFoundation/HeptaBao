@@ -215,10 +215,20 @@ pub(super) struct PublicationGeneration {
     raft: Option<(u64, u64)>,
 }
 
+#[path = "service_external_key_native.rs"]
+mod external_key_native;
+
+enum ExternalKeyProvider {
+    Kms {
+        host: SharedKmsPlugin,
+        expected_host_generation: u64,
+    },
+    NativeTransit(external_key_native::NativeTransitVerification),
+}
+
 pub(super) struct ExternalKeyPlan {
     pub(super) plugin_id: String,
-    host: SharedKmsPlugin,
-    expected_host_generation: u64,
+    provider: ExternalKeyProvider,
     request: SecretValue,
     action: &'static str,
     config_name: String,
@@ -632,11 +642,24 @@ impl ExternalKeyPlan {
                 "external key request deadline expired before entry",
             ));
         }
-        let mut host = self.host.try_lock().map_err(|_| {
+        let (host, expected_host_generation) = match &self.provider {
+            ExternalKeyProvider::NativeTransit(native) => {
+                let _deadline_scope = self
+                    .authority
+                    .deadline
+                    .map(crate::request_deadline::RequestDeadlineScope::enter);
+                return native.execute();
+            }
+            ExternalKeyProvider::Kms {
+                host,
+                expected_host_generation,
+            } => (host, expected_host_generation),
+        };
+        let mut host = host.try_lock().map_err(|_| {
             Response::error(503, "external key KMS plugin host busy or unavailable")
         })?;
         if host.state() != PluginHostState::Active
-            || host.manifest().descriptor().generation() != self.expected_host_generation
+            || host.manifest().descriptor().generation() != *expected_host_generation
         {
             return Err(Response::error(
                 503,
@@ -1121,31 +1144,54 @@ impl Service {
         if self.pending_external_key.is_some() {
             return Response::error(503, "another external key verification is pending");
         }
-        let Some(host) = self.kms_plugins.get(&verification.plugin_id).cloned() else {
-            return Response::error(
-                501,
-                "external key verification requires an admitted KMS provider",
-            );
+        // Presence of either registry entry selects the original KMS owner.
+        // A disabled, revoked or incomplete binding must never fall back to HTTP.
+        let provider = match (
+            self.kms_plugins.get(&verification.plugin_id).cloned(),
+            self.kms_keys.get(&verification.plugin_id),
+        ) {
+            (Some(host), Some(binding)) => {
+                if !binding.enabled {
+                    return Response::error(403, "external key KMS provider is disabled");
+                }
+                let expected_host_generation = {
+                    let Ok(guard) = host.try_lock() else {
+                        return Response::error(
+                            503,
+                            "external key KMS plugin host busy or unavailable",
+                        );
+                    };
+                    if guard.state() != PluginHostState::Active {
+                        return Response::error(503, "external key KMS plugin host is not active");
+                    }
+                    guard.manifest().descriptor().generation()
+                };
+                ExternalKeyProvider::Kms {
+                    host,
+                    expected_host_generation,
+                }
+            }
+            (None, None) if verification.plugin_id == "transit" => {
+                match external_key_native::NativeTransitVerification::prepare(
+                    &self.outbound,
+                    verification.action,
+                    &verification.request,
+                ) {
+                    Ok(native) => ExternalKeyProvider::NativeTransit(native),
+                    Err(error) => return error,
+                }
+            }
+            (None, None) => {
+                return Response::error(
+                    501,
+                    "external key verification requires an admitted KMS provider",
+                );
+            }
+            _ => return Response::error(403, "external key KMS provider is unavailable"),
         };
-        if !self
-            .kms_keys
-            .get(&verification.plugin_id)
-            .is_some_and(|key| key.enabled)
-        {
-            return Response::error(403, "external key KMS provider is disabled");
-        }
         if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(501, "external key verification responses cannot be wrapped");
         }
-        let expected_host_generation = {
-            let Ok(host) = host.try_lock() else {
-                return Response::error(503, "external key KMS plugin host busy or unavailable");
-            };
-            if host.state() != PluginHostState::Active {
-                return Response::error(503, "external key KMS plugin host is not active");
-            }
-            host.manifest().descriptor().generation()
-        };
         let expected_identity = match self.current_state_identity() {
             Ok(identity) => identity,
             Err(error) => return error,
@@ -1170,8 +1216,7 @@ impl Service {
         );
         self.pending_external_key = Some(ExternalKeyPlan {
             plugin_id: verification.plugin_id,
-            host,
-            expected_host_generation,
+            provider,
             request: verification.request,
             action: verification.action,
             config_name: verification.config_name,
@@ -1195,30 +1240,56 @@ impl Service {
         if let Err(error) = self.validate_plugin_response(&mut plan.authority) {
             return error;
         }
-        let host_current = self
-            .kms_plugins
-            .get(&plan.plugin_id)
-            .is_some_and(|host| Arc::ptr_eq(host, &plan.host));
-        let enabled = self
-            .kms_keys
-            .get(&plan.plugin_id)
-            .is_some_and(|key| key.enabled);
-        if !host_current || !enabled {
-            return Response::error(503, "external key KMS host changed before publication");
-        }
-        // Retain host authority through the serial publication transition, so a
-        // same-Arc revoke or admitted upgrade cannot race the final check.
-        let Ok(host) = plan.host.try_lock() else {
-            return Response::error(503, "external key KMS plugin host busy or unavailable");
+        // Keep the original sandbox host lock through publication. Native
+        // HTTP retains the exact enrolled TLS Arc and the absence of a KMS owner.
+        let _host_guard = match &plan.provider {
+            ExternalKeyProvider::Kms {
+                host,
+                expected_host_generation,
+            } => {
+                let host_current = self
+                    .kms_plugins
+                    .get(&plan.plugin_id)
+                    .is_some_and(|current| Arc::ptr_eq(current, host));
+                let enabled = self
+                    .kms_keys
+                    .get(&plan.plugin_id)
+                    .is_some_and(|key| key.enabled);
+                if !host_current || !enabled {
+                    return Response::error(
+                        503,
+                        "external key KMS host changed before publication",
+                    );
+                }
+                let Ok(guard) = host.try_lock() else {
+                    return Response::error(
+                        503,
+                        "external key KMS plugin host busy or unavailable",
+                    );
+                };
+                if guard.state() != PluginHostState::Active
+                    || guard.manifest().descriptor().generation() != *expected_host_generation
+                {
+                    return Response::error(
+                        503,
+                        "external key KMS host authority changed before publication",
+                    );
+                }
+                Some(guard)
+            }
+            ExternalKeyProvider::NativeTransit(native) => {
+                if self.kms_plugins.contains_key(&plan.plugin_id)
+                    || self.kms_keys.contains_key(&plan.plugin_id)
+                    || !native.enrollment_current(&self.outbound)
+                {
+                    return Response::error(
+                        503,
+                        "external key native provider changed before publication",
+                    );
+                }
+                None
+            }
         };
-        if host.state() != PluginHostState::Active
-            || host.manifest().descriptor().generation() != plan.expected_host_generation
-        {
-            return Response::error(
-                503,
-                "external key KMS host authority changed before publication",
-            );
-        }
         let current = match self.current_state_identity() {
             Ok(identity) => identity,
             Err(error) => return error,
