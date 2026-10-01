@@ -62,7 +62,7 @@ impl CrlSet {
             delta: crl(number + 1, Some(number), BTreeMap::new()),
         }
     }
-    pub(super) fn tbs(&self, issuer: &str, public: &[u8; 32]) -> Result<Vec<Vec<u8>>> {
+    pub(super) fn tbs(&self, issuer: &str, public: &ExternalPkiPublicKey) -> Result<Vec<Vec<u8>>> {
         Ok(vec![
             crl_tbs(issuer, public, &self.full)?,
             crl_tbs(issuer, public, &self.delta)?,
@@ -71,7 +71,7 @@ impl CrlSet {
     pub(super) fn sign(
         &mut self,
         issuer: &str,
-        public: &[u8; 32],
+        public: &ExternalPkiPublicKey,
         signatures: &[Zeroizing<Vec<u8>>],
     ) -> Result<()> {
         if signatures.len() != 2 {
@@ -83,12 +83,17 @@ impl CrlSet {
             .zip(tbs)
             .zip(signatures)
         {
-            crl.der = signed_der(&tbs, signature);
+            crl.der = signed_der(&tbs, signature, public);
             validate_signed_der(public, &tbs, &crl.der)?;
         }
         Ok(())
     }
-    pub(super) fn validate(&self, issuer: &str, public: &[u8; 32], clock: u64) -> Result<()> {
+    pub(super) fn validate(
+        &self,
+        issuer: &str,
+        public: &ExternalPkiPublicKey,
+        clock: u64,
+    ) -> Result<()> {
         if self.full.base.is_some()
             || self.delta.base != Some(self.full.number)
             || self.full.number == 0
@@ -130,10 +135,10 @@ fn key_identifier(public: &[u8]) -> Vec<u8> {
         .to_vec()
 }
 
-fn crl_tbs(issuer: &str, public: &[u8; 32], crl: &Crl) -> Result<Vec<u8>> {
+fn crl_tbs(issuer: &str, public: &ExternalPkiPublicKey, crl: &Crl) -> Result<Vec<u8>> {
     let mut parts = vec![
         integer(&[1]),
-        algorithm_ed25519(),
+        public.signature_algorithm(),
         name(issuer),
         time(crl.issued),
         time(crl.expires),
@@ -150,7 +155,10 @@ fn crl_tbs(issuer: &str, public: &[u8; 32], crl: &Crl) -> Result<Vec<u8>> {
         extension(
             &[0x55, 0x1d, 0x23],
             false,
-            &seq(&[context_primitive(0, &key_identifier(public))]),
+            &seq(&[context_primitive(
+                0,
+                &key_identifier(&public.subject_key_bits()?),
+            )]),
         ),
         extension(&[0x55, 0x1d, 0x14], false, &positive_u64(crl.number)),
     ];
@@ -163,7 +171,7 @@ fn crl_tbs(issuer: &str, public: &[u8; 32], crl: &Crl) -> Result<Vec<u8>> {
 
 fn leaf_tbs(
     root: &RootCa,
-    public: &[u8; 32],
+    public: &ExternalPkiPublicKey,
     leaf_public: &[u8; 32],
     prepared: &LeafTemplate,
 ) -> Result<Vec<u8>> {
@@ -199,14 +207,17 @@ fn leaf_tbs(
         extension(
             &[0x55, 0x1d, 0x23],
             false,
-            &seq(&[context_primitive(0, &key_identifier(public))]),
+            &seq(&[context_primitive(
+                0,
+                &key_identifier(&public.subject_key_bits()?),
+            )]),
         ),
         extension(&[0x55, 0x1d, 0x11], false, &seq(&names)),
     ];
     Ok(seq(&[
         context_explicit(0, &integer(&[2])),
         integer(&serial_bytes(&prepared.serial)?),
-        algorithm_ed25519(),
+        public.signature_algorithm(),
         name(&root.common_name),
         seq(&[time(prepared.not_before), time(prepared.expires)]),
         name(&prepared.common_name),
@@ -304,7 +315,7 @@ impl Pki {
             dns_san: key.dns_san,
             generated_at: now,
             consumption: Some(consumption),
-            bound_public: Some(key.public_key),
+            bound_public: Some(key.public_key.clone()),
         }))
     }
 
@@ -336,7 +347,7 @@ impl Pki {
                 };
                 let response = self.publish_leaf(
                     prepared,
-                    signed_der(&material.tbs, &signatures[0]),
+                    signed_der(&material.tbs, &signatures[0], &material.public_key),
                     &consumption.leaf_pkcs8,
                     true,
                 )?;
@@ -499,8 +510,11 @@ impl ExternalPkiTemplate {
             _ => None,
         }
     }
-    pub(super) fn materialize_consumption(self, public: [u8; 32]) -> Result<ExternalPkiMaterial> {
-        if self.bound_public != Some(public) {
+    pub(super) fn materialize_consumption(
+        self,
+        public: ExternalPkiPublicKey,
+    ) -> Result<ExternalPkiMaterial> {
+        if self.bound_public.as_ref() != Some(&public) {
             return Err(error(
                 503,
                 "external PKI provider public-key binding changed",

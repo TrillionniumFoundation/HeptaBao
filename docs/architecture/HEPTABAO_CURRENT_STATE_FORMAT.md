@@ -924,3 +924,24 @@ multi-issuer lifecycle remain unfinished lanes. The pinned 2.7 direct-root black
 old fixed mapping after provider rotation with 400 before signing; this differs
 from the already-created issuer's issuance path, which has a separate 500 result.
 No full PKI, migration or production authority follows from this increment.
+
+## Schema 67: typed external EC/RSA issuer public keys
+
+`ExternalKey.public_key` retains its exact legacy Ed25519 32-byte JSON array.
+The six EC/RSA kinds use a closed `{kind,spki_der}` representation. Unknown fields
+are rejected; public DER is bounded to 8 KiB and must match its maintained
+canonical export, declared curve or modulus bit length. Root, native CSR, leaf
+and full/delta CRL readback verify the actual signatures against this public key.
+No external private material enters this representation.
+
+The maximum supported schema is 67, independently of the AAD-bound schema-66
+floor. All namespaces participate in writer selection: retain the existing
+schema, require 66 for AAD-bound state and 67 for typed PKI state. Publication
+rejects any decrease from a valid previous schema. Removing a typed issuer does
+not lower its retained schema-67 floor. Active typed material with a lower label
+is refused, as are schema zero and unknown newer schemas. Legacy Ed25519 bytes
+remain canonical and can retain schema 65; existing AAD-bound state retains 66.
+The original record-owner, journal, nonce, authority, audit and delivery fences
+are unchanged. Actual prior-reader refusal for both active and retired typed
+state and fresh immutable runtime comparison are required before qualification;
+native tests cannot establish those external results.

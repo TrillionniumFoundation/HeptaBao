@@ -55,8 +55,7 @@ fn schema37_credentials_keep_absent_marker_on_read_reopen_and_successful_login()
     old.schema = 37;
     assert!(!old.auth.has_userpass_password_semantics());
     assert!(old.validate_format().is_ok());
-    service
-        .commit_state(&old)
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &old)
         .map_err(|_| "legacy publication")?;
     service.state = Some(old);
     drop(service);
@@ -181,9 +180,9 @@ fn marked_credentials_cannot_hide_under_schema37_at_commit_restore_or_reopen() -
         service.durable.as_ref().ok_or("durable")?.generation(),
         generation
     );
-    let bad = service
-        .prepare_record_plan(&downgraded)
-        .map_err(|_| "fixture root")?;
+    let bad =
+        crate::service::tests::prepare_rejected_legacy_graph_fixture(&mut service, &downgraded)
+            .map_err(|_| "fixture root")?;
     assert!(
         Service::materialize_record_state(
             &bad.root,

@@ -67,6 +67,17 @@ pub(super) struct PreparedSnapshotRestore {
 }
 
 impl PreparedSnapshotRestore {
+    // Internal cfg(test) fault injection isolates the last floor gate while
+    // preserving all other affine restore fields. No production constructor
+    // or caller can replace the original captured identity.
+    #[cfg(test)]
+    pub(super) fn fixture_rebind_base_for_protected_floor(
+        &mut self,
+        base: crate::state_record_root::StateIdentity,
+    ) {
+        self.base = base;
+    }
+
     pub(super) fn generation(&self) -> u64 {
         self.durable.metadata().generation
     }
@@ -280,21 +291,7 @@ impl Service {
         let (state, bytes, _) = Self::load_state_from_resources(&prepared)
             .map_err(|_| Response::error(400, "snapshot application state is invalid"))?;
         if let Some(current) = &self.state {
-            if current.schema >= AAD_BOUND_STATE_SCHEMA && state.schema < AAD_BOUND_STATE_SCHEMA {
-                return Err(Response::error(
-                    400,
-                    "snapshot would downgrade AAD-bound convergent encryption",
-                ));
-            }
-            current
-                .engines
-                .validate_aad_bound_convergent_restore(&state.engines)
-                .map_err(|_| {
-                    Response::error(
-                        400,
-                        "snapshot would downgrade AAD-bound convergent encryption",
-                    )
-                })?;
+            Self::validate_snapshot_protected_floor(current, &state)?;
         }
         if state.engines.has_openldap_mount() || !state.database.is_empty() {
             return Err(Response::error(
@@ -320,6 +317,38 @@ impl Service {
             activation: self.unseal_nonce.clone(),
             base: self.current_state_identity()?,
         })
+    }
+
+    // Ordinary historical <=65 restores retain their existing policy. Once
+    // typed PKI has raised the durable reader requirement, even retiring the
+    // last typed key cannot authorize restoring a pre-67 image. This checks the
+    // authenticated incoming label before HA can normalize its writer schema.
+    pub(super) fn validate_snapshot_protected_floor(
+        current: &State,
+        incoming: &State,
+    ) -> Result<(), Response> {
+        if current.schema >= TYPED_PKI_STATE_SCHEMA && incoming.schema < TYPED_PKI_STATE_SCHEMA {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade typed external PKI state",
+            ));
+        }
+        if current.schema >= AAD_BOUND_STATE_SCHEMA && incoming.schema < AAD_BOUND_STATE_SCHEMA {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade AAD-bound convergent encryption",
+            ));
+        }
+        current
+            .engines
+            .validate_aad_bound_convergent_restore(&incoming.engines)
+            .map_err(|_| {
+                Response::error(
+                    400,
+                    "snapshot would downgrade AAD-bound convergent encryption",
+                )
+            })?;
+        Ok(())
     }
 
     pub(super) fn commit_snapshot_restore(
@@ -408,6 +437,9 @@ impl Service {
             );
         }
         if let Err(error) = self.validate_loaded_capacity(&prepared.state, prepared.root.as_ref()) {
+            return error;
+        }
+        if let Err(error) = Self::validate_snapshot_protected_floor(current, &prepared.state) {
             return error;
         }
         let Some(durable) = self.durable.as_mut() else {

@@ -47,9 +47,7 @@ fn schema36_read_reopen_noop_and_rejection_do_not_upgrade_but_mutation_does() ->
     assert!(!old.engines.has_packed_kv1_records());
     old.auth.remove_name_modes_for_legacy_format_test();
     old.schema = 36;
-    let plan = service.prepare_record_plan(&old).map_err(|_| "old plan")?;
-    service
-        .commit_record_plan(&old, plan)
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &old)
         .map_err(|_| "old publication")?;
     service.state = Some(old);
     let identity = service
@@ -161,9 +159,9 @@ fn authenticated_deep_packed_graph_cannot_hide_under_schema36_on_any_load_path()
     downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 36;
     assert!(downgraded.validate_format().is_err());
-    let bad = service
-        .prepare_record_plan(&downgraded)
-        .map_err(|_| "candidate identity")?;
+    let bad =
+        crate::service::tests::prepare_rejected_legacy_graph_fixture(&mut service, &downgraded)
+            .map_err(|_| "candidate identity")?;
     let bad_root = bad.root.clone();
     assert_eq!(
         service

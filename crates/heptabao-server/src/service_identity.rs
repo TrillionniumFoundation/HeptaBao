@@ -9,10 +9,12 @@ impl State {
     /// into an older supported format. The all-namespace scan also finds safe
     /// material introduced by the current candidate before its first commit.
     pub(super) fn writer_schema(&self) -> u32 {
-        if self.schema == 0 || self.schema > AAD_BOUND_STATE_SCHEMA {
+        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
             return self.schema;
         }
-        let required = if self.engines.has_aad_bound_convergent_state() {
+        let required = if self.engines.has_typed_external_pki_state() {
+            TYPED_PKI_STATE_SCHEMA
+        } else if self.engines.has_aad_bound_convergent_state() {
             AAD_BOUND_STATE_SCHEMA
         } else {
             CURRENT_STATE_SCHEMA
@@ -24,10 +26,19 @@ impl State {
         &self,
         previous: Option<&State>,
     ) -> Result<(), Response> {
-        if self.schema == 0 || self.schema > AAD_BOUND_STATE_SCHEMA {
+        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < TYPED_PKI_STATE_SCHEMA
+            && (self.engines.has_typed_external_pki_state()
+                || previous.is_some_and(|state| state.schema >= TYPED_PKI_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "typed external PKI public keys require schema 67",
             ));
         }
         if self.schema < AAD_BOUND_STATE_SCHEMA
@@ -39,10 +50,26 @@ impl State {
                 "AAD-bound convergent keys require schema 66",
             ));
         }
+        if previous.is_some_and(|state| {
+            state.schema == 0
+                || state.schema > MAX_SUPPORTED_STATE_SCHEMA
+                || self.schema < state.schema
+        }) {
+            return Err(Response::error(
+                503,
+                "identity state schema cannot decrease",
+            ));
+        }
         Ok(())
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        if self.schema < TYPED_PKI_STATE_SCHEMA && self.engines.has_typed_external_pki_state() {
+            return Err(Response::error(
+                503,
+                "typed external PKI public keys require schema 67",
+            ));
+        }
         if self.schema < AAD_BOUND_STATE_SCHEMA && self.engines.has_aad_bound_convergent_state() {
             return Err(Response::error(
                 503,
@@ -692,7 +719,8 @@ impl State {
             | 63
             | 64
             | CURRENT_STATE_SCHEMA
-            | AAD_BOUND_STATE_SCHEMA => Ok(()),
+            | AAD_BOUND_STATE_SCHEMA
+            | TYPED_PKI_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

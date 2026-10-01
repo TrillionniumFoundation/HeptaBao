@@ -51,6 +51,8 @@ use crate::state_record_root::RecordStateRoot;
 // AAD-bound convergent material activates schema 66 irreversibly for this store.
 const CURRENT_STATE_SCHEMA: u32 = 65;
 const AAD_BOUND_STATE_SCHEMA: u32 = 66;
+const TYPED_PKI_STATE_SCHEMA: u32 = 67;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = TYPED_PKI_STATE_SCHEMA;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;

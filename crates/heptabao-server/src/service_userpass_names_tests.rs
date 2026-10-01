@@ -215,8 +215,7 @@ fn schema38_and39_accept_absent_name_modes_without_adopting_legacy_accounts() ->
         old.schema = schema;
         assert!(old.validate_format().is_ok());
     }
-    service
-        .commit_state(&old)
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &old)
         .map_err(|_| "publish format fixture")?;
     service.state = Some(old);
     let before = service.current_state_digest().map_err(|_| "digest")?;

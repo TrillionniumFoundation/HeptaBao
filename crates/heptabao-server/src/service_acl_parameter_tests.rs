@@ -43,8 +43,7 @@ fn setup() -> TestResult<(Root, Service, String, String, String)> {
     let mut legacy = service.state.clone().ok_or("state")?;
     legacy.schema = 57;
     legacy.validate_format().map_err(|_| "legacy format")?;
-    service
-        .commit_state(&legacy)
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &legacy)
         .map_err(|_| "publish schema 57")?;
     service.state = Some(legacy);
     drop(service);
@@ -275,8 +274,7 @@ fn acl_schema58_reopens_under_schema59_and_promotes_only_on_mutation() -> TestRe
     assert!(legacy.validate_format().is_ok());
     assert!(legacy.auth.has_acl_parameter_state());
     assert!(!legacy.engines.has_pki_extension_state());
-    service
-        .commit_state(&legacy)
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &legacy)
         .map_err(|_| "publish prior ACL schema")?;
     service.state = Some(legacy);
     drop(service);

@@ -1186,7 +1186,7 @@ mod tests {
         assert!(state.validate_format().is_err());
         state.schema = CURRENT_STATE_SCHEMA;
         assert!(state.validate_format().is_ok());
-        state.schema = AAD_BOUND_STATE_SCHEMA + 1;
+        state.schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
         assert!(state.validate_format().is_err());
         let (auth, _) = AuthState::bootstrap(100)?;
         state.auth = auth.into();

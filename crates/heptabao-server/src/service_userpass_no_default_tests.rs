@@ -29,8 +29,7 @@ fn userpass_no_default_presence_requires39_and_legacy_unknown_survives_read_and_
         .remove("token_policies_configured");
     old.auth = serde_json::from_value::<AuthState>(wire)?.into();
     assert!(old.validate_format().is_ok());
-    service
-        .commit_state(&old)
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &old)
         .map_err(|_| "publish format fixture")?;
     service.state = Some(old);
     let before = service.current_state_digest().map_err(|_| "digest")?;

@@ -478,8 +478,7 @@ fn acl_identity_template_schema60_is_independent_and_no_template_schema59_is_byt
     // Do not weaken that guard: the normal reopen below must reconstruct it.
     assert!(decoded.validate_format().is_err());
     assert_eq!(serde_json::to_vec(&decoded)?, original);
-    f.service
-        .commit_state(&legacy)
+    crate::service::tests::commit_legacy_state_fixture(&mut f.service, &legacy)
         .map_err(|_| "legacy publish")?;
     f.service.state = Some(legacy);
     f.restart()?;

@@ -458,8 +458,7 @@ fn acl_wrapping_schema61_is_independent_and_schema60_promotes_only_on_mutation()
     legacy.schema = 60;
     assert!(!legacy.auth.has_acl_wrapping_ttl_state());
     legacy.validate_format().map_err(|_| "legacy validation")?;
-    service
-        .commit_state(&legacy)
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &legacy)
         .map_err(|_| "publish schema60")?;
     service.state = Some(legacy);
     drop(service);

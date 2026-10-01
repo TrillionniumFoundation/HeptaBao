@@ -14,7 +14,7 @@ use zeroize::{Zeroize, Zeroizing};
 
 #[path = "pki_external.rs"]
 mod external;
-pub(crate) use external::{ExternalPkiMaterial, ExternalPkiTemplate};
+pub(crate) use external::{ExternalPkiMaterial, ExternalPkiPublicKey, ExternalPkiTemplate};
 #[path = "pki_public.rs"]
 mod public;
 

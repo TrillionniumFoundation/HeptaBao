@@ -84,7 +84,7 @@ class PostgresGenerationContractTests(unittest.TestCase):
         self.assertGreaterEqual(parse_current_schema(service), 56)
         self.assertIn("password policy state requires schema 56", identity)
         self.assertIn("database password policies and username templates require schema 56", identity)
-        self.assertRegex(identity, r"(?s)match self.schema\s*\{.*?\b56\b[^=]*\|\s*CURRENT_STATE_SCHEMA\s*\|\s*AAD_BOUND_STATE_SCHEMA\s*=>\s*Ok\(\(\)\)")
+        self.assertRegex(identity, r"(?s)match self.schema\s*\{.*?\b56\b[^=]*\|\s*CURRENT_STATE_SCHEMA\s*\|\s*AAD_BOUND_STATE_SCHEMA\s*\|\s*TYPED_PKI_STATE_SCHEMA\s*=>\s*Ok\(\(\)\)")
         self.assertIn("state.schema = 55;", database)
         self.assertIn("statement-template password policy must use only ASCII", database)
 

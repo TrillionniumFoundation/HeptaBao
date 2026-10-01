@@ -3,6 +3,9 @@
 //! publishes only after its original request and durable generation fences.
 use super::*;
 use ring::signature::{ED25519, UnparsedPublicKey};
+#[path = "pki_external_public_key.rs"]
+mod public_key;
+pub(crate) use public_key::ExternalPkiPublicKey;
 #[path = "pki_external_leaf.rs"]
 mod leaf;
 use leaf::{ConsumptionMaterial, ConsumptionTemplate, CrlSet, LeafPublic};
@@ -24,7 +27,7 @@ pub(super) struct ExternalState {
 #[serde(deny_unknown_fields)]
 struct ExternalKey {
     reference: String,
-    public_key: [u8; 32],
+    public_key: ExternalPkiPublicKey,
     key_id: String,
     issuer_id: String,
     key_name: String,
@@ -67,12 +70,12 @@ pub(crate) struct ExternalPkiTemplate {
     dns_san: bool,
     generated_at: u64,
     consumption: Option<ConsumptionTemplate>,
-    bound_public: Option<[u8; 32]>,
+    bound_public: Option<ExternalPkiPublicKey>,
 }
 
 pub(crate) struct ExternalPkiMaterial {
     template: ExternalPkiTemplate,
-    public_key: [u8; 32],
+    public_key: ExternalPkiPublicKey,
     pub(crate) tbs: Vec<u8>,
     extra_tbs: Vec<Vec<u8>>,
     root_crls: Option<CrlSet>,
@@ -155,7 +158,11 @@ fn dns_san_extension(common_name: &str) -> Vec<u8> {
     )
 }
 
-fn csr_info(common_name: &str, public_key: &[u8; 32], dns_san: bool) -> Vec<u8> {
+fn csr_info(
+    common_name: &str,
+    public_key: &ExternalPkiPublicKey,
+    dns_san: bool,
+) -> Result<Vec<u8>> {
     let attributes = if dns_san {
         // [0] is the IMPLICIT attribute set. Each extensionRequest attribute
         // contains a SET with one canonical Extensions sequence.
@@ -166,16 +173,20 @@ fn csr_info(common_name: &str, public_key: &[u8; 32], dns_san: bool) -> Vec<u8> 
     } else {
         Vec::new()
     };
-    seq(&[
+    Ok(seq(&[
         integer(&[0]),
         name(common_name),
-        seq(&[algorithm_ed25519(), bit_string(public_key, 0)]),
+        public_key.spki()?,
         context_explicit(0, &attributes),
-    ])
+    ]))
 }
 
-fn signed_der(tbs: &[u8], signature: &[u8]) -> Vec<u8> {
-    seq(&[tbs.to_vec(), algorithm_ed25519(), bit_string(signature, 0)])
+fn signed_der(tbs: &[u8], signature: &[u8], public: &ExternalPkiPublicKey) -> Vec<u8> {
+    seq(&[
+        tbs.to_vec(),
+        public.signature_algorithm(),
+        bit_string(signature, 0),
+    ])
 }
 
 fn external_serial() -> Result<String> {
@@ -202,20 +213,25 @@ pub(super) fn formatted_serial(serial: &str) -> String {
 // The pinned 2.7 direct-root blackbox has exactly KeyUsage, BasicConstraints,
 // SKI and AKI, plus a DNS SAN when the CN is a valid DNS name. SHA-1 is solely the
 // standard public-key identifier construction, never a signature algorithm.
-fn external_root_tbs(spec: CertificateSpec<'_>, dns_san: bool) -> Result<Vec<u8>> {
-    let CertificateSpec {
+struct ExternalRootSpec<'a> {
+    serial: &'a str,
+    issuer_cn: &'a str,
+    subject_cn: &'a str,
+    public_key: &'a ExternalPkiPublicKey,
+    not_before: u64,
+    not_after: u64,
+}
+fn external_root_tbs(spec: ExternalRootSpec<'_>, dns_san: bool) -> Result<Vec<u8>> {
+    let ExternalRootSpec {
         serial,
         issuer_cn,
         subject_cn,
         public_key,
         not_before,
         not_after,
-        ..
     } = spec;
-    if public_key.len() != 32 {
-        return Err(bad("external PKI public key length"));
-    }
-    let key_id = ring::digest::digest(&ring::digest::SHA1_FOR_LEGACY_USE_ONLY, public_key);
+    let key_bits = public_key.subject_key_bits()?;
+    let key_id = ring::digest::digest(&ring::digest::SHA1_FOR_LEGACY_USE_ONLY, &key_bits);
     let mut extensions = vec![
         extension(&[0x55, 0x1d, 0x0f], true, &bit_string(&[0x06], 1)),
         extension(&[0x55, 0x1d, 0x13], true, &seq(&[boolean(true)])),
@@ -232,37 +248,39 @@ fn external_root_tbs(spec: CertificateSpec<'_>, dns_san: bool) -> Result<Vec<u8>
     Ok(seq(&[
         context_explicit(0, &integer(&[2])),
         integer(&serial_bytes(serial)?),
-        algorithm_ed25519(),
+        public_key.signature_algorithm(),
         name(issuer_cn),
         seq(&[time(not_before), time(not_after)]),
         name(subject_cn),
-        seq(&[algorithm_ed25519(), bit_string(public_key, 0)]),
+        public_key.spki()?,
         context_explicit(3, &seq(&extensions)),
     ]))
 }
 
 impl ExternalPkiTemplate {
-    pub(crate) fn materialize(self, public_key: [u8; 32]) -> Result<ExternalPkiMaterial> {
+    pub(crate) fn materialize(
+        self,
+        public_key: impl Into<ExternalPkiPublicKey>,
+    ) -> Result<ExternalPkiMaterial> {
+        let public_key = public_key.into();
+        public_key.validate()?;
         if self.is_consumption() {
             return self.materialize_consumption(public_key);
         }
         let tbs = if self.operation == "root" {
             external_root_tbs(
-                CertificateSpec {
+                ExternalRootSpec {
                     serial: &self.serial,
                     issuer_cn: &self.common_name,
                     subject_cn: &self.common_name,
                     public_key: &public_key,
                     not_before: self.not_before,
                     not_after: self.not_after,
-                    is_ca: true,
-                    alt_names: &[],
-                    ip_sans: &[],
                 },
                 self.dns_san,
             )?
         } else {
-            csr_info(&self.common_name, &public_key, self.dns_san)
+            csr_info(&self.common_name, &public_key, self.dns_san)?
         };
         let root_crls = (self.operation == "root").then(|| CrlSet::empty(self.generated_at));
         let extra_tbs = root_crls
@@ -282,6 +300,15 @@ impl ExternalPkiTemplate {
 }
 
 impl ExternalPkiMaterial {
+    pub(crate) fn signing_input(&self, tbs: &[u8]) -> Result<Vec<u8>> {
+        self.public_key.signing_input(tbs)
+    }
+    pub(crate) fn hash_algorithm(&self) -> Option<&'static str> {
+        self.public_key.hash_algorithm()
+    }
+    pub(crate) fn signature_size_bound(&self) -> usize {
+        self.public_key.signature_size_bound()
+    }
     pub(crate) fn tbs_parts(&self) -> impl Iterator<Item = &Vec<u8>> {
         std::iter::once(&self.tbs).chain(self.extra_tbs.iter())
     }
@@ -290,11 +317,7 @@ impl ExternalPkiMaterial {
             .tbs_parts()
             .nth(index)
             .ok_or_else(|| bad("external PKI signature index"))?;
-        if signature.len() != 64
-            || UnparsedPublicKey::new(&ED25519, &self.public_key)
-                .verify(tbs, signature)
-                .is_err()
-        {
+        if self.public_key.verify(tbs, signature).is_err() {
             return Err(error(
                 503,
                 "external PKI unknown after entry: cryptographic signature mismatch; no blind retry",
@@ -305,6 +328,17 @@ impl ExternalPkiMaterial {
 }
 
 impl Pki {
+    pub(in crate::engines) fn has_typed_external_pki_state(&self) -> bool {
+        self.external
+            .root
+            .as_ref()
+            .is_some_and(|key| key.public_key.is_asymmetric())
+            || self
+                .external
+                .intermediate
+                .as_ref()
+                .is_some_and(|csr| csr.key.public_key.is_asymmetric())
+    }
     pub(in crate::engines::pki) fn public_issuer_metadata(&self) -> Option<(&str, &str, &str)> {
         self.external.root.as_ref().map(|key| {
             (
@@ -443,7 +477,7 @@ impl Pki {
             issuer_name: template.issuer_name,
             dns_san: template.dns_san,
         };
-        let encoded = signed_der(&material.tbs, &signatures[0]);
+        let encoded = signed_der(&material.tbs, &signatures[0], &key.public_key);
         if template.operation == "root" {
             if self.root.is_some() {
                 return Err(bad("PKI root already exists"));
@@ -484,6 +518,7 @@ impl Pki {
             return Err(bad("external PKI root ownership mismatch"));
         }
         let validate_key = |key: &ExternalKey| -> Result<()> {
+            key.public_key.validate()?;
             if !reference_valid(&key.reference)
                 || !valid_identifier(&key.key_id)
                 || !valid_identifier(&key.issuer_id)
@@ -511,16 +546,13 @@ impl Pki {
                 return Err(bad("external PKI must not contain local private key"));
             }
             let tbs = external_root_tbs(
-                CertificateSpec {
+                ExternalRootSpec {
                     serial: &root.serial,
                     issuer_cn: &root.common_name,
                     subject_cn: &root.common_name,
                     public_key: &key.public_key,
                     not_before: root.not_before,
                     not_after: root.not_after,
-                    is_ca: true,
-                    alt_names: &[],
-                    ip_sans: &[],
                 },
                 key.dns_san,
             )?;
@@ -536,7 +568,7 @@ impl Pki {
             }
             validate_signed_der(
                 &csr.key.public_key,
-                &csr_info(&csr.common_name, &csr.key.public_key, csr.key.dns_san),
+                &csr_info(&csr.common_name, &csr.key.public_key, csr.key.dns_san)?,
                 &csr.csr_der,
             )?;
         }
@@ -544,15 +576,62 @@ impl Pki {
     }
 }
 
-fn validate_signed_der(public_key: &[u8; 32], tbs: &[u8], document: &[u8]) -> Result<()> {
-    let signature = document
-        .get(document.len().saturating_sub(64)..)
-        .ok_or_else(|| bad("invalid external PKI document"))?;
-    if signature.len() != 64
-        || signed_der(tbs, signature) != document
-        || UnparsedPublicKey::new(&ED25519, public_key)
-            .verify(tbs, signature)
-            .is_err()
+fn take_der(input: &[u8]) -> Result<(u8, &[u8], &[u8])> {
+    let (&tag, tail) = input
+        .split_first()
+        .ok_or_else(|| bad("invalid external PKI DER"))?;
+    let (&length, mut tail) = tail
+        .split_first()
+        .ok_or_else(|| bad("invalid external PKI DER"))?;
+    let size = if length & 0x80 == 0 {
+        usize::from(length)
+    } else {
+        let width = usize::from(length & 0x7f);
+        if !(1..=4).contains(&width) || tail.len() < width {
+            return Err(bad("invalid external PKI DER length"));
+        }
+        let (bytes, rest) = tail.split_at(width);
+        tail = rest;
+        bytes
+            .iter()
+            .fold(0usize, |size, byte| (size << 8) | usize::from(*byte))
+    };
+    if size > tail.len() {
+        return Err(bad("invalid external PKI DER bounds"));
+    }
+    let (content, rest) = tail.split_at(size);
+    if der(tag, content).as_slice() != &input[..input.len() - rest.len()] {
+        return Err(bad("noncanonical external PKI DER"));
+    }
+    Ok((tag, content, rest))
+}
+
+fn validate_signed_der(
+    public_key: &ExternalPkiPublicKey,
+    tbs: &[u8],
+    document: &[u8],
+) -> Result<()> {
+    let (tag, fields, rest) = take_der(document)?;
+    if tag != 0x30 || !rest.is_empty() {
+        return Err(bad("invalid external PKI document"));
+    }
+    let (tag, content, fields) = take_der(fields)?;
+    if tag != 0x30 || der(tag, content) != tbs {
+        return Err(bad("external PKI TBS mismatch"));
+    }
+    let (tag, content, fields) = take_der(fields)?;
+    if tag != 0x30 || der(tag, content) != public_key.signature_algorithm() {
+        return Err(bad("external PKI algorithm mismatch"));
+    }
+    let (tag, bits, rest) = take_der(fields)?;
+    let signature = bits
+        .get(1..)
+        .ok_or_else(|| bad("invalid external PKI signature"))?;
+    if tag != 0x03
+        || bits.first() != Some(&0)
+        || !rest.is_empty()
+        || signed_der(tbs, signature, public_key) != document
+        || public_key.verify(tbs, signature).is_err()
     {
         return Err(bad("invalid external PKI document or signature"));
     }

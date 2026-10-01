@@ -57,7 +57,8 @@ fn approle_per_secret_id_presence_requires46_and_absent45_reads_preserve_bytes()
                 old.schema = 45;
                 old.validate_format().map_err(|_| "old format")?;
                 let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;
-                service.commit_state(&old).map_err(|_| "old fixture")?;
+                crate::service::tests::commit_legacy_state_fixture(&mut service, &old)
+                    .map_err(|_| "old fixture")?;
                 drop(service);
                 let mut service = root.service()?;
                 assert_eq!(
@@ -135,7 +136,8 @@ fn approle_secret_source_presence_requires45_but_absent44_reads_preserve_bytes()
     old.schema = 44;
     old.validate_format().map_err(|_| "old format")?;
     let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;
-    service.commit_state(&old).map_err(|_| "old fixture")?;
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &old)
+        .map_err(|_| "old fixture")?;
     service.state = Some(old);
     for path in [
         "auth/approle/role/source",
@@ -204,7 +206,8 @@ fn approle_cidr_presence_requires43_but_absent42_role_reads_do_not_migrate() -> 
     old.schema = 42;
     old.validate_format().map_err(|_| "old format")?;
     let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;
-    service.commit_state(&old).map_err(|_| "old fixture")?;
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &old)
+        .map_err(|_| "old fixture")?;
     service.state = Some(old);
     let read = call(
         &mut service,

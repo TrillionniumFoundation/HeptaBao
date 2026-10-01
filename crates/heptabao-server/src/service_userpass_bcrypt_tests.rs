@@ -110,9 +110,9 @@ fn bcrypt_import_alone_requires38_and_survives_authenticated_reopen_and_backup()
         service.durable.as_ref().ok_or("durable")?.generation(),
         generation
     );
-    let bad = service
-        .prepare_record_plan(&downgraded)
-        .map_err(|_| "fixture root")?;
+    let bad =
+        crate::service::tests::prepare_rejected_legacy_graph_fixture(&mut service, &downgraded)
+            .map_err(|_| "fixture root")?;
     assert!(
         Service::materialize_record_state(
             &bad.root,

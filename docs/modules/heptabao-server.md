@@ -971,15 +971,19 @@ increment. Every wider qualification and production authority remains false.
 
 ## Bounded direct external PKI generation
 
-The public [OpenBao 2.7 PKI API](https://openbao.org/docs/api/secret/pki/) and
-checksum-pinned binary blackboxes define the direct KMS root and CSR wire lane.
 Native DER construction separates to-be-signed bytes from signature assembly;
 a separate remote Transit actually signs them over deployment-enrolled TLS.
-The native consumer verifies the actual Ed25519 signature and fixed-version
-SPKI before publishing a root or CSR. Schema 65 retains public metadata and a
-registry reference, with no local external private key. See the schema-65 section
-of [the state-format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md)
-for reader/writer, original-authority and stale-publication fences.
+The consumer verifies the actual signature and fixed-version SPKI before
+publishing a root, native CSR, leaf or full/delta CRL. Ed25519 uses the retained
+pure-message signature. P-256/P-384/P-521 and RSA 2048/3072/4096 use the locked
+maintained OpenSSL public provider and their observed digest/OID mapping.
+Schema 65 retains the exact legacy Ed public array; schema 67 gates the closed
+typed SPKI representation and retains its floor after retirement. External CA
+private material remains remote. Local Ed leaf generation and standard PKCS8
+output keep their original owners and zeroizing buffers. See
+[the state-format contract](../architecture/HEPTABAO_CURRENT_STATE_FORMAT.md)
+and [the asymmetric contract](../engineering/EXTERNAL_PKI_ASYMMETRIC_270.md)
+for original-authority, reader/writer, grant, clock and delivery-veto fences.
 
 The original `external_pki_consumer_live.py` keeps its 85 ordered checks. Fresh
 pinned-2.7 blackboxes fail its official-CSR remote-binding predicates: the KMS CSR
@@ -988,16 +992,15 @@ does not enter the provider Sign endpoint. Both legacy and issuers paths exhibit
 this difference; local self-verification does not qualify remote binding.
 
 `external_pki_root_consumer_live.py` declares a separate complete 81-case trace
-on three fresh processes. It compares both external roots and separately proves
-the native CSR's fixed remote SPKI, real signature and one provider Sign entry.
-Per-root Sign-entry checks are exact for each implementation: pinned 2.7 enters
-Sign three times, while the bounded native root enters once and does not yet
-implement external CRL generation. Both root signatures still require actual
-verification with the selected provider SPKI; extra calls do not substitute for
-that predicate or establish CRL parity.
-Root and native-CSR verdicts are separate. It binds candidate build commit/tree
-and before/after binary hashes separately from QA source identity, includes
-owned-process cleanup in the denominator and leaves broader authority false.
-It does not reuse a failed 85-case prefix or qualify the official CSR difference.
-External leaf issuance, CRLs, other signing types and multi-issuer lifecycle
-are still unfinished.
+on three fresh processes. Both external roots require three provider Sign
+entries and actual verification with the selected remote SPKI. Native CSR checks
+separately require the fixed remote SPKI, real signature and one Sign entry.
+Root and native-CSR verdicts are separate; the failed official 85-case prefix
+cannot qualify either. The existing external leaf/full/delta profile keeps all
+164 checks, and the public seventeen-route profile keeps all 317 checks and its
+separate 308-check official-only preflight. Those bounded traces exercise Ed
+issuers. The new six-key native development tests and official-only 168 public
+observations do not inherit these production qualification receipts. New exact
+custody comparison and actual schema-66 predecessor refusal are required for
+the typed-SPKI increment. Multiple issuers and full PKI remain open; full OpenBao
+compatibility, migration, production and independent authority remain false.

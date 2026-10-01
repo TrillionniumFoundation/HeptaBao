@@ -606,8 +606,7 @@ fn schema41_without_typed_kube_owner_reopens_without_migration() -> TestResult {
     state.schema = 41;
     assert!(!state.engines.has_kubernetes_typed_lease_owners());
     state.validate_format().map_err(|_| "schema41 validation")?;
-    service
-        .commit_state(&state)
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &state)
         .map_err(|_| "persist schema41")?;
     service.state = Some(state);
     drop(service);

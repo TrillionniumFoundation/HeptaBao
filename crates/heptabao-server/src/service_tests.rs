@@ -1,6 +1,127 @@
 use super::*;
 use std::sync::atomic::{AtomicU64, Ordering};
 
+// Only this cfg(test) module constructs authenticated historical writer inputs.
+// It does not authorize a running current writer to downgrade. The predecessor
+// label is temporary; owner payloads and their diff/reuse remain unchanged.
+// The normal publication/AEAD/graph pipeline still creates the actual input.
+fn with_legacy_fixture_predecessor<T>(
+    service: &mut Service,
+    fixture: &State,
+    operation: impl FnOnce(&mut Service) -> Result<T, Response>,
+) -> Result<T, Response> {
+    let protected = |state: &State| {
+        state.schema == 0
+            || state.schema > CURRENT_STATE_SCHEMA
+            || state.engines.has_aad_bound_convergent_state()
+            || state.engines.has_typed_external_pki_state()
+            || state.engines.has_external_pki_state()
+            || state.engines.has_external_transit_state()
+            || state.engines.has_external_key_state()
+            || state.engines.has_asymmetric_state()
+            || state.engines.has_mldsa_state()
+    };
+    let current = service
+        .state
+        .as_mut()
+        .ok_or_else(|| Response::error(503, "legacy fixture requires an ordinary writer"))?;
+    if service.ha.is_some() || protected(current) || protected(fixture) {
+        return Err(Response::error(
+            503,
+            "protected state cannot be a legacy fixture",
+        ));
+    }
+    current.validate_format()?;
+    let original_schema = current.schema;
+    current.schema = fixture.schema;
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| operation(service)));
+    if let Some(current) = service.state.as_mut() {
+        current.schema = original_schema;
+    }
+    match result {
+        Ok(result) => result,
+        Err(panic) => std::panic::resume_unwind(panic),
+    }
+}
+
+pub(super) fn commit_legacy_state_fixture(
+    service: &mut Service,
+    fixture: &State,
+) -> Result<(), Response> {
+    fixture.validate_format()?;
+    with_legacy_fixture_predecessor(service, fixture, |service| service.commit_state(fixture))
+}
+
+// These callers intentionally manufacture authenticated malformed old graphs
+// for loader rejection tests. They never install the malformed RAM candidate.
+pub(super) fn prepare_rejected_legacy_graph_fixture(
+    service: &mut Service,
+    fixture: &State,
+) -> Result<records::RecordPlan, Response> {
+    if fixture.validate_format().is_ok() {
+        return Err(Response::error(
+            503,
+            "rejected graph fixture must be invalid",
+        ));
+    }
+    with_legacy_fixture_predecessor(service, fixture, |service| {
+        service.prepare_record_plan(fixture)
+    })
+}
+
+#[test]
+fn legacy_fixture_constructor_preserves_real_writer_gate_and_rejects_protected_labels()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    bootstrap(&mut service)?;
+    let original = service.state.clone().ok_or("state")?;
+    let mut legacy = original.clone();
+    legacy.schema = 60;
+    legacy.validate_format().map_err(|_| "legacy format")?;
+    assert!(
+        service
+            .commit_state(&legacy)
+            .err()
+            .is_some_and(|response| response.status == 503),
+        "ordinary writer cannot downgrade for fixture setup"
+    );
+    commit_legacy_state_fixture(&mut service, &legacy).map_err(|_| "old writer input")?;
+    assert!(
+        service.state.as_ref().ok_or("state")?.schema == original.schema,
+        "fixture restores original RAM label"
+    );
+    let panic = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let _: Result<(), Response> =
+            with_legacy_fixture_predecessor(&mut service, &legacy, |_| {
+                std::panic::resume_unwind(Box::new("synthetic legacy fixture panic"));
+            });
+    }));
+    assert!(
+        panic.is_err() && service.state.as_ref().ok_or("state")?.schema == original.schema,
+        "fixture restores label and rethrows any panic"
+    );
+    for schema in [
+        AAD_BOUND_STATE_SCHEMA,
+        TYPED_PKI_STATE_SCHEMA,
+        MAX_SUPPORTED_STATE_SCHEMA + 1,
+    ] {
+        let mut protected = legacy.clone();
+        protected.schema = schema;
+        assert!(
+            commit_legacy_state_fixture(&mut service, &protected).is_err(),
+            "fixture cannot create protected or future label"
+        );
+        service.state.as_mut().ok_or("state")?.schema = schema;
+        assert!(
+            commit_legacy_state_fixture(&mut service, &legacy).is_err(),
+            "protected writer cannot use legacy fixture constructor"
+        );
+        service.state.as_mut().ok_or("state")?.schema = original.schema;
+    }
+    Ok(())
+}
+
 fn invalid_postgres_config() -> PgStorageConfig {
     PgStorageConfig {
         endpoint: crate::outbound::EndpointConfig {

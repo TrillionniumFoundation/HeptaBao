@@ -198,12 +198,10 @@ impl ExternalPkiPlan {
             .get("data")
             .and_then(Value::as_object)
             .ok_or_else(unknown)?;
-        if data.get("type").and_then(Value::as_str) != Some("ed25519") {
-            return Err(Response::error(
-                501,
-                "external PKI requires a qualified Ed25519 public-key lane",
-            ));
-        }
+        let kind = data
+            .get("type")
+            .and_then(Value::as_str)
+            .ok_or_else(unknown)?;
         if data.get("supports_signing").and_then(Value::as_bool) != Some(true)
             || data.get("latest_version").and_then(Value::as_u64).is_none()
         {
@@ -229,14 +227,8 @@ impl ExternalPkiPlan {
             .and_then(|key| key.get("public_key"))
             .and_then(Value::as_str)
             .ok_or_else(unknown)?;
-        if public_text.len() > 64 {
-            return Err(unknown());
-        }
-        let public = BASE64.decode(public_text).map_err(|_| unknown())?;
-        if public.len() != 32 || BASE64.encode(&public) != public_text {
-            return Err(unknown());
-        }
-        let public: [u8; 32] = public.try_into().map_err(|_| unknown())?;
+        let public = crate::engines::ExternalPkiPublicKey::from_metadata(kind, public_text)
+            .map_err(|cause| Response::error(cause.status, &cause.message))?;
         let material = self
             .template
             .as_ref()
@@ -259,8 +251,16 @@ impl ExternalPkiPlan {
                     "external PKI withheld between signing effects; remote outcome unknown; no blind retry",
                 ));
             }
-            let body = SensitiveJson(json!({"input":BASE64.encode(tbs),"key_version":version_key,
-            "prehashed":false,"signature_algorithm":"pkcs1v15"}));
+            let input = material
+                .signing_input(tbs)
+                .map_err(|cause| Response::error(cause.status, &cause.message))?;
+            let mut body = SensitiveJson(
+                json!({"input":BASE64.encode(input),"key_version":version_key,
+            "prehashed":material.hash_algorithm().is_some(),"signature_algorithm":"pkcs1v15"}),
+            );
+            if let Some(hash) = material.hash_algorithm() {
+                body.0["hash_algorithm"] = json!(hash);
+            }
             let signed = crypto_response(
                 self.outbound
                     .put_external_transit(&self.sign_url, token, namespace, &body.0)
@@ -286,7 +286,7 @@ impl ExternalPkiPlan {
                 .and_then(Value::as_str)
                 .and_then(|value| value.strip_prefix(&prefix))
                 .ok_or_else(unknown)?;
-            if text.len() != 88 {
+            if text.is_empty() || text.len() > material.signature_size_bound().div_ceil(3) * 4 {
                 return Err(unknown());
             }
             let signature = Zeroizing::new(BASE64.decode(text).map_err(|_| unknown())?);

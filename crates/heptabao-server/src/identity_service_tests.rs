@@ -695,7 +695,7 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
     {
         assert!(token.get("entity_id").is_none());
     }
-    for schema in [0, AAD_BOUND_STATE_SCHEMA + 1, u32::MAX] {
+    for schema in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
         value["schema"] = json!(schema);
         assert!(
             serde_json::from_value::<State>(value.clone())?
@@ -791,7 +791,8 @@ fn identity_schema_promotes_before_a_mutating_response_and_survives_reopen() -> 
     legacy.auth.remove_name_modes_for_legacy_format_test();
     legacy.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(legacy.validate_format().is_ok());
-    s.commit_state(&legacy).map_err(|_| "fixture persistence")?;
+    crate::service::tests::commit_legacy_state_fixture(&mut s, &legacy)
+        .map_err(|_| "fixture persistence")?;
     s.state = Some(legacy);
     drop(s);
     let mut s = f.service()?;
@@ -889,7 +890,8 @@ fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestR
     legacy.auth.remove_name_modes_for_legacy_format_test();
     legacy.auth.omit_lease_metadata_for_legacy_fixture();
     assert!(legacy.validate_format().is_ok());
-    s.commit_state(&legacy).map_err(|_| "fixture persistence")?;
+    crate::service::tests::commit_legacy_state_fixture(&mut s, &legacy)
+        .map_err(|_| "fixture persistence")?;
     s.state = Some(legacy);
     assert_eq!(
         call(
@@ -1305,7 +1307,7 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
             .is_some_and(|response| response.status == 503
                 && response.body["errors"][0] == "AAD-bound convergent keys require schema 66")
     );
-    for unknown in [0, AAD_BOUND_STATE_SCHEMA + 1, u32::MAX] {
+    for unknown in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
         let mut state = retired.clone();
         state.schema = unknown;
         assert!(state.writer_schema() == unknown);

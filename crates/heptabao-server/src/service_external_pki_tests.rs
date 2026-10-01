@@ -2,6 +2,8 @@
 //! certificates, signatures, input, credentials or serialized secret state.
 use super::*;
 use x509_parser::prelude::*;
+#[path = "service_external_pki_asymmetric_tests.rs"]
+mod asymmetric_tests;
 #[path = "service_external_pki_leaf_tests.rs"]
 mod leaf_tests;
 #[path = "service_external_pki_public_tests.rs"]

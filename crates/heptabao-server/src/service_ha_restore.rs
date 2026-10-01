@@ -74,6 +74,7 @@ impl Service {
                 request.now,
             )
             .map_err(|error| Response::error(error.status, &error.message))?;
+        Self::validate_snapshot_protected_floor(live, &prepared.state)?;
         if !live.database.is_empty()
             || live.engines.has_openldap_mount()
             || !prepared.state.database.is_empty()

@@ -30,7 +30,7 @@ mod kv_versioning;
 mod leases;
 pub(crate) mod openldap;
 mod pki;
-pub(crate) use pki::{ExternalPkiMaterial, ExternalPkiTemplate};
+pub(crate) use pki::{ExternalPkiMaterial, ExternalPkiPublicKey, ExternalPkiTemplate};
 mod ssh;
 mod totp;
 mod transit;
@@ -572,6 +572,13 @@ impl EngineState {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount|
             matches!(&mount.backend, Backend::Pki(engine) if engine.has_external_state()))
+        })
+    }
+
+    pub(crate) fn has_typed_external_pki_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Pki(engine) if engine.has_typed_external_pki_state()))
         })
     }
 

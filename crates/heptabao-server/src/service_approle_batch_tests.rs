@@ -323,8 +323,7 @@ fn approle_batch_role_and_mount_each_require_schema42_but_old_none_admits41() ->
             json!({"token_type":"default-service"}),
         ),
     ] {
-        service
-            .commit_state(&legacy)
+        crate::service::tests::commit_legacy_state_fixture(&mut service, &legacy)
             .map_err(|_| "legacy fixture commit")?;
         service.state = Some(legacy.clone());
         assert_eq!(call(&mut service, "POST", path, &admin, body).status, 204);
@@ -607,7 +606,8 @@ fn approle_sid_metadata_presence_requires47_while_absent46_reopen_and_reads_pres
         old.schema = 46;
         old.validate_format().map_err(|_| "old format")?;
         let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;
-        service.commit_state(&old).map_err(|_| "old fixture")?;
+        crate::service::tests::commit_legacy_state_fixture(&mut service, &old)
+            .map_err(|_| "old fixture")?;
         drop(service);
         let mut service = root.service()?;
         assert_eq!(

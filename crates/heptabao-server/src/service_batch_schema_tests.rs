@@ -17,7 +17,8 @@ fn batch_schema_requires41_for_precreated_authority_and_explicit_issuance_config
         .auth
         .remove_unused_batch_authority_for_legacy_format_test();
     assert!(state.validate_format().is_ok());
-    service.commit_state(&state).map_err(|_| "fixture commit")?;
+    crate::service::tests::commit_legacy_state_fixture(&mut service, &state)
+        .map_err(|_| "fixture commit")?;
     service.state = Some(state);
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
     let digest = service.current_state_digest().map_err(|_| "digest")?;

@@ -90,7 +90,7 @@ fn kerberos_schema50_preserves_legacy48_workflow49_oidc51_and_lockout52_and_reje
     assert!(state.validate_format().is_ok());
     state.schema = CURRENT_STATE_SCHEMA;
     assert!(state.validate_format().is_ok());
-    state.schema = AAD_BOUND_STATE_SCHEMA + 1;
+    state.schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
     assert!(state.validate_format().is_err());
     Ok(())
 }
