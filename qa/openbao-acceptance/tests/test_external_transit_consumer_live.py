@@ -1,6 +1,8 @@
 import base64
 import copy
 import importlib.util
+import hashlib
+import json
 from pathlib import Path
 import sys
 import unittest
@@ -15,7 +17,7 @@ SPEC.loader.exec_module(MODULE)
 
 class ExternalConsumerContractTests(unittest.TestCase):
     def test_exact_denominator_rejects_empty_missing_reordered_duplicate_and_failed_traces(self):
-        self.assertEqual(1981, len(MODULE.EXPECTED_CASES))
+        self.assertEqual(1982, len(MODULE.EXPECTED_CASES))
         rows = [{"case": case, "passed": True} for case in MODULE.EXPECTED_CASES]
         self.assertEqual(len(MODULE.EXPECTED_CASES), len(set(MODULE.EXPECTED_CASES)))
         self.assertTrue(MODULE.trace_complete(rows))
@@ -23,6 +25,35 @@ class ExternalConsumerContractTests(unittest.TestCase):
         failed[-1]["passed"] = False
         for invalid in ([], rows[:-1], list(reversed(rows)), rows + [rows[-1]], failed):
             self.assertFalse(MODULE.trace_complete(invalid))
+
+    def test_ca_successor_retains_every_other_original_case_and_order(self):
+        cases = MODULE.EXPECTED_CASES
+        accepted = cases.index("candidate.api_ca_assertion_accepted")
+        self.assertEqual("candidate.api_ca_assertion_remote_readback", cases[accepted + 1])
+        self.assertEqual("candidate.restore_enrolled_config", cases[accepted + 2])
+        self.assertNotIn("candidate.api_ca_override_refused", cases)
+        original = tuple("candidate.api_ca_override_refused" if name == "candidate.api_ca_assertion_accepted" else name
+            for name in cases if name != "candidate.api_ca_assertion_remote_readback")
+        self.assertEqual("e75fb2460140262b6e3ab67cb9f15f9ebaf62eb703d60796c0d5d5dc1c391c48", hashlib.sha256(json.dumps(original, separators=(",", ":")).encode()).hexdigest())
+        rows = [{"case": name, "passed": True} for name in cases]
+        self.assertFalse(MODULE.trace_complete([row for row in rows if row["case"] != "candidate.api_ca_assertion_remote_readback"]))
+
+    def test_ca_assertion_requires_framed_crypto_output_and_real_exact_readback(self):
+        payload = base64.b64encode(bytes(range(28))).decode()
+        good = {"data": {"ciphertext": "vault:v2:" + payload, "key_version": 2}}
+        self.assertTrue(MODULE.api_ca_assertion_ciphertext(good) == good["data"]["ciphertext"])
+        self.assertTrue(MODULE.api_ca_assertion_readback_matches({"data": {"plaintext": MODULE.PLAIN}}))
+        for invalid in ({}, {"data": {"verified": True}}, {"data": {"ciphertext": good["data"]["ciphertext"], "key_version": True}},
+                {"data": {"ciphertext": "vault:v1:" + payload, "key_version": 2}},
+                {"data": {"ciphertext": "vault:v2:%%%%", "key_version": 2}},
+                {"data": {"ciphertext": "vault:v2:AB==", "key_version": 2}},
+                {"data": {"ciphertext": "vault:v2:" + base64.b64encode(bytes(29)).decode()[:-2] + "B=", "key_version": 2}},
+                {"data": {**good["data"], "private_key": None}}):
+            self.assertIsNone(MODULE.api_ca_assertion_ciphertext(invalid))
+        for invalid in ({}, {"data": {"verified": True}}, {"data": {"plaintext": False}},
+                {"data": {"plaintext": "wrong"}}, {"data": {"plaintext": MODULE.PLAIN, "private_key": None}},
+                {"errors": ["failure"]}):
+            self.assertFalse(MODULE.api_ca_assertion_readback_matches(invalid))
 
     def test_raw_remote_payload_retains_exact_bytes_and_selected_local_version(self):
         payload = base64.b64encode(bytes(range(28))).decode()

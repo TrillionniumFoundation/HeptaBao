@@ -83,7 +83,8 @@ def expected_cases():
     cases += [side + ".remote_namespace_cross_decrypt" for side in ("candidate", "official")]
     cases += ["candidate.tls_skip_verify_config", "candidate.tls_skip_verify_refused",
         "candidate.restore_verified_config", "candidate.api_ca_override_config",
-        "candidate.api_ca_override_refused", "candidate.restore_enrolled_config",
+        "candidate.api_ca_assertion_accepted", "candidate.api_ca_assertion_remote_readback",
+        "candidate.restore_enrolled_config",
         "official.bad_ca_config", "official.bad_ca_refused", "official.restore_ca",
         "candidate.restart_health", "candidate.restart_decrypt",
         "official.restart_health", "official.restart_decrypt", "remote.restart_health",
@@ -365,6 +366,28 @@ def remote_payload(ciphertext, version):
     return payload
 
 
+def api_ca_assertion_ciphertext(body):
+    if type(body) is not dict or type(body.get("data")) is not dict:
+        return None
+    data = body["data"]
+    if data.keys() != {"ciphertext", "key_version"} or type(data["key_version"]) is not int or data["key_version"] != 2:
+        return None
+    ciphertext = data["ciphertext"]
+    try:
+        payload = remote_payload(ciphertext, 2)
+        if base64.b64encode(base64.b64decode(payload, validate=True)).decode() != payload:
+            return None
+    except (Failure, ValueError, TypeError):
+        return None
+    return ciphertext
+
+
+def api_ca_assertion_readback_matches(body):
+    return (type(body) is dict and type(body.get("data")) is dict
+        and body["data"].keys() == {"plaintext"} and type(body["data"]["plaintext"]) is str
+        and body["data"]["plaintext"] == PLAIN)
+
+
 class Trace:
     def __init__(self, rows):
         self.rows = rows
@@ -585,7 +608,13 @@ def run(binary, rows):
         t.call("candidate.tls_skip_verify_refused", c, "POST", "consumer/encrypt/local", 400, {"plaintext": PLAIN})
         t.call("candidate.restore_verified_config", c, "POST", CONFIG, 204, configs["candidate"])
         t.call("candidate.api_ca_override_config", c, "POST", CONFIG, 204, {**configs["candidate"], "tls_ca_cert_bytes": ca})
-        t.call("candidate.api_ca_override_refused", c, "POST", "consumer/encrypt/local", 501, {"plaintext": PLAIN})
+        assertion_encrypted = c.request("POST", "/v1/consumer/encrypt/local", {"plaintext": PLAIN})
+        assertion_ciphertext = api_ca_assertion_ciphertext(assertion_encrypted.body)
+        t.check("candidate.api_ca_assertion_accepted", assertion_encrypted.status == 200
+            and assertion_ciphertext is not None, assertion_encrypted.status)
+        assertion_readback = r.request("POST", "/v1/transit/decrypt/remote", {"ciphertext": assertion_ciphertext})
+        t.check("candidate.api_ca_assertion_remote_readback", assertion_readback.status == 200
+            and api_ca_assertion_readback_matches(assertion_readback.body), assertion_readback.status)
         t.call("candidate.restore_enrolled_config", c, "POST", CONFIG, 204, configs["candidate"])
         t.call("official.bad_ca_config", o, "POST", CONFIG, 204, {**configs["official"], "verify": False, "tls_ca_cert_bytes": (native.root / "ca.crt").read_text()})
         t.call("official.bad_ca_refused", o, "POST", "consumer/encrypt/local", 400, {"plaintext": PLAIN})
