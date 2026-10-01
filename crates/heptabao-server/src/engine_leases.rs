@@ -158,7 +158,12 @@ impl EngineState {
         let any = self.namespaces.values().any(|state| {
             state.mounts.values().any(|mount| match &mount.backend {
                 Backend::Ssh(engine) => !engine.leases.is_empty(),
-                Backend::Pki(engine) => engine.has_live_leases(self.lease_clock),
+                // External signed caches also consume this monotonic floor:
+                // a root-only issuer can have no currently leased leaf while
+                // an observed CRL expiry still requires durable fencing.
+                Backend::Pki(engine) => {
+                    engine.has_live_leases(self.lease_clock) || engine.has_external_state()
+                }
                 Backend::Kubernetes(engine) => engine.has_typed_observations(),
                 _ => false,
             })

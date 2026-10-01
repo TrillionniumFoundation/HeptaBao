@@ -1314,6 +1314,57 @@ impl EngineState {
             })
     }
 
+    fn public_pki_mount<'a, 'b>(
+        &'a self,
+        namespace: &str,
+        path: &'b str,
+    ) -> Option<(&'a pki::Pki, &'b str)> {
+        if path.contains('?') || path.starts_with('/') {
+            return None;
+        }
+        let state = self.namespaces.get(namespace)?;
+        let (mount_path, mount) = state
+            .mounts
+            .iter()
+            .find(|(mount, _)| path.starts_with(mount.as_str()))?;
+        let Backend::Pki(engine) = &mount.backend else {
+            return None;
+        };
+        Some((engine, &path[mount_path.len()..]))
+    }
+
+    pub(crate) fn is_public_pki_read(&self, namespace: &str, method: &str, path: &str) -> bool {
+        self.public_pki_mount(namespace, path)
+            .is_some_and(|(engine, relative)| engine.public_read_route(method, relative).is_some())
+    }
+
+    /// This receiver cannot allocate a namespace or mutate a PKI mount. Only
+    /// closed public projections can reach it, including the existing cache
+    /// expiry and revoked-owner fences; it never enters a remote effect.
+    pub(crate) fn handle_public_pki_read(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<EngineResponse>> {
+        let Some((engine, relative)) = self.public_pki_mount(namespace, path) else {
+            return Ok(None);
+        };
+        let Some(route) = engine.public_read_route(method, relative) else {
+            return Ok(None);
+        };
+        let params = SecretJson(if body.is_null() {
+            json!({})
+        } else {
+            body.clone()
+        });
+        engine
+            .handle_public_read(route, &params, now.max(self.lease_clock))
+            .map(Some)
+    }
+
     /// Requires live Service authorization. The immutable receiver makes this
     /// path unable to allocate a namespace, consume a token or modify an engine.
     pub(crate) fn handle_immutable_kv_read(

@@ -87,15 +87,17 @@ def parser() -> Parser:
     enable.add_argument("path")
     metadata = commands.add_parser("metadata")
     actions = metadata.add_subparsers(dest="metadata_command", required=True, parser_class=Parser)
-    for name in ("get", "put", "delete"):
+    for name in ("get", "put", "patch", "delete"):
         command = actions.add_parser(name)
         _common(command, field=False, formatted=name != "delete")
         command.add_argument("path")
-        if name == "put":
+        if name in ("put", "patch"):
             command.add_argument("-max-versions", "--max-versions", type=int)
             command.add_argument("-cas-required", "--cas-required", type=_boolean)
             command.add_argument("-delete-version-after", "--delete-version-after")
             command.add_argument("-custom-metadata", "--custom-metadata", action="append", default=[])
+            if name == "patch":
+                command.add_argument("-remove-custom-metadata", "--remove-custom-metadata", action="append", default=[])
     return result
 
 
@@ -210,7 +212,7 @@ def _local(args):
             raise BaoError("patch_data_required")
         if any(not key for key in args.remove_data):
             raise BaoError("invalid_remove_data")
-    if args.command == "metadata" and args.metadata_command == "put":
+    if args.command == "metadata" and args.metadata_command in ("put", "patch"):
         if args.max_versions is not None and not 0 <= args.max_versions <= 2**64 - 1:
             raise BaoError("invalid_max_versions")
         payload = {}
@@ -223,6 +225,10 @@ def _local(args):
             if not sep or not key:
                 raise BaoError("invalid_custom_metadata")
             custom[key] = value
+        for key in getattr(args, "remove_custom_metadata", []):
+            if not key:
+                raise BaoError("invalid_remove_custom_metadata")
+            custom[key] = None
         if custom:
             payload["custom_metadata"] = custom
     fmt = args.format if args.format is not None else _env("FORMAT", "table")
@@ -309,8 +315,9 @@ def execute(client: Client, args, path: str, mount: str, versions: list[int], pa
     elif args.command == "list":
         response = _request(client, "LIST", prefix + ("metadata/" if version == 2 else "") + suffix)
     elif args.command == "metadata":
-        response = _request(client, {"get": "GET", "put": "POST", "delete": "DELETE"}[args.metadata_command],
-                            prefix + "metadata/" + suffix, payload)
+        method = {"get": "GET", "put": "POST", "patch": "PATCH", "delete": "DELETE"}[args.metadata_command]
+        options = {"content_type": "application/merge-patch+json"} if method == "PATCH" else {}
+        response = _request(client, method, prefix + "metadata/" + suffix, payload, **options)
     elif args.command in ("delete", "undelete", "destroy"):
         if args.command == "delete" and not versions:
             response = _request(client, "DELETE", data_path)

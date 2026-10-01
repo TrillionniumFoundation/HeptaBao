@@ -375,7 +375,7 @@ impl Pki {
         if self.external.root.is_none()
             || !matches!(
                 path,
-                "cert/crl" | "crl" | "crl/pem" | "crl/delta" | "crl/delta/pem"
+                "cert/crl" | "cert/delta-crl" | "crl" | "crl/pem" | "crl/delta" | "crl/delta/pem"
             )
         {
             return Ok(None);
@@ -401,14 +401,14 @@ impl Pki {
             return Err(error(503, "external CRL rebuild is required"));
         }
         let crl = crls.selected(path.contains("delta"));
-        if path == "cert/crl" {
+        if matches!(path, "cert/crl" | "cert/delta-crl") {
             return Ok(Some(ok(
-                json!({"certificate":pem("X509 CRL",&crl.der)}),
+                json!({"certificate":super::public::stored_pem("X509 CRL",&crl.der),"revocation_time":0,"revocation_time_rfc3339":""}),
                 false,
             )));
         }
         let body = if path.ends_with("/pem") {
-            pem("X509 CRL", &crl.der).into_bytes()
+            super::public::stored_pem("X509 CRL", &crl.der).into_bytes()
         } else {
             crl.der.clone()
         };

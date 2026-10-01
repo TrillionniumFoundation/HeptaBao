@@ -305,6 +305,15 @@ impl ExternalPkiMaterial {
 }
 
 impl Pki {
+    pub(in crate::engines::pki) fn public_issuer_metadata(&self) -> Option<(&str, &str, &str)> {
+        self.external.root.as_ref().map(|key| {
+            (
+                key.issuer_id.as_str(),
+                key.key_id.as_str(),
+                key.issuer_name.as_str(),
+            )
+        })
+    }
     pub(in crate::engines) fn external_handles(&self, path: &str) -> bool {
         matches!(path, "root/generate/kms" | "intermediate/generate/kms")
             || self.external.root.is_some()

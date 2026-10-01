@@ -15,6 +15,8 @@ use zeroize::{Zeroize, Zeroizing};
 #[path = "pki_external.rs"]
 mod external;
 pub(crate) use external::{ExternalPkiMaterial, ExternalPkiTemplate};
+#[path = "pki_public.rs"]
+mod public;
 
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;
@@ -440,25 +442,8 @@ impl Pki {
             self.external.clear_root();
             return Ok(empty(changed));
         }
-        if method == "GET"
-            && let Some(response) = self.external_crl_read(path, now)?
-        {
-            reject_unknown(body, &[])?;
-            return Ok(response);
-        }
-        if path == "cert/ca" && method == "GET" {
-            reject_unknown(body, &[])?;
-            let root = self.root.as_ref().ok_or_else(not_found)?;
-            return Ok(ok(
-                json!({"certificate": pem("CERTIFICATE", &root.certificate_der)}),
-                false,
-            ));
-        }
-        if path == "cert/crl" && method == "GET" {
-            reject_unknown(body, &[])?;
-            let root = self.root.as_ref().ok_or_else(not_found)?;
-            let der = self.crl_der(root, now)?;
-            return Ok(ok(json!({"certificate": pem("X509 CRL", &der)}), false));
+        if let Some(route) = self.public_read_route(method, path) {
+            return self.handle_public_read(route, body, now);
         }
         if let Some(serial) = path.strip_prefix("cert/") {
             if method != "GET" {

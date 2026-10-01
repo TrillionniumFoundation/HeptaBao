@@ -4,6 +4,8 @@ use super::*;
 use x509_parser::prelude::*;
 #[path = "service_external_pki_leaf_tests.rs"]
 mod leaf_tests;
+#[path = "service_external_pki_public_tests.rs"]
+mod public_tests;
 
 fn pki_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, String)> {
     let (root, mut service, unseal, admin) = remote.fixture()?;
@@ -357,7 +359,14 @@ fn exercise_external_pki270_leaf_crls_with_schema(safe_schema: bool) -> TestResu
     );
     assert!(
         read.status == 200
-            && read.body["data"]["certificate"] == data["certificate"]
+            && read.body["data"]["certificate"].as_str()
+                == Some(
+                    data["certificate"]
+                        .as_str()
+                        .ok_or("issued certificate PEM")?
+                        .strip_suffix('\n')
+                        .ok_or("generated certificate final LF")?
+                )
             && read.body["data"].get("private_key").is_none(),
         "durable certificate readback omits private material"
     );
@@ -823,7 +832,14 @@ fn external_pki270_real_remote_root_and_csr_have_bound_public_keys_and_restart()
             );
             assert!(
                 retained.status == 200
-                    && retained.body["data"]["certificate"] == data["certificate"],
+                    && retained.body["data"]["certificate"].as_str()
+                        == Some(
+                            data["certificate"]
+                                .as_str()
+                                .ok_or("generated root PEM")?
+                                .strip_suffix('\n')
+                                .ok_or("generated root final LF")?
+                        ),
                 "external root certificate readback exact"
             );
         }

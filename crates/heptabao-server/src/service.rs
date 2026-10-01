@@ -2119,6 +2119,27 @@ impl Service {
             }
             self.state = Some(admitted.clone());
         }
+        // Public projection classification is bound to the actual namespace
+        // and mount after normal HA/unseal and durable lease-owner maintenance.
+        // Monotonic expiry observations must survive rollback and restart; a
+        // public projection neither consumes a bearer nor enters remote signing.
+        // Explicit response wrapping retains the separate existing admission.
+        if wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+            && admitted.engines.is_public_pki_read(namespace, method, path)
+        {
+            return match admitted
+                .engines
+                .handle_public_pki_read(namespace, method, path, body, now)
+            {
+                Ok(Some(mut response)) => Response {
+                    consistency_index: None,
+                    status: response.status,
+                    body: std::mem::take(&mut response.body),
+                },
+                Err(error) => Response::error(error.status, &error.message),
+                Ok(None) => Response::error(503, "public PKI projection changed"),
+            };
+        }
         let public_otp_verify = admitted
             .engines
             .is_ssh_verification(namespace, method, path);
@@ -2734,6 +2755,20 @@ impl Service {
     ) -> Response {
         if path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/") {
             return Self::ui_mounts_route(state, principal, namespace, method, path, now);
+        }
+        match state
+            .engines
+            .handle_public_pki_read(namespace, method, path, body, now)
+        {
+            Ok(Some(mut response)) => {
+                return Response {
+                    consistency_index: None,
+                    status: response.status,
+                    body: std::mem::take(&mut response.body),
+                };
+            }
+            Err(error) => return Response::error(error.status, &error.message),
+            Ok(None) => {}
         }
         if let Some(principal) = principal
             && let Err(error) = state.auth.authorize_request_parameters(

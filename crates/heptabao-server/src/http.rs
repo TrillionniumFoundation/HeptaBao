@@ -1375,6 +1375,36 @@ fn decode_query(value: &str) -> Result<String, ParseError> {
 }
 
 fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io::Result<()> {
+    // Only the engine's closed certificate envelope selects these constants.
+    // Neither caller data nor provider JSON supplies an arbitrary MIME type.
+    let raw_certificate = if response.status == 200
+        && response
+            .body
+            .as_object()
+            .is_some_and(|body| body.len() == 2)
+    {
+        let media = match response.body["format"].as_str() {
+            Some("der" | "chain") => Some("application/pkix-cert"),
+            Some("pem") => Some("application/pem-certificate-chain"),
+            _ => None,
+        };
+        media.and_then(|media| {
+            response.body["__heptabao_pki_certificate"]
+                .as_str()
+                .and_then(|text| {
+                    use base64::Engine as _;
+                    let base64 = base64::engine::general_purpose::STANDARD;
+                    if text.len() > 256 * 1024 {
+                        return None;
+                    }
+                    let bytes = base64.decode(text).ok()?;
+                    (bytes.len() <= 128 * 1024 && base64.encode(&bytes) == text)
+                        .then_some((bytes, media))
+                })
+        })
+    } else {
+        None
+    };
     // Only this closed, bounded CRL transport envelope can select a raw public
     // body. The content types are constants and never come from provider JSON.
     let raw_crl = if response.status == 200
@@ -1398,7 +1428,9 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
     } else {
         None
     };
-    let content_type = if raw_crl.is_some() {
+    let content_type = if let Some((_, media)) = &raw_certificate {
+        *media
+    } else if raw_crl.is_some() {
         if response.body["pem"] == true {
             "application/x-pem-file"
         } else {
@@ -1407,7 +1439,9 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
     } else {
         "application/json"
     };
-    let mut bytes = Zeroizing::new(if let Some(raw) = raw_crl {
+    let mut bytes = Zeroizing::new(if let Some((raw, _)) = raw_certificate {
+        raw
+    } else if let Some(raw) = raw_crl {
         raw
     } else if response.status == 204 {
         Vec::new()
@@ -1461,6 +1495,64 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn pki_public_certificate_transport_has_closed_mime_and_canonical_bounds() -> io::Result<()> {
+        use base64::Engine as _;
+        let payload = [0x30, 0x00];
+        let encoded = base64::engine::general_purpose::STANDARD.encode(payload);
+        for (format, media) in [
+            ("der", "application/pkix-cert"),
+            ("pem", "application/pem-certificate-chain"),
+            ("chain", "application/pkix-cert"),
+        ] {
+            let response = || Response {
+                status: 200,
+                consistency_index: None,
+                body: json!({"__heptabao_pki_certificate":encoded,"format":format}),
+            };
+            let mut wire = Vec::new();
+            write_response(&mut wire, response(), false)?;
+            let header = format!("Content-Type: {media}\r\n");
+            assert!(
+                wire.windows(header.len())
+                    .any(|bytes| bytes == header.as_bytes()),
+                "closed public certificate MIME"
+            );
+            assert!(
+                wire.ends_with(&payload),
+                "public certificate transport preserves exact bytes"
+            );
+            let mut head = Vec::new();
+            write_response(&mut head, response(), true)?;
+            assert!(
+                head.ends_with(b"\r\n\r\n"),
+                "HEAD withholds all public certificate payload"
+            );
+        }
+        for body in [
+            json!({"__heptabao_pki_certificate":encoded,"format":"text/html"}),
+            json!({"__heptabao_pki_certificate":"MAA","format":"der"}),
+            json!({"__heptabao_pki_certificate":encoded,"format":"der","extra":true}),
+            json!({"__heptabao_pki_certificate":base64::engine::general_purpose::STANDARD.encode(vec![0;128*1024+1]),"format":"der"}),
+        ] {
+            let mut wire = Vec::new();
+            write_response(
+                &mut wire,
+                Response {
+                    status: 200,
+                    consistency_index: None,
+                    body,
+                },
+                false,
+            )?;
+            assert!(
+                wire.windows(b"Content-Type: application/json".len())
+                    .any(|bytes| bytes == b"Content-Type: application/json"),
+                "unknown/noncanonical/oversize envelope remains JSON"
+            );
+        }
+        Ok(())
+    }
     #[test]
     fn external_pki_crl_transport_is_bounded_and_has_a_closed_content_type() -> io::Result<()> {
         use base64::Engine as _;
