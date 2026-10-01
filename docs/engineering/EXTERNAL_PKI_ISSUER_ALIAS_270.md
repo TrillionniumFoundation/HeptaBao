@@ -24,7 +24,7 @@ certificate returns 503 and is never rebuilt by a public read.
 
 The existing `issuer/default/json` representation already has one final LF.
 Legacy CA, serial certificate and CRL public projections keep their existing
-no-final-LF representation. This change adds no MIME choices, private fields,
+no-final-LF representation. The public-read alias increment adds no MIME choices, private fields,
 serialization fields, schema numbers or restore exceptions. Active and retired
 typed external PKI state still requires the sticky schema-67 floor; JWT and
 AAD-bound state retain their separate existing writer requirements.
@@ -45,7 +45,45 @@ old-format snapshot rejection. The existing external PKI suite passes 41 tests
 with these additions. These native tests do not replace fresh source/binary-
 bound Linux public HTTP comparison or actual previous-reader qualification.
 
+The finite external issuance increment accepts `issuer/<ref>/issue/<role>`
+for the same single issuer, with exact default/ID/name selection. It resolves an
+unknown reference to an error before entering the provider. Selection does not
+replace the original request path: ACL admission, request/response audit,
+typed lease-owner capture, persisted certificate path and lease ID all keep
+that path. The existing canonical `issue/<role>` behavior stays in its prior
+format. Original actor, namespace, mount grant, enrolled TLS/host generation,
+StateIdentity, publication generation/HA frontier, deadline and final delivery
+clock checks continue to govern every entered effect; unknown results are not
+retried and no external CA private key is requested or stored.
+
+A persisted issuer-specific path changes the reader contract even though it
+uses an existing string field. The all-namespace writer requires schema 71
+when any such issued record exists, including revoked or expired records.
+Deleting the last record or mount retains the already published 71 label.
+Readers reject issuer paths under labels below 71 and continue to decode every
+previous supported schema, including BYOK 70, JWT 68/69, typed PKI 67 and
+AAD-bound 66. Record preflight and final publication refuse a decreased label.
+Authenticated snapshot preparation and final local/HA restore admission
+refuse an incoming label below the live protected 71 floor before writer
+normalization; ordinary historical snapshots at or below 65 keep their prior
+policy. Native-codec predecessor snapshot tests are not actual old-reader
+qualification. Actual schema-70 binary refusal for active and retired encrypted
+71 state, with authoritative state/journal/seal bytes preserved, remains a
+separate required scope.
+
+A fresh pinned official 2.7 provider and consumer completed 52 fixed
+observations with 2-second HTTP and 360-second outer budgets. Known issuer
+paths issued real signed leaves, preserved their original lease path, and
+required exact-path ACL and a live external-key grant. Root/leaf/revoke entered
+three/one/two actual provider Sign calls; unknown references, grant denial and
+provider-rotation rejection entered zero. Maintained private-key loading and
+leaf public-key binding were real. The full CRL contained the revoked serial;
+the delta CRL had a valid signature and did not contain that serial. This
+contract discovery does not qualify a candidate binary. Source/binary-bound
+candidate comparison and actual prior-reader scopes remain outstanding for
+this increment.
+
 Remaining PKI work includes multiple issuers, issuer mutation/default changes,
-import/rotation, explicit issuer issue/sign authority, OCSP, ACME and other
+import/rotation, explicit issuer sign authority, OCSP, ACME and other
 unclosed API contracts. Full OpenBao replacement, production authority and
 independent qualification remain false.

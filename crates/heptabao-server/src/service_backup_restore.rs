@@ -327,6 +327,14 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= PKI_ISSUER_PATH_STATE_SCHEMA
+            && incoming.schema < PKI_ISSUER_PATH_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI issuer-path leases",
+            ));
+        }
         if current.schema >= TRANSIT_BYOK_STATE_SCHEMA
             && incoming.schema < TRANSIT_BYOK_STATE_SCHEMA
         {

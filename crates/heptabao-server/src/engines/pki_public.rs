@@ -153,7 +153,7 @@ impl Pki {
         }
     }
 
-    fn require_public_issuer(&self, reference: &str) -> Result<()> {
+    pub(in crate::engines::pki) fn require_public_issuer(&self, reference: &str) -> Result<()> {
         let (id, _, name) = self
             .public_issuer_metadata()
             .ok_or_else(|| error(500, "issuer reference is unavailable"))?;

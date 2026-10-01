@@ -29,8 +29,10 @@ impl EngineState {
         })
     }
     pub(crate) fn is_pki_issue_route(&self, namespace: &str, path: &str) -> bool {
-        self.pki_mount(namespace, path)
-            .is_some_and(|mount| path[mount.len()..].starts_with("issue/"))
+        self.pki_mount(namespace, path).is_some_and(|mount| {
+            let relative = &path[mount.len()..];
+            relative.starts_with("issue/") || pki::Pki::issuer_issue_route(relative).is_some()
+        })
     }
     pub(crate) fn is_lease_service_route(&self, namespace: &str, path: &str) -> bool {
         self.is_ssh_service_route(namespace, path) || self.is_pki_issue_route(namespace, path)

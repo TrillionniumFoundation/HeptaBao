@@ -243,8 +243,14 @@ impl Pki {
                 || issued.owner.batch_claims().is_some_and(|claims| {
                     issued.issued < claims.issued_at() || issued.expires > claims.expires_at()
                 })
-                || !issued.path.starts_with(&prefix)
-                || issued.path[prefix.len()..].contains('/')
+                || !(if issued.path.starts_with(&prefix) {
+                    !issued.path[prefix.len()..].contains('/')
+                } else {
+                    issued
+                        .path
+                        .strip_prefix(mount)
+                        .is_some_and(|path| Self::issuer_issue_route(path).is_some())
+                })
                 || issued.lease_id != format!("{}/{}", issued.path, serial)
                 || issued.issued > clock
                 || issued.expires <= issued.issued
@@ -260,6 +266,17 @@ impl Pki {
             }
         }
         Ok(())
+    }
+
+    // Historical issuer paths remain format-bearing after revocation or expiry.
+    // Selection at request time is separate from this closed persisted grammar.
+    pub(super) fn has_issuer_path_state(&self, mount: &str) -> bool {
+        self.issued.values().any(|issued| {
+            issued
+                .path
+                .strip_prefix(mount)
+                .is_some_and(|relative| Self::issuer_issue_route(relative).is_some())
+        })
     }
 
     pub(super) fn has_live_leases(&self, clock: u64) -> bool {

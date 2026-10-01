@@ -348,10 +348,26 @@ impl Pki {
             )
         })
     }
+    // Parse only this closed alias shape. Resolution and authority remain separate;
+    // the original request path must never become the canonical issue path.
+    pub(in crate::engines) fn issuer_issue_route(path: &str) -> Option<(&str, &str)> {
+        let (reference, role) = path.strip_prefix("issuer/")?.split_once("/issue/")?;
+        (!reference.is_empty()
+            && reference.len() <= 128
+            && !reference.contains('/')
+            && !role.is_empty()
+            && role.len() <= 128
+            && !role.contains('/')
+            && !path.contains('?'))
+        .then_some((reference, role))
+    }
+
     pub(in crate::engines) fn external_handles(&self, path: &str) -> bool {
         matches!(path, "root/generate/kms" | "intermediate/generate/kms")
             || self.external.root.is_some()
-                && (path.starts_with("issue/") || matches!(path, "revoke" | "crl/rotate"))
+                && (path.starts_with("issue/")
+                    || Self::issuer_issue_route(path).is_some()
+                    || matches!(path, "revoke" | "crl/rotate"))
     }
 
     pub(in crate::engines) fn has_external_state(&self) -> bool {

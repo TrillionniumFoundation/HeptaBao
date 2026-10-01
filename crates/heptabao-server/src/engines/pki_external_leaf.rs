@@ -243,16 +243,29 @@ impl Pki {
             .root
             .as_ref()
             .ok_or_else(|| error(503, "external PKI root is missing"))?;
-        let consumption = if let Some(role) = path.strip_prefix("issue/") {
+        let issue = path
+            .strip_prefix("issue/")
+            .map(|role| (None, role))
+            .or_else(|| {
+                Self::issuer_issue_route(path).map(|(reference, role)| (Some(reference), role))
+            });
+        let consumption = if let Some((reference, role)) = issue {
             if !write_method(method) {
                 return Err(unsupported());
             }
             if role.is_empty() || role.contains('/') {
                 return Err(not_found());
             }
+            if let Some(reference) = reference {
+                self.require_public_issuer(reference)?;
+            }
             let owner = owner.ok_or_else(|| error(403, "credential issuer is required"))?;
             let mut prepared =
                 self.prepare_leaf(mount, role, body, &owner.owner, owner.expires_at, now)?;
+            if reference.is_some() {
+                // Preserve the actual authorized issuer route in the lease graph.
+                prepared.path = format!("{mount}{path}");
+            }
             prepared.serial = external_serial()?;
             prepared.lease_id = format!("{}/{}", prepared.path, prepared.serial);
             prepared.not_before = now.saturating_sub(30).max(root.not_before);

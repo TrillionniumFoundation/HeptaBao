@@ -600,6 +600,14 @@ impl EngineState {
         })
     }
 
+    pub(crate) fn has_issuer_path_pki_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.iter().any(|(path, mount)| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_issuer_path_state(path))
+            })
+        })
+    }
+
     pub(crate) fn has_asymmetric_state(&self) -> bool {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount|
