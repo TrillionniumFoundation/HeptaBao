@@ -378,17 +378,12 @@ impl Pki {
         }
     }
 
-    pub(in crate::engines::pki) fn external_crl_read(
+    pub(in crate::engines::pki) fn external_crl_der(
         &self,
-        path: &str,
+        delta: bool,
         now: u64,
-    ) -> Result<Option<EngineResponse>> {
-        if self.external.root.is_none()
-            || !matches!(
-                path,
-                "cert/crl" | "cert/delta-crl" | "crl" | "crl/pem" | "crl/delta" | "crl/delta/pem"
-            )
-        {
+    ) -> Result<Option<&[u8]>> {
+        if self.external.root.is_none() {
             return Ok(None);
         }
         let crls = self
@@ -411,17 +406,35 @@ impl Pki {
         {
             return Err(error(503, "external CRL rebuild is required"));
         }
-        let crl = crls.selected(path.contains("delta"));
+        Ok(Some(&crls.selected(delta).der))
+    }
+
+    pub(in crate::engines::pki) fn external_crl_read(
+        &self,
+        path: &str,
+        now: u64,
+    ) -> Result<Option<EngineResponse>> {
+        if self.external.root.is_none()
+            || !matches!(
+                path,
+                "cert/crl" | "cert/delta-crl" | "crl" | "crl/pem" | "crl/delta" | "crl/delta/pem"
+            )
+        {
+            return Ok(None);
+        }
+        let der = self
+            .external_crl_der(path.contains("delta"), now)?
+            .ok_or_else(not_found)?;
         if matches!(path, "cert/crl" | "cert/delta-crl") {
             return Ok(Some(ok(
-                json!({"certificate":super::public::stored_pem("X509 CRL",&crl.der),"revocation_time":0,"revocation_time_rfc3339":""}),
+                json!({"certificate":super::public::stored_pem("X509 CRL",der),"revocation_time":0,"revocation_time_rfc3339":""}),
                 false,
             )));
         }
         let body = if path.ends_with("/pem") {
-            super::public::stored_pem("X509 CRL", &crl.der).into_bytes()
+            super::public::stored_pem("X509 CRL", der).into_bytes()
         } else {
-            crl.der.clone()
+            der.to_vec()
         };
         Ok(Some(EngineResponse {
             status: 200,

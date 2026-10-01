@@ -17,6 +17,15 @@ pub(in crate::engines) enum PkiPublicRead<'a> {
     ExternalCrl(&'a str),
     Issuers,
     DefaultIssuer,
+    IssuerCertificate(&'a str, CertificateFormat),
+    IssuerJson(&'a str),
+    IssuerCrl(&'a str, bool, IssuerCrlFormat),
+}
+
+pub(in crate::engines) enum IssuerCrlFormat {
+    Json,
+    Der,
+    Pem,
 }
 
 pub(super) fn stored_pem(label: &str, der: &[u8]) -> String {
@@ -75,6 +84,54 @@ impl Pki {
                 Some(PkiPublicRead::ExternalCrl(path))
             }
             _ => {
+                if let Some(selected) = path.strip_prefix("issuer/") {
+                    let (reference, suffix) = selected.split_once('/')?;
+                    if reference.is_empty() || reference.len() > 128 {
+                        return None;
+                    }
+                    return match suffix {
+                        "json" => Some(PkiPublicRead::IssuerJson(reference)),
+                        "der" => Some(PkiPublicRead::IssuerCertificate(
+                            reference,
+                            CertificateFormat::Der,
+                        )),
+                        "pem" => Some(PkiPublicRead::IssuerCertificate(
+                            reference,
+                            CertificateFormat::Pem,
+                        )),
+                        "crl" => Some(PkiPublicRead::IssuerCrl(
+                            reference,
+                            false,
+                            IssuerCrlFormat::Json,
+                        )),
+                        "crl/der" => Some(PkiPublicRead::IssuerCrl(
+                            reference,
+                            false,
+                            IssuerCrlFormat::Der,
+                        )),
+                        "crl/pem" => Some(PkiPublicRead::IssuerCrl(
+                            reference,
+                            false,
+                            IssuerCrlFormat::Pem,
+                        )),
+                        "crl/delta" => Some(PkiPublicRead::IssuerCrl(
+                            reference,
+                            true,
+                            IssuerCrlFormat::Json,
+                        )),
+                        "crl/delta/der" => Some(PkiPublicRead::IssuerCrl(
+                            reference,
+                            true,
+                            IssuerCrlFormat::Der,
+                        )),
+                        "crl/delta/pem" => Some(PkiPublicRead::IssuerCrl(
+                            reference,
+                            true,
+                            IssuerCrlFormat::Pem,
+                        )),
+                        _ => None,
+                    };
+                }
                 let selected = path.strip_prefix("cert/")?;
                 if let Some(serial) = selected.strip_suffix("/raw/pem") {
                     normalize_serial(serial).ok()?;
@@ -93,6 +150,19 @@ impl Pki {
                     Some(PkiPublicRead::Certificate(selected))
                 }
             }
+        }
+    }
+
+    fn require_public_issuer(&self, reference: &str) -> Result<()> {
+        let (id, _, name) = self
+            .public_issuer_metadata()
+            .ok_or_else(|| error(500, "issuer reference is unavailable"))?;
+        if reference == "default" || reference == id || (!name.is_empty() && reference == name) {
+            Ok(())
+        } else {
+            // The pinned public 2.7 alias probe returns 500 for unknown names
+            // and IDs. Never turn an unknown reference into the default issuer.
+            Err(error(500, "issuer reference is unavailable"))
         }
     }
 
@@ -158,6 +228,54 @@ impl Pki {
                     json!({"keys":[issuer],"key_info":{issuer:{"is_default":true,"issuer_name":name,"key_id":key,"serial_number":external::formatted_serial(&root.serial)}}}),
                     false,
                 ))
+            }
+            PkiPublicRead::IssuerCertificate(reference, format) => {
+                self.require_public_issuer(reference)?;
+                let root = self.root.as_ref().ok_or_else(not_found)?;
+                if root.certificate_der.len() > 64 * 1024 {
+                    return Err(error(503, "public certificate exceeds bounds"));
+                }
+                match format {
+                    CertificateFormat::Der => raw_certificate(&root.certificate_der, format),
+                    CertificateFormat::Pem => {
+                        // Issuer-specific PEM has one final LF; legacy public
+                        // CA and serial projections retain their no-LF encoding.
+                        let bytes = pem("CERTIFICATE", &root.certificate_der).into_bytes();
+                        Ok(EngineResponse {
+                            status: 200,
+                            body: json!({"__heptabao_pki_certificate":BASE64.encode(bytes),"format":"pem"}),
+                            mutated: false,
+                        })
+                    }
+                    CertificateFormat::Chain => Err(bad("issuer format is unavailable")),
+                }
+            }
+            PkiPublicRead::IssuerJson(reference) => {
+                self.require_public_issuer(reference)?;
+                self.handle_public_read(PkiPublicRead::DefaultIssuer, body, now)
+            }
+            PkiPublicRead::IssuerCrl(reference, delta, format) => {
+                self.require_public_issuer(reference)?;
+                let der = self.external_crl_der(delta, now)?.ok_or_else(not_found)?;
+                match format {
+                    IssuerCrlFormat::Json => Ok(ok(json!({"crl":pem("X509 CRL",der)}), false)),
+                    IssuerCrlFormat::Der | IssuerCrlFormat::Pem => {
+                        let is_pem = matches!(format, IssuerCrlFormat::Pem);
+                        let bytes = if is_pem {
+                            pem("X509 CRL", der).into_bytes()
+                        } else {
+                            der.to_vec()
+                        };
+                        if bytes.len() > 512 * 1024 {
+                            return Err(error(503, "public CRL exceeds bounds"));
+                        }
+                        Ok(EngineResponse {
+                            status: 200,
+                            body: json!({"__heptabao_pki_crl":BASE64.encode(bytes),"pem":is_pem}),
+                            mutated: false,
+                        })
+                    }
+                }
             }
             PkiPublicRead::DefaultIssuer => {
                 let root = self.root.as_ref().ok_or_else(not_found)?;
