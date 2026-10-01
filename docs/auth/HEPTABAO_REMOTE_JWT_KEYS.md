@@ -85,9 +85,12 @@ not revoke existing HeptaBao tokens independently of their normal authority rule
 JWT verifies issuer, role audience, subject, signature and time claims. Ordinary
 JWT assertions are reusable: each successful login issues a new service token.
 `jti` is optional metadata. At least one nonzero `iat`, `nbf` or `exp` is required;
-missing dates are derived with the role's leeway settings. Role type is `jwt`, user_claim is `sub` in this profile;
-Identity alias/entity binding and live entity/group policy checks still apply.
-New keys with the same subject reuse the correct existing identity binding.
+missing dates are derived with the role's leeway settings. Role type is `jwt`.
+Creating a role requires explicit `user_claim`, which selects a literal top-level
+string claim. Existing role writes with `role_type=jwt` preserve an omitted
+selector; old stored roles retain `sub`. Identity alias/entity binding and live
+entity/group policy checks still apply. New keys with the same selected alias
+reuse the existing binding within that auth mount and namespace.
 
 Static and remote JWT roles accept `bound_claims` and `bound_claims_type`.
 Every configured claim must match; scalar/list alternatives match if any pair
@@ -110,11 +113,11 @@ emulate implementation-dependent behavior.
 Role updates preserve an omitted bound map; null or `{}` clears it. An omitted
 `bound_claims_type` resets the mode to `string`, including on partial writes;
 null or an unknown mode returns 400 without mutation. Readback includes
-`role_type:"jwt"` and `user_claim:"sub"`. The new optional role state requires
+`role_type:"jwt"`. The selected `user_claim` remains independent of registered `sub` used by `bound_subject`. The new optional role state requires
 schema 30; old absent state keeps its serialized shape. Concurrent role changes
 invalidate remote login results, and failed matches publish no token or wrapper.
-This adds claim predicates only: arbitrary claim mapping, selectable user/group
-claims and OIDC UserInfo merging remain separate work.
+Bound predicates remain separate from the selected user alias. Arbitrary claim
+mapping, selectable group claims and OIDC UserInfo merging remain separate work.
 
 The [schema-30 bound-claims comparison](../../qa/openbao-acceptance/evidence/jwt-bound-claims-6de8ab2.json)
 records 362 matching observations per side against OpenBao 2.6.2, using static
@@ -179,8 +182,13 @@ proof verifier retain their separate one-use contracts.
 
 `role_type=oidc` is rejected on this JWT mount. Browser authorization-code flows
 use the separate OIDC mount profile; remote JWT discovery does not activate them.
-Arbitrary JSON-pointer claim mapping, external-group sync and complete JWT/OIDC
-API parity remain open. OpenBao's remote
+JSON-pointer user selection, arbitrary claim mapping, external-group sync and
+complete JWT/OIDC API parity remain open. Custom-claim JWTs currently still
+require a registered `sub`; this increment does not claim the no-`sub` profile.
+OpenBao 2.7.0 returns 204 for an absent Identity alias lookup, while the native
+lookup currently returns 404. Omitted `role_type` follows the native JWT profile;
+the public OpenBao API documents an OIDC default. These independent wire/API
+differences remain outside this selector implementation. OpenBao's remote
 key cache may retain an old key until refresh; this candidate's per-login fresh
 fetch is intentionally stricter and cannot establish full cache-semantics parity.
 
@@ -218,3 +226,33 @@ passed 36 checks, including OIDC config preflight, independent writes and late
 authority changes. These receipts bind production source `649c125` and the
 observed binary; they are selected local acceptance, not full compatibility or
 independent production qualification.
+
+### Custom JWT identity claim reader fence
+
+Successful static or remote JWT login binds the selected verified string claim
+to the Identity alias and display name. Missing, nonstring, empty, control-bearing
+or oversized values reject before token publication; `bound_subject` still checks
+the signed registered `sub`. A key is a literal top-level JSON member, including
+names containing `/`; this increment does not enable JSON Pointer selection,
+claim mappings, external group aliases or CEL. Existing group predicates and
+bound-claim matching keep their independent contracts.
+
+The role stores only an optional custom selector. Default `sub` retains the old
+serialized shape and schema 65. Custom state raises the writer requirement to
+schema 68, scans every namespace, and keeps that floor after role retirement.
+Old labels, malformed selectors, future schemas, publication downgrade and both
+snapshot restore paths reject. AAD-bound schema 66 and typed-PKI schema 67 remain
+independent floors. Remote completion compares the captured complete role before
+publishing; Identity disable, mount, namespace, activation and Service commit
+gates still precede token release. Renewal retains the original issued entity and
+policies and reads current role TTL limits without remapping the identity claim.
+
+The implementation uses the existing maintained signature verifier once; it does
+not parse an unverified payload to select identity. The source tests include real
+RS256 signatures, invalid values/signatures, scoped aliases, disabled entities,
+encrypted restart, renewal and active/retired schema boundaries. A separate
+fresh pinned OpenBao 2.7.0 observation confirms selected alias binding, wrong
+type/signature rejection, new-role selector requirements and existing-role
+merge semantics. Its original failed assumptions remain recorded; it is not
+native runtime qualification. Actual prior-reader and integrated native
+qualification remain pending, with no production or full replacement authority.

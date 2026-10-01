@@ -992,6 +992,9 @@ impl JwtConfig {
 
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct JwtRole {
+    // None retains the exact legacy/default-sub encoding.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    user_claim: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     token_type: Option<batch_issuance::UserTokenType>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4962,11 +4965,12 @@ impl AuthState {
             }
             let verified = verification_config
                 .verifier()?
-                .verify_native(
+                .verify_native_with_user_claim(
                     jwt,
                     now,
                     jwt_login::native_time_policy(&config, &role),
                     role.bound_claims.as_ref(),
+                    role.user_claim.as_deref().unwrap_or("sub"),
                 )
                 .map_err(|_| bad("JWT signature or claims validation failed"))?;
             let claimed_namespace = verified.namespace.as_deref().unwrap_or("");
@@ -4995,7 +4999,7 @@ impl AuthState {
                 groups: verified.groups.clone(),
                 last_seen: now,
             };
-            let mut display_name = format!("{}-{}", mount.replace('/', "-"), verified.subject);
+            let mut display_name = format!("{}-{}", mount.replace('/', "-"), verified.alias);
             if display_name.ends_with('-') {
                 display_name.pop();
             }
@@ -5058,7 +5062,7 @@ impl AuthState {
             response.login_identity = Some(LoginIdentity {
                 metadata: Some(metadata),
                 mount: mount.into(),
-                alias: verified.subject.clone(),
+                alias: verified.alias,
             });
             self.retire_jwt_login_replay(scope);
             self.jwt_at_mut(scope)
@@ -5302,7 +5306,7 @@ impl AuthState {
                     json!({
                         "role_type": "jwt",
                         "token_type": role.token_type.unwrap_or_default().name(),
-                        "user_claim": "sub",
+                        "user_claim": role.user_claim.as_deref().unwrap_or("sub"),
                         "bound_claims_type": role.bound_claims.as_ref().map_or("string", |bounds| bounds.kind.as_str()),
                         "bound_claims": role.bound_claims.as_ref().map(|bounds| &bounds.claims),
                         "bound_groups": role.bound_groups,
@@ -5351,19 +5355,14 @@ impl AuthState {
                 if body
                     .get("role_type")
                     .is_some_and(|v| v.as_str() != Some("jwt"))
-                    || body
-                        .get("user_claim")
-                        .is_some_and(|v| v.as_str() != Some("sub"))
                 {
-                    return Err(err(
-                        501,
-                        "only role_type jwt with sub identity is implemented",
-                    ));
+                    return Err(err(501, "only role_type jwt is implemented"));
                 }
                 let previous = self
                     .jwt_at(scope)
                     .and_then(|state| state.roles.get(name))
                     .cloned();
+                let user_claim = jwt_login::user_claim_update(body, previous.as_ref())?;
                 let bound_claims = jwt_login::bound_claims_update(
                     body,
                     previous
@@ -5471,6 +5470,7 @@ impl AuthState {
                     return Err(bad("JWT role token TTL is outside bounds"));
                 }
                 let role = JwtRole {
+                    user_claim,
                     token_type: body
                         .get("token_type")
                         .map(batch_issuance::UserTokenType::parse)

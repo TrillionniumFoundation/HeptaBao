@@ -603,7 +603,7 @@ mod tests {
             ),
             (
                 "auth/nested/jwt/role/app",
-                json!({"bound_audiences":["service"],"token_ttl":60,"token_max_ttl":300}),
+                json!({"role_type":"jwt","user_claim":"sub","bound_audiences":["service"],"token_ttl":60,"token_max_ttl":300}),
             ),
         ] {
             state

@@ -36,7 +36,7 @@ fn fixture_subject(subject: &str) -> (AuthState, Principal, Value) {
         &admin,
         "auth/nested/jwt/role/app",
         json!({
-            "role_type":"jwt", "bound_audiences":["service"],"token_ttl":120,"token_max_ttl":600
+            "role_type":"jwt", "user_claim":"sub", "bound_audiences":["service"],"token_ttl":120,"token_max_ttl":600
         }),
     )
     .unwrap();

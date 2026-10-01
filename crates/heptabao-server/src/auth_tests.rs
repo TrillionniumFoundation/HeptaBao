@@ -3046,7 +3046,7 @@ fn configured_jwt_mount(
         "team",
         "POST",
         &format!("auth/{mount}/role/app"),
-        json!({"token_policies":["reader"],"bound_subject":"alice","bound_groups":["team/developers"],
+        json!({"role_type":"jwt","user_claim":"sub","token_policies":["reader"],"bound_subject":"alice","bound_groups":["team/developers"],
             "bound_audiences":["https://service.example/bao"],"token_ttl":600,"token_max_ttl":900}),
         1000,
     );
@@ -3563,7 +3563,7 @@ fn jwt_service_persists_tokens_and_allows_assertion_reuse_across_reopen() {
         ),
         (
             "auth/workload/role/app",
-            json!({"policies":["reader"],"token_ttl":600}),
+            json!({"role_type":"jwt","user_claim":"sub","policies":["reader"],"token_ttl":600}),
         ),
     ] {
         assert!(
@@ -3694,7 +3694,7 @@ fn jwt_jwks_config_accepts_public_ed25519_and_drives_login() {
         "team",
         "POST",
         "auth/federated/role/app",
-        json!({"token_policies":["reader"],"bound_subject":"alice","bound_groups":["team/developers"],
+        json!({"role_type":"jwt","user_claim":"sub","token_policies":["reader"],"bound_subject":"alice","bound_groups":["team/developers"],
             "bound_audiences":["https://service.example/bao"],"token_ttl":120,"token_max_ttl":240}),
         1000,
     );

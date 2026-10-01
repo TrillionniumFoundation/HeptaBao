@@ -446,9 +446,10 @@ fn external_pki270_all_six_remote_keys_root_leaf_crl_encrypted_restart_and_schem
             "retired67 to65 universally rejected"
         );
         let mut unsupported = retired.clone();
-        unsupported.schema = 68;
+        unsupported.schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
         assert!(
-            unsupported.writer_schema() == 68 && unsupported.validate_format().is_err(),
+            unsupported.writer_schema() == MAX_SUPPORTED_STATE_SCHEMA + 1
+                && unsupported.validate_format().is_err(),
             "unknown writer schema preserved and rejected"
         );
         drop(reopened);

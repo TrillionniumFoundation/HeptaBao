@@ -52,7 +52,9 @@ use crate::state_record_root::RecordStateRoot;
 const CURRENT_STATE_SCHEMA: u32 = 65;
 const AAD_BOUND_STATE_SCHEMA: u32 = 66;
 const TYPED_PKI_STATE_SCHEMA: u32 = 67;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = TYPED_PKI_STATE_SCHEMA;
+// Custom JWT identity claims activate an irreversible reader requirement.
+const JWT_USER_CLAIM_STATE_SCHEMA: u32 = 68;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = JWT_USER_CLAIM_STATE_SCHEMA;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -2572,10 +2574,12 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        // The first safe-key mutation needs the new schema before record
-        // preflight. Ordinary legacy reads retain their original schema until
-        // a proven logical mutation, as before.
-        if admitted.engines.has_aad_bound_convergent_state() {
+        // Safe-key and custom JWT role candidates need their reader schema
+        // before record preflight. Ordinary legacy reads retain their original
+        // schema until a proven logical mutation, as before.
+        if admitted.engines.has_aad_bound_convergent_state()
+            || admitted.auth.has_jwt_user_claim_state()
+        {
             admitted.schema = admitted.writer_schema();
         }
         if admitted.engines.record_root().is_some() {
@@ -7277,6 +7281,10 @@ mod ldap_renewal_tests;
 #[cfg(test)]
 #[path = "service_ldap_native_tests.rs"]
 mod ldap_native_tests;
+
+#[cfg(test)]
+#[path = "service_jwt_user_claim_tests.rs"]
+mod jwt_user_claim_tests;
 
 #[cfg(all(test, target_os = "linux"))]
 #[path = "service_jwt_renewal_tests.rs"]

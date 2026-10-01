@@ -13,6 +13,7 @@ fn with_legacy_fixture_predecessor<T>(
     let protected = |state: &State| {
         state.schema == 0
             || state.schema > CURRENT_STATE_SCHEMA
+            || state.auth.has_jwt_user_claim_state()
             || state.engines.has_aad_bound_convergent_state()
             || state.engines.has_typed_external_pki_state()
             || state.engines.has_external_pki_state()

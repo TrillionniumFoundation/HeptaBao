@@ -460,8 +460,7 @@ fn jwt_native_role_zero_defaults_issue_and_renew_using_current_mount_limits() {
     ] {
         let (mut state, root) = native_ttl_fixture();
         assert!(!state.has_jwt_native_ttl_defaults());
-        let mut body =
-            json!({"role_type":"jwt","bound_subject":"alice","token_policies":["reader"]});
+        let mut body = json!({"role_type":"jwt","user_claim":"sub","bound_subject":"alice","token_policies":["reader"]});
         body.as_object_mut()
             .unwrap()
             .extend(limits.as_object().unwrap().clone());
@@ -527,7 +526,7 @@ fn jwt_native_role_null_preserves_each_duration_but_zero_resets_it() {
     native_ttl_role(
         &mut state,
         &root,
-        json!({"role_type":"jwt","bound_subject":"alice",
+        json!({"role_type":"jwt","user_claim":"sub","bound_subject":"alice",
         "token_ttl":40,"token_max_ttl":300,"token_period":20,"token_explicit_max_ttl":200}),
     )
     .unwrap();
@@ -585,7 +584,7 @@ fn jwt_native_role_zero_max_tracks_mount_but_explicit_cap_stays_at_issue() {
         native_ttl_role(
             &mut state,
             &root,
-            json!({"role_type":"jwt","bound_subject":"alice",
+            json!({"role_type":"jwt","user_claim":"sub","bound_subject":"alice",
             "token_policies":["reader"],"token_explicit_max_ttl":explicit}),
         )
         .unwrap();
@@ -616,7 +615,7 @@ fn jwt_native_role_zero_max_tracks_mount_but_explicit_cap_stays_at_issue() {
     native_ttl_role(
         &mut state,
         &root,
-        json!({"role_type":"jwt","bound_subject":"alice",
+        json!({"role_type":"jwt","user_claim":"sub","bound_subject":"alice",
         "token_policies":["reader"],"token_period":800,"token_explicit_max_ttl":650}),
     )
     .unwrap();
@@ -634,7 +633,7 @@ fn jwt_native_role_invalid_durations_are_atomic_and_persisted_limits_are_checked
     native_ttl_role(
         &mut state,
         &root,
-        json!({"role_type":"jwt","bound_subject":"alice"}),
+        json!({"role_type":"jwt","user_claim":"sub","bound_subject":"alice"}),
     )
     .unwrap();
     for body in [
@@ -714,7 +713,7 @@ fn jwt_zero_service_ttl_does_not_relax_the_legacy_assertion_lifetime_limit() {
     native_ttl_role(
         &mut state,
         &root,
-        json!({"role_type":"jwt","bound_subject":"alice"}),
+        json!({"role_type":"jwt","user_claim":"sub","bound_subject":"alice"}),
     )
     .unwrap();
     let pair = Ed25519KeyPair::from_seed_unchecked(&[57; 32]).unwrap();

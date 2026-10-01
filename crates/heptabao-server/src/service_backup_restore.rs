@@ -320,13 +320,21 @@ impl Service {
     }
 
     // Ordinary historical <=65 restores retain their existing policy. Once
-    // typed PKI has raised the durable reader requirement, even retiring the
-    // last typed key cannot authorize restoring a pre-67 image. This checks the
+    // protected material or custom JWT roles have raised the reader requirement,
+    // retirement cannot authorize restoring an earlier image. Check the
     // authenticated incoming label before HA can normalize its writer schema.
     pub(super) fn validate_snapshot_protected_floor(
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= JWT_USER_CLAIM_STATE_SCHEMA
+            && incoming.schema < JWT_USER_CLAIM_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade custom JWT identity claims",
+            ));
+        }
         if current.schema >= TYPED_PKI_STATE_SCHEMA && incoming.schema < TYPED_PKI_STATE_SCHEMA {
             return Err(Response::error(
                 400,

@@ -7,6 +7,7 @@ use super::*;
 pub(crate) struct NativeJwtIdentity {
     pub issuer: String,
     pub subject: String,
+    pub alias: String,
     pub audiences: BTreeSet<String>,
     pub namespace: Option<String>,
     pub groups: BTreeSet<String>,
@@ -60,6 +61,7 @@ fn numeric_date(
 }
 
 impl JwtVerifier {
+    #[cfg(test)]
     pub(crate) fn verify_native(
         &self,
         token: &str,
@@ -67,12 +69,34 @@ impl JwtVerifier {
         time: NativeJwtTimePolicy,
         bounds: Option<&NativeJwtBoundClaims>,
     ) -> Result<NativeJwtIdentity, AuthError> {
+        self.verify_native_with_user_claim(token, now, time, bounds, "sub")
+    }
+
+    pub(crate) fn verify_native_with_user_claim(
+        &self,
+        token: &str,
+        now: u64,
+        time: NativeJwtTimePolicy,
+        bounds: Option<&NativeJwtBoundClaims>,
+        user_claim: &str,
+    ) -> Result<NativeJwtIdentity, AuthError> {
         let (mut claims, _) = self.verified_claims(token)?;
         // Match only the verified, original claims. Registered fields have not
         // been consumed or replaced with inferred time values yet.
         if bounds.is_some_and(|bounds| !bounds.matches(&claims)) {
             return Err(AuthError::ClaimDenied);
         }
+        // Select from the same authenticated original object before registered
+        // claim consumption. A selected key is a literal top-level member.
+        let selected_alias = if user_claim == "sub" {
+            None
+        } else {
+            Some(match claims.get(user_claim) {
+                Some(Value::String(value)) => checked_string(value.clone())?,
+                Some(_) => return Err(AuthError::InvalidClaim),
+                None => return Err(AuthError::MissingClaim),
+            })
+        };
         let issuer = take_string(&mut claims, "iss")?;
         let subject = take_string(&mut claims, "sub")?;
         let audiences = take_audiences(&mut claims)?;
@@ -133,9 +157,11 @@ impl JwtVerifier {
         {
             return Err(AuthError::ClaimDenied);
         }
+        let alias = selected_alias.unwrap_or_else(|| subject.clone());
         Ok(NativeJwtIdentity {
             issuer,
             subject,
+            alias,
             audiences,
             namespace,
             groups,

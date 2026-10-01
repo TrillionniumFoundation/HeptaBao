@@ -94,6 +94,50 @@ pub(super) fn role_leeway(
     }
 }
 
+pub(super) fn valid_user_claim_name(value: &str) -> bool {
+    !value.is_empty() && value.len() <= 1024 && !value.chars().any(char::is_control)
+}
+
+pub(super) fn user_claim_update(
+    body: &Value,
+    previous: Option<&JwtRole>,
+) -> Result<Option<String>, AuthError> {
+    match body.get("user_claim") {
+        None => previous
+            .map(|role| role.user_claim.clone())
+            .ok_or_else(|| bad("user_claim is required when creating a JWT role")),
+        Some(Value::String(value)) if value == "sub" => Ok(None),
+        Some(Value::String(value)) if valid_user_claim_name(value) => Ok(Some(value.clone())),
+        _ => Err(bad("user_claim must be a bounded nonempty string")),
+    }
+}
+
+impl AuthState {
+    pub(crate) fn has_jwt_user_claim_state(&self) -> bool {
+        self.jwt_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .any(|mount| mount.roles.values().any(|role| role.user_claim.is_some()))
+    }
+
+    pub(crate) fn validate_jwt_user_claim_state(&self) -> Result<(), AuthError> {
+        if self
+            .jwt_mounts
+            .values()
+            .flat_map(|mounts| mounts.values())
+            .flat_map(|mount| mount.roles.values())
+            .any(|role| {
+                role.user_claim
+                    .as_deref()
+                    .is_some_and(|value| !valid_user_claim_name(value))
+            })
+        {
+            return Err(bad("invalid persisted JWT user claim"));
+        }
+        Ok(())
+    }
+}
+
 impl AuthState {
     pub(crate) fn has_native_jwt_state(&self) -> bool {
         self.jwt_mounts

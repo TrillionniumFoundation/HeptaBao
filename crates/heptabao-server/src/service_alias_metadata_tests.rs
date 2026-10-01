@@ -19,11 +19,11 @@ fn fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
         ),
         (
             "auth/jwt/role/first",
-            json!({"role_type":"jwt","bound_audiences":["service"],"token_ttl":60,"token_max_ttl":600}),
+            json!({"role_type":"jwt","user_claim":"sub","bound_audiences":["service"],"token_ttl":60,"token_max_ttl":600}),
         ),
         (
             "auth/jwt/role/second",
-            json!({"role_type":"jwt","bound_audiences":["service"],"token_ttl":60,"token_max_ttl":600}),
+            json!({"role_type":"jwt","user_claim":"sub","bound_audiences":["service"],"token_ttl":60,"token_max_ttl":600}),
         ),
     ] {
         assert_eq!(

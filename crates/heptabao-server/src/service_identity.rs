@@ -12,7 +12,9 @@ impl State {
         if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
             return self.schema;
         }
-        let required = if self.engines.has_typed_external_pki_state() {
+        let required = if self.auth.has_jwt_user_claim_state() {
+            JWT_USER_CLAIM_STATE_SCHEMA
+        } else if self.engines.has_typed_external_pki_state() {
             TYPED_PKI_STATE_SCHEMA
         } else if self.engines.has_aad_bound_convergent_state() {
             AAD_BOUND_STATE_SCHEMA
@@ -30,6 +32,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < JWT_USER_CLAIM_STATE_SCHEMA
+            && (self.auth.has_jwt_user_claim_state()
+                || previous.is_some_and(|state| state.schema >= JWT_USER_CLAIM_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "custom JWT identity claims require schema 68",
             ));
         }
         if self.schema < TYPED_PKI_STATE_SCHEMA
@@ -64,6 +75,15 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        if self.schema < JWT_USER_CLAIM_STATE_SCHEMA && self.auth.has_jwt_user_claim_state() {
+            return Err(Response::error(
+                503,
+                "custom JWT identity claims require schema 68",
+            ));
+        }
+        self.auth
+            .validate_jwt_user_claim_state()
+            .map_err(|_| Response::error(503, "invalid JWT identity claim state"))?;
         if self.schema < TYPED_PKI_STATE_SCHEMA && self.engines.has_typed_external_pki_state() {
             return Err(Response::error(
                 503,
@@ -720,7 +740,8 @@ impl State {
             | 64
             | CURRENT_STATE_SCHEMA
             | AAD_BOUND_STATE_SCHEMA
-            | TYPED_PKI_STATE_SCHEMA => Ok(()),
+            | TYPED_PKI_STATE_SCHEMA
+            | JWT_USER_CLAIM_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
