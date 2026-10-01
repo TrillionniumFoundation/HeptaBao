@@ -505,6 +505,7 @@ impl Pki {
             self.root = Some(RootCa {
                 common_name: template.common_name,
                 pkcs8: Vec::new(),
+                local_material: None,
                 certificate_der: encoded,
                 serial: template.serial,
                 not_before: template.not_before,
@@ -528,8 +529,7 @@ impl Pki {
     }
 
     pub(super) fn validate_external_state(&self) -> Result<()> {
-        if self.root.as_ref().is_some_and(|root| root.pkcs8.is_empty())
-            != self.external.root.is_some()
+        if self.root.as_ref().is_some_and(|root| root.is_external()) != self.external.root.is_some()
         {
             return Err(bad("external PKI root ownership mismatch"));
         }
@@ -558,7 +558,7 @@ impl Pki {
             if key.dns_san && !valid_domain(&root.common_name) {
                 return Err(bad("external PKI DNS SAN subject is invalid"));
             }
-            if !root.pkcs8.is_empty() {
+            if !root.is_external() {
                 return Err(bad("external PKI must not contain local private key"));
             }
             let tbs = external_root_tbs(

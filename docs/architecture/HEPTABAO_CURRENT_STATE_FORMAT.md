@@ -7,8 +7,8 @@ in retained increment notes. Exact source remains authoritative.
 ## Source and authoritative ownership
 
 The current Service state schema is **65**. This is the ordinary writer schema,
-with conditional sticky feature floors 66–70. `CURRENT_STATE_SCHEMA` and
-`MAX_SUPPORTED_STATE_SCHEMA` (70) are in
+with conditional sticky feature floors 66–72. `CURRENT_STATE_SCHEMA` and
+`MAX_SUPPORTED_STATE_SCHEMA` (72) are in
 `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -1012,3 +1012,29 @@ RSA/EC/Ed25519/ML-DSA/HMAC keys, BYOK export and plaintext key backups remain
 unfinished. Actual prior 69-reader refusal and fresh immutable native/2.7
 comparison are separate qualification requirements; native scoped tests and
 official-only observations do not substitute for them.
+
+
+## Schema 72: typed local PKI keys and leaf subjects
+
+Local RSA 2048/3072/4096, EC P224/P256/P384/P521, and ML-DSA 44/65/87
+root material has a closed encoding marker. Classic private material is PKCS8
+DER; ML-DSA durable material is an explicitly tagged 32-byte seed, not PKCS8.
+Standard leaf private responses use the maintained provider PKCS8 encoder. The
+provider's internal encoding temporary cleanup has not been independently
+proved; server-owned zeroizing buffers do not prove whole-chain zeroization.
+
+New root requests and new roles default to RSA2048. Historical Ed25519 root
+bytes, role bytes and external leaf public arrays retain their old encoding and
+meaning. Typed role parameters and typed external leaf public projections also
+require schema72. The all-namespace writer scan raises the label conditionally;
+the store retains72 after deleting its last typed material. Pure ordinary and
+explicit legacy Ed stores retain their existing65–71 labels.
+
+Publication rejects active or retired72 state downgrades. Snapshot prepare and
+commit both reject72-to-earlier restore before HA normalization, while the
+existing65–71 decoders and owner/base guards remain required. Unknown future
+labels are never normalized downward. Actual prior71 reader and paired API
+qualification require separate exact binary receipts; source review is not
+reader qualification. Full PKI parity and independent security review remain
+false. Local full/delta CRL, OCSP, CSR, ACME/CEL and issuer management coverage
+are not established by adding local key algorithms.

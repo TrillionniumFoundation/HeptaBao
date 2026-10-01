@@ -327,6 +327,14 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= LOCAL_TYPED_PKI_STATE_SCHEMA
+            && incoming.schema < LOCAL_TYPED_PKI_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade typed local PKI keys",
+            ));
+        }
         if current.schema >= PKI_ISSUER_PATH_STATE_SCHEMA
             && incoming.schema < PKI_ISSUER_PATH_STATE_SCHEMA
         {

@@ -79,7 +79,7 @@ impl Pki {
                 Some(PkiPublicRead::DefaultIssuer)
             }
             "cert/delta-crl" | "crl" | "crl/pem" | "crl/delta" | "crl/delta/pem"
-                if self.root.as_ref().is_some_and(|root| root.pkcs8.is_empty()) =>
+                if self.root.as_ref().is_some_and(|root| root.is_external()) =>
             {
                 Some(PkiPublicRead::ExternalCrl(path))
             }

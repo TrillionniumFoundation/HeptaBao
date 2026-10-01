@@ -12,7 +12,9 @@ impl State {
         if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
             return self.schema;
         }
-        let required = if self.engines.has_issuer_path_pki_state() {
+        let required = if self.engines.has_local_typed_pki_state() {
+            LOCAL_TYPED_PKI_STATE_SCHEMA
+        } else if self.engines.has_issuer_path_pki_state() {
             PKI_ISSUER_PATH_STATE_SCHEMA
         } else if self.engines.has_transit_byok_state() {
             TRANSIT_BYOK_STATE_SCHEMA
@@ -38,6 +40,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < LOCAL_TYPED_PKI_STATE_SCHEMA
+            && (self.engines.has_local_typed_pki_state()
+                || previous.is_some_and(|state| state.schema >= LOCAL_TYPED_PKI_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "typed local PKI keys require schema 72",
             ));
         }
         if self.schema < PKI_ISSUER_PATH_STATE_SCHEMA
@@ -109,6 +120,12 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < LOCAL_TYPED_PKI_STATE_SCHEMA && self.engines.has_local_typed_pki_state() {
+            return Err(Response::error(
+                503,
+                "typed local PKI keys require schema 72",
             ));
         }
         if self.schema < PKI_ISSUER_PATH_STATE_SCHEMA && self.engines.has_issuer_path_pki_state() {
@@ -801,7 +818,8 @@ impl State {
             | JWT_USER_CLAIM_STATE_SCHEMA
             | JWT_PEM_KEYSET_STATE_SCHEMA
             | TRANSIT_BYOK_STATE_SCHEMA
-            | PKI_ISSUER_PATH_STATE_SCHEMA => Ok(()),
+            | PKI_ISSUER_PATH_STATE_SCHEMA
+            | LOCAL_TYPED_PKI_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

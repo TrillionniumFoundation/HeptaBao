@@ -32,7 +32,7 @@ chacha20poly1305 = { version = "=0.10.1", default-features = false, features = [
 hmac = { version = "=0.12.1", default-features = false, features = ["std"] }
 md5 = "=0.8.0"
 # FIPS 204 implementation; keys are cleared on drop and the exact version is locked.
-ml-dsa = { version = "=0.1.1", default-features = false, features = ["alloc", "rand_core", "zeroize"] }
+ml-dsa = { version = "=0.1.1", default-features = false, features = ["alloc", "rand_core", "zeroize", "pkcs8"] }
 getrandom = { version = "=0.4.3", features = ["sys_rng"] }
 subtle = "=2.6.1"
 sha2 = { version = "=0.10.9", default-features = false, features = ["std"] }

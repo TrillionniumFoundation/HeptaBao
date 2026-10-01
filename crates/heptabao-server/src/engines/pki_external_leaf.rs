@@ -14,13 +14,13 @@ pub(super) enum ConsumptionTemplate {
 pub(super) struct ConsumptionMaterial {
     pub(super) template: ConsumptionTemplate,
     pub(super) leaf_pkcs8: Zeroizing<Vec<u8>>,
-    pub(super) leaf_public: Option<[u8; 32]>,
+    pub(super) leaf_public: Option<LocalPublicKey>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct LeafPublic {
-    public_key: [u8; 32],
+    public_key: LocalPublicKey,
     not_before: u64,
     alt_names: Vec<String>,
     ip_sans: Vec<IpAddr>,
@@ -172,9 +172,14 @@ fn crl_tbs(issuer: &str, public: &ExternalPkiPublicKey, crl: &Crl) -> Result<Vec
 fn leaf_tbs(
     root: &RootCa,
     public: &ExternalPkiPublicKey,
-    leaf_public: &[u8; 32],
+    leaf_public: &LocalPublicKey,
     prepared: &LeafTemplate,
 ) -> Result<Vec<u8>> {
+    if leaf_public.kind() != prepared.local_key_kind {
+        return Err(bad("external leaf subject key type mismatch"));
+    }
+    leaf_public.validate()?;
+    let leaf_bits = leaf_public.subject_key_bits()?;
     let mut names = vec![context_primitive(2, prepared.common_name.as_bytes())];
     names.extend(
         prepared
@@ -202,7 +207,7 @@ fn leaf_tbs(
         extension(
             &[0x55, 0x1d, 0x0e],
             false,
-            &octet_string(&key_identifier(leaf_public)),
+            &octet_string(&key_identifier(&leaf_bits)),
         ),
         extension(
             &[0x55, 0x1d, 0x23],
@@ -221,12 +226,19 @@ fn leaf_tbs(
         name(&root.common_name),
         seq(&[time(prepared.not_before), time(prepared.expires)]),
         name(&prepared.common_name),
-        seq(&[algorithm_ed25519(), bit_string(leaf_public, 0)]),
+        leaf_public.spki()?,
         context_explicit(3, &seq(&extensions)),
     ]))
 }
 
 impl Pki {
+    pub(in crate::engines::pki) fn has_typed_leaf_subjects(&self) -> bool {
+        self.external
+            .issued_public
+            .values()
+            .any(|leaf| matches!(leaf.public_key, LocalPublicKey::Typed(_)))
+    }
+
     pub(in crate::engines) fn prepare_external_consumption(
         &self,
         method: &str,
@@ -504,6 +516,7 @@ impl Pki {
                 owner_expires: None,
                 leased: issued.leased,
                 common_name: issued.common_name.clone(),
+                local_key_kind: projection.public_key.kind(),
                 alt_names: projection.alt_names.clone(),
                 ip_sans: projection.ip_sans.clone(),
                 issued: issued.issued,
@@ -552,22 +565,13 @@ impl ExternalPkiTemplate {
             .ok_or_else(|| bad("external PKI consumption missing"))?;
         let (tbs, extra, leaf_pkcs8, leaf_public) = match &consumption {
             ConsumptionTemplate::Leaf(prepared) => {
-                let pkcs8 = Zeroizing::new(
-                    Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
-                        .map_err(|_| error(503, "PKI leaf key generation failed"))?
-                        .as_ref()
-                        .to_vec(),
-                );
-                let pair = Ed25519KeyPair::from_pkcs8(&pkcs8)
-                    .map_err(|_| error(503, "PKI leaf key generation failed"))?;
-                let leaf_public: [u8; 32] = pair
-                    .public_key()
-                    .as_ref()
-                    .try_into()
-                    .map_err(|_| error(503, "PKI leaf public key generation failed"))?;
+                let leaf = LocalPrivateMaterial::generate(prepared.local_key_kind)?;
+                let pkcs8 = leaf.private_der()?;
+                let leaf_public = leaf.public()?;
                 let root = RootCa {
                     common_name: self.common_name.clone(),
                     pkcs8: Vec::new(),
+                    local_material: None,
                     certificate_der: Vec::new(),
                     serial: String::new(),
                     not_before: self.not_before,

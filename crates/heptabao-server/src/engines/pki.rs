@@ -15,8 +15,11 @@ use zeroize::{Zeroize, Zeroizing};
 #[path = "pki_external.rs"]
 mod external;
 pub(crate) use external::{ExternalPkiMaterial, ExternalPkiPublicKey, ExternalPkiTemplate};
+#[path = "pki_local_key.rs"]
+mod local_key;
 #[path = "pki_public.rs"]
 mod public;
+use local_key::{LocalKeyKind, LocalPrivateMaterial, LocalPublicKey};
 
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;
@@ -99,6 +102,8 @@ pub(super) struct Pki {
 struct RootCa {
     common_name: String,
     pkcs8: Vec<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_material: Option<LocalPrivateMaterial>,
     certificate_der: Vec<u8>,
     serial: String,
     not_before: u64,
@@ -112,6 +117,26 @@ impl Drop for RootCa {
     }
 }
 
+impl RootCa {
+    fn is_external(&self) -> bool {
+        self.pkcs8.is_empty() && self.local_material.is_none()
+    }
+
+    fn local_key(&self) -> Result<LocalPrivateMaterial> {
+        match &self.local_material {
+            Some(material) if self.pkcs8.is_empty() && material.kind() != LocalKeyKind::Ed25519 => {
+                material.public()?;
+                Ok(material.clone())
+            }
+            None if !self.pkcs8.is_empty() => Ok(LocalPrivateMaterial::Pkcs8 {
+                kind: LocalKeyKind::Ed25519,
+                der: self.pkcs8.clone(),
+            }),
+            _ => Err(error(503, "invalid local PKI root ownership")),
+        }
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 struct Role {
     allowed_domains: BTreeSet<String>,
@@ -120,6 +145,8 @@ struct Role {
     allow_ip_sans: bool,
     max_ttl: u64,
     generate_lease: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_key_kind: Option<LocalKeyKind>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -191,6 +218,17 @@ impl Pki {
             || !AcmeConfig::is_default(&self.acme)
     }
 
+    pub(in crate::engines) fn has_local_typed_key_state(&self) -> bool {
+        self.root
+            .as_ref()
+            .is_some_and(|root| root.local_material.is_some())
+            || self
+                .roles
+                .values()
+                .any(|role| role.local_key_kind.is_some())
+            || self.has_typed_leaf_subjects()
+    }
+
     pub(super) fn validate(&self, namespace: &str, mount: &str, clock: u64) -> Result<()> {
         if self.default_ttl == 0
             || self.default_ttl > self.max_ttl
@@ -207,11 +245,11 @@ impl Pki {
             return Err(bad("enabled PKI ACME requires a configured cluster path"));
         }
         if let Some(root) = &self.root {
-            if !(if root.pkcs8.is_empty() {
+            if !(if root.is_external() {
                 external::common_name_valid(&root.common_name)
             } else {
                 valid_common_name(&root.common_name)
-            }) || root.pkcs8.is_empty() && !self.has_external_state()
+            }) || root.is_external() && !self.has_external_state()
                 || root.pkcs8.len() > 4096
                 || root.certificate_der.is_empty()
                 || root.certificate_der.len() > 64 * 1024
@@ -221,7 +259,12 @@ impl Pki {
             {
                 return Err(bad("invalid PKI root state"));
             }
-            if !root.pkcs8.is_empty() {
+            if root.local_material.is_some() {
+                let material = root.local_key()?;
+                material
+                    .public()?
+                    .validate_certificate(&root.certificate_der)?;
+            } else if !root.is_external() {
                 Ed25519KeyPair::from_pkcs8(&root.pkcs8).map_err(|_| bad("invalid PKI root key"))?;
             }
         }
@@ -390,13 +433,8 @@ impl Pki {
             if !write_method(method) {
                 return Err(unsupported());
             }
-            reject_unknown(body, &["common_name", "ttl", "key_type"])?;
-            if body
-                .get("key_type")
-                .is_some_and(|value| value.as_str() != Some("ed25519"))
-            {
-                return Err(bad("bounded PKI root supports only key_type=ed25519"));
-            }
+            reject_unknown(body, &["common_name", "ttl", "key_type", "key_bits"])?;
+            let kind = LocalKeyKind::from_body(body)?;
             if self.root.is_some() {
                 return Err(bad("PKI root already exists"));
             }
@@ -408,22 +446,21 @@ impl Pki {
             if ttl == 0 || ttl > self.max_ttl {
                 return Err(bad("PKI root TTL is outside bounds"));
             }
-            let pkcs8 = Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
-                .map_err(|_| error(503, "PKI root key generation failed"))?;
-            let pair = Ed25519KeyPair::from_pkcs8(pkcs8.as_ref())
-                .map_err(|_| error(503, "PKI root key generation failed"))?;
+            let material = LocalPrivateMaterial::generate(kind)?;
+            let public = material.public()?;
             let serial = random_serial()?;
             let not_before = now.saturating_sub(60);
             let not_after = now
                 .checked_add(ttl)
                 .ok_or_else(|| bad("PKI root TTL overflow"))?;
-            let certificate_der = certificate_der(
-                &pair,
+            let certificate_der = certificate_der_local(
+                &material,
+                &public,
                 CertificateSpec {
                     serial: &serial,
                     issuer_cn: common_name,
                     subject_cn: common_name,
-                    public_key: pair.public_key().as_ref(),
+                    public_key: &[],
                     not_before,
                     not_after,
                     is_ca: true,
@@ -432,9 +469,15 @@ impl Pki {
                 },
             )?;
             let certificate = pem("CERTIFICATE", &certificate_der);
+            let (pkcs8, local_material) = if kind == LocalKeyKind::Ed25519 {
+                (material.private_der()?.to_vec(), None)
+            } else {
+                (Vec::new(), Some(material))
+            };
             self.root = Some(RootCa {
                 common_name: common_name.into(),
-                pkcs8: pkcs8.as_ref().to_vec(),
+                pkcs8,
+                local_material,
                 certificate_der,
                 serial: serial.clone(),
                 not_before,
@@ -510,14 +553,9 @@ impl Pki {
                             "max_ttl",
                             "generate_lease",
                             "key_type",
+                            "key_bits",
                         ],
                     )?;
-                    if body
-                        .get("key_type")
-                        .is_some_and(|value| value.as_str() != Some("ed25519"))
-                    {
-                        return Err(bad("bounded PKI roles support only key_type=ed25519"));
-                    }
                     let role = Role::from_body(body)?;
                     if !self.roles.contains_key(name) && self.roles.len() >= MAX_ROLES {
                         return Err(error(507, "PKI role capacity exhausted"));
@@ -751,6 +789,7 @@ impl Pki {
             owner_expires,
             leased: role.generate_lease,
             common_name: common_name.into(),
+            local_key_kind: role.local_key_kind.unwrap_or(LocalKeyKind::Ed25519),
             alt_names,
             ip_sans,
             issued: now,
@@ -775,29 +814,23 @@ impl Pki {
             .root
             .as_ref()
             .ok_or_else(|| error(503, "PKI root is not configured"))?;
-        if root.pkcs8.is_empty() {
+        if root.is_external() {
             return Err(error(
                 501,
                 "external PKI leaf issuance requires a qualified signing lane",
             ));
         }
-        let leaf_pkcs8 = Zeroizing::new(
-            Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
-                .map_err(|_| error(503, "PKI leaf key generation failed"))?
-                .as_ref()
-                .to_vec(),
-        );
-        let leaf = Ed25519KeyPair::from_pkcs8(&leaf_pkcs8)
-            .map_err(|_| error(503, "PKI leaf key generation failed"))?;
-        let root_pair = Ed25519KeyPair::from_pkcs8(&root.pkcs8)
-            .map_err(|_| error(500, "stored PKI root key is invalid"))?;
-        let certificate_der = certificate_der(
+        let leaf = LocalPrivateMaterial::generate(prepared.local_key_kind)?;
+        let leaf_public = leaf.public()?;
+        let root_pair = root.local_key()?;
+        let certificate_der = certificate_der_local(
             &root_pair,
+            &leaf_public,
             CertificateSpec {
                 serial: &prepared.serial,
                 issuer_cn: &root.common_name,
                 subject_cn: &prepared.common_name,
-                public_key: leaf.public_key().as_ref(),
+                public_key: &[],
                 not_before: prepared.not_before,
                 not_after: prepared.expires,
                 is_ca: false,
@@ -805,6 +838,7 @@ impl Pki {
                 ip_sans: &prepared.ip_sans,
             },
         )?;
+        let leaf_pkcs8 = leaf.private_der()?;
         self.publish_leaf(prepared, certificate_der, &leaf_pkcs8, false)
     }
 
@@ -832,7 +866,8 @@ impl Pki {
         } else {
             pem("CERTIFICATE", &root.certificate_der)
         };
-        let mut private_key = leaf_private_key_pem(leaf_pkcs8)?;
+        let mut private_key =
+            LocalPrivateMaterial::private_pem(prepared.local_key_kind, leaf_pkcs8)?;
         // OpenBao's external issuance bundle omits the canonical final LF.
         // Remove it in the existing zeroizing response owner, not a new clone.
         if external && private_key.ends_with('\n') {
@@ -841,7 +876,7 @@ impl Pki {
         let ttl = prepared.expires.saturating_sub(prepared.issued);
         let mut data = json!({
             "certificate":certificate, "issuing_ca":issuing_ca,
-            "private_key":private_key.as_str(), "private_key_type":"ed25519",
+            "private_key":private_key.as_str(), "private_key_type":prepared.local_key_kind.key_type(),
             "serial_number":prepared.serial, "expiration":prepared.expires,
         });
         if external {
@@ -873,14 +908,15 @@ impl Pki {
     }
 
     fn crl_der(&self, root: &RootCa, now: u64) -> Result<Vec<u8>> {
-        if root.pkcs8.is_empty() {
+        if root.is_external() {
             return Err(error(
                 501,
                 "external PKI CRL requires a qualified signing lane",
             ));
         }
-        let pair = Ed25519KeyPair::from_pkcs8(&root.pkcs8)
-            .map_err(|_| error(500, "stored PKI root key is invalid"))?;
+        let pair = root.local_key()?;
+        let public = pair.public()?;
+        let algorithm = pair.kind().signature_algorithm();
         let mut revoked = Vec::new();
         for (serial, cert) in &self.issued {
             let Some(at) = cert.revoked_at else { continue };
@@ -891,7 +927,7 @@ impl Pki {
         }
         let mut parts = vec![
             integer(&[1]),
-            algorithm_ed25519(),
+            algorithm.clone(),
             name(&root.common_name),
             time(now),
             time(now.saturating_add(24 * 3600)),
@@ -900,12 +936,11 @@ impl Pki {
             parts.push(seq(&revoked));
         }
         let tbs = seq(&parts);
-        let signature = pair.sign(&tbs);
-        Ok(seq(&[
-            tbs,
-            algorithm_ed25519(),
-            bit_string(signature.as_ref(), 0),
-        ]))
+        let signature = pair.sign(&tbs)?;
+        if !public.verify(&tbs, &signature)? {
+            return Err(error(503, "local PKI CRL signature failed validation"));
+        }
+        Ok(seq(&[tbs, algorithm, bit_string(&signature, 0)]))
     }
 }
 
@@ -924,12 +959,17 @@ impl Role {
             allow_ip_sans: optional_bool(body, "allow_ip_sans")?.unwrap_or(false),
             max_ttl: ttl_field(body, "max_ttl", DEFAULT_LEAF_TTL)?,
             generate_lease: optional_bool(body, "generate_lease")?.unwrap_or(false),
+            local_key_kind: match LocalKeyKind::from_body(body)? {
+                LocalKeyKind::Ed25519 => None,
+                kind => Some(kind),
+            },
         };
         role.validate()?;
         Ok(role)
     }
     fn validate(&self) -> Result<()> {
-        if self.allowed_domains.is_empty()
+        if self.local_key_kind == Some(LocalKeyKind::Ed25519)
+            || self.allowed_domains.is_empty()
             || self.allowed_domains.len() > 64
             || self.allowed_domains.iter().any(|v| !valid_domain(v))
             || self.max_ttl == 0
@@ -947,14 +987,19 @@ impl Role {
         })
     }
     fn descriptor(&self) -> Value {
-        json!({
+        let mut descriptor = json!({
             "allowed_domains": self.allowed_domains,
             "allow_subdomains": self.allow_subdomains,
             "allow_ip_sans": self.allow_ip_sans,
             "max_ttl": self.max_ttl,
             "generate_lease": self.generate_lease,
             "key_type": "ed25519",
-        })
+        });
+        if let Some(kind) = self.local_key_kind {
+            descriptor["key_type"] = json!(kind.key_type());
+            descriptor["key_bits"] = json!(kind.bits());
+        }
+        descriptor
     }
 }
 
@@ -1213,6 +1258,7 @@ struct LeafTemplate {
     owner_expires: Option<u64>,
     leased: bool,
     common_name: String,
+    local_key_kind: LocalKeyKind,
     alt_names: Vec<String>,
     ip_sans: Vec<IpAddr>,
     issued: u64,
@@ -1243,20 +1289,60 @@ fn certificate_der(signer: &Ed25519KeyPair, spec: CertificateSpec<'_>) -> Result
 }
 
 fn certificate_tbs(spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
+    if spec.public_key.len() != 32 {
+        return Err(error(500, "invalid Ed25519 public key"));
+    }
+    let spki = seq(&[algorithm_ed25519(), bit_string(spec.public_key, 0)]);
+    certificate_tbs_with(spec, &spki, &algorithm_ed25519())
+}
+
+fn certificate_der_local(
+    signer: &LocalPrivateMaterial,
+    subject: &LocalPublicKey,
+    spec: CertificateSpec<'_>,
+) -> Result<Vec<u8>> {
+    if signer.kind() == LocalKeyKind::Ed25519
+        && let LocalPublicKey::Ed25519(public) = subject
+    {
+        let bytes = signer.private_der()?;
+        let pair = Ed25519KeyPair::from_pkcs8(&bytes)
+            .map_err(|_| error(503, "invalid local PKI signing key"))?;
+        return certificate_der(
+            &pair,
+            CertificateSpec {
+                public_key: public,
+                ..spec
+            },
+        );
+    }
+    let algorithm = signer.kind().signature_algorithm();
+    let tbs = certificate_tbs_with(spec, &subject.spki()?, &algorithm)?;
+    let signature = signer.sign(&tbs)?;
+    if !signer.public()?.verify(&tbs, &signature)? {
+        return Err(error(
+            503,
+            "local PKI certificate signature failed validation",
+        ));
+    }
+    Ok(seq(&[tbs, algorithm, bit_string(&signature, 0)]))
+}
+
+fn certificate_tbs_with(
+    spec: CertificateSpec<'_>,
+    subject_spki: &[u8],
+    signature_algorithm: &[u8],
+) -> Result<Vec<u8>> {
     let CertificateSpec {
         serial,
         issuer_cn,
         subject_cn,
-        public_key,
+        public_key: _,
         not_before,
         not_after,
         is_ca,
         alt_names,
         ip_sans,
     } = spec;
-    if public_key.len() != 32 {
-        return Err(error(500, "invalid Ed25519 public key"));
-    }
     let mut extensions = Vec::new();
     let basic = if is_ca {
         seq(&[boolean(true)])
@@ -1287,11 +1373,11 @@ fn certificate_tbs(spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
     let tbs = seq(&[
         context_explicit(0, &integer(&[2])),
         integer(&serial_bytes(serial)?),
-        algorithm_ed25519(),
+        signature_algorithm.to_vec(),
         name(issuer_cn),
         seq(&[time(not_before), time(not_after)]),
         name(subject_cn),
-        seq(&[algorithm_ed25519(), bit_string(public_key, 0)]),
+        subject_spki.to_vec(),
         context_explicit(3, &seq(&extensions)),
     ]);
     Ok(tbs)
