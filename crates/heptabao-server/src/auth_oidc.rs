@@ -269,6 +269,7 @@ impl OidcExchange {
                 )
                 .map_err(|_| err(503, "OIDC signing keys unavailable; session consumed"))?;
             let config = JwtConfig {
+                jwt_validation_pubkeys: None,
                 remote: None,
                 jwt_supported_algs: Some(self.config.jwt_supported_algs.clone()),
                 issuer: self.config.oidc_discovery_url.clone(),

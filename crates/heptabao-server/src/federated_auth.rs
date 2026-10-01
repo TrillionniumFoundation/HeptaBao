@@ -189,6 +189,7 @@ impl VerifiedPrincipal {
 pub struct JwtVerifier {
     policy: TrustPolicy,
     keys: BTreeMap<String, VerificationKey>,
+    pem_keyset: bool,
 }
 
 impl JwtVerifier {
@@ -208,7 +209,22 @@ impl JwtVerifier {
         Ok(Self {
             policy,
             keys: by_id,
+            pem_keyset: false,
         })
+    }
+
+    // Only the persisted PEM source selects this bounded same-algorithm mode.
+    pub(crate) fn new_pem_keyset(
+        policy: TrustPolicy,
+        keys: impl IntoIterator<Item = VerificationKey>,
+    ) -> Result<Self, AuthError> {
+        let keys: Vec<_> = keys.into_iter().take(65).collect();
+        if keys.len() > 64 {
+            return Err(AuthError::InvalidKey);
+        }
+        let mut verifier = Self::new(policy, keys)?;
+        verifier.pem_keyset = true;
+        Ok(verifier)
     }
 
     /// Verify the signed assertion without granting an application capability.
@@ -259,7 +275,11 @@ impl JwtVerifier {
         }
         let mut header = parse_unique_object(&header_bytes)?;
         let algorithm_name = take_string(&mut header, "alg")?;
-        let key_id = take_string(&mut header, "kid")?;
+        let key_id = if self.pem_keyset {
+            take_optional_string(&mut header, "kid")?
+        } else {
+            Some(take_string(&mut header, "kid")?)
+        };
         if let Some(typ) = take_optional_string(&mut header, "typ")?
             && typ != "JWT"
         {
@@ -268,14 +288,34 @@ impl JwtVerifier {
         if !header.is_empty() {
             return Err(AuthError::MalformedToken);
         }
-        let key = self.keys.get(&key_id).ok_or(AuthError::UnknownKeyId)?;
-        if algorithm_name != key.algorithm.header_name() {
-            return Err(AuthError::AlgorithmDenied);
-        }
         let signing_input = format!("{encoded_header}.{encoded_claims}");
-        verify_signature(key, signing_input.as_bytes(), &signature_bytes)?;
-
-        Ok((parse_unique_object(&claims_bytes)?, key.algorithm))
+        let algorithm = if self.pem_keyset {
+            let mut matching = self
+                .keys
+                .values()
+                .filter(|key| key.algorithm.header_name() == algorithm_name)
+                .peekable();
+            if matching.peek().is_none() {
+                return Err(AuthError::AlgorithmDenied);
+            }
+            matching
+                .find(|key| {
+                    verify_signature(key, signing_input.as_bytes(), &signature_bytes).is_ok()
+                })
+                .map(|key| key.algorithm)
+                .ok_or(AuthError::SignatureInvalid)?
+        } else {
+            let key = self
+                .keys
+                .get(key_id.as_deref().ok_or(AuthError::MissingClaim)?)
+                .ok_or(AuthError::UnknownKeyId)?;
+            if algorithm_name != key.algorithm.header_name() {
+                return Err(AuthError::AlgorithmDenied);
+            }
+            verify_signature(key, signing_input.as_bytes(), &signature_bytes)?;
+            key.algorithm
+        };
+        Ok((parse_unique_object(&claims_bytes)?, algorithm))
     }
 
     fn verify_internal(

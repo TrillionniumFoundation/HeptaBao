@@ -73,6 +73,8 @@ mod identity;
 mod jwt_batch;
 #[path = "auth_jwt_login.rs"]
 mod jwt_login;
+#[path = "auth_jwt_pem.rs"]
+mod jwt_pem;
 #[path = "auth_jwt_renewal.rs"]
 mod jwt_renewal;
 #[path = "auth_ldap_native.rs"]
@@ -803,6 +805,8 @@ struct JwtKeyRecord {
 #[derive(Clone, Serialize, Deserialize, Debug, Eq, PartialEq)]
 struct JwtConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    jwt_validation_pubkeys: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     remote: Option<RemoteJwtSource>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     jwt_supported_algs: Option<BTreeSet<String>>,
@@ -986,7 +990,12 @@ impl JwtConfig {
                     .map_err(|_| bad("invalid JWT verification key"))?,
             );
         }
-        JwtVerifier::new(policy, keys).map_err(|_| bad("invalid JWT verifier configuration"))
+        if self.jwt_validation_pubkeys.is_some() {
+            JwtVerifier::new_pem_keyset(policy, keys)
+        } else {
+            JwtVerifier::new(policy, keys)
+        }
+        .map_err(|_| bad("invalid JWT verifier configuration"))
     }
 }
 
@@ -5132,7 +5141,8 @@ impl AuthState {
                         "required_namespace": config.required_namespace,
                         "clock_skew_seconds": config.clock_skew_seconds,
                         "maximum_token_lifetime_seconds": config.maximum_token_lifetime_seconds,
-                        "keys": keys
+                        "keys": keys,
+                        "jwt_validation_pubkeys": config.jwt_validation_pubkeys.as_deref().unwrap_or(&[])
                     }),
                     false,
                 ))
@@ -5170,6 +5180,7 @@ impl AuthState {
                 "maximum_token_lifetime_seconds",
                 "keys",
                 "jwks",
+                "jwt_validation_pubkeys",
                 "jwks_url",
                 "jwks_ca_pem",
                 "oidc_discovery_ca_pem",
@@ -5214,8 +5225,13 @@ impl AuthState {
             .get("maximum_token_lifetime_seconds")
             .map(|_| number(body, "maximum_token_lifetime_seconds", 0))
             .transpose()?;
-        if body.get("keys").is_some() && body.get("jwks").is_some() {
-            return Err(bad("configure either JWT keys or jwks, not both"));
+        if ["keys", "jwks", "jwt_validation_pubkeys"]
+            .iter()
+            .filter(|field| body.get(**field).is_some())
+            .count()
+            > 1
+        {
+            return Err(bad("exactly one local JWT key source is required"));
         }
         let jwt_supported_algs = if body.get("jwt_supported_algs").is_some() {
             let values = claim_values(body, "jwt_supported_algs")?;
@@ -5236,7 +5252,13 @@ impl AuthState {
                 .and_then(|state| state.config.as_ref())
                 .and_then(|config| config.remote.as_ref()),
         )?;
-        let keys = if remote.is_some() {
+        let pem_source = body
+            .get("jwt_validation_pubkeys")
+            .map(jwt_pem::parse)
+            .transpose()?;
+        let keys = if let Some((_, keys)) = &pem_source {
+            keys.clone()
+        } else if remote.is_some() {
             BTreeMap::new()
         } else if let Some(jwks) = body.get("jwks") {
             parse_jwks(jwks)?
@@ -5248,6 +5270,7 @@ impl AuthState {
             parse_legacy_jwt_keys(key_values)?
         };
         let config = JwtConfig {
+            jwt_validation_pubkeys: pem_source.map(|(pems, _)| pems),
             remote,
             jwt_supported_algs,
             issuer,
@@ -5257,7 +5280,7 @@ impl AuthState {
             maximum_token_lifetime_seconds,
             keys,
         };
-        if config.remote.is_none() {
+        if config.remote.is_none() && config.jwt_validation_pubkeys.is_none() {
             config.verifier()?;
         } else {
             let mut audiences = config.audiences.clone();

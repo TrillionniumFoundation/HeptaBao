@@ -14,6 +14,7 @@ fn with_legacy_fixture_predecessor<T>(
         state.schema == 0
             || state.schema > CURRENT_STATE_SCHEMA
             || state.auth.has_jwt_user_claim_state()
+            || state.auth.has_jwt_pem_keyset_state()
             || state.engines.has_aad_bound_convergent_state()
             || state.engines.has_typed_external_pki_state()
             || state.engines.has_external_pki_state()

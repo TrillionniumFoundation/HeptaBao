@@ -583,9 +583,10 @@ fn jwt_user_claim_schema68_is_conditional_sticky_and_snapshot_protected() -> Tes
         "retired floor cannot downgrade through publication or restore"
     );
     let mut future = retired;
-    future.schema = 69;
+    future.schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
     assert!(
-        future.writer_schema() == 69 && future.validate_format().is_err(),
+        future.writer_schema() == MAX_SUPPORTED_STATE_SCHEMA + 1
+            && future.validate_format().is_err(),
         "unknown future schema remains rejected"
     );
     Ok(())

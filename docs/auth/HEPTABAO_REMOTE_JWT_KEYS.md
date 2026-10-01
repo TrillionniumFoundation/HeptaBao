@@ -15,12 +15,58 @@ identity state. Schema 4 introduced source-selection and algorithm constraints;
 schema 19 adds native reusable assertions and role time-claim leeways. Schema 28
 adds API-owned HTTPS trust without silently migrating older transport authority.
 
-Exactly one source is accepted: existing static keys/inline JWKS, `jwks_url`, or
-`oidc_discovery_url`. Mixed sources fail without committing a changed config.
+Exactly one source is accepted: existing static keys/inline JWKS,
+`jwt_validation_pubkeys`, `jwks_url`, or `oidc_discovery_url`. Mixed sources fail
+without committing a changed config.
 `bound_issuer` configures issuer matching; `jwt_supported_algs` bounds the selected
 algorithms to RS256, ES256 and EdDSA. RSA keys require 2048–4096-bit moduli and
 exponent 65537. Private key parameters, symmetric keys, duplicate key IDs,
 unsupported algorithms, malformed curves and unknown JOSE headers are rejected.
+
+## Local PEM public-key configuration
+
+`jwt_validation_pubkeys` accepts a string array or comma-separated string of
+SPKI `PUBLIC KEY` envelopes. It stores public keys and derived verification
+bytes in the existing encrypted Auth transaction. RSA uses RS256 with a
+2048–4096-bit modulus and exponent 65537; EC uses ES256/P-256; Ed25519 uses
+EdDSA. At most 64 keys are accepted, with at most 16 KiB per envelope and 1 MiB
+total input. Unsupported curves, private keys, PKCS1 `RSA PUBLIC KEY`
+envelopes, certificates, malformed keys and multiple envelopes in one element
+are rejected before the configuration is replaced. Provider parser errors do
+not echo input or private-key bytes. Surrounding whitespace is trimmed before
+public readback; array normalization still needs its separate pinned API
+comparison and is not claimed as exact wire parity.
+
+Only this explicit PEM source tries its bounded set of keys of the JWT header's
+algorithm. Configured PEM keys do not have a JWS `kid`, so missing or unknown
+`kid` can authenticate after the existing signature and claim checks succeed.
+Static-key and inline/remote JWKS sources retain exact `kid` selection. The
+algorithm allowlist remains authoritative: a disjoint but valid allowlist can
+be configured, then denies login. No remote address, absent key source or
+failed signature falls back to another source. The role can supply its audience
+when configuration has no audience extension; issuer, namespace, time claims,
+selected string user claim and the registered subject remain independently
+checked. Optional issuer and assertions without `sub` remain outside this
+increment.
+
+The optional persisted PEM source requires conditional schema 69. Old absent
+fields preserve their encoded shape and schemas 65–68. State admission
+revalidates the public PEM/key-byte binding, trust-policy bounds and containing
+namespace. All namespaces participate in writer selection. Schema 69 stays
+sticky after replacing or removing the source, and active/retired publication
+and local/HA snapshot restore cannot lower that floor. Renewal continues to use
+the current role, mount and Identity gates locally. A captured remote result
+cannot complete after its configuration is replaced by PEM, even for the same
+public key. These source tests do not qualify a new immutable runtime or prove
+an actual schema-68 binary's refusal; those remain separate finite live lanes.
+
+The public [JWT API](https://openbao.org/docs/api/auth/jwt/) documents the PEM
+source. The pinned 2.7.0, official-only 33-observation preparation also exercised
+RSA/P-256/Ed25519 login, missing and unknown `kid`, failed configuration retaining
+the previous keys, source conflicts, and a disjoint algorithm allowlist.
+PKCS1 configuration returned 400; its following successful login used the prior
+valid configuration. These observations are distinct from candidate tests and
+do not establish complete JWT/OIDC compatibility.
 
 ## Administrator-configured HTTPS and legacy enrollment
 

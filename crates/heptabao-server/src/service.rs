@@ -54,7 +54,8 @@ const AAD_BOUND_STATE_SCHEMA: u32 = 66;
 const TYPED_PKI_STATE_SCHEMA: u32 = 67;
 // Custom JWT identity claims activate an irreversible reader requirement.
 const JWT_USER_CLAIM_STATE_SCHEMA: u32 = 68;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = JWT_USER_CLAIM_STATE_SCHEMA;
+const JWT_PEM_KEYSET_STATE_SCHEMA: u32 = 69;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = JWT_PEM_KEYSET_STATE_SCHEMA;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -2579,6 +2580,7 @@ impl Service {
         // schema until a proven logical mutation, as before.
         if admitted.engines.has_aad_bound_convergent_state()
             || admitted.auth.has_jwt_user_claim_state()
+            || admitted.auth.has_jwt_pem_keyset_state()
         {
             admitted.schema = admitted.writer_schema();
         }
@@ -7282,6 +7284,9 @@ mod ldap_renewal_tests;
 #[path = "service_ldap_native_tests.rs"]
 mod ldap_native_tests;
 
+#[cfg(test)]
+#[path = "service_jwt_pem_tests.rs"]
+mod jwt_pem_tests;
 #[cfg(test)]
 #[path = "service_jwt_user_claim_tests.rs"]
 mod jwt_user_claim_tests;

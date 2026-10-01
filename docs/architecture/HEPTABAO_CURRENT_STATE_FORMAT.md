@@ -6,8 +6,9 @@ in retained increment notes. Exact source remains authoritative.
 
 ## Source and authoritative ownership
 
-The current Service state schema is **65**. Its source constant is
-`CURRENT_STATE_SCHEMA` in `crates/heptabao-server/src/service.rs`; admission is
+The ordinary Service writer schema is **65**, with conditional sticky feature
+floors 66–69. `CURRENT_STATE_SCHEMA` and `MAX_SUPPORTED_STATE_SCHEMA` (69) are in
+`crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
 internal owners, not competing independent stores. Schema 5 introduced encrypted
@@ -934,9 +935,10 @@ canonical export, declared curve or modulus bit length. Root, native CSR, leaf
 and full/delta CRL readback verify the actual signatures against this public key.
 No external private material enters this representation.
 
-The maximum supported schema is 67, independently of the AAD-bound schema-66
-floor. All namespaces participate in writer selection: retain the existing
-schema, require 66 for AAD-bound state and 67 for typed PKI state. Publication
+Typed PKI requires schema 67, independently of the AAD-bound schema-66
+floor and the JWT-specific floors below. All namespaces participate in writer
+selection: retain the existing schema, require 66 for AAD-bound state and 67 for
+typed PKI state. Publication
 rejects any decrease from a valid previous schema. Removing a typed issuer does
 not lower its retained schema-67 floor. Active typed material with a lower label
 is refused, as are schema zero and unknown newer schemas. Legacy Ed25519 bytes
@@ -945,3 +947,34 @@ The original record-owner, journal, nonce, authority, audit and delivery fences
 are unchanged. Actual prior-reader refusal for both active and retired typed
 state and fresh immutable runtime comparison are required before qualification;
 native tests cannot establish those external results.
+
+
+## Schema 68: selected literal JWT user claims
+
+JWT roles with a selected literal top-level string `user_claim` distinct from
+the historical `sub` default require schema 68. Absent/default-`sub` role fields
+keep their earlier encoding. The signature-verified selected claim binds the
+Identity alias within its namespace and auth-mount incarnation; registered
+`sub` remains independent for the role's `bound_subject` constraint. All
+namespaces contribute to writer selection. The schema-68 floor survives
+retirement and cannot be lowered by publication or local/HA snapshot restore.
+
+## Schema 69: local JWT PEM public-key sets
+
+`JwtConfig.jwt_validation_pubkeys` is absent for older key sources. A nonempty
+bounded SPKI public-key list selects local same-algorithm verification rather
+than the exact-`kid` lookup of static keys and JWKS. Persisted source strings and
+derived key bytes must bind exactly; invalid trust-policy bounds, wrong
+containing namespace and concurrent remote-source state are rejected. A lower
+label cannot hide this source discriminator from an older reader.
+
+Schema 69 is selected only when PEM state is present in any namespace or an
+existing state already retains that floor. Feature-free old source encodings
+and conditional schemas 65–68 remain unchanged. Removing the final PEM source
+does not lower 69. Publication and both local and HA snapshot restore protect
+the active or retired floor; schema zero and values above the supported maximum
+remain rejected without rewriting them. Real old-reader active/retired refusal,
+encrypted protected-file preservation and fresh immutable candidate runtime
+qualification are separate required evidence; scoped source tests cannot
+substitute for those results. See the [JWT key guide](../auth/HEPTABAO_REMOTE_JWT_KEYS.md)
+for the bounded input, algorithm and authentication contract.

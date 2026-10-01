@@ -327,6 +327,14 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= JWT_PEM_KEYSET_STATE_SCHEMA
+            && incoming.schema < JWT_PEM_KEYSET_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade JWT PEM keysets",
+            ));
+        }
         if current.schema >= JWT_USER_CLAIM_STATE_SCHEMA
             && incoming.schema < JWT_USER_CLAIM_STATE_SCHEMA
         {

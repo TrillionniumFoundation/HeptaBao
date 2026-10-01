@@ -154,6 +154,7 @@ fn login_elapsed_now(now: u64, elapsed: std::time::Duration) -> u64 {
 
 fn same_remote_binding(left: &JwtConfig, right: &JwtConfig) -> bool {
     left.remote == right.remote
+        && left.jwt_validation_pubkeys == right.jwt_validation_pubkeys
         && left.jwt_supported_algs == right.jwt_supported_algs
         && left.issuer == right.issuer
         && left.audiences == right.audiences
@@ -171,6 +172,7 @@ impl RemoteJwtSource {
         if jwks_url.is_some() == oidc_discovery_url.is_some()
             || body.get("jwks").is_some()
             || body.get("keys").is_some()
+            || body.get("jwt_validation_pubkeys").is_some()
         {
             return Err(bad("exactly one JWT key source is required"));
         }
