@@ -75,7 +75,7 @@ def run_interface(kind: str, instance: dict, root: Path, official_binary: Path, 
     value = "synthetic-cli-requested-value"
     protected = (instance["token"].encode(), value.encode())
     prefix = kind + "/"
-    data_file = root / (kind + "-input.json")
+    data_file = Path(instance["root"]) / (kind + "-input.json")
     private_write(data_file, {"value": value, "keep": "yes"}, replace=False)
 
     def command(case, command, flags, path, data=(), expected=0):

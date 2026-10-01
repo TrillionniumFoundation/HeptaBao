@@ -66,6 +66,31 @@ class PythonKVCLIEvidenceTests(unittest.TestCase):
         for value in ("synthetic-proof-bearer", "synthetic-cli-requested-value", str(self.root)):
             self.assertNotIn(value, serialized)
 
+    def test_four_interfaces_keep_owner_only_inputs_in_their_own_fixture(self):
+        total = []
+        inputs = []
+        for side in ("candidate", "oracle"):
+            fixture = self.root / side
+            fixture.mkdir(mode=0o700)
+            instance = dict(self.instance, root=str(fixture))
+            for kind in ("python", "bao"):
+                operations = iter(runner.OPERATIONS)
+                def actual(arguments, **kwargs):
+                    return self.completed(next(operations), arguments)
+                rows = []
+                with patch.object(runner.subprocess, "run", side_effect=actual):
+                    runner.run_interface(kind, instance, self.root, Path("/pinned/bao"), rows)
+                self.assertEqual(len(rows), 68)
+                self.assertTrue(all(row["passed"] is True for row in rows))
+                total.extend(rows)
+                inputs.append(fixture / (kind + "-input.json"))
+        self.assertEqual(len(total), 272)
+        for path in inputs:
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(json.loads(path.read_text()),
+                             {"value": "synthetic-cli-requested-value", "keep": "yes"})
+            self.assertFalse((self.root / path.name).exists())
+
     def test_matching_failed_prefix_cannot_qualify_interface(self):
         def bad(case, result):
             if case == "v2_stale_cas":
