@@ -1,4 +1,6 @@
+import base64
 import copy
+import json
 import unittest
 import pki_issuer_alias_strict_live as probe
 
@@ -111,6 +113,52 @@ class IssuerStrictContracts(unittest.TestCase):
         self.assertFalse(probe.observation_contract_complete(rows))
         rows=complete();rows[0]['passed']=1
         self.assertFalse(probe.observation_contract_complete(rows))
+
+    def test_selected_audit_formats_count_actual_request_and_response(self):
+        encoded=base64.b64encode(bytes(32)).decode()
+        def native(kind,status):
+            return {'event':{'schema':2,'sequence':1,'previous':encoded,'time':1,
+                'kind':kind,'path_digest':'synthetic-digest','status':status},'mac':encoded}
+        self.assertEqual(probe.audit_counts('\n'.join(json.dumps(v) for v in (
+            native('request',None),native('response',200),
+            native('initialization-response-prepared',200))), 'paired'), {'request':1,'response':1})
+        self.assertEqual(probe.audit_counts('\n'.join(json.dumps({'type':kind}) for kind in
+            ('request','response')), 'oracle'), {'request':1,'response':1})
+
+    def test_audit_producer_formats_are_not_fallback_alternatives(self):
+        encoded=base64.b64encode(bytes(32)).decode()
+        native={'event':{'schema':2,'sequence':1,'previous':encoded,'time':1,
+            'kind':'request','path_digest':'synthetic','status':None},'mac':encoded}
+        for record,mode in ((native,'oracle'),({'type':'request'},'paired'),
+                            ({**native,'type':'request'},'paired'),
+                            ({'type':'request','event':{}},'oracle')):
+            with self.assertRaises(ValueError):probe.audit_counts(json.dumps(record),mode)
+        for value in (True,None,'request',[],{'type':False},{'type':'synthetic'}):
+            with self.assertRaises(ValueError):probe.audit_counts(json.dumps(value),'oracle')
+        with self.assertRaises(ValueError):probe.audit_counts('', 'synthetic')
+
+    def test_native_audit_wrapper_and_event_fields_fail_closed(self):
+        encoded=base64.b64encode(bytes(32)).decode()
+        native={'event':{'schema':2,'sequence':1,'previous':encoded,'time':1,
+            'kind':'response','path_digest':'synthetic','status':200},'mac':encoded}
+        invalid=[]
+        for key in native['event']:
+            value=copy.deepcopy(native);del value['event'][key];invalid.append(value)
+        for key,value in (('schema',3),('schema',True),('sequence',True),('sequence',0),
+            ('time',False),('status',True),('status',None),('kind',False),('kind','synthetic'),
+            ('previous',None),('previous','synthetic'),('path_digest',None)):
+            bad=copy.deepcopy(native);bad['event'][key]=value;invalid.append(bad)
+        invalid += [{'event':{}}, {**native,'extra':None}, {**native,'mac':None},
+            {**native,'mac':encoded+'='}, {**native,'event':{**native['event'],'future':True}}]
+        for value in invalid:
+            with self.assertRaises(ValueError):probe.audit_counts(json.dumps(value),'paired')
+        with self.assertRaises(ValueError):probe.audit_counts('not-json','paired')
+
+    def test_audit_delta_zero_cannot_complete_the_fixed_trace(self):
+        for key in ('audit_request_delta','audit_response_delta'):
+            rows=complete();next(r for r in rows if r['case']=='public.absent.default.json')[key]=0
+            self.assertFalse(probe.observation_contract_complete(rows))
+
 
 
 if __name__=='__main__':unittest.main()

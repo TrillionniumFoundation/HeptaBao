@@ -103,6 +103,51 @@ def observation_contract_complete(rows):
             if not exact_projection(row,suffix,case.startswith('unknown.')):return False
     return True
 
+def audit_counts(text, mode):
+    """Count the selected producer format; this is not audit MAC verification."""
+    if type(text) is not str or mode not in ('oracle', 'paired'):
+        raise ValueError('audit_format_invalid')
+    counts = {'request': 0, 'response': 0}
+    for line in text.splitlines():
+        value = json.loads(line)
+        if type(value) is not dict:
+            raise ValueError('audit_format_invalid')
+        if mode == 'oracle':
+            kind = value.get('type')
+            if 'event' in value or type(kind) is not str or kind not in counts:
+                raise ValueError('audit_format_invalid')
+        else:
+            if set(value) != {'event', 'mac'} or type(value['event']) is not dict:
+                raise ValueError('audit_format_invalid')
+            event = value['event']
+            if (set(event) != {'schema', 'sequence', 'previous', 'time', 'kind', 'path_digest', 'status'}
+                    or type(event['schema']) is not int or event['schema'] != 2
+                    or type(event['sequence']) is not int or not 1 <= event['sequence'] <= 2**64-1
+                    or type(event['time']) is not int or not 0 <= event['time'] <= 2**64-1
+                    or type(event['path_digest']) is not str):
+                raise ValueError('audit_format_invalid')
+            for encoded in (event['previous'], value['mac']):
+                if type(encoded) is not str:
+                    raise ValueError('audit_format_invalid')
+                try:
+                    decoded = base64.b64decode(encoded, validate=True)
+                except (ValueError, TypeError):
+                    raise ValueError('audit_format_invalid') from None
+                if len(decoded) != 32 or base64.b64encode(decoded).decode() != encoded:
+                    raise ValueError('audit_format_invalid')
+            kind = event['kind']
+            if type(kind) is not str or kind not in (*counts, 'initialization-response-prepared'):
+                raise ValueError('audit_format_invalid')
+            status = event['status']
+            if kind == 'request':
+                if status is not None: raise ValueError('audit_format_invalid')
+            elif type(status) is not int or not 1 <= status <= 65535:
+                raise ValueError('audit_format_invalid')
+        if kind in counts:
+            counts[kind] += 1
+    return counts
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', required=True); parser.add_argument('--root', required=True)
@@ -222,11 +267,7 @@ def main():
         opener=urllib.request.build_opener(NoRedirect(),urllib.request.ProxyHandler({}),urllib.request.HTTPSHandler(context=ssl.create_default_context(cafile=consumer['ca_file'])))
         caches={}
         def audit_count():
-            counts={'request':0,'response':0}
-            for line in (Path(consumer['root'])/'audit.jsonl').read_text().splitlines():
-                kind=json.loads(line).get('type')
-                if kind in counts: counts[kind]+=1
-            return counts
+            return audit_counts((Path(consumer['root'])/'audit.jsonl').read_text(), a.mode)
         def read(path,case,mode='absent',kind=None,negative=False):
             headers={} if mode=='absent' else {'X-Vault-Token':''}; n=len(sign_entries); audit=audit_count()
             req=urllib.request.Request(consumer['address']+'/v1/'+path,headers=headers,method='GET')
