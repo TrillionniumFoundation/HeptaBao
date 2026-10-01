@@ -570,13 +570,21 @@ async fn accumulated_replay_uses_small_batches_inside_unchanged_peer_budget()
         first.change_membership(BTreeSet::from([1, 2, 3])).await?;
         router.paused.write().await.insert(3);
         let mut last = None;
+        let mut last_receipt_index = None;
         for serial in 1..=45 {
             let envelope = ReplicatedEnvelope::new(
                 format!("paced-once-{serial}"),
                 [serial as u8; 32],
                 vec![serial as u8; 8 * 1024],
             )?;
-            first.replicate(serial, &envelope).await?;
+            let receipt = first.replicate(serial, &envelope).await?;
+            last_receipt_index = Some(receipt.log_index);
+            eprintln!(
+                "frontier_diagnostic stage=ack serial={} receipt_index={} leader_applied={:?}",
+                serial,
+                receipt.log_index,
+                first.local_leader_observation()?.applied_index
+            );
             last = Some(envelope);
         }
         let expected = last.ok_or("last expected envelope")?;
@@ -584,6 +592,10 @@ async fn accumulated_replay_uses_small_batches_inside_unchanged_peer_budget()
             .local_leader_observation()?
             .applied_index
             .ok_or("leader frontier")?;
+        eprintln!(
+            "frontier_diagnostic stage=wait last_receipt={:?} sampled_frontier={}",
+            last_receipt_index, frontier
+        );
         router.paced_target.store(3, Ordering::SeqCst);
         router.paused.write().await.clear();
         let caught_up = tokio::time::timeout(Duration::from_secs(8), async {
@@ -602,14 +614,19 @@ async fn accumulated_replay_uses_small_batches_inside_unchanged_peer_budget()
         caught_up.map_err(
             |_| "fixed RPC budget repeatedly rejected the same accumulated replay batch",
         )??;
-        assert_eq!(
-            nodes[2]
-                .latest_envelope()
-                .await?
-                .ok_or("replica state")?
-                .digest(),
-            expected.digest()
+        let observed = nodes[2].latest_envelope().await?.ok_or("replica state")?;
+        let fixture_ordinal = observed
+            .operation_id()
+            .strip_prefix("paced-once-")
+            .and_then(|serial| serial.parse::<u64>().ok());
+        eprintln!(
+            "frontier_diagnostic stage=exit last_receipt={:?} sampled_frontier={} follower_applied={:?} fixture_ordinal={:?}",
+            last_receipt_index,
+            frontier,
+            nodes[2].local_leader_observation()?.applied_index,
+            fixture_ordinal
         );
+        assert_eq!(observed.digest(), expected.digest());
         assert_eq!(
             router.paced_budget_ms.load(Ordering::SeqCst),
             150,
@@ -659,13 +676,21 @@ async fn failed_replay_adapts_contiguous_prefix_without_acknowledging_unsent_suf
         first.change_membership(BTreeSet::from([1, 2, 3])).await?;
         router.paused.write().await.insert(3);
         let mut last = None;
+        let mut last_receipt_index = None;
         for serial in 1..=20 {
             let envelope = ReplicatedEnvelope::new(
                 format!("paced-once-{serial}"),
                 [serial as u8; 32],
                 vec![serial as u8; 8 * 1024],
             )?;
-            first.replicate(serial, &envelope).await?;
+            let receipt = first.replicate(serial, &envelope).await?;
+            last_receipt_index = Some(receipt.log_index);
+            eprintln!(
+                "frontier_diagnostic stage=ack serial={} receipt_index={} leader_applied={:?}",
+                serial,
+                receipt.log_index,
+                first.local_leader_observation()?.applied_index
+            );
             last = Some(envelope);
         }
         let expected = last.ok_or("last expected envelope")?;
@@ -673,6 +698,10 @@ async fn failed_replay_adapts_contiguous_prefix_without_acknowledging_unsent_suf
             .local_leader_observation()?
             .applied_index
             .ok_or("leader frontier")?;
+        eprintln!(
+            "frontier_diagnostic stage=wait last_receipt={:?} sampled_frontier={}",
+            last_receipt_index, frontier
+        );
         router
             .paced_max_append_bytes
             .store(32 * 1024, Ordering::SeqCst);
@@ -694,14 +723,19 @@ async fn failed_replay_adapts_contiguous_prefix_without_acknowledging_unsent_suf
         caught_up.map_err(
             |_| "fixed RPC budget repeatedly rejected the same accumulated replay batch",
         )??;
-        assert_eq!(
-            nodes[2]
-                .latest_envelope()
-                .await?
-                .ok_or("replica state")?
-                .digest(),
-            expected.digest()
+        let observed = nodes[2].latest_envelope().await?.ok_or("replica state")?;
+        let fixture_ordinal = observed
+            .operation_id()
+            .strip_prefix("paced-once-")
+            .and_then(|serial| serial.parse::<u64>().ok());
+        eprintln!(
+            "frontier_diagnostic stage=exit last_receipt={:?} sampled_frontier={} follower_applied={:?} fixture_ordinal={:?}",
+            last_receipt_index,
+            frontier,
+            nodes[2].local_leader_observation()?.applied_index,
+            fixture_ordinal
         );
+        assert_eq!(observed.digest(), expected.digest());
         assert_eq!(
             router.paced_budget_ms.load(Ordering::SeqCst),
             150,
