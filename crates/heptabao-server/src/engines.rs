@@ -24,6 +24,8 @@ use identity_projection::IdentityProjection;
 pub(crate) mod kubernetes;
 mod kv;
 mod kv1_records;
+#[path = "engine_kv_versioning.rs"]
+mod kv_versioning;
 #[path = "engine_leases.rs"]
 mod leases;
 pub(crate) mod openldap;
@@ -1610,7 +1612,13 @@ impl EngineState {
             // Registry operations can affect overlap/incarnation state across
             // mounts, so they deliberately retain namespace-level transactionality.
             let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
-            let response = handle_mounts(&mut candidate, method, mount_path, &params)?;
+            let response = handle_mounts(
+                &mut candidate,
+                method,
+                mount_path,
+                &params,
+                |name, mount| self.upgrade_kv_mount(namespace, name, mount, now),
+            )?;
             if response.mutated {
                 self.update_record_registry(namespace, &mut candidate)?;
                 self.namespaces.insert(namespace.into(), candidate);
@@ -1747,6 +1755,7 @@ fn handle_mounts(
     method: &str,
     requested: &str,
     body: &Value,
+    upgrade: impl Fn(&str, &MountState) -> Result<kv::Kv2>,
 ) -> Result<EngineResponse> {
     let requested = requested.trim_end_matches('/');
     if let Some(mount_path) = requested.strip_suffix("/tune") {
@@ -1766,8 +1775,9 @@ fn handle_mounts(
         }
         let expected = optional_u64(body, "cas_revision")?;
         require_mount_revision(expected, mount.revision)?;
-        let before = serde_json::to_vec(&*mount)
-            .map_err(|_| error(500, "mount state serialization failed"))?;
+        let before = crate::secret_serde::to_vec(&*mount, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| error(507, "mount state exceeds serialization capacity"))?;
+        let mut converted = false;
         let mut tune = body.clone();
         tune.as_object_mut()
             .ok_or_else(|| bad("request body must be an object"))?
@@ -1811,21 +1821,30 @@ fn handle_mounts(
                 .ok_or_else(|| bad("KV version must be a string"))?;
             match (&mount.backend, version) {
                 (Backend::Kv1(_) | Backend::Kv1Records, "1") | (Backend::Kv2(_), "2") => {}
-                _ => {
-                    return Err(error(
-                        501,
-                        "online KV format conversion is not implemented; migrate through explicit API export/import",
-                    ));
+                (Backend::Kv1(_) | Backend::Kv1Records, "2") => {
+                    mount.backend = Backend::Kv2(upgrade(&name, mount)?);
+                    converted = true;
                 }
+                (Backend::Kv2(_), "1") => return Err(bad("KV version cannot be downgraded")),
+                _ => return Err(bad("KV version must be 1 or 2 on a KV mount")),
             }
         }
-        let after = serde_json::to_vec(&*mount)
-            .map_err(|_| error(500, "mount state serialization failed"))?;
+        let after = crate::secret_serde::to_vec(&*mount, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| error(507, "mount state exceeds serialization capacity"))?;
         if before == after {
             return Ok(empty(false));
         }
         mount.revision = next_mount_revision(mount.revision)?;
-        return Ok(empty(true));
+        return Ok(if converted {
+            EngineResponse {
+                status: 200,
+                body: json!({"request_id":"", "lease_id":"", "renewable":false, "lease_duration":0,
+                    "data":null, "wrap_info":null, "warnings":["KV v1 data was upgraded to KV v2."], "auth":null}),
+                mutated: true,
+            }
+        } else {
+            empty(true)
+        });
     }
     if requested == "cubbyhole" {
         if method == "GET" {

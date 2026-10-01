@@ -280,6 +280,29 @@ fn scan_map_keys<T>(entries: &BTreeMap<String, T>, prefix: &str) -> Result<Vec<S
 }
 
 impl Kv2 {
+    pub(super) fn from_v1(entries: BTreeMap<String, SharedJson>, now: u64) -> Self {
+        Self {
+            config: Config::default(),
+            entries: entries
+                .into_iter()
+                .map(|(path, value)| {
+                    let mut entry = Entry::new(now);
+                    entry.current_version = 1;
+                    entry.versions.insert(
+                        1,
+                        Version {
+                            created_at: now,
+                            deletion_at: None,
+                            destroyed: false,
+                            data: Some(value),
+                        },
+                    );
+                    (path, entry)
+                })
+                .collect(),
+        }
+    }
+
     pub(super) fn has_metadata_cas_state(&self) -> bool {
         self.config.metadata_cas_required
             || self.entries.values().any(|entry| {

@@ -7324,5 +7324,9 @@ mod external_keys_tests;
 mod external_transit_tests;
 
 #[cfg(test)]
+#[path = "service_kv_versioning_tests.rs"]
+mod kv_versioning_tests;
+
+#[cfg(test)]
 #[path = "service_ui_mounts_tests.rs"]
 mod ui_mounts_tests;

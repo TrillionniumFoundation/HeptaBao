@@ -44,7 +44,7 @@ def _duration(value: str) -> float:
     return number
 
 
-def _common(command: Parser, *, field: bool = True, formatted: bool = True):
+def _common(command: Parser, *, field: bool = True, formatted: bool = True, mounted: bool = True):
     command.add_argument("-address", "--address")
     command.add_argument("-ca-cert", "--ca-file", dest="ca_file")
     command.add_argument("-token-file", "--token-file")
@@ -58,7 +58,10 @@ def _common(command: Parser, *, field: bool = True, formatted: bool = True):
         command.add_argument("-field", "--field", default="")
     else:
         command.set_defaults(field="")
-    command.add_argument("-mount", "--mount", default="")
+    if mounted:
+        command.add_argument("-mount", "--mount", default="")
+    else:
+        command.set_defaults(mount="")
 
 
 def parser() -> Parser:
@@ -79,6 +82,9 @@ def parser() -> Parser:
         command.add_argument("path")
         if name in ("put", "patch"):
             command.add_argument("data", nargs="+" if name == "put" else "*")
+    enable = commands.add_parser("enable-versioning")
+    _common(enable, field=False, mounted=False)
+    enable.add_argument("path")
     metadata = commands.add_parser("metadata")
     actions = metadata.add_subparsers(dest="metadata_command", required=True, parser_class=Parser)
     for name in ("get", "put", "delete"):
@@ -185,7 +191,7 @@ def _versions(arguments: list[str]) -> list[int]:
 def _local(args):
     # Reject malformed paths/options before even the read-only preflight request.
     path = args.path
-    if args.command == "list":
+    if args.command in ("list", "enable-versioning"):
         path = path.removesuffix("/")
     path = unquote(key_path(path, allow_empty=args.command == "list" and bool(args.mount)))
     mount = unquote(key_path(args.mount)) if args.mount else ""
@@ -285,6 +291,9 @@ def _read_data(client: Client, path: str, version: int = 0) -> tuple[dict, int]:
 
 
 def execute(client: Client, args, path: str, mount: str, versions: list[int], payload) -> tuple[Response, str, int]:
+    if args.command == "enable-versioning":
+        response = _request(client, "POST", "sys/mounts/" + key_path(path) + "/tune", {"options": {"version": "2"}})
+        return response, path + "/", 2
     mounted, relative, version = discover(client, path, mount)
     if not relative and args.command != "list":
         raise BaoError("secret_path_required")
@@ -387,6 +396,8 @@ def _table(title: str, value: dict) -> str:
 
 
 def render(response: Response, args, fmt: str, data_path: str, version: int) -> str:
+    if args.command == "enable-versioning":
+        return "Success! Tuned the secrets engine at: " + data_path + "\n"
     data = response.body.get("data", {})
     selected = data.get("data") if args.command == "get" and version == 2 and isinstance(data, dict) else data
     if args.field:

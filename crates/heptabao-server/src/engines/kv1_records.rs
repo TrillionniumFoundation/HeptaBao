@@ -360,6 +360,58 @@ impl EngineState {
             .map_err(record_error)
     }
 
+    pub(super) fn record_kv1_conversion_values(
+        &self,
+        namespace: &str,
+        mount: &str,
+        incarnation: u64,
+    ) -> Result<BTreeMap<String, SharedJson>> {
+        let runtime = self
+            .records
+            .as_ref()
+            .ok_or_else(|| error(503, "KV1 record root is unavailable"))?;
+        let scope = Kv1Scope::new(namespace, mount, incarnation).map_err(record_error)?;
+        let mut after = None;
+        let mut total = 0;
+        let mut values = BTreeMap::new();
+        loop {
+            kv_versioning::deadline()?;
+            let page = runtime
+                .index
+                .scan(&scope, "", after.as_deref(), KEY_PAGE, true)
+                .map_err(record_error)?;
+            if page.next_after.is_some() && (page.keys.is_empty() || page.next_after == after) {
+                return Err(error(503, "KV1 conversion cursor did not advance"));
+            }
+            for path in page.keys {
+                kv_versioning::deadline()?;
+                valid_path(&path)?;
+                let key =
+                    Kv1Key::new(namespace, mount, incarnation, &path).map_err(record_error)?;
+                let bytes = runtime
+                    .index
+                    .get(&key)
+                    .ok_or_else(|| error(503, "KV1 conversion source disappeared"))?;
+                kv_versioning::account_value(&mut total, &path, bytes.len())?;
+                let value: SecretJson = serde_json::from_slice(bytes)
+                    .map_err(|_| error(503, "KV1 conversion source is invalid"))?;
+                let canonical =
+                    crate::secret_serde::to_vec(&*value, crate::state_records::MAX_VALUE_BYTES)
+                        .map_err(|_| error(503, "KV1 conversion source is invalid"))?;
+                if !value.is_object() || canonical.as_slice() != bytes {
+                    return Err(error(503, "KV1 conversion source is invalid"));
+                }
+                if values.insert(path, SharedJson::from(value)).is_some() {
+                    return Err(error(503, "KV1 conversion contains duplicate paths"));
+                }
+            }
+            after = page.next_after;
+            if after.is_none() {
+                return Ok(values);
+            }
+        }
+    }
+
     pub(super) fn read_record_kv1(
         &self,
         namespace: &str,
@@ -486,7 +538,17 @@ impl EngineState {
                             && next.incarnation == mount.incarnation
                     })
                 {
+                    let converted = candidate
+                        .mounts
+                        .get(name)
+                        .is_some_and(|next| matches!(next.backend, Backend::Kv2(_)));
+                    if converted {
+                        kv_versioning::deadline()?;
+                    }
                     next.remove_or_move_scope(namespace, name, mount.incarnation, None)?;
+                    if converted {
+                        kv_versioning::deadline()?;
+                    }
                 }
             }
         }
