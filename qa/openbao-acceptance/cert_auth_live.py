@@ -13,6 +13,8 @@ rejecting a distinct client from the same issuing CA.
 """
 from __future__ import annotations
 
+from fixture_mounts import provision_secret_kv2
+
 import argparse
 import hashlib
 import json
@@ -282,6 +284,7 @@ def run_fixture(binary: Path, root: Path) -> dict:
         fixture.token = init["root_token"]
         fixture.unseal_key = init["keys_base64"][0]
         check("unseal_over_mTLS", fixture.call("POST", "sys/unseal", {"key": fixture.unseal_key})[0] == 200)
+        fixture_setup = provision_secret_kv2(fixture.call)
         check("cert_auth_mount", fixture.call("POST", "sys/auth/cert", {"type": "cert"})[0] == 204)
         policy = 'path "secret/data/cert-fixture" { capabilities = ["read"] }'
         check("cert_policy", fixture.call("POST", "sys/policies/acl/cert-reader", {"policy": policy})[0] == 204)
@@ -346,6 +349,7 @@ def run_fixture(binary: Path, root: Path) -> dict:
             revoked_failed = True
         check("CRL_revoked_client_is_rejected_before_Service", revoked_failed)
         return {"schema": "heptabao.cert-auth-live.v1", "status": "passed", "checks": checks,
+                "fixture_mount_setup": fixture_setup,
                 "count": len(checks), "compatibility_claim": False, "production_authority": False}
     finally:
         fixture.stop()

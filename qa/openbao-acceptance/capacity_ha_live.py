@@ -133,6 +133,7 @@ def main() -> int:
     finally:
         if cluster is not None:
             report["scenarios"] = cluster.scenarios
+            report["fixture_mount_setup"] = cluster.fixture_mount_setup
             try:
                 cluster.close()
             except (FixtureError, OSError, subprocess.SubprocessError):

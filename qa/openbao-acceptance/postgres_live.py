@@ -7,6 +7,8 @@ DSN, existing data directory, live credential or production endpoint is accepted
 Missing binaries are BLOCKED, exit 77; never fall back to the PG-wire model.
 """
 from __future__ import annotations
+
+from fixture_mounts import provision_secret_kv2
 import argparse
 import concurrent.futures
 from contextlib import contextmanager
@@ -370,6 +372,7 @@ def run(binary,bin_dir,root,checks):
         p=instance.root/'server.json';c=json.loads(p.read_text());c['lifecycle_interval_seconds']=1;c['outbound_endpoints']=[dict(origin=pg.origin,address=f'127.0.0.1:{pg.port}',server_name='localhost',ca_pem=(instance.root/'ca.crt').read_text())];p.write_text(json.dumps(c));p.chmod(0o600)
         instance.start();status,init=instance.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1});check('initialize',status==200)
         instance.token=init['root_token'];key=init['keys_base64'][0];check('unseal',instance.call('POST','sys/unseal',{'key':key})[0]==200)
+        check('fixture_secret_kv2_enabled',provision_secret_kv2(instance.call)['http_status']==204)
         check('mount',instance.call('POST','sys/mounts/database',{'type':'database'})[0]==204)
         config=dict(plugin_name='postgresql-database-plugin',connection_url=pg.origin+'/app',username='hb_manager',password=pg.manager_password,allowed_roles=['reader','short','churn','retiretest'])
         check('native_pg_tls_scram_config',instance.call('POST','database/config/local',config)[0]==204)

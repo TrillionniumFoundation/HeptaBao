@@ -186,6 +186,7 @@ def run(binary: Path, work_dir: Path, binary_sha256: str) -> dict:
             "binary_sha256": binary_sha256,
             "status": "pass_scoped_repository_fixture",
             "scenarios": cluster.scenarios,
+            "fixture_mount_setup": cluster.fixture_mount_setup,
             "rotated_node_id": rotating.node_id,
             "overlap_pins": 2,
             "same_ca_only": True,

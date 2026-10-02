@@ -65,6 +65,24 @@ class RollingUpgradeCluster(Cluster):
         self.candidate_digest = hashlib.sha256(candidate_binary.read_bytes()).hexdigest()
         super().__init__(base_binary, root)
 
+    def provision_seed_mounts(self, seed: Node) -> None:
+        # The exact historical base may already have its legacy default mount.
+        # Observe that explicit prerequisite; a current empty base provisions it.
+        status, body = seed.call("GET", "sys/mounts", token=self.root_token)
+        mounts = body.get("data")
+        if status != 200 or type(mounts) is not dict:
+            raise FixtureError("rolling_seed_mount_inventory_failed")
+        if "secret/" not in mounts:
+            return super().provision_seed_mounts(seed)
+        mount = mounts["secret/"]
+        if (type(mount) is not dict or mount.get("type") != "kv"
+                or type(mount.get("options")) is not dict
+                or mount["options"].get("version") != "2"):
+            raise FixtureError("rolling_seed_secret_mount_not_kv2")
+        self.fixture_mount_setup.append({"mount": "secret", "http_status": 200,
+                                         "mutations_submitted": 0, "automatic_retry": False,
+                                         "existing_legacy_kv2_verified": True})
+
     def assert_misbound_rejection(self, wrong: Node) -> None:
         if wrong.binary == self.candidate_binary:
             checked_binary(wrong.binary, self.candidate_digest)
@@ -410,6 +428,7 @@ def main() -> int:
     finally:
         if cluster is not None:
             report["scenarios"] = cluster.scenarios
+            report["fixture_mount_setup"] = cluster.fixture_mount_setup
             try:
                 cluster.close()
             except (FixtureError, OSError, subprocess.SubprocessError):

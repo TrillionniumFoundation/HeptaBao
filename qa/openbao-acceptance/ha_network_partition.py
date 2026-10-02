@@ -408,6 +408,7 @@ def main() -> int:
     finally:
         if cluster is not None:
             report["scenarios"] = cluster.scenarios
+            report["fixture_mount_setup"] = cluster.fixture_mount_setup
             report["health_observations"] = cluster.health_observations
             try:
                 cluster.close()

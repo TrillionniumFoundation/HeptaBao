@@ -140,6 +140,8 @@ impl Service {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(feature = "fixture-capacity-limit")]
+    use super::super::tests::bootstrap_unmounted;
     use super::super::tests::{Root, bootstrap, call, limited_token};
     use super::*;
 
@@ -176,7 +178,7 @@ mod tests {
                 .is_err()
         );
         service.install_fixture_opaque_owner_limit(Some(2 * 1024 * 1024))?;
-        let (_, token) = bootstrap(&mut service)?;
+        let (_, token) = bootstrap_unmounted(&mut service)?;
         let before = call(
             &mut service,
             "GET",
@@ -191,6 +193,17 @@ mod tests {
             2 * 1024 * 1024
         );
         assert_eq!(before.body["data"]["state_limit_bytes"], 2 * 1024 * 1024);
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/mounts/secret",
+                &token,
+                json!({"type":"kv","options":{"version":"2"}}),
+            )
+            .status,
+            204
+        );
         assert_eq!(
             call(
                 &mut service,

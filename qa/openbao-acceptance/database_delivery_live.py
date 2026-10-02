@@ -6,6 +6,8 @@ Only synthetic state is used. Reports never contain tokens or credential bytes.
 """
 from __future__ import annotations
 
+from fixture_mounts import provision_secret_kv2
+
 import argparse
 import concurrent.futures
 import json
@@ -67,6 +69,9 @@ def check_case(binary, root, case):
         instance.token = initialized["root_token"]
         unseal_key = initialized["keys_base64"][0]
         require(instance.call("POST", "sys/unseal", {"key": unseal_key})[0] == 200, "unseal")
+        fixture_setup = None
+        if case.endswith("_unrelated_write"):
+            fixture_setup = provision_secret_kv2(instance.call, error_type=FixtureFailure)
         namespace = "team" if case == "issue_namespace_seal" else ""
         if namespace:
             require(instance.call("POST", "sys/namespaces/team", {})[0] == 200, "namespace")
@@ -191,7 +196,7 @@ def check_case(binary, root, case):
             require(isinstance(lease, str), "lease_identity_retained")
             require(instance.call("POST", "sys/leases/lookup", {"lease_id": lease}, namespace=namespace)[0] == 200, "positive_lease_reopened")
         require(events.read_text().splitlines().count("issue") == 1, "no_duplicate_issue")
-        return {"case": case, "passed": True, "provider_effect_committed_before_change": True,
+        return {"case": case, "fixture_mount_setup": fixture_setup, "passed": True, "provider_effect_committed_before_change": True,
                 "status": status, "expected_status": expected, "restart_checked": True,
                 "same_identity_cleanup_checked": not positive, "no_duplicate_issue": True}
     finally:

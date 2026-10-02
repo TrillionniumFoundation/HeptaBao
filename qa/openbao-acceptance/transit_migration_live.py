@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Real pinned OpenBao -> HeptaBao Transit re-encryption; synthetic loopback only."""
 from pathlib import Path
+from fixture_mounts import provision_transit
 import base64
 import importlib.util
 import json
@@ -50,6 +51,7 @@ def run(binary, output, *, oracle_version=VERSION):
             key = init['keys_base64'][0]
             check('candidate_unseal', instance.call('POST', 'sys/unseal', {'key': key})[0] == 200)
             target = Client(instance.address, str(instance.root / 'ca.crt'), instance.token)
+            fixture_setup = provision_transit(instance.call, error_type=BaoError)
             check('source_mount', source.request('POST', '/v1/sys/mounts/transit', {'type': 'transit'}).status == 204)
             check('source_key', source.request('POST', '/v1/transit/keys/source', {'type': 'aes256-gcm96'}).status in (200, 204))
             check('target_key', target.request('POST', '/v1/transit/keys/destination', {'type': 'aes256-gcm96'}).status in (200, 204))
@@ -130,7 +132,7 @@ def run(binary, output, *, oracle_version=VERSION):
                 after = target.request('GET', '/v1/sys/internal/storage/capacity').data()['generation']
                 check('pending_resume_no_new_effect', before == after)
             result = {'schema': 'heptabao.transit-migration-live.v1', 'status': 'passed_scoped_reencryption',
-                      'checks': checks, 'count': len(checks), 'candidate_binary_sha256': file_digest(binary),
+                      'checks': checks, 'fixture_mount_setup': fixture_setup, 'count': len(checks), 'candidate_binary_sha256': file_digest(binary),
                       'oracle_version': oracle_version, 'oracle_storage_backend': oracle_identity['storage'],
                       'oracle_binary_sha256': oracle_identity['binary_sha256'],
                       'oracle_archive_sha256': oracle_identity['artifact_sha256'], 'full_format_migration': False,

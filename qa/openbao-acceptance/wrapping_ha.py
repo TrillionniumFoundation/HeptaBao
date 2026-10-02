@@ -130,6 +130,7 @@ def main(*, cluster_type=WrappingCluster, profile="wrapping-ha", runner_path=Non
     finally:
         if cluster is not None:
             report["scenarios"] = cluster.scenarios
+            report["fixture_mount_setup"] = cluster.fixture_mount_setup
             try:
                 cluster.close()
             except Exception:

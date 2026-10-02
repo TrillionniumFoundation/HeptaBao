@@ -61,6 +61,7 @@ class AdminCluster(Cluster):
         status,body=seed.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1})
         self.check('initialize_seed',status==200);self.root_token=body['root_token'];self.unseal_key=body['keys_base64'][0]
         self.check('seed_unseal',seed.call('POST','sys/unseal',{'key':self.unseal_key})[0]==200)
+        self.provision_seed_mounts(seed)
         self.cluster_id=seed.call('GET','sys/health')[1]['cluster_id'];seed.stop();self.configure_ha()
         for n in self.nodes[1:]:shutil.copytree(seed.data_dir,n.data_dir)
         for n in self.nodes[1:]+self.nodes[:1]:n.start()
@@ -167,7 +168,7 @@ def main():
     except Exception as error:report.update(status='failed',failure=str(error) if isinstance(error,FixtureError) else type(error).__name__)
     finally:
         if c is not None:
-            report['scenarios']=c.scenarios;report['scenario_count']=len(c.scenarios);report['snapshot_artifacts']=c.snapshot_artifacts;c.close()
+            report['scenarios']=c.scenarios;report['fixture_mount_setup']=c.fixture_mount_setup;report['scenario_count']=len(c.scenarios);report['snapshot_artifacts']=c.snapshot_artifacts;c.close()
         shutil.rmtree(temp);out.write_text(json.dumps(report,indent=2)+'\n');out.chmod(0o600)
     print(json.dumps({'status':report['status'],'scenarios':report['scenario_count'],'failure':report.get('failure')}))
     return 0 if report['status']=='passed' else 1

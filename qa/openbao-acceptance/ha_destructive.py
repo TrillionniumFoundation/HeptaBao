@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 from contextlib import ExitStack
+from fixture_mounts import provision_secret_kv2
 import hashlib
 import json
 import os
@@ -227,6 +228,7 @@ class Cluster:
         self.root, self.binary = root, binary
         self.nodes: list[Node] = []
         self.scenarios: list[str] = []
+        self.fixture_mount_setup: list[dict] = []
         self.root_token = ""
         self.unseal_key = ""
         self.cluster_id = ""
@@ -374,6 +376,10 @@ class Cluster:
         if node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] != 200:
             raise FixtureError("restart_unseal_failed")
 
+    def provision_seed_mounts(self, seed: Node) -> None:
+        self.fixture_mount_setup.append(provision_secret_kv2(
+            seed.call, token=self.root_token, error_type=FixtureError))
+
     def bootstrap(self) -> None:
         """Start the synthetic three-voter cluster without unrelated fault cases."""
         seed = self.nodes[0]
@@ -383,6 +389,7 @@ class Cluster:
         self.check("fresh_seed_initialized", status == 200 and bool(body.get("root_token")) and bool(body.get("keys_base64")))
         self.root_token, self.unseal_key = body["root_token"], body["keys_base64"][0]
         self.check("seed_unsealed_before_ha", seed.call("POST", "sys/unseal", {"key": self.unseal_key})[0] == 200)
+        self.provision_seed_mounts(seed)
         status, health = seed.call("GET", "sys/health")
         self.check("seed_cluster_identity_read_back", status == 200 and isinstance(health.get("cluster_id"), str) and bool(health["cluster_id"]))
         self.cluster_id = health["cluster_id"]
@@ -511,6 +518,7 @@ def main() -> int:
     finally:
         if cluster is not None:
             report["scenarios"] = cluster.scenarios
+            report["fixture_mount_setup"] = cluster.fixture_mount_setup
             try:
                 cluster.close()
             except (FixtureError, OSError, subprocess.SubprocessError):

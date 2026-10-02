@@ -6,6 +6,8 @@ boolean observations and status codes, not provider payloads or bearer tokens.
 """
 from __future__ import annotations
 
+from fixture_mounts import provision_secret_kv2
+
 import argparse
 import concurrent.futures
 import hashlib
@@ -61,6 +63,9 @@ def check_case(binary, root, case):
         instance.token = initialized["root_token"]
         unseal_key = initialized["keys_base64"][0]
         require(instance.call("POST", "sys/unseal", {"key": unseal_key})[0] == 200, "unseal")
+        fixture_setup = None
+        if case == "unrelated_write":
+            fixture_setup = provision_secret_kv2(instance.call, error_type=FixtureFailure)
         namespace = "team" if case == "namespace_seal" else ""
         if namespace:
             require(instance.call("POST", "sys/namespaces/team", {})[0] == 200, "namespace")
@@ -130,7 +135,7 @@ def check_case(binary, root, case):
         require(instance.call("POST", "sys/unseal", {"key": unseal_key})[0] == 200, "restart_unseal")
         restart_status, restarted = instance.call("GET", path, namespace=namespace)
         durable = restart_status == 200 and restarted.get("data", {}).get("connection_url") == expected_url
-        return {"case": case, "passed": status == expected and preserved and durable and finite_use_preserved,
+        return {"case": case, "fixture_mount_setup": fixture_setup, "passed": status == expected and preserved and durable and finite_use_preserved,
                 "status": status, "expected_status": expected, "provider_entered": True,
                 "configuration_correct": preserved, "restart_configuration_correct": durable,
                 "finite_use_preserved": finite_use_preserved}

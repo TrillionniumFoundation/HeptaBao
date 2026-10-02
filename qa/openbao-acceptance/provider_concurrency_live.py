@@ -11,6 +11,8 @@ compatibility, or independent qualification authority.
 """
 from __future__ import annotations
 
+from fixture_mounts import provision_secret_kv2
+
 import argparse
 import hashlib
 import json
@@ -92,6 +94,7 @@ def run(binary: Path, root: Path, report: dict) -> None:
         instance.token = initialized["root_token"]
         unseal_key = initialized["keys_base64"][0]
         check("unseal", instance.call("POST", "sys/unseal", {"key": unseal_key})[0] == 200)
+        report["fixture_mount_setup"] = provision_secret_kv2(instance.call)
         check("jwt_mount", instance.call("POST", "sys/auth/federated", {"type": "jwt"})[0] == 204)
         check(
             "untrusted_jwks_configuration_rejected",

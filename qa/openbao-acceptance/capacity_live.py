@@ -8,6 +8,8 @@ canonical 16 MiB ceiling and does not qualify production scale.
 """
 from __future__ import annotations
 
+from fixture_mounts import provision_secret_kv2
+
 import importlib.util
 import json
 import os
@@ -305,6 +307,8 @@ def run(binary: Path, output: Path) -> int:
         stage = 'initial-recovery'
         progress('phase', stage=stage, state_bytes=initial['state_bytes'])
         initial = restart_and_measure('initial', initial, key)
+        # Keep the original unmounted V4/reopen observations before records exist.
+        report['fixture_mount_setup'] = provision_secret_kv2(instance.call)
 
         stage = 'saturation'
         progress(

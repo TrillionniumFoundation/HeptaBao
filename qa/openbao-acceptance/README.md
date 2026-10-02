@@ -64,6 +64,29 @@ receipt for future binaries or full-format migration. Archive additional actual
 execution receipts and bind each to the tested deployment and immutable candidate
 source identity before making a scoped claim. No live HA pass is bundled.
 
+## Explicit fixture mounts
+
+Fresh initialization creates the standard system mounts. Synthetic acceptance
+instances that use `secret` KV-v2 or Transit enable that engine explicitly before
+their business or fault phase. `fixture_mounts.py` submits each mount mutation
+once and requires the exact 204 acknowledgement, using the caller's existing
+request budget. Denials, conflicts and unknown replies terminate setup; they do
+not trigger a retry or an assumed success.
+
+The shared three-process HA seed enables its KV-v2 mount after unseal and before
+its stopped state is copied to peers. The rolling-upgrade fixture first reads
+its historical seed's mount inventory: an existing `secret/` must be exactly
+KV-v2, while an absent mount is enabled once. Setup observations are reported
+separately so the original eight bootstrap scenarios and business checks remain
+intact. The capacity profiles keep their initial unmounted V4 observations and
+then enable KV-v2 before testing the V5 record transition.
+
+These prerequisites add setup requests and can change a fixture's state baseline.
+The accompanying pure tests check ordering and single-attempt failure behavior;
+they do not qualify a native service, an official Oracle, a migration or HA.
+Existing CI failure receipts remain failures until a new source-bound execution
+completes the original checks with these explicit prerequisites.
+
 ## Additional selected runtime profiles
 
 `userpass_names_live.py` compares fresh userpass CRUD, login, canonical Identity

@@ -116,6 +116,10 @@ def run(binary, launcher_path, work_dir, oracle_port, *, oracle_version=VERSION)
                             "storage_backend": oracle_identity["storage"],
                             "tls_verified": True, "mode": "server_not_dev"}
         report["target"] = {"version": target_health["version"], "cluster_digest": digest(target_health["cluster_id"]), "tls_verified": True}
+        stage = "candidate_mount"
+        mount(target, "secret")
+        report["fixture_mount_setup"] = {"mount": "secret", "http_status": 204,
+                                         "mutations_submitted": 1, "automatic_retry": False}
         stage = "source_mount"
         mount(source, source_mount)
         source_mount_created = True

@@ -6,6 +6,8 @@ Receipts contain case names, hashes and outcomes, never responses or secrets.
 """
 from __future__ import annotations
 
+from fixture_mounts import provision_secret_kv2
+
 import argparse
 import concurrent.futures
 import copy
@@ -164,6 +166,7 @@ def run(binary: Path, pg_bin: Path, root: Path, checks: list) -> None:
                       for leaf in ("state.hbs", "ledger.hbl", "journal.hbj")))
         check("postgres_service_unseal", instance.call("POST", "sys/unseal", {"key": key})[0] == 200)
         check("initialization_ack", instance.call("POST", "sys/init/ack", {})[0] == 204)
+        check("fixture_secret_kv2_enabled", provision_secret_kv2(instance.call)["http_status"] == 204)
         secret = "synthetic-postgres-secret-" + secrets.token_hex(20)
         check("kv_write_through_postgres_service", instance.call(
             "POST", "secret/data/postgres-item", {"data": {"value": secret}})[0] == 200)

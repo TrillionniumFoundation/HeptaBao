@@ -6,6 +6,8 @@ The server may reach it only through the deployment-owned outbound allowlist.
 """
 from __future__ import annotations
 
+from fixture_mounts import provision_secret_kv2
+
 import argparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -186,6 +188,7 @@ def run(binary: Path, work_dir: Path) -> int:
         )
         check("api_cannot_rebind_http_audit_destination", status == 409)
 
+        fixture_setup = provision_secret_kv2(instance.call)
         secret = "audit-http-synthetic-value"
         status, _ = instance.call("POST", "secret/data/audit-http", {"data": {"value": secret}})
         check("audited_mutation_succeeds", status == 200)
@@ -247,6 +250,7 @@ def run(binary: Path, work_dir: Path) -> int:
         result = {
             "status": "passed",
             "checks": len(passed),
+            "fixture_mount_setup": fixture_setup,
             "passed": passed,
             "collector": "loopback_host_enrolled_tls",
             "redirects": "forbidden",

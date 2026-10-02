@@ -2,6 +2,8 @@
 """Exercise the real process-configured Unix syslog audit profile."""
 from __future__ import annotations
 
+from fixture_mounts import provision_secret_kv2
+
 import argparse
 import json
 import os
@@ -153,6 +155,7 @@ def run(binary: Path, work_dir: Path) -> int:
             == 409,
         )
 
+        fixture_setup = provision_secret_kv2(instance.call)
         secret = "synthetic-syslog-secret"
         check(
             "audited_mutation_succeeds",
@@ -208,6 +211,7 @@ def run(binary: Path, work_dir: Path) -> int:
                 {
                     "status": "passed",
                     "checks": len(passed),
+                    "fixture_mount_setup": fixture_setup,
                     "passed": passed,
                     "facility": "AUTH",
                     "tag": "heptabao",

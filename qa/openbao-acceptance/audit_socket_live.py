@@ -8,6 +8,8 @@ failure remains observable while the local file device preserves service.
 """
 from __future__ import annotations
 
+from fixture_mounts import provision_secret_kv2
+
 import argparse
 import json
 import os
@@ -141,6 +143,7 @@ def run(binary: Path, work_dir: Path) -> int:
         )
         check("api_cannot_rebind_socket_destination", status == 409)
 
+        fixture_setup = provision_secret_kv2(instance.call)
         secret = "audit-socket-synthetic-value"
         check(
             "audited_mutation_succeeds",
@@ -199,6 +202,7 @@ def run(binary: Path, work_dir: Path) -> int:
             "schema": "heptabao.audit-socket-live.v1",
             "status": "passed_scoped_socket_audit",
             "checks": len(passed),
+            "fixture_mount_setup": fixture_setup,
             "passed": passed,
             "socket_type": "tcp",
             "configuration_authority": "trusted_process_only",
