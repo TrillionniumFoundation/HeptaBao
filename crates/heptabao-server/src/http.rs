@@ -377,6 +377,7 @@ fn serve_inner(
         }
         Ok(())
     })();
+    #[cfg(target_os = "linux")]
     if let Err(error) = startup {
         #[cfg(target_os = "linux")]
         if let Some(control) = local_control.as_ref() {
@@ -384,6 +385,8 @@ fn serve_inner(
         }
         return Err(error);
     }
+    #[cfg(not(target_os = "linux"))]
+    startup?;
     if let Some(ha) = forwarding_ha {
         let forward_timeout = ha
             .lock()
