@@ -38,6 +38,7 @@ const POLL: Duration = Duration::from_millis(2);
 const MAX_HANDSHAKE: usize = 4096;
 
 #[cfg(test)]
+#[path = "service_openbao_wrapper_linux/deadline_tests.rs"]
 mod deadline_tests;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
