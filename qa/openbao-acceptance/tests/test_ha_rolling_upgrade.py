@@ -47,6 +47,58 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
                     cluster.assert_misbound_rejection(node)
                 node.stop.assert_called_once_with()
 
+    def test_current_pinned_base_can_reject_misbinding_before_api_startup(self):
+        cluster = self.cluster()
+        cluster.scenarios, cluster.candidate_binary = [], Path("/candidate")
+        node = Mock(binary=Path("/base"))
+        node.start.side_effect = upgrade.FixtureError("node_exited_during_startup")
+        with patch.object(upgrade, "checked_binary") as checked, \
+                patch.object(upgrade, "running_digest") as running:
+            cluster.assert_misbound_rejection(node)
+        self.assertEqual(checked.call_count, 2)
+        checked.assert_called_with(node.binary, cluster.base_digest)
+        node.start.assert_called_once_with()
+        node.verify_startup_rejection.assert_called_once_with(upgrade.MISBOUND_BOOTSTRAP_ERROR)
+        node.expect_startup_rejection.assert_not_called()
+        node.call.assert_not_called()
+        running.assert_not_called()
+        node.stop.assert_called_once_with()
+        self.assertEqual(cluster.scenarios, ["rolling_upgrade_base_misbound_startup_rejected"])
+
+    def test_base_startup_failure_requires_exact_terminal_marker(self):
+        for start_error, rejection_error in [
+            ("node_listener_timeout", None),
+            ("node_exited_during_startup", "unexpected_startup_rejection"),
+            ("node_exited_during_startup", "misbound_cluster_process_did_not_exit"),
+        ]:
+            with self.subTest(start_error=start_error, rejection_error=rejection_error):
+                cluster = self.cluster()
+                cluster.scenarios, cluster.candidate_binary = [], Path("/candidate")
+                node = Mock(binary=Path("/base"))
+                node.start.side_effect = upgrade.FixtureError(start_error)
+                if rejection_error:
+                    node.verify_startup_rejection.side_effect = upgrade.FixtureError(rejection_error)
+                with patch.object(upgrade, "checked_binary"), self.assertRaises(upgrade.FixtureError):
+                    cluster.assert_misbound_rejection(node)
+                node.start.assert_called_once_with()
+                node.call.assert_not_called()
+                node.stop.assert_called_once_with()
+                self.assertEqual(cluster.scenarios, [])
+                if start_error != "node_exited_during_startup":
+                    node.verify_startup_rejection.assert_not_called()
+
+    def test_changed_base_file_cannot_admit_a_startup_refusal(self):
+        cluster = self.cluster()
+        cluster.scenarios, cluster.candidate_binary = [], Path("/candidate")
+        node = Mock(binary=Path("/base"))
+        node.start.side_effect = upgrade.FixtureError("node_exited_during_startup")
+        with patch.object(upgrade, "checked_binary", side_effect=[None, upgrade.FixtureError("binary_digest_mismatch")]), \
+                self.assertRaisesRegex(upgrade.FixtureError, "binary_digest_mismatch"):
+            cluster.assert_misbound_rejection(node)
+        node.call.assert_not_called()
+        node.stop.assert_called_once_with()
+        self.assertEqual(cluster.scenarios, [])
+
     def test_candidate_misbinding_keeps_strict_startup_contract(self):
         cluster = self.cluster()
         cluster.scenarios, cluster.candidate_binary = [], Path("/candidate")

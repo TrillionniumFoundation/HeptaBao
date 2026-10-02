@@ -87,12 +87,21 @@ class RollingUpgradeCluster(Cluster):
         if wrong.binary == self.candidate_binary:
             checked_binary(wrong.binary, self.candidate_digest)
             return super().assert_misbound_rejection(wrong)
-        # The pinned PR base predates startup marker admission. Prove the actual
-        # running executable, then require its exact unseal refusal and sealed
-        # health. A candidate or unknown executable never receives this exception.
+        # A stacked PR can have a current base that rejects the mismatched
+        # marker before API startup. Observe that exact terminal refusal from
+        # this launch; never retry startup or accept an unrelated exit. A legacy
+        # base must still prove its running digest and exact sealed-unseal refusal.
         checked_binary(wrong.binary, self.base_digest)
         try:
-            wrong.start()
+            try:
+                wrong.start()
+            except FixtureError as error:
+                if str(error) != "node_exited_during_startup":
+                    raise
+                wrong.verify_startup_rejection(MISBOUND_BOOTSTRAP_ERROR)
+                checked_binary(wrong.binary, self.base_digest)
+                self.check("rolling_upgrade_base_misbound_startup_rejected", True)
+                return
             if running_digest(wrong) != self.base_digest:
                 raise FixtureError("rolling_upgrade_base_binary_changed")
             status, denied = wrong.call(
@@ -114,7 +123,7 @@ class RollingUpgradeCluster(Cluster):
     def leader(self) -> Node:
         """Resolve one stable leader across the exact base/candidate health schema.
 
-        The exact base predates ``ha_application_ready``. Accept that missing
+        Historical bases may predate ``ha_application_ready``. Accept that missing
         field only while /proc proves the process is the pinned base binary.
         Candidate processes must expose and assert the stronger readiness bit.
         """
