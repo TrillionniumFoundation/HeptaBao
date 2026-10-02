@@ -27,86 +27,26 @@ MAX_SIGNATURES = 128
 HEX40 = set("0123456789abcdef")
 HEX64 = set("0123456789abcdef")
 
-# Ed25519 constants from RFC 8032.
-_Q = 2**255 - 19
-_L = 2**252 + 27742317777372353535851937790883648493
-_D = (-121665 * pow(121666, _Q - 2, _Q)) % _Q
-_I = pow(2, (_Q - 1) // 4, _Q)
-_IDENTITY = (0, 1)
+# Both evidence formats use the same strict verification-only primitive.
+# Keep this adapter's public argument order and boolean rejection contract.
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
 
-
-def _inv(value: int) -> int:
-    return pow(value % _Q, _Q - 2, _Q)
-
-
-def _recover_x(y: int, sign: int) -> int:
-    xx = ((y * y - 1) * _inv(_D * y * y + 1)) % _Q
-    x = pow(xx, (_Q + 3) // 8, _Q)
-    if (x * x - xx) % _Q != 0:
-        x = (x * _I) % _Q
-    if (x * x - xx) % _Q != 0:
-        raise ValueError("point is not on the Ed25519 curve")
-    if (x & 1) != sign:
-        x = _Q - x
-    return x
-
-
-def _decode_point(encoded: bytes) -> tuple[int, int]:
-    if len(encoded) != 32:
-        raise ValueError("Ed25519 point must be 32 bytes")
-    value = int.from_bytes(encoded, "little")
-    sign = value >> 255
-    y = value & ((1 << 255) - 1)
-    if y >= _Q:
-        raise ValueError("non-canonical Ed25519 point")
-    point = (_recover_x(y, sign), y)
-    if _point_add(point, _IDENTITY) != point:
-        raise ValueError("invalid Ed25519 point")
-    if point == _IDENTITY or _scalar_mul(_L, point) != _IDENTITY:
-        raise ValueError("Ed25519 point is not in the prime-order subgroup")
-    return point
-
-
-def _point_add(left: tuple[int, int], right: tuple[int, int]) -> tuple[int, int]:
-    x1, y1 = left
-    x2, y2 = right
-    product = (_D * x1 * x2 * y1 * y2) % _Q
-    x3 = ((x1 * y2 + y1 * x2) * _inv(1 + product)) % _Q
-    y3 = ((y1 * y2 + x1 * x2) * _inv(1 - product)) % _Q
-    return x3, y3
-
-
-def _scalar_mul(scalar: int, point: tuple[int, int]) -> tuple[int, int]:
-    result = _IDENTITY
-    addend = point
-    while scalar:
-        if scalar & 1:
-            result = _point_add(result, addend)
-        addend = _point_add(addend, addend)
-        scalar >>= 1
-    return result
-
-_BASE_Y = (4 * _inv(5)) % _Q
-_BASE = (_recover_x(_BASE_Y, 0), _BASE_Y)
+import heptabao_ed25519_v2_5 as _ed25519
 
 
 def verify_ed25519(public_key: bytes, message: bytes, signature: bytes) -> bool:
-    """Strictly verify an Ed25519 signature without accepting small-order points."""
+    """Verify byte inputs; malformed encodings return False, not a new exception."""
     try:
+        # Retain cheap rejection before subgroup arithmetic, as in the original
+        # completion API. The shared primitive owns the cryptographic equation.
         if len(public_key) != 32 or len(signature) != 64:
             return False
-        r_encoded = signature[:32]
-        s = int.from_bytes(signature[32:], "little")
-        if s >= _L:
+        if int.from_bytes(signature[32:], "little") >= _ed25519.ORDER:
             return False
-        public = _decode_point(public_key)
-        r_point = _decode_point(r_encoded)
-        challenge = int.from_bytes(
-            hashlib.sha512(r_encoded + public_key + message).digest(), "little"
-        ) % _L
-        return _scalar_mul(s, _BASE) == _point_add(
-            r_point, _scalar_mul(challenge, public)
-        )
+        _ed25519.verify(public_key, signature, message)
+        return True
     except (ArithmeticError, ValueError):
         return False
 

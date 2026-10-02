@@ -9,6 +9,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "verify_external_completion_v2_5.py"
 SPEC = importlib.util.spec_from_file_location("verify_external_completion_v2_5", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
@@ -16,37 +18,13 @@ verifier = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(verifier)
 
 
-def _encode_point(point: tuple[int, int]) -> bytes:
-    x, y = point
-    return (y | ((x & 1) << 255)).to_bytes(32, "little")
-
-
 def _public_key(seed: bytes) -> bytes:
-    expanded = hashlib.sha512(seed).digest()
-    scalar_bytes = bytearray(expanded[:32])
-    scalar_bytes[0] &= 248
-    scalar_bytes[31] &= 63
-    scalar_bytes[31] |= 64
-    scalar = int.from_bytes(scalar_bytes, "little")
-    return _encode_point(verifier._scalar_mul(scalar, verifier._BASE))
+    return Ed25519PrivateKey.from_private_bytes(seed).public_key().public_bytes_raw()
 
 
 def _sign(seed: bytes, message: bytes) -> bytes:
-    expanded = hashlib.sha512(seed).digest()
-    scalar_bytes = bytearray(expanded[:32])
-    scalar_bytes[0] &= 248
-    scalar_bytes[31] &= 63
-    scalar_bytes[31] |= 64
-    scalar = int.from_bytes(scalar_bytes, "little")
-    prefix = expanded[32:]
-    public_key = _encode_point(verifier._scalar_mul(scalar, verifier._BASE))
-    nonce = int.from_bytes(hashlib.sha512(prefix + message).digest(), "little") % verifier._L
-    encoded_r = _encode_point(verifier._scalar_mul(nonce, verifier._BASE))
-    challenge = int.from_bytes(
-        hashlib.sha512(encoded_r + public_key + message).digest(), "little"
-    ) % verifier._L
-    s = (nonce + challenge * scalar) % verifier._L
-    return encoded_r + s.to_bytes(32, "little")
+    # Synthetic fixtures use an independent provider, not verifier internals.
+    return Ed25519PrivateKey.from_private_bytes(seed).sign(message)
 
 
 class CompletionFixture:
@@ -184,7 +162,7 @@ class ExternalCompletionVerifierTests(unittest.TestCase):
         public_key = bytes.fromhex(
             "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
         )
-        signature = bytes(32) + verifier._L.to_bytes(32, "little")
+        signature = bytes(32) + (2**252 + 27742317777372353535851937790883648493).to_bytes(32, "little")
         self.assertFalse(verifier.verify_ed25519(public_key, b"", signature))
 
     def test_complete_fixture_is_admitted(self) -> None:

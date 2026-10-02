@@ -13,11 +13,25 @@ The executable verifier is:
 scripts/verify_external_completion_v2_5.py
 ```
 
+It uses the same strict verification-only primitive as the external-evidence
+validator: `scripts/heptabao_ed25519_v2_5.py`. Run it from a complete checkout,
+or retain both files side by side when packaging the verifier. No standalone
+single-file verifier or signing entrypoint is provided. Exact source-tree binding
+covers both files; an old receipt does not qualify changed verification code.
+
 The hostile and positive regressions are:
 
 ```text
 tests/repository/test_verify_external_completion_v2_5.py
+tests/repository/test_completion_signature_boundary.py
 ```
+
+The Python verification adapter accepts byte inputs and returns `False` for
+invalid lengths, noncanonical encodings/scalars, non-prime-order points and bad
+signatures. Incorrect Python argument types remain programming errors. Both
+evidence formats retain their own envelope, artifact, custody and signer rules.
+Test signing uses only synthetic deterministic seeds and the already-pinned
+`cryptography` fixture dependency; it does not participate in production admission.
 
 ## Purpose
 
