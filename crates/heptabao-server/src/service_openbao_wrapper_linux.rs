@@ -4,8 +4,8 @@
 use std::collections::BTreeMap;
 use std::fmt;
 use std::fs::File;
-use std::io::{self, Read};
-use std::os::fd::{AsFd, OwnedFd};
+use std::io::{self, Read, Write};
+use std::os::fd::{AsFd, AsRawFd, OwnedFd};
 use std::os::unix::fs::{FileExt, MetadataExt};
 use std::os::unix::process::CommandExt;
 use std::path::PathBuf;
@@ -26,7 +26,7 @@ use heptabao_openbao_grpc::{
 };
 use heptabao_plugin_host::OwnedExecutableImage;
 use ring::digest::{Context, SHA256};
-use rustix::fs::{Mode, OFlags};
+use rustix::fs::{MemfdFlags, Mode, OFlags, SealFlags};
 use rustix::process::{Pid, PidfdFlags, Signal};
 use serde::Deserialize;
 use serde::de::{MapAccess, Visitor};
@@ -308,13 +308,11 @@ impl<'de> Deserialize<'de> for ConfigMap {
     }
 }
 
-fn private_config(config: &OpenBaoWrapperConfig) -> Result<(File, RpcOptions), BridgeError> {
-    let parent = config
-        .configuration_file
+fn private_file(path: &std::path::Path, expected_sha256: &str) -> Result<(File, Zeroizing<Vec<u8>>), BridgeError> {
+    let parent = path
         .parent()
         .ok_or(BridgeError::InvalidBinding)?;
-    let name = config
-        .configuration_file
+    let name = path
         .file_name()
         .ok_or(BridgeError::InvalidBinding)?;
     let directory = heptabao_filesystem_guard::open_absolute_directory_no_symlinks(parent)
@@ -353,7 +351,7 @@ fn private_config(config: &OpenBaoWrapperConfig) -> Result<(File, RpcOptions), B
         )
     };
     let before = stamp(&metadata);
-    let expected = digest(&config.configuration_sha256)?;
+    let expected = digest(expected_sha256)?;
     let mut bytes = Zeroizing::new(vec![0; metadata.len() as usize]);
     for _ in 0..2 {
         let mut offset = 0;
@@ -374,6 +372,11 @@ fn private_config(config: &OpenBaoWrapperConfig) -> Result<(File, RpcOptions), B
             return Err(BridgeError::IdentityChanged);
         }
     }
+    Ok((file, bytes))
+}
+
+fn private_config(config: &OpenBaoWrapperConfig) -> Result<(File, RpcOptions), BridgeError> {
+    let (file, bytes) = private_file(&config.configuration_file, &config.configuration_sha256)?;
     let mut map: ConfigMap =
         serde_json::from_slice(&bytes).map_err(|_| BridgeError::InvalidOptions)?;
     let mut options = RpcOptions::default();
@@ -487,6 +490,9 @@ pub(super) fn launch_automatic_runtime(
     let stop = Arc::new(AtomicBool::new(false));
     let cleanup = Arc::new(Mutex::new(WrapperCleanupState::NotStarted));
     lifecycle.track_cleanup(cleanup.clone())?;
+    let diagnostic = Arc::new(Mutex::new(Some(serde_json::json!({"provider":null,"owned_pid":null,
+        "generation":generation,"authenticated_h2":false,"health_authenticated":false}))));
+    lifecycle.track_diagnostic(diagnostic.clone())?;
     let control = Arc::new(Control {
         sender,
         stop: stop.clone(),
@@ -504,12 +510,24 @@ pub(super) fn launch_automatic_runtime(
             Err(_) => { let _ = ready.send(Err(BridgeError::BeforeDispatch)); lifecycle.revoke(); return; }
         };
         let mut child: Option<OwnedChild> = None;
+        // This FD lives through session drop and the actual child terminal wait.
+        let mut soft_hsm: Option<(File, File)> = None;
         let startup = (|| {
             let before = lifecycle.snapshot()?;
             let image = OwnedExecutableImage::open(&config.command, digest(&config.command_sha256)?).map_err(|_| BridgeError::InvalidBinding)?;
             let executable = image.identity().map_err(|_| BridgeError::InvalidBinding)?;
             let (configuration, options) = private_config(&config)?;
             let meta = configuration.metadata().map_err(|_| BridgeError::InvalidBinding)?;
+            if let (Some(path), Some(hash)) = (&config.soft_hsm_configuration_file, &config.soft_hsm_configuration_sha256) {
+                let (original, bytes) = private_file(path, hash)?;
+                let mut sealed = File::from(rustix::fs::memfd_create("heptabao-soft-hsm-configuration",
+                    MemfdFlags::CLOEXEC | MemfdFlags::ALLOW_SEALING).map_err(|_| BridgeError::BeforeDispatch)?);
+                sealed.write_all(&bytes).map_err(|_| BridgeError::BeforeDispatch)?;
+                rustix::fs::fchmod(&sealed, Mode::RUSR | Mode::WUSR).map_err(|_| BridgeError::BeforeDispatch)?;
+                rustix::fs::fcntl_add_seals(&sealed, SealFlags::WRITE | SealFlags::GROW | SealFlags::SHRINK | SealFlags::SEAL)
+                    .map_err(|_| BridgeError::BeforeDispatch)?;
+                soft_hsm = Some((original, sealed));
+            }
             let client = PerLaunchClientIdentity::generate()?;
             create_socket_directory(&directory)?;
             if lifecycle.snapshot()? != before || stop.load(Ordering::Acquire) { return Err(BridgeError::LifecycleDenied); }
@@ -519,6 +537,9 @@ pub(super) fn launch_automatic_runtime(
                 .env("PLUGIN_CLIENT_CERT", client.public_certificate_pem())
                 .env("PLUGIN_UNIX_SOCKET_DIR", &directory)
                 .process_group(0).stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::null());
+            if let Some((_, file)) = soft_hsm.as_ref() {
+                command.env("SOFTHSM2_CONF", format!("/proc/{}/fd/{}", std::process::id(), file.as_raw_fd()));
+            }
             lifecycle.authorize_start(generation)?;
             let started = command.spawn().map_err(|_| {
                 set_cleanup(&cleanup, WrapperCleanupState::NotStarted);
@@ -527,6 +548,9 @@ pub(super) fn launch_automatic_runtime(
             let owned = match OwnedChild::capture(started, cleanup.clone()) {
                 Ok(child) => child,
                 Err(mut uncaptured) => {
+                    if let Ok(mut observed) = diagnostic.lock() {
+                        if let Some(value) = observed.as_mut() { value["owned_pid"] = serde_json::json!(uncaptured.id()); }
+                    }
                     // The owned Child has not been waited or reaped, so its PID
                     // cannot be reused. This is only the pidfd-capture failure.
                     let _ = uncaptured.kill();
@@ -545,6 +569,9 @@ pub(super) fn launch_automatic_runtime(
                 }
             };
             child = Some(owned);
+            if let Ok(mut observed) = diagnostic.lock() {
+                if let Some(value) = observed.as_mut() { value["owned_pid"] = serde_json::json!(child.as_ref().ok_or(BridgeError::OutcomeUnknown)?.child.id()); }
+            }
             let owned = child.as_mut().ok_or(BridgeError::OutcomeUnknown)?;
             let probe = LinuxIdentityProbe::capture_started_child(StartedChildBinding {
                 pid: owned.child.id(), uid: rustix::process::geteuid().as_raw(), executable_device: executable.0,
@@ -552,9 +579,19 @@ pub(super) fn launch_automatic_runtime(
                 config_device: meta.dev(), config_inode: meta.ino(), config_sha256: digest(&config.configuration_sha256)?,
             }, &config.configuration_file, lifecycle.clone())?;
             let identity = probe.observe()?.0;
+            let actual_pid = Pid::from_raw(identity.pid as i32).ok_or(BridgeError::InvalidBinding)?;
+            let actual_pgid = rustix::process::getpgid(Some(actual_pid)).map_err(|_| BridgeError::ProcessObservationUnavailable)?.as_raw();
+            if probe.observe()?.0 != identity { return Err(BridgeError::IdentityChanged); }
+            let observation = serde_json::json!({
+                "provider": {"pid":identity.pid,"pgid":actual_pgid,"sid":identity.session_id,
+                    "uid":identity.uid,"start_ticks":identity.start_ticks,
+                    "executable_sha256":super::super::hex(&identity.executable_sha256)},
+                "owned_pid":identity.pid,"generation":generation,"authenticated_h2":false,"health_authenticated":false
+            });
+            *diagnostic.lock().map_err(|_| BridgeError::ProcessObservationUnavailable)? = Some(observation.clone());
             let handshake = read_handshake(&mut owned.child, &probe, &directory, deadline, &stop)?;
             let limits = RpcLimits { maximum_request_bytes: 1024 * 1024, maximum_response_bytes: 1024 * 1024, timeout };
-            rt.block_on(async {
+            let session = rt.block_on(async {
                 tokio::select! {
                     _ = cancelled(&stop) => Err(BridgeError::LifecycleDenied),
                     result = tokio::time::timeout(deadline.saturating_duration_since(Instant::now()), async {
@@ -569,7 +606,12 @@ pub(super) fn launch_automatic_runtime(
                         Ok(session)
                     }) => result.map_err(|_| BridgeError::OutcomeUnknown)?,
                 }
-            })
+            })?;
+            let mut authenticated = observation;
+            authenticated["authenticated_h2"] = serde_json::json!(true);
+            authenticated["health_authenticated"] = serde_json::json!(true);
+            *diagnostic.lock().map_err(|_| BridgeError::ProcessObservationUnavailable)? = Some(authenticated);
+            Ok(session)
         })();
         match startup {
             Ok(mut session) => {

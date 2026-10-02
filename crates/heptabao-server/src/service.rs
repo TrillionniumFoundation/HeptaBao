@@ -239,6 +239,16 @@ fn clone_pg_storage_config(config: &PgStorageConfig) -> PgStorageConfig {
 
 impl SealMetadata {
     fn validate(&self) -> Result<(), &'static str> {
+        if self.schema == 2 {
+            if self.generation == 0 || self.share_format != "wrapper-v1" || self.secret_shares != 0 || self.secret_threshold != 0 {
+                return Err("invalid Wrapper seal metadata");
+            }
+            let envelope = openbao_wrapper::barrier::Envelope::decode(&self.wrapped_barrier_key)?;
+            if envelope.generation() != self.generation {
+                return Err("Wrapper seal generation mismatch");
+            }
+            return Ok(());
+        }
         if self.schema != 1
             || self.generation == 0
             || !matches!(self.share_format.as_str(), "shamir-v1" | "raw-v1")
@@ -787,6 +797,8 @@ enum ExternalEffectPlan {
     KubernetesToken(kubernetes_secret::KubernetesTokenEffectPlan),
     OpenLdap(openldap_secret::OpenLdapEffectPlan),
     SnapshotTransfer(Box<snapshot_transfer::SnapshotTransferPlan>),
+    #[cfg(target_os = "linux")]
+    WrapperBarrierInit(Box<openbao_wrapper::barrier::InitializationPlan>),
 }
 
 pub(crate) enum ExternalEffectResult {
@@ -804,6 +816,8 @@ pub(crate) enum ExternalEffectResult {
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
     OpenLdap(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
+    #[cfg(target_os = "linux")]
+    WrapperBarrierInit(Result<OpenBaoWrapperCompletion, heptabao_openbao_grpc::BridgeError>),
 }
 
 pub(crate) struct PendingExternalRequest {
@@ -817,6 +831,8 @@ impl PendingExternalRequest {
     /// existing finalize boundary still rejects every late external result.
     pub(crate) fn execute_before(&self, deadline: std::time::Instant) -> ExternalEffectResult {
         match &self.effect {
+            #[cfg(target_os = "linux")]
+            ExternalEffectPlan::WrapperBarrierInit(plan) => ExternalEffectResult::WrapperBarrierInit(plan.execute_before(deadline)),
             ExternalEffectPlan::OnlineAuth(plan) => {
                 ExternalEffectResult::OnlineAuth(plan.execute_before(deadline))
             }
@@ -828,6 +844,8 @@ impl PendingExternalRequest {
     /// global Service writer while this method is executing.
     pub(crate) fn execute(&self) -> ExternalEffectResult {
         match &self.effect {
+            #[cfg(target_os = "linux")]
+            ExternalEffectPlan::WrapperBarrierInit(plan) => ExternalEffectResult::WrapperBarrierInit(plan.execute_before(plan.deadline())),
             ExternalEffectPlan::Database(plan) => ExternalEffectResult::Database(plan.execute()),
             ExternalEffectPlan::DatabaseConfig(plan) => {
                 ExternalEffectResult::DatabaseConfig(plan.execute())
@@ -957,6 +975,7 @@ pub struct Service {
     barrier_key: Option<Zeroizing<[u8; 32]>>,
     rekey: Option<RekeyState>,
     recovery_required: bool,
+    private_shutdown_requested: bool,
     ha: Option<Arc<Mutex<HaProcess>>>,
     opaque_owner_capacity: usize,
     #[cfg(test)]
@@ -1306,6 +1325,7 @@ impl Service {
             barrier_key: None,
             rekey,
             recovery_required,
+            private_shutdown_requested: false,
             ha,
             opaque_owner_capacity: MAX_STATE_BYTES,
             #[cfg(test)]
@@ -1428,6 +1448,33 @@ impl Service {
         }
     }
 
+    /// Trusted local control only. Never called by an HTTP capability.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn begin_private_shutdown(&mut self) -> Result<(), &'static str> {
+        self.private_shutdown_requested = true;
+        self.fence_openbao_wrapper();
+        self.state = None;
+        self.ha_activation = None;
+        self.record_root = None;
+        self.record_writes_since_gc = 0;
+        self.ha_read_cache = None;
+        self.durable = None;
+        self.barrier_key = None;
+        self.unseal_shares.clear();
+        let discard_rekey = self
+            .rekey
+            .as_ref()
+            .is_some_and(|rekey| rekey.verification.is_none());
+        if let Some(rekey) = self.rekey.as_mut() {
+            rekey.provided.clear();
+            rekey.verification_provided.clear();
+        }
+        if discard_rekey {
+            self.rekey = None;
+        }
+        self.rotate_unseal_nonce()
+    }
+
     /// Keep the original HTTP deadline through synchronous forwarding. Restore
     /// the prior scope before returning either a response or an external plan.
     pub(crate) fn begin_request_before(
@@ -1437,6 +1484,10 @@ impl Service {
         forwarded: bool,
     ) -> RequestExecution {
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+        if self.private_shutdown_requested {
+            erase_json(&mut request.body);
+            return RequestExecution::Complete(Response::error(503, "service shutdown in progress"));
+        }
         if crate::request_deadline::current()
             .is_some_and(|deadline| std::time::Instant::now() >= deadline)
         {
@@ -1552,6 +1603,10 @@ impl Service {
         result: ExternalEffectResult,
     ) -> Response {
         let response = match (pending.effect, result) {
+            #[cfg(target_os = "linux")]
+            (ExternalEffectPlan::WrapperBarrierInit(plan), ExternalEffectResult::WrapperBarrierInit(result)) => {
+                self.finalize_wrapper_barrier_initialization(*plan, result, pending.now, &pending.fingerprint)
+            }
             (ExternalEffectPlan::Database(plan), ExternalEffectResult::Database(result)) => {
                 self.finalize_database_request(*plan, result)
             }
@@ -1634,6 +1689,10 @@ impl Service {
             self.recovery_required = true;
             self.ha_activation = None;
             erase_json(&mut response.body);
+            #[cfg(target_os = "linux")]
+            if self.seal.as_ref().is_some_and(|seal| seal.schema == 2) {
+                self.fence_wrapper_barrier_delivery();
+            }
             return Response::error(
                 503,
                 "response audit failed; outcome unknown; authoritative recovery required",
@@ -1792,6 +1851,21 @@ impl Service {
             }
         }
         if path == "sys/init" && matches!(method, "PUT" | "POST") {
+            #[cfg(target_os = "linux")]
+            if self.wrapper_barrier_selected() && !self.initialized() {
+                let plan = if !valid_path(path) || !valid_namespace(namespace) || !namespace.is_empty() {
+                    Err(Response::error(400, "initialization requires the root namespace"))
+                } else {
+                    self.prepare_wrapper_barrier_initialization(&body)
+                };
+                erase_json(&mut body);
+                return match plan {
+                    Ok(plan) => RequestExecution::External(Box::new(PendingExternalRequest {
+                        fingerprint, now, effect: ExternalEffectPlan::WrapperBarrierInit(Box::new(plan)),
+                    })),
+                    Err(response) => RequestExecution::Complete(self.audit_completed_response(&fingerprint, now, response)),
+                };
+            }
             let (response, response_audited) =
                 if !valid_path(path) || !valid_namespace(namespace) || !namespace.is_empty() {
                     (
@@ -3386,7 +3460,9 @@ impl Service {
             .as_ref()
             .map(|seal| {
                 (
-                    if seal.share_format == "raw-v1" {
+                    if seal.schema == 2 {
+                        "openbao-wrapper"
+                    } else if seal.share_format == "raw-v1" {
                         "shamir-legacy"
                     } else {
                         "shamir"
@@ -3435,11 +3511,20 @@ impl Service {
         body: &Value,
         now: u64,
         response_fingerprint: &str,
-        mut import: impl FnMut(
+        import: impl FnMut(
             &PgStorageConfig,
             &BackendBundle,
         ) -> Result<Box<dyn DurableBackend>, BackendError>,
     ) -> (Response, bool) {
+        self.initialize_with_wrapper_material(body, now, response_fingerprint, import, None)
+    }
+
+    fn initialize_with_wrapper_material(
+        &mut self, body: &Value, now: u64, response_fingerprint: &str,
+        mut import: impl FnMut(&PgStorageConfig, &BackendBundle) -> Result<Box<dyn DurableBackend>, BackendError>,
+        wrapper: Option<openbao_wrapper::barrier::PreparedMaterial>,
+    ) -> (Response, bool) {
+        let wrapper_mode = wrapper.is_some() || self.seal.as_ref().is_some_and(|seal| seal.schema == 2);
         if self.ha.is_some() {
             return (
                 Response::error(
@@ -3462,15 +3547,20 @@ impl Service {
                 false,
             );
         }
-        let shares = match bounded_u8_field(body, "secret_shares", 5) {
+        let shares = match bounded_u8_field(body, "secret_shares", if wrapper_mode { 0 } else { 5 }) {
             Ok(value) => value,
             Err(message) => return (Response::error(400, message), false),
         };
-        let threshold = match bounded_u8_field(body, "secret_threshold", 3) {
+        let threshold = match bounded_u8_field(body, "secret_threshold", if wrapper_mode { 0 } else { 3 }) {
             Ok(value) => value,
             Err(message) => return (Response::error(400, message), false),
         };
-        if shares == 0 || shares > MAX_SEAL_SHARES || threshold == 0 || threshold > shares {
+        let invalid_shares = if wrapper_mode {
+            shares != 0 || threshold != 0
+        } else {
+            shares == 0 || shares > MAX_SEAL_SHARES || threshold == 0 || threshold > shares
+        };
+        if invalid_shares {
             return (
                 Response::error(
                     400,
@@ -3594,32 +3684,38 @@ impl Service {
             );
         }
 
-        let seal_key = match crypto::random::<32>() {
-            Ok(value) => Zeroizing::new(value),
-            Err(error) => return (Response::error(503, error), false),
-        };
-        let barrier_key = match crypto::random::<32>() {
-            Ok(value) => Zeroizing::new(value),
-            Err(error) => return (Response::error(503, error), false),
-        };
-        let generated_shares = match crypto::split_secret(&seal_key, shares, threshold) {
-            Ok(value) => value,
-            Err(error) => return (Response::error(503, error), false),
-        };
-        let mut seal = SealMetadata {
-            schema: 1,
-            generation: 1,
-            share_format: "shamir-v1".into(),
-            secret_shares: shares,
-            secret_threshold: threshold,
-            wrapped_barrier_key: String::new(),
-        };
-        let wrapped =
-            match crypto::wrap_barrier_key(&seal_key, &seal.associated_data(), &barrier_key) {
+        let wrapper_deadline = wrapper.as_ref().map(|material| material.deadline);
+        let (seal, generated_shares, barrier_key) = if let Some(material) = wrapper {
+            (material.seal, Vec::new(), material.key)
+        } else {
+            let seal_key = match crypto::random::<32>() {
                 Ok(value) => Zeroizing::new(value),
                 Err(error) => return (Response::error(503, error), false),
             };
-        seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
+            let barrier_key = match crypto::random::<32>() {
+                Ok(value) => Zeroizing::new(value),
+                Err(error) => return (Response::error(503, error), false),
+            };
+            let generated_shares = match crypto::split_secret(&seal_key, shares, threshold) {
+                Ok(value) => value,
+                Err(error) => return (Response::error(503, error), false),
+            };
+            let mut seal = SealMetadata {
+                schema: 1,
+                generation: 1,
+                share_format: "shamir-v1".into(),
+                secret_shares: shares,
+                secret_threshold: threshold,
+                wrapped_barrier_key: String::new(),
+            };
+            let wrapped =
+                match crypto::wrap_barrier_key(&seal_key, &seal.associated_data(), &barrier_key) {
+                    Ok(value) => Zeroizing::new(value),
+                    Err(error) => return (Response::error(503, error), false),
+                };
+            seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
+            (seal, generated_shares, barrier_key)
+        };
         if let Err(error) = seal.validate() {
             return (Response::error(500, error), false);
         }
@@ -3829,6 +3925,10 @@ impl Service {
                 true,
             );
         }
+        if wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+            self.fence_openbao_wrapper();
+            return (Response::error(503, "Wrapper initialization deadline expired before publication"), true);
+        }
         let parent_synced = match stage.publish(&self.data_dir, &parent) {
             Ok(value) => value,
             Err(_) => {
@@ -3849,7 +3949,7 @@ impl Service {
         self.barrier_key = None;
         self.unseal_shares.clear();
         self.rekey = None;
-        if !parent_synced {
+        if !parent_synced || wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -4174,6 +4274,9 @@ impl Service {
     }
 
     fn unseal(&mut self, body: &Value) -> Response {
+        if self.seal.as_ref().is_some_and(|seal| seal.schema == 2) {
+            return Response::error(501, "Wrapper seal uses trusted startup; manual unseal and migration are unavailable");
+        }
         if self.state.is_some() && !self.recovery_required {
             return self.seal_status();
         }
@@ -4590,6 +4693,9 @@ impl Service {
     }
 
     fn rekey_route(&mut self, method: &str, path: &str, body: &Value) -> Response {
+        if self.seal.as_ref().is_some_and(|seal| seal.schema == 2) {
+            return Response::error(501, "Wrapper recovery-key rekey requires a separate supported consumer");
+        }
         match initialization_recovery_pending(&self.data_dir) {
             Ok(false) => {}
             Ok(true) => {

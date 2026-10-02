@@ -32,6 +32,11 @@ mod snapshot;
 pub(crate) mod consistency;
 #[path = "http_leader.rs"]
 mod leader;
+#[cfg(target_os = "linux")]
+#[path = "http_local_control.rs"]
+mod local_control;
+#[cfg(target_os = "linux")]
+pub use local_control::LocalControlConfig;
 
 const MAX_HEADERS: usize = 16 * 1024;
 const MAX_BODY: usize = 256 * 1024;
@@ -109,6 +114,10 @@ pub struct Config {
     /// This does not select a KMS/barrier consumer or the HBP1 transport.
     #[serde(default)]
     pub openbao_wrapper: Option<crate::OpenBaoWrapperConfig>,
+    /// Explicit local deployment authority. No HTTP route creates this control.
+    #[cfg(target_os = "linux")]
+    #[serde(default)]
+    pub local_control: Option<LocalControlConfig>,
     /// Qualification-only lower bound seam. Ordinary binaries reject this
     /// field because the feature is absent; feature builds may only reduce the
     /// canonical 16 MiB opaque-owner ceiling, never raise it.
@@ -243,6 +252,15 @@ fn serve_inner(
     if config.tls_client_auth_optional && config.tls_client_ca_file.is_none() {
         return Err("optional TLS client authentication requires a client CA bundle".into());
     }
+    #[cfg(target_os = "linux")]
+    let mut local_control = if let Some(control) = config.local_control.as_ref() {
+        if ha.is_some() || config.postgres_durable.is_some() || !config.plugin_auth.is_empty()
+            || !config.plugin_database.is_empty() || !config.plugin_kms.is_empty() || !config.plugin_secrets.is_empty()
+            || !config.openbao_wrapper.as_ref().is_some_and(|wrapper| wrapper.seal_barrier) {
+            return Err("local control requires the standalone Wrapper seal profile".into());
+        }
+        Some(local_control::Control::open(control)?)
+    } else { None };
     let consistency_settings = consistency::Settings::checked(
         config.consistency_max_index_wait.as_deref(),
         config.consistency_fallback_behavior.as_deref(),
@@ -343,8 +361,28 @@ fn serve_inner(
     };
     // Startup process work is outside the Service writer; no API can install or
     // reattach an endpoint. Failed admission aborts listener startup explicitly.
-    if let Some(plan) = wrapper_launch {
-        plan.execute().map_err(|error| error.to_string())?;
+    let startup: Result<(), String> = (|| {
+        if let Some(plan) = wrapper_launch {
+            plan.execute().map_err(|error| error.to_string())?;
+        }
+        #[cfg(target_os = "linux")]
+        {
+            let activation = service.lock().map_err(|_| "service lock unavailable")?
+                .prepare_wrapper_barrier_activation()?;
+            if let Some(plan) = activation {
+                let completion = plan.execute();
+                service.lock().map_err(|_| "service lock unavailable")?
+                    .finish_wrapper_barrier_activation(completion)?;
+            }
+        }
+        Ok(())
+    })();
+    if let Err(error) = startup {
+        #[cfg(target_os = "linux")]
+        if let Some(control) = local_control.as_ref() {
+            return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {});
+        }
+        return Err(error);
     }
     if let Some(ha) = forwarding_ha {
         let forward_timeout = ha
@@ -379,21 +417,85 @@ fn serve_inner(
             .map_err(|_| "HA process lock is unavailable".to_owned())?
             .register_forward_handler(handler)?;
     }
-    let listener =
-        TcpListener::bind(config.listen).map_err(|_| "cannot bind configured listener")?;
-    let _lifecycle = crate::service::start_lifecycle_worker(
-        &service,
-        Duration::from_secs(config.lifecycle_interval_seconds),
-    )?;
-    let _ha_activation = crate::service::start_ha_activation_worker(&service)?;
+    let listener = match TcpListener::bind(config.listen) {
+        Ok(value) => value,
+        Err(_) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                return control.shutdown(&service, &AtomicUsize::new(0), Some("cannot bind configured listener".into()), || {});
+            }
+            return Err("cannot bind configured listener".into());
+        }
+    };
+    let _lifecycle = match crate::service::start_lifecycle_worker(
+        &service, Duration::from_secs(config.lifecycle_interval_seconds),
+    ) {
+        Ok(value) => value,
+        Err(error) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {});
+            }
+            return Err(error);
+        }
+    };
+    let _ha_activation = match crate::service::start_ha_activation_worker(&service) {
+        Ok(value) => value,
+        Err(error) => {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || { drop(_lifecycle); });
+            }
+            return Err(error);
+        }
+    };
     let connections = Arc::new(AtomicUsize::new(0));
     eprintln!(
         "HeptaBao {} TLS listener ready at {}",
         if ha_enabled { "HA" } else { "single-node" },
         config.listen
     );
-    for stream in listener.incoming() {
-        let stream = stream.map_err(|_| "listener accept failed")?;
+    #[cfg(target_os = "linux")]
+    if let Some(control) = local_control.as_ref() {
+        let admission = listener.set_nonblocking(true)
+            .map_err(|_| "cannot bound private control accept polling".to_owned())
+            .and_then(|()| control.ready(&service));
+        if let Err(error) = admission {
+            drop(listener);
+            return control.shutdown(&service, &connections, Some(error), || {
+                drop(_lifecycle); drop(_ha_activation);
+            });
+        }
+    }
+    loop {
+        #[cfg(target_os = "linux")]
+        if let Some(control) = local_control.as_mut() {
+            if control.poll(&service) {
+                drop(listener);
+                return control.shutdown(&service, &connections, None, || {
+                    drop(_lifecycle); drop(_ha_activation);
+                });
+            }
+        }
+        let stream = match listener.accept() {
+            Ok((stream, _)) => stream,
+            Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                std::thread::sleep(Duration::from_millis(2));
+                continue;
+            }
+            Err(_) => {
+                #[cfg(target_os = "linux")]
+                if let Some(control) = local_control.as_ref() {
+                    drop(listener);
+                    return control.shutdown(&service, &connections, Some("listener accept failed".into()), || {
+                        drop(_lifecycle); drop(_ha_activation);
+                    });
+                }
+                return Err("listener accept failed".into());
+            }
+        };
         let timeout = Duration::from_secs(config.timeout_seconds);
         // One budget from accept, including worker scheduling, TLS/body reads,
         // service lock waiting, forwarding, provider work, and response writes.
@@ -408,18 +510,29 @@ fn serve_inner(
             continue;
         }
         let guard = ConnectionGuard(Arc::clone(&connections));
-        let peer = stream
-            .peer_addr()
-            .map_err(|_| "cannot identify accepted peer")?
-            .ip();
+        let peer = match stream.peer_addr() {
+            Ok(peer) => peer.ip(),
+            Err(_) => {
+                drop(guard); drop(stream);
+                #[cfg(target_os = "linux")]
+                if let Some(control) = local_control.as_ref() {
+                    drop(listener);
+                    return control.shutdown(&service, &connections, Some("cannot identify accepted peer".into()), || {
+                        drop(_lifecycle); drop(_ha_activation);
+                    });
+                }
+                return Err("cannot identify accepted peer".into());
+            }
+        };
         let rate_limited = limiter
             .lock()
             .map_or(true, |mut limiter| !limiter.allow(peer));
-        let service = Arc::clone(&service);
+        let request_service = Arc::clone(&service);
         let tls = Arc::clone(&tls);
         let spawn = std::thread::Builder::new()
             .name("heptabao-request".into())
             .spawn(move || {
+                let service = request_service;
                 let _guard = guard;
                 if stream.set_read_timeout(Some(timeout)).is_err()
                     || stream.set_write_timeout(Some(timeout)).is_err()
@@ -557,10 +670,16 @@ fn serve_inner(
                 let _ = reply.write(&mut stream, head);
             });
         if spawn.is_err() {
+            #[cfg(target_os = "linux")]
+            if let Some(control) = local_control.as_ref() {
+                drop(listener);
+                return control.shutdown(&service, &connections, Some("cannot create bounded request worker".into()), || {
+                    drop(_lifecycle); drop(_ha_activation);
+                });
+            }
             return Err("cannot create bounded request worker".into());
         }
     }
-    Ok(())
 }
 
 fn execute_external_without_writer<T, P, R, E, F>(
