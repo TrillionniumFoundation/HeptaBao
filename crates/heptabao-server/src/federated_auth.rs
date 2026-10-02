@@ -5,9 +5,10 @@
 //!
 //! The verifier accepts only explicitly configured JWS algorithms and key IDs,
 //! rejects duplicate top-level JSON members, binds issuer, audience, namespace
-//! and time claims, and records a token fingerprint durably before returning a
-//! principal. MFA proofs are HMAC authenticated and channel-bound, and use the
-//! same accepted-before-release replay ledger.
+//! and time claims. The explicit `verify_and_record` proof API records a
+//! fingerprint durably before release; native JWT login accepts reusable bearer
+//! assertions through a separate profile. MFA proofs are HMAC authenticated,
+//! channel-bound and use the one-use replay ledger.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
@@ -18,6 +19,7 @@ use std::path::{Component, Path, PathBuf};
 use zeroize::Zeroize;
 
 use base64::Engine;
+use heptabao_filesystem_guard::normalize_root_owned_system_alias;
 use ring::{digest, hmac, signature};
 use serde::de::{self, MapAccess, Visitor};
 use serde::{Deserialize, Deserializer};
@@ -34,10 +36,18 @@ const REPLAY_BODY_BYTES: usize = 5 + 8 + 32 + 8 + 32;
 const REPLAY_TAG_BYTES: usize = 32;
 const REPLAY_FRAME_BYTES: usize = REPLAY_BODY_BYTES + REPLAY_TAG_BYTES;
 
+#[path = "federated_native_jwt.rs"]
+mod native_jwt;
+pub(crate) use native_jwt::NativeJwtTimePolicy;
+#[path = "federated_jwt_bound_claims.rs"]
+mod bound_claims;
+pub(crate) use bound_claims::{NativeJwtBoundClaims, NativeJwtBoundClaimsType};
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum JwtAlgorithm {
     Ed25519,
     Es256,
+    Rs256,
 }
 
 impl JwtAlgorithm {
@@ -45,6 +55,7 @@ impl JwtAlgorithm {
         match self {
             Self::Ed25519 => "EdDSA",
             Self::Es256 => "ES256",
+            Self::Rs256 => "RS256",
         }
     }
 }
@@ -66,6 +77,7 @@ impl VerificationKey {
         let valid_encoding = match algorithm {
             JwtAlgorithm::Ed25519 => bytes.len() == 32,
             JwtAlgorithm::Es256 => bytes.len() == 65 && bytes.first() == Some(&4),
+            JwtAlgorithm::Rs256 => rsa_components(&bytes).is_some(),
         };
         if !valid_encoding || bytes.len() > MAX_KEY_BYTES {
             return Err(AuthError::InvalidKey);
@@ -139,6 +151,11 @@ pub struct VerifiedPrincipal {
     pub audiences: BTreeSet<String>,
     pub namespace: Option<String>,
     pub groups: BTreeSet<String>,
+    /// OIDC authentication context claims. These are populated only for the
+    /// authorization-code profile; native JWT keeps its existing claim
+    /// surface and does not acquire an MFA interpretation.
+    pub acr: Option<String>,
+    pub amr: BTreeSet<String>,
     pub token_id: String,
     pub issued_at: u64,
     pub expires_at: u64,
@@ -172,6 +189,7 @@ impl VerifiedPrincipal {
 pub struct JwtVerifier {
     policy: TrustPolicy,
     keys: BTreeMap<String, VerificationKey>,
+    pem_keyset: bool,
 }
 
 impl JwtVerifier {
@@ -191,13 +209,50 @@ impl JwtVerifier {
         Ok(Self {
             policy,
             keys: by_id,
+            pem_keyset: false,
         })
     }
 
+    // Only the persisted PEM source selects this bounded same-algorithm mode.
+    pub(crate) fn new_pem_keyset(
+        policy: TrustPolicy,
+        keys: impl IntoIterator<Item = VerificationKey>,
+    ) -> Result<Self, AuthError> {
+        let keys: Vec<_> = keys.into_iter().take(65).collect();
+        if keys.len() > 64 {
+            return Err(AuthError::InvalidKey);
+        }
+        let mut verifier = Self::new(policy, keys)?;
+        verifier.pem_keyset = true;
+        Ok(verifier)
+    }
+
     /// Verify the signed assertion without granting an application capability.
-    /// The caller still owns role authorization and durable replay admission;
-    /// `heptabao-server` commits both with token issuance in its encrypted state.
+    /// This strict proof profile requires iat, exp and jti. Callers requiring
+    /// one-use proof admission must use `verify_and_record`; ordinary native
+    /// JWT bearer login uses a separate crate-private verification profile.
     pub fn verify(&self, token: &str, now: u64) -> Result<VerifiedPrincipal, AuthError> {
+        self.verify_internal(token, now, None)
+    }
+
+    /// ID-token verification for an already consumed authorization session.
+    /// This does not admit a request or grant a service Principal. The caller
+    /// binds redirect, client proof, one-use state, role and durable publication.
+    pub(crate) fn verify_oidc(
+        &self,
+        token: &str,
+        now: u64,
+        nonce: &str,
+        access_token: &str,
+        code: &str,
+    ) -> Result<VerifiedPrincipal, AuthError> {
+        self.verify_internal(token, now, Some((nonce, access_token, code)))
+    }
+
+    fn verified_claims(
+        &self,
+        token: &str,
+    ) -> Result<(BTreeMap<String, Value>, JwtAlgorithm), AuthError> {
         if token.is_empty() || token.len() > MAX_TOKEN_BYTES || !token.is_ascii() {
             return Err(AuthError::MalformedToken);
         }
@@ -220,7 +275,11 @@ impl JwtVerifier {
         }
         let mut header = parse_unique_object(&header_bytes)?;
         let algorithm_name = take_string(&mut header, "alg")?;
-        let key_id = take_string(&mut header, "kid")?;
+        let key_id = if self.pem_keyset {
+            take_optional_string(&mut header, "kid")?
+        } else {
+            Some(take_string(&mut header, "kid")?)
+        };
         if let Some(typ) = take_optional_string(&mut header, "typ")?
             && typ != "JWT"
         {
@@ -229,23 +288,96 @@ impl JwtVerifier {
         if !header.is_empty() {
             return Err(AuthError::MalformedToken);
         }
-        let key = self.keys.get(&key_id).ok_or(AuthError::UnknownKeyId)?;
-        if algorithm_name != key.algorithm.header_name() {
-            return Err(AuthError::AlgorithmDenied);
-        }
         let signing_input = format!("{encoded_header}.{encoded_claims}");
-        verify_signature(key, signing_input.as_bytes(), &signature_bytes)?;
+        let algorithm = if self.pem_keyset {
+            let mut matching = self
+                .keys
+                .values()
+                .filter(|key| key.algorithm.header_name() == algorithm_name)
+                .peekable();
+            if matching.peek().is_none() {
+                return Err(AuthError::AlgorithmDenied);
+            }
+            matching
+                .find(|key| {
+                    verify_signature(key, signing_input.as_bytes(), &signature_bytes).is_ok()
+                })
+                .map(|key| key.algorithm)
+                .ok_or(AuthError::SignatureInvalid)?
+        } else {
+            let key = self
+                .keys
+                .get(key_id.as_deref().ok_or(AuthError::MissingClaim)?)
+                .ok_or(AuthError::UnknownKeyId)?;
+            if algorithm_name != key.algorithm.header_name() {
+                return Err(AuthError::AlgorithmDenied);
+            }
+            verify_signature(key, signing_input.as_bytes(), &signature_bytes)?;
+            key.algorithm
+        };
+        Ok((parse_unique_object(&claims_bytes)?, algorithm))
+    }
 
-        let mut claims = parse_unique_object(&claims_bytes)?;
+    fn verify_internal(
+        &self,
+        token: &str,
+        now: u64,
+        oidc: Option<(&str, &str, &str)>,
+    ) -> Result<VerifiedPrincipal, AuthError> {
+        let (mut claims, algorithm) = self.verified_claims(token)?;
         let issuer = take_string(&mut claims, "iss")?;
         let subject = take_string(&mut claims, "sub")?;
         let audiences = take_audiences(&mut claims)?;
         let expires_at = take_u64(&mut claims, "exp")?;
         let issued_at = take_u64(&mut claims, "iat")?;
         let not_before = take_optional_u64(&mut claims, "nbf")?.unwrap_or(issued_at);
-        let token_id = take_string(&mut claims, "jti")?;
+        let token_id = if let Some((nonce, access_token, code)) = oidc {
+            // Code flow uses durable one-use state and a verified nonce; OIDC
+            // ID tokens are not required to carry the separate JWT profile's jti.
+            let _ = take_optional_string(&mut claims, "jti")?;
+            if algorithm == JwtAlgorithm::Ed25519
+                || self.policy.audiences.len() != 1
+                || take_string(&mut claims, "nonce")? != nonce
+            {
+                return Err(AuthError::ClaimDenied);
+            }
+            let client_id = self
+                .policy
+                .audiences
+                .iter()
+                .next()
+                .ok_or(AuthError::InvalidPolicy)?;
+            let azp = take_optional_string(&mut claims, "azp")?;
+            if !audiences.contains(client_id)
+                || azp.as_ref().is_some_and(|v| v != client_id)
+                || audiences.len() > 1 && azp.as_ref() != Some(client_id)
+            {
+                return Err(AuthError::ClaimDenied);
+            }
+            for (field, input) in [("at_hash", access_token), ("c_hash", code)] {
+                if let Some(expected) = take_optional_string(&mut claims, field)? {
+                    let digest = digest::digest(&digest::SHA256, input.as_bytes());
+                    let encoded = base64::engine::general_purpose::URL_SAFE_NO_PAD
+                        .encode(&digest.as_ref()[..16]);
+                    if encoded != expected {
+                        return Err(AuthError::ClaimDenied);
+                    }
+                }
+            }
+            base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(digest_bytes(token.as_bytes()))
+        } else {
+            take_string(&mut claims, "jti")?
+        };
         let namespace = take_optional_string(&mut claims, "heptabao_namespace")?;
         let groups = take_string_set(&mut claims, "groups")?;
+        let (acr, amr) = if oidc.is_some() {
+            (
+                take_optional_string(&mut claims, "acr")?,
+                take_string_set(&mut claims, "amr")?,
+            )
+        } else {
+            (None, BTreeSet::new())
+        };
 
         if issuer != self.policy.issuer
             || audiences.is_disjoint(&self.policy.audiences)
@@ -273,6 +405,8 @@ impl JwtVerifier {
             audiences,
             namespace,
             groups,
+            acr,
+            amr,
             token_id,
             issued_at,
             expires_at,
@@ -661,6 +795,23 @@ fn decode_segment(value: &str) -> Result<Vec<u8>, AuthError> {
         .map_err(|_| AuthError::MalformedToken)
 }
 
+/// Internal canonical public RSA encoding: big-endian u16 modulus length,
+/// modulus, then exponent 65537. Admission is restricted to 2048..4096 bits.
+fn rsa_components(bytes: &[u8]) -> Option<(&[u8], &[u8])> {
+    if bytes.len() < 2 {
+        return None;
+    }
+    let n = u16::from_be_bytes([bytes[0], bytes[1]]) as usize;
+    if !(256..=512).contains(&n)
+        || bytes.len() != n + 5
+        || bytes[2] < 0x80
+        || bytes[2 + n..] != [1, 0, 1]
+    {
+        return None;
+    }
+    Some((&bytes[2..2 + n], &bytes[2 + n..]))
+}
+
 fn verify_signature(
     key: &VerificationKey,
     message: &[u8],
@@ -669,6 +820,14 @@ fn verify_signature(
     let result = match key.algorithm {
         JwtAlgorithm::Ed25519 => signature::UnparsedPublicKey::new(&signature::ED25519, &key.bytes)
             .verify(message, signature_bytes),
+        JwtAlgorithm::Rs256 => {
+            let (n, e) = rsa_components(&key.bytes).ok_or(AuthError::InvalidKey)?;
+            signature::RsaPublicKeyComponents { n, e }.verify(
+                &signature::RSA_PKCS1_2048_8192_SHA256,
+                message,
+                signature_bytes,
+            )
+        }
         JwtAlgorithm::Es256 => {
             signature::UnparsedPublicKey::new(&signature::ECDSA_P256_SHA256_FIXED, &key.bytes)
                 .verify(message, signature_bytes)
@@ -879,6 +1038,7 @@ fn validate_root(path: &Path) -> Result<(), AuthError> {
     if !path.is_absolute() {
         return Err(AuthError::InvalidRoot);
     }
+    let path = normalize_root_owned_system_alias(path).map_err(|_| AuthError::InvalidRoot)?;
     let mut current = PathBuf::new();
     for component in path.components() {
         match component {
@@ -974,6 +1134,7 @@ fn digest_bytes(bytes: &[u8]) -> [u8; 32] {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::{random_bytes, runtime_secret};
     use base64::engine::general_purpose::URL_SAFE_NO_PAD;
     use ring::signature::{Ed25519KeyPair, KeyPair};
     use serde_json::json;
@@ -1115,19 +1276,32 @@ mod tests {
     #[test]
     fn mfa_is_channel_bound_and_persistently_single_use() {
         let root = root("mfa");
-        let mut replay = PersistentReplayLedger::open(&root, [5; 32]).unwrap();
-        let verifier = MfaVerifier::new([6; 32], 10).unwrap();
-        let proof =
-            MfaProof::sign("alice", "totp-1", 1000, 1100, [9; 16], [10; 32], [6; 32]).unwrap();
+        let replay_key = random_bytes();
+        let verifier_key = random_bytes();
+        let proof_nonce = random_bytes();
+        let channel = random_bytes();
+        let wrong_channel = random_bytes();
+        let mut replay = PersistentReplayLedger::open(&root, replay_key).unwrap();
+        let verifier = MfaVerifier::new(verifier_key, 10).unwrap();
+        let proof = MfaProof::sign(
+            "alice",
+            "totp-1",
+            1000,
+            1100,
+            proof_nonce,
+            channel,
+            verifier_key,
+        )
+        .unwrap();
         assert_eq!(
-            verifier.verify_and_record(&proof, "alice", [11; 32], 1050, &mut replay),
+            verifier.verify_and_record(&proof, "alice", wrong_channel, 1050, &mut replay),
             Err(AuthError::InvalidMfaProof)
         );
         verifier
-            .verify_and_record(&proof, "alice", [10; 32], 1050, &mut replay)
+            .verify_and_record(&proof, "alice", channel, 1050, &mut replay)
             .unwrap();
         assert_eq!(
-            verifier.verify_and_record(&proof, "alice", [10; 32], 1050, &mut replay),
+            verifier.verify_and_record(&proof, "alice", channel, 1050, &mut replay),
             Err(AuthError::ReplayDetected)
         );
         drop(replay);
@@ -1152,5 +1326,149 @@ mod tests {
         ));
         let _ = fs::remove_file(root.join("writer.lock"));
         fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn oidc_id_token_binds_nonce_authorized_party_and_token_hashes_without_relaxing_jwt() {
+        use ring::rand::SystemRandom;
+        use ring::signature::{ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair};
+        let rng = SystemRandom::new();
+        let document =
+            EcdsaKeyPair::generate_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, &rng).unwrap();
+        let pair =
+            EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_FIXED_SIGNING, document.as_ref(), &rng)
+                .unwrap();
+        let policy = TrustPolicy::new(
+            "https://issuer.example:443",
+            BTreeSet::from(["client".into()]),
+            None,
+            0,
+            600,
+        )
+        .unwrap();
+        let key = VerificationKey::new(
+            "p256",
+            JwtAlgorithm::Es256,
+            pair.public_key().as_ref().to_vec(),
+        )
+        .unwrap();
+        let verifier = JwtVerifier::new(policy, [key]).unwrap();
+        let sign = |claims: &Value| {
+            let h = URL_SAFE_NO_PAD.encode(br#"{"alg":"ES256","kid":"p256","typ":"JWT"}"#);
+            let payload = URL_SAFE_NO_PAD.encode(serde_json::to_vec(claims).unwrap());
+            let input = format!("{h}.{payload}");
+            let signature = pair.sign(&rng, input.as_bytes()).unwrap();
+            format!("{input}.{}", URL_SAFE_NO_PAD.encode(signature.as_ref()))
+        };
+        let short_hash = |s: &str| {
+            URL_SAFE_NO_PAD.encode(&digest::digest(&digest::SHA256, s.as_bytes()).as_ref()[..16])
+        };
+        let nonce = runtime_secret("oidc-nonce");
+        let wrong_nonce = runtime_secret("oidc-wrong-nonce");
+        let access_token = runtime_secret("oidc-access-token");
+        let wrong_access_token = runtime_secret("oidc-wrong-access-token");
+        let authorization_code = runtime_secret("oidc-authorization-code");
+        let wrong_authorization_code = runtime_secret("oidc-wrong-authorization-code");
+        let original = json!({"iss":"https://issuer.example:443","sub":"alice","aud":"client",
+            "iat":100,"exp":400,"nonce":nonce.as_str(),"acr":"urn:example:loa:2",
+            "amr":["pwd","otp"],"at_hash":short_hash(access_token.as_str()),
+            "c_hash":short_hash(authorization_code.as_str())});
+        let encoded = sign(&original);
+        let verified = verifier
+            .verify_oidc(
+                &encoded,
+                110,
+                nonce.as_str(),
+                access_token.as_str(),
+                authorization_code.as_str(),
+            )
+            .unwrap();
+        assert_eq!(verified.acr.as_deref(), Some("urn:example:loa:2"));
+        assert_eq!(verified.amr, BTreeSet::from(["otp".into(), "pwd".into()]));
+        assert!(verifier.verify(&encoded, 110).is_err()); // original JWT still requires jti
+        assert!(
+            verifier
+                .verify_oidc(
+                    &encoded,
+                    110,
+                    wrong_nonce.as_str(),
+                    access_token.as_str(),
+                    authorization_code.as_str(),
+                )
+                .is_err()
+        );
+        assert!(
+            verifier
+                .verify_oidc(
+                    &encoded,
+                    110,
+                    nonce.as_str(),
+                    wrong_access_token.as_str(),
+                    authorization_code.as_str(),
+                )
+                .is_err()
+        );
+        assert!(
+            verifier
+                .verify_oidc(
+                    &encoded,
+                    110,
+                    nonce.as_str(),
+                    access_token.as_str(),
+                    wrong_authorization_code.as_str(),
+                )
+                .is_err()
+        );
+        for (field, value) in [
+            ("azp", json!("other")),
+            ("aud", json!(["client", "other"])),
+            ("iss", json!("https://other.example:443")),
+            ("nonce", json!(false)),
+            ("exp", json!(110)),
+            ("iat", json!(111)),
+        ] {
+            let mut bad = original.clone();
+            bad[field] = value;
+            assert!(
+                verifier
+                    .verify_oidc(
+                        &sign(&bad),
+                        110,
+                        nonce.as_str(),
+                        access_token.as_str(),
+                        authorization_code.as_str(),
+                    )
+                    .is_err(),
+                "{field}"
+            );
+        }
+        let mut multiple = original.clone();
+        multiple["aud"] = json!(["client", "other"]);
+        multiple["azp"] = json!("client");
+        assert!(
+            verifier
+                .verify_oidc(
+                    &sign(&multiple),
+                    110,
+                    nonce.as_str(),
+                    access_token.as_str(),
+                    authorization_code.as_str(),
+                )
+                .is_ok()
+        );
+        for value in [json!("otp"), json!(["pwd", 7])] {
+            let mut malformed = original.clone();
+            malformed["amr"] = value;
+            assert!(
+                verifier
+                    .verify_oidc(
+                        &sign(&malformed),
+                        110,
+                        nonce.as_str(),
+                        access_token.as_str(),
+                        authorization_code.as_str(),
+                    )
+                    .is_err()
+            );
+        }
     }
 }

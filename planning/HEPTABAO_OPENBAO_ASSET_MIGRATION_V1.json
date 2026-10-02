@@ -1,0 +1,212 @@
+{
+  "schema": "heptabao.openbao-asset-migration.v1",
+  "source_product": "OpenBao",
+  "source_version": "2.6.2",
+  "target_product": "HeptaBao",
+  "full_asset_migration_authority": false,
+  "cutover_authority": false,
+  "rollback_authority": false,
+  "rules": [
+    "Every in-scope asset class has exactly one disposition.",
+    "BOUNDED_ADAPTER means only the named adapter and scope are implemented; it does not imply whole-product migration.",
+    "Assets with no safe transfer implementation remain fail-closed and cannot be silently dropped.",
+    "Revoked, expired, destroyed, or single-use state must never be resurrected by migration or rollback.",
+    "Repository tests and local rehearsals cannot self-grant migration, cutover, rollback, production, or release authority."
+  ],
+  "assets": [
+    {
+      "id": "system_configuration",
+      "disposition": "PREFLIGHT_ONLY",
+      "source_owner": "system backend and storage metadata",
+      "adapter": null,
+      "evidence": [
+        "docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md"
+      ],
+      "required_exit": "Convert and verify supported server/system configuration without importing OpenBao barrier or snapshot bytes."
+    },
+    {
+      "id": "policies_acl",
+      "disposition": "BOUNDED_ADAPTER",
+      "source_owner": "ACL policy store",
+      "adapter": "qa/openbao-acceptance/migrate_policies.py",
+      "evidence": [
+        "docs/migration/HEPTABAO_POLICY_MIGRATION.md",
+        "qa/openbao-acceptance/tests/test_policy_migration.py",
+        "qa/openbao-acceptance/policy_migration_live.py"
+      ],
+      "required_exit": "Expand the bounded single-namespace user-policy transfer to every namespace, reconcile built-in default/root semantics explicitly, and prove token/revocation cutover plus rollback cannot preserve stale authority."
+    },
+    {
+      "id": "namespaces",
+      "disposition": "NO_SAFE_TRANSFER_IMPLEMENTED",
+      "source_owner": "namespace hierarchy",
+      "adapter": null,
+      "evidence": [
+        "docs/modules/heptabao-namespace.md"
+      ],
+      "required_exit": "Preserve namespace hierarchy and ownership without cross-namespace policy or mount rebinding."
+    },
+    {
+      "id": "auth_mounts",
+      "disposition": "BOUNDED_ADAPTER",
+      "source_owner": "auth mount registry and method configuration",
+      "adapter": "qa/openbao-acceptance/migrate_auth_mount.py",
+      "evidence": [
+        "docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md",
+        "qa/openbao-acceptance/tests/test_auth_mount_migration.py",
+        "qa/openbao-acceptance/auth_mount_migration_live.py"
+      ],
+      "required_exit": "Expand bounded auth-mount recreation across every supported namespace/mount; preserve tune semantics while allocating new target accessors/incarnations, force consumer re-authentication, and prove source credentials/tokens cannot regain authority after cutover or rollback."
+    },
+    {
+      "id": "identity_entities_aliases_groups",
+      "disposition": "BOUNDED_ADAPTER",
+      "source_owner": "identity graph",
+      "adapter": "qa/openbao-acceptance/migrate_identity.py",
+      "evidence": [
+        "docs/engines/HEPTABAO_IDENTITY_RUNTIME.md",
+        "qa/openbao-acceptance/tests/test_identity_migration.py",
+        "qa/openbao-acceptance/identity_migration_live.py"
+      ],
+      "required_exit": "Expand bounded entity/internal-group recreation across namespaces and explicitly resolve aliases, external groups, group aliases, merged lineage and authentication accessor bindings through re-authentication or reviewed reconstruction; prove no old identity authority is resurrected."
+    },
+    {
+      "id": "tokens_and_revocation",
+      "disposition": "DO_NOT_TRANSFER_LIVE_AUTHORITY",
+      "source_owner": "token store",
+      "adapter": null,
+      "evidence": [
+        "docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md"
+      ],
+      "required_exit": "Use an explicit re-authentication/cutover strategy; revoked, expired, exhausted, or accessor-only token state must not become usable authority."
+    },
+    {
+      "id": "kv_v2_data_history_metadata",
+      "disposition": "BOUNDED_ADAPTER",
+      "source_owner": "KV-v2 mounts",
+      "adapter": "qa/openbao-acceptance/migrate_kv2.py",
+      "evidence": [
+        "docs/migration/HEPTABAO_OPENBAO_MIGRATION.md",
+        "qa/openbao-acceptance/tests/test_migration_inventory.py",
+        "qa/openbao-acceptance/tests/test_migration_resume.py"
+      ],
+      "required_exit": "Expand from explicitly selected contiguous readable histories to an inventory-complete policy for destroyed/deleted/pruned versions and every KV mount before cutover."
+    },
+    {
+      "id": "transit_keys_ciphertexts",
+      "disposition": "BOUNDED_ADAPTER",
+      "source_owner": "Transit engine and application ciphertext references",
+      "adapter": "qa/openbao-acceptance/migrate_transit.py",
+      "evidence": [
+        "docs/migration/HEPTABAO_TRANSIT_REENCRYPTION.md",
+        "clients/python/heptabao/transit_migration.py",
+        "clients/python/tests/test_transit_migration.py"
+      ],
+      "required_exit": "Inventory every Transit key/version and update all application ciphertext references under a fenced, resumable cutover; key export is not assumed."
+    },
+    {
+      "id": "pki_keys_roles_certs_revocation",
+      "disposition": "NO_SAFE_TRANSFER_IMPLEMENTED",
+      "source_owner": "PKI mounts",
+      "adapter": null,
+      "evidence": [
+        "docs/engines/HEPTABAO_SINGLE_NODE_ENGINES.md"
+      ],
+      "required_exit": "Define private-key custody, issuer/role/certificate/CRL transfer or deliberate reissuance, preserving revocation state."
+    },
+    {
+      "id": "ssh_roles_credentials",
+      "disposition": "BOUNDED_ADAPTER",
+      "source_owner": "SSH secret engine",
+      "adapter": "qa/openbao-acceptance/migrate_ssh_roles.py",
+      "evidence": [
+        "docs/migration/HEPTABAO_SSH_ROLE_MIGRATION.md",
+        "qa/openbao-acceptance/tests/test_ssh_role_migration.py",
+        "qa/openbao-acceptance/ssh_role_migration_live.py"
+      ],
+      "required_exit": "Expand the bounded single-namespace SSH OTP role-configuration transfer to every SSH mount; explicitly migrate or reissue CA/issuer state, drain source-issued OTP/lease authority, preserve mount incarnation, and prove host/PAM cutover plus rollback cannot resurrect credentials."
+    },
+    {
+      "id": "database_config_roles_leases",
+      "disposition": "NO_SAFE_TRANSFER_IMPLEMENTED",
+      "source_owner": "database engine/provider configuration",
+      "adapter": null,
+      "evidence": [
+        "docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md"
+      ],
+      "required_exit": "Transfer connection/role configuration without exposing credentials and reconcile all external leases/revocations against real providers."
+    },
+    {
+      "id": "other_secret_engines",
+      "disposition": "NO_SAFE_TRANSFER_IMPLEMENTED",
+      "source_owner": "other enabled secret engines",
+      "adapter": null,
+      "evidence": [
+        "planning/HEPTABAO_REPLACEMENT_EXECUTION_V2.json"
+      ],
+      "required_exit": "Every enabled in-scope engine requires an explicit migrate, recreate, or unsupported disposition; omission is a blocker."
+    },
+    {
+      "id": "leases_and_revocation_state",
+      "disposition": "NO_SAFE_TRANSFER_IMPLEMENTED",
+      "source_owner": "expiration manager and provider-side effects",
+      "adapter": null,
+      "evidence": [
+        "docs/operations/HEPTABAO_AGENT_PROXY_HELPER.md"
+      ],
+      "required_exit": "Reconcile renewable/revoked/expired leases and provider effects without duplicate issuance or resurrection."
+    },
+    {
+      "id": "audit_configuration",
+      "disposition": "RECREATE_AND_VERIFY",
+      "source_owner": "audit device configuration",
+      "adapter": null,
+      "evidence": [
+        "docs/operations/HEPTABAO_OBSERVABILITY_CATALOG_V1.md"
+      ],
+      "required_exit": "Recreate supported audit configuration with new HeptaBao keys/chains; do not import OpenBao audit secrets as equivalent local chain state."
+    },
+    {
+      "id": "storage_ha_metadata",
+      "disposition": "DO_NOT_IMPORT_RAW_FORMAT",
+      "source_owner": "OpenBao storage/Raft/barrier metadata",
+      "adapter": null,
+      "evidence": [
+        "docs/storage/HEPTABAO_DURABILITY_AND_CRASH_CONSISTENCY_CONTRACT_V1.md",
+        "docs/operations/HEPTABAO_RAFT_ADMINISTRATION.md"
+      ],
+      "required_exit": "Use logical asset migration into a freshly initialized HeptaBao cluster; raw OpenBao snapshots/barrier/Raft bytes are not format-compatible."
+    },
+    {
+      "id": "wrapping_cubbyhole_ephemeral",
+      "disposition": "EPHEMERAL_DO_NOT_MIGRATE",
+      "source_owner": "response wrapping and token-private cubbyhole state",
+      "adapter": null,
+      "evidence": [
+        "docs/auth/HEPTABAO_RESPONSE_WRAPPING.md",
+        "docs/engines/HEPTABAO_CUBBYHOLE.md"
+      ],
+      "required_exit": "Cutover must invalidate outstanding wrapping/ephemeral authority rather than recreating it as fresh usable state."
+    },
+    {
+      "id": "external_provider_configuration",
+      "disposition": "NO_SAFE_TRANSFER_IMPLEMENTED",
+      "source_owner": "LDAP/JWT/Kubernetes/database/plugin/KMS provider configuration",
+      "adapter": null,
+      "evidence": [
+        "planning/HEPTABAO_REPLACEMENT_EXECUTION_V2.json"
+      ],
+      "required_exit": "Re-enroll provider trust and credentials from approved custody, then execute provider-specific readback/revocation tests."
+    },
+    {
+      "id": "application_consumers",
+      "disposition": "PREFLIGHT_ONLY",
+      "source_owner": "applications and automation consuming OpenBao",
+      "adapter": null,
+      "evidence": [
+        "docs/migration/HEPTABAO_MIGRATION_PREFLIGHT.md"
+      ],
+      "required_exit": "Inventory endpoints, auth paths, policy dependencies, Transit ciphertext references, leases, agents/proxies and trust roots; rehearse atomic switch and rollback."
+    }
+  ]
+}

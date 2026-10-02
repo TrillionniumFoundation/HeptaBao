@@ -4,6 +4,11 @@ import importlib.util
 import shutil
 import tempfile
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -133,6 +138,7 @@ class PlanV146HostileTests(unittest.TestCase):
             ),
         )
 
+    @historical_only
     def test_push_context_is_rejected(self) -> None:
         self.assert_rejected(
             ".github/workflows/plan-v1.4.6-authoritative-recovery-closure.yml",

@@ -51,6 +51,11 @@ impl Barrier for AeadBarrier {
         Ok(protected)
     }
 
+    fn sealed_len_bound(&self, plaintext_len: usize) -> Option<usize> {
+        // HBA1 magic + 96-bit nonce + AES-GCM tag.
+        plaintext_len.checked_add(32)
+    }
+
     fn open(&self, context: &[u8], protected: &[u8]) -> Result<Vec<u8>, BarrierError> {
         if protected.len() < 32 || &protected[..4] != b"HBA1" {
             return Err(BarrierError);

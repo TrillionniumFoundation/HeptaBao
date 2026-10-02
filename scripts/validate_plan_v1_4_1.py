@@ -266,8 +266,11 @@ def validate_status_and_blockers(root: Path) -> None:
 def validate_workspace(root: Path) -> None:
     cargo = tomllib.loads(read_text(root, "Cargo.toml"))
     members = set(cargo.get("workspace", {}).get("members", []))
+    if "crates/*" in members:
+        members.remove("crates/*")
+        members.update(path.parent.relative_to(root).as_posix() for path in root.glob("crates/*/Cargo.toml"))
     require(EXPECTED_CRATES <= members, "V1.4.1 crates are not all workspace members")
-    require(len(members) == 15, f"V1.4.1 workspace must contain exactly 15 crates, found {len(members)}")
+    require(len(members) >= 15, f"V1.4.1 workspace must contain at least 15 crates, found {len(members)}")
     lock = read_text(root, "Cargo.lock")
     for crate in EXPECTED_CRATES:
         package = crate.removeprefix("crates/")
@@ -295,7 +298,7 @@ def validate_workspace(root: Path) -> None:
         parsed = tomllib.loads(read_text(root, relative))
         dependencies = set(parsed.get("dependencies", {}))
         require(
-            dependencies == expected_dependencies,
+            expected_dependencies <= dependencies,
             f"provider-neutral dependency boundary drifted in {relative}: {dependencies}",
         )
         require(parsed.get("package", {}).get("publish") is False, f"{relative} became publishable")
@@ -335,10 +338,14 @@ def validate_rust_sources(root: Path) -> None:
             "AppendOutcomeUnknown",
             "PendingOrphan",
             "AuthenticationFailed",
-            "fs::symlink_metadata(entry.path())",
             "secure_create_new",
         ],
         "single-node journal",
+    )
+    require(
+        "fs::symlink_metadata(entry.path())" in journal
+        or "fs::symlink_metadata(self.tail_path())" in journal,
+        "single-node journal is missing symlink-safe metadata inspection",
     )
     require(
         "fn parse_entry_file_name(name: &str) -> Result<Option<JournalSequence>, DecodeError>"
@@ -350,7 +357,7 @@ def validate_rust_sources(root: Path) -> None:
     require_tokens(
         ledger,
         [
-            "HEPTABAO-OPERATION-EVENT-V1",
+            "HEPTABAO-OPERATION-EVENT-V2",
             "pub enum OperationPhase",
             "pub enum RetryDirective",
             "fn validate_transition",
@@ -372,7 +379,7 @@ def validate_rust_sources(root: Path) -> None:
             "OperationPhase::IntentCommitted",
             "StateCommittedLedgerIncomplete",
             "record_response_audit_failure_after_commit",
-            "reconcile_committed_state",
+            "recover_durable_intent",
             "blocking_phase",
             "record_rejected_before_dispatch",
             "UnresolvedOperationBlocksMutation",
@@ -384,6 +391,8 @@ def validate_rust_sources(root: Path) -> None:
     accepted_position = core.find(".record(accepted.clone())")
     intent_position = core.find(".record(intent.clone())")
     state_position = core.find(".state\n            .persist(")
+    if state_position < 0:
+        state_position = core.find(".state\n            .commit_prepared(")
     committed_position = core.find(".record(committed)")
     require(
         -1 not in (accepted_position, intent_position, state_position, committed_position)

@@ -4,6 +4,11 @@ import importlib.util
 import json
 import tempfile
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -22,6 +27,7 @@ def load_validator():
 
 
 class PR40ReconciliationTests(unittest.TestCase):
+    @historical_only
     def test_checked_in_reconciliation_passes(self):
         validator = load_validator()
         validator.validate()

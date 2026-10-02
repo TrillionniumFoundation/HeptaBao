@@ -26,7 +26,7 @@ The parser is intentionally bounded and lexical. It does not claim Rust name res
 
 ## 5. External completion admission
 
-`HB-BLK-CTRL-001` and `HB-BLK-EXT-001..007` each receive an `UNEXECUTED` template. The validator can inspect planning shape without closure, but closure mode requires exact source identities, complete PASS-only cases, distinct accountable roles, blocker-specific separation, artifact custody, no unresolved Critical/High/Unclassified finding, fresh valid signatures and unchanged authority flags.
+`HB-BLK-CTRL-001` and `HB-BLK-EXT-001..008` each receive an `UNEXECUTED` template. The validator can inspect planning shape without closure, but closure mode requires exact source identities, complete PASS-only cases, distinct accountable roles, blocker-specific separation, artifact custody, no unresolved Critical/High/Unclassified finding, fresh valid signatures and unchanged authority flags.
 
 Repository automation cannot populate real identities, legal authority, operating coverage, HSM custody, restricted raw Oracle evidence, independent power-cut control or separately controlled reproduction. Those facts remain open until external operators submit authentic evidence.
 
@@ -62,4 +62,4 @@ The production composition root, policy, identity, token, lease, namespace, syst
 
 ## 9. Completion rule
 
-`HB-BLK-REPO-059..062` close only after final source and prospective merge pass the V1.4.7 and inherited gates and receive a current independent review. `HB-BLK-CTRL-001` and `HB-BLK-EXT-001..007` remain open until authentic completion envelopes pass strict admission. Qualification, compatibility, provider selection and all production/migration/release authority remain false.
+`HB-BLK-REPO-059..062` close only after final source and prospective merge pass the V1.4.7 and inherited gates and receive a current independent review. `HB-BLK-CTRL-001` and `HB-BLK-EXT-001..008` remain open until authentic completion envelopes pass strict admission. Qualification, compatibility, provider selection and all production/migration/release authority remain false.

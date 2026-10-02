@@ -205,81 +205,15 @@ def _closed_keys(value: dict[str, Any], allowed: set[str], context: str) -> None
 
 
 _REQUIRED_CASES: dict[str, frozenset[str]] = {
-    "HB-BLK-CTRL-001": frozenset(
-        {
-            "direct-push-member-denied",
-            "direct-push-admin-denied",
-            "missing-check-merge-denied",
-            "insufficient-approvals-denied",
-            "unresolved-conversation-denied",
-            "force-push-denied",
-            "branch-delete-denied",
-        }
-    ),
-    "HB-BLK-EXT-001": frozenset(
-        {
-            "program-review-pass",
-            "security-review-pass",
-            "storage-review-pass",
-            "critical-findings-zero",
-            "high-findings-zero",
-        }
-    ),
-    "HB-BLK-EXT-002": frozenset(
-        {
-            "license-disposition-signed",
-            "trademark-disposition-signed",
-            "patent-disposition-signed",
-            "export-disposition-signed",
-        }
-    ),
-    "HB-BLK-EXT-003": frozenset(
-        {
-            "disclosure-channel-operational",
-            "oncall-coverage-verified",
-            "incident-drill-pass",
-            "revocation-drill-pass",
-        }
-    ),
-    "HB-BLK-EXT-004": frozenset(
-        {
-            "hsm-key-generated",
-            "signer-custody-separated",
-            "rotation-ceremony-pass",
-            "emergency-revocation-pass",
-            "transparency-checkpoint-published",
-        }
-    ),
-    "HB-BLK-EXT-005": frozenset(
-        {
-            "oracle-capture-complete",
-            "sanitized-fixtures-complete",
-            "side-effects-covered",
-            "cli-client-covered",
-            "transfer-signed",
-        }
-    ),
-    "HB-BLK-EXT-006": frozenset(
-        {
-            "linux-amd64-pass",
-            "linux-arm64-pass",
-            "windows-amd64-pass",
-            "macos-arm64-pass",
-            "power-cut-pass",
-            "fsync-loss-pass",
-            "corruption-recovery-pass",
-            "rolling-upgrade-pass",
-            "disaster-recovery-pass",
-        }
-    ),
-    "HB-BLK-EXT-007": frozenset(
-        {
-            "clean-room-build-a-pass",
-            "clean-room-build-b-pass",
-            "artifact-digest-match",
-            "test-reproduction-pass",
-        }
-    ),
+    "HB-BLK-CTRL-001": frozenset({"main-ruleset-enforced", "required-checks-enforced", "non-admin-bypass-denied", "force-push-denied", "deletion-denied"}),
+    "HB-BLK-EXT-001": frozenset({"program-review", "product-security-review", "storage-distributed-review", "reviewer-independence", "current-head-binding"}),
+    "HB-BLK-EXT-002": frozenset({"license-disposition", "trademark-disposition", "patent-disposition", "export-control-disposition", "clean-room-disposition"}),
+    "HB-BLK-EXT-003": frozenset({"private-disclosure-channel", "24x7-roster", "incident-drill", "credential-revocation-drill", "forensic-retention-drill"}),
+    "HB-BLK-EXT-004": frozenset({"isolated-release-signer", "kms-hsm-custody", "key-rotation-ceremony", "emergency-revocation", "transparency-checkpoint"}),
+    "HB-BLK-EXT-005": frozenset({"restricted-oracle-capture", "deterministic-sanitization", "role-separated-transfer", "oracle-artifact-rehash", "candidate-artifact-rehash", "complete-surface-differential"}),
+    "HB-BLK-EXT-006": frozenset({"power-cut-campaign", "torn-write-campaign", "fsync-loss-campaign", "disk-stall-campaign", "filesystem-corruption-campaign", "multi-platform-destructive-campaign"}),
+    "HB-BLK-EXT-007": frozenset({"independent-source-acquisition", "independent-toolchain", "independent-runner", "independent-cache-root", "independent-signing-root", "exact-output-reproduction"}),
+    "HB-BLK-EXT-008": frozenset({"linux-sandbox-provider", "macos-sandbox-provider", "windows-sandbox-provider", "process-tree-termination", "authenticated-multiplexed-transport", "provider-connectors", "rolling-plugin-upgrade", "destructive-provider-qualification"}),
 }
 
 _REQUIRED_ROLE_COUNTS: dict[str, dict[str, int]] = {
@@ -295,6 +229,10 @@ _REQUIRED_ROLE_COUNTS: dict[str, dict[str, int]] = {
     "HB-BLK-EXT-005": {"oracle-custodian": 1, "compatibility-reviewer": 1},
     "HB-BLK-EXT-006": {"platform-qualifier": 1, "storage-qualifier": 1},
     "HB-BLK-EXT-007": {"independent-reproducer": 2},
+    "HB-BLK-EXT-008": {
+        "plugin-qualifier": 1,
+        "provider-reviewer": 1,
+    },
 }
 
 

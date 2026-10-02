@@ -394,6 +394,7 @@ where
             })
             .map_err(|_| RuntimeError::AuditUnavailableBeforeEntry)?;
 
+        let replay_epoch = self.durable.replay_epoch();
         let result = match request.operation {
             InboundOperation::Put(value) => PutRequest::new(
                 principal.as_str(),
@@ -406,7 +407,7 @@ where
             .map_err(map_durable_error)
             .and_then(|mutation| {
                 self.durable
-                    .put_with_failpoint(mutation, failpoint)
+                    .put_with_failpoint_in_replay_epoch(replay_epoch, mutation, failpoint)
                     .map_err(map_durable_error)
             }),
             InboundOperation::Delete => DeleteRequest::new(
@@ -419,7 +420,7 @@ where
             .map_err(map_durable_error)
             .and_then(|mutation| {
                 self.durable
-                    .delete_with_failpoint(mutation, failpoint)
+                    .delete_with_failpoint_in_replay_epoch(replay_epoch, mutation, failpoint)
                     .map_err(map_durable_error)
             }),
         };
@@ -629,7 +630,8 @@ fn map_durable_error(error: ServiceError) -> RuntimeError {
         | ServiceError::InvalidResource
         | ServiceError::InvalidSecret
         | ServiceError::InvalidAuthorizationDigest => RuntimeError::InvalidRequest,
-        ServiceError::RequestBindingConflict
+        ServiceError::ReplayEpochMismatch
+        | ServiceError::RequestBindingConflict
         | ServiceError::RequestCapacityExhausted
         | ServiceError::BackupRollbackRejected
         | ServiceError::GenerationOverflow
@@ -1011,7 +1013,11 @@ mod tests {
     fn actual_io_failure_is_never_mapped_to_rejection() -> Result<(), RuntimeError> {
         let root = Root::new("actual-io")?;
         let mut runtime = service(&root, TestAuthorizer { allow: true }, TestAudit::default())?;
-        fs::create_dir(root.0.join("ledger.tmp")).map_err(|_| RuntimeError::DurableRejected)?;
+        // Ordinary mutations append authenticated journal deltas; the ledger is
+        // now a checkpoint artifact. Block the real append path, not ledger.tmp.
+        fs::rename(root.0.join("journal.hbj"), root.0.join("journal.saved"))
+            .map_err(|_| RuntimeError::DurableRejected)?;
+        fs::create_dir(root.0.join("journal.hbj")).map_err(|_| RuntimeError::DurableRejected)?;
         let reference =
             match runtime.handle(inbound(b"token-a", "request-io", "secret/app", b"secret")?) {
                 Err(RuntimeError::OutcomeUnknown { recovery_reference }) => recovery_reference,
@@ -1035,12 +1041,21 @@ mod tests {
                 .any(|e| e.stage() == AuditStage::OutcomeUnknown)
         );
         drop(runtime);
-        fs::remove_dir(root.0.join("ledger.tmp")).map_err(|_| RuntimeError::DurableRejected)?;
+        fs::remove_dir(root.0.join("journal.hbj")).map_err(|_| RuntimeError::DurableRejected)?;
+        fs::rename(root.0.join("journal.saved"), root.0.join("journal.hbj"))
+            .map_err(|_| RuntimeError::DurableRejected)?;
         let durable =
             DurableService::reopen(&root.0, TestBarrier::new(), 32).map_err(map_durable_error)?;
-        assert_eq!(
-            durable.reconcile(&reference),
-            ReconciliationStatus::Committed { generation: 1 }
+        // No journal frame could enter in this particular fixture, but absence
+        // of a retained result is still Unknown, not general retry permission.
+        // The separate after-publication failure test proves Committed recovery.
+        assert_eq!(durable.reconcile(&reference), ReconciliationStatus::Unknown);
+        assert_eq!(durable.generation(), 0);
+        assert!(
+            durable
+                .get("root/team-a", "secret/app")
+                .map_err(map_durable_error)?
+                .is_none()
         );
         Ok(())
     }
@@ -1090,6 +1105,53 @@ mod tests {
             Err(RuntimeError::AuditUnavailableAfterRead)
         );
         assert_eq!(runtime.generation(), 1);
+        Ok(())
+    }
+
+    #[test]
+    fn runtime_mutations_continue_after_replay_epoch_retirement() -> Result<(), RuntimeError> {
+        let root = Root::new("replay-retirement")?;
+        let mut runtime = service(&root, TestAuthorizer { allow: true }, TestAudit::default())?;
+        assert!(matches!(
+            runtime.handle(inbound(
+                b"token-a",
+                "before-retirement",
+                "secret/before",
+                b"one"
+            )?)?,
+            RuntimeOutcome::Committed { generation: 1, .. }
+        ));
+        assert_eq!(runtime.durable.replay_epoch(), 0);
+        assert_eq!(runtime.retained_request_count(), 1);
+
+        runtime
+            .durable
+            .retire_replay_epoch()
+            .map_err(map_durable_error)?;
+        assert_eq!(runtime.durable.replay_epoch(), 1);
+        assert_eq!(runtime.retained_request_count(), 0);
+
+        assert!(matches!(
+            runtime.handle(inbound(
+                b"token-a",
+                "after-retirement",
+                "secret/after",
+                b"two"
+            )?)?,
+            RuntimeOutcome::Committed { generation: 2, .. }
+        ));
+        assert_eq!(runtime.retained_request_count(), 1);
+        assert_eq!(
+            runtime
+                .read(
+                    &Credential::new(b"token-a".to_vec())?,
+                    "root/team-a",
+                    "secret/after",
+                    "read-after-retirement"
+                )?
+                .map(|secret| secret.expose().to_vec()),
+            Some(b"two".to_vec())
+        );
         Ok(())
     }
 }

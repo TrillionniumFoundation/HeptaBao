@@ -4,16 +4,53 @@
 
 ## Current API semantics and runtime integration
 
-`ExclusiveDirectory::open(root)` owns one Linux directory descriptor and exclusive writer lock. `root` must be an existing absolute directory. The guard is deliberately not cloneable: keep it alive for every operation and use `access_path()` or `leaf_path(name)`, never reconstruct paths through the original pathname. Leaf names are bounded to 240 bytes and reject separators/traversal. `verify()` checks the original directory identity; `sync_all()` persists directory metadata.
+`ExclusiveDirectory::open(root)` owns one Unix directory descriptor and exclusive
+writer lock. `root` must be an existing absolute directory; every path component
+is opened without following symlinks, with pre/open/post device/inode checks.
+On macOS, the fixed compatibility aliases `/var`, `/tmp` and `/etc` are first
+normalized to `/private/...` only after verifying that `/` is root-owned and not
+group/world-writable and that the alias is the exact root-owned platform link.
+No caller-selected or later symlink is admitted.
+The owner is deliberately not cloneable. New consumers use `open_file`,
+`entry_exists`, `remove_file`, `rename` and independent streaming `entries`
+operations on that held descriptor, never reconstruct authority from the original
+pathname. `FileAccess` distinguishes Read, Write, Append, exclusive CreateNew and
+CreateNewReadWrite for a private unlinked snapshot transfer;
+Write does not implicitly truncate. Opened leaves must be singly linked regular
+files; creation is mode 0600. Names remain flat, bounded to 240 bytes and reject
+separators/traversal. `verify()` checks the held directory identity, and
+`sync_all()` synchronizes that same handle even after pathname replacement.
 
-`RootIdentityChanged`, `UnsafeRoot`, `WriterBusy` and `InvalidLeafName` fail closed; no other-platform fallback exists (`UnsupportedPlatform`). Writer acquisition retries at most 64 ms to tolerate fork/exec descriptor inheritance, not to take over a live owner. Dropping the guard releases the lock. This package is in the current server dependency closure, protecting the `durable-service` storage root; the server audit rotation code implements its own directory/descriptor fencing and does not call this guard. This crate has no independent HTTP route. Restore or repair must keep the descriptor fence and never delete a live lock to force admission.
+`access_path()` is a fallible `Result<&Path, DirectoryGuardError>` compatibility
+API for legacy Linux consumers only. It verifies the `/proc/self/fd` identity;
+`leaf_path(name)` depends on it. Those adapters return `UnsupportedPlatform` on
+non-Linux rather than falling back to ambient paths. They are not required by
+the Unix relative operations. Non-Unix acquisition remains unsupported.
+
+`normalize_root_owned_system_alias` exposes that narrow platform normalization to
+other descriptor walkers; non-macOS paths are returned unchanged. It is not a
+general canonicalization or symlink-following API. `open_absolute_directory_no_symlinks`
+then exposes the same Unix component traversal as a read-only directory handle
+without a writer lock. Snapshot parent custody uses it alongside, not instead of,
+the existing durable writer. The spool has its own `ExclusiveDirectory` and a
+single-transfer lease. This primitive never grants durable-write authorization or
+permits competing writers.
+
+`RootIdentityChanged`, `UnsafeRoot`, `WriterBusy` and `InvalidLeafName` fail closed.
+Writer acquisition retains the bounded 64 ms fork/exec inheritance retry, not a
+live-owner takeover. Dropping the owner releases the lock. Current native
+`durable-service::FileBackend` operations and ordinary server initialization
+publication use this owner; the server audit implementation has its own Unix
+directory fence. Legacy journal/store consumers are not thereby ported. Repair
+must never delete or bypass a live writer lock to force admission.
 
 Current executable checks (source anchors, not a pass receipt):
 
 - `root_is_descriptor_bound_and_leaf_names_are_closed` — `crates/heptabao-filesystem-guard/src/lib.rs`.
 - `symlink_root_is_rejected` — `crates/heptabao-filesystem-guard/src/lib.rs`.
+- `darwin_root_owned_var_alias_is_normalized_but_later_symlinks_remain_denied` — `crates/heptabao-filesystem-guard/src/relative_tests.rs`.
 
-Run `cargo +1.98.0 test --locked -p heptabao-filesystem-guard --all-targets`. Exercise descriptor replacement, competing writers and fsync failure on Linux; successful unit tests do not qualify a target filesystem.
+Run `cargo +1.98.0 test --locked -p heptabao-filesystem-guard --all-targets`. Exercise descriptor replacement, competing writers and fsync failure on each Unix target; successful unit tests do not qualify a target filesystem.
 
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
@@ -23,7 +60,7 @@ Run `cargo +1.98.0 test --locked -p heptabao-filesystem-guard --all-targets`. Ex
 
 ## Purpose and non-goals
 
-Owns a Linux directory descriptor, validates root identity, provides bounded descriptor-relative leaf access and retains an exclusive writer fence for object lifetime.
+Owns a Unix directory descriptor, validates root identity, provides bounded descriptor-relative leaf access and retains an exclusive writer fence for object lifetime.
 
 This crate does not by itself grant qualification, compatibility, production, migration or release authority. It must not be used to infer behavior outside the currently declared profile.
 
@@ -145,7 +182,8 @@ Diagnostics use stable typed error classes and opaque correlation identities. Op
 
 ## Known gaps
 
-- Current profile is Linux-local-filesystem only.
+- Current local-filesystem behavior is exercised on Linux and macOS; other Unix
+  kernels and filesystems are not inferred from those runs.
 - Network filesystem semantics are not claimed.
 - Kernel power-cut and storage-controller qualification remain external.
 
@@ -194,3 +232,7 @@ without weakening the public fail-closed `WriterBusy` behavior.
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-filesystem-guard.md).

@@ -208,7 +208,7 @@ def collect(args: argparse.Namespace) -> dict[str, Any]:
     status = "EXECUTED_PASS" if failed == unknown == 0 else "EXECUTED_FAIL" if failed else "BLOCKED"
     value = {
         "schema":"heptabao.dependency-probe-evidence.v1","plan_id":"HEPTABAO-PLAN-2026-08-28","revision":"1.1","evidence_id":args.evidence_id,"profile_id":item["profile_id"],"candidate_id":item["candidate_id"],"capability":item["capability"],"package":item["package"],"version":item["version"],"execution_kind":args.execution_kind,"status":status,"captured_at_utc":datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),
-        "source":{"repository":"ProfHepta/HeptaBao","branch":args.branch,"commit_sha":args.commit_sha,"tree_sha":args.tree_sha,"clean_tree":args.clean_tree},
+        "source":{"repository":"TrillionniumFoundation/HeptaBao","branch":args.branch,"commit_sha":args.commit_sha,"tree_sha":args.tree_sha,"clean_tree":args.clean_tree},
         "environment":{"environment_id":args.environment_id,"os":args.os or platform.system().lower(),"arch":args.arch or platform.machine(),"target":args.target,"toolchain":args.toolchain,"rustc":args.rustc,"cargo":args.cargo,"python":platform.python_version(),"runner_name":args.runner_name,"runner_id":int(args.runner_id) if args.runner_id else None,"job_id":int(args.job_id) if args.job_id else None,"container_or_image_digest":args.image_digest},
         "profile":{"manifest_path":item["probe_manifest"],"default_features":item["default_features"],"features":sorted(item["features"]),"profile_digest_sha256":profile_digest(item),"expected_registry_checksum_sha256":item["expected_registry_checksum_sha256"],"expected_release_commit_sha":item["expected_release_commit_sha"]},
         "artifacts":artifacts,"graph_summary":graph,

@@ -1,26 +1,7 @@
 name: plan-v1.4.2-anchored-recovery
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - codex/plan-v1.4-full-gap-closure-v1
-    paths:
-      - Cargo.toml
-      - Cargo.lock
-      - crates/heptabao-key-lifecycle/**
-      - crates/heptabao-rollback-anchor/**
-      - crates/heptabao-recovery-core/**
-      - docs/plan/HEPTABAO_PLAN_V1_4_2_KEY_LIFECYCLE_ROLLBACK_AND_RECOVERY.md
-      - docs/recovery/HEPTABAO_ANCHORED_RECOVERY_CONTRACT_V1.md
-      - planning/HEPTABAO_BLOCKER_REGISTER_V1_4_2.yaml
-      - planning/HEPTABAO_NORMATIVE_DOCUMENT_MANIFEST_V1_4_2.yaml
-      - planning/HEPTABAO_V1_4_2_ANCHORED_RECOVERY_STATUS.yaml
-      - schemas/heptabao_normative_document_manifest_v1_4_2.schema.json
-      - scripts/validate_plan_v1_4_2.py
-      - scripts/validate_v1_4_2_inherited_surface.py
-      - tests/plan/test_plan_v1_4_2.py
-      - .github/workflows/plan-v1.4.2-anchored-recovery.yml
+  # Historical V1.4.2 gate; run on demand for forensic evidence only.
   workflow_dispatch:
 
 permissions:

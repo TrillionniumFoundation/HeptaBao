@@ -35,18 +35,28 @@ class Instance:
             "-keyout", str(root / "ca.key"), "-out", str(root / "ca.crt"),
             "-subj", "/CN=HeptaBao Synthetic Test CA", "-addext", "basicConstraints=critical,CA:TRUE",
             "-addext", "keyUsage=critical,keyCertSign,cRLSign",
+            "-addext", "subjectKeyIdentifier=hash",
+            "-addext", "authorityKeyIdentifier=keyid:always",
         ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         subprocess.run(["openssl", "req", "-new", "-newkey", "rsa:2048", "-nodes",
                         "-keyout", str(root / "tls.key"), "-out", str(root / "tls.csr"),
                         "-subj", "/CN=localhost"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        private_write(root / "leaf.ext", "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\n")
+        # Do not depend on the host openssl/LibreSSL default extension policy.
+        # Python 3.13+ verifies RFC 5280 identifiers strictly by default.
+        private_write(root / "leaf.ext", "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:localhost,IP:127.0.0.1\nsubjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid:always\n")
         subprocess.run(["openssl", "x509", "-req", "-in", str(root / "tls.csr"),
                         "-CA", str(root / "ca.crt"), "-CAkey", str(root / "ca.key"), "-CAcreateserial",
                         "-out", str(root / "tls.crt"), "-days", "2", "-sha256", "-extfile", str(root / "leaf.ext")],
                        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         (root / "ca.key").chmod(0o600)
         (root / "tls.key").chmod(0o600)
-        self.context = ssl.create_default_context(cafile=str(root / "ca.crt"))
+        # OpenSSL inherits the caller's umask for public certificates. A
+        # group-writable CA must not become an admitted client trust root.
+        (root / "ca.crt").chmod(0o644)
+        (root / "tls.crt").chmod(0o644)
+        context = ssl.create_default_context(cafile=str(root / "ca.crt"))
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        self.context = context
         self.client = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=self.context))
         private_write(root / "server.json", json.dumps({
             "listen": f"127.0.0.1:{self.port}", "data_dir": str(root / "data"),
@@ -67,7 +77,12 @@ class Instance:
                 status, _ = self.call("GET", "sys/health")
                 if status in (200, 501, 503):
                     return
-            except (OSError, urllib.error.URLError):
+            except ssl.SSLCertVerificationError:
+                raise RuntimeError("TLS certificate verification failed during startup") from None
+            except urllib.error.URLError as error:
+                if isinstance(error.reason, ssl.SSLCertVerificationError):
+                    raise RuntimeError("TLS certificate verification failed during startup") from None
+            except OSError:
                 pass
             time.sleep(0.05)
         raise RuntimeError("TLS listener did not become ready")
@@ -97,7 +112,7 @@ class Instance:
         return int(first[1])
 
     def call(self, method, path, body=None, *, token=None, namespace="", extra_headers=None):
-        headers = {"Content-Type": "application/json", "X-Vault-Token": self.token if token is None else token}
+        headers = {"Accept": "application/json", "Content-Type": "application/json", "X-Vault-Token": self.token if token is None else token}
         if namespace:
             headers["X-Vault-Namespace"] = namespace
         headers.update(extra_headers or {})
@@ -134,6 +149,8 @@ def run(binary: Path, root: Path, keep_running: bool):
         check("wrong_unseal_denied", instance.call("POST", "sys/unseal", {"key": "00" * 32})[0] >= 400)
         check("unseal", instance.call("POST", "sys/unseal", {"key": key})[0] == 200)
         check("active_health", instance.call("GET", "sys/health")[0] == 200)
+        check("root_kv_mount_enabled", instance.call("POST", "sys/mounts/secret",
+              {"type": "kv", "options": {"version": "2"}})[0] == 204)
         audit_path = root / "audit.jsonl"
         audit_before = len(audit_path.read_bytes().splitlines())
         leaked_token = "wire-token-must-not-appear"
@@ -161,9 +178,20 @@ def run(binary: Path, root: Path, keep_running: bool):
         status, read = instance.call("GET", "secret/data/item?version=1")
         check("kv_read", status == 200 and read["data"]["data"]["value"] == marker)
         check("invalid_token_denied", instance.call("GET", "secret/data/item", token="invalid-synthetic")[0] == 403)
-        check("unsupported_wrapping_withholds_secret", instance.call("GET", "secret/data/item", extra_headers={"X-Vault-Wrap-TTL": "60s"})[0] == 501)
+        status, wrapped = instance.call("GET", "secret/data/item", extra_headers={"X-Vault-Wrap-TTL": "60s"})
+        check("wrapping_withholds_secret", status == 200 and wrapped.get("data") is None
+              and wrapped.get("auth") is None and marker not in json.dumps(wrapped))
+        wrapping_token = wrapped["wrap_info"]["token"]
+        status, unwrapped = instance.call("POST", "sys/wrapping/unwrap", {}, token=wrapping_token)
+        check("unwrap_returns_exact_secret", status == 200 and unwrapped["data"]["data"]["value"] == marker)
+        check("wrapping_replay_rejected", instance.call("POST", "sys/wrapping/unwrap", {}, token=wrapping_token)[0] == 400)
+        check("unsupported_wrapping_format_withholds_secret", instance.call("GET", "secret/data/item",
+              extra_headers={"X-Vault-Wrap-TTL": "60s", "X-Vault-Wrap-Format": "jwt"})[0] == 501)
         check("unsupported_mfa_fails_closed", instance.call("GET", "secret/data/item", extra_headers={"X-Vault-MFA": "synthetic"})[0] == 501)
         check("secret_query_rejected", instance.call("POST", "smoke-totp/keys/leak?url=synthetic", {})[0] == 400)
+        check("namespace_create", instance.call("POST", "sys/namespaces/isolated", {})[0] == 200)
+        check("namespace_kv_mount_enabled", instance.call("POST", "sys/mounts/secret",
+              {"type": "kv", "options": {"version": "2"}}, namespace="isolated")[0] == 204)
         # Equal path suffixes in distinct namespaces must not share bytes.
         check("namespace_write", instance.call("POST", "secret/data/item", {"data": {"value": "different"}}, namespace="isolated")[0] == 200)
         check("namespace_isolation", instance.call("GET", "secret/data/item")[1]["data"]["data"]["value"] == marker)
@@ -181,7 +209,7 @@ def run(binary: Path, root: Path, keep_running: bool):
         used_code = generated["data"]["code"]
         status, validated = instance.call("POST", "smoke-totp/code/item", {"code": used_code})
         check("totp_validate", status == 200 and validated["data"]["valid"] is True)
-        check("ha_explicitly_unimplemented", instance.call("POST", "sys/step-down", {})[0] == 501)
+        check("ha_step_down_requires_ha", instance.call("POST", "sys/step-down", {}, token=instance.token)[0] == 400)
         instance.stop()  # SIGKILL, deliberately no clean seal/close.
         check("encrypted_disk", all(marker.encode() not in path.read_bytes() for path in (root / "data").rglob("*") if path.is_file()))
         check("redacted_audit", marker.encode() not in (root / "audit.jsonl").read_bytes())

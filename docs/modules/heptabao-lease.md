@@ -4,6 +4,8 @@ Current source binding: [docs/modules/CURRENT_SOURCE_BINDING.md](CURRENT_SOURCE_
 
 Shared rules: `docs/engineering/HEPTABAO_ENGINEERING_HANDBOOK_V1.md`.
 
+Current runtime distinction: The current SSH OTP local lease owner is `heptabao-server/src/engine_leases.rs` inside Service, not this standalone model. The server has a bounded local lifecycle worker, but this crate does not schedule expiry or execute general external-provider callbacks.
+
 ## Purpose and non-goals
 
 This package owns lease issue, renewal, expiration and revocation state for secret and authentication leases. It does not execute backend revocation callbacks, persist leases or schedule background expiration.
@@ -14,7 +16,9 @@ This package owns lease issue, renewal, expiration and revocation state for secr
 
 `LeaseStore::issue(LeaseIssue)` owns lease ID, owner entity, scope, kind, timestamps, renewable flag and generation. The command requires a unique ID and nonzero TTL whose addition to `issued_at` fits in `Tick`; overflow maps to `InvalidTtl`. Issuance returns an owned `LeaseView` and does not generate or provision a secret in an external backend.
 
-`validate(&mut self, id, now)` is mutating: it lazily marks an active lease expired at `now >= expires_at`, advances generation and returns `Expired`. `renew(id, now, ttl)` requires a live renewable lease and sets its deadline to `now + ttl`; it can shorten the old deadline, has no maximum-TTL policy and has no external provider callback. Its expired branch marks state without the same generation increment as `validate`. The caller must supply monotonic time and any stricter deadline/generation policy.
+`validate(&mut self, id, now)` is mutating: it lazily marks an active lease expired at `now >= expires_at`, advances generation and returns `Expired`. `renew_bounded(id, now, ttl, max_ttl)` requires a live renewable lease and sets its deadline to the smaller of `now + ttl` and `issued_at + max_ttl`. The maximum is an absolute lifetime from issuance, not a fresh window on every renewal. Zero TTLs and either addition overflowing return `InvalidTtl` without changing the live record. A reached deadline marks the lease expired once and cannot be reversed by a later call using an earlier time or larger policy limit. The caller owns the maximum-TTL policy and must supply monotonic time; this API does not authenticate the policy source or execute a provider callback.
+
+The legacy `renew(id, now, ttl)` remains for historical model compatibility. It has no maximum-TTL input and is not a production lease admission path. Its expired branch retains the historical generation behavior. Runtime adapters must select a bounded policy, persist the decision and coordinate the external effect; using `renew_bounded` alone does not establish those guarantees.
 
 `revoke(id)` and `revoke_prefix(prefix)` mark only currently Active records and do not accept time; prefix matching respects path segments. They do not run revocation SQL, revoke a provider credential, cascade from a token, or schedule expiry. An adapter must coordinate those side effects and durably retain unknown outcomes before reporting revocation complete.
 
@@ -82,6 +86,9 @@ Current executable anchors (source assertions, not a claim that tests were rerun
 
 - [`tests::lease_lifecycle_is_monotonic`](../../crates/heptabao-lease/src/lib.rs) checks the demonstrated issue/renew/revoke path and subsequent revoked rejection.
 - [`tests::prefix_revocation_respects_path_boundaries`](../../crates/heptabao-lease/src/lib.rs) checks /secret/app revocation leaves /secret/application outside the scope.
+- `tests::bounded_renewal_cannot_extend_absolute_lifetime` checks repeated renewal never exceeds the issue-time maximum and expiry cannot revive on clock rollback.
+- `tests::bounded_renewal_invalid_input_is_atomic` checks zero TTLs and both overflow paths leave the live record unchanged.
+- `tests::bounded_renewal_rejects_expired_revoked_and_nonrenewable_leases` checks the existing expiry, reduced policy deadline, revocation, renewable flag and missing-ID boundaries.
 
 `cargo test -p heptabao-lease` covers command-object issue, renewal, revocation, expiration and segment-safe prefix revocation. The current CI compiles all targets, rejects excessive function arguments through strict Clippy and builds documentation.
 
@@ -105,3 +112,7 @@ The V1.4.7 generated facts below are a preserved historical snapshot. Current de
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-lease.md).

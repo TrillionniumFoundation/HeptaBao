@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.radius-bounded.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "case": "initialize",
+      "passed": true
+    },
+    {
+      "case": "unseal",
+      "passed": true
+    },
+    {
+      "case": "mount",
+      "passed": true
+    },
+    {
+      "case": "config",
+      "passed": true
+    },
+    {
+      "case": "config_roundtrip",
+      "passed": true
+    },
+    {
+      "case": "pap_accept_with_message_authenticator",
+      "passed": true
+    },
+    {
+      "case": "request_message_authenticator",
+      "passed": true
+    },
+    {
+      "case": "reject_bad_authenticator",
+      "passed": true
+    },
+    {
+      "case": "reject_bad_response_authenticator",
+      "passed": true
+    },
+    {
+      "case": "provider_reject_does_not_issue_token",
+      "passed": true
+    },
+    {
+      "case": "timeout_fails_closed",
+      "passed": true
+    }
+  ],
+  "bounded_profile": "PAP over process-enrolled IPv4 UDP; strict Message-Authenticator and Response Authenticator; one-shot timeout",
+  "full_openbao_radius_compatibility": false,
+  "independent_qualification": false
+}

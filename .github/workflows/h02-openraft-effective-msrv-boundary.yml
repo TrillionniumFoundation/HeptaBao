@@ -1,14 +1,8 @@
 name: h02-openraft-effective-msrv-boundary
 
 on:
-  push:
-    branches: ["codex/h02-durable-multiprocess-closure-v2"]
-    paths:
-      - ".github/workflows/h02-openraft-effective-msrv-boundary.yml"
-      - "probes/h02/openraft-tokio/Cargo.toml"
-      - "probes/h02/openraft-tokio/Cargo.lock"
+  # Historical diagnostic lane; manual-only so superseded branch pushes and nightly duplicates do not slow development.
   workflow_dispatch:
-
 permissions:
   contents: read
 

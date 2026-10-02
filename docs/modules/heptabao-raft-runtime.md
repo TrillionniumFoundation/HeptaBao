@@ -12,7 +12,25 @@ This package implements a durable three-voter OpenRaft consensus core for HeptaB
 
 `replicate` borrows a sealed `ReplicatedEnvelope` and a nonzero client serial; the envelope binds a 1–128-byte ASCII operation ID (alphanumeric plus `-_.:`), a nonzero 32-byte digest and 1 byte–1 MiB of opaque sealed bytes. `next_production_client_serial` obtains serial allocation from durable state rather than process uptime. After a lost response, reconcile the operation binding before retrying. `ensure_linearizable` is an awaited ReadIndex barrier, not a cached leader observation. `applied_state`/`latest_envelope` read local state and require the caller to establish the needed authority barrier first.
 
-`initialize_single`, `add_learner` and `change_membership(voters)` are administrative consensus operations, not HTTP authorization. The server/caller owns operator admission, peer identity and compatible cluster/key configuration. `trigger_snapshot` requests a local snapshot; success alone does not establish remote InstallSnapshot or destructive recovery qualification. `shutdown(self)` consumes the node, while `rpc_service()` clones the request adapter needed by the peer listener.
+`ProcessRaftNode::local_leader_observation` samples one local metrics snapshot,
+including the actual consensus `term`, local id, actual local leader role, remembered
+current leader and committed/
+applied indexes. This passive snapshot performs no RPC or ReadIndex and cannot
+authorize application access. The server binds its separately gated application
+activation event to this term; observing a new term alone cannot publish a time.
+
+The `ApplicationRequest` state machine also accepts typed record Stage/Publish/Prune
+commands. Staging stores bounded sealed objects but does not change the application
+root. Publish validates the expected typed base and complete referenced closure;
+pruning is limited to objects unreachable from the committed root. The same command
+validation applies during live application and journal replay. The server's HBSM5
+codec authenticates object metadata and decrypts values; the Raft runtime does not
+interpret KV plaintext. Record state uses explicit format 3 snapshot/bundle framing
+so an older legacy parser cannot silently discard the object map. Existing object,
+state-machine and 128MiB snapshot budgets remain enforced; this API description is
+not a successful scale, snapshot-transfer or mixed-version test receipt.
+
+`initialize_single`, `enroll_learner`, `add_learner`, `wait_for_learner_replication` and `change_membership(voters)` are administrative consensus operations, not HTTP authorization. `enroll_learner` observes a committed learner membership without requiring the target to be reachable; `add_learner` composes that operation with the stronger replication and recent-heartbeat readiness check. The server bootstrap path uses the split operations, so an unavailable learner remains a durable learner and is never promoted or reported as active. The server/caller owns operator admission, peer identity and compatible cluster/key configuration. `trigger_snapshot` requests a local snapshot; success alone does not establish remote InstallSnapshot or destructive recovery qualification. `shutdown(self)` consumes the node, while `rpc_service()` clones the request adapter needed by the peer listener.
 
 Current API declaration excerpt (illustrative, not a standalone program):
 
@@ -96,6 +114,31 @@ Source-bound lexical inventory: `crates/heptabao-raft-runtime`; Cargo SHA-256 `6
 
 This table is generated from the exact candidate source. It is a bounded lexical inventory, not a stability or compatibility promise.
 <!-- END GENERATED V1.4.7 PUBLIC API TRUTH -->
+
+## Interrupted snapshot reception
+
+The authenticated peer adapter owns in-memory, bounded receive prefixes; a
+prefix acknowledgement is neither a durable snapshot nor an applied-log
+observation. Before replacing any prefix, the first chunk binds its committed
+vote to the authenticated sender and its transfer identifier to the serialized
+metadata, vote and total length. Malformed prefixes, regressing votes or log
+frontiers, and conflicting content at the same frontier leave admitted progress
+untouched. Whole-snapshot length/CRC verification and OpenRaft's final snapshot
+installation remain mandatory; CRC is transport integrity, not authentication.
+
+A valid restart retires that sender's incomplete transfer. A higher-vote sender
+also retires lower-vote prefixes, so interrupted restarts and leadership changes
+do not permanently consume the four receive slots. Late chunks from retired
+transfers are rejected. Identical first-chunk replay restarts reception after a
+lost acknowledgement, without replaying an application mutation. Allocation grows
+with received bytes rather than preallocating a claimed 128 MiB snapshot.
+
+`interrupted_snapshot_restarts_do_not_exhaust_receive_slots` retains the original
+slot-exhaustion regression. The `process::snapshot_receive_tests` group covers
+malformed-prefix preservation, authenticated sender binding, leadership changes,
+late chunks and identical restart. Real snapshot installation/reopen and local
+applied-frontier checks remain in `process::replication_tests`; these bounded
+checks do not establish full OpenBao compatibility or destructive qualification.
 
 ## State and data model
 
@@ -202,3 +245,37 @@ node is not silently invented and no network RPC is issued. The existing durable
 restart/quorum-loss regression remains mandatory, without ignores or retry wrappers.
 Real network fault evidence is separately described in
 `docs/operations/HEPTABAO_NETWORK_PARTITION_QUALIFICATION.md`.
+
+## Current native administration
+
+`src/process/admin.rs` now exposes committed membership/replication observations, guarded native learner add/promotion/demotion/removal and persisted snapshot metadata/digests. See [Raft administration](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) for the expected-index fence, joint-to-stable completion, bounds and five-process acceptance command. This does not establish OpenBao snapshot format, forced restore, mixed-version rollout or independent qualification.
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-raft-runtime.md).
+
+## Deadline-bound replay prefixes
+
+A remote peer starts with the existing 128 KiB AppendEntries batching target.
+Only a multi-entry RPC failure that actually exhausts the supplied soft deadline
+halves that peer's target, down to 16 KiB. Instant offline errors leave the target
+unchanged. Each request preserves a contiguous prefix, its vote, previous log ID
+and leader commit. A legal singleton remains intact even above the soft target;
+the original hard wire/proposal limits and caller RPC deadline remain enforced.
+
+If the peer durably accepts a shortened request, the adapter returns OpenRaft
+`PartialSuccess` with the last actually sent log ID. It never confirms the omitted
+suffix. Existing conflict, higher-vote and partial-success responses retain their
+original meaning. This changes internal consensus replication batches, not
+application retry authority or the physical campaign's applied-frontier check.
+
+The paced real-Raft regression
+`failed_replay_adapts_contiguous_prefix_without_acknowledging_unsent_suffix`
+exhausts the unchanged 150 ms budget on an accumulated prefix and requires all
+nodes to reach the final applied frontier and exact application digest. The
+recording-transport regression
+`successful_shortened_request_confirms_only_actual_contiguous_prefix` confirms
+that entries 6 and 7 are sent and acknowledged while entry 8 remains pending.
+Actual physical-host success still requires a receipt at the executed source;
+this mechanism alone does not guarantee progress for a slow large singleton or
+qualify WAN, power-loss or production operation.

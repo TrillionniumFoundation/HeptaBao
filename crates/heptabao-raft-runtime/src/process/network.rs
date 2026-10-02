@@ -4,6 +4,7 @@ use std::io::Cursor;
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::state_machine::TypeConfig;
 use futures::future::BoxFuture;
 use openraft::errors::{
     NetworkError, RPCError, RaftError, ReplicationClosed, StreamingError, Unreachable,
@@ -11,11 +12,11 @@ use openraft::errors::{
 use openraft::network::v2::RaftNetworkV2;
 use openraft::network::{RPCOption, RaftNetworkFactory};
 use openraft::raft::{
-    AppendEntriesRequest, AppendEntriesResponse, SnapshotResponse, VoteRequest, VoteResponse,
+    AppendEntriesRequest, AppendEntriesResponse, SnapshotResponse, TransferLeaderRequest,
+    TransferLeaderResponse, VoteRequest, VoteResponse,
 };
 use openraft::type_config::alias::{SnapshotOf, VoteOf};
 use openraft::{OptionalSend, Snapshot};
-use openraft_memstore::TypeConfig;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use tokio::sync::Mutex;
@@ -32,6 +33,7 @@ pub enum RaftRpcKind {
     Vote,
     PreVote,
     SnapshotChunk,
+    TransferLeader,
 }
 
 #[derive(Debug)]
@@ -131,6 +133,7 @@ impl RaftNetworkFactory<TypeConfig> for RemoteNetworkFactory {
             target,
             peers: self.peers.clone(),
             transport: self.transport.clone(),
+            append_payload_target: crate::replication_bounds::TARGET_APPEND_RPC_BYTES,
         }
     }
 }
@@ -140,6 +143,9 @@ pub struct RemoteNetwork {
     target: u64,
     peers: Arc<BTreeSet<u64>>,
     transport: Arc<dyn RaftPeerRpc>,
+    // A timeout on a backlog must not replay the same oversized batch forever.
+    // This target is local to this peer; the hard wire limit and RPC TTL stay fixed.
+    append_payload_target: usize,
 }
 
 impl std::fmt::Debug for RemoteNetwork {
@@ -186,12 +192,28 @@ impl RemoteNetwork {
         Req: Serialize,
         Resp: DeserializeOwned,
     {
+        use super::rpc_observation::{RpcAttempt, Stage};
+        let started = std::time::Instant::now();
         let payload =
             serde_json::to_vec(request).map_err(|error| network_error(error.to_string()))?;
-        let response = self.exchange(kind, payload, option.soft_ttl()).await?;
-        let result: Result<Resp, RaftError<TypeConfig>> =
-            serde_json::from_slice(&response).map_err(|error| network_error(error.to_string()))?;
-        result.map_err(|error| RPCError::Unreachable(Unreachable::new(&error)))
+        let observation = RpcAttempt {
+            source: self.source,
+            target: self.target,
+            kind,
+            bytes: payload.len(),
+            budget: option.soft_ttl(),
+            started,
+        };
+        let response = self
+            .exchange(kind, payload, option.soft_ttl())
+            .await
+            .inspect_err(|_| observation.failed(Stage::Transport))?;
+        let result: Result<Resp, RaftError<TypeConfig>> = serde_json::from_slice(&response)
+            .inspect_err(|_| observation.failed(Stage::Decode))
+            .map_err(|error| network_error(error.to_string()))?;
+        result
+            .inspect_err(|_| observation.failed(Stage::RemoteRaft))
+            .map_err(|error| RPCError::Unreachable(Unreachable::new(&error)))
     }
 
     async fn send_snapshot(
@@ -240,12 +262,24 @@ impl RemoteNetwork {
                 chunk_crc32: crc32(&chunk),
                 chunk,
             };
+            use super::rpc_observation::{RpcAttempt, Stage};
+            let started = std::time::Instant::now();
             let payload =
                 serde_json::to_vec(&request).map_err(|error| network_error(error.to_string()))?;
+            let observation = RpcAttempt {
+                source: self.source,
+                target: self.target,
+                kind: RaftRpcKind::SnapshotChunk,
+                bytes: payload.len(),
+                budget: option.soft_ttl(),
+                started,
+            };
             let response = self
                 .exchange(RaftRpcKind::SnapshotChunk, payload, option.soft_ttl())
-                .await?;
+                .await
+                .inspect_err(|_| observation.failed(Stage::Transport))?;
             let ack: SnapshotChunkAck = serde_json::from_slice(&response)
+                .inspect_err(|_| observation.failed(Stage::Decode))
                 .map_err(|error| network_error(error.to_string()))?;
             if ack.transfer_id != transfer_id || ack.next_ordinal != ordinal + 1 {
                 return Err(network_error(
@@ -277,11 +311,49 @@ impl RaftNetworkV2<TypeConfig> for RemoteNetwork {
 
     async fn append_entries(
         &mut self,
-        request: AppendEntriesRequest<TypeConfig>,
+        mut request: AppendEntriesRequest<TypeConfig>,
         option: RPCOption,
     ) -> Result<AppendEntriesResponse<TypeConfig>, RPCError<TypeConfig>> {
-        self.rpc(RaftRpcKind::AppendEntries, &request, &option)
+        let entries = std::mem::take(&mut request.entries);
+        let mut bytes = serde_json::to_vec(&request)
+            .map_err(|error| network_error(error.to_string()))?
+            .len();
+        let mut keep = 0;
+        for entry in &entries {
+            let entry_bytes = serde_json::to_vec(entry)
+                .map_err(|error| network_error(error.to_string()))?
+                .len();
+            let next = bytes.saturating_add(entry_bytes + usize::from(keep != 0));
+            // Always retain a legal singleton, including accepted entries larger
+            // than the soft batching target. Preserve a contiguous log prefix.
+            if keep != 0 && next > self.append_payload_target {
+                break;
+            }
+            bytes = next;
+            keep += 1;
+        }
+        let shortened = keep < entries.len();
+        request.entries = entries;
+        request.entries.truncate(keep);
+        let last_sent = request.entries.last().map(|entry| entry.log_id);
+        let started = std::time::Instant::now();
+        match self
+            .rpc(RaftRpcKind::AppendEntries, &request, &option)
             .await
+        {
+            Ok(AppendEntriesResponse::Success) if shortened => {
+                // OpenRaft must retry the suffix: Success would falsely confirm
+                // entries that never crossed the authenticated peer transport.
+                Ok(AppendEntriesResponse::PartialSuccess(last_sent))
+            }
+            Ok(response) => Ok(response),
+            Err(error) => {
+                if request.entries.len() > 1 && started.elapsed() >= option.soft_ttl() {
+                    self.append_payload_target = (self.append_payload_target / 2).max(16 * 1024);
+                }
+                Err(error)
+            }
+        }
     }
 
     async fn vote(
@@ -298,6 +370,15 @@ impl RaftNetworkV2<TypeConfig> for RemoteNetwork {
         option: RPCOption,
     ) -> Result<VoteResponse<TypeConfig>, RPCError<TypeConfig>> {
         self.rpc(RaftRpcKind::PreVote, &request, &option).await
+    }
+
+    async fn transfer_leader(
+        &mut self,
+        request: TransferLeaderRequest<TypeConfig>,
+        option: RPCOption,
+    ) -> Result<TransferLeaderResponse<TypeConfig>, RPCError<TypeConfig>> {
+        self.rpc(RaftRpcKind::TransferLeader, &request, &option)
+            .await
     }
 
     async fn full_snapshot(
@@ -375,6 +456,23 @@ impl RaftRpcService {
                 let ack = self.handle_snapshot_chunk(source, request).await?;
                 serde_json::to_vec(&ack).map_err(|_| RemoteRaftError::InvalidSnapshot)
             }
+            RaftRpcKind::TransferLeader => {
+                let request: TransferLeaderRequest<TypeConfig> =
+                    serde_json::from_slice(&payload).map_err(|_| RemoteRaftError::InvalidRpc)?;
+                // Bind the claimed leader and recipient to the authenticated
+                // transport direction before asking OpenRaft to check vote/log progress.
+                if request.from_leader().leader_id.node_id != source
+                    || *request.to_node_id() != self.local_id
+                {
+                    return Err(RemoteRaftError::InvalidRpc);
+                }
+                let result = self
+                    .raft
+                    .handle_transfer_leader(request)
+                    .await
+                    .map_err(RaftError::<TypeConfig>::Fatal);
+                serde_json::to_vec(&result).map_err(|_| RemoteRaftError::InvalidRpc)
+            }
         }
     }
 
@@ -391,6 +489,9 @@ impl RaftRpcService {
             || request.ordinal >= request.total_chunks
             || total_bytes > MAX_REMOTE_SNAPSHOT_BYTES
             || request.chunk.len() > SNAPSHOT_CHUNK_BYTES
+            || request.chunk.len() > total_bytes
+            || (request.total_chunks == 1 && request.chunk.len() != total_bytes)
+            || (request.total_chunks > 1 && request.chunk.is_empty())
             || crc32(&request.chunk) != request.chunk_crc32
         {
             return Err(RemoteRaftError::InvalidSnapshot);
@@ -400,11 +501,43 @@ impl RaftRpcService {
         let completed = {
             let mut snapshots = self.incoming_snapshots.lock().await;
             if request.ordinal == 0 {
-                if snapshots.len() >= MAX_INCOMING_SNAPSHOTS && !snapshots.contains_key(&key) {
-                    return Err(RemoteRaftError::InvalidSnapshot);
-                }
                 let vote = request.vote.ok_or(RemoteRaftError::InvalidSnapshot)?;
                 let meta = request.meta.ok_or(RemoteRaftError::InvalidSnapshot)?;
+                // Validate the authenticated sender and the complete prefix
+                // identity before releasing any already-admitted receive state.
+                let meta_bytes =
+                    serde_json::to_vec(&meta).map_err(|_| RemoteRaftError::InvalidSnapshot)?;
+                let vote_bytes =
+                    serde_json::to_vec(&vote).map_err(|_| RemoteRaftError::InvalidSnapshot)?;
+                if !vote.committed
+                    || vote.leader_id.node_id != source
+                    || request.transfer_id
+                        != snapshot_transfer_id(&meta_bytes, &vote_bytes, total_bytes)
+                    || (request.total_chunks == 1 && request.whole_crc32 != request.chunk_crc32)
+                    || snapshots.values().any(|pending| {
+                        matches!(
+                            vote.partial_cmp(&pending.vote),
+                            None | Some(std::cmp::Ordering::Less)
+                        ) || (vote == pending.vote
+                            && (meta.last_log_id < pending.meta.last_log_id
+                                || (meta.last_log_id == pending.meta.last_log_id
+                                    && (meta != pending.meta
+                                        || total_bytes != pending.total_bytes
+                                        || request.whole_crc32 != pending.whole_crc32))))
+                    })
+                {
+                    return Err(RemoteRaftError::InvalidSnapshot);
+                }
+                // A restart supersedes this sender's incomplete prefix. A new
+                // leader also retires older-vote streams; late chunks can no
+                // longer append to them. Keep the original aggregate bound.
+                snapshots.retain(|(peer, _), pending| {
+                    *peer != source
+                        && pending.vote.partial_cmp(&vote) != Some(std::cmp::Ordering::Less)
+                });
+                if snapshots.len() >= MAX_INCOMING_SNAPSHOTS {
+                    return Err(RemoteRaftError::InvalidSnapshot);
+                }
                 snapshots.insert(
                     key.clone(),
                     IncomingSnapshot {
@@ -414,7 +547,7 @@ impl RaftRpcService {
                         meta,
                         total_bytes,
                         whole_crc32: request.whole_crc32,
-                        data: Vec::with_capacity(total_bytes),
+                        data: Vec::with_capacity(request.chunk.len()),
                     },
                 );
             } else if request.vote.is_some() || request.meta.is_some() {
@@ -484,4 +617,99 @@ fn network_error(message: impl Into<String>) -> RPCError<TypeConfig> {
 
 fn remote_network_error(error: RemoteRaftError) -> RPCError<TypeConfig> {
     network_error(error.to_string())
+}
+
+#[cfg(test)]
+mod append_prefix_tests {
+    use super::*;
+    use openraft::alias::EntryOf;
+    use openraft::{EntryPayload, LogId};
+
+    #[derive(Debug, Default)]
+    struct Recorder {
+        received: Mutex<Vec<AppendEntriesRequest<TypeConfig>>>,
+    }
+
+    impl RaftPeerRpc for Arc<Recorder> {
+        fn exchange(
+            &self,
+            _source: u64,
+            _target: u64,
+            _kind: RaftRpcKind,
+            payload: Vec<u8>,
+            _timeout: Duration,
+        ) -> BoxFuture<'static, Result<Vec<u8>, RemoteRaftError>> {
+            let recorder = self.clone();
+            Box::pin(async move {
+                let request =
+                    serde_json::from_slice(&payload).map_err(|_| RemoteRaftError::InvalidRpc)?;
+                recorder.received.lock().await.push(request);
+                let response: Result<AppendEntriesResponse<TypeConfig>, RaftError<TypeConfig>> =
+                    Ok(AppendEntriesResponse::Success);
+                serde_json::to_vec(&response).map_err(|_| RemoteRaftError::InvalidRpc)
+            })
+        }
+    }
+
+    fn log_id(index: u64) -> openraft::alias::LogIdOf<TypeConfig> {
+        LogId {
+            leader_id: openraft::impls::leader_id_adv::LeaderId {
+                term: 2,
+                node_id: 1,
+            },
+            index,
+        }
+    }
+
+    #[tokio::test]
+    async fn successful_shortened_request_confirms_only_actual_contiguous_prefix()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let recorder = Arc::new(Recorder::default());
+        let mut factory =
+            RemoteNetworkFactory::new(1, BTreeSet::from([1, 2, 3]), Arc::new(recorder.clone()))?;
+        let mut network = factory.new_client(2, &()).await;
+        network.append_payload_target = 18 * 1024;
+        let vote = VoteOf::<TypeConfig>::new_committed(2, 1);
+        let entries = (6..=8)
+            .map(|index| EntryOf::<TypeConfig> {
+                log_id: log_id(index),
+                payload: EntryPayload::Normal(
+                    openraft_memstore::ClientRequest {
+                        client: "synthetic-prefix".into(),
+                        serial: index,
+                        status: "x".repeat(8 * 1024),
+                    }
+                    .into(),
+                ),
+            })
+            .collect();
+        let response = network
+            .append_entries(
+                AppendEntriesRequest {
+                    vote,
+                    prev_log_id: Some(log_id(5)),
+                    entries,
+                    leader_commit: Some(log_id(8)),
+                },
+                RPCOption::new(Duration::from_millis(150)),
+            )
+            .await?;
+        assert!(
+            matches!(response, AppendEntriesResponse::PartialSuccess(Some(id)) if id == log_id(7))
+        );
+        let received = recorder.received.lock().await;
+        assert_eq!(received.len(), 1);
+        assert_eq!(received[0].vote, vote);
+        assert_eq!(received[0].prev_log_id, Some(log_id(5)));
+        assert_eq!(received[0].leader_commit, Some(log_id(8)));
+        assert_eq!(
+            received[0]
+                .entries
+                .iter()
+                .map(|entry| entry.log_id)
+                .collect::<Vec<_>>(),
+            vec![log_id(6), log_id(7)]
+        );
+        Ok(())
+    }
 }

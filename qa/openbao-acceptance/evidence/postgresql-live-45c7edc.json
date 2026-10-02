@@ -1,0 +1,237 @@
+{
+  "schema": "heptabao.postgresql-provider-real.v1",
+  "independent_qualification": false,
+  "real_postgresql_executed": true,
+  "provider_sql_executed": true,
+  "checks": [
+    {
+      "case": "real_postgres_bootstrap_sql_executed",
+      "passed": true
+    },
+    {
+      "case": "initialize",
+      "passed": true
+    },
+    {
+      "case": "unseal",
+      "passed": true
+    },
+    {
+      "case": "mount",
+      "passed": true
+    },
+    {
+      "case": "native_pg_tls_scram_config",
+      "passed": true
+    },
+    {
+      "case": "database_config_list",
+      "passed": true
+    },
+    {
+      "case": "role_reader",
+      "passed": true
+    },
+    {
+      "case": "role_short",
+      "passed": true
+    },
+    {
+      "case": "role_churn",
+      "passed": true
+    },
+    {
+      "case": "role_retiretest",
+      "passed": true
+    },
+    {
+      "case": "database_role_list",
+      "passed": true
+    },
+    {
+      "case": "referenced_database_config_delete_rejected",
+      "passed": true
+    },
+    {
+      "case": "database_role_delete",
+      "passed": true
+    },
+    {
+      "case": "deleted_database_role_absent",
+      "passed": true
+    },
+    {
+      "case": "database_role_list_after_delete",
+      "passed": true
+    },
+    {
+      "case": "issue",
+      "passed": true
+    },
+    {
+      "case": "credential_really_logs_into_postgresql",
+      "passed": true
+    },
+    {
+      "case": "wrong_password_really_denied",
+      "passed": true
+    },
+    {
+      "case": "provider_fence_identity_observed",
+      "passed": true
+    },
+    {
+      "case": "provider_fence_binding_observed",
+      "passed": true
+    },
+    {
+      "case": "provider_call_really_waiting_on_postgres_fence",
+      "passed": true
+    },
+    {
+      "case": "slow_provider_does_not_block_unrelated_kv_write",
+      "passed": true
+    },
+    {
+      "case": "unrelated_kv_read_completes_while_provider_still_blocked",
+      "passed": true
+    },
+    {
+      "case": "renew_after_provider_fence_release",
+      "passed": true
+    },
+    {
+      "case": "service_restart_unseal",
+      "passed": true
+    },
+    {
+      "case": "renewed_credential_survives_service_restart",
+      "passed": true
+    },
+    {
+      "case": "real_active_database_session_observed",
+      "passed": true
+    },
+    {
+      "case": "revoke_provider_side",
+      "passed": true
+    },
+    {
+      "case": "revoke_terminates_existing_database_session",
+      "passed": true
+    },
+    {
+      "case": "revoked_database_session_absent",
+      "passed": true
+    },
+    {
+      "case": "revoke_really_prevents_pg_login",
+      "passed": true
+    },
+    {
+      "case": "revoked_provider_ledger_retired",
+      "passed": true
+    },
+    {
+      "case": "revoked_postgres_role_retired",
+      "passed": true
+    },
+    {
+      "case": "prefix_revoke_seed_0",
+      "passed": true
+    },
+    {
+      "case": "prefix_revoke_seed_1",
+      "passed": true
+    },
+    {
+      "case": "database_prefix_revoke",
+      "passed": true
+    },
+    {
+      "case": "database_prefix_revoke_login_denied_0",
+      "passed": true
+    },
+    {
+      "case": "database_prefix_revoke_lookup_absent_0",
+      "passed": true
+    },
+    {
+      "case": "database_prefix_revoke_login_denied_1",
+      "passed": true
+    },
+    {
+      "case": "database_prefix_revoke_lookup_absent_1",
+      "passed": true
+    },
+    {
+      "case": "lease_retirement_survives_more_than_old_128_lifetime_limit",
+      "passed": true
+    },
+    {
+      "case": "provider_ledger_compacts_after_churn",
+      "passed": true
+    },
+    {
+      "case": "provider_generated_roles_compact_after_churn",
+      "passed": true
+    },
+    {
+      "case": "provider_global_fence_is_compact_and_monotonic",
+      "passed": true
+    },
+    {
+      "case": "provider_manager_cannot_bypass_ledger",
+      "passed": true
+    },
+    {
+      "case": "outage_seed",
+      "passed": true
+    },
+    {
+      "case": "provider_outage_is_pending_not_success",
+      "passed": true
+    },
+    {
+      "case": "both_restart",
+      "passed": true
+    },
+    {
+      "case": "restart_reconcile",
+      "passed": true
+    },
+    {
+      "case": "reconciled_role_denied",
+      "passed": true
+    },
+    {
+      "case": "idle_expiry_seed",
+      "passed": true
+    },
+    {
+      "case": "worker_retires_role_not_only_ttl",
+      "passed": true
+    },
+    {
+      "case": "idle_expiry_provider_login_denied",
+      "passed": true
+    },
+    {
+      "case": "stored_provider_contract_version",
+      "passed": true
+    }
+  ],
+  "postgres_version": "postgres (PostgreSQL) 17.11 (Ubuntu 17.11-1.pgdg24.04+2)",
+  "provider_sql_sha256": "c0422f3dda8de5ae8921f875859c858259264a2a92bca24701057f961398fcf6",
+  "status": "passed",
+  "binary_unchanged": true,
+  "check_count": 54,
+  "candidate_binary_sha256": "e389be313be0c5240a2dadd33cd866ae215e28f4c2f2ec7a95dba26de6b1e72a",
+  "candidate_binary_source_head": "45c7edcaafd5cfd3061029ee4e9848a336f71761",
+  "execution_platform": "Linux aarch64 guest (Ubuntu Noble)",
+  "fixture_command": "python3 qa/openbao-acceptance/postgres_live.py --binary <linux-guest>/target-linux-guest-clean/release/heptabao-server --postgres-bin /usr/lib/postgresql/17/bin --output <linux-guest>/postgres-live-45c7edc.json",
+  "postgresql_distribution": "PostgreSQL 17.11 (PGDG noble arm64)",
+  "tls_verification": "CA pinning with loopback IP SAN; PGSSLMODE=verify-full; SCRAM-SHA-256 required",
+  "provider_fence_qualification": "Exact provider fence advisory lock and lease/fence binding; unrelated KV I/O completes while provider call is blocked",
+  "source_checkout": "SSD Lima guest source bind at /mnt/heptabao-repo; all PostgreSQL data and binaries remained in the dedicated SSD guest/runtime"
+}

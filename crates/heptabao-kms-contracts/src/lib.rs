@@ -17,6 +17,8 @@ pub enum KmsCapability {
     Wrap,
     Unwrap,
     GenerateDataKey,
+    Sign,
+    Verify,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

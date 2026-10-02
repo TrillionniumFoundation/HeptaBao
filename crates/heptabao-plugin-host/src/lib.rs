@@ -179,6 +179,9 @@ fn operations_are_valid_for_kind(kind: PluginKind, operations: &BTreeSet<PluginO
         PluginKind::Authentication => operations
             .iter()
             .all(|operation| matches!(operation, PluginOperation::Read | PluginOperation::Write)),
+        PluginKind::Kms => operations
+            .iter()
+            .all(|operation| matches!(operation, PluginOperation::Read)),
         PluginKind::Audit => operations
             .iter()
             .all(|operation| matches!(operation, PluginOperation::Write)),
@@ -358,6 +361,47 @@ impl<R: SandboxRunner> PluginHost<R> {
 
     pub fn manifest(&self) -> &PluginManifest {
         &self.manifest
+    }
+
+    /// Admit and atomically switch to a newer plugin descriptor.
+    ///
+    /// Admission happens before mutating host state.  The plugin ID/kind and
+    /// previously declared capabilities must remain stable or grow, while a
+    /// strictly newer descriptor generation fences stale callers.  This is a
+    /// repository-side rolling handoff primitive; draining an external
+    /// process, migrating provider credentials and proving rollback remain
+    /// deployment qualification work.
+    pub fn upgrade(&mut self, replacement: PluginManifest) -> Result<(), PluginHostError> {
+        if self.state != PluginHostState::Active {
+            return Err(match self.state {
+                PluginHostState::ReconciliationRequired => PluginHostError::ReconciliationRequired,
+                PluginHostState::Revoked => PluginHostError::PluginRevoked,
+                PluginHostState::Active => PluginHostError::InvalidUpgrade,
+            });
+        }
+        let current = self.manifest.descriptor();
+        let next = replacement.descriptor();
+        if next.id() != current.id()
+            || next.kind() != current.kind()
+            || next.generation() <= current.generation()
+            || !self
+                .manifest
+                .operations()
+                .iter()
+                .all(|operation| replacement.operations().contains(operation))
+            || !self
+                .manifest
+                .environment_allowlist()
+                .iter()
+                .all(|name| replacement.environment_allowlist().contains(name))
+        {
+            return Err(PluginHostError::InvalidUpgrade);
+        }
+        self.runner
+            .admit(&replacement)
+            .map_err(|_| PluginHostError::SandboxUnavailable)?;
+        self.manifest = replacement;
+        Ok(())
     }
 
     pub fn invoke(
@@ -637,6 +681,35 @@ impl<R: SandboxRunner> DynamicSecretBroker<R> {
         }
     }
 
+    /// Revoke every active lease whose scope is below `prefix`.
+    ///
+    /// The IDs are snapshotted before invoking the provider so that each
+    /// provider effect has an independent generation and lease transition.
+    /// A failure stops at the first uncertain lease; earlier successful
+    /// revocations remain committed and later leases are left untouched.
+    pub fn revoke_prefix(
+        &mut self,
+        prefix: &CanonicalPath,
+        request: &SecretValue,
+        environment: &SecretEnvironment,
+    ) -> Result<usize, PluginHostError> {
+        let lease_ids = self
+            .leases
+            .iter()
+            .filter(|(_, record)| {
+                record.view.state == DynamicLeaseState::Active
+                    && record.view.scope.matches_prefix(prefix)
+            })
+            .map(|(lease_id, _)| lease_id.clone())
+            .collect::<Vec<_>>();
+        let mut revoked = 0;
+        for lease_id in lease_ids {
+            self.revoke(&lease_id, request, environment)?;
+            revoked += 1;
+        }
+        Ok(revoked)
+    }
+
     pub fn reconcile_host(
         &mut self,
         lease_id: &Id,
@@ -733,6 +806,7 @@ pub enum PluginHostError {
     CorruptDurablePluginState,
     Durable(heptabao_durable_service::ServiceError),
     GenerationOverflow,
+    InvalidUpgrade,
 }
 
 impl fmt::Display for PluginHostError {
@@ -766,6 +840,7 @@ impl fmt::Display for PluginHostError {
             Self::CorruptDurablePluginState => "durable plugin state failed closed",
             Self::Durable(_) => "durable plugin transition failed",
             Self::GenerationOverflow => "plugin or lease generation overflow",
+            Self::InvalidUpgrade => "plugin replacement is not a compatible newer generation",
         })
     }
 }
@@ -790,8 +865,10 @@ impl From<DomainError> for PluginHostError {
 mod tests {
     use super::*;
     use heptabao_plugin_contracts::PluginRegistry;
+    #[cfg(target_os = "linux")]
     use std::sync::atomic::{AtomicU64, Ordering};
 
+    #[cfg(target_os = "linux")]
     static TEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
     #[derive(Clone, Copy, Debug)]
@@ -912,6 +989,33 @@ mod tests {
         Ok(())
     }
 
+    #[test]
+    fn compatible_upgrade_admits_before_swapping_generation() -> Result<(), Box<dyn Error>> {
+        let mut host = manifest(Behavior::Echo)?;
+        let id = host.manifest().descriptor().id().clone();
+        let mut registry = PluginRegistry::default();
+        registry.register(host.manifest().descriptor().clone())?;
+        let candidate = registry.get(&id)?.replacement(
+            CanonicalPath::parse("/opt/heptabao/plugins/database-v2")?,
+            [11; 32],
+            2,
+        )?;
+        registry.upgrade(&id, candidate)?;
+        let descriptor = registry.get(&id)?.clone();
+        let replacement = PluginManifest::new(
+            descriptor,
+            host.manifest().sandbox().clone(),
+            host.manifest().limits(),
+            host.manifest().operations().clone(),
+            host.manifest().environment_allowlist().clone(),
+        )?;
+        host.upgrade(replacement)?;
+        assert_eq!(3, host.manifest().descriptor().generation());
+        assert_eq!(2, host.manifest().descriptor().protocol_version());
+        assert_eq!([11; 32], *host.manifest().descriptor().checksum());
+        Ok(())
+    }
+
     #[cfg(target_os = "linux")]
     #[test]
     fn command_runner_uses_the_verified_wrapper_and_bounded_frame() -> Result<(), Box<dyn Error>> {
@@ -1025,6 +1129,54 @@ mod tests {
         assert_eq!(DynamicLeaseState::Revoked, revoked.state);
         assert!(format!("{broker:?}").contains("DynamicSecretBroker"));
         assert!(!format!("{broker:?}").contains("synthetic-dynamic-secret"));
+        Ok(())
+    }
+
+    #[test]
+    fn dynamic_revoke_prefix_respects_canonical_scope_boundaries() -> Result<(), Box<dyn Error>> {
+        let host = manifest(Behavior::Echo)?;
+        let mut broker = DynamicSecretBroker::new(host)?;
+        let request = SecretValue::new(b"synthetic-dynamic-secret".to_vec())?;
+        for (lease_id, scope) in [
+            ("lease_app", "/database/app"),
+            ("lease_role", "/database/role"),
+            ("lease_other", "/databases/other"),
+        ] {
+            broker.issue(
+                DynamicLeaseSpec {
+                    lease_id: Id::parse(lease_id)?,
+                    owner_entity: Id::parse("owner_one")?,
+                    scope: CanonicalPath::parse(scope)?,
+                    issued_at: Tick::new(10),
+                    ttl: 30,
+                    renewable: true,
+                },
+                &request,
+                &SecretEnvironment::new(),
+            )?;
+        }
+        assert_eq!(
+            2,
+            broker.revoke_prefix(
+                &CanonicalPath::parse("/database")?,
+                &request,
+                &SecretEnvironment::new(),
+            )?
+        );
+        assert_eq!(
+            DynamicLeaseState::Revoked,
+            broker.view(&Id::parse("lease_app")?, Tick::new(11))?.state
+        );
+        assert_eq!(
+            DynamicLeaseState::Revoked,
+            broker.view(&Id::parse("lease_role")?, Tick::new(11))?.state
+        );
+        assert_eq!(
+            DynamicLeaseState::Active,
+            broker
+                .view(&Id::parse("lease_other")?, Tick::new(11))?
+                .state
+        );
         Ok(())
     }
 }

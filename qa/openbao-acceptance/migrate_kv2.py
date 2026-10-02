@@ -130,6 +130,69 @@ def snapshot(client, mount, key):
                                 "max_versions": max(current, maximum), "delete_version_after": "0s"}}
 
 
+def selected_inventory_digest(mount, records):
+    manifest = {
+        "mount": mount,
+        "objects": [
+            {
+                "key": record["key"],
+                "source_digest": digest(record["source_metadata"]),
+                "record_digest": digest(record),
+            }
+            for record in records
+        ],
+    }
+    return digest(manifest)
+
+
+def source_binding_identity(client, health, mount):
+    return {
+        "endpoint": client.address,
+        "namespace": client.namespace,
+        "mount": mount,
+        "cluster_id": health["cluster_id"],
+        "version": health["version"],
+    }
+
+
+def target_binding_identity(client, health, mount):
+    return {
+        "endpoint": client.address,
+        "namespace": client.namespace,
+        "mount": mount,
+        "cluster_id": health["cluster_id"],
+    }
+
+
+def checkpoint_binding(source_identity, keys, inventory_digest, target_identity=None):
+    binding = {
+        "source_identity": source_identity,
+        "keys_digest": digest(keys),
+        "inventory_digest": inventory_digest,
+        "profile": SCHEMA,
+    }
+    if target_identity is not None:
+        binding["target_identity"] = target_identity
+    return binding
+
+
+def snapshot_inventory(client, mount, keys):
+    """Read a bounded, selected inventory with a before/after consistency fence.
+
+    This proves that the explicitly selected objects did not change while the
+    inventory was read.  It is intentionally scoped to ``keys`` and does not
+    claim a complete OpenBao instance snapshot or a Raft-consistent view.
+    """
+    if not keys or len(keys) > MAX_KEYS or len(set(keys)) != len(keys):
+        raise BaoError("bounded_unique_key_allowlist_required")
+    before = {key: read_metadata(client, mount, key) for key in keys}
+    records = [snapshot(client, mount, key) for key in keys]
+    after = {key: read_metadata(client, mount, key) for key in keys}
+    if before != after:
+        raise BaoError("source_inventory_changed_during_snapshot")
+    return records, selected_inventory_digest(mount, records)
+
+
 def validate_export_record(record):
     if not isinstance(record, dict) or not isinstance(record.get("key"), str):
         raise BaoError("invalid_export_object")
@@ -269,6 +332,53 @@ def transfer_record(target, mount, record, checkpoint):
     return "copied_and_verified"
 
 
+
+def verified_existing_prefix(target, mount, record):
+    """Read-only admission for explicit append import; never truncate or overwrite.
+
+    Existing readable versions must be an exact prefix, with identical selected
+    metadata and explicit retention for the entire imported history. This does
+    not prove that an external writer is fenced; deployment control must do that.
+    """
+    validate_export_record(record)
+    before = read_metadata(target, mount, record["key"])
+    count = active_history(before)
+    if count > len(record["versions"]):
+        raise BaoError("append_target_is_ahead_of_frozen_source")
+    if not settings_match(before, record["target_metadata"]):
+        raise BaoError("append_target_metadata_mismatch")
+    maximum = before.get("max_versions")
+    if type(maximum) is not int or maximum < len(record["versions"]):
+        raise BaoError("append_requires_explicit_retention_for_complete_history")
+    verify_target(target, mount, record, count)
+    if read_metadata(target, mount, record["key"]) != before:
+        raise BaoError("append_target_changed_during_prefix_verification")
+    return count
+
+
+def append_existing_record(target, mount, record, checkpoint):
+    """Explicit existing-prefix import with the same durable CAS/reconcile path.
+
+    Normal transfer_record still refuses an unowned existing destination. Only
+    this opt-in entry point admits a byte/ordinal-verified historical prefix.
+    An uncertain append resumes by exact readback, never by reseeding its intent.
+    """
+    validate_export_record(record)
+    object_id = digest(record["key"])
+    if object_id not in checkpoint.state["objects"]:
+        count = verified_existing_prefix(target, mount, record)
+        checkpoint.state["objects"][object_id] = {
+            "source_digest": digest(record), "completed_version": count,
+            "phase": "copying", "admission": "verified-existing-prefix-v1",
+            "original_prefix_versions": count,
+        }
+        checkpoint.save()  # Own the verified prefix before any append effect.
+    elif (not isinstance(checkpoint.state["objects"][object_id], dict)
+          or checkpoint.state["objects"][object_id].get("admission") != "verified-existing-prefix-v1"):
+        raise BaoError("append_checkpoint_admission_mismatch")
+    return transfer_record(target, mount, record, checkpoint)
+
+
 def main(argv=None):
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("transfer", "export", "import"))
@@ -283,6 +393,8 @@ def main(argv=None):
     parser.add_argument("--source-writes-frozen", action="store_true", help="operator attests source writers remain frozen")
     parser.add_argument("--target-exclusive", action="store_true", help="operator attests exclusive control of selected target keys")
     parser.add_argument("--allow-plaintext-export", action="store_true")
+    parser.add_argument("--append-verified-prefix", action="store_true",
+                        help="import only: explicitly admit an identical existing history prefix; never overwrite it")
     args = parser.parse_args(argv)
     result = {"schema": "heptabao.kv2-transfer-result.v1", "status": "failed", "mode": "apply" if args.apply else "dry_run",
               "action": args.action, "objects_checked": 0, "objects_copied": 0, "objects_already_verified": 0,
@@ -291,6 +403,9 @@ def main(argv=None):
               "scope": "contiguous_readable_active_versions_1_to_n_and_selected_metadata"}
     code = 2
     try:
+        if args.append_verified_prefix and args.action != "import":
+            raise BaoError("append_verified_prefix_requires_offline_import")
+        result["target_admission"] = "verified_existing_prefix" if args.append_verified_prefix else "new_owned_object"
         source = target = None
         records = None
         if args.action in ("transfer", "export"):
@@ -300,8 +415,7 @@ def main(argv=None):
             source = Client.from_env(args.source_prefix)
             source_health = source.health()
             verify_mount(source, args.source_mount)
-            source_identity = {"endpoint": source.address, "namespace": source.namespace, "mount": args.source_mount,
-                               "cluster_id": source_health["cluster_id"], "version": source_health["version"]}
+            source_identity = source_binding_identity(source, source_health, args.source_mount)
         else:
             if not args.export_file:
                 raise BaoError("private_export_file_required")
@@ -309,9 +423,11 @@ def main(argv=None):
             if (not isinstance(bundle, dict) or bundle.get("schema") != SCHEMA
                     or bundle.get("source_writes_frozen_attestation") is not True
                     or not isinstance(bundle.get("source_identity"), dict)
-                    or not isinstance(bundle.get("objects"), list) or not 0 < len(bundle["objects"]) <= MAX_KEYS):
+                    or not isinstance(bundle.get("objects"), list) or not 0 < len(bundle["objects"]) <= MAX_KEYS
+                    or not isinstance(bundle.get("inventory_digest"), str)):
                 raise BaoError("invalid_or_unfrozen_export")
             records, source_identity = bundle["objects"], bundle["source_identity"]
+            inventory_digest = bundle["inventory_digest"]
             if (not isinstance(source_identity.get("endpoint"), str)
                     or endpoint(source_identity["endpoint"]) != source_identity["endpoint"]
                     or not isinstance(source_identity.get("cluster_id"), str) or not source_identity["cluster_id"]
@@ -326,6 +442,12 @@ def main(argv=None):
             keys = [r["key"] for r in records]
             if len(set(keys)) != len(keys):
                 raise BaoError("duplicate_export_objects")
+            expected_manifest = {"mount": source_identity["mount"],
+                                "objects": [{"key": record["key"],
+                                             "source_digest": digest(record["source_metadata"]),
+                                             "record_digest": digest(record)} for record in records]}
+            if inventory_digest != digest(expected_manifest):
+                raise BaoError("export_inventory_digest_mismatch")
             result["source_live_revalidated"] = False
         if args.action in ("transfer", "import"):
             target = Client.from_env(args.target_prefix)
@@ -341,10 +463,28 @@ def main(argv=None):
                 raise BaoError("apply_requires_checkpoint_exclusive_target_and_frozen_source")
         elif args.apply and (not args.export_file or not args.allow_plaintext_export or not args.source_writes_frozen):
             raise BaoError("export_requires_private_path_plaintext_opt_in_and_frozen_source")
-        binding = {"source_identity": source_identity, "keys_digest": digest(keys), "profile": SCHEMA}
-        if target:
-            binding["target_identity"] = {"endpoint": target.address, "namespace": target.namespace,
-                                          "mount": args.target_mount, "cluster_id": target_health["cluster_id"]}
+        if source:
+            records, inventory_digest = snapshot_inventory(source, args.source_mount, keys)
+        elif records is not None:
+            expected_manifest = {"mount": source_identity["mount"],
+                                "objects": [{"key": record["key"],
+                                             "source_digest": digest(record["source_metadata"]),
+                                             "record_digest": digest(record)} for record in records]}
+            if inventory_digest != digest(expected_manifest):
+                raise BaoError("export_inventory_digest_mismatch")
+        target_identity = (
+            target_binding_identity(target, target_health, args.target_mount)
+            if target
+            else None
+        )
+        binding = checkpoint_binding(
+            source_identity,
+            keys,
+            inventory_digest,
+            target_identity,
+        )
+        if args.append_verified_prefix:
+            binding["target_admission"] = "verified-existing-prefix-v1"
         checkpoint = lock = None
         exported = []
         try:
@@ -353,7 +493,7 @@ def main(argv=None):
                 lock.__enter__()
                 checkpoint = Checkpoint(args.checkpoint, binding)
             for index, key in enumerate(keys):
-                record = snapshot(source, args.source_mount, key) if source else records[index]
+                record = records[index]
                 result["objects_checked"] += 1
                 if args.action == "export":
                     if args.apply:
@@ -361,7 +501,8 @@ def main(argv=None):
                         if len(canonical(exported)) > MAX_BODY - 65536:
                             raise BaoError("export_size_limit_use_direct_transfer")
                 elif args.apply:
-                    outcome = transfer_record(target, args.target_mount, record, checkpoint)
+                    copier = append_existing_record if args.append_verified_prefix else transfer_record
+                    outcome = copier(target, args.target_mount, record, checkpoint)
                     result["objects_already_verified" if outcome == "already_verified" else "objects_copied"] += 1
                     if source and read_metadata(source, args.source_mount, key) != record["source_metadata"]:
                         raise BaoError("source_changed_after_copy_target_not_cut_over")
@@ -370,9 +511,13 @@ def main(argv=None):
                     if existing is not None:
                         # Dry-run cannot certify a resumable target without checking the bound checkpoint.
                         result["target_existing_objects"] = result.get("target_existing_objects", 0) + 1
+                    if args.append_verified_prefix:
+                        verified_existing_prefix(target, args.target_mount, record)
+                        result["verified_prefix_objects"] = result.get("verified_prefix_objects", 0) + 1
             if args.action == "export" and args.apply:
                 private_write(args.export_file, {"schema": SCHEMA, "source_identity": source_identity,
-                              "source_writes_frozen_attestation": True, "objects": exported}, replace=False)
+                              "source_writes_frozen_attestation": True,
+                              "inventory_digest": inventory_digest, "objects": exported}, replace=False)
         finally:
             if lock:
                 lock.__exit__(None, None, None)

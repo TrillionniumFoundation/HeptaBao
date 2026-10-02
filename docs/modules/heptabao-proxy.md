@@ -20,6 +20,18 @@ The adapter must enforce actual streamed body and aggregate-header limits, valid
 
 This independent planner is outside the current server dependency closure. It implements no listener, pooling, caching or OpenBao Proxy process; the operational runbook below describes responsibilities for a future transport adapter, not existing deployment commands.
 
+### Current executable client profile
+
+This Rust crate remains a standalone model and is not newly connected into the
+server dependency graph. The separate Python 0.2.0 executable implementation in
+`clients/python/heptabao/` now supplies bounded AppRole authentication, a private
+restart-aware token sink, renewal, and an exact-route Linux Unix-socket proxy.
+Its actual process state, file formats, trust limits, no-blind-retry behavior and
+source/installed-package tests are specified in
+[the operational consumer guide](../operations/HEPTABAO_AGENT_PROXY_HELPER.md).
+Do not infer full OpenBao Agent/Proxy compatibility or use this crate's unit tests
+as evidence that the separate executable was run at the current candidate.
+
 ### Historical V1.4.7 lexical snapshot
 
 The following generated block is retained unchanged for historical verification. Its declarations and line numbers are not the current API contract; use the explanation above and the [current source binding](CURRENT_SOURCE_BINDING.md).
@@ -110,3 +122,7 @@ The V1.4.7 generated facts below are a preserved historical snapshot. Current de
 - Regeneration: `python scripts/render_plan_v1_4_7.py --write`
 - Verification: `python scripts/render_plan_v1_4_7.py --check`
 <!-- END GENERATED V1.4.7 MODULE FACTS -->
+
+## Independent module closure dossier
+
+The detailed design, boundary, failure-semantics and exact-head acceptance record is maintained in [the module closure dossier](../module-closure/heptabao-proxy.md).

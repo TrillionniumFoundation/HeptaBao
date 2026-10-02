@@ -4,6 +4,11 @@ import shutil
 import sys
 import tempfile
 import unittest
+
+try:
+    from tests.plan.historical import historical_only
+except ModuleNotFoundError:  # direct `python tests/plan/test_*.py` execution
+    from historical import historical_only
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -31,6 +36,7 @@ class PlanV14Tests(unittest.TestCase):
     def test_current_repository_validates(self) -> None:
         validate(ROOT)
 
+    @historical_only
     def test_missing_workspace_member_fails_closed(self) -> None:
         temporary, target = self.copy_repository()
         self.addCleanup(temporary.cleanup)

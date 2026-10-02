@@ -42,7 +42,7 @@
       "additionalProperties": false,
       "required": ["repository", "branch", "commit", "tree", "clean_tree", "manifest_sha256", "cargo_lock_sha256"],
       "properties": {
-        "repository": {"const": "ProfHepta/HeptaBao"},
+        "repository": {"const": "TrillionniumFoundation/HeptaBao"},
         "branch": {"type": "string", "minLength": 1},
         "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
         "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},

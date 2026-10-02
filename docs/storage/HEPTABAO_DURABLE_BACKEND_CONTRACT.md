@@ -1,0 +1,258 @@
+# HeptaBao durable backend contract
+
+`heptabao-durable-service` separates the replay protocol from physical
+persistence through `DurableBackend`. The filesystem backend remains the
+default; callers can inject another backend without changing journal,
+recovery, capacity, or backup semantics.
+
+## Boundary
+
+The backend receives **sealed bytes only**.  `Barrier::seal` and
+`Barrier::open` remain in `DurableService`; a backend must never receive a
+plaintext snapshot, replay record, secret, token, or request value.  The
+backend owns storage of exactly three artifacts:
+
+| Artifact | Current file | Meaning |
+| --- | --- | --- |
+| `Snapshot` | `state.hbs` | authenticated materialized state |
+| `Ledger` | `ledger.hbl` | authenticated replay ledger checkpoint |
+| `Journal` | `journal.hbj` | magic plus authenticated frames |
+
+The backend does not interpret frame bytes.  Generation, sequence, request
+binding, and recovery validation stay in `lib.rs`.
+
+The implemented public Rust surface is:
+
+```rust
+pub struct BackendBundle {
+    pub snapshot: Vec<u8>,
+    pub ledger: Vec<u8>,
+    pub journal: Vec<u8>,
+}
+
+pub trait DurableBackend: Send {
+    /// Verify the descriptor-bound writer fence.
+    fn verify(&self) -> Result<(), BackendError>;
+
+    /// Acquire the backend's writer fence and return one bounded view.
+    /// A database implementation reads the three artifacts in one snapshot.
+    fn load(&mut self) -> Result<BackendBundle, BackendError>;
+
+    /// Create an empty store and publish its initial three artifacts together.
+    fn initialize_empty(&mut self, initial: &BackendBundle) -> Result<(), BackendError>;
+
+    /// Append one complete, already-sealed journal frame. `expected_len` is
+    /// the caller's last durable byte count; a mismatch is a stale-writer
+    /// error. The returned length is the new durable length.
+    fn append_journal(
+        &mut self,
+        expected_len: usize,
+        frame: &[u8],
+    ) -> Result<usize, BackendError>;
+
+    /// Remove a physically incomplete tail after frame decoding has proved
+    /// that only the tail is repairable.
+    fn truncate_journal(
+        &mut self,
+        expected_len: usize,
+        new_len: usize,
+    ) -> Result<(), BackendError>;
+
+    /// Publish a complete checkpoint. Filesystem backends use staged files and
+    /// return an unknown outcome if publication crosses a rename boundary.
+    /// Database backends must use one transaction for all three rows (or chunks
+    /// plus one manifest), so readers never observe a partial bundle.
+    fn publish_checkpoint(
+        &mut self,
+        expected: &BackendBundle,
+        replacement: &BackendBundle,
+    ) -> Result<(), BackendError>;
+
+    /// Restore methods default to Unsupported; checkpoint support is insufficient.
+    fn restore_profile(&self) -> Result<RestoreProfile, BackendError>;
+    fn publish_restore(
+        &mut self,
+        expected: &BackendBundle,
+        replacement: &BackendBundle,
+        intent: Option<&[u8]>,
+    ) -> Result<(), BackendError>;
+    fn staged_restore_commitments(&self) -> Result<StagedRestoreCommitments, BackendError>;
+    fn staged_restore_replacement(&self) -> Result<BackendBundle, BackendError>;
+    fn finish_restore(
+        &mut self,
+        intent: &[u8],
+        replacement: &BackendBundle,
+    ) -> Result<(), BackendError>;
+
+    /// Close the writer fence. This method must not send a best-effort network
+    /// rollback: an unfinished database transaction is rolled back by closing
+    /// the connection, and an unknown result must remain unknown to the
+    /// service.
+    fn close(self) -> Result<(), BackendError>
+    where
+        Self: Sized;
+}
+```
+
+`BackendError` is intentionally a bounded, non-secret error enum.  It needs
+at least `Io`, `Unavailable`, `StaleWriter`, `Capacity`, `Corrupt`, and
+`OutcomeUnknown`.  Remote SQL text, endpoint URLs, credentials, and sealed
+bytes must never be copied into `Display`, logs, or serialized responses.
+
+`load` is the important part of the contract.  A PostgreSQL implementation
+must read a manifest revision and all artifact rows under one repeatable-read
+transaction.  The manifest revision is advanced in the same transaction as
+`publish_checkpoint` and `append_journal`; a connection loss after commit is
+`OutcomeUnknown`, so the live service is fenced until a fresh `load` and
+normal recovery run.  A filesystem implementation can read the three files
+under the existing descriptor writer fence; the service's authenticated
+cross-check remains authoritative after a crash.
+
+## Smallest integration change
+
+The service exposes a defaulted second type parameter. All create, reopen,
+append, truncate, compaction, retirement, restore, and capacity operations use
+the injected backend. Existing callers still select `FileBackend` through the
+path-based constructors.
+
+```rust
+pub struct DurableService<B: Barrier, S: DurableBackend = Box<dyn DurableBackend>> {
+    backend: S,
+    // barrier, decoded snapshot/ledger, replay state, and limits stay here
+}
+```
+
+`FileBackend` owns `ExclusiveDirectory` and the anchored `state.hbs`,
+`journal.hbj`, and `ledger.hbl` paths; move only the physical helper functions (`atomic_write`,
+`append_journal_frame`, `read_bounded`, and path helpers) behind the trait.
+`create_new` calls `initialize_empty`, `reopen` calls `load`, `append_frame` calls
+`append_journal`, and `compact` and `retire_replay_epoch` call
+`publish_checkpoint`. Restore instead requires the explicit `restore_profile`
+and `publish_restore` protocol below. No replay
+decision should move into a backend.
+
+The backend must be injected at construction, with compatibility constructors
+retained:
+
+```rust
+DurableService::create_new(root, barrier, max_requests) // FileBackend
+DurableService::create_new_with_backend(backend, barrier, max_requests)
+DurableService::reopen_with_backend(backend, barrier, ...)
+```
+
+Both injected constructors require a backend that already owns its writer
+fence. `DurableService::close(self)` calls the backend's explicit close method;
+ordinary drop also drops the backend, whose RAII implementation must release
+ownership. Neither path may turn an unknown write result into an acknowledgement.
+
+The injected-backend tests run the real service protocol against a non-file
+backend: batch mutation, checkpoint, backup restore, reopen, and a persisted
+Apply frame whose acknowledgement is lost. The latter must fence the live
+service and replay exactly once after reopen. Server process configuration can
+select `PostgresDurableBackend`; the default path-based constructors still
+select filesystem storage. PostgreSQL initialization uses a
+[recoverable prepared bundle](HEPTABAO_POSTGRES_INITIALIZATION_RECOVERY.md)
+before remote publication.
+
+## Restore publication and interrupted recovery
+
+Ordinary checkpoint publication does not authorize restoration across generations
+or replay epochs. `DurableBackend::restore_profile` defaults to `Unsupported`;
+custom backends must explicitly implement `publish_restore`. PostgreSQL advertises
+`RestoreProfile::Atomic` and uses its existing writer-fenced SQL transaction for
+the complete triple. Its unknown-COMMIT fence is unchanged.
+
+The file backend advertises `FileIntent` bound to the open directory's device and
+inode. `DurableService` seals a versioned intent under the separate barrier context
+`heptabao.durable-service.restore-intent.v1`. It authenticates that directory,
+the old generation, replay epoch, retired frontier, journal sequence and length,
+the new generation and replay frontiers, and the lengths and domain-separated
+SHA-256 commitments of all six old/new sealed artifacts.
+
+Publication persists the complete triples as `restore-old-*` and `restore-new-*`
+files first. These stages carry no authority on their own. The commit point is
+replacing `state.hbs` with the authenticated `HBR1` intent and syncing its
+directory. While that marker remains active, the backend replaces and syncs
+`ledger.hbl`, then `journal.hbj`, and finally the new ordinary `HBS2` snapshot.
+Every replacement uses a component temporary and directory sync. The old snapshot
+decoder rejects `HBR1`; it cannot serve a mixed bundle during restoration.
+
+Reopen authenticates `HBR1` before normal snapshot decoding. It verifies the
+directory identity, hashes all retained components with a 64 KiB buffer, and
+requires the active ledger/journal to match exactly one publication prefix:
+old/old, new/old, or new/new. It then authenticates and validates the complete
+incoming triple with the backup decoder before calling `finish_restore`.
+Missing, changed, oversized, unrelated, or unauthenticated components fail closed.
+After the intent commits, recovery only completes the authenticated replacement;
+it does not fall back to old state. A pending directory copied to a different
+inode is rejected. This is crash consistency, not protection against replay of
+an entire historical filesystem image.
+
+Any error after publication begins fences the live service until reopen.
+Pre-intent interruption reopens the complete old state; post-intent interruption
+finishes the complete new state, including an explicitly allowed epoch rollback.
+After the final snapshot sync, cleanup is best effort. Orphan stages contain
+sealed bytes, are ignored without `HBR1`, and are replaced by the next restore.
+
+The bounds remain 64 MiB per artifact, 130 MiB per incoming backup including its
+60-byte container overhead, and 8 KiB per intent. Disk usage can include the
+active triple, retained old/new triples, and one component temporary. There is
+no free-space reservation; recovery after disk exhaustion may require freeing
+space for that temporary. Component decryption still materializes bounded
+state in memory. All stages stay in the descriptor-bound data directory.
+
+`restore_transaction::tests` exercises every retained-file/intent/publication
+boundary, interruptions during recovery itself, tampering, missing components,
+directory copying, inconsistent epochs, oversized sparse components, and
+checkpoint-only backend rejection. Ordinary compaction creates no restore stages.
+
+## PostgreSQL mapping
+
+The physical adapter already used for opaque records must not be treated as a
+drop-in replacement for this protocol.  It needs a separate backend namespace
+and a manifest row, for example:
+
+```text
+hb_durable_artifacts(scope, artifact, chunk_no, bytes, revision)
+hb_durable_manifest(scope, revision, snapshot_generation, journal_length)
+```
+
+`artifact` is a fixed enum (`snapshot`, `ledger`, `journal`), `chunk_no` is a
+bounded integer, and all identifiers are parameters or constants.  A
+`publish_checkpoint` transaction writes the new chunks, deletes obsolete
+chunks, then updates the manifest last.  `append_journal` writes only the new
+frame chunks and advances the manifest under `revision = expected_revision`.
+The adapter must derive the database from its enrolled connection URL and use
+the same TLS/SCRAM and loopback policy as the existing PostgreSQL storage
+client.  It must not reuse provider tables or silently create an unregistered
+schema.
+
+The 64 MiB per-artifact bound remains a service invariant.  Database rows are
+smaller (the current storage client uses a 1 MiB value bound); chunking is a
+physical detail and must not change logical journal bytes or sequence checks.
+
+## Contract tests before server wiring
+
+Add one backend contract test module and run it for `FileBackend` first and
+`PostgresBackend` before selecting it in server configuration:
+
+1. initialize then load returns the exact three sealed byte strings;
+2. append succeeds at the expected length and rejects a stale length;
+3. a truncated tail is repairable only through `truncate_journal`;
+4. checkpoint replacement is all-or-nothing from a fresh `load`;
+5. a failed/unknown commit fences the client and a reopened client recovers;
+6. oversized artifacts and chunks are rejected before any write;
+7. two writers cannot both hold the backend fence;
+8. no backend error or debug representation contains endpoint, credential, or
+   sealed payload bytes.
+
+The PostgreSQL fixture must additionally kill the client during a committed
+append, restart PostgreSQL, and prove both outcomes: a committed frame is
+replayed exactly once, while an uncommitted frame is absent.  The receipt must
+record the source and probe hashes, database version, and check names, while
+keeping the raw PostgreSQL log private.
+
+This adapter boundary is a prerequisite for server-level PostgreSQL storage;
+it does not itself provide HA leadership, fencing, migration, or OpenBao API
+compatibility.  Those claims require separate server integration and
+production-style receipts.
