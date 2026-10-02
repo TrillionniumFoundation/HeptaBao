@@ -89,6 +89,22 @@ class DeliveryGateOwnershipTests(unittest.TestCase):
                     self.assertNotIn("continue-on-error", step)
         self.assertGreater(lint_jobs, 0)
 
+    def test_rolling_profile_uses_verified_immutable_base_source(self):
+        workflow = yaml.safe_load(
+            (ROOT / ".github/workflows/codex-openbao-replacement-ci.yml").read_text()
+        )
+        steps = [step for job in workflow["jobs"].values() for step in job["steps"]
+                 if step.get("name") == "Exercise exact-base to candidate HA rolling upgrade"]
+        self.assertEqual(len(steps), 1)
+        script = steps[0]["run"]
+        source_check = 'test "$(git -C "$base_dir" rev-parse HEAD)" = "$PR_BASE"'
+        clean_check = 'test -z "$(git -C "$base_dir" status --porcelain=v1 --untracked-files=all)"'
+        self.assertLess(script.index(source_check), script.index("cargo +1.98.0 build"))
+        self.assertLess(script.index(clean_check), script.index("cargo +1.98.0 build"))
+        self.assertIn('--base-source-commit "$PR_BASE"', script)
+        self.assertIn('--base-sha256 "$base_digest"', script)
+        self.assertIn('--candidate-sha256 "$candidate_digest"', script)
+
 
 if __name__ == "__main__":
     unittest.main()

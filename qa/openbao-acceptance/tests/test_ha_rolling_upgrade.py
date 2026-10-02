@@ -1,5 +1,7 @@
 """Rolling wire retirement must preserve quorum without weakening evidence."""
 import hashlib
+import contextlib
+import io
 import json
 import os
 from pathlib import Path
@@ -20,6 +22,157 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
         cluster.candidate_digest = "b" * 64
         cluster.root_token = "synthetic-unused"
         return cluster
+
+    def test_only_reviewed_exact_base_sources_select_a_wire_profile(self):
+        for source, expected in [
+            ("55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18", "legacy"),
+            ("8457a5569a31a41a4cd2f36d06d1f18125e9c88a", "current"),
+        ]:
+            self.assertEqual(upgrade.base_peer_wire_profile(source), expected)
+        for source in ["", "main", "8457a556", "a" * 40,
+                       "8457A5569A31A41A4CD2F36D06D1F18125E9C88A"]:
+            with self.subTest(source=source), self.assertRaisesRegex(
+                    upgrade.FixtureError, "unreviewed_base_peer_wire_profile"):
+                upgrade.base_peer_wire_profile(source)
+
+    def test_unknown_base_source_fails_before_binary_access_or_cluster_launch(self):
+        args = ["fixture", "--base-source-commit", "a" * 40,
+                "--base-binary", "/unused/base", "--base-sha256", "b" * 64,
+                "--candidate-binary", "/unused/candidate", "--candidate-sha256", "c" * 64,
+                "--work-dir", "/unused/work"]
+        output = io.StringIO()
+        with patch.object(sys, "argv", args), contextlib.redirect_stdout(output), \
+                patch.object(upgrade, "checked_binary") as checked, \
+                patch.object(upgrade, "RollingUpgradeCluster") as cluster:
+            self.assertEqual(upgrade.main(), 1)
+        checked.assert_not_called()
+        cluster.assert_not_called()
+        report = json.loads(output.getvalue())
+        self.assertEqual(report["failure_class"], "unreviewed_base_peer_wire_profile")
+        self.assertEqual(report["scenarios"], [])
+
+    def test_first_candidate_configuration_matches_reviewed_base_wire(self):
+        for profile, expected in [("legacy", True), ("current", False)]:
+            with self.subTest(profile=profile):
+                cluster = self.cluster()
+                cluster.base_peer_wire = profile
+                cluster.candidate_binary = Path("/candidate")
+                cluster.unseal_key, cluster.scenarios = "synthetic-unused", []
+                cluster.leader = Mock()
+                cluster.set_legacy_forward_transition = Mock()
+                node = Mock()
+                node.call.return_value = (200, {})
+                with patch.object(upgrade, "running_digest", return_value=cluster.candidate_digest):
+                    cluster.upgrade(node, "first")
+                cluster.set_legacy_forward_transition.assert_called_once_with(node, expected)
+                node.start.assert_called_once_with()
+                node.call.assert_called_once_with("POST", "sys/unseal", {"key": cluster.unseal_key})
+                self.assertEqual(cluster.scenarios, ["first_candidate_process_digest"])
+
+    def test_unknown_profile_cannot_construct_a_cluster(self):
+        with patch.object(upgrade.Cluster, "__init__") as create, \
+                patch.object(Path, "read_bytes") as read:
+            with self.assertRaisesRegex(upgrade.FixtureError, "unreviewed_base_peer_wire_profile"):
+                upgrade.RollingUpgradeCluster(Path("/base"), Path("/candidate"), Path("/work"),
+                                              base_source_commit="a" * 40)
+        read.assert_not_called()
+        create.assert_not_called()
+
+    def test_missing_source_is_rejected_before_fixture_construction(self):
+        with patch.object(sys, "argv", ["fixture"]), contextlib.redirect_stderr(io.StringIO()), \
+                patch.object(upgrade, "RollingUpgradeCluster") as create:
+            with self.assertRaises(SystemExit) as error:
+                upgrade.main()
+        self.assertEqual(error.exception.code, 2)
+        create.assert_not_called()
+
+    def test_current_profile_never_opens_legacy_receive_or_claims_retirement(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "ha.json").write_text('{"cluster_id":"test-cluster"}')
+            node = Mock(root=root)
+            cluster = self.cluster()
+            cluster.base_peer_wire, cluster.nodes, cluster.scenarios = "current", [node], []
+            cluster.retire_legacy_senders()
+            node.stop.assert_not_called()
+            node.start.assert_not_called()
+            self.assertEqual(cluster.scenarios,
+                             ["rolling_upgrade_current_base_never_enabled_legacy_wire"])
+            for flag in ["allow_legacy_peer_v1", "emit_legacy_peer_v1"]:
+                (root / "ha.json").write_text(json.dumps({flag: False}))
+                with self.assertRaises(upgrade.FixtureError):
+                    cluster.retire_legacy_senders()
+
+    def test_legacy_sender_retirement_keeps_one_write_and_all_node_readback_per_phase(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cluster = self.cluster()
+            cluster.base_peer_wire, cluster.scenarios = "legacy", []
+            cluster.unseal_key = "synthetic-unused"
+            cluster.nodes = []
+            for node_id in (1, 2, 3):
+                root = Path(directory) / str(node_id)
+                root.mkdir()
+                (root / "ha.json").write_text('{"allow_legacy_peer_v1":true}')
+                node = Mock(node_id=node_id, root=root, process=None)
+                node.call.return_value = (200, {})
+                cluster.nodes.append(node)
+            cluster.leader, cluster.write, cluster.read = Mock(), Mock(), Mock()
+            cluster.retire_legacy_senders()
+            self.assertEqual(cluster.write.call_count, 3)
+            self.assertEqual(cluster.read.call_count, 9)
+            for node in cluster.nodes:
+                node.stop.assert_called_once_with()
+                node.start.assert_called_once_with()
+                self.assertEqual(json.loads((node.root / "ha.json").read_text()),
+                                 {"allow_legacy_peer_v1": True, "emit_legacy_peer_v1": False})
+            self.assertEqual(cluster.scenarios[-1],
+                             "rolling_upgrade_all_senders_current_before_any_receiver_closes")
+
+    def test_both_profiles_retain_strict_writes_readback_failover_and_epoch_transition(self):
+        for profile in ["legacy", "current"]:
+            with self.subTest(profile=profile), tempfile.TemporaryDirectory() as directory:
+                cluster = self.cluster()
+                cluster.base_peer_wire, cluster.scenarios = profile, []
+                cluster.candidate_binary = Path("/candidate")
+                cluster.unseal_key = "synthetic-unused"
+                cluster.nodes = []
+                for node_id in (1, 2, 3):
+                    root = Path(directory) / str(node_id)
+                    root.mkdir()
+                    (root / "ha.json").write_text("{}")
+                    node = Mock(node_id=node_id, root=root, process=object(), binary=Path("/base"))
+                    node.stop.side_effect = lambda node=node: setattr(node, "process", None)
+                    node.start.side_effect = lambda node=node: setattr(node, "process", object())
+                    node.call.return_value = (200, {})
+                    cluster.nodes.append(node)
+                cluster.leader = lambda: max(
+                    (node for node in cluster.nodes if node.process is not None),
+                    key=lambda node: node.node_id,
+                )
+                cluster.write, cluster.read = Mock(), Mock()
+                cluster.replay_epoch = Mock(side_effect=[0, 1])
+                cluster.retire_epoch = Mock(return_value=1)
+                with patch.object(upgrade.Cluster, "run"), patch.object(
+                        upgrade, "running_digest",
+                        side_effect=lambda node: cluster.candidate_digest
+                        if node.binary == cluster.candidate_binary else cluster.base_digest):
+                    cluster.run()
+                writes = [call.args[1] for call in cluster.write.call_args_list]
+                reads = [call.args[1] for call in cluster.read.call_args_list]
+                self.assertEqual(len(writes), len(set(writes)))
+                for node_id in (1, 2, 3):
+                    path = f"rolling-strict-wire-{node_id}"
+                    self.assertEqual(writes.count(path), 1)
+                    self.assertEqual(reads.count(path), 3)
+                    path = f"rolling-new-wire-{node_id}"
+                    self.assertEqual(writes.count(path), int(profile == "legacy"))
+                    self.assertEqual(reads.count(path), 3 if profile == "legacy" else 0)
+                self.assertIn("rolling_upgrade_candidate_majority_serves_while_old_voter_down",
+                              cluster.scenarios)
+                self.assertIn("rolling_upgrade_post_epoch_failover", cluster.scenarios)
+                self.assertIn("rolling_upgrade_post_epoch_value_converged", cluster.scenarios)
+                self.assertEqual(cluster.replay_epoch.call_count, 2)
+                cluster.retire_epoch.assert_called_once()
 
     def test_pinned_base_misbinding_uses_exact_legacy_contract(self):
         cluster = self.cluster()
