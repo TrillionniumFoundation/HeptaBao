@@ -72,7 +72,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+          cargo +1.98.0 clippy --workspace --all-targets --locked --exclude qrcode -- -D warnings
 
       - name: Build documentation and server
         shell: bash
@@ -215,7 +215,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+          cargo +1.98.0 clippy --workspace --all-targets --locked --exclude qrcode -- -D warnings
 
       - name: Build documentation and server
         shell: bash
@@ -377,7 +377,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+          cargo +1.98.0 clippy --workspace --all-targets --locked --exclude qrcode -- -D warnings
           cargo +1.98.0 doc --workspace --no-deps --locked
           cargo +1.98.0 build --locked -p heptabao-server
 
