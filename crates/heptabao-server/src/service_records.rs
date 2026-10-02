@@ -552,6 +552,7 @@ impl Service {
             if result.is_err() {
                 // Publication may have committed despite a missing response.
                 if activation.is_some() {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                     self.recovery_required = true;
                     self.ha_activation = None;
                 }
@@ -569,6 +570,7 @@ impl Service {
                     .ok_or("fixture committed local generation unavailable")
                     .and_then(|durable| context.after_commit(&receipt, durable.generation()));
                 if let Err(error) = gated {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                     self.recovery_required = true;
                     self.ha_activation = None;
                     self.ha_read_cache = None;
@@ -583,6 +585,7 @@ impl Service {
         let result = self.persist_record_plan_local(&plan, &operation, false);
         if let Err(error) = result {
             if self.ha.is_some() {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
                 return Err(Self::ha_committed_local_failure(error));
@@ -595,6 +598,7 @@ impl Service {
         // A poisoned bookkeeping lock cannot make the just-published state
         // appear rolled back. Fence and require reload instead.
         if let Err(error) = state.engines.clear_published_record_objects(&plan.root.kv1) {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Err(engine_error(error));
@@ -622,12 +626,14 @@ impl Service {
         let result = Self::persist_record_batch(durable, plan, operation);
         if durable.recovery_required() || (result.is_err() && durable.replay_epoch() != prior_epoch)
         {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
         }
         match result {
             Ok(()) => Ok(()),
             Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Err(Response {
@@ -796,6 +802,7 @@ impl Service {
         };
         self.install_received_record_state(state, plan)?;
         if let Err(error) = self.cache_verified_ha_records(&committed) {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Err(error);
@@ -814,6 +821,7 @@ impl Service {
     ) -> Result<(), Response> {
         // Raft already owns this state; a local limit is not a pre-entry rejection.
         if let Err(error) = self.validate_loaded_capacity(&state, Some(&plan.root)) {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             self.ha_read_cache = None;
@@ -823,12 +831,14 @@ impl Service {
         let operation = match crypto::random::<16>() {
             Ok(value) => format!("hasync-record-{}", hex(&value)),
             Err(error) => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
                 return Err(Response::error(503, error));
             }
         };
         if let Err(error) = self.persist_record_plan_local(&plan, &operation, true) {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Err(Self::ha_committed_local_failure(error));
@@ -850,6 +860,7 @@ impl Service {
                 )
             }
             ServiceError::OutcomeUnknown { recovery_reference } => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Response {
@@ -860,6 +871,7 @@ impl Service {
                 }
             }
             _ => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Response::error(
@@ -873,6 +885,7 @@ impl Service {
     fn maybe_collect_record_objects(&mut self) -> Result<(), Response> {
         let result = self.collect_record_objects_if_due();
         if result.as_ref().is_err_and(|error| error.status == 503) {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
         }

@@ -103,18 +103,51 @@ def call(endpoint, method, path, token="", body=None, headers=(), *, timeout=REQ
     finally: connection.close()
 
 
+def fixed_request_metadata(name,method,path,expected):
+    # Only canonical source-owned case/method/route labels and bounded HTTP codes may be reported.
+    case=next((n for n in sorted(COMMON_REQUIRED|HA_REQUIRED) if type(name) is str and n==name),"unrecognized_case")
+    verb=method if type(method) is str and method in ("GET","POST") else None
+    route="other_route"
+    if type(path) is str:
+        if path=="sys/init":route="initialize"
+        elif path=="sys/unseal":route="unseal"
+        elif path.startswith("sys/mounts/"):route="mount"
+        elif path=="sys/leader":route="leader"
+        elif path=="sys/step-down":route="step_down"
+        elif path.startswith("sys/wrapping/"):route="wrapping"
+        elif path.startswith("auth/token/"):route="token"
+        elif path.startswith((MOUNT+"/data/","secret/data/")):route="kv_data"
+    return {"case":case,"method":verb,"route":route,
+        "expected_status":expected if type(expected) is int and 100<=expected<=599 else None,
+        "actual_status":None,"reason":"response_not_recorded"}
+
+
+def bounded_digest(value):
+    return value if type(value) is str and len(value)==64 and all(c in "0123456789abcdef" for c in value) else None
+
+
+def official_config_hash(instance):
+    # The Official fixture writes this fixed config file; never copy config contents or paths into stdout.
+    try:return bounded_digest(file_hash(instance.root/"server.json"))
+    except OSError:return None
+
+
 class Trace:
-    def __init__(self): self.checks=[];self.statuses=[]
+    def __init__(self): self.checks=[];self.statuses=[];self.request_metadata=[]
     def check(self,name,condition):
         self.checks.append({"case":name,"passed":condition is True})
         if condition is not True: raise FixtureError(name)
     def request(self,name,endpoint,method,path,expected,token="",body=None,headers=(), *, timeout=REQUEST_TIMEOUT, body_delay=0):
+        observed=fixed_request_metadata(name,method,path,expected);self.request_metadata.append(observed)
         try:
             status,value,metadata=call(endpoint,method,path,token,body,headers,timeout=timeout,body_delay=body_delay)
         except (OSError, http.client.HTTPException) as error:
             # HTTP exception text can contain an arbitrary server status line.
             # Bind only the known case and exception class, never that text.
+            observed["reason"]="http_exception" if isinstance(error,http.client.HTTPException) else "os_error"
             raise FixtureError(name+"."+type(error).__name__) from None
+        observed["actual_status"]=status if type(status) is int and 100<=status<=599 else None
+        observed["reason"]="status_match" if status==expected else "unexpected_status"
         self.statuses.append({"case":name,"status":status})
         self.check(name,status==expected)
         return value,metadata
@@ -259,7 +292,7 @@ def main():
     output=args.output.absolute();admitted=admit_output(output)
     bao=verify_inputs(version=args.oracle_version);before=source_identity(ROOT,binary)
     work=Path(tempfile.mkdtemp(prefix="consistency270-",dir=output.parent))
-    traces={};failures={};oracle_hash=file_hash(bao)
+    traces={};failures={};config_hashes={};oracle_hash=file_hash(bao)
     def interrupted(signum,frame):raise FixtureError("interrupted")
     handlers={kind:signal.signal(kind,interrupted) for kind in (signal.SIGINT,signal.SIGTERM)}
     try:
@@ -267,10 +300,13 @@ def main():
             trace=Trace();traces[side]=trace
             instance=(Instance(binary,work/side) if side=="candidate" else RestartableOfficial(bao,work/side,side=="official_raft"))
             endpoint=Endpoint(instance.port,instance.root/"ca.crt") if side=="candidate" else instance.endpoint
+            if side!="candidate":config_hashes[side]={"before":official_config_hash(instance),"after":None}
             try:
                 instance.start();common(instance,endpoint,trace)
             except Exception as error: failures[side]=str(error) if isinstance(error,FixtureError) else type(error).__name__
-            finally:instance.stop()
+            finally:
+                instance.stop()
+                if side!="candidate":config_hashes[side]["after"]=official_config_hash(instance)
             if not complete_checks(trace.checks,len(COMMON_REQUIRED),required_cases=COMMON_REQUIRED):failures.setdefault(side,"incomplete_trace")
         trace=Trace();traces["candidate_ha"]=trace
         try:candidate_ha(binary,work/"candidate-ha",trace)
@@ -288,12 +324,17 @@ def main():
         "request_timeout_seconds":REQUEST_TIMEOUT,"initialization_timeout_seconds":INITIALIZATION_TIMEOUT,
         "oracle_binary_sha256":oracle_hash,"oracle_archive_sha256":file_hash(Path(os.environ["HB_ORACLE_ARCHIVE"])),
         "runner_sha256":file_hash(Path(__file__)),"common_status_traces_match":matched,
+        "diagnostic_request_metadata":{k:v.request_metadata for k,v in traces.items()},
+        "diagnostic_official_config_sha256":config_hashes,
         "retained_failure_work_dir":str(work) if failures else None,
         "full_openbao_compatibility":False,"independent_qualification":False,"production_authority":False}
     if admit_output(output)!=admitted:raise ValueError("report_parent_changed")
     private_write(output,report,replace=False)
     if not failures:shutil.rmtree(work)
-    print(json.dumps({"status":report["status"],"failures":failures,"checks":{k:len(v.checks) for k,v in traces.items()}}))
+    print(json.dumps({"status":report["status"],"failures":failures,"checks":{k:len(v.checks) for k,v in traces.items()},
+        "diagnostic_last_request":{k:(v.request_metadata[-1] if v.request_metadata else None) for k,v in traces.items()},
+        "diagnostic_official_config_sha256":config_hashes,"oracle_binary_sha256":bounded_digest(report["oracle_binary_sha256"]),
+        "oracle_archive_sha256":bounded_digest(report["oracle_archive_sha256"]),"runner_sha256":bounded_digest(report["runner_sha256"])}))
     return int(bool(failures))
 
 

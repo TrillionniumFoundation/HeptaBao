@@ -58,6 +58,12 @@ def running_digest(node: Node) -> str:
         raise FixtureError("rolling_upgrade_running_binary_unreadable") from error
 
 
+def health_flag(body: dict, field: str) -> bool | None:
+    """Only a real boolean may enter a failure diagnostic from a health body."""
+    value = body.get(field)
+    return value if type(value) is bool else None
+
+
 class RollingUpgradeCluster(Cluster):
     def __init__(self, base_binary: Path, candidate_binary: Path, root: Path):
         self.candidate_binary = candidate_binary
@@ -183,9 +189,9 @@ class RollingUpgradeCluster(Cluster):
             health_status, health = node.call("GET", "sys/health", timeout=2)
             detail = (
                 f"node_{node.node_id}_last_{last_status}_health_{health_status}"
-                f"_active_{health.get('ha_active')}_ready_{health.get('ha_application_ready')}"
-                f"_standby_{health.get('standby')}_sealed_{health.get('sealed')}"
-                f"_recovery_{health.get('recovery_required')}"
+                f"_active_{health_flag(health, 'ha_active')}_ready_{health_flag(health, 'ha_application_ready')}"
+                f"_standby_{health_flag(health, 'standby')}_sealed_{health_flag(health, 'sealed')}"
+                f"_recovery_{health_flag(health, 'recovery_required')}"
             )
         except (OSError, urllib.error.URLError, TimeoutError):
             detail = f"node_{node.node_id}_last_{last_status}_health_unavailable"

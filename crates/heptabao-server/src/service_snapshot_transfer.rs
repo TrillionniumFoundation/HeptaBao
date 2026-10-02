@@ -211,6 +211,7 @@ impl Service {
                     .audit_event("response", &fingerprint, now, Some(307))
                     .is_err()
                 {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                     self.recovery_required = true;
                     self.ha_activation = None;
                     return NativeSnapshotAdmission::Execute(RequestExecution::Complete(

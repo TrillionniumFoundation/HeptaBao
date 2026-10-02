@@ -506,6 +506,7 @@ impl Service {
             }
             Err(_) => {
                 if durable.recovery_required() {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                     self.recovery_required = true;
                     self.ha_activation = None;
                 }

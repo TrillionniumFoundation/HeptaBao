@@ -105,6 +105,10 @@ pub struct Config {
     pub plugin_kms: Vec<crate::PluginKmsConfig>,
     #[serde(default)]
     pub plugin_secrets: Vec<crate::PluginSecretConfig>,
+    /// Optional, deployment-owned SDK Wrapper runtime with per-launch AutoMTLS.
+    /// This does not select a KMS/barrier consumer or the HBP1 transport.
+    #[serde(default)]
+    pub openbao_wrapper: Option<crate::OpenBaoWrapperConfig>,
     /// Qualification-only lower bound seam. Ordinary binaries reject this
     /// field because the feature is absent; feature builds may only reduce the
     /// canonical 16 MiB opaque-owner ceiling, never raise it.
@@ -316,7 +320,7 @@ fn serve_inner(
         }
         .map_err(str::to_owned)?,
     ));
-    {
+    let wrapper_launch = {
         let mut service = service.lock().map_err(|_| "service lock unavailable")?;
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         {
@@ -335,6 +339,12 @@ fn serve_inner(
         if let Some(postgres) = config.postgres_durable {
             service.install_postgres_durable_storage(postgres)?;
         }
+        service.install_openbao_wrapper(config.openbao_wrapper)?
+    };
+    // Startup process work is outside the Service writer; no API can install or
+    // reattach an endpoint. Failed admission aborts listener startup explicitly.
+    if let Some(plan) = wrapper_launch {
+        plan.execute().map_err(|error| error.to_string())?;
     }
     if let Some(ha) = forwarding_ha {
         let forward_timeout = ha

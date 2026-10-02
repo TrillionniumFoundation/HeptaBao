@@ -157,6 +157,7 @@ impl Service {
         self.state = Some(state);
         let published_generation = self.durable.as_ref().ok_or_else(invalid)?.generation();
         if deadline().is_err() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             self.ha_read_cache = None;

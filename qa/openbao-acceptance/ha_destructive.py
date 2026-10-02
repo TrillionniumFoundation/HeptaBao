@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import argparse
 from contextlib import ExitStack
-from fixture_mounts import provision_secret_kv2
+from fixture_mounts import completed_kv2_mount_metadata, provision_secret_kv2
 import hashlib
 import json
 import os
@@ -377,8 +377,9 @@ class Cluster:
             raise FixtureError("restart_unseal_failed")
 
     def provision_seed_mounts(self, seed: Node) -> None:
-        self.fixture_mount_setup.append(provision_secret_kv2(
-            seed.call, token=self.root_token, error_type=FixtureError))
+        provision_secret_kv2(
+            seed.call, token=self.root_token, error_type=FixtureError)
+        self.fixture_mount_setup.append(completed_kv2_mount_metadata())
 
     def bootstrap(self) -> None:
         """Start the synthetic three-voter cluster without unrelated fault cases."""

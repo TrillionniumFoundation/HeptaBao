@@ -30,6 +30,7 @@ impl Service {
                 if already_committed {
                     // We cannot retract the committed authority. Fail closed
                     // until reopen instead of keeping the old activation live.
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                     self.recovery_required = true;
                     self.ha_activation = None;
                     self.ha_read_cache = None;

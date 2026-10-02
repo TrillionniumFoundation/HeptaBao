@@ -559,7 +559,7 @@ fn pki_root_formats_preserve_acl_and_encrypted_restart_public_der() -> TestResul
                 == 204,
             "format fixture mount failed"
         );
-        let body = json!({"common_name":"formats.example.test", "ttl":"1h", "key_type":"ed25519", "format":format, "private_key_format":"unknown-internal-format"});
+        let body = json!({"common_name":"Synthetic Format Root", "ttl":"1h", "key_type":"ed25519", "format":format, "private_key_format":"unknown-internal-format"});
         let before = zeroize::Zeroizing::new(serde_json::to_vec(s.state.as_ref().ok_or("state")?)?);
         let denied = call(
             &mut s,
@@ -578,7 +578,7 @@ fn pki_root_formats_preserve_acl_and_encrypted_restart_public_der() -> TestResul
             &root,
             "POST",
             &format!("{mount}/root/generate/internal"),
-            json!({"common_name":"formats.example.test", "key_type":"ed25519", "format":null}),
+            json!({"common_name":"Synthetic Format Root", "key_type":"ed25519", "format":null}),
             100,
         );
         assert!(invalid.status == 400, "invalid format did not reject");

@@ -2972,6 +2972,7 @@ impl Service {
         results: DatabaseBatchEffectResult,
     ) -> Response {
         if results.len() > plan.plans.len() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Response::error(
@@ -3375,6 +3376,7 @@ impl Service {
             )
             .is_err()
         {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Err("provider result audit unavailable");

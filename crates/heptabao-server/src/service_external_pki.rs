@@ -637,6 +637,7 @@ impl Service {
             // negative observation contains only a status and the original path
             // digest; its failure cannot grant delivery or initiate another effect.
             erase_json(&mut response.body);
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Response::error(

@@ -22,3 +22,14 @@ def provision_secret_kv2(call, *, error_type=RuntimeError, **request_options):
 def provision_transit(call, *, error_type=RuntimeError, **request_options):
     return _provision(call, "transit", {"type": "transit"},
                       error_type=error_type, request_options=request_options)
+
+
+def completed_kv2_mount_metadata():
+    """Public setup evidence, constructed after provisioning succeeds.
+
+    Accept no request, response, token, exception, or callback output.
+    The preceding provision_secret_kv2 call retains its once-only
+    submission and exact integer-204 failure contract.
+    """
+    return {"mount": "secret", "http_status": 204,
+            "mutations_submitted": 1, "automatic_retry": False}

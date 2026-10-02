@@ -267,6 +267,8 @@ pub struct CommandSandboxRunner;
 
 #[cfg(target_os = "linux")]
 mod command_runner;
+#[cfg(target_os = "linux")]
+pub use command_runner::OwnedExecutableImage;
 
 // No path-execution fallback: other platforms need equivalent sealed image and
 // nonblocking process I/O backends before this runner may admit any plugin.

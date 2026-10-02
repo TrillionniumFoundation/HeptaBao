@@ -62,6 +62,7 @@ impl Service {
             .audit_event("lifecycle-response", &fingerprint, now, Some(status))
             .is_err()
         {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Err("lifecycle result audit unavailable; recovery required");

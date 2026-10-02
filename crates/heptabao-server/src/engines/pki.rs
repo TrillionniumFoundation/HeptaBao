@@ -279,11 +279,8 @@ impl Pki {
             return Err(bad("enabled PKI ACME requires a configured cluster path"));
         }
         if let Some(root) = &self.root {
-            if !(if root.is_external() {
-                external::common_name_valid(&root.common_name)
-            } else {
-                valid_common_name(&root.common_name)
-            }) || root.is_external() && !self.has_external_state()
+            if !external::common_name_valid(&root.common_name)
+                || root.is_external() && !self.has_external_state()
                 || root.pkcs8.len() > 4096
                 || root.certificate_der.is_empty()
                 || root.certificate_der.len() > 64 * 1024
@@ -486,7 +483,8 @@ impl Pki {
                 return Err(bad("PKI root already exists"));
             }
             let common_name = string(body, "common_name")?;
-            if !valid_common_name(common_name) {
+            // A root subject CN is a distinguished-name value, not a DNS SAN.
+            if !external::common_name_valid(common_name) {
                 return Err(bad("invalid PKI common name"));
             }
             let ttl = ttl_field(body, "ttl", DEFAULT_ROOT_TTL)?;

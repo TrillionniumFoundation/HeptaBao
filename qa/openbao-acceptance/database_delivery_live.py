@@ -6,7 +6,7 @@ Only synthetic state is used. Reports never contain tokens or credential bytes.
 """
 from __future__ import annotations
 
-from fixture_mounts import provision_secret_kv2
+from fixture_mounts import completed_kv2_mount_metadata, provision_secret_kv2
 
 import argparse
 import concurrent.futures
@@ -71,7 +71,8 @@ def check_case(binary, root, case):
         require(instance.call("POST", "sys/unseal", {"key": unseal_key})[0] == 200, "unseal")
         fixture_setup = None
         if case.endswith("_unrelated_write"):
-            fixture_setup = provision_secret_kv2(instance.call, error_type=FixtureFailure)
+            provision_secret_kv2(instance.call, error_type=FixtureFailure)
+            fixture_setup = completed_kv2_mount_metadata()
         namespace = "team" if case == "issue_namespace_seal" else ""
         if namespace:
             require(instance.call("POST", "sys/namespaces/team", {})[0] == 200, "namespace")

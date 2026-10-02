@@ -41,6 +41,12 @@ mod test_support;
 mod valkey_wire;
 pub use service::ServiceRequest;
 pub use service::{AuditConfig, AuditSocketConfig, AuditSyslogConfig};
+#[cfg(target_os = "linux")]
+pub use service::{
+    OpenBaoWrapperCompletion, OpenBaoWrapperOperationPlan, WrapperCleanupState, WrapperOperation,
+    WrapperReply,
+};
+pub use service::{OpenBaoWrapperConfig, OpenBaoWrapperLaunchPlan, OpenBaoWrapperTransport};
 pub use service::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, PluginSecretConfig};
 pub use service::{Response, Service};
 

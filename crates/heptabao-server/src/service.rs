@@ -94,10 +94,20 @@ mod lifecycle;
 mod namespaces;
 #[path = "service_online_auth.rs"]
 mod online_auth;
+#[path = "service_openbao_wrapper.rs"]
+mod openbao_wrapper;
 #[path = "service_openldap.rs"]
 mod openldap_secret;
 #[path = "service_plugin.rs"]
 mod plugin;
+#[cfg(target_os = "linux")]
+pub use openbao_wrapper::{
+    OpenBaoWrapperCompletion, OpenBaoWrapperOperationPlan, WrapperCleanupState, WrapperOperation,
+    WrapperReply,
+};
+pub use openbao_wrapper::{
+    OpenBaoWrapperConfig, OpenBaoWrapperLaunchPlan, OpenBaoWrapperTransport,
+};
 #[path = "service_snapshot_transfer.rs"]
 mod snapshot_transfer;
 #[path = "service_ui_mounts.rs"]
@@ -884,6 +894,8 @@ fn classify_request_effect(
 }
 
 pub struct Service {
+    openbao_wrapper_owner: Option<openbao_wrapper::ServiceWrapperOwner>,
+    openbao_wrapper_generation: u64,
     outbound: crate::outbound::Outbound,
     database_cursor: Option<(String, String, String)>,
     database_rotation_cursor: Option<(String, String, String)>,
@@ -1231,6 +1243,8 @@ impl Service {
         let unseal_nonce = hex(&crypto::random::<16>()?);
         let recovery_required = postgres_pending_exists(&data_dir)?;
         Ok(Self {
+            openbao_wrapper_owner: None,
+            openbao_wrapper_generation: 0,
             outbound: crate::outbound::Outbound::default(),
             database_cursor: None,
             database_rotation_cursor: None,
@@ -1334,6 +1348,7 @@ impl Service {
             .audit_event("wire-response", &fingerprint, now, Some(status))
             .is_err()
         {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Response::error(503, "wire rejection response audit unavailable");
@@ -1596,6 +1611,7 @@ impl Service {
                 ExternalEffectResult::SnapshotTransfer(result),
             ) => self.finalize_snapshot_transfer(*plan, result),
             _ => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Response::error(503, "external request observation type mismatch")
@@ -1614,6 +1630,7 @@ impl Service {
             .audit_event("response", fingerprint, now, Some(response.status))
             .is_err()
         {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             erase_json(&mut response.body);
@@ -1763,6 +1780,7 @@ impl Service {
                     .audit_event("response", &fingerprint, now, Some(status))
                     .is_err()
                 {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                     self.recovery_required = true;
                     self.ha_activation = None;
                     return RequestExecution::Complete(Response::error(
@@ -1843,6 +1861,7 @@ impl Service {
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
         if staged > 1 {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return RequestExecution::Complete(self.audit_completed_response(
@@ -2406,6 +2425,7 @@ impl Service {
             if !principal.as_ref().is_some_and(Principal::is_root) {
                 return Response::error(403, "permission denied");
             }
+            self.fence_openbao_wrapper();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
@@ -3493,6 +3513,7 @@ impl Service {
             }
         };
         if pending_exists {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
         }
@@ -3775,6 +3796,7 @@ impl Service {
                     false,
                 );
             }
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             let pending = match load_postgres_pending(&self.data_dir, secret, shares, threshold) {
@@ -3828,6 +3850,7 @@ impl Service {
         self.unseal_shares.clear();
         self.rekey = None;
         if !parent_synced {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             if recovery_secret.is_some() {
@@ -3996,6 +4019,7 @@ impl Service {
         self.unseal_shares.clear();
         self.rekey = None;
         if !parent_synced {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return (
@@ -4134,6 +4158,7 @@ impl Service {
         // Also sync an already absent file: a previous delete may have succeeded
         // while its directory sync failed, so absence alone is not an acknowledgement.
         if sync(&self.data_dir).is_err() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Response::error(
@@ -4298,6 +4323,7 @@ impl Service {
     }
 
     fn activate_barrier(&mut self, key: &[u8; 32]) -> Result<(), Response> {
+        let wrapper_activation = self.begin_openbao_wrapper_activation();
         self.durable = None;
         self.state = None;
         self.ha_activation = None;
@@ -4425,9 +4451,19 @@ impl Service {
         self.barrier_key = Some(Zeroizing::new(*key));
         self.recovery_required = false;
         if let Err(error) = self.synchronize_ha_after_unseal() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Err(error);
+        }
+        if wrapper_activation.publish_unsealed().is_err() {
+            self.fence_openbao_wrapper();
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(Response::error(
+                503,
+                "Wrapper lifecycle publication unavailable",
+            ));
         }
         Ok(())
     }
@@ -4897,6 +4933,7 @@ impl Service {
         self.unseal_shares.clear();
         self.rekey = None;
         if delete_pending_rekey(&self.data_dir).is_err() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Response::error(
@@ -4997,6 +5034,7 @@ impl Service {
             };
             let previous_epoch = durable.replay_epoch();
             if next_state.replay_epoch != previous_epoch {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
                 return Response::error(503, "replay epoch metadata requires recovery");
@@ -5018,6 +5056,7 @@ impl Service {
             }
             self.state = Some(next_state);
             let Some(durable) = self.durable.as_ref() else {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
                 return Response::error(503, "replay retirement lost durable owner");
@@ -5025,6 +5064,7 @@ impl Service {
             if durable.replay_epoch() != current_epoch
                 || durable.retired_through_generation() != retired_through_generation
             {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
                 return Response::error(503, "replay retirement did not converge locally");
@@ -5064,6 +5104,7 @@ impl Service {
                 (result, durable.recovery_required())
             };
             if fenced {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
             }
@@ -5300,6 +5341,7 @@ impl Service {
                 // An error after proposal may hide a committed epoch change.
                 // Never continue admitting observations from the old epoch.
                 if epoch_transition {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                     self.recovery_required = true;
                     self.ha_activation = None;
                 }
@@ -5317,6 +5359,7 @@ impl Service {
             Ok(()) => Ok(()),
             Err(error) => {
                 if self.ha.is_some() {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                     self.recovery_required = true;
                     self.ha_activation = None;
                     return Err(Self::ha_committed_local_failure(error));
@@ -5432,12 +5475,14 @@ impl Service {
             && target_replay_epoch > prior_replay_epoch
             && durable.replay_epoch() == target_replay_epoch;
         if durable.recovery_required() || epoch_advanced_without_state {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
         }
         match result {
             Ok(_) => Ok(()),
             Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Err(Response {
@@ -5573,6 +5618,7 @@ impl Service {
             ));
         }
         if let Err(error) = self.validate_loaded_capacity(&state, None) {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             self.ha_read_cache = None;
@@ -5672,6 +5718,7 @@ impl Service {
             },
         );
         if let Err(error) = result {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Err(Self::ha_committed_local_failure(error));
@@ -5681,6 +5728,7 @@ impl Service {
         self.install_epoch_activation(activation);
         self.recovery_required = false;
         if let Err(error) = self.cache_verified_ha_state(&committed) {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
             return Err(error);

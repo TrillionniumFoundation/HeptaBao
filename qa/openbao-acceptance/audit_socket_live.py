@@ -8,7 +8,7 @@ failure remains observable while the local file device preserves service.
 """
 from __future__ import annotations
 
-from fixture_mounts import provision_secret_kv2
+from fixture_mounts import completed_kv2_mount_metadata, provision_secret_kv2
 
 import argparse
 import json
@@ -143,7 +143,8 @@ def run(binary: Path, work_dir: Path) -> int:
         )
         check("api_cannot_rebind_socket_destination", status == 409)
 
-        fixture_setup = provision_secret_kv2(instance.call)
+        provision_secret_kv2(instance.call)
+        fixture_setup = completed_kv2_mount_metadata()
         secret = "audit-socket-synthetic-value"
         check(
             "audited_mutation_succeeds",

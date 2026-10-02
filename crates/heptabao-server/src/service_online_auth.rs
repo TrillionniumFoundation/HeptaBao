@@ -815,6 +815,7 @@ impl Service {
                 .auth
                 .finish_oidc_observation(&namespace, &mount, *exchange, observed),
             _ => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
                 return Response::error(503, "online authentication observation type mismatch");

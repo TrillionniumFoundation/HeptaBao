@@ -22,6 +22,7 @@ heptabao-raft-runtime = { path = "../heptabao-raft-runtime" }
 heptabao-domain = { path = "../heptabao-domain" }
 heptabao-plugin-contracts = { path = "../heptabao-plugin-contracts" }
 heptabao-plugin-host = { path = "../heptabao-plugin-host" }
+heptabao-openbao-grpc = { path = "../heptabao-openbao-grpc" }
 heptabao-kms-contracts = { path = "../heptabao-kms-contracts" }
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
@@ -54,7 +55,7 @@ cross-krb5 = { version = "=0.5.0", default-features = false }
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.189"
 # Safe descriptor-relative filesystem operations, including macOS audit rotation.
-rustix = { version = "=1.1.4", features = ["fs"] }
+rustix = { version = "=1.1.4", features = ["fs", "process"] }
 
 [lints]
 workspace = true

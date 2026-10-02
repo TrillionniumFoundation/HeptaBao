@@ -50,12 +50,22 @@ fn local_root_formats_use_real_selected_crypto_and_survive_serde() -> TestResult
         for format in ["pem", "der", "pem_bundle"] {
             let mut pki = Pki::default();
             let generated = pki.handle_admin("POST", "root/generate/internal", &json!({
-                "common_name":"formats.example.test", "ttl":"1h", "key_type":kind, "key_bits":bits, "format":format
+                "common_name":"Synthetic Format Root", "ttl":"1h", "key_type":kind, "key_bits":bits, "format":format
             }), 1_700_000_000)?;
             assert!(generated.status == 200, "root format generation rejected");
             let der = certificate_der(&generated, format)?;
             let cert = X509::from_der(&der)?;
             let public = cert.public_key()?;
+            let subject_cn = cert
+                .subject_name()
+                .entries_by_nid(openssl::nid::Nid::COMMONNAME)
+                .next()
+                .ok_or("root subject common name")?;
+            assert!(
+                subject_cn.data().as_slice() == b"Synthetic Format Root",
+                "root subject CN was altered"
+            );
+            pki.validate("", "pki/", 1_700_000_000)?;
             assert!(public.id() == id, "root certificate algorithm differs");
             assert!(cert.verify(&public)?, "root self-signature is invalid");
             let root = pki.root.as_ref().ok_or("root owner")?;
@@ -73,6 +83,7 @@ fn local_root_formats_use_real_selected_crypto_and_survive_serde() -> TestResult
             );
             let encoded = Zeroizing::new(serde_json::to_vec(&pki)?);
             let restored: Pki = serde_json::from_slice(encoded.as_slice())?;
+            restored.validate("", "pki/", 1_700_000_000)?;
             let restored_root = restored.root.as_ref().ok_or("restored root owner")?;
             assert!(
                 restored_root.certificate_der == der,
@@ -168,6 +179,47 @@ fn invalid_root_formats_and_unrelated_fields_leave_engine_state_unchanged() -> T
     assert!(
         before.as_slice() == after.as_slice(),
         "unknown option mutated root state"
+    );
+    Ok(())
+}
+
+#[test]
+fn root_subject_common_name_rejects_invalid_values_without_mutation() -> TestResult {
+    let mut pki = Pki::default();
+    let before = Zeroizing::new(serde_json::to_vec(&pki)?);
+    for common_name in [
+        json!(""),
+        json!("Synthetic\nFormat Root"),
+        json!("Synthetic\0Format Root"),
+        json!("Synthetic\u{7f}Format Root"),
+        json!("a".repeat(254)),
+        Value::Null,
+        json!(true),
+        json!(1),
+        json!([]),
+        json!({}),
+    ] {
+        let result = pki.handle_admin(
+            "POST",
+            "root/generate/internal",
+            &json!({
+                "common_name":common_name, "ttl":"1h", "key_type":"ed25519", "key_bits":0, "format":"pem"
+            }),
+            1_700_000_000,
+        );
+        assert!(
+            matches!(result, Err(ref error) if error.status == 400),
+            "invalid root subject common name was accepted"
+        );
+        let after = Zeroizing::new(serde_json::to_vec(&pki)?);
+        assert!(
+            before.as_slice() == after.as_slice(),
+            "invalid root subject changed engine state"
+        );
+    }
+    assert!(
+        !valid_common_name("Synthetic Format Root"),
+        "root subject support weakened the leaf DNS constraint"
     );
     Ok(())
 }
