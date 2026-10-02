@@ -18,6 +18,7 @@ import time
 
 from bao_http import SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
+from fixture_mounts import provision_secret_kv2
 
 
 def main() -> int:
@@ -86,6 +87,7 @@ def main() -> int:
         check("client.init",status==200)
         instance.token=init["root_token"];save_token("root.token",instance.token)
         check("client.unseal",instance.call("POST","sys/unseal",{"key":init["keys_base64"][0]})[0]==200)
+        report["fixture_mount_setup"]=provision_secret_kv2(instance.call,error_type=ScenarioFailure)
         payload={"v":"private-synthetic-client-response"};sensitive.append(payload["v"])
         private_write(root/"kv-input.json",{"data":payload},replace=False)
         result=cli("client.write",["write","secret/data/cli-check","--input",str(root/"kv-input.json")],write=True)
