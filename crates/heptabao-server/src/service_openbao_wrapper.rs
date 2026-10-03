@@ -97,10 +97,18 @@ impl OpenBaoWrapperConfig {
         {
             return Err(BridgeError::InvalidBinding);
         }
-        match (&self.soft_hsm_configuration_file, &self.soft_hsm_configuration_sha256) {
+        match (
+            &self.soft_hsm_configuration_file,
+            &self.soft_hsm_configuration_sha256,
+        ) {
             (None, None) => {}
-            (Some(path), Some(hash)) if absolute_regular_path(path)
-                && path != &self.command && path != &self.configuration_file => { digest(hash)?; }
+            (Some(path), Some(hash))
+                if absolute_regular_path(path)
+                    && path != &self.command
+                    && path != &self.configuration_file =>
+            {
+                digest(hash)?;
+            }
             _ => return Err(BridgeError::InvalidBinding),
         }
         digest(&self.command_sha256)?;
@@ -183,7 +191,10 @@ impl ServiceLifecycle {
     }
 
     #[cfg(target_os = "linux")]
-    fn track_diagnostic(&self, diagnostic: Arc<Mutex<Option<serde_json::Value>>>) -> Result<(), BridgeError> {
+    fn track_diagnostic(
+        &self,
+        diagnostic: Arc<Mutex<Option<serde_json::Value>>>,
+    ) -> Result<(), BridgeError> {
         let mut state = self.0.lock().map_err(|_| BridgeError::LifecycleDenied)?;
         if state.revoked || state.generation == 0 || state.diagnostic.is_some() {
             return Err(BridgeError::LifecycleDenied);
@@ -341,9 +352,12 @@ impl Service {
         if let Some(config) = config.as_ref() {
             config.validate().map_err(|error| error.to_string())?;
         }
-        let barrier_binding = config.as_ref().filter(|config| config.seal_barrier)
+        let barrier_binding = config
+            .as_ref()
+            .filter(|config| config.seal_barrier)
             .map(|config| barrier::configuration_binding(config, &self.data_dir))
-            .transpose().map_err(|error| error.to_string())?;
+            .transpose()
+            .map_err(|error| error.to_string())?;
         if let Some(seal) = self.seal.as_ref() {
             if seal.schema == 2 {
                 let envelope = barrier::Envelope::decode(&seal.wrapped_barrier_key)
@@ -375,7 +389,8 @@ impl Service {
         let runtime_directory = {
             let suffix = super::crypto::random::<16>()
                 .map_err(|_| "Wrapper launch identity unavailable".to_owned())?;
-            self.data_dir.parent()
+            self.data_dir
+                .parent()
                 .ok_or("Wrapper data directory has no parent")?
                 .join(format!(".heptabao-wrapper-launch-{}", super::hex(&suffix)))
         };
@@ -528,20 +543,35 @@ impl Service {
         })
     }
     pub(crate) fn openbao_wrapper_private_observation(&self) -> Result<serde_json::Value, String> {
-        let owner = self.openbao_wrapper_owner.as_ref().ok_or("Wrapper observation owner missing")?;
-        let state = owner.lifecycle.0.lock().map_err(|_| "Wrapper observation owner unavailable")?;
+        let owner = self
+            .openbao_wrapper_owner
+            .as_ref()
+            .ok_or("Wrapper observation owner missing")?;
+        let state = owner
+            .lifecycle
+            .0
+            .lock()
+            .map_err(|_| "Wrapper observation owner unavailable")?;
         let mut observation = match state.diagnostic.as_ref() {
-            Some(monitor) => monitor.lock().map_err(|_| "Wrapper admission observation unavailable")?
-                .clone().ok_or("Wrapper admission observation incomplete")?,
-            None => serde_json::json!({"provider":null,"owned_pid":null,"generation":self.openbao_wrapper_generation,
-                "authenticated_h2":false,"health_authenticated":false}),
+            Some(monitor) => monitor
+                .lock()
+                .map_err(|_| "Wrapper admission observation unavailable")?
+                .clone()
+                .ok_or("Wrapper admission observation incomplete")?,
+            None => {
+                serde_json::json!({"provider":null,"owned_pid":null,"generation":self.openbao_wrapper_generation,
+                "authenticated_h2":false,"health_authenticated":false})
+            }
         };
         let cleanup = match state.cleanup.as_ref() {
-            Some(monitor) => *monitor.lock().map_err(|_| "Wrapper cleanup monitor unavailable")?,
+            Some(monitor) => *monitor
+                .lock()
+                .map_err(|_| "Wrapper cleanup monitor unavailable")?,
             None => WrapperCleanupState::NotStarted,
         };
         observation["cleanup"] = serde_json::json!(format!("{cleanup:?}"));
-        observation["sealed"] = serde_json::json!(self.state.is_none() && self.barrier_key.is_none());
+        observation["sealed"] =
+            serde_json::json!(self.state.is_none() && self.barrier_key.is_none());
         Ok(observation)
     }
     pub fn prepare_openbao_wrapper_operation(
@@ -563,7 +593,8 @@ impl Service {
         }
         let runtime = lifecycle.runtime()?;
         let deadline = Instant::now() + runtime.timeout();
-        let deadline = crate::request_deadline::current().map_or(deadline, |request| request.min(deadline));
+        let deadline =
+            crate::request_deadline::current().map_or(deadline, |request| request.min(deadline));
         if Instant::now() >= deadline {
             return Err(BridgeError::BeforeDispatch);
         }
@@ -686,8 +717,15 @@ mod tests {
 
     #[test]
     fn required_wrapper_activation_cannot_publish_without_admitted_owner() {
-        let activation = WrapperActivation { lifecycle: None, required: true, completed: false };
-        assert_eq!(activation.publish_unsealed(), Err(BridgeError::LifecycleDenied));
+        let activation = WrapperActivation {
+            lifecycle: None,
+            required: true,
+            completed: false,
+        };
+        assert_eq!(
+            activation.publish_unsealed(),
+            Err(BridgeError::LifecycleDenied)
+        );
     }
 
     #[test]

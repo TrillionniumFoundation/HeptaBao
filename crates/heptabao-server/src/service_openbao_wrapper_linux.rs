@@ -309,13 +309,12 @@ impl<'de> Deserialize<'de> for ConfigMap {
     }
 }
 
-fn private_file(path: &std::path::Path, expected_sha256: &str) -> Result<(File, Zeroizing<Vec<u8>>), BridgeError> {
-    let parent = path
-        .parent()
-        .ok_or(BridgeError::InvalidBinding)?;
-    let name = path
-        .file_name()
-        .ok_or(BridgeError::InvalidBinding)?;
+fn private_file(
+    path: &std::path::Path,
+    expected_sha256: &str,
+) -> Result<(File, Zeroizing<Vec<u8>>), BridgeError> {
+    let parent = path.parent().ok_or(BridgeError::InvalidBinding)?;
+    let name = path.file_name().ok_or(BridgeError::InvalidBinding)?;
     let directory = heptabao_filesystem_guard::open_absolute_directory_no_symlinks(parent)
         .map_err(|_| BridgeError::InvalidBinding)?;
     let file = File::from(
@@ -491,8 +490,10 @@ pub(super) fn launch_automatic_runtime(
     let stop = Arc::new(AtomicBool::new(false));
     let cleanup = Arc::new(Mutex::new(WrapperCleanupState::NotStarted));
     lifecycle.track_cleanup(cleanup.clone())?;
-    let diagnostic = Arc::new(Mutex::new(Some(serde_json::json!({"provider":null,"owned_pid":null,
-        "generation":generation,"authenticated_h2":false,"health_authenticated":false}))));
+    let diagnostic = Arc::new(Mutex::new(Some(
+        serde_json::json!({"provider":null,"owned_pid":null,
+        "generation":generation,"authenticated_h2":false,"health_authenticated":false}),
+    )));
     lifecycle.track_diagnostic(diagnostic.clone())?;
     let control = Arc::new(Control {
         sender,

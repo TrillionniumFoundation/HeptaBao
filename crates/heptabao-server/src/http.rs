@@ -254,13 +254,23 @@ fn serve_inner(
     }
     #[cfg(target_os = "linux")]
     let mut local_control = if let Some(control) = config.local_control.as_ref() {
-        if ha.is_some() || config.postgres_durable.is_some() || !config.plugin_auth.is_empty()
-            || !config.plugin_database.is_empty() || !config.plugin_kms.is_empty() || !config.plugin_secrets.is_empty()
-            || !config.openbao_wrapper.as_ref().is_some_and(|wrapper| wrapper.seal_barrier) {
+        if ha.is_some()
+            || config.postgres_durable.is_some()
+            || !config.plugin_auth.is_empty()
+            || !config.plugin_database.is_empty()
+            || !config.plugin_kms.is_empty()
+            || !config.plugin_secrets.is_empty()
+            || !config
+                .openbao_wrapper
+                .as_ref()
+                .is_some_and(|wrapper| wrapper.seal_barrier)
+        {
             return Err("local control requires the standalone Wrapper seal profile".into());
         }
         Some(local_control::Control::open(control)?)
-    } else { None };
+    } else {
+        None
+    };
     let consistency_settings = consistency::Settings::checked(
         config.consistency_max_index_wait.as_deref(),
         config.consistency_fallback_behavior.as_deref(),
@@ -367,11 +377,15 @@ fn serve_inner(
         }
         #[cfg(target_os = "linux")]
         {
-            let activation = service.lock().map_err(|_| "service lock unavailable")?
+            let activation = service
+                .lock()
+                .map_err(|_| "service lock unavailable")?
                 .prepare_wrapper_barrier_activation()?;
             if let Some(plan) = activation {
                 let completion = plan.execute();
-                service.lock().map_err(|_| "service lock unavailable")?
+                service
+                    .lock()
+                    .map_err(|_| "service lock unavailable")?
                     .finish_wrapper_barrier_activation(completion)?;
             }
         }
@@ -425,13 +439,19 @@ fn serve_inner(
         Err(_) => {
             #[cfg(target_os = "linux")]
             if let Some(control) = local_control.as_ref() {
-                return control.shutdown(&service, &AtomicUsize::new(0), Some("cannot bind configured listener".into()), || {});
+                return control.shutdown(
+                    &service,
+                    &AtomicUsize::new(0),
+                    Some("cannot bind configured listener".into()),
+                    || {},
+                );
             }
             return Err("cannot bind configured listener".into());
         }
     };
     let _lifecycle = match crate::service::start_lifecycle_worker(
-        &service, Duration::from_secs(config.lifecycle_interval_seconds),
+        &service,
+        Duration::from_secs(config.lifecycle_interval_seconds),
     ) {
         Ok(value) => value,
         Err(error) => {
@@ -449,7 +469,9 @@ fn serve_inner(
             #[cfg(target_os = "linux")]
             if let Some(control) = local_control.as_ref() {
                 drop(listener);
-                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || { drop(_lifecycle); });
+                return control.shutdown(&service, &AtomicUsize::new(0), Some(error), || {
+                    drop(_lifecycle);
+                });
             }
             return Err(error);
         }
@@ -462,13 +484,15 @@ fn serve_inner(
     );
     #[cfg(target_os = "linux")]
     if let Some(control) = local_control.as_ref() {
-        let admission = listener.set_nonblocking(true)
+        let admission = listener
+            .set_nonblocking(true)
             .map_err(|_| "cannot bound private control accept polling".to_owned())
             .and_then(|()| control.ready(&service));
         if let Err(error) = admission {
             drop(listener);
             return control.shutdown(&service, &connections, Some(error), || {
-                drop(_lifecycle); drop(_ha_activation);
+                drop(_lifecycle);
+                drop(_ha_activation);
             });
         }
     }
@@ -478,7 +502,8 @@ fn serve_inner(
             if control.poll(&service) {
                 drop(listener);
                 return control.shutdown(&service, &connections, None, || {
-                    drop(_lifecycle); drop(_ha_activation);
+                    drop(_lifecycle);
+                    drop(_ha_activation);
                 });
             }
         }
@@ -492,9 +517,15 @@ fn serve_inner(
                 #[cfg(target_os = "linux")]
                 if let Some(control) = local_control.as_ref() {
                     drop(listener);
-                    return control.shutdown(&service, &connections, Some("listener accept failed".into()), || {
-                        drop(_lifecycle); drop(_ha_activation);
-                    });
+                    return control.shutdown(
+                        &service,
+                        &connections,
+                        Some("listener accept failed".into()),
+                        || {
+                            drop(_lifecycle);
+                            drop(_ha_activation);
+                        },
+                    );
                 }
                 return Err("listener accept failed".into());
             }
@@ -516,13 +547,20 @@ fn serve_inner(
         let peer = match stream.peer_addr() {
             Ok(peer) => peer.ip(),
             Err(_) => {
-                drop(guard); drop(stream);
+                drop(guard);
+                drop(stream);
                 #[cfg(target_os = "linux")]
                 if let Some(control) = local_control.as_ref() {
                     drop(listener);
-                    return control.shutdown(&service, &connections, Some("cannot identify accepted peer".into()), || {
-                        drop(_lifecycle); drop(_ha_activation);
-                    });
+                    return control.shutdown(
+                        &service,
+                        &connections,
+                        Some("cannot identify accepted peer".into()),
+                        || {
+                            drop(_lifecycle);
+                            drop(_ha_activation);
+                        },
+                    );
                 }
                 return Err("cannot identify accepted peer".into());
             }
@@ -676,9 +714,15 @@ fn serve_inner(
             #[cfg(target_os = "linux")]
             if let Some(control) = local_control.as_ref() {
                 drop(listener);
-                return control.shutdown(&service, &connections, Some("cannot create bounded request worker".into()), || {
-                    drop(_lifecycle); drop(_ha_activation);
-                });
+                return control.shutdown(
+                    &service,
+                    &connections,
+                    Some("cannot create bounded request worker".into()),
+                    || {
+                        drop(_lifecycle);
+                        drop(_ha_activation);
+                    },
+                );
             }
             return Err("cannot create bounded request worker".into());
         }

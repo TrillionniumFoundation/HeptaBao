@@ -240,7 +240,11 @@ fn clone_pg_storage_config(config: &PgStorageConfig) -> PgStorageConfig {
 impl SealMetadata {
     fn validate(&self) -> Result<(), &'static str> {
         if self.schema == 2 {
-            if self.generation == 0 || self.share_format != "wrapper-v1" || self.secret_shares != 0 || self.secret_threshold != 0 {
+            if self.generation == 0
+                || self.share_format != "wrapper-v1"
+                || self.secret_shares != 0
+                || self.secret_threshold != 0
+            {
                 return Err("invalid Wrapper seal metadata");
             }
             let envelope = openbao_wrapper::barrier::Envelope::decode(&self.wrapped_barrier_key)?;
@@ -832,7 +836,9 @@ impl PendingExternalRequest {
     pub(crate) fn execute_before(&self, deadline: std::time::Instant) -> ExternalEffectResult {
         match &self.effect {
             #[cfg(target_os = "linux")]
-            ExternalEffectPlan::WrapperBarrierInit(plan) => ExternalEffectResult::WrapperBarrierInit(plan.execute_before(deadline)),
+            ExternalEffectPlan::WrapperBarrierInit(plan) => {
+                ExternalEffectResult::WrapperBarrierInit(plan.execute_before(deadline))
+            }
             ExternalEffectPlan::OnlineAuth(plan) => {
                 ExternalEffectResult::OnlineAuth(plan.execute_before(deadline))
             }
@@ -845,7 +851,9 @@ impl PendingExternalRequest {
     pub(crate) fn execute(&self) -> ExternalEffectResult {
         match &self.effect {
             #[cfg(target_os = "linux")]
-            ExternalEffectPlan::WrapperBarrierInit(plan) => ExternalEffectResult::WrapperBarrierInit(plan.execute_before(plan.deadline())),
+            ExternalEffectPlan::WrapperBarrierInit(plan) => {
+                ExternalEffectResult::WrapperBarrierInit(plan.execute_before(plan.deadline()))
+            }
             ExternalEffectPlan::Database(plan) => ExternalEffectResult::Database(plan.execute()),
             ExternalEffectPlan::DatabaseConfig(plan) => {
                 ExternalEffectResult::DatabaseConfig(plan.execute())
@@ -1486,7 +1494,10 @@ impl Service {
         let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
         if self.private_shutdown_requested {
             erase_json(&mut request.body);
-            return RequestExecution::Complete(Response::error(503, "service shutdown in progress"));
+            return RequestExecution::Complete(Response::error(
+                503,
+                "service shutdown in progress",
+            ));
         }
         if crate::request_deadline::current()
             .is_some_and(|deadline| std::time::Instant::now() >= deadline)
@@ -1604,9 +1615,15 @@ impl Service {
     ) -> Response {
         let response = match (pending.effect, result) {
             #[cfg(target_os = "linux")]
-            (ExternalEffectPlan::WrapperBarrierInit(plan), ExternalEffectResult::WrapperBarrierInit(result)) => {
-                self.finalize_wrapper_barrier_initialization(*plan, result, pending.now, &pending.fingerprint)
-            }
+            (
+                ExternalEffectPlan::WrapperBarrierInit(plan),
+                ExternalEffectResult::WrapperBarrierInit(result),
+            ) => self.finalize_wrapper_barrier_initialization(
+                *plan,
+                result,
+                pending.now,
+                &pending.fingerprint,
+            ),
             (ExternalEffectPlan::Database(plan), ExternalEffectResult::Database(result)) => {
                 self.finalize_database_request(*plan, result)
             }
@@ -1853,17 +1870,27 @@ impl Service {
         if path == "sys/init" && matches!(method, "PUT" | "POST") {
             #[cfg(target_os = "linux")]
             if self.wrapper_barrier_selected() && !self.initialized() {
-                let plan = if !valid_path(path) || !valid_namespace(namespace) || !namespace.is_empty() {
-                    Err(Response::error(400, "initialization requires the root namespace"))
-                } else {
-                    self.prepare_wrapper_barrier_initialization(&body)
-                };
+                let plan =
+                    if !valid_path(path) || !valid_namespace(namespace) || !namespace.is_empty() {
+                        Err(Response::error(
+                            400,
+                            "initialization requires the root namespace",
+                        ))
+                    } else {
+                        self.prepare_wrapper_barrier_initialization(&body)
+                    };
                 erase_json(&mut body);
                 return match plan {
                     Ok(plan) => RequestExecution::External(Box::new(PendingExternalRequest {
-                        fingerprint, now, effect: ExternalEffectPlan::WrapperBarrierInit(Box::new(plan)),
+                        fingerprint,
+                        now,
+                        effect: ExternalEffectPlan::WrapperBarrierInit(Box::new(plan)),
                     })),
-                    Err(response) => RequestExecution::Complete(self.audit_completed_response(&fingerprint, now, response)),
+                    Err(response) => RequestExecution::Complete(self.audit_completed_response(
+                        &fingerprint,
+                        now,
+                        response,
+                    )),
                 };
             }
             let (response, response_audited) =
@@ -3520,11 +3547,18 @@ impl Service {
     }
 
     fn initialize_with_wrapper_material(
-        &mut self, body: &Value, now: u64, response_fingerprint: &str,
-        mut import: impl FnMut(&PgStorageConfig, &BackendBundle) -> Result<Box<dyn DurableBackend>, BackendError>,
+        &mut self,
+        body: &Value,
+        now: u64,
+        response_fingerprint: &str,
+        mut import: impl FnMut(
+            &PgStorageConfig,
+            &BackendBundle,
+        ) -> Result<Box<dyn DurableBackend>, BackendError>,
         wrapper: Option<openbao_wrapper::barrier::PreparedMaterial>,
     ) -> (Response, bool) {
-        let wrapper_mode = wrapper.is_some() || self.seal.as_ref().is_some_and(|seal| seal.schema == 2);
+        let wrapper_mode =
+            wrapper.is_some() || self.seal.as_ref().is_some_and(|seal| seal.schema == 2);
         if self.ha.is_some() {
             return (
                 Response::error(
@@ -3547,14 +3581,16 @@ impl Service {
                 false,
             );
         }
-        let shares = match bounded_u8_field(body, "secret_shares", if wrapper_mode { 0 } else { 5 }) {
+        let shares = match bounded_u8_field(body, "secret_shares", if wrapper_mode { 0 } else { 5 })
+        {
             Ok(value) => value,
             Err(message) => return (Response::error(400, message), false),
         };
-        let threshold = match bounded_u8_field(body, "secret_threshold", if wrapper_mode { 0 } else { 3 }) {
-            Ok(value) => value,
-            Err(message) => return (Response::error(400, message), false),
-        };
+        let threshold =
+            match bounded_u8_field(body, "secret_threshold", if wrapper_mode { 0 } else { 3 }) {
+                Ok(value) => value,
+                Err(message) => return (Response::error(400, message), false),
+            };
         let invalid_shares = if wrapper_mode {
             shares != 0 || threshold != 0
         } else {
@@ -3927,7 +3963,13 @@ impl Service {
         }
         if wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
             self.fence_openbao_wrapper();
-            return (Response::error(503, "Wrapper initialization deadline expired before publication"), true);
+            return (
+                Response::error(
+                    503,
+                    "Wrapper initialization deadline expired before publication",
+                ),
+                true,
+            );
         }
         let parent_synced = match stage.publish(&self.data_dir, &parent) {
             Ok(value) => value,
@@ -3949,7 +3991,9 @@ impl Service {
         self.barrier_key = None;
         self.unseal_shares.clear();
         self.rekey = None;
-        if !parent_synced || wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+        if !parent_synced
+            || wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline)
+        {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -4275,7 +4319,10 @@ impl Service {
 
     fn unseal(&mut self, body: &Value) -> Response {
         if self.seal.as_ref().is_some_and(|seal| seal.schema == 2) {
-            return Response::error(501, "Wrapper seal uses trusted startup; manual unseal and migration are unavailable");
+            return Response::error(
+                501,
+                "Wrapper seal uses trusted startup; manual unseal and migration are unavailable",
+            );
         }
         if self.state.is_some() && !self.recovery_required {
             return self.seal_status();
@@ -4694,7 +4741,10 @@ impl Service {
 
     fn rekey_route(&mut self, method: &str, path: &str, body: &Value) -> Response {
         if self.seal.as_ref().is_some_and(|seal| seal.schema == 2) {
-            return Response::error(501, "Wrapper recovery-key rekey requires a separate supported consumer");
+            return Response::error(
+                501,
+                "Wrapper recovery-key rekey requires a separate supported consumer",
+            );
         }
         match initialization_recovery_pending(&self.data_dir) {
             Ok(false) => {}
