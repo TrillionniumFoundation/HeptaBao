@@ -1,0 +1,1084 @@
+{
+  "$defs": {
+    "hostile": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "EXECUTED_PASS"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "outcome": {
+                "const": "REJECTED_OR_ABORTED_AFTER_INJECTION"
+              },
+              "phase_reached": {
+                "const": true
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "EXECUTED_FAIL"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "outcome": {
+                "const": "ACCEPTED"
+              },
+              "phase_reached": {
+                "const": true
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "BLOCKED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "outcome": {
+                "const": "SETUP_OR_EXECUTION_BLOCKED"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "authority_effect": {
+          "const": "NONE"
+        },
+        "candidate_id": {
+          "const": "HB-DEP-RAFT-OPENRAFT"
+        },
+        "child_exit_code": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "child_signal": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "detail": {
+          "type": "object"
+        },
+        "durability_class": {
+          "const": "TEST_ONLY_IN_MEMORY_NO_PRODUCTION_CLAIM"
+        },
+        "execution_scope": {
+          "const": "ISOLATED_CHILD_REAL_OPENRAFT_STALE_COMMITTED_SNAPSHOT_INJECTION"
+        },
+        "outcome": {
+          "enum": [
+            "REJECTED_OR_ABORTED_AFTER_INJECTION",
+            "ACCEPTED",
+            "SETUP_OR_EXECUTION_BLOCKED"
+          ]
+        },
+        "phase_reached": {
+          "type": "boolean"
+        },
+        "profile_id": {
+          "const": "HB-H02-FAULT-LAB-OPENRAFT-0_10_0_ALPHA_33"
+        },
+        "qualification": {
+          "const": false
+        },
+        "schema": {
+          "const": "heptabao.h02-openraft-hostile-snapshot-result.v1"
+        },
+        "seed": {
+          "pattern": "^0x[0-9a-f]{16}$",
+          "type": "string"
+        },
+        "selection_effect": {
+          "const": "NONE"
+        },
+        "status": {
+          "enum": [
+            "EXECUTED_PASS",
+            "EXECUTED_FAIL",
+            "BLOCKED"
+          ]
+        },
+        "stderr_bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "stdout_lines": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "version": {
+          "const": "0.10.0-alpha.33"
+        }
+      },
+      "required": [
+        "schema",
+        "candidate_id",
+        "version",
+        "profile_id",
+        "seed",
+        "status",
+        "phase_reached",
+        "outcome",
+        "child_exit_code",
+        "child_signal",
+        "stdout_lines",
+        "stderr_bytes",
+        "execution_scope",
+        "durability_class",
+        "detail",
+        "qualification",
+        "selection_effect",
+        "authority_effect"
+      ],
+      "title": "HeptaBao H02 OpenRaft hostile snapshot result v1",
+      "type": "object"
+    },
+    "linear": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "EXECUTED_PASS"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "linearizable": {
+                "const": true
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "EXECUTED_FAIL"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "linearizable": {
+                "const": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "BLOCKED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "linearizable": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "authority_effect": {
+          "const": "NONE"
+        },
+        "checker": {
+          "additionalProperties": false,
+          "properties": {
+            "algorithm": {
+              "const": "bounded-real-time-precedence-backtracking"
+            },
+            "max_operations": {
+              "const": 64
+            },
+            "model": {
+              "const": "single-register-v1"
+            }
+          },
+          "required": [
+            "algorithm",
+            "model",
+            "max_operations"
+          ],
+          "type": "object"
+        },
+        "explored_states": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "history_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "linearizable": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "operation_count": {
+          "maximum": 64,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "promotion_effect": {
+          "const": "BLOCK_PENDING_DURABLE_STORE_OS_DISK_CLOCK_AND_INDEPENDENT_REPRODUCTION"
+        },
+        "qualification": {
+          "const": false
+        },
+        "reason": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema": {
+          "const": "heptabao.h02-linearizability-result.v1"
+        },
+        "selection_effect": {
+          "const": "NONE"
+        },
+        "status": {
+          "enum": [
+            "EXECUTED_PASS",
+            "EXECUTED_FAIL",
+            "BLOCKED"
+          ]
+        },
+        "witness_order": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema",
+        "status",
+        "linearizable",
+        "history_sha256",
+        "operation_count",
+        "witness_order",
+        "explored_states",
+        "reason",
+        "checker",
+        "qualification",
+        "selection_effect",
+        "promotion_effect",
+        "authority_effect"
+      ],
+      "title": "HeptaBao H02 linearizability checker result v1",
+      "type": "object"
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "cargo_lock_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "clean_tree": {
+          "type": "boolean"
+        },
+        "commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "repository": {
+          "const": "TrillionniumFoundation/HeptaBao"
+        },
+        "tree": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository",
+        "commit",
+        "tree",
+        "clean_tree",
+        "manifest_sha256",
+        "cargo_lock_sha256"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://heptabao.invalid/schemas/heptabao_h02_openraft_fault_lab_evidence_v2.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "EXECUTED_PASS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "problems": {
+            "maxItems": 0
+          },
+          "results": {
+            "properties": {
+              "hostile_snapshot": {
+                "properties": {
+                  "status": {
+                    "const": "EXECUTED_PASS"
+                  }
+                },
+                "type": "object"
+              },
+              "linearizability": {
+                "properties": {
+                  "status": {
+                    "const": "EXECUTED_PASS"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "source": {
+            "properties": {
+              "clean_tree": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "artifacts": {
+      "additionalProperties": false,
+      "properties": {
+        "Cargo.lock": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "Cargo.toml": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checker.stderr": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checker.stdout": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "execution-context.json": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "history.stderr": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hostile-result.json": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hostile.stderr": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "linearizability-history.json": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "linearizability-result.json": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rustc.stderr": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rustc.stdout": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "test.stderr": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "test.stdout": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "execution-context.json",
+        "rustc.stdout",
+        "hostile-result.json",
+        "linearizability-history.json",
+        "linearizability-result.json",
+        "rustc.stderr",
+        "test.stderr",
+        "hostile.stderr",
+        "history.stderr",
+        "checker.stderr",
+        "test.stdout",
+        "checker.stdout"
+      ],
+      "type": "object"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "entry_id": {
+      "pattern": "^1\\.(88|99)\\.0-(5eed20260828cafe|8badf00d12345678|d15ea5e5cafef00d)$",
+      "type": "string"
+    },
+    "execution": {
+      "additionalProperties": false,
+      "properties": {
+        "argv": {
+          "additionalProperties": false,
+          "properties": {
+            "checker": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "history": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "hostile": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "rustc": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "test": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "rustc",
+            "test",
+            "hostile",
+            "history",
+            "checker"
+          ],
+          "type": "object"
+        },
+        "argv_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "configuration_checks": {
+          "additionalProperties": false,
+          "properties": {
+            "checker": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "after": {
+                      "type": "boolean"
+                    },
+                    "before": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "before",
+                    "after"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "history": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "after": {
+                      "type": "boolean"
+                    },
+                    "before": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "before",
+                    "after"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "hostile": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "after": {
+                      "type": "boolean"
+                    },
+                    "before": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "before",
+                    "after"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "rustc": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "after": {
+                      "type": "boolean"
+                    },
+                    "before": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "before",
+                    "after"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "test": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "after": {
+                      "type": "boolean"
+                    },
+                    "before": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "before",
+                    "after"
+                  ],
+                  "type": "object"
+                }
+              ]
+            }
+          },
+          "required": [
+            "rustc",
+            "test",
+            "hostile",
+            "history",
+            "checker"
+          ],
+          "type": "object"
+        },
+        "configuration_paths": {
+          "items": {
+            "pattern": "^/",
+            "type": "string"
+          },
+          "minItems": 4,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "configuration_policy": {
+          "const": "HB-H02-FAULT-V2-ISOLATED-CARGO-CONFIG-FREE-V1"
+        },
+        "cwd": {
+          "pattern": "^/",
+          "type": "string"
+        },
+        "environment": {
+          "additionalProperties": false,
+          "properties": {
+            "CARGO_HOME": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "CARGO_TARGET_DIR": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "GIT_CONFIG_GLOBAL": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "GIT_CONFIG_NOSYSTEM": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "HOME": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "LANG": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "LC_ALL": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "PATH": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "RUSTUP_HOME": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "TMPDIR": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "TZ": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "PATH",
+            "RUSTUP_HOME",
+            "HOME",
+            "CARGO_HOME",
+            "TMPDIR",
+            "CARGO_TARGET_DIR",
+            "LANG",
+            "LC_ALL",
+            "TZ",
+            "GIT_CONFIG_NOSYSTEM",
+            "GIT_CONFIG_GLOBAL"
+          ],
+          "type": "object"
+        },
+        "environment_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "environment_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "execution_profile_id": {
+          "const": "HB-H02-OPENRAFT-FAULT-LAB-CURRENT-V2"
+        },
+        "executor_kind": {
+          "const": "github-hosted"
+        },
+        "return_codes": {
+          "additionalProperties": false,
+          "properties": {
+            "checker": {
+              "maximum": 255,
+              "minimum": 0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "history": {
+              "maximum": 255,
+              "minimum": 0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "hostile": {
+              "maximum": 255,
+              "minimum": 0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "rustc": {
+              "maximum": 255,
+              "minimum": 0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "test": {
+              "maximum": 255,
+              "minimum": 0,
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "rustc",
+            "test",
+            "hostile",
+            "history",
+            "checker"
+          ],
+          "type": "object"
+        },
+        "run_attempt": {
+          "pattern": "^[1-9][0-9]*$",
+          "type": "string"
+        },
+        "run_id": {
+          "pattern": "^[1-9][0-9]*$",
+          "type": "string"
+        },
+        "runner_id": {
+          "const": "github-api-enrichment-pending"
+        },
+        "runner_name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "schema": {
+          "const": "heptabao.h02-fault-lab-execution-context.v2"
+        },
+        "seed": {
+          "enum": [
+            "0x5eed20260828cafe",
+            "0x8badf00d12345678",
+            "0xd15ea5e5cafef00d"
+          ]
+        },
+        "setup_error": {
+          "minLength": 1,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_after": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/source"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_before": {
+          "$ref": "#/$defs/source"
+        },
+        "toolchain": {
+          "enum": [
+            "1.88.0",
+            "1.99.0"
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "execution_profile_id",
+        "toolchain",
+        "seed",
+        "run_id",
+        "run_attempt",
+        "runner_name",
+        "runner_id",
+        "executor_kind",
+        "environment_id",
+        "source_before",
+        "source_after",
+        "argv",
+        "argv_sha256",
+        "return_codes",
+        "cwd",
+        "environment",
+        "setup_error",
+        "environment_sha256",
+        "configuration_policy",
+        "configuration_paths",
+        "configuration_checks"
+      ],
+      "type": "object"
+    },
+    "execution_profile_id": {
+      "const": "HB-H02-OPENRAFT-FAULT-LAB-CURRENT-V2"
+    },
+    "problems": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "promotion_effect": {
+      "const": "BLOCK_PENDING_DURABLE_STORE_OS_DISK_CLOCK_AND_INDEPENDENT_REPRODUCTION"
+    },
+    "qualification": {
+      "const": false
+    },
+    "results": {
+      "additionalProperties": false,
+      "properties": {
+        "hostile_snapshot": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/hostile"
+            }
+          ]
+        },
+        "linearizability": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/linear"
+            }
+          ]
+        }
+      },
+      "required": [
+        "hostile_snapshot",
+        "linearizability"
+      ],
+      "type": "object"
+    },
+    "revision": {
+      "const": "2.0"
+    },
+    "schema": {
+      "const": "heptabao.h02-openraft-fault-lab-evidence.v2"
+    },
+    "selection_effect": {
+      "const": "NONE"
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "status": {
+      "enum": [
+        "EXECUTED_PASS",
+        "EXECUTED_FAIL",
+        "BLOCKED"
+      ]
+    }
+  },
+  "required": [
+    "schema",
+    "revision",
+    "execution_profile_id",
+    "entry_id",
+    "status",
+    "source",
+    "execution",
+    "artifacts",
+    "results",
+    "problems",
+    "qualification",
+    "selection_effect",
+    "authority_effect",
+    "promotion_effect"
+  ],
+  "type": "object"
+}

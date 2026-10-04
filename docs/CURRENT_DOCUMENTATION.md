@@ -207,6 +207,17 @@ Revision 2.1 reports canonical raw equality separately from a named, bounded
 safety/outcome replay comparison. The first native V2 run's six revision-2.0
 BLOCKED receipts remain unchanged; a fresh exact-head run is still required.
 
+The [current H02 fault-lab V2 source profile](plan/HEPTABAO_H02_OPENRAFT_FAULT_LAB_V2.md)
+prepares a separate six-entry Rust 1.88.0/1.99.0 hostile-snapshot and external
+linearizability lane. It copies the committed probe lock with `--locked`, binds
+fresh source/compiler/run observations, and retains every failure before the
+final gate. Each actual concurrent history is checked independently; raw
+history, RPC or witness equality across runs is not required. The V1/native/raw
+schema/checker contracts remain unchanged. Source-only validation does not
+establish a native 1.99.0 pass or qualification; fresh exact-head hosted evidence
+is still required. Its explicit execution-input PR filter and manual dispatch
+introduce no repository permission or protection change.
+
 Historical H01/H02, V1.3, V2.4 and V2.5 admission diagnostic workflows remain
 manual-only for reproducible evidence. Their obsolete branch push triggers and
 the duplicate V2 Linux assurance schedule are retired. Pull requests use the
