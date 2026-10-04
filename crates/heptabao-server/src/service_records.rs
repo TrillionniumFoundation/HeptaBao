@@ -1134,7 +1134,7 @@ mod tests {
                 .is_empty()
         );
         let anchor = service
-            .full_existing_record_plan(state)
+            .full_existing_record_plan(&state)
             .map_err(|_| "anchor")?;
         assert!(!anchor.objects.is_empty());
         struct AnchorReader(BTreeMap<ObjectId, Arc<StagedObject>>);
