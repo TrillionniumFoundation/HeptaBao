@@ -2566,6 +2566,39 @@ impl Service {
         if let Some(principal) = principal.as_mut() {
             principal.bind_request_wrapping_ttl(wrap_ttl_seconds);
         }
+        // The original header's namespace/barrier guards remain above. Only
+        // this authenticated request capability selects a self token's actual
+        // context; opaque transport text or a routing hint grants no authority.
+        let token_namespace = if matches!(
+            path,
+            "auth/token/lookup-self" | "auth/token/renew-self" | "auth/token/revoke-self"
+        ) {
+            principal.as_ref().map(|actor| actor.namespace().to_owned())
+        } else {
+            None
+        };
+        let changed_token_namespace = token_namespace
+            .as_deref()
+            .is_some_and(|actual| actual != namespace);
+        let namespace = token_namespace.as_deref().unwrap_or(namespace);
+        let request = RequestView {
+            namespace,
+            ..request
+        };
+        if enforce_namespace && changed_token_namespace && !admitted.namespace_exists(namespace) {
+            return Response::error(404, "namespace not found");
+        }
+        if enforce_namespace && changed_token_namespace && admitted.namespace_is_sealed(namespace) {
+            return Response::error(503, "namespace is sealed");
+        }
+        let namespace_resource_route = namespaces::owns(path)
+            || path == "sys/mounts"
+            || path.starts_with("sys/mounts/")
+            || path.starts_with("auth/")
+            || !path.starts_with("sys/");
+        let resources_unloaded = namespace_resource_route
+            && admitted.namespaces.inherited_owner(namespace).is_some()
+            && !self.namespace_runtime.is_loaded(namespace);
         if let Some(principal) = principal.as_mut()
             && let Err(error) = Self::bind_identity_principal(&admitted, principal, namespace)
         {
@@ -2574,6 +2607,9 @@ impl Service {
         if method == "HELP" {
             if principal.is_none() {
                 return Response::error(403, "missing client token");
+            }
+            if resources_unloaded {
+                return Response::error(404, "namespace resource routes are unloaded");
             }
             return help_projection.map_or_else(
                 || Response::error(404, "help route not found"),
@@ -2603,6 +2639,12 @@ impl Service {
             )
         {
             return Response::error(error.status, &error.message);
+        }
+        // Ordinary closure removes the actual resource owners. A valid actor
+        // from another namespace still fails the existing ACL scope check
+        // above; an authorized resource request observes the unloaded router.
+        if resources_unloaded && principal.is_some() {
+            return Response::error(404, "namespace resource routes are unloaded");
         }
         // Do not inspect stored provider parameters or disclose candidate
         // validation/existence failures until this exact route is authorized.

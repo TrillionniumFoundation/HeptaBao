@@ -1006,3 +1006,232 @@ fn ordinary_delete_late_original_deadline_retires_without_acknowledgement() -> T
     );
     Ok(())
 }
+
+#[test]
+fn ordinary_router_keeps_authenticated_self_context_and_cross_namespace_acl_order() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 200,
+        "ordinary namespace created through actual dispatch"
+    );
+    let shares = create(&mut service, "", "barrier", &token)?;
+    unseal(&mut service, "", "barrier", &token, &shares);
+    assert!(
+        wire(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/reader",
+            "barrier",
+            &token,
+            json!({"policy":"path \"*\" { capabilities = [\"read\", \"update\", \"list\"] }"})
+        )
+        .status
+            == 204,
+        "actual barrier policy created"
+    );
+    let issued = wire(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        "barrier",
+        &token,
+        json!({"policies":["reader"], "no_default_policy":true}),
+    );
+    assert!(
+        issued.status == 200,
+        "actual nonroot namespace token issued"
+    );
+    let actor = zeroize::Zeroizing::new(
+        issued.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("actor")?
+            .to_owned(),
+    );
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 204,
+        "ordinary resource owner closes with its actual inherited key"
+    );
+    for (label, caller, header, method, path, expected) in [
+        (
+            "root self context",
+            token.as_str(),
+            "plain",
+            "GET",
+            "auth/token/lookup-self",
+            200,
+        ),
+        (
+            "root self Help context",
+            token.as_str(),
+            "plain",
+            "HELP",
+            "auth/token/lookup-self",
+            200,
+        ),
+        (
+            "root auth owner unloaded",
+            token.as_str(),
+            "plain",
+            "HELP",
+            "auth/token/create",
+            404,
+        ),
+        (
+            "root mount owner unloaded",
+            token.as_str(),
+            "plain",
+            "GET",
+            "sys/mounts",
+            404,
+        ),
+        (
+            "root namespace router unloaded",
+            token.as_str(),
+            "plain",
+            "GET",
+            "sys/namespaces/missing/seal-status",
+            404,
+        ),
+        (
+            "loaded missing child control",
+            token.as_str(),
+            "barrier",
+            "GET",
+            "sys/namespaces/missing/seal-status",
+            500,
+        ),
+        (
+            "actual barrier token self context",
+            actor.as_str(),
+            "plain",
+            "GET",
+            "auth/token/lookup-self",
+            200,
+        ),
+        (
+            "omitted header actual token context",
+            actor.as_str(),
+            "",
+            "GET",
+            "auth/token/lookup-self",
+            200,
+        ),
+        (
+            "actual barrier token self Help",
+            actor.as_str(),
+            "plain",
+            "HELP",
+            "auth/token/lookup-self",
+            200,
+        ),
+        (
+            "cross namespace mount ACL first",
+            actor.as_str(),
+            "plain",
+            "GET",
+            "sys/mounts",
+            403,
+        ),
+        (
+            "cross namespace namespace ACL first",
+            actor.as_str(),
+            "plain",
+            "GET",
+            "sys/namespaces/missing/seal-status",
+            403,
+        ),
+        (
+            "authenticated Help sees actual unloaded owner",
+            actor.as_str(),
+            "plain",
+            "HELP",
+            "auth/token/create",
+            404,
+        ),
+        (
+            "invalid actor before resource lookup",
+            "hvs.invalid",
+            "plain",
+            "GET",
+            "sys/mounts",
+            403,
+        ),
+        (
+            "invalid Help actor before lookup",
+            "hvs.invalid",
+            "plain",
+            "HELP",
+            "auth/token/create",
+            403,
+        ),
+        (
+            "unknown header before self context",
+            token.as_str(),
+            "unknown",
+            "GET",
+            "auth/token/lookup-self",
+            404,
+        ),
+    ] {
+        let response = wire(&mut service, method, path, header, caller, json!({}));
+        assert!(
+            response.status == expected,
+            "fixed official owner/context priority: {label}"
+        );
+        if method == "HELP" && expected == 200 {
+            assert!(
+                response.body["id"].as_str() == Some(caller),
+                "actual caller id remains dynamic"
+            );
+        }
+    }
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/barrier/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 204,
+        "actual independent barrier closes"
+    );
+    for caller in [token.as_str(), actor.as_str()] {
+        assert!(
+            wire(
+                &mut service,
+                "GET",
+                "auth/token/lookup-self",
+                "barrier",
+                caller,
+                json!({})
+            )
+            .status
+                == 503,
+            "original strong header guard precedes any authenticated self rewrite"
+        );
+    }
+    Ok(())
+}

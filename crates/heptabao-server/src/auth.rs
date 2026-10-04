@@ -1351,6 +1351,13 @@ impl Drop for Principal {
 }
 
 impl Principal {
+    pub(super) fn namespace(&self) -> &str {
+        match &self.credential {
+            batch_principal::VerifiedCredential::Service(token) => &token.namespace,
+            batch_principal::VerifiedCredential::Batch(claims) => claims.namespace(),
+        }
+    }
+
     pub(super) fn is_root(&self) -> bool {
         self.service_token().is_some_and(|token| token.root)
     }
