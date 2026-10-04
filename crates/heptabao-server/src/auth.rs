@@ -5946,6 +5946,17 @@ impl AuthState {
                     )?;
                     self.target_token(namespace, body, operation.ends_with("accessor"), now)?
                 };
+                // permission() above authorized this exact renew operation.
+                // Only a retained record in this namespace with its own expired
+                // deadline gets the reference token-not-found classification.
+                // Missing/revoked handles and invalid ancestors retain their
+                // existing closed authority checks; absence is not proof.
+                if self.tokens.get(&id).is_some_and(|token| {
+                    token.namespace == namespace
+                        && token.expires_at.is_some_and(|expiry| now >= expiry)
+                }) {
+                    return Err(bad("token not found"));
+                }
                 self.active_token(&id, now, false)?;
                 self.require_offline_renewal_origin(&id)?;
                 if let Some(response) =
@@ -8573,3 +8584,7 @@ mod cert_ttl_tests;
 #[cfg(test)]
 #[path = "auth_cert_metadata_tests.rs"]
 mod cert_metadata_tests;
+
+#[cfg(test)]
+#[path = "auth_token_renew_target_tests.rs"]
+mod token_renew_target_tests;

@@ -3128,22 +3128,56 @@ impl Service {
         ) {
             return Some(Response::error(error.status, &error.message));
         }
-        Some(
-            match state.engines.handle_immutable_kv_read(
-                request.namespace,
-                request.method,
-                request.path,
-                request.body,
-                request.now,
-            ) {
-                Ok(mut response) => Response {
-                    consistency_index: None,
-                    status: response.status,
-                    body: std::mem::take(&mut response.body),
-                },
-                Err(error) => Response::error(error.status, &error.message),
+        let mut response = match state.engines.handle_immutable_kv_read(
+            request.namespace,
+            request.method,
+            request.path,
+            request.body,
+            request.now,
+        ) {
+            Ok(mut response) => Response {
+                consistency_index: None,
+                status: response.status,
+                body: std::mem::take(&mut response.body),
             },
-        )
+            Err(error) => Response::error(error.status, &error.message),
+        };
+        if let Err(error) = Self::project_kv1_read_lease(
+            state,
+            request.namespace,
+            request.method,
+            request.path,
+            request.body,
+            &mut response.body,
+            response.status,
+        ) {
+            return Some(error);
+        }
+        Some(response)
+    }
+
+    fn project_kv1_read_lease(
+        state: &State,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        response: &mut Value,
+        status: u16,
+    ) -> Result<(), Response> {
+        if status == 200
+            && state
+                .engines
+                .is_kv1_value_read(namespace, method, path, body)
+        {
+            let ttl = state
+                .auth
+                .secret_default_lease_ttl()
+                .map_err(|_| Response::error(503, "secret lease defaults unavailable"))?;
+            response["lease_duration"] = json!(ttl);
+            response["renewable"] = json!(false);
+        }
+        Ok(())
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -3467,6 +3501,17 @@ impl Service {
         let mut engines = state.engines.clone();
         match engines.handle(namespace, method, path, body, now) {
             Ok(Some(mut response)) => {
+                if let Err(error) = Self::project_kv1_read_lease(
+                    state,
+                    namespace,
+                    method,
+                    path,
+                    body,
+                    &mut response.body,
+                    response.status,
+                ) {
+                    return error;
+                }
                 if response.mutated {
                     state.engines = engines;
                 }

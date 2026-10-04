@@ -631,7 +631,7 @@ fn serve_inner(
                     .saturating_duration_since(Instant::now());
                 let parsed = read_request_mode(&mut stream, read_budget, true);
                 stream.sock.deadline = deadline;
-                let (mut reply, head) = match parsed {
+                let (reply, head) = match parsed {
                     Ok(mut request) => {
                         request.client_certificates =
                             stream.conn.peer_certificates().map(|certificates| {
@@ -673,7 +673,7 @@ fn serve_inner(
                             origin_peer: Some(peer),
                             client_certificates: request.client_certificates.take(),
                         };
-                        let reply = if let Err(response) = &consistency {
+                        let mut reply = if let Err(response) = &consistency {
                             let mut rejected = audited_wire_rejection(
                                 &service,
                                 &attempt_id,
@@ -709,6 +709,7 @@ fn serve_inner(
                                 false,
                             ))
                         };
+                        logical::project(&mut reply, &attempt_id, &request.path);
                         (reply, is_head)
                     }
                     Err(error) => {
@@ -735,7 +736,6 @@ fn serve_inner(
                         (reply, error.health_head == Some(true))
                     }
                 };
-                logical::project(&mut reply, &attempt_id);
                 let _ = reply.write(&mut stream, head);
             });
         if spawn.is_err() {

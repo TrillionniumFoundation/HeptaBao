@@ -1553,6 +1553,27 @@ impl EngineState {
             .map(Some)
     }
 
+    /// Classify an actual admitted KV1 value read, including the record owner.
+    /// Route text or a user data field alone cannot select a secret lease.
+    pub(crate) fn is_kv1_value_read(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> bool {
+        kv_request_method(method, body) == "GET"
+            && self.namespaces.get(namespace).is_some_and(|state| {
+                state
+                    .mounts
+                    .iter()
+                    .find(|(mount, _)| path.starts_with(mount.as_str()))
+                    .is_some_and(|(_, mount)| {
+                        matches!(mount.backend, Backend::Kv1(_) | Backend::Kv1Records)
+                    })
+            })
+    }
+
     /// Requires live Service authorization. The immutable receiver makes this
     /// path unable to allocate a namespace, consume a token or modify an engine.
     pub(crate) fn handle_immutable_kv_read(
