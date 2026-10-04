@@ -167,6 +167,7 @@ fn exported_roots_match_certificate_and_preserve_oracle_bundle_encodings() -> Te
 fn non_pkcs8_private_export_options_preserve_official_legacy_encoding() -> TestResult {
     for choice in [
         json!("encrypted"),
+        json!(true),
         json!(123),
         json!(null),
         json!(""),
@@ -197,6 +198,21 @@ fn non_pkcs8_private_export_options_preserve_official_legacy_encoding() -> TestR
             .map_err(|_| "default exported public")?
             .validate_certificate(&root.certificate_der)
             .map_err(|_| "default exported actual self-signature")?;
+    }
+    Ok(())
+}
+
+#[test]
+fn compound_private_key_format_is_refused_before_root_creation() -> TestResult {
+    for choice in [json!(["pkcs8"]), json!({"x":"pkcs8"})] {
+        let mut pki = Pki::default();
+        let result = pki.handle_admin("POST", "root/generate/exported",
+            &json!({"common_name":"exported-root.example.test", "key_type":"ec", "private_key_format":choice}), 100);
+        assert!(
+            matches!(result, Err(error) if error.status == 400),
+            "official compound format refusal"
+        );
+        assert!(pki.root.is_none(), "rejected format does not publish root");
     }
     Ok(())
 }

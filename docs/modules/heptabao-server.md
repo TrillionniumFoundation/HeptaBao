@@ -1026,7 +1026,7 @@ without replay. Registry values stay inside the existing encrypted owner; no
 schema or private-key owner is introduced. This bounded implementation does not
 add mutual TLS or establish full replacement or production authority.
 
-## Bounded internal root output formats
+## Local root output formats and private export
 
 `root/generate/internal` accepts `format=pem`, `der` and `pem_bundle`. PEM and
 internal bundle responses contain the single self-signed certificate with no
@@ -1035,13 +1035,34 @@ base64. `issuing_ca` uses the selected representation. Internal generation does
 not export CA private material and ignores its known `private_key_format`
 parameter; the pinned official-only 22-case observer covers eight scalar values.
 Empty, unknown or non-string certificate formats fail before key generation or
-state publication. Other root-generation options remain bounded by the existing
-handler. Stored DER, legacy Ed ownership and conditional schema 72 are unchanged.
+state publication. Compound private-format values are rejected before generation.
+
+`root/generate/exported` returns the root private key and its actual algorithm.
+Default RSA private keys use PKCS#1, default EC private keys use SEC1, and
+Ed25519 and ML-DSA use PKCS8. Only the literal `private_key_format=pkcs8` converts
+the separate private field; other scalar choices retain the default encoding,
+matching the pinned 2.7 observer. DER output uses standard base64. An exported
+PEM bundle places the default private block before the certificate, even when
+the separate private field has been converted to PKCS8. `issuing_ca` remains
+the public certificate in the selected encoding. Owned intermediate DER,
+base64 and PEM buffers are zeroized; the private response follows Service's
+durable commit and audit boundary.
+
+Both local generation routes return persisted issuer/key identifiers and empty
+default names. Identifiers activate schema 75 independently of typed key state,
+including a legacy-encoded Ed25519 key. Admission, publication and authenticated
+snapshot restore reject lower reader labels. Root or mount retirement keeps the
+reader floor, while historical roots with no identifiers retain their older
+representation. The record writer raises this requirement before record
+preflight. Default root backdating is 30 seconds.
 
 The source tests require actual maintained-provider self-signature verification,
 selected Ed/EC/RSA public algorithms, tampered-signature rejection, stored-key
-public binding, serde preservation and encrypted Service reopen/readback. These
-are separate from the immutable official-only observation. No candidate runtime
-comparison, full PKI compatibility or production authority is established by this
-source increment. Subject/SAN/time/signature options and multiple local issuers
-remain separate work.
+public binding, serde preservation and encrypted Service reopen/readback. Export
+tests import returned keys through maintained providers and compare actual SPKI,
+verify self-signatures and reopened signing, and check the official response
+fields and bundle ordering. Service tests exercise identifier reader floors,
+retirement, real encrypted reopen, rejected restoration and absence of private
+keys from actual audit records. These checks are separate from official-only
+observations and do not establish complete PKI compatibility. Additional
+subject/SAN/time/signature options and multiple local issuers remain work.

@@ -490,6 +490,12 @@ impl Pki {
             )?;
             let kind = LocalKeyKind::from_body(body)?;
             let output_format = RootOutputFormat::from_body(body)?;
+            if matches!(
+                body.get("private_key_format"),
+                Some(Value::Array(_) | Value::Object(_))
+            ) {
+                return Err(bad("invalid PKI private key format"));
+            }
             let exported = path == "root/generate/exported";
             // Internal generation ignores this field, matching the oracle.
             // The oracle converts only the literal PKCS8 choice. Other scalar
