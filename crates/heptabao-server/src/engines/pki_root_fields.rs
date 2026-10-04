@@ -314,8 +314,8 @@ fn rfc3339_seconds(value: &str) -> Result<u64> {
         }
     }
     let offset = &value[zone..];
-    let suffix = if offset == "Z" {
-        "Z".to_owned()
+    let offset_seconds = if offset == "Z" {
+        0i64
     } else {
         let offset_bytes = offset.as_bytes();
         if offset_bytes.len() != 6
@@ -329,24 +329,32 @@ fn rfc3339_seconds(value: &str) -> Result<u64> {
         {
             return Err(invalid());
         }
-        format!("{}{}{}", &offset[..1], &offset[1..3], &offset[4..6])
+        let hours = offset[1..3].parse::<i64>().map_err(|_| invalid())?;
+        let minutes = offset[4..6].parse::<i64>().map_err(|_| invalid())?;
+        let seconds = hours * 3600 + minutes * 60;
+        if offset_bytes[0] == b'+' {
+            seconds
+        } else {
+            -seconds
+        }
     };
-    // The maintained ASN.1 time parser validates the Gregorian calendar and
-    // offset. X.509 encodes integer seconds, as does the upstream consumer.
+    // Validate the local Gregorian calendar with the maintained ASN.1 parser,
+    // then apply the validated RFC3339 offset. Some OpenSSL releases reject
+    // offset-form ASN.1 times. X.509 encodes integer seconds.
     let stamp = format!(
-        "{}{}{}{}{}{}{}",
+        "{}{}{}{}{}{}Z",
         &value[..4],
         &value[5..7],
         &value[8..10],
         &value[11..13],
         &value[14..16],
-        &value[17..19],
-        suffix
+        &value[17..19]
     );
     let parsed = Asn1Time::from_str(&stamp).map_err(|_| invalid())?;
     let epoch = Asn1Time::from_unix(0).map_err(|_| invalid())?;
     let diff = epoch.diff(&parsed).map_err(|_| invalid())?;
-    u64::try_from(i64::from(diff.days) * 86400 + i64::from(diff.secs)).map_err(|_| invalid())
+    u64::try_from(i64::from(diff.days) * 86400 + i64::from(diff.secs) - offset_seconds)
+        .map_err(|_| invalid())
 }
 
 /// The signed certificate owns the issuer's entire DN. Parsing also works for
