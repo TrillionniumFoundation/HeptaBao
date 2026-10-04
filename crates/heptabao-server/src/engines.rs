@@ -1280,6 +1280,16 @@ impl EngineState {
         engine.stage_revoke(namespace, mount, lease_id)
     }
 
+    pub(crate) fn retire_namespace_pending_delivery(&mut self, namespace: &str) {
+        if let Some(owner) = self.namespaces.get_mut(namespace) {
+            for mount in owner.mounts.values_mut() {
+                if let Backend::OpenLdap(engine) = &mut mount.backend {
+                    engine.retire_pending_delivery();
+                }
+            }
+        }
+    }
+
     pub(crate) fn openldap_lease_authority(
         &self,
         namespace: &str,

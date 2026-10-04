@@ -131,6 +131,7 @@ pub(super) struct PluginResponseAuthority {
     principal: Principal,
     namespace: String,
     namespace_incarnation: Option<u64>,
+    namespace_delivery_binding: namespace_runtime::DeliveryBinding,
     activation_nonce: String,
     cluster_id: String,
     method: String,
@@ -156,6 +157,10 @@ impl PluginResponseAuthority {
             principal,
             namespace: request.namespace.to_owned(),
             namespace_incarnation: state.namespaces.incarnation(request.namespace),
+            namespace_delivery_binding: namespace_runtime::DeliveryBinding::capture(
+                state,
+                request.namespace,
+            ),
             activation_nonce: activation_nonce.to_owned(),
             cluster_id: state.cluster_id.clone(),
             method: kv_authorization_method(request.method, request.body).to_owned(),
@@ -1406,7 +1411,14 @@ impl Service {
             || state.cluster_id != authority.cluster_id
             || !state.namespace_exists(&authority.namespace)
             || state.namespace_is_sealed(&authority.namespace)
+            || (state
+                .namespaces
+                .inherited_owner(&authority.namespace)
+                .is_some()
+                && !self.namespace_runtime.is_loaded(&authority.namespace))
             || state.namespaces.incarnation(&authority.namespace) != authority.namespace_incarnation
+            || namespace_runtime::DeliveryBinding::capture(state, &authority.namespace)
+                != authority.namespace_delivery_binding
         {
             return Err(Response::error(
                 503,

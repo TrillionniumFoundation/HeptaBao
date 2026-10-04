@@ -52,9 +52,22 @@ fn pending(execution: RequestExecution) -> TestResult<PendingExternalRequest> {
 }
 
 fn setup(service: &mut Service, root: &str, namespace: &str, batch: bool) -> TestResult<String> {
-    if !namespace.is_empty() {
+    if !namespace.is_empty()
+        && !service
+            .state
+            .as_ref()
+            .is_some_and(|state| state.namespace_exists(namespace))
+    {
+        let (parent, child) = namespace.rsplit_once('/').unwrap_or(("", namespace));
         complete(
-            request(service, "POST", "sys/namespaces/team", "", root, json!({})),
+            request(
+                service,
+                "POST",
+                &format!("sys/namespaces/{child}"),
+                parent,
+                root,
+                json!({}),
+            ),
             200,
         )?;
     }
@@ -146,6 +159,27 @@ fn lease_id(pending: &PendingExternalRequest) -> TestResult<String> {
 }
 
 fn cleanup_is_retained(service: &Service, namespace: &str, id: &str) -> TestResult {
+    let state = service.state.as_ref().ok_or("missing state")?;
+    if state.namespaces.inherited_owner(namespace).is_some()
+        && !service.namespace_runtime.is_loaded(namespace)
+    {
+        assert!(state.database.mount(namespace, "database/").is_none());
+        let key = service.barrier_key.as_ref().ok_or("actual root key")?;
+        let retained = service
+            .namespace_runtime
+            .inspect_closed_database_cleanup(state, namespace, key, id)
+            .map_err(|_| "closed typed cleanup validation")?;
+        assert!(
+            retained,
+            "actual closed ciphertext retains subtractive cleanup"
+        );
+        assert!(
+            !service.namespace_runtime.is_loaded(namespace)
+                && state.database.mount(namespace, "database/").is_none(),
+            "inspection cannot restore resources or install a shared key"
+        );
+        return Ok(());
+    }
     let lease = service
         .state
         .as_ref()
@@ -243,6 +277,304 @@ fn database_delivery_namespace_seal_withholds_secret_and_preserves_cleanup() -> 
         200
     );
     cleanup_is_retained(&service, "team", &id)?;
+    Ok(())
+}
+
+#[test]
+fn database_closed_cleanup_uses_actual_parent_without_loading_child_or_reviving_delivery()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    let created = complete(
+        request(
+            &mut service,
+            "POST",
+            "sys/namespaces/outer",
+            "",
+            &root_token,
+            json!({"seal":"seal \"shamir\" { shares = 3\n threshold = 2 }"}),
+        ),
+        200,
+    )?;
+    let shares = created.body["data"]["key_shares"]
+        .as_array()
+        .ok_or("parent shares")?
+        .iter()
+        .map(|value| {
+            value
+                .as_str()
+                .map(|part| Zeroizing::new(part.to_owned()))
+                .ok_or("parent share shape")
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    for share in shares.iter().take(2) {
+        complete(
+            request(
+                &mut service,
+                "POST",
+                "sys/namespaces/outer/unseal",
+                "",
+                &root_token,
+                json!({"key":share.as_str()}),
+            ),
+            200,
+        )?;
+    }
+    let token = setup(&mut service, &root_token, "outer/team", false)?;
+    let effect = pending(request(
+        &mut service,
+        "GET",
+        "database/creds/reader",
+        "outer/team",
+        &token,
+        json!({}),
+    ))?;
+    let id = lease_id(&effect)?;
+    complete(
+        request(
+            &mut service,
+            "POST",
+            "sys/namespaces/team/seal",
+            "outer",
+            &root_token,
+            json!({}),
+        ),
+        204,
+    )?;
+    cleanup_is_retained(&service, "outer/team", &id)?;
+    let response = service.finish_external_request(effect, ExternalEffectResult::Database(Ok(())));
+    assert!(response.status == 503 && response.body.get("data").is_none());
+    cleanup_is_retained(&service, "outer/team", &id)?;
+    complete(
+        request(
+            &mut service,
+            "POST",
+            "sys/namespaces/outer/seal",
+            "",
+            &root_token,
+            json!({}),
+        ),
+        204,
+    )?;
+    assert!(
+        !service.namespace_runtime.is_loaded("outer")
+            && !service.namespace_runtime.is_loaded("outer/team")
+    );
+    let state = service.state.as_ref().ok_or("closed parent state")?;
+    assert!(
+        service
+            .namespace_runtime
+            .inspect_closed_database_cleanup(
+                state,
+                "outer/team",
+                service.barrier_key.as_ref().ok_or("root key")?,
+                &id
+            )
+            .is_err(),
+        "real root key cannot substitute for the unavailable independent parent"
+    );
+    for share in shares.iter().take(2) {
+        complete(
+            request(
+                &mut service,
+                "POST",
+                "sys/namespaces/outer/unseal",
+                "",
+                &root_token,
+                json!({"key":share.as_str()}),
+            ),
+            200,
+        )?;
+    }
+    cleanup_is_retained(&service, "outer/team", &id)?;
+    Ok(())
+}
+
+#[test]
+fn database_namespace_failed_closure_keeps_original_intent_and_requires_real_recovery() -> TestResult
+{
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, root_token) = bootstrap(&mut service)?;
+    let token = setup(&mut service, &root_token, "team", false)?;
+    let effect = pending(request(
+        &mut service,
+        "GET",
+        "database/creds/reader",
+        "team",
+        &token,
+        json!({}),
+    ))?;
+    let id = lease_id(&effect)?;
+    let durable = service.durable.take().ok_or("real durable handle")?;
+    complete(
+        request(
+            &mut service,
+            "POST",
+            "sys/namespaces/team/seal",
+            "",
+            &root_token,
+            json!({}),
+        ),
+        503,
+    )?;
+    let current = service.state.as_ref().ok_or("failed closure live state")?;
+    let lease = current
+        .database
+        .mount("team", "database/")
+        .and_then(|mount| mount.leases.get(&id))
+        .ok_or("original intent")?;
+    assert!(lease.phase == Phase::PendingIssue && lease.password.is_some());
+    assert!(current.namespaces.inherited_owner("team").is_none());
+    service.durable = Some(durable);
+    drop(effect);
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let current = service.state.as_ref().ok_or("recovered state")?;
+    let lease = current
+        .database
+        .mount("team", "database/")
+        .and_then(|mount| mount.leases.get(&id))
+        .ok_or("recovered original intent")?;
+    assert!(lease.phase == Phase::PendingIssue && lease.password.is_some());
+    assert!(current.namespaces.inherited_owner("team").is_none());
+    Ok(())
+}
+
+#[test]
+fn database_closed_parcel_rejects_wrong_key_mac_frontier_and_original_deadline() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    let token = setup(&mut service, &root_token, "team", false)?;
+    complete(
+        request(
+            &mut service,
+            "POST",
+            "sys/mounts/kv",
+            "team",
+            &root_token,
+            json!({"type":"kv","options":{"version":"1"}}),
+        ),
+        204,
+    )?;
+    complete(
+        request(
+            &mut service,
+            "POST",
+            "kv/proof",
+            "team",
+            &root_token,
+            json!({"value":"nonsecret-record-cell-probe"}),
+        ),
+        204,
+    )?;
+    let effect = pending(request(
+        &mut service,
+        "GET",
+        "database/creds/reader",
+        "team",
+        &token,
+        json!({}),
+    ))?;
+    let id = lease_id(&effect)?;
+    complete(
+        request(
+            &mut service,
+            "POST",
+            "sys/namespaces/team/seal",
+            "",
+            &root_token,
+            json!({}),
+        ),
+        204,
+    )?;
+    let state = service.state.as_ref().ok_or("closed typed state")?;
+    let root_key = service.barrier_key.as_ref().ok_or("root key")?;
+    let before = owner_store::serialize_owner(state).map_err(|_| "canonical before")?;
+    assert!(
+        service
+            .namespace_runtime
+            .inspect_closed_database_cleanup(state, "team", &[9; 32], &id)
+            .is_err()
+    );
+    let mut missing_cells = state.clone();
+    let binding = state
+        .namespaces
+        .custody_binding(&state.cluster_id, "team")
+        .map_err(|_| "actual cell owner")?;
+    assert!(
+        !state
+            .engines
+            .namespace_record_cells(&binding)
+            .map_err(|_| "actual cells")?
+            .is_empty()
+    );
+    missing_cells
+        .engines
+        .publish_namespace_record_cells(&binding, &crate::namespace_record_graph::Cells::new())
+        .map_err(|_| "bounded missing-cell fixture")?;
+    assert!(
+        service
+            .namespace_runtime
+            .inspect_closed_database_cleanup(&missing_cells, "team", root_key, &id)
+            .is_err(),
+        "database-only access still verifies the complete typed record owner"
+    );
+    let mut missing_floor = state.clone();
+    missing_floor.namespaces.custody_frontiers.remove("team");
+    assert!(
+        service
+            .namespace_runtime
+            .inspect_closed_database_cleanup(&missing_floor, "team", root_key, &id)
+            .is_err()
+    );
+    let mut tampered = state.clone();
+    let owner = tampered
+        .namespaces
+        .inherited_owner("team")
+        .ok_or("actual owner")?;
+    let mut wire = serde_json::to_value(owner)?;
+    let encoded = wire["protected_assets"]
+        .as_str()
+        .ok_or("owner ciphertext")?;
+    let mut bytes = STANDARD.decode(encoded)?;
+    bytes[0] ^= 1;
+    wire["protected_assets"] = json!(STANDARD.encode(&bytes));
+    wire["generation"] = json!(owner.generation() + 1);
+    let wrong: crate::namespace_custody::InheritedDescriptor = serde_json::from_value(wire)?;
+    tampered
+        .namespaces
+        .install_inherited_owner(&tampered.cluster_id.clone(), "team", wrong)
+        .map_err(|_| "bounded tampered owner fixture")?;
+    assert!(
+        service
+            .namespace_runtime
+            .inspect_closed_database_cleanup(&tampered, "team", root_key, &id)
+            .is_err()
+    );
+    let deadline = Instant::now() - Duration::from_millis(1);
+    {
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+        assert!(
+            service
+                .namespace_runtime
+                .inspect_closed_database_cleanup(state, "team", root_key, &id)
+                .is_err()
+        );
+        assert!(crate::request_deadline::current() == Some(deadline));
+    }
+    assert!(owner_store::serialize_owner(state).map_err(|_| "canonical after")? == before);
+    assert!(
+        !service.namespace_runtime.is_loaded("team")
+            && state.database.mount("team", "database/").is_none()
+    );
+    drop(effect);
     Ok(())
 }
 

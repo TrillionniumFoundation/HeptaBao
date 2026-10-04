@@ -29,6 +29,33 @@ enum Owner {
     Inherited(InheritedDescriptor),
 }
 
+/// Process-local response fencing only. These public owner fields never grant
+/// a key or actor and do not include a generation changed by unrelated writes.
+#[derive(Clone, PartialEq, Eq)]
+pub(super) struct DeliveryBinding(Vec<(Binding, u64, u64, Option<InheritedParent>)>);
+
+impl DeliveryBinding {
+    pub(super) fn capture(state: &State, actual: &str) -> Self {
+        let mut path = String::new();
+        let mut owners = Vec::new();
+        for component in actual.split('/').filter(|part| !part.is_empty()) {
+            if !path.is_empty() {
+                path.push('/');
+            }
+            path.push_str(component);
+            if let Ok(owner) = Owner::actual(state, &path) {
+                owners.push((
+                    owner.binding().clone(),
+                    owner.key_epoch(),
+                    owner.seal_frontier(),
+                    owner.parent().cloned(),
+                ));
+            }
+        }
+        Self(owners)
+    }
+}
+
 impl Owner {
     fn actual(state: &State, actual: &str) -> Result<Self, Response> {
         match (
@@ -191,6 +218,17 @@ pub(super) struct Runtime {
 pub(super) struct Fresh {
     pub(super) candidate: State,
     pub(super) shares: Vec<zeroize::Zeroizing<Vec<u8>>>,
+}
+
+// Exclusive temporary typed view. It cannot be serialized, published as a
+// logical State or registered as a loaded/shared key. Public entry points below
+// expose only a typed database cleanup operation and a cfg-test observation.
+struct ClosedInheritedParcel {
+    actual: String,
+    binding: Binding,
+    owner: InheritedDescriptor,
+    key: Key,
+    private: State,
 }
 
 impl Drop for Runtime {
@@ -373,6 +411,7 @@ impl Runtime {
 
     pub(super) fn closed_candidate(&self, state: &State, actual: &str) -> Result<State, Response> {
         let mut candidate = state.clone();
+        Self::retire_pending_delivery(&mut candidate, actual)?;
         self.prepare(&mut candidate)?;
         let prefix = format!("{actual}/");
         let mut paths = self
@@ -432,6 +471,7 @@ impl Runtime {
     ) -> Result<State, Response> {
         request_live()?;
         let mut candidate = state.clone();
+        Self::retire_pending_delivery(&mut candidate, actual)?;
         self.prepare(&mut candidate)?;
         if candidate.namespaces.custody_owner(actual).is_some() {
             return Err(unavailable());
@@ -479,6 +519,146 @@ impl Runtime {
         closed.validate_format()?;
         request_live()?;
         Ok(closed)
+    }
+
+    fn retire_pending_delivery(state: &mut State, actual: &str) -> Result<(), Response> {
+        // Only actual loaded typed owners are visited. Independently closed
+        // descendant parcels already carry their own retired admission.
+        for namespace in state.namespaces.partition_paths(actual)? {
+            state.engines.retire_namespace_pending_delivery(&namespace);
+            Service::retire_namespace_pending_database(state, &namespace)?;
+        }
+        Ok(())
+    }
+
+    fn closed_inherited_parcel(
+        &self,
+        state: &State,
+        actual: &str,
+        root_key: &[u8; 32],
+    ) -> Result<ClosedInheritedParcel, Response> {
+        request_live()?;
+        if actual.is_empty() || self.is_loaded(actual) {
+            return Err(unavailable());
+        }
+        let mut prepared = state.clone();
+        self.prepare(&mut prepared)?;
+        prepared.namespaces.validate(&prepared.cluster_id)?;
+        let binding = prepared
+            .namespaces
+            .custody_binding(&prepared.cluster_id, actual)?;
+        let owner = prepared
+            .namespaces
+            .inherited_owner(actual)
+            .cloned()
+            .ok_or_else(unavailable)?;
+        if prepared.namespaces.custody_frontiers.get(actual) != Some(&owner.frontier()) {
+            return Err(unavailable());
+        }
+        let (key, bytes) =
+            if let Some(parent) = prepared.namespaces.closest_independent_ancestor(actual) {
+                let parent_owner = Owner::actual(&prepared, parent)?;
+                if owner.parent()
+                    != &(InheritedParent::Namespace {
+                        binding: parent_owner.binding().clone(),
+                        key_epoch: parent_owner.key_epoch(),
+                    })
+                {
+                    return Err(unavailable());
+                }
+                self.loaded.get(parent).ok_or_else(unavailable)?.with_key(
+                    &parent_owner,
+                    |parent_key| {
+                        owner
+                            .open_namespace(&binding, parent_key)
+                            .map_err(|_| unavailable())
+                    },
+                )?
+            } else {
+                if owner.parent()
+                    != &(InheritedParent::Root {
+                        cluster_id: prepared.cluster_id.clone(),
+                    })
+                {
+                    return Err(unavailable());
+                }
+                owner
+                    .open_root(&binding, root_key)
+                    .map_err(|_| unavailable())?
+            };
+        let assets = serde_json::from_slice::<namespace_assets::NamespaceAssets>(&bytes)
+            .map_err(|_| unavailable())?;
+        let cells = prepared
+            .engines
+            .namespace_record_cells(&binding)
+            .map_err(|_| unavailable())?;
+        let private = prepared.restore_namespace_assets(actual, &key, assets, &cells)?;
+        request_live()?;
+        Ok(ClosedInheritedParcel {
+            actual: actual.to_owned(),
+            binding,
+            owner,
+            key,
+            private,
+        })
+    }
+
+    pub(super) fn compensate_closed_database(
+        &self,
+        state: &State,
+        actual: &str,
+        root_key: &[u8; 32],
+        plan: &database::DatabaseEffectPlan,
+    ) -> Result<State, Response> {
+        let mut parcel = self.closed_inherited_parcel(state, actual, root_key)?;
+        if !plan.matches_namespace_binding(&parcel.binding) {
+            return Err(unavailable());
+        }
+        Service::compensate_closed_database_intent(&mut parcel.private, plan)?;
+        let (mut closed, assets, cells) = parcel
+            .private
+            .partition_namespace_assets(&parcel.actual, &parcel.key)?;
+        let bytes = owner_store::serialize_owner(&assets).map_err(state_serialization_error)?;
+        let previous = parcel
+            .owner
+            .open_assets(&parcel.binding, &parcel.key)
+            .map_err(|_| unavailable())?;
+        let updated = if previous.as_slice() == bytes.as_slice() {
+            parcel.owner.clone()
+        } else {
+            parcel
+                .owner
+                .replace_assets(&parcel.binding, &parcel.key, &bytes)
+                .map_err(|_| unavailable())?
+        };
+        // Cleanup changes only generation. The manual closure and actual
+        // parent stay closed; no loaded slot or new lease is manufactured.
+        if updated.seal_frontier() != parcel.owner.seal_frontier()
+            || updated.parent() != parcel.owner.parent()
+        {
+            return Err(unavailable());
+        }
+        closed
+            .engines
+            .publish_namespace_record_cells(&parcel.binding, &cells)
+            .map_err(|_| unavailable())?;
+        Owner::Inherited(updated).install(&mut closed, &parcel.actual)?;
+        self.prepare(&mut closed)?;
+        closed.validate_format()?;
+        request_live()?;
+        Ok(closed)
+    }
+
+    #[cfg(test)]
+    pub(super) fn inspect_closed_database_cleanup(
+        &self,
+        state: &State,
+        actual: &str,
+        root_key: &[u8; 32],
+        id: &str,
+    ) -> Result<bool, Response> {
+        let parcel = self.closed_inherited_parcel(state, actual, root_key)?;
+        Ok(parcel.private.database.has_subtractive_cleanup(actual, id))
     }
 
     /// Restore only after descriptor/typed assets/private record graph have all
