@@ -143,7 +143,7 @@ struct RootCa {
     #[serde(default, skip_serializing_if = "String::is_empty")]
     key_id: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    local_fields: Option<LocalRootMetadata>,
+    local_fields: Option<Box<LocalRootMetadata>>,
     pkcs8: Vec<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     local_material: Option<LocalPrivateMaterial>,
@@ -621,7 +621,7 @@ impl Pki {
                 common_name: common_name.into(),
                 issuer_id,
                 key_id,
-                local_fields: fields.metadata,
+                local_fields: fields.metadata.map(Box::new),
                 pkcs8,
                 local_material,
                 certificate_der,
