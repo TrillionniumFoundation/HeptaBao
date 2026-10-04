@@ -12,7 +12,9 @@ impl State {
         if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
             return self.schema;
         }
-        let required = if self.engines.has_local_pki_intermediate_state() {
+        let required = if self.auth.has_token_role_state() {
+            TOKEN_ROLE_STATE_SCHEMA
+        } else if self.engines.has_local_pki_intermediate_state() {
             LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
         } else if self.engines.has_local_pki_crl_state() {
             LOCAL_PKI_CRL_STATE_SCHEMA
@@ -54,6 +56,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < TOKEN_ROLE_STATE_SCHEMA
+            && (self.auth.has_token_role_state()
+                || previous.is_some_and(|state| state.schema >= TOKEN_ROLE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "Token API role ownership requires schema 80",
             ));
         }
         if self.schema < LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
@@ -207,6 +218,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        self.auth
+            .validate_token_role_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < TOKEN_ROLE_STATE_SCHEMA && self.auth.has_token_role_state() {
+            return Err(Response::error(
+                503,
+                "Token API role ownership requires schema 80",
             ));
         }
         if self.schema < LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA

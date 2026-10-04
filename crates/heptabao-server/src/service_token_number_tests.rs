@@ -153,3 +153,30 @@ fn token_number_conversion_does_not_retype_original_parameter_acl() -> TestResul
     assert!(rejected.body.get("auth").is_none());
     Ok(())
 }
+
+#[test]
+fn token_number_boolean_fields_preserve_noncanonical_spelling_after_authorization() -> TestResult {
+    let fixture = Root::new();
+    let mut service = fixture.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    for field in ["no_parent", "renewable"] {
+        for raw in ["-0", "1e0", "1.0"] {
+            let rejected = call(
+                &mut service,
+                "POST",
+                "auth/token/create",
+                &root,
+                wire_body(&format!("{{\"{field}\":{raw}}}"))?,
+            );
+            assert_eq!(rejected.status, 400);
+            assert_eq!(
+                rejected.body["errors"],
+                json!([format!(
+                    "Field validation failed: error converting input for field \"{field}\": '' cannot parse value as 'bool': strconv.ParseBool: invalid syntax"
+                )])
+            );
+            assert!(rejected.body.get("auth").is_none());
+        }
+    }
+    Ok(())
+}

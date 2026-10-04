@@ -327,6 +327,12 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= TOKEN_ROLE_STATE_SCHEMA && incoming.schema < TOKEN_ROLE_STATE_SCHEMA {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade Token API role ownership",
+            ));
+        }
         if current.schema >= LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
             && incoming.schema < LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
         {

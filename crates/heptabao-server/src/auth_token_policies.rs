@@ -12,12 +12,13 @@ pub(super) fn resolve(
     parent: &Token,
     namespace: &str,
     is_sudo: bool,
+    role: Option<&super::token_roles::Role>,
 ) -> Result<BTreeSet<String>, AuthError> {
     let input = string_slice(body.get("policies"))?;
     let no_default = weak_boolean(body.get("no_default_policy"), "no_default_policy")?;
     let omitted_or_empty = input.is_empty();
     let mut requested: BTreeSet<String> = input
-        .into_iter()
+        .iter()
         .map(|policy| simple_lowercase(policy.trim()))
         .filter(|policy| !policy.is_empty())
         .collect();
@@ -26,7 +27,15 @@ pub(super) fn resolve(
     if requested.contains("root") {
         requested = BTreeSet::from(["root".into()]);
     }
-    let add_default = if namespace != parent.namespace {
+    let add_default = if let Some(role) = role.filter(|role| role.restricted()) {
+        requested = role.resolve_policies(&input, parent, no_default)?;
+        if namespace != parent.namespace && requested.contains("root") {
+            return Err(bad(
+                "root tokens may not be created from a parent namespace",
+            ));
+        }
+        false
+    } else if namespace != parent.namespace {
         if !is_sudo {
             return Err(bad(
                 "root or sudo privileges required to directly generate a token in a child namespace",
@@ -111,7 +120,7 @@ pub(super) fn string_slice(value: Option<&Value>) -> Result<Vec<String>, AuthErr
     }
 }
 
-fn weak_string(value: &Value) -> Option<String> {
+pub(super) fn weak_string(value: &Value) -> Option<String> {
     match value {
         Value::Null => Some(String::new()),
         Value::String(value) => Some(value.clone()),
@@ -184,7 +193,7 @@ fn go_kind(value: &Value) -> &'static str {
     }
 }
 
-fn simple_lowercase(value: &str) -> String {
+pub(super) fn simple_lowercase(value: &str) -> String {
     // Go strings.ToLower applies one Unicode simple mapping per rune. Rust's
     // full lowercase expands U+0130 to i + combining dot; its first mapping is
     // the simple i used by the pinned reference. No context-specific casing.

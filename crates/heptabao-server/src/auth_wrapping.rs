@@ -156,6 +156,7 @@ impl AuthState {
         };
         let token = Token {
             token_api_lease_ttl: None,
+            token_role: None,
             bound_cidrs: Vec::new(),
             wrapping: Some(wrapped),
             entity_id: None,

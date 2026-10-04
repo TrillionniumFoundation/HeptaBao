@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 
 const MARKER: &str = "__heptabao_token_number_fields";
 const INVALID: &str = "invalid request-local token number carrier";
+const FIELDS: [&str; 4] = ["policies", "no_default_policy", "no_parent", "renewable"];
 
 pub(crate) fn eligible(method: &str, path: &str) -> bool {
     matches!(method, "POST" | "PUT")
@@ -28,7 +29,7 @@ pub(crate) fn transport_body(
         serde_json::from_slice(bytes).map_err(|_| INVALID)?
     };
     let mut numbers = Map::new();
-    for field in ["policies", "no_default_policy"] {
+    for field in FIELDS {
         if let Some(raw) = raw.get(field)
             && let Some(value) = body.get(field)
             && let Some(spelling) = capture(raw, value, field == "policies")?
@@ -104,11 +105,11 @@ pub(crate) fn request<'a>(
         .ok_or(INVALID)?;
     if numbers
         .keys()
-        .any(|field| !matches!(field.as_str(), "policies" | "no_default_policy"))
+        .any(|field| !FIELDS.contains(&field.as_str()))
     {
         return Err(INVALID);
     }
-    for field in ["policies", "no_default_policy"] {
+    for field in FIELDS {
         if !valid_mapping(original.get(field), numbers.get(field), field == "policies") {
             return Err(INVALID);
         }

@@ -68,7 +68,8 @@ const LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA: u32 = 77;
 const LOCAL_PKI_CRL_STATE_SCHEMA: u32 = 78;
 // Pending local CSR keys and imported intermediate/public chain ownership.
 const LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA: u32 = 79;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA;
+const TOKEN_ROLE_STATE_SCHEMA: u32 = 80;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = TOKEN_ROLE_STATE_SCHEMA;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -8028,3 +8029,7 @@ mod default_mount_tests;
 #[cfg(test)]
 #[path = "pki_ocsp_service_tests.rs"]
 mod pki_ocsp_service_tests;
+
+#[cfg(test)]
+#[path = "service_token_roles_tests.rs"]
+mod token_roles_tests;

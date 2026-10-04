@@ -94,6 +94,8 @@ mod ldap_renewal;
 mod mount_visibility;
 #[path = "auth_token_policies.rs"]
 mod token_policies;
+#[path = "auth_token_roles.rs"]
+mod token_roles;
 use ldap_native::{LdapNativeConfig, LdapNativeUser};
 #[path = "auth_native_token.rs"]
 mod native_token;
@@ -200,6 +202,8 @@ pub struct AuthState {
     wrapping_clock: u64,
     tokens: BTreeMap<String, Token>,
     policies: BTreeMap<String, BTreeMap<String, Policy>>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    token_roles: BTreeMap<String, BTreeMap<String, token_roles::Role>>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     password_policies: BTreeMap<String, BTreeMap<String, password_policy::PasswordPolicy>>,
     users: BTreeMap<String, BTreeMap<String, User>>,
@@ -1196,6 +1200,8 @@ struct Token {
     /// increment is requested. None preserves historical one-hour renewal.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     token_api_lease_ttl: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_role: Option<token_roles::IssuedRole>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     bound_cidrs: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2065,6 +2071,12 @@ impl AuthState {
                 .cloned(),
         );
         namespaces.extend(self.users.keys().filter(|value| !value.is_empty()).cloned());
+        namespaces.extend(
+            self.token_roles
+                .keys()
+                .filter(|value| !value.is_empty())
+                .cloned(),
+        );
         namespaces.extend(self.roles.keys().filter(|value| !value.is_empty()).cloned());
         namespaces.extend(
             self.mounted_users
@@ -2163,6 +2175,10 @@ impl AuthState {
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
             && self
+                .token_roles
+                .get(namespace)
+                .is_none_or(|entries| entries.is_empty())
+            && self
                 .password_policies
                 .get(namespace)
                 .is_none_or(|entries| entries.is_empty())
@@ -2245,6 +2261,7 @@ impl AuthState {
             wrapping_clock: 0,
             tokens: BTreeMap::new(),
             policies: BTreeMap::new(),
+            token_roles: BTreeMap::new(),
             password_policies: BTreeMap::new(),
             users: BTreeMap::new(),
             roles: BTreeMap::new(),
@@ -2266,6 +2283,7 @@ impl AuthState {
         state.initialize_fresh_namespace_auth("")?;
         let token = Token {
             token_api_lease_ttl: None,
+            token_role: None,
             bound_cidrs: Vec::new(),
             wrapping: None,
             entity_id: None,
@@ -5185,6 +5203,7 @@ impl AuthState {
             } else {
                 let token = Token {
                     token_api_lease_ttl: None,
+                    token_role: None,
                     bound_cidrs: Vec::new(),
                     wrapping: None,
                     entity_id: None,
@@ -5735,6 +5754,9 @@ impl AuthState {
         let operation = path
             .strip_prefix("auth/token/")
             .ok_or_else(|| bad("invalid token path"))?;
+        if operation == "roles" || operation.starts_with("roles/") {
+            return self.token_role_route(principal, namespace, method, path, body, now);
+        }
         let allowed_method = match operation {
             "lookup-self" => matches!(method, "GET" | "POST"),
             "lookup" | "lookup-accessor" => matches!(method, "GET" | "POST"),
@@ -5759,6 +5781,9 @@ impl AuthState {
                 now,
                 operation == "create-orphan",
             ),
+            operation if operation.starts_with("create/") => {
+                self.create_token(actor, namespace, path, body, now, false)
+            }
             "lookup-self" => {
                 reject_unknown(body, &[])?;
                 let token = self.check_principal(actor, namespace, now)?;
@@ -6079,13 +6104,26 @@ impl AuthState {
                 "no_default_policy",
                 "display_name",
                 "type",
+                "entity_alias",
             ],
         )?;
-        let batch = match body.get("type") {
-            None | Some(Value::Null) => false,
-            Some(Value::String(value)) if value.is_empty() || value == "service" => false,
-            Some(Value::String(value)) if value == "batch" => true,
-            _ => return Err(bad("invalid token type")),
+        let requested_no_parent = token_policies::weak_boolean(body.get("no_parent"), "no_parent")?;
+        let requested_renewable = if body.get("renewable").is_some() {
+            token_policies::weak_boolean(body.get("renewable"), "renewable")?
+        } else {
+            true
+        };
+        let selected_role = self.selected_token_role(namespace, path)?;
+        let role = selected_role.as_ref().map(|(_, role)| role);
+        let batch = if let Some(role) = role {
+            role.batch(body)?
+        } else {
+            match body.get("type") {
+                None | Some(Value::Null) => false,
+                Some(Value::String(value)) if value.is_empty() || value == "service" => false,
+                Some(Value::String(value)) if value == "batch" => true,
+                _ => return Err(bad("invalid token type")),
+            }
         };
         actor.require_service("batch tokens cannot create more tokens")?;
         let parent = self
@@ -6099,14 +6137,40 @@ impl AuthState {
             || self
                 .authorize_request(actor, namespace, path, "sudo", now)
                 .is_ok();
-        let requested = token_policies::resolve(body, &parent, namespace, is_sudo)?;
+        if namespace != parent.namespace && !is_sudo {
+            return Err(bad(
+                "root or sudo privileges required to directly generate a token in a child namespace",
+            ));
+        }
+        let requested = token_policies::resolve(body, &parent, namespace, is_sudo, role)?;
         let root = requested.contains("root");
         if root && (requested.len() != 1 || !namespace.is_empty()) {
             return Err(bad("root policy must be exclusive and in root namespace"));
         }
-        let no_parent = force_orphan || boolean(body, "no_parent", false)?;
+        let no_parent = if let Some(role) = role {
+            role.orphan()
+        } else {
+            force_orphan || requested_no_parent
+        };
+        let entity_alias = if let Some(role) = role {
+            role.alias(body)?
+        } else {
+            if body
+                .get("entity_alias")
+                .is_some_and(|value| value.as_str().is_some_and(|value| !value.is_empty()))
+            {
+                return Err(bad(
+                    "'entity_alias' is only allowed in combination with token role",
+                ));
+            }
+            None
+        };
+        let issued_role = selected_role
+            .as_ref()
+            .map(|(name, role)| role.issued(name, path));
+        let creation_path = issued_role.as_ref().map_or(path, |role| role.path.as_str());
         let period = duration(body, "period", 0)?;
-        if (no_parent && (!batch || !force_orphan)) || period > 0 {
+        if (requested_no_parent && role.is_none()) || period > 0 {
             self.authorize_request(actor, namespace, path, "sudo", now)?;
         }
         if period > MAX_TTL {
@@ -6120,7 +6184,34 @@ impl AuthState {
         if explicit_max > MAX_TTL {
             return Err(bad("explicit maximum TTL exceeds service maximum"));
         }
-        let num_uses = number(body, "num_uses", 0)?;
+        let requested_uses = number(body, "num_uses", 0)?;
+        let num_uses = role.map_or(requested_uses, |role| role.uses(requested_uses));
+        let effective_period = if batch {
+            period
+        } else {
+            role.map_or(period, |role| {
+                token_roles::lesser_nonzero(period, role.period())
+            })
+        };
+        let effective_max = if batch {
+            explicit_max
+        } else {
+            role.map_or(explicit_max, |role| {
+                token_roles::lesser_nonzero(explicit_max, role.explicit_max())
+            })
+        };
+        let effective_max_expires_at = (effective_max > 0)
+            .then(|| checked_expiry(now, effective_max))
+            .transpose()?;
+        let mut role_warnings = Vec::new();
+        if let Some(role) = role {
+            if explicit_max > 0 && role.explicit_max() > 0 {
+                role_warnings.push(format!("Explicit max TTL specified both during creation call and in role; using the lesser value of {effective_max} seconds"));
+            }
+            if period > 0 && role.period() > 0 {
+                role_warnings.push(format!("Period specified both during creation call and in role; using the lesser value of {effective_period} seconds"));
+            }
+        }
         if batch && (explicit_max != 0 || period != 0 || num_uses != 0) {
             return Err(bad(
                 "batch tokens cannot have explicit_max_ttl, period, or num_uses",
@@ -6132,13 +6223,13 @@ impl AuthState {
         let max_expires_at = (explicit_max > 0)
             .then(|| checked_expiry(now, explicit_max))
             .transpose()?;
-        let expires_at = if root && period == 0 && requested_ttl == 0 {
+        let expires_at = if root && effective_period == 0 && requested_ttl == 0 {
             if parent.expires_at.is_some() && explicit_max == 0 {
                 return Err(bad(
                     "expiring root tokens cannot create non-expiring root tokens",
                 ));
             }
-            max_expires_at
+            effective_max_expires_at
         } else {
             Some(self.native_token_expiry(
                 AuthScope {
@@ -6148,10 +6239,10 @@ impl AuthState {
                 NativeTokenLimits {
                     ttl: requested_ttl,
                     max_ttl: 0,
-                    period,
+                    period: effective_period,
                 },
                 now,
-                max_expires_at,
+                effective_max_expires_at,
                 0,
                 now,
             )?)
@@ -6170,7 +6261,7 @@ impl AuthState {
         if display_name.len() > 128 {
             return Err(bad("display name too long"));
         }
-        let warnings: Vec<String> = requested
+        let mut warnings: Vec<String> = requested
             .iter()
             .filter(|name| {
                 name.as_str() != "root"
@@ -6187,14 +6278,18 @@ impl AuthState {
                 )
             })
             .collect();
+        role_warnings.append(&mut warnings);
+        let warnings = role_warnings;
         if batch {
             let claims = batch::BatchClaims {
                 namespace: namespace.into(),
                 policies: requested,
                 metadata: BTreeMap::new(),
                 display_name: display_name.into(),
-                path: path.into(),
-                bound_cidrs: if no_parent {
+                path: creation_path.into(),
+                bound_cidrs: if let Some(role) = role {
+                    role.bound_cidrs()
+                } else if no_parent {
                     Vec::new()
                 } else {
                     parent.bound_cidrs.clone()
@@ -6202,29 +6297,48 @@ impl AuthState {
                 issued_at: now,
                 expires_at: expires_at.ok_or_else(|| bad("batch token requires TTL"))?,
                 parent: (!no_parent).then(|| actor.digest.clone()),
-                entity_id: if no_parent {
+                entity_id: if no_parent || entity_alias.is_some() {
                     None
                 } else {
                     parent.entity_id.clone()
                 },
             };
             self.system_lease_defaults.get_or_insert(system_defaults);
-            let mut response = batch_issuance::PendingBatchGrant::response(claims, None);
+            let mut response = batch_issuance::PendingBatchGrant::response(
+                claims,
+                entity_alias.as_ref().map(|_| "token".into()),
+            );
             if !warnings.is_empty() {
                 response.body["warnings"] = json!(warnings);
+            }
+            if let Some(alias) = entity_alias {
+                response.login_identity = Some(LoginIdentity {
+                    mount: "token".into(),
+                    alias,
+                    metadata: None,
+                });
             }
             return Ok(response);
         }
         let mut response = self.issue(
             Token {
                 token_api_lease_ttl: expires_at.map(|expiry| expiry - now),
-                bound_cidrs: if no_parent || expires_at.is_none() {
+                token_role: issued_role,
+                bound_cidrs: if expires_at.is_none() {
+                    Vec::new()
+                } else if let Some(role) = role {
+                    role.bound_cidrs()
+                } else if no_parent {
                     Vec::new()
                 } else {
                     parent.bound_cidrs.clone()
                 },
                 wrapping: None,
-                entity_id: parent.entity_id.clone(),
+                entity_id: if no_parent || entity_alias.is_some() {
+                    None
+                } else {
+                    parent.entity_id.clone()
+                },
                 cubbyhole: cubbyhole::TokenCubbyhole::default(),
                 accessor: random_id("a.")?,
                 namespace: namespace.into(),
@@ -6239,10 +6353,14 @@ impl AuthState {
                 expires_at,
                 max_expires_at,
                 period,
-                renewable: boolean(body, "renewable", true)? && expires_at.is_some(),
-                uses_remaining: unlimited_zero(number(body, "num_uses", 0)?),
+                renewable: requested_renewable
+                    && role.is_none_or(|role| role.renewable())
+                    && expires_at.is_some(),
+                uses_remaining: unlimited_zero(num_uses),
                 display_name: display_name.into(),
-                auth_mount: if no_parent {
+                auth_mount: if entity_alias.is_some() {
+                    Some("token".into())
+                } else if no_parent {
                     None
                 } else {
                     parent.auth_mount.clone()
@@ -6261,6 +6379,13 @@ impl AuthState {
         self.system_lease_defaults.get_or_insert(system_defaults);
         if !warnings.is_empty() {
             response.body["warnings"] = json!(warnings);
+        }
+        if let Some(alias) = entity_alias {
+            response.login_identity = Some(LoginIdentity {
+                mount: "token".into(),
+                alias,
+                metadata: None,
+            });
         }
         Ok(response)
     }
@@ -7580,6 +7705,7 @@ fn login_token(
     }
     Ok(Token {
         token_api_lease_ttl: None,
+        token_role: None,
         bound_cidrs: Vec::new(),
         wrapping: None,
         entity_id: None,
@@ -7616,6 +7742,10 @@ fn token_info(token: &Token, now: u64) -> Value {
     }) = &token.auth_provenance
     {
         info["creation_ttl"] = json!(ttl);
+    }
+    if let Some(role) = &token.token_role {
+        info["role"] = json!(role.name);
+        info["path"] = json!(role.path);
     }
     if !token.bound_cidrs.is_empty() {
         info["bound_cidrs"] = json!(token.bound_cidrs);
