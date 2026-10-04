@@ -9,6 +9,10 @@ pub(super) struct OrdinaryKvAuthority {
     principal: Principal,
     namespace: String,
     namespace_incarnation: Option<u64>,
+    // Trusted ingress contract; HTTP and forwarded ingress require catalog
+    // membership. Historical native calls can own an uncataloged namespace,
+    // but still bind its actual Auth/Engine and the exact None/Some incarnation.
+    namespace_catalog_required: bool,
     mount_path: String,
     mount_incarnation: u64,
     mount_revision: u64,
@@ -50,6 +54,7 @@ impl OrdinaryKvAuthority {
             principal,
             namespace: request.namespace.to_owned(),
             namespace_incarnation: state.namespaces.incarnation(request.namespace),
+            namespace_catalog_required: request.enforce_namespace,
             mount_path: mount_path.to_owned(),
             mount_incarnation,
             mount_revision,
@@ -115,7 +120,7 @@ impl OrdinaryKvAuthority {
         if self.deadline_expired()
             || activation_nonce != self.activation_nonce
             || state.cluster_id != self.cluster_id
-            || !state.namespace_exists(&self.namespace)
+            || self.namespace_catalog_required && !state.namespace_exists(&self.namespace)
             || state.namespace_is_sealed(&self.namespace)
             || state.namespaces.incarnation(&self.namespace) != self.namespace_incarnation
             || state

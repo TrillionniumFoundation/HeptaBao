@@ -280,3 +280,123 @@ fn ordinary_kv_delivery_keeps_original_elapsed_expiry_deadline_and_mount_incarna
     }
     Ok(())
 }
+
+#[test]
+fn ordinary_kv_delivery_preserves_trusted_native_scope_without_bypassing_http_or_rebinding()
+-> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    fixture(&mut service, &root);
+    let namespace = "legacy-team";
+    for (method, path, body, expected) in [
+        (
+            "POST",
+            "sys/mounts/kv-late",
+            json!({"type":"kv","options":{"version":"1"}}),
+            204,
+        ),
+        (
+            "POST",
+            "kv-late/item",
+            json!({"synthetic":"private-legacy-KV"}),
+            204,
+        ),
+        (
+            "PUT",
+            "sys/policies/acl/legacy-reader",
+            json!({"policy":r#"path "kv-late/*" { capabilities=["read"] }"#}),
+            204,
+        ),
+    ] {
+        let response = service.handle_at(method, path, namespace, &root, body, 100);
+        assert_eq!(response.status, expected, "{path}: {}", response.body);
+    }
+    let issued = service.handle_at(
+        "POST",
+        "auth/token/create",
+        namespace,
+        &root,
+        json!({"policies":["legacy-reader"],"no_default_policy":true,"ttl":"10m"}),
+        100,
+    );
+    assert_eq!(issued.status, 200, "{}", issued.body);
+    let token = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("legacy scoped token")?
+        .to_owned();
+    let native = service.handle_at("GET", "kv-late/item", namespace, &token, json!({}), 100);
+    assert_eq!(native.status, 200, "{}", native.body);
+    assert_eq!(native.body["data"]["synthetic"], "private-legacy-KV");
+    assert_eq!(
+        service
+            .handle_at("GET", "kv-late/item", "", &token, json!({}), 100)
+            .status,
+        403,
+        "the actual namespace-scoped actor cannot read the root KV owner"
+    );
+    let http = service.begin_at_mode(RequestDispatch {
+        method: "GET",
+        path: "kv-late/item",
+        namespace,
+        token: &token,
+        body: json!({"enforce_namespace":false}),
+        now: 100,
+        allow_forward: true,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    });
+    let http = service.finish_synchronous_request(http);
+    assert_eq!(http.status, 404, "{}", http.body);
+    assert!(http.body.get("data").is_none());
+
+    let body = json!({});
+    let state = service.state.as_mut().ok_or("legacy state")?;
+    assert!(state.namespaces.incarnation(namespace).is_none());
+    let mut principal = state.auth.authenticate(&token, 100)?;
+    Service::bind_identity_principal(state, &mut principal, namespace)
+        .map_err(|response| format!("legacy identity admission {}", response.status))?;
+    let request = RequestView {
+        method: "GET",
+        path: "kv-late/item",
+        namespace,
+        token: &token,
+        body: &body,
+        now: 100,
+        admission_started: Instant::now(),
+        token_clock: None,
+        allow_forward: true,
+        enforce_namespace: false,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    };
+    let authority = OrdinaryKvAuthority::new(principal, state, &request, &service.unseal_nonce)
+        .map_err(|response| format!("legacy capsule admission {}", response.status))?;
+    let mut domain =
+        state
+            .engines
+            .handle_immutable_kv_read(namespace, "GET", "kv-late/item", &body, 100)?;
+    assert_eq!(domain.status, 200);
+    let response = Response {
+        consistency_index: None,
+        status: domain.status,
+        body: std::mem::take(&mut domain.body),
+    };
+    // A new real catalog incarnation must not adopt an earlier native delivery.
+    state.namespaces.create(
+        &state.cluster_id,
+        namespace,
+        std::collections::BTreeMap::new(),
+        false,
+    )?;
+    assert!(state.namespaces.incarnation(namespace).is_some());
+    let audited =
+        service.audit_completed_response("synthetic-legacy-delivery", 100, None, response);
+    let withheld = service.complete_ordinary_kv_delivery(authority, audited);
+    assert_eq!(withheld.status, 503);
+    assert!(withheld.body.get("data").is_none() && withheld.consistency_index.is_none());
+    Ok(())
+}

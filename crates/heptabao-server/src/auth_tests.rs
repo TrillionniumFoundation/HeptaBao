@@ -3592,12 +3592,9 @@ fn jwt_service_persists_tokens_and_allows_assertion_reuse_across_reopen() {
         .as_str()
         .unwrap()
         .to_owned();
-    assert_eq!(
-        service
-            .handle_at("GET", "secret/data/app", "team", &raw, json!({}), 1051)
-            .body["data"]["data"]["value"],
-        "synthetic-jwt-secret"
-    );
+    let read = service.handle_at("GET", "secret/data/app", "team", &raw, json!({}), 1051);
+    assert_eq!(read.status, 200, "{}", read.body);
+    assert_eq!(read.body["data"]["data"]["value"], "synthetic-jwt-secret");
     drop(service);
     let mut service = make_service();
     assert_eq!(
