@@ -4,7 +4,7 @@ Status: `V2.1 / RUNNABLE SINGLE-NODE CANDIDATE UNDER REVIEW`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
-This is the current entry point for all 46 workspace packages. It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
+This is the current entry point for all 47 workspace packages. It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
 
 ## Canonical current truth
 
@@ -22,7 +22,7 @@ The exact Git commit and tree outrank generated status prose.
 - `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md` — the current discriminator, legacy read admission, commit promotion and rollback boundaries.
 
 - `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md` — actual runtime dependency closure and internal state owners.
-- `docs/modules/CURRENT_RUNTIME_MAP.md` — all 46 packages mapped to runtime integration, routes and named source tests.
+- `docs/modules/CURRENT_RUNTIME_MAP.md` — all 47 packages mapped to runtime integration, routes and named source tests.
 
 The following retained increment/target documents describe their own historical or library scope:
 
@@ -41,7 +41,7 @@ Current source authority is the exact Git commit/tree exercised by CI. `planning
 Read `docs/modules/CURRENT_SOURCE_BINDING.md` before using inherited V1.4.7
 source tables; those tables are historical, not current API inventories.
 
-- `docs/modules/README.md` — complete index for all 46 workspace packages.
+- `docs/modules/README.md` — complete index for all 47 workspace packages.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md` — current semantic standard.
 - `planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml` and `docs/module-closure/` —
   one source-bound design, boundary, failure-semantics and acceptance dossier
@@ -254,7 +254,7 @@ The V1.4.6 authoritative recovery closure and V1.4.5 security invariant closure 
 - `docs/engines/HEPTABAO_SSH_OTP.md`: online OTP issuance/verification and scoped registered lease lifecycle.
 - `clients/python/README.md`: installable real HTTPS SDK and explicit private-output CLI.
 
-These extend the existing source owner without changing the 46 Cargo-package
+These extend the existing source owner without changing the 47 Cargo-package
 count. The fixed compatibility corpus remains separate from selected new official
 binary profiles. Source/test presence and local fixture execution do not establish
 full compatibility, multi-platform/host safety, independent acceptance or release.

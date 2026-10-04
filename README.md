@@ -14,7 +14,7 @@ gaps. Historical 2.6.2 inventories and receipts are not relabeled as current
 
 ## Current repository state
 
-The current workspace contains **46 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
+The current workspace contains **47 packages**. It includes the reviewed V2 control-plane contracts plus `heptabao-durable-service` and `heptabao-runtime-service`, which join authenticated authorization and accepted-before-entry audit to restart-safe Barrier-protected mutation, reconciliation and duplicate suppression.
 
 The `heptabao-server` binary adds bounded TLS, an AES-GCM encrypted durable state, persistent token/userpass/AppRole authentication, ACL and KV/Transit/TOTP engines. See `docs/modules/heptabao-server.md` and `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md` for exact scope and actual verification.
 
@@ -74,7 +74,7 @@ do not qualify the current denominator.
 
 Historical V1.x and V2.0 artifacts remain exact-source evidence but are not current state authority.
 
-Inherited repository gates remain visible: V1.4.6 authoritative recovery closure, V1.4.5 security invariant closure, and the V1.4.4 module-documentation baseline are historical, non-current baselines. Current Cargo workspace documentation: **46 / 46** existing crates. This candidate remains not production-deployable.
+Inherited repository gates remain visible: V1.4.6 authoritative recovery closure, V1.4.5 security invariant closure, and the V1.4.4 module-documentation baseline are historical, non-current baselines. Current Cargo workspace documentation: **47 / 47** existing crates. This candidate remains not production-deployable.
 
 ## Mandatory path
 

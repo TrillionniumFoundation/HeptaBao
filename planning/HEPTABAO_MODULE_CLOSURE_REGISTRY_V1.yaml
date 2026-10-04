@@ -214,6 +214,13 @@ modules:
   test_anchor: hierarchy_and_longest_prefix_resolution_are_deterministic
   test_anchor_path: crates/heptabao-namespace/src/lib.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
+- crate: heptabao-openbao-grpc
+  dossier: docs/module-closure/heptabao-openbao-grpc.md
+  guide: docs/modules/heptabao-openbao-grpc.md
+  source: crates/heptabao-openbao-grpc/src
+  test_anchor: timeout_fences_and_never_replays
+  test_anchor_path: crates/heptabao-openbao-grpc/src/tests.rs
+  state: IMPLEMENTED_REVIEW_REQUIRED
 - crate: heptabao-operation-ledger
   dossier: docs/module-closure/heptabao-operation-ledger.md
   guide: docs/modules/heptabao-operation-ledger.md

@@ -147,6 +147,12 @@ modules:
   documentation_standard: V3
   source: crates/heptabao-namespace/src/lib.rs
   guide: docs/modules/heptabao-namespace.md
+- crate: heptabao-openbao-grpc
+  domain: owned OpenBao Wrapper RPC and AutoMTLS transport
+  state: IMPLEMENTED_REVIEW_REQUIRED
+  documentation_standard: V3
+  source: crates/heptabao-openbao-grpc/src/lib.rs
+  guide: docs/modules/heptabao-openbao-grpc.md
 - crate: heptabao-operation-ledger
   domain: operation reconciliation ledger
   state: INHERITED_IMPLEMENTED

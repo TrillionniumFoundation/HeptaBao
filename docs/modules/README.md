@@ -1,8 +1,8 @@
 # HeptaBao module documentation index
 
-Current executable ownership and route/test mapping: `docs/modules/CURRENT_RUNTIME_MAP.md` and `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md`. Five packages are in the current server runtime dependency closure; the remaining guides describe separate models, contracts, prototypes and tools.
+Current executable ownership and route/test mapping: `docs/modules/CURRENT_RUNTIME_MAP.md` and `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md`. Ten packages are in the current server runtime dependency closure; the remaining guides describe separate models, contracts, prototypes and tools.
 
-Current status: `V2.1 / 46 WORKSPACE PACKAGES`
+Current status: `V2.1 / 47 WORKSPACE PACKAGES`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
@@ -44,6 +44,7 @@ Run `python scripts/validate_module_closure.py` to check the closed set.
 | `heptabao-migration` | migration writer authority | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-migration.md` |
 | `heptabao-mount-router` | namespace scoped mount routing | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-mount-router.md` |
 | `heptabao-namespace` | hierarchical namespace isolation | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-namespace.md` |
+| `heptabao-openbao-grpc` | owned OpenBao Wrapper RPC and AutoMTLS transport | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-openbao-grpc.md` |
 | `heptabao-operation-ledger` | operation reconciliation ledger | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-operation-ledger.md` |
 | `heptabao-operator-api` | operator outcome classification | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-operator-api.md` |
 | `heptabao-oracle-observer` | clean-room observation contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-oracle-observer.md` |

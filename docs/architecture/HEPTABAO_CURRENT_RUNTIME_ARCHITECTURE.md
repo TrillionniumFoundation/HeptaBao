@@ -1,6 +1,6 @@
 # Current runnable architecture and state ownership
 
-Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`. This source-level map is for the current runnable candidate. [The complete 46-package map](../modules/CURRENT_RUNTIME_MAP.md) distinguishes the actual server dependencies from separate contracts, prototypes and tools. See [current source binding](../modules/CURRENT_SOURCE_BINDING.md) for content digests and the historical snapshot boundary. No diagram confers qualification or compatibility authority.
+Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`. This source-level map is for the current runnable candidate. [The complete 47-package map](../modules/CURRENT_RUNTIME_MAP.md) distinguishes the actual server dependencies from separate contracts, prototypes and tools. See [current source binding](../modules/CURRENT_SOURCE_BINDING.md) for content digests and the historical snapshot boundary. No diagram confers qualification or compatibility authority.
 
 ## Actual workspace dependency graph
 
@@ -15,6 +15,8 @@ flowchart TD
     Server --> Domain["heptabao-domain"]
     Server --> Contracts["heptabao-plugin-contracts"]
     Server --> Plugin["heptabao-plugin-host"]
+    Server --> KMS["heptabao-kms-contracts"]
+    Server --> Wrapper["heptabao-openbao-grpc"]
     Plugin --> Durable
     Plugin --> Contracts
     Plugin --> Domain
@@ -22,6 +24,8 @@ flowchart TD
 ```
 
 `ha-service` provides the concrete mutually authenticated peer transport and certificate binding consumed by the server. Its generic `HaService` facade is a separate model. `raft-runtime::ProcessRaftNode` provides one voter per process; `RaftRuntime` also retains a three-voter in-process test facade. Compiling those packages does not mean a single-node server automatically runs HA: operators must explicitly supply HA configuration and admit the cluster/key identity.
+
+`openbao-grpc` supplies the Wrapper session and AutoMTLS transport. The Linux server adapter owns the admitted executable/configuration descriptors, short private socket directory and provider child through terminal exit; the server barrier owner binds encrypted state and recovery publication. This is a concrete Wrapper consumer, with broader backend/provider compatibility still requiring actual acceptance evidence.
 
 ## Actual server modules and request ownership
 
