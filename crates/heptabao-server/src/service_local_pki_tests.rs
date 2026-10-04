@@ -443,9 +443,10 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
         "retired restore downgrade denied"
     );
     let mut future = retired.clone();
-    future.schema = 73;
+    future.schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
     assert!(
-        future.writer_schema() == 73 && future.validate_format().is_err(),
+        future.writer_schema() == MAX_SUPPORTED_STATE_SCHEMA + 1
+            && future.validate_format().is_err(),
         "unknown future schema is not normalized"
     );
     drop(service);
