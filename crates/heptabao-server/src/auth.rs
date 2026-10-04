@@ -62,6 +62,8 @@ mod acl;
 mod acl_template;
 #[path = "auth_acl_wrapping.rs"]
 mod acl_wrapping;
+#[path = "auth_default_policy.rs"]
+mod default_policy;
 pub(crate) use acl_template::parse_selector as parse_identity_selector;
 pub(crate) use acl_template::{IdentitySelector, IdentityTemplateValues, TemplateField};
 #[path = "auth_approle_renewal.rs"]
@@ -2567,8 +2569,6 @@ impl AuthState {
         if !matches!(method, "GET" | "HEAD" | "POST" | "PUT" | "PATCH") {
             return Ok(());
         }
-        let empty_parameters = acl::ParameterMap::new();
-        let empty_required = BTreeSet::new();
         let mut decision = acl::Decision::default();
         for policy_name in token.policies().iter().chain(&principal.identity_policies) {
             if let Some(policy) = self
@@ -2591,12 +2591,17 @@ impl AuthState {
                     );
                 }
             } else if policy_name == "default" {
-                for (pattern, _) in acl::DEFAULT_RULES {
+                for rule in &default_policy::compiled()?.rules {
+                    let Some(rendered) =
+                        acl_template::render(&rule.path, &principal.identity_templates)?
+                    else {
+                        continue;
+                    };
                     decision.consider_parameters(
-                        pattern,
-                        &empty_parameters,
-                        &empty_parameters,
-                        &empty_required,
+                        &rendered,
+                        &rule.allowed_parameters,
+                        &rule.denied_parameters,
+                        &rule.required_parameters,
                         path,
                     );
                 }
@@ -2638,8 +2643,17 @@ impl AuthState {
                     );
                 }
             } else if policy_name == "default" {
-                for (pattern, capabilities) in acl::DEFAULT_RULES {
-                    decision.consider(pattern, capabilities.iter().copied(), path, capability);
+                for rule in &default_policy::compiled()?.rules {
+                    let Some(rendered) = acl_template::render(&rule.path, identity_templates)?
+                    else {
+                        continue;
+                    };
+                    decision.consider(
+                        &rendered,
+                        rule.capabilities.iter().map(String::as_str),
+                        path,
+                        capability,
+                    );
                 }
             }
         }
@@ -7893,17 +7907,7 @@ fn token_info(token: &Token, now: u64) -> Value {
 }
 
 fn default_policy_source() -> String {
-    acl::DEFAULT_RULES
-        .iter()
-        .map(|(path, caps)| {
-            let caps = caps
-                .iter()
-                .map(|cap| format!("\"{cap}\""))
-                .collect::<Vec<_>>()
-                .join(", ");
-            format!("path \"{path}\" {{ capabilities = [{caps}] }}\n")
-        })
-        .collect()
+    default_policy::SOURCE.to_owned()
 }
 
 fn path_matches(pattern: &str, path: &str) -> bool {

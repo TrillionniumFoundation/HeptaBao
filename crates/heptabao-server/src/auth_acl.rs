@@ -8,20 +8,6 @@ use std::{
     collections::{BTreeMap, BTreeSet},
 };
 
-pub(super) const DEFAULT_RULES: &[(&str, &[&str])] = &[
-    ("auth/token/lookup-self", &["read"]),
-    ("sys/capabilities-self", &["update"]),
-    ("auth/token/renew-self", &["update"]),
-    ("auth/token/revoke-self", &["update"]),
-    ("sys/wrapping/wrap", &["update"]),
-    ("sys/wrapping/unwrap", &["update"]),
-    ("sys/wrapping/lookup", &["update", "read"]),
-    (
-        "cubbyhole/*",
-        &["create", "read", "update", "delete", "list"],
-    ),
-];
-
 fn priority(left: &str, right: &str) -> Ordering {
     let first_wildcard = |path: &str| path.find(['+', '*']).unwrap_or(path.len());
     first_wildcard(left)
