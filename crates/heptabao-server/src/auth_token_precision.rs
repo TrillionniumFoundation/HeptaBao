@@ -76,6 +76,18 @@ impl Timestamp {
     pub(crate) fn duration_since_epoch(self) -> Duration {
         Duration::new(self.seconds, self.nanoseconds)
     }
+    pub(crate) fn rfc3339(self) -> String {
+        let whole = crate::engines::timestamp(self.seconds);
+        if self.nanoseconds == 0 {
+            return whole;
+        }
+        let fraction = format!("{:09}", self.nanoseconds);
+        format!(
+            "{}.{}Z",
+            whole.trim_end_matches('Z'),
+            fraction.trim_end_matches('0')
+        )
+    }
     pub(crate) fn truncate_seconds(self) -> Self {
         Self {
             seconds: self.seconds,

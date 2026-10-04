@@ -2776,8 +2776,19 @@ impl AuthState {
         cap: &str,
         now: u64,
     ) -> Result<&'principal Principal, AuthError> {
+        self.permission_observed(principal, namespace, path, cap, AuthorityTime::Coarse(now))
+    }
+
+    fn permission_observed<'principal>(
+        &self,
+        principal: Option<&'principal Principal>,
+        namespace: &str,
+        path: &str,
+        cap: &str,
+        time: AuthorityTime,
+    ) -> Result<&'principal Principal, AuthError> {
         let principal = principal.ok_or_else(denied)?;
-        self.authorize_request(principal, namespace, path, cap, now)?;
+        self.authorize_request_observed(principal, namespace, path, cap, time)?;
         Ok(principal)
     }
 
@@ -3592,6 +3603,31 @@ impl AuthState {
         peer_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Option<AuthResponse>, AuthError> {
+        self.handle_with_connection_observed(
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            AuthorityTime::Coarse(now),
+            peer_certificates,
+            origin_peer,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn handle_with_connection_observed(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        time: AuthorityTime,
+        peer_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+    ) -> Result<Option<AuthResponse>, AuthError> {
+        let now = time.seconds();
         validate_namespace(namespace)?;
         validate_path(path, false)?;
         if path.starts_with("sys/wrapping/") {
@@ -3621,13 +3657,13 @@ impl AuthState {
                 .ok_or_else(|| err(404, "auth mount not found"))?;
             let scope = AuthScope { namespace, mount };
             let result = match entry.kind.as_str() {
-                "token" if mount == "token" => self.token_route(
+                "token" if mount == "token" => self.token_route_observed(
                     principal,
                     namespace,
                     method,
                     path,
                     body,
-                    now,
+                    time,
                     peer_certificates,
                 ),
                 "userpass" if suffix.starts_with("login/") => {
@@ -5863,6 +5899,7 @@ impl AuthState {
     }
 
     #[allow(clippy::too_many_arguments)]
+    #[cfg(test)]
     fn token_route(
         &mut self,
         principal: Option<&Principal>,
@@ -5873,11 +5910,34 @@ impl AuthState {
         now: u64,
         peer_certificates: Option<&[Vec<u8>]>,
     ) -> Result<AuthResponse, AuthError> {
+        self.token_route_observed(
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            AuthorityTime::Coarse(now),
+            peer_certificates,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn token_route_observed(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        time: AuthorityTime,
+        peer_certificates: Option<&[Vec<u8>]>,
+    ) -> Result<AuthResponse, AuthError> {
+        let now = time.seconds();
         let operation = path
             .strip_prefix("auth/token/")
             .ok_or_else(|| bad("invalid token path"))?;
         if operation == "roles" || operation.starts_with("roles/") {
-            return self.token_role_route(principal, namespace, method, path, body, now);
+            return self.token_role_route_observed(principal, namespace, method, path, body, time);
         }
         let allowed_method = match operation {
             "lookup-self" => matches!(method, "GET" | "POST"),
@@ -5893,7 +5953,7 @@ impl AuthState {
             "accessors" => "list",
             _ => "update",
         };
-        let actor = self.permission(principal, namespace, path, capability, now)?;
+        let actor = self.permission_observed(principal, namespace, path, capability, time)?;
         match operation {
             "create" | "create-orphan" => self.create_token(
                 actor,
@@ -5908,8 +5968,8 @@ impl AuthState {
             }
             "lookup-self" => {
                 reject_unknown(body, &[])?;
-                let token = self.check_principal(actor, namespace, now)?;
-                Ok(response(token.info(now), false))
+                let token = self.check_principal_observed(actor, namespace, time)?;
+                Ok(response(token.info_observed(time)?, false))
             }
             "lookup" | "lookup-accessor" => {
                 reject_unknown(
@@ -5925,12 +5985,12 @@ impl AuthState {
                         .get("token")
                         .is_none_or(|value| value.is_null() || value.as_str() == Some(""))
                 {
-                    let token = self.check_principal(actor, namespace, now)?;
-                    return Ok(response(token.info(now), false));
+                    let token = self.check_principal_observed(actor, namespace, time)?;
+                    return Ok(response(token.info_observed(time)?, false));
                 }
                 if operation == "lookup" {
                     let target = self
-                        .inspect_raw_target(string_field(body, "token")?, namespace, now)
+                        .inspect_raw_target_observed(string_field(body, "token")?, namespace, time)
                         .map_err(|error| {
                             if error.status == 403 {
                                 err(403, "bad token")
@@ -5938,30 +5998,37 @@ impl AuthState {
                                 error
                             }
                         })?;
-                    return Ok(response(target.view(self, now)?.info(now), false));
+                    return Ok(response(
+                        target.view_observed(self, time)?.info_observed(time)?,
+                        false,
+                    ));
                 }
-                let id = self.target_token(namespace, body, true, now)?;
-                let token = self.active_token(&id, now, true)?;
-                Ok(response(token_info(token, now), false))
+                let id = self.target_token_observed(namespace, body, true, time)?;
+                let token = self.active_token_observed(&id, time, true)?;
+                Ok(response(token_info_observed(token, time)?, false))
             }
             "accessors" => {
-                self.authorize_request(actor, namespace, path, "sudo", now)?;
+                self.authorize_request_observed(actor, namespace, path, "sudo", time)?;
                 let keys: Vec<&str> = self
                     .tokens
                     .values()
-                    .filter(|t| t.namespace == namespace && !t.expires_at.is_some_and(|e| e <= now))
+                    .filter(|t| {
+                        t.namespace == namespace
+                            && time.service_live(t.token_api_precision.as_ref(), t.expires_at)
+                    })
                     .map(|t| t.accessor.as_str())
                     .collect();
                 Ok(response(json!({"keys": keys}), false))
             }
             "tidy" => {
                 reject_unknown(body, &[])?;
-                self.authorize_request(actor, namespace, path, "sudo", now)?;
+                self.authorize_request_observed(actor, namespace, path, "sudo", time)?;
                 let stale: Vec<String> = self
                     .tokens
                     .iter()
                     .filter(|(id, token)| {
-                        token.namespace == namespace && self.active_token(id, now, true).is_err()
+                        token.namespace == namespace
+                            && self.active_token_observed(id, time, true).is_err()
                     })
                     .map(|(id, _)| id.clone())
                     .collect();
@@ -5987,13 +6054,13 @@ impl AuthState {
                     return Err(bad("missing token"));
                 }
                 if self
-                    .authorize_request(actor, namespace, path, "sudo", now)
+                    .authorize_request_observed(actor, namespace, path, "sudo", time)
                     .is_err()
                 {
                     return Err(bad("root or sudo privileges required to revoke and orphan"));
                 }
                 let target = self
-                    .inspect_raw_target(raw, namespace, now)
+                    .inspect_raw_target_observed(raw, namespace, time)
                     .map_err(|error| {
                         if error.status == 403 {
                             bad("token to revoke not found")
@@ -6023,12 +6090,16 @@ impl AuthState {
                 if operation == "revoke" {
                     let raw = string_field(body, "token")?;
                     if raw.starts_with("hvb.") {
-                        self.inspect_raw_target(raw, namespace, now)?;
+                        self.inspect_raw_target_observed(raw, namespace, time)?;
                         return Err(bad("batch tokens cannot be revoked"));
                     }
                 }
-                let id =
-                    self.target_token(namespace, body, operation.ends_with("accessor"), now)?;
+                let id = self.target_token_observed(
+                    namespace,
+                    body,
+                    operation.ends_with("accessor"),
+                    time,
+                )?;
                 self.revoke(&id);
                 Ok(empty(true))
             }
@@ -6046,9 +6117,29 @@ impl AuthState {
                             &["accessor", "increment"]
                         },
                     )?;
-                    self.target_token(namespace, body, operation.ends_with("accessor"), now)?
+                    self.target_token_observed(
+                        namespace,
+                        body,
+                        operation.ends_with("accessor"),
+                        time,
+                    )?
                 };
-                self.active_token(&id, now, false)?;
+                // Target classification runs only after the actor's path ACL.
+                // An owned precise deadline is never classified from its ceil
+                // projection; absent, revoked, foreign and ancestor-only failures
+                // keep the closed target resolution behavior.
+                if self.tokens.get(&id).is_some_and(|token| {
+                    token.namespace == namespace
+                        && match token.token_api_precision.as_ref() {
+                            Some(lease) => time
+                                .exact()
+                                .is_some_and(|now| lease.expires_at.is_some_and(|end| end < now)),
+                            None => token.expires_at.is_some_and(|end| end <= time.seconds()),
+                        }
+                }) {
+                    return Err(bad("token not found"));
+                }
+                self.active_token_observed(&id, time, false)?;
                 self.require_offline_renewal_origin(&id)?;
                 if let Some(response) =
                     self.renew_userpass_token(namespace, &id, operation, body, now)?
@@ -6124,6 +6215,16 @@ impl AuthState {
         accessor: bool,
         now: u64,
     ) -> Result<String, AuthError> {
+        self.target_token_observed(namespace, body, accessor, AuthorityTime::Coarse(now))
+    }
+
+    fn target_token_observed(
+        &self,
+        namespace: &str,
+        body: &Value,
+        accessor: bool,
+        time: AuthorityTime,
+    ) -> Result<String, AuthError> {
         let id = if accessor {
             let wanted = string_field(body, "accessor")?;
             if wanted.is_empty() {
@@ -6137,7 +6238,7 @@ impl AuthState {
         } else {
             let raw = string_field(body, "token")?;
             if raw.starts_with("hvb.") {
-                self.inspect_raw_target(raw, namespace, now)?;
+                self.inspect_raw_target_observed(raw, namespace, time)?;
                 return Err(bad("batch tokens cannot be renewed"));
             }
             hash(raw)
@@ -7893,6 +7994,33 @@ fn login_token(
         auth_provenance: None,
     })
 }
+fn token_info_observed(token: &Token, time: AuthorityTime) -> Result<Value, AuthError> {
+    let mut info = token_info(token, time.seconds());
+    if let Some(lease) = &token.token_api_precision {
+        let now = time.exact().ok_or_else(denied)?;
+        info["issue_time"] = json!(lease.issued_at.rfc3339());
+        info["ttl"] = json!(
+            lease
+                .expires_at
+                .map(|end| end.lookup_remaining_seconds(now))
+                .transpose()
+                .map_err(|_| denied())?
+                .unwrap_or(0)
+        );
+        info["expire_time"] = json!(lease.expires_at.map(Timestamp::rfc3339));
+        info["creation_ttl"] = json!(lease.creation_grant.public_seconds());
+        info["explicit_max_ttl"] = json!(lease.requested_explicit_max.public_seconds());
+        if !lease.requested_period.is_zero() {
+            info["period"] = json!(lease.requested_period.public_seconds());
+        }
+        if let Some(last) = lease.last_renewed_at {
+            info["last_renewal"] = json!(last.seconds());
+            info["last_renewal_time"] = json!(last.rfc3339());
+        }
+    }
+    Ok(info)
+}
+
 fn token_info(token: &Token, now: u64) -> Value {
     let mut info = json!({"accessor": token.accessor, "policies": token.policies, "display_name": token.display_name,
         "creation_time": token.created_at, "ttl": token.expires_at.map(|t| t.saturating_sub(now)).unwrap_or(0),

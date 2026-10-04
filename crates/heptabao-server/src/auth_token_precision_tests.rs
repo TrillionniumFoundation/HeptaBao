@@ -250,3 +250,142 @@ fn precise_batch_and_persisted_owner_are_authenticated_with_whole_creation_ancho
     assert!(serde_json::from_value::<LeaseOwner>(bad).is_err());
     Ok(())
 }
+
+#[test]
+fn precise_token_routes_preserve_public_fraction_and_recheck_target_deadline() -> TestResult {
+    let (mut state, root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw);
+    let before = AuthorityTime::Precise(timestamp(100, 600_000_000));
+    let after = AuthorityTime::Precise(timestamp(100, 800_000_000));
+    let actor = state.authenticate_from_observed(&raw, before, None)?;
+    let lookup = state.token_route_observed(
+        Some(&actor),
+        "",
+        "GET",
+        "auth/token/lookup-self",
+        &json!({}),
+        before,
+        None,
+    )?;
+    assert_eq!(lookup.body["data"]["issue_time"], "1970-01-01T00:01:40.2Z");
+    assert_eq!(lookup.body["data"]["expire_time"], "1970-01-01T00:01:40.7Z");
+    assert_eq!(lookup.body["data"]["creation_ttl"], 0);
+    assert_eq!(lookup.body["data"]["ttl"], 0);
+    assert!(
+        state
+            .token_route_observed(
+                Some(&actor),
+                "",
+                "GET",
+                "auth/token/lookup-self",
+                &json!({}),
+                after,
+                None
+            )
+            .is_err()
+    );
+    let body = json!({"token":raw});
+    assert!(
+        state
+            .token_route_observed(
+                Some(&root),
+                "",
+                "POST",
+                "auth/token/lookup",
+                &body,
+                before,
+                None
+            )
+            .is_ok()
+    );
+    let expired = state
+        .token_route_observed(
+            Some(&root),
+            "",
+            "POST",
+            "auth/token/renew",
+            &body,
+            after,
+            None,
+        )
+        .err()
+        .ok_or("expired renewed")?;
+    assert_eq!(
+        (expired.status, expired.message.as_str()),
+        (400, "token not found")
+    );
+    let absent = state
+        .token_route_observed(
+            Some(&root),
+            "",
+            "POST",
+            "auth/token/renew",
+            &json!({"token":"hvs.unknown"}),
+            after,
+            None,
+        )
+        .err()
+        .ok_or("unknown renewed")?;
+    assert_eq!(absent.status, 403);
+    let accessor = state.tokens[&hash(&raw)].accessor.clone();
+    let by_accessor = state.token_route_observed(
+        Some(&root),
+        "",
+        "POST",
+        "auth/token/lookup-accessor",
+        &json!({"accessor":accessor}),
+        before,
+        None,
+    )?;
+    assert_eq!(
+        by_accessor.body["data"]["expire_time"],
+        "1970-01-01T00:01:40.7Z"
+    );
+    assert!(
+        state
+            .token_route(
+                Some(&root),
+                "",
+                "POST",
+                "auth/token/lookup",
+                &body,
+                100,
+                None
+            )
+            .is_err()
+    );
+    Ok(())
+}
+#[test]
+fn precise_public_clock_serializes_checked_fraction_without_changing_authority() -> TestResult {
+    assert_eq!(timestamp(0, 1).rfc3339(), "1970-01-01T00:00:00.000000001Z");
+    assert_eq!(timestamp(0, 0).rfc3339(), "1970-01-01T00:00:00Z");
+    assert_eq!(
+        timestamp(MAX_SECONDS, 999_999_999).rfc3339(),
+        "9999-12-31T23:59:59.999999999Z"
+    );
+    let (mut state, root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw);
+    let token = state.tokens.get_mut(&hash(&raw)).ok_or("token absent")?;
+    let lease = token
+        .token_api_precision
+        .as_mut()
+        .ok_or("precision absent")?;
+    lease.last_renewed_at = Some(timestamp(100, 300_000_000));
+    lease.expires_at = Some(timestamp(100, 800_000_000));
+    state.validate_system_lease_defaults()?;
+    let lookup = super::super::token_info_observed(
+        &state.tokens[&hash(&raw)],
+        AuthorityTime::Precise(timestamp(100, 600_000_000)),
+    )?;
+    assert_eq!(lookup["last_renewal"], 100);
+    assert_eq!(lookup["last_renewal_time"], "1970-01-01T00:01:40.3Z");
+    assert_eq!(lookup["expire_time"], "1970-01-01T00:01:40.8Z");
+    assert!(
+        super::super::token_info_observed(&state.tokens[&hash(&raw)], AuthorityTime::Coarse(100))
+            .is_err()
+    );
+    Ok(())
+}

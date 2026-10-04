@@ -555,14 +555,14 @@ impl AuthState {
             .map(|role| Some((name.into(), role)))
             .ok_or_else(|| bad(&format!("unknown role {name}")))
     }
-    pub(super) fn token_role_route(
+    pub(super) fn token_role_route_observed(
         &mut self,
         principal: Option<&Principal>,
         namespace: &str,
         method: &str,
         path: &str,
         body: &Value,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<AuthResponse, AuthError> {
         let name = path
             .strip_prefix("auth/token/roles")
@@ -570,7 +570,7 @@ impl AuthState {
             .strip_prefix('/')
             .unwrap_or("");
         let capability = route_capability(method, name.is_empty())?;
-        self.permission(principal, namespace, path, capability, now)?;
+        self.permission_observed(principal, namespace, path, capability, time)?;
         if name.is_empty() {
             if capability != "list" {
                 return Err(bad("role name cannot be empty"));

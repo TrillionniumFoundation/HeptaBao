@@ -696,6 +696,7 @@ impl Service {
                 &step.body,
                 None,
                 request.now,
+                request.token_clock,
                 request.client_certificates,
                 request.origin_peer,
                 &mut approle_secret_consumption,

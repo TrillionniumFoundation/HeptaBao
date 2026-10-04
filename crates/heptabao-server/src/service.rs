@@ -2883,6 +2883,7 @@ impl Service {
                 body,
                 token_fields.as_ref(),
                 now,
+                request.token_clock,
                 client_certificates,
                 origin_peer,
                 &mut approle_secret_consumption,
@@ -3149,6 +3150,7 @@ impl Service {
         body: &Value,
         token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
         now: u64,
+        token_clock: Option<RequestClock>,
         client_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
         approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
@@ -3162,6 +3164,7 @@ impl Service {
             body,
             token_fields,
             now,
+            token_clock,
             client_certificates,
             origin_peer,
             approle_secret_consumption,
@@ -3183,6 +3186,7 @@ impl Service {
         body: &Value,
         token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
         now: u64,
+        token_clock: Option<RequestClock>,
         client_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
         approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
@@ -3204,14 +3208,24 @@ impl Service {
             Err(error) => return Response::error(error.status, &error.message),
             Ok(None) => {}
         }
+        let time = match token_clock {
+            Some(clock) => match clock
+                .with_seconds_floor(now)
+                .and_then(RequestClock::observed_at)
+            {
+                Ok(at) => AuthorityTime::Precise(at),
+                Err(_) => return Response::error(503, "trusted token clock is unavailable"),
+            },
+            None => AuthorityTime::Coarse(now),
+        };
         if let Some(principal) = principal
-            && let Err(error) = state.auth.authorize_request_parameters(
+            && let Err(error) = state.auth.authorize_request_parameters_observed(
                 principal,
                 namespace,
                 kv_authorization_method(method, body),
                 path,
                 body,
-                now,
+                time,
             )
         {
             return Response::error(error.status, &error.message);
@@ -3316,13 +3330,13 @@ impl Service {
         let token_backend_body = token_fields.map(|carrier| carrier.backend_body());
         let auth_body = token_backend_body.as_ref().map_or(body, |body| &body.0);
         let mut auth = state.auth.clone();
-        match auth.handle_with_connection(
+        match auth.handle_with_connection_observed(
             principal,
             namespace,
             method,
             path,
             auth_body,
-            now,
+            time,
             client_certificates,
             origin_peer,
         ) {

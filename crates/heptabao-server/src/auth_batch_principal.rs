@@ -63,9 +63,10 @@ impl<'a> CheckedCredential<'a> {
     pub(super) fn is_wrapping(&self) -> bool {
         matches!(self, Self::Service(token) if token.wrapping.is_some())
     }
-    pub(super) fn info(&self, now: u64) -> Value {
+    pub(super) fn info_observed(&self, time: AuthorityTime) -> Result<Value, AuthError> {
+        let now = time.seconds();
         match self {
-            Self::Service(token) => token_info(token, now),
+            Self::Service(token) => token_info_observed(token, time),
             Self::Batch(claims) => {
                 let mut info = json!({
                     "accessor":"", "policies":claims.policies(),
@@ -85,7 +86,23 @@ impl<'a> CheckedCredential<'a> {
                 if !claims.bound_cidrs().is_empty() {
                     info["bound_cidrs"] = json!(claims.bound_cidrs());
                 }
-                info
+                if let Some(lease) = claims.precision() {
+                    let now = time.exact().ok_or_else(denied)?;
+                    info["ttl"] = json!(
+                        lease
+                            .expires_at
+                            .lookup_remaining_seconds(now)
+                            .map_err(|_| denied())?
+                    );
+                    info["expire_time"] = json!(lease.expires_at.rfc3339());
+                    info["issue_time"] = json!(
+                        Timestamp::whole(claims.issued_at())
+                            .map_err(|_| denied())?
+                            .rfc3339()
+                    );
+                    info["creation_ttl"] = json!(lease.granted_ttl.public_seconds());
+                }
+                Ok(info)
             }
         }
     }
@@ -108,12 +125,20 @@ impl InspectionCredential {
         auth: &'a AuthState,
         now: u64,
     ) -> Result<CheckedCredential<'a>, AuthError> {
+        self.view_observed(auth, AuthorityTime::Coarse(now))
+    }
+
+    pub(super) fn view_observed<'a>(
+        &'a self,
+        auth: &'a AuthState,
+        time: AuthorityTime,
+    ) -> Result<CheckedCredential<'a>, AuthError> {
         match self {
             Self::Service(digest) => auth
-                .active_token(digest, now, true)
+                .active_token_observed(digest, time, true)
                 .map(CheckedCredential::Service),
             Self::Batch(claims) => {
-                auth.check_batch_claims(claims, claims.namespace(), now)?;
+                auth.check_batch_claims_observed(claims, claims.namespace(), time)?;
                 Ok(CheckedCredential::Batch(claims))
             }
         }
@@ -262,6 +287,15 @@ impl AuthState {
         namespace: &str,
         now: u64,
     ) -> Result<InspectionCredential, AuthError> {
+        self.inspect_raw_target_observed(raw, namespace, AuthorityTime::Coarse(now))
+    }
+
+    pub(super) fn inspect_raw_target_observed(
+        &self,
+        raw: &str,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<InspectionCredential, AuthError> {
         validate_namespace(namespace)?;
         if raw.starts_with("hvb.") {
             if raw.len() > batch::MAX_BATCH_TOKEN_BYTES {
@@ -271,9 +305,9 @@ impl AuthState {
                 .batch_authority
                 .as_ref()
                 .ok_or_else(denied)?
-                .open(raw, namespace, now)
+                .open_authenticated_observed(raw, time)
                 .map_err(|_| denied())?;
-            self.check_batch_claims(&claims, namespace, now)?;
+            self.check_batch_claims_observed(&claims, namespace, time)?;
             // An administrator inspecting a target is not using its bearer as
             // the request actor. Target CIDRs must not be tested against their IP.
             return Ok(InspectionCredential::Batch(Box::new(claims)));
@@ -282,7 +316,7 @@ impl AuthState {
             return Err(denied());
         }
         let digest = hash(raw);
-        let token = self.active_token(&digest, now, true)?;
+        let token = self.active_token_observed(&digest, time, true)?;
         if token.namespace != namespace {
             return Err(denied());
         }
