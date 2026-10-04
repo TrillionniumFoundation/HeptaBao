@@ -386,12 +386,15 @@ fn ordinary_kv_delivery_preserves_trusted_native_scope_without_bypassing_http_or
         body: std::mem::take(&mut domain.body),
     };
     // A new real catalog incarnation must not adopt an earlier native delivery.
-    state.namespaces.create(
-        &state.cluster_id,
-        namespace,
-        std::collections::BTreeMap::new(),
-        false,
-    )?;
+    assert!(
+        state
+            .namespaces
+            .adopt_legacy(&state.cluster_id, [namespace.to_owned()].into())
+            .map_err(|response| format!("checked namespace adoption {}", response.status))?
+    );
+    state
+        .validate_format()
+        .map_err(|response| format!("adopted namespace state {}", response.status))?;
     assert!(state.namespaces.incarnation(namespace).is_some());
     let audited =
         service.audit_completed_response("synthetic-legacy-delivery", 100, None, response);
