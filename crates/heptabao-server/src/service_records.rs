@@ -1124,11 +1124,11 @@ mod tests {
             service.durable.as_ref().ok_or("durable")?.generation(),
             count
         );
-        let state = service.state.as_ref().ok_or("state")?;
+        let mut state = service.state.clone().ok_or("state")?;
         assert!(state.engines.record_objects()?.is_empty());
         assert!(
             service
-                .prepare_record_plan(state)
+                .prepare_record_plan(&mut state)
                 .map_err(|_| "delta")?
                 .objects
                 .is_empty()

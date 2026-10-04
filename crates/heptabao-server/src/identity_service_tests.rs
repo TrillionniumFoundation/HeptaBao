@@ -692,6 +692,8 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
     auth.remove_name_modes_for_legacy_format_test();
     auth.omit_lease_metadata_for_legacy_fixture();
     let state = State {
+        namespace_protected: None,
+        namespace_leases: namespace_runtime::Leases::default(),
         schema: 1,
         cluster_id: "legacy-synthetic".into(),
         replay_epoch: 0,
@@ -773,6 +775,8 @@ fn identity_schema_fences_persisted_radius_state_for_old_readers() -> TestResult
     )?;
     assert_eq!(configured.ok_or("missing config response")?.status, 204);
     let mut state = State {
+        namespace_protected: None,
+        namespace_leases: namespace_runtime::Leases::default(),
         schema: CURRENT_STATE_SCHEMA,
         cluster_id: "radius-schema-test".into(),
         replay_epoch: 0,
@@ -979,6 +983,8 @@ fn metadata_cas_schema_rejects_downgrade_from_version_or_requirement() -> TestRe
             .handle("", "POST", path, &body, 100)?
             .ok_or("missing engine response")?;
         let mut state = State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: 15,
             cluster_id: "metadata-cas-schema".into(),
             replay_epoch: 0,
