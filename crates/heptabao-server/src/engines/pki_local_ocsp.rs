@@ -677,7 +677,7 @@ mod tests {
             }
             fields.push(octet_string(b"opaque extension is not signed or echoed"));
             let extension = context_explicit(2, &seq(&[seq(&fields)]));
-            let variant = seq(&[seq(&[seq(&[single.clone()]), extension])]);
+            let variant = seq(&[seq(&[seq(std::slice::from_ref(&single)), extension])]);
             let response = pki.local_ocsp(
                 false,
                 None,
@@ -696,7 +696,7 @@ mod tests {
         for variant in [
             seq(&[seq(&[
                 context_explicit(0, &integer(&[0])),
-                seq(&[single.clone()]),
+                seq(std::slice::from_ref(&single)),
             ])]),
             seq(&[seq(&[seq(&[single.clone(), single.clone()])])]),
         ] {
@@ -718,7 +718,7 @@ mod tests {
         for variant in [
             seq(&[seq(&[
                 context_explicit(1, &der(0x86, b"https://example.test")),
-                seq(&[single.clone()]),
+                seq(std::slice::from_ref(&single)),
             ])]),
             seq(&[
                 seq(&[seq(&[single])]),

@@ -16,6 +16,7 @@ pub(super) struct GetCarrier {
     original_path: String,
 }
 const GET_PATH_MARKER: &str = "__heptabao_pki_ocsp_get_path";
+const QUERY_MARKER: &str = "__heptabao_kv_read_query";
 
 fn ordinary_path(path: &str) -> bool {
     !path.is_empty()
@@ -85,7 +86,13 @@ pub(crate) fn get_request<'a>(
 impl GetRequest<'_> {
     // No actual PKI responder owns this path. Rebuild exactly the ordinary
     // GET's query-only body and selectors; the private carrier is never data.
-    pub(crate) fn ordinary(&self) -> Result<(&'static str, CarrierBody), Response> {
+    pub(crate) fn ordinary(
+        &self,
+        actual_kv: bool,
+    ) -> Result<(&'static str, CarrierBody), Response> {
+        if actual_kv {
+            return kv_query("GET", self.query);
+        }
         let mut body = CarrierBody(json!({}));
         merge_query_fields("GET", self.path, self.query, &mut body.0)
             .map_err(|error| Response::error(error.status, error.message))?;
@@ -113,6 +120,145 @@ impl GetRequest<'_> {
     }
 }
 
+fn query_candidate(method: &str, path: &str, query: &str) -> bool {
+    matches!(method, "GET" | "LIST" | "SCAN")
+        && !query.is_empty()
+        && !path.starts_with("sys/")
+        && !path.starts_with("auth/")
+        && !path.contains("//")
+        && ordinary_path(path.trim_end_matches('/'))
+}
+pub(super) fn query_carrier_body(method: &str, path: &str, query: &str) -> Option<Value> {
+    query_candidate(method, path, query)
+        .then(|| json!({QUERY_MARKER:{"path":path,"query":query,"wire_method":method}}))
+}
+
+pub(crate) struct QueryRequest<'a> {
+    path: &'a str,
+    query: &'a str,
+    wire_method: &'a str,
+}
+
+pub(crate) fn query_request<'a>(
+    method: &str,
+    path: &'a str,
+    body: &'a Value,
+) -> Option<QueryRequest<'a>> {
+    let object = body.as_object()?;
+    if object.len() != 1 {
+        return None;
+    }
+    let carrier = object.get(QUERY_MARKER)?.as_object()?;
+    if carrier.len() != 3 || carrier.get("path")?.as_str()? != path {
+        return None;
+    }
+    let query = carrier.get("query")?.as_str()?;
+    let wire_method = carrier.get("wire_method")?.as_str()?;
+    if query.len() > MAX_HEADERS || !query_candidate(wire_method, path, query) {
+        return None;
+    }
+    let selected = if wire_method == "GET" {
+        get_query_method(query).ok()?
+    } else {
+        wire_method
+    };
+    (selected == method).then_some(QueryRequest {
+        path,
+        query,
+        wire_method,
+    })
+}
+
+impl QueryRequest<'_> {
+    pub(crate) fn resolve(&self, actual_kv: bool) -> Result<(&str, CarrierBody), Response> {
+        if actual_kv {
+            return kv_query(self.wire_method, self.query);
+        }
+        let mut body = CarrierBody(json!({}));
+        merge_query_fields(self.wire_method, self.path, self.query, &mut body.0)
+            .map_err(|error| Response::error(error.status, error.message))?;
+        if self.wire_method == "GET" {
+            let method = get_query_method(self.query)
+                .map_err(|error| Response::error(error.status, error.message))?;
+            if method == "LIST" {
+                body.0
+                    .as_object_mut()
+                    .ok_or_else(|| Response::error(400, "JSON object required"))?
+                    .remove("list");
+            }
+            if method == "SCAN" {
+                body.0
+                    .as_object_mut()
+                    .ok_or_else(|| Response::error(400, "JSON object required"))?
+                    .remove("scan");
+            }
+            return Ok((method, body));
+        }
+        Ok((self.wire_method, body))
+    }
+}
+
+// Go URL.Query discards a malformed field, accepts a bare key, and retains
+// duplicate values in order. Query bytes never become a namespace or token.
+fn decode_url_query(value: &str) -> Option<String> {
+    let mut decoded = Zeroizing::new(Vec::with_capacity(value.len()));
+    let mut bytes = value.bytes();
+    while let Some(byte) = bytes.next() {
+        decoded.push(match byte {
+            b'+' => b' ',
+            b'%' => {
+                let a = char::from(bytes.next()?).to_digit(16)?;
+                let b = char::from(bytes.next()?).to_digit(16)?;
+                u8::try_from(a * 16 + b).ok()?
+            }
+            _ => byte,
+        });
+    }
+    Some(String::from_utf8_lossy(&decoded).into_owned())
+}
+
+fn url_query(query: &str) -> BTreeMap<String, Vec<String>> {
+    let mut values: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    for field in query
+        .split('&')
+        .filter(|field| !field.is_empty() && !field.contains(';'))
+    {
+        let (key, value) = field.split_once('=').unwrap_or((field, ""));
+        if let Some((key, value)) = decode_url_query(key).zip(decode_url_query(value)) {
+            values.entry(key).or_default().push(value);
+        }
+    }
+    values
+}
+
+fn kv_query<'a>(wire_method: &'a str, query: &str) -> Result<(&'a str, CarrierBody), Response> {
+    let mut values = url_query(query);
+    let method = if wire_method == "GET" {
+        get_query_method(query).map_err(|error| Response::error(error.status, error.message))?
+    } else {
+        wire_method
+    };
+    if wire_method == "GET" && method == "LIST" {
+        values.remove("list");
+    }
+    if wire_method == "GET" && method == "SCAN" {
+        values.remove("scan");
+    }
+    let object = values
+        .into_iter()
+        .filter(|(key, _)| key != "help")
+        .map(|(key, mut values)| {
+            let value = if values.len() == 1 {
+                Value::String(values.remove(0))
+            } else {
+                json!(values)
+            };
+            (key, value)
+        })
+        .collect();
+    Ok((method, CarrierBody(Value::Object(object))))
+}
+
 // The pinned outer GET operation reads the first valid URL.Query list/scan
 // value. Other query fields never replace the path-captured OCSP request.
 // Go URL.Query discards fields containing bad escapes or raw semicolons.
@@ -121,14 +267,16 @@ pub(super) fn get_query_method(query: &str) -> Result<&'static str, ParseError> 
     let mut scan = None;
     for field in query.split('&').filter(|field| !field.contains(';')) {
         let (key, value) = field.split_once('=').unwrap_or((field, ""));
-        let Ok(key) = decode_query(key) else { continue };
+        let Some(key) = decode_url_query(key) else {
+            continue;
+        };
         let target = match key.as_str() {
             "list" => &mut list,
             "scan" => &mut scan,
             _ => continue,
         };
         if target.is_none()
-            && let Ok(value) = decode_query(value)
+            && let Some(value) = decode_url_query(value)
         {
             *target = Some(value);
         }
@@ -430,6 +578,20 @@ impl RawPost<'_> {
     }
 }
 
+// Both audit events retain the same admitted fingerprint. Bind original
+// request-local query bytes before routing; never log or persist those bytes.
+pub(crate) fn audit_query<'a>(
+    method: &str,
+    path: &'a str,
+    body: &'a Value,
+) -> Option<(&'a str, &'a str, &'a str)> {
+    if let Some(carrier) = get_request(method, path, body) {
+        return Some(("GET", carrier.path, carrier.query));
+    }
+    query_request(method, path, body)
+        .map(|carrier| (carrier.wire_method, carrier.path, carrier.query))
+}
+
 pub(crate) fn audit_payload<'a>(
     method: &'a str,
     path: &'a str,
@@ -437,6 +599,9 @@ pub(crate) fn audit_payload<'a>(
 ) -> Option<&'a str> {
     if opaque_get_request(method, path, body) {
         return body.get(GET_PATH_MARKER)?.get("path")?.as_str();
+    }
+    if let Some(carrier) = query_request(method, path, body) {
+        return Some(carrier.path);
     }
     if let Some(carrier) = raw_post_request(method, path, body) {
         return Some(carrier.encoded);

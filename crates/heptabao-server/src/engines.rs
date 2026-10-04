@@ -1496,6 +1496,24 @@ impl EngineState {
             .is_some_and(|(_, relative)| relative == "ocsp")
     }
 
+    pub(crate) fn is_actual_kv_query_owner(&self, namespace: &str, path: &str) -> bool {
+        self.namespaces
+            .get(namespace)
+            .and_then(|state| {
+                state
+                    .mounts
+                    .iter()
+                    .filter(|(mount, _)| path.starts_with(mount.as_str()))
+                    .max_by_key(|(mount, _)| mount.len())
+            })
+            .is_some_and(|(_, mount)| {
+                matches!(
+                    mount.backend,
+                    Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
+                )
+            })
+    }
+
     pub(crate) fn is_public_pki_read(&self, namespace: &str, method: &str, path: &str) -> bool {
         self.public_pki_mount(namespace, path)
             .is_some_and(|(engine, relative)| engine.public_read_route(method, relative).is_some())

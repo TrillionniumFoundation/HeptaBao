@@ -1398,13 +1398,22 @@ fn read_request_mode(
         );
     }
     let invalid_query = |message| bad(message).with_health_context(&method, path);
-    if ocsp_get.is_none() && !ocsp::post_route(&method, route) {
+    let private_query = if ocsp_get.is_none() {
+        ocsp::query_carrier_body(&method, path, query)
+    } else {
+        None
+    };
+    let has_private_query = private_query.is_some();
+    if let Some(carrier) = private_query {
+        crate::service::erase_json(&mut body.0);
+        body.0 = carrier;
+    } else if ocsp_get.is_none() && !ocsp::post_route(&method, route) {
         merge_query_fields(&method, path, query, &mut body.0)?;
     }
     let Some(object) = body.0.as_object_mut() else {
         return Err(bad("JSON object required"));
     };
-    let method = if ocsp_get.is_some() {
+    let method = if ocsp_get.is_some() || (has_private_query && method == "GET") {
         ocsp::get_query_method(query)?.to_owned()
     } else if method == "GET" {
         let list = object.get("list") == Some(&Value::Bool(true));
@@ -2054,7 +2063,12 @@ mod tests {
         let r = read_request(&mut text.as_bytes(), Duration::from_secs(1))
             .map_err(|e| e.message.to_owned())?;
         assert_eq!(r.path, "secret/data/a");
-        assert_eq!(r.body.0, json!({"version":2}));
+        let carrier =
+            ocsp::query_request(&r.method, &r.path, &r.body.0).ok_or("private query carrier")?;
+        let (method, strict) = carrier.resolve(false).map_err(|_| "strict owner query")?;
+        assert_eq!(method, "GET");
+        assert_eq!(strict.0, json!({"version":2}));
+        assert_eq!(r.body.0["__heptabao_kv_read_query"]["query"], "version=2");
         Ok(())
     }
 
@@ -2083,7 +2097,12 @@ mod tests {
             );
         }
         let request = "GET /v1/secret/data/a?token=synthetic HTTP/1.1\r\nHost: localhost\r\n\r\n";
-        assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+        let parsed = read_request(&mut request.as_bytes(), Duration::from_secs(1));
+        assert!(parsed.is_ok_and(|request| {
+            request.token.is_empty()
+                && ocsp::query_request(&request.method, &request.path, &request.body.0)
+                    .is_some_and(|carrier| carrier.resolve(false).is_err())
+        }));
     }
 
     #[test]
@@ -2689,8 +2708,15 @@ mod wrapping_header_tests {
                 "{method} /v1/secret/metadata/a?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n"
             );
             assert!(
-                read_request(&mut request.as_bytes(), Duration::from_secs(1))
-                    .is_ok_and(|r| r.body.0[key].is_boolean())
+                read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_ok_and(|r| {
+                    if let Some(carrier) = ocsp::query_request(&r.method, &r.path, &r.body.0) {
+                        carrier
+                            .resolve(false)
+                            .is_ok_and(|(_, body)| body.0[key].is_boolean())
+                    } else {
+                        r.body.0[key].is_boolean()
+                    }
+                })
             );
         }
     }
@@ -2718,14 +2744,23 @@ mod wrapping_header_tests {
             let request =
                 format!("LIST /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
             assert!(
-                read_request(&mut request.as_bytes(), Duration::from_secs(1))
-                    .is_ok_and(|r| r.body.0 == expected)
+                read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_ok_and(|r| {
+                    ocsp::query_request(&r.method, &r.path, &r.body.0).is_some_and(|carrier| {
+                        carrier
+                            .resolve(false)
+                            .is_ok_and(|(_, body)| body.0 == expected)
+                    })
+                })
             );
         }
         for query in ["version=-1", "depth=-1"] {
             let request =
                 format!("LIST /v1/secret/metadata/?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
-            assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| ocsp::query_request(&r.method, &r.path, &r.body.0)
+                        .is_some_and(|carrier| carrier.resolve(false).is_err()))
+            );
         }
     }
 
@@ -2814,7 +2849,6 @@ mod wrapping_header_tests {
         for wire in [
             "POST /v1/sys/health?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n",
             "GET /v1/sys/healthy?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n",
-            "GET /v1/secret/data/private?activecode=99 HTTP/1.1\r\nHost: localhost\r\n\r\n",
             "GET /v1/secret/data/private HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-TTL: invalid\r\n\r\n",
             "GET /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nX-Vault-Wrap-Format: jwt\r\n\r\n",
             "GET /v1/sys/health HTTP/1.1\r\nHost: localhost\r\nX-Vault-Index: malformed\r\n\r\n",

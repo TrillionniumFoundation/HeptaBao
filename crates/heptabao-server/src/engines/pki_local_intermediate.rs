@@ -998,7 +998,7 @@ impl Pki {
                     .any(|(id, key)| Some(id.as_str()) != current && key.key_name == name)
             }))
         {
-            return Err(bad("PKI key name already exists"));
+            return Err(bad("key name already in use"));
         }
         Ok(())
     }
@@ -1407,7 +1407,7 @@ impl Pki {
                 .as_ref()
                 .is_some_and(|s| s.pending.values().any(|k| k.key_name == name))
         {
-            return Err(bad("PKI key name already exists"));
+            return Err(bad("key name already in use"));
         }
         let material = LocalPrivateMaterial::generate(LocalKeyKind::from_body(body)?)?;
         let csr = csr_der(&material, &fields, common_name)?;

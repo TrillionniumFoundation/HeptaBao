@@ -1838,6 +1838,18 @@ impl Service {
             context.update(payload.as_bytes());
             fingerprint = STANDARD.encode(context.sign().as_ref());
         }
+        if let Some((wire_method, original_path, query)) =
+            crate::http::ocsp::audit_query(method, path, &body)
+        {
+            let mut context = hmac::Context::with_key(&self.audit_key);
+            context.update(b"heptabao.audit.read-query.v1");
+            context.update(fingerprint.as_bytes());
+            for field in [wire_method, original_path, query] {
+                context.update(&(field.len() as u64).to_le_bytes());
+                context.update(field.as_bytes());
+            }
+            fingerprint = STANDARD.encode(context.sign().as_ref());
+        }
         if let Some(ttl) = wrap_ttl_seconds {
             let mut context = hmac::Context::with_key(&self.audit_key);
             context.update(b"heptabao.audit.wrapping-request.v1");
@@ -2283,7 +2295,11 @@ impl Service {
                 let Some(carrier) = crate::http::ocsp::get_request(method, path, body) else {
                     return Response::error(400, "invalid request-local GET carrier");
                 };
-                ordinary_get = Some(match carrier.ordinary() {
+                let actual_kv = self
+                    .state
+                    .as_ref()
+                    .is_some_and(|state| state.engines.is_actual_kv_query_owner(namespace, path));
+                ordinary_get = Some(match carrier.ordinary(actual_kv) {
                     Ok(request) => request,
                     Err(response) => return response,
                 });
@@ -2291,6 +2307,23 @@ impl Service {
             } else {
                 return Response::error(404, "OCSP mount not found");
             }
+        } else if let Some(carrier) = crate::http::ocsp::query_request(method, path, body) {
+            let actual_kv = self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.engines.is_actual_kv_query_owner(namespace, path));
+            ordinary_get = Some(match carrier.resolve(actual_kv) {
+                Ok((method, body)) => (
+                    match method {
+                        "LIST" => "LIST",
+                        "SCAN" => "SCAN",
+                        _ => "GET",
+                    },
+                    body,
+                ),
+                Err(response) => return response,
+            });
+            None
         } else {
             None
         };

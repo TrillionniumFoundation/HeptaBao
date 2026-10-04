@@ -310,19 +310,17 @@ fn ocsp_http_actual_mount_raw_media_control_fallback_and_disabled_priority() -> 
         assert_eq!(response.body["data"], sentinel);
     }
     for query in ["foo=bar", "limit=2&limit=3", "limit=%GG"] {
-        assert_eq!(
-            wire(
-                &mut service,
-                "GET",
-                &format!("secret/ocsp/plainkey?{query}"),
-                "",
-                &root,
-                None,
-                &[]
-            )?
-            .status,
-            400
-        );
+        let read = wire(
+            &mut service,
+            "GET",
+            &format!("secret/ocsp/plainkey?{query}"),
+            "",
+            &root,
+            None,
+            &[],
+        )?;
+        assert_eq!(read.status, 200);
+        assert_eq!(read.body["data"], sentinel);
     }
     assert_eq!(
         wire(
@@ -742,5 +740,370 @@ fn ocsp_http_actual_mount_raw_media_control_fallback_and_disabled_priority() -> 
     let audit = std::fs::read_to_string(directory.0.join("audit.jsonl"))?;
     assert!(!audit.contains(&base64::engine::general_purpose::STANDARD.encode(&request)));
     assert!(!audit.contains(&root));
+    Ok(())
+}
+
+#[test]
+fn ordinary_kv_query_uses_actual_owner_go_values_and_keeps_authentication() -> TestResult {
+    let directory = Directory(std::env::temp_dir().join(format!(
+        "heptabao-kv-query-{}-{}",
+        std::process::id(),
+        u64::from_le_bytes(crypto::random::<8>()?)
+    )));
+    std::fs::create_dir(&directory.0)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&directory.0, std::fs::Permissions::from_mode(0o700))?;
+    }
+    let mut service = Service::new(directory.0.join("data"), &directory.0.join("audit.jsonl"))?;
+    let initialized = admin(
+        &mut service,
+        "",
+        "sys/init",
+        json!({"secret_shares":1,"secret_threshold":1}),
+    )?;
+    assert_eq!(initialized.status, 200);
+    let root = text(&initialized.body, "/root_token")?;
+    let key = text(&initialized.body, "/keys_base64/0")?;
+    assert_eq!(
+        admin(&mut service, "", "sys/unseal", json!({"key":key}))?.status,
+        200
+    );
+    for (mount, version) in [("kv-one", "1"), ("kv-two", "2")] {
+        assert_eq!(
+            admin(
+                &mut service,
+                &root,
+                &format!("sys/mounts/{mount}"),
+                json!({"type":"kv","options":{"version":version}})
+            )?
+            .status,
+            204
+        );
+    }
+    let sentinel = json!({"ordinary":"preserve","__heptabao_pki_ocsp_request":"AA==",
+        "__heptabao_kv_read_query":{"path":"kv-one/ocsp/plainkey","query":"token=forged","wire_method":"GET"}});
+    for path in ["ocsp/plainkey", "plainkey", "ocsp/branch/child"] {
+        assert_eq!(
+            admin(
+                &mut service,
+                &root,
+                &format!("kv-one/{path}"),
+                sentinel.clone()
+            )?
+            .status,
+            204
+        );
+        for value in ["one", "two"] {
+            assert_eq!(
+                admin(
+                    &mut service,
+                    &root,
+                    &format!("kv-two/data/{path}"),
+                    json!({"data":{"value":value}})
+                )?
+                .status,
+                200
+            );
+        }
+    }
+    for (query, expected_v2, selected) in [
+        ("foo=bar", 200, 2),
+        ("bare", 200, 2),
+        ("=value", 200, 2),
+        ("help=anything", 200, 2),
+        ("foo=%00", 200, 2),
+        ("foo=%FF", 200, 2),
+        ("foo=a;b", 200, 2),
+        ("version=1&foo=%GG", 200, 1),
+        ("f%GGoo=x", 200, 2),
+        ("foo=%GG", 200, 2),
+        ("foo=a&foo=b", 200, 2),
+        ("limit=2&limit=3", 200, 2),
+        ("version=1&version=2", 400, 0),
+        ("version=1", 200, 1),
+        ("version=2", 200, 2),
+        ("version=0", 200, 2),
+        ("version=", 200, 2),
+        ("version=-1", 200, 2),
+        ("version=0x1", 200, 1),
+        ("version=%2B1", 200, 1),
+        ("version=%201%20", 400, 0),
+        ("depth=bad", 200, 2),
+        ("list=false", 200, 2),
+        ("list=false&list=true", 200, 2),
+        ("__heptabao_pki_ocsp_get_path=other", 200, 2),
+    ] {
+        for stem in ["ocsp/plainkey", "plainkey"] {
+            let one = wire(
+                &mut service,
+                "GET",
+                &format!("kv-one/{stem}?{query}"),
+                "",
+                &root,
+                Some("text/plain"),
+                b"ignored GET body",
+            )?;
+            assert_eq!(one.status, 200, "v1 {query}");
+            assert_eq!(one.body["data"], sentinel);
+            let two = wire(
+                &mut service,
+                "GET",
+                &format!("kv-two/data/{stem}?{query}"),
+                "",
+                &root,
+                None,
+                &[],
+            )?;
+            assert_eq!(two.status, expected_v2, "v2 {query}");
+            if expected_v2 == 200 {
+                assert_eq!(two.body["data"]["metadata"]["version"], selected);
+            }
+        }
+    }
+    for (query, two_status) in [
+        ("list=true&foo=bar", 200),
+        ("list=true&foo=%GG", 200),
+        ("list=true&limit=1&limit=2", 400),
+        ("list=true&list=false", 200),
+        ("list=%GG&list=true", 200),
+        ("scan=true&foo=bar", 200),
+    ] {
+        for (mount, status) in [("kv-one", 200), ("kv-two/metadata", two_status)] {
+            let response = wire(
+                &mut service,
+                "GET",
+                &format!("{mount}/ocsp/branch?{query}"),
+                "",
+                &root,
+                None,
+                &[],
+            )?;
+            assert_eq!(response.status, status, "{mount} {query}");
+            if status == 200 {
+                assert_eq!(response.body["data"]["keys"], json!(["child"]));
+            }
+        }
+    }
+    for method in ["LIST", "SCAN"] {
+        for mount in ["kv-one", "kv-two/metadata"] {
+            let response = wire(
+                &mut service,
+                method,
+                &format!("{mount}/ocsp/branch?foo=bar"),
+                "",
+                &root,
+                None,
+                &[],
+            )?;
+            assert_eq!(response.status, 200);
+            assert_eq!(response.body["data"]["keys"], json!(["child"]));
+        }
+    }
+    for query in ["list=invalid", "list=true&scan=true"] {
+        assert_eq!(
+            wire(
+                &mut service,
+                "GET",
+                &format!("kv-one/ocsp/plainkey?{query}"),
+                "",
+                &root,
+                None,
+                &[]
+            )?
+            .status,
+            400
+        );
+    }
+    assert_eq!(
+        admin(
+            &mut service,
+            &root,
+            "sys/policies/acl/query-no-kv",
+            json!({"policy":"path \"auth/token/lookup-self\" { capabilities = [\"read\"] }"})
+        )?
+        .status,
+        204
+    );
+    let denied = admin(
+        &mut service,
+        &root,
+        "auth/token/create",
+        json!({"policies":["query-no-kv"],"no_default_policy":true}),
+    )?;
+    assert_eq!(denied.status, 200);
+    let denied_token = text(&denied.body, "/auth/client_token")?;
+    for token in ["", denied_token.as_str()] {
+        for path in ["kv-one/ocsp/plainkey", "kv-two/data/ocsp/plainkey"] {
+            assert_eq!(
+                wire(
+                    &mut service,
+                    "GET",
+                    &format!("{path}?token=forged&foo=%GG"),
+                    "",
+                    token,
+                    None,
+                    &[]
+                )?
+                .status,
+                403
+            );
+        }
+    }
+
+    // Authentication/ACL see original Go string/array values before backend
+    // declared version/limit coercion, including malformed typed values.
+    for token in ["", denied_token.as_str()] {
+        for path in [
+            "kv-two/data/ocsp/plainkey?version=bad",
+            "kv-two/data/ocsp/plainkey?version=1&version=2",
+            "kv-two/metadata/ocsp/branch?list=true&limit=1&limit=2",
+        ] {
+            assert_eq!(
+                wire(&mut service, "GET", path, "", token, None, &[])?.status,
+                403
+            );
+        }
+    }
+    for (label, rule, statuses) in [
+        (
+            "allowed-string",
+            "allowed_parameters = { \"version\" = [\"1\"] }",
+            [200, 403, 403, 403, 403],
+        ),
+        (
+            "denied-string",
+            "denied_parameters = { \"version\" = [\"1\"] }",
+            [403, 200, 400, 400, 400],
+        ),
+        (
+            "allowed-number",
+            "allowed_parameters = { \"version\" = [1] }",
+            [403, 403, 403, 403, 403],
+        ),
+    ] {
+        let name = format!("query-{label}");
+        let policy =
+            format!("path \"kv-two/data/ocsp/plainkey\" {{ capabilities = [\"read\"] {rule} }}");
+        assert_eq!(
+            admin(
+                &mut service,
+                &root,
+                &format!("sys/policies/acl/{name}"),
+                json!({"policy":policy})
+            )?
+            .status,
+            204
+        );
+        let created = admin(
+            &mut service,
+            &root,
+            "auth/token/create",
+            json!({"policies":[name],"no_default_policy":true}),
+        )?;
+        assert_eq!(created.status, 200);
+        let token = text(&created.body, "/auth/client_token")?;
+        for (query, status) in [
+            "version=1",
+            "version=2",
+            "version=bad",
+            "version=1&version=2",
+            "version=1&version=1",
+        ]
+        .into_iter()
+        .zip(statuses)
+        {
+            assert_eq!(
+                wire(
+                    &mut service,
+                    "GET",
+                    &format!("kv-two/data/ocsp/plainkey?{query}"),
+                    "",
+                    &token,
+                    None,
+                    &[]
+                )?
+                .status,
+                status,
+                "{label} {query}"
+            );
+        }
+    }
+    let before = std::fs::read_to_string(directory.0.join("audit.jsonl"))?;
+    for query in ["version=1", "version=2"] {
+        assert_eq!(
+            wire(
+                &mut service,
+                "GET",
+                &format!("kv-one/plainkey?{query}"),
+                "",
+                &root,
+                None,
+                &[]
+            )?
+            .status,
+            200
+        );
+    }
+    let after = std::fs::read_to_string(directory.0.join("audit.jsonl"))?;
+    let records = after[before.len()..]
+        .lines()
+        .map(serde_json::from_str::<Value>)
+        .collect::<Result<Vec<_>, _>>()?;
+    let records: Vec<_> = records
+        .into_iter()
+        .filter(|record| {
+            matches!(
+                record["event"]["kind"].as_str(),
+                Some("request" | "response")
+            )
+        })
+        .collect();
+    assert_eq!(records.len(), 4);
+    assert_eq!(
+        records[0]["event"]["path_digest"],
+        records[1]["event"]["path_digest"]
+    );
+    assert_eq!(
+        records[2]["event"]["path_digest"],
+        records[3]["event"]["path_digest"]
+    );
+    assert_ne!(
+        records[0]["event"]["path_digest"],
+        records[2]["event"]["path_digest"]
+    );
+    assert!(
+        !after.contains("version=1")
+            && !after.contains("version=2")
+            && !after.contains("__heptabao_kv_read_query")
+    );
+    for path in [
+        "sys/mounts/kv-one/tune?foo=bar",
+        "auth/token/lookup-self?foo=bar",
+        "missing/path?foo=bar",
+    ] {
+        assert_eq!(
+            wire(&mut service, "GET", path, "", &root, None, &[])?.status,
+            400
+        );
+    }
+    assert_eq!(
+        admin(&mut service, &root, "sys/seal", json!({}))?.status,
+        204
+    );
+    assert_eq!(
+        wire(
+            &mut service,
+            "GET",
+            "kv-one/ocsp/plainkey?foo=bar",
+            "",
+            &root,
+            None,
+            &[]
+        )?
+        .status,
+        503
+    );
     Ok(())
 }

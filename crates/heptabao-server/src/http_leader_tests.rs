@@ -224,7 +224,7 @@ fn leader_http_ignores_only_semantic_headers_and_consumes_the_bounded_body()
 #[test]
 fn dedicated_leader_parsing_does_not_relax_other_api_routes() {
     for wire in [
-        "GET /v1/secret/data/a?unknown=value HTTP/1.1\r\nHost: local\r\n\r\n",
+        "GET /v1/auth/token/lookup-self?unknown=value HTTP/1.1\r\nHost: local\r\n\r\n",
         "GET /v1/sys/leader/?unknown=value HTTP/1.1\r\nHost: local\r\n\r\n",
         "GET /v1/sys/leader-other?bare HTTP/1.1\r\nHost: local\r\n\r\n",
         "GET /v1/secret/data/a HTTP/1.1\r\nHost: local\r\nX-Vault-Synthetic: x\r\n\r\n",
@@ -235,4 +235,15 @@ fn dedicated_leader_parsing_does_not_relax_other_api_routes() {
     ] {
         assert!(read_request_mode(&mut wire.as_bytes(), Duration::from_secs(1), true).is_err());
     }
+    let wire = "GET /v1/secret/data/a?unknown=value HTTP/1.1\r\nHost: local\r\n\r\n";
+    assert!(
+        read_request_mode(&mut wire.as_bytes(), Duration::from_secs(1), true).is_ok_and(
+            |request| crate::http::ocsp::query_request(
+                &request.method,
+                &request.path,
+                &request.body.0
+            )
+            .is_some_and(|carrier| carrier.resolve(false).is_err())
+        )
+    );
 }
