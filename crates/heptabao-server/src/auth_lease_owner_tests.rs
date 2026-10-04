@@ -7,6 +7,8 @@ type TestResult = Result<(), Box<dyn std::error::Error>>;
 
 fn claims() -> BatchClaims {
     BatchClaims {
+        token_role: None,
+        token_api_policy_names: false,
         namespace: "team".into(),
         policies: BTreeSet::from(["default".into()]),
         metadata: BTreeMap::from([("username".into(), "private-user".into())]),

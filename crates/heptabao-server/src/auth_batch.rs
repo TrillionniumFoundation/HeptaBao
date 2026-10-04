@@ -182,6 +182,12 @@ impl TryFrom<StoredAuthority> for BatchKeyAuthority {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct BatchClaims {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) token_role: Option<super::token_roles::IssuedRole>,
+    /// Issuer-owned Token API grammar marker, authenticated in the sealed claim.
+    /// Historical native login claims omit this field and retain strict names.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub(crate) token_api_policy_names: bool,
     pub(crate) namespace: String,
     pub(crate) policies: BTreeSet<String>,
     pub(crate) metadata: BTreeMap<String, String>,
@@ -237,6 +243,9 @@ impl VerifiedBatchClaims {
     }
     pub(crate) fn path(&self) -> &str {
         &self.claims.path
+    }
+    pub(crate) fn token_role(&self) -> Option<&super::token_roles::IssuedRole> {
+        self.claims.token_role.as_ref()
     }
     pub(crate) fn bound_cidrs(&self) -> &[String] {
         &self.claims.bound_cidrs
@@ -312,10 +321,31 @@ impl BatchClaims {
             || self.path.len() > 2048
             || self.path.chars().any(char::is_control)
             || self.policies.len() > 128
-            || self
-                .policies
-                .iter()
-                .any(|p| !super::valid_name(p) || p == "root")
+            || self.policies.iter().any(|p| {
+                let valid = if self.token_api_policy_names || self.token_role.is_some() {
+                    super::token_policies::valid_api_policy_name(p)
+                } else {
+                    super::valid_name(p)
+                };
+                !valid || p == "root"
+            })
+        {
+            return Err(BatchError::InvalidClaims);
+        }
+        if self.token_api_policy_names
+            && self.token_role.is_none()
+            && !matches!(
+                self.path.as_str(),
+                "auth/token/create" | "auth/token/create-orphan"
+            )
+        {
+            return Err(BatchError::InvalidClaims);
+        }
+        if self
+            .token_role
+            .as_ref()
+            .is_some_and(|role| !role.valid_path() || role.path != self.path)
+            || (self.path.starts_with("auth/token/create/") && self.token_role.is_none())
         {
             return Err(BatchError::InvalidClaims);
         }

@@ -244,7 +244,7 @@ fn token_roles_delegate_policy_and_orphans_with_actual_route_acl_only() -> TestR
         .err()
         .ok_or("ordinary no_parent lost sudo")?
         .status,
-        403
+        400
     );
     assert_eq!(serde_json::to_vec(&state)?, before);
     assert_eq!(
@@ -260,7 +260,7 @@ fn token_roles_delegate_policy_and_orphans_with_actual_route_acl_only() -> TestR
         .err()
         .ok_or("explicit no_parent lost sudo on orphan route")?
         .status,
-        403
+        400
     );
     assert_eq!(serde_json::to_vec(&state)?, before);
     let malformed = call(
@@ -505,8 +505,7 @@ fn token_role_renewal_uses_current_role_and_deleted_role_preserves_live_token() 
     Ok(())
 }
 #[test]
-fn token_role_fixed_type_overrides_body_and_batch_use_role_is_stored_before_issue_refusal()
--> TestResult {
+fn token_role_fixed_type_and_batch_role_uses_follow_issuance_and_lookup_contract() -> TestResult {
     let (mut state, root) = setup()?;
     call(
         &mut state,
@@ -533,19 +532,51 @@ fn token_role_fixed_type_overrides_body_and_batch_use_role_is_stored_before_issu
         json!({"token_type":"batch","orphan":true,"renewable":false,"token_num_uses":2}),
         100,
     )?;
+    let records = state.tokens.len();
+    let mut grant = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/create/batch",
+        json!({"policies":["p-one"]}),
+        100,
+    )?;
+    assert_eq!(grant.status, 200);
+    assert_eq!(grant.body["auth"]["num_uses"], 2);
+    state.finish_pending_batch(&mut grant, "", 100)?;
+    let raw = grant.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("sealed role batch grant")?;
+    let info = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/lookup",
+        json!({"token":raw}),
+        100,
+    )?
+    .body["data"]
+        .clone();
+    assert_eq!(info["num_uses"], 0);
+    assert_eq!(info["role"], "batch");
+    assert_eq!(info["path"], "auth/token/create/batch");
+    assert_eq!(state.tokens.len(), records);
     let before = serde_json::to_vec(&state)?;
-    assert!(
-        call(
-            &mut state,
-            &root,
-            "",
-            "POST",
-            "auth/token/create/batch",
-            json!({"policies":["p-one"]}),
-            100
-        )
-        .is_err()
-    );
+    let failure = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/create/batch",
+        json!({"policies":["p-one"],"num_uses":1}),
+        100,
+    )
+    .err()
+    .ok_or("batch request num_uses bypassed")?;
+    assert_eq!(failure.status, 400);
+    assert_eq!(failure.message, "batch tokens cannot have \"num_uses\" set");
     assert_eq!(serde_json::to_vec(&state)?, before);
     call(
         &mut state,
@@ -665,5 +696,265 @@ fn token_role_forged_client_provenance_and_persisted_issuer_path_are_refused() -
         .auth_provenance = None;
     assert!(invalid.validate_token_role_state().is_err());
     state.validate_token_role_state()?;
+    Ok(())
+}
+
+#[test]
+fn token_api_unicode_batch_uses_resolved_names_and_never_accepts_client_provenance() -> TestResult {
+    let (mut state, root) = setup()?;
+    assert!(!state.has_token_api_schema80_state());
+    let mut ordinary = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/create",
+        json!({"type":"batch","policies":["Σ","x,y"],"no_default_policy":true,"ttl":"60s"}),
+        100,
+    )?;
+    assert!(state.has_token_api_schema80_state());
+    assert!(!state.has_token_role_state());
+    assert_eq!(ordinary.body["auth"]["token_policies"], json!(["x,y", "σ"]));
+    assert_eq!(
+        ordinary.body["warnings"],
+        json!([
+            "Policy \"x,y\" does not exist",
+            "Policy \"σ\" does not exist"
+        ])
+    );
+    state.finish_pending_batch(&mut ordinary, "", 100)?;
+    let raw = ordinary.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("ordinary batch")?;
+    let reopened: AuthState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
+    assert!(reopened.has_token_api_schema80_state());
+    let verified = reopened
+        .authenticate_read_only(raw, 100)?
+        .ok_or("read-only batch admission")?;
+    assert_eq!(
+        verified.policies(),
+        &BTreeSet::from(["x,y".into(), "σ".into()])
+    );
+    let before = serde_json::to_vec(&state)?;
+    let forged = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/create",
+        json!({"type":"batch","policies":["p-one"],"token_api_policy_names":true}),
+        100,
+    )
+    .err()
+    .ok_or("client marker accepted")?;
+    assert_eq!(forged.status, 400);
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/roles/unicode",
+        json!({"token_type":"batch","orphan":true,"renewable":false,"allowed_policies":["Σ","x,y"]}),
+        100,
+    )?;
+    let mut role = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/create/unicode",
+        json!({"policies":["Σ","x,y"],"no_default_policy":true}),
+        100,
+    )?;
+    state.finish_pending_batch(&mut role, "", 100)?;
+    let raw = role.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("role batch")?;
+    let info = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/lookup",
+        json!({"token":raw}),
+        100,
+    )?;
+    assert_eq!(info.body["data"]["role"], "unicode");
+    assert_eq!(info.body["data"]["policies"], json!(["x,y", "σ"]));
+    Ok(())
+}
+
+#[test]
+fn token_role_framework_weak_fields_preserve_duration_units_integer_bases_and_atomic_errors()
+-> TestResult {
+    let (mut state, root) = setup()?;
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/roles/weak",
+        json!({"token_period":"1h2m3.5s","token_num_uses":"0x10","orphan":"true"}),
+        100,
+    )?;
+    let read = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/token/roles/weak",
+        json!({}),
+        100,
+    )?;
+    assert_eq!(read.body["data"]["token_period"], 3723);
+    assert_eq!(read.body["data"]["token_num_uses"], 16);
+    assert_eq!(read.body["data"]["orphan"], true);
+    for (value, seconds) in [
+        (json!("1.5s"), 1),
+        (json!("2500ms"), 2),
+        (json!("-0.5s"), 0),
+        (json!("2d"), 172800),
+    ] {
+        call(
+            &mut state,
+            &root,
+            "",
+            "POST",
+            "auth/token/roles/weak",
+            json!({"token_period":value}),
+            100,
+        )?;
+        assert_eq!(
+            call(
+                &mut state,
+                &root,
+                "",
+                "GET",
+                "auth/token/roles/weak",
+                json!({}),
+                100
+            )?
+            .body["data"]["token_period"],
+            seconds
+        );
+    }
+    for (value, uses) in [
+        (json!("010"), 8),
+        (json!("0b11"), 3),
+        (json!("0o11"), 9),
+        (json!("1_000"), 1000),
+        (json!(""), 0),
+    ] {
+        call(
+            &mut state,
+            &root,
+            "",
+            "POST",
+            "auth/token/roles/weak",
+            json!({"token_num_uses":value}),
+            100,
+        )?;
+        let actual = call(
+            &mut state,
+            &root,
+            "",
+            "GET",
+            "auth/token/roles/weak",
+            json!({}),
+            100,
+        )?;
+        if uses == 0 {
+            assert!(actual.body["data"].get("token_num_uses").is_none());
+        } else {
+            assert_eq!(actual.body["data"]["token_num_uses"], uses);
+        }
+    }
+    let before = serde_json::to_vec(&state)?;
+    for (body, message) in [
+        (
+            json!({"orphan":[]}),
+            "error converting input for field \"orphan\": '' expected type 'bool', got unconvertible type '[]interface {}'",
+        ),
+        (
+            json!({"renewable":-1}),
+            "error converting input for field \"renewable\": '' cannot parse value as 'bool': strconv.ParseBool: invalid syntax",
+        ),
+        (
+            json!({"token_num_uses":1.5}),
+            "error converting input for field \"token_num_uses\": '' cannot parse value as 'int': strconv.ParseInt: invalid syntax",
+        ),
+        (
+            json!({"token_num_uses":"9223372036854775808"}),
+            "error converting input for field \"token_num_uses\": '' cannot parse value as 'int': strconv.ParseInt: value out of range",
+        ),
+        (
+            json!({"token_num_uses":-1}),
+            "error parsing role fields: 'token_num_uses' cannot be negative",
+        ),
+        (
+            json!({"token_period":true}),
+            "error converting input for field \"token_period\": could not parse duration from input",
+        ),
+        (
+            json!({"token_period":1.5}),
+            "error converting input for field \"token_period\": time: missing unit in duration \"1.5\"",
+        ),
+        (
+            json!({"token_period":"1.5d"}),
+            "error converting input for field \"token_period\": strconv.ParseInt: parsing \"1.5\": invalid syntax",
+        ),
+        (
+            json!({"token_period":"9223372037s"}),
+            "error converting input for field \"token_period\": time: invalid duration \"9223372037s\"",
+        ),
+        (
+            json!({"token_period":"-1.5s"}),
+            "error converting input for field \"token_period\": cannot provide negative value '-1'",
+        ),
+    ] {
+        let failure = call(
+            &mut state,
+            &root,
+            "",
+            "POST",
+            "auth/token/roles/weak",
+            body,
+            100,
+        )
+        .err()
+        .ok_or("invalid field updated role")?;
+        assert_eq!(failure.status, 400);
+        assert_eq!(failure.message, message);
+        assert_eq!(serde_json::to_vec(&state)?, before);
+    }
+    let ordinary = call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/create",
+        json!({"policies":["p-one"],"renewable":[]}),
+        100,
+    )
+    .err()
+    .ok_or("ordinary type error accepted")?;
+    assert!(ordinary.message.starts_with("Field validation failed: "));
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    let mut reopened: AuthState = serde_json::from_slice(&before)?;
+    reopened.validate_token_role_state()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            &root,
+            "",
+            "GET",
+            "auth/token/roles/weak",
+            json!({}),
+            100
+        )?
+        .body["data"]["token_period"],
+        172800
+    );
     Ok(())
 }

@@ -78,6 +78,10 @@ impl<'a> CheckedCredential<'a> {
                     "type":"batch", "namespace":claims.namespace(),
                     "entity_id":claims.entity_id().unwrap_or(""), "meta":claims.metadata()
                 });
+                if let Some(role) = claims.token_role() {
+                    info["role"] = json!(role.name);
+                    info["creation_ttl"] = json!(claims.expires_at() - claims.issued_at());
+                }
                 if !claims.bound_cidrs().is_empty() {
                     info["bound_cidrs"] = json!(claims.bound_cidrs());
                 }

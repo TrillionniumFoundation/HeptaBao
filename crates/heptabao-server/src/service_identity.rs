@@ -12,7 +12,7 @@ impl State {
         if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
             return self.schema;
         }
-        let required = if self.auth.has_token_role_state() {
+        let required = if self.auth.has_token_api_schema80_state() {
             TOKEN_ROLE_STATE_SCHEMA
         } else if self.engines.has_local_pki_intermediate_state() {
             LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
@@ -59,7 +59,7 @@ impl State {
             ));
         }
         if self.schema < TOKEN_ROLE_STATE_SCHEMA
-            && (self.auth.has_token_role_state()
+            && (self.auth.has_token_api_schema80_state()
                 || previous.is_some_and(|state| state.schema >= TOKEN_ROLE_STATE_SCHEMA))
         {
             return Err(Response::error(
@@ -223,7 +223,7 @@ impl State {
         self.auth
             .validate_token_role_state()
             .map_err(|error| Response::error(503, &error.message))?;
-        if self.schema < TOKEN_ROLE_STATE_SCHEMA && self.auth.has_token_role_state() {
+        if self.schema < TOKEN_ROLE_STATE_SCHEMA && self.auth.has_token_api_schema80_state() {
             return Err(Response::error(
                 503,
                 "Token API role ownership requires schema 80",

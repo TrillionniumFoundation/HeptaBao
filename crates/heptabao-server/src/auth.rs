@@ -204,6 +204,10 @@ pub struct AuthState {
     policies: BTreeMap<String, BTreeMap<String, Policy>>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     token_roles: BTreeMap<String, BTreeMap<String, token_roles::Role>>,
+    /// Sticky reader floor for authenticated Token API batch policy grammar.
+    /// False and absent historical states keep the original serialized bytes.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    token_api_batch_policy_state: bool,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     password_policies: BTreeMap<String, BTreeMap<String, password_policy::PasswordPolicy>>,
     users: BTreeMap<String, BTreeMap<String, User>>,
@@ -2262,6 +2266,7 @@ impl AuthState {
             tokens: BTreeMap::new(),
             policies: BTreeMap::new(),
             token_roles: BTreeMap::new(),
+            token_api_batch_policy_state: false,
             password_policies: BTreeMap::new(),
             users: BTreeMap::new(),
             roles: BTreeMap::new(),
@@ -4745,6 +4750,8 @@ impl AuthState {
             if self.cert_uses_batch(scope, role) {
                 let mut response = batch_issuance::PendingBatchGrant::response(
                     batch::BatchClaims {
+                        token_role: None,
+                        token_api_policy_names: false,
                         namespace: namespace.into(),
                         policies: role.policies.clone(),
                         metadata: metadata.take(),
@@ -5187,6 +5194,8 @@ impl AuthState {
             let mut response = if self.jwt_uses_batch(scope, &role) {
                 batch_issuance::PendingBatchGrant::response(
                     batch::BatchClaims {
+                        token_role: None,
+                        token_api_policy_names: false,
                         namespace: namespace.into(),
                         policies: role.policies.clone(),
                         metadata: metadata.clone(),
@@ -6168,10 +6177,19 @@ impl AuthState {
         let issued_role = selected_role
             .as_ref()
             .map(|(name, role)| role.issued(name, path));
-        let creation_path = issued_role.as_ref().map_or(path, |role| role.path.as_str());
+        let creation_path = issued_role
+            .as_ref()
+            .map_or_else(|| path.to_owned(), |role| role.path.clone());
         let period = duration(body, "period", 0)?;
-        if (requested_no_parent && role.is_none()) || period > 0 {
-            self.authorize_request(actor, namespace, path, "sudo", now)?;
+        if requested_no_parent && role.is_none() && !is_sudo {
+            return Err(bad(
+                "root or sudo privileges required to create orphan token",
+            ));
+        }
+        if period > 0 && !is_sudo {
+            return Err(bad(
+                "root or sudo privileges required to create periodic token",
+            ));
         }
         if period > MAX_TTL {
             return Err(bad("period exceeds maximum TTL"));
@@ -6190,7 +6208,7 @@ impl AuthState {
             period
         } else {
             role.map_or(period, |role| {
-                token_roles::lesser_nonzero(period, role.period())
+                token_roles::lesser_nonzero(period, role.effective_period())
             })
         };
         let effective_max = if batch {
@@ -6208,14 +6226,23 @@ impl AuthState {
             if explicit_max > 0 && role.explicit_max() > 0 {
                 role_warnings.push(format!("Explicit max TTL specified both during creation call and in role; using the lesser value of {effective_max} seconds"));
             }
-            if period > 0 && role.period() > 0 {
+            if period > 0 && role.effective_period() > 0 {
                 role_warnings.push(format!("Period specified both during creation call and in role; using the lesser value of {effective_period} seconds"));
             }
         }
-        if batch && (explicit_max != 0 || period != 0 || num_uses != 0) {
-            return Err(bad(
-                "batch tokens cannot have explicit_max_ttl, period, or num_uses",
-            ));
+        if batch {
+            let problem = if explicit_max != 0 {
+                Some("explicit_max_ttl")
+            } else if requested_uses != 0 {
+                Some("num_uses")
+            } else if period != 0 {
+                Some("period")
+            } else {
+                None
+            };
+            if let Some(problem) = problem {
+                return Err(bad(&format!("batch tokens cannot have {problem:?} set")));
+            }
         }
         if batch && root {
             return Err(bad("batch tokens cannot have root policy"));
@@ -6281,12 +6308,23 @@ impl AuthState {
         role_warnings.append(&mut warnings);
         let warnings = role_warnings;
         if batch {
+            // This marker is issuer-owned authenticated claim data, never a client
+            // field or a policy grant inferred from an arbitrary path. Roles have
+            // their own authenticated marker; ordinary ASCII grants remain byte
+            // compatible with historical batch claims.
+            let token_api_policy_names =
+                issued_role.is_none() && requested.iter().any(|name| !valid_name(name));
+            if token_api_policy_names {
+                self.token_api_batch_policy_state = true;
+            }
             let claims = batch::BatchClaims {
+                token_role: issued_role,
+                token_api_policy_names,
                 namespace: namespace.into(),
                 policies: requested,
                 metadata: BTreeMap::new(),
                 display_name: display_name.into(),
-                path: creation_path.into(),
+                path: creation_path,
                 bound_cidrs: if let Some(role) = role {
                     role.bound_cidrs()
                 } else if no_parent {
@@ -6308,6 +6346,10 @@ impl AuthState {
                 claims,
                 entity_alias.as_ref().map(|_| "token".into()),
             );
+            // Reference applies the role's use limit after validating batch
+            // request fields. It is an issuance response value; authenticated
+            // stateless batch lookup continues reporting zero remaining uses.
+            response.body["auth"]["num_uses"] = json!(num_uses);
             if !warnings.is_empty() {
                 response.body["warnings"] = json!(warnings);
             }
@@ -7038,6 +7080,8 @@ impl AuthState {
                 .then(|| checked_expiry(now, user.token_explicit_max_ttl))
                 .transpose()?;
             let claims = batch::BatchClaims {
+                token_role: None,
+                token_api_policy_names: false,
                 namespace: namespace.into(),
                 policies: token_policies,
                 metadata: BTreeMap::from([("username".into(), name.into())]),
@@ -7538,6 +7582,8 @@ impl AuthState {
         let mut issued = if self.approle_uses_batch(scope, &role) {
             batch_issuance::PendingBatchGrant::response(
                 batch::BatchClaims {
+                    token_role: None,
+                    token_api_policy_names: false,
                     namespace: namespace.into(),
                     policies: role.policies.clone(),
                     metadata: metadata.0.clone(),

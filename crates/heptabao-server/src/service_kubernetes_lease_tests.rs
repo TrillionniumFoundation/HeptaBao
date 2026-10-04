@@ -47,6 +47,8 @@ fn fixture(parented: bool, identity: bool) -> TestResult<Fixture> {
     let mut keys = BatchKeyAuthority::new(100)?;
     let raw = keys.seal(
         BatchClaims {
+            token_role: None,
+            token_api_policy_names: false,
             namespace: String::new(),
             policies: BTreeSet::from(["default".into()]),
             metadata: BTreeMap::new(),

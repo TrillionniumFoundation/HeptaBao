@@ -2,6 +2,8 @@
 //! Contracts pinned to OpenBao 2.7.0 token_store.go.
 //! R07 was observed before external custody loss; fresh qualification is required.
 use super::*;
+#[path = "auth_token_role_fields.rs"]
+mod fields;
 
 const MAX_ROLE_TEXT: usize = 1024 * 1024;
 const MAX_ISSUED_ROLE_PATH: usize = MAX_ROLE_TEXT + 8192 + 64;
@@ -55,9 +57,29 @@ impl Default for Role {
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct IssuedRole {
+pub(crate) struct IssuedRole {
     pub(super) name: String,
     pub(super) path: String,
+}
+
+impl IssuedRole {
+    pub(super) fn valid_path(&self) -> bool {
+        let expected = format!("auth/token/create/{}", self.name);
+        valid_role_name(&self.name)
+            && self.path.len() <= MAX_ISSUED_ROLE_PATH
+            && self.path.strip_prefix(&expected).is_some_and(|suffix| {
+                suffix.is_empty()
+                    || suffix
+                        .strip_prefix('/')
+                        .is_some_and(|suffix| !suffix.is_empty() && valid_suffix(suffix))
+            })
+    }
+}
+impl Drop for IssuedRole {
+    fn drop(&mut self) {
+        self.name.zeroize();
+        self.path.zeroize();
+    }
 }
 
 fn word(byte: u8) -> bool {
@@ -113,38 +135,6 @@ fn role_list(
     }
     Ok(result)
 }
-fn role_duration(body: &Value, field: &str) -> Result<u64, AuthError> {
-    if body.get(field).is_some_and(Value::is_null) {
-        return Ok(0);
-    }
-    if body
-        .get(field)
-        .and_then(Value::as_i64)
-        .is_some_and(|n| n < 0)
-    {
-        return Err(bad(&format!(
-            "error converting input for field {field:?}: cannot provide negative value '{}'",
-            body[field]
-        )));
-    }
-    let value = duration(body, field, 0)?;
-    if value > MAX_ROLE_DURATION {
-        return Err(bad("role duration overflows native duration"));
-    }
-    Ok(value)
-}
-fn role_uses(body: &Value) -> Result<u64, AuthError> {
-    match body.get("token_num_uses") {
-        None | Some(Value::Null) => Ok(0),
-        Some(Value::Bool(value)) => Ok(u64::from(*value)),
-        Some(Value::String(value)) => value
-            .parse::<u64>()
-            .map_err(|_| bad("error parsing role fields: 'token_num_uses' cannot be negative")),
-        Some(value) => value
-            .as_u64()
-            .ok_or_else(|| bad("error parsing role fields: 'token_num_uses' cannot be negative")),
-    }
-}
 fn cidrs(body: &Value, field: &str) -> Result<Vec<String>, AuthError> {
     let mapped = json!({"token_bound_cidrs":body[field]});
     token_cidrs::field(&mapped).map_err(|_| {
@@ -174,16 +164,13 @@ impl Role {
             }
         }
         if body.get("orphan").is_some() {
-            self.orphan = token_policies::weak_boolean(body.get("orphan"), "orphan")?;
+            self.orphan = fields::boolean(body, "orphan")?;
         }
         if body.get("renewable").is_some() {
-            self.renewable = token_policies::weak_boolean(body.get("renewable"), "renewable")?;
+            self.renewable = fields::boolean(body, "renewable")?;
         }
         if body.get("token_no_default_policy").is_some() {
-            self.token_no_default_policy = token_policies::weak_boolean(
-                body.get("token_no_default_policy"),
-                "token_no_default_policy",
-            )?;
+            self.token_no_default_policy = fields::boolean(body, "token_no_default_policy")?;
         }
         if let Some(value) = body.get("path_suffix") {
             let suffix = token_policies::weak_string(value)
@@ -230,13 +217,13 @@ impl Role {
             ),
         ] {
             if body.get(native).is_some_and(|v| !v.is_null()) {
-                *value = role_duration(body, native)?;
+                *value = fields::duration(body, native)?;
                 *legacy_value = 0;
                 if body.get(legacy).is_some_and(|v| !v.is_null()) {
                     warnings.push(format!("Both '{native}' and deprecated '{legacy}' value supplied, ignoring the deprecated value"));
                 }
             } else if body.get(legacy).is_some_and(|v| !v.is_null()) {
-                *value = role_duration(body, legacy)?;
+                *value = fields::duration(body, legacy)?;
                 *legacy_value = *value;
             }
         }
@@ -254,7 +241,7 @@ impl Role {
             warnings.push(format!("Given explicit max TTL of {} is greater than system/mount allowed value of {MAX_TTL} seconds; until this is fixed attempting to create tokens against this role will result in an error",self.token_explicit_max_ttl));
         }
         if body.get("token_num_uses").is_some() {
-            self.token_num_uses = role_uses(body)?;
+            self.token_num_uses = fields::uses(body)?;
         }
         if body.get("allowed_entity_aliases").is_some() {
             self.allowed_entity_aliases = Some(role_list(body, "allowed_entity_aliases", false)?);
@@ -427,7 +414,7 @@ impl Role {
     pub(super) fn uses(&self, requested: u64) -> u64 {
         lesser_nonzero(requested, self.token_num_uses)
     }
-    pub(super) fn period(&self) -> u64 {
+    pub(super) fn effective_period(&self) -> u64 {
         self.token_period
     }
     pub(super) fn explicit_max(&self) -> u64 {
@@ -520,6 +507,9 @@ fn glob_matches(pattern: &str, value: &str) -> bool {
     true
 }
 impl AuthState {
+    pub(crate) fn has_token_api_schema80_state(&self) -> bool {
+        self.token_api_batch_policy_state || self.has_token_role_state()
+    }
     pub(crate) fn has_token_role_state(&self) -> bool {
         self.token_roles.values().any(|roles| !roles.is_empty())
             || self.tokens.values().any(|token| token.token_role.is_some())
@@ -538,21 +528,12 @@ impl AuthState {
         }
         for token in self.tokens.values() {
             if let Some(role) = &token.token_role {
-                let expected = format!("auth/token/create/{}", role.name);
-                let suffix = role.path.strip_prefix(&expected);
-                if !valid_role_name(&role.name)
+                if !role.valid_path()
                     || !matches!(
                         token.auth_provenance,
                         Some(TokenAuthProvenance::TokenApi { .. })
                     )
                     || token.wrapping.is_some()
-                    || suffix.is_none_or(|suffix| {
-                        !suffix.is_empty()
-                            && suffix
-                                .strip_prefix('/')
-                                .is_none_or(|suffix| !valid_suffix(suffix))
-                    })
-                    || role.path.len() > MAX_ISSUED_ROLE_PATH
                 {
                     return Err(bad("invalid persisted issued token role"));
                 }

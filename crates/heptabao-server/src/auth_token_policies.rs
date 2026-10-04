@@ -7,6 +7,12 @@ use std::collections::BTreeSet;
 #[path = "auth_token_go_print.rs"]
 mod go_print;
 
+// Claims use the already resolved Token API policy set. Preserve the API's
+// Unicode and punctuation grammar without changing native login policy names.
+pub(super) fn valid_api_policy_name(value: &str) -> bool {
+    !value.is_empty() && value.trim() == value && simple_lowercase(value) == value
+}
+
 pub(super) fn resolve(
     body: &Value,
     parent: &Token,
