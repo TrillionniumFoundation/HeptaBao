@@ -836,7 +836,7 @@ enum ExternalEffectPlan {
     ExternalKey(plugin::ExternalKeyPlan),
     ExternalTransit(external_transit::ExternalTransitPlan),
     ExternalPki(external_pki::ExternalPkiPlan),
-    KubernetesToken(kubernetes_secret::KubernetesTokenEffectPlan),
+    KubernetesToken(Box<kubernetes_secret::KubernetesTokenEffectPlan>),
     OpenLdap(openldap_secret::OpenLdapEffectPlan),
     SnapshotTransfer(Box<snapshot_transfer::SnapshotTransferPlan>),
     #[cfg(target_os = "linux")]
@@ -2179,7 +2179,9 @@ impl Service {
             .or_else(|| external_key.map(ExternalEffectPlan::ExternalKey))
             .or_else(|| external_transit.map(ExternalEffectPlan::ExternalTransit))
             .or_else(|| external_pki.map(ExternalEffectPlan::ExternalPki))
-            .or_else(|| kubernetes_token.map(ExternalEffectPlan::KubernetesToken))
+            .or_else(|| {
+                kubernetes_token.map(|plan| ExternalEffectPlan::KubernetesToken(Box::new(plan)))
+            })
             .or_else(|| openldap.map(ExternalEffectPlan::OpenLdap))
             .or_else(|| {
                 snapshot_transfer.map(|plan| ExternalEffectPlan::SnapshotTransfer(Box::new(plan)))
