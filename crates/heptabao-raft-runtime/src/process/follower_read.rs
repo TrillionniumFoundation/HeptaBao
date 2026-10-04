@@ -158,9 +158,14 @@ async fn leader_witness(
                 if !bound(raft, request.leader, request.term, true) {
                     return Err(ReadIndexFailure::NotLeader);
                 }
-                let receiver = raft.metrics();
-                let metrics = receiver.borrow_watched();
-                let applied = metrics.last_applied.ok_or(ReadIndexFailure::Unavailable)?;
+                let applied = {
+                    let receiver = raft.metrics();
+                    let metrics = receiver.borrow_watched();
+                    metrics.last_applied.ok_or(ReadIndexFailure::Unavailable)?
+                };
+                // Release the metrics read guard before the final bound reads
+                // that lock again. A queued metrics writer can otherwise block
+                // this nested read while waiting for our first guard to drop.
                 if local.node_id() != &request.leader
                     || local.read_log_id().log_id() != &log
                     || local.applied() < Some(&log)
