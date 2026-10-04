@@ -35,7 +35,7 @@ pub(super) fn parse(body: &Value) -> Result<Option<Config>, Response> {
         return Err(invalid());
     }
     let blocks = if text.trim_start().starts_with('{') {
-        json_blocks(&serde_json::from_str::<Value>(&text).map_err(|_| invalid())?)?
+        json_blocks(&serde_json::from_str::<JsonConfig>(&text).map_err(|_| invalid())?)?
     } else {
         Parser::new(&text)?.blocks()?
     };
@@ -73,6 +73,12 @@ pub(super) fn parse(body: &Value) -> Result<Option<Config>, Response> {
         return Err(Response::error(
             400,
             "invalid seal config: share counts outside bounds",
+        ));
+    }
+    if shares > 1 && threshold == 1 {
+        return Err(Response::error(
+            400,
+            "invalid seal config: threshold must be greater than one for multiple shares",
         ));
     }
     if let Some(pgp) = body.get("pgp_keys") {
@@ -117,31 +123,120 @@ pub(super) fn parse(body: &Value) -> Result<Option<Config>, Response> {
 type Fields = serde_json::Map<String, Value>;
 type Blocks = Vec<(String, Fields)>;
 
-fn json_blocks(root: &Value) -> Result<Blocks, Response> {
-    let object = root.as_object().ok_or_else(invalid)?;
-    let mut blocks = Vec::new();
-    for name in ["seal", "kms"] {
-        let Some(value) = object.get(name) else {
-            continue;
-        };
-        let values = match value {
-            Value::Array(values) => values.iter().collect::<Vec<_>>(),
+// HCL 1 preserves repeated JSON block names as separate stanzas, while KMS
+// config assignments within one stanza use the last value. A Value map alone
+// would silently erase duplicate top-level seal blocks before this boundary.
+enum JsonConfig {
+    Object(Vec<(String, Self)>),
+    Array(Vec<Self>),
+    Scalar(Value),
+}
+impl JsonConfig {
+    fn object(&self) -> Result<&[(String, Self)], Response> {
+        match self {
+            Self::Object(fields) => Ok(fields),
+            _ => Err(invalid()),
+        }
+    }
+    fn values(&self) -> Vec<&Self> {
+        match self {
+            Self::Array(values) => values.iter().collect(),
             other => vec![other],
-        };
-        for value in values {
-            for (kind, fields) in value.as_object().ok_or_else(invalid)? {
-                let alternatives = match fields {
-                    Value::Array(values) => values.iter().collect::<Vec<_>>(),
-                    other => vec![other],
-                };
-                for fields in alternatives {
-                    if blocks.len() >= 4 {
-                        return Err(invalid());
+        }
+    }
+    fn value(&self) -> Value {
+        match self {
+            Self::Scalar(value) => value.clone(),
+            Self::Array(values) => Value::Array(values.iter().map(Self::value).collect()),
+            Self::Object(fields) => Value::Object(
+                fields
+                    .iter()
+                    .map(|(name, value)| (name.clone(), value.value()))
+                    .collect(),
+            ),
+        }
+    }
+}
+impl<'de> Deserialize<'de> for JsonConfig {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct Visitor;
+        impl<'de> serde::de::Visitor<'de> for Visitor {
+            type Value = JsonConfig;
+            fn expecting(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                f.write_str("namespace JSON seal configuration")
+            }
+            fn visit_map<A: serde::de::MapAccess<'de>>(
+                self,
+                mut map: A,
+            ) -> Result<Self::Value, A::Error> {
+                let mut fields = Vec::new();
+                while let Some(field) = map.next_entry()? {
+                    if fields.len() >= 4096 {
+                        return Err(serde::de::Error::custom("configuration exceeds bounds"));
                     }
-                    blocks.push((
-                        kind.clone(),
-                        fields.as_object().ok_or_else(invalid)?.clone(),
-                    ));
+                    fields.push(field);
+                }
+                Ok(JsonConfig::Object(fields))
+            }
+            fn visit_seq<A: serde::de::SeqAccess<'de>>(
+                self,
+                mut sequence: A,
+            ) -> Result<Self::Value, A::Error> {
+                let mut values = Vec::new();
+                while let Some(value) = sequence.next_element()? {
+                    if values.len() >= 4096 {
+                        return Err(serde::de::Error::custom("configuration exceeds bounds"));
+                    }
+                    values.push(value);
+                }
+                Ok(JsonConfig::Array(values))
+            }
+            fn visit_bool<E: serde::de::Error>(self, value: bool) -> Result<Self::Value, E> {
+                Ok(JsonConfig::Scalar(Value::Bool(value)))
+            }
+            fn visit_i64<E: serde::de::Error>(self, value: i64) -> Result<Self::Value, E> {
+                Ok(JsonConfig::Scalar(Value::Number(value.into())))
+            }
+            fn visit_u64<E: serde::de::Error>(self, value: u64) -> Result<Self::Value, E> {
+                Ok(JsonConfig::Scalar(Value::Number(value.into())))
+            }
+            fn visit_f64<E: serde::de::Error>(self, value: f64) -> Result<Self::Value, E> {
+                serde_json::Number::from_f64(value)
+                    .map(|value| JsonConfig::Scalar(Value::Number(value)))
+                    .ok_or_else(|| serde::de::Error::custom("invalid configuration number"))
+            }
+            fn visit_str<E: serde::de::Error>(self, value: &str) -> Result<Self::Value, E> {
+                Ok(JsonConfig::Scalar(Value::String(value.into())))
+            }
+            fn visit_string<E: serde::de::Error>(self, value: String) -> Result<Self::Value, E> {
+                Ok(JsonConfig::Scalar(Value::String(value)))
+            }
+            fn visit_unit<E: serde::de::Error>(self) -> Result<Self::Value, E> {
+                Ok(JsonConfig::Scalar(Value::Null))
+            }
+        }
+        deserializer.deserialize_any(Visitor)
+    }
+}
+
+fn json_blocks(root: &JsonConfig) -> Result<Blocks, Response> {
+    let object = root.object()?;
+    let mut blocks = Vec::new();
+    for (name, value) in object {
+        if matches!(name.as_str(), "seal" | "kms") {
+            for value in value.values() {
+                for (kind, fields) in value.object()? {
+                    for fields in fields.values() {
+                        if blocks.len() >= 4 {
+                            return Err(invalid());
+                        }
+                        let fields = fields
+                            .object()?
+                            .iter()
+                            .map(|(name, value)| (name.clone(), value.value()))
+                            .collect();
+                        blocks.push((kind.clone(), fields));
+                    }
                 }
             }
         }
@@ -293,9 +388,7 @@ impl Parser {
                 return Err(invalid());
             }
             let value = self.value(depth)?;
-            if fields.insert(name, value).is_some() {
-                return Err(invalid());
-            }
+            fields.insert(name, value);
             self.symbol(',');
         }
         Ok(fields)

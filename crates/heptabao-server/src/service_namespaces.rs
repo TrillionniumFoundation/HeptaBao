@@ -752,6 +752,39 @@ impl State {
 }
 
 impl Service {
+    fn namespace_custody_gate(
+        state: &State,
+        principal: &Principal,
+        request: &RequestView<'_>,
+        caller_incarnation: u64,
+        actual: &str,
+        binding: &crate::namespace_custody::Binding,
+    ) -> Result<(), Response> {
+        namespace_runtime::request_live()?;
+        if state.namespaces.incarnation(request.namespace) != Some(caller_incarnation)
+            || state.namespace_is_sealed(request.namespace)
+            || state
+                .namespaces
+                .custody_binding(&state.cluster_id, actual)?
+                != *binding
+        {
+            return Err(Response::error(
+                503,
+                "namespace custody owner or caller frontier changed",
+            ));
+        }
+        state
+            .auth
+            .authorize_request(
+                principal,
+                request.namespace,
+                request.path,
+                "update",
+                request.now,
+            )
+            .map_err(|error| Response::error(error.status, &error.message))
+    }
+
     pub(super) fn namespace_route(
         &mut self,
         mut state: State,
@@ -785,6 +818,9 @@ impl Service {
         ) {
             return Response::error(error.status, &error.message);
         }
+        let Some(caller_incarnation) = state.namespaces.incarnation(request.namespace) else {
+            return Response::error(404, "request namespace not found");
+        };
 
         let suffix = request
             .path
@@ -835,6 +871,21 @@ impl Service {
                 return Response::error(405, "namespace seal operations require POST or PUT");
             }
             if operation == "unseal" {
+                let binding = match state.namespaces.custody_binding(&state.cluster_id, &target) {
+                    Ok(binding) => binding,
+                    Err(error) => return error,
+                };
+                if let Err(error) = Self::namespace_custody_gate(
+                    &state,
+                    principal,
+                    request,
+                    caller_incarnation,
+                    &target,
+                    &binding,
+                ) {
+                    self.namespace_runtime.reset_progress(&target);
+                    return error;
+                }
                 let reset = match request.body.get("reset") {
                     None | Some(Value::Null) => false,
                     Some(Value::Bool(value)) => *value,
@@ -998,6 +1049,20 @@ impl Service {
                 }
                 let mut shares = None;
                 let mut threshold = 0;
+                let binding = match state.namespaces.custody_binding(&state.cluster_id, &target) {
+                    Ok(binding) => binding,
+                    Err(error) => return error,
+                };
+                if let Err(error) = Self::namespace_custody_gate(
+                    &state,
+                    principal,
+                    request,
+                    caller_incarnation,
+                    &target,
+                    &binding,
+                ) {
+                    return error;
+                }
                 if let Some(config) = seal {
                     match namespace_runtime::Runtime::fresh_candidate(
                         &state,
@@ -1005,9 +1070,9 @@ impl Service {
                         config.shares,
                         config.threshold,
                     ) {
-                        Ok((candidate, key_shares)) => {
-                            state = candidate;
-                            shares = Some(key_shares);
+                        Ok(fresh) => {
+                            state = fresh.candidate;
+                            shares = Some(fresh.shares);
                             threshold = config.threshold;
                         }
                         Err(error) => return error,
@@ -1017,7 +1082,31 @@ impl Service {
                 if let Err(error) = state.validate_format() {
                     return error;
                 }
+                if let Err(error) = Self::namespace_custody_gate(
+                    &state,
+                    principal,
+                    request,
+                    caller_incarnation,
+                    &target,
+                    &binding,
+                ) {
+                    return error;
+                }
                 if let Err(error) = self.commit_state(&mut state) {
+                    return error;
+                }
+                if let Err(error) = Self::namespace_custody_gate(
+                    &state,
+                    principal,
+                    request,
+                    caller_incarnation,
+                    &target,
+                    &binding,
+                ) {
+                    // Publication may have completed while the caller's original
+                    // deadline elapsed. Keep the durable closed owner, but drop
+                    // private candidate shares and return no new authority.
+                    self.state = Some(state);
                     return error;
                 }
                 let mut response = state
@@ -1064,6 +1153,26 @@ impl Service {
                         "namespace contains runtime state; owned cleanup is required before deletion",
                     );
                 }
+                let custody = state.namespaces.custody_owner(&target).cloned();
+                if custody.is_some() && state.namespaces.entries[&target].sealed {
+                    return Response::error(
+                        503,
+                        "sealed namespace requires owned delete-sealed cleanup",
+                    );
+                }
+                if self.namespace_runtime.has_loaded_within(&target) {
+                    state = match self.namespace_runtime.closed_candidate(&state, &target) {
+                        Ok(candidate) => candidate,
+                        Err(error) => return error,
+                    };
+                }
+                if let Some(custody) = custody
+                    && let Err(error) = state
+                        .engines
+                        .retire_namespace_record_cells(custody.binding())
+                {
+                    return Response::error(error.status, &error.message);
+                }
                 if let Err(error) = state.namespaces.remove(&target) {
                     return error;
                 }
@@ -1078,6 +1187,7 @@ impl Service {
                 if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
+                self.namespace_runtime.close(&target);
                 self.state = Some(state);
                 // Native deletion acknowledges the accepted cleanup. This scoped
                 // empty-owner case is already durably removed; callers still

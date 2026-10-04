@@ -58,6 +58,22 @@ impl EngineState {
         !self.namespace_record_owners.is_empty()
     }
 
+    /// Remove only the exact typed owner's opaque cells. Retirement and its
+    /// descriptor floor remain in the root namespace registry, independently
+    /// of the removed catalog. A recreated path gets a new actual binding.
+    pub(crate) fn retire_namespace_record_cells(&mut self, binding: &Binding) -> Result<()> {
+        if self
+            .namespace_record_owners
+            .get(binding.namespace())
+            .is_none_or(|owner| owner.binding != *binding)
+        {
+            return Err(error(503, "namespace record retirement owner rejected"));
+        }
+        self.publish_namespace_record_cells(binding, &Cells::new())?;
+        self.namespace_record_owners.remove(binding.namespace());
+        Ok(())
+    }
+
     pub(crate) fn publish_namespace_record_cells(
         &mut self,
         binding: &Binding,

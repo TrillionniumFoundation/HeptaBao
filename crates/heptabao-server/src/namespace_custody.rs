@@ -595,7 +595,7 @@ impl Tombstone {
 }
 
 fn validate_counts(shares: u8, threshold: u8) -> Result<(), Error> {
-    if shares == 0 || threshold == 0 || threshold > shares {
+    if shares == 0 || threshold == 0 || threshold > shares || shares > 1 && threshold == 1 {
         return Err(Error::InvalidCounts);
     }
     Ok(())

@@ -409,3 +409,152 @@ fn strong_http_failed_durable_creation_returns_no_shares_or_runtime_slot() -> Te
     );
     Ok(())
 }
+
+#[test]
+fn strong_http_delete_recreate_retires_slots_cells_and_actual_incarnation() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    let old = create(&mut service, "", "empty-owner", &token)?;
+    unseal(&mut service, "", "empty-owner", &token, &old);
+    let stale = service.state.clone().ok_or("state")?;
+    let incarnation = stale
+        .namespaces
+        .incarnation("empty-owner")
+        .ok_or("incarnation")?;
+    assert_eq!(
+        wire(
+            &mut service,
+            "DELETE",
+            "sys/namespaces/empty-owner",
+            "",
+            &token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert!(
+        stale.namespace_leases.validate().is_err(),
+        "successful deletion drops the old sole key despite retained state references"
+    );
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .has_namespace_record_custody(),
+        "deleted owner's opaque cells and binding are removed in the same durable candidate"
+    );
+    let fresh = create(&mut service, "", "empty-owner", &token)?;
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .namespaces
+            .incarnation("empty-owner")
+            .ok_or("incarnation")?
+            > incarnation,
+        "recreation cannot reuse the deleted actual incarnation"
+    );
+    assert_eq!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/empty-owner/unseal",
+            "",
+            &token,
+            json!({"key":old[0].as_str()})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/empty-owner/unseal",
+            "",
+            &token,
+            json!({"key":old[1].as_str()})
+        )
+        .status,
+        400,
+        "old shares cannot load a recreated owner's key"
+    );
+    unseal(&mut service, "", "empty-owner", &token, &fresh);
+    Ok(())
+}
+
+#[test]
+fn strong_http_original_expired_deadline_returns_no_grant_and_clears_progress() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    {
+        let _deadline =
+            crate::request_deadline::RequestDeadlineScope::enter(std::time::Instant::now());
+        let response = wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/expired-create",
+            "",
+            &token,
+            json!({"seal":"seal \"shamir\" { shares = 3 threshold = 2 }"}),
+        );
+        assert_eq!(response.status, 503);
+        assert!(
+            response.body.get("data").is_none()
+                && !service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .namespaces
+                    .contains("expired-create"),
+            "expired original request cannot deliver shares or install a new owner"
+        );
+    }
+    let shares = create(&mut service, "", "partial-owner", &token)?;
+    assert_eq!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/partial-owner/unseal",
+            "",
+            &token,
+            json!({"key":shares[0].as_str()})
+        )
+        .status,
+        200
+    );
+    {
+        let _deadline =
+            crate::request_deadline::RequestDeadlineScope::enter(std::time::Instant::now());
+        assert_eq!(
+            wire(
+                &mut service,
+                "POST",
+                "sys/namespaces/partial-owner/unseal",
+                "",
+                &token,
+                json!({"key":shares[1].as_str()})
+            )
+            .status,
+            503
+        );
+    }
+    let status = wire(
+        &mut service,
+        "GET",
+        "sys/namespaces/partial-owner/seal-status",
+        "",
+        &token,
+        json!({}),
+    );
+    assert_eq!(status.body["data"]["sealed"], true);
+    assert_eq!(status.body["data"]["progress"], 0);
+    unseal(&mut service, "", "partial-owner", &token, &shares);
+    Ok(())
+}

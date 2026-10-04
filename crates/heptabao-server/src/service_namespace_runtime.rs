@@ -9,6 +9,18 @@ fn unavailable() -> Response {
     Response::error(503, "namespace custody lease is unavailable or retired")
 }
 
+pub(super) fn request_live() -> Result<(), Response> {
+    if crate::request_deadline::current()
+        .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+    {
+        return Err(Response::error(
+            503,
+            "namespace custody request deadline expired",
+        ));
+    }
+    Ok(())
+}
+
 struct Slot {
     key: Option<Key>,
     binding: Binding,
@@ -72,6 +84,11 @@ pub(super) struct Runtime {
     progress: BTreeMap<String, Progress>,
 }
 
+pub(super) struct Fresh {
+    pub(super) candidate: State,
+    pub(super) shares: Vec<zeroize::Zeroizing<Vec<u8>>>,
+}
+
 impl Drop for Runtime {
     fn drop(&mut self) {
         self.clear();
@@ -132,6 +149,10 @@ impl Runtime {
         actual: &str,
         fragment: &[u8],
     ) -> Result<Option<State>, Response> {
+        if let Err(error) = request_live() {
+            self.progress.remove(actual);
+            return Err(error);
+        }
         let descriptor = state
             .namespaces
             .custody_owner(actual)
@@ -160,6 +181,10 @@ impl Runtime {
             .get_mut(actual)
             .ok_or_else(unavailable)?
             .submit(descriptor, fragment);
+        if let Err(error) = request_live() {
+            self.progress.remove(actual);
+            return Err(error);
+        }
         match result {
             Ok(Submission::Pending) => Ok(None),
             Ok(Submission::Unlocked { key, .. }) => {
@@ -187,7 +212,8 @@ impl Runtime {
         actual: &str,
         shares: u8,
         threshold: u8,
-    ) -> Result<(State, Vec<zeroize::Zeroizing<Vec<u8>>>), Response> {
+    ) -> Result<Fresh, Response> {
+        request_live()?;
         let binding = state
             .namespaces
             .custody_binding(&state.cluster_id, actual)?;
@@ -223,7 +249,11 @@ impl Runtime {
         candidate.namespaces.set_sealed(actual, true)?;
         candidate.schema = candidate.writer_schema();
         candidate.validate_format()?;
-        Ok((candidate, created.shares))
+        request_live()?;
+        Ok(Fresh {
+            candidate,
+            shares: created.shares,
+        })
     }
 
     pub(super) fn closed_candidate(&self, state: &State, actual: &str) -> Result<State, Response> {
@@ -292,6 +322,7 @@ impl Runtime {
         actual: &str,
         key: Key,
     ) -> Result<State, Response> {
+        request_live()?;
         if self.loaded.len() >= 1024 || self.loaded.contains_key(actual) {
             return Err(unavailable());
         }
@@ -325,6 +356,7 @@ impl Runtime {
         if let Some(previous) = &state.namespace_protected {
             protected = previous.as_ref().clone();
         }
+        request_live()?;
         self.loaded.insert(actual.to_owned(), lease);
         candidate.namespace_leases = Leases(self.loaded.values().cloned().collect());
         candidate.namespace_protected = Some(Arc::new(protected));
