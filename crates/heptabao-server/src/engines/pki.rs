@@ -1209,7 +1209,11 @@ impl Pki {
             "serial_number":prepared.serial, "expiration":prepared.expires,
         });
         data["serial_number"] = json!(external::formatted_serial(&prepared.serial));
-        data["ca_chain"] = json!(root.local_ca_chain_pem());
+        data["ca_chain"] = if external {
+            json!([issuing_ca])
+        } else {
+            json!(root.local_ca_chain_pem())
+        };
         data["not_before"] = json!(prepared.not_before);
         let response = EngineResponse {
             status: 200,

@@ -223,7 +223,7 @@ impl Pki {
             }
             PkiPublicRead::RawCa(format) => {
                 let root = self.root.as_ref().ok_or_else(not_found)?;
-                if matches!(format, CertificateFormat::Chain) {
+                if matches!(format, CertificateFormat::Chain) && root.local_chain.is_some() {
                     let bytes = root.local_ca_chain_pem().join("\n").into_bytes();
                     return Ok(EngineResponse {
                         status: 200,
