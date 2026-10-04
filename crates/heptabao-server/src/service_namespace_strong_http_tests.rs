@@ -1333,18 +1333,21 @@ fn closed_auth_affine_help_consumes_only_after_real_owner_commit_and_survives_re
             && service.durable.as_ref().ok_or("durable")?.generation() == before,
         "unknown original header neither authenticates nor consumes"
     );
+    let first = wire(
+        &mut service,
+        "HELP",
+        "auth/token/lookup-self",
+        "",
+        &actor,
+        json!({}),
+    );
     assert!(
-        wire(
-            &mut service,
-            "HELP",
-            "auth/token/lookup-self",
-            "",
-            &actor,
-            json!({})
-        )
-        .status
-            == 404,
-        "verified actual self owner is unloaded after atomic finite use"
+        first.status == 404
+            && first.body
+                == json!({"errors":[
+                    "no handler for route \"auth/token/lookup-self\". route entry not found."
+                ]}),
+        "pinned genuine closed self response after atomic finite use"
     );
     assert!(
         service.durable.as_ref().ok_or("durable")?.generation() > before,
@@ -1360,18 +1363,17 @@ fn closed_auth_affine_help_consumes_only_after_real_owner_commit_and_survives_re
                 .is_none(),
         "credential admission never loads a logical auth, engine or shared key"
     );
+    let replay = wire(
+        &mut service,
+        "HELP",
+        "auth/token/lookup-self",
+        "",
+        &actor,
+        json!({}),
+    );
     assert!(
-        wire(
-            &mut service,
-            "HELP",
-            "auth/token/lookup-self",
-            "",
-            &actor,
-            json!({})
-        )
-        .status
-            == 403,
-        "same one-use capability cannot replay its authenticated404"
+        replay.status == 403 && replay.body == json!({"errors":["permission denied"]}),
+        "pinned public denial after genuine durable one-use consumption"
     );
     drop(service);
     let mut recovered = root.service()?;
@@ -1932,6 +1934,85 @@ fn committed_namespace_finite_help_keeps_canonical_live_state_after_consumption(
         .status
             == 204,
         "following real record publication accepts the committed namespace predecessor"
+    );
+    Ok(())
+}
+
+#[test]
+fn closed_auth_strong_token_check_error_keeps_original_header_priority() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    let shares = create(&mut service, "", "barrier", &token)?;
+    unseal(&mut service, "", "barrier", &token, &shares);
+    assert!(
+        wire(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/reader",
+            "barrier",
+            &token,
+            json!({"policy":"path \"*\" { capabilities = [\"read\"] }"})
+        )
+        .status
+            == 204,
+        "actual independent owner policy"
+    );
+    let minted = wire(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        "barrier",
+        &token,
+        json!({"policies":["reader"],"no_default_policy":true,"ttl":"1h"}),
+    );
+    assert!(minted.status == 200, "actual independent service token");
+    let actor = zeroize::Zeroizing::new(
+        minted.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("real service bearer")?
+            .to_owned(),
+    );
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/barrier/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 204,
+        "actual independent owner unloads"
+    );
+    let omitted = wire(
+        &mut service,
+        "HELP",
+        "auth/token/lookup-self",
+        "",
+        &actor,
+        json!({}),
+    );
+    assert!(
+        omitted.status == 503
+            && omitted.body
+                == json!({"errors":[
+                    "error performing token check: failed to read entry: Vault is sealed"
+                ]}),
+        "pinned strong token-check failure without request header ownership"
+    );
+    let own = wire(
+        &mut service,
+        "HELP",
+        "auth/token/lookup-self",
+        "barrier",
+        &actor,
+        json!({}),
+    );
+    assert!(
+        own.status == 503 && own.body == json!({"errors":["namespace is sealed"]}),
+        "original independent header barrier remains the first public failure"
     );
     Ok(())
 }

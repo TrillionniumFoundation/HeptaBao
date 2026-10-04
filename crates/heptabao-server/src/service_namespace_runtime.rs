@@ -7,6 +7,13 @@ use crate::namespace_custody::{
 };
 use std::sync::{Arc, Mutex};
 
+pub(super) fn unloaded_route(path: &str) -> Response {
+    Response::error(
+        404,
+        &format!("no handler for route \"{path}\". route entry not found."),
+    )
+}
+
 fn unavailable() -> Response {
     Response::error(503, "namespace custody lease is unavailable or retired")
 }
@@ -254,7 +261,14 @@ impl ClosedAuthAdmission {
     }
     pub(super) fn actor(&self) -> Result<&Principal, Response> {
         self.principal.as_ref().map_err(|error| {
-            Response::error(error.status, "closed namespace token admission rejected")
+            Response::error(
+                error.status,
+                if error.status == 403 {
+                    "permission denied"
+                } else {
+                    "closed namespace token admission rejected"
+                },
+            )
         })
     }
     fn current_auth(&self, current: &State) -> Result<AuthState, Response> {

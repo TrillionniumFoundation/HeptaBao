@@ -2624,7 +2624,7 @@ impl Service {
                 return Response::error(403, "missing client token");
             }
             if resources_unloaded {
-                return Response::error(404, "namespace resource routes are unloaded");
+                return namespace_runtime::unloaded_route(path);
             }
             return help_projection.map_or_else(
                 || Response::error(404, "help route not found"),
@@ -2659,7 +2659,7 @@ impl Service {
         // from another namespace still fails the existing ACL scope check
         // above; an authorized resource request observes the unloaded router.
         if resources_unloaded && principal.is_some() {
-            return Response::error(404, "namespace resource routes are unloaded");
+            return namespace_runtime::unloaded_route(path);
         }
         // Do not inspect stored provider parameters or disclose candidate
         // validation/existence failures until this exact route is authorized.

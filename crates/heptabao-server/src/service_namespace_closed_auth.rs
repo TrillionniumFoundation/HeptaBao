@@ -29,7 +29,10 @@ impl Service {
             return Some(Response::error(403, "permission denied"));
         }
         if admitted.namespace_is_sealed(actual) {
-            return Some(Response::error(503, "namespace is sealed"));
+            return Some(Response::error(
+                503,
+                "error performing token check: failed to read entry: Vault is sealed",
+            ));
         }
         if admitted.namespaces.inherited_owner(actual).is_none()
             || self.namespace_runtime.is_loaded(actual)
@@ -141,7 +144,7 @@ impl Service {
             && !self.namespace_runtime.is_loaded(namespace);
         if request.method == "HELP" {
             if unloaded {
-                return Response::error(404, "namespace resource routes are unloaded");
+                return namespace_runtime::unloaded_route(request.path);
             }
             return help_body.map_or_else(
                 || Response::error(404, "help route not found"),
@@ -171,7 +174,7 @@ impl Service {
             return response;
         }
         if unloaded {
-            return Response::error(404, "namespace resource routes are unloaded");
+            return namespace_runtime::unloaded_route(request.path);
         }
         // This first bounded slice never dispatches other ordinary owners,
         // target-token writes, wrapper payloads or external effects.
