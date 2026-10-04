@@ -48,13 +48,23 @@ fn issuer_issue_fixture_with_role(
     if historical_role {
         // Authenticated typed predecessor fixture; no claim of an old binary.
         // Publish it before any new-role84 commit, without lowering a protected store.
-        let mut encoded = serde_json::to_value(prior)?;
-        encoded["engines"]["namespaces"][""]["mounts"]["external-ca/"]["backend"]["Pki"]["roles"]
-            ["leaf"] = json!({
-            "allowed_domains":["example.test"],"allow_subdomains":true,
-            "allow_ip_sans":false,"max_ttl":1800,"generate_lease":true
-        });
-        let predecessor: State = serde_json::from_value(encoded)?;
+        // Clone retains the actual authenticated record runtime. Whole-State
+        // serde would deliberately drop that process-private publication owner.
+        let mut predecessor = prior.clone();
+        predecessor.engines.fixture_insert_historical_pki_role(
+            "",
+            "external-ca/",
+            "leaf",
+            &json!({
+                "allowed_domains":["example.test"],"allow_subdomains":true,
+                "allow_ip_sans":false,"max_ttl":1800,"generate_lease":true
+            }),
+        )?;
+        assert!(
+            predecessor.engines.record_root() == prior.engines.record_root()
+                && predecessor.engines.record_root().is_some(),
+            "historical fixture retains the true admitted record root"
+        );
         assert!(
             predecessor.schema == prior.schema
                 && predecessor.writer_schema() == prior.schema

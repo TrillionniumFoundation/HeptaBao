@@ -851,6 +851,23 @@ impl Pki {
         Err(error(404, "PKI path is not implemented"))
     }
 
+    #[cfg(test)]
+    pub(super) fn fixture_insert_historical_role(
+        &mut self,
+        name: &str,
+        value: &Value,
+    ) -> Result<()> {
+        valid_name(name)?;
+        let role: Role = serde_json::from_value(value.clone())
+            .map_err(|_| bad("historical typed role fixture"))?;
+        if role.allow_bare_domains.is_some() || role.allow_any_name {
+            return Err(bad("historical fixture cannot install a new role owner"));
+        }
+        role.validate()?;
+        self.roles.insert(name.to_owned(), role);
+        Ok(())
+    }
+
     fn handle_cluster_config(&mut self, method: &str, body: &Value) -> Result<EngineResponse> {
         match method {
             "GET" => {

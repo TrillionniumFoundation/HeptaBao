@@ -655,6 +655,25 @@ impl EngineState {
         })
     }
 
+    #[cfg(test)]
+    pub(crate) fn fixture_insert_historical_pki_role(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        name: &str,
+        value: &Value,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|state| state.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(pki) = &mut mounted.backend else {
+            return Err(bad("historical role fixture requires actual PKI mount"));
+        };
+        pki.fixture_insert_historical_role(name, value)
+    }
+
     pub(crate) fn has_pki_role_bare_domain_state(&self) -> bool {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount| {
