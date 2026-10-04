@@ -113,6 +113,8 @@ mod openldap_secret;
 mod plugin;
 #[path = "service_recovery_keys.rs"]
 mod recovery_keys;
+#[path = "service_token_precision.rs"]
+mod token_precision;
 #[cfg(target_os = "linux")]
 pub use openbao_wrapper::{
     OpenBaoWrapperCompletion, OpenBaoWrapperOperationPlan, WrapperCleanupState, WrapperOperation,
@@ -866,6 +868,7 @@ pub(crate) enum ExternalEffectResult {
 pub(crate) struct PendingExternalRequest {
     fingerprint: String,
     now: u64,
+    token_clock: Option<RequestClock>,
     effect: ExternalEffectPlan,
 }
 
@@ -1745,8 +1748,12 @@ impl Service {
                 ExternalEffectResult::ExternalPki(result),
             ) => {
                 let response = self.finalize_external_pki(&mut plan, result);
-                let response =
-                    self.audit_completed_response(&pending.fingerprint, pending.now, response);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
                 return self.complete_external_pki_delivery(
                     &mut plan,
                     response,
@@ -1771,15 +1778,25 @@ impl Service {
                 Response::error(503, "external request observation type mismatch")
             }
         };
-        self.audit_completed_response(&pending.fingerprint, pending.now, response)
+        self.audit_completed_response(
+            &pending.fingerprint,
+            pending.now,
+            pending.token_clock,
+            response,
+        )
     }
 
     fn audit_completed_response(
         &mut self,
         fingerprint: &str,
         now: u64,
+        token_clock: Option<RequestClock>,
         mut response: Response,
     ) -> Response {
+        if let Err(cause) = self.persist_terminal_token_clock(token_clock, now) {
+            erase_json(&mut response.body);
+            response = cause;
+        }
         if self
             .audit_event("response", fingerprint, now, Some(response.status))
             .is_err()
@@ -2020,11 +2037,13 @@ impl Service {
                     Ok(plan) => RequestExecution::External(Box::new(PendingExternalRequest {
                         fingerprint,
                         now,
+                        token_clock,
                         effect: ExternalEffectPlan::WrapperBarrierInit(Box::new(plan)),
                     })),
                     Err(response) => RequestExecution::Complete(self.audit_completed_response(
                         &fingerprint,
                         now,
+                        token_clock,
                         response,
                     )),
                 };
@@ -2105,6 +2124,7 @@ impl Service {
             return RequestExecution::Complete(self.audit_completed_response(
                 &fingerprint,
                 now,
+                token_clock,
                 Response::error(503, "multiple external effects staged for one request"),
             ));
         }
@@ -2130,10 +2150,16 @@ impl Service {
             return RequestExecution::External(Box::new(PendingExternalRequest {
                 fingerprint,
                 now,
+                token_clock,
                 effect,
             }));
         }
-        RequestExecution::Complete(self.audit_completed_response(&fingerprint, now, response))
+        RequestExecution::Complete(self.audit_completed_response(
+            &fingerprint,
+            now,
+            token_clock,
+            response,
+        ))
     }
 
     fn handle_inner(&mut self, request: RequestView<'_>) -> Response {
@@ -3073,6 +3099,7 @@ impl Service {
     fn immutable_kv_response(&self, request: &RequestView<'_>) -> Option<Response> {
         let state = self.state.as_ref()?;
         if request.wrap_ttl_seconds.is_some()
+            || state.has_token_api_precision_state()
             || state.engines.has_live_leases()
             || state.auth.is_wrapping_token(request.token)
             || !state

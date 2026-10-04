@@ -60,7 +60,12 @@ fn timed_leaf_delivery(
     let expiration = response.body["data"]["expiration"]
         .as_u64()
         .ok_or("real leaf expiry")?;
-    let response = service.audit_completed_response(&pending.fingerprint, pending.now, response);
+    let response = service.audit_completed_response(
+        &pending.fingerprint,
+        pending.now,
+        pending.token_clock,
+        response,
+    );
     let before = started.elapsed();
     let response =
         service.complete_external_pki_delivery(&mut plan, response, &pending.fingerprint);

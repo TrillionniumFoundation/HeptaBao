@@ -36,6 +36,7 @@ fn service(
 }
 fn precise_service(state: &mut AuthState, raw: &str) {
     state.token_api_precision_state = true;
+    state.token_api_observed_at = Some(timestamp(100, 200_000_000));
     let token = state.tokens.get_mut(&hash(raw)).unwrap();
     let granted = span(500_000_000);
     token.token_api_precision = Some(ServicePrecision {
@@ -221,6 +222,7 @@ fn precise_batch_and_persisted_owner_are_authenticated_with_whole_creation_ancho
     )?;
     state.batch_authority = Some(keys);
     state.token_api_precision_state = true;
+    state.token_api_observed_at = Some(timestamp(100, 200_000_000));
     let before = AuthorityTime::Precise(timestamp(100, 350_000_000));
     let after = AuthorityTime::Precise(timestamp(100, 800_000_000));
     assert!(state.authenticate_from(token.as_str(), 100, None).is_err());
@@ -249,6 +251,26 @@ fn precise_batch_and_persisted_owner_are_authenticated_with_whole_creation_ancho
     let mut bad = serde_json::to_value(&decoded)?;
     bad["token_api_precision"]["expires_at"]["nanoseconds"] = json!(900_000_000);
     assert!(serde_json::from_value::<LeaseOwner>(bad).is_err());
+    // The trusted observed expiry survives Auth-owner persistence. Replaying
+    // the earlier exact wall time cannot restore the opaque token or its owner.
+    state.observe_token_api_time(after)?;
+    let mut reopened: AuthState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
+    reopened.validate_system_lease_defaults()?;
+    assert!(
+        reopened
+            .authenticate_from_observed(token.as_str(), before, None)
+            .is_err()
+    );
+    assert!(
+        reopened
+            .authorize_request_observed(&actor, "", "auth/token/lookup-self", "read", before)
+            .is_err()
+    );
+    assert!(
+        reopened
+            .resolve_lease_owner_observed(&decoded, "", before)
+            .is_none()
+    );
     Ok(())
 }
 
@@ -657,5 +679,122 @@ fn coarse_publication_cannot_seal_precise_batch_or_reanchor_its_creation() -> Te
     assert!(state.finish_pending_batch(&mut issued, "", 100).is_err());
     assert_eq!(serde_json::to_vec(&state)?, before);
     assert!(issued.body["auth"].get("client_token").is_none());
+    Ok(())
+}
+
+#[test]
+fn private_observation_floor_survives_reopen_and_prevents_same_second_token_revival() -> TestResult
+{
+    let (mut state, root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw);
+    state.authenticate_from_observed(
+        &raw,
+        AuthorityTime::Precise(timestamp(100, 600_000_000)),
+        None,
+    )?;
+    assert!(state.observe_token_api_time(AuthorityTime::Precise(timestamp(100, 800_000_000)))?);
+    assert!(
+        state
+            .authenticate_from_observed(
+                &raw,
+                AuthorityTime::Precise(timestamp(100, 600_000_000)),
+                None
+            )
+            .is_err()
+    );
+    let mut reopened: AuthState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
+    reopened.validate_system_lease_defaults()?;
+    assert!(
+        reopened
+            .authenticate_from_observed(
+                &raw,
+                AuthorityTime::Precise(timestamp(100, 600_000_000)),
+                None
+            )
+            .is_err()
+    );
+    let before = serde_json::to_vec(&reopened)?;
+    assert!(!reopened.observe_token_api_time(AuthorityTime::Precise(timestamp(100, 300_000_000)))?);
+    assert_eq!(serde_json::to_vec(&reopened)?, before);
+    assert!(
+        reopened
+            .observe_token_api_time(AuthorityTime::Coarse(101))
+            .is_err()
+    );
+    assert_eq!(serde_json::to_vec(&reopened)?, before);
+    Ok(())
+}
+#[test]
+fn precise_floor_retirement_and_snapshot_publication_cannot_remove_or_lower_it() -> TestResult {
+    let (mut state, root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw);
+    state.observe_token_api_time(AuthorityTime::Precise(timestamp(100, 800_000_000)))?;
+    state.tokens.remove(&hash(&raw));
+    assert!(state.has_token_api_precision_state());
+    state.validate_system_lease_defaults()?;
+    let same: AuthState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
+    same.validate_token_api_clock_floor(Some(&state))?;
+    let mut lower = same.clone();
+    lower.token_api_observed_at = Some(timestamp(100, 700_000_000));
+    assert!(lower.validate_token_api_clock_floor(Some(&state)).is_err());
+    lower.token_api_observed_at = None;
+    lower.token_api_precision_state = false;
+    assert!(lower.validate_token_api_clock_floor(Some(&state)).is_err());
+    let mut higher = same.clone();
+    higher.observe_token_api_time(AuthorityTime::Precise(timestamp(100, 900_000_000)))?;
+    higher.validate_token_api_clock_floor(Some(&state))?;
+    Ok(())
+}
+#[test]
+fn request_floor_does_not_add_elapsed_again_or_move_the_monotonic_deadline_origin() -> TestResult {
+    let started = Instant::now()
+        .checked_sub(Duration::from_millis(250))
+        .ok_or("instant")?;
+    let clock = RequestClock::anchored(Duration::new(100, 200_000_000), started)?;
+    let floor = timestamp(1000, 800_000_000);
+    let normalized = clock.with_timestamp_floor(floor);
+    assert_eq!(normalized.started(), started);
+    assert_eq!(normalized.admitted_at(), floor);
+    assert_eq!(normalized.observed_at()?, floor);
+    assert_eq!(normalized.with_seconds_floor(999)?.observed_at()?, floor);
+    let mut state = setup()?.0;
+    state.token_api_precision_state = true;
+    state.token_api_observed_at = Some(floor);
+    assert_eq!(state.token_api_request_clock(clock).observed_at()?, floor);
+    Ok(())
+}
+#[test]
+fn precise_observation_floor_is_bounded_and_cannot_be_forged_through_creation_body() -> TestResult {
+    let (mut state, root) = setup()?;
+    let recipe = prepared(&state, &root, false)?;
+    let clock = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+    let issued = state.finish_precise_token_creation(recipe,
+        &json!({"ttl":"500ms", "token_api_observed_at":{"seconds":253402300799_u64,"nanoseconds":999999999}}), clock)?;
+    assert_eq!(issued.body["auth"]["lease_duration"], 0);
+    assert_eq!(
+        state.token_api_observed_at.ok_or("floor absent")?.seconds(),
+        100
+    );
+    state.validate_system_lease_defaults()?;
+    let base = serde_json::to_value(&state)?;
+    for bad in [
+        json!({"seconds":100,"nanoseconds":1000000000}),
+        json!({"seconds":253402300800_u64,"nanoseconds":0}),
+        json!("future"),
+        json!(-1),
+    ] {
+        let mut malformed = base.clone();
+        malformed["token_api_observed_at"] = bad;
+        assert!(serde_json::from_value::<AuthState>(malformed).is_err());
+    }
+    let mut missing = base.clone();
+    missing
+        .as_object_mut()
+        .ok_or("auth object")?
+        .remove("token_api_observed_at");
+    let missing: AuthState = serde_json::from_value(missing)?;
+    assert!(missing.validate_token_api_precision_state().is_err());
     Ok(())
 }

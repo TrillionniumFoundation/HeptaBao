@@ -21,6 +21,11 @@ impl Service {
         let time = time
             .with_seconds_floor(state.engines.lease_clock())
             .map_err(|_| Response::error(503, "trusted token clock is unavailable"))?;
+        let clock_changed = state
+            .auth
+            .observe_token_api_time(time)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        let time = state.auth.token_api_observed_time(time);
         let now = time.seconds();
         let owners = state.engines.lease_owners();
         let mut live = BTreeSet::new();
@@ -47,7 +52,7 @@ impl Service {
             .engines
             .maintain_local_pki_crl(now)
             .map_err(|error| Response::error(error.status, &error.message))?;
-        Ok(reconciled | rebuilt)
+        Ok(clock_changed | reconciled | rebuilt)
     }
     pub(super) fn lease_route(
         state: &mut State,

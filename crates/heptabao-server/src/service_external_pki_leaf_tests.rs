@@ -283,8 +283,12 @@ fn external_pki270_own_publication_checkpoint_rejects_postcommit_grant_aba() -> 
                 .is_ok_and(|identity| identity == checkpoint_identity),
             "ABA restores content while durable generation advances"
         );
-        let response =
-            service.audit_completed_response(&pending.fingerprint, pending.now, response);
+        let response = service.audit_completed_response(
+            &pending.fingerprint,
+            pending.now,
+            pending.token_clock,
+            response,
+        );
         let sequence = service.audit_sequence;
         if fail_veto_audit {
             service.audit_capacity = service.audit.metadata()?.len();

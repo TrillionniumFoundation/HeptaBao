@@ -885,28 +885,7 @@ fn coarse_owner_maintenance_cannot_destroy_a_live_precise_ssh_lease() -> TestRes
     install(&mut service, &root);
     assert_eq!(issue(&mut service, &root).status, 200);
     let state = service.state.as_mut().ok_or("state")?;
-    // This isolated pre-activation fixture is constructed inside cfg(test),
-    // never from a bearer/body. Schema82 publication remains disabled.
-    let mut auth = serde_json::to_value(&state.auth)?;
-    let issuer = auth["tokens"]
-        .as_object_mut()
-        .ok_or("tokens")?
-        .values_mut()
-        .find(|token| token["root"] == true)
-        .ok_or("root issuer")?;
-    issuer["expires_at"] = json!(101);
-    issuer["token_api_lease_ttl"] = json!(1);
-    issuer["auth_provenance"] = json!({"kind":"token_api","issued_creation_ttl":0});
-    issuer["token_api_precision"] = json!({
-        "issued_at":{"seconds":100,"nanoseconds":200000000},
-        "grant_started_at":{"seconds":100,"nanoseconds":200000000},
-        "expires_at":{"seconds":100,"nanoseconds":700000000},
-        "last_renewed_at":null,"previous_grant":500000000,"creation_grant":500000000,
-        "requested_period":0,"requested_explicit_max":0
-    });
-    auth["token_api_precision_state"] = json!(true);
-    state.auth = serde_json::from_value(auth)?;
-    state.auth.validate_system_lease_defaults()?;
+    install_precise_root_for_clock_test(state)?;
     let before = serde_json::to_vec(state)?;
     let failure =
         Service::reconcile_lease_owners(state, 100).expect_err("coarse authority refused");
@@ -927,5 +906,108 @@ fn coarse_owner_maintenance_cannot_destroy_a_live_precise_ssh_lease() -> TestRes
         .map_err(|_| "expired precise owner reconciliation failed")?
     );
     assert!(!state.engines.has_live_leases());
+    Ok(())
+}
+
+fn install_precise_root_for_clock_test(state: &mut State) -> TestResult {
+    // This isolated pre-activation fixture is constructed inside cfg(test),
+    // never from a bearer/body. Schema82 publication remains disabled.
+    let mut auth = serde_json::to_value(&state.auth)?;
+    let issuer = auth["tokens"]
+        .as_object_mut()
+        .ok_or("tokens")?
+        .values_mut()
+        .find(|token| token["root"] == true)
+        .ok_or("root issuer")?;
+    issuer["expires_at"] = json!(101);
+    issuer["token_api_lease_ttl"] = json!(1);
+    issuer["auth_provenance"] = json!({"kind":"token_api","issued_creation_ttl":0});
+    issuer["token_api_precision"] = json!({
+        "issued_at":{"seconds":100,"nanoseconds":200000000},
+        "grant_started_at":{"seconds":100,"nanoseconds":200000000},
+        "expires_at":{"seconds":100,"nanoseconds":700000000},
+        "last_renewed_at":null,"previous_grant":500000000,"creation_grant":500000000,
+        "requested_period":0,"requested_explicit_max":0
+    });
+    auth["token_api_precision_state"] = json!(true);
+    auth["token_api_observed_at"] = json!({"seconds":100,"nanoseconds":200000000});
+    state.auth = serde_json::from_value(auth)?;
+    state.auth.validate_system_lease_defaults()?;
+    Ok(())
+}
+
+#[test]
+fn terminal_clock_commit_failure_erases_a_successful_private_response() -> TestResult {
+    let fixture = Fixture::new()?;
+    let mut service = fixture.service()?;
+    let (_root, _) = start(&mut service)?;
+    install_precise_root_for_clock_test(service.state.as_mut().ok_or("state")?)?;
+    let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+    let digest = service.current_state_digest().map_err(|_| "state digest")?;
+    let clock = RequestClock::anchored(Duration::new(100, 800000000), std::time::Instant::now())?;
+    // The staged precision reader/writer is deliberately still disabled.
+    // Even a handler's already prepared success cannot bypass that commit gate.
+    let response = service.audit_completed_response(
+        "terminal-floor-test",
+        100,
+        Some(clock),
+        Response {
+            consistency_index: None,
+            status: 200,
+            body: json!({"auth":{"client_token":"withheld-terminal-credential"}}),
+        },
+    );
+    assert_eq!(response.status, 503);
+    assert!(
+        !response
+            .body
+            .to_string()
+            .contains("withheld-terminal-credential")
+    );
+    assert_eq!(
+        serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
+        before
+    );
+    assert_eq!(
+        service.current_state_digest().map_err(|_| "state digest")?,
+        digest
+    );
+    Ok(())
+}
+
+#[test]
+fn historical_terminal_clock_does_not_add_an_authoritative_state_write() -> TestResult {
+    let fixture = Fixture::new()?;
+    let mut service = fixture.service()?;
+    let (_root, _) = start(&mut service)?;
+    let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+    let digest = service.current_state_digest().map_err(|_| "state digest")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let clock = RequestClock::anchored(Duration::new(100, 800000000), std::time::Instant::now())?;
+    service
+        .persist_terminal_token_clock(Some(clock), 100)
+        .map_err(|_| "historical terminal clock")?;
+    service
+        .persist_terminal_token_clock(None, 100)
+        .map_err(|_| "historical coarse terminal clock")?;
+    assert_eq!(
+        serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
+        before
+    );
+    assert_eq!(
+        service.current_state_digest().map_err(|_| "state digest")?,
+        digest
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .has_token_api_precision_state()
+    );
     Ok(())
 }

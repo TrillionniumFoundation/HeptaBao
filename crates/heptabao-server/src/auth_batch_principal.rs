@@ -232,6 +232,7 @@ impl AuthState {
         namespace: &str,
         time: AuthorityTime,
     ) -> Result<(), AuthError> {
+        let time = self.token_api_observed_time(time);
         self.batch_authority
             .as_ref()
             .ok_or_else(denied)?
@@ -391,6 +392,7 @@ impl AuthState {
         namespace: &str,
         time: AuthorityTime,
     ) -> Option<ResolvedLeaseOwner> {
+        let time = self.token_api_observed_time(time);
         if let Some(digest) = owner.service_digest() {
             let issuer = self.lease_issuer_by_digest_observed(digest, namespace, time)?;
             return Some(ResolvedLeaseOwner {

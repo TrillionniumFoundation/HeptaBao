@@ -17,6 +17,30 @@ pub(super) struct RecordPlan {
     pub objects: Vec<Arc<StagedObject>>,
 }
 
+impl RecordPlan {
+    fn validate_precise_auth_owner(&self, state: &State) -> Result<(), Response> {
+        if !state.has_token_api_precision_state() {
+            return Ok(());
+        }
+        // Bind the private floor and every precise issuer field to the exact
+        // authenticated Auth owner carried by this plan, including old plans
+        // paired with a newer in-memory State. No floor is trusted as metadata.
+        let bytes = owner_store::serialize_owner(&state.auth).map_err(state_serialization_error)?;
+        let owner = self
+            .root
+            .owners
+            .iter()
+            .find(|owner| owner.name == "auth")
+            .ok_or_else(unavailable)?;
+        let digest = state_record_root::digest_owner(&self.root.address_key(), "auth", &bytes)
+            .map_err(root_error)?;
+        if owner.total_bytes != bytes.len() as u64 || owner.digest != digest {
+            return Err(unavailable());
+        }
+        Ok(())
+    }
+}
+
 /// Keep the first occurrence in child-first order, but reject an ID that hides
 /// conflicting authenticated metadata or bytes. A pending batch is not yet in
 /// durable.get, so admission and execution must consume the same unique set.
@@ -436,6 +460,7 @@ impl Service {
     ) -> Result<(), Response> {
         state.validate_publication_schema(self.state.as_ref())?;
         state.validate_format()?;
+        plan.validate_precise_auth_owner(state)?;
         if state.schema != plan.root.state_schema
             || state.cluster_id != plan.root.cluster_id
             || state.replay_epoch != plan.root.replay_epoch
@@ -831,6 +856,18 @@ impl Service {
                 "HA recovery state requires a backend-bound public-index consumer",
             ));
         }
+        if let Err(error) = state
+            .auth
+            .validate_token_api_clock_floor(self.state.as_ref().map(|state| &*state.auth))
+            .map_err(|error| Response::error(503, &error.message))
+            .and_then(|()| plan.validate_precise_auth_owner(&state))
+        {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            self.ha_read_cache = None;
+            return Err(Self::ha_committed_local_failure(error));
+        }
         // Raft already owns this state; a local limit is not a pre-entry rejection.
         if let Err(error) = self.validate_loaded_capacity(&state, Some(&plan.root)) {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
@@ -999,6 +1036,36 @@ mod tests {
             204
         );
     }
+    #[test]
+    fn old_record_plan_cannot_publish_a_newer_private_observation_floor() -> TestResult {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (_key, token) = bootstrap(&mut service)?;
+        mount(&mut service, &token);
+        let state = service.state.as_ref().ok_or("state")?;
+        let plan = service.prepare_record_plan(state).map_err(|_| "plan")?;
+        plan.validate_precise_auth_owner(state)
+            .map_err(|_| "historical binding")?;
+        let digest = service.current_state_digest().map_err(|_| "digest")?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let mut newer = state.clone();
+        let mut auth = serde_json::to_value(&newer.auth)?;
+        auth["token_api_precision_state"] = json!(true);
+        auth["token_api_observed_at"] = json!({"seconds":100,"nanoseconds":800000000});
+        newer.auth = serde_json::from_value(auth)?;
+        newer.auth.validate_system_lease_defaults()?;
+        assert!(plan.validate_precise_auth_owner(&newer).is_err());
+        assert_eq!(
+            service.current_state_digest().map_err(|_| "digest")?,
+            digest
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        Ok(())
+    }
+
     #[test]
     fn object_dedup_preserves_order_and_rejects_reference_or_byte_conflicts() -> TestResult {
         let key = crate::state_records::AddressKey::from_bytes([71; 32]);

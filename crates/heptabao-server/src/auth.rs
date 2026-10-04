@@ -220,6 +220,9 @@ pub struct AuthState {
     /// Sticky precision ownership; stateless issued batch tokens outlive records.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     token_api_precision_state: bool,
+    /// Trusted private observation floor, retained after the final token retires.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_api_observed_at: Option<Timestamp>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     password_policies: BTreeMap<String, BTreeMap<String, password_policy::PasswordPolicy>>,
     users: BTreeMap<String, BTreeMap<String, User>>,
@@ -2283,6 +2286,7 @@ impl AuthState {
             token_roles: BTreeMap::new(),
             token_api_batch_policy_state: false,
             token_api_precision_state: false,
+            token_api_observed_at: None,
             password_policies: BTreeMap::new(),
             users: BTreeMap::new(),
             roles: BTreeMap::new(),
@@ -2344,6 +2348,7 @@ impl AuthState {
         consume_check: bool,
     ) -> Result<&Token, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
+        let time = self.token_api_observed_time(time);
         let time = if token.wrapping.is_some() {
             AuthorityTime::Coarse(time.seconds().max(self.wrapping_clock))
         } else {
@@ -2465,6 +2470,7 @@ impl AuthState {
         time: AuthorityTime,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Principal, AuthError> {
+        let time = self.token_api_observed_time(time);
         let now = time.seconds();
         if raw.starts_with("hvb.") {
             return self.batch_principal_observed(raw, time, origin_peer);
@@ -3655,6 +3661,8 @@ impl AuthState {
         peer_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Option<AuthResponse>, AuthError> {
+        let time = self.token_api_observed_time(time);
+        let clock = clock.map(|clock| self.token_api_request_clock(clock));
         let now = time.seconds();
         validate_namespace(namespace)?;
         validate_path(path, false)?;
@@ -5986,6 +5994,8 @@ impl AuthState {
         clock: Option<RequestClock>,
         peer_certificates: Option<&[Vec<u8>]>,
     ) -> Result<AuthResponse, AuthError> {
+        let time = self.token_api_observed_time(time);
+        let clock = clock.map(|clock| self.token_api_request_clock(clock));
         let now = time.seconds();
         let operation = path
             .strip_prefix("auth/token/")

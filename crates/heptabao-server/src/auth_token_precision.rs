@@ -255,32 +255,38 @@ impl BatchPrecision {
 pub(crate) struct RequestClock {
     wall: Timestamp,
     started: Instant,
+    floor: Option<Timestamp>,
 }
 impl RequestClock {
     pub(crate) fn anchored(wall: Duration, started: Instant) -> Result<Self, PrecisionError> {
         Ok(Self {
             wall: Timestamp::from_wall(wall)?,
             started,
+            floor: None,
         })
     }
     pub(crate) fn observed_at(self) -> Result<Timestamp, PrecisionError> {
         let elapsed = self.started.elapsed();
         // The elapsed span is request bounded; reject rather than saturate.
-        self.wall.checked_add(DurationNanos::checked(
+        let observed = self.wall.checked_add(DurationNanos::checked(
             u64::try_from(elapsed.as_nanos()).map_err(|_| PrecisionError::Clock)?,
-        )?)
+        )?)?;
+        Ok(self.floor.map_or(observed, |floor| observed.max(floor)))
     }
     pub(crate) fn admitted_at(self) -> Timestamp {
-        self.wall
+        self.floor.map_or(self.wall, |floor| self.wall.max(floor))
     }
     pub(crate) fn started(self) -> Instant {
         self.started
     }
     pub(crate) fn with_seconds_floor(self, seconds: u64) -> Result<Self, PrecisionError> {
-        Ok(Self {
-            wall: self.wall.max(Timestamp::whole(seconds)?),
+        Ok(self.with_timestamp_floor(Timestamp::whole(seconds)?))
+    }
+    pub(crate) fn with_timestamp_floor(self, floor: Timestamp) -> Self {
+        Self {
+            floor: Some(self.floor.map_or(floor, |previous| previous.max(floor))),
             ..self
-        })
+        }
     }
 }
 
@@ -347,17 +353,75 @@ impl AuthorityTime {
 impl super::AuthState {
     pub(crate) fn has_token_api_precision_state(&self) -> bool {
         self.token_api_precision_state
+            || self.token_api_observed_at.is_some()
             || self
                 .tokens
                 .values()
                 .any(|token| token.token_api_precision.is_some())
     }
+    pub(crate) fn token_api_observed_time(&self, time: AuthorityTime) -> AuthorityTime {
+        match (time, self.token_api_observed_at) {
+            (AuthorityTime::Precise(now), Some(floor)) => AuthorityTime::Precise(now.max(floor)),
+            _ => time,
+        }
+    }
+    pub(super) fn token_api_request_clock(&self, clock: RequestClock) -> RequestClock {
+        self.token_api_observed_at
+            .map_or(clock, |floor| clock.with_timestamp_floor(floor))
+    }
+    pub(crate) fn observe_token_api_time(
+        &mut self,
+        time: AuthorityTime,
+    ) -> Result<bool, super::AuthError> {
+        if !self.has_token_api_precision_state() {
+            return Ok(false);
+        }
+        let at = self
+            .token_api_observed_time(time)
+            .exact()
+            .ok_or_else(|| super::err(503, "trusted token clock is required"))?
+            .max(
+                Timestamp::whole(self.wrapping_clock)
+                    .map_err(|_| super::err(503, "trusted token clock is unavailable"))?,
+            );
+        let changed = self.token_api_observed_at != Some(at);
+        self.token_api_observed_at = Some(at);
+        Ok(changed)
+    }
+    pub(crate) fn validate_token_api_clock_floor(
+        &self,
+        previous: Option<&Self>,
+    ) -> Result<(), super::AuthError> {
+        if let Some(previous) = previous
+            && previous.has_token_api_precision_state()
+            && (!self.token_api_precision_state
+                || self.token_api_observed_at.is_none()
+                || previous.token_api_observed_at.is_none()
+                || self.token_api_observed_at < previous.token_api_observed_at)
+        {
+            return Err(super::err(
+                503,
+                "Token API precise observation floor cannot decrease",
+            ));
+        }
+        Ok(())
+    }
     pub(crate) fn validate_token_api_precision_state(&self) -> Result<(), super::AuthError> {
+        if self.token_api_precision_state != self.token_api_observed_at.is_some() {
+            return Err(super::bad(
+                "invalid private Token API precise observation floor",
+            ));
+        }
         for token in self.tokens.values() {
             let Some(lease) = &token.token_api_precision else {
                 continue;
             };
             if !self.token_api_precision_state
+                || self.token_api_observed_at.is_none_or(|floor| {
+                    lease.grant_started_at > floor
+                        || lease.issued_at > floor
+                        || lease.last_renewed_at.is_some_and(|last| last > floor)
+                })
                 || token.wrapping.is_some()
                 || token.auth_cert_role.is_some()
                 || token.auth_cert_sha256.is_some()

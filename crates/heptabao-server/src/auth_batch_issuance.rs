@@ -281,6 +281,7 @@ impl AuthState {
         now: u64,
         time: AuthorityTime,
     ) -> Result<(), AuthError> {
+        let time = self.token_api_observed_time(time);
         let Some(pending) = response.pending_batch.take() else {
             return Ok(());
         };

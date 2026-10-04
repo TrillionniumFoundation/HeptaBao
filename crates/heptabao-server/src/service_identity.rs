@@ -74,6 +74,9 @@ impl State {
                 "unsupported or downgraded identity state schema",
             ));
         }
+        self.auth
+            .validate_token_api_clock_floor(previous.map(|state| &state.auth))
+            .map_err(|error| Response::error(503, &error.message))?;
         if self.has_token_api_precision_state()
             || previous.is_some_and(|state| state.has_token_api_precision_state())
         {
@@ -249,6 +252,12 @@ impl State {
         self.auth
             .validate_token_api_precision_state()
             .map_err(|error| Response::error(503, &error.message))?;
+        if self.has_token_api_precision_state() && !self.auth.has_token_api_precision_state() {
+            return Err(Response::error(
+                503,
+                "private precise lease owners require an observation floor",
+            ));
+        }
         if self.has_token_api_precision_state() {
             return Err(Response::error(
                 503,

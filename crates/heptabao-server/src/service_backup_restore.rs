@@ -327,6 +327,10 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        incoming
+            .auth
+            .validate_token_api_clock_floor(Some(&current.auth))
+            .map_err(|error| Response::error(400, &error.message))?;
         if current.schema >= TOKEN_ROLE_STATE_SCHEMA && incoming.schema < TOKEN_ROLE_STATE_SCHEMA {
             return Err(Response::error(
                 400,

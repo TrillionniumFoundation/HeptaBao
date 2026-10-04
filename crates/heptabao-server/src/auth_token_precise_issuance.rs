@@ -54,6 +54,7 @@ impl AuthState {
         body: &Value,
         clock: RequestClock,
     ) -> Result<AuthResponse, AuthError> {
+        let clock = self.token_api_request_clock(clock);
         let PreparedCreation {
             actor,
             namespace,
@@ -332,6 +333,7 @@ impl AuthState {
             result
         };
         self.token_api_precision_state = true;
+        self.observe_token_api_time(AuthorityTime::Precise(precise(clock)?))?;
         self.system_lease_defaults.get_or_insert(system_defaults);
         if !warnings.is_empty() {
             response.body["warnings"] = json!(warnings);
@@ -358,6 +360,7 @@ impl AuthState {
         body: &Value,
         clock: RequestClock,
     ) -> Result<Option<AuthResponse>, AuthError> {
+        let clock = self.token_api_request_clock(clock);
         let token = self.tokens.get(target).ok_or_else(denied)?;
         let Some(lease) = token.token_api_precision.as_ref() else {
             return Ok(None);
@@ -457,6 +460,7 @@ impl AuthState {
                 "entity_id":token.entity_id.as_deref().unwrap_or(""),"lease_duration":grant.ttl.public_seconds(),
                 "renewable":true,"token_type":"service","orphan":token.parent.is_none(),"num_uses":token.uses_remaining.unwrap_or(0)}}),
         };
+        self.observe_token_api_time(AuthorityTime::Precise(precise(clock)?))?;
         self.system_lease_defaults.get_or_insert(system_defaults);
         if !grant.warnings.is_empty() {
             response.body["warnings"] = json!(grant.warnings);
