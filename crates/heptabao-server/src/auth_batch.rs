@@ -312,12 +312,11 @@ pub(crate) fn validate_projection(
 
 impl BatchClaims {
     fn validate(&self) -> Result<(), BatchError> {
-        if let Some(lease) = &self.token_api_precision {
-            if !self.token_api_policy_names
-                || lease.validate(self.issued_at, self.expires_at).is_err()
-            {
-                return Err(BatchError::InvalidClaims);
-            }
+        if let Some(lease) = &self.token_api_precision
+            && (!self.token_api_policy_names
+                || lease.validate(self.issued_at, self.expires_at).is_err())
+        {
+            return Err(BatchError::InvalidClaims);
         }
         validate_projection(
             &self.namespace,
@@ -362,14 +361,6 @@ impl BatchClaims {
             return Err(BatchError::InvalidClaims);
         }
         super::token_cidrs::validate(&self.bound_cidrs).map_err(|_| BatchError::InvalidClaims)
-    }
-}
-
-fn check_time(issued_at: u64, expires_at: u64, now: u64) -> Result<(), BatchError> {
-    if now < issued_at || now >= expires_at {
-        Err(BatchError::ExpiredOrFuture)
-    } else {
-        Ok(())
     }
 }
 
@@ -641,6 +632,7 @@ impl BatchKeyAuthority {
             .ok_or(BatchError::InvalidAuthority)
     }
 
+    #[cfg(test)]
     pub(crate) fn check_verified(
         &self,
         claims: &VerifiedBatchClaims,
@@ -672,6 +664,7 @@ impl BatchKeyAuthority {
         )
     }
 
+    #[cfg(test)]
     pub(crate) fn check_lease(
         &self,
         claims: &super::lease_owner::BatchLeaseClaims,

@@ -244,23 +244,23 @@ mod tests {
     use super::*;
     use serde_json::json;
     type TestResult = Result<(), Box<dyn std::error::Error>>;
-    fn span(ns: u64) -> DurationNanos {
-        DurationNanos::checked(ns).unwrap()
+    fn span(ns: u64) -> Result<DurationNanos, PrecisionError> {
+        DurationNanos::checked(ns)
     }
-    fn at(seconds: u64, nanos: u32) -> Timestamp {
-        Timestamp::checked(seconds, nanos).unwrap()
+    fn at(seconds: u64, nanos: u32) -> Result<Timestamp, PrecisionError> {
+        Timestamp::checked(seconds, nanos)
     }
-    fn inputs() -> TTLInputs {
-        TTLInputs {
-            default_ttl: span(10_000_000_000),
-            mount_max: span(32_000_000_000),
-            increment: span(0),
-            backend_ttl: span(0),
-            period: span(0),
-            backend_max: span(0),
-            explicit_max: span(0),
+    fn inputs() -> Result<TTLInputs, PrecisionError> {
+        Ok(TTLInputs {
+            default_ttl: span(10_000_000_000)?,
+            mount_max: span(32_000_000_000)?,
+            increment: span(0)?,
+            backend_ttl: span(0)?,
+            period: span(0)?,
+            backend_max: span(0)?,
+            explicit_max: span(0)?,
             start: None,
-        }
+        })
     }
     #[test]
     fn ordinary_fractional_durations_reject_negative_subseconds_and_preserve_lease_alias_priority()
@@ -280,7 +280,7 @@ mod tests {
                 "explicit_max_ttl" => requested.explicit_max,
                 _ => requested.ttl,
             };
-            assert_eq!(value, span(ns));
+            assert_eq!(value, span(ns)?);
             body[field] = json!("-0.5s");
             assert_eq!(
                 RequestedDurations::parse(&body)
@@ -292,19 +292,19 @@ mod tests {
         }
         assert_eq!(
             RequestedDurations::parse(&json!({"ttl":0,"lease":"2s"}))?.ttl,
-            span(0)
+            span(0)?
         );
         assert_eq!(
             RequestedDurations::parse(&json!({"ttl":null,"lease":"2s"}))?.ttl,
-            span(2_000_000_000)
+            span(2_000_000_000)?
         );
         assert_eq!(
             RequestedDurations::parse(&json!({"ttl":false,"lease":"2s"}))?.ttl,
-            span(0)
+            span(0)?
         );
         assert_eq!(
             RequestedDurations::parse(&json!({"ttl":true}))?.ttl,
-            span(1_000_000_000)
+            span(1_000_000_000)?
         );
         assert_eq!(
             RequestedDurations::parse(&json!({"ttl":1.5}))
@@ -368,28 +368,28 @@ mod tests {
     fn calculate_ttl_truncates_only_clocks_and_keeps_fractional_grants_and_precise_issue_anchor()
     -> TestResult {
         let input = TTLInputs {
-            backend_ttl: span(500_000_000),
-            ..inputs()
+            backend_ttl: span(500_000_000)?,
+            ..inputs()?
         };
-        let q = calculate(input, at(100, 900_000_000))?;
-        assert_eq!(q.ttl, span(500_000_000));
+        let q = calculate(input, at(100, 900_000_000)?)?;
+        assert_eq!(q.ttl, span(500_000_000)?);
         assert!(q.warnings.is_empty());
         // Expiration.RegisterAuth uses real time plus this exact grant. The
         // metadata CreationTime and CalculateTTL clock remain whole-second.
         assert_eq!(
-            at(100, 900_000_000).checked_add(q.ttl)?,
-            at(101, 400_000_000)
+            at(100, 900_000_000)?.checked_add(q.ttl)?,
+            at(101, 400_000_000)?
         );
         let q = calculate(
             TTLInputs {
-                backend_ttl: span(10_000_000_000),
-                explicit_max: span(1_500_000_000),
-                start: Some(at(100, 900_000_000)),
-                ..inputs()
+                backend_ttl: span(10_000_000_000)?,
+                explicit_max: span(1_500_000_000)?,
+                start: Some(at(100, 900_000_000)?),
+                ..inputs()?
             },
-            at(101, 300_000_000),
+            at(101, 300_000_000)?,
         )?;
-        assert_eq!(q.ttl, span(500_000_000));
+        assert_eq!(q.ttl, span(500_000_000)?);
         assert_eq!(
             q.warnings,
             vec![
@@ -399,11 +399,11 @@ mod tests {
         assert!(matches!(
             calculate(
                 TTLInputs {
-                    explicit_max: span(1_500_000_000),
-                    start: Some(at(100, 900_000_000)),
-                    ..inputs()
+                    explicit_max: span(1_500_000_000)?,
+                    start: Some(at(100, 900_000_000)?),
+                    ..inputs()?
                 },
-                at(102, 0)
+                at(102, 0)?
             ),
             Err(TTLError::PastMax)
         ));
@@ -413,22 +413,22 @@ mod tests {
     fn period_lifetime_and_each_warning_format_follow_pinned_source() -> TestResult {
         let q = calculate(
             TTLInputs {
-                period: span(500_000_000),
-                start: Some(at(100, 900_000_000)),
-                ..inputs()
+                period: span(500_000_000)?,
+                start: Some(at(100, 900_000_000)?),
+                ..inputs()?
             },
-            at(1000, 100_000_000),
+            at(1000, 100_000_000)?,
         )?;
-        assert_eq!(q.ttl, span(500_000_000));
+        assert_eq!(q.ttl, span(500_000_000)?);
         assert!(q.warnings.is_empty());
         let q = calculate(
             TTLInputs {
-                period: span(40_000_000_000),
-                ..inputs()
+                period: span(40_000_000_000)?,
+                ..inputs()?
             },
-            at(100, 0),
+            at(100, 0)?,
         )?;
-        assert_eq!(q.ttl, span(32_000_000_000));
+        assert_eq!(q.ttl, span(32_000_000_000)?);
         assert_eq!(
             q.warnings,
             vec![
@@ -446,15 +446,15 @@ mod tests {
             (3600000000001, "1h0.000000001s"),
             (3661000000000, "1h1m1s"),
         ] {
-            assert_eq!(human_duration(span(ns)), text)
+            assert_eq!(human_duration(span(ns)?), text)
         }
         assert!(matches!(
             calculate(
                 TTLInputs {
-                    mount_max: span(0),
-                    ..inputs()
+                    mount_max: span(0)?,
+                    ..inputs()?
                 },
-                at(100, 0)
+                at(100, 0)?
             ),
             Err(TTLError::NonpositiveMax)
         ));
@@ -467,27 +467,24 @@ mod increment_tests {
     use super::*;
     use serde_json::json;
     #[test]
-    fn framework_renew_increment_is_whole_seconds_without_changing_creation_parser() {
+    fn framework_renew_increment_is_whole_seconds_without_changing_creation_parser()
+    -> Result<(), AuthError> {
         assert_eq!(
-            renew_increment(&json!({"increment":"1.5s"}))
-                .unwrap()
-                .public_seconds(),
+            renew_increment(&json!({"increment":"1.5s"}))?.public_seconds(),
             1
         );
         assert_eq!(
-            renew_increment(&json!({"increment":"-0.5s"}))
-                .unwrap()
-                .public_seconds(),
+            renew_increment(&json!({"increment":"-0.5s"}))?.public_seconds(),
             0
         );
         assert!(renew_increment(&json!({"increment":"-1s"})).is_err());
         assert!(renew_increment(&json!({"increment":true})).is_err());
         assert_eq!(
-            RequestedDurations::parse(&json!({"ttl":"1.5s"}))
-                .unwrap()
+            RequestedDurations::parse(&json!({"ttl":"1.5s"}))?
                 .ttl
                 .nanoseconds(),
             1_500_000_000
         );
+        Ok(())
     }
 }

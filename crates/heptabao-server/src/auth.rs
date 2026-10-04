@@ -2388,6 +2388,7 @@ impl AuthState {
         self.authenticate_read_only_from(raw, now, None)
     }
 
+    #[cfg(test)]
     pub(super) fn authenticate_read_only_from(
         &self,
         raw: &str,
@@ -2455,6 +2456,7 @@ impl AuthState {
         self.authenticate_from(raw, now, None)
     }
 
+    #[cfg(test)]
     pub(super) fn authenticate_from(
         &mut self,
         raw: &str,
@@ -2634,6 +2636,7 @@ impl AuthState {
         self.authorize_request_observed(principal, namespace, path, "sudo", time)
     }
 
+    #[cfg(test)]
     pub(super) fn authorize_request_parameters(
         &self,
         principal: &Principal,
@@ -8852,6 +8855,7 @@ pub(crate) struct LeaseIssuer {
     pub(crate) entity_id: Option<String>,
 }
 impl AuthState {
+    #[cfg(test)]
     pub(crate) fn lease_issuer_by_digest(
         &self,
         id: &str,
@@ -8903,9 +8907,7 @@ impl AuthState {
                 }
                 cursor = current.parent.as_deref().and_then(|id| self.tokens.get(id));
             }
-            if time.exact().is_none() {
-                return None;
-            }
+            time.exact()?;
         }
         Some(LeaseIssuer {
             expires_at: expires,

@@ -160,7 +160,7 @@ impl DurationNanos {
         self.0 / NANOS
     }
     pub(crate) fn ceil_seconds(self) -> u64 {
-        self.0 / NANOS + u64::from(self.0 % NANOS != 0)
+        self.0 / NANOS + u64::from(!self.0.is_multiple_of(NANOS))
     }
 }
 
@@ -462,7 +462,7 @@ impl super::AuthState {
             }
             if lease.expires_at.is_none()
                 && (!token.root
-                    || token.namespace != ""
+                    || !token.namespace.is_empty()
                     || token.policies.len() != 1
                     || !token.policies.contains("root")
                     || token.renewable

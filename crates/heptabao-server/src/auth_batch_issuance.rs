@@ -265,6 +265,7 @@ impl AuthState {
         response.body["auth"]["entity_id"] = json!(entity_id);
         Ok(true)
     }
+    #[cfg(test)]
     pub(crate) fn finish_pending_batch(
         &mut self,
         response: &mut AuthResponse,

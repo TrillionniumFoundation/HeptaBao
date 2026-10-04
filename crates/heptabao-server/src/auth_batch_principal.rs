@@ -194,15 +194,6 @@ impl AuthState {
             .validate_lease_authority(claims, namespace)
             .map_err(|_| err(503, "invalid batch lease key authority"))
     }
-    fn batch_parent_expiry(
-        &self,
-        parent: Option<&str>,
-        namespace: &str,
-        now: u64,
-    ) -> Result<Option<u64>, AuthError> {
-        self.batch_parent_expiry_observed(parent, namespace, AuthorityTime::Coarse(now))
-    }
-
     fn batch_parent_expiry_observed(
         &self,
         parent: Option<&str>,
@@ -217,6 +208,7 @@ impl AuthState {
                 .ok_or_else(denied),
         }
     }
+    #[cfg(test)]
     pub(super) fn check_batch_claims(
         &self,
         claims: &VerifiedBatchClaims,
@@ -350,14 +342,6 @@ impl AuthState {
     /// The admitted final use may execute Kubernetes TokenRequest, but cannot
     /// release its leased credential. Persistent owner resolution stays strict;
     /// completion retires the observation after that one authorized execution.
-    pub(crate) fn admitted_kubernetes_lease_issuer(
-        &self,
-        actor: &Principal,
-        namespace: &str,
-        now: u64,
-    ) -> Result<ResolvedLeaseOwner, AuthError> {
-        self.admitted_kubernetes_lease_issuer_observed(actor, namespace, AuthorityTime::Coarse(now))
-    }
     pub(crate) fn admitted_kubernetes_lease_issuer_observed(
         &self,
         actor: &Principal,

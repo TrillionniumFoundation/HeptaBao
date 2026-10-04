@@ -523,16 +523,15 @@ impl AuthState {
             }
         }
         for token in self.tokens.values() {
-            if let Some(role) = &token.token_role {
-                if !role.valid_path()
+            if let Some(role) = &token.token_role
+                && (!role.valid_path()
                     || !matches!(
                         token.auth_provenance,
                         Some(TokenAuthProvenance::TokenApi { .. })
                     )
-                    || token.wrapping.is_some()
-                {
-                    return Err(bad("invalid persisted issued token role"));
-                }
+                    || token.wrapping.is_some())
+            {
+                return Err(bad("invalid persisted issued token role"));
             }
         }
         Ok(())

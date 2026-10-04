@@ -530,7 +530,11 @@ impl Service {
                     time,
                 )
                 .is_some_and(|owner| {
-                    owner.entity_id.as_deref().is_none_or(|id| {
+                    // A provider credential cannot outlive the authenticated
+                    // exact owner cap, including any service-token ancestor.
+                    owner.precise_expires_at.is_none_or(|expires| {
+                        time.exact().is_some_and(|observed| observed < expires)
+                    }) && owner.entity_id.as_deref().is_none_or(|id| {
                         state
                             .engines
                             .identity_projection(&plan.inner.namespace, id)

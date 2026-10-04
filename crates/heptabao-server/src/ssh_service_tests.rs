@@ -887,8 +887,9 @@ fn coarse_owner_maintenance_cannot_destroy_a_live_precise_ssh_lease() -> TestRes
     let state = service.state.as_mut().ok_or("state")?;
     install_precise_root_for_clock_test(state)?;
     let before = serde_json::to_vec(state)?;
-    let failure =
-        Service::reconcile_lease_owners(state, 100).expect_err("coarse authority refused");
+    let failure = Service::reconcile_lease_owners(state, 100)
+        .err()
+        .ok_or("coarse authority accepted")?;
     assert_eq!(failure.status, 503);
     assert_eq!(serde_json::to_vec(state)?, before);
     assert!(state.engines.has_live_leases());
