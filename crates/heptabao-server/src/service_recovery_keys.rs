@@ -414,6 +414,7 @@ impl Service {
             Err(error) => error,
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub(super) fn recovery_route(
         &mut self,
         state: State,
@@ -437,6 +438,7 @@ impl Service {
             now,
         )
     }
+    #[allow(clippy::too_many_arguments)]
     fn recovery_route_with_authority(
         &mut self,
         mut state: State,
@@ -637,10 +639,10 @@ impl Service {
                 }
                 Err(_) => return Response::error(400, "invalid recovery rotation configuration"),
             };
-            if let Some(secret) = delivery_secret.as_ref() {
-                if attempt.bind_delivery(secret).is_err() {
-                    return Response::error(400, "invalid private recovery delivery binding");
-                }
+            if let Some(secret) = delivery_secret.as_ref()
+                && attempt.bind_delivery(secret).is_err()
+            {
+                return Response::error(400, "invalid private recovery delivery binding");
             }
             if attempt.source.is_none() {
                 return self.recovery_candidate(state, attempt, deadline);
@@ -708,26 +710,26 @@ impl Service {
                     Some(target) => target,
                     None => return Response::error(503, "missing verified recovery candidate"),
                 };
-                return match self.finish_recovery_commit(state, &attempt, target, deadline) {
+                match self.finish_recovery_commit(state, &attempt, target, deadline) {
                     Ok(_) => Response::ok(json!({"complete": true, "nonce": nonce})),
                     Err(error) => error,
-                };
+                }
             }
-            Ok(true) => return self.recovery_candidate(state, attempt, deadline),
+            Ok(true) => self.recovery_candidate(state, attempt, deadline),
             Ok(false) => {
                 state.auth.recovery_attempt = Some(attempt);
-                return match self.publish_recovery_owner(state, deadline) {
+                match self.publish_recovery_owner(state, deadline) {
                     Ok(state) => Self::recovery_status(&state, verification),
                     Err(error) => error,
-                };
+                }
             }
             Err(_) => {
                 // Persist failed-quorum erasure as well; unrelated shares cannot linger after a full wrong set.
                 state.auth.recovery_attempt = Some(attempt);
-                return match self.publish_recovery_owner(state, deadline) {
+                match self.publish_recovery_owner(state, deadline) {
                     Ok(_) => Response::error(400, "recovery share or challenge rejected"),
                     Err(error) => error,
-                };
+                }
             }
         }
     }
@@ -1240,6 +1242,9 @@ impl Service {
 // and initialization bytes. Missing inputs FAIL UNQUALIFIED; no fake provider,
 // cluster id, recovery share, state or archive is constructed by these tests.
 #[cfg(all(test, target_os = "linux"))]
+// These genuine fixture failures must abort the test while retaining its exact
+// private diagnostic and fencing its owned provider through Case::drop.
+#[allow(clippy::expect_used, clippy::panic)]
 mod source825_real_recovery_fixture_tests {
     use super::*;
     use std::fs::{self, OpenOptions};
