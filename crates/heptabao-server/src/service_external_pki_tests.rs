@@ -10,6 +10,9 @@ mod issuer_alias_tests;
 mod issuer_issue_tests;
 #[path = "service_external_pki_leaf_tests.rs"]
 mod leaf_tests;
+#[path = "service_pki_role_any_name_tests.rs"]
+mod role_any_name;
+
 #[path = "service_local_pki_tests.rs"]
 mod local_tests;
 #[path = "service_external_pki_public_tests.rs"]

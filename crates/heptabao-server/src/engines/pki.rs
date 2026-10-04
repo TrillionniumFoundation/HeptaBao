@@ -204,6 +204,8 @@ struct Role {
     #[serde(default, skip_serializing_if = "String::is_empty")]
     issuer_ref: String,
     allowed_domains: BTreeSet<String>,
+    #[serde(default, skip_serializing_if = "role_false")]
+    allow_any_name: bool,
     allow_subdomains: bool,
     #[serde(default)]
     allow_ip_sans: bool,
@@ -211,6 +213,10 @@ struct Role {
     generate_lease: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     local_key_kind: Option<LocalKeyKind>,
+}
+
+fn role_false(value: &bool) -> bool {
+    !*value
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -279,6 +285,10 @@ impl Pki {
         self.default_ttl = default;
         self.max_ttl = max;
         Ok(())
+    }
+
+    pub(in crate::engines) fn has_role_any_name_state(&self) -> bool {
+        self.roles.values().any(|role| role.allow_any_name)
     }
 
     pub(super) fn has_extension_state(&self) -> bool {
@@ -752,6 +762,7 @@ impl Pki {
                         body,
                         &[
                             "allowed_domains",
+                            "allow_any_name",
                             "allow_subdomains",
                             "allow_ip_sans",
                             "max_ttl",
@@ -1254,8 +1265,9 @@ impl Pki {
 
 impl Role {
     fn from_body(body: &Value) -> Result<Self> {
+        let allow_any_name = optional_bool(body, "allow_any_name")?.unwrap_or(false);
         let allowed_domains = string_list(body.get("allowed_domains"))?;
-        if allowed_domains.is_empty()
+        if !allow_any_name && allowed_domains.is_empty()
             || allowed_domains.len() > 64
             || allowed_domains.iter().any(|v| !valid_domain(v))
         {
@@ -1276,6 +1288,7 @@ impl Role {
                 _ => return Err(bad("invalid PKI role issuer reference")),
             },
             allowed_domains: allowed_domains.into_iter().collect(),
+            allow_any_name,
             allow_subdomains: optional_bool(body, "allow_subdomains")?.unwrap_or(false),
             allow_ip_sans: optional_bool(body, "allow_ip_sans")?.unwrap_or(false),
             max_ttl: ttl_field(body, "max_ttl", DEFAULT_LEAF_TTL)?,
@@ -1293,7 +1306,7 @@ impl Role {
             || self.issuer_ref.contains('/')
             || self.issuer_ref.chars().any(char::is_control)
             || self.local_key_kind == Some(LocalKeyKind::Ed25519)
-            || self.allowed_domains.is_empty()
+            || !self.allow_any_name && self.allowed_domains.is_empty()
             || self.allowed_domains.len() > 64
             || self.allowed_domains.iter().any(|v| !valid_domain(v))
             || self.max_ttl == 0
@@ -1305,15 +1318,17 @@ impl Role {
     }
     fn allows(&self, name: &str) -> bool {
         let name = name.to_ascii_lowercase();
-        self.allowed_domains.iter().any(|domain| {
-            let domain = domain.to_ascii_lowercase();
-            name == domain || self.allow_subdomains && name.ends_with(&format!(".{domain}"))
-        })
+        self.allow_any_name
+            || self.allowed_domains.iter().any(|domain| {
+                let domain = domain.to_ascii_lowercase();
+                name == domain || self.allow_subdomains && name.ends_with(&format!(".{domain}"))
+            })
     }
     fn descriptor(&self) -> Value {
         let mut descriptor = json!({
             "issuer_ref": if self.issuer_ref.is_empty() {"default"} else {self.issuer_ref.as_str()},
             "allowed_domains": self.allowed_domains,
+            "allow_any_name": self.allow_any_name,
             "allow_subdomains": self.allow_subdomains,
             "allow_ip_sans": self.allow_ip_sans,
             "max_ttl": self.max_ttl,

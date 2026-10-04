@@ -327,6 +327,14 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI allow_any_name ownership",
+            ));
+        }
         if current.schema >= TOKEN_ROLE_STATE_SCHEMA && incoming.schema < TOKEN_ROLE_STATE_SCHEMA {
             return Err(Response::error(
                 400,

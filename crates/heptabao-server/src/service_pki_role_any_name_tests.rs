@@ -1,0 +1,357 @@
+//! Actual PKI role semantics, signed issuance, encrypted reopen and reader floor.
+use super::*;
+use crate::service::tests::bootstrap_unmounted;
+use openssl::x509::X509;
+
+#[test]
+fn pki_role_any_name_signs_actual_unlisted_dns_names_and_reopens() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/ca",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status,
+        204
+    );
+    let ca = call(
+        &mut service,
+        "POST",
+        "ca/root/generate/internal",
+        &admin,
+        json!({"common_name":"ca.example.test","key_type":"ec","key_bits":256,"ttl":"4h"}),
+    );
+    assert_eq!(ca.status, 200, "actual EC root");
+    let cert = X509::from_pem(
+        ca.body["data"]["certificate"]
+            .as_str()
+            .ok_or("CA PEM missing")?
+            .as_bytes(),
+    )?;
+    let public = cert.public_key()?;
+    assert!(cert.verify(&public)?, "actual root self signature");
+    let role = call(
+        &mut service,
+        "POST",
+        "ca/roles/any",
+        &admin,
+        json!({"allow_any_name":true,"key_type":"ec","key_bits":256,"max_ttl":"1h"}),
+    );
+    assert_eq!(
+        role.status, 200,
+        "actual allow_any_name role without invented domains"
+    );
+    assert_eq!(role.body["data"]["allow_any_name"], true);
+    assert_eq!(role.body["data"]["allowed_domains"], json!([]));
+    let leaf = call(
+        &mut service,
+        "POST",
+        "ca/issue/any",
+        &admin,
+        json!({"common_name":"outside.other.test","alt_names":["second.unlisted.test"],"ttl":"10m"}),
+    );
+    assert_eq!(
+        leaf.status, 200,
+        "actual authenticated unlisted DNS issuance"
+    );
+    let leaf = X509::from_pem(
+        leaf.body["data"]["certificate"]
+            .as_str()
+            .ok_or("leaf PEM missing")?
+            .as_bytes(),
+    )?;
+    assert!(
+        leaf.verify(&public)?,
+        "issued certificate signed by actual owned root"
+    );
+    let names = leaf.subject_alt_names().ok_or("SAN missing")?;
+    assert!(
+        names
+            .iter()
+            .any(|n| n.dnsname() == Some("outside.other.test"))
+    );
+    assert!(
+        names
+            .iter()
+            .any(|n| n.dnsname() == Some("second.unlisted.test"))
+    );
+    let active = service.state.as_ref().ok_or("active state")?;
+    assert_eq!(active.schema, PKI_ROLE_ANY_NAME_STATE_SCHEMA);
+    assert!(active.engines.has_pki_role_any_name_state());
+    drop(service);
+    let mut reopened = root.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200,
+        "actual encrypted reopen"
+    );
+    assert_eq!(
+        call(&mut reopened, "GET", "ca/roles/any", &admin, json!({})).body["data"]["allow_any_name"],
+        true
+    );
+    let leaf = call(
+        &mut reopened,
+        "POST",
+        "ca/issue/any",
+        &admin,
+        json!({"common_name":"third.unlisted.test","ttl":"10m"}),
+    );
+    assert_eq!(leaf.status, 200);
+    let leaf = X509::from_pem(
+        leaf.body["data"]["certificate"]
+            .as_str()
+            .ok_or("reopened leaf PEM missing")?
+            .as_bytes(),
+    )?;
+    assert!(leaf.verify(&public)?, "reopened real private owner signs");
+    Ok(())
+}
+
+#[test]
+fn pki_role_any_name_preserves_dns_ip_constraints_and_false_legacy_bytes() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, admin) = bootstrap_unmounted(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/ca",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/root/generate/internal",
+            &admin,
+            json!({"common_name":"ca.example.test","key_type":"ec","key_bits":256,"ttl":"4h"})
+        )
+        .status,
+        200
+    );
+    let scoped = json!({"allowed_domains":["example.test"],"allow_subdomains":true,"key_type":"ec","key_bits":256});
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/roles/scoped",
+            &admin,
+            scoped.clone()
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(&mut service, "GET", "ca/roles/scoped", &admin, json!({})).body["data"]["allow_any_name"],
+        false
+    );
+    let before =
+        crate::secret_serde::to_vec(service.state.as_ref().ok_or("state")?, MAX_STATE_BYTES)
+            .map_err(|_| "state bytes")?;
+    let mut explicit = scoped.clone();
+    explicit["allow_any_name"] = json!(false);
+    assert_eq!(
+        call(&mut service, "POST", "ca/roles/scoped", &admin, explicit).status,
+        200
+    );
+    let after =
+        crate::secret_serde::to_vec(service.state.as_ref().ok_or("state")?, MAX_STATE_BYTES)
+            .map_err(|_| "state bytes")?;
+    assert!(
+        before == after,
+        "default false preserves complete actual legacy state bytes"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/issue/scoped",
+            &admin,
+            json!({"common_name":"outside.other.test"})
+        )
+        .status,
+        403
+    );
+    for invalid in [json!("true"), json!(1), Value::Null] {
+        let mut body = scoped.clone();
+        body["allow_any_name"] = invalid;
+        assert_eq!(
+            call(&mut service, "POST", "ca/roles/invalid", &admin, body).status,
+            400,
+            "actual typed boolean required"
+        );
+    }
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/roles/any",
+            &admin,
+            json!({"allow_any_name":true,"allow_ip_sans":false,"key_type":"ec","key_bits":256})
+        )
+        .status,
+        200
+    );
+    for name in ["bad name.test", "-bad.test", "bad..test", "bad/test"] {
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "ca/issue/any",
+                &admin,
+                json!({"common_name":name})
+            )
+            .status,
+            403,
+            "any DNS domain does not bypass hostname validation"
+        );
+    }
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/issue/any",
+            &admin,
+            json!({"common_name":"outside.other.test","ip_sans":["192.0.2.1"]})
+        )
+        .status,
+        403,
+        "allow_any_name retains independent IP SAN permission"
+    );
+    assert_eq!(call(&mut service,"POST","ca/roles/any",&admin,json!({"allow_any_name":true,"allowed_domains":["bad domain"],"key_type":"ec","key_bits":256})).status,400,"supplied malformed domains still refused");
+    Ok(())
+}
+
+#[test]
+fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/ca",
+                "team",
+                &admin,
+                json!({"type":"pki"}),
+                100
+            )
+            .status,
+        204
+    );
+    let previous = service.state.clone().ok_or("previous")?;
+    let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "ca/roles/any",
+                "team",
+                &admin,
+                json!({"allow_any_name":true,"key_type":"ec","key_bits":256}),
+                100
+            )
+            .status,
+        200
+    );
+    let active = service.state.clone().ok_or("active")?;
+    assert_eq!(active.schema, PKI_ROLE_ANY_NAME_STATE_SCHEMA);
+    assert!(active.engines.has_pki_role_any_name_state());
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    let mut lower = active.clone();
+    lower.schema = TOKEN_ROLE_STATE_SCHEMA;
+    assert_eq!(lower.writer_schema(), PKI_ROLE_ANY_NAME_STATE_SCHEMA);
+    assert!(lower.validate_format().is_err());
+    assert!(service.commit_state(&lower).is_err());
+    assert!(Service::validate_snapshot_protected_floor(&active, &lower).is_err());
+    for schema in [81, 82, MAX_SUPPORTED_STATE_SCHEMA + 1] {
+        let mut unsupported = active.clone();
+        unsupported.schema = schema;
+        assert_eq!(
+            unsupported.writer_schema(),
+            schema,
+            "unintegrated formats not silently normalized"
+        );
+        assert!(unsupported.validate_format().is_err());
+        assert!(
+            unsupported
+                .validate_publication_schema(Some(&active))
+                .is_err()
+        );
+    }
+    assert!(service.prepare_snapshot_restore(&backup).is_err());
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "unchanged identity")?,
+        identity
+    );
+    assert_eq!(
+        service
+            .handle_at("DELETE", "ca/roles/any", "team", &admin, json!({}), 100)
+            .status,
+        204
+    );
+    let retired = service.state.as_ref().ok_or("retired")?;
+    assert!(!retired.engines.has_pki_role_any_name_state());
+    assert_eq!(retired.schema, PKI_ROLE_ANY_NAME_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), PKI_ROLE_ANY_NAME_STATE_SCHEMA);
+    assert!(previous.validate_publication_schema(Some(retired)).is_err());
+    assert!(Service::validate_snapshot_protected_floor(retired, &previous).is_err());
+    drop(service);
+    let mut reopened = root.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        reopened.state.as_ref().ok_or("reopened")?.schema,
+        PKI_ROLE_ANY_NAME_STATE_SCHEMA
+    );
+    assert!(
+        !reopened
+            .state
+            .as_ref()
+            .ok_or("reopened")?
+            .engines
+            .has_pki_role_any_name_state()
+    );
+    assert!(reopened.prepare_snapshot_restore(&backup).is_err());
+    Ok(())
+}

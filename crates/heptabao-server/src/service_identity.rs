@@ -9,10 +9,12 @@ impl State {
     /// into an older supported format. The all-namespace scan also finds safe
     /// material introduced by the current candidate before its first commit.
     pub(super) fn writer_schema(&self) -> u32 {
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.auth.has_token_api_schema80_state() {
+        let required = if self.engines.has_pki_role_any_name_state() {
+            PKI_ROLE_ANY_NAME_STATE_SCHEMA
+        } else if self.auth.has_token_api_schema80_state() {
             TOKEN_ROLE_STATE_SCHEMA
         } else if self.engines.has_local_pki_intermediate_state() {
             LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
@@ -52,10 +54,19 @@ impl State {
         &self,
         previous: Option<&State>,
     ) -> Result<(), Response> {
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        if !supported_reader_schema(self.schema) {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            && (self.engines.has_pki_role_any_name_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_ANY_NAME_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI allow_any_name ownership requires schema 83",
             ));
         }
         if self.schema < TOKEN_ROLE_STATE_SCHEMA
@@ -201,9 +212,7 @@ impl State {
             ));
         }
         if previous.is_some_and(|state| {
-            state.schema == 0
-                || state.schema > MAX_SUPPORTED_STATE_SCHEMA
-                || self.schema < state.schema
+            !supported_reader_schema(state.schema) || self.schema < state.schema
         }) {
             return Err(Response::error(
                 503,
@@ -214,10 +223,18 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        if !supported_reader_schema(self.schema) {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            && self.engines.has_pki_role_any_name_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI allow_any_name ownership requires schema 83",
             ));
         }
         self.auth
@@ -988,7 +1005,8 @@ impl State {
             | LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
             | LOCAL_PKI_CRL_STATE_SCHEMA
             | LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
-            | TOKEN_ROLE_STATE_SCHEMA => Ok(()),
+            | TOKEN_ROLE_STATE_SCHEMA
+            | PKI_ROLE_ANY_NAME_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
