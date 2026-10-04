@@ -572,6 +572,7 @@ impl ExternalPkiTemplate {
                     common_name: self.common_name.clone(),
                     issuer_id: String::new(),
                     key_id: String::new(),
+                    local_fields: None,
                     pkcs8: Vec::new(),
                     local_material: None,
                     certificate_der: Vec::new(),

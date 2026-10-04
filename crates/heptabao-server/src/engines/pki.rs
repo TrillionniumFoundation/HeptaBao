@@ -20,6 +20,9 @@ mod local_key;
 #[path = "pki_public.rs"]
 mod public;
 use local_key::{LocalKeyKind, LocalPrivateMaterial, LocalPublicKey};
+#[path = "pki_root_fields.rs"]
+mod root_fields;
+use root_fields::{LocalRootMetadata, RootFields};
 
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;
@@ -139,6 +142,8 @@ struct RootCa {
     issuer_id: String,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     key_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_fields: Option<LocalRootMetadata>,
     pkcs8: Vec<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     local_material: Option<LocalPrivateMaterial>,
@@ -273,6 +278,12 @@ impl Pki {
             .is_some_and(|root| !root.issuer_id.is_empty() || !root.key_id.is_empty())
     }
 
+    pub(in crate::engines) fn has_local_root_fields_state(&self) -> bool {
+        self.root
+            .as_ref()
+            .is_some_and(|root| root.local_fields.is_some())
+    }
+
     pub(super) fn validate(&self, namespace: &str, mount: &str, clock: u64) -> Result<()> {
         if self.default_ttl == 0
             || self.default_ttl > self.max_ttl
@@ -295,13 +306,24 @@ impl Pki {
                 || root.certificate_der.is_empty()
                 || root.certificate_der.len() > 64 * 1024
                 || root.not_before >= root.not_after
-                || root.not_after - root.not_before > MAX_TTL + 120
+                || root.not_after - root.not_before
+                    > if root.local_fields.is_some() {
+                        MAX_TTL * 2
+                    } else {
+                        MAX_TTL + 120
+                    }
                 || serial_bytes(&root.serial).is_err()
                 || !valid_pki_id(&root.issuer_id)
                 || !valid_pki_id(&root.key_id)
                 || root.issuer_id.is_empty() != root.key_id.is_empty()
             {
                 return Err(bad("invalid PKI root state"));
+            }
+            if let Some(fields) = &root.local_fields {
+                fields.validate()?;
+                if root.is_external() || root.issuer_id.is_empty() {
+                    return Err(bad("invalid local PKI root field ownership"));
+                }
             }
             if root.local_material.is_some() {
                 let material = root.local_key()?;
@@ -486,6 +508,22 @@ impl Pki {
                     "key_bits",
                     "format",
                     "private_key_format",
+                    "alt_names",
+                    "ip_sans",
+                    "uri_sans",
+                    "exclude_cn_from_sans",
+                    "ou",
+                    "organization",
+                    "country",
+                    "locality",
+                    "province",
+                    "street_address",
+                    "postal_code",
+                    "serial_number",
+                    "not_before_duration",
+                    "max_path_length",
+                    "issuer_name",
+                    "key_name",
                 ],
             )?;
             let kind = LocalKeyKind::from_body(body)?;
@@ -510,6 +548,7 @@ impl Pki {
             if !external::common_name_valid(common_name) {
                 return Err(bad("invalid PKI common name"));
             }
+            let fields = RootFields::from_body(body, common_name)?;
             let ttl = ttl_field(body, "ttl", DEFAULT_ROOT_TTL)?;
             if ttl == 0 || ttl > self.max_ttl {
                 return Err(bad("PKI root TTL is outside bounds"));
@@ -517,7 +556,7 @@ impl Pki {
             let material = LocalPrivateMaterial::generate(kind)?;
             let public = material.public()?;
             let serial = random_serial()?;
-            let not_before = now.saturating_sub(30);
+            let not_before = now.saturating_sub(fields.backdate);
             let not_after = now
                 .checked_add(ttl)
                 .ok_or_else(|| bad("PKI root TTL overflow"))?;
@@ -528,12 +567,18 @@ impl Pki {
                     serial: &serial,
                     issuer_cn: common_name,
                     subject_cn: common_name,
+                    issuer_name_der: Some(&fields.subject_der),
+                    subject_name_der: Some(&fields.subject_der),
                     public_key: &[],
                     not_before,
                     not_after,
                     is_ca: true,
-                    alt_names: &[],
-                    ip_sans: &[],
+                    alt_names: &fields.dns_sans,
+                    email_sans: &fields.email_sans,
+                    ip_sans: &fields.ip_sans,
+                    uri_sans: &fields.uri_sans,
+                    exclude_cn_from_sans: fields.exclude_cn,
+                    max_path_length: fields.max_path_length,
                 },
             )?;
             let issuing_ca = output_format.certificate(&certificate_der);
@@ -545,9 +590,9 @@ impl Pki {
                 "serial_number": serial,
                 "expiration": not_after,
                 "issuer_id": issuer_id,
-                "issuer_name": "",
+                "issuer_name": fields.metadata.as_ref().map_or("", |meta| meta.issuer_name.as_str()),
                 "key_id": key_id,
-                "key_name": "",
+                "key_name": fields.metadata.as_ref().map_or("", |meta| meta.key_name.as_str()),
             });
             if exported {
                 let (private_der, label) = material.root_export_der(export_pkcs8)?;
@@ -576,6 +621,7 @@ impl Pki {
                 common_name: common_name.into(),
                 issuer_id,
                 key_id,
+                local_fields: fields.metadata,
                 pkcs8,
                 local_material,
                 certificate_der,
@@ -915,6 +961,7 @@ impl Pki {
         let leaf = LocalPrivateMaterial::generate(prepared.local_key_kind)?;
         let leaf_public = leaf.public()?;
         let root_pair = root.local_key()?;
+        let issuer_name_der = root_fields::certificate_subject(&root.certificate_der)?;
         let certificate_der = certificate_der_local(
             &root_pair,
             &leaf_public,
@@ -922,12 +969,18 @@ impl Pki {
                 serial: &prepared.serial,
                 issuer_cn: &root.common_name,
                 subject_cn: &prepared.common_name,
+                issuer_name_der: Some(&issuer_name_der),
+                subject_name_der: None,
                 public_key: &[],
                 not_before: prepared.not_before,
                 not_after: prepared.expires,
                 is_ca: false,
                 alt_names: &prepared.alt_names,
+                email_sans: &[],
                 ip_sans: &prepared.ip_sans,
+                uri_sans: &[],
+                exclude_cn_from_sans: false,
+                max_path_length: None,
             },
         )?;
         let leaf_pkcs8 = leaf.private_der()?;
@@ -1020,7 +1073,7 @@ impl Pki {
         let mut parts = vec![
             integer(&[1]),
             algorithm.clone(),
-            name(&root.common_name),
+            root_fields::certificate_subject(&root.certificate_der)?,
             time(now),
             time(now.saturating_add(24 * 3600)),
         ];
@@ -1389,12 +1442,18 @@ struct CertificateSpec<'a> {
     serial: &'a str,
     issuer_cn: &'a str,
     subject_cn: &'a str,
+    issuer_name_der: Option<&'a [u8]>,
+    subject_name_der: Option<&'a [u8]>,
     public_key: &'a [u8],
     not_before: u64,
     not_after: u64,
     is_ca: bool,
     alt_names: &'a [String],
+    email_sans: &'a [String],
     ip_sans: &'a [IpAddr],
+    uri_sans: &'a [String],
+    exclude_cn_from_sans: bool,
+    max_path_length: Option<u32>,
 }
 
 fn certificate_der(signer: &Ed25519KeyPair, spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
@@ -1455,16 +1514,26 @@ fn certificate_tbs_with(
         serial,
         issuer_cn,
         subject_cn,
+        issuer_name_der,
+        subject_name_der,
         public_key: _,
         not_before,
         not_after,
         is_ca,
         alt_names,
+        email_sans,
         ip_sans,
+        uri_sans,
+        exclude_cn_from_sans,
+        max_path_length,
     } = spec;
     let mut extensions = Vec::new();
     let basic = if is_ca {
-        seq(&[boolean(true)])
+        let mut fields = vec![boolean(true)];
+        if let Some(length) = max_path_length {
+            fields.push(integer(&length.to_be_bytes()));
+        }
+        seq(&fields)
     } else {
         seq(&[])
     };
@@ -1477,9 +1546,14 @@ fn certificate_tbs_with(
         &bit_string(&[usage_byte], unused),
     ));
     let mut names = Vec::new();
-    names.push(context_primitive(2, subject_cn.as_bytes()));
+    if !exclude_cn_from_sans {
+        names.push(context_primitive(2, subject_cn.as_bytes()));
+    }
     for name in alt_names {
         names.push(context_primitive(2, name.as_bytes()));
+    }
+    for email in email_sans {
+        names.push(context_primitive(1, email.as_bytes()));
     }
     for ip in ip_sans {
         let bytes = match ip {
@@ -1488,14 +1562,19 @@ fn certificate_tbs_with(
         };
         names.push(context_primitive(7, &bytes));
     }
-    extensions.push(extension(&[0x55, 0x1d, 0x11], false, &seq(&names)));
+    for uri in uri_sans {
+        names.push(context_primitive(6, uri.as_bytes()));
+    }
+    if !names.is_empty() {
+        extensions.push(extension(&[0x55, 0x1d, 0x11], false, &seq(&names)));
+    }
     let tbs = seq(&[
         context_explicit(0, &integer(&[2])),
         integer(&serial_bytes(serial)?),
         signature_algorithm.to_vec(),
-        name(issuer_cn),
+        issuer_name_der.map_or_else(|| name(issuer_cn), <[u8]>::to_vec),
         seq(&[time(not_before), time(not_after)]),
-        name(subject_cn),
+        subject_name_der.map_or_else(|| name(subject_cn), <[u8]>::to_vec),
         subject_spki.to_vec(),
         context_explicit(3, &seq(&extensions)),
     ]);

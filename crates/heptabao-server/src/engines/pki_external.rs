@@ -340,13 +340,30 @@ impl Pki {
                 .is_some_and(|csr| csr.key.public_key.is_asymmetric())
     }
     pub(in crate::engines::pki) fn public_issuer_metadata(&self) -> Option<(&str, &str, &str)> {
-        self.external.root.as_ref().map(|key| {
-            (
-                key.issuer_id.as_str(),
-                key.key_id.as_str(),
-                key.issuer_name.as_str(),
-            )
-        })
+        self.external
+            .root
+            .as_ref()
+            .map(|key| {
+                (
+                    key.issuer_id.as_str(),
+                    key.key_id.as_str(),
+                    key.issuer_name.as_str(),
+                )
+            })
+            .or_else(|| {
+                self.root
+                    .as_ref()
+                    .filter(|root| !root.issuer_id.is_empty())
+                    .map(|root| {
+                        (
+                            root.issuer_id.as_str(),
+                            root.key_id.as_str(),
+                            root.local_fields
+                                .as_ref()
+                                .map_or("", |fields| fields.issuer_name.as_str()),
+                        )
+                    })
+            })
     }
     // Parse only this closed alias shape. Resolution and authority remain separate;
     // the original request path must never become the canonical issue path.
@@ -506,6 +523,7 @@ impl Pki {
                 common_name: template.common_name,
                 issuer_id: String::new(),
                 key_id: String::new(),
+                local_fields: None,
                 pkcs8: Vec::new(),
                 local_material: None,
                 certificate_der: encoded,

@@ -433,6 +433,140 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
 }
 
 #[test]
+fn extended_root_fields_in_child_namespace_raise_sticky_floor_before_preflight() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &admin,
+            json!({})
+        )
+        .status
+            == 200,
+        "extended root namespace"
+    );
+    assert!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/ca",
+                "team",
+                &admin,
+                json!({"type":"pki"}),
+                100
+            )
+            .status
+            == 204,
+        "extended root mount"
+    );
+    let ordinary = service.state.clone().ok_or("ordinary state")?;
+    let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    let response = service.handle_at("POST","ca/root/generate/exported","team",&admin,
+        json!({"common_name":"ca.example.test","key_type":"ed25519","organization":["Test Organization"],
+            "issuer_name":"team-issuer","key_name":"team-key","not_before_duration":"90s"}),100);
+    assert!(
+        response.status == 200,
+        "actual extended root encrypted publication"
+    );
+    let private = Zeroizing::new(
+        response.body["data"]["private_key"]
+            .as_str()
+            .ok_or("exported private field")?
+            .to_owned(),
+    );
+    let active = service.state.clone().ok_or("active extended root")?;
+    assert!(
+        active.schema == LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+            && active.engines.has_local_pki_root_fields_state()
+            && !active.engines.has_local_typed_pki_state(),
+        "independent all-namespace extended Ed reader requirement"
+    );
+    let before = service
+        .current_state_identity()
+        .map_err(|_| "committed identity")?;
+    let mut lower = active.clone();
+    lower.schema = LOCAL_PKI_IDENTIFIER_STATE_SCHEMA;
+    assert!(
+        lower.writer_schema() == LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+            && lower.validate_format().is_err()
+            && service.commit_state(&lower).is_err(),
+        "old identifier-only reader cannot publish extended root fields"
+    );
+    assert!(
+        service.prepare_snapshot_restore(&backup).is_err(),
+        "old snapshot cannot remove root fields"
+    );
+    assert!(
+        service
+            .current_state_identity()
+            .map_err(|_| "unchanged identity")?
+            == before,
+        "failed downgrade leaves durable state unchanged"
+    );
+    let audit = fs::read(root.path.join("audit.jsonl"))?;
+    assert!(
+        !audit
+            .windows(private.len())
+            .any(|v| v == private.as_bytes())
+            && !audit
+                .windows(b"PRIVATE KEY".len())
+                .any(|v| v == b"PRIVATE KEY"),
+        "actual extended private delivery absent from audit"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "actual extended root encrypted reopen"
+    );
+    let issuer = reopened.handle_at(
+        "GET",
+        "ca/issuer/team-issuer/json",
+        "team",
+        &admin,
+        json!({}),
+        100,
+    );
+    assert!(
+        issuer.status == 200 && issuer.body["data"]["issuer_name"] == "team-issuer",
+        "persisted local alias resolves after restart"
+    );
+    assert!(
+        reopened
+            .handle_at("DELETE", "sys/mounts/ca", "team", &admin, json!({}), 100)
+            .status
+            == 204,
+        "extended root retirement"
+    );
+    let retired = reopened.state.as_ref().ok_or("retired state")?;
+    assert!(
+        !retired.engines.has_local_pki_root_fields_state()
+            && retired.writer_schema() == LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA,
+        "extended reader requirement remains after retirement"
+    );
+    let mut lower = retired.clone();
+    lower.schema = LOCAL_PKI_IDENTIFIER_STATE_SCHEMA;
+    assert!(
+        lower.validate_publication_schema(Some(retired)).is_err()
+            && Service::validate_snapshot_protected_floor(retired, &ordinary).is_err(),
+        "retirement does not permit writer or snapshot downgrade"
+    );
+    Ok(())
+}
+
+#[test]
 fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restore_gates()
 -> TestResult {
     let root = Root::new();
