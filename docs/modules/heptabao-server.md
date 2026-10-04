@@ -1139,7 +1139,14 @@ CA certificate without a matching owned private key remains a public issuer.
 
 Local `keys/generate/internal`, `keys/generate/exported`, and `keys/import`
 retain actual owned private material without constructing a placeholder CA or
-CSR. Certificate import matches the actual maintained SPKI against either an
+CSR. `intermediate/generate/existing` signs a fresh CSR with an actual owned
+key selected by identity, name or the independent key default; it does not
+insert another key, replace existing ownership proofs, or rename that key.
+Explicit generation type/bits are refused in this mode. Key GET includes the
+RFC 5280 subject key identifier computed from its real public key; generation,
+import and rename retain their distinct response shapes. CSR responses expose
+the unconfigured AIA warning while configurable AIA remains outside this profile.
+Certificate import matches the actual maintained SPKI against either an
 unbound or already associated owned key. A later key import binds existing
 public issuers without changing their identities. Partial chains retain only
 verified available issuer edges and are rebuilt when a parent is imported.

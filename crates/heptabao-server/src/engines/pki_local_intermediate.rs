@@ -17,6 +17,7 @@ const MAX_CHAIN: usize = 16;
 const MAX_CA_BUNDLE: usize = 512 * 1024;
 const CSR_FIELDS: &[&str] = &[
     "common_name",
+    "key_ref",
     "key_type",
     "key_bits",
     "key_name",
@@ -854,6 +855,12 @@ impl Pki {
                 }
                 self.generate_owned_local_key(body, path.ends_with("exported"))?
             }
+            "intermediate/generate/existing" => {
+                if !write_method(method) {
+                    return Err(unsupported());
+                }
+                self.generate_existing_local_csr(body)?
+            }
             "intermediate/generate/internal" | "intermediate/generate/exported" => {
                 if !write_method(method) {
                     return Err(unsupported());
@@ -1213,7 +1220,15 @@ impl Pki {
         match method {
             "GET" => {
                 reject_unknown(body, &[])?;
-                Ok(Self::key_projection(&id, &name, material.kind(), false))
+                let identifier = root_fields::subject_key_identifier(&material.public()?.spki()?)?;
+                let formatted = identifier
+                    .iter()
+                    .map(|byte| format!("{byte:02x}"))
+                    .collect::<Vec<_>>()
+                    .join(":");
+                let mut response = Self::key_projection(&id, &name, material.kind(), false);
+                response.body["data"]["subject_key_id"] = json!(formatted);
+                Ok(response)
             }
             "POST" | "PUT" => {
                 reject_unknown(body, &["key_name"])?;
@@ -1282,6 +1297,79 @@ impl Pki {
             }
             _ => Err(unsupported()),
         }
+    }
+
+    fn csr_response(data: Value, mutated: bool) -> EngineResponse {
+        let mut response = ok(data, mutated);
+        response.body["warnings"] = json!([
+            "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information. Since this certificate is an intermediate, it might be useful to regenerate this certificate after fixing this problem for the root mount."
+        ]);
+        response
+    }
+
+    fn generate_existing_local_csr(&mut self, body: &Value) -> Result<EngineResponse> {
+        reject_unknown(body, CSR_FIELDS)?;
+        if body.get("key_type").is_some() || body.get("key_bits").is_some() {
+            return Err(bad(
+                "invalid parameter for the kms/existing path parameter, key_type nor key_bits arguments can be set in this mode",
+            ));
+        }
+        if self.root.as_ref().is_some_and(RootCa::is_external) {
+            return Err(bad("local CSR cannot borrow external authority"));
+        }
+        let reference = body
+            .get("key_ref")
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("PKI key reference must be a string"))
+            })
+            .transpose()?
+            .unwrap_or("default");
+        if reference.is_empty() {
+            return Err(bad(
+                "failed to lookup public key from existing key: missing argument key_ref for existing type",
+            ));
+        }
+        let common_name = string(body, "common_name")?;
+        if !external::common_name_valid(common_name) {
+            return Err(bad("invalid CSR common name"));
+        }
+        let fields = RootFields::from_body(body, common_name)?;
+        self.admit_local_root_names(&fields)?;
+        let name = fields.metadata.as_ref().map_or("", |m| m.key_name.as_str());
+        self.new_key_name(name, None)?;
+        if matches!(
+            body.get("private_key_format"),
+            Some(Value::Array(_) | Value::Object(_))
+        ) {
+            return Err(bad("invalid PKI private key format"));
+        }
+        let format = RootOutputFormat::from_body(body)?;
+        let legacy = self
+            .root
+            .as_ref()
+            .is_some_and(|r| r.issuer_id.is_empty() || r.key_id.is_empty());
+        let mut candidate = self.clone();
+        if legacy {
+            candidate.promote_default_associations()?;
+        }
+        if reference == "default" && candidate.default_local_key_id().is_empty() {
+            return Err(bad(
+                "failed to lookup public key from existing key: no default key currently configured",
+            ));
+        }
+        let (id, _, material) = candidate.owned_key(reference).map_err(|_| {
+            bad("failed to lookup public key from existing key: key reference is unavailable")
+        })?;
+        let csr = csr_der(&material, &fields, common_name)?;
+        let data = json!({"csr":match format {RootOutputFormat::Der=>BASE64.encode(&csr),_=>pem("CERTIFICATE REQUEST",&csr)},"key_id":id});
+        // Existing private material already owns this key. Do not insert a
+        // second pending key, invent a CA, replace a CSR proof, or rename it.
+        if legacy {
+            *self = candidate;
+        }
+        Ok(Self::csr_response(data, legacy))
     }
 
     fn generate_local_csr(&mut self, body: &Value, exported: bool) -> Result<EngineResponse> {
@@ -1371,7 +1459,7 @@ impl Pki {
                 key_name: name,
             },
         );
-        Ok(ok(data, true))
+        Ok(Self::csr_response(data, true))
     }
 
     fn sign_local_intermediate(
@@ -2985,6 +3073,92 @@ mod tests {
                 pki.selected_local_issuer_id()
             );
         }
+        Ok(())
+    }
+    #[test]
+    fn existing_csr_reuses_all_eleven_true_owned_keys_without_state_or_alias_changes() -> TestResult
+    {
+        let mut pki = Pki::default();
+        let missing = pki.handle_admin(
+            "POST",
+            "intermediate/generate/existing",
+            &json!({"common_name":"reuse.example.test"}),
+            NOW,
+        );
+        assert!(matches!(missing, Err(e) if e.status==400));
+        for (kind, bits) in [
+            ("ed25519", 0),
+            ("rsa", 2048),
+            ("rsa", 3072),
+            ("rsa", 4096),
+            ("ec", 224),
+            ("ec", 256),
+            ("ec", 384),
+            ("ec", 521),
+            ("mldsa", 44),
+            ("mldsa", 65),
+            ("mldsa", 87),
+        ] {
+            let generated = pki.handle_admin(
+                "POST",
+                "keys/generate/internal",
+                &json!({"key_type":kind,"key_bits":bits,"key_name":format!("reuse-{kind}{bits}")}),
+                NOW,
+            )?;
+            let id = generated.body["data"]["key_id"]
+                .as_str()
+                .ok_or("key id")?
+                .to_owned();
+            let before = Zeroizing::new(serde_json::to_vec(&pki)?);
+            let response = pki.handle_admin(
+                "POST",
+                "intermediate/generate/existing",
+                &json!({"common_name":"reuse.example.test","key_ref":id,"key_name":"unused-name"}),
+                NOW,
+            )?;
+            assert!(!response.mutated);
+            assert_eq!(*before, serde_json::to_vec(&pki)?);
+            assert_eq!(response.body["data"]["key_id"], id);
+            assert_eq!(response.body["data"].as_object().ok_or("data")?.len(), 2);
+            let bytes = pem_blocks(
+                response.body["data"]["csr"].as_str().ok_or("csr")?,
+                "CERTIFICATE REQUEST",
+            )?
+            .remove(0);
+            let csr = parse_csr(&bytes)?;
+            let material = pki.owned_key(&id)?.2;
+            assert_eq!(
+                csr.certification_request_info.subject_pki.raw,
+                material.public()?.spki()?
+            );
+            let read = pki.handle_admin("GET", &format!("key/{id}"), &json!({}), NOW)?;
+            assert_eq!(read.body["data"].as_object().ok_or("metadata")?.len(), 4);
+            assert_eq!(
+                read.body["data"]["subject_key_id"]
+                    .as_str()
+                    .ok_or("identifier")?
+                    .len(),
+                59
+            );
+            assert_eq!(pki.owned_key(&id)?.1, format!("reuse-{kind}{bits}"));
+            assert!(
+                matches!(pki.handle_admin("POST", "intermediate/generate/existing", &json!({"common_name":"reuse.example.test","key_ref":id,"key_type":"rsa","key_bits":4096}), NOW),Err(e)if e.status==400)
+            );
+            assert_eq!(*before, serde_json::to_vec(&pki)?);
+        }
+        pki.handle_admin("POST", "root/generate/internal", &json!({"common_name":"bound.example.test","key_type":"ec","key_name":"bound-owner","ttl":"24h"}), NOW)?;
+        let id = pki.owned_key("bound-owner")?.0;
+        let before = Zeroizing::new(serde_json::to_vec(&pki)?);
+        let response = pki.handle_admin(
+            "POST",
+            "intermediate/generate/existing",
+            &json!({"common_name":"bound-reuse.example.test","key_ref":"bound-owner"}),
+            NOW,
+        )?;
+        assert_eq!(response.body["data"]["key_id"], id);
+        assert_eq!(*before, serde_json::to_vec(&pki)?);
+        let reopened: Pki = serde_json::from_slice(&before)?;
+        reopened.validate("", "pki/", NOW)?;
         Ok(())
     }
 }
