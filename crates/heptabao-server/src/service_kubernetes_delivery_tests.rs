@@ -219,6 +219,26 @@ fn kube_delivery_frozen_provider_config_preserves_owner_and_mount_recreation_rej
         if change == "provider" {
             // Existing leases make this configuration update unreachable:
             // observe the real 409 rather than inventing a changed config.
+            // The first ordinary request after typed injected completion may
+            // legitimately persist the existing Engine observation floor.
+            // Establish it with an actual lookup, never omit/normalize it.
+            let observed = call(
+                &mut f.service,
+                "POST",
+                "sys/leases/lookup",
+                &f.admin,
+                json!({"lease_id":f.plan.inner.lease_id}),
+            );
+            assert_eq!(observed.status, 200, "{}", observed.body);
+            assert_eq!(
+                f.service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .engines
+                    .lease_clock(),
+                100
+            );
             let before = serde_json::to_vec(f.service.state.as_ref().ok_or("state")?)?;
             let rejected = call(
                 &mut f.service,
