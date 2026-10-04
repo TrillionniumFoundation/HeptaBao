@@ -873,3 +873,179 @@ fn custody_floors_survive_hidden_child_retirement_and_recreation_without_routing
     );
     Ok(())
 }
+
+#[test]
+fn inherited_descriptor_floor_rejects_stale_hidden_owner_and_kind_changes()
+-> Result<(), Box<dyn std::error::Error>> {
+    use crate::namespace_custody::{Descriptor, InheritedDescriptor};
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/parent",
+            &token,
+            json!({})
+        )
+        .status
+            == 200,
+        "actual ordinary parent"
+    );
+    assert!(
+        service
+            .handle_at(
+                "POST",
+                "sys/namespaces/child",
+                "parent",
+                &token,
+                json!({}),
+                100
+            )
+            .status
+            == 200,
+        "actual ordinary child"
+    );
+    let state = service.state.as_ref().ok_or("actual state")?;
+    let cluster = &state.cluster_id;
+    let root_key = service.barrier_key.as_ref().ok_or("actual root key")?;
+    let actual = "parent/child";
+    let mut registry = state.namespaces.clone();
+    let binding = registry
+        .custody_binding(cluster, actual)
+        .map_err(|_| "actual child binding")?;
+    let (first, key) = InheritedDescriptor::create_root(binding.clone(), root_key, b"{}")?;
+    registry
+        .install_inherited_owner(cluster, actual, first.clone())
+        .map_err(|_| "first inherited floor")?;
+    let second = first.advance_seal_frontier(&binding, &key)?;
+    registry
+        .install_inherited_owner(cluster, actual, second.clone())
+        .map_err(|_| "next inherited floor")?;
+    assert!(
+        registry
+            .install_inherited_owner(cluster, actual, first.clone())
+            .is_err(),
+        "same incarnation cannot restore a stale frontier"
+    );
+    let independent = Descriptor::create(binding.clone(), 1, 1, b"{}")?;
+    assert!(
+        registry
+            .install_custody_owner(cluster, actual, independent.descriptor)
+            .is_err(),
+        "live inherited owner cannot change custody kind"
+    );
+    let parent = registry
+        .detach_catalog("parent")
+        .map_err(|_| "actual parent detach")?;
+    assert!(
+        !registry.contains(actual) && registry.custody_frontiers.contains_key(actual),
+        "hidden catalog cannot erase the exact private child floor"
+    );
+    let public = registry.list(cluster, "", true);
+    assert!(
+        public.body["data"]["keys"] == json!(["parent/"]),
+        "private floor grants no public catalog entry"
+    );
+    let mut stale = serde_json::to_value(&parent)?;
+    stale["entries"][actual]["inherited"] = serde_json::to_value(&first)?;
+    let stale = serde_json::from_value(stale)?;
+    let mut rejected = registry.clone();
+    rejected
+        .attach_catalog("parent", stale)
+        .map_err(|_| "stale candidate catalog attach")?;
+    assert!(
+        rejected.validate(cluster).is_err(),
+        "restored hidden descriptor must match the retained root floor"
+    );
+    registry
+        .attach_catalog("parent", parent)
+        .map_err(|_| "exact current catalog")?;
+    registry
+        .validate(cluster)
+        .map_err(|_| "current exact floor")?;
+    let mut false_flag = registry.clone();
+    false_flag
+        .set_sealed(actual, true)
+        .map_err(|_| "candidate flag")?;
+    assert!(
+        false_flag.validate(cluster).is_err(),
+        "inherited ciphertext cannot be replaced by a boolean seal grant"
+    );
+    Ok(())
+}
+
+#[test]
+fn inherited_retirement_requires_a_new_actual_incarnation_before_recreation()
+-> Result<(), Box<dyn std::error::Error>> {
+    use crate::namespace_custody::{Descriptor, InheritedDescriptor};
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/recreate",
+            &token,
+            json!({})
+        )
+        .status
+            == 200,
+        "actual ordinary owner"
+    );
+    let state = service.state.as_ref().ok_or("state")?;
+    let cluster = &state.cluster_id;
+    let root_key = service.barrier_key.as_ref().ok_or("actual root key")?;
+    let mut registry = state.namespaces.clone();
+    let first_binding = registry
+        .custody_binding(cluster, "recreate")
+        .map_err(|_| "first binding")?;
+    let (first, _) = InheritedDescriptor::create_root(first_binding.clone(), root_key, b"{}")?;
+    registry
+        .install_inherited_owner(cluster, "recreate", first.clone())
+        .map_err(|_| "first actual inherited owner")?;
+    registry.remove("recreate").map_err(|_| "retirement")?;
+    registry.validate(cluster).map_err(|_| "retired floor")?;
+    assert!(
+        registry.custody_frontiers["recreate"].is_retired() && !registry.contains("recreate"),
+        "retirement persists without routing authority"
+    );
+    registry
+        .insert_legacy(cluster, "recreate")
+        .map_err(|_| "fresh catalog incarnation")?;
+    assert!(
+        registry
+            .install_inherited_owner(cluster, "recreate", first)
+            .is_err(),
+        "retired key owner cannot authorize a recreated namespace"
+    );
+    let next_binding = registry
+        .custody_binding(cluster, "recreate")
+        .map_err(|_| "new binding")?;
+    assert!(
+        next_binding != first_binding,
+        "genuine recreation changes binding and incarnation"
+    );
+    let (next, _) = InheritedDescriptor::create_root(next_binding.clone(), root_key, b"{}")?;
+    registry
+        .install_inherited_owner(cluster, "recreate", next)
+        .map_err(|_| "new actual inherited owner")?;
+    registry
+        .validate(cluster)
+        .map_err(|_| "new incarnation floor")?;
+    let mut independent = state.namespaces.clone();
+    let created = Descriptor::create(first_binding.clone(), 1, 1, b"{}")?;
+    independent
+        .install_custody_owner(cluster, "recreate", created.descriptor)
+        .map_err(|_| "actual independent owner")?;
+    let (wrong_kind, _) = InheritedDescriptor::create_root(first_binding, root_key, b"{}")?;
+    assert!(
+        independent
+            .install_inherited_owner(cluster, "recreate", wrong_kind)
+            .is_err(),
+        "live independent owner cannot change to inherited custody"
+    );
+    Ok(())
+}

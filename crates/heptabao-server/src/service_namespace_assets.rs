@@ -162,13 +162,70 @@ impl State {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::namespace_custody::{Descriptor, Progress, Submission};
+    use crate::namespace_custody::{Descriptor, InheritedDescriptor, Progress, Submission};
     use crate::service::tests::{Root, bootstrap_unmounted, call};
     type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+    enum TypedOwner {
+        Independent(Descriptor),
+        Inherited(InheritedDescriptor),
+    }
+
+    impl TypedOwner {
+        fn replace(
+            &self,
+            binding: &crate::namespace_custody::Binding,
+            key: &Key,
+            bytes: &[u8],
+        ) -> TestResult<Self> {
+            Ok(match self {
+                Self::Independent(owner) => {
+                    Self::Independent(owner.replace_assets(binding, key, bytes)?)
+                }
+                Self::Inherited(owner) => {
+                    Self::Inherited(owner.replace_assets(binding, key, bytes)?)
+                }
+            })
+        }
+        fn install(&self, state: &mut State) -> Result<(), Response> {
+            match self {
+                Self::Independent(owner) => state.namespaces.install_custody_owner(
+                    &state.cluster_id,
+                    "custody",
+                    owner.clone(),
+                ),
+                Self::Inherited(owner) => state.namespaces.install_inherited_owner(
+                    &state.cluster_id,
+                    "custody",
+                    owner.clone(),
+                ),
+            }
+        }
+        fn open(
+            &self,
+            binding: &crate::namespace_custody::Binding,
+            key: &Key,
+        ) -> TestResult<Zeroizing<Vec<u8>>> {
+            Ok(match self {
+                Self::Independent(owner) => owner.open_assets(binding, key)?,
+                Self::Inherited(owner) => owner.open_assets(binding, key)?,
+            })
+        }
+    }
 
     #[test]
     fn typed_namespace_assets_remove_auth_engine_records_and_child_catalog_atomically() -> TestResult
     {
+        typed_partition_roundtrip(false)
+    }
+
+    #[test]
+    fn inherited_namespace_assets_commit_real_root_key_ciphertext_and_restore_all_owners()
+    -> TestResult {
+        typed_partition_roundtrip(true)
+    }
+
+    fn typed_partition_roundtrip(inherited: bool) -> TestResult {
         let root = Root::new();
         let mut service = root.service()?;
         let (_, token) = bootstrap_unmounted(&mut service)?;
@@ -249,18 +306,28 @@ mod tests {
             .namespaces
             .custody_binding(&original.cluster_id, "custody")
             .map_err(|_| "binding")?;
-        let created = Descriptor::create(binding.clone(), 2, 2, b"{}")?;
-        let mut progress = Progress::new(binding.clone(), &created.descriptor)?;
-        assert!(
-            matches!(
-                progress.submit(&created.descriptor, &created.shares[0])?,
-                Submission::Pending
-            ),
-            "first share partial"
-        );
-        let key = match progress.submit(&created.descriptor, &created.shares[1])? {
-            Submission::Unlocked { key, .. } => key,
-            Submission::Pending => return Err("threshold".into()),
+        let (owner, key) = if inherited {
+            let root_key = service
+                .barrier_key
+                .as_ref()
+                .ok_or("actual root barrier key")?;
+            let (owner, key) = InheritedDescriptor::create_root(binding.clone(), root_key, b"{}")?;
+            (TypedOwner::Inherited(owner), key)
+        } else {
+            let created = Descriptor::create(binding.clone(), 2, 2, b"{}")?;
+            let mut progress = Progress::new(binding.clone(), &created.descriptor)?;
+            assert!(
+                matches!(
+                    progress.submit(&created.descriptor, &created.shares[0])?,
+                    Submission::Pending
+                ),
+                "first share partial"
+            );
+            let key = match progress.submit(&created.descriptor, &created.shares[1])? {
+                Submission::Unlocked { key, .. } => key,
+                Submission::Pending => return Err("threshold".into()),
+            };
+            (TypedOwner::Independent(created.descriptor), key)
         };
         let (mut closed, assets, cells) = original
             .partition_namespace_assets("custody", &key)
@@ -289,14 +356,13 @@ mod tests {
         );
         let bytes = crate::secret_serde::to_vec(&assets, MAX_STATE_BYTES)
             .map_err(|_| "typed assets serialization")?;
-        let protected = created.descriptor.replace_assets(&binding, &key, &bytes)?;
+        let protected = owner.replace(&binding, &key, &bytes)?;
         closed
             .engines
             .publish_namespace_record_cells(&binding, &cells)
             .map_err(|_| "actual cipher cell staging")?;
-        closed
-            .namespaces
-            .install_custody_owner(&closed.cluster_id, "custody", protected.clone())
+        protected
+            .install(&mut closed)
             .map_err(|_| "actual encrypted owner")?;
         closed.schema = closed.writer_schema();
         assert!(
@@ -363,7 +429,22 @@ mod tests {
                 "actual durable graph retains exact namespace ciphertext cells"
             );
         }
-        let opened = protected.open_assets(&binding, &key)?;
+        let opened = if let TypedOwner::Inherited(owner) = &protected {
+            let root_key = service.barrier_key.as_ref().ok_or("same actual root key")?;
+            let (reopened_key, bytes) = owner.open_root(&binding, root_key)?;
+            assert!(
+                reopened_key.matches_binding(&binding),
+                "actual root key derives the exact namespace owner"
+            );
+            let wrong = Zeroizing::new([0u8; 32]);
+            assert!(
+                owner.open_root(&binding, &wrong).is_err(),
+                "no alternate root key opens the real durable owner"
+            );
+            bytes
+        } else {
+            protected.open(&binding, &key)?
+        };
         let decoded: NamespaceAssets = serde_json::from_slice(&opened)?;
         let restored = closed
             .restore_namespace_assets("custody", &key, decoded, &cells)

@@ -28,6 +28,8 @@ struct NamespaceEntry {
     incarnation: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     custody: Option<crate::namespace_custody::Descriptor>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    inherited: Option<crate::namespace_custody::InheritedDescriptor>,
     /// Runtime routing projection. An independent custody descriptor is always
     /// persisted sealed; only a process-local authenticated slot opens it.
     #[serde(default, skip_serializing_if = "is_false")]
@@ -231,7 +233,10 @@ impl NamespaceRegistry {
     pub(super) fn has_custody_state(&self) -> bool {
         !self.retired_custody.is_empty()
             || !self.custody_frontiers.is_empty()
-            || self.entries.values().any(|entry| entry.custody.is_some())
+            || self
+                .entries
+                .values()
+                .any(|entry| entry.custody.is_some() || entry.inherited.is_some())
     }
 
     pub(super) fn install_custody_owner(
@@ -258,6 +263,9 @@ impl NamespaceRegistry {
         let entry = self.entries.get_mut(actual).ok_or_else(|| {
             Response::error(503, "namespace ciphertext catalog owner disappeared")
         })?;
+        if entry.inherited.is_some() {
+            return Err(Response::error(503, "namespace custody kind cannot change"));
+        }
         if entry
             .custody
             .as_ref()
@@ -278,6 +286,55 @@ impl NamespaceRegistry {
         actual: &str,
     ) -> Option<&crate::namespace_custody::Descriptor> {
         self.entries.get(actual)?.custody.as_ref()
+    }
+
+    pub(super) fn inherited_owner(
+        &self,
+        actual: &str,
+    ) -> Option<&crate::namespace_custody::InheritedDescriptor> {
+        self.entries.get(actual)?.inherited.as_ref()
+    }
+
+    #[cfg(test)]
+    pub(super) fn install_inherited_owner(
+        &mut self,
+        cluster_id: &str,
+        actual: &str,
+        descriptor: crate::namespace_custody::InheritedDescriptor,
+    ) -> Result<(), Response> {
+        let binding = self.custody_binding(cluster_id, actual)?;
+        descriptor
+            .validate(&binding)
+            .map_err(|_| Response::error(503, "invalid inherited owner"))?;
+        let frontier = descriptor.frontier();
+        if self
+            .custody_frontiers
+            .get(actual)
+            .is_some_and(|old| !old.admits(&frontier))
+        {
+            return Err(Response::error(
+                503,
+                "inherited durable floor cannot decrease",
+            ));
+        }
+        let entry = self
+            .entries
+            .get_mut(actual)
+            .ok_or_else(|| Response::error(503, "inherited owner is absent"))?;
+        if entry.custody.is_some()
+            || entry
+                .inherited
+                .as_ref()
+                .is_some_and(|old| !old.admits_successor(&descriptor))
+        {
+            return Err(Response::error(
+                503,
+                "namespace inherited owner cannot change or regress",
+            ));
+        }
+        entry.inherited = Some(descriptor);
+        self.custody_frontiers.insert(actual.to_owned(), frontier);
+        Ok(())
     }
     pub(super) fn custody_binding(
         &self,
@@ -424,6 +481,12 @@ impl NamespaceRegistry {
                 return Err(Response::error(503, "invalid namespace catalog entry"));
             }
             if let Some(descriptor) = &entry.custody {
+                if entry.inherited.is_some() {
+                    return Err(Response::error(
+                        503,
+                        "namespace has conflicting custody kinds",
+                    ));
+                }
                 let binding = self.custody_binding(cluster_id, path)?;
                 descriptor
                     .validate(&binding)
@@ -432,6 +495,24 @@ impl NamespaceRegistry {
                     return Err(Response::error(
                         503,
                         "namespace active descriptor differs from durable floor",
+                    ));
+                }
+            }
+            if let Some(descriptor) = &entry.inherited {
+                if entry.sealed {
+                    return Err(Response::error(
+                        503,
+                        "inherited owner cannot use an independent seal flag",
+                    ));
+                }
+                let binding = self.custody_binding(cluster_id, path)?;
+                descriptor
+                    .validate(&binding)
+                    .map_err(|_| Response::error(503, "invalid inherited ciphertext descriptor"))?;
+                if self.custody_frontiers.get(path) != Some(&descriptor.frontier()) {
+                    return Err(Response::error(
+                        503,
+                        "inherited descriptor differs from durable floor",
                     ));
                 }
             }
@@ -523,6 +604,7 @@ impl NamespaceRegistry {
                 id: namespace_id(cluster_id, &path, incarnation),
                 incarnation,
                 custody: None,
+                inherited: None,
                 sealed: false,
                 custom_metadata: BTreeMap::new(),
             },
@@ -615,6 +697,7 @@ impl NamespaceRegistry {
                 id: namespace_id(cluster_id, &path, incarnation),
                 incarnation,
                 custody: None,
+                inherited: None,
                 sealed,
                 custom_metadata: metadata,
             },
@@ -664,6 +747,12 @@ impl NamespaceRegistry {
             .ok_or_else(|| Response::error(507, "namespace incarnation exhausted"))?;
         self.next_incarnation.insert(path.clone(), next);
         if let Some(custody) = entry.custody {
+            self.custody_frontiers
+                .insert(path.clone(), custody.frontier().retirement());
+            self.retired_custody
+                .insert(path.to_owned(), custody.retirement());
+        }
+        if let Some(custody) = entry.inherited {
             self.custody_frontiers
                 .insert(path.clone(), custody.frontier().retirement());
             self.retired_custody
@@ -857,6 +946,12 @@ impl Service {
             }
             if !state.namespaces.contains(&target) {
                 return Response::error(500, "namespace does not exist");
+            }
+            // The typed owner format is admitted before its runtime adopter is
+            // activated. Never mutate/forget such assets through the legacy
+            // boolean fence while the complete restore path is still pending.
+            if state.namespaces.inherited_owner(&target).is_some() {
+                return Response::error(503, "inherited namespace runtime adoption is not active");
             }
             if operation == "seal-status" {
                 if request.method != "GET" && request.method != "HEAD" {
@@ -1153,6 +1248,12 @@ impl Service {
                 response
             }
             "DELETE" => {
+                if state.namespaces.inherited_owner(&target).is_some() {
+                    return Response::error(
+                        503,
+                        "inherited namespace runtime adoption is not active",
+                    );
+                }
                 if request.body.as_object().is_none_or(|body| !body.is_empty()) {
                     return Response::error(400, "namespace delete accepts an empty request body");
                 }

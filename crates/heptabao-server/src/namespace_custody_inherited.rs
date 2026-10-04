@@ -1,7 +1,10 @@
 //! Shareless custody for an ordinary namespace. These primitives authenticate
 //! an actual parent/child owner and derive a private key; they grant no caller
 //! principal and do not themselves unload or restore Service resources.
-use super::{Binding, CUSTODY_SCHEMA, Error, Key, MAX_ENCODING, VERSION, validate_assets};
+use super::{
+    Binding, CUSTODY_SCHEMA, Error, Frontier, Key, MAX_ENCODING, Tombstone, VERSION,
+    validate_assets,
+};
 use crate::crypto::AeadBarrier;
 use base64::{Engine, engine::general_purpose::STANDARD};
 use heptabao_durable_service::Barrier;
@@ -153,6 +156,80 @@ impl InheritedDescriptor {
 
     pub fn seal_frontier(&self) -> u64 {
         self.seal_frontier
+    }
+
+    pub(crate) fn frontier(&self) -> Frontier {
+        let mut digest = ring::digest::Context::new(&ring::digest::SHA256);
+        digest.update(b"heptabao-namespace-inherited-durable-floor-v1\0");
+        fn field(digest: &mut ring::digest::Context, bytes: &[u8]) {
+            digest.update(&(bytes.len() as u64).to_be_bytes());
+            digest.update(bytes);
+        }
+        fn binding(digest: &mut ring::digest::Context, binding: &Binding) {
+            for value in [
+                &binding.cluster_id,
+                &binding.namespace,
+                &binding.namespace_id,
+            ] {
+                field(digest, value.as_bytes());
+            }
+            digest.update(&binding.incarnation.to_be_bytes());
+        }
+        binding(&mut digest, &self.binding);
+        match &self.parent {
+            InheritedParent::Root { cluster_id } => {
+                digest.update(&[0]);
+                field(&mut digest, cluster_id.as_bytes());
+            }
+            InheritedParent::Namespace {
+                binding: parent,
+                key_epoch,
+            } => {
+                digest.update(&[1]);
+                binding(&mut digest, parent);
+                digest.update(&key_epoch.to_be_bytes());
+            }
+        }
+        digest.update(&self.version.to_be_bytes());
+        digest.update(&self.schema.to_be_bytes());
+        digest.update(&1u64.to_be_bytes());
+        digest.update(&self.generation.to_be_bytes());
+        digest.update(&self.seal_frontier.to_be_bytes());
+        field(&mut digest, self.protected_assets.as_bytes());
+        let descriptor_digest = digest
+            .finish()
+            .as_ref()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect();
+        Frontier {
+            version: VERSION,
+            schema: CUSTODY_SCHEMA,
+            binding: self.binding.clone(),
+            key_epoch: 1,
+            generation: self.generation,
+            seal_frontier: self.seal_frontier,
+            retired: false,
+            descriptor_digest,
+        }
+    }
+
+    pub fn admits_successor(&self, next: &Self) -> bool {
+        self.binding == next.binding
+            && self.parent == next.parent
+            && next.generation >= self.generation
+            && next.seal_frontier >= self.seal_frontier
+            && (next.generation != self.generation || self == next)
+    }
+
+    pub(crate) fn retirement(&self) -> Tombstone {
+        Tombstone {
+            version: VERSION,
+            schema: CUSTODY_SCHEMA,
+            binding: self.binding.clone(),
+            key_epoch: 1,
+            seal_frontier: self.seal_frontier,
+        }
     }
 
     pub fn validate(&self, actual: &Binding) -> Result<(), Error> {
