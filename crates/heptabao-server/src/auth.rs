@@ -6213,6 +6213,9 @@ impl AuthState {
                     )?
                 };
                 // Target classification runs only after the actor's path ACL.
+                // An exhausted issued Token API handle is no longer renewable,
+                // even when this operation consumed its own admitted final use.
+                // That restriction is independent of a real wall-time expiry.
                 // An owned precise deadline is never classified from its ceil
                 // projection; absent, revoked, foreign and ancestor-only failures
                 // keep the closed target resolution behavior.
@@ -6222,12 +6225,13 @@ impl AuthState {
                             token.auth_provenance,
                             Some(TokenAuthProvenance::TokenApi { .. })
                         )
-                        && match token.token_api_precision.as_ref() {
-                            Some(lease) => time
-                                .exact()
-                                .is_some_and(|now| lease.expires_at.is_some_and(|end| end < now)),
-                            None => token.expires_at.is_some_and(|end| end <= time.seconds()),
-                        }
+                        && (token.uses_remaining == Some(0)
+                            || match token.token_api_precision.as_ref() {
+                                Some(lease) => time.exact().is_some_and(|now| {
+                                    lease.expires_at.is_some_and(|end| end < now)
+                                }),
+                                None => token.expires_at.is_some_and(|end| end <= time.seconds()),
+                            })
                 }) {
                     return Err(bad("token not found"));
                 }
@@ -6465,8 +6469,12 @@ impl AuthState {
             .check_principal_observed(actor, namespace, time)?
             .service()?
             .clone();
-        if parent.uses_remaining.is_some() {
-            return Err(bad("limited-use tokens cannot create child tokens"));
+        if let Some(remaining) = parent.uses_remaining {
+            return Err(bad(if remaining == 0 {
+                "parent token lookup failed: no parent found"
+            } else {
+                "restricted use token cannot generate child tokens"
+            }));
         }
         let is_sudo = parent.root
             || self
