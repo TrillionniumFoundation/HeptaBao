@@ -85,6 +85,7 @@ impl AuthState {
             now,
         )?;
         let token = Token {
+            token_api_precision: None,
             token_api_lease_ttl: None,
             token_role: None,
             bound_cidrs: authority.bound_cidrs,

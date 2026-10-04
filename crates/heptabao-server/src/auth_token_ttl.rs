@@ -64,6 +64,7 @@ impl AuthState {
 
     pub(crate) fn validate_system_lease_defaults(&self) -> Result<(), AuthError> {
         self.system_lease_defaults()?;
+        self.validate_token_api_precision_state()?;
         self.validate_token_api_creation_ttl()?;
         for token in self.tokens.values() {
             if let Some(ttl) = token.token_api_lease_ttl

@@ -4141,6 +4141,7 @@ mod tests {
             .seal(
                 BatchClaims {
                     token_role: None,
+                    token_api_precision: None,
                     token_api_policy_names: false,
                     namespace: String::new(),
                     policies: BTreeSet::new(),
@@ -4730,6 +4731,7 @@ mod tests {
             let raw = authority.seal(
                 BatchClaims {
                     token_role: None,
+                    token_api_precision: None,
                     token_api_policy_names: false,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),
@@ -4831,6 +4833,7 @@ mod tests {
             let raw = authority.seal(
                 BatchClaims {
                     token_role: None,
+                    token_api_precision: None,
                     token_api_policy_names: false,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),
@@ -4939,6 +4942,7 @@ mod tests {
             let raw = authority.seal(
                 BatchClaims {
                     token_role: None,
+                    token_api_precision: None,
                     token_api_policy_names: false,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),

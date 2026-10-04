@@ -511,6 +511,7 @@ fn external_pki270_issuer_issue_schema71_active_retired_record_and_snapshot_fenc
         body: &snapshot_body,
         now: 100,
         admission_started: std::time::Instant::now(),
+        token_clock: None,
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: None,

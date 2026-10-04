@@ -52,6 +52,7 @@ fn external_pki270_typed67_active_and_retired_snapshot_floor_and_final_commit() 
         body: &snapshot_body,
         now: 100,
         admission_started: std::time::Instant::now(),
+        token_clock: None,
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: None,

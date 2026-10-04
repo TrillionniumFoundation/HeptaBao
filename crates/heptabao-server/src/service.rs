@@ -1,6 +1,6 @@
 use crate::request_deadline::HaLock;
 use crate::{
-    auth::{AuthState, Principal},
+    auth::{AuthState, AuthorityTime, Principal, RequestClock},
     crypto::{self, AeadBarrier, SecretShare},
     engines::EngineState,
     ha::HaProcess,
@@ -781,11 +781,24 @@ struct RequestView<'a> {
     body: &'a Value,
     now: u64,
     admission_started: std::time::Instant,
+    token_clock: Option<RequestClock>,
     allow_forward: bool,
     enforce_namespace: bool,
     wrap_ttl_seconds: Option<u64>,
     origin_peer: Option<std::net::IpAddr>,
     client_certificates: Option<&'a [Vec<u8>]>,
+}
+
+impl RequestView<'_> {
+    fn token_time(&self) -> Result<AuthorityTime, Response> {
+        match self.token_clock {
+            Some(clock) => clock
+                .observed_at()
+                .map(AuthorityTime::Precise)
+                .map_err(|_| Response::error(503, "trusted token clock is unavailable")),
+            None => Ok(AuthorityTime::Coarse(self.now)),
+        }
+    }
 }
 
 pub(crate) enum RequestExecution {
@@ -1436,14 +1449,20 @@ impl Service {
     }
 
     pub fn handle_request(&mut self, request: ServiceRequest<'_>) -> Response {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_or(0, |d| d.as_secs());
-        self.handle_request_clock(request, now, true)
+        let started = std::time::Instant::now();
+        let observed = match SystemTime::now().duration_since(UNIX_EPOCH) {
+            Ok(observed) => observed,
+            Err(_) => return Response::error(503, "trusted token clock is unavailable"),
+        };
+        let clock = match RequestClock::anchored(observed, started) {
+            Ok(clock) => clock,
+            Err(_) => return Response::error(503, "trusted token clock is unavailable"),
+        };
+        self.handle_request_clock(request, observed.as_secs(), true, Some(clock))
     }
 
     pub fn handle_request_at(&mut self, request: ServiceRequest<'_>, now: u64) -> Response {
-        self.handle_request_clock(request, now, false)
+        self.handle_request_clock(request, now, false, None)
     }
 
     fn handle_request_clock(
@@ -1451,6 +1470,7 @@ impl Service {
         request: ServiceRequest<'_>,
         now: u64,
         realtime: bool,
+        token_clock: Option<RequestClock>,
     ) -> Response {
         let ServiceRequest {
             method,
@@ -1476,7 +1496,11 @@ impl Service {
             client_certificates,
         };
         if realtime {
-            let execution = self.begin_at_mode(dispatch).with_realtime_remote_jwt();
+            let execution = match token_clock {
+                Some(clock) => self.begin_at_mode_precise(dispatch, clock),
+                None => self.begin_at_mode(dispatch),
+            }
+            .with_realtime_remote_jwt();
             self.finish_synchronous_request(execution)
         } else {
             self.handle_at_mode(dispatch)
@@ -1551,12 +1575,24 @@ impl Service {
             || {
                 SystemTime::now()
                     .duration_since(UNIX_EPOCH)
-                    .unwrap_or(Duration::ZERO)
+                    .unwrap_or(Duration::MAX)
             },
             |(_, observed)| observed,
         );
+        let clock = match RequestClock::anchored(observed, started) {
+            Ok(clock) => clock,
+            Err(_) => {
+                return RequestExecution::Complete(Response::error(
+                    503,
+                    "trusted token clock is unavailable",
+                ));
+            }
+        };
         let now = observed.as_secs();
-        let _publication_clock = external_pki::PublicationClockScope::enter(observed, started);
+        let _publication_clock = external_pki::PublicationClockScope::enter(
+            clock.admitted_at().duration_since_epoch(),
+            started,
+        );
         let ServiceRequest {
             method,
             path,
@@ -1567,19 +1603,22 @@ impl Service {
             origin_peer,
             client_certificates,
         } = request;
-        let execution = self.begin_at_mode(RequestDispatch {
-            method,
-            path,
-            namespace,
-            token,
-            body,
-            now,
-            allow_forward: true,
-            enforce_namespace: true,
-            wrap_ttl_seconds,
-            origin_peer,
-            client_certificates,
-        });
+        let execution = self.begin_at_mode_precise(
+            RequestDispatch {
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                now,
+                allow_forward: true,
+                enforce_namespace: true,
+                wrap_ttl_seconds,
+                origin_peer,
+                client_certificates,
+            },
+            clock,
+        );
         if self.native_snapshot_clock.is_some() {
             execution
         } else {
@@ -1591,9 +1630,21 @@ impl Service {
         let started = std::time::Instant::now();
         let observed = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .unwrap_or(Duration::ZERO);
+            .unwrap_or(Duration::MAX);
+        let clock = match RequestClock::anchored(observed, started) {
+            Ok(clock) => clock,
+            Err(_) => {
+                return RequestExecution::Complete(Response::error(
+                    503,
+                    "trusted token clock is unavailable",
+                ));
+            }
+        };
         let now = observed.as_secs();
-        let _publication_clock = external_pki::PublicationClockScope::enter(observed, started);
+        let _publication_clock = external_pki::PublicationClockScope::enter(
+            clock.admitted_at().duration_since_epoch(),
+            started,
+        );
         let ServiceRequest {
             method,
             path,
@@ -1604,19 +1655,22 @@ impl Service {
             origin_peer,
             client_certificates,
         } = request;
-        self.begin_at_mode(RequestDispatch {
-            method,
-            path,
-            namespace,
-            token,
-            body,
-            now,
-            allow_forward: false,
-            enforce_namespace: true,
-            wrap_ttl_seconds,
-            origin_peer,
-            client_certificates,
-        })
+        self.begin_at_mode_precise(
+            RequestDispatch {
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                now,
+                allow_forward: false,
+                enforce_namespace: true,
+                wrap_ttl_seconds,
+                origin_peer,
+                client_certificates,
+            },
+            clock,
+        )
         .with_realtime_remote_jwt()
     }
 
@@ -1753,10 +1807,27 @@ impl Service {
     // The integer request clock and monotonic anchor enter together, before
     // audit, HA catch-up or finite-use admission can block. Explicit-clock callers
     // retain this anchor; real remote JWT requests sample wall time at completion.
+    fn begin_at_mode_precise(
+        &mut self,
+        request: RequestDispatch<'_>,
+        clock: RequestClock,
+    ) -> RequestExecution {
+        self.begin_at_mode_started_clock(request, clock.started(), Some(clock))
+    }
+
     fn begin_at_mode_started(
         &mut self,
         request: RequestDispatch<'_>,
         admission_started: std::time::Instant,
+    ) -> RequestExecution {
+        self.begin_at_mode_started_clock(request, admission_started, None)
+    }
+
+    fn begin_at_mode_started_clock(
+        &mut self,
+        request: RequestDispatch<'_>,
+        admission_started: std::time::Instant,
+        token_clock: Option<RequestClock>,
     ) -> RequestExecution {
         let RequestDispatch {
             method,
@@ -1816,6 +1887,7 @@ impl Service {
                     body: &body,
                     now,
                     admission_started,
+                    token_clock,
                     allow_forward,
                     enforce_namespace,
                     // The dedicated health diagnostic ignores wrapping TTL.
@@ -1989,6 +2061,7 @@ impl Service {
             body: &body,
             now,
             admission_started,
+            token_clock,
             allow_forward,
             enforce_namespace,
             wrap_ttl_seconds,
@@ -2076,6 +2149,7 @@ impl Service {
             origin_peer,
             client_certificates,
             admission_started: _,
+            token_clock: _,
         } = request;
         let opaque_ocsp_get = crate::http::ocsp::opaque_get_request(method, path, body);
         if !valid_namespace(namespace) || (!valid_path(path) && !opaque_ocsp_get) {
@@ -2486,7 +2560,13 @@ impl Service {
                     .auth
                     .authenticate_mount_metadata_from(token, now, origin_peer)
             } else {
-                admitted.auth.authenticate_from(token, now, origin_peer)
+                let time = match request.token_time() {
+                    Ok(time) => time,
+                    Err(error) => return error,
+                };
+                admitted
+                    .auth
+                    .authenticate_from_observed(token, time, origin_peer)
             };
             match authenticated {
                 Ok(principal) => Some(principal),
@@ -2510,13 +2590,16 @@ impl Service {
         }
         if !mount_metadata
             && let Some(principal) = principal.as_ref()
-            && let Err(error) = admitted.auth.authorize_request_parameters(
+            && let Err(error) = admitted.auth.authorize_request_parameters_observed(
                 principal,
                 namespace,
                 kv_authorization_method(method, body),
                 path,
                 body,
-                now,
+                match request.token_time() {
+                    Ok(time) => time,
+                    Err(error) => return error,
+                },
             )
         {
             return Response::error(error.status, &error.message);
@@ -2995,9 +3078,13 @@ impl Service {
         if request.token.is_empty() {
             return Some(Response::error(403, "missing client token"));
         }
-        let mut principal = match state.auth.authenticate_read_only_from(
+        let time = match request.token_time() {
+            Ok(time) => time,
+            Err(error) => return Some(error),
+        };
+        let mut principal = match state.auth.authenticate_read_only_from_observed(
             request.token,
-            request.now,
+            time,
             request.origin_peer,
         ) {
             Ok(Some(principal)) => principal,
@@ -3008,13 +3095,13 @@ impl Service {
         {
             return Some(error);
         }
-        if let Err(error) = state.auth.authorize_request_parameters(
+        if let Err(error) = state.auth.authorize_request_parameters_observed(
             &principal,
             request.namespace,
             kv_authorization_method(request.method, request.body),
             request.path,
             request.body,
-            request.now,
+            time,
         ) {
             return Some(Response::error(error.status, &error.message));
         }
@@ -3025,12 +3112,12 @@ impl Service {
             state
                 .engines
                 .required_capability(request.namespace, method, request.path)?;
-        if let Err(error) = state.auth.authorize_request(
+        if let Err(error) = state.auth.authorize_request_observed(
             &principal,
             request.namespace,
             request.path,
             capability,
-            request.now,
+            time,
         ) {
             return Some(Response::error(error.status, &error.message));
         }
@@ -3040,7 +3127,7 @@ impl Service {
                 request.method,
                 request.path,
                 request.body,
-                request.now,
+                time,
             ) {
                 Ok(mut response) => Response {
                     consistency_index: None,

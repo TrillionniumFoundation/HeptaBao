@@ -155,6 +155,7 @@ impl AuthState {
             wrapped_accessor: wrapped_accessor.clone(),
         };
         let token = Token {
+            token_api_precision: None,
             token_api_lease_ttl: None,
             token_role: None,
             bound_cidrs: Vec::new(),

@@ -18,7 +18,7 @@ use zeroize::{Zeroize, Zeroizing};
 pub(crate) const MAX_BATCH_CLAIMS_BYTES: usize = 8 * 1024;
 pub(crate) const MAX_BATCH_TOKEN_BYTES: usize = 16 * 1024;
 pub(crate) const MAX_BATCH_KEYS: usize = 8;
-const MAX_BATCH_TTL: u64 = super::MAX_TTL;
+pub(super) const MAX_BATCH_TTL: u64 = super::MAX_TTL;
 // A native JWT display name contains a bounded auth mount, '-' and subject.
 // Keep the full identity; the total authenticated claims still fit the 8 KiB cap.
 const MAX_BATCH_DISPLAY_NAME_BYTES: usize = 256 + 1 + 1024;
@@ -183,6 +183,8 @@ impl TryFrom<StoredAuthority> for BatchKeyAuthority {
 #[serde(deny_unknown_fields)]
 pub(crate) struct BatchClaims {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) token_api_precision: Option<super::token_precision::BatchPrecision>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) token_role: Option<super::token_roles::IssuedRole>,
     /// Issuer-owned Token API grammar marker, authenticated in the sealed claim.
     /// Historical native login claims omit this field and retain strict names.
@@ -250,6 +252,9 @@ impl VerifiedBatchClaims {
     pub(crate) fn bound_cidrs(&self) -> &[String] {
         &self.claims.bound_cidrs
     }
+    pub(crate) fn precision(&self) -> Option<&super::token_precision::BatchPrecision> {
+        self.claims.token_api_precision.as_ref()
+    }
     pub(crate) fn issued_at(&self) -> u64 {
         self.claims.issued_at
     }
@@ -307,6 +312,13 @@ pub(crate) fn validate_projection(
 
 impl BatchClaims {
     fn validate(&self) -> Result<(), BatchError> {
+        if let Some(lease) = &self.token_api_precision {
+            if !self.token_api_policy_names
+                || lease.validate(self.issued_at, self.expires_at).is_err()
+            {
+                return Err(BatchError::InvalidClaims);
+            }
+        }
         validate_projection(
             &self.namespace,
             self.issued_at,
@@ -358,6 +370,19 @@ fn check_time(issued_at: u64, expires_at: u64, now: u64) -> Result<(), BatchErro
         Err(BatchError::ExpiredOrFuture)
     } else {
         Ok(())
+    }
+}
+
+fn check_time_observed(
+    precision: Option<&super::token_precision::BatchPrecision>,
+    issued_at: u64,
+    expires_at: u64,
+    time: super::AuthorityTime,
+) -> Result<(), BatchError> {
+    if time.batch_live(precision, issued_at, expires_at) {
+        Ok(())
+    } else {
+        Err(BatchError::ExpiredOrFuture)
     }
 }
 
@@ -532,6 +557,14 @@ impl BatchKeyAuthority {
         raw: &str,
         now: u64,
     ) -> Result<VerifiedBatchClaims, BatchError> {
+        self.open_authenticated_observed(raw, super::AuthorityTime::Coarse(now))
+    }
+
+    pub(crate) fn open_authenticated_observed(
+        &self,
+        raw: &str,
+        time: super::AuthorityTime,
+    ) -> Result<VerifiedBatchClaims, BatchError> {
         self.validate()?;
         if raw.len() > MAX_BATCH_TOKEN_BYTES {
             return Err(BatchError::Capacity);
@@ -580,7 +613,12 @@ impl BatchKeyAuthority {
         if claims.issued_at < key.created_at {
             return Err(BatchError::InvalidToken);
         }
-        check_time(claims.issued_at, claims.expires_at, now)?;
+        check_time_observed(
+            claims.token_api_precision.as_ref(),
+            claims.issued_at,
+            claims.expires_at,
+            time,
+        )?;
         Ok(VerifiedBatchClaims {
             claims,
             authority_id: authority,
@@ -609,6 +647,15 @@ impl BatchKeyAuthority {
         namespace: &str,
         now: u64,
     ) -> Result<(), BatchError> {
+        self.check_verified_observed(claims, namespace, super::AuthorityTime::Coarse(now))
+    }
+
+    pub(crate) fn check_verified_observed(
+        &self,
+        claims: &VerifiedBatchClaims,
+        namespace: &str,
+        time: super::AuthorityTime,
+    ) -> Result<(), BatchError> {
         self.validate()?;
         let key = self.find_key(claims.authority_id(), claims.key_id())?;
         if namespace != claims.namespace() {
@@ -617,7 +664,12 @@ impl BatchKeyAuthority {
         if claims.issued_at() < key.created_at {
             return Err(BatchError::InvalidToken);
         }
-        check_time(claims.issued_at(), claims.expires_at(), now)
+        check_time_observed(
+            claims.precision(),
+            claims.issued_at(),
+            claims.expires_at(),
+            time,
+        )
     }
 
     pub(crate) fn check_lease(
@@ -626,8 +678,22 @@ impl BatchKeyAuthority {
         namespace: &str,
         now: u64,
     ) -> Result<(), BatchError> {
+        self.check_lease_observed(claims, namespace, super::AuthorityTime::Coarse(now))
+    }
+
+    pub(crate) fn check_lease_observed(
+        &self,
+        claims: &super::lease_owner::BatchLeaseClaims,
+        namespace: &str,
+        time: super::AuthorityTime,
+    ) -> Result<(), BatchError> {
         self.validate_lease_authority(claims, namespace)?;
-        check_time(claims.issued_at(), claims.expires_at(), now)
+        check_time_observed(
+            claims.precision(),
+            claims.issued_at(),
+            claims.expires_at(),
+            time,
+        )
     }
 
     /// Loading an expired owner must remain possible so provider maintenance can

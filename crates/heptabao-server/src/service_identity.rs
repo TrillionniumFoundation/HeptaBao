@@ -5,6 +5,22 @@ use super::*;
 use crate::auth::{AuthError, AuthResponse};
 
 impl State {
+    /// Retained/pending/all-namespace owners can carry private batch precision
+    /// even when no corresponding service-token record remains.
+    pub(super) fn has_token_api_precision_state(&self) -> bool {
+        self.auth.has_token_api_precision_state()
+            || self
+                .engines
+                .all_lease_owners()
+                .into_iter()
+                .chain(self.database.all_lease_owners())
+                .any(|(_, owner)| {
+                    owner
+                        .batch_claims()
+                        .is_some_and(|claims| claims.precision().is_some())
+                })
+    }
+
     /// Preserve unknown schemas for admission to reject; never normalize them
     /// into an older supported format. The all-namespace scan also finds safe
     /// material introduced by the current candidate before its first commit.
@@ -56,6 +72,16 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.has_token_api_precision_state()
+            || previous.is_some_and(|state| state.has_token_api_precision_state())
+        {
+            // Schema82 issuance/publication is staged until all explicit
+            // response and provider owner paths preserve precise authority.
+            return Err(Response::error(
+                503,
+                "Token API precise lease publication is not enabled",
             ));
         }
         if self.schema < TOKEN_ROLE_STATE_SCHEMA
@@ -218,6 +244,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        self.auth
+            .validate_token_api_precision_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.has_token_api_precision_state() {
+            return Err(Response::error(
+                503,
+                "Token API precise lease reader requires schema 82",
             ));
         }
         self.auth

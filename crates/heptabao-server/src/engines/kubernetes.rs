@@ -1023,6 +1023,7 @@ mod owner_tests {
         let token = keys.seal(
             BatchClaims {
                 token_role: None,
+                token_api_precision: None,
                 token_api_policy_names: false,
                 namespace: String::new(),
                 policies: BTreeSet::from(["default".into()]),
@@ -1040,6 +1041,7 @@ mod owner_tests {
         Ok(ResolvedLeaseOwner {
             owner: LeaseOwner::from_batch(&keys.open(token.as_str(), "", 100)?),
             expires_at: Some(200),
+            precise_expires_at: None,
             entity_id: None,
         })
     }

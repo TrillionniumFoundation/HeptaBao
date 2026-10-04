@@ -50,6 +50,8 @@ pub(crate) struct BatchLeaseClaims {
     expires_at: u64,
     parent: Option<String>,
     entity_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_api_precision: Option<super::token_precision::BatchPrecision>,
 }
 
 #[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize)]
@@ -70,6 +72,8 @@ struct BatchOwnerWire {
     expires_at: u64,
     parent: Option<String>,
     entity_id: Option<String>,
+    #[serde(default)]
+    token_api_precision: Option<super::token_precision::BatchPrecision>,
 }
 
 impl TryFrom<BatchOwnerWire> for BatchLeaseClaims {
@@ -85,6 +89,7 @@ impl TryFrom<BatchOwnerWire> for BatchLeaseClaims {
             expires_at: value.expires_at,
             parent: value.parent,
             entity_id: value.entity_id,
+            token_api_precision: value.token_api_precision,
         };
         claims.validate()?;
         Ok(claims)
@@ -112,10 +117,18 @@ impl BatchLeaseClaims {
             expires_at: claims.expires_at(),
             parent: claims.parent().map(str::to_owned),
             entity_id: claims.entity_id().map(str::to_owned),
+            token_api_precision: claims.precision().cloned(),
         }
     }
 
     pub(crate) fn validate(&self) -> Result<(), BatchError> {
+        if self
+            .token_api_precision
+            .as_ref()
+            .is_some_and(|lease| lease.validate(self.issued_at, self.expires_at).is_err())
+        {
+            return Err(BatchError::InvalidClaims);
+        }
         if !self.authority_id.is_valid()
             || !self.key_id.is_valid()
             || !valid_digest(&self.token_digest)
@@ -141,6 +154,9 @@ impl BatchLeaseClaims {
     }
     pub(crate) fn namespace(&self) -> &str {
         &self.namespace
+    }
+    pub(crate) fn precision(&self) -> Option<&super::token_precision::BatchPrecision> {
+        self.token_api_precision.as_ref()
     }
     pub(crate) fn issued_at(&self) -> u64 {
         self.issued_at

@@ -15,6 +15,7 @@ impl AuthState {
     }
 
     pub(crate) fn validate_token_api_creation_ttl(&self) -> Result<(), AuthError> {
+        self.validate_token_api_precision_state()?;
         for token in self.tokens.values() {
             let Some(TokenAuthProvenance::TokenApi {
                 issued_creation_ttl: Some(ttl),
@@ -22,6 +23,13 @@ impl AuthState {
             else {
                 continue;
             };
+            if token.token_api_precision.is_some() {
+                // The private checked grant may be shorter than one second;
+                // its public initial TTL is zero without being a root token.
+                // validate_token_api_precision_state checks full ownership and
+                // every coarse projection before this legacy-specific branch.
+                continue;
+            }
             // Direct-login provenance and wrappers cannot acquire this field.
             if *ttl > MAX_TTL
                 || token.wrapping.is_some()

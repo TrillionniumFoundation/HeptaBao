@@ -111,8 +111,11 @@ use radius_native::RadiusNativeConfig;
 mod token_cidrs;
 #[path = "auth_token_creation_ttl.rs"]
 mod token_creation_ttl;
+#[path = "auth_token_precision.rs"]
+mod token_precision;
 #[path = "auth_token_ttl.rs"]
 mod token_ttl;
+pub(crate) use token_precision::{AuthorityTime, RequestClock, Timestamp};
 #[path = "auth_userpass_cidrs.rs"]
 mod userpass_cidrs;
 #[path = "auth_userpass_names.rs"]
@@ -208,6 +211,9 @@ pub struct AuthState {
     /// False and absent historical states keep the original serialized bytes.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     token_api_batch_policy_state: bool,
+    /// Sticky precision ownership; stateless issued batch tokens outlive records.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    token_api_precision_state: bool,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     password_policies: BTreeMap<String, BTreeMap<String, password_policy::PasswordPolicy>>,
     users: BTreeMap<String, BTreeMap<String, User>>,
@@ -1200,6 +1206,9 @@ impl Drop for AuthState {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Token {
+    /// Private issuer-owned lease metadata; absent on all historical tokens.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    token_api_precision: Option<token_precision::ServicePrecision>,
     /// The prior granted lease, used by native Token API renewal when no
     /// increment is requested. None preserves historical one-hour renewal.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2267,6 +2276,7 @@ impl AuthState {
             policies: BTreeMap::new(),
             token_roles: BTreeMap::new(),
             token_api_batch_policy_state: false,
+            token_api_precision_state: false,
             password_policies: BTreeMap::new(),
             users: BTreeMap::new(),
             roles: BTreeMap::new(),
@@ -2287,6 +2297,7 @@ impl AuthState {
         };
         state.initialize_fresh_namespace_auth("")?;
         let token = Token {
+            token_api_precision: None,
             token_api_lease_ttl: None,
             token_role: None,
             bound_cidrs: Vec::new(),
@@ -2317,13 +2328,22 @@ impl AuthState {
     }
 
     fn active_token(&self, id: &str, now: u64, consume_check: bool) -> Result<&Token, AuthError> {
+        self.active_token_observed(id, AuthorityTime::Coarse(now), consume_check)
+    }
+
+    fn active_token_observed(
+        &self,
+        id: &str,
+        time: AuthorityTime,
+        consume_check: bool,
+    ) -> Result<&Token, AuthError> {
         let token = self.tokens.get(id).ok_or_else(denied)?;
-        let now = if token.wrapping.is_some() {
-            now.max(self.wrapping_clock)
+        let time = if token.wrapping.is_some() {
+            AuthorityTime::Coarse(time.seconds().max(self.wrapping_clock))
         } else {
-            now
+            time
         };
-        if token.expires_at.is_some_and(|t| now >= t)
+        if !time.service_live(token.token_api_precision.as_ref(), token.expires_at)
             || consume_check && token.uses_remaining == Some(0)
         {
             return Err(denied());
@@ -2336,7 +2356,9 @@ impl AuthState {
                 return Err(denied());
             }
             let ancestor = self.tokens.get(parent_id).ok_or_else(denied)?;
-            if ancestor.expires_at.is_some_and(|t| now >= t) || ancestor.uses_remaining == Some(0) {
+            if !time.service_live(ancestor.token_api_precision.as_ref(), ancestor.expires_at)
+                || ancestor.uses_remaining == Some(0)
+            {
                 return Err(denied());
             }
             parent = ancestor.parent.as_deref();
@@ -2361,14 +2383,26 @@ impl AuthState {
         now: u64,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Option<Principal>, AuthError> {
+        self.authenticate_read_only_from_observed(raw, AuthorityTime::Coarse(now), origin_peer)
+    }
+
+    pub(super) fn authenticate_read_only_from_observed(
+        &self,
+        raw: &str,
+        time: AuthorityTime,
+        origin_peer: Option<std::net::IpAddr>,
+    ) -> Result<Option<Principal>, AuthError> {
+        let now = time.seconds();
         if raw.starts_with("hvb.") {
-            return self.batch_principal(raw, now, origin_peer).map(Some);
+            return self
+                .batch_principal_observed(raw, time, origin_peer)
+                .map(Some);
         }
         if raw.len() > 256 || !raw.starts_with("hvs.") {
             return Err(denied());
         }
         let id = hash(raw);
-        let token = self.active_token(&id, now, true)?;
+        let token = self.active_token_observed(&id, time, true)?;
         token_cidrs::check(&token.bound_cidrs, origin_peer)?;
         if token.uses_remaining.is_some() || token.wrapping.is_some() {
             return Ok(None);
@@ -2416,14 +2450,24 @@ impl AuthState {
         now: u64,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Principal, AuthError> {
+        self.authenticate_from_observed(raw, AuthorityTime::Coarse(now), origin_peer)
+    }
+
+    pub(super) fn authenticate_from_observed(
+        &mut self,
+        raw: &str,
+        time: AuthorityTime,
+        origin_peer: Option<std::net::IpAddr>,
+    ) -> Result<Principal, AuthError> {
+        let now = time.seconds();
         if raw.starts_with("hvb.") {
-            return self.batch_principal(raw, now, origin_peer);
+            return self.batch_principal_observed(raw, time, origin_peer);
         }
         if raw.len() > 256 || !raw.starts_with("hvs.") {
             return Err(denied());
         }
         let id = hash(raw);
-        let current = self.active_token(&id, now, true)?;
+        let current = self.active_token_observed(&id, time, true)?;
         token_cidrs::check(&current.bound_cidrs, origin_peer)?;
         let token = self.tokens.get_mut(&id).ok_or_else(denied)?;
         if let Some(remaining) = &mut token.uses_remaining {
@@ -2455,10 +2499,19 @@ impl AuthState {
         namespace: &str,
         now: u64,
     ) -> Result<batch_principal::CheckedCredential<'a>, AuthError> {
+        self.check_principal_observed(principal, namespace, AuthorityTime::Coarse(now))
+    }
+
+    fn check_principal_observed<'a>(
+        &'a self,
+        principal: &'a Principal,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<batch_principal::CheckedCredential<'a>, AuthError> {
         validate_namespace(namespace)?;
         let view = match &principal.credential {
             batch_principal::VerifiedCredential::Service(snapshot) => {
-                let token = self.active_token(&principal.digest, now, false)?;
+                let token = self.active_token_observed(&principal.digest, time, false)?;
                 token_cidrs::check(&token.bound_cidrs, principal.origin_peer)?;
                 if token.accessor != snapshot.accessor || token.entity_id != snapshot.entity_id {
                     return Err(denied());
@@ -2466,7 +2519,7 @@ impl AuthState {
                 batch_principal::CheckedCredential::Service(token)
             }
             batch_principal::VerifiedCredential::Batch(claims) => {
-                self.check_batch_claims(claims, namespace, now)?;
+                self.check_batch_claims_observed(claims, namespace, time)?;
                 token_cidrs::check(claims.bound_cidrs(), principal.origin_peer)?;
                 batch_principal::CheckedCredential::Batch(claims)
             }
@@ -2487,6 +2540,23 @@ impl AuthState {
         capability: &str,
         now: u64,
     ) -> Result<(), AuthError> {
+        self.authorize_request_observed(
+            principal,
+            namespace,
+            path,
+            capability,
+            AuthorityTime::Coarse(now),
+        )
+    }
+
+    pub(super) fn authorize_request_observed(
+        &self,
+        principal: &Principal,
+        namespace: &str,
+        path: &str,
+        capability: &str,
+        time: AuthorityTime,
+    ) -> Result<(), AuthError> {
         if matches!(principal.admission, PrincipalAdmission::MountMetadata) {
             return Err(denied());
         }
@@ -2494,7 +2564,7 @@ impl AuthState {
         if !CAPABILITIES.contains(&capability) || capability == "deny" {
             return Err(denied());
         }
-        let token = self.check_principal(principal, namespace, now)?;
+        let token = self.check_principal_observed(principal, namespace, time)?;
         if principal
             .service_token()
             .is_some_and(|token| token.wrapping.is_some())
@@ -2531,8 +2601,25 @@ impl AuthState {
         capability: &str,
         now: u64,
     ) -> Result<(), AuthError> {
-        self.authorize_request(principal, namespace, path, capability, now)?;
-        self.authorize_request(principal, namespace, path, "sudo", now)
+        self.authorize_sudo_request_observed(
+            principal,
+            namespace,
+            path,
+            capability,
+            AuthorityTime::Coarse(now),
+        )
+    }
+
+    pub(super) fn authorize_sudo_request_observed(
+        &self,
+        principal: &Principal,
+        namespace: &str,
+        path: &str,
+        capability: &str,
+        time: AuthorityTime,
+    ) -> Result<(), AuthError> {
+        self.authorize_request_observed(principal, namespace, path, capability, time)?;
+        self.authorize_request_observed(principal, namespace, path, "sudo", time)
     }
 
     pub(super) fn authorize_request_parameters(
@@ -2544,11 +2631,30 @@ impl AuthState {
         body: &Value,
         now: u64,
     ) -> Result<(), AuthError> {
+        self.authorize_request_parameters_observed(
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            AuthorityTime::Coarse(now),
+        )
+    }
+
+    pub(super) fn authorize_request_parameters_observed(
+        &self,
+        principal: &Principal,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        time: AuthorityTime,
+    ) -> Result<(), AuthError> {
         // OpenBao applies generic allowed/denied/required request parameters
         // only to logical read/create/update/patch operations. Delete, list,
         // scan, renew, revoke and rollback have separate admission semantics.
         validate_path(path, false)?;
-        let token = self.check_principal(principal, namespace, now)?;
+        let token = self.check_principal_observed(principal, namespace, time)?;
         if principal
             .service_token()
             .is_some_and(|token| token.wrapping.is_some())
@@ -4751,6 +4857,7 @@ impl AuthState {
                 let mut response = batch_issuance::PendingBatchGrant::response(
                     batch::BatchClaims {
                         token_role: None,
+                        token_api_precision: None,
                         token_api_policy_names: false,
                         namespace: namespace.into(),
                         policies: role.policies.clone(),
@@ -5195,6 +5302,7 @@ impl AuthState {
                 batch_issuance::PendingBatchGrant::response(
                     batch::BatchClaims {
                         token_role: None,
+                        token_api_precision: None,
                         token_api_policy_names: false,
                         namespace: namespace.into(),
                         policies: role.policies.clone(),
@@ -5211,6 +5319,7 @@ impl AuthState {
                 )
             } else {
                 let token = Token {
+                    token_api_precision: None,
                     token_api_lease_ttl: None,
                     token_role: None,
                     bound_cidrs: Vec::new(),
@@ -6319,6 +6428,7 @@ impl AuthState {
             }
             let claims = batch::BatchClaims {
                 token_role: issued_role,
+                token_api_precision: None,
                 token_api_policy_names,
                 namespace: namespace.into(),
                 policies: requested,
@@ -6364,6 +6474,7 @@ impl AuthState {
         }
         let mut response = self.issue(
             Token {
+                token_api_precision: None,
                 token_api_lease_ttl: expires_at.map(|expiry| expiry - now),
                 token_role: issued_role,
                 bound_cidrs: if expires_at.is_none() {
@@ -7081,6 +7192,7 @@ impl AuthState {
                 .transpose()?;
             let claims = batch::BatchClaims {
                 token_role: None,
+                token_api_precision: None,
                 token_api_policy_names: false,
                 namespace: namespace.into(),
                 policies: token_policies,
@@ -7583,6 +7695,7 @@ impl AuthState {
             batch_issuance::PendingBatchGrant::response(
                 batch::BatchClaims {
                     token_role: None,
+                    token_api_precision: None,
                     token_api_policy_names: false,
                     namespace: namespace.into(),
                     policies: role.policies.clone(),
@@ -7750,6 +7863,7 @@ fn login_token(
         return Err(denied());
     }
     Ok(Token {
+        token_api_precision: None,
         token_api_lease_ttl: None,
         token_role: None,
         bound_cidrs: Vec::new(),
@@ -8456,6 +8570,7 @@ mod tests;
 // A bounded issuer reference is metadata, not a reusable execution Principal.
 pub(crate) struct LeaseIssuer {
     pub(crate) expires_at: Option<u64>,
+    pub(crate) precise_expires_at: Option<Timestamp>,
     pub(crate) entity_id: Option<String>,
 }
 impl AuthState {
@@ -8465,11 +8580,24 @@ impl AuthState {
         namespace: &str,
         now: u64,
     ) -> Option<LeaseIssuer> {
-        let token = self.active_token(id, now, true).ok()?;
+        self.lease_issuer_by_digest_observed(id, namespace, AuthorityTime::Coarse(now))
+    }
+
+    pub(crate) fn lease_issuer_by_digest_observed(
+        &self,
+        id: &str,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Option<LeaseIssuer> {
+        let token = self.active_token_observed(id, time, true).ok()?;
         if !token.root && token.namespace != namespace {
             return None;
         }
         let mut expires = token.expires_at;
+        let mut precise_expires = token
+            .token_api_precision
+            .as_ref()
+            .and_then(|lease| lease.expires_at);
         let mut parent = token.parent.as_deref();
         // active_token already rejected cycles, missing or expired ancestors.
         while let Some(id) = parent {
@@ -8477,10 +8605,33 @@ impl AuthState {
             if let Some(limit) = ancestor.expires_at {
                 expires = Some(expires.map_or(limit, |current| current.min(limit)));
             }
+            if let Some(limit) = ancestor
+                .token_api_precision
+                .as_ref()
+                .and_then(|lease| lease.expires_at)
+            {
+                precise_expires = Some(precise_expires.map_or(limit, |current| current.min(limit)));
+            }
             parent = ancestor.parent.as_deref();
+        }
+        if precise_expires.is_some() {
+            let mut cursor = Some(token);
+            while let Some(current) = cursor {
+                if current.token_api_precision.is_none()
+                    && let Some(coarse) = current.expires_at
+                {
+                    let bound = Timestamp::whole(coarse).ok()?;
+                    precise_expires = Some(precise_expires?.min(bound));
+                }
+                cursor = current.parent.as_deref().and_then(|id| self.tokens.get(id));
+            }
+            if time.exact().is_none() {
+                return None;
+            }
         }
         Some(LeaseIssuer {
             expires_at: expires,
+            precise_expires_at: precise_expires,
             entity_id: token.entity_id.clone(),
         })
     }

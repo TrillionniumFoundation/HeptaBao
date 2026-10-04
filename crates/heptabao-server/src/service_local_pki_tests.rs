@@ -875,6 +875,7 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
         body: &body,
         now: 100,
         admission_started: std::time::Instant::now(),
+        token_clock: None,
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: None,

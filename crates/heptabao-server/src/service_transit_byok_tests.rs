@@ -431,6 +431,7 @@ fn byok_mixed_pem69_authenticated_restore_prepare_and_commit_reject_active_retir
         body: &body,
         now: 100,
         admission_started: std::time::Instant::now(),
+        token_clock: None,
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: None,

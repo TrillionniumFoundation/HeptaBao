@@ -142,6 +142,7 @@ impl Principal {
 pub(crate) struct ResolvedLeaseOwner {
     pub(crate) owner: LeaseOwner,
     pub(crate) expires_at: Option<u64>,
+    pub(crate) precise_expires_at: Option<Timestamp>,
     pub(crate) entity_id: Option<String>,
 }
 
@@ -174,10 +175,19 @@ impl AuthState {
         namespace: &str,
         now: u64,
     ) -> Result<Option<u64>, AuthError> {
+        self.batch_parent_expiry_observed(parent, namespace, AuthorityTime::Coarse(now))
+    }
+
+    fn batch_parent_expiry_observed(
+        &self,
+        parent: Option<&str>,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<Option<u64>, AuthError> {
         match parent {
             None => Ok(None),
             Some(digest) => self
-                .lease_issuer_by_digest(digest, namespace, now)
+                .lease_issuer_by_digest_observed(digest, namespace, time)
                 .map(|issuer| issuer.expires_at)
                 .ok_or_else(denied),
         }
@@ -188,18 +198,36 @@ impl AuthState {
         namespace: &str,
         now: u64,
     ) -> Result<(), AuthError> {
+        self.check_batch_claims_observed(claims, namespace, AuthorityTime::Coarse(now))
+    }
+
+    pub(super) fn check_batch_claims_observed(
+        &self,
+        claims: &VerifiedBatchClaims,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<(), AuthError> {
         self.batch_authority
             .as_ref()
             .ok_or_else(denied)?
-            .check_verified(claims, namespace, now)
+            .check_verified_observed(claims, namespace, time)
             .map_err(|_| denied())?;
-        self.batch_parent_expiry(claims.parent(), namespace, now)?;
+        self.batch_parent_expiry_observed(claims.parent(), namespace, time)?;
         Ok(())
     }
     pub(super) fn batch_principal(
         &self,
         raw: &str,
         now: u64,
+        origin_peer: Option<std::net::IpAddr>,
+    ) -> Result<Principal, AuthError> {
+        self.batch_principal_observed(raw, AuthorityTime::Coarse(now), origin_peer)
+    }
+
+    pub(super) fn batch_principal_observed(
+        &self,
+        raw: &str,
+        time: AuthorityTime,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Principal, AuthError> {
         if raw.len() > batch::MAX_BATCH_TOKEN_BYTES {
@@ -209,9 +237,9 @@ impl AuthState {
             .batch_authority
             .as_ref()
             .ok_or_else(denied)?
-            .open_authenticated(raw, now)
+            .open_authenticated_observed(raw, time)
             .map_err(|_| denied())?;
-        self.check_batch_claims(&claims, claims.namespace(), now)?;
+        self.check_batch_claims_observed(&claims, claims.namespace(), time)?;
         token_cidrs::check(claims.bound_cidrs(), origin_peer)?;
         Ok(Principal {
             admission: PrincipalAdmission::Operation {
@@ -225,7 +253,7 @@ impl AuthState {
             wrap_ttl_seconds: None,
             identity_checked: false,
             #[cfg(test)]
-            request_time: now,
+            request_time: time.seconds(),
         })
     }
     pub(super) fn inspect_raw_target(
@@ -289,6 +317,10 @@ impl AuthState {
             CheckedCredential::Service(token) => Ok(ResolvedLeaseOwner {
                 owner: LeaseOwner::service(&actor.digest).map_err(|_| denied())?,
                 expires_at: token.expires_at,
+                precise_expires_at: token
+                    .token_api_precision
+                    .as_ref()
+                    .and_then(|lease| lease.expires_at),
                 entity_id: token.entity_id.clone(),
             }),
             CheckedCredential::Batch(_) => self.typed_lease_issuer(actor, namespace, now),
@@ -300,27 +332,38 @@ impl AuthState {
         namespace: &str,
         now: u64,
     ) -> Option<ResolvedLeaseOwner> {
+        self.resolve_lease_owner_observed(owner, namespace, AuthorityTime::Coarse(now))
+    }
+
+    pub(crate) fn resolve_lease_owner_observed(
+        &self,
+        owner: &LeaseOwner,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Option<ResolvedLeaseOwner> {
         if let Some(digest) = owner.service_digest() {
-            let issuer = self.lease_issuer_by_digest(digest, namespace, now)?;
+            let issuer = self.lease_issuer_by_digest_observed(digest, namespace, time)?;
             return Some(ResolvedLeaseOwner {
                 owner: owner.clone(),
                 expires_at: issuer.expires_at,
+                precise_expires_at: issuer.precise_expires_at,
                 entity_id: issuer.entity_id,
             });
         }
         let claims = owner.batch_claims()?;
         self.batch_authority
             .as_ref()?
-            .check_lease(claims, namespace, now)
+            .check_lease_observed(claims, namespace, time)
             .ok()?;
         // Parent authority is a live dependency, not the batch lease's TTL cap.
         // Upstream indexes non-orphan batch leases under the service parent for
         // revocation, while the immutable batch claims define maximum expiry.
-        self.batch_parent_expiry(claims.parent(), namespace, now)
+        self.batch_parent_expiry_observed(claims.parent(), namespace, time)
             .ok()?;
         Some(ResolvedLeaseOwner {
             owner: owner.clone(),
             expires_at: Some(claims.expires_at()),
+            precise_expires_at: claims.precision().map(|lease| lease.expires_at),
             entity_id: claims.entity_id().map(str::to_owned),
         })
     }

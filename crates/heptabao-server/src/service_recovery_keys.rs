@@ -1821,6 +1821,7 @@ mod source825_real_recovery_fixture_tests {
             body: &body,
             now: now(),
             admission_started: Instant::now(),
+            token_clock: None,
             allow_forward: false,
             enforce_namespace: true,
             wrap_ttl_seconds: None,

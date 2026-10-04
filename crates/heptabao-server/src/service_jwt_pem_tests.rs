@@ -779,6 +779,7 @@ fn jwt_pem_authenticated_snapshot_prepare_and_final_commit_reject_active_retired
         body: &body,
         now: 120,
         admission_started: std::time::Instant::now(),
+        token_clock: None,
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: None,

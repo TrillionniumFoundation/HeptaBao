@@ -21,6 +21,7 @@ fn request<'a>(token: &'a str, body: &'a Value) -> RequestView<'a> {
         body,
         now: 100,
         admission_started: std::time::Instant::now(),
+        token_clock: None,
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: None,

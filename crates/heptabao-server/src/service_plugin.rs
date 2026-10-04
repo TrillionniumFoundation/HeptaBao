@@ -139,6 +139,7 @@ pub(super) struct PluginResponseAuthority {
     capability: &'static str,
     sudo: bool,
     admitted_at: u64,
+    token_clock: Option<RequestClock>,
     started: std::time::Instant,
     deadline: Option<std::time::Instant>,
 }
@@ -164,6 +165,7 @@ impl PluginResponseAuthority {
             capability,
             sudo,
             admitted_at: request.now,
+            token_clock: request.token_clock,
             started: request.admission_started,
             deadline: crate::request_deadline::current(),
         }
@@ -179,6 +181,17 @@ impl PluginResponseAuthority {
         std::time::Duration::from_secs(self.admitted_at)
             .saturating_add(self.started.elapsed())
             .as_secs()
+    }
+
+    pub(super) fn token_time(&self) -> Result<AuthorityTime, Response> {
+        match self.token_clock {
+            Some(clock) => clock
+                .with_seconds_floor(self.admitted_at)
+                .and_then(RequestClock::observed_at)
+                .map(AuthorityTime::Precise)
+                .map_err(|_| Response::error(503, "trusted token clock is unavailable")),
+            None => Ok(AuthorityTime::Coarse(self.now())),
+        }
     }
 
     pub(super) fn deadline_expired(&self) -> bool {
@@ -1414,33 +1427,33 @@ impl Service {
             ));
         }
         Self::bind_identity_principal(state, &mut authority.principal, &authority.namespace)?;
-        let now = authority.now();
+        let time = authority.token_time()?;
         state
             .auth
-            .authorize_request_parameters(
+            .authorize_request_parameters_observed(
                 &authority.principal,
                 &authority.namespace,
                 &authority.method,
                 &authority.path,
                 &authority.body,
-                now,
+                time,
             )
             .map_err(|error| Response::error(error.status, &error.message))?;
         let authorized = if authority.sudo {
-            state.auth.authorize_sudo_request(
+            state.auth.authorize_sudo_request_observed(
                 &authority.principal,
                 &authority.namespace,
                 &authority.path,
                 authority.capability,
-                now,
+                time,
             )
         } else {
-            state.auth.authorize_request(
+            state.auth.authorize_request_observed(
                 &authority.principal,
                 &authority.namespace,
                 &authority.path,
                 authority.capability,
-                now,
+                time,
             )
         };
         authorized.map_err(|error| Response::error(error.status, &error.message))?;
