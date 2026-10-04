@@ -9,6 +9,10 @@ use heptabao_durable_service::Barrier;
 use serde::{Deserialize, Serialize};
 use zeroize::Zeroizing;
 
+#[path = "namespace_custody_inherited.rs"]
+mod inherited;
+pub use inherited::{InheritedDescriptor, InheritedParent};
+
 const VERSION: u32 = 1;
 const CUSTODY_SCHEMA: u32 = 81;
 const MAX_PAYLOAD: usize = crate::MAX_APPLICATION_STATE_BYTES;
