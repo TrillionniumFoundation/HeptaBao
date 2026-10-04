@@ -114,6 +114,11 @@ impl std::error::Error for BackendError {}
 /// A backend for the three existing durable-service files.
 pub trait DurableBackend: Send {
     fn verify(&self) -> Result<(), BackendError>;
+    /// Confirm current ownership before an external metadata publication.
+    /// Remote backends must query their existing session without reconnecting.
+    fn verify_live_ownership(&mut self) -> Result<(), BackendError> {
+        self.verify()
+    }
     /// Return one bounded view while holding the backend's writer fence.
     fn load(&mut self) -> Result<BackendBundle, BackendError>;
 
@@ -193,6 +198,10 @@ pub trait DurableBackend: Send {
 impl DurableBackend for Box<dyn DurableBackend> {
     fn verify(&self) -> Result<(), BackendError> {
         self.as_ref().verify()
+    }
+
+    fn verify_live_ownership(&mut self) -> Result<(), BackendError> {
+        self.as_mut().verify_live_ownership()
     }
 
     fn load(&mut self) -> Result<BackendBundle, BackendError> {

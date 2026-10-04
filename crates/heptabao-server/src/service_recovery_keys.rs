@@ -243,6 +243,22 @@ impl Service {
         self.barrier_key = None;
         self.recovery_required = true;
     }
+    fn verify_recovery_backend_owner(&mut self) -> Result<(), Response> {
+        let result = self
+            .durable
+            .as_mut()
+            .ok_or_else(|| Response::error(503, "durable recovery owner absent"))?
+            .verify_live_ownership();
+        if result.is_err() {
+            self.fence_recovery_delivery();
+            return Err(Response::error(
+                503,
+                "durable recovery writer fence unavailable",
+            ));
+        }
+        Ok(())
+    }
+
     fn publish_recovery_owner(
         &mut self,
         mut state: State,
@@ -302,6 +318,7 @@ impl Service {
         state.auth.recovery_intent = Some(intent);
         // This ONE encrypted owner commit switches credential authority AND installs repair intent.
         let committed = self.publish_recovery_owner(state, deadline)?;
+        self.verify_recovery_backend_owner()?;
         let admitted = match self.reconcile_recovery_seal(&committed, deadline) {
             Ok(admitted) => admitted,
             Err(error) => {
@@ -309,6 +326,7 @@ impl Service {
                 return Err(error);
             }
         };
+        self.verify_recovery_backend_owner()?;
         self.seal = admitted.0;
         let mut clean = committed;
         clean.auth.recovery_intent = None;
@@ -448,10 +466,10 @@ impl Service {
                 "sealable namespace recovery rotation requires its owning credential consumer",
             );
         }
-        if self.ha.is_some() || self.postgres_durable.is_some() {
+        if self.ha.is_some() {
             return Response::error(
                 501,
-                "recovery public-index publication on HA/PostgreSQL requires its backend consumer",
+                "recovery public-index publication on HA requires its backend consumer",
             );
         }
         if !self.seal.as_ref().is_some_and(SealMetadata::is_wrapper) {
@@ -469,6 +487,9 @@ impl Service {
                 return Response::error(503, "initialization response delivery state unavailable");
             }
         }
+        if let Err(error) = self.verify_recovery_backend_owner() {
+            return error;
+        }
         let deadline = crate::request_deadline::current();
         if let Err(error) = live(deadline) {
             return error;
@@ -481,6 +502,9 @@ impl Service {
                     return error;
                 }
             };
+            if let Err(error) = self.verify_recovery_backend_owner() {
+                return error;
+            }
             self.seal = admitted.0;
             state.auth.recovery_intent = None;
             state = match self.publish_recovery_owner(state, deadline) {
@@ -1111,6 +1135,7 @@ impl Service {
         data_dir: PathBuf,
         audit_path: &Path,
         actual_config: openbao_wrapper::OpenBaoWrapperConfig,
+        actual_postgres_config: Option<PgStorageConfig>,
         actual_initialization_body: Value,
         now: u64,
     ) -> Result<FreshWrapperFixture, String> {
@@ -1131,6 +1156,9 @@ impl Service {
         if service.initialized() || service.state.is_some() || service.seal.is_some() {
             return Err("fixture refuses an initialized or recovered store".into());
         }
+        if let Some(config) = actual_postgres_config {
+            service.install_postgres_durable_storage(config)?;
+        }
         let launch = service
             .install_openbao_wrapper(Some(actual_config))?
             .ok_or("genuine Wrapper launch plan missing")?;
@@ -1150,6 +1178,7 @@ impl Service {
         same_data_dir: PathBuf,
         same_audit_path: &Path,
         same_actual_config: openbao_wrapper::OpenBaoWrapperConfig,
+        same_postgres_config: Option<PgStorageConfig>,
     ) -> Result<Service, String> {
         if !same_actual_config.seal_barrier {
             return Err("fixture restart requires the same real Wrapper provider".into());
@@ -1162,6 +1191,9 @@ impl Service {
             return Err(
                 "fixture restart refuses absent, changed, or non-Wrapper public seal".into(),
             );
+        }
+        if let Some(config) = same_postgres_config {
+            service.install_postgres_durable_storage(config)?;
         }
         let launch = service
             .install_openbao_wrapper(Some(same_actual_config))?
@@ -1300,6 +1332,7 @@ mod source825_real_recovery_fixture_tests {
         data: PathBuf,
         audit: PathBuf,
         config: Vec<u8>,
+        postgres: Option<PgStorageConfig>,
         init: Value,
         service: Option<Service>,
         token: String,
@@ -1352,10 +1385,30 @@ mod source825_real_recovery_fixture_tests {
         let audit = root.join("audit.jsonl");
         save(&root.join("provider-config.original.json"), &config);
         save(&root.join("initialization-body.original.json"), &init_raw);
+        let postgres = std::env::var_os("HEPTABAO_RECOVERY_FIXTURE_PG_CONFIG").map(|_| {
+            let raw = private_raw(
+                "HEPTABAO_RECOVERY_FIXTURE_PG_CONFIG",
+                "HEPTABAO_RECOVERY_FIXTURE_PG_CONFIG_SHA256",
+                m.uid(),
+            );
+            save(&root.join("postgres-config.original.private.json"), &raw);
+            let mut config: PgStorageConfig =
+                serde_json::from_slice(&raw).expect("actual PostgreSQL deployment configuration");
+            config.scope = format!("{}-{name}", config.scope);
+            config
+                .validate()
+                .expect("actual independent PostgreSQL scope");
+            assert!(
+                init.get("recovery_nonce").is_some(),
+                "real PostgreSQL initialization requires a private retrieval nonce"
+            );
+            config
+        });
         let f = Service::fixture_start_genuine_recovery_wrapper(
             data.clone(),
             &audit,
             serde_json::from_slice(&config).expect("real production wrapper config"),
+            postgres.as_ref().map(clone_pg_storage_config),
             init.clone(),
             now(),
         )
@@ -1368,6 +1421,7 @@ mod source825_real_recovery_fixture_tests {
             data,
             audit,
             config,
+            postgres,
             init,
             service: Some(f.service),
             token: String::new(),
@@ -1391,6 +1445,32 @@ mod source825_real_recovery_fixture_tests {
             .map(|v| v.as_str().expect("real recovery encoding").to_owned())
             .collect::<Vec<_>>();
         assert!(!c.old_keys.is_empty());
+        if c.postgres.is_some() {
+            let retrieved = c
+                .service
+                .as_mut()
+                .expect("live PostgreSQL fixture")
+                .handle_at("PUT", "sys/init", "", "", c.init.clone(), now());
+            response(
+                &c.root,
+                "postgres-initialization-same-nonce-retrieval",
+                &retrieved,
+            );
+            assert_eq!(
+                retrieved.status, 200,
+                "actual PostgreSQL nonce recovery failed"
+            );
+            assert_eq!(
+                retrieved.body, f.initialization.body,
+                "retrieval must preserve the exact already committed candidate"
+            );
+            assert!(
+                ["state.hbs", "ledger.hbl", "journal.hbj"]
+                    .iter()
+                    .all(|name| !c.data.join(name).exists()),
+                "PostgreSQL authority must remain remote"
+            );
+        }
         let ack = c.service.as_mut().expect("live fixture").handle_at(
             "POST",
             "sys/init/ack",
@@ -1527,6 +1607,7 @@ mod source825_real_recovery_fixture_tests {
             c.data.clone(),
             &c.audit,
             serde_json::from_slice(&c.config).expect("identical actual provider bytes"),
+            c.postgres.as_ref().map(clone_pg_storage_config),
         )
         .unwrap_or_else(|_| panic!("same-store real provider restart failed"));
         c.service = Some(restarted);

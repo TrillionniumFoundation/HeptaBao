@@ -667,6 +667,13 @@ impl DurableBackend for PostgresDurableBackend {
         }
     }
 
+    fn verify_live_ownership(&mut self) -> Result<(), BackendError> {
+        // transaction checks this same session's advisory lock at the server;
+        // commit checks liveness again and every error poisons this owner.
+        let session = self.transaction(true)?;
+        self.finish(session)
+    }
+
     fn load(&mut self) -> Result<BackendBundle, BackendError> {
         // A short planning transaction reads only bounded lengths. The session
         // writer fence spans planning and the actual read; all payload pages

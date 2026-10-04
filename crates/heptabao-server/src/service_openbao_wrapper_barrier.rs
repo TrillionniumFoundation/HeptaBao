@@ -1,5 +1,5 @@
-//! Explicit Wrapper barrier consumer proposal. No local-unseal fallback.
-//! This first opt-in profile omits recovery-key, rekey, migration and PG init.
+//! Explicit Wrapper barrier consumer with durable Recovery authority.
+//! Filesystem and PostgreSQL consumers retain the genuine provider binding.
 
 use std::fmt;
 use std::path::Path;
@@ -357,10 +357,10 @@ mod linux {
                     "Wrapper initialization requires a fresh sealed store",
                 ));
             }
-            if self.ha.is_some() || self.postgres_durable.is_some() {
+            if self.ha.is_some() {
                 return Err(Response::error(
                     501,
-                    "Wrapper HA/PostgreSQL initialization requires a supported consumer",
+                    "Wrapper HA initialization requires a supported consumer",
                 ));
             }
             let response_retrieval = validate_initialization_options(body)?;
@@ -459,7 +459,7 @@ mod linux {
                 &plan.body.0,
                 now,
                 fingerprint,
-                |_, _| Err(super::super::super::BackendError::Unsupported),
+                super::super::super::Service::import_postgres_initialization,
                 Some(material),
             );
             if response.status != 200 {

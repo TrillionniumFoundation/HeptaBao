@@ -558,6 +558,19 @@ impl<B: Barrier> DurableService<B> {
 }
 
 impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
+    /// Confirm that the admitted backend still owns its writer fence. A remote
+    /// connection loss leaves this service unresolved until a genuine reopen.
+    pub fn verify_live_ownership(&mut self) -> Result<(), ServiceError> {
+        if self.unresolved {
+            return Err(ServiceError::RecoveryRequired);
+        }
+        if let Err(error) = self.backend.verify_live_ownership() {
+            self.unresolved = true;
+            return Err(map_backend_error(error));
+        }
+        Ok(())
+    }
+
     /// Initialize an empty, exclusively owned backend with sealed artifacts.
     /// The backend must have acquired its writer fence before this call.
     pub fn create_new_with_backend(
