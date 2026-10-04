@@ -5961,8 +5961,10 @@ impl AuthState {
                     self.target_token(namespace, body, operation.ends_with("accessor"), now)?
                 };
                 // permission() above authorized this exact renew operation.
-                // Only a retained Token API record here with its own expired
-                // deadline gets the reference token-not-found classification.
+                // A retained Token API record with an expired deadline or
+                // exhausted uses gets the reference token-not-found classification.
+                // The admitted final use keeps its ordinary request authority,
+                // but cannot produce a renewed authentication credential.
                 // Missing/revoked handles and invalid ancestors retain their
                 // existing closed authority checks; absence is not proof.
                 if self.tokens.get(&id).is_some_and(|token| {
@@ -5971,7 +5973,8 @@ impl AuthState {
                             token.auth_provenance,
                             Some(TokenAuthProvenance::TokenApi { .. })
                         )
-                        && token.expires_at.is_some_and(|expiry| now >= expiry)
+                        && (token.uses_remaining == Some(0)
+                            || token.expires_at.is_some_and(|expiry| now >= expiry))
                 }) {
                     return Err(bad("token not found"));
                 }
@@ -6179,8 +6182,12 @@ impl AuthState {
             .check_principal(actor, namespace, now)?
             .service()?
             .clone();
-        if parent.uses_remaining.is_some() {
-            return Err(bad("limited-use tokens cannot create child tokens"));
+        if let Some(remaining) = parent.uses_remaining {
+            return Err(bad(if remaining == 0 {
+                "parent token lookup failed: no parent found"
+            } else {
+                "restricted use token cannot generate child tokens"
+            }));
         }
         let is_sudo = parent.root
             || self

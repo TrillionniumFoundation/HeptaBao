@@ -592,3 +592,96 @@ fn token_unknown_warning_uses_exact_pinned_go_unicode_print_categories() -> Test
     }
     Ok(())
 }
+
+fn final_use_actor(
+    state: &mut AuthState,
+    root: &Principal,
+    uses: u64,
+) -> Result<Principal, Box<dyn std::error::Error>> {
+    request(
+        state,
+        root,
+        "",
+        "sys/policies/acl/final-use-all",
+        json!({"policy":r#"path "*" { capabilities = ["create", "read", "update", "delete", "list", "sudo"] }"#}),
+    )?;
+    let (actor, _) = issue(
+        state,
+        root,
+        "",
+        "auth/token/create",
+        json!({"policies":["final-use-all"],"no_default_policy":true,"ttl":"1h","num_uses":uses}),
+    )?;
+    Ok(actor)
+}
+
+#[test]
+fn final_and_remaining_restricted_uses_report_actual_child_creation_errors() -> TestResult {
+    for uses in [1, 2] {
+        for (path, kind) in [
+            ("auth/token/create", "service"),
+            ("auth/token/create", "batch"),
+            ("auth/token/create-orphan", "service"),
+        ] {
+            let (mut state, root) = setup()?;
+            let actor = final_use_actor(&mut state, &root, uses)?;
+            assert!(state.active_token(&actor.digest, 100, false).is_ok());
+            let before = serde_json::to_vec(&state)?;
+            let error = request(
+                &mut state,
+                &actor,
+                "",
+                path,
+                json!({"policies":["default"],"no_default_policy":true,"ttl":"1h","type":kind}),
+            )
+            .err()
+            .ok_or("restricted use created child")?;
+            assert_eq!(error.status, 400);
+            assert_eq!(
+                error.message,
+                if uses == 1 {
+                    "parent token lookup failed: no parent found"
+                } else {
+                    "restricted use token cannot generate child tokens"
+                }
+            );
+            assert_eq!(serde_json::to_vec(&state)?, before);
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn final_use_token_api_self_renewal_is_not_an_expiry_or_new_authentication() -> TestResult {
+    let (mut state, root) = setup()?;
+    let actor = final_use_actor(&mut state, &root, 1)?;
+    let token = state.tokens.get(&actor.digest).ok_or("issued token")?;
+    assert_eq!(token.uses_remaining, Some(0));
+    assert!(token.expires_at.is_some_and(|end| end > 100));
+    state.authorize_request(&actor, "", "auth/token/renew-self", "update", 100)?;
+    let before = serde_json::to_vec(&state)?;
+    let error = request(
+        &mut state,
+        &actor,
+        "",
+        "auth/token/renew-self",
+        json!({"increment":"1h"}),
+    )
+    .err()
+    .ok_or("exhausted token renewed")?;
+    assert_eq!(error.status, 400);
+    assert_eq!(error.message, "token not found");
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
+#[test]
+fn the_admitted_final_use_keeps_read_authority_and_self_revocation_success() -> TestResult {
+    let (mut state, root) = setup()?;
+    let actor = final_use_actor(&mut state, &root, 1)?;
+    state.authorize_request(&actor, "", "final-use/probe", "read", 100)?;
+    let response = request(&mut state, &actor, "", "auth/token/revoke-self", json!({}))?;
+    assert_eq!(response.status, 204);
+    assert!(!state.tokens.contains_key(&actor.digest));
+    Ok(())
+}
