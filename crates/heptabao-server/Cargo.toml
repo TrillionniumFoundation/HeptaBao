@@ -51,6 +51,7 @@ aws-lc-rs = { version = "=1.17.1", default-features = false, features = ["non-fi
 
 [target.'cfg(target_os = "linux")'.dependencies]
 cross-krb5 = { version = "=0.5.0", default-features = false }
+heptabao-linux-parent-death = { path = "../heptabao-linux-parent-death" }
 
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.189"

@@ -7,6 +7,12 @@ required_sections:
 - Acceptance evidence
 - Known gaps and evolution
 modules:
+- crate: heptabao-linux-parent-death
+  dossier: docs/module-closure/heptabao-linux-parent-death.md
+  guide: docs/modules/heptabao-linux-parent-death.md
+  source: crates/heptabao-linux-parent-death/src
+  test_anchor: null
+  state: IMPLEMENTED_REVIEW_REQUIRED
 - crate: heptabao-agent
   dossier: docs/module-closure/heptabao-agent.md
   guide: docs/modules/heptabao-agent.md
