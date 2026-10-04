@@ -464,16 +464,18 @@ impl Service {
                 }
             })));
         }
-        let state: State = serde_json::from_slice(&committed.bytes)
+        let mut state: State = serde_json::from_slice(&committed.bytes)
             .map_err(|_| Response::error(503, "HA committed state schema is invalid"))?;
         state.validate_format()?;
         let next_digest = crypto::digest(&committed.bytes);
         debug_assert_eq!(next_digest, committed.digest);
+        let state_schema = state.schema;
+        let replay_epoch = state.replay_epoch;
         self.commit_state_bytes_with_mode(
-            &state,
+            &mut state,
             &committed.bytes,
-            state.schema,
-            state.replay_epoch,
+            state_schema,
+            replay_epoch,
             next_digest,
             true,
         )?;

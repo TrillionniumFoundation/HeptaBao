@@ -96,6 +96,63 @@ impl Runtime {
         });
     }
 
+    pub(super) fn closed_candidate(&self, state: &State, actual: &str) -> Result<State, Response> {
+        let mut candidate = state.clone();
+        self.prepare(&mut candidate)?;
+        let prefix = format!("{actual}/");
+        let mut paths = self
+            .loaded
+            .keys()
+            .filter(|path| path.as_str() == actual || path.starts_with(&prefix))
+            .cloned()
+            .collect::<Vec<_>>();
+        if paths.is_empty() {
+            return Err(unavailable());
+        }
+        paths.sort_by_key(|path| std::cmp::Reverse(path.split('/').count()));
+        for path in paths {
+            let descriptor = candidate
+                .namespaces
+                .custody_owner(&path)
+                .cloned()
+                .ok_or_else(unavailable)?;
+            let binding = candidate
+                .namespaces
+                .custody_binding(&candidate.cluster_id, &path)?;
+            let lease = self.loaded.get(&path).ok_or_else(unavailable)?;
+            candidate = lease.with_key(&descriptor, |key| {
+                let (mut next, assets, cells) = candidate.partition_namespace_assets(&path, key)?;
+                let bytes =
+                    owner_store::serialize_owner(&assets).map_err(state_serialization_error)?;
+                let previous = descriptor
+                    .open_assets(&binding, key)
+                    .map_err(|_| unavailable())?;
+                let updated = if previous.as_slice() == bytes.as_slice() {
+                    descriptor.clone()
+                } else {
+                    descriptor
+                        .replace_assets(&binding, key, &bytes)
+                        .map_err(|_| unavailable())?
+                };
+                let closed = updated
+                    .advance_seal_frontier(&binding, key)
+                    .map_err(|_| unavailable())?;
+                next.engines
+                    .publish_namespace_record_cells(&binding, &cells)
+                    .map_err(|_| unavailable())?;
+                next.namespaces
+                    .install_custody_owner(&next.cluster_id, &path, closed)?;
+                next.namespaces.set_sealed(&path, true)?;
+                next.namespace_leases
+                    .0
+                    .retain(|candidate| !Arc::ptr_eq(&candidate.0, &lease.0));
+                Ok(next)
+            })?;
+        }
+        self.prepare(&mut candidate)?;
+        Ok(candidate)
+    }
+
     /// Restore only after descriptor/typed assets/private record graph have all
     /// authenticated under the actual durable owner. Installing a key is never
     /// sufficient by itself to give a caller a principal or namespace grant.
@@ -149,14 +206,26 @@ impl Runtime {
     /// of the parent; its independent key is never given to that parent.
     pub(super) fn prepare(&self, state: &mut State) -> Result<(), Response> {
         state.namespace_leases.validate()?;
-        if self.loaded.is_empty() {
-            if !state.namespace_leases.is_empty() {
-                return Err(unavailable());
-            }
+        if state.namespace_leases.is_empty() {
             state.namespace_protected = None;
             return Ok(());
         }
-        let mut paths = self.loaded.keys().cloned().collect::<Vec<_>>();
+        let mut paths = Vec::with_capacity(state.namespace_leases.0.len());
+        for lease in &state.namespace_leases.0 {
+            let slot = lease.0.lock().map_err(|_| unavailable())?;
+            let actual = slot.binding.namespace();
+            if self
+                .loaded
+                .get(actual)
+                .is_none_or(|current| !Arc::ptr_eq(&current.0, &lease.0))
+            {
+                return Err(unavailable());
+            }
+            if paths.iter().any(|path| path == actual) {
+                return Err(unavailable());
+            }
+            paths.push(actual.to_owned());
+        }
         paths.sort_by(|left, right| {
             right
                 .split('/')
@@ -233,7 +302,12 @@ impl Runtime {
             })?;
         }
         logical.namespace_protected = Some(canonical);
-        logical.namespace_leases = Leases(self.loaded.values().cloned().collect());
+        logical.namespace_leases = Leases(
+            paths
+                .iter()
+                .map(|path| self.loaded.get(path).cloned().ok_or_else(unavailable))
+                .collect::<Result<Vec<_>, _>>()?,
+        );
         *state = logical;
         Ok(())
     }
@@ -311,5 +385,327 @@ impl Serialize for State {
 impl Service {
     pub(super) fn prepare_namespace_publication(&self, state: &mut State) -> Result<(), Response> {
         self.namespace_runtime.prepare(state)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::namespace_custody::{Created, Progress, Submission};
+    use crate::service::tests::{Root, bootstrap_unmounted, call};
+    type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+    fn key(descriptor: &Descriptor, created: &Created) -> TestResult<Key> {
+        let mut progress = Progress::new(descriptor.binding().clone(), descriptor)?;
+        match progress.submit(descriptor, &created.shares[0])? {
+            Submission::Unlocked { key, .. } => Ok(key),
+            Submission::Pending => Err("threshold did not authenticate".into()),
+        }
+    }
+
+    fn install(service: &mut Service, actual: &str) -> TestResult<Created> {
+        let mut loaded = service.state.clone().ok_or("state")?;
+        service
+            .prepare_namespace_publication(&mut loaded)
+            .map_err(|_| "predecessor protection")?;
+        let state = loaded
+            .protected_state()
+            .map_err(|_| "predecessor owner")?
+            .clone();
+        let binding = state
+            .namespaces
+            .custody_binding(&state.cluster_id, actual)
+            .map_err(|_| "binding")?;
+        let created = Descriptor::create(binding.clone(), 1, 1, b"{}")?;
+        let key = key(&created.descriptor, &created)?;
+        let (mut closed, assets, cells) = state
+            .partition_namespace_assets(actual, &key)
+            .map_err(|_| "partition")?;
+        let bytes = owner_store::serialize_owner(&assets)?;
+        let descriptor = created.descriptor.replace_assets(&binding, &key, &bytes)?;
+        closed
+            .engines
+            .publish_namespace_record_cells(&binding, &cells)
+            .map_err(|_| "cipher cells")?;
+        closed
+            .namespaces
+            .install_custody_owner(&closed.cluster_id, actual, descriptor)
+            .map_err(|_| "descriptor")?;
+        closed
+            .namespaces
+            .set_sealed(actual, true)
+            .map_err(|_| "closed routing owner")?;
+        closed.schema = closed.writer_schema();
+        service
+            .commit_state(&mut closed)
+            .map_err(|_| "actual protected publication")?;
+        service.namespace_runtime.close(actual);
+        service.state = Some(closed);
+        restore(service, actual, &created)?;
+        Ok(created)
+    }
+
+    fn restore(service: &mut Service, actual: &str, created: &Created) -> TestResult {
+        let state = service.state.as_ref().ok_or("state")?;
+        let descriptor = state.namespaces.custody_owner(actual).ok_or("descriptor")?;
+        let key = key(descriptor, created)?;
+        let candidate = service
+            .namespace_runtime
+            .restore(state, actual, key)
+            .map_err(|_| "actual typed restore")?;
+        service.state = Some(candidate);
+        Ok(())
+    }
+
+    fn new_namespace(service: &mut Service, root: &str, parent: &str, name: &str) -> TestResult {
+        assert!(
+            service
+                .handle_at(
+                    "POST",
+                    &format!("sys/namespaces/{name}"),
+                    parent,
+                    root,
+                    json!({}),
+                    100
+                )
+                .status
+                == 200,
+            "actual namespace created"
+        );
+        Ok(())
+    }
+
+    fn mounted_record(
+        service: &mut Service,
+        root: &str,
+        namespace: &str,
+        marker: &str,
+    ) -> TestResult {
+        assert!(
+            service
+                .handle_at(
+                    "POST",
+                    "sys/mounts/records",
+                    namespace,
+                    root,
+                    json!({"type":"kv", "options":{"version":"1"}}),
+                    100
+                )
+                .status
+                == 204,
+            "actual KV owner mounted"
+        );
+        assert!(
+            service
+                .handle_at(
+                    "POST",
+                    "records/value",
+                    namespace,
+                    root,
+                    json!({"marker":marker, "large":"x".repeat(4096)}),
+                    100
+                )
+                .status
+                == 204,
+            "actual bounded record written"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn loaded_namespace_publication_keeps_root_ciphertext_and_rejects_stale_plan() -> TestResult {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = bootstrap_unmounted(&mut service)?;
+        new_namespace(&mut service, &token, "", "custody")?;
+        new_namespace(&mut service, &token, "custody", "child")?;
+        mounted_record(&mut service, &token, "", "unrelated-root-record")?;
+        mounted_record(&mut service, &token, "custody", "protected-live-marker")?;
+        mounted_record(
+            &mut service,
+            &token,
+            "custody/child",
+            "protected-child-marker",
+        )?;
+        let created = install(&mut service, "custody")?;
+        assert!(
+            service
+                .handle_at("GET", "records/value", "custody", &token, json!({}), 100)
+                .status
+                == 200,
+            "actual loaded KV route accepts the real root principal"
+        );
+        let identity = service.current_state_identity().map_err(|_| "identity")?;
+        assert!(
+            service
+                .handle_at("GET", "records/value", "custody", &token, json!({}), 100)
+                .status
+                == 200
+                && service.current_state_identity().map_err(|_| "identity")? == identity,
+            "read does not randomize ciphertext or allocate a publication"
+        );
+        assert!(
+            service
+                .handle_at(
+                    "POST",
+                    "records/value",
+                    "custody",
+                    &token,
+                    json!({"marker":"new-protected-live-marker", "large":"y".repeat(4096)}),
+                    100
+                )
+                .status
+                == 204,
+            "actual mutation passes the protected publication boundary"
+        );
+        let logical = service.state.as_ref().ok_or("logical")?;
+        let encoded = owner_store::serialize_owner(logical)?;
+        for marker in [
+            "protected-live-marker",
+            "new-protected-live-marker",
+            "protected-child-marker",
+        ] {
+            assert!(
+                !encoded
+                    .windows(marker.len())
+                    .any(|window| window == marker.as_bytes()),
+                "root serialized owner contains no loaded namespace plaintext"
+            );
+        }
+        let manifest = service.record_root.as_ref().ok_or("record root")?;
+        let persisted = Service::materialize_record_state(
+            manifest,
+            &records::DurableReader(service.durable.as_ref().ok_or("durable")?),
+        )
+        .map_err(|_| "actual reopen")?;
+        assert!(
+            persisted.namespace_is_sealed("custody")
+                && !persisted.namespace_exists("custody/child")
+                && persisted.engines.namespace_is_empty("custody")
+                && persisted.auth.namespace_is_empty("custody"),
+            "genuine V5 durable graph has only the closed namespace owner"
+        );
+        let mut old = service.state.clone().ok_or("old candidate")?;
+        let stale = service
+            .prepare_record_plan(&mut old)
+            .map_err(|_| "old plan")?;
+        let mut closed = service
+            .namespace_runtime
+            .closed_candidate(service.state.as_ref().ok_or("state")?, "custody")
+            .map_err(|_| "manual closure candidate")?;
+        service
+            .commit_state(&mut closed)
+            .map_err(|_| "manual closure publication")?;
+        service.namespace_runtime.close("custody");
+        service.state = Some(closed);
+        let closed_identity = service.current_state_identity().map_err(|_| "identity")?;
+        assert!(
+            old.namespace_leases.validate().is_err()
+                && owner_store::serialize_owner(&old).is_err()
+                && service.commit_record_plan(&old, stale).is_err()
+                && service.current_state_identity().map_err(|_| "identity")? == closed_identity,
+            "revocation reaches a pinned stale State and plan before publication"
+        );
+        assert!(
+            service
+                .handle_at("GET", "records/value", "custody", &token, json!({}), 100)
+                .status
+                == 503
+                && service
+                    .handle_at("GET", "records/value", "", &token, json!({}), 100)
+                    .status
+                    == 200,
+            "manual namespace closure preserves the unrelated root owner"
+        );
+        restore(&mut service, "custody", &created)?;
+        let response = service.handle_at("GET", "records/value", "custody", &token, json!({}), 100);
+        assert!(
+            response.status == 200
+                && response.body["data"]["marker"] == "new-protected-live-marker",
+            "fresh original shares restore the last actually committed namespace value"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn ancestor_closure_retires_independent_child_slot_and_restores_each_owner_separately()
+    -> TestResult {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = bootstrap_unmounted(&mut service)?;
+        new_namespace(&mut service, &token, "", "outer")?;
+        new_namespace(&mut service, &token, "outer", "inner")?;
+        new_namespace(&mut service, &token, "outer/inner", "child")?;
+        for (namespace, marker) in [
+            ("outer", "outer-secret"),
+            ("outer/inner", "inner-secret"),
+            ("outer/inner/child", "inner-child-secret"),
+        ] {
+            mounted_record(&mut service, &token, namespace, marker)?;
+        }
+        let inner = install(&mut service, "outer/inner")?;
+        let outer = install(&mut service, "outer")?;
+        restore(&mut service, "outer/inner", &inner)?;
+        let mut pinned_inner = service.state.clone().ok_or("pinned independent child")?;
+        let stale = service
+            .prepare_record_plan(&mut pinned_inner)
+            .map_err(|_| "child plan")?;
+        let mut closed = service
+            .namespace_runtime
+            .closed_candidate(service.state.as_ref().ok_or("state")?, "outer")
+            .map_err(|_| "ancestor candidate")?;
+        service
+            .commit_state(&mut closed)
+            .map_err(|_| "ancestor publication")?;
+        service.namespace_runtime.close("outer");
+        service.state = Some(closed);
+        assert!(
+            pinned_inner.namespace_leases.validate().is_err()
+                && service.commit_record_plan(&pinned_inner, stale).is_err(),
+            "ancestor closure retires the child's independently held slot"
+        );
+        restore(&mut service, "outer", &outer)?;
+        assert!(
+            service
+                .handle_at("GET", "records/value", "outer", &token, json!({}), 100)
+                .status
+                == 200
+                && service
+                    .handle_at(
+                        "GET",
+                        "records/value",
+                        "outer/inner",
+                        &token,
+                        json!({}),
+                        100
+                    )
+                    .status
+                    == 503
+                && !service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .namespace_exists("outer/inner/child"),
+            "parent shares restore parent resources and the still-closed independent child descriptor"
+        );
+        restore(&mut service, "outer/inner", &inner)?;
+        for namespace in ["outer/inner", "outer/inner/child"] {
+            assert!(
+                service
+                    .handle_at("GET", "records/value", namespace, &token, json!({}), 100)
+                    .status
+                    == 200,
+                "child's own shares restore its resources and ordinary child assets"
+            );
+        }
+        let encoded = owner_store::serialize_owner(service.state.as_ref().ok_or("state")?)?;
+        assert!(
+            !encoded
+                .windows("inner-secret".len())
+                .any(|window| window == b"inner-secret"),
+            "parent canonical owner cannot contain the independently restored child's plaintext"
+        );
+        let _ = call(&mut service, "GET", "sys/health", &token, json!({}));
+        Ok(())
     }
 }

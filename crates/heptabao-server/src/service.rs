@@ -6235,7 +6235,7 @@ impl Service {
                 .is_leader()
                 .map_err(|_| Response::error(503, "HA role is unavailable"))?;
             if is_leader {
-                let state = self
+                let mut state = self
                     .state
                     .clone()
                     .ok_or_else(|| Response::error(503, "server is sealed"))?;
