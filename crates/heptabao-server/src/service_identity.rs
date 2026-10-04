@@ -75,7 +75,7 @@ impl State {
             ));
         }
         self.auth
-            .validate_token_api_clock_floor(previous.map(|state| &state.auth))
+            .validate_token_api_clock_floor(previous.map(|state| &*state.auth))
             .map_err(|error| Response::error(503, &error.message))?;
         if self.has_token_api_precision_state()
             || previous.is_some_and(|state| state.has_token_api_precision_state())

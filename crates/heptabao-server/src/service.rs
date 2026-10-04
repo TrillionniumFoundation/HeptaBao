@@ -3160,7 +3160,7 @@ impl Service {
                 request.method,
                 request.path,
                 request.body,
-                time,
+                time.seconds(),
             ) {
                 Ok(mut response) => Response {
                     consistency_index: None,
