@@ -39,3 +39,47 @@ pub fn bind_owner_death(command: &mut std::process::Command) {
         });
     }
 }
+
+#[cfg(all(test, target_os = "linux"))]
+mod tests {
+    use super::bind_owner_death;
+    use std::process::{Command, Stdio};
+
+    #[test]
+    fn fixed_signal_and_parent_survive_actual_exec() -> Result<(), Box<dyn std::error::Error>> {
+        const PROBE: &str = "HEPTABAO_PARENT_DEATH_EXEC_TEST";
+        if let Ok(expected_parent) = std::env::var(PROBE) {
+            let expected_parent: i32 = expected_parent.parse()?;
+            assert_eq!(
+                rustix::process::parent_process_death_signal()?,
+                Some(rustix::process::Signal::KILL),
+                "the actual executed child retains the fixed kernel signal"
+            );
+            assert_eq!(
+                rustix::process::getppid().map(|pid| pid.as_raw_nonzero().get()),
+                Some(expected_parent),
+                "the actual executed child remains owned by its spawning parent"
+            );
+            return Ok(());
+        }
+        let mut command = Command::new(std::env::current_exe()?);
+        command
+            .args([
+                "--exact",
+                "tests::fixed_signal_and_parent_survive_actual_exec",
+            ])
+            .env(
+                PROBE,
+                rustix::process::getpid().as_raw_nonzero().get().to_string(),
+            )
+            .stdout(Stdio::null())
+            .stderr(Stdio::null());
+        bind_owner_death(&mut command);
+        let mut child = command.spawn()?;
+        assert!(
+            child.wait()?.success(),
+            "actual child executes and exits normally"
+        );
+        Ok(())
+    }
+}

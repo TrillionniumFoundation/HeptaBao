@@ -6,6 +6,12 @@ The Wrapper runtime invokes it from the persistent child ownership thread, which
 retains its owned Child and pidfd until an actual terminal wait. Request admission
 threads can exit while that ownership thread and provider remain live.
 
+`fixed_signal_and_parent_survive_actual_exec` runs an actual child executable,
+reads the kernel parent-death signal and parent identity after exec, and waits
+for its natural exit. The genuine Wrapper lifecycle consumer separately checks
+server SIGKILL/SIGTERM, live encryption after the caller thread exits, and normal
+provider retirement with the runtime's actual terminal wait.
+
 The sole unsafe boundary registers a closed `pre_exec` callback. After fork the
 callback uses only rustix prctl/getppid syscalls and raw OS errno conversion; it
 does not allocate, lock, access environment, log, format, or call caller code.

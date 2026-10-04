@@ -27,7 +27,9 @@ and, when it owns the adopted child, its own wait result.
 
 ## Acceptance evidence
 
-No in-crate test function was discovered. Genuine executable coverage is supplied
+`fixed_signal_and_parent_survive_actual_exec` checks the actual kernel signal and
+parent identity in an executed child and waits for its natural exit.
+Genuine provider executable coverage is supplied
 by `crates/heptabao-server/examples/wrapper_lifecycle_consumer.rs` and the external
 owned-process consumer: real provider AutoMTLS admission, a joined request caller
 followed by genuine Encrypt/Decrypt, controlled retirement with TerminalReaped,
