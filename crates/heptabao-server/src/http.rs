@@ -43,7 +43,9 @@ const MAX_BODY: usize = 256 * 1024;
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
 const MAX_RESPONSE: usize = 32 * 1024 * 1024;
 
-fn default_disable_unauthed_rekey_endpoints() -> bool { true }
+fn default_disable_unauthed_rekey_endpoints() -> bool {
+    true
+}
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -2688,7 +2690,8 @@ mod ui_mounts_tests;
 mod recovery_listener_policy_tests {
     use super::*;
     #[test]
-    fn legacy_recovery_requires_explicit_listener_false_and_rejects_non_boolean() -> Result<(), serde_json::Error> {
+    fn legacy_recovery_requires_explicit_listener_false_and_rejects_non_boolean()
+    -> Result<(), serde_json::Error> {
         let mut body = serde_json::json!({"listen": "127.0.0.1:8200", "data_dir": "/synthetic/data",
             "audit_file": "/synthetic/audit", "tls_cert_file": "/synthetic/cert", "tls_key_file": "/synthetic/key"});
         let default: Config = serde_json::from_value(body.clone())?;

@@ -385,18 +385,41 @@ fn private_config(config: &OpenBaoWrapperConfig) -> Result<(File, RpcOptions), B
     Ok((file, options))
 }
 
-fn create_socket_directory(path: &PathBuf) -> Result<(), BridgeError> {
+fn create_socket_directory(path: &PathBuf) -> Result<File, BridgeError> {
     let directory = heptabao_filesystem_guard::open_absolute_directory_no_symlinks(
         path.parent().ok_or(BridgeError::InvalidBinding)?,
     )
     .map_err(|_| BridgeError::InvalidBinding)?;
-    rustix::fs::mkdirat(
-        &directory,
-        path.file_name().ok_or(BridgeError::InvalidBinding)?,
-        Mode::from_bits_truncate(0o700),
-    )
-    .map_err(|_| BridgeError::InvalidBinding)?;
-    Ok(())
+    let parent = directory
+        .metadata()
+        .map_err(|_| BridgeError::InvalidBinding)?;
+    let uid = rustix::process::geteuid().as_raw();
+    // A shared temporary parent must be sticky and owned by root or this
+    // service. mkdirat is exclusive, with an unpredictable 128-bit name;
+    // there is no environment-selected directory or reused socket path.
+    if !parent.is_dir()
+        || (parent.uid() != 0 && parent.uid() != uid)
+        || (parent.mode() & 0o022 != 0 && parent.mode() & 0o1000 == 0)
+    {
+        return Err(BridgeError::InvalidBinding);
+    }
+    let name = path.file_name().ok_or(BridgeError::InvalidBinding)?;
+    rustix::fs::mkdirat(&directory, name, Mode::from_bits_truncate(0o700))
+        .map_err(|_| BridgeError::InvalidBinding)?;
+    let owned = File::from(
+        rustix::fs::openat(
+            &directory,
+            name,
+            OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+            Mode::empty(),
+        )
+        .map_err(|_| BridgeError::InvalidBinding)?,
+    );
+    let metadata = owned.metadata().map_err(|_| BridgeError::InvalidBinding)?;
+    if !metadata.is_dir() || metadata.uid() != uid || metadata.mode() & 0o7777 != 0o700 {
+        return Err(BridgeError::InvalidBinding);
+    }
+    Ok(owned)
 }
 
 fn read_handshake(
@@ -514,6 +537,7 @@ pub(super) fn launch_automatic_runtime(
         let mut child: Option<OwnedChild> = None;
         // This FD lives through session drop and the actual child terminal wait.
         let mut soft_hsm: Option<(File, File)> = None;
+        let mut socket_directory: Option<File> = None;
         let startup = (|| {
             let before = lifecycle.snapshot()?;
             let image = OwnedExecutableImage::open(&config.command, digest(&config.command_sha256)?).map_err(|_| BridgeError::InvalidBinding)?;
@@ -531,7 +555,7 @@ pub(super) fn launch_automatic_runtime(
                 soft_hsm = Some((original, sealed));
             }
             let client = PerLaunchClientIdentity::generate()?;
-            create_socket_directory(&directory)?;
+            socket_directory = Some(create_socket_directory(&directory)?);
             if lifecycle.snapshot()? != before || stop.load(Ordering::Acquire) { return Err(BridgeError::LifecycleDenied); }
             let mut command = image.command();
             command.env_clear().env(KMS_MAGIC_COOKIE_KEY, KMS_MAGIC_COOKIE_VALUE)
@@ -649,8 +673,10 @@ pub(super) fn launch_automatic_runtime(
                 owned.await_terminal();
             }
         }
-        // The private socket directory is retained for metadata audit. No
-        // recursive deletion, path-based signal, or descendant claim is made.
+        // Keep the private directory descriptor through the owned provider's
+        // actual terminal wait, then retain its path for metadata audit.
+        drop(socket_directory);
+        // No recursive deletion, path-based signal, or descendant claim is made.
     }).map_err(|_| BridgeError::BeforeDispatch)?;
     match admission.recv_timeout(deadline.saturating_duration_since(Instant::now())) {
         Ok(Ok(())) => Ok(WrapperRuntime(control)),

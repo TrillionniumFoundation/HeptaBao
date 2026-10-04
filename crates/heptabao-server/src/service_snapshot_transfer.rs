@@ -601,14 +601,22 @@ impl Service {
         deadline: Instant,
     ) -> Result<PendingExternalRequest, Response> {
         self.fixture_require_live_recovery_wrapper()?;
-        if request.method != "POST" || request.path != "sys/storage/raft/snapshot"
-            || !request.namespace.is_empty() {
-            return Err(Response::error(400, "fixture requires the real local native snapshot upload route"));
+        if request.method != "POST"
+            || request.path != "sys/storage/raft/snapshot"
+            || !request.namespace.is_empty()
+        {
+            return Err(Response::error(
+                400,
+                "fixture requires the real local native snapshot upload route",
+            ));
         }
         match self.begin_native_snapshot_before(request, deadline) {
             NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(*pending),
             NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => Err(response),
-            NativeSnapshotAdmission::Redirect(_) => Err(Response::error(501, "fixture refuses a redirected native upload")),
+            NativeSnapshotAdmission::Redirect(_) => Err(Response::error(
+                501,
+                "fixture refuses a redirected native upload",
+            )),
         }
     }
 
@@ -622,11 +630,22 @@ impl Service {
         observed: ExternalEffectResult,
     ) -> Result<VerifiedNativeRestore, Response> {
         let (plan, result) = match (pending.effect, observed) {
-            (ExternalEffectPlan::SnapshotTransfer(plan), ExternalEffectResult::SnapshotTransfer(result)) => (*plan, result),
-            _ => return Err(Response::error(503, "fixture native transport observation mismatch")),
+            (
+                ExternalEffectPlan::SnapshotTransfer(plan),
+                ExternalEffectResult::SnapshotTransfer(result),
+            ) => (*plan, result),
+            _ => {
+                return Err(Response::error(
+                    503,
+                    "fixture native transport observation mismatch",
+                ));
+            }
         };
         if plan.is_download {
-            return Err(Response::error(400, "fixture requires an actual native upload"));
+            return Err(Response::error(
+                400,
+                "fixture requires an actual native upload",
+            ));
         }
         let _deadline = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
         if Instant::now() >= plan.deadline {
@@ -638,7 +657,10 @@ impl Service {
             _ => false,
         };
         if !same_ha {
-            return Err(Response::error(409, "snapshot HA transfer authority changed"));
+            return Err(Response::error(
+                409,
+                "snapshot HA transfer authority changed",
+            ));
         }
         if self.recovery_required
             || self.audit_failed
@@ -681,11 +703,19 @@ impl Service {
             Err(response) => return Err(response),
         };
         if live_seal != plan.seal_identity {
-            return Err(Response::error(409, "snapshot transfer seal identity changed"));
+            return Err(Response::error(
+                409,
+                "snapshot transfer seal identity changed",
+            ));
         }
         let mut imported = match result {
             Ok(Observation::Upload(value)) => value,
-            Ok(Observation::Download) => return Err(Response::error(503, "fixture native upload observation mismatch")),
+            Ok(Observation::Download) => {
+                return Err(Response::error(
+                    503,
+                    "fixture native upload observation mismatch",
+                ));
+            }
             Err(error) => return Err(error),
         };
         let result = (|| -> Result<backup_restore::PreparedSnapshotRestore, Response> {
@@ -704,9 +734,7 @@ impl Service {
             let opened = Zeroizing::new(
                 barrier
                     .open(snapshot_archive::CHECKSUM_CONTEXT, &imported.sealed_sums)
-                    .map_err(|_| {
-                        Response::error(400, "snapshot checksum authentication failed")
-                    })?,
+                    .map_err(|_| Response::error(400, "snapshot checksum authentication failed"))?,
             );
             if opened.as_slice() != imported.sums.as_slice() {
                 return Err(Response::error(
@@ -742,6 +770,9 @@ impl Service {
             Ok(value) => value,
             Err(error) => return Err(error),
         };
-        Ok(VerifiedNativeRestore { prepared, clock: (plan.now, plan.started) })
+        Ok(VerifiedNativeRestore {
+            prepared,
+            clock: (plan.now, plan.started),
+        })
     }
 }

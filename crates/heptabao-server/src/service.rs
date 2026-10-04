@@ -84,8 +84,6 @@ mod external_transit;
 mod ha_activation;
 #[path = "service_ha_read.rs"]
 mod ha_read;
-#[path = "service_recovery_keys.rs"]
-mod recovery_keys;
 #[path = "service_identity.rs"]
 mod identity;
 #[path = "service_kubernetes_secrets.rs"]
@@ -104,6 +102,8 @@ mod openbao_wrapper;
 mod openldap_secret;
 #[path = "service_plugin.rs"]
 mod plugin;
+#[path = "service_recovery_keys.rs"]
+mod recovery_keys;
 #[cfg(target_os = "linux")]
 pub use openbao_wrapper::{
     OpenBaoWrapperCompletion, OpenBaoWrapperOperationPlan, WrapperCleanupState, WrapperOperation,
@@ -242,13 +242,12 @@ fn clone_pg_storage_config(config: &PgStorageConfig) -> PgStorageConfig {
 }
 
 impl SealMetadata {
-    fn is_wrapper(&self) -> bool { matches!(self.schema, 2 | 3) }
+    fn is_wrapper(&self) -> bool {
+        matches!(self.schema, 2 | 3)
+    }
     fn validate(&self) -> Result<(), &'static str> {
         if self.is_wrapper() {
-            if self.generation == 0
-                || self.share_format != "wrapper-v1"
-                
-            {
+            if self.generation == 0 || self.share_format != "wrapper-v1" {
                 return Err("invalid Wrapper seal metadata");
             }
             let envelope = openbao_wrapper::barrier::Envelope::decode(&self.wrapped_barrier_key)?;
@@ -257,8 +256,10 @@ impl SealMetadata {
             }
             let recovery = envelope.recovery();
             match (self.schema, recovery) {
-                (2, None) if self.secret_shares == 0 && self.secret_threshold == 0 => {},
-                (3, Some(recovery)) if recovery.shares == self.secret_shares && recovery.threshold == self.secret_threshold => {},
+                (2, None) if self.secret_shares == 0 && self.secret_threshold == 0 => {}
+                (3, Some(recovery))
+                    if recovery.shares == self.secret_shares
+                        && recovery.threshold == self.secret_threshold => {}
                 _ => return Err("invalid Wrapper recovery metadata"),
             }
             return Ok(());
@@ -2499,10 +2500,25 @@ impl Service {
             }
             return self.ack_initialization(method, body);
         }
-        if matches!(path, "sys/rotate/recovery/init" | "sys/rotate/recovery/update" | "sys/rotate/recovery/verify" | "sys/internal/recovery-key-delivery") {
-            return self.recovery_route(admitted, principal.as_ref(), method, path, namespace, body, now);
+        if matches!(
+            path,
+            "sys/rotate/recovery/init"
+                | "sys/rotate/recovery/update"
+                | "sys/rotate/recovery/verify"
+                | "sys/internal/recovery-key-delivery"
+        ) {
+            return self.recovery_route(
+                admitted,
+                principal.as_ref(),
+                method,
+                path,
+                namespace,
+                body,
+                now,
+            );
         }
-        if path.starts_with("sys/rekey-recovery-key/") { return Response::error(404, "unknown legacy recovery rekey path");
+        if path.starts_with("sys/rekey-recovery-key/") {
+            return Response::error(404, "unknown legacy recovery rekey path");
         }
         if matches!(path, "sys/rekey/init" | "sys/rekey/update") {
             if !principal.as_ref().is_some_and(Principal::is_root) {
@@ -3589,7 +3605,9 @@ impl Service {
             );
         }
         if wrapper_mode {
-            if let Err(response) = openbao_wrapper::barrier::validate_initialization_options(body) { return (response, false); }
+            if let Err(response) = openbao_wrapper::barrier::validate_initialization_options(body) {
+                return (response, false);
+            }
         } else if body.as_object().is_none_or(|object| {
             object.keys().any(|key| {
                 !matches!(
@@ -3628,10 +3646,18 @@ impl Service {
             );
         }
         let recovery_counts = if wrapper_mode {
-            let recovery_shares = match bounded_u8_field(body, "recovery_shares", 0) { Ok(value) => value, Err(error) => return (Response::error(400, error), false) };
-            let recovery_threshold = match bounded_u8_field(body, "recovery_threshold", 0) { Ok(value) => value, Err(error) => return (Response::error(400, error), false) };
+            let recovery_shares = match bounded_u8_field(body, "recovery_shares", 0) {
+                Ok(value) => value,
+                Err(error) => return (Response::error(400, error), false),
+            };
+            let recovery_threshold = match bounded_u8_field(body, "recovery_threshold", 0) {
+                Ok(value) => value,
+                Err(error) => return (Response::error(400, error), false),
+            };
             (recovery_shares, recovery_threshold)
-        } else { (0, 0) };
+        } else {
+            (0, 0)
+        };
         let recovery_secret = match body.get("recovery_nonce") {
             None => None,
             Some(value) => match decode_initialization_secret(value) {
@@ -3708,7 +3734,19 @@ impl Service {
             }
             return (
                 match recovery_secret.as_ref() {
-                    Some(secret) => self.recover_initialization(secret, if wrapper_mode { recovery_counts.0 } else { shares }, if wrapper_mode { recovery_counts.1 } else { threshold }),
+                    Some(secret) => self.recover_initialization(
+                        secret,
+                        if wrapper_mode {
+                            recovery_counts.0
+                        } else {
+                            shares
+                        },
+                        if wrapper_mode {
+                            recovery_counts.1
+                        } else {
+                            threshold
+                        },
+                    ),
                     None => Response::error(400, "already initialized"),
                 },
                 false,
@@ -3800,15 +3838,35 @@ impl Service {
             Err(error) => return (Response::error(503, error), false),
         };
         let recovery_fragments = if recovery_counts.0 != 0 {
-            let fragments = match auth.initialize_recovery_credential(&cluster_id, recovery_counts.0, recovery_counts.1) {
-                Ok(fragments) => fragments, Err(_) => return (Response::error(503, "cannot create independent recovery credential"), false),
+            let fragments = match auth.initialize_recovery_credential(
+                &cluster_id,
+                recovery_counts.0,
+                recovery_counts.1,
+            ) {
+                Ok(fragments) => fragments,
+                Err(_) => {
+                    return (
+                        Response::error(503, "cannot create independent recovery credential"),
+                        false,
+                    );
+                }
             };
-            let Some(credential) = auth.recovery_credential.as_ref() else { return (Response::error(503, "recovery candidate absent"), false); };
+            let Some(credential) = auth.recovery_credential.as_ref() else {
+                return (Response::error(503, "recovery candidate absent"), false);
+            };
             seal = match openbao_wrapper::barrier::seal_with_recovery(&seal, credential) {
-                Ok(seal) => seal, Err(_) => return (Response::error(503, "cannot prepare public recovery configuration"), false),
+                Ok(seal) => seal,
+                Err(_) => {
+                    return (
+                        Response::error(503, "cannot prepare public recovery configuration"),
+                        false,
+                    );
+                }
             };
             fragments
-        } else { Vec::new() };
+        } else {
+            Vec::new()
+        };
         let mut state = State {
             schema: CURRENT_STATE_SCHEMA,
             cluster_id,
@@ -3820,7 +3878,9 @@ impl Service {
             raft_admin: raft_admin::RaftAdminState::default().into(),
         };
         state.schema = state.writer_schema();
-        if let Err(error) = state.validate_format() { return (error, false); }
+        if let Err(error) = state.validate_format() {
+            return (error, false);
+        }
         let mut stage = match InitializationStage::create(&self.data_dir) {
             Ok(value) => value,
             Err(_) => {
@@ -3916,9 +3976,20 @@ impl Service {
         let mut recovery_keys = Zeroizing::new(Vec::<String>::new());
         let mut recovery_keys_base64 = Zeroizing::new(Vec::<String>::new());
         for fragment in recovery_fragments {
-            let Some(credential) = state.auth.recovery_credential.as_ref() else { return (Response::error(503, "recovery credential absent during delivery"), false); };
+            let Some(credential) = state.auth.recovery_credential.as_ref() else {
+                return (
+                    Response::error(503, "recovery credential absent during delivery"),
+                    false,
+                );
+            };
             let encoded = match credential.encode_share(&fragment) {
-                Ok(encoded) => Zeroizing::new(encoded), Err(_) => return (Response::error(503, "recovery share codec rejected delivery"), false),
+                Ok(encoded) => Zeroizing::new(encoded),
+                Err(_) => {
+                    return (
+                        Response::error(503, "recovery share codec rejected delivery"),
+                        false,
+                    );
+                }
             };
             recovery_keys.push(hex(&encoded));
             recovery_keys_base64.push(STANDARD.encode(encoded.as_slice()));
@@ -4522,12 +4593,18 @@ impl Service {
     }
 
     fn activate_barrier(&mut self, key: &[u8; 32]) -> Result<(), Response> {
-        self.activate_barrier_with_deadline(key, crate::request_deadline::current()).map(|_| ())
+        self.activate_barrier_with_deadline(key, crate::request_deadline::current())
+            .map(|_| ())
     }
 
-    fn activate_barrier_with_deadline(&mut self, key: &[u8; 32], deadline: Option<std::time::Instant>)
-        -> Result<recovery_keys::AdmittedRecoverySeal, Response> {
-        if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) { return Err(Response::error(503, "barrier admission deadline expired")); }
+    fn activate_barrier_with_deadline(
+        &mut self,
+        key: &[u8; 32],
+        deadline: Option<std::time::Instant>,
+    ) -> Result<recovery_keys::AdmittedRecoverySeal, Response> {
+        if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+            return Err(Response::error(503, "barrier admission deadline expired"));
+        }
         let wrapper_activation = self.begin_openbao_wrapper_activation();
         self.durable = None;
         self.state = None;
@@ -4576,7 +4653,13 @@ impl Service {
         let record_root = records::decode_root(&bytes)?;
         self.validate_loaded_capacity(&state, record_root.as_ref())?;
         // Bind durable identity before any local state is admitted into an HA epoch.
-        if (self.ha.is_some() || self.postgres_durable.is_some()) && state.auth.has_recovery_state() { return Err(Response::error(503, "HA/PostgreSQL recovery startup requires a backend-bound consumer")); }
+        if (self.ha.is_some() || self.postgres_durable.is_some()) && state.auth.has_recovery_state()
+        {
+            return Err(Response::error(
+                503,
+                "HA/PostgreSQL recovery startup requires a backend-bound consumer",
+            ));
+        }
         let admitted_seal = self.reconcile_recovery_seal(&state, deadline)?;
         // Bind durable identity before any local state is admitted into an HA epoch.
         if let Some(ha) = self.ha.as_ref() {
@@ -4645,7 +4728,12 @@ impl Service {
                 }
             }
         }
-        if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) { return Err(Response::error(503, "barrier deadline expired before publication")); }
+        if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+            return Err(Response::error(
+                503,
+                "barrier deadline expired before publication",
+            ));
+        }
         self.seal = admitted_seal.0.clone();
         self.durable = Some(durable);
         self.state = Some(state);
@@ -4668,7 +4756,10 @@ impl Service {
         }
         if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
             self.fence_recovery_delivery();
-            return Err(Response::error(503, "barrier deadline expired before lifecycle publication"));
+            return Err(Response::error(
+                503,
+                "barrier deadline expired before lifecycle publication",
+            ));
         }
         if wrapper_activation.publish_unsealed().is_err() {
             self.fence_openbao_wrapper();
@@ -5826,9 +5917,17 @@ impl Service {
         let state: State = serde_json::from_slice(&committed.bytes)
             .map_err(|_| Response::error(503, "HA committed state schema is invalid"))?;
         state.validate_format()?;
-        if state.auth.has_recovery_state() || self.state.as_ref().is_some_and(|state| state.auth.has_recovery_state()) {
+        if state.auth.has_recovery_state()
+            || self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.auth.has_recovery_state())
+        {
             self.fence_recovery_delivery();
-            return Err(Response::error(503, "HA recovery state requires a backend-bound public-index consumer"));
+            return Err(Response::error(
+                503,
+                "HA recovery state requires a backend-bound public-index consumer",
+            ));
         }
         let expected_cluster = ha
             .lock_for_request()

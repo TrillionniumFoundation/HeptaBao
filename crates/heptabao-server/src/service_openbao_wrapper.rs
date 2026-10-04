@@ -389,10 +389,15 @@ impl Service {
         let runtime_directory = {
             let suffix = super::crypto::random::<16>()
                 .map_err(|_| "Wrapper launch identity unavailable".to_owned())?;
-            self.data_dir
-                .parent()
-                .ok_or("Wrapper data directory has no parent")?
-                .join(format!(".heptabao-wrapper-launch-{}", super::hex(&suffix)))
+            // The SDK appends its own Unix socket name. A transport endpoint
+            // must not inherit the durable store's possibly deep path: Linux
+            // sockaddr_un is limited to 108 bytes. The provider/config/store
+            // binding stays unchanged; only this owned transient path is short.
+            PathBuf::from("/tmp").join(format!(
+                ".heptabao-wrapper-{}-{}",
+                rustix::process::geteuid().as_raw(),
+                super::hex(&suffix)
+            ))
         };
         self.openbao_wrapper_owner = Some(ServiceWrapperOwner {
             lifecycle: lifecycle.clone(),

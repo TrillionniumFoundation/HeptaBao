@@ -26,12 +26,14 @@ use x509_parser::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
-#[path = "auth_recovery_keys.rs"]
-mod recovery_keys;
 #[path = "auth_recovery_ceremony.rs"]
 mod recovery_ceremony;
+#[path = "auth_recovery_keys.rs"]
+mod recovery_keys;
+pub(crate) use recovery_ceremony::{
+    Error as RecoveryCeremonyError, RecoveryAttempt, RecoveryCommitIntent, RecoveryDelivery,
+};
 pub(crate) use recovery_keys::{RecoveryCredential, RecoveryPublic};
-pub(crate) use recovery_ceremony::{Error as RecoveryCeremonyError, RecoveryAttempt, RecoveryCommitIntent, RecoveryDelivery};
 
 #[path = "auth_oidc.rs"]
 mod oidc;
@@ -1884,66 +1886,118 @@ impl AuthState {
     }
 
     pub(crate) fn has_indexed_recovery_wire(&self) -> bool {
-        self.recovery_credential.as_ref().is_some_and(recovery_keys::RecoveryCredential::uses_indexed_wire)
-            || self.recovery_attempt.as_ref().is_some_and(RecoveryAttempt::uses_indexed_wire)
+        self.recovery_credential
+            .as_ref()
+            .is_some_and(recovery_keys::RecoveryCredential::uses_indexed_wire)
+            || self
+                .recovery_attempt
+                .as_ref()
+                .is_some_and(RecoveryAttempt::uses_indexed_wire)
     }
     pub(crate) fn has_recovery_state(&self) -> bool {
-        self.recovery_credential.is_some() || self.recovery_attempt.is_some()
-            || self.recovery_intent.is_some() || self.recovery_delivery.is_some()
+        self.recovery_credential.is_some()
+            || self.recovery_attempt.is_some()
+            || self.recovery_intent.is_some()
+            || self.recovery_delivery.is_some()
     }
 
     pub(crate) fn validate_recovery_credential(&self, cluster_id: &str) -> Result<(), AuthError> {
-        if self.has_recovery_state() && cluster_id.is_empty() { return Err(bad("recovery state requires a cluster identity")); }
+        if self.has_recovery_state() && cluster_id.is_empty() {
+            return Err(bad("recovery state requires a cluster identity"));
+        }
         let binding = crate::crypto::digest(cluster_id.as_bytes());
         if let Some(credential) = &self.recovery_credential {
-            credential.validate_binding(binding).map_err(|_| bad("invalid protected recovery credential"))?;
+            credential
+                .validate_binding(binding)
+                .map_err(|_| bad("invalid protected recovery credential"))?;
         }
         if let Some(attempt) = &self.recovery_attempt {
-            attempt.validate(binding, self.recovery_credential.as_ref()).map_err(|_| bad("invalid recovery ceremony"))?;
+            attempt
+                .validate(binding, self.recovery_credential.as_ref())
+                .map_err(|_| bad("invalid recovery ceremony"))?;
         }
         if let Some(intent) = &self.recovery_intent {
-            if self.recovery_attempt.is_some() { return Err(bad("committed recovery intent cannot retain an attempt")); }
-            intent.validate(binding, self.recovery_credential.as_ref().ok_or_else(|| bad("recovery intent lacks committed credential"))?)
+            if self.recovery_attempt.is_some() {
+                return Err(bad("committed recovery intent cannot retain an attempt"));
+            }
+            intent
+                .validate(
+                    binding,
+                    self.recovery_credential
+                        .as_ref()
+                        .ok_or_else(|| bad("recovery intent lacks committed credential"))?,
+                )
                 .map_err(|_| bad("invalid recovery commit intent"))?;
         }
         if let Some(delivery) = &self.recovery_delivery {
-            let target = self.recovery_attempt.as_ref().and_then(|attempt| attempt.candidate.as_ref())
-                .or(self.recovery_credential.as_ref()).ok_or_else(|| bad("recovery delivery lacks candidate or committed credential"))?;
-            delivery.validate(binding, target).map_err(|_| bad("invalid private recovery delivery"))?;
+            let target = self
+                .recovery_attempt
+                .as_ref()
+                .and_then(|attempt| attempt.candidate.as_ref())
+                .or(self.recovery_credential.as_ref())
+                .ok_or_else(|| bad("recovery delivery lacks candidate or committed credential"))?;
+            delivery
+                .validate(binding, target)
+                .map_err(|_| bad("invalid private recovery delivery"))?;
             if let Some(attempt) = &self.recovery_attempt {
-                delivery.validate_attempt(attempt).map_err(|_| bad("private recovery delivery challenge differs"))?;
+                delivery
+                    .validate_attempt(attempt)
+                    .map_err(|_| bad("private recovery delivery challenge differs"))?;
             }
         }
         Ok(())
     }
 
     pub(crate) fn same_recovery_control(&self, other: &Self) -> bool {
-        self.recovery_credential == other.recovery_credential && self.recovery_attempt == other.recovery_attempt
-            && self.recovery_intent == other.recovery_intent && self.recovery_delivery == other.recovery_delivery
+        self.recovery_credential == other.recovery_credential
+            && self.recovery_attempt == other.recovery_attempt
+            && self.recovery_intent == other.recovery_intent
+            && self.recovery_delivery == other.recovery_delivery
     }
 
-    pub(crate) fn validate_recovery_publication(&self, previous: &Self, cluster_id: &str) -> Result<(), AuthError> {
+    pub(crate) fn validate_recovery_publication(
+        &self,
+        previous: &Self,
+        cluster_id: &str,
+    ) -> Result<(), AuthError> {
         self.validate_recovery_credential(cluster_id)?;
         if self.recovery_credential != previous.recovery_credential {
-            let intent = self.recovery_intent.as_ref().ok_or_else(|| bad("recovery authority switch requires a commit intent"))?;
-            if intent.source_credential != previous.recovery_credential { return Err(bad("recovery source credential changed")); }
+            let intent = self
+                .recovery_intent
+                .as_ref()
+                .ok_or_else(|| bad("recovery authority switch requires a commit intent"))?;
+            if intent.source_credential != previous.recovery_credential {
+                return Err(bad("recovery source credential changed"));
+            }
         }
         Ok(())
     }
 
     /// Candidate staging only. This never publishes state or enables an endpoint.
     /// Service must publish the whole candidate at its writer_schema floor under the existing lock.
-    pub(crate) fn initialize_recovery_credential(&mut self, cluster_id: &str, shares: u8, threshold: u8)
-        -> Result<Vec<crate::crypto::SecretShare>, AuthError> {
+    pub(crate) fn initialize_recovery_credential(
+        &mut self,
+        cluster_id: &str,
+        shares: u8,
+        threshold: u8,
+    ) -> Result<Vec<crate::crypto::SecretShare>, AuthError> {
         if self.recovery_credential.is_some() || cluster_id.is_empty() {
-            return Err(bad("recovery initialization requires a fresh cluster credential"));
+            return Err(bad(
+                "recovery initialization requires a fresh cluster credential",
+            ));
         }
         let (credential, fragments) = recovery_keys::RecoveryCredential::generate(
-            crate::crypto::digest(cluster_id.as_bytes()), 1, shares, threshold)
-            .map_err(|failure| match failure {
-                recovery_keys::Error::InvalidConfiguration => bad("invalid recovery share configuration"),
-                _ => err(503, "recovery randomness unavailable"),
-            })?;
+            crate::crypto::digest(cluster_id.as_bytes()),
+            1,
+            shares,
+            threshold,
+        )
+        .map_err(|failure| match failure {
+            recovery_keys::Error::InvalidConfiguration => {
+                bad("invalid recovery share configuration")
+            }
+            _ => err(503, "recovery randomness unavailable"),
+        })?;
         self.recovery_credential = Some(credential);
         Ok(fragments)
     }

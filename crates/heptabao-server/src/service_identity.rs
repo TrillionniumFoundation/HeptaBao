@@ -48,17 +48,28 @@ impl State {
         }
         if self.schema < RECOVERY_CREDENTIAL_STATE_SCHEMA
             && (self.auth.has_recovery_state()
-                || previous.is_some_and(|state| state.schema >= RECOVERY_CREDENTIAL_STATE_SCHEMA)) {
-            return Err(Response::error(503, "protected recovery credential requires schema 73"));
+                || previous.is_some_and(|state| state.schema >= RECOVERY_CREDENTIAL_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "protected recovery credential requires schema 73",
+            ));
         }
         if self.schema < INDEXED_RECOVERY_WIRE_STATE_SCHEMA
-            && (self.auth.has_indexed_recovery_wire() || previous.is_some_and(|state| state.schema >= INDEXED_RECOVERY_WIRE_STATE_SCHEMA)) {
-            return Err(Response::error(503, "indexed recovery wire requires schema 74"));
+            && (self.auth.has_indexed_recovery_wire()
+                || previous.is_some_and(|state| state.schema >= INDEXED_RECOVERY_WIRE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "indexed recovery wire requires schema 74",
+            ));
         }
-        self.auth.validate_recovery_credential(&self.cluster_id)
+        self.auth
+            .validate_recovery_credential(&self.cluster_id)
             .map_err(|_| Response::error(503, "invalid protected recovery credential"))?;
         if let Some(previous) = previous {
-            self.auth.validate_recovery_publication(&previous.auth, &self.cluster_id)
+            self.auth
+                .validate_recovery_publication(&previous.auth, &self.cluster_id)
                 .map_err(|_| Response::error(503, "recovery authority publication rejected"))?;
         }
         if self.schema < LOCAL_TYPED_PKI_STATE_SCHEMA
@@ -142,12 +153,20 @@ impl State {
             ));
         }
         if self.schema < RECOVERY_CREDENTIAL_STATE_SCHEMA && self.auth.has_recovery_state() {
-            return Err(Response::error(503, "protected recovery credential requires schema 73"));
+            return Err(Response::error(
+                503,
+                "protected recovery credential requires schema 73",
+            ));
         }
-        if self.schema < INDEXED_RECOVERY_WIRE_STATE_SCHEMA && self.auth.has_indexed_recovery_wire() {
-            return Err(Response::error(503, "indexed recovery wire requires schema 74"));
+        if self.schema < INDEXED_RECOVERY_WIRE_STATE_SCHEMA && self.auth.has_indexed_recovery_wire()
+        {
+            return Err(Response::error(
+                503,
+                "indexed recovery wire requires schema 74",
+            ));
         }
-        self.auth.validate_recovery_credential(&self.cluster_id)
+        self.auth
+            .validate_recovery_credential(&self.cluster_id)
             .map_err(|_| Response::error(503, "invalid protected recovery credential"))?;
         if self.schema < LOCAL_TYPED_PKI_STATE_SCHEMA && self.engines.has_local_typed_pki_state() {
             return Err(Response::error(
@@ -1008,41 +1027,63 @@ mod recovery_state_tests {
 
     fn state() -> Result<State, crate::auth::AuthError> {
         let (auth, _) = AuthState::bootstrap(1)?;
-        Ok(State { schema: CURRENT_STATE_SCHEMA, cluster_id: "recovery-test-cluster".into(),
-            replay_epoch: 0, namespaces: namespaces::NamespaceRegistry::default().into(),
-            auth: auth.into(), engines: EngineState::initialized_empty().into(),
+        Ok(State {
+            schema: CURRENT_STATE_SCHEMA,
+            cluster_id: "recovery-test-cluster".into(),
+            replay_epoch: 0,
+            namespaces: namespaces::NamespaceRegistry::default().into(),
+            auth: auth.into(),
+            engines: EngineState::initialized_empty().into(),
             database: database::DatabaseState::default().into(),
-            raft_admin: raft_admin::RaftAdminState::default().into() })
+            raft_admin: raft_admin::RaftAdminState::default().into(),
+        })
     }
 
     #[test]
-    fn recovery_staging_defeats_owner_reuse_and_forces_monotonic_floor() -> Result<(), Box<dyn std::error::Error>> {
+    fn recovery_staging_defeats_owner_reuse_and_forces_monotonic_floor()
+    -> Result<(), Box<dyn std::error::Error>> {
         let previous = state().map_err(|_| std::io::Error::other("test bootstrap failed"))?;
         let old_bytes = owner_store::serialize_owner(&previous.auth)?;
         assert!(!String::from_utf8_lossy(&old_bytes).contains("recovery_credential"));
         let mut candidate = previous.clone();
-        let fragments = candidate.auth.initialize_recovery_credential(&candidate.cluster_id, 5, 3)
+        let fragments = candidate
+            .auth
+            .initialize_recovery_credential(&candidate.cluster_id, 5, 3)
             .map_err(|_| std::io::Error::other("test recovery generation failed"))?;
         assert_eq!(fragments.len(), 5);
         assert!(!previous.auth.has_recovery_credential());
         assert!(!OwnerReuseHint::between(Some(&previous), &candidate).auth);
-        assert_eq!(candidate.writer_schema(), INDEXED_RECOVERY_WIRE_STATE_SCHEMA);
+        assert_eq!(
+            candidate.writer_schema(),
+            INDEXED_RECOVERY_WIRE_STATE_SCHEMA
+        );
         assert!(candidate.validate_format().is_err());
         candidate.schema = candidate.writer_schema();
         assert!(candidate.validate_format().is_ok());
         assert!(candidate.validate_publication_schema(None).is_ok());
-        assert!(candidate.validate_publication_schema(Some(&previous)).is_err());
+        assert!(
+            candidate
+                .validate_publication_schema(Some(&previous))
+                .is_err()
+        );
         let mut downgraded = candidate.clone();
         downgraded.schema = LOCAL_TYPED_PKI_STATE_SCHEMA;
-        assert!(downgraded.validate_publication_schema(Some(&candidate)).is_err());
+        assert!(
+            downgraded
+                .validate_publication_schema(Some(&candidate))
+                .is_err()
+        );
         assert_eq!(old_bytes, owner_store::serialize_owner(&previous.auth)?);
         Ok(())
     }
 
     #[test]
-    fn recovery_roundtrip_binds_cluster_and_rejects_old_schema_admission() -> Result<(), Box<dyn std::error::Error>> {
+    fn recovery_roundtrip_binds_cluster_and_rejects_old_schema_admission()
+    -> Result<(), Box<dyn std::error::Error>> {
         let mut candidate = state().map_err(|_| std::io::Error::other("test bootstrap failed"))?;
-        candidate.auth.initialize_recovery_credential(&candidate.cluster_id, 3, 2)
+        candidate
+            .auth
+            .initialize_recovery_credential(&candidate.cluster_id, 3, 2)
             .map_err(|_| std::io::Error::other("test recovery generation failed"))?;
         candidate.schema = candidate.writer_schema();
         let bytes = owner_store::serialize_owner(&candidate)?;
@@ -1050,44 +1091,84 @@ mod recovery_state_tests {
         assert!(loaded.validate_format().is_ok());
         loaded.cluster_id = "unrelated-cluster".into();
         assert!(loaded.validate_format().is_err());
-        assert!(loaded.validate_publication_schema(Some(&candidate)).is_err());
+        assert!(
+            loaded
+                .validate_publication_schema(Some(&candidate))
+                .is_err()
+        );
         loaded.cluster_id = candidate.cluster_id.clone();
         loaded.schema = LOCAL_TYPED_PKI_STATE_SCHEMA;
         assert!(loaded.validate_format().is_err());
-        assert!(loaded.auth.initialize_recovery_credential(&loaded.cluster_id, 3, 2).is_err());
+        assert!(
+            loaded
+                .auth
+                .initialize_recovery_credential(&loaded.cluster_id, 3, 2)
+                .is_err()
+        );
         Ok(())
     }
 
     #[test]
-    fn snapshot_floor_cannot_replay_same_schema_recovery_credentials_or_challenges() -> Result<(), Box<dyn std::error::Error>> {
+    fn snapshot_floor_cannot_replay_same_schema_recovery_credentials_or_challenges()
+    -> Result<(), Box<dyn std::error::Error>> {
         let mut current = state().map_err(|_| std::io::Error::other("test bootstrap failed"))?;
-        current.auth.initialize_recovery_credential(&current.cluster_id, 5, 3)
+        current
+            .auth
+            .initialize_recovery_credential(&current.cluster_id, 5, 3)
             .map_err(|_| std::io::Error::other("recovery generation failed"))?;
         current.schema = current.writer_schema();
         let mut stale = current.clone();
-        let (unrelated, _) = crate::auth::RecoveryCredential::generate(crypto::digest(stale.cluster_id.as_bytes()), 1, 5, 3)
-            .map_err(|_| std::io::Error::other("recovery generation failed"))?;
+        let (unrelated, _) = crate::auth::RecoveryCredential::generate(
+            crypto::digest(stale.cluster_id.as_bytes()),
+            1,
+            5,
+            3,
+        )
+        .map_err(|_| std::io::Error::other("recovery generation failed"))?;
         stale.auth.recovery_credential = Some(unrelated);
         assert_eq!(current.schema, stale.schema);
         assert!(Service::validate_snapshot_protected_floor(&current, &stale).is_err());
         let mut stale_challenge = current.clone();
-        stale_challenge.auth.recovery_attempt = Some(crate::auth::RecoveryAttempt::new(crypto::digest(current.cluster_id.as_bytes()),
-            current.auth.recovery_credential.as_ref(), 3, 2, true).map_err(|_| std::io::Error::other("challenge generation failed"))?);
+        stale_challenge.auth.recovery_attempt = Some(
+            crate::auth::RecoveryAttempt::new(
+                crypto::digest(current.cluster_id.as_bytes()),
+                current.auth.recovery_credential.as_ref(),
+                3,
+                2,
+                true,
+            )
+            .map_err(|_| std::io::Error::other("challenge generation failed"))?,
+        );
         assert!(Service::validate_snapshot_protected_floor(&current, &stale_challenge).is_err());
         assert!(Service::validate_snapshot_protected_floor(&current, &current).is_ok());
         Ok(())
     }
     #[test]
-    fn indexed_attempt_raises_reader_before_candidate_and_cancel_does_not_lower_it() -> Result<(), Box<dyn std::error::Error>> {
+    fn indexed_attempt_raises_reader_before_candidate_and_cancel_does_not_lower_it()
+    -> Result<(), Box<dyn std::error::Error>> {
         let mut previous = state().map_err(|_| std::io::Error::other("bootstrap failed"))?;
-        let (legacy, _) = crate::auth::RecoveryCredential::generate_with_codec(crypto::digest(previous.cluster_id.as_bytes()), 1, 5, 3, None)
-            .map_err(|_| std::io::Error::other("legacy generation failed"))?;
+        let (legacy, _) = crate::auth::RecoveryCredential::generate_with_codec(
+            crypto::digest(previous.cluster_id.as_bytes()),
+            1,
+            5,
+            3,
+            None,
+        )
+        .map_err(|_| std::io::Error::other("legacy generation failed"))?;
         previous.auth.recovery_credential = Some(legacy);
         previous.schema = RECOVERY_CREDENTIAL_STATE_SCHEMA;
         assert!(previous.validate_format().is_ok());
         let mut active = previous.clone();
-        active.auth.recovery_attempt = Some(crate::auth::RecoveryAttempt::new(crypto::digest(active.cluster_id.as_bytes()),
-            active.auth.recovery_credential.as_ref(), 255, 2, true).map_err(|_| std::io::Error::other("challenge failed"))?);
+        active.auth.recovery_attempt = Some(
+            crate::auth::RecoveryAttempt::new(
+                crypto::digest(active.cluster_id.as_bytes()),
+                active.auth.recovery_credential.as_ref(),
+                255,
+                2,
+                true,
+            )
+            .map_err(|_| std::io::Error::other("challenge failed"))?,
+        );
         assert!(active.validate_format().is_err());
         assert_eq!(active.writer_schema(), INDEXED_RECOVERY_WIRE_STATE_SCHEMA);
         active.schema = active.writer_schema();
@@ -1097,9 +1178,12 @@ mod recovery_state_tests {
         assert_eq!(canceled.writer_schema(), INDEXED_RECOVERY_WIRE_STATE_SCHEMA);
         let mut downgraded = canceled.clone();
         downgraded.schema = RECOVERY_CREDENTIAL_STATE_SCHEMA;
-        assert!(downgraded.validate_publication_schema(Some(&canceled)).is_err());
+        assert!(
+            downgraded
+                .validate_publication_schema(Some(&canceled))
+                .is_err()
+        );
         assert!(Service::validate_snapshot_protected_floor(&canceled, &downgraded).is_err());
         Ok(())
     }
-
 }
