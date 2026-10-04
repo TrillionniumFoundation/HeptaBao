@@ -279,7 +279,7 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
 }
 
 #[test]
-fn legacy_ordinary_namespace_seal_fence_cannot_grant_an_independent_key()
+fn ordinary_namespace_ciphertext_unload_cannot_grant_an_independent_key()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
@@ -328,7 +328,7 @@ fn legacy_ordinary_namespace_seal_fence_cannot_grant_an_independent_key()
     );
     assert_eq!(
         network_call(&mut service, "GET", "secret/data/item", "team", json!({}),).status,
-        503
+        404
     );
     let status = network_call(
         &mut service,
@@ -338,8 +338,8 @@ fn legacy_ordinary_namespace_seal_fence_cannot_grant_an_independent_key()
         json!({}),
     );
     // Official R28 plain namespace: seal 204, status/unseal both 400 because
-    // no independent owner was configured. The old operational fence below
-    // remains a legacy guard; ordinary resource unloading is still pending.
+    // no independent owner was configured. Real ordinary assets unload under
+    // their inherited root key; no independent Shamir authority is invented.
     assert_eq!(status.status, 400);
     assert_eq!(
         network_call(
@@ -354,7 +354,7 @@ fn legacy_ordinary_namespace_seal_fence_cannot_grant_an_independent_key()
     );
     assert_eq!(
         network_call(&mut service, "GET", "secret/data/item", "team", json!({}),).status,
-        503
+        404
     );
     Ok(())
 }

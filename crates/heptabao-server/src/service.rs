@@ -5099,6 +5099,10 @@ impl Service {
             self.ha_activation = None;
             return Err(error);
         }
+        if let Err(error) = self.activate_inherited_namespaces(key, deadline) {
+            self.fence_recovery_delivery();
+            return Err(error);
+        }
         if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
             self.fence_recovery_delivery();
             return Err(Response::error(

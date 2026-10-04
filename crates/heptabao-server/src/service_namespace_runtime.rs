@@ -2,7 +2,9 @@
 //! a revocable slot, never an Arc<Key>; revocation drops and zeroizes the sole
 //! key even while an old prepared candidate keeps the slot alive.
 use super::*;
-use crate::namespace_custody::{Binding, Descriptor, Key, Progress, Submission};
+use crate::namespace_custody::{
+    Binding, Descriptor, InheritedDescriptor, InheritedParent, Key, Progress, Submission,
+};
 use std::sync::{Arc, Mutex};
 
 fn unavailable() -> Response {
@@ -21,11 +23,112 @@ pub(super) fn request_live() -> Result<(), Response> {
     Ok(())
 }
 
+#[derive(Clone)]
+enum Owner {
+    Independent(Descriptor),
+    Inherited(InheritedDescriptor),
+}
+
+impl Owner {
+    fn actual(state: &State, actual: &str) -> Result<Self, Response> {
+        match (
+            state.namespaces.custody_owner(actual),
+            state.namespaces.inherited_owner(actual),
+        ) {
+            (Some(owner), None) => Ok(Self::Independent(owner.clone())),
+            (None, Some(owner)) => Ok(Self::Inherited(owner.clone())),
+            _ => Err(unavailable()),
+        }
+    }
+    fn binding(&self) -> &Binding {
+        match self {
+            Self::Independent(owner) => owner.binding(),
+            Self::Inherited(owner) => owner.binding(),
+        }
+    }
+    fn key_epoch(&self) -> u64 {
+        match self {
+            Self::Independent(owner) => owner.key_epoch(),
+            Self::Inherited(_) => 1,
+        }
+    }
+    fn seal_frontier(&self) -> u64 {
+        match self {
+            Self::Independent(owner) => owner.seal_frontier(),
+            Self::Inherited(owner) => owner.seal_frontier(),
+        }
+    }
+    fn parent(&self) -> Option<&InheritedParent> {
+        match self {
+            Self::Independent(_) => None,
+            Self::Inherited(owner) => Some(owner.parent()),
+        }
+    }
+    fn open_assets(
+        &self,
+        binding: &Binding,
+        key: &Key,
+    ) -> Result<Zeroizing<Vec<u8>>, crate::namespace_custody::Error> {
+        match self {
+            Self::Independent(owner) => owner.open_assets(binding, key),
+            Self::Inherited(owner) => owner.open_assets(binding, key),
+        }
+    }
+    fn replace_assets(
+        &self,
+        binding: &Binding,
+        key: &Key,
+        bytes: &[u8],
+    ) -> Result<Self, crate::namespace_custody::Error> {
+        match self {
+            Self::Independent(owner) => owner
+                .replace_assets(binding, key, bytes)
+                .map(Self::Independent),
+            Self::Inherited(owner) => owner
+                .replace_assets(binding, key, bytes)
+                .map(Self::Inherited),
+        }
+    }
+    fn advance_seal_frontier(
+        &self,
+        binding: &Binding,
+        key: &Key,
+    ) -> Result<Self, crate::namespace_custody::Error> {
+        match self {
+            Self::Independent(owner) => owner
+                .advance_seal_frontier(binding, key)
+                .map(Self::Independent),
+            Self::Inherited(owner) => owner
+                .advance_seal_frontier(binding, key)
+                .map(Self::Inherited),
+        }
+    }
+    fn install(&self, state: &mut State, actual: &str) -> Result<(), Response> {
+        match self {
+            Self::Independent(owner) => {
+                state
+                    .namespaces
+                    .install_custody_owner(&state.cluster_id, actual, owner.clone())?;
+                state.namespaces.set_sealed(actual, true)
+            }
+            Self::Inherited(owner) => {
+                state.namespaces.install_inherited_owner(
+                    &state.cluster_id,
+                    actual,
+                    owner.clone(),
+                )?;
+                state.namespaces.set_sealed(actual, false)
+            }
+        }
+    }
+}
+
 struct Slot {
     key: Option<Key>,
     binding: Binding,
     key_epoch: u64,
     frontier: u64,
+    parent: Option<InheritedParent>,
 }
 
 #[derive(Clone)]
@@ -41,13 +144,14 @@ impl Lease {
 
     fn with_key<T>(
         &self,
-        descriptor: &Descriptor,
+        descriptor: &Owner,
         apply: impl FnOnce(&Key) -> Result<T, Response>,
     ) -> Result<T, Response> {
         let slot = self.0.lock().map_err(|_| unavailable())?;
         if slot.binding != *descriptor.binding()
             || slot.key_epoch != descriptor.key_epoch()
             || slot.frontier != descriptor.seal_frontier()
+            || slot.parent.as_ref() != descriptor.parent()
         {
             return Err(unavailable());
         }
@@ -134,6 +238,10 @@ impl Runtime {
 
     pub(super) fn reset_progress(&mut self, actual: &str) {
         self.progress.remove(actual);
+    }
+
+    pub(super) fn is_loaded(&self, actual: &str) -> bool {
+        self.loaded.contains_key(actual)
     }
 
     pub(super) fn has_loaded_within(&self, actual: &str) -> bool {
@@ -278,11 +386,7 @@ impl Runtime {
         }
         paths.sort_by_key(|path| std::cmp::Reverse(path.split('/').count()));
         for path in paths {
-            let descriptor = candidate
-                .namespaces
-                .custody_owner(&path)
-                .cloned()
-                .ok_or_else(unavailable)?;
+            let descriptor = Owner::actual(&candidate, &path)?;
             let binding = candidate
                 .namespaces
                 .custody_binding(&candidate.cluster_id, &path)?;
@@ -307,9 +411,7 @@ impl Runtime {
                 next.engines
                     .publish_namespace_record_cells(&binding, &cells)
                     .map_err(|_| unavailable())?;
-                next.namespaces
-                    .install_custody_owner(&next.cluster_id, &path, closed)?;
-                next.namespaces.set_sealed(&path, true)?;
+                closed.install(&mut next, &path)?;
                 next.namespace_leases
                     .0
                     .retain(|candidate| !Arc::ptr_eq(&candidate.0, &lease.0));
@@ -318,6 +420,65 @@ impl Runtime {
         }
         self.prepare(&mut candidate)?;
         Ok(candidate)
+    }
+
+    /// Ordinary namespaces use their actual longest owner key. No independent
+    /// share, unseal progress or caller-selected parent is manufactured here.
+    pub(super) fn inherited_closed_candidate(
+        &self,
+        state: &State,
+        actual: &str,
+        root_key: &[u8; 32],
+    ) -> Result<State, Response> {
+        request_live()?;
+        let mut candidate = state.clone();
+        self.prepare(&mut candidate)?;
+        if candidate.namespaces.custody_owner(actual).is_some() {
+            return Err(unavailable());
+        }
+        if candidate.namespaces.inherited_owner(actual).is_some() {
+            return if self.has_loaded_within(actual) {
+                self.closed_candidate(&candidate, actual)
+            } else {
+                Ok(candidate)
+            };
+        }
+        if self.has_loaded_within(actual) {
+            candidate = self.closed_candidate(&candidate, actual)?;
+        }
+        let binding = candidate
+            .namespaces
+            .custody_binding(&candidate.cluster_id, actual)?;
+        let (owner, key) =
+            if let Some(parent) = candidate.namespaces.closest_independent_ancestor(actual) {
+                let descriptor = Owner::actual(&candidate, parent)?;
+                let lease = self.loaded.get(parent).ok_or_else(unavailable)?;
+                lease.with_key(&descriptor, |parent_key| {
+                    InheritedDescriptor::create_namespace(binding.clone(), parent_key, b"{}")
+                        .map_err(|_| unavailable())
+                })?
+            } else {
+                InheritedDescriptor::create_root(binding.clone(), root_key, b"{}")
+                    .map_err(|_| unavailable())?
+            };
+        // A legacy ordinary boolean flag is never a key. Clear it only in this
+        // private candidate, where real assets are immediately encrypted and
+        // detached before any publication or runtime grant is possible.
+        candidate.namespaces.set_sealed(actual, false)?;
+        let (mut closed, assets, cells) = candidate.partition_namespace_assets(actual, &key)?;
+        let bytes = owner_store::serialize_owner(&assets).map_err(state_serialization_error)?;
+        let descriptor = owner
+            .replace_assets(&binding, &key, &bytes)
+            .map_err(|_| unavailable())?;
+        closed
+            .engines
+            .publish_namespace_record_cells(&binding, &cells)
+            .map_err(|_| unavailable())?;
+        Owner::Inherited(descriptor).install(&mut closed, actual)?;
+        closed.schema = closed.writer_schema();
+        closed.validate_format()?;
+        request_live()?;
+        Ok(closed)
     }
 
     /// Restore only after descriptor/typed assets/private record graph have all
@@ -340,20 +501,72 @@ impl Runtime {
         key: Key,
         late: impl FnOnce(&State) -> Result<(), Response>,
     ) -> Result<State, Response> {
+        let mut pending = BTreeMap::new();
+        let mut candidate = self.restore_unpublished(state, actual, key, &mut pending)?;
+        self.restore_inherited_children(&mut candidate, actual, None, &mut pending)?;
+        self.publish_restored(candidate, pending, late)
+    }
+
+    /// Restore a root-key derived owner only during actual barrier activation.
+    /// A temporary batch owns all new keys until every typed descendant and the
+    /// original activation deadline have passed. No child slot is visible early.
+    pub(super) fn restore_root_inherited(
+        &mut self,
+        state: &State,
+        root_key: &[u8; 32],
+        late: impl FnOnce(&State) -> Result<(), Response>,
+    ) -> Result<State, Response> {
+        let mut candidate = state.clone();
+        let mut pending = BTreeMap::new();
+        self.restore_inherited_children(&mut candidate, "", Some(root_key), &mut pending)?;
+        self.publish_restored(candidate, pending, late)
+    }
+
+    fn publish_restored(
+        &mut self,
+        mut candidate: State,
+        pending: BTreeMap<String, Lease>,
+        late: impl FnOnce(&State) -> Result<(), Response>,
+    ) -> Result<State, Response> {
+        self.prepare_with_loaded(&mut candidate, &pending)?;
+        if !candidate
+            .namespaces
+            .legacy_ordinary_sealed_paths()
+            .is_empty()
+        {
+            return Err(Response::error(
+                503,
+                "legacy ordinary sealed owner requires authenticated ciphertext migration",
+            ));
+        }
+        late(&candidate)?;
         request_live()?;
-        if self.loaded.len() >= 1024 || self.loaded.contains_key(actual) {
+        // All fallible checks precede this batch installation. Dropping a failed
+        // exclusive batch drops/zeroizes its keys without revoking existing slots.
+        self.loaded.extend(pending);
+        candidate.namespace_leases = Leases(self.loaded.values().cloned().collect());
+        Ok(candidate)
+    }
+
+    fn restore_unpublished(
+        &self,
+        state: &State,
+        actual: &str,
+        key: Key,
+        pending: &mut BTreeMap<String, Lease>,
+    ) -> Result<State, Response> {
+        request_live()?;
+        if self.loaded.len() + pending.len() >= 1024
+            || self.loaded.contains_key(actual)
+            || pending.contains_key(actual)
+        {
             return Err(unavailable());
         }
-        // Admission clones intentionally clear their prepared projection. An
-        // already-loaded ancestor must be re-projected before selecting the
-        // durable view; its logical plaintext is never a protected snapshot.
         let mut prepared = state.clone();
-        self.prepare(&mut prepared)?;
+        self.prepare_with_loaded(&mut prepared, pending)?;
         let state = &prepared;
-        let descriptor = state
-            .namespaces
-            .custody_owner(actual)
-            .ok_or_else(unavailable)?;
+        state.namespaces.validate(&state.cluster_id)?;
+        let descriptor = Owner::actual(state, actual)?;
         let binding = state
             .namespaces
             .custody_binding(&state.cluster_id, actual)?;
@@ -368,25 +581,112 @@ impl Runtime {
             .map_err(|_| unavailable())?;
         let mut candidate = state.restore_namespace_assets(actual, &key, assets, &cells)?;
         candidate.namespaces.set_sealed(actual, false)?;
+        let protected = state.protected_state()?.clone();
         let lease = Lease(Arc::new(Mutex::new(Slot {
             key: Some(key),
             binding,
             key_epoch: descriptor.key_epoch(),
             frontier: descriptor.seal_frontier(),
+            parent: descriptor.parent().cloned(),
         })));
-        let protected = state.protected_state()?.clone();
-        late(&candidate)?;
-        request_live()?;
-        self.loaded.insert(actual.to_owned(), lease);
-        candidate.namespace_leases = Leases(self.loaded.values().cloned().collect());
+        pending.insert(actual.to_owned(), lease);
+        candidate.namespace_leases = Leases(
+            self.loaded
+                .values()
+                .chain(pending.values())
+                .cloned()
+                .collect(),
+        );
         candidate.namespace_protected = Some(Arc::new(protected));
         Ok(candidate)
+    }
+
+    fn restore_inherited_children(
+        &self,
+        candidate: &mut State,
+        within: &str,
+        root_key: Option<&[u8; 32]>,
+        pending: &mut BTreeMap<String, Lease>,
+    ) -> Result<(), Response> {
+        let prefix = format!("{within}/");
+        loop {
+            let mut paths = candidate.namespaces.inherited_paths();
+            paths.sort_by_key(|path| (path.split('/').count(), path.clone()));
+            let mut restored = false;
+            for actual in paths {
+                if (!within.is_empty() && !actual.starts_with(&prefix))
+                    || self.loaded.contains_key(&actual)
+                    || pending.contains_key(&actual)
+                {
+                    continue;
+                }
+                let descriptor = candidate
+                    .namespaces
+                    .inherited_owner(&actual)
+                    .cloned()
+                    .ok_or_else(unavailable)?;
+                let binding = candidate
+                    .namespaces
+                    .custody_binding(&candidate.cluster_id, &actual)?;
+                let key = if let Some(parent) =
+                    candidate.namespaces.closest_independent_ancestor(&actual)
+                {
+                    let owner = Owner::actual(candidate, parent)?;
+                    if descriptor.parent()
+                        != &(InheritedParent::Namespace {
+                            binding: owner.binding().clone(),
+                            key_epoch: owner.key_epoch(),
+                        })
+                    {
+                        return Err(unavailable());
+                    }
+                    let Some(lease) = pending.get(parent).or_else(|| self.loaded.get(parent))
+                    else {
+                        continue;
+                    };
+                    lease.with_key(&owner, |parent_key| {
+                        descriptor
+                            .open_namespace(&binding, parent_key)
+                            .map(|(key, _)| key)
+                            .map_err(|_| unavailable())
+                    })?
+                } else {
+                    let expected = InheritedParent::Root {
+                        cluster_id: candidate.cluster_id.clone(),
+                    };
+                    if descriptor.parent() != &expected {
+                        return Err(unavailable());
+                    }
+                    let Some(root_key) = root_key else {
+                        continue;
+                    };
+                    descriptor
+                        .open_root(&binding, root_key)
+                        .map(|(key, _)| key)
+                        .map_err(|_| unavailable())?
+                };
+                *candidate = self.restore_unpublished(candidate, &actual, key, pending)?;
+                restored = true;
+            }
+            if !restored {
+                return Ok(());
+            }
+        }
     }
 
     /// Build one protected candidate from deepest independent child first.
     /// Its closed child descriptor/catalog becomes an ordinary encrypted asset
     /// of the parent; its independent key is never given to that parent.
     pub(super) fn prepare(&self, state: &mut State) -> Result<(), Response> {
+        self.prepare_with_loaded(state, &BTreeMap::new())
+    }
+
+    fn prepare_with_loaded(
+        &self,
+        state: &mut State,
+        pending: &BTreeMap<String, Lease>,
+    ) -> Result<(), Response> {
+        let loaded = |actual: &str| pending.get(actual).or_else(|| self.loaded.get(actual));
         state.namespace_leases.validate()?;
         if state.namespace_leases.is_empty() {
             state.namespace_protected = None;
@@ -396,11 +696,7 @@ impl Runtime {
         for lease in &state.namespace_leases.0 {
             let slot = lease.0.lock().map_err(|_| unavailable())?;
             let actual = slot.binding.namespace();
-            if self
-                .loaded
-                .get(actual)
-                .is_none_or(|current| !Arc::ptr_eq(&current.0, &lease.0))
-            {
+            if loaded(actual).is_none_or(|current| !Arc::ptr_eq(&current.0, &lease.0)) {
                 return Err(unavailable());
             }
             if paths.iter().any(|path| path == actual) {
@@ -417,15 +713,11 @@ impl Runtime {
         });
         let mut protected = state.clone();
         for actual in &paths {
-            let descriptor = protected
-                .namespaces
-                .custody_owner(actual)
-                .cloned()
-                .ok_or_else(unavailable)?;
+            let descriptor = Owner::actual(&protected, actual)?;
             let binding = protected
                 .namespaces
                 .custody_binding(&protected.cluster_id, actual)?;
-            let lease = self.loaded.get(actual).ok_or_else(unavailable)?;
+            let lease = loaded(actual).ok_or_else(unavailable)?;
             protected = lease.with_key(&descriptor, |key| {
                 let (mut next, assets, cells) =
                     protected.partition_namespace_assets(actual, key)?;
@@ -444,9 +736,7 @@ impl Runtime {
                 next.engines
                     .publish_namespace_record_cells(&binding, &cells)
                     .map_err(|_| unavailable())?;
-                next.namespaces
-                    .install_custody_owner(&next.cluster_id, actual, next_descriptor)?;
-                next.namespaces.set_sealed(actual, true)?;
+                next_descriptor.install(&mut next, actual)?;
                 next.schema = next.writer_schema();
                 next.validate_format()?;
                 Ok(next)
@@ -459,15 +749,11 @@ impl Runtime {
         // parcels, parent before child. This is also the publication preflight.
         let mut logical = protected;
         for actual in paths.iter().rev() {
-            let descriptor = logical
-                .namespaces
-                .custody_owner(actual)
-                .cloned()
-                .ok_or_else(unavailable)?;
+            let descriptor = Owner::actual(&logical, actual)?;
             let binding = logical
                 .namespaces
                 .custody_binding(&logical.cluster_id, actual)?;
-            let lease = self.loaded.get(actual).ok_or_else(unavailable)?;
+            let lease = loaded(actual).ok_or_else(unavailable)?;
             logical = lease.with_key(&descriptor, |key| {
                 let bytes = descriptor
                     .open_assets(&binding, key)
@@ -487,10 +773,49 @@ impl Runtime {
         logical.namespace_leases = Leases(
             paths
                 .iter()
-                .map(|path| self.loaded.get(path).cloned().ok_or_else(unavailable))
+                .map(|path| loaded(path).cloned().ok_or_else(unavailable))
                 .collect::<Result<Vec<_>, _>>()?,
         );
         *state = logical;
+        Ok(())
+    }
+}
+
+impl Service {
+    pub(super) fn activate_inherited_namespaces(
+        &mut self,
+        key: &[u8; 32],
+        deadline: Option<std::time::Instant>,
+    ) -> Result<(), Response> {
+        let mut candidate = self.state.clone().ok_or_else(unavailable)?;
+        let mut legacy = candidate.namespaces.legacy_ordinary_sealed_paths();
+        legacy.sort_by_key(|path| (path.split('/').count(), path.clone()));
+        let mut migrated = false;
+        for actual in legacy {
+            if !candidate.namespace_exists(&actual) {
+                continue;
+            }
+            candidate = self
+                .namespace_runtime
+                .inherited_closed_candidate(&candidate, &actual, key)?;
+            migrated = true;
+        }
+        if migrated {
+            // A legacy boolean containing root-owned plaintext never reopens by
+            // clearing that flag. Publish genuine typed ciphertext before any key
+            // slot can be installed. Nested legacy flags still fail closed.
+            self.commit_state(&mut candidate)?;
+            self.state = Some(candidate.clone());
+        }
+        let candidate = self
+            .namespace_runtime
+            .restore_root_inherited(&candidate, key, |_| {
+                if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+                    return Err(unavailable());
+                }
+                request_live()
+            })?;
+        self.state = Some(candidate);
         Ok(())
     }
 }
@@ -915,6 +1240,484 @@ mod tests {
             "parent canonical owner cannot contain the independently restored child's plaintext"
         );
         let _ = call(&mut service, "GET", "sys/health", &token, json!({}));
+        Ok(())
+    }
+
+    #[test]
+    fn ordinary_http_unloads_real_resources_and_root_restart_restores_canonical_ciphertext()
+    -> TestResult {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (root_share, token) = bootstrap_unmounted(&mut service)?;
+        new_namespace(&mut service, &token, "", "plain")?;
+        new_namespace(&mut service, &token, "plain", "child")?;
+        mounted_record(&mut service, &token, "plain", "ordinary-secret")?;
+        mounted_record(&mut service, &token, "plain/child", "ordinary-child-secret")?;
+        assert!(
+            service
+                .namespace_fixture_at(
+                    "POST",
+                    "sys/namespaces/plain/seal",
+                    "",
+                    &token,
+                    json!({}),
+                    100
+                )
+                .status
+                == 204,
+            "real ordinary seal acknowledgement"
+        );
+        let closed = service.state.as_ref().ok_or("closed")?;
+        assert!(
+            closed.namespaces.inherited_owner("plain").is_some()
+                && !closed.namespace_is_sealed("plain")
+                && closed.engines.namespace_is_empty("plain")
+                && closed.auth.namespace_is_empty("plain")
+                && !closed.namespace_exists("plain/child"),
+            "ordinary seal unloads assets without inventing an independent barrier flag"
+        );
+        assert!(
+            service
+                .namespace_fixture_at("GET", "records/value", "plain", &token, json!({}), 100)
+                .status
+                == 404,
+            "root sees the genuine unloaded owner route"
+        );
+        assert!(
+            service
+                .namespace_fixture_at(
+                    "GET",
+                    "records/value",
+                    "plain/child",
+                    &token,
+                    json!({}),
+                    100
+                )
+                .status
+                == 404,
+            "child catalog is unloaded"
+        );
+        assert!(
+            service
+                .namespace_fixture_at(
+                    "GET",
+                    "sys/namespaces/plain/seal-status",
+                    "",
+                    &token,
+                    json!({}),
+                    100
+                )
+                .status
+                == 400,
+            "ordinary owner has no Shamir status"
+        );
+        let encoded = owner_store::serialize_owner(service.state.as_ref().ok_or("closed")?)?;
+        assert!(
+            !encoded
+                .windows(b"ordinary-secret".len())
+                .any(|bytes| bytes == b"ordinary-secret"),
+            "closed durable root excludes real plaintext"
+        );
+        let identity = service
+            .current_state_identity()
+            .map_err(|_| "closed identity")?;
+        drop(service);
+        let mut service = root.service()?;
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":root_share})
+            )
+            .status
+                == 200,
+            "actual root barrier key restores ordinary runtime after restart"
+        );
+        assert!(
+            service
+                .current_state_identity()
+                .map_err(|_| "restored identity")?
+                == identity,
+            "runtime restoration preserves durable identity instantly"
+        );
+        assert!(
+            owner_store::serialize_owner(service.state.as_ref().ok_or("restored")?)?.as_slice()
+                == encoded.as_slice(),
+            "same actual protected bytes are retained after root restoration"
+        );
+        for namespace in ["plain", "plain/child"] {
+            assert!(
+                service
+                    .namespace_fixture_at("GET", "records/value", namespace, &token, json!({}), 100)
+                    .status
+                    == 200,
+                "genuine ordinary resources restore under the actual root key"
+            );
+        }
+        let mut stale = service.state.clone().ok_or("loaded candidate")?;
+        let plan = service
+            .prepare_record_plan(&mut stale)
+            .map_err(|_| "loaded plan")?;
+        let before = stale
+            .namespaces
+            .inherited_owner("plain")
+            .ok_or("inherited")?
+            .seal_frontier();
+        assert!(
+            service
+                .namespace_fixture_at(
+                    "POST",
+                    "sys/namespaces/plain/seal",
+                    "",
+                    &token,
+                    json!({}),
+                    100
+                )
+                .status
+                == 204,
+            "manual ordinary close commits"
+        );
+        assert!(
+            stale.namespace_leases.validate().is_err()
+                && service.commit_record_plan(&stale, plan).is_err(),
+            "manual ordinary close destroys keys held by stale prepared leases"
+        );
+        assert!(
+            service
+                .state
+                .as_ref()
+                .ok_or("closed again")?
+                .namespaces
+                .inherited_owner("plain")
+                .ok_or("owner")?
+                .seal_frontier()
+                > before,
+            "manual seal advances the real exact frontier"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn ordinary_child_uses_actual_independent_parent_and_keeps_independent_grandchild_closed()
+    -> TestResult {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = bootstrap_unmounted(&mut service)?;
+        new_namespace(&mut service, &token, "", "outer")?;
+        let parent = install(&mut service, "outer")?;
+        new_namespace(&mut service, &token, "outer", "plain")?;
+        new_namespace(&mut service, &token, "outer/plain", "independent")?;
+        mounted_record(
+            &mut service,
+            &token,
+            "outer/plain",
+            "ordinary-under-independent",
+        )?;
+        mounted_record(
+            &mut service,
+            &token,
+            "outer/plain/independent",
+            "independent-grandchild",
+        )?;
+        let grandchild = install(&mut service, "outer/plain/independent")?;
+        assert!(
+            service
+                .namespace_fixture_at(
+                    "POST",
+                    "sys/namespaces/plain/seal",
+                    "outer",
+                    &token,
+                    json!({}),
+                    100
+                )
+                .status
+                == 204,
+            "ordinary child seal uses actual parent custody"
+        );
+        let state = service.state.as_ref().ok_or("state")?;
+        let owner = state
+            .namespaces
+            .inherited_owner("outer/plain")
+            .ok_or("child owner")?;
+        let parent_owner = state
+            .namespaces
+            .custody_owner("outer")
+            .ok_or("actual independent parent")?;
+        assert!(
+            owner.parent()
+                == &(InheritedParent::Namespace {
+                    binding: parent_owner.binding().clone(),
+                    key_epoch: parent_owner.key_epoch()
+                }),
+            "true parent binding and key epoch are durable, never inferred from a path or caller"
+        );
+        assert!(
+            service
+                .namespace_fixture_at(
+                    "POST",
+                    "sys/namespaces/outer/seal",
+                    "",
+                    &token,
+                    json!({}),
+                    100
+                )
+                .status
+                == 204,
+            "parent closes its typed descendants"
+        );
+        assert!(
+            service.namespace_runtime.loaded.is_empty(),
+            "all actual parent and descendant slots are revoked"
+        );
+        let response = service.namespace_fixture_at(
+            "POST",
+            "sys/namespaces/outer/unseal",
+            "",
+            &token,
+            json!({"key":hex(&parent.shares[0])}),
+            100,
+        );
+        assert!(
+            response.status == 200 && response.body["data"]["sealed"] == false,
+            "actual parent share restores the complete owned batch"
+        );
+        assert!(
+            service
+                .namespace_fixture_at(
+                    "GET",
+                    "records/value",
+                    "outer/plain",
+                    &token,
+                    json!({}),
+                    100
+                )
+                .status
+                == 200,
+            "parent key restores its ordinary child resources"
+        );
+        assert!(
+            service
+                .namespace_fixture_at(
+                    "GET",
+                    "records/value",
+                    "outer/plain/independent",
+                    &token,
+                    json!({}),
+                    100
+                )
+                .status
+                == 503,
+            "parent key cannot unlock independent grandchild"
+        );
+        let response = service.namespace_fixture_at(
+            "POST",
+            "sys/namespaces/independent/unseal",
+            "outer/plain",
+            &token,
+            json!({"key":hex(&grandchild.shares[0])}),
+            100,
+        );
+        assert!(
+            response.status == 200,
+            "grandchild requires its own actual key share"
+        );
+        assert!(
+            service
+                .namespace_fixture_at(
+                    "GET",
+                    "records/value",
+                    "outer/plain/independent",
+                    &token,
+                    json!({}),
+                    100
+                )
+                .status
+                == 200,
+            "independent resources restore only after their own key proof"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn failed_inherited_restore_batch_releases_no_slot_and_preserves_durable_owner() -> TestResult {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = bootstrap_unmounted(&mut service)?;
+        new_namespace(&mut service, &token, "", "plain")?;
+        mounted_record(&mut service, &token, "plain", "no-premature-runtime-grant")?;
+        assert!(
+            service
+                .namespace_fixture_at(
+                    "POST",
+                    "sys/namespaces/plain/seal",
+                    "",
+                    &token,
+                    json!({}),
+                    100
+                )
+                .status
+                == 204,
+            "real ordinary closed state"
+        );
+        let state = service.state.as_ref().ok_or("closed")?;
+        let before = owner_store::serialize_owner(state)?;
+        let root_key = service.barrier_key.as_ref().ok_or("actual root key")?;
+        let mut runtime = Runtime::default();
+        assert!(
+            runtime
+                .restore_root_inherited(state, root_key, |_| Err(Response::error(
+                    403,
+                    "expired actual actor"
+                )))
+                .is_err()
+                && runtime.loaded.is_empty(),
+            "late authority rejection installs no batch key slot"
+        );
+        assert!(
+            runtime
+                .restore_root_inherited(state, &[0u8; 32], |_| Ok(()))
+                .is_err()
+                && runtime.loaded.is_empty(),
+            "failed genuine MAC validation installs no batch key slot"
+        );
+        assert!(
+            owner_store::serialize_owner(state)?.as_slice() == before.as_slice(),
+            "failed attempts cannot mutate canonical owner or resource catalog"
+        );
+        let actual_deadline = std::time::Instant::now() + std::time::Duration::from_millis(5);
+        let _budget = crate::request_deadline::RequestDeadlineScope::enter(actual_deadline);
+        assert!(
+            runtime
+                .restore_root_inherited(state, root_key, |_| {
+                    std::thread::sleep(std::time::Duration::from_millis(10));
+                    Ok(())
+                })
+                .is_err()
+                && runtime.loaded.is_empty(),
+            "original deadline expiration discards the entire unpublished key batch"
+        );
+        assert!(
+            crate::request_deadline::current() == Some(actual_deadline),
+            "restoration never renews request budget"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn ordinary_delete_recreate_commits_retirement_and_revokes_inherited_slots() -> TestResult {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (root_share, token) = bootstrap_unmounted(&mut service)?;
+        new_namespace(&mut service, &token, "", "empty")?;
+        assert!(
+            service
+                .namespace_fixture_at(
+                    "POST",
+                    "sys/namespaces/empty/seal",
+                    "",
+                    &token,
+                    json!({}),
+                    100
+                )
+                .status
+                == 204,
+            "empty actual ordinary owner closes"
+        );
+        drop(service);
+        let mut service = root.service()?;
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":root_share})
+            )
+            .status
+                == 200,
+            "genuine root barrier restores empty inherited runtime"
+        );
+        let mut stale = service.state.clone().ok_or("loaded empty")?;
+        let first = stale
+            .namespaces
+            .custody_binding(&stale.cluster_id, "empty")
+            .map_err(|_| "first actual binding")?;
+        let plan = service
+            .prepare_record_plan(&mut stale)
+            .map_err(|_| "old empty plan")?;
+        assert!(
+            service
+                .namespace_fixture_at("DELETE", "sys/namespaces/empty", "", &token, json!({}), 100)
+                .status
+                == 200,
+            "empty inherited delete commits real cleanup"
+        );
+        assert!(
+            !service.namespace_runtime.is_loaded("empty")
+                && stale.namespace_leases.validate().is_err()
+                && service.commit_record_plan(&stale, plan).is_err(),
+            "delete destroys the real key slot and stale prepared permission"
+        );
+        new_namespace(&mut service, &token, "", "empty")?;
+        let state = service.state.as_ref().ok_or("recreated")?;
+        let next = state
+            .namespaces
+            .custody_binding(&state.cluster_id, "empty")
+            .map_err(|_| "new actual binding")?;
+        assert!(
+            next != first && state.namespaces.inherited_owner("empty").is_none(),
+            "new incarnation cannot inherit the retired key or descriptor"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn failed_ordinary_ciphertext_commit_keeps_live_assets_and_publishes_no_owner() -> TestResult {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, token) = bootstrap_unmounted(&mut service)?;
+        new_namespace(&mut service, &token, "", "plain")?;
+        mounted_record(
+            &mut service,
+            &token,
+            "plain",
+            "commit-failure-retains-live-assets",
+        )?;
+        let mut state = service.state.clone().ok_or("live candidate")?;
+        let principal = state.auth.authenticate(&token, 100)?;
+        let before = owner_store::serialize_owner(service.state.as_ref().ok_or("live")?)?;
+        service.durable = None;
+        let response = service.namespace_route(
+            state,
+            Some(&principal),
+            &RequestView {
+                method: "POST",
+                path: "sys/namespaces/plain/seal",
+                namespace: "",
+                token: &token,
+                body: &json!({}),
+                now: 100,
+                admission_started: std::time::Instant::now(),
+                allow_forward: true,
+                enforce_namespace: true,
+                wrap_ttl_seconds: None,
+                origin_peer: None,
+                client_certificates: None,
+            },
+        );
+        assert!(
+            response.status >= 400,
+            "actual missing writer rejects ordinary publication"
+        );
+        let retained = service.state.as_ref().ok_or("retained live owner")?;
+        assert!(
+            retained.namespaces.inherited_owner("plain").is_none()
+                && !retained.engines.namespace_is_empty("plain")
+                && owner_store::serialize_owner(retained)?.as_slice() == before.as_slice(),
+            "failed real commit neither unloads live assets nor publishes a ciphertext grant"
+        );
         Ok(())
     }
 }

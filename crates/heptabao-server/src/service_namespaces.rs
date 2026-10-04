@@ -295,7 +295,6 @@ impl NamespaceRegistry {
         self.entries.get(actual)?.inherited.as_ref()
     }
 
-    #[cfg(test)]
     pub(super) fn install_inherited_owner(
         &mut self,
         cluster_id: &str,
@@ -336,6 +335,37 @@ impl NamespaceRegistry {
         self.custody_frontiers.insert(actual.to_owned(), frontier);
         Ok(())
     }
+    pub(super) fn legacy_ordinary_sealed_paths(&self) -> Vec<String> {
+        self.entries
+            .iter()
+            .filter(|(_, entry)| {
+                entry.sealed && entry.custody.is_none() && entry.inherited.is_none()
+            })
+            .map(|(path, _)| path.clone())
+            .collect()
+    }
+
+    pub(super) fn inherited_paths(&self) -> Vec<String> {
+        self.entries
+            .iter()
+            .filter(|(_, entry)| entry.inherited.is_some())
+            .map(|(path, _)| path.clone())
+            .collect()
+    }
+
+    pub(super) fn closest_independent_ancestor(&self, actual: &str) -> Option<&str> {
+        self.entries
+            .iter()
+            .filter(|(path, entry)| {
+                entry.custody.is_some()
+                    && actual
+                        .strip_prefix(path.as_str())
+                        .is_some_and(|suffix| suffix.starts_with('/'))
+            })
+            .map(|(path, _)| path.as_str())
+            .max_by_key(|path| path.len())
+    }
+
     pub(super) fn custody_binding(
         &self,
         cluster_id: &str,
@@ -947,12 +977,6 @@ impl Service {
             if !state.namespaces.contains(&target) {
                 return Response::error(500, "namespace does not exist");
             }
-            // The typed owner format is admitted before its runtime adopter is
-            // activated. Never mutate/forget such assets through the legacy
-            // boolean fence while the complete restore path is still pending.
-            if state.namespaces.inherited_owner(&target).is_some() {
-                return Response::error(503, "inherited namespace runtime adoption is not active");
-            }
             if operation == "seal-status" {
                 if request.method != "GET" && request.method != "HEAD" {
                     return Response::error(405, "namespace seal-status requires GET");
@@ -1058,25 +1082,51 @@ impl Service {
                     self.namespace_runtime.reset_progress(&target);
                 }
             } else {
-                // Ordinary namespace resource unloading is a distinct remaining
-                // contract; this branch preserves its prior operational fence.
-                // Independent child slots still require actual protected
-                // publication and complete revocation when this ancestor seals.
-                if self.namespace_runtime.has_loaded_within(&target) {
-                    state = match self.namespace_runtime.closed_candidate(&state, &target) {
-                        Ok(candidate) => candidate,
-                        Err(error) => return error,
-                    };
-                }
-                if let Err(error) = state.namespaces.set_sealed(&target, true) {
+                let binding = match state.namespaces.custody_binding(&state.cluster_id, &target) {
+                    Ok(binding) => binding,
+                    Err(error) => return error,
+                };
+                if let Err(error) = Self::namespace_custody_gate(
+                    &state,
+                    principal,
+                    request,
+                    caller_incarnation,
+                    &target,
+                    &binding,
+                ) {
                     return error;
                 }
-                state.schema = state.writer_schema();
+                let Some(root_key) = self.barrier_key.as_ref() else {
+                    return Response::error(503, "actual barrier key is unavailable");
+                };
+                state = match self
+                    .namespace_runtime
+                    .inherited_closed_candidate(&state, &target, root_key)
+                {
+                    Ok(candidate) => candidate,
+                    Err(error) => return error,
+                };
                 if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
+                // Durable closure is authoritative even if the caller expires
+                // after commit. Revoke all old slots and retain the closed state
+                // before the final actor/deadline check releases an acknowledgement.
                 self.namespace_runtime.close(&target);
+                #[cfg(test)]
+                external_pki::delay_after_publication_for_test();
+                let late = Self::namespace_custody_gate(
+                    &state,
+                    principal,
+                    request,
+                    caller_incarnation,
+                    &target,
+                    &binding,
+                );
                 self.state = Some(state);
+                if let Err(error) = late {
+                    return error;
+                }
             }
             return Response {
                 consistency_index: None,
@@ -1268,6 +1318,15 @@ impl Service {
                     );
                 }
                 let custody = state.namespaces.custody_owner(&target).cloned();
+                let custody_binding = custody
+                    .as_ref()
+                    .map(|owner| owner.binding().clone())
+                    .or_else(|| {
+                        state
+                            .namespaces
+                            .inherited_owner(&target)
+                            .map(|owner| owner.binding().clone())
+                    });
                 if custody.is_some() && state.namespaces.entries[&target].sealed {
                     return Response::error(
                         503,
@@ -1280,10 +1339,8 @@ impl Service {
                         Err(error) => return error,
                     };
                 }
-                if let Some(custody) = custody
-                    && let Err(error) = state
-                        .engines
-                        .retire_namespace_record_cells(custody.binding())
+                if let Some(binding) = custody_binding
+                    && let Err(error) = state.engines.retire_namespace_record_cells(&binding)
                 {
                     return Response::error(error.status, &error.message);
                 }

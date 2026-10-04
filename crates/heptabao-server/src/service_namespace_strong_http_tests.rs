@@ -841,3 +841,54 @@ fn strong_http_original_expired_deadline_returns_no_grant_and_clears_progress() 
     unseal(&mut service, "", "partial-owner", &token, &shares);
     Ok(())
 }
+
+#[test]
+fn ordinary_http_late_actor_after_real_commit_closes_assets_without_acknowledgement() -> TestResult
+{
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/ordinary-late",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 200,
+        "actual ordinary owner"
+    );
+    write_marker(&mut service, "ordinary-late", &token);
+    let actor = short_actor(&mut service, &token, false)?;
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    let _original = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let _delay = external_pki::PublicationDelayScope::enter(std::time::Duration::from_millis(2100));
+    let response = service.handle_request(ServiceRequest::new(
+        "POST",
+        "sys/namespaces/ordinary-late/seal",
+        "",
+        &actor,
+        json!({}),
+    ));
+    assert!(
+        response.status == 403,
+        "actor expiration after real ordinary closure cannot receive an acknowledgement"
+    );
+    let closed = service.state.as_ref().ok_or("closed candidate")?;
+    assert!(
+        service.durable.as_ref().ok_or("durable")?.generation() != before
+            && closed.namespaces.inherited_owner("ordinary-late").is_some()
+            && closed.engines.namespace_is_empty("ordinary-late")
+            && !service.namespace_runtime.has_loaded_within("ordinary-late"),
+        "successful durable closure still removes assets and key slots after actor expiry"
+    );
+    assert!(
+        crate::request_deadline::current() == Some(deadline),
+        "original actor request budget is retained"
+    );
+    Ok(())
+}
