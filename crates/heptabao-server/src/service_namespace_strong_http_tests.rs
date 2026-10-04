@@ -250,7 +250,7 @@ fn strong_http_completed_unseal_late_actor_rejects_before_slot_registration() ->
     let _clock = external_pki::PublicationClockScope::enter(observed, started);
     let deadline = started + std::time::Duration::from_secs(30);
     let _original = crate::request_deadline::RequestDeadlineScope::enter(deadline);
-    let state = service.state.clone().ok_or("state")?;
+    let mut state = service.state.clone().ok_or("state")?;
     let principal = state.auth.authenticate(&actor, now)?;
     let binding = state
         .namespaces
