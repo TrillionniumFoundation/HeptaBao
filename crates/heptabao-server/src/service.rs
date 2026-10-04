@@ -2906,7 +2906,8 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        if admitted.engines.has_local_pki_intermediate_state()
+        if admitted.auth.has_token_role_state()
+            || admitted.engines.has_local_pki_intermediate_state()
             || admitted.engines.has_local_pki_crl_state()
             || admitted.engines.has_local_pki_multi_issuer_state()
             || admitted.engines.has_local_pki_root_fields_state()

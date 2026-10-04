@@ -19,19 +19,15 @@ fn token_role_schema80_namespace_reopen_retirement_and_snapshot_floor() -> TestR
     );
     let previous = service.state.clone().ok_or("previous")?;
     let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
-    assert_eq!(
-        service
-            .handle_at(
-                "POST",
-                "auth/token/roles/shared",
-                "team",
-                &admin,
-                json!({"allowed_policies":["p-one"],"orphan":true}),
-                100
-            )
-            .status,
-        204
+    let created = service.handle_at(
+        "POST",
+        "auth/token/roles/shared",
+        "team",
+        &admin,
+        json!({"allowed_policies":["p-one"],"orphan":true}),
+        100,
     );
+    assert_eq!(created.status, 204, "{:?}", created.body.get("errors"));
     let active = service.state.clone().ok_or("active")?;
     assert_eq!(active.schema, TOKEN_ROLE_STATE_SCHEMA);
     assert_eq!(active.writer_schema(), TOKEN_ROLE_STATE_SCHEMA);
@@ -107,17 +103,14 @@ fn token_role_alias_uses_owned_identity_and_disabled_entity_prevents_publication
     let root = Root::new();
     let mut service = root.service()?;
     let (_, admin) = bootstrap_unmounted(&mut service)?;
-    assert_eq!(
-        call(
-            &mut service,
-            "POST",
-            "auth/token/roles/alias",
-            &admin,
-            json!({"allowed_policies":["default"],"allowed_entity_aliases":["Ada"]})
-        )
-        .status,
-        204
+    let created = call(
+        &mut service,
+        "POST",
+        "auth/token/roles/alias",
+        &admin,
+        json!({"allowed_policies":["default"],"allowed_entity_aliases":["Ada"]}),
     );
+    assert_eq!(created.status, 204, "{:?}", created.body.get("errors"));
     let first = call(
         &mut service,
         "POST",
