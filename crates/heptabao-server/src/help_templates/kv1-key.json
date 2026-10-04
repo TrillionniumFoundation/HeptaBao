@@ -1,0 +1,87 @@
+{
+  "help": "Request:        ocsp/plainkey\nMatching Route: ^(?P<path>.*)$\n\nPass-through secret storage to the storage backend, allowing you to\nread/write arbitrary data into secret storage.\n\n## PARAMETERS\n\n    path (string)\n\n        Location of the secret.\n\n## DESCRIPTION\n\nThe pass-through backend reads and writes arbitrary data into secret storage,\nencrypting it along the way.\n\nA TTL can be specified when writing with the \"ttl\" field. If given, the\nduration of leases returned by this backend will be set to this value. This\ncan be used as a hint from the writer of a secret to the consumer of a secret\nthat the consumer should re-read the value before the TTL has expired.\nHowever, any revocation must be handled by the user of this backend; the lease\nduration does not affect the provided data in any way.",
+  "openapi": {
+    "components": {
+      "schemas": {}
+    },
+    "info": {
+      "description": "HTTP API that gives you full access to OpenBao. All API routes are prefixed with `/v1/`.",
+      "license": {
+        "name": "Mozilla Public License 2.0",
+        "url": "https://www.mozilla.org/en-US/MPL/2.0"
+      },
+      "title": "OpenBao API",
+      "version": "2.7.0"
+    },
+    "openapi": "3.0.2",
+    "paths": {
+      "/{path}": {
+        "delete": {
+          "operationId": "delete-path",
+          "responses": {
+            "204": {
+              "description": "empty body"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "description": "Pass-through secret storage to the storage backend, allowing you to read/write arbitrary data into secret storage.",
+        "get": {
+          "operationId": "read-path",
+          "parameters": [
+            {
+              "description": "Return a list if `true`",
+              "in": "query",
+              "name": "list",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "description": "Return a recursive list if `true`",
+              "in": "query",
+              "name": "scan",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "parameters": [
+          {
+            "description": "Location of the secret.",
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "post": {
+          "operationId": "write-path",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          },
+          "tags": [
+            "secrets"
+          ]
+        },
+        "x-vault-createSupported": true
+      }
+    }
+  },
+  "see_also": null
+}

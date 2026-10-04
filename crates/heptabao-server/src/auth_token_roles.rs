@@ -4,6 +4,8 @@
 use super::*;
 #[path = "auth_token_role_fields.rs"]
 mod fields;
+#[path = "auth_token_role_lists.rs"]
+mod lists;
 
 const MAX_ROLE_TEXT: usize = 1024 * 1024;
 const MAX_ISSUED_ROLE_PATH: usize = MAX_ROLE_TEXT + 8192 + 64;
@@ -119,12 +121,7 @@ fn role_list(
     field: &str,
     collapse_root: bool,
 ) -> Result<BTreeSet<String>, AuthError> {
-    let raw = body.get(field);
-    let values = if let Some(Value::String(value)) = raw {
-        value.split(',').map(str::to_owned).collect()
-    } else {
-        token_policies::string_slice(raw)?
-    };
+    let values = lists::comma_strings(body, field)?;
     let mut result: BTreeSet<String> = values
         .iter()
         .map(|s| token_policies::simple_lowercase(s.trim()))
@@ -135,13 +132,7 @@ fn role_list(
     }
     Ok(result)
 }
-fn cidrs(body: &Value, field: &str) -> Result<Vec<String>, AuthError> {
-    let mapped = json!({"token_bound_cidrs":body[field]});
-    token_cidrs::field(&mapped).map_err(|_| {
-        let first=body[field].as_array().and_then(|values|values.first()).and_then(Value::as_str).or_else(||body[field].as_str()).unwrap_or("");
-        bad(&format!("error parsing role fields: error parsing address {}: Unable to convert {} to an IPv4 or IPv6 address, or a UNIX Socket",token_policies::quote_policy(first),token_policies::quote_policy(first)))
-    })
-}
+
 impl Role {
     fn update(&mut self, body: &Value) -> Result<Vec<String>, AuthError> {
         let mut warnings = Vec::new();
@@ -172,9 +163,8 @@ impl Role {
         if body.get("token_no_default_policy").is_some() {
             self.token_no_default_policy = fields::boolean(body, "token_no_default_policy")?;
         }
-        if let Some(value) = body.get("path_suffix") {
-            let suffix = token_policies::weak_string(value)
-                .ok_or_else(|| bad("path suffix must be a string"))?;
+        if body.get("path_suffix").is_some() {
+            let suffix = lists::string(body, "path_suffix")?;
             if suffix.contains("..") {
                 return Err(bad(
                     "error registering path suffix: path cannot contain parent references",
@@ -190,6 +180,12 @@ impl Role {
         if let Some(value) = body.get("token_type") {
             if value.is_null() {
                 return Err(bad("Invalid 'token_type' value: null"));
+            }
+            // The official handler panics for numeric/bool Raw values after weak
+            // framework validation. Retain a bounded rejection rather than
+            // introducing a panic; this transport behavior remains a gap.
+            if value.is_array() || value.is_object() {
+                lists::string(body, "token_type")?;
             }
             let value = value
                 .as_str()
@@ -228,13 +224,13 @@ impl Role {
             }
         }
         if body.get("token_bound_cidrs").is_some() {
-            self.token_bound_cidrs = cidrs(body, "token_bound_cidrs")?;
+            self.token_bound_cidrs = lists::cidrs(body, "token_bound_cidrs")?;
             self.bound_cidrs.clear();
             if body.get("bound_cidrs").is_some() {
                 warnings.insert(usize::from(warnings.first().is_some_and(|w|w.contains("token_period"))),"Both 'token_bound_cidrs' and deprecated 'bound_cidrs' value supplied, ignoring the deprecated value".into());
             }
         } else if body.get("bound_cidrs").is_some() {
-            self.bound_cidrs = cidrs(body, "bound_cidrs")?;
+            self.bound_cidrs = lists::cidrs(body, "bound_cidrs")?;
             self.token_bound_cidrs.clone_from(&self.bound_cidrs);
         }
         if self.token_explicit_max_ttl > MAX_TTL {

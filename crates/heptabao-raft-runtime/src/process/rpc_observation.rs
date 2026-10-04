@@ -23,13 +23,14 @@ pub(super) struct RpcAttempt {
 impl RpcAttempt {
     pub fn failed(&self, stage: Stage) {
         static ORIGIN: OnceLock<Instant> = OnceLock::new();
-        static LAST: [AtomicU64; 5] = [const { AtomicU64::new(u64::MAX) }; 5];
+        static LAST: [AtomicU64; 6] = [const { AtomicU64::new(u64::MAX) }; 6];
         let (slot, kind) = match self.kind {
             RaftRpcKind::AppendEntries => (0, "append"),
             RaftRpcKind::Vote => (1, "vote"),
             RaftRpcKind::PreVote => (2, "pre_vote"),
             RaftRpcKind::SnapshotChunk => (3, "snapshot"),
             RaftRpcKind::TransferLeader => (4, "transfer"),
+            RaftRpcKind::ReadIndex => (5, "read_index"),
         };
         let bucket = ORIGIN.get_or_init(Instant::now).elapsed().as_secs();
         let previous = LAST[slot].load(Ordering::Relaxed);

@@ -1624,6 +1624,47 @@ impl DurableStateMachine {
 
     /// The generation and value belong to one locked observation. Every apply,
     /// checkpoint and snapshot install advances this local generation.
+    // Tests hold the actual production bundle mutex; no generation, log,
+    // clock, committed value or read authority is fabricated by this seam.
+    #[cfg(test)]
+    pub(crate) async fn hold_application_bundle_until(
+        &self,
+        acquired: tokio::sync::oneshot::Sender<()>,
+        release: tokio::sync::oneshot::Receiver<()>,
+    ) {
+        let _guard = self.bundle.lock().await;
+        let _ = acquired.send(());
+        let _ = release.await;
+    }
+
+    pub(crate) fn same_instance(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.bundle, &other.bundle)
+    }
+
+    /// The selected application root, its generation and actual applied log
+    /// belong to one state-machine lock. No cached metrics enter this snapshot.
+    pub(crate) async fn application_read_snapshot(
+        &self,
+        client: &str,
+    ) -> (
+        u64,
+        Option<LogIdOf<TypeConfig>>,
+        Option<String>,
+        Option<crate::PublishedRecordRoot>,
+    ) {
+        let bundle = self.bundle.lock().await;
+        (
+            bundle.generation,
+            bundle.state.last_applied_log,
+            bundle.state.client_status.get(client).cloned(),
+            bundle
+                .state
+                .records_v5
+                .as_ref()
+                .and_then(crate::records::RecordState::published),
+        )
+    }
+
     pub(crate) async fn client_status_at_generation(&self, client: &str) -> (u64, Option<String>) {
         let bundle = self.bundle.lock().await;
         (

@@ -958,3 +958,90 @@ fn token_role_framework_weak_fields_preserve_duration_units_integer_bases_and_at
     );
     Ok(())
 }
+
+#[test]
+fn token_role_list_weak_fields_and_cidr_errors_are_atomic_and_durable() -> TestResult {
+    let (mut state, root) = setup()?;
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/roles/weak-lists",
+        json!({"allowed_policies":[" P-ONE ",2,true,null,"Σ","X,Y"],"allowed_entity_aliases":{},"path_suffix":123,"token_bound_cidrs":" 127.0.0.2/24 , ::1/128 "}),
+        100,
+    )?;
+    let info = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "auth/token/roles/weak-lists",
+        json!({}),
+        100,
+    )?
+    .body["data"]
+        .clone();
+    assert_eq!(
+        info["allowed_policies"],
+        json!(["1", "2", "p-one", "x,y", "σ"])
+    );
+    assert_eq!(info["allowed_entity_aliases"], json!([]));
+    assert_eq!(info["path_suffix"], "123");
+    assert_eq!(info["token_bound_cidrs"], json!(["127.0.0.2/24", "::1"]));
+    let before = serde_json::to_vec(&state)?;
+    for (body, expected) in [
+        (
+            json!({"renewable":false,"allowed_policies":[{"a":1}]}),
+            "error converting input for field \"allowed_policies\": 1 error(s) decoding:\n\n* '[0]' expected type 'string', got unconvertible type 'map[string]interface {}', value: 'map[a:1]'",
+        ),
+        (
+            json!({"token_bound_cidrs":["127.0.0.1/32",123]}),
+            "error parsing role fields: error parsing address \"123\": Unable to convert \"123\" to an IPv4 or IPv6 address, or a UNIX Socket",
+        ),
+        (
+            json!({"bound_cidrs":true}),
+            "error parsing bound_cidrs: error parsing address \"1\": Unable to convert \"1\" to an IPv4 or IPv6 address, or a UNIX Socket",
+        ),
+        (
+            json!({"path_suffix":[]}),
+            "error converting input for field \"path_suffix\": '' expected type 'string', got unconvertible type '[]interface {}'",
+        ),
+        (
+            json!({"token_type":{}}),
+            "error converting input for field \"token_type\": '' expected type 'string', got unconvertible type 'map[string]interface {}'",
+        ),
+    ] {
+        let e = call(
+            &mut state,
+            &root,
+            "",
+            "POST",
+            "auth/token/roles/weak-lists",
+            body,
+            100,
+        )
+        .err()
+        .ok_or("invalid role field was admitted")?;
+        assert_eq!(e.status, 400);
+        assert_eq!(e.message, expected);
+        assert_eq!(serde_json::to_vec(&state)?, before);
+    }
+    call(
+        &mut state,
+        &root,
+        "",
+        "POST",
+        "auth/token/roles/weak-lists",
+        json!({"token_bound_cidrs":null,"allowed_policies":true,"path_suffix":null}),
+        100,
+    )?;
+    let reopened: AuthState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
+    reopened.validate_token_role_state()?;
+    assert!(reopened.has_token_api_schema80_state());
+    let read = reopened.token_roles[""]["weak-lists"].info("weak-lists");
+    assert_eq!(read["allowed_policies"], json!(["1"]));
+    assert_eq!(read["path_suffix"], "");
+    assert!(read.get("token_bound_cidrs").is_none());
+    Ok(())
+}

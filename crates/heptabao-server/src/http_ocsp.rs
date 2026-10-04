@@ -120,13 +120,30 @@ impl GetRequest<'_> {
     }
 }
 
-fn query_candidate(method: &str, path: &str, query: &str) -> bool {
-    matches!(method, "GET" | "LIST" | "SCAN")
-        && !query.is_empty()
+pub(super) fn head_candidate(method: &str, path: &str) -> bool {
+    method == "HEAD"
         && !path.starts_with("sys/")
         && !path.starts_with("auth/")
-        && !path.contains("//")
-        && ordinary_path(path.trim_end_matches('/'))
+        && !path.starts_with('/')
+        && path.len() <= 4096
+        && !path.is_empty()
+        && path
+            .bytes()
+            .all(|byte| byte.is_ascii_graphic() && !matches!(byte, b'?' | b'#'))
+}
+
+fn query_candidate(method: &str, path: &str, query: &str) -> bool {
+    head_candidate(method, path)
+        || (matches!(method, "GET" | "LIST" | "SCAN")
+            && !query.is_empty()
+            && !path.starts_with("sys/")
+            && !path.starts_with("auth/")
+            && !path.contains("//")
+            && ordinary_path(path.trim_end_matches('/')))
+}
+
+pub(crate) fn opaque_header_request(method: &str, path: &str, body: &Value) -> bool {
+    method == "HEAD" && query_request(method, path, body).is_some()
 }
 pub(super) fn query_carrier_body(method: &str, path: &str, query: &str) -> Option<Value> {
     query_candidate(method, path, query)
@@ -171,7 +188,7 @@ pub(crate) fn query_request<'a>(
 
 impl QueryRequest<'_> {
     pub(crate) fn resolve(&self, actual_kv: bool) -> Result<(&str, CarrierBody), Response> {
-        if actual_kv {
+        if actual_kv || self.wire_method == "HEAD" {
             return kv_query(self.wire_method, self.query);
         }
         let mut body = CarrierBody(json!({}));
@@ -217,7 +234,7 @@ fn decode_url_query(value: &str) -> Option<String> {
     Some(String::from_utf8_lossy(&decoded).into_owned())
 }
 
-fn url_query(query: &str) -> BTreeMap<String, Vec<String>> {
+pub(super) fn url_query(query: &str) -> BTreeMap<String, Vec<String>> {
     let mut values: BTreeMap<String, Vec<String>> = BTreeMap::new();
     for field in query
         .split('&')
@@ -585,6 +602,10 @@ pub(crate) fn audit_query<'a>(
     path: &'a str,
     body: &'a Value,
 ) -> Option<(&'a str, &'a str, &'a str)> {
+    if let Some(request) = super::help::request(method, path, body) {
+        return Some(request);
+    }
+
     if let Some(carrier) = get_request(method, path, body) {
         return Some(("GET", carrier.path, carrier.query));
     }

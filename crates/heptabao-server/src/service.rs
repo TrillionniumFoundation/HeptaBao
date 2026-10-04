@@ -93,6 +93,8 @@ mod external_transit;
 mod ha_activation;
 #[path = "service_ha_read.rs"]
 mod ha_read;
+#[path = "service_ha_received.rs"]
+mod ha_received;
 #[path = "service_identity.rs"]
 mod identity;
 #[path = "service_kubernetes_secrets.rs"]
@@ -113,6 +115,8 @@ mod openldap_secret;
 mod plugin;
 #[path = "service_recovery_keys.rs"]
 mod recovery_keys;
+#[path = "service_wrapper_ha.rs"]
+mod wrapper_ha;
 #[cfg(target_os = "linux")]
 pub use openbao_wrapper::{
     OpenBaoWrapperCompletion, OpenBaoWrapperOperationPlan, WrapperCleanupState, WrapperOperation,
@@ -142,7 +146,7 @@ mod raft_admin;
 mod records;
 #[path = "service_state_store.rs"]
 mod state_store;
-pub(crate) use ha_activation::start_ha_activation_worker;
+pub(crate) use ha_activation::start_ha_activation_worker_with_budget;
 pub(crate) use lifecycle::start_lifecycle_worker;
 
 #[path = "service_leases.rs"]
@@ -1271,7 +1275,11 @@ impl Service {
             }
         }
         if ha.is_some()
-            && (initialization_recovery_pending(&data_dir)? || postgres_pending_exists(&data_dir)?)
+            && (postgres_pending_exists(&data_dir)?
+                || (initialization_recovery_pending(&data_dir)?
+                    && !load_seal_metadata(&data_dir)?
+                        .as_ref()
+                        .is_some_and(SealMetadata::is_wrapper)))
         {
             return Err("acknowledge initialization recovery before enabling HA");
         }
@@ -2078,7 +2086,12 @@ impl Service {
             admission_started: _,
         } = request;
         let opaque_ocsp_get = crate::http::ocsp::opaque_get_request(method, path, body);
-        if !valid_namespace(namespace) || (!valid_path(path) && !opaque_ocsp_get) {
+        if !valid_namespace(namespace)
+            || (!valid_path(path)
+                && !opaque_ocsp_get
+                && !crate::http::ocsp::opaque_header_request(method, path, body)
+                && !crate::http::help::opaque_request(method, path, body))
+        {
             return Response::error(400, "invalid canonical namespace or path");
         }
         // Early control routes resolve the namespace against admitted state.
@@ -2126,8 +2139,9 @@ impl Service {
             if self.state.is_some()
                 && !self.recovery_required
                 && !self.audit_failed
-                && active
-                && !application_ready
+                && !self.ha_owned_wrapper_selected()
+                && (active && !application_ready
+                    || observation.1 && self.seal.as_ref().is_some_and(SealMetadata::is_wrapper))
             {
                 if let Err(mut error) = self.sync_from_ha_with_anchor(false) {
                     error.status = 503;
@@ -2135,6 +2149,24 @@ impl Service {
                 }
                 // Leadership/quorum can change during materialization. Only a
                 // fresh observation of both authority and digest is ready.
+                observation = self.ha_observation();
+            }
+            if self.ha_owned_wrapper_selected()
+                && self.state.is_some()
+                && !self.recovery_required
+                && !self.audit_failed
+            {
+                // ReadIndex still proves current authority within the original
+                // 1s health budget. The owned worker alone publishes catch-up.
+                if self
+                    .current_state_identity()
+                    .and_then(|identity| self.verify_ha_state_identity(identity))
+                    .is_err()
+                {
+                    return Response::error(503, "HA local state awaits owned catch-up");
+                }
+                // Identity may remain unchanged across a term/leader change.
+                // The response must use the role after that ReadIndex gate.
                 observation = self.ha_observation();
             }
             // The namespace catalog may have changed in the committed state;
@@ -2335,15 +2367,28 @@ impl Service {
                 return Response::error(404, "OCSP mount not found");
             }
         } else if let Some(carrier) = crate::http::ocsp::query_request(method, path, body) {
+            if !valid_path(path)
+                && !self
+                    .state
+                    .as_ref()
+                    .is_some_and(|state| state.engines.is_actual_pki_ocsp_path(namespace, path))
+            {
+                return Response::error(404, "opaque header owner not found");
+            }
             let actual_kv = self
                 .state
                 .as_ref()
                 .is_some_and(|state| state.engines.is_actual_kv_query_owner(namespace, path));
-            ordinary_get = Some(match carrier.resolve(actual_kv) {
+            let actual_ocsp = self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.engines.is_actual_pki_ocsp(namespace, path));
+            ordinary_get = Some(match carrier.resolve(actual_kv || actual_ocsp) {
                 Ok((method, body)) => (
                     match method {
                         "LIST" => "LIST",
                         "SCAN" => "SCAN",
+                        "HEAD" => "HEAD",
                         _ => "GET",
                     },
                     body,
@@ -2418,6 +2463,35 @@ impl Service {
                 }
                 self.state = Some(admitted.clone());
             }
+        }
+        // HeaderOperation is unsupported by this public responder. A GET to
+        // the POST-only bare path also has no request-captured suffix. Resolve
+        // this after the same namespace/HA/barrier/maintenance guards, without
+        // interpreting DER or granting access to another owner.
+        if (method == "HEAD" && admitted.engines.is_actual_pki_ocsp_path(namespace, path))
+            || (!opaque_ocsp_get
+                && matches!(method, "GET" | "LIST" | "SCAN")
+                && admitted.engines.is_actual_pki_ocsp(namespace, path))
+        {
+            return Response::error(405, "unsupported operation");
+        }
+        let help_projection = if method == "HELP" {
+            if crate::http::help::request(method, path, body).is_none() {
+                return Response::error(400, "invalid request-local help carrier");
+            }
+            match admitted.engines.help_projection(namespace, path) {
+                Ok(value) => value,
+                Err(error) => return Response::error(error.status, &error.message),
+            }
+        } else {
+            None
+        };
+        if help_projection.as_ref().is_some_and(|help| help.anonymous) {
+            return Response {
+                consistency_index: None,
+                status: 200,
+                body: help_projection.map_or_else(|| json!({}), |help| help.body),
+            };
         }
         // Public projection classification is bound to the actual namespace
         // and mount after normal HA/unseal and durable lease-owner maintenance.
@@ -2507,6 +2581,26 @@ impl Service {
             && let Err(error) = Self::bind_identity_principal(&admitted, principal, namespace)
         {
             return error;
+        }
+        if method == "HELP" {
+            if principal.is_none() {
+                return Response::error(403, "missing client token");
+            }
+            return help_projection.map_or_else(
+                || Response::error(404, "help route not found"),
+                |mut help| {
+                    if path == "auth/token/lookup-self"
+                        && let Some(object) = help.body.as_object_mut()
+                    {
+                        object.insert("id".into(), Value::String(token.to_owned()));
+                    }
+                    Response {
+                        consistency_index: None,
+                        status: 200,
+                        body: help.body,
+                    }
+                },
+            );
         }
         if !mount_metadata
             && let Some(principal) = principal.as_ref()
@@ -3796,11 +3890,20 @@ impl Service {
                     false
                 }
             };
-        if self.ha.is_some() {
+        if self.ha.is_some() && !wrapper_mode {
             return (
                 Response::error(
                     409,
-                    "initialize and unseal a node before enabling HA; HA initialization requires an existing durable state",
+                    "HA initialization requires the configured Wrapper consumer",
+                ),
+                false,
+            );
+        }
+        if self.ha.is_some() && wrapper_ha::pending_exists(&self.data_dir).unwrap_or(true) {
+            return (
+                Response::error(
+                    503,
+                    "HA initialization must resolve its retained Wrapper candidate",
                 ),
                 false,
             );
@@ -4043,9 +4146,16 @@ impl Service {
             Ok((auth, token)) => (auth, Zeroizing::new(token)),
             Err(error) => return (Response::error(error.status, &error.message), false),
         };
-        let cluster_id = match crypto::random::<16>() {
-            Ok(value) => STANDARD.encode(value),
-            Err(error) => return (Response::error(503, error), false),
+        let cluster_id = if self.ha.is_some() {
+            match self.ha_initial_cluster() {
+                Ok(cluster_id) => cluster_id,
+                Err(error) => return (error, false),
+            }
+        } else {
+            match crypto::random::<16>() {
+                Ok(value) => STANDARD.encode(value),
+                Err(error) => return (Response::error(503, error), false),
+            }
         };
         let recovery_fragments = if recovery_counts.0 != 0 {
             let fragments = match auth.initialize_recovery_credential(
@@ -4131,6 +4241,27 @@ impl Service {
             Err(error) => return (Response::error(503, error), false),
         };
         let operation_id = hex(&operation_id);
+        let initial_plan = if self.ha.is_some() {
+            match Self::prepare_initial_owner_plan(&state, &bytes, &operation_id) {
+                Ok(plan) => Some(plan),
+                Err(error) => return (error, false),
+            }
+        } else {
+            None
+        };
+        let initial_binding = match initial_plan
+            .as_ref()
+            .map(|plan| plan.publication_binding(&operation_id, &bytes))
+            .transpose()
+        {
+            Ok(binding) => binding,
+            Err(_) => {
+                return (
+                    Response::error(503, "HA initial owner binding invalid"),
+                    false,
+                );
+            }
+        };
         if let Err(error) = Self::persist_owner_state_batch(
             &mut durable,
             &state,
@@ -4144,7 +4275,7 @@ impl Service {
                     allow_epoch_catchup: false,
                     reuse: OwnerReuseHint::default(),
                 },
-                prepared_plan: None,
+                prepared_plan: initial_plan,
             },
         ) {
             return (
@@ -4219,6 +4350,35 @@ impl Service {
                     false,
                 );
             }
+        }
+        if let Some(binding) = initial_binding {
+            if self
+                .audit_event(
+                    "initialization-response-prepared",
+                    response_fingerprint,
+                    now,
+                    Some(200),
+                )
+                .is_err()
+            {
+                self.fence_recovery_delivery();
+                return (
+                    Response::error(503, "HA initialization response audit unavailable"),
+                    true,
+                );
+            }
+            return self.publish_ha_initialization(
+                stage,
+                &state,
+                &bytes,
+                &operation_id,
+                binding,
+                seal,
+                &barrier_key,
+                response,
+                &parent,
+                wrapper_deadline,
+            );
         }
         if let (Some(profile), Some(secret)) = (durable_profile.as_ref(), recovery_secret.as_ref())
         {
@@ -4590,6 +4750,23 @@ impl Service {
     }
 
     fn recover_initialization(&self, secret: &[u8; 32], shares: u8, threshold: u8) -> Response {
+        let ha_identity = if self.ha.is_some() {
+            if self.recovery_required || self.state.is_none() {
+                return Response::error(
+                    503,
+                    "HA initialization response requires admitted current authority",
+                );
+            }
+            match self
+                .current_state_identity()
+                .and_then(|identity| self.verify_ha_state_identity(identity).map(|()| identity))
+            {
+                Ok(identity) => Some(identity),
+                Err(error) => return error,
+            }
+        } else {
+            None
+        };
         let seal = match self.seal.as_ref() {
             Some(seal) if seal.secret_shares == shares && seal.secret_threshold == threshold => {
                 seal
@@ -4620,6 +4797,17 @@ impl Service {
             .is_err()
         {
             return Response::error(503, "initialization publication durability is unknown");
+        }
+        if ha_identity.is_some_and(|identity| {
+            self.current_state_identity().ok() != Some(identity)
+                || self.verify_ha_state_identity(identity).is_err()
+                || crate::request_deadline::current()
+                    .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+        }) {
+            return Response::error(
+                503,
+                "HA initialization response authority changed or deadline expired",
+            );
         }
         match serde_json::from_slice::<Value>(&plaintext) {
             Ok(body) => Response::ok(body),
@@ -4886,12 +5074,7 @@ impl Service {
         let record_root = records::decode_root(&bytes)?;
         self.validate_loaded_capacity(&state, record_root.as_ref())?;
         // Bind durable identity before any local state is admitted into an HA epoch.
-        if self.ha.is_some() && state.auth.has_recovery_state() {
-            return Err(Response::error(
-                503,
-                "HA recovery startup requires a backend-bound consumer",
-            ));
-        }
+
         // A PostgreSQL owner must still hold the same server-side session
         // fence before and after repairing its authenticated local public index.
         durable.verify_live_ownership().map_err(|_| {
@@ -4900,7 +5083,13 @@ impl Service {
                 "durable recovery owner unavailable before public-index repair",
             )
         })?;
-        let admitted_seal = self.reconcile_recovery_seal(&state, deadline)?;
+        let admitted_seal = if self.ha.is_some() {
+            // Local protected state may lag Raft. Repair only after the exact
+            // committed HA authority has been installed below.
+            recovery_keys::AdmittedRecoverySeal(self.seal.clone())
+        } else {
+            self.reconcile_recovery_seal(&state, deadline)?
+        };
         durable.verify_live_ownership().map_err(|_| {
             Response::error(
                 503,
@@ -4994,7 +5183,18 @@ impl Service {
         self.record_writes_since_gc = 64;
         self.barrier_key = Some(Zeroizing::new(*key));
         self.recovery_required = false;
-        if let Err(error) = self.synchronize_ha_after_unseal() {
+        let synchronize =
+            if self.ha.is_some() && self.seal.as_ref().is_some_and(SealMetadata::is_wrapper) {
+                self.synchronize_ha_after_unseal_with(
+                    |_| Ok(true),
+                    |service| service.sync_from_ha(),
+                    || std::thread::sleep(std::time::Duration::from_millis(50)),
+                )
+                .and_then(|()| self.reconcile_ha_recovery_index(deadline))
+            } else {
+                self.synchronize_ha_after_unseal()
+            };
+        if let Err(error) = synchronize {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -6010,6 +6210,25 @@ impl Service {
         batch: OwnerBatchInput,
     ) -> Result<(), Response> {
         state.validate_publication_schema(self.state.as_ref())?;
+        self.persist_admitted_owner_state_batch(
+            state,
+            bytes,
+            operation_id,
+            state_schema,
+            target_replay_epoch,
+            batch,
+        )
+    }
+
+    fn persist_admitted_owner_state_batch(
+        &mut self,
+        state: &State,
+        bytes: &[u8],
+        operation_id: &str,
+        state_schema: u32,
+        target_replay_epoch: u64,
+        batch: OwnerBatchInput,
+    ) -> Result<(), Response> {
         let durable = self
             .durable
             .as_mut()
@@ -6157,36 +6376,22 @@ impl Service {
             ));
         }
         if self.current_state_digest()? == committed.digest {
+            if self.seal.as_ref().is_some_and(SealMetadata::is_wrapper) {
+                // Read local B before the independent fresh HA receipt. A
+                // pre-index authority failure may leave that complete owner
+                // available for a later pass, but local integrity failures fence.
+                let local = self.capture_existing_ha_publication()?;
+                let received = self.receive_materialized_ha_state(&committed)?;
+                self.reconcile_existing_ha_publication(&local, &received)?;
+            } else {
+                self.reconcile_unchanged_ha_recovery_index(crate::request_deadline::current())?;
+            }
             self.cache_verified_ha_state(&committed)?;
             return Ok(());
         }
-        let state: State = serde_json::from_slice(&committed.bytes)
-            .map_err(|_| Response::error(503, "HA committed state schema is invalid"))?;
-        state.validate_format()?;
-        if state.auth.has_recovery_state()
-            || self
-                .state
-                .as_ref()
-                .is_some_and(|state| state.auth.has_recovery_state())
-        {
-            self.fence_recovery_delivery();
-            return Err(Response::error(
-                503,
-                "HA recovery state requires a backend-bound public-index consumer",
-            ));
-        }
-        let expected_cluster = ha
-            .lock_for_request()
-            .map_err(|_| Response::error(503, "HA control state is unavailable"))?
-            .cluster_id()
-            .to_owned();
-        if state.cluster_id != expected_cluster {
-            return Err(Response::error(
-                503,
-                "HA committed state belongs to a different cluster",
-            ));
-        }
-        if let Err(error) = self.validate_loaded_capacity(&state, None) {
+        let received = self.receive_materialized_ha_state(&committed)?;
+        let state = received.state();
+        if let Err(error) = self.validate_loaded_capacity(state, None) {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -6196,7 +6401,7 @@ impl Service {
         // This epoch is already authoritative in Raft. RNG failure must fence
         // this node before any local publication or old observation release.
         let activation = self.prepare_epoch_activation(state.replay_epoch, true)?;
-        let operation_id = format!("hasync-{}", hex(&committed.digest));
+        let operation_id = received.operation_id()?;
         // Older HA envelopes bind their exact logical wire bytes, not this
         // binary's State serializer. Materialized owners are written with the
         // current serializer, so local V4 integrity must bind those bytes.
@@ -6237,10 +6442,10 @@ impl Service {
                     .durable
                     .as_ref()
                     .ok_or_else(|| Response::error(503, "server is sealed"))?;
-                let reuse = OwnerReuseHint::between(self.state.as_ref(), &state);
+                let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
                 let plan = Self::prepare_owner_state_plan(
                     durable,
-                    &state,
+                    state,
                     &committed.bytes,
                     &operation_id,
                     state.schema,
@@ -6271,8 +6476,9 @@ impl Service {
                 ));
             }
         };
-        let result = self.persist_local_with_epoch_policy_and_plan(
-            &state,
+        received.before_publication(self)?;
+        let result = self.persist_admitted_owner_state_batch(
+            state,
             &local_bytes,
             &operation_id,
             state.schema,
@@ -6281,7 +6487,7 @@ impl Service {
                 options: PersistOwnerStateOptions {
                     compact_before_entry: true,
                     allow_epoch_catchup: true,
-                    reuse: OwnerReuseHint::between(self.state.as_ref(), &state),
+                    reuse: OwnerReuseHint::between(self.state.as_ref(), state),
                 },
                 prepared_plan,
             },
@@ -6292,11 +6498,36 @@ impl Service {
             self.ha_activation = None;
             return Err(Self::ha_committed_local_failure(error));
         }
-        self.state = Some(state);
-        self.state_digest = Some(committed.digest);
+        let publication: Result<ha_received::HaLocalPublicationProgress, Response> = (|| {
+            let completed = received.after_publication(self)?;
+            self.state = Some(received.state().clone());
+            self.state_digest = Some(committed.digest);
+            let progress = completed.progress(self)?;
+            if progress == ha_received::HaLocalPublicationProgress::Superseded {
+                return Ok(progress);
+            }
+            self.reconcile_completed_ha_recovery_index(&completed)
+        })();
+        match publication {
+            Ok(ha_received::HaLocalPublicationProgress::Current) => {}
+            Ok(ha_received::HaLocalPublicationProgress::Superseded) => {
+                return Err(Response::error(
+                    503,
+                    "HA local publication is catching up to a newer committed target",
+                ));
+            }
+            Err(error) => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                self.ha_read_cache = None;
+                return Err(Self::ha_committed_local_failure(error));
+            }
+        }
         self.install_epoch_activation(activation);
         self.recovery_required = false;
         if let Err(error) = self.cache_verified_ha_state(&committed) {
+            eprintln!("heptabao-ha-completed: stage=after_index_materialized_cache");
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;

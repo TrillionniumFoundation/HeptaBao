@@ -55,7 +55,7 @@ fn parse(value: &str) -> Result<(IpAddr, u8, u16), AuthError> {
     Ok((address, prefix, 0))
 }
 
-fn canonical(value: &str) -> Result<String, AuthError> {
+pub(super) fn canonical(value: &str) -> Result<String, AuthError> {
     let (address, prefix, port) = parse(value)?;
     if port != 0 {
         return Ok(std::net::SocketAddr::new(address, port).to_string());

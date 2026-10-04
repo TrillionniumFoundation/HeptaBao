@@ -742,8 +742,47 @@ impl Service {
         committed: crate::ha::CommittedRecordState,
     ) -> Result<(), Response> {
         if self.current_state_identity()? == committed.identity {
+            if self.seal.as_ref().is_some_and(SealMetadata::is_wrapper) {
+                let local = self.capture_existing_ha_publication()?;
+                let received = self.receive_ha_records(ha, &committed)?;
+                self.reconcile_existing_ha_publication(&local, received.owner())?;
+            } else {
+                self.reconcile_unchanged_ha_recovery_index(crate::request_deadline::current())?;
+            }
             return self.cache_verified_ha_records(&committed);
         }
+        let received = self.receive_ha_records(ha, &committed)?;
+        match self.install_committed_ha_records(received) {
+            Ok(ha_received::HaLocalPublicationProgress::Current) => {}
+            Ok(ha_received::HaLocalPublicationProgress::Superseded) => {
+                return Err(Response::error(
+                    503,
+                    "HA local publication is catching up to a newer committed target",
+                ));
+            }
+            Err(error) => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                self.ha_read_cache = None;
+                return Err(Self::ha_committed_local_failure(error));
+            }
+        }
+        if let Err(error) = self.cache_verified_ha_records(&committed) {
+            eprintln!("heptabao-ha-completed: stage=after_index_records_cache");
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(error);
+        }
+        self.recovery_required = false;
+        Ok(())
+    }
+
+    pub(super) fn materialize_committed_ha_records(
+        ha: &Arc<Mutex<HaProcess>>,
+        committed: &crate::ha::CommittedRecordState,
+    ) -> Result<(State, RecordPlan), Response> {
         struct HaReader<'a> {
             ha: &'a HaProcess,
             root: &'a RecordStateRoot,
@@ -800,37 +839,31 @@ impl Service {
             identity: committed.identity,
             objects,
         };
-        self.install_received_record_state(state, plan)?;
-        if let Err(error) = self.cache_verified_ha_records(&committed) {
-            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
-            self.recovery_required = true;
-            self.ha_activation = None;
-            return Err(error);
-        }
-        self.recovery_required = false;
-        Ok(())
+        Ok((state, plan))
     }
 
     // The caller has authenticated the complete committed graph. Keep local
     // publication and activation installation together, including HA catch-up
     // across more than one missed epoch.
+    #[cfg(test)]
     pub(super) fn install_received_record_state(
         &mut self,
         state: State,
         plan: RecordPlan,
     ) -> Result<(), Response> {
-        if state.auth.has_recovery_state()
+        if self.ha.is_some()
+            || state.auth.has_recovery_state()
             || self
                 .state
                 .as_ref()
                 .is_some_and(|state| state.auth.has_recovery_state())
         {
-            self.fence_recovery_delivery();
             return Err(Response::error(
                 503,
-                "HA recovery state requires a backend-bound public-index consumer",
+                "test receiver cannot admit HA Recovery authority",
             ));
         }
+        state.validate_publication_schema(self.state.as_ref())?;
         // Raft already owns this state; a local limit is not a pre-entry rejection.
         if let Err(error) = self.validate_loaded_capacity(&state, Some(&plan.root)) {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
@@ -858,6 +891,7 @@ impl Service {
         self.record_root = Some(plan.root);
         self.state_digest = Some(plan.identity.digest());
         self.state = Some(state);
+        self.reconcile_ha_recovery_index(crate::request_deadline::current())?;
         self.install_epoch_activation(activation);
         self.record_writes_since_gc = 64;
         Ok(())

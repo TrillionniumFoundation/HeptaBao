@@ -140,6 +140,31 @@ late chunks and identical restart. Real snapshot installation/reopen and local
 applied-frontier checks remain in `process::replication_tests`; these bounded
 checks do not establish full OpenBao compatibility or destructive qualification.
 
+## Follower ReadIndex
+
+`ProcessRaftNode::ensure_linearizable` obtains a fresh ReadIndex from its current
+leader through the configured authenticated peer adapter. The reply binds the
+request serial, node ID, term and complete committed log ID. The leader crosses
+OpenRaft's actual quorum read barrier and observes its own applied log before
+replying. A follower constructs a local linearizer without a remote applied hint
+and waits for its own applied frontier; it checks the same committed leader and
+term before and after that wait. An old reply after a leadership change, a lagging
+follower, or a warm cache during quorum loss cannot authorize a read.
+
+The original absolute caller deadline covers peer transport and local apply.
+Nested checks do not restart the budget. The server emits ReadIndex only in a
+cluster-bound current peer frame, binds the mTLS certificate to its declared
+source, and charges the operation against bounded application admission so
+consensus workers remain available. No ReadIndex RPC commits, forwards, or
+replays a write; mutation still requires the local leader. The production
+transport and full application publication require their own exact-source tests.
+
+`follower_requires_fresh_quorum_own_apply_and_bound_witness_with_one_deadline`
+uses three real OpenRaft nodes and disk stores to cover delayed local apply,
+quorum loss, malformed reply witnesses, a genuine leadership transfer while a
+reply is delayed, recovery, and the shared caller deadline. Its loopback router
+is a test transport and does not establish mTLS qualification.
+
 ## State and data model
 
 Each node owns a versioned CRC-protected log generation, persistent vote and committed membership, a versioned state-machine bundle, and a snapshot generation. Store initialization is marked before the first generation is published; interrupted replacement preserves exactly one recoverable predecessor and ambiguous multiple predecessors fail closed. New application entries use the length-prefixed `hbr2` envelope profile (unambiguous `hbr1` entries remain readable): operation identity, semantic digest and ciphertext encoded without plaintext interpretation. Client serial numbers provide OpenRaft state-machine deduplication and must be nonzero. `decode_status` rejects malformed length prefixes and UTF-8 split boundaries with `InvalidEnvelope` before slicing, so hostile Unicode cannot panic the decoder.
