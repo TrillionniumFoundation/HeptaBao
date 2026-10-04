@@ -9,6 +9,9 @@ const MAX_LOCAL_ISSUERS: usize = 256;
 pub(super) struct LocalIssuers {
     pub(super) other: BTreeMap<String, RootCa>,
     pub(super) default_follows_latest_issuer: bool,
+    // Key selection is independent of the selected issuer. Removing an issuer
+    // retains its key and therefore retains this default until root deletion.
+    default_key_id: String,
     #[serde(default)]
     orphan_keys: BTreeMap<String, RootCa>,
     #[serde(default)]
@@ -141,6 +144,9 @@ impl Pki {
         let Some(current) = self.root.as_mut() else {
             if let Some(state) = &mut self.local_issuers {
                 archive_issuer(state, &next)?;
+                if state.default_key_id.is_empty() {
+                    state.default_key_id = next.key_id.clone();
+                }
             }
             self.root = Some(next);
             return Ok(());
@@ -160,6 +166,7 @@ impl Pki {
             Box::new(LocalIssuers {
                 other: BTreeMap::new(),
                 default_follows_latest_issuer: false,
+                default_key_id: current.key_id.clone(),
                 orphan_keys: BTreeMap::new(),
                 certificates: BTreeMap::new(),
                 retired_issuers: BTreeMap::new(),
@@ -195,6 +202,16 @@ impl Pki {
             || state.retired_issuers.len() > MAX_ISSUED
         {
             return Err(bad("invalid local PKI issuer state"));
+        }
+        if if self.local_keys().next().is_none() {
+            !state.default_key_id.is_empty()
+        } else {
+            !valid_pki_id(&state.default_key_id)
+                || !self
+                    .local_keys()
+                    .any(|root| root.key_id == state.default_key_id)
+        } {
+            return Err(bad("invalid local PKI default key ownership"));
         }
         let mut issuer_ids = BTreeSet::new();
         let mut key_ids = BTreeSet::new();
@@ -354,10 +371,15 @@ impl Pki {
             .is_some_and(|state| state.default_follows_latest_issuer);
         let change_follows = follows.is_some_and(|value| value != before_follows);
         if change_default || change_follows {
+            let default_key_id = self
+                .root
+                .as_ref()
+                .map_or_else(String::new, |root| root.key_id.clone());
             let state = self.local_issuers.get_or_insert_with(|| {
                 Box::new(LocalIssuers {
                     other: BTreeMap::new(),
                     default_follows_latest_issuer: false,
+                    default_key_id,
                     orphan_keys: BTreeMap::new(),
                     certificates: BTreeMap::new(),
                     retired_issuers: BTreeMap::new(),
@@ -392,12 +414,19 @@ impl Pki {
     pub(super) fn local_key_list(&self, body: &Value) -> Result<EngineResponse> {
         reject_unknown(body, &[])?;
         let mut info = serde_json::Map::new();
+        let default_key_id = self.local_issuers.as_ref().map_or_else(
+            || self.root.as_ref().map_or("", |root| root.key_id.as_str()),
+            |state| state.default_key_id.as_str(),
+        );
         for root in self.local_keys() {
             let name = root
                 .local_fields
                 .as_ref()
                 .map_or("", |fields| fields.key_name.as_str());
-            info.insert(root.key_id.clone(), json!({"key_name":name}));
+            info.insert(
+                root.key_id.clone(),
+                json!({"key_name":name,"is_default":root.key_id==default_key_id}),
+            );
         }
         if info.is_empty() {
             return Err(not_found());
@@ -416,6 +445,10 @@ impl Pki {
         reject_unknown(body, &[])?;
         self.local_issuer(reference)?;
         self.promote_default_associations()?;
+        let default_key_id = self
+            .root
+            .as_ref()
+            .map_or_else(String::new, |root| root.key_id.clone());
         let id = self.local_issuer(reference)?.issuer_id.clone();
         let removed = if self.root.as_ref().is_some_and(|root| root.issuer_id == id) {
             self.root.take().ok_or_else(not_found)?
@@ -432,6 +465,7 @@ impl Pki {
                 certificates: BTreeMap::new(),
                 retired_issuers: BTreeMap::new(),
                 default_follows_latest_issuer: false,
+                default_key_id,
             })
         });
         archive_issuer(state, &removed)?;
@@ -483,6 +517,7 @@ impl Pki {
                     certificates: BTreeMap::new(),
                     retired_issuers: BTreeMap::new(),
                     default_follows_latest_issuer: false,
+                    default_key_id: root.key_id.clone(),
                 })
             });
             archive_issuer(state, &root)?;
@@ -493,6 +528,7 @@ impl Pki {
                 archive_issuer(state, root)?;
             }
             state.orphan_keys.clear();
+            state.default_key_id.clear();
         }
         Ok(changed)
     }
@@ -548,6 +584,7 @@ mod tests {
         let mut pki = Pki::default();
         generate(&mut pki, "root-a", now)?;
         let id_a = pki.root.as_ref().ok_or("root a")?.issuer_id.clone();
+        let key_a = pki.root.as_ref().ok_or("key a")?.key_id.clone();
         generate(&mut pki, "root-b", now)?;
         let id_b = pki.local_issuer("root-b")?.issuer_id.clone();
         assert!(
@@ -581,6 +618,10 @@ mod tests {
             "POST",
             &json!({"default":"root-b","default_follows_latest_issuer":true}),
         )?;
+        assert!(
+            pki.local_key_list(&json!({}))?.body["data"]["key_info"][&key_a]["is_default"] == true,
+            "issuer default changes preserve the independent first key default"
+        );
         pki.handle_admin("POST","roles/web",&json!({"allowed_domains":["example.test"],"allow_subdomains":true,"issuer_ref":"root-a","max_ttl":"10m"}),now)?;
         let owner = serde_json::from_value::<LeaseOwner>(json!("a".repeat(43)))?;
         let a = pki.issue_route(
@@ -599,6 +640,15 @@ mod tests {
             None,
             now,
         )?;
+        for leaf in [&a, &b] {
+            assert!(
+                leaf.body["data"]["private_key"]
+                    .as_str()
+                    .ok_or("leaf key")?
+                    .starts_with("-----BEGIN EC PRIVATE KEY-----\n"),
+                "local EC leaves use SEC1"
+            );
+        }
         let sa = a.body["data"]["serial_number"]
             .as_str()
             .ok_or("serial a")?
@@ -674,12 +724,16 @@ mod tests {
             "deleted alias never falls back"
         );
         assert!(
+            pki.local_key_list(&json!({}))?.body["data"]["key_info"][&key_a]["is_default"] == true,
+            "deleted issuer and follows-latest preserve the original default key"
+        );
+        assert!(
             pki.local_issuer_config("GET", &json!({}))?.body["data"]["default_follows_latest_issuer"]
                 == true,
             "delete retains configuration"
         );
         let certs = pki.certificate_list(&json!({}))?.body.clone();
-        let deleted = pki.handle_admin("DELETE", "root/delete", &json!({}), now + 2)?;
+        let deleted = pki.handle_admin("DELETE", "root", &json!({}), now + 2)?;
         assert!(
             deleted.status == 200,
             "root deletion returns the official status"

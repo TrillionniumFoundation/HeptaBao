@@ -1078,7 +1078,7 @@ fields and bundle ordering. Service tests exercise identifier reader floors,
 retirement, real encrypted reopen, rejected restoration and absence of private
 keys from actual audit records. These checks are separate from official-only
 observations and do not establish complete PKI compatibility. Remaining
-signature and constraint options, multiple local issuers, and broader PKI
+signature and constraint options and broader PKI
 lifecycle compatibility still require implementation and actual comparison.
 
 Local PKI issuer management retains each certificate and private key in encrypted
@@ -1090,6 +1090,13 @@ selection. Unknown references fail without substituting another signer. Each
 full local CRL includes only revocations associated with its signing issuer.
 Deleting an issuer retains its key; deleting roots removes issuer/key ownership
 while retaining role and certificate history. These persisted ownership and
+independent default-key fields keep the first key selected through issuer
+default changes and issuer deletion. Local EC/RSA leaf responses use the legacy
+SEC1/PKCS1 encoding; external leaf responses retain their PKCS8 encoding.
+PKI administrative mutations advance the durable monotonic clock so a later
+certificate revocation can be validated after encrypted restart. The official
+`DELETE root` path and the existing `root/delete` alias retain certificate history.
+These ownership and
 history fields require schema 77 before record preflight across all namespaces;
 retirement preserves that writer and snapshot floor. Local leaf responses include
 `ca_chain`, `not_before`, and colon-separated serial numbers. Multi-issuer unit

@@ -937,6 +937,118 @@ fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -
                 == 2,
         "all issuers survive reopen"
     );
+    let keys = service.handle_at("LIST", "ca/keys", "team", &admin, json!({}), 100);
+    let key_info = keys.body["data"]["key_info"]
+        .as_object()
+        .ok_or("key owners")?;
+    let default_key = key_info
+        .iter()
+        .find(|(_, value)| value["is_default"] == true)
+        .map(|(id, _)| id.clone())
+        .ok_or("default key")?;
+    assert!(
+        key_info
+            .values()
+            .filter(|value| value["is_default"] == true)
+            .count()
+            == 1,
+        "one durable independent key default"
+    );
+    assert!(
+        service
+            .handle_at(
+                "POST",
+                "ca/config/issuers",
+                "team",
+                &admin,
+                json!({"default":"root-b"}),
+                101
+            )
+            .status
+            == 200,
+        "change selected issuer"
+    );
+    assert!(
+        service
+            .handle_at("LIST", "ca/keys", "team", &admin, json!({}), 101)
+            .body["data"]["key_info"][&default_key]["is_default"]
+            == true,
+        "key default survives issuer selection"
+    );
+    let serial = issued.body["data"]["serial_number"]
+        .as_str()
+        .ok_or("leaf serial")?;
+    let revoked = service.handle_at(
+        "POST",
+        "ca/revoke",
+        "team",
+        &admin,
+        json!({"serial_number":serial}),
+        110,
+    );
+    assert!(
+        revoked.status == 200
+            && revoked.body["data"]["revocation_time"] == 110
+            && revoked.body["data"]["state"] == "revoked"
+            && revoked.body["data"]["revocation_time_rfc3339"] == "1970-01-01T00:01:50Z",
+        "later nonleased revoke commits with the monotonic clock and public fields"
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("revoked state")?
+            .engines
+            .lease_clock()
+            == 110,
+        "revoke retains its actual publication clock"
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":unseal})).status == 200,
+        "encrypted revoked state reopens"
+    );
+    assert!(
+        service
+            .handle_at(
+                "GET",
+                &format!("ca/cert/{serial}"),
+                "team",
+                &admin,
+                json!({}),
+                100
+            )
+            .body["data"]["revocation_time"]
+            == 110,
+        "reopened revocation survives a lower request clock"
+    );
+    let certs = service
+        .handle_at("LIST", "ca/certs", "team", &admin, json!({}), 110)
+        .body
+        .clone();
+    assert!(
+        service
+            .handle_at("DELETE", "ca/root", "team", &admin, json!({}), 111)
+            .status
+            == 200,
+        "official root DELETE path commits"
+    );
+    assert!(
+        service
+            .handle_at("LIST", "ca/keys", "team", &admin, json!({}), 111)
+            .status
+            == 404
+            && service
+                .handle_at("LIST", "ca/issuers", "team", &admin, json!({}), 111)
+                .status
+                == 404
+            && service
+                .handle_at("LIST", "ca/certs", "team", &admin, json!({}), 111)
+                .body
+                == certs,
+        "root deletion removes keys and issuers while preserving certificate history"
+    );
     assert!(
         service
             .handle_at("DELETE", "sys/mounts/ca", "team", &admin, json!({}), 100)

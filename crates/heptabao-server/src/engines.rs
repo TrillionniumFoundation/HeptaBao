@@ -1851,6 +1851,7 @@ impl EngineState {
                 .external_keys
                 .require_consumer(reference, &mount_path)?;
         }
+        let pki_request = matches!(mount.backend, Backend::Pki(_));
         let response = match &mut mount.backend {
             Backend::Database | Backend::RabbitMq => {
                 return Err(error(
@@ -1883,10 +1884,15 @@ impl EngineState {
             Backend::Transit(engine) => {
                 engine.handle(namespace, &mount_path, method, relative, &params, now)?
             }
-            Backend::Pki(engine) => engine.handle_admin(method, relative, &params, now)?,
+            Backend::Pki(engine) => {
+                engine.handle_admin(method, relative, &params, now.max(self.lease_clock))?
+            }
             Backend::Ssh(engine) => engine.handle_role(method, relative, &params)?,
         };
         if response.mutated {
+            if pki_request {
+                self.lease_clock = self.lease_clock.max(now);
+            }
             self.namespaces
                 .entry(namespace.into())
                 .or_default()

@@ -474,7 +474,11 @@ impl LocalPrivateMaterial {
         Ok((Zeroizing::new(bytes), label))
     }
 
-    pub(super) fn private_pem(kind: LocalKeyKind, bytes: &[u8]) -> Result<Zeroizing<String>> {
+    pub(super) fn private_pem(
+        kind: LocalKeyKind,
+        bytes: &[u8],
+        pkcs8: bool,
+    ) -> Result<Zeroizing<String>> {
         if kind == LocalKeyKind::Ed25519 {
             return leaf_private_key_pem(bytes);
         }
@@ -487,14 +491,18 @@ impl LocalPrivateMaterial {
             }
         };
         material.public()?;
-        let encoded = material.private_der()?;
+        let (encoded, label) = material.root_export_der(pkcs8)?;
         let base64 = Zeroizing::new(BASE64.encode(encoded.as_slice()));
-        let mut pem = Zeroizing::new(String::from("-----BEGIN PRIVATE KEY-----\n"));
+        let mut pem = Zeroizing::new(String::from("-----BEGIN "));
+        pem.push_str(label);
+        pem.push_str("-----\n");
         for chunk in base64.as_bytes().chunks(64) {
             pem.push_str(std::str::from_utf8(chunk).map_err(crypto_failure)?);
             pem.push('\n');
         }
-        pem.push_str("-----END PRIVATE KEY-----\n");
+        pem.push_str("-----END ");
+        pem.push_str(label);
+        pem.push_str("-----\n");
         Ok(pem)
     }
 }

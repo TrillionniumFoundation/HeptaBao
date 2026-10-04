@@ -656,7 +656,7 @@ impl Pki {
             })?;
             return Ok(ok(data, true));
         }
-        if path == "root/delete" {
+        if path == "root/delete" || path == "root" && method == "DELETE" {
             if method != "DELETE" && !write_method(method) {
                 return Err(unsupported());
             }
@@ -748,7 +748,8 @@ impl Pki {
                 cert.revoked_at = Some(now.max(cert.issued));
             }
             return Ok(ok(
-                json!({"revocation_time": self.issued.get(&serial).and_then(|v| v.revoked_at).unwrap_or(0)}),
+                json!({"revocation_time":cert.revoked_at.unwrap_or(0),
+                    "revocation_time_rfc3339":timestamp(cert.revoked_at.unwrap_or(0)),"state":"revoked"}),
                 changed,
             ));
         }
@@ -1136,7 +1137,7 @@ impl Pki {
             pem("CERTIFICATE", &root.certificate_der)
         };
         let mut private_key =
-            LocalPrivateMaterial::private_pem(prepared.local_key_kind, leaf_pkcs8)?;
+            LocalPrivateMaterial::private_pem(prepared.local_key_kind, leaf_pkcs8, external)?;
         // OpenBao's external issuance bundle omits the canonical final LF.
         // Remove it in the existing zeroizing response owner, not a new clone.
         if external && private_key.ends_with('\n') {
