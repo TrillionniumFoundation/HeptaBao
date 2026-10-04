@@ -1415,6 +1415,7 @@ mod owner_tests {
             token: Zeroizing::new("synthetic-provider-jwt".into()),
             expires_at: 700,
             audiences: Vec::new(),
+            artifact_lifetime_nanos: None,
         }
     }
 
@@ -1517,6 +1518,141 @@ mod owner_tests {
         let pending = engine.pending.get_mut(&plan.lease_id).ok_or("pending")?;
         pending.authority.as_mut().ok_or("authority")?.expires_at = 201;
         assert!(engine.validate_scope("").is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn kube_opaque_artifact_public_lifetime_never_extends_original_private_batch_cap() -> TestResult
+    {
+        let (mut engine, issuer) = ready()?;
+        let mut plan = issue(&mut engine, &issuer)?;
+        engine.bind_opaque_artifact_intent(&mut plan, 32 * 24 * 3600, 32 * 24 * 3600)?;
+        assert!(engine.has_opaque_artifact_state());
+        assert_eq!(plan.authority.expires_at, 200);
+        let issued = engine.finalize(
+            &plan,
+            TokenMetadata {
+                token: Zeroizing::new("synthetic-opaque-artifact-not-a-grant".into()),
+                expires_at: 0,
+                audiences: plan.audiences.clone(),
+                artifact_lifetime_nanos: Some(0),
+            },
+            103,
+            true,
+        )?;
+        assert_eq!(issued.status, 200);
+        assert_eq!(issued.body["lease_duration"], 3600);
+        assert_eq!(
+            issued.body["warnings"][0],
+            "the created Kubernetes service accout token TTL 0s is less than the OpenBao lease TTL 10m0s; capping the lease TTL accordingly"
+        );
+        assert_eq!(
+            issued.body["warnings"][1],
+            "TTL of \"768h\" exceeded the effective max_ttl of \"1h\"; TTL value is capped accordingly"
+        );
+        let lookup = engine.lease_lookup(&plan.lease_id, 103)?;
+        assert_eq!(lookup["ttl"], 3600);
+        let receipt = engine
+            .capture_delivery_receipt(&plan)?
+            .ok_or("actual receipt")?;
+        assert_eq!(receipt.expires_at(), 200);
+        assert_eq!(receipt.response_lease_duration(150), 3600);
+        engine.validate_delivery_receipt(&plan, &receipt, 199)?;
+        assert!(
+            engine
+                .validate_delivery_receipt(&plan, &receipt, 200)
+                .is_err()
+        );
+        assert!(
+            engine
+                .all_owners()
+                .any(|owner| owner == &plan.authority.owner)
+        );
+        let bytes = serde_json::to_vec(&engine)?;
+        assert!(!String::from_utf8_lossy(&bytes).contains("synthetic-opaque-artifact-not-a-grant"));
+        let reopened: Kubernetes = serde_json::from_slice(&bytes)?;
+        reopened.validate_scope("")?;
+        assert!(reopened.validate_scope("other").is_err());
+        reopened
+            .capture_delivery_receipt(&plan)?
+            .ok_or("reopened actual owner")?;
+        Ok(())
+    }
+
+    #[test]
+    fn kube_opaque_artifact_actual_request_digest_and_producer_cannot_be_replaced() -> TestResult {
+        let (mut engine, issuer) = ready()?;
+        let mut plan = issue(&mut engine, &issuer)?;
+        engine.bind_opaque_artifact_intent(&mut plan, 32 * 24 * 3600, 32 * 24 * 3600)?;
+        assert!(engine.finalize(&plan, metadata(), 101, true).is_err());
+        assert!(engine.pending.contains_key(&plan.lease_id));
+        let new_metadata = TokenMetadata {
+            token: Zeroizing::new("synthetic-opaque-result".into()),
+            expires_at: 0,
+            audiences: plan.audiences.clone(),
+            artifact_lifetime_nanos: Some(300_000_000_000),
+        };
+        assert_eq!(
+            engine.finalize(&plan, new_metadata, 101, true)?.body["lease_duration"],
+            300
+        );
+        let mut value = serde_json::to_value(&engine)?;
+        value["leases"][&plan.lease_id]["opaque_artifact"]["request_digest"] =
+            json!("b".repeat(64));
+        let changed: Kubernetes = serde_json::from_value(value)?;
+        assert!(changed.validate().is_err());
+        let mut value = serde_json::to_value(&engine)?;
+        value["leases"][&plan.lease_id]["opaque_artifact"]["contract"]["producer"] =
+            json!("client-JSON-proof");
+        assert!(serde_json::from_value::<Kubernetes>(value).is_err());
+        let mut value = serde_json::to_value(&engine)?;
+        value["leases"][&plan.lease_id]["opaque_artifact"]["admission"]["expires_at"] = json!(700);
+        let widened: Kubernetes = serde_json::from_value(value)?;
+        assert!(widened.validate().is_err());
+        assert!(engine.retire_lease(&plan.lease_id));
+        assert!(engine.has_opaque_artifact_state());
+        assert!(engine.capture_delivery_receipt(&plan)?.is_none());
+        assert!(
+            engine
+                .all_owners()
+                .any(|owner| owner == &plan.authority.owner)
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn kube_opaque_artifact_legacy_none_keeps_old_serialization_and_private_expiry_contract()
+    -> TestResult {
+        let (mut engine, issuer) = ready()?;
+        let plan = issue(&mut engine, &issuer)?;
+        assert!(!engine.has_opaque_artifact_state());
+        let pending = serde_json::to_value(&engine)?;
+        assert!(
+            pending["pending"][&plan.lease_id]
+                .get("artifact_contract")
+                .is_none()
+        );
+        let mut opaque = metadata();
+        opaque.expires_at = 0;
+        opaque.artifact_lifetime_nanos = Some(600_000_000_000);
+        assert!(engine.finalize(&plan, opaque, 101, true).is_err());
+        assert!(engine.pending.contains_key(&plan.lease_id));
+        engine.finalize(&plan, metadata(), 101, true)?;
+        let legacy = serde_json::to_value(&engine)?;
+        assert!(
+            legacy["leases"][&plan.lease_id]
+                .get("opaque_artifact")
+                .is_none()
+        );
+        let reopened: Kubernetes = serde_json::from_value(legacy)?;
+        assert!(!reopened.has_opaque_artifact_state());
+        assert_eq!(
+            reopened
+                .capture_delivery_receipt(&plan)?
+                .ok_or("legacy receipt")?
+                .expires_at(),
+            200
+        );
         Ok(())
     }
 }

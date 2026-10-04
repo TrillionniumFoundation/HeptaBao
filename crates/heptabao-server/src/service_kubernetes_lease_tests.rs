@@ -125,6 +125,7 @@ fn metadata() -> TokenMetadata {
         token: Zeroizing::new("synthetic-provider-token-no-network".into()),
         expires_at: 700,
         audiences: Vec::new(),
+        artifact_lifetime_nanos: None,
     }
 }
 
@@ -388,6 +389,7 @@ fn kube_zero_elapsed_one_second_lease_is_not_artificially_expired() -> TestResul
             token: Zeroizing::new("one-second-synthetic-provider-token".into()),
             expires_at: 101,
             audiences: Vec::new(),
+            artifact_lifetime_nanos: None,
         }),
         || 100,
     );
@@ -831,6 +833,172 @@ fn kube_clock_failure_before_completion_does_not_publish_or_release_provider_tok
     assert_eq!(
         generation,
         service.durable.as_ref().ok_or("durable")?.generation()
+    );
+    Ok(())
+}
+
+// The gate remains off. This fixture binds the actual admitted intent using the
+// same internal producer before a real durable publication; no HTTP body field
+// can select it. These cases do not replace the R54/R62 real HTTPS oracles.
+fn opaque_fixture() -> TestResult<Fixture> {
+    let (root, mut service, key, token, mut plan) = fixture(false, false)?;
+    let mut state = service.state.clone().ok_or("state")?;
+    let defaults = state.auth.secret_lease_defaults().map_err(|_| "defaults")?;
+    state
+        .engines
+        .bind_kubernetes_opaque_artifact_intent(&mut plan.inner, defaults)
+        .map_err(|_| "actual admitted opaque contract")?;
+    state.schema = state.writer_schema();
+    assert_eq!(state.schema, KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA);
+    state.validate_format().map_err(|_| "opaque state")?;
+    service
+        .commit_state(&state)
+        .map_err(|_| "actual opaque intent publication")?;
+    service.state = Some(state);
+    Ok((root, service, key, token, plan))
+}
+
+fn opaque_reply(claims: Value) -> TestResult<Value> {
+    // Signature bytes are intentionally not a grant. R54 proves that opaque
+    // public metadata does not verify them; the original private Box does.
+    let token = format!(
+        "{}.{}.{}",
+        URL_SAFE_NO_PAD.encode(br#"{"alg":"RS256"}"#),
+        URL_SAFE_NO_PAD.encode(serde_json::to_vec(&claims)?),
+        URL_SAFE_NO_PAD.encode(b"not-a-signature-authority")
+    );
+    Ok(json!({"status":{"token":token,"expirationTimestamp":"2000-01-01T00:00:00Z"}}))
+}
+
+#[test]
+fn kube_opaque_artifact_public_claims_do_not_change_private_owner_and_bad_metadata_keeps_intent()
+-> TestResult {
+    let (_root, service, _, _, plan) = opaque_fixture()?;
+    for (claims, lifetime) in [
+        (
+            json!({"iat":100,"exp":700,"sub":"wrong","aud":["wrong"]}),
+            600_000_000_000,
+        ),
+        (json!({"iat":100.75,"exp":700.75}), 600_000_000_000),
+        (json!({"iat":null,"exp":null}), 0),
+        (json!({"iat":100}), -100_000_000_000),
+    ] {
+        let reply = opaque_reply(claims)?;
+        let metadata = token_metadata(&reply, &plan.inner, 101).map_err(|_| "opaque metadata")?;
+        assert_eq!(metadata.expires_at, 0);
+        assert_eq!(metadata.artifact_lifetime_nanos, Some(lifetime));
+        assert_eq!(metadata.audiences, plan.inner.audiences);
+        assert_eq!(plan.inner.authority.expires_at, 200);
+    }
+    let state_before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+    for (claims, word) in [
+        (json!({"iat":100,"exp":"700"}), "string"),
+        (json!({"iat":true,"exp":700}), "bool"),
+    ] {
+        let rejected = token_metadata(&opaque_reply(claims)?, &plan.inner, 101)
+            .err()
+            .ok_or("bad metadata accepted")?;
+        assert_eq!(rejected.status, 500);
+        assert!(
+            rejected.body["errors"][0]
+                .as_str()
+                .ok_or("public error")?
+                .contains(&format!("got unconvertible type '{word}'"))
+        );
+    }
+    assert_eq!(
+        serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
+        state_before
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .has_kubernetes_opaque_artifact_state()
+    );
+    Ok(())
+}
+
+#[test]
+fn kube_opaque_artifact_durable_registration_and_retirement_preserve_schema_and_private_cap()
+-> TestResult {
+    let (root, mut service, key, token, plan) = opaque_fixture()?;
+    let metadata = token_metadata(
+        &opaque_reply(json!({"iat":null,"exp":null}))?,
+        &plan.inner,
+        101,
+    )
+    .map_err(|_| "metadata")?;
+    let response = service.finalize_kubernetes_token_with_clock(&plan, Ok(metadata), || 101);
+    assert_eq!(response.status, 200, "{}", response.body);
+    assert_eq!(response.body["lease_duration"], 3600);
+    assert_eq!(plan.inner.authority.expires_at, 200);
+    let mut state = service.state.clone().ok_or("state")?;
+    assert_eq!(state.schema, KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA);
+    let lookup = state
+        .engines
+        .handle_lease_admin(
+            "",
+            "POST",
+            "sys/leases/lookup",
+            &json!({"lease_id":plan.inner.lease_id}),
+            101,
+        )
+        .map_err(|_| "lookup")?;
+    assert_eq!(lookup.body["data"]["ttl"], 3600);
+    let retired = state
+        .engines
+        .handle_lease_admin(
+            "",
+            "POST",
+            "sys/leases/revoke",
+            &json!({"lease_id":plan.inner.lease_id}),
+            102,
+        )
+        .map_err(|_| "retire")?;
+    assert_eq!(retired.status, 204);
+    assert!(state.engines.has_kubernetes_opaque_artifact_state());
+    service
+        .commit_state(&state)
+        .map_err(|_| "real retirement publication")?;
+    service.state = Some(state);
+    let digest = service.current_state_digest().map_err(|_| "digest")?;
+    drop(service);
+    let mut reopened = root.service()?;
+    assert_eq!(
+        call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        reopened
+            .current_state_digest()
+            .map_err(|_| "reopened digest")?,
+        digest
+    );
+    assert_eq!(
+        reopened.state.as_ref().ok_or("state")?.schema,
+        KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+    );
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/leases/lookup",
+            &token,
+            json!({"lease_id":plan.inner.lease_id})
+        )
+        .status,
+        400
+    );
+    assert!(
+        reopened
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .has_kubernetes_opaque_artifact_state()
     );
     Ok(())
 }

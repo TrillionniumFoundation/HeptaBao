@@ -1404,3 +1404,49 @@ mod recovery_state_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod kubernetes_artifact_floor_tests {
+    use super::*;
+    #[test]
+    fn kube_opaque_artifact_floor_survives_empty_retirement_and_refuses_snapshot_downgrade()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let (auth, _) = AuthState::bootstrap(1).map_err(|_| "bootstrap")?;
+        let current = State {
+            schema: KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA,
+            cluster_id: "opaque-artifact-floor-test".into(),
+            replay_epoch: 0,
+            namespaces: namespaces::NamespaceRegistry::default().into(),
+            auth: auth.into(),
+            engines: EngineState::initialized_empty().into(),
+            database: database::DatabaseState::default().into(),
+            raft_admin: raft_admin::RaftAdminState::default().into(),
+        };
+        current
+            .validate_format()
+            .map_err(|_| "schema87 supported reader")?;
+        assert_eq!(current.writer_schema(), 87);
+        let mut older = current.clone();
+        older.schema = TOKEN_ROLE_STATE_SCHEMA;
+        assert!(older.validate_publication_schema(Some(&current)).is_err());
+        let rejected = Service::validate_snapshot_protected_floor(&current, &older)
+            .err()
+            .ok_or("missing snapshot rejection")?;
+        assert_eq!(rejected.status, 400);
+        assert_eq!(
+            rejected.body["errors"],
+            json!(["snapshot would downgrade opaque Kubernetes artifact ownership"])
+        );
+        let mut unknown = current.clone();
+        unknown.schema = 88;
+        assert!(unknown.validate_format().is_err());
+        assert_eq!(unknown.writer_schema(), 88);
+        // Namespace81 and precise Token82 are not activated by accepting87.
+        for reserved in [81, 82, 83, 84, 85, 86] {
+            let mut separate = current.clone();
+            separate.schema = reserved;
+            assert!(separate.validate_format().is_err());
+        }
+        Ok(())
+    }
+}

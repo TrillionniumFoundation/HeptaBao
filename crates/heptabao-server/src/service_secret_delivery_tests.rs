@@ -180,6 +180,7 @@ fn observed(pending: &PendingExternalRequest) -> TestResult<(String, ExternalEff
                 token: Zeroizing::new("synthetic-provider-token-no-network".into()),
                 expires_at: 700,
                 audiences: Vec::new(),
+                artifact_lifetime_nanos: None,
             })),
         )),
         ExternalEffectPlan::OpenLdap(plan) => Ok((

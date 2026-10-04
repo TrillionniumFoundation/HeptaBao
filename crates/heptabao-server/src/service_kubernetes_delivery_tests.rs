@@ -92,6 +92,7 @@ fn fixture(ttl: &str, deadline: Option<Instant>, audited: bool) -> TestResult<Fi
             token: Zeroizing::new("synthetic-private-delivery-credential".into()),
             expires_at: 700,
             audiences: Vec::new(),
+            artifact_lifetime_nanos: None,
         }),
     );
     assert_eq!(response.status, 200, "actual lease publication");

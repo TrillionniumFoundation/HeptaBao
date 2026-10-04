@@ -1068,6 +1068,49 @@ mod tests {
         );
     }
     #[test]
+    fn kube_opaque_artifact_record_owner_rejects_old_plan_after_actual_mount_revision_commit()
+    -> TestResult {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (_key, token) = bootstrap(&mut service)?;
+        mount(&mut service, &token);
+        let mut candidate = service.state.as_ref().ok_or("state")?.clone();
+        candidate.schema = KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA;
+        service
+            .commit_state(&candidate)
+            .map_err(|_| "actual schema87 publication")?;
+        service.state = Some(candidate);
+        let before = service.state.as_ref().ok_or("state")?;
+        let plan = service
+            .prepare_record_plan(before)
+            .map_err(|_| "actual record plan")?;
+        plan.validate_kubernetes_artifact_owner(before)
+            .map_err(|_| "actual initial Engine owner")?;
+        let changed = call(
+            &mut service,
+            "POST",
+            "sys/mounts/records/tune",
+            &token,
+            json!({"description":"actual protected owner revision"}),
+        );
+        assert_eq!(changed.status, 204, "{}", changed.body);
+        let state = service.state.as_ref().ok_or("current state")?.clone();
+        assert!(plan.validate_kubernetes_artifact_owner(&state).is_err());
+        let digest = service.current_state_digest().map_err(|_| "digest")?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        assert!(service.commit_record_plan(&state, plan).is_err());
+        assert_eq!(
+            service.current_state_digest().map_err(|_| "digest")?,
+            digest
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        Ok(())
+    }
+
+    #[test]
     fn old_record_plan_cannot_publish_a_newer_private_observation_floor() -> TestResult {
         let directory = Root::new();
         let mut service = directory.service()?;
