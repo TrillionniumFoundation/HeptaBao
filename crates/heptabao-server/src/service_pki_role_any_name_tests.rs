@@ -81,7 +81,8 @@ fn pki_role_any_name_signs_actual_unlisted_dns_names_and_reopens() -> TestResult
             .any(|n| n.dnsname() == Some("second.unlisted.test"))
     );
     let active = service.state.as_ref().ok_or("active state")?;
-    assert_eq!(active.schema, PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
+    assert_eq!(active.schema, PKI_ROLE_WILDCARD_STATE_SCHEMA);
+    assert!(active.engines.has_pki_role_wildcard_state());
     assert!(active.engines.has_pki_role_any_name_state());
     drop(service);
     let mut reopened = root.service()?;
@@ -284,12 +285,13 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
         200
     );
     let active = service.state.clone().ok_or("active")?;
-    assert_eq!(active.schema, PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
+    assert_eq!(active.schema, PKI_ROLE_WILDCARD_STATE_SCHEMA);
+    assert!(active.engines.has_pki_role_wildcard_state());
     assert!(active.engines.has_pki_role_any_name_state());
     let identity = service.current_state_identity().map_err(|_| "identity")?;
     let mut lower = active.clone();
     lower.schema = TOKEN_ROLE_STATE_SCHEMA;
-    assert_eq!(lower.writer_schema(), PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
+    assert_eq!(lower.writer_schema(), PKI_ROLE_WILDCARD_STATE_SCHEMA);
     assert!(lower.validate_format().is_err());
     assert!(service.commit_state(&lower).is_err());
     assert!(Service::validate_snapshot_protected_floor(&active, &lower).is_err());
@@ -323,8 +325,8 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
     );
     let retired = service.state.as_ref().ok_or("retired")?;
     assert!(!retired.engines.has_pki_role_any_name_state());
-    assert_eq!(retired.schema, PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
-    assert_eq!(retired.writer_schema(), PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
+    assert_eq!(retired.schema, PKI_ROLE_WILDCARD_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), PKI_ROLE_WILDCARD_STATE_SCHEMA);
     assert!(previous.validate_publication_schema(Some(retired)).is_err());
     assert!(Service::validate_snapshot_protected_floor(retired, &previous).is_err());
     drop(service);
@@ -342,7 +344,7 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
     );
     assert_eq!(
         reopened.state.as_ref().ok_or("reopened")?.schema,
-        PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+        PKI_ROLE_WILDCARD_STATE_SCHEMA
     );
     assert!(
         !reopened
@@ -522,7 +524,8 @@ fn pki_role_default_ip_sans_signs_ipv4_ipv6_and_retains_explicit_false_on_reopen
         assert!(
             !state.engines.has_pki_role_any_name_state()
                 && state.engines.has_pki_role_bare_domain_state()
-                && state.schema == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
+                && state.engines.has_pki_role_wildcard_state()
+                && state.schema == PKI_ROLE_WILDCARD_STATE_SCHEMA,
             "existing IP permission and actual separate base-domain owner keep distinct semantics"
         );
     }
@@ -687,13 +690,14 @@ fn pki_role_bare_domain_default_denies_base_and_explicit_permission_reopens() ->
     }
     let active = service.state.clone().ok_or("state")?;
     assert!(
-        active.schema == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+        active.schema == PKI_ROLE_WILDCARD_STATE_SCHEMA
             && active.engines.has_pki_role_bare_domain_state()
+            && active.engines.has_pki_role_wildcard_state()
     );
-    for label in [80, 83] {
+    for label in [80, 83, 84] {
         let mut lower = active.clone();
         lower.schema = label;
-        assert_eq!(lower.writer_schema(), PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
+        assert_eq!(lower.writer_schema(), PKI_ROLE_WILDCARD_STATE_SCHEMA);
         assert!(lower.validate_format().is_err() && service.commit_state(&lower).is_err());
         assert!(Service::validate_snapshot_protected_floor(&active, &lower).is_err());
     }
@@ -936,6 +940,34 @@ fn pki_wildcard_real_owner_schema85_keeps_historical84_and_retired_fences() -> T
     let reopened: State = serde_json::from_slice(&bytes)?;
     assert_eq!(bytes, serde_json::to_vec(&reopened)?);
     assert!(reopened.validate_format().is_ok());
+    // A separate historical83 typed fixture contains genuine AnyName but
+    // neither later optional role owner. It is never committed over schema85.
+    let mut encoded83 = serde_json::to_value(&historical.engines)?;
+    let role83 = encoded83
+        .pointer_mut("/namespaces//mounts/ca~1/backend/Pki/roles/owner")
+        .and_then(Value::as_object_mut)
+        .ok_or("historical83 role")?;
+    assert_eq!(role83.remove("allow_bare_domains"), Some(json!(false)));
+    assert!(!role83.contains_key("allow_wildcard_certificates"));
+    role83.insert("allow_any_name".to_owned(), json!(true));
+    let mut historical83 = historical.clone();
+    historical83.engines = serde_json::from_value(encoded83)?;
+    historical83.schema = PKI_ROLE_ANY_NAME_STATE_SCHEMA;
+    assert!(historical83.engines.has_pki_role_any_name_state());
+    assert!(!historical83.engines.has_pki_role_bare_domain_state());
+    assert!(!historical83.engines.has_pki_role_wildcard_state());
+    assert_eq!(historical83.writer_schema(), PKI_ROLE_ANY_NAME_STATE_SCHEMA);
+    assert!(historical83.validate_format().is_ok());
+    let bytes83 = serde_json::to_vec(&historical83)?;
+    let reopened83: State = serde_json::from_slice(&bytes83)?;
+    assert!(reopened83.validate_format().is_ok());
+    assert_eq!(bytes83, serde_json::to_vec(&reopened83)?);
+    assert!(
+        historical83
+            .validate_publication_schema(Some(&active))
+            .is_err()
+    );
+    assert!(Service::validate_snapshot_protected_floor(&active, &historical83).is_err());
     drop(service);
     let mut service = root.service()?;
     assert_eq!(

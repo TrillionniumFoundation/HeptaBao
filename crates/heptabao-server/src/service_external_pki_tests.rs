@@ -155,7 +155,7 @@ fn leaf_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, St
     let prior = service.state.as_ref().ok_or("actual pre-role state")?;
     let prior_schema = prior.schema;
     assert!(
-        prior_schema < PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+        prior_schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
             && !prior.engines.has_pki_role_bare_domain_state(),
         "actual root precedes new role owner"
     );
@@ -179,9 +179,10 @@ fn leaf_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, St
         .as_ref()
         .ok_or("actual published role state")?;
     assert!(
-        current.schema == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
-            && current.engines.has_pki_role_bare_domain_state(),
-        "record preflight publishes the real Ed25519 role owner with floor84"
+        current.schema == PKI_ROLE_WILDCARD_STATE_SCHEMA
+            && current.engines.has_pki_role_bare_domain_state()
+            && current.engines.has_pki_role_wildcard_state(),
+        "record preflight publishes the real Ed25519 role owner with floor85"
     );
     let mut lowered = current.clone();
     lowered.schema = prior_schema;
@@ -348,7 +349,7 @@ fn exercise_external_pki270_leaf_crls_with_schema(safe_schema: bool) -> TestResu
             == 200,
         "mixed schema bounded leaf role"
     );
-    let expected_schema = PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA;
+    let expected_schema = PKI_ROLE_WILDCARD_STATE_SCHEMA;
     assert!(
         service.state.as_ref().ok_or("mixed root state")?.schema == expected_schema
             && service
@@ -357,7 +358,7 @@ fn exercise_external_pki270_leaf_crls_with_schema(safe_schema: bool) -> TestResu
                 .ok_or("mixed root state")?
                 .engines
                 .has_pki_role_bare_domain_state(),
-        "actual new role carries its distinct84 owner above65 or66"
+        "actual new role carries its distinct85 owner above65 or66"
     );
     let descriptor = call(
         &mut *remote.service.lock().map_err(|_| "remote lock")?,

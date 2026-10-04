@@ -694,8 +694,8 @@ fn external_pki270_public_clock_maintenance_keeps_irreversible_schema66_and_real
         .ok_or("protected ciphertext")?
         .to_owned();
     assert!(
-        service.state.as_ref().ok_or("state")?.schema == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
-        "real AAD material and existing new role require84 before maintenance"
+        service.state.as_ref().ok_or("state")?.schema == PKI_ROLE_WILDCARD_STATE_SCHEMA,
+        "real AAD material and existing new role require85 before maintenance"
     );
     let provider_entries = remote.calls()?;
     assert!(
@@ -706,7 +706,7 @@ fn external_pki270_public_clock_maintenance_keeps_irreversible_schema66_and_real
         "fresh public cache advances existing monotonic maintenance"
     );
     assert!(
-        service.state.as_ref().ok_or("state")?.schema == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
+        service.state.as_ref().ok_or("state")?.schema == PKI_ROLE_WILDCARD_STATE_SCHEMA,
         "necessary public maintenance cannot downgrade the writer schema"
     );
     let expired = service.handle_at(
@@ -722,8 +722,8 @@ fn external_pki270_public_clock_maintenance_keeps_irreversible_schema66_and_real
         "observed cache expiry is unavailable"
     );
     assert!(
-        service.state.as_ref().ok_or("state")?.schema == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
-        "negative expiry publication retains the role84 floor"
+        service.state.as_ref().ok_or("state")?.schema == PKI_ROLE_WILDCARD_STATE_SCHEMA,
+        "negative expiry publication retains the role85 floor"
     );
     drop(service);
     let mut reopened = root.service()?;
@@ -736,8 +736,8 @@ fn external_pki270_public_clock_maintenance_keeps_irreversible_schema66_and_real
         "new reader authenticates the actual persisted safe store after rollback"
     );
     assert!(
-        reopened.state.as_ref().ok_or("state")?.schema == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
-        "encrypted restart retains the actual role84 floor"
+        reopened.state.as_ref().ok_or("state")?.schema == PKI_ROLE_WILDCARD_STATE_SCHEMA,
+        "encrypted restart retains the actual role85 floor"
     );
     assert!(
         reopened

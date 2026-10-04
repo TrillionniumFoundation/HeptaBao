@@ -618,7 +618,7 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
         let crl = current_crl(&mut service, &admin)?;
         verify_local_crl(&root_spki, &crl, 1)?;
         assert!(
-            service.state.as_ref().ok_or("state")?.schema == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            service.state.as_ref().ok_or("state")?.schema == PKI_ROLE_WILDCARD_STATE_SCHEMA
                 && service
                     .state
                     .as_ref()
@@ -643,7 +643,7 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
         );
         assert!(
             reopened.state.as_ref().ok_or("reopened state")?.schema
-                == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
+                == PKI_ROLE_WILDCARD_STATE_SCHEMA,
             "encrypted reopen retains the actual new role permission floor"
         );
         verify_local_crl(&root_spki, &current_crl(&mut reopened, &admin)?, 1)?;
@@ -1044,7 +1044,7 @@ fn external_issuer_default_rsa_and_mldsa_subjects_are_real_and_bound() -> TestRe
     }
     assert!(
         service.state.as_ref().ok_or("external typed state")?.schema
-            == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            == PKI_ROLE_WILDCARD_STATE_SCHEMA
             && service
                 .state
                 .as_ref()
@@ -1080,7 +1080,7 @@ fn external_issuer_default_rsa_and_mldsa_subjects_are_real_and_bound() -> TestRe
             .as_ref()
             .ok_or("external reopened state")?
             .schema
-            == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
+            == PKI_ROLE_WILDCARD_STATE_SCHEMA,
         "encrypted reopen retains actual typed subjects and their new role permission floor"
     );
     Ok(())
@@ -1202,8 +1202,7 @@ fn local_crl_idle_maintenance_commits_signed_delta_and_survives_clock_rollback_r
         "unchanged revocations allocate no new CRL"
     );
     assert!(
-        service.state.as_ref().ok_or("committed state")?.schema
-            == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+        service.state.as_ref().ok_or("committed state")?.schema == PKI_ROLE_WILDCARD_STATE_SCHEMA
             && service
                 .state
                 .as_ref()
@@ -1518,7 +1517,8 @@ fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -
     assert!(
         !retired.engines.has_local_pki_multi_issuer_state()
             && !retired.engines.has_pki_role_bare_domain_state()
-            && retired.writer_schema() == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
+            && !retired.engines.has_pki_role_wildcard_state()
+            && retired.writer_schema() == PKI_ROLE_WILDCARD_STATE_SCHEMA,
         "retirement retains the highest actual role permission floor"
     );
     assert!(
@@ -1531,6 +1531,7 @@ fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -
         LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA,
         LOCAL_PKI_CRL_STATE_SCHEMA,
         PKI_ROLE_ANY_NAME_STATE_SCHEMA,
+        PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
     ] {
         let mut older = retired.clone();
         older.schema = schema;
