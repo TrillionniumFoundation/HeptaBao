@@ -4015,3 +4015,76 @@ fn hcl_parameter_value_recursion_is_bounded_before_tree_construction() {
 
 #[path = "auth_token_revoke_orphan_tests.rs"]
 mod token_revoke_orphan_tests;
+
+#[test]
+fn policy_collection_modern_method_root_last_and_missing_are_readonly() {
+    let (mut state, _, root) = setup();
+    for name in ["alpha", "zulu"] {
+        put_policy(
+            &mut state,
+            &root,
+            "",
+            name,
+            json!("path \"fixture\" { capabilities = [\"read\"] }"),
+        );
+    }
+    let before = serde_json::to_vec(&state).unwrap();
+    let error = state
+        .handle(Some(&root), "", "GET", "sys/policies/acl", &json!({}), 100)
+        .err()
+        .unwrap();
+    assert_eq!(error.status, 405);
+    assert_eq!(
+        error.message,
+        "1 error occurred:\n\t* unsupported operation\n\n"
+    );
+    let modern = call(
+        &mut state,
+        &root,
+        "",
+        "LIST",
+        "sys/policies/acl",
+        json!({}),
+        100,
+    );
+    assert_eq!(
+        modern.body["data"],
+        json!({"keys":["alpha","default","zulu","root"]})
+    );
+    let legacy = call(&mut state, &root, "", "GET", "sys/policy", json!({}), 100);
+    assert_eq!(legacy.body["data"]["keys"], modern.body["data"]["keys"]);
+    assert_eq!(legacy.body["data"]["policies"], modern.body["data"]["keys"]);
+    let missing = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/policies/acl/absent",
+        json!({}),
+        100,
+    );
+    assert_eq!(missing.status, 404);
+    assert_eq!(missing.body, json!({"errors":[]}));
+    let modern = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/policies/acl/alpha",
+        json!({}),
+        100,
+    );
+    let legacy = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/policy/alpha",
+        json!({}),
+        100,
+    );
+    assert_eq!(modern.body["data"]["policy"], legacy.body["data"]["rules"]);
+    assert!(modern.body["data"].get("rules").is_none());
+    assert!(legacy.body["data"].get("policy").is_none());
+    assert_eq!(serde_json::to_vec(&state).unwrap(), before);
+}

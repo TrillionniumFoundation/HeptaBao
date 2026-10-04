@@ -3166,6 +3166,26 @@ impl Service {
         status: u16,
     ) -> Result<(), Response> {
         if status == 200
+            && method == "GET"
+            && path.starts_with("sys/mounts/")
+            && path.ends_with("/tune")
+            && let Some(data) = response.get_mut("data").and_then(Value::as_object_mut)
+        {
+            let (default_ttl, max_ttl) = state
+                .auth
+                .secret_lease_defaults()
+                .map_err(|_| Response::error(503, "secret lease defaults unavailable"))?;
+            for (field, inherited) in [
+                ("default_lease_ttl", default_ttl),
+                ("max_lease_ttl", max_ttl),
+            ] {
+                if data.get(field).and_then(Value::as_u64) == Some(0) {
+                    data.insert(field.into(), json!(inherited));
+                }
+            }
+            data.entry("force_no_cache").or_insert(json!(false));
+        }
+        if status == 200
             && state
                 .engines
                 .is_kv1_value_read(namespace, method, path, body)
@@ -6643,7 +6663,7 @@ impl Service {
         body: &Value,
     ) -> Response {
         if !namespace.is_empty() || !principal.is_root() {
-            return Response::error(403, "permission denied");
+            return Response::error(403, "1 error occurred:\n\t* permission denied\n\n");
         }
         let config = self.audit_rotation.config();
         let file_path = self.audit_rotation.active_path();

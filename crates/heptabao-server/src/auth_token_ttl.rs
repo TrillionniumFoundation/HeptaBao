@@ -63,7 +63,12 @@ impl AuthState {
     }
 
     pub(crate) fn secret_default_lease_ttl(&self) -> Result<u64, AuthError> {
-        Ok(self.system_lease_defaults()?.default_ttl)
+        Ok(self.secret_lease_defaults()?.0)
+    }
+
+    pub(crate) fn secret_lease_defaults(&self) -> Result<(u64, u64), AuthError> {
+        let defaults = self.system_lease_defaults()?;
+        Ok((defaults.default_ttl, defaults.max_ttl))
     }
 
     pub(crate) fn validate_system_lease_defaults(&self) -> Result<(), AuthError> {

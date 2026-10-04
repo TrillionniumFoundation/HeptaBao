@@ -6469,13 +6469,14 @@ impl AuthState {
         body: &Value,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
+        let legacy = path == "sys/policy" || path.starts_with("sys/policy/");
         let suffix = path
             .strip_prefix("sys/policies/acl")
             .or_else(|| path.strip_prefix("sys/policy"))
             .ok_or_else(|| bad("invalid policy route"))?;
         let name = suffix.strip_prefix('/').unwrap_or(suffix);
         let capability = match method {
-            "GET" if name.is_empty() => "list",
+            "GET" if name.is_empty() && legacy => "list",
             "GET" => "read",
             "LIST" => "list",
             "DELETE" => "delete",
@@ -6484,6 +6485,9 @@ impl AuthState {
         };
         let actor = self.permission(principal, namespace, path, capability, now)?;
         if name.is_empty() {
+            if method == "GET" && !legacy {
+                return Err(err(405, "1 error occurred:\n\t* unsupported operation\n\n"));
+            }
             if capability != "list" {
                 return Err(bad("policy name required"));
             }
@@ -6493,10 +6497,17 @@ impl AuthState {
                 .map(|p| p.keys().cloned().collect())
                 .unwrap_or_default();
             keys.insert("default".into());
+            keys.remove("root");
+            let mut keys: Vec<String> = keys.into_iter().collect();
             if namespace.is_empty() {
-                keys.insert("root".into());
+                keys.push("root".into());
             }
-            return Ok(response(json!({"keys": keys, "policies": keys}), false));
+            let data = if legacy {
+                json!({"keys": keys, "policies": keys})
+            } else {
+                json!({"keys": keys})
+            };
+            return Ok(response(data, false));
         }
         if !valid_name(name) {
             return Err(bad("invalid policy name"));
@@ -6512,12 +6523,20 @@ impl AuthState {
             {
                 Some(policy) => policy.source.clone(),
                 None if name == "default" => default_policy_source(),
-                None => return Err(err(404, "policy not found")),
+                None => {
+                    return Ok(AuthResponse {
+                        status: 404,
+                        body: json!({"errors": []}),
+                        ..empty(false)
+                    });
+                }
             };
-            return Ok(response(
-                json!({"name": name, "policy": source, "rules": source}),
-                false,
-            ));
+            let data = if legacy {
+                json!({"name": name, "rules": source})
+            } else {
+                json!({"name": name, "policy": source})
+            };
+            return Ok(response(data, false));
         }
         self.authorize_request(actor, namespace, path, "sudo", now)?;
         if capability == "delete" {

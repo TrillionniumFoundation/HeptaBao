@@ -146,6 +146,22 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
                 .or_insert_with(|| json!({}));
         }
     }
+    if path.ends_with("/tune")
+        && (path.starts_with("sys/mounts/") || path.starts_with("sys/auth/"))
+        && let Some(data) = body.get_mut("data").and_then(Value::as_object_mut)
+    {
+        for field in ["revision", "incarnation", "accessor"] {
+            data.remove(field);
+        }
+    }
+    if path == "sys/mounts"
+        && let Some(data) = body.get_mut("data").and_then(Value::as_object_mut)
+    {
+        for mount in data.values_mut().filter_map(Value::as_object_mut) {
+            mount.remove("revision");
+            mount.remove("incarnation");
+        }
+    }
     if inject_system_data(path)
         && let Some(data) = body.get("data").and_then(Value::as_object).cloned()
     {
@@ -160,6 +176,38 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn tune_wire_projection_retains_config_and_keeps_user_values_outside_control_routes() {
+        let data = json!({"default_lease_ttl":2764800,"force_no_cache":false,
+            "revision":7,"incarnation":3,"accessor":"native-owner-control"});
+        for path in ["sys/mounts/probe/tune", "sys/auth/token/tune"] {
+            let mut reply = snapshot::NativeReply::Json(Response {
+                status: 200,
+                consistency_index: None,
+                body: json!({"data":data}),
+            });
+            project(&mut reply, &[0; 16], path);
+            let snapshot::NativeReply::Json(response) = reply else {
+                unreachable!()
+            };
+            assert_eq!(response.body["data"]["default_lease_ttl"], 2764800);
+            assert_eq!(response.body["default_lease_ttl"], 2764800);
+            for field in ["revision", "incarnation", "accessor"] {
+                assert!(response.body["data"].get(field).is_none());
+                assert!(response.body.get(field).is_none());
+            }
+        }
+        let mut reply = snapshot::NativeReply::Json(Response {
+            status: 200,
+            consistency_index: None,
+            body: json!({"data":data}),
+        });
+        project(&mut reply, &[0; 16], "records/value");
+        let snapshot::NativeReply::Json(response) = reply else {
+            unreachable!()
+        };
+        assert_eq!(response.body["data"], data);
+    }
     #[test]
     fn logical_wire_projection_keeps_grants_and_raw_transport_distinct() -> io::Result<()> {
         let mut reply = snapshot::NativeReply::Json(Response {
