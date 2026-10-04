@@ -108,7 +108,7 @@ where
         .to_vec())
 }
 
-fn leaf_binding(response: &Response) -> TestResult<Vec<u8>> {
+fn leaf_binding(response: &Response, external: bool) -> TestResult<Vec<u8>> {
     assert!(response.status == 200, "leaf response success");
     let certificate = decode_pem(
         response.body["data"]["certificate"]
@@ -120,9 +120,18 @@ fn leaf_binding(response: &Response) -> TestResult<Vec<u8>> {
     let text = response.body["data"]["private_key"]
         .as_str()
         .ok_or("leaf private response")?;
+    let label = if external {
+        "PRIVATE KEY"
+    } else {
+        match response.body["data"]["private_key_type"].as_str() {
+            Some("rsa") => "RSA PRIVATE KEY",
+            Some("ec") => "EC PRIVATE KEY",
+            _ => "PRIVATE KEY",
+        }
+    };
     assert!(
-        text.starts_with("-----BEGIN PRIVATE KEY-----\n"),
-        "standard maintained leaf PKCS8"
+        text.starts_with(&format!("-----BEGIN {label}-----\n")),
+        "private encoding matches the actual subject and issuer path"
     );
     let encoded = Zeroizing::new(
         text.lines()
@@ -145,7 +154,7 @@ fn leaf_binding(response: &Response) -> TestResult<Vec<u8>> {
         "2.16.840.1.101.3.4.3.18" => private_public::<MlDsa65>(&private)?,
         "2.16.840.1.101.3.4.3.19" => private_public::<MlDsa87>(&private)?,
         _ => PKey::private_key_from_der(&private)
-            .map_err(|_| "standard classic leaf PKCS8")?
+            .map_err(|_| "standard classic private encoding")?
             .public_key_to_der()
             .map_err(|_| "classic leaf public")?,
     };
@@ -364,7 +373,7 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
             issued.body["data"]["private_key_type"] == key_type,
             "private response type matches actual subject"
         );
-        let leaf = leaf_binding(&issued)?;
+        let leaf = leaf_binding(&issued, false)?;
         let (_, leaf_certificate) = X509Certificate::from_der(&leaf).map_err(|_| "leaf parse")?;
         verify_signature(
             &root_spki,
@@ -421,7 +430,7 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
             &admin,
             json!({"common_name":"next.example.test","ttl":"10m"}),
         );
-        let next = leaf_binding(&next)?;
+        let next = leaf_binding(&next, false)?;
         let (_, next) = X509Certificate::from_der(&next).map_err(|_| "reopened leaf parse")?;
         verify_signature(
             &root_spki,
@@ -800,7 +809,7 @@ fn external_issuer_default_rsa_and_mldsa_subjects_are_real_and_bound() -> TestRe
             response.body["data"]["private_key_type"] == kind,
             "external leaf has selected subject type"
         );
-        let bytes = leaf_binding(&response)?;
+        let bytes = leaf_binding(&response, true)?;
         let (_, leaf) = X509Certificate::from_der(&bytes).map_err(|_| "external leaf DER")?;
         ring::signature::UnparsedPublicKey::new(&ring::signature::ED25519, &issuer)
             .verify(

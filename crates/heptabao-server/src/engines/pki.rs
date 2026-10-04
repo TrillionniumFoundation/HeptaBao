@@ -1957,7 +1957,7 @@ mod tests {
             issued.body["data"]["private_key"]
                 .as_str()
                 .unwrap_or("")
-                .contains("BEGIN PRIVATE KEY")
+                .contains("BEGIN RSA PRIVATE KEY")
         );
         let revoked = pki.handle_admin(
             "POST",

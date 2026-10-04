@@ -622,7 +622,7 @@ mod tests {
             pki.local_key_list(&json!({}))?.body["data"]["key_info"][&key_a]["is_default"] == true,
             "issuer default changes preserve the independent first key default"
         );
-        pki.handle_admin("POST","roles/web",&json!({"allowed_domains":["example.test"],"allow_subdomains":true,"issuer_ref":"root-a","max_ttl":"10m"}),now)?;
+        pki.handle_admin("POST","roles/web",&json!({"allowed_domains":["example.test"],"allow_subdomains":true,"issuer_ref":"root-a","max_ttl":"10m","key_type":"ec"}),now)?;
         let owner = serde_json::from_value::<LeaseOwner>(json!("a".repeat(43)))?;
         let a = pki.issue_route(
             "pki/",
