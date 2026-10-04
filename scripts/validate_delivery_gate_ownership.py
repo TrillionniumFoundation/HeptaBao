@@ -9,10 +9,10 @@ FULL = ROOT / ".github/workflows/codex-openbao-replacement-ci.yml"
 TRUST = ROOT / ".github/workflows/workflow-trust-boundary.yml"
 
 REQUIRED_NATIVE_GATES = (
-    "cargo +1.98.0 fmt --all -- --check",
-    "cargo +1.98.0 test --locked --workspace --all-targets",
-    "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
-    "cargo +1.98.0 doc --locked --workspace --no-deps",
+    "cargo +1.99.0 fmt --all -- --check",
+    "cargo +1.99.0 test --locked --workspace --all-targets",
+    "cargo +1.99.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
+    "cargo +1.99.0 doc --locked --workspace --no-deps",
 )
 
 # Workflow trust must establish the execution boundary and source identity;
@@ -27,24 +27,31 @@ FORBIDDEN_TRUST_GATES = (
     "python -m unittest discover -s tests/repository",
     "python -m unittest discover -s tests/platform",
     "python -m unittest discover -s tests/oracle",
+    # Preserve the previous compiler's ownership boundary during upgrades.
+    "cargo +1.98.0 fmt --all -- --check",
     "cargo +1.98.0 test --locked --workspace --all-targets",
     "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
+    "cargo +1.98.0 doc --locked --workspace --no-deps",
+    "cargo +1.99.0 test --locked --workspace --all-targets",
+    "cargo +1.99.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
 )
 
 
 def validate(root: Path = ROOT) -> list[str]:
     full = (root / ".github/workflows/codex-openbao-replacement-ci.yml").read_text(encoding="utf-8")
     trust = (root / ".github/workflows/workflow-trust-boundary.yml").read_text(encoding="utf-8")
+    # YAML can fold a plain run scalar across lines without changing its command.
+    trust_gates = " ".join(trust.split())
     errors: list[str] = []
     if '["head","merge"]' not in full:
         errors.append("full qualification no longer covers exact head and prospective merge")
     for gate in REQUIRED_NATIVE_GATES:
         if gate not in full:
             errors.append(f"full qualification lost native gate: {gate}")
-        if gate in trust:
+        if gate in trust_gates:
             errors.append(f"workflow trust duplicates native gate: {gate}")
     for gate in FORBIDDEN_TRUST_GATES:
-        if gate in trust:
+        if gate in trust_gates:
             errors.append(f"workflow trust duplicates full-qualification gate: {gate}")
     if "success() || failure()" in full:
         errors.append("full qualification contains unconditional diagnostic continuation")

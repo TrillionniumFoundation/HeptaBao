@@ -109,11 +109,11 @@ profiles without granting independent or production authority.
 python scripts/validate_repository_v2.py
 python scripts/validate_current_documentation_semantics.py
 python -m unittest discover -s tests/repository -p 'test_*.py' -v
-cargo +1.98.0 fmt --all -- --check
-cargo +1.98.0 test --locked --workspace --all-targets
+cargo +1.99.0 fmt --all -- --check
+cargo +1.99.0 test --locked --workspace --all-targets
 # qrcode is vendored third-party code: workspace tests/build it, product Clippy owns first-party Rust.
-cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings
-cargo +1.98.0 doc --locked --workspace --no-deps
+cargo +1.99.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings
+cargo +1.99.0 doc --locked --workspace --no-deps
 ```
 
 A current exact-head and real prospective-main-merge run are required. Historical green checks and local output are not admission evidence.

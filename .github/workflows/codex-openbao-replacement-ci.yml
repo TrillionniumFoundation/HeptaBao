@@ -77,11 +77,11 @@ jobs:
 
       - name: Install exact Rust toolchain
         shell: bash
-        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt,clippy
+        run: rustup toolchain install 1.99.0 --profile minimal --component rustfmt,clippy
 
       - name: Check formatting without changing source
         shell: bash
-        run: cargo +1.98.0 fmt --all -- --check
+        run: cargo +1.99.0 fmt --all -- --check
 
       - name: Install MIT Kerberos build and acceptance prerequisites
         shell: bash
@@ -104,7 +104,7 @@ jobs:
 
       - name: Test the complete locked Rust workspace
         shell: bash
-        run: cargo +1.98.0 test --locked --workspace --all-targets --no-fail-fast
+        run: cargo +1.99.0 test --locked --workspace --all-targets --no-fail-fast
 
       - name: Check strict first-party workspace Clippy
         shell: bash
@@ -112,18 +112,18 @@ jobs:
         # complete workspace test/build gates, while product lint owns only
         # first-party Rust and does not turn upstream warning drift into a
         # developer-only blocker.
-        run: cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings
+        run: cargo +1.99.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings
 
       - name: Build workspace documentation
         shell: bash
-        run: cargo +1.98.0 doc --locked --workspace --no-deps
+        run: cargo +1.99.0 doc --locked --workspace --no-deps
 
       - name: Build and exercise the real TLS service
         id: runtime_ready
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 build --locked -p heptabao-server
+          cargo +1.99.0 build --locked -p heptabao-server
           python qa/single-node/smoke.py \
             --binary "$PWD/target/debug/heptabao-server" \
             --work-dir "$RUNNER_TEMP/heptabao-openbao-replacement-smoke"
@@ -285,9 +285,9 @@ jobs:
           mkdir -m 700 "$reports"
           # Keep fixture features out of the ordinary product binary.
           export CARGO_TARGET_DIR="$RUNNER_TEMP/heptabao-capacity-target"
-          cargo +1.98.0 test --locked -p heptabao-server --features fixture-capacity-limit --lib service::capacity::tests
-          cargo +1.98.0 clippy --locked -p heptabao-server --features fixture-capacity-limit --all-targets -- -D warnings
-          cargo +1.98.0 build --locked -p heptabao-server --features fixture-capacity-limit
+          cargo +1.99.0 test --locked -p heptabao-server --features fixture-capacity-limit --lib service::capacity::tests
+          cargo +1.99.0 clippy --locked -p heptabao-server --features fixture-capacity-limit --all-targets -- -D warnings
+          cargo +1.99.0 build --locked -p heptabao-server --features fixture-capacity-limit
           timeout 180 python qa/openbao-acceptance/capacity_live.py \
             --binary "$CARGO_TARGET_DIR/debug/heptabao-server" --output "$reports/capacity.json"
 
@@ -399,7 +399,7 @@ jobs:
           git worktree add --detach "$base_dir" "$PR_BASE"
           cleanup() { git worktree remove --force "$base_dir" >/dev/null 2>&1 || true; }
           trap cleanup EXIT
-          CARGO_TARGET_DIR="$base_target" cargo +1.98.0 build             --locked -p heptabao-server --manifest-path "$base_dir/Cargo.toml"
+          CARGO_TARGET_DIR="$base_target" cargo +1.99.0 build             --locked -p heptabao-server --manifest-path "$base_dir/Cargo.toml"
           base_binary="$base_target/debug/heptabao-server"
           candidate_binary="$PWD/target/debug/heptabao-server"
           base_digest="$(sha256sum "$base_binary" | cut -d ' ' -f 1)"
@@ -451,7 +451,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 build --locked -p heptabao-server --example postgres_storage_probe
+          cargo +1.99.0 build --locked -p heptabao-server --example postgres_storage_probe
           timeout 180 python qa/openbao-acceptance/postgres_storage_live.py \
             --probe "$PWD/target/debug/examples/postgres_storage_probe" \
             --postgres-bin /usr/lib/postgresql/17/bin \
@@ -463,7 +463,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 build --locked -p heptabao-server --example postgres_durable_probe
+          cargo +1.99.0 build --locked -p heptabao-server --example postgres_durable_probe
           timeout 180 python qa/openbao-acceptance/postgres_durable_live.py \
             --probe "$PWD/target/debug/examples/postgres_durable_probe" \
             --work-dir "$RUNNER_TEMP/heptabao-postgresql-durable" \
@@ -546,7 +546,7 @@ jobs:
             git worktree remove --force "$legacy_dir" >/dev/null 2>&1 || true
           }
           trap cleanup_generation_legacy EXIT
-          CARGO_TARGET_DIR="$legacy_target" cargo +1.98.0 build \
+          CARGO_TARGET_DIR="$legacy_target" cargo +1.99.0 build \
             --locked -p heptabao-server --manifest-path "$legacy_dir/Cargo.toml"
           candidate_binary="$PWD/target/debug/heptabao-server"
           legacy_binary="$legacy_target/debug/heptabao-server"
@@ -590,7 +590,7 @@ jobs:
             git worktree remove --force "$legacy_dir" >/dev/null 2>&1 || true
           }
           trap cleanup_root_statements_legacy EXIT
-          CARGO_TARGET_DIR="$legacy_target" cargo +1.98.0 build \
+          CARGO_TARGET_DIR="$legacy_target" cargo +1.99.0 build \
             --locked -p heptabao-server --manifest-path "$legacy_dir/Cargo.toml"
           candidate_binary="$PWD/target/debug/heptabao-server"
           legacy_binary="$legacy_target/debug/heptabao-server"
@@ -756,7 +756,7 @@ jobs:
           work="$RUNNER_TEMP/heptabao-migration270-private"
           reports="$RUNNER_TEMP/heptabao-safe-reports/migration270"
           mkdir -m 700 "$work" "$reports"
-          cargo +1.98.0 build --locked -p heptabao-migration --bin inspect-openbao-snapshot
+          cargo +1.99.0 build --locked -p heptabao-migration --bin inspect-openbao-snapshot
           timeout 300 python qa/openbao-acceptance/migration_snapshot_live.py \
             --oracle-version 2.7.0 \
             --inspector "$PWD/target/debug/inspect-openbao-snapshot" \
@@ -949,7 +949,7 @@ jobs:
         run: |
           set -euo pipefail
           work="$RUNNER_TEMP/heptabao-migration-snapshot"
-          cargo +1.98.0 build --locked -p heptabao-migration --bin inspect-openbao-snapshot
+          cargo +1.99.0 build --locked -p heptabao-migration --bin inspect-openbao-snapshot
           timeout 300 python qa/openbao-acceptance/migration_snapshot_live.py \
             --inspector "$PWD/target/debug/inspect-openbao-snapshot" \
             --work-dir "$work"

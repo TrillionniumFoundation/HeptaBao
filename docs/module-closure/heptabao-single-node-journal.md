@@ -31,7 +31,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 - **Source/manifest evidence:** portable repository-relative source SHA-256 `4347f8e2e59c1a886c52098e367c55ce9c48041f0f73edf3d110dd353e51f119`; manifest SHA-256 `01ff4f6fd366388129bf4694d126102e209898a924f65f8fd957029c06168a6f`.
 - **Named executable anchor:** `create_append_replay_and_reopen_round_trip` in `crates/heptabao-single-node-journal/src/lib.rs`.
-- **Required command:** `cargo +1.98.0 test --locked -p heptabao-single-node-journal` (must be executed against this exact source tree; historical CI output is not current evidence).
+- **Required command:** `cargo +1.99.0 test --locked -p heptabao-single-node-journal` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 

@@ -13,7 +13,7 @@ Current executable checks (source anchors, not a pass receipt):
 - `strict_request_parses_and_classifies` — `crates/heptabao-protocol/src/lib.rs`.
 - `duplicate_host_is_rejected` — `crates/heptabao-protocol/src/lib.rs`.
 
-Run `cargo +1.98.0 test --locked -p heptabao-protocol --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+Run `cargo +1.99.0 test --locked -p heptabao-protocol --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
 
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
@@ -159,9 +159,9 @@ Detected crate-local tests:
 Required local gate:
 
 ```text
-cargo +1.98.0 fmt --all -- --check
-cargo +1.98.0 test --locked --workspace --all-targets
-cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+cargo +1.99.0 fmt --all -- --check
+cargo +1.99.0 test --locked --workspace --all-targets
+cargo +1.99.0 clippy --locked --workspace --all-targets -- -D warnings
 ```
 
 Domain changes also run plan mutation tests, current platform/Oracle regressions and frozen inherited-source replay. A green run is technical evidence only.

@@ -98,10 +98,10 @@ python -m unittest discover -s tests/plan -p 'test_module_documentation_v1_4_4.p
 python -m unittest discover -s tests/plan -p 'test_external_completion_evidence_v1.py' -v
 python -m unittest discover -s tests/platform -p 'test_*.py' -v
 python -m unittest discover -s tests/oracle -p 'test_*.py' -v
-cargo +1.98.0 fmt --all -- --check
-cargo +1.98.0 test --locked --workspace --all-targets
-cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
-cargo +1.98.0 doc --locked --workspace --no-deps
+cargo +1.99.0 fmt --all -- --check
+cargo +1.99.0 test --locked --workspace --all-targets
+cargo +1.99.0 clippy --locked --workspace --all-targets -- -D warnings
+cargo +1.99.0 doc --locked --workspace --no-deps
 git diff --exit-code
 ```
 

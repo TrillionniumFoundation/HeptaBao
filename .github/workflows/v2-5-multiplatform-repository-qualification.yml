@@ -45,13 +45,13 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
 
-      - name: Install exact Rust 1.98 toolchain
+      - name: Install exact Rust 1.99 toolchain
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-          cargo +1.98.0 --version
-          rustc +1.98.0 --version
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.99.0 --version
+          rustc +1.99.0 --version
 
       - name: Validate repository and V2.5 admission boundaries
         shell: bash
@@ -65,21 +65,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 fmt --all -- --check
-          cargo +1.98.0 test --workspace --all-targets --locked -- --test-threads=1
+          cargo +1.99.0 fmt --all -- --check
+          cargo +1.99.0 test --workspace --all-targets --locked -- --test-threads=1
 
       - name: Run strict Clippy
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+          cargo +1.99.0 clippy --workspace --all-targets --locked -- -D warnings
 
       - name: Build documentation and server
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 doc --workspace --no-deps --locked
-          cargo +1.98.0 build --locked -p heptabao-server
+          cargo +1.99.0 doc --workspace --no-deps --locked
+          cargo +1.99.0 build --locked -p heptabao-server
 
       - name: Verify final clean tree
         shell: bash
@@ -106,21 +106,21 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
-      - name: Install exact Rust 1.98 toolchain
+      - name: Install exact Rust 1.99 toolchain
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.98.0 --profile minimal
-          rustc +1.98.0 --version
-          cargo +1.98.0 --version
+          rustup toolchain install 1.99.0 --profile minimal
+          rustc +1.99.0 --version
+          cargo +1.99.0 --version
 
       - name: Build the exact release candidate twice in isolated target roots
         shell: bash
         run: |
           set -euo pipefail
           export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
-          CARGO_TARGET_DIR="$RUNNER_TEMP/release-a" cargo +1.98.0 build --locked --release -p heptabao-server
-          CARGO_TARGET_DIR="$RUNNER_TEMP/release-b" cargo +1.98.0 build --locked --release -p heptabao-server
+          CARGO_TARGET_DIR="$RUNNER_TEMP/release-a" cargo +1.99.0 build --locked --release -p heptabao-server
+          CARGO_TARGET_DIR="$RUNNER_TEMP/release-b" cargo +1.99.0 build --locked --release -p heptabao-server
           binary_a="$RUNNER_TEMP/release-a/release/heptabao-server"
           binary_b="$RUNNER_TEMP/release-b/release/heptabao-server"
           test -x "$binary_a" && test -x "$binary_b"
@@ -173,7 +173,7 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
 
-      - name: Install exact Rust 1.98 toolchain
+      - name: Install exact Rust 1.99 toolchain
         shell: bash
         run: |
           set -euo pipefail
@@ -182,10 +182,10 @@ jobs:
           # This is an ephemeral runner: remove only that exact toolchain before
           # installing the pinned complete component set. Product gates stay
           # unchanged.
-          rustup toolchain uninstall 1.98.0-aarch64-unknown-linux-gnu || true
-          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-          cargo +1.98.0 --version
-          rustc +1.98.0 --version
+          rustup toolchain uninstall 1.99.0-aarch64-unknown-linux-gnu || true
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.99.0 --version
+          rustc +1.99.0 --version
 
       - name: Validate repository and V2.5 admission boundaries
         shell: bash
@@ -208,21 +208,21 @@ jobs:
               "O_CLOEXEC": os.O_CLOEXEC,
           })
           PY
-          cargo +1.98.0 fmt --all -- --check
-          cargo +1.98.0 test --workspace --all-targets --locked -- --test-threads=1
+          cargo +1.99.0 fmt --all -- --check
+          cargo +1.99.0 test --workspace --all-targets --locked -- --test-threads=1
 
       - name: Run strict Clippy
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
+          cargo +1.99.0 clippy --workspace --all-targets --locked -- -D warnings
 
       - name: Build documentation and server
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 doc --workspace --no-deps --locked
-          cargo +1.98.0 build --locked -p heptabao-server
+          cargo +1.99.0 doc --workspace --no-deps --locked
+          cargo +1.99.0 build --locked -p heptabao-server
 
       - name: Verify final clean tree
         shell: bash
@@ -261,10 +261,10 @@ jobs:
           # toolchain whose cargo-clippy conflicts with rustup recovery. The
           # runner is ephemeral; remove only the exact pinned toolchain before
           # installing the complete component set, matching the ARM lane.
-          rustup toolchain uninstall 1.98.0-aarch64-apple-darwin || true
-          rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-          cargo +1.98.0 --version
-          rustc +1.98.0 --version
+          rustup toolchain uninstall 1.99.0-aarch64-apple-darwin || true
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt --component clippy
+          cargo +1.99.0 --version
+          rustc +1.99.0 --version
 
       - name: Validate repository and V2.5 admission boundaries
         shell: bash
@@ -278,8 +278,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 fmt --all -- --check
-          cargo +1.98.0 test --workspace --all-targets --locked --no-run
+          cargo +1.99.0 fmt --all -- --check
+          cargo +1.99.0 test --workspace --all-targets --locked --no-run
 
       - name: Execute packages outside the Linux storage closure
         shell: bash
@@ -300,7 +300,7 @@ jobs:
           if temp_root.is_symlink() or not temp_root.is_absolute():
               raise SystemExit("TMPDIR must be an absolute non-symlink directory")
           metadata = json.loads(subprocess.check_output([
-              "cargo", "+1.98.0", "metadata", "--format-version", "1", "--locked"
+              "cargo", "+1.99.0", "metadata", "--format-version", "1", "--locked"
           ]))
           workspace = set(metadata["workspace_members"])
           packages = {
@@ -337,7 +337,7 @@ jobs:
               "executed_packages": runnable,
               "compiled_but_storage_blocked_packages": blocked,
           }, sort_keys=True))
-          command = ["cargo", "+1.98.0", "test", "--locked", "--all-targets"]
+          command = ["cargo", "+1.99.0", "test", "--locked", "--all-targets"]
           for name in runnable:
               command.extend(["-p", name])
           command.extend(["--", "--test-threads=1"])
@@ -371,15 +371,15 @@ jobs:
               }
           }
           EOF
-          cargo +1.98.0 run --offline --manifest-path "$probe/Cargo.toml"
+          cargo +1.99.0 run --offline --manifest-path "$probe/Cargo.toml"
 
       - name: Run strict Clippy and build portable artifacts
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.98.0 clippy --workspace --all-targets --locked -- -D warnings
-          cargo +1.98.0 doc --workspace --no-deps --locked
-          cargo +1.98.0 build --locked -p heptabao-server
+          cargo +1.99.0 clippy --workspace --all-targets --locked -- -D warnings
+          cargo +1.99.0 doc --workspace --no-deps --locked
+          cargo +1.99.0 build --locked -p heptabao-server
 
       - name: Verify final clean tree
         shell: bash

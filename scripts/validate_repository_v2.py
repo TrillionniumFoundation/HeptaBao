@@ -191,10 +191,10 @@ def validate_current_documentation(plan_id: str, package_names: set[str]) -> lis
             errors.append(f"README.md must state the exact current package count ({count})")
         for command in (
             "python scripts/validate_repository_v2.py",
-            "cargo +1.98.0 fmt --all -- --check",
-            "cargo +1.98.0 test --locked --workspace --all-targets",
-            "cargo +1.98.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
-            "cargo +1.98.0 doc --locked --workspace --no-deps",
+            "cargo +1.99.0 fmt --all -- --check",
+            "cargo +1.99.0 test --locked --workspace --all-targets",
+            "cargo +1.99.0 clippy --locked --workspace --all-targets --exclude qrcode -- -D warnings",
+            "cargo +1.99.0 doc --locked --workspace --no-deps",
         ):
             if command not in readme:
                 errors.append(f"README.md is missing current validation command: {command}")

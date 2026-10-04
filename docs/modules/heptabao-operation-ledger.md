@@ -13,7 +13,7 @@ Current executable checks (source anchors, not a pass receipt):
 - `legal_mutation_chain_replays_and_requires_lookup_after_commit` — `crates/heptabao-operation-ledger/src/lib.rs`.
 - `duplicate_acceptance_and_illegal_transition_fail_closed` — `crates/heptabao-operation-ledger/src/lib.rs`.
 
-Run `cargo +1.98.0 test --locked -p heptabao-operation-ledger --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+Run `cargo +1.99.0 test --locked -p heptabao-operation-ledger --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
 
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
@@ -146,9 +146,9 @@ Detected crate-local tests:
 Required local gate:
 
 ```text
-cargo +1.98.0 fmt --all -- --check
-cargo +1.98.0 test --locked --workspace --all-targets
-cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+cargo +1.99.0 fmt --all -- --check
+cargo +1.99.0 test --locked --workspace --all-targets
+cargo +1.99.0 clippy --locked --workspace --all-targets -- -D warnings
 ```
 
 Domain changes also run plan mutation tests, current platform/Oracle regressions and frozen inherited-source replay. A green run is technical evidence only.

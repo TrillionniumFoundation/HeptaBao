@@ -13,7 +13,7 @@ Current executable checks (source anchors, not a pass receipt):
 - `create_commit_load_and_reopen_round_trip` — `crates/heptabao-single-node-store/src/lib.rs`.
 - `compare_and_swap_rejects_stale_expected_generation` — `crates/heptabao-single-node-store/src/lib.rs`.
 
-Run `cargo +1.98.0 test --locked -p heptabao-single-node-store --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
+Run `cargo +1.99.0 test --locked -p heptabao-single-node-store --all-targets`. See the remaining guide sections for format, failure, maintenance and operating boundaries.
 
 **Source baseline:** `3582fda50cd9b03ca39713814cdd8229462bbbd2`  
 **Source tree:** `123c99b71c7e33169bef6033eaefb71e386ed6ca`  
@@ -116,9 +116,9 @@ Detected crate-local tests:
 Required local gate:
 
 ```text
-cargo +1.98.0 fmt --all -- --check
-cargo +1.98.0 test --locked --workspace --all-targets
-cargo +1.98.0 clippy --locked --workspace --all-targets -- -D warnings
+cargo +1.99.0 fmt --all -- --check
+cargo +1.99.0 test --locked --workspace --all-targets
+cargo +1.99.0 clippy --locked --workspace --all-targets -- -D warnings
 ```
 
 Domain changes also run plan mutation tests, current platform/Oracle regressions and frozen inherited-source replay. A green run is technical evidence only.

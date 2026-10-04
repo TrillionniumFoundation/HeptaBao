@@ -155,7 +155,7 @@ Current executable anchors (source assertions, not a claim that tests were rerun
 - [`durable::tests::unknown_effect_persists_intent_and_fences_restart_until_readback`](../../crates/heptabao-plugin-host/src/durable.rs) checks a persisted unknown intent blocks restarted admission.
 - [`durable::tests::durable_failure_after_plugin_entry_withholds_secret_and_retains_intent`](../../crates/heptabao-plugin-host/src/durable.rs) checks post-provider storage capacity failure withholds plaintext and retains a reconciliation intent.
 
-`cargo +1.98.0 test -p heptabao-plugin-host` covers undeclared operations and environment names, pre-entry versus post-entry failure, mandatory reconciliation, monotonic dynamic lease issue/renew/revoke, durable intent recovery, encrypted lease reopen, capacity failure after process entry, plaintext withholding and secret-redacted debug output. On Linux, `command_runner_uses_the_verified_wrapper_and_bounded_frame` launches a real checksum-pinned wrapper process, verifies inherited environment clearing and round-trips the bounded `HBP1`/`HBR1` frame.
+`cargo +1.99.0 test -p heptabao-plugin-host` covers undeclared operations and environment names, pre-entry versus post-entry failure, mandatory reconciliation, monotonic dynamic lease issue/renew/revoke, durable intent recovery, encrypted lease reopen, capacity failure after process entry, plaintext withholding and secret-redacted debug output. On Linux, `command_runner_uses_the_verified_wrapper_and_bounded_frame` launches a real checksum-pinned wrapper process, verifies inherited environment clearing and round-trips the bounded `HBP1`/`HBR1` frame.
 
 ## Evolution and open boundaries
 

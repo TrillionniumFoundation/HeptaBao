@@ -181,9 +181,9 @@ Current named source scenarios:
 - `bootstrap_membership_resolves_explicit_follower_hint` — `crates/heptabao-raft-runtime/src/cluster.rs`.
 - `failed_snapshot_persist_does_not_publish_snapshot_or_generation` — `crates/heptabao-raft-runtime/src/store.rs`.
 
-Run `cargo +1.98.0 test --locked -p heptabao-raft-runtime --all-targets`. These are source anchors; a current test receipt is separate.
+Run `cargo +1.99.0 test --locked -p heptabao-raft-runtime --all-targets`. These are source anchors; a current test receipt is separate.
 
-Run `cargo +1.98.0 test --locked -p heptabao-raft-runtime` for the package and the full workspace commands from `README.md`. The primary executable regression bootstraps three voters, commits a bounded sealed envelope, proves all state machines converge, crosses ReadIndex, isolates the leader and proves no isolated commit, shuts down, reopens every durable store, crosses ReadIndex again and proves convergence. Store tests additionally cover interrupted atomic replacement, corruption, missing generations, stale predecessors, legacy adoption boundaries, symlink roots/generations, directory substitution and exact round-trip encoding.
+Run `cargo +1.99.0 test --locked -p heptabao-raft-runtime` for the package and the full workspace commands from `README.md`. The primary executable regression bootstraps three voters, commits a bounded sealed envelope, proves all state machines converge, crosses ReadIndex, isolates the leader and proves no isolated commit, shuts down, reopens every durable store, crosses ReadIndex again and proves convergence. Store tests additionally cover interrupted atomic replacement, corruption, missing generations, stale predecessors, legacy adoption boundaries, symlink roots/generations, directory substitution and exact round-trip encoding.
 
 ## Evolution and open boundaries
 

@@ -16,7 +16,7 @@ Expired deadlines and unavailable readiness deny provider entry. Entered timeout
 
 **Named executable anchor:** `timeout_fences_and_never_replays` in `crates/heptabao-openbao-grpc/src/tests.rs`.
 
-Run `cargo +1.98.0 test --locked -p heptabao-openbao-grpc` on the exact candidate. Protocol golden bytes, all seven RPC paths, unknown-outcome fencing, readiness deadlines and authenticated transport have separate named source tests. Actual official SDK/PKCS11 provider runs and the full workspace gates are separate evidence; this dossier grants no current-head test success or replacement qualification.
+Run `cargo +1.99.0 test --locked -p heptabao-openbao-grpc` on the exact candidate. Protocol golden bytes, all seven RPC paths, unknown-outcome fencing, readiness deadlines and authenticated transport have separate named source tests. Actual official SDK/PKCS11 provider runs and the full workspace gates are separate evidence; this dossier grants no current-head test success or replacement qualification.
 
 ## Known gaps and evolution
 

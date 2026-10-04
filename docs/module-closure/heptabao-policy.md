@@ -31,7 +31,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 - **Source/manifest evidence:** portable repository-relative source SHA-256 `4630f53b32250d25d8fb75c2d17fa98b2e7cc2cdf3b6cbc2caa0d1c50f56e09b`; manifest SHA-256 `7ac2233dc0a58b056b87f400d97335c42dc29109deeca52d52ae39835bce3b25`.
 - **Named executable anchor:** `authorization_is_default_deny_and_segment_bounded` in `crates/heptabao-policy/src/lib.rs`.
-- **Required command:** `cargo +1.98.0 test --locked -p heptabao-policy` (must be executed against this exact source tree; historical CI output is not current evidence).
+- **Required command:** `cargo +1.99.0 test --locked -p heptabao-policy` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.
 - **Acceptance interpretation:** a passing unit test proves only the named module behavior. It does not prove server integration, OpenBao parity, HA, external provider correctness, crash recovery, or production qualification. Those require separate executable profiles and independent admission.
 
