@@ -464,8 +464,8 @@ impl Service {
         }
         if !namespace.is_empty() {
             return Response::error(
-                501,
-                "sealable namespace recovery rotation requires its owning credential consumer",
+                403,
+                "recovery rekey is root namespace only",
             );
         }
         if self.ha.is_some() {
