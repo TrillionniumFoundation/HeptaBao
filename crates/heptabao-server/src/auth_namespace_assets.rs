@@ -229,20 +229,19 @@ mod tests {
             .plugin_auth_mounts
             .insert("custody".into(), BTreeMap::new());
         state.cert_roles.insert("custody".into(), BTreeMap::new());
-        let original = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)?;
-        let batch = crate::secret_serde::to_vec(
-            &state.batch_authority,
-            crate::MAX_APPLICATION_STATE_BYTES,
-        )?;
+        let original = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| "private auth serialization")?;
+        let batch =
+            crate::secret_serde::to_vec(&state.batch_authority, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| "private root batch serialization")?;
         let assets = state.detach_namespace("custody")?;
         assert!(
             state.namespace_is_empty("custody") && state.authenticate_read_only(&root, 100).is_ok(),
             "all namespace auth maps unload without transferring root authority"
         );
-        let retained_batch = crate::secret_serde::to_vec(
-            &state.batch_authority,
-            crate::MAX_APPLICATION_STATE_BYTES,
-        )?;
+        let retained_batch =
+            crate::secret_serde::to_vec(&state.batch_authority, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| "private root batch serialization")?;
         assert!(
             batch.as_slice() == retained_batch.as_slice()
                 && state.wrapping_clock == 42
@@ -254,7 +253,8 @@ mod tests {
             "wrong actual namespace fails"
         );
         state.attach_namespace("custody", assets.clone())?;
-        let restored = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)?;
+        let restored = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| "private auth serialization")?;
         assert!(
             original.as_slice() == restored.as_slice(),
             "all nineteen typed maps restore without changing root fields"
@@ -264,7 +264,8 @@ mod tests {
                 && state.detach_namespace("").is_err(),
             "collisions and root partition are rejected"
         );
-        let after = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)?;
+        let after = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| "private auth serialization")?;
         assert!(
             after.as_slice() == restored.as_slice(),
             "failed restoration cannot partially change authority"

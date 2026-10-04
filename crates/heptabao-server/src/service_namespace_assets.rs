@@ -4,6 +4,7 @@
 use super::*;
 use crate::namespace_custody::Key;
 use crate::namespace_record_graph::Cells;
+use std::collections::BTreeSet;
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -286,7 +287,8 @@ mod tests {
                 && closed.auth.authenticate_read_only(&token, 100).is_ok(),
             "scoped token authority unloads while root credential stays root owned"
         );
-        let bytes = crate::secret_serde::to_vec(&assets, MAX_STATE_BYTES)?;
+        let bytes = crate::secret_serde::to_vec(&assets, MAX_STATE_BYTES)
+            .map_err(|_| "typed assets serialization")?;
         let protected = created.descriptor.replace_assets(&binding, &key, &bytes)?;
         let opened = protected.open_assets(&binding, &key)?;
         let decoded: NamespaceAssets = serde_json::from_slice(&opened)?;
