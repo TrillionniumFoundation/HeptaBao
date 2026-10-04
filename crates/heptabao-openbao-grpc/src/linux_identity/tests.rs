@@ -336,18 +336,9 @@ fn fully_sealed_kernel_image_keeps_process_and_config_fences()
     let required =
         SealFlags::WRITE | SealFlags::GROW | SealFlags::SHRINK | SealFlags::EXEC | SealFlags::SEAL;
     let mut fixture = Fixture::new()?;
-    let image = kernel_image_fixture(&mut fixture, required)?;
+    let _image = kernel_image_fixture(&mut fixture, required)?;
     let probe = fixture.probe(Hook::stable())?;
     assert!(probe.sealed_executable.is_some());
-    assert!(
-        image.write_at(b"X", 0).is_err(),
-        "kernel must reject content changes"
-    );
-    assert!(image.set_len(0).is_err(), "kernel must reject truncation");
-    assert!(
-        rustix::fs::fcntl_add_seals(&image, SealFlags::FUTURE_WRITE).is_err(),
-        "kernel must reject seal changes"
-    );
     for _ in 0..3 {
         assert!(probe.observe()?.0 == fixture.expected);
     }
@@ -357,6 +348,28 @@ fn fully_sealed_kernel_image_keeps_process_and_config_fences()
     fs::write(fixture.proc_root.join("101/stat"), stat(101, 101, 200))?;
     fs::write(&fixture.config, b"CHANGED_PRIVATE_CONFIG")?;
     assert!(probe.observe() == Err(BridgeError::IdentityChanged));
+
+    let mut mutation_fixture = Fixture::new()?;
+    let image = kernel_image_fixture(&mut mutation_fixture, required)?;
+    let mutation_probe = mutation_fixture.probe(Hook::stable())?;
+    let before = stable_metadata(&image)?;
+    assert!(
+        image.write_at(b"X", 0).is_err(),
+        "kernel must reject content changes"
+    );
+    assert!(image.set_len(0).is_err(), "kernel must reject truncation");
+    assert!(
+        rustix::fs::fcntl_add_seals(&image, SealFlags::FUTURE_WRITE).is_err(),
+        "kernel must reject seal changes"
+    );
+    assert!(stable_hash(&image, MAX_EXECUTABLE)? == mutation_fixture.expected.executable_sha256);
+    // Linux may update mtime/ctime even when a sealed write returns EPERM.
+    // The complete metadata fence must still reject that observed change.
+    if stable_metadata(&image)? != before {
+        assert!(mutation_probe.observe() == Err(BridgeError::IdentityChanged));
+    } else {
+        assert!(mutation_probe.observe()?.0 == mutation_fixture.expected);
+    }
     Ok(())
 }
 
