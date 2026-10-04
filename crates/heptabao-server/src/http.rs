@@ -1767,7 +1767,8 @@ mod tests {
                 .map_err(|_| io::Error::other("bounded OCSP GET"))?;
             assert_eq!(request.path, format!("nested/pki/ocsp/{suffix}"));
             assert_eq!(request.namespace, "team");
-            assert_eq!(request.body.0["__heptabao_pki_ocsp_get_path"], request.path);
+            assert_eq!(request.body.0["__heptabao_pki_ocsp_get_path"]["path"], request.path);
+            assert_eq!(request.body.0["__heptabao_pki_ocsp_get_path"]["query"], "");
         }
         for size in [0, 4, 2047, 2048, 4096] {
             let mut wire=format!("POST /v1/pki/ocsp HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/ocsp-request\r\nContent-Length: {size}\r\n\r\n").into_bytes();

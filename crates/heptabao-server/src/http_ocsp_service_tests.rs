@@ -283,6 +283,196 @@ fn ocsp_http_actual_mount_raw_media_control_fallback_and_disabled_priority() -> 
         wire(&mut service, "GET", "secret/ocsp", "", &root, None, &[])?.body["data"],
         expected
     );
+    // A lexical /ocsp/ segment does not own a legal KV key or control path.
+    // Compare the candidate with the same ordinary route without that segment.
+    for path in [
+        "secret/ocsp/plainkey",
+        "secret/plain/plainkey",
+        "secret/ocsp/branch/child",
+        "secret/plain/branch/child",
+    ] {
+        assert_eq!(
+            admin(&mut service, &root, path, sentinel.clone())?.status,
+            204
+        );
+    }
+    for query in ["", "?limit=2", "?list=false"] {
+        let response = wire(
+            &mut service,
+            "GET",
+            &format!("secret/ocsp/plainkey{query}"),
+            "",
+            &root,
+            Some("text/plain"),
+            b"ignored GET body",
+        )?;
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["data"], sentinel);
+    }
+    for query in ["foo=bar", "limit=2&limit=3", "limit=%GG"] {
+        assert_eq!(
+            wire(
+                &mut service,
+                "GET",
+                &format!("secret/ocsp/plainkey?{query}"),
+                "",
+                &root,
+                None,
+                &[]
+            )?
+            .status,
+            400
+        );
+    }
+    assert_eq!(
+        wire(
+            &mut service,
+            "GET",
+            "secret/ocsp/plainkey",
+            "",
+            "",
+            None,
+            &[]
+        )?
+        .status,
+        403
+    );
+    for query in ["list=true", "scan=true&limit=2"] {
+        let candidate = wire(
+            &mut service,
+            "GET",
+            &format!("secret/ocsp/branch?{query}"),
+            "",
+            &root,
+            None,
+            &[],
+        )?;
+        let ordinary = wire(
+            &mut service,
+            "GET",
+            &format!("secret/plain/branch?{query}"),
+            "",
+            &root,
+            None,
+            &[],
+        )?;
+        assert_eq!(candidate.status, 200);
+        assert_eq!(candidate.status, ordinary.status);
+        assert_eq!(candidate.body["data"], ordinary.body["data"]);
+    }
+    assert_eq!(
+        admin(
+            &mut service,
+            &root,
+            "sys/mounts/team/ocsp/nested",
+            json!({"type":"kv","options":{"version":"1"}})
+        )?
+        .status,
+        204
+    );
+    assert_eq!(
+        admin(
+            &mut service,
+            &root,
+            "team/ocsp/nested/plainkey",
+            sentinel.clone()
+        )?
+        .status,
+        204
+    );
+    let nested = wire(
+        &mut service,
+        "GET",
+        "team/ocsp/nested/plainkey?limit=2",
+        "",
+        &root,
+        None,
+        &[],
+    )?;
+    assert_eq!(nested.status, 200);
+    assert_eq!(nested.body["data"], sentinel);
+    assert_eq!(
+        wire(
+            &mut service,
+            "GET",
+            "sys/mounts/team/ocsp/nested/tune",
+            "",
+            &root,
+            None,
+            &[]
+        )?
+        .status,
+        200
+    );
+    assert_eq!(
+        wire(
+            &mut service,
+            "GET",
+            "sys/mounts/team/ocsp/nested/tune",
+            "",
+            "",
+            None,
+            &[]
+        )?
+        .status,
+        403
+    );
+    assert_eq!(
+        admin(&mut service, &root, "sys/namespaces/team", json!({}))?.status,
+        200
+    );
+    let bytes = serde_json::to_vec(&json!({"type":"kv","options":{"version":"1"}}))?;
+    assert_eq!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/mounts/nested/ocsp/kv",
+            "team",
+            &root,
+            Some("application/json"),
+            &bytes
+        )?
+        .status,
+        204
+    );
+    let bytes = serde_json::to_vec(&sentinel)?;
+    assert_eq!(
+        wire(
+            &mut service,
+            "POST",
+            "nested/ocsp/kv/plainkey",
+            "team",
+            &root,
+            Some("application/json"),
+            &bytes
+        )?
+        .status,
+        204
+    );
+    let namespaced = wire(
+        &mut service,
+        "GET",
+        "nested/ocsp/kv/plainkey?limit=2",
+        "team",
+        &root,
+        None,
+        &[],
+    )?;
+    assert_eq!(namespaced.status, 200);
+    assert_eq!(namespaced.body["data"], sentinel);
+    assert_eq!(
+        wire(
+            &mut service,
+            "GET",
+            "nested/ocsp/kv/plainkey",
+            "missing",
+            &root,
+            None,
+            &[]
+        )?
+        .status,
+        404
+    );
     for query in ["foo=bar", "list=true"] {
         let response = wire(
             &mut service,

@@ -2261,31 +2261,45 @@ impl Service {
             );
         }
 
-        // Opaque GET text is admitted only to the synchronized namespace's
-        // longest actual PKI mount. Unknown/non-PKI candidates stop here and
-        // cannot enter any control, auth, KV, plugin or external-effect route.
+        // Interpret opaque GET text only for the synchronized namespace's
+        // longest actual PKI responder. A valid ordinary path retains its
+        // original GET/query semantics at other owners; invalid opaque text
+        // cannot enter control, auth, KV or external-effect routes.
+        let mut ordinary_get = None;
         let ocsp_get = if opaque_ocsp_get {
-            let Some((canonical, suffix)) = self
+            if let Some((canonical, suffix)) = self
                 .state
                 .as_ref()
                 .and_then(|state| state.engines.canonical_pki_ocsp_get(namespace, path))
-            else {
+            {
+                if matches!(method, "LIST" | "SCAN") {
+                    return Response::error(405, "unsupported OCSP operation");
+                }
+                Some((
+                    canonical,
+                    crate::http::ocsp::CarrierBody(crate::http::ocsp::decoded_get_body(&suffix)),
+                ))
+            } else if valid_path(path) {
+                let Some(carrier) = crate::http::ocsp::get_request(method, path, body) else {
+                    return Response::error(400, "invalid request-local GET carrier");
+                };
+                ordinary_get = Some(match carrier.ordinary() {
+                    Ok(request) => request,
+                    Err(response) => return response,
+                });
+                None
+            } else {
                 return Response::error(404, "OCSP mount not found");
-            };
-            if matches!(method, "LIST" | "SCAN") {
-                return Response::error(405, "unsupported OCSP operation");
             }
-            Some((
-                canonical,
-                crate::http::ocsp::CarrierBody(crate::http::ocsp::decoded_get_body(&suffix)),
-            ))
         } else {
             None
         };
+        let method = ordinary_get.as_ref().map_or(method, |(method, _)| *method);
         let path = ocsp_get
             .as_ref()
             .map_or(path, |(canonical, _)| canonical.as_str());
         let body = ocsp_get.as_ref().map_or(body, |(_, body)| &body.0);
+        let body = ordinary_get.as_ref().map_or(body, |(_, body)| &body.0);
         let post_body =
             if let Some(carrier) = crate::http::ocsp::json_post_request(method, path, body) {
                 let actual_pki_ocsp = self
@@ -2310,6 +2324,7 @@ impl Service {
             };
         let body = post_body.as_ref().map_or(body, |body| &body.0);
         let request = RequestView {
+            method,
             path,
             body,
             ..request

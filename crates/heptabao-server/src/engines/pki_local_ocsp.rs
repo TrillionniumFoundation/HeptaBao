@@ -459,7 +459,11 @@ impl Pki {
                 ));
             }
         }
-        let Some(root) = self.root.as_ref().filter(|root| !root.is_external()) else {
+        let Some(root) = self
+            .local_issuer("default")
+            .ok()
+            .filter(|root| !root.is_external())
+        else {
             return Ok(error_response(401, 6));
         };
         project_response(signed_response(root, &request, None, true, now, expiry))

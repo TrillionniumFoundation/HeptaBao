@@ -51,11 +51,66 @@ pub(super) fn get_carrier(method: &str, route: &str) -> Result<Option<GetCarrier
 }
 
 pub(crate) fn opaque_get_request(method: &str, path: &str, body: &Value) -> bool {
-    matches!(method, "GET" | "LIST" | "SCAN")
-        && opaque_get_candidate("GET", path)
-        && body.as_object().is_some_and(|object| {
-            object.len() == 1 && object.get(GET_PATH_MARKER).and_then(Value::as_str) == Some(path)
-        })
+    get_request(method, path, body).is_some()
+}
+
+pub(crate) struct GetRequest<'a> {
+    path: &'a str,
+    query: &'a str,
+}
+
+pub(crate) fn get_request<'a>(
+    method: &str,
+    path: &'a str,
+    body: &'a Value,
+) -> Option<GetRequest<'a>> {
+    if !matches!(method, "GET" | "LIST" | "SCAN") || !opaque_get_candidate("GET", path) {
+        return None;
+    }
+    let object = body.as_object()?;
+    if object.len() != 1 {
+        return None;
+    }
+    let carrier = object.get(GET_PATH_MARKER)?.as_object()?;
+    if carrier.len() != 2 || carrier.get("path")?.as_str()? != path {
+        return None;
+    }
+    let query = carrier.get("query")?.as_str()?;
+    if query.len() > MAX_HEADERS || get_query_method(query).ok()? != method {
+        return None;
+    }
+    Some(GetRequest { path, query })
+}
+
+impl GetRequest<'_> {
+    // No actual PKI responder owns this path. Rebuild exactly the ordinary
+    // GET's query-only body and selectors; the private carrier is never data.
+    pub(crate) fn ordinary(&self) -> Result<(&'static str, CarrierBody), Response> {
+        let mut body = CarrierBody(json!({}));
+        merge_query_fields("GET", self.path, self.query, &mut body.0)
+            .map_err(|error| Response::error(error.status, error.message))?;
+        let object = body
+            .0
+            .as_object_mut()
+            .ok_or_else(|| Response::error(400, "JSON object required"))?;
+        let list = object.get("list") == Some(&Value::Bool(true));
+        let scan = object.get("scan") == Some(&Value::Bool(true));
+        let method = match (list, scan) {
+            (true, true) => {
+                return Err(Response::error(400, "list and scan are mutually exclusive"));
+            }
+            (true, false) => {
+                object.remove("list");
+                "LIST"
+            }
+            (false, true) => {
+                object.remove("scan");
+                "SCAN"
+            }
+            (false, false) => "GET",
+        };
+        Ok((method, body))
+    }
 }
 
 // The pinned outer GET operation reads the first valid URL.Query list/scan
@@ -267,7 +322,7 @@ pub(super) fn carrier_body(
     query: &str,
 ) -> Option<Value> {
     if let Some(get) = get {
-        return Some(json!({GET_PATH_MARKER: get.original_path}));
+        return Some(json!({GET_PATH_MARKER: {"path":get.original_path,"query":query}}));
     }
     post.then(|| {
         json!({POST_MARKER: {
@@ -381,7 +436,7 @@ pub(crate) fn audit_payload<'a>(
     body: &'a Value,
 ) -> Option<&'a str> {
     if opaque_get_request(method, path, body) {
-        return body.get(GET_PATH_MARKER)?.as_str();
+        return body.get(GET_PATH_MARKER)?.get("path")?.as_str();
     }
     if let Some(carrier) = raw_post_request(method, path, body) {
         return Some(carrier.encoded);
@@ -436,7 +491,8 @@ mod tests {
             let body =
                 carrier_body(get.as_ref(), false, path, None, &[], "").unwrap_or(Value::Null);
             assert!(opaque_get_request("GET", path, &body));
-            assert_eq!(body[GET_PATH_MARKER], path);
+            assert_eq!(body[GET_PATH_MARKER]["path"], path);
+            assert_eq!(body[GET_PATH_MARKER]["query"], "");
             assert!(!opaque_get_request("POST", path, &body));
             assert!(!opaque_get_request("GET", "other/ocsp/AA==", &body));
         }

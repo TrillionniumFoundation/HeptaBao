@@ -111,7 +111,7 @@ fn carrier(bytes: &[u8]) -> Value {
     json!({"__heptabao_pki_ocsp_request":BASE64.encode(bytes)})
 }
 fn get_carrier(path: &str) -> Value {
-    json!({"__heptabao_pki_ocsp_get_path": path})
+    json!({"__heptabao_pki_ocsp_get_path": {"path":path,"query":""}})
 }
 
 #[test]
