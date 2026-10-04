@@ -1204,6 +1204,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "heptabao-linux-parent-death"
+version = "0.1.0"
+dependencies = [
+ "rustix",
+]
+
+[[package]]
 name = "heptabao-mount-router"
 version = "0.1.0"
 dependencies = [
@@ -1386,6 +1393,7 @@ dependencies = [
  "heptabao-filesystem-guard",
  "heptabao-ha-service",
  "heptabao-kms-contracts",
+ "heptabao-linux-parent-death",
  "heptabao-openbao-grpc",
  "heptabao-plugin-contracts",
  "heptabao-plugin-host",
