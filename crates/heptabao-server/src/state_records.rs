@@ -182,6 +182,9 @@ impl Kv1Key {
     pub(crate) fn incarnation(&self) -> u64 {
         self.incarnation
     }
+    pub(crate) fn path(&self) -> &str {
+        &self.path
+    }
     fn probe(scope: &Kv1Scope, path: &str) -> Self {
         Self {
             namespace: scope.namespace.clone(),

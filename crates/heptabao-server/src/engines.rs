@@ -32,6 +32,8 @@ mod kv_versioning;
 mod leases;
 #[path = "engine_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
+#[path = "engine_namespace_record_cells.rs"]
+mod namespace_record_cells;
 pub(crate) mod openldap;
 mod pki;
 pub(crate) use pki::local_ocsp::raw_response as raw_ocsp_response;
@@ -44,6 +46,8 @@ mod transit;
 pub struct EngineState {
     #[serde(skip)]
     records: Option<kv1_records::Runtime>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    namespace_record_owners: BTreeMap<String, namespace_record_cells::Owner>,
     #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
     lease_clock: u64,
     namespaces: BTreeMap<String, CowNamespace>,

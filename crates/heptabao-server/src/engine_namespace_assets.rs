@@ -34,12 +34,16 @@ impl EngineState {
                 .map_err(|_| error(503, "namespace record key is unavailable"))?;
             let (retained, owned) = runtime
                 .index
+                .partition_namespace(namespace, Arc::clone(&private_key))
+                .map_err(kv1_records::record_error)?;
+            let (protected, _) = runtime
+                .protected
                 .partition_namespace(namespace, private_key)
                 .map_err(kv1_records::record_error)?;
             let (graph, cells) =
                 Graph::protect(namespace, key, &owned).map_err(kv1_records::record_error)?;
             let mut objects = Vec::new();
-            retained
+            protected
                 .visit_objects(|object| {
                     objects.push(Arc::clone(object));
                     Ok(())
@@ -48,9 +52,16 @@ impl EngineState {
             (
                 Some(graph),
                 cells,
-                Some(kv1_records::Runtime::with_objects(
+                Some(kv1_records::Runtime::with_views(
                     Arc::clone(&runtime.key),
                     retained,
+                    protected,
+                    runtime
+                        .loaded_namespaces
+                        .iter()
+                        .filter(|loaded| loaded.as_str() != namespace)
+                        .cloned()
+                        .collect(),
                     objects,
                 )),
             )
@@ -102,18 +113,10 @@ impl EngineState {
                     .index
                     .merge_namespace(actual, &owned)
                     .map_err(kv1_records::record_error)?;
-                let mut objects = Vec::new();
-                index
-                    .visit_objects(|object| {
-                        objects.push(Arc::clone(object));
-                        Ok(())
-                    })
-                    .map_err(kv1_records::record_error)?;
-                Some(kv1_records::Runtime::with_objects(
-                    Arc::clone(&runtime.key),
-                    index,
-                    objects,
-                ))
+                let mut restored = runtime.clone();
+                restored.index = index;
+                restored.loaded_namespaces.insert(actual.to_owned());
+                Some(restored)
             }
             (None, None) => None,
             (Some(_), None) => None,

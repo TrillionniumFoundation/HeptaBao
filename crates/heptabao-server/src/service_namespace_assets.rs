@@ -262,7 +262,7 @@ mod tests {
             Submission::Unlocked { key, .. } => key,
             Submission::Pending => return Err("threshold".into()),
         };
-        let (closed, assets, cells) = original
+        let (mut closed, assets, cells) = original
             .partition_namespace_assets("custody", &key)
             .map_err(|_| "partition")?;
         assert!(
@@ -290,11 +290,66 @@ mod tests {
         let bytes = crate::secret_serde::to_vec(&assets, MAX_STATE_BYTES)
             .map_err(|_| "typed assets serialization")?;
         let protected = created.descriptor.replace_assets(&binding, &key, &bytes)?;
+        closed
+            .engines
+            .publish_namespace_record_cells(&binding, &cells)
+            .map_err(|_| "actual cipher cell staging")?;
+        closed
+            .namespaces
+            .install_custody_owner(&closed.cluster_id, "custody", protected.clone())
+            .map_err(|_| "actual encrypted owner")?;
+        closed.schema = closed.writer_schema();
+        assert!(
+            closed.schema == NAMESPACE_CUSTODY_STATE_SCHEMA,
+            "typed ciphertext activates reader floor 81"
+        );
+        let mut lower = closed.clone();
+        lower.schema = NAMESPACE_CUSTODY_STATE_SCHEMA - 1;
+        assert!(
+            lower.validate_format().is_err() && service.commit_state(&lower).is_err(),
+            "old reader labels cannot publish custody assets"
+        );
+        service
+            .commit_state(&closed)
+            .map_err(|_| "actual protected V5 publication")?;
+        service.state = Some(closed.clone());
+        let manifest = service
+            .record_root
+            .as_ref()
+            .ok_or("protected record root")?;
+        let persisted = Service::materialize_record_state(
+            manifest,
+            &records::DurableReader(service.durable.as_ref().ok_or("durable")?),
+        )
+        .map_err(|_| "actual protected V5 reopen")?;
+        assert!(
+            persisted.schema == NAMESPACE_CUSTODY_STATE_SCHEMA
+                && persisted.engines.record_root() == closed.engines.record_root()
+                && persisted
+                    .auth
+                    .authenticate_read_only(&scoped_token, 100)
+                    .is_err()
+                && !persisted.namespace_exists("custody/child"),
+            "genuine durable reopening contains ciphertext and unloaded assets"
+        );
+        for (name, ciphertext) in &cells {
+            let stored = persisted
+                .engines
+                .read_namespace_record_cell(&binding, name)?;
+            assert!(
+                stored.as_slice() == ciphertext.as_slice(),
+                "actual durable graph retains exact namespace ciphertext cells"
+            );
+        }
         let opened = protected.open_assets(&binding, &key)?;
         let decoded: NamespaceAssets = serde_json::from_slice(&opened)?;
         let restored = closed
             .restore_namespace_assets("custody", &key, decoded, &cells)
             .map_err(|_| "restore")?;
+        assert!(
+            restored.engines.record_root() == closed.engines.record_root(),
+            "runtime restoration does not change the protected publication root"
+        );
         assert!(
             restored.namespace_exists("custody/child"),
             "actual descendants restore"

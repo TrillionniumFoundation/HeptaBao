@@ -26,6 +26,10 @@ pub struct Binding {
 }
 
 impl Binding {
+    pub(crate) fn namespace(&self) -> &str {
+        &self.namespace
+    }
+
     pub fn new(
         cluster_id: String,
         namespace: String,
@@ -78,6 +82,7 @@ pub struct Descriptor {
     threshold: u8,
     key_epoch: u64,
     generation: u64,
+    seal_frontier: u64,
     wrapped_key: String,
     protected_assets: String,
 }
@@ -92,6 +97,7 @@ impl std::fmt::Debug for Descriptor {
             .field("threshold", &self.threshold)
             .field("key_epoch", &self.key_epoch)
             .field("generation", &self.generation)
+            .field("seal_frontier", &self.seal_frontier)
             .field("ciphertext", &"[REDACTED]")
             .finish()
     }
@@ -245,6 +251,7 @@ impl Descriptor {
             threshold,
             key_epoch: 1,
             generation: 1,
+            seal_frontier: 1,
             wrapped_key: String::new(),
             protected_assets: String::new(),
         };
@@ -274,6 +281,9 @@ impl Descriptor {
     pub fn generation(&self) -> u64 {
         self.generation
     }
+    pub fn seal_frontier(&self) -> u64 {
+        self.seal_frontier
+    }
     pub fn share_count(&self) -> u8 {
         self.shares
     }
@@ -289,6 +299,7 @@ impl Descriptor {
             || self.binding != *actual
             || self.key_epoch == 0
             || self.generation == 0
+            || self.seal_frontier == 0
             || self.wrapped_key.len() > 128
             || self.protected_assets.len() > MAX_ENCODING
         {
@@ -328,6 +339,7 @@ impl Descriptor {
         context.extend_from_slice(&self.key_epoch.to_be_bytes());
         if include_generation {
             context.extend_from_slice(&self.generation.to_be_bytes());
+            context.extend_from_slice(&self.seal_frontier.to_be_bytes());
         }
         Ok(context)
     }
@@ -373,6 +385,70 @@ impl Descriptor {
         next.protected_assets = STANDARD.encode(protected);
         Ok(next)
     }
+
+    /// Manual closure advances the authenticated frontier. Existing unseal
+    /// shares remain valid; stale progress and peer/effect capabilities do not.
+    pub fn advance_seal_frontier(&self, actual: &Binding, key: &Key) -> Result<Self, Error> {
+        let assets = self.open_assets(actual, key)?;
+        let mut next = self.clone();
+        next.generation = self
+            .generation
+            .checked_add(1)
+            .ok_or(Error::GenerationExhausted)?;
+        next.seal_frontier = self
+            .seal_frontier
+            .checked_add(1)
+            .ok_or(Error::GenerationExhausted)?;
+        let barrier = AeadBarrier::new(*key.bytes).map_err(|_| Error::InvalidKey)?;
+        next.protected_assets = STANDARD.encode(
+            barrier
+                .seal(&next.context(b"namespace-assets", true)?, &assets)
+                .map_err(|_| Error::Randomness)?,
+        );
+        Ok(next)
+    }
+
+    pub(crate) fn retirement(&self) -> Tombstone {
+        Tombstone {
+            version: VERSION,
+            schema: CUSTODY_SCHEMA,
+            binding: self.binding.clone(),
+            key_epoch: self.key_epoch,
+            seal_frontier: self.seal_frontier,
+        }
+    }
+}
+
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct Tombstone {
+    version: u32,
+    schema: u32,
+    binding: Binding,
+    key_epoch: u64,
+    seal_frontier: u64,
+}
+
+impl Tombstone {
+    pub(crate) fn validate(
+        &self,
+        cluster_id: &str,
+        namespace: &str,
+        next_incarnation: u64,
+    ) -> Result<(), Error> {
+        self.binding.validate()?;
+        if self.version != VERSION
+            || self.schema != CUSTODY_SCHEMA
+            || self.key_epoch == 0
+            || self.seal_frontier == 0
+            || self.binding.cluster_id != cluster_id
+            || self.binding.namespace != namespace
+            || self.binding.incarnation >= next_incarnation
+        {
+            return Err(Error::CorruptDescriptor);
+        }
+        Ok(())
+    }
 }
 
 fn validate_counts(shares: u8, threshold: u8) -> Result<(), Error> {
@@ -393,6 +469,7 @@ fn validate_assets(assets: &[u8]) -> Result<(), Error> {
 pub struct Progress {
     actual: Binding,
     key_epoch: u64,
+    seal_frontier: u64,
     shares: u8,
     threshold: u8,
     parts: Vec<Zeroizing<Vec<u8>>>,
@@ -433,6 +510,7 @@ impl Progress {
         Ok(Self {
             actual,
             key_epoch: descriptor.key_epoch,
+            seal_frontier: descriptor.seal_frontier,
             shares: descriptor.shares,
             threshold: descriptor.threshold,
             parts: Vec::new(),
@@ -457,6 +535,7 @@ impl Progress {
     ) -> Result<Submission, Error> {
         descriptor.validate(&self.actual)?;
         if self.key_epoch != descriptor.key_epoch
+            || self.seal_frontier != descriptor.seal_frontier
             || self.shares != descriptor.shares
             || self.threshold != descriptor.threshold
         {
@@ -533,6 +612,60 @@ fn nonce() -> Result<String, Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn namespace_manual_frontier_retires_stale_progress_and_authenticates_new_assets()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let binding = Binding::new(
+            "frontier-cluster".into(),
+            "custody".into(),
+            "public-id".into(),
+            1,
+        )?;
+        let created = Descriptor::create(binding.clone(), 3, 2, b"{\"typed\":\"private-assets\"}")?;
+        let mut stale = Progress::new(binding.clone(), &created.descriptor)?;
+        assert!(
+            matches!(
+                stale.submit(&created.descriptor, &created.shares[0])?,
+                Submission::Pending
+            ),
+            "old progress started"
+        );
+        let mut unlock = Progress::new(binding.clone(), &created.descriptor)?;
+        unlock.submit(&created.descriptor, &created.shares[0])?;
+        let key = match unlock.submit(&created.descriptor, &created.shares[1])? {
+            Submission::Unlocked { key, .. } => key,
+            Submission::Pending => return Err("threshold".into()),
+        };
+        let closed = created.descriptor.advance_seal_frontier(&binding, &key)?;
+        assert!(
+            closed.seal_frontier() == created.descriptor.seal_frontier() + 1
+                && closed.generation() == created.descriptor.generation() + 1,
+            "manual seal advances authenticated monotone frontier"
+        );
+        assert!(
+            stale.submit(&closed, &created.shares[1]).is_err()
+                && stale.count() == 0
+                && stale.nonce().is_empty(),
+            "stale partial progress cannot cross manual frontier"
+        );
+        let mut fresh = Progress::new(binding.clone(), &closed)?;
+        fresh.submit(&closed, &created.shares[0])?;
+        let assets = match fresh.submit(&closed, &created.shares[1])? {
+            Submission::Unlocked { assets, .. } => assets,
+            Submission::Pending => return Err("new threshold".into()),
+        };
+        assert!(
+            assets.as_slice() == b"{\"typed\":\"private-assets\"}",
+            "same private shares authenticate latest closed owner"
+        );
+        let mut tampered = closed.clone();
+        tampered.seal_frontier -= 1;
+        assert!(
+            tampered.open_assets(&binding, &key).is_err(),
+            "frontier is part of authenticated asset AAD"
+        );
+        Ok(())
+    }
     fn binding(namespace: &str, incarnation: u64) -> Result<Binding, Error> {
         Binding::new(
             "fixture-cluster".into(),
