@@ -269,7 +269,7 @@ pub(super) fn certificate_subject(der: &[u8]) -> Result<Vec<u8>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use x509_parser::{extensions::GeneralName, prelude::X509RevocationList};
+    use x509_parser::{extensions::GeneralName, prelude::CertificateRevocationList};
 
     type TestResult = std::result::Result<(), Box<dyn std::error::Error>>;
 
@@ -407,7 +407,7 @@ mod tests {
             reopened.handle_admin("POST", "revoke", &json!({"serial_number":serial}), now + 1)?;
             let root = reopened.root.as_ref().ok_or("reopened root")?;
             let der = reopened.crl_der(root, now + 2)?;
-            let (_, crl) = X509RevocationList::from_der(&der)?;
+            let (_, crl) = CertificateRevocationList::from_der(&der)?;
             assert!(
                 crl.issuer().as_raw() == root_subject,
                 "CRL uses the root's full actual DN"
