@@ -226,7 +226,7 @@ fn pem_blocks(input: &str, label: &str) -> Result<Vec<Vec<u8>>> {
     let mut rest = input.trim();
     let mut values = Vec::new();
     while !rest.is_empty() {
-        if values.len() >= MAX_CHAIN + 1 {
+        if values.len() > MAX_CHAIN {
             return Err(bad("PEM bundle exceeds bounds"));
         }
         let payload = rest
@@ -309,7 +309,7 @@ fn sans(fields: &RootFields, common_name: &str) -> Vec<u8> {
     if values.is_empty() {
         Vec::new()
     } else {
-        vec![extension(&[0x55, 0x1d, 0x11], false, &seq(&values))].concat()
+        extension(&[0x55, 0x1d, 0x11], false, &seq(&values))
     }
 }
 
