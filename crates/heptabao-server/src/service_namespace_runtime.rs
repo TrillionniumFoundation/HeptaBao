@@ -1089,7 +1089,7 @@ impl Service {
             // clearing that flag. Publish genuine typed ciphertext before any key
             // slot can be installed. Nested legacy flags still fail closed.
             self.commit_state(&mut candidate)?;
-            self.state = Some(candidate.clone());
+            candidate = self.install_committed_namespace_view(candidate);
         }
         let candidate = self
             .namespace_runtime
@@ -1174,6 +1174,15 @@ impl Serialize for State {
 }
 
 impl Service {
+    /// The committed candidate owns the exact validated protected view. Install
+    /// it without cloning; the continuation is a fresh mutable candidate whose
+    /// clone deliberately clears that view before its next publication.
+    pub(super) fn install_committed_namespace_view(&mut self, committed: State) -> State {
+        let continuation = committed.clone();
+        self.state = Some(committed);
+        continuation
+    }
+
     pub(super) fn prepare_namespace_publication(&self, state: &mut State) -> Result<(), Response> {
         self.namespace_runtime.prepare(state)
     }

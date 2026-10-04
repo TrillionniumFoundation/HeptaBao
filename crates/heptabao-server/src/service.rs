@@ -2452,7 +2452,7 @@ impl Service {
                 if let Err(error) = self.commit_state(&mut admitted) {
                     return error;
                 }
-                self.state = Some(admitted.clone());
+                admitted = self.install_committed_namespace_view(admitted);
             }
         }
         // HeaderOperation is unsupported by this public responder. A GET to
@@ -2519,7 +2519,7 @@ impl Service {
             if let Err(error) = self.commit_state(&mut admitted) {
                 return error;
             }
-            self.state = Some(admitted.clone());
+            admitted = self.install_committed_namespace_view(admitted);
         }
         // OpenBao reports an invalid self-unwrapping capability as a wrapping
         // request error, not a generic login failure. Validate its type/scope
@@ -2576,7 +2576,7 @@ impl Service {
             if let Err(error) = self.commit_state(&mut admitted) {
                 return error;
             }
-            self.state = Some(admitted.clone());
+            admitted = self.install_committed_namespace_view(admitted);
         }
         if let Some(principal) = principal.as_mut() {
             principal.bind_request_wrapping_ttl(wrap_ttl_seconds);

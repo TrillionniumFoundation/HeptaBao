@@ -274,7 +274,7 @@ impl Service {
             return Err(error);
         }
         // commit_state has updated durable/record identity. Install ONLY this committed candidate.
-        self.state = Some(state.clone());
+        state = self.install_committed_namespace_view(state);
         if let Err(error) = live(deadline) {
             self.fence_recovery_delivery();
             return Err(error);

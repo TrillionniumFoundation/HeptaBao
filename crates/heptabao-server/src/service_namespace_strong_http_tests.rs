@@ -1811,3 +1811,127 @@ fn closed_auth_public_login_and_lookup_ignore_bearer_without_consuming_its_one_u
     );
     Ok(())
 }
+
+#[test]
+fn committed_namespace_wrapping_clock_keeps_canonical_predecessor_for_second_commit() -> TestResult
+{
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    write_marker(&mut service, "", &token);
+    let shares = create(&mut service, "", "barrier", &token)?;
+    unseal(&mut service, "", "barrier", &token, &shares);
+    for now in [100, 101, 102] {
+        let mut request = ServiceRequest::new(
+            "POST",
+            "sys/wrapping/wrap",
+            "barrier",
+            &token,
+            json!({"public_marker":"clock-double-commit"}),
+        );
+        request.wrap_ttl_seconds = Some(60);
+        let response = service.handle_request_at(request, now);
+        assert!(
+            response.status == 200 && response.body["wrap_info"]["token"].is_string(),
+            "same request clock admission and wrapper publication both commit"
+        );
+        let state = service.state.as_ref().ok_or("live state")?;
+        assert!(
+            state.protected_state().is_ok(),
+            "live installed state retains its exact committed canonical view"
+        );
+        assert!(
+            service.namespace_runtime.is_loaded("barrier"),
+            "clock maintenance neither closes nor substitutes genuine independent custody"
+        );
+        marker(&mut service, "", &token);
+    }
+    Ok(())
+}
+
+#[test]
+fn committed_namespace_finite_help_keeps_canonical_live_state_after_consumption() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    write_marker(&mut service, "", &token);
+    let shares = create(&mut service, "", "barrier", &token)?;
+    unseal(&mut service, "", "barrier", &token, &shares);
+    assert!(
+        wire(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/reader",
+            "barrier",
+            &token,
+            json!({"policy":"path \"*\" { capabilities = [\"read\", \"update\"] }"})
+        )
+        .status
+            == 204,
+        "real independent namespace policy"
+    );
+    let minted = wire(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        "barrier",
+        &token,
+        json!({"policies":["reader"],"no_default_policy":true,"num_uses":1,"ttl":"1h"}),
+    );
+    assert!(minted.status == 200, "real finite bearer minted");
+    let actor = zeroize::Zeroizing::new(
+        minted.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("finite bearer")?
+            .to_owned(),
+    );
+    assert!(
+        wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "barrier",
+            &actor,
+            json!({})
+        )
+        .status
+            == 200,
+        "first finite authenticated help consumes and succeeds"
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("live state")?
+            .protected_state()
+            .is_ok(),
+        "early help return retains committed canonical predecessor"
+    );
+    assert!(
+        wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "barrier",
+            &actor,
+            json!({})
+        )
+        .status
+            == 403,
+        "consumption is not undone by restoring the correct live view"
+    );
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "kv/next",
+            "",
+            &token,
+            json!({"public_marker":"after-finite-help"})
+        )
+        .status
+            == 204,
+        "following real record publication accepts the committed namespace predecessor"
+    );
+    Ok(())
+}
