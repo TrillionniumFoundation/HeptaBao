@@ -985,6 +985,7 @@ pub struct Service {
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
     pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
+    pending_ordinary_kv_commit_notice: Option<ordinary_kv_delivery::OrdinaryKvCommitNoticeCapture>,
     native_snapshot_transport: bool,
     native_snapshot_clock: Option<(std::time::Instant, Duration)>,
     snapshot_spool: Option<Arc<crate::snapshot_file::SnapshotSpool>>,
@@ -1337,6 +1338,7 @@ impl Service {
             pending_openldap_effect: None,
             pending_snapshot_transfer: None,
             pending_ordinary_kv_authority: None,
+            pending_ordinary_kv_commit_notice: None,
             native_snapshot_transport: false,
             native_snapshot_clock: None,
             snapshot_spool: None,
@@ -1819,6 +1821,9 @@ impl Service {
             );
         }
         self.stamp_consistency_index(&mut response);
+        if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
+            authority.mark_response_audited(fingerprint);
+        }
         response
     }
 
@@ -1886,6 +1891,7 @@ impl Service {
             || self.pending_openldap_effect.is_some()
             || self.pending_snapshot_transfer.is_some()
             || self.pending_ordinary_kv_authority.is_some()
+            || self.pending_ordinary_kv_commit_notice.is_some()
         {
             erase_json(&mut body);
             return RequestExecution::Complete(Response::error(
@@ -2160,11 +2166,28 @@ impl Service {
                 effect,
             }));
         }
-        let response = self.audit_completed_response(&fingerprint, now, token_clock, response);
-        let response = if let Some(authority) = ordinary_kv_authority {
-            self.complete_ordinary_kv_delivery(authority, response)
-        } else {
-            response
+        let ordinary_kv_expected = ordinary_kv_authority.is_some();
+        // Retain the exact moved capsule through terminal-floor publication and
+        // mandatory audit. A typed unknown floor outcome attaches to this same
+        // request, rather than being reconstructed from the public response.
+        self.pending_ordinary_kv_authority = ordinary_kv_authority;
+        let mut response = self.audit_completed_response(&fingerprint, now, token_clock, response);
+        let response = match (
+            ordinary_kv_expected,
+            self.pending_ordinary_kv_authority.take(),
+        ) {
+            (true, Some(authority)) => {
+                self.complete_ordinary_kv_delivery(authority, response, &fingerprint)
+            }
+            (false, None) => response,
+            _ => {
+                erase_json(&mut response.body);
+                response.consistency_index = None;
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                Response::error(503, "ordinary KV delivery capsule was lost")
+            }
         };
         RequestExecution::Complete(response)
     }
@@ -6255,7 +6278,12 @@ impl Service {
         }
         match result {
             Ok(_) => Ok(()),
-            Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
+            Err(
+                ref error @ ServiceError::OutcomeUnknown {
+                    ref recovery_reference,
+                },
+            ) => {
+                self.capture_ordinary_kv_outcome_unknown(error, false);
                 crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;

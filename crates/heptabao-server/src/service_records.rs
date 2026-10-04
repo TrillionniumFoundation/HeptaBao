@@ -657,7 +657,12 @@ impl Service {
         }
         match result {
             Ok(()) => Ok(()),
-            Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
+            Err(
+                ref error @ ServiceError::OutcomeUnknown {
+                    ref recovery_reference,
+                },
+            ) => {
+                self.capture_ordinary_kv_outcome_unknown(error, true);
                 crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;

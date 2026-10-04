@@ -3,6 +3,32 @@
 use super::records::RecordPlan;
 use super::*;
 
+// A negative storage observation is not delivery authority. Its constructor
+// accepts the durable primitive's typed error; JSON/status/fence flags cannot
+// populate it. The binding belongs to the original affine request capsule.
+#[derive(PartialEq, Eq)]
+struct OrdinaryKvRequestBinding {
+    started: std::time::Instant,
+    namespace: String,
+    path: String,
+    method: String,
+    activation_nonce: String,
+}
+
+struct IndeterminateCommitNotice {
+    binding: OrdinaryKvRequestBinding,
+    error: &'static str,
+    recovery_reference: String,
+}
+
+// Temporarily carries only the negative observation while the original
+// capsule is moved into the existing before-Publish closure. It conveys no
+// Principal, clock, deadline, admission or right to release a private body.
+pub(super) struct OrdinaryKvCommitNoticeCapture {
+    binding: OrdinaryKvRequestBinding,
+    notice: Option<IndeterminateCommitNotice>,
+}
+
 /// One original admission capability; neither this capsule nor Principal is
 /// cloned, serialized or reconstructed from a bearer after dispatch.
 pub(super) struct OrdinaryKvAuthority {
@@ -26,6 +52,8 @@ pub(super) struct OrdinaryKvAuthority {
     token_clock: Option<RequestClock>,
     started: std::time::Instant,
     deadline: Option<std::time::Instant>,
+    indeterminate_commit: Option<IndeterminateCommitNotice>,
+    audited_fingerprint: Option<String>,
 }
 
 impl Drop for OrdinaryKvAuthority {
@@ -68,9 +96,25 @@ impl OrdinaryKvAuthority {
             token_clock: request.token_clock,
             started: request.admission_started,
             deadline: crate::request_deadline::current(),
+            indeterminate_commit: None,
+            audited_fingerprint: None,
         };
         authority.check(state, &state.auth, activation_nonce)?;
         Ok(authority)
+    }
+
+    fn request_binding(&self) -> OrdinaryKvRequestBinding {
+        OrdinaryKvRequestBinding {
+            started: self.started,
+            namespace: self.namespace.clone(),
+            path: self.path.clone(),
+            method: self.method.clone(),
+            activation_nonce: self.activation_nonce.clone(),
+        }
+    }
+
+    pub(super) fn mark_response_audited(&mut self, fingerprint: &str) {
+        self.audited_fingerprint = Some(fingerprint.to_owned());
     }
 
     pub(super) fn principal(&self) -> &Principal {
@@ -167,6 +211,40 @@ impl OrdinaryKvAuthority {
 }
 
 impl Service {
+    pub(super) fn capture_ordinary_kv_outcome_unknown(
+        &mut self,
+        error: &ServiceError,
+        record_owner: bool,
+    ) {
+        let ServiceError::OutcomeUnknown { recovery_reference } = error else {
+            return;
+        };
+        let error = if record_owner {
+            "record durable outcome unknown; do not blindly retry"
+        } else {
+            "durable outcome unknown; do not blindly retry"
+        };
+        if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
+            authority.indeterminate_commit = Some(IndeterminateCommitNotice {
+                binding: authority.request_binding(),
+                error,
+                recovery_reference: recovery_reference.clone(),
+            });
+        } else if let Some(capture) = self.pending_ordinary_kv_commit_notice.as_mut() {
+            capture.notice = Some(IndeterminateCommitNotice {
+                binding: OrdinaryKvRequestBinding {
+                    started: capture.binding.started,
+                    namespace: capture.binding.namespace.clone(),
+                    path: capture.binding.path.clone(),
+                    method: capture.binding.method.clone(),
+                    activation_nonce: capture.binding.activation_nonce.clone(),
+                },
+                error,
+                recovery_reference: recovery_reference.clone(),
+            });
+        }
+    }
+
     /// Keep the original request deadline through the existing publication
     /// hook. The capsule remains owned until mandatory response audit/stamping
     /// has finished; this method does not discharge delivery authority.
@@ -175,8 +253,24 @@ impl Service {
         state: &State,
         plan: RecordPlan,
     ) -> Result<(), Response> {
+        if self.pending_ordinary_kv_commit_notice.is_some() {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(Response::error(
+                503,
+                "ordinary KV commit observation is unavailable",
+            ));
+        }
         let mut authority = self.pending_ordinary_kv_authority.take();
-        let result = if let Some(authority) = authority.as_mut() {
+        self.pending_ordinary_kv_commit_notice =
+            authority
+                .as_ref()
+                .map(|authority| OrdinaryKvCommitNoticeCapture {
+                    binding: authority.request_binding(),
+                    notice: None,
+                });
+        let mut result = if let Some(authority) = authority.as_mut() {
             let activation_nonce = self.unseal_nonce.clone();
             self.commit_record_plan_with_before_publish(
                 state,
@@ -188,6 +282,22 @@ impl Service {
         } else {
             self.commit_record_plan(state, plan)
         };
+        let capture = self.pending_ordinary_kv_commit_notice.take();
+        match (authority.as_mut(), capture) {
+            (Some(authority), Some(capture)) if capture.binding == authority.request_binding() => {
+                authority.indeterminate_commit = capture.notice;
+            }
+            (None, None) => {}
+            _ => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                result = Err(Response::error(
+                    503,
+                    "ordinary KV commit observation was lost",
+                ));
+            }
+        }
         self.pending_ordinary_kv_authority = authority;
         result
     }
@@ -196,7 +306,25 @@ impl Service {
         &mut self,
         mut authority: OrdinaryKvAuthority,
         mut response: Response,
+        fingerprint: &str,
     ) -> Response {
+        if let Some(notice) = authority.indeterminate_commit.take() {
+            erase_json(&mut response.body);
+            response.consistency_index = None;
+            if notice.binding != authority.request_binding()
+                || authority.audited_fingerprint.as_deref() != Some(fingerprint)
+            {
+                return Response::error(503, "ordinary KV indeterminate notice was not audited");
+            }
+            // This is exclusively a public negative storage observation. Never
+            // reuse the handler/audit body or stamp an index; it proves no grant.
+            return Response {
+                consistency_index: None,
+                status: 503,
+                body: json!({"errors":[notice.error],
+                             "recovery_reference":notice.recovery_reference}),
+            };
+        }
         let _deadline_scope = authority
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);

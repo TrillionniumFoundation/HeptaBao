@@ -180,7 +180,8 @@ fn ordinary_kv_delivery_withholds_actual_read_after_late_revocation_policy_or_pa
         }
         let audited =
             service.audit_completed_response("synthetic-kv-delivery", 100, None, response);
-        let denied = service.complete_ordinary_kv_delivery(authority, audited);
+        let denied =
+            service.complete_ordinary_kv_delivery(authority, audited, "synthetic-kv-delivery");
         assert_eq!(denied.status, 403, "{scenario}: {}", denied.body);
         assert!(denied.body.get("data").is_none());
         assert!(denied.consistency_index.is_none());
@@ -273,7 +274,8 @@ fn ordinary_kv_delivery_keeps_original_elapsed_expiry_deadline_and_mount_incarna
         };
         let audited =
             service.audit_completed_response("synthetic-kv-delivery", 100, None, response);
-        let denied = service.complete_ordinary_kv_delivery(authority, audited);
+        let denied =
+            service.complete_ordinary_kv_delivery(authority, audited, "synthetic-kv-delivery");
         assert_eq!(denied.status, expected, "{scenario}: {}", denied.body);
         assert!(denied.body.get("data").is_none());
         assert!(denied.consistency_index.is_none());
@@ -398,8 +400,200 @@ fn ordinary_kv_delivery_preserves_trusted_native_scope_without_bypassing_http_or
     assert!(state.namespaces.incarnation(namespace).is_some());
     let audited =
         service.audit_completed_response("synthetic-legacy-delivery", 100, None, response);
-    let withheld = service.complete_ordinary_kv_delivery(authority, audited);
+    let withheld =
+        service.complete_ordinary_kv_delivery(authority, audited, "synthetic-legacy-delivery");
     assert_eq!(withheld.status, 503);
     assert!(withheld.body.get("data").is_none() && withheld.consistency_index.is_none());
+    Ok(())
+}
+
+#[test]
+fn ordinary_kv_indeterminate_json_and_fence_flags_cannot_create_storage_notice() -> TestResult {
+    for scenario in ["json", "fence"] {
+        let files = Root::new();
+        let mut service = files.service()?;
+        let (_, root) = bootstrap(&mut service)?;
+        fixture(&mut service, &root);
+        let token = issue(&mut service, &root, 0, "10m")?;
+        let (authority, mut response) = read_admitted(&mut service, &token, &json!({}))?;
+        assert!(authority.indeterminate_commit.is_none());
+        response.status = 503;
+        response.body["recovery_reference"] = json!("client-invented-notice");
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "auth/token/revoke",
+                &root,
+                json!({"token":token})
+            )
+            .status,
+            204
+        );
+        if scenario == "fence" {
+            service.recovery_required = true;
+        }
+        let response = service.complete_ordinary_kv_delivery(
+            authority,
+            response,
+            "synthetic-no-storage-notice",
+        );
+        assert_eq!(response.status, if scenario == "fence" { 503 } else { 403 });
+        assert!(response.body.get("data").is_none());
+        assert!(response.body.get("recovery_reference").is_none());
+        assert!(!response.body.to_string().contains("client-invented-notice"));
+        assert!(response.consistency_index.is_none());
+    }
+    Ok(())
+}
+
+#[test]
+fn ordinary_kv_non_unknown_durable_error_cannot_create_storage_notice() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    fixture(&mut service, &root);
+    let token = issue(&mut service, &root, 0, "10m")?;
+    let (authority, _) = read_admitted(&mut service, &token, &json!({}))?;
+    service.pending_ordinary_kv_authority = Some(authority);
+    service.capture_ordinary_kv_outcome_unknown(&ServiceError::CorruptState, true);
+    let authority = service
+        .pending_ordinary_kv_authority
+        .take()
+        .ok_or("capsule missing")?;
+    assert!(authority.indeterminate_commit.is_none());
+    assert!(service.pending_ordinary_kv_commit_notice.is_none());
+    Ok(())
+}
+
+#[test]
+fn ordinary_kv_deleted_version_404_metadata_still_requires_original_actor() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PUT",
+            "secret/data/metadata-protected",
+            &root,
+            json!({"data":{"synthetic":"deleted-private-value"}})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "secret/data/metadata-protected",
+            &root,
+            json!({})
+        )
+        .status,
+        204
+    );
+    policy(
+        &mut service,
+        &root,
+        r#"path "secret/data/*" { capabilities=["read"] }"#,
+    );
+    let token = issue(&mut service, &root, 0, "10m")?;
+    let state = service.state.as_mut().ok_or("state missing")?;
+    let mut principal = state.auth.authenticate(&token, 100)?;
+    Service::bind_identity_principal(state, &mut principal, "")
+        .map_err(|response| format!("identity admission {}", response.status))?;
+    let body = json!({});
+    let request = RequestView {
+        method: "GET",
+        path: "secret/data/metadata-protected",
+        namespace: "",
+        token: &token,
+        body: &body,
+        now: 100,
+        admission_started: Instant::now(),
+        token_clock: None,
+        allow_forward: true,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    };
+    let authority = OrdinaryKvAuthority::new(principal, state, &request, &service.unseal_nonce)
+        .map_err(|response| format!("KV admission {}", response.status))?;
+    let mut domain = state
+        .engines
+        .handle("", "GET", request.path, &body, 100)?
+        .ok_or("KV2 response missing")?;
+    assert_eq!(domain.status, 404);
+    assert_eq!(domain.body["data"]["metadata"]["version"], 1);
+    assert!(domain.body["data"]["metadata"]["deletion_time"].is_string());
+    let response = Response {
+        consistency_index: None,
+        status: domain.status,
+        body: std::mem::take(&mut domain.body),
+    };
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/revoke",
+            &root,
+            json!({"token":token})
+        )
+        .status,
+        204
+    );
+    let audited = service.audit_completed_response("synthetic-kv2-404", 100, None, response);
+    assert_eq!(audited.status, 404);
+    let withheld = service.complete_ordinary_kv_delivery(authority, audited, "synthetic-kv2-404");
+    assert_eq!(withheld.status, 403);
+    assert!(withheld.body.get("data").is_none());
+    assert!(!withheld.body.to_string().contains("metadata"));
+    assert!(withheld.consistency_index.is_none());
+    Ok(())
+}
+
+#[test]
+fn ordinary_kv_indeterminate_notice_requires_same_private_binding_and_audited_request() -> TestResult
+{
+    // Synthetic typed errors only exercise the negative binding/audit guards.
+    // The original unknown_journal_write test supplies the real storage fault.
+    for scenario in ["binding", "fingerprint", "unaudited"] {
+        let files = Root::new();
+        let mut service = files.service()?;
+        let (_, root) = bootstrap(&mut service)?;
+        fixture(&mut service, &root);
+        let token = issue(&mut service, &root, 0, "10m")?;
+        let (authority, response) = read_admitted(&mut service, &token, &json!({}))?;
+        service.pending_ordinary_kv_authority = Some(authority);
+        service.capture_ordinary_kv_outcome_unknown(
+            &ServiceError::OutcomeUnknown {
+                recovery_reference: "synthetic-typed-storage-reference".into(),
+            },
+            true,
+        );
+        let mut authority = service
+            .pending_ordinary_kv_authority
+            .take()
+            .ok_or("capsule missing")?;
+        assert!(authority.indeterminate_commit.is_some());
+        if scenario != "unaudited" {
+            authority.mark_response_audited("synthetic-notice-request");
+        }
+        if scenario == "binding" {
+            authority.path = "kv-late/another-request".into();
+        }
+        let fingerprint = if scenario == "fingerprint" {
+            "different-notice-request"
+        } else {
+            "synthetic-notice-request"
+        };
+        let withheld = service.complete_ordinary_kv_delivery(authority, response, fingerprint);
+        assert_eq!(withheld.status, 503);
+        assert!(withheld.body.get("data").is_none());
+        assert!(withheld.body.get("recovery_reference").is_none());
+        assert!(withheld.consistency_index.is_none());
+    }
     Ok(())
 }
