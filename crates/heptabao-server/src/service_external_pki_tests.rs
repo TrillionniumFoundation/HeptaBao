@@ -326,6 +326,16 @@ fn exercise_external_pki270_leaf_crls_with_schema(safe_schema: bool) -> TestResu
         "root metadata plus certificate, full CRL and delta CRL signatures"
     );
     assert!(
+        service.state.as_ref().ok_or("pre-role mixed root")?.schema == expected_schema
+            && !service
+                .state
+                .as_ref()
+                .ok_or("pre-role mixed root")?
+                .engines
+                .has_pki_role_bare_domain_state(),
+        "actual root retains65 or genuine AAD-bound66 before a new role"
+    );
+    assert!(
         call(
             &mut service,
             "POST",
@@ -338,9 +348,16 @@ fn exercise_external_pki270_leaf_crls_with_schema(safe_schema: bool) -> TestResu
             == 200,
         "mixed schema bounded leaf role"
     );
+    let expected_schema = PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA;
     assert!(
-        service.state.as_ref().ok_or("mixed root state")?.schema == expected_schema,
-        "ordinary PKI stays65 and mixed opt-in PKI retains66"
+        service.state.as_ref().ok_or("mixed root state")?.schema == expected_schema
+            && service
+                .state
+                .as_ref()
+                .ok_or("mixed root state")?
+                .engines
+                .has_pki_role_bare_domain_state(),
+        "actual new role carries its distinct84 owner above65 or66"
     );
     let descriptor = call(
         &mut *remote.service.lock().map_err(|_| "remote lock")?,
