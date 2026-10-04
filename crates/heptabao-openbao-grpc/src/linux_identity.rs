@@ -91,6 +91,8 @@ impl<H: AuthoritativeLifecycleHook> LinuxIdentityProbe<H> {
 pub struct LinuxIdentityProbe<H> {
     expected: OwnedPluginIdentity,
     held_executable: File,
+    sealed_executable: Option<(StableMetadata, [u8; 32])>,
+    process_group_id: u32,
     held_config: File,
     config_path: PathBuf,
     hook: H,
@@ -134,9 +136,12 @@ impl<H: AuthoritativeLifecycleHook> LinuxIdentityProbe<H> {
         verify_frame(&before, &expected)?;
         let held_executable = open_executable(root, expected.pid)?;
         let held_config = open_config(config_path)?;
+        let sealed_executable = capture_sealed_executable(root, &expected, &held_executable)?;
         let probe = Self {
             expected,
             held_executable,
+            sealed_executable,
+            process_group_id: before.process_group_id,
             held_config,
             config_path: config_path.to_path_buf(),
             hook,
@@ -159,6 +164,9 @@ impl<H: AuthoritativeLifecycleHook> LinuxIdentityProbe<H> {
         }
         let before = process_frame(root, self.expected.pid, self.expected.uid)?;
         verify_frame(&before, &self.expected)?;
+        if before.process_group_id != self.process_group_id {
+            return Err(BridgeError::IdentityChanged);
+        }
         let executable = open_executable(root, self.expected.pid)?;
         let config = open_config(&self.config_path)?;
         let held_executable_meta = stable_metadata(&self.held_executable)?;
@@ -177,7 +185,18 @@ impl<H: AuthoritativeLifecycleHook> LinuxIdentityProbe<H> {
         {
             return Err(BridgeError::IdentityChanged);
         }
-        let executable_sha = stable_hash(&executable, MAX_EXECUTABLE)?;
+        let executable_sha = match self.sealed_executable {
+            Some((captured, sha256)) => {
+                if executable_meta != captured
+                    || !complete_executable_seals(&self.held_executable)
+                    || !complete_executable_seals(&executable)
+                {
+                    return Err(BridgeError::IdentityChanged);
+                }
+                sha256
+            }
+            None => stable_hash(&executable, MAX_EXECUTABLE)?,
+        };
         let config_sha = stable_hash(&config, MAX_CONFIG)?;
         if stable_metadata(&self.held_executable)? != executable_meta
             || stable_metadata(&self.held_config)? != config_meta
@@ -189,7 +208,13 @@ impl<H: AuthoritativeLifecycleHook> LinuxIdentityProbe<H> {
         if stable_metadata(&open_config(&self.config_path)?)? != config_meta {
             return Err(BridgeError::IdentityChanged);
         }
-        if stable_metadata(&open_executable(root, self.expected.pid)?)? != executable_meta {
+        let reopened_executable = open_executable(root, self.expected.pid)?;
+        if stable_metadata(&reopened_executable)? != executable_meta
+            || self.sealed_executable.is_some()
+                && (!complete_executable_seals(&self.held_executable)
+                    || !complete_executable_seals(&executable)
+                    || !complete_executable_seals(&reopened_executable))
+        {
             return Err(BridgeError::IdentityChanged);
         }
         let after = process_frame(root, self.expected.pid, self.expected.uid)?;
@@ -290,6 +315,65 @@ fn open_config(path: &Path) -> Result<File, BridgeError> {
     .map_err(|_| BridgeError::ProcessObservationUnavailable)?;
     Ok(File::from(fd))
 }
+// The kernel forbids content, size, execution-mode and seal changes only
+// after every required seal is present. Missing/unsupported seals retain the
+// existing two-pass hash on every observation of a mutable executable.
+#[cfg(target_os = "linux")]
+fn complete_executable_seals(file: &File) -> bool {
+    use rustix::fs::SealFlags;
+    rustix::fs::fcntl_get_seals(file).is_ok_and(|actual| {
+        actual.contains(
+            SealFlags::WRITE
+                | SealFlags::GROW
+                | SealFlags::SHRINK
+                | SealFlags::EXEC
+                | SealFlags::SEAL,
+        )
+    })
+}
+#[cfg(not(target_os = "linux"))]
+fn complete_executable_seals(_file: &File) -> bool {
+    false
+}
+
+fn capture_sealed_executable(
+    root: &Path,
+    expected: &OwnedPluginIdentity,
+    held: &File,
+) -> Result<Option<(StableMetadata, [u8; 32])>, BridgeError> {
+    if !complete_executable_seals(held) {
+        return Ok(None);
+    }
+    let before = stable_metadata(held)?;
+    let reopened = open_executable(root, expected.pid)?;
+    if before.uid != expected.uid
+        || before.device != expected.executable_device
+        || before.inode != expected.executable_inode
+        || stable_metadata(&reopened)? != before
+        || !complete_executable_seals(&reopened)
+    {
+        return Err(BridgeError::IdentityChanged);
+    }
+    // Independently hash both the retained image and the actual /proc image
+    // twice before admitting an immutable digest. Expected bytes are never
+    // used as a substitute for reading the executable the process runs.
+    let held_sha = stable_hash(held, MAX_EXECUTABLE)?;
+    let reopened_sha = stable_hash(&reopened, MAX_EXECUTABLE)?;
+    let terminal = open_executable(root, expected.pid)?;
+    if held_sha != expected.executable_sha256
+        || reopened_sha != held_sha
+        || stable_metadata(held)? != before
+        || stable_metadata(&reopened)? != before
+        || stable_metadata(&terminal)? != before
+        || !complete_executable_seals(held)
+        || !complete_executable_seals(&reopened)
+        || !complete_executable_seals(&terminal)
+    {
+        return Err(BridgeError::IdentityChanged);
+    }
+    Ok(Some((before, held_sha)))
+}
+
 fn hash_pass(file: &File, length: u64) -> Result<[u8; 32], BridgeError> {
     let mut context = Context::new(&SHA256);
     let mut buffer = Zeroizing::new(vec![0; 16 * 1024]);
@@ -356,6 +440,7 @@ fn read_proc_file(path: &Path) -> Result<Zeroizing<Vec<u8>>, BridgeError> {
 struct ProcessFrame {
     pid: u32,
     uid: u32,
+    process_group_id: u32,
     session_id: u32,
     start_ticks: u64,
 }
@@ -371,7 +456,7 @@ fn unsigned<T: std::str::FromStr>(bytes: &[u8]) -> Result<T, BridgeError> {
         .parse()
         .map_err(|_| BridgeError::ProcessObservationUnavailable)
 }
-fn parse_stat(bytes: &[u8]) -> Result<(u32, u32, u64), BridgeError> {
+fn parse_stat(bytes: &[u8]) -> Result<(u32, u32, u32, u64), BridgeError> {
     let split = bytes
         .iter()
         .position(|b| *b == b' ')
@@ -399,12 +484,13 @@ fn parse_stat(bytes: &[u8]) -> Result<(u32, u32, u64), BridgeError> {
         let field = field.strip_prefix(b"-").unwrap_or(field);
         let _: u64 = unsigned(field)?;
     }
+    let process_group_id: u32 = unsigned(fields[2])?;
     let session_id: u32 = unsigned(fields[3])?;
     let start_ticks: u64 = unsigned(fields[19])?;
-    if pid == 0 || session_id == 0 || start_ticks == 0 {
+    if pid == 0 || process_group_id == 0 || session_id == 0 || start_ticks == 0 {
         return Err(BridgeError::ProcessObservationUnavailable);
     }
-    Ok((pid, session_id, start_ticks))
+    Ok((pid, process_group_id, session_id, start_ticks))
 }
 fn parse_uids(bytes: &[u8]) -> Result<u32, BridgeError> {
     let mut found = None;
@@ -439,7 +525,7 @@ fn process_frame(root: &Path, pid: u32, uid: u32) -> Result<ProcessFrame, Bridge
     if !before.is_dir() || before.uid() != uid {
         return Err(BridgeError::IdentityChanged);
     }
-    let (actual_pid, session_id, start_ticks) =
+    let (actual_pid, process_group_id, session_id, start_ticks) =
         parse_stat(&read_proc_file(&directory.join("stat"))?)?;
     let actual_uid = parse_uids(&read_proc_file(&directory.join("status"))?)?;
     let after =
@@ -455,6 +541,7 @@ fn process_frame(root: &Path, pid: u32, uid: u32) -> Result<ProcessFrame, Bridge
     Ok(ProcessFrame {
         pid: actual_pid,
         uid: actual_uid,
+        process_group_id,
         session_id,
         start_ticks,
     })
