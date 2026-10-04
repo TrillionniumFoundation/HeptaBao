@@ -40,6 +40,7 @@ fn precise_service(state: &mut AuthState, raw: &str) {
     let granted = span(500_000_000);
     token.token_api_precision = Some(ServicePrecision {
         issued_at: timestamp(100, 200_000_000),
+        grant_started_at: timestamp(100, 200_000_000),
         expires_at: Some(timestamp(100, 700_000_000)),
         last_renewed_at: None,
         previous_grant: granted,
@@ -373,6 +374,7 @@ fn precise_public_clock_serializes_checked_fraction_without_changing_authority()
         .token_api_precision
         .as_mut()
         .ok_or("precision absent")?;
+    lease.grant_started_at = timestamp(100, 300_000_000);
     lease.last_renewed_at = Some(timestamp(100, 300_000_000));
     lease.expires_at = Some(timestamp(100, 800_000_000));
     state.validate_system_lease_defaults()?;
@@ -380,12 +382,213 @@ fn precise_public_clock_serializes_checked_fraction_without_changing_authority()
         &state.tokens[&hash(&raw)],
         AuthorityTime::Precise(timestamp(100, 600_000_000)),
     )?;
-    assert_eq!(lookup["last_renewal"], 100);
-    assert_eq!(lookup["last_renewal_time"], "1970-01-01T00:01:40.3Z");
+    assert_eq!(lookup["last_renewal_time"], 100);
+    assert_eq!(lookup["last_renewal"], "1970-01-01T00:01:40.3Z");
     assert_eq!(lookup["expire_time"], "1970-01-01T00:01:40.8Z");
     assert!(
         super::super::token_info_observed(&state.tokens[&hash(&raw)], AuthorityTime::Coarse(100))
             .is_err()
     );
+    Ok(())
+}
+
+#[test]
+fn registration_clock_cannot_move_an_already_computed_precise_deadline() -> TestResult {
+    let (mut state, root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw);
+    let token = state.tokens.get_mut(&hash(&raw)).ok_or("token absent")?;
+    let lease = token
+        .token_api_precision
+        .as_mut()
+        .ok_or("precision absent")?;
+    lease.issued_at = timestamp(100, 200_040_000);
+    state.validate_system_lease_defaults()?;
+    assert!(
+        state
+            .authenticate_from_observed(
+                &raw,
+                AuthorityTime::Precise(timestamp(100, 700_010_000)),
+                None
+            )
+            .is_err()
+    );
+    let token = state.tokens.get_mut(&hash(&raw)).ok_or("token absent")?;
+    let lease = token
+        .token_api_precision
+        .as_mut()
+        .ok_or("precision absent")?;
+    // A later public registration clock does not add time to an owned grant.
+    lease.grant_started_at = timestamp(100, 300_000_000);
+    lease.last_renewed_at = Some(timestamp(100, 300_020_000));
+    lease.expires_at = Some(timestamp(100, 800_000_000));
+    state.validate_system_lease_defaults()?;
+    assert!(
+        state
+            .authenticate_from_observed(
+                &raw,
+                AuthorityTime::Precise(timestamp(100, 800_010_000)),
+                None
+            )
+            .is_err()
+    );
+    Ok(())
+}
+
+fn prepared<'a>(
+    state: &AuthState,
+    root: &'a Principal,
+    batch: bool,
+) -> Result<super::super::token_precise_issuance::PreparedCreation<'a>, Box<dyn std::error::Error>>
+{
+    Ok(super::super::token_precise_issuance::PreparedCreation {
+        actor: root,
+        namespace: "",
+        request_path: "auth/token/create",
+        creation_seconds: 100,
+        parent: state.check_principal(root, "", 100)?.service()?.clone(),
+        policies: BTreeSet::from(["default".into()]),
+        role: None,
+        issued_role: None,
+        root: false,
+        batch,
+        no_parent: false,
+        entity_alias: None,
+        creation_path: "auth/token/create".into(),
+        requested_renewable: true,
+        is_sudo: true,
+        requested_no_parent: false,
+    })
+}
+#[test]
+fn staged_precise_creation_and_renewal_keep_zero_public_grant_with_live_private_deadline()
+-> TestResult {
+    let (mut state, root) = setup()?;
+    let clock = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+    let recipe = prepared(&state, &root, false)?;
+    let issued = state.finish_precise_token_creation(recipe, &json!({"ttl":"500ms"}), clock)?;
+    assert_eq!(issued.body["auth"]["lease_duration"], 0);
+    let raw = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("token absent")?;
+    let digest = hash(raw);
+    state.validate_system_lease_defaults()?;
+    let first = state.tokens[&digest]
+        .token_api_precision
+        .clone()
+        .ok_or("lease absent")?;
+    assert_eq!(first.previous_grant, span(500_000_000));
+    assert_eq!(
+        first
+            .expires_at
+            .ok_or("deadline absent")?
+            .elapsed(first.grant_started_at)?,
+        span(500_000_000)
+    );
+    assert!(first.issued_at >= first.grant_started_at);
+    assert!(state.authenticate_from(raw, 100, None).is_err());
+    let clock = RequestClock::anchored(Duration::new(100, 300_000_000), Instant::now())?;
+    let renewal = state
+        .renew_precise_token_api_token(&root, "", "auth/token/renew", &digest, &json!({}), clock)?
+        .ok_or("renew absent")?;
+    assert_eq!(renewal.body["auth"]["lease_duration"], 0);
+    state.validate_system_lease_defaults()?;
+    let renewed = state.tokens[&digest]
+        .token_api_precision
+        .as_ref()
+        .ok_or("renew precision absent")?;
+    assert_eq!(renewed.creation_grant, first.creation_grant);
+    assert_eq!(renewed.issued_at, first.issued_at);
+    assert_eq!(renewed.previous_grant, span(500_000_000));
+    assert_eq!(
+        renewed
+            .expires_at
+            .ok_or("renew deadline absent")?
+            .elapsed(renewed.grant_started_at)?,
+        span(500_000_000)
+    );
+    assert!(
+        renewed
+            .last_renewed_at
+            .is_some_and(|at| at >= renewed.grant_started_at)
+    );
+    assert!(
+        state
+            .authenticate_from_observed(
+                raw,
+                AuthorityTime::Precise(timestamp(100, 900_000_000)),
+                None
+            )
+            .is_err()
+    );
+    Ok(())
+}
+#[test]
+fn staged_precise_batch_sealing_preserves_authenticated_whole_creation_anchor() -> TestResult {
+    let (mut state, root) = setup()?;
+    let recipe = prepared(&state, &root, true)?;
+    let clock = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+    let mut issued = state.finish_precise_token_creation(recipe, &json!({"ttl":"500ms"}), clock)?;
+    assert_eq!(issued.body["auth"]["lease_duration"], 0);
+    state.finish_pending_batch_observed(
+        &mut issued,
+        "",
+        100,
+        AuthorityTime::Precise(timestamp(100, 400_000_000)),
+    )?;
+    let raw = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("batch absent")?;
+    state.authenticate_from_observed(
+        raw,
+        AuthorityTime::Precise(timestamp(100, 400_000_000)),
+        None,
+    )?;
+    assert!(
+        state
+            .authenticate_from_observed(
+                raw,
+                AuthorityTime::Precise(timestamp(100, 600_000_000)),
+                None
+            )
+            .is_err()
+    );
+    assert!(state.authenticate_from(raw, 100, None).is_err());
+    state.validate_system_lease_defaults()?;
+    Ok(())
+}
+#[test]
+fn coarse_maintenance_never_retires_precision_from_closed_clock_authority() -> TestResult {
+    let (mut state, root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw);
+    let before = serde_json::to_vec(&state)?;
+    let error = state
+        .token_route(
+            Some(&root),
+            "",
+            "POST",
+            "auth/token/tidy",
+            &json!({}),
+            100,
+            None,
+        )
+        .err()
+        .ok_or("coarse tidy accepted")?;
+    assert_eq!(error.status, 503);
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    let expired = AuthorityTime::Precise(timestamp(100, 800_000_000));
+    let tidy = state.token_route_observed(
+        Some(&root),
+        "",
+        "POST",
+        "auth/token/tidy",
+        &json!({}),
+        expired,
+        None,
+    )?;
+    assert_eq!(tidy.body["data"]["removed_tokens"], 1);
+    assert!(!state.tokens.contains_key(&hash(&raw)));
+    assert!(state.has_token_api_precision_state());
     Ok(())
 }

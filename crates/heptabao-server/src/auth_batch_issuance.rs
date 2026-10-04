@@ -81,7 +81,7 @@ impl PendingBatchGrant {
         let body = json!({"auth":{
             "accessor":"", "policies":claims.policies, "token_policies":claims.policies,
             "entity_id":claims.entity_id.as_deref().unwrap_or(""), "metadata":claims.metadata,
-            "lease_duration":claims.expires_at-claims.issued_at, "renewable":false,
+            "lease_duration":claims.token_api_precision.as_ref().map_or(claims.expires_at-claims.issued_at, |lease|lease.granted_ttl.public_seconds()), "renewable":false,
             "token_type":"batch", "orphan":claims.parent.is_none(), "num_uses":0
         }});
         AuthResponse {
@@ -225,12 +225,27 @@ impl AuthState {
         namespace: &str,
         now: u64,
     ) -> Result<(), AuthError> {
+        self.finish_pending_batch_observed(response, namespace, now, AuthorityTime::Coarse(now))
+    }
+
+    pub(crate) fn finish_pending_batch_observed(
+        &mut self,
+        response: &mut AuthResponse,
+        namespace: &str,
+        now: u64,
+        time: AuthorityTime,
+    ) -> Result<(), AuthError> {
         let Some(pending) = response.pending_batch.take() else {
             return Ok(());
         };
         if pending.claims.namespace != namespace
             || pending.claims.issued_at != now
             || pending.claims.expires_at <= now
+            || !time.batch_live(
+                pending.claims.token_api_precision.as_ref(),
+                pending.claims.issued_at,
+                pending.claims.expires_at,
+            )
             || pending.login_mount.is_some() && pending.claims.entity_id.is_none()
         {
             return Err(denied());
@@ -244,7 +259,7 @@ impl AuthState {
         // These are a fresh grant's original parent/namespace, not a target
         // inspection. Parent liveness remains authoritative through publication.
         if let Some(parent) = pending.claims.parent.as_deref() {
-            self.lease_issuer_by_digest(parent, namespace, now)
+            self.lease_issuer_by_digest_observed(parent, namespace, time)
                 .ok_or_else(denied)?;
         }
         let mut authority = match &self.batch_authority {

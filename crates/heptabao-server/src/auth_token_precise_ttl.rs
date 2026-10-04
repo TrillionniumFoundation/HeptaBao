@@ -81,6 +81,33 @@ pub(super) fn uses(body: &Value) -> Result<u64, AuthError> {
     u64::try_from(parsed).map_err(|_| bad("number of uses cannot be negative"))
 }
 
+/// Renew's framework TypeDurationSecond truncates through float64 Seconds,
+/// unlike ordinary creation's TypeString durations. Negative subsecond input
+/// becomes zero; nonzero negative seconds are rejected before handler execution.
+pub(super) fn renew_increment(body: &Value) -> Result<DurationNanos, AuthError> {
+    let field = "increment";
+    let text = match body.get(field) {
+        None | Some(Value::Null) => {
+            return DurationNanos::from_seconds(0).map_err(|_| bad("invalid checked increment"));
+        }
+        Some(Value::String(value)) => value.clone(),
+        Some(Value::Number(value)) => value.to_string(),
+        Some(_) => {
+            return Err(bad(
+                "Field validation failed: error converting input for field \"increment\": could not parse duration from input",
+            ));
+        }
+    };
+    let nanos = token_duration::parse_duration(&text).map_err(|error| {
+        bad(&format!(
+            "Field validation failed: error converting input for field {field:?}: {error}"
+        ))
+    })?;
+    let seconds = (nanos as f64 / 1_000_000_000_f64) as i64;
+    let seconds = u64::try_from(seconds).map_err(|_| bad(&format!("Field validation failed: error converting input for field {field:?}: cannot provide negative value '{seconds}'")))?;
+    DurationNanos::from_seconds(seconds).map_err(|_| bad("invalid checked increment"))
+}
+
 #[derive(Clone, Copy)]
 pub(super) struct TTLInputs {
     pub(super) default_ttl: DurationNanos,
@@ -432,5 +459,35 @@ mod tests {
             Err(TTLError::NonpositiveMax)
         ));
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod increment_tests {
+    use super::*;
+    use serde_json::json;
+    #[test]
+    fn framework_renew_increment_is_whole_seconds_without_changing_creation_parser() {
+        assert_eq!(
+            renew_increment(&json!({"increment":"1.5s"}))
+                .unwrap()
+                .public_seconds(),
+            1
+        );
+        assert_eq!(
+            renew_increment(&json!({"increment":"-0.5s"}))
+                .unwrap()
+                .public_seconds(),
+            0
+        );
+        assert!(renew_increment(&json!({"increment":"-1s"})).is_err());
+        assert!(renew_increment(&json!({"increment":true})).is_err());
+        assert_eq!(
+            RequestedDurations::parse(&json!({"ttl":"1.5s"}))
+                .unwrap()
+                .ttl
+                .nanoseconds(),
+            1_500_000_000
+        );
     }
 }

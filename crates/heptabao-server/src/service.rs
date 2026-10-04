@@ -793,7 +793,8 @@ impl RequestView<'_> {
     fn token_time(&self) -> Result<AuthorityTime, Response> {
         match self.token_clock {
             Some(clock) => clock
-                .observed_at()
+                .with_seconds_floor(self.now)
+                .and_then(RequestClock::observed_at)
                 .map(AuthorityTime::Precise)
                 .map_err(|_| Response::error(503, "trusted token clock is unavailable")),
             None => Ok(AuthorityTime::Coarse(self.now)),
@@ -3208,11 +3209,15 @@ impl Service {
             Err(error) => return Response::error(error.status, &error.message),
             Ok(None) => {}
         }
+        let token_clock = match token_clock
+            .map(|clock| clock.with_seconds_floor(now))
+            .transpose()
+        {
+            Ok(clock) => clock,
+            Err(_) => return Response::error(503, "trusted token clock is unavailable"),
+        };
         let time = match token_clock {
-            Some(clock) => match clock
-                .with_seconds_floor(now)
-                .and_then(RequestClock::observed_at)
-            {
+            Some(clock) => match clock.observed_at() {
                 Ok(at) => AuthorityTime::Precise(at),
                 Err(_) => return Response::error(503, "trusted token clock is unavailable"),
             },
@@ -3330,13 +3335,14 @@ impl Service {
         let token_backend_body = token_fields.map(|carrier| carrier.backend_body());
         let auth_body = token_backend_body.as_ref().map_or(body, |body| &body.0);
         let mut auth = state.auth.clone();
-        match auth.handle_with_connection_observed(
+        match auth.handle_with_connection_clock(
             principal,
             namespace,
             method,
             path,
             auth_body,
             time,
+            token_clock,
             client_certificates,
             origin_peer,
         ) {

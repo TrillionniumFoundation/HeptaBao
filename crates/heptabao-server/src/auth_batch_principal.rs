@@ -301,12 +301,12 @@ impl AuthState {
             if raw.len() > batch::MAX_BATCH_TOKEN_BYTES {
                 return Err(denied());
             }
-            let claims = self
-                .batch_authority
-                .as_ref()
-                .ok_or_else(denied)?
-                .open_authenticated_observed(raw, time)
-                .map_err(|_| denied())?;
+            let authority = self.batch_authority.as_ref().ok_or_else(denied)?;
+            let claims = match time {
+                AuthorityTime::Coarse(now) => authority.open(raw, namespace, now),
+                AuthorityTime::Precise(_) => authority.open_authenticated_observed(raw, time),
+            }
+            .map_err(|_| denied())?;
             self.check_batch_claims_observed(&claims, namespace, time)?;
             // An administrator inspecting a target is not using its bearer as
             // the request actor. Target CIDRs must not be tested against their IP.

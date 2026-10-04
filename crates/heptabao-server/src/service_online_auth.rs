@@ -200,13 +200,17 @@ impl Service {
         principal: &mut Option<Principal>,
         request: &RequestView<'_>,
     ) -> Option<Response> {
-        let plan = match admitted.auth.prepare_provider_renewal(
+        let time = match request.token_time() {
+            Ok(time) => time,
+            Err(response) => return Some(response),
+        };
+        let plan = match admitted.auth.prepare_provider_renewal_observed(
             principal.as_ref(),
             request.namespace,
             request.method,
             request.path,
             request.body,
-            request.now,
+            time,
         ) {
             Ok(None) => return None,
             Err(error) => return Some(auth_error(error)),

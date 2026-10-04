@@ -113,6 +113,8 @@ mod token_cidrs;
 mod token_creation_ttl;
 #[path = "auth_token_duration.rs"]
 mod token_duration;
+#[path = "auth_token_precise_issuance.rs"]
+mod token_precise_issuance;
 #[path = "auth_token_precise_ttl.rs"]
 mod token_precise_ttl;
 #[path = "auth_token_precision.rs"]
@@ -3627,6 +3629,32 @@ impl AuthState {
         peer_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Option<AuthResponse>, AuthError> {
+        self.handle_with_connection_clock(
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            time,
+            None,
+            peer_certificates,
+            origin_peer,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn handle_with_connection_clock(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        time: AuthorityTime,
+        clock: Option<RequestClock>,
+        peer_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+    ) -> Result<Option<AuthResponse>, AuthError> {
         let now = time.seconds();
         validate_namespace(namespace)?;
         validate_path(path, false)?;
@@ -3657,13 +3685,14 @@ impl AuthState {
                 .ok_or_else(|| err(404, "auth mount not found"))?;
             let scope = AuthScope { namespace, mount };
             let result = match entry.kind.as_str() {
-                "token" if mount == "token" => self.token_route_observed(
+                "token" if mount == "token" => self.token_route_with_clock(
                     principal,
                     namespace,
                     method,
                     path,
                     body,
                     time,
+                    clock,
                     peer_certificates,
                 ),
                 "userpass" if suffix.starts_with("login/") => {
@@ -5921,6 +5950,7 @@ impl AuthState {
         )
     }
 
+    #[cfg(test)]
     #[allow(clippy::too_many_arguments)]
     fn token_route_observed(
         &mut self,
@@ -5930,6 +5960,30 @@ impl AuthState {
         path: &str,
         body: &Value,
         time: AuthorityTime,
+        peer_certificates: Option<&[Vec<u8>]>,
+    ) -> Result<AuthResponse, AuthError> {
+        self.token_route_with_clock(
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            time,
+            None,
+            peer_certificates,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn token_route_with_clock(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        time: AuthorityTime,
+        clock: Option<RequestClock>,
         peer_certificates: Option<&[Vec<u8>]>,
     ) -> Result<AuthResponse, AuthError> {
         let now = time.seconds();
@@ -5955,16 +6009,34 @@ impl AuthState {
         };
         let actor = self.permission_observed(principal, namespace, path, capability, time)?;
         match operation {
-            "create" | "create-orphan" => self.create_token(
-                actor,
-                namespace,
-                path,
-                body,
-                now,
-                operation == "create-orphan",
-            ),
+            "create" | "create-orphan" => {
+                if time.exact().is_none() {
+                    self.create_token(
+                        actor,
+                        namespace,
+                        path,
+                        body,
+                        now,
+                        operation == "create-orphan",
+                    )
+                } else {
+                    self.create_token_observed(
+                        actor,
+                        namespace,
+                        path,
+                        body,
+                        time,
+                        clock,
+                        operation == "create-orphan",
+                    )
+                }
+            }
             operation if operation.starts_with("create/") => {
-                self.create_token(actor, namespace, path, body, now, false)
+                if time.exact().is_none() {
+                    self.create_token(actor, namespace, path, body, now, false)
+                } else {
+                    self.create_token_observed(actor, namespace, path, body, time, clock, false)
+                }
             }
             "lookup-self" => {
                 reject_unknown(body, &[])?;
@@ -6023,6 +6095,12 @@ impl AuthState {
             "tidy" => {
                 reject_unknown(body, &[])?;
                 self.authorize_request_observed(actor, namespace, path, "sudo", time)?;
+                if time.exact().is_none() && self.has_token_api_precision_state() {
+                    return Err(err(
+                        503,
+                        "trusted precise clock required for token maintenance",
+                    ));
+                }
                 let stale: Vec<String> = self
                     .tokens
                     .iter()
@@ -6130,6 +6208,10 @@ impl AuthState {
                 // keep the closed target resolution behavior.
                 if self.tokens.get(&id).is_some_and(|token| {
                     token.namespace == namespace
+                        && matches!(
+                            token.auth_provenance,
+                            Some(TokenAuthProvenance::TokenApi { .. })
+                        )
                         && match token.token_api_precision.as_ref() {
                             Some(lease) => time
                                 .exact()
@@ -6156,6 +6238,12 @@ impl AuthState {
                     return Ok(response);
                 }
                 if let Some(response) = self.renew_oidc_token(namespace, &id, body, now)? {
+                    return Ok(response);
+                }
+                if let Some(clock) = clock
+                    && let Some(response) = self
+                        .renew_precise_token_api_token(actor, namespace, path, &id, body, clock)?
+                {
                     return Ok(response);
                 }
                 if let Some(response) = self.renew_token_api_token(namespace, &id, body, now)? {
@@ -6206,16 +6294,6 @@ impl AuthState {
             }
             _ => Err(err(404, "unsupported token operation")),
         }
-    }
-
-    fn target_token(
-        &self,
-        namespace: &str,
-        body: &Value,
-        accessor: bool,
-        now: u64,
-    ) -> Result<String, AuthError> {
-        self.target_token_observed(namespace, body, accessor, AuthorityTime::Coarse(now))
     }
 
     fn target_token_observed(
@@ -6314,22 +6392,46 @@ impl AuthState {
         now: u64,
         force_orphan: bool,
     ) -> Result<AuthResponse, AuthError> {
-        reject_unknown(
+        self.create_token_observed(
+            actor,
+            namespace,
+            path,
             body,
-            &[
-                "policies",
-                "ttl",
-                "explicit_max_ttl",
-                "period",
-                "num_uses",
-                "renewable",
-                "no_parent",
-                "no_default_policy",
-                "display_name",
-                "type",
-                "entity_alias",
-            ],
-        )?;
+            AuthorityTime::Coarse(now),
+            None,
+            force_orphan,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn create_token_observed(
+        &mut self,
+        actor: &Principal,
+        namespace: &str,
+        path: &str,
+        body: &Value,
+        time: AuthorityTime,
+        clock: Option<RequestClock>,
+        force_orphan: bool,
+    ) -> Result<AuthResponse, AuthError> {
+        let now = time.seconds();
+        let mut fields = vec![
+            "policies",
+            "ttl",
+            "explicit_max_ttl",
+            "period",
+            "num_uses",
+            "renewable",
+            "no_parent",
+            "no_default_policy",
+            "display_name",
+            "type",
+            "entity_alias",
+        ];
+        if token_precise_issuance::ENABLED {
+            fields.push("lease");
+        }
+        reject_unknown(body, &fields)?;
         let requested_no_parent = token_policies::weak_boolean(body.get("no_parent"), "no_parent")?;
         let requested_renewable = if body.get("renewable").is_some() {
             token_policies::weak_boolean(body.get("renewable"), "renewable")?
@@ -6350,7 +6452,7 @@ impl AuthState {
         };
         actor.require_service("batch tokens cannot create more tokens")?;
         let parent = self
-            .check_principal(actor, namespace, now)?
+            .check_principal_observed(actor, namespace, time)?
             .service()?
             .clone();
         if parent.uses_remaining.is_some() {
@@ -6358,7 +6460,7 @@ impl AuthState {
         }
         let is_sudo = parent.root
             || self
-                .authorize_request(actor, namespace, path, "sudo", now)
+                .authorize_request_observed(actor, namespace, path, "sudo", time)
                 .is_ok();
         if namespace != parent.namespace && !is_sudo {
             return Err(bad(
@@ -6394,6 +6496,32 @@ impl AuthState {
         let creation_path = issued_role
             .as_ref()
             .map_or_else(|| path.to_owned(), |role| role.path.clone());
+        if token_precise_issuance::ENABLED {
+            let clock = clock
+                .ok_or_else(|| err(503, "trusted precise token issuer clock is unavailable"))?;
+            return self.finish_precise_token_creation(
+                token_precise_issuance::PreparedCreation {
+                    actor,
+                    namespace,
+                    request_path: path,
+                    creation_seconds: now,
+                    parent,
+                    policies: requested,
+                    role: role.cloned(),
+                    issued_role,
+                    root,
+                    batch,
+                    no_parent,
+                    entity_alias,
+                    creation_path,
+                    requested_renewable,
+                    is_sudo,
+                    requested_no_parent,
+                },
+                body,
+                clock,
+            );
+        }
         let period = duration(body, "period", 0)?;
         if requested_no_parent && role.is_none() && !is_sudo {
             return Err(bad(
@@ -8014,8 +8142,8 @@ fn token_info_observed(token: &Token, time: AuthorityTime) -> Result<Value, Auth
             info["period"] = json!(lease.requested_period.public_seconds());
         }
         if let Some(last) = lease.last_renewed_at {
-            info["last_renewal"] = json!(last.seconds());
-            info["last_renewal_time"] = json!(last.rfc3339());
+            info["last_renewal"] = json!(last.rfc3339());
+            info["last_renewal_time"] = json!(last.seconds());
         }
     }
     Ok(info)

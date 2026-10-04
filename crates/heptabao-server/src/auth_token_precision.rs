@@ -164,12 +164,14 @@ impl DurationNanos {
     }
 }
 
-/// Service expiry is a real lease issue/renewal timestamp plus the exact grant.
-/// Token metadata CreationTime remains a separate whole-second reference clock.
+/// The expiry anchor is sampled before the lease registration timestamp.
+/// Token CreationTime remains whole seconds; issue/last-renewal are separate
+/// public registration clocks and never reconstruct expiration authority.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct ServicePrecision {
     pub(crate) issued_at: Timestamp,
+    pub(crate) grant_started_at: Timestamp,
     pub(crate) expires_at: Option<Timestamp>,
     pub(crate) last_renewed_at: Option<Timestamp>,
     pub(crate) previous_grant: DurationNanos,
@@ -184,16 +186,19 @@ impl ServicePrecision {
         coarse_expiry: Option<u64>,
         coarse_grant: Option<u64>,
     ) -> Result<(), PrecisionError> {
-        let limit = DurationNanos::from_seconds(super::MAX_TTL)?;
-        if self.creation_grant > limit
-            || self.previous_grant > limit
-            || self.issued_at.truncate_seconds() < Timestamp::whole(creation_seconds)?
-            || self.last_renewed_at.is_some_and(|at| at < self.issued_at)
+        if self.issued_at.truncate_seconds() < Timestamp::whole(creation_seconds)?
+            || self.grant_started_at < Timestamp::whole(creation_seconds)?
+            || match self.last_renewed_at {
+                Some(last) => {
+                    self.grant_started_at < self.issued_at || last < self.grant_started_at
+                }
+                None => self.grant_started_at > self.issued_at,
+            }
             || self.creation_grant.is_zero() != self.previous_grant.is_zero()
         {
             return Err(PrecisionError::Lease);
         }
-        let anchor = self.last_renewed_at.unwrap_or(self.issued_at);
+        let anchor = self.grant_started_at;
         match self.expires_at {
             Some(deadline)
                 if !self.previous_grant.is_zero()
@@ -208,6 +213,7 @@ impl ServicePrecision {
                 && self.requested_period.is_zero()
                 && self.requested_explicit_max.is_zero()
                 && self.last_renewed_at.is_none()
+                && self.grant_started_at == self.issued_at
                 && coarse_expiry.is_none()
                 && coarse_grant.is_none() =>
             {
@@ -351,6 +357,13 @@ impl super::AuthState {
                 || token.auth_cert_sha256.is_some()
                 || token.period != lease.requested_period.ceil_seconds()
                 || (lease.last_renewed_at.is_some() && !token.renewable)
+                || !token.root
+                    && (lease.creation_grant
+                        > DurationNanos::from_seconds(super::MAX_TTL)
+                            .map_err(|_| super::bad("invalid precise grant limit"))?
+                        || lease.previous_grant
+                            > DurationNanos::from_seconds(super::MAX_TTL)
+                                .map_err(|_| super::bad("invalid precise grant limit"))?)
             {
                 return Err(super::bad(
                     "invalid private Token API precise lease ownership",
