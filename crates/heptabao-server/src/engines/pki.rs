@@ -1290,7 +1290,7 @@ impl Role {
             allowed_domains: allowed_domains.into_iter().collect(),
             allow_any_name,
             allow_subdomains: optional_bool(body, "allow_subdomains")?.unwrap_or(false),
-            allow_ip_sans: optional_bool(body, "allow_ip_sans")?.unwrap_or(false),
+            allow_ip_sans: optional_bool(body, "allow_ip_sans")?.unwrap_or(true),
             max_ttl: ttl_field(body, "max_ttl", DEFAULT_LEAF_TTL)?,
             generate_lease: optional_bool(body, "generate_lease")?.unwrap_or(false),
             local_key_kind: match LocalKeyKind::from_body(body)? {
@@ -2069,7 +2069,7 @@ mod tests {
         pki.handle_admin(
             "POST",
             "roles/web",
-            &json!({"allowed_domains":["example.test"]}),
+            &json!({"allowed_domains":["example.test"],"allow_ip_sans":false}),
             1_700_000_001,
         )?;
         let denied = pki.issue(
@@ -2082,7 +2082,10 @@ mod tests {
         );
         let denied_status = match denied {
             Ok(_) => {
-                return Err("role without allow_ip_sans unexpectedly issued a certificate".into());
+                return Err(
+                    "role with explicit allow_ip_sans=false unexpectedly issued a certificate"
+                        .into(),
+                );
             }
             Err(error) => error.status,
         };

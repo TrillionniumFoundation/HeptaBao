@@ -355,3 +355,192 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
     assert!(reopened.prepare_snapshot_restore(&backup).is_err());
     Ok(())
 }
+
+#[test]
+fn pki_role_default_ip_sans_signs_ipv4_ipv6_and_retains_explicit_false_on_reopen() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/ca",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status,
+        204
+    );
+    let ca = call(
+        &mut service,
+        "POST",
+        "ca/root/generate/internal",
+        &admin,
+        json!({"common_name":"ca.example.test","key_type":"ec","key_bits":256,"ttl":"4h"}),
+    );
+    assert_eq!(ca.status, 200, "actual issuer creation");
+    let ca = X509::from_pem(
+        ca.body["data"]["certificate"]
+            .as_str()
+            .ok_or("CA PEM")?
+            .as_bytes(),
+    )?;
+    let public = ca.public_key()?;
+    assert!(ca.verify(&public)?, "actual issuer signature");
+    let scoped = json!({"allowed_domains":["example.test"],"allow_subdomains":true,"key_type":"ec","key_bits":256,"max_ttl":"1h"});
+    let role = call(
+        &mut service,
+        "POST",
+        "ca/roles/default-ip",
+        &admin,
+        scoped.clone(),
+    );
+    assert_eq!(role.status, 200);
+    assert_eq!(
+        role.body["data"]["allow_ip_sans"], true,
+        "real create default from OpenBao 2.7.0"
+    );
+    let mut deny = scoped.clone();
+    deny["allow_ip_sans"] = json!(false);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/roles/deny-ip",
+            &admin,
+            deny.clone()
+        )
+        .status,
+        200
+    );
+    let request =
+        json!({"common_name":"api.example.test","ip_sans":["192.0.2.1","2001:db8::1"],"ttl":"10m"});
+    let ipv4 = std::net::Ipv4Addr::new(192, 0, 2, 1).octets();
+    let ipv6 = "2001:db8::1".parse::<std::net::Ipv6Addr>()?.octets();
+    for reopened in [false, true] {
+        if reopened {
+            drop(service);
+            service = root.service()?;
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "sys/unseal",
+                    "",
+                    json!({"key":unseal})
+                )
+                .status,
+                200,
+                "actual encrypted owner reopen"
+            );
+        }
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "ca/roles/default-ip",
+                &admin,
+                json!({})
+            )
+            .body["data"]["allow_ip_sans"],
+            true
+        );
+        assert_eq!(
+            call(&mut service, "GET", "ca/roles/deny-ip", &admin, json!({})).body["data"]["allow_ip_sans"],
+            false,
+            "stored explicit false is not replaced by new create default"
+        );
+        let issued = call(
+            &mut service,
+            "POST",
+            "ca/issue/default-ip",
+            &admin,
+            request.clone(),
+        );
+        assert_eq!(issued.status, 200, "default role actually issues IP SANs");
+        let leaf = X509::from_pem(
+            issued.body["data"]["certificate"]
+                .as_str()
+                .ok_or("leaf PEM")?
+                .as_bytes(),
+        )?;
+        assert!(
+            leaf.verify(&public)?,
+            "original actual issuer signs both address families"
+        );
+        let names = leaf.subject_alt_names().ok_or("SAN missing")?;
+        assert!(
+            names
+                .iter()
+                .any(|name| name.ipaddress() == Some(ipv4.as_slice())),
+            "actual IPv4 SAN bytes"
+        );
+        assert!(
+            names
+                .iter()
+                .any(|name| name.ipaddress() == Some(ipv6.as_slice())),
+            "actual IPv6 SAN bytes"
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "ca/issue/deny-ip",
+                &admin,
+                request.clone()
+            )
+            .status,
+            403,
+            "explicit false continues denying actual IPv4 and IPv6 issuance"
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "ca/issue/default-ip",
+                &admin,
+                json!({"common_name":"api.example.test","ip_sans":["not-an-ip"]})
+            )
+            .status,
+            400,
+            "default true does not accept malformed addresses"
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "ca/issue/default-ip",
+                &admin,
+                json!({"common_name":"outside.other.test","ip_sans":["192.0.2.1"]})
+            )
+            .status,
+            403,
+            "IP permission does not widen the independently owned DNS domains"
+        );
+        let state = service.state.as_ref().ok_or("state")?;
+        assert!(
+            !state.engines.has_pki_role_any_name_state()
+                && state.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA,
+            "existing owned IP permission does not fabricate a new schema requirement"
+        );
+    }
+    let state = service.state.as_ref().ok_or("state")?;
+    let bytes = crate::secret_serde::to_vec(state, MAX_STATE_BYTES).map_err(|_| "state bytes")?;
+    let decoded = serde_json::from_slice::<State>(&bytes).map_err(|_| "state decode")?;
+    assert!(
+        crate::secret_serde::to_vec(&decoded, MAX_STATE_BYTES).map_err(|_| "state roundtrip")?
+            == bytes,
+        "actual stored booleans roundtrip without default rewrites"
+    );
+    for wrong_type in [json!("true"), json!(1), Value::Null] {
+        let mut invalid = scoped.clone();
+        invalid["allow_ip_sans"] = wrong_type;
+        assert_eq!(
+            call(&mut service, "POST", "ca/roles/invalid-ip", &admin, invalid).status,
+            400,
+            "actual boolean required for explicit permission"
+        );
+    }
+    Ok(())
+}
