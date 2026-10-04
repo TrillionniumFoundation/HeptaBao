@@ -330,12 +330,13 @@ impl Pki {
                 || root.certificate_der.is_empty()
                 || root.certificate_der.len() > 64 * 1024
                 || root.not_before >= root.not_after
-                || root.not_after - root.not_before
-                    > if root.local_fields.is_some() {
-                        MAX_TTL * 2
-                    } else {
-                        MAX_TTL + 120
-                    }
+                || root.local_chain.is_none()
+                    && root.not_after - root.not_before
+                        > if root.local_fields.is_some() {
+                            MAX_TTL * 2
+                        } else {
+                            MAX_TTL + 120
+                        }
                 || serial_bytes(&root.serial).is_err()
                 || !valid_pki_id(&root.issuer_id)
                 || !valid_pki_id(&root.key_id)

@@ -894,6 +894,7 @@ impl Pki {
         let serial = random_serial()?;
         let expires = root_fields::root_expiration(body, now, self.max_ttl, self.default_ttl)?;
         let ski = root_fields::certificate_key_identifier(&root.certificate_der)?;
+        let issuer_name = root_fields::certificate_subject(&root.certificate_der)?;
         let cert = certificate_der_local(
             &material,
             &public,
@@ -901,7 +902,7 @@ impl Pki {
                 serial: &serial,
                 issuer_cn: &root.common_name,
                 subject_cn: &cname,
-                issuer_name_der: Some(root_fields::certificate_subject(&root.certificate_der)?),
+                issuer_name_der: Some(&issuer_name),
                 subject_name_der: Some(&fields.subject_der),
                 public_key: &[],
                 authority_key_id: ski.as_deref(),
@@ -1316,6 +1317,10 @@ mod tests {
 
     #[test]
     fn actual_csr_signatures_all_eleven_owned_key_kinds_and_export_roundtrip() -> TestResult {
+        use ml_dsa::{
+            Keypair as _, MlDsa44, MlDsa65, MlDsa87, SigningKey,
+            pkcs8::{DecodePrivateKey as _, EncodePublicKey as _},
+        };
         let mut p = Pki::default();
         for (kind, bits) in [
             ("rsa", 2048),
@@ -1336,11 +1341,46 @@ mod tests {
                 "CERTIFICATE REQUEST",
             )?
             .remove(0);
-            parse_csr(&bytes)?;
+            let parsed = parse_csr(&bytes)?;
             assert!(
                 response.body["data"]["private_key"]
                     .as_str()
                     .is_some_and(|v| v.starts_with("-----BEGIN PRIVATE KEY-----"))
+            );
+            let exported = Zeroizing::new(
+                pem_blocks(
+                    response.body["data"]["private_key"]
+                        .as_str()
+                        .ok_or("private")?,
+                    "PRIVATE KEY",
+                )?
+                .remove(0),
+            );
+            let actual_public = if kind == "mldsa" {
+                match bits {
+                    44 => SigningKey::<MlDsa44>::from_pkcs8_der(&exported)?
+                        .verifying_key()
+                        .to_public_key_der()?
+                        .as_bytes()
+                        .to_vec(),
+                    65 => SigningKey::<MlDsa65>::from_pkcs8_der(&exported)?
+                        .verifying_key()
+                        .to_public_key_der()?
+                        .as_bytes()
+                        .to_vec(),
+                    87 => SigningKey::<MlDsa87>::from_pkcs8_der(&exported)?
+                        .verifying_key()
+                        .to_public_key_der()?
+                        .as_bytes()
+                        .to_vec(),
+                    _ => return Err("unexpected MLDSA kind".into()),
+                }
+            } else {
+                PKey::private_key_from_der(&exported)?.public_key_to_der()?
+            };
+            assert_eq!(
+                actual_public, parsed.certification_request_info.subject_pki.raw,
+                "actual exported private key owns CSR SPKI"
             );
         }
         assert!(p.root.is_none());
@@ -1349,6 +1389,195 @@ mod tests {
         let p: Pki = serde_json::from_slice(&raw)?;
         p.validate("", "pki/", NOW)?;
         assert!(p.has_local_intermediate_state());
+        Ok(())
+    }
+
+    #[test]
+    fn signed_ca_index_public_read_revocation_real_crl_and_owned_history_are_durable() -> TestResult
+    {
+        let (mut root, intermediate) = setup()?;
+        let serial = intermediate.root.as_ref().ok_or("CA")?.serial.clone();
+        root.validate("", "pki/", NOW)?;
+        let response =
+            root.handle_admin("POST", "revoke", &json!({"serial_number":serial}), NOW + 1)?;
+        assert_eq!(response.body["data"]["state"], "revoked");
+        root.validate("", "pki/", NOW + 1)?;
+        let issuer = root.root.as_ref().ok_or("issuer")?;
+        let der = root.cached_local_crl(issuer, false)?;
+        let (rest, crl) = x509_parser::revocation_list::CertificateRevocationList::from_der(der)?;
+        assert!(rest.is_empty());
+        assert_eq!(crl.iter_revoked_certificates().count(), 1);
+        assert_eq!(
+            normalize_serial(
+                &crl.iter_revoked_certificates()
+                    .next()
+                    .ok_or("revoked")?
+                    .raw_serial_as_string()
+            )?,
+            serial
+        );
+        assert!(
+            X509::from_der(&issuer.certificate_der)?
+                .public_key()
+                .is_ok_and(|key| openssl::x509::X509Crl::from_der(der)
+                    .is_ok_and(|crl| crl.verify(&key).unwrap_or(false)))
+        );
+        let before = Zeroizing::new(serde_json::to_vec(&root)?);
+        let read = root.public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)?;
+        assert_eq!(read.body["data"]["revocation_time"], NOW + 1);
+        assert_eq!(*before, serde_json::to_vec(&root)?);
+        let mut reopened: Pki = serde_json::from_slice(&before)?;
+        reopened.validate("", "pki/", NOW + 1)?;
+        assert_eq!(
+            reopened
+                .public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)?
+                .body,
+            read.body
+        );
+        for field in ["issuer_id", "issued", "expires", "revoked_at"] {
+            let mut value = serde_json::to_value(&reopened)?;
+            let ca = value["local_intermediate"]["signed_certificates"][&serial]
+                .as_object_mut()
+                .ok_or("indexed CA")?;
+            ca.insert(
+                field.to_owned(),
+                match field {
+                    "issuer_id" => json!("00000000-0000-0000-0000-000000000000"),
+                    "issued" | "revoked_at" => json!(NOW + 2),
+                    _ => json!(NOW + 99),
+                },
+            );
+            let forged: Pki = serde_json::from_value(value)?;
+            assert!(
+                forged.validate("", "pki/", NOW + 1).is_err(),
+                "indexed CA field {field} remains owned"
+            );
+        }
+        reopened.handle_admin("DELETE", "root", &json!({}), NOW + 2)?;
+        reopened.validate("", "pki/", NOW + 2)?;
+        assert!(reopened.has_local_intermediate_state());
+        assert!(reopened.local_certificate(&serial).is_some());
+        Ok(())
+    }
+
+    #[test]
+    fn real_three_ca_chain_uses_each_owned_key_and_pending_default_selection_survives_reopen()
+    -> TestResult {
+        let (root, mut intermediate) = setup()?;
+        let mut child = Pki::default();
+        let generated = child.handle_admin("POST", "intermediate/generate/internal", &json!({"common_name":"third.example.test","key_type":"ed25519","key_name":"child-one"}), NOW)?;
+        let first = generated.body["data"]["key_id"]
+            .as_str()
+            .ok_or("key")?
+            .to_owned();
+        let second = child.handle_admin(
+            "POST",
+            "intermediate/generate/internal",
+            &json!({"common_name":"spare.example.test","key_type":"ec","key_name":"child-two"}),
+            NOW,
+        )?;
+        let second = second.body["data"]["key_id"]
+            .as_str()
+            .ok_or("key")?
+            .to_owned();
+        child.handle_admin("POST", "config/keys", &json!({"default":"child-two"}), NOW)?;
+        assert_eq!(
+            child
+                .handle_admin("GET", "config/keys", &json!({}), NOW)?
+                .body["data"]["default"],
+            second
+        );
+        let raw = Zeroizing::new(serde_json::to_vec(&child)?);
+        let mut child: Pki = serde_json::from_slice(&raw)?;
+        child.validate("", "pki/", NOW)?;
+        let signed = intermediate.handle_admin(
+            "POST",
+            "root/sign-intermediate",
+            &json!({"csr":generated.body["data"]["csr"],"ttl":"6h"}),
+            NOW,
+        )?;
+        let bundle = signed.body["data"]["ca_chain"]
+            .as_array()
+            .ok_or("chain")?
+            .iter()
+            .map(|v| v.as_str().unwrap_or(""))
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert_eq!(
+            signed.body["data"]["ca_chain"]
+                .as_array()
+                .ok_or("chain")?
+                .len(),
+            3
+        );
+        child.handle_admin(
+            "POST",
+            "intermediate/set-signed",
+            &json!({"certificate":bundle}),
+            NOW,
+        )?;
+        child.validate("", "pki/", NOW)?;
+        assert_eq!(child.root.as_ref().ok_or("child CA")?.key_id, first);
+        assert_eq!(child.default_local_key_id(), second);
+        assert_eq!(
+            certificate(&child.root.as_ref().ok_or("child")?.certificate_der)?
+                .basic_constraints()?
+                .ok_or("constraints")?
+                .value
+                .path_len_constraint,
+            Some(0)
+        );
+        child.handle_admin(
+            "POST",
+            "roles/web",
+            &json!({"allowed_domains":["example.test"],"allow_subdomains":true,"key_type":"ec"}),
+            NOW,
+        )?;
+        let owner = serde_json::from_value::<LeaseOwner>(json!("a".repeat(43)))?;
+        let issued = child.issue(
+            "pki/",
+            "web",
+            &json!({"common_name":"three.example.test"}),
+            &owner,
+            None,
+            NOW + 1,
+        )?;
+        assert_eq!(
+            issued.body["data"]["ca_chain"]
+                .as_array()
+                .ok_or("leaf chain")?
+                .len(),
+            3
+        );
+        let mut store = X509StoreBuilder::new()?;
+        store.add_cert(X509::from_der(
+            &root.root.as_ref().ok_or("root")?.certificate_der,
+        )?)?;
+        let mut param = X509VerifyParam::new()?;
+        param.set_time(NOW as _);
+        store.set_param(&param)?;
+        let store = store.build();
+        let mut untrusted = Stack::new()?;
+        untrusted.push(X509::from_der(
+            &child.root.as_ref().ok_or("child")?.certificate_der,
+        )?)?;
+        untrusted.push(X509::from_der(
+            &intermediate
+                .root
+                .as_ref()
+                .ok_or("intermediate")?
+                .certificate_der,
+        )?)?;
+        let leaf = X509::from_pem(
+            issued.body["data"]["certificate"]
+                .as_str()
+                .ok_or("leaf")?
+                .as_bytes(),
+        )?;
+        assert!(
+            X509StoreContext::new()?
+                .init(&store, &leaf, &untrusted, |context| context.verify_cert())?
+        );
         Ok(())
     }
 }

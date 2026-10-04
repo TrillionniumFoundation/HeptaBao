@@ -239,7 +239,7 @@ impl Pki {
                 || !key_ids.insert(&root.key_id)
                 || !external::common_name_valid(&root.common_name)
                 || root.not_before >= root.not_after
-                || root.not_after - root.not_before > MAX_TTL * 2
+                || root.local_chain.is_none() && root.not_after - root.not_before > MAX_TTL * 2
                 || serial_bytes(&root.serial).is_err()
                 || root.certificate_der.len() > 64 * 1024
                 || root.pkcs8.len() > 4096
