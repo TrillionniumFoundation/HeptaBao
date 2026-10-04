@@ -566,6 +566,7 @@ mod tests;
 // No JSON backup is relabeled as a native archive and no state is overwritten.
 #[cfg(test)]
 impl Service {
+    #[allow(clippy::too_many_arguments)] // Keep the fixture's real restore and recovery inputs explicit.
     pub(super) fn fixture_native_restore_after_real_recovery_commit(
         &mut self,
         verified: snapshot_transfer::VerifiedNativeRestore,

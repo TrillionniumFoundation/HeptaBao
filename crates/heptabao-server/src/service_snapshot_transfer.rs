@@ -669,9 +669,7 @@ impl Service {
         {
             return Err(Response::error(409, "snapshot transfer authority changed"));
         }
-        if let Err(response) = self.revalidate_native_snapshot_ha_leader() {
-            return Err(response);
-        }
+        self.revalidate_native_snapshot_ha_leader()?;
         if Instant::now() >= plan.deadline {
             return Err(Response::error(503, "snapshot transfer deadline elapsed"));
         }
@@ -698,10 +696,7 @@ impl Service {
         ) {
             return Err(Response::error(error.status, &error.message));
         }
-        let live_seal = match self.current_snapshot_seal_identity(&plan.lease, plan.deadline) {
-            Ok(value) => value,
-            Err(response) => return Err(response),
-        };
+        let live_seal = self.current_snapshot_seal_identity(&plan.lease, plan.deadline)?;
         if live_seal != plan.seal_identity {
             return Err(Response::error(
                 409,
@@ -766,10 +761,7 @@ impl Service {
             }
             Ok(prepared)
         })();
-        let prepared = match result {
-            Ok(value) => value,
-            Err(error) => return Err(error),
-        };
+        let prepared = result?;
         Ok(VerifiedNativeRestore {
             prepared,
             clock: (plan.now, plan.started),

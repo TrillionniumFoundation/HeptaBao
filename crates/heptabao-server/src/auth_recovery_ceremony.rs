@@ -532,7 +532,9 @@ impl RecoveryDelivery {
             };
             let encoded = zeroize::Zeroizing::new(
                 hex.as_bytes()
-                    .chunks_exact(2)
+                    .as_chunks::<2>()
+                    .0
+                    .iter()
                     .map(|pair| nibble(pair[0]) * 16 + nibble(pair[1]))
                     .collect::<Vec<_>>(),
             );

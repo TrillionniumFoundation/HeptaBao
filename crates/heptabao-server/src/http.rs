@@ -507,14 +507,14 @@ fn serve_inner(
     }
     loop {
         #[cfg(target_os = "linux")]
-        if let Some(control) = local_control.as_mut() {
-            if control.poll(&service) {
-                drop(listener);
-                return control.shutdown(&service, &connections, None, || {
-                    drop(_lifecycle);
-                    drop(_ha_activation);
-                });
-            }
+        if let Some(control) = local_control.as_mut()
+            && control.poll(&service)
+        {
+            drop(listener);
+            return control.shutdown(&service, &connections, None, || {
+                drop(_lifecycle);
+                drop(_ha_activation);
+            });
         }
         let stream = match listener.accept() {
             Ok((stream, _)) => stream,

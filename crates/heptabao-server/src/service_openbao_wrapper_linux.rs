@@ -8,7 +8,7 @@ use std::io::{self, Read, Write};
 use std::os::fd::{AsFd, AsRawFd, OwnedFd};
 use std::os::unix::fs::{FileExt, MetadataExt};
 use std::os::unix::process::CommandExt;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Child, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, mpsc};
@@ -385,7 +385,7 @@ fn private_config(config: &OpenBaoWrapperConfig) -> Result<(File, RpcOptions), B
     Ok((file, options))
 }
 
-fn create_socket_directory(path: &PathBuf) -> Result<File, BridgeError> {
+fn create_socket_directory(path: &Path) -> Result<File, BridgeError> {
     let directory = heptabao_filesystem_guard::open_absolute_directory_no_symlinks(
         path.parent().ok_or(BridgeError::InvalidBinding)?,
     )
@@ -425,7 +425,7 @@ fn create_socket_directory(path: &PathBuf) -> Result<File, BridgeError> {
 fn read_handshake(
     child: &mut Child,
     probe: &impl IdentityProbe,
-    directory: &PathBuf,
+    directory: &Path,
     deadline: Instant,
     stop: &AtomicBool,
 ) -> Result<AutomaticHandshake, BridgeError> {
@@ -574,8 +574,10 @@ pub(super) fn launch_automatic_runtime(
             let owned = match OwnedChild::capture(started, cleanup.clone()) {
                 Ok(child) => child,
                 Err(mut uncaptured) => {
-                    if let Ok(mut observed) = diagnostic.lock() {
-                        if let Some(value) = observed.as_mut() { value["owned_pid"] = serde_json::json!(uncaptured.id()); }
+                    if let Ok(mut observed) = diagnostic.lock()
+                        && let Some(value) = observed.as_mut()
+                    {
+                        value["owned_pid"] = serde_json::json!(uncaptured.id());
                     }
                     // The owned Child has not been waited or reaped, so its PID
                     // cannot be reused. This is only the pidfd-capture failure.
@@ -595,8 +597,10 @@ pub(super) fn launch_automatic_runtime(
                 }
             };
             child = Some(owned);
-            if let Ok(mut observed) = diagnostic.lock() {
-                if let Some(value) = observed.as_mut() { value["owned_pid"] = serde_json::json!(child.as_ref().ok_or(BridgeError::OutcomeUnknown)?.child.id()); }
+            if let Ok(mut observed) = diagnostic.lock()
+                && let Some(value) = observed.as_mut()
+            {
+                value["owned_pid"] = serde_json::json!(child.as_ref().ok_or(BridgeError::OutcomeUnknown)?.child.id());
             }
             let owned = child.as_mut().ok_or(BridgeError::OutcomeUnknown)?;
             let probe = LinuxIdentityProbe::capture_started_child(StartedChildBinding {
@@ -667,11 +671,11 @@ pub(super) fn launch_automatic_runtime(
             Err(error) => { let _ = ready.send(Err(error)); }
         }
         lifecycle.revoke();
-        if let Some(mut owned) = child {
-            if owned.cleanup.lock().map_or(true, |state| *state != WrapperCleanupState::TerminalReaped) {
-                owned.request_stop();
-                owned.await_terminal();
-            }
+        if let Some(mut owned) = child
+            && owned.cleanup.lock().map_or(true, |state| *state != WrapperCleanupState::TerminalReaped)
+        {
+            owned.request_stop();
+            owned.await_terminal();
         }
         // Keep the private directory descriptor through the owned provider's
         // actual terminal wait, then retain its path for metadata audit.

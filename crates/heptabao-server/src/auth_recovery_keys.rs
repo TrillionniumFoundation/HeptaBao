@@ -571,8 +571,8 @@ mod tests {
             .verification_nonce
             .clone()
             .ok_or("missing verification nonce")?;
-        assert_eq!(
-            attempt
+        assert!(
+            !attempt
                 .submit(
                     Some(&old),
                     &verify,
@@ -581,10 +581,9 @@ mod tests {
                         .map_err(|error| format!("{error:?}"))?,
                     true
                 )
-                .map_err(|error| format!("{error:?}"))?,
-            false
+                .map_err(|error| format!("{error:?}"))?
         );
-        assert_eq!(
+        assert!(
             attempt
                 .submit(
                     Some(&old),
@@ -594,8 +593,7 @@ mod tests {
                         .map_err(|error| format!("{error:?}"))?,
                     true
                 )
-                .map_err(|error| format!("{error:?}"))?,
-            true
+                .map_err(|error| format!("{error:?}"))?
         );
         assert_eq!(
             serde_json::to_vec(&old).map_err(|error| error.to_string())?,
