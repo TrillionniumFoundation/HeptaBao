@@ -1639,7 +1639,7 @@ mod source825_real_recovery_fixture_tests {
                         crate::request_deadline::RequestDeadlineScope::enter(original_deadline);
                     service
                         .prepare_wrapper_barrier_initialization(&init)
-                        .expect("live actual initialization plan")
+                        .unwrap_or_else(|_| panic!("live actual initialization plan unavailable"))
                 };
                 let completion = if name == "deadline-tightened-before-execution" {
                     plan.execute_before(Instant::now())
