@@ -4,6 +4,29 @@ use super::*;
 use std::time::{Duration, Instant};
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+fn assert_delivery_veto_audit(files: &Root, status: u16) -> TestResult {
+    let audit = std::fs::read_to_string(files.path.join("audit.jsonl"))?;
+    let records = audit
+        .lines()
+        .map(serde_json::from_str::<Value>)
+        .collect::<Result<Vec<_>, _>>()?;
+    let veto = records.last().ok_or("delivery veto audit")?;
+    let planned = records
+        .iter()
+        .rev()
+        .nth(1)
+        .ok_or("planned response audit")?;
+    assert_eq!(planned["event"]["kind"], "response");
+    assert_eq!(planned["event"]["status"], 200);
+    assert_eq!(veto["event"]["kind"], "ordinary-kv-delivery-veto");
+    assert_eq!(veto["event"]["status"], status);
+    assert_eq!(
+        planned["event"]["path_digest"],
+        veto["event"]["path_digest"]
+    );
+    Ok(())
+}
+
 fn policy(service: &mut Service, root: &str, source: &str) {
     assert_eq!(
         call(
@@ -185,6 +208,7 @@ fn ordinary_kv_delivery_withholds_actual_read_after_late_revocation_policy_or_pa
         assert_eq!(denied.status, 403, "{scenario}: {}", denied.body);
         assert!(denied.body.get("data").is_none());
         assert!(denied.consistency_index.is_none());
+        assert_delivery_veto_audit(&files, denied.status)?;
     }
     Ok(())
 }
@@ -279,6 +303,7 @@ fn ordinary_kv_delivery_keeps_original_elapsed_expiry_deadline_and_mount_incarna
         assert_eq!(denied.status, expected, "{scenario}: {}", denied.body);
         assert!(denied.body.get("data").is_none());
         assert!(denied.consistency_index.is_none());
+        assert_delivery_veto_audit(&files, denied.status)?;
     }
     Ok(())
 }
@@ -404,6 +429,7 @@ fn ordinary_kv_delivery_preserves_trusted_native_scope_without_bypassing_http_or
         service.complete_ordinary_kv_delivery(authority, audited, "synthetic-legacy-delivery");
     assert_eq!(withheld.status, 503);
     assert!(withheld.body.get("data").is_none() && withheld.consistency_index.is_none());
+    assert_delivery_veto_audit(&files, 503)?;
     Ok(())
 }
 
@@ -595,5 +621,38 @@ fn ordinary_kv_indeterminate_notice_requires_same_private_binding_and_audited_re
         assert!(withheld.body.get("recovery_reference").is_none());
         assert!(withheld.consistency_index.is_none());
     }
+    Ok(())
+}
+
+#[test]
+fn ordinary_kv_delivery_veto_audit_failure_fences_without_returning_private_value() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    fixture(&mut service, &root);
+    let token = issue(&mut service, &root, 0, "10m")?;
+    let (authority, response) = read_admitted(&mut service, &token, &json!({}))?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/revoke",
+            &root,
+            json!({"token":token})
+        )
+        .status,
+        204
+    );
+    let audited = service.audit_completed_response("synthetic-kv-delivery", 100, None, response);
+    assert_eq!(audited.status, 200);
+    let before = std::fs::read(files.path.join("audit.jsonl"))?;
+    service.audit_capacity = service.audit.metadata()?.len();
+    let withheld =
+        service.complete_ordinary_kv_delivery(authority, audited, "synthetic-kv-delivery");
+    assert_eq!(withheld.status, 503);
+    assert!(withheld.body.get("data").is_none());
+    assert!(withheld.consistency_index.is_none());
+    assert!(service.recovery_required && service.ha_activation.is_none());
+    assert_eq!(std::fs::read(files.path.join("audit.jsonl"))?, before);
     Ok(())
 }

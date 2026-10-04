@@ -325,6 +325,7 @@ impl Service {
                              "recovery_reference":notice.recovery_reference}),
             };
         }
+        let planned_success = (200..300).contains(&response.status);
         let _deadline_scope = authority
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);
@@ -352,6 +353,32 @@ impl Service {
         if let Err(error) = checked {
             erase_json(&mut response.body);
             response.consistency_index = None;
+            let now = self.state.as_ref().map_or(authority.admitted_at, |state| {
+                authority
+                    .token_time(&state.auth)
+                    .map_or(authority.admitted_at, AuthorityTime::seconds)
+            });
+            if planned_success
+                && self
+                    .audit_event(
+                        "ordinary-kv-delivery-veto",
+                        fingerprint,
+                        now,
+                        Some(error.status),
+                    )
+                    .is_err()
+            {
+                // This records a negative delivery observation after the private
+                // body was erased. Failure cannot deliver data, extend the
+                // original deadline or initiate another KV effect.
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                return Response::error(
+                    503,
+                    "ordinary KV delivery veto audit failed; authoritative recovery required",
+                );
+            }
             return error;
         }
         response
