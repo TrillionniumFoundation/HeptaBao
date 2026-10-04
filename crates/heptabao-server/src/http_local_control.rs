@@ -153,7 +153,7 @@ impl Control {
         .map_err(|_| "cannot publish immutable private observation")?;
         self.directory
             .sync_all()
-            .map_err(|_| "cannot sync private observation directory")
+            .map_err(|_| "cannot sync private observation directory".to_owned())
     }
     pub(super) fn ready(&self, service: &Arc<Mutex<Service>>) -> Result<(), String> {
         let observation = service

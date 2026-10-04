@@ -582,7 +582,7 @@ pub(super) fn launch_automatic_runtime(
             }, &config.configuration_file, lifecycle.clone())?;
             let identity = probe.observe()?.0;
             let actual_pid = Pid::from_raw(identity.pid as i32).ok_or(BridgeError::InvalidBinding)?;
-            let actual_pgid = rustix::process::getpgid(Some(actual_pid)).map_err(|_| BridgeError::ProcessObservationUnavailable)?.as_raw();
+            let actual_pgid = rustix::process::getpgid(Some(actual_pid)).map_err(|_| BridgeError::ProcessObservationUnavailable)?.as_raw_pid();
             if probe.observe()?.0 != identity { return Err(BridgeError::IdentityChanged); }
             let observation = serde_json::json!({
                 "provider": {"pid":identity.pid,"pgid":actual_pgid,"sid":identity.session_id,
