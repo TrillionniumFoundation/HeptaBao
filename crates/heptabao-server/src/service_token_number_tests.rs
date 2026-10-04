@@ -124,7 +124,7 @@ fn token_number_role_fields_preserve_wire_lexemes_and_original_parameter_acl() -
     assert_eq!(
         failure.body["errors"],
         json!([
-            "error converting input for field \"token_period\": time: missing unit in duration \"1e0\""
+            "error converting input for field \"token_period\": time: unknown unit \"e\" in duration \"1e0\""
         ])
     );
     assert_eq!(
