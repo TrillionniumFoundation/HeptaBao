@@ -104,6 +104,8 @@ mod leader;
 mod lifecycle;
 #[path = "service_namespace_assets.rs"]
 mod namespace_assets;
+#[path = "service_namespace_config.rs"]
+mod namespace_config;
 #[path = "service_namespace_runtime.rs"]
 mod namespace_runtime;
 #[path = "service_namespaces.rs"]
@@ -2299,13 +2301,8 @@ impl Service {
         {
             return Response::error(404, "namespace not found");
         }
-        let namespace_seal_control = path
-            .strip_prefix("sys/namespaces/")
-            .and_then(|suffix| suffix.rsplit_once('/').map(|(_, operation)| operation))
-            .is_some_and(|operation| matches!(operation, "seal" | "unseal" | "seal-status"));
         if enforce_namespace
             && !matches!(path, "sys/health" | "sys/init" | "sys/seal-status")
-            && !namespace_seal_control
             && self
                 .state
                 .as_ref()

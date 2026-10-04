@@ -2,7 +2,7 @@
 //! a revocable slot, never an Arc<Key>; revocation drops and zeroizes the sole
 //! key even while an old prepared candidate keeps the slot alive.
 use super::*;
-use crate::namespace_custody::{Binding, Descriptor, Key};
+use crate::namespace_custody::{Binding, Descriptor, Key, Progress, Submission};
 use std::sync::{Arc, Mutex};
 
 fn unavailable() -> Response {
@@ -69,6 +69,7 @@ impl Leases {
 #[derive(Default)]
 pub(super) struct Runtime {
     loaded: BTreeMap<String, Lease>,
+    progress: BTreeMap<String, Progress>,
 }
 
 impl Drop for Runtime {
@@ -83,6 +84,7 @@ impl Runtime {
             lease.revoke();
         }
         self.loaded.clear();
+        self.progress.clear();
     }
 
     pub(super) fn close(&mut self, namespace: &str) {
@@ -94,6 +96,134 @@ impl Runtime {
             }
             retain
         });
+        self.progress
+            .retain(|actual, _| actual != namespace && !actual.starts_with(&prefix));
+    }
+
+    pub(super) fn status(&self, state: &State, actual: &str) -> Result<Response, Response> {
+        let descriptor = state
+            .namespaces
+            .custody_owner(actual)
+            .ok_or_else(|| Response::error(400, "namespace is not sealable"))?;
+        let sealed = !self.loaded.contains_key(actual);
+        let progress = sealed.then(|| self.progress.get(actual)).flatten();
+        Ok(Response::ok(json!({"data":{
+            "type":"shamir", "initialized":true, "sealed":sealed,
+            "t":descriptor.threshold(), "n":descriptor.share_count(),
+            "progress":progress.map_or(0, Progress::count),
+            "nonce":progress.map_or("", Progress::nonce),
+        }})))
+    }
+
+    pub(super) fn reset_progress(&mut self, actual: &str) {
+        self.progress.remove(actual);
+    }
+
+    pub(super) fn has_loaded_within(&self, actual: &str) -> bool {
+        let prefix = format!("{actual}/");
+        self.loaded
+            .keys()
+            .any(|path| path == actual || path.starts_with(&prefix))
+    }
+
+    pub(super) fn submit(
+        &mut self,
+        state: &State,
+        actual: &str,
+        fragment: &[u8],
+    ) -> Result<Option<State>, Response> {
+        let descriptor = state
+            .namespaces
+            .custody_owner(actual)
+            .ok_or_else(|| Response::error(400, "namespace is not sealable"))?;
+        let expected = if descriptor.threshold() == 1 { 32 } else { 33 };
+        if fragment.len() != expected {
+            return Err(Response::error(400, "invalid namespace key share length"));
+        }
+        if self.loaded.contains_key(actual) {
+            return Ok(None);
+        }
+        if !self.progress.contains_key(actual) {
+            if self.progress.len() >= 1024 {
+                return Err(unavailable());
+            }
+            let binding = state
+                .namespaces
+                .custody_binding(&state.cluster_id, actual)?;
+            self.progress.insert(
+                actual.to_owned(),
+                Progress::new(binding, descriptor).map_err(|_| unavailable())?,
+            );
+        }
+        let result = self
+            .progress
+            .get_mut(actual)
+            .ok_or_else(unavailable)?
+            .submit(descriptor, fragment);
+        match result {
+            Ok(Submission::Pending) => Ok(None),
+            Ok(Submission::Unlocked { key, .. }) => {
+                self.progress.remove(actual);
+                self.restore(state, actual, key).map(Some)
+            }
+            Err(error) => {
+                self.progress.remove(actual);
+                match error {
+                    crate::namespace_custody::Error::InvalidKey
+                    | crate::namespace_custody::Error::InvalidShare => {
+                        Err(Response::error(400, "invalid namespace unseal key"))
+                    }
+                    _ => Err(unavailable()),
+                }
+            }
+        }
+    }
+
+    /// Fresh namespace keys are private candidate material. This function does
+    /// not install a slot. The caller can return shares only after the complete
+    /// descriptor, opaque records and asset removal have durably committed.
+    pub(super) fn fresh_candidate(
+        state: &State,
+        actual: &str,
+        shares: u8,
+        threshold: u8,
+    ) -> Result<(State, Vec<zeroize::Zeroizing<Vec<u8>>>), Response> {
+        let binding = state
+            .namespaces
+            .custody_binding(&state.cluster_id, actual)?;
+        let created = Descriptor::create(binding.clone(), shares, threshold, b"{}")
+            .map_err(|_| unavailable())?;
+        let mut progress =
+            Progress::new(binding.clone(), &created.descriptor).map_err(|_| unavailable())?;
+        let mut key = None;
+        for share in created.shares.iter().take(usize::from(threshold)) {
+            if let Submission::Unlocked { key: unlocked, .. } = progress
+                .submit(&created.descriptor, share)
+                .map_err(|_| unavailable())?
+            {
+                key = Some(unlocked);
+            }
+        }
+        let key = key.ok_or_else(unavailable)?;
+        let (mut candidate, assets, cells) = state.partition_namespace_assets(actual, &key)?;
+        let bytes = zeroize::Zeroizing::new(
+            owner_store::serialize_owner(&assets).map_err(state_serialization_error)?,
+        );
+        let descriptor = created
+            .descriptor
+            .replace_assets(&binding, &key, &bytes)
+            .map_err(|_| unavailable())?;
+        candidate
+            .engines
+            .publish_namespace_record_cells(&binding, &cells)
+            .map_err(|_| unavailable())?;
+        candidate
+            .namespaces
+            .install_custody_owner(&candidate.cluster_id, actual, descriptor)?;
+        candidate.namespaces.set_sealed(actual, true)?;
+        candidate.schema = candidate.writer_schema();
+        candidate.validate_format()?;
+        Ok((candidate, created.shares))
     }
 
     pub(super) fn closed_candidate(&self, state: &State, actual: &str) -> Result<State, Response> {

@@ -27,6 +27,7 @@ fn cell_name(reference: &ObjectRef) -> String {
 }
 
 impl Graph {
+    #[cfg(test)]
     pub(crate) fn protect(
         namespace: &str,
         key: &Key,

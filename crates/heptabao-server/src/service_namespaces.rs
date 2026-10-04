@@ -28,11 +28,8 @@ struct NamespaceEntry {
     incarnation: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     custody: Option<crate::namespace_custody::Descriptor>,
-    /// Operational namespace seal state. The namespace owner remains encrypted
-    /// by the server barrier; this flag fences request routing until an
-    /// authorized ancestor explicitly unseals it. A separate per-namespace
-    /// custody key hierarchy is intentionally not claimed by this bounded
-    /// profile.
+    /// Runtime routing projection. An independent custody descriptor is always
+    /// persisted sealed; only a process-local authenticated slot opens it.
     #[serde(default, skip_serializing_if = "is_false")]
     sealed: bool,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
@@ -155,24 +152,12 @@ fn validate_metadata_value(key: &str, value: &str) -> Result<(), Response> {
     Ok(())
 }
 
-fn create_metadata(body: &Value) -> Result<(BTreeMap<String, String>, bool), Response> {
+fn create_metadata(body: &Value) -> Result<BTreeMap<String, String>, Response> {
     let object = body
         .as_object()
         .ok_or_else(|| Response::error(400, "namespace request body must be an object"))?;
-    if object
-        .keys()
-        .any(|key| !matches!(key.as_str(), "custom_metadata" | "seal"))
-    {
-        return Err(Response::error(400, "unsupported namespace parameter"));
-    }
-    if let Some(value) = object.get("seal")
-        && !value.is_boolean()
-    {
-        return Err(Response::error(400, "seal must be boolean"));
-    }
-    let sealed = object.get("seal").and_then(Value::as_bool).unwrap_or(false);
     let Some(metadata) = object.get("custom_metadata") else {
-        return Ok((BTreeMap::new(), sealed));
+        return Ok(BTreeMap::new());
     };
     let metadata = metadata
         .as_object()
@@ -188,7 +173,7 @@ fn create_metadata(body: &Value) -> Result<(BTreeMap<String, String>, bool), Res
         validate_metadata_value(key, value)?;
         out.insert(key.clone(), value.to_owned());
     }
-    Ok((out, sealed))
+    Ok(out)
 }
 
 fn patch_metadata(current: &mut BTreeMap<String, String>, body: &Value) -> Result<(), Response> {
@@ -824,6 +809,9 @@ impl Service {
             let Some(target) = suffix.strip_suffix(&format!("/{operation}")) else {
                 continue;
             };
+            if target.contains('/') {
+                return Response::error(400, "namespace name cannot contain /");
+            }
             let target = match join_path(request.namespace, target) {
                 Ok(path) => path,
                 Err(error) => return error,
@@ -831,55 +819,108 @@ impl Service {
             if target.is_empty() {
                 return Response::error(400, "root namespace cannot be sealed");
             }
-            let Some(current) = state
-                .namespaces
-                .entries
-                .get(&target)
-                .map(|entry| entry.sealed)
-            else {
-                return Response::error(404, "namespace not found");
-            };
+            if !state.namespaces.contains(&target) {
+                return Response::error(500, "namespace does not exist");
+            }
             if operation == "seal-status" {
                 if request.method != "GET" && request.method != "HEAD" {
                     return Response::error(405, "namespace seal-status requires GET");
                 }
-                if request.body.as_object().is_none_or(|body| !body.is_empty()) {
-                    return Response::error(
-                        400,
-                        "namespace seal-status accepts an empty request body",
-                    );
-                }
-                return Response::ok(json!({
-                    "id": state.namespaces.entries[&target].id,
-                    "path": format!("{target}/"),
-                    "sealed": current,
-                    "effective_sealed": state.namespaces.is_sealed(&target),
-                }));
+                return self
+                    .namespace_runtime
+                    .status(&state, &target)
+                    .unwrap_or_else(|error| error);
             }
             if !matches!(request.method, "POST" | "PUT") {
                 return Response::error(405, "namespace seal operations require POST or PUT");
             }
-            if request.body.as_object().is_none_or(|body| !body.is_empty()) {
-                return Response::error(
-                    400,
-                    "namespace seal operations accept an empty request body",
-                );
+            if operation == "unseal" {
+                let reset = match request.body.get("reset") {
+                    None | Some(Value::Null) => false,
+                    Some(Value::Bool(value)) => *value,
+                    Some(Value::String(value)) => match value.as_str() {
+                        "true" | "1" => true,
+                        "false" | "0" | "" => false,
+                        _ => return Response::error(400, "invalid reset flag"),
+                    },
+                    Some(Value::Number(value)) => value.as_i64().is_some_and(|value| value != 0),
+                    _ => return Response::error(400, "invalid reset flag"),
+                };
+                if reset {
+                    self.namespace_runtime.reset_progress(&target);
+                } else {
+                    let key = match request.body.get("key") {
+                        None => String::new(),
+                        Some(value) => match namespace_config::weak_string(value) {
+                            Some(value) => value,
+                            None => return Response::error(400, "key must be a string"),
+                        },
+                    };
+                    let key = zeroize::Zeroizing::new(key);
+                    if key.is_empty() {
+                        return Response::error(500, "provided key is empty");
+                    }
+                    let fragment =
+                        match decode_hex(&key).or_else(|| STANDARD.decode(key.as_bytes()).ok()) {
+                            Some(value) => zeroize::Zeroizing::new(value),
+                            None => return Response::error(400, "invalid key encoding"),
+                        };
+                    match self.namespace_runtime.submit(&state, &target, &fragment) {
+                        Ok(Some(candidate)) => {
+                            state = candidate;
+                            let response = self
+                                .namespace_runtime
+                                .status(&state, &target)
+                                .unwrap_or_else(|error| error);
+                            self.state = Some(state);
+                            return response;
+                        }
+                        Ok(None) => {}
+                        Err(error) => return error,
+                    }
+                }
+                return self
+                    .namespace_runtime
+                    .status(&state, &target)
+                    .unwrap_or_else(|error| error);
             }
-            let sealed = operation == "seal";
-            if current == sealed {
-                return Response::ok(json!({"sealed": current}));
+            if state.namespaces.custody_owner(&target).is_some() {
+                if !state.namespaces.entries[&target].sealed {
+                    state = match self.namespace_runtime.closed_candidate(&state, &target) {
+                        Ok(candidate) => candidate,
+                        Err(error) => return error,
+                    };
+                    if let Err(error) = self.commit_state(&mut state) {
+                        return error;
+                    }
+                    // Publication precedes revocation. Failed commits keep the
+                    // existing loaded owner and deliver no new runtime state.
+                    self.namespace_runtime.close(&target);
+                    self.state = Some(state);
+                } else {
+                    self.namespace_runtime.reset_progress(&target);
+                }
+            } else {
+                // Ordinary namespace resource unloading is a distinct remaining
+                // contract; this branch preserves its prior operational fence.
+                // Independent child slots still require actual protected
+                // publication and complete revocation when this ancestor seals.
+                if self.namespace_runtime.has_loaded_within(&target) {
+                    state = match self.namespace_runtime.closed_candidate(&state, &target) {
+                        Ok(candidate) => candidate,
+                        Err(error) => return error,
+                    };
+                }
+                if let Err(error) = state.namespaces.set_sealed(&target, true) {
+                    return error;
+                }
+                state.schema = state.writer_schema();
+                if let Err(error) = self.commit_state(&mut state) {
+                    return error;
+                }
+                self.namespace_runtime.close(&target);
+                self.state = Some(state);
             }
-            if let Err(error) = state.namespaces.set_sealed(&target, sealed) {
-                return error;
-            }
-            state.schema = state.writer_schema();
-            if let Err(error) = state.validate_format() {
-                return error;
-            }
-            if let Err(error) = self.commit_state(&mut state) {
-                return error;
-            }
-            self.state = Some(state);
             return Response {
                 consistency_index: None,
                 status: 204,
@@ -922,21 +963,56 @@ impl Service {
                 if !state.namespace_exists(&parent) {
                     return Response::error(404, "parent namespace not found");
                 }
-                let (metadata, sealed) = match create_metadata(request.body) {
+                let metadata = match create_metadata(request.body) {
                     Ok(metadata) => metadata,
                     Err(error) => return error,
                 };
-                if let Err(error) =
-                    state
-                        .namespaces
-                        .create(&state.cluster_id, &target, metadata, sealed)
-                {
-                    return error;
+                let seal = match namespace_config::parse(request.body) {
+                    Ok(seal) => seal,
+                    Err(error) => return error,
+                };
+                let exists = state.namespaces.contains(&target);
+                if exists {
+                    if seal.is_some() {
+                        return Response::error(
+                            400,
+                            "namespace seal configuration cannot be changed",
+                        );
+                    }
+                    let Some(entry) = state.namespaces.entries.get_mut(&target) else {
+                        return Response::error(503, "namespace catalog owner disappeared");
+                    };
+                    entry.custom_metadata = metadata;
+                } else {
+                    if let Err(error) =
+                        state
+                            .namespaces
+                            .create(&state.cluster_id, &target, metadata, false)
+                    {
+                        return error;
+                    }
+                    if let Err(error) = state.auth.initialize_fresh_namespace_auth(&target) {
+                        return Response::error(error.status, &error.message);
+                    }
+                    state.engines.ensure_empty_namespace(&target);
                 }
-                if let Err(error) = state.auth.initialize_fresh_namespace_auth(&target) {
-                    return Response::error(error.status, &error.message);
+                let mut shares = None;
+                let mut threshold = 0;
+                if let Some(config) = seal {
+                    match namespace_runtime::Runtime::fresh_candidate(
+                        &state,
+                        &target,
+                        config.shares,
+                        config.threshold,
+                    ) {
+                        Ok((candidate, key_shares)) => {
+                            state = candidate;
+                            shares = Some(key_shares);
+                            threshold = config.threshold;
+                        }
+                        Err(error) => return error,
+                    }
                 }
-                state.engines.ensure_empty_namespace(&target);
                 state.schema = state.writer_schema();
                 if let Err(error) = state.validate_format() {
                     return error;
@@ -944,10 +1020,15 @@ impl Service {
                 if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
-                let response = state
+                let mut response = state
                     .namespaces
                     .read(&state.cluster_id, request.namespace, &target)
                     .unwrap_or_else(|error| error);
+                if let Some(shares) = shares {
+                    response.body["data"]["key_shares"] =
+                        Value::Array(shares.iter().map(|part| Value::String(hex(part))).collect());
+                    response.body["data"]["key_threshold"] = json!(threshold);
+                }
                 self.state = Some(state);
                 response
             }
@@ -1012,3 +1093,7 @@ impl Service {
 #[cfg(test)]
 #[path = "service_namespace_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "service_namespace_strong_http_tests.rs"]
+mod strong_http_tests;
