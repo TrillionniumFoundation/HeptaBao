@@ -1542,13 +1542,7 @@ mod source825_real_recovery_fixture_tests {
     fn native_race(name: &str, isolate_floor: bool) {
         let mut c = start(name);
         let (nonce, share) = pending_final(&mut c);
-        let req = ServiceRequest::new(
-            "GET",
-            "sys/storage/raft/snapshot",
-            "",
-            &c.token,
-            Value::Null,
-        );
+        let req = ServiceRequest::new("GET", "sys/storage/raft/snapshot", "", &c.token, json!({}));
         let mut pending = match c
             .service
             .as_mut()
@@ -1557,6 +1551,10 @@ mod source825_real_recovery_fixture_tests {
         {
             snapshot_transfer::NativeSnapshotAdmission::Execute(RequestExecution::External(v)) => {
                 *v
+            }
+            snapshot_transfer::NativeSnapshotAdmission::Execute(RequestExecution::Complete(r)) => {
+                response(&c.root, "native-export-admission-failed", &r);
+                panic!("UNQUALIFIED: genuine native export admission failed")
             }
             _ => panic!("UNQUALIFIED: genuine native export admission failed"),
         };
@@ -1578,19 +1576,16 @@ mod source825_real_recovery_fixture_tests {
             .finish_external_request(pending, observed);
         response(&c.root, "native-export", &result);
         assert_eq!(result.status, 200);
-        let req = ServiceRequest::new(
-            "POST",
-            "sys/storage/raft/snapshot",
-            "",
-            &c.token,
-            Value::Null,
-        );
+        let req = ServiceRequest::new("POST", "sys/storage/raft/snapshot", "", &c.token, json!({}));
         let mut pending = c
             .service
             .as_mut()
             .expect("live fixture")
             .fixture_begin_native_snapshot_upload(req, Instant::now() + Duration::from_secs(30))
-            .unwrap_or_else(|_| panic!("genuine native upload admission failed"));
+            .unwrap_or_else(|error| {
+                response(&c.root, "native-upload-admission-failed", &error);
+                panic!("genuine native upload admission failed")
+            });
         let (observed, file) = pending.execute_snapshot_transfer(&mut std::io::Cursor::new(&raw));
         assert!(file.is_none());
         let verified = c
@@ -1598,7 +1593,10 @@ mod source825_real_recovery_fixture_tests {
             .as_mut()
             .expect("live fixture")
             .fixture_prepare_verified_native_restore(pending, observed)
-            .unwrap_or_else(|_| panic!("actual native archive authentication/preparation failed"));
+            .unwrap_or_else(|error| {
+                response(&c.root, "native-authentication-preparation-failed", &error);
+                panic!("actual native archive authentication/preparation failed")
+            });
         let actor = principal(&c);
         let body = Value::Null;
         let request = RequestView {
