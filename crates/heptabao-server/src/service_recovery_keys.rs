@@ -413,6 +413,9 @@ impl Service {
         use ha_received::HaLocalPublicationProgress;
         let result: Result<(), HaRecoveryIndexAdmissionFailure> = (|| {
             live(completed.deadline())?;
+            // A completion token cannot mask later actual owner/object damage.
+            // Reject before any possible public-index write under its original bound.
+            completed.verify_local_publication(self)?;
             self.durable
                 .as_mut()
                 .ok_or_else(|| Response::error(503, "HA local durable owner absent"))?
@@ -427,6 +430,7 @@ impl Service {
                 completed.deadline(),
                 Some(completed),
             )?;
+            completed.verify_local_publication(self)?;
             self.durable
                 .as_mut()
                 .ok_or_else(|| Response::error(503, "HA local durable owner absent"))?
@@ -3066,6 +3070,256 @@ mod source825_real_recovery_fixture_tests {
                 &serde_json::to_vec(&json!({"passed":true,"generation_before":before,
                     "actual_generation_captured":current,"actual_live_ownership_before_capture":true,
                     "original_admission_budget_seconds":15,"permanent_fence":true,
+                    "qualification_transferred":false})).expect("public negative evidence"));
+            close(&case);
+        }
+    }
+
+    #[test]
+    #[ignore = "requires admitted genuine PKCS11 provider, real durable corruption and actual three-Raft quorum"]
+    fn genuine_wrapper_completed_publication_rejects_after_write_corrupt_graph() {
+        for (name, record_object) in [
+            ("completed-afterwrite-owner-object", false),
+            ("completed-afterwrite-record-object", true),
+        ] {
+            eprintln!("actual-completed-deep-readback-case: {name}");
+            let mut case = start(name);
+            let (nonce, share) = pending_final(&mut case);
+            let actor = principal(&case);
+            let encoded = decode_key_material(&share).expect("actual recovery fragment");
+            let service = case.service.as_mut().expect("actual Wrapper service");
+            let cut = service
+                .fixture_commit_owner_before_public_repair(&actor, &nonce, &encoded, now(), None)
+                .unwrap_or_else(|_| panic!("actual protected B checkpoint"));
+            let mut b = cut.committed;
+            let target = cut.target_public;
+            let cluster = crate::ha::snapshot_test_support::Cluster::new(
+                &case.root.join("real-raft"),
+                &b.cluster_id,
+            )
+            .expect("actual three OpenRaft nodes");
+            let bytes = owner_store::serialize_owner(&b).expect("actual B owner bytes");
+            let binding = Service::prepare_initial_owner_plan(&b, &bytes, "actual-constructor-B")
+                .unwrap_or_else(|_| panic!("actual owner plan"))
+                .publication_binding("actual-constructor-B", &bytes)
+                .expect("actual binding");
+            cluster.processes[0]
+                .lock()
+                .expect("actual leader")
+                .commit_state_with_owner_binding("actual-constructor-B", [0; 32], &bytes, binding)
+                .expect("actual committed B");
+            service.ha = Some(Arc::clone(&cluster.processes[1]));
+            {
+                let _setup = crate::request_deadline::RequestDeadlineScope::enter(
+                    Instant::now() + Duration::from_secs(15),
+                );
+                let admitted = service
+                    .admit_ha_recovery_seal(&b, crate::request_deadline::current())
+                    .unwrap_or_else(|_| panic!("actual earlier B index repair"));
+                service.seal = admitted.0;
+                assert!(service.seal.as_ref() == Some(&target));
+                if record_object {
+                    b.engines = b
+                        .engines
+                        .migrate_kv1_records(crate::state_records::AddressKey::from_bytes(
+                            crypto::random().expect("actual key"),
+                        ))
+                        .expect("actual earlier graph migration")
+                        .into();
+                    let plan = service
+                        .prepare_record_plan(&b)
+                        .unwrap_or_else(|_| panic!("actual complete B graph"));
+                    cluster.processes[0]
+                        .lock()
+                        .expect("actual leader")
+                        .commit_record_state(
+                            "actual-constructor-record-B",
+                            &crate::state_record_root::StateIdentity::Legacy(crypto::digest(
+                                &bytes,
+                            )),
+                            &plan.bytes,
+                            &plan.objects,
+                        )
+                        .expect("actual committed record B");
+                    service
+                        .persist_record_plan_local(&plan, "actual-constructor-record-local-B", true)
+                        .unwrap_or_else(|_| panic!("actual local graph B"));
+                    service.record_root = Some(plan.root);
+                    service.state_digest = Some(plan.identity.digest());
+                    service.state = Some(b.clone());
+                }
+            }
+            let _admission = crate::request_deadline::RequestDeadlineScope::enter(
+                Instant::now() + Duration::from_secs(15),
+            );
+            let observed = cluster.processes[1]
+                .lock()
+                .expect("actual follower")
+                .latest_committed_state_if_changed(None)
+                .expect("actual full B quorum read");
+            let (materialized, records_receipt) = match observed {
+                crate::ha::CommittedStateRead::Materialized(committed) => (
+                    Some(
+                        service
+                            .receive_materialized_ha_state(&committed)
+                            .unwrap_or_else(|_| panic!("actual materialized B receipt")),
+                    ),
+                    None,
+                ),
+                crate::ha::CommittedStateRead::Records(committed) => (
+                    None,
+                    Some(
+                        service
+                            .receive_ha_records(&Arc::clone(&cluster.processes[1]), &committed)
+                            .unwrap_or_else(|_| panic!("actual record B receipt")),
+                    ),
+                ),
+                _ => panic!("actual B publication must exist"),
+            };
+            let receipt = materialized.as_ref().unwrap_or_else(|| {
+                records_receipt
+                    .as_ref()
+                    .expect("actual record receipt")
+                    .owner()
+            });
+            let completed = receipt
+                .after_publication(service)
+                .unwrap_or_else(|_| panic!("actual good full local B completion"));
+            let root_before = service
+                .durable
+                .as_ref()
+                .expect("actual writer")
+                .get("system", "state")
+                .expect("actual root read");
+            let before = service
+                .durable
+                .as_ref()
+                .expect("actual B writer")
+                .generation();
+            let expected = service
+                .current_state_identity()
+                .unwrap_or_else(|_| panic!("actual warm B"));
+            let public = fs::read(service.data_dir.join("seal.json")).expect("actual B index");
+            let resource = if record_object {
+                service.record_root.as_ref().expect("actual graph").owners[0].chunks[0].resource()
+            } else {
+                owner_store::decode_manifest(root_before.as_ref().expect("actual V4 root").expose())
+                    .expect("actual V4 codec")
+                    .expect("actual V4 manifest")
+                    .unique_chunk_resources()
+                    .expect("actual V4 chunks")
+                    .into_iter()
+                    .next()
+                    .expect("actual V4 owner chunk")
+            };
+            service
+                .durable
+                .as_mut()
+                .expect("actual writer")
+                .put(
+                    PutRequest::new(
+                        "actual-completed-negative",
+                        "system",
+                        "actual-completed-negative-write",
+                        &resource,
+                        crypto::digest(b"actual-invalid-object"),
+                        Secret::new(b"actual-invalid-object".to_vec()).expect("invalid object"),
+                    )
+                    .expect("actual corruption request"),
+                )
+                .expect("actual object replacement");
+            assert_eq!(
+                service
+                    .durable
+                    .as_ref()
+                    .expect("actual changed graph")
+                    .get("system", &resource)
+                    .expect("actual replaced object"),
+                Some(Secret::new(b"actual-invalid-object".to_vec()).expect("invalid object"))
+            );
+            assert_eq!(
+                service
+                    .durable
+                    .as_ref()
+                    .expect("actual root unchanged")
+                    .get("system", "state")
+                    .expect("actual root read"),
+                root_before
+            );
+            assert!(
+                Service::load_state_from_durable(
+                    service.durable.as_ref().expect("actual bad full graph")
+                )
+                .is_err()
+            );
+            // Freshly captured generation already includes the actual bad
+            // write. A stale-generation comparison cannot reject this fixture.
+            let current = service
+                .durable
+                .as_ref()
+                .expect("actual current writer")
+                .generation();
+            assert!(current > before);
+            service
+                .durable
+                .as_mut()
+                .expect("actual live current writer")
+                .verify_live_ownership()
+                .expect("actual current-generation ownership");
+            assert!(
+                !service
+                    .durable
+                    .as_ref()
+                    .expect("actual current store")
+                    .recovery_required()
+            );
+            assert!(
+                service
+                    .current_state_identity()
+                    .unwrap_or_else(|_| panic!("warm B unchanged"))
+                    == expected
+            );
+            assert_eq!(
+                fs::read(service.data_dir.join("seal.json")).expect("actual index unchanged"),
+                public
+            );
+            assert!(
+                cluster.processes[1]
+                    .lock()
+                    .expect("actual follower")
+                    .application_identity_witness()
+                    .expect("genuine B quorum witness")
+                    .0
+                    == expected
+            );
+            assert!(
+                receipt.after_publication(service).is_err(),
+                "a completed token must read every actual current-generation owner/object"
+            );
+            assert!(
+                completed.progress(service).is_err(),
+                "a previously constructed token must revalidate the actual complete graph"
+            );
+            assert!(
+                service
+                    .reconcile_completed_ha_recovery_index(&completed)
+                    .is_err(),
+                "actual corrupt graph must reject index publication before any index write"
+            );
+            assert!(service.recovery_required && service.durable.is_none());
+            assert!(service.state.is_none() && service.barrier_key.is_none());
+            assert!(service.ha_activation.is_none() && service.ha_read_cache.is_none());
+            assert_eq!(
+                fs::read(service.data_dir.join("seal.json")).expect("index unchanged"),
+                public
+            );
+            save(&case.root.join("completed-deep-readback-original.json"),
+                &serde_json::to_vec(&json!({"passed":true,"generation_before":before,
+                    "actual_generation_after_corruption":current,"actual_live_ownership":true,
+                    "actual_root_unchanged":true,"actual_deep_loader_rejected":true,
+                    "fresh_completed_constructor_rejected":true,
+                    "old_completed_progress_rejected":true,"actual_index_caller_permanent_fence":true,
+                    "original_admission_budget_seconds":15,"index_unchanged":true,
                     "qualification_transferred":false})).expect("public negative evidence"));
             close(&case);
         }

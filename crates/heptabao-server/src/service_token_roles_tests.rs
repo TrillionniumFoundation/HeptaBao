@@ -153,6 +153,10 @@ fn token_role_alias_uses_owned_identity_and_disabled_entity_prevents_publication
         json!({"entity_alias":"Ada"}),
     );
     assert_eq!(denied.status, 403);
+    assert_eq!(
+        denied.body["errors"],
+        json!(["entity from given entity alias is disabled"])
+    );
     assert!(denied.body.get("auth").is_none());
     assert_eq!(
         service.current_state_identity().map_err(|_| "identity")?,

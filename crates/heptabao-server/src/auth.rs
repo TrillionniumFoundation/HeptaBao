@@ -1551,6 +1551,11 @@ fn bad(message: &str) -> AuthError {
 fn denied() -> AuthError {
     err(403, "permission denied")
 }
+fn acl_denied() -> AuthError {
+    // Core wraps a policy decision in its permission-denied multierror. Keep
+    // credential, identity and admission failures on their distinct paths.
+    err(403, "1 error occurred:\n\t* permission denied\n\n")
+}
 fn response(data: Value, mutated: bool) -> AuthResponse {
     AuthResponse {
         approle_secret_consumption: None,
@@ -2519,7 +2524,7 @@ impl AuthState {
         {
             Ok(())
         } else {
-            Err(denied())
+            Err(acl_denied())
         }
     }
 
@@ -2557,7 +2562,7 @@ impl AuthState {
             return Ok(());
         }
         if !self.wrapping_policy_allows(principal, namespace, path, token.policies())? {
-            return Err(denied());
+            return Err(acl_denied());
         }
         if !matches!(method, "GET" | "HEAD" | "POST" | "PUT" | "PATCH") {
             return Ok(());
@@ -2600,7 +2605,7 @@ impl AuthState {
         if decision.parameters_allowed(body) {
             Ok(())
         } else {
-            Err(denied())
+            Err(acl_denied())
         }
     }
 
@@ -3810,6 +3815,7 @@ impl AuthState {
         token.auth_mount = Some(plan.mount.clone());
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             metadata: None,
             mount: plan.mount,
             alias: alias.into(),
@@ -4320,6 +4326,7 @@ impl AuthState {
         });
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             metadata: None,
             mount: plan.mount.clone(),
             alias: plan.name.clone(),
@@ -4647,6 +4654,7 @@ impl AuthState {
         });
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             metadata: None,
             mount: plan.mount,
             alias: plan.username,
@@ -4769,6 +4777,7 @@ impl AuthState {
                 // count, while the self-contained batch has no use counter.
                 response.body["auth"]["num_uses"] = json!(role.token_num_uses);
                 response.login_identity = Some(LoginIdentity {
+                    token_api_alias: false,
                     metadata: None,
                     mount: mount.into(),
                     alias: certificate_identity_alias(attributes.as_ref(), role_name),
@@ -4797,6 +4806,7 @@ impl AuthState {
             });
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
             response.login_identity = Some(LoginIdentity {
+                token_api_alias: false,
                 metadata: None,
                 mount: mount.into(),
                 alias: certificate_identity_alias(attributes.as_ref(), role_name),
@@ -5244,6 +5254,7 @@ impl AuthState {
                 response.body["warnings"] = json!([warning]);
             }
             response.login_identity = Some(LoginIdentity {
+                token_api_alias: false,
                 metadata: Some(metadata),
                 mount: mount.into(),
                 alias: verified.alias,
@@ -6355,6 +6366,7 @@ impl AuthState {
             }
             if let Some(alias) = entity_alias {
                 response.login_identity = Some(LoginIdentity {
+                    token_api_alias: true,
                     mount: "token".into(),
                     alias,
                     metadata: None,
@@ -6424,6 +6436,7 @@ impl AuthState {
         }
         if let Some(alias) = entity_alias {
             response.login_identity = Some(LoginIdentity {
+                token_api_alias: true,
                 mount: "token".into(),
                 alias,
                 metadata: None,
@@ -7130,6 +7143,7 @@ impl AuthState {
         userpass_no_default::omit_empty_token_policies(&mut response);
         response.body["auth"]["metadata"] = json!({"username":name});
         response.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             metadata: None,
             mount: mount.into(),
             alias: name.into(),
@@ -7626,6 +7640,7 @@ impl AuthState {
         issued.body["auth"]["metadata"] = json!(metadata.0);
         issued.approle_secret_consumption = credential_consumption.map(Box::new);
         issued.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             metadata: Some(metadata.take()),
             mount: mount.into(),
             alias: role_id.into(),

@@ -1049,7 +1049,14 @@ impl Service {
                 .bind_login_identity(namespace, &accessor, &login.alias, now)
                 .map_err(|error| Response::error(error.status, &error.message))?;
             if projection.disabled {
-                return Err(Response::error(403, "permission denied"));
+                return Err(Response::error(
+                    403,
+                    if login.token_api_alias {
+                        "entity from given entity alias is disabled"
+                    } else {
+                        "permission denied"
+                    },
+                ));
             }
             auth.bind_issued_entity(response, namespace, &login.mount, &projection.entity_id)
                 .map_err(auth_error)?;

@@ -23,6 +23,9 @@ use std::{
     },
     time::{Duration, Instant},
 };
+
+#[path = "http_logical.rs"]
+mod logical;
 use zeroize::{Zeroize, Zeroizing};
 
 #[path = "http_help.rs"]
@@ -628,7 +631,7 @@ fn serve_inner(
                     .saturating_duration_since(Instant::now());
                 let parsed = read_request_mode(&mut stream, read_budget, true);
                 stream.sock.deadline = deadline;
-                let (reply, head) = match parsed {
+                let (mut reply, head) = match parsed {
                     Ok(mut request) => {
                         request.client_certificates =
                             stream.conn.peer_certificates().map(|certificates| {
@@ -732,6 +735,7 @@ fn serve_inner(
                         (reply, error.health_head == Some(true))
                     }
                 };
+                logical::project(&mut reply, &attempt_id);
                 let _ = reply.write(&mut stream, head);
             });
         if spawn.is_err() {

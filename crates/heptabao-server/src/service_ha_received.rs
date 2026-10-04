@@ -234,6 +234,10 @@ impl CompletedLocalPublication<'_> {
         self.receipt.deadline
     }
 
+    pub(super) fn verify_local_publication(&self, service: &mut Service) -> Result<(), Response> {
+        self.receipt.verify_local_publication(service)
+    }
+
     pub(super) fn complete_index_publication(
         &self,
         service: &mut Service,
@@ -613,8 +617,16 @@ impl ReceivedHaState {
         live(self.deadline)
     }
 
-    fn verify_local_publication(&self, service: &Service) -> Result<(), Response> {
+    fn verify_local_publication(&self, service: &mut Service) -> Result<(), Response> {
+        live(self.deadline)?;
+        service
+            .durable
+            .as_mut()
+            .ok_or_else(rejected)?
+            .verify_live_ownership()
+            .map_err(|_| rejected())?;
         let durable = service.durable.as_ref().ok_or_else(rejected)?;
+        let generation = durable.generation();
         if durable.replay_epoch() != self.state.replay_epoch {
             return Err(rejected());
         }
@@ -676,7 +688,35 @@ impl ReceivedHaState {
                 }
             }
         }
-        Ok(())
+        // The typed root/manifest names a graph, not proof that its actual
+        // reachable owner/object bytes remain intact after publication. Reload
+        // all of that graph from this live writer at its CURRENT generation.
+        let (loaded, _, rewrite) = Service::load_state_from_durable(durable)?;
+        if rewrite
+            || loaded.schema != self.state.schema
+            || loaded.cluster_id != self.state.cluster_id
+            || loaded.replay_epoch != self.state.replay_epoch
+            || durable.recovery_required()
+            || owner_store::serialize_owner(&loaded)
+                .map_err(state_serialization_error)?
+                .as_slice()
+                != owner_store::serialize_owner(&self.state)
+                    .map_err(state_serialization_error)?
+                    .as_slice()
+        {
+            return Err(rejected());
+        }
+        live(self.deadline)?;
+        service
+            .durable
+            .as_mut()
+            .ok_or_else(rejected)?
+            .verify_live_ownership()
+            .map_err(|_| rejected())?;
+        if service.durable.as_ref().ok_or_else(rejected)?.generation() != generation {
+            return Err(rejected());
+        }
+        live(self.deadline)
     }
 
     pub(super) fn after_publication<'a>(
@@ -963,23 +1003,23 @@ mod tests {
             },
         };
         assert!(service.ha_read_cache.is_none());
-        assert!(receipt.verify_local_publication(&service).is_ok());
+        assert!(receipt.verify_local_publication(&mut service).is_ok());
         receipt.publication = ReceivedPublication::Materialized {
             owner_manifest_digest: Some([0; 32]),
         };
-        assert!(receipt.verify_local_publication(&service).is_err());
+        assert!(receipt.verify_local_publication(&mut service).is_err());
         receipt.publication = ReceivedPublication::Materialized {
             owner_manifest_digest: None,
         };
-        assert!(receipt.verify_local_publication(&service).is_ok());
+        assert!(receipt.verify_local_publication(&mut service).is_ok());
         receipt.state.cluster_id = "different-target".into();
-        assert!(receipt.verify_local_publication(&service).is_err());
+        assert!(receipt.verify_local_publication(&mut service).is_err());
         receipt.state = state.clone();
         receipt.state.schema -= 1;
-        assert!(receipt.verify_local_publication(&service).is_err());
+        assert!(receipt.verify_local_publication(&mut service).is_err());
         receipt.state = state.clone();
         receipt.state.replay_epoch += 1;
-        assert!(receipt.verify_local_publication(&service).is_err());
+        assert!(receipt.verify_local_publication(&mut service).is_err());
         // Staging a Records root really changes the durable publication. A
         // previous materialized receipt cannot pass merely on a cached cursor.
         let mut record_state = state.clone();
@@ -996,20 +1036,20 @@ mod tests {
             .persist_record_plan_local(&plan, "received-readback-test", true)
             .map_err(|_| "publish received record plan")?;
         receipt.state = state.clone();
-        assert!(receipt.verify_local_publication(&service).is_err());
+        assert!(receipt.verify_local_publication(&mut service).is_err());
         receipt.state = record_state;
         receipt.identity = identity;
         receipt.publication = ReceivedPublication::Records {
             root_bytes: root_bytes.clone(),
         };
-        assert!(receipt.verify_local_publication(&service).is_ok());
+        assert!(receipt.verify_local_publication(&mut service).is_ok());
         receipt.identity = StateIdentity::RecordsV5([0; 32]);
-        assert!(receipt.verify_local_publication(&service).is_err());
+        assert!(receipt.verify_local_publication(&mut service).is_err());
         receipt.identity = identity;
         receipt.publication = ReceivedPublication::Records {
             root_bytes: Zeroizing::new(vec![0]),
         };
-        assert!(receipt.verify_local_publication(&service).is_err());
+        assert!(receipt.verify_local_publication(&mut service).is_err());
         Ok(())
     }
 
@@ -1077,7 +1117,7 @@ mod tests {
             write(&mut service, &a, &fixed)?,
             MutationOutcome::Duplicate { .. }
         ));
-        assert!(receipt.verify_local_publication(&service).is_err());
+        assert!(receipt.verify_local_publication(&mut service).is_err());
         let first = receipt.operation_id().map_err(|_| "fresh event")?;
         let second = receipt.operation_id().map_err(|_| "another event")?;
         assert_ne!(first, second);
@@ -1085,7 +1125,7 @@ mod tests {
             write(&mut service, &a, &first)?,
             MutationOutcome::Committed { .. }
         ));
-        assert!(receipt.verify_local_publication(&service).is_ok());
+        assert!(receipt.verify_local_publication(&mut service).is_ok());
         Ok(())
     }
 

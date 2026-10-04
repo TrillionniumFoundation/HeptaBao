@@ -81,6 +81,56 @@ fn read_original(s: &mut Service, admin: &str) {
 }
 
 #[test]
+fn acl_errors_preserve_policy_origin_and_credentials_without_effects() -> TestResult {
+    let (_root, mut service, _, admin) = fresh()?;
+    install(
+        &mut service,
+        &admin,
+        "unrelated",
+        r#"path "elsewhere/*" { capabilities=["read"] }"#,
+    );
+    let token = issue(&mut service, &admin, &["unrelated"], false, 0)?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+    for ttl in [None, Some(0)] {
+        // None exercises the immutable read; Some(0) exercises ordinary dispatch.
+        let denied = wrapped(
+            &mut service,
+            &token,
+            "GET",
+            "secret/data/item",
+            json!({}),
+            ttl,
+        );
+        assert_eq!(denied.status, 403);
+        assert_eq!(
+            denied.body["errors"],
+            json!(["1 error occurred:\n\t* permission denied\n\n"])
+        );
+        let credential = wrapped(
+            &mut service,
+            "invalid-token",
+            "GET",
+            "secret/data/item",
+            json!({}),
+            ttl,
+        );
+        assert_eq!(credential.status, 403);
+        assert_eq!(credential.body["errors"], json!(["permission denied"]));
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert_eq!(
+            serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
+            before
+        );
+    }
+    read_original(&mut service, &admin);
+    Ok(())
+}
+
+#[test]
 fn acl_wrapping_bounds_distinguish_absent_zero_and_positive_for_service_and_batch() -> TestResult {
     for batch in [false, true] {
         let (_root, mut service, _, admin) = fresh()?;

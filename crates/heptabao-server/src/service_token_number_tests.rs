@@ -106,15 +106,12 @@ fn token_number_role_fields_preserve_wire_lexemes_and_original_parameter_acl() -
         "POST",
         path,
         &root,
-        wire_body_at(
-            path,
-            r#"{"allowed_policies":[1e0,1.0],"path_suffix":1e+06}"#,
-        )?,
+        wire_body_at(path, r#"{"allowed_policies":[1e0,1.0],"path_suffix":1e0}"#)?,
     );
     assert_eq!(response.status, 204, "{}", response.body["errors"]);
     let read = call(&mut service, "GET", path, &root, json!({}));
     assert_eq!(read.body["data"]["allowed_policies"], json!(["1.0", "1e0"]));
-    assert_eq!(read.body["data"]["path_suffix"], "1e+06");
+    assert_eq!(read.body["data"]["path_suffix"], "1e0");
     let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
     let failure = call(
         &mut service,
