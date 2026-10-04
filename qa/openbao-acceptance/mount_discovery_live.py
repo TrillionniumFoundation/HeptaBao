@@ -212,7 +212,7 @@ def main():
     parent = output.parent.stat()
     if output.exists() or parent.st_uid != os.geteuid() or parent.st_mode & 0o077:
         parser.error("output must be new in a caller-owned 0700 directory")
-    pinned = pinned_artifact("2.7.0")
+    pinned = pinned_artifact(version="2.7.0")
     private = Path(tempfile.mkdtemp(prefix="heptabao-mount-discovery270-"))
     private.chmod(0o700)
     spec = importlib.util.spec_from_file_location("mount_smoke", ROOT / "qa/single-node/smoke.py")
