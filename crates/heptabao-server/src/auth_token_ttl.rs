@@ -145,7 +145,7 @@ impl AuthState {
         let role = token.token_role.as_ref().map(|issued| {
             self.token_roles.get(namespace).and_then(|roles| roles.get(&issued.name)).ok_or_else(|| err(500, &format!("1 error occurred:\n\t* failed to renew entry: original token role {} could not be found, not renewing\n\n",token_policies::quote_policy(&issued.name))))
         }).transpose()?;
-        let period = role.map_or(token.period, |role| role.period());
+        let period = role.map_or(token.period, |role| role.effective_period());
         let explicit_max_expires_at = if let Some(role) = role {
             (role.explicit_max() > 0)
                 .then(|| checked_expiry(token.created_at, role.explicit_max()))

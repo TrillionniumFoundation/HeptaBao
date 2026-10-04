@@ -6190,7 +6190,7 @@ impl AuthState {
             period
         } else {
             role.map_or(period, |role| {
-                token_roles::lesser_nonzero(period, role.period())
+                token_roles::lesser_nonzero(period, role.effective_period())
             })
         };
         let effective_max = if batch {
@@ -6208,7 +6208,7 @@ impl AuthState {
             if explicit_max > 0 && role.explicit_max() > 0 {
                 role_warnings.push(format!("Explicit max TTL specified both during creation call and in role; using the lesser value of {effective_max} seconds"));
             }
-            if period > 0 && role.period() > 0 {
+            if period > 0 && role.effective_period() > 0 {
                 role_warnings.push(format!("Period specified both during creation call and in role; using the lesser value of {effective_period} seconds"));
             }
         }

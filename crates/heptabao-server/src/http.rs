@@ -25,6 +25,8 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "http_help.rs"]
+pub(crate) mod help;
 #[path = "http_ocsp.rs"]
 pub(crate) mod ocsp;
 #[path = "http_snapshot.rs"]
@@ -632,7 +634,9 @@ fn serve_inner(
                                     .map(|certificate| certificate.as_ref().to_vec())
                                     .collect()
                             });
-                        let is_head = request.method == "HEAD";
+                        let is_head = request.method == "HEAD"
+                            || help::request(&request.method, &request.path, &request.body.0)
+                                .is_some_and(|(method, _, _)| method == "HEAD");
                         let native_snapshot = request.native_snapshot.take();
                         // Index admission precedes logical dispatch and any snapshot body I/O.
                         // It never authenticates the caller or creates permission to retry.
@@ -643,11 +647,13 @@ fn serve_inner(
                             deadline,
                         );
                         let mut service_request = ServiceRequest {
-                            method: if is_head
+                            method: if request.method == "HEAD"
                                 && request.path != "sys/leader"
                                 && request.path != "sys/internal/ui/mounts"
                                 && !request.path.starts_with("sys/internal/ui/mounts/")
                                 && request.wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+                                && ocsp::query_request("HEAD", &request.path, &request.body.0)
+                                    .is_none()
                             {
                                 "GET"
                             } else {
@@ -715,10 +721,12 @@ fn serve_inner(
                         if error.empty_errors && response.status == error.status {
                             response.body = json!({"errors": []});
                         }
-                        (
-                            snapshot::NativeReply::Json(response),
-                            error.health_head == Some(true),
-                        )
+                        let reply = if error.outer_bad_request && response.status == 400 {
+                            snapshot::NativeReply::HttpBadRequest
+                        } else {
+                            snapshot::NativeReply::Json(response)
+                        };
+                        (reply, error.health_head == Some(true))
                     }
                 };
                 let _ = reply.write(&mut stream, head);
@@ -985,6 +993,8 @@ struct ParseError {
     // A semantic rejection after valid method/route/header admission can still
     // belong to the public health diagnostic. None retains mandatory wire audit.
     health_head: Option<bool>,
+    // Go rejects malformed URI paths and conflicting lengths before logical dispatch.
+    outer_bad_request: bool,
 }
 impl ParseError {
     fn with_health_context(mut self, method: &str, route: &str) -> Self {
@@ -1001,6 +1011,7 @@ impl From<io::Error> for ParseError {
             message: "incomplete or timed out HTTP request",
             empty_errors: false,
             health_head: None,
+            outer_bad_request: false,
         }
     }
 }
@@ -1010,7 +1021,28 @@ fn bad(message: &'static str) -> ParseError {
         message,
         empty_errors: false,
         health_head: None,
+        outer_bad_request: false,
     }
+}
+
+fn outer_bad(message: &'static str) -> ParseError {
+    ParseError {
+        outer_bad_request: true,
+        ..bad(message)
+    }
+}
+
+fn valid_uri_path_escapes(path: &str) -> bool {
+    let mut bytes = path.bytes();
+    while let Some(byte) = bytes.next() {
+        if byte == b'%'
+            && (!bytes.next().is_some_and(|byte| byte.is_ascii_hexdigit())
+                || !bytes.next().is_some_and(|byte| byte.is_ascii_hexdigit()))
+        {
+            return false;
+        }
+    }
+    true
 }
 
 #[cfg(test)]
@@ -1092,10 +1124,13 @@ fn read_request_mode(
     if target.len() > 8192 || !target.starts_with("/v1/") {
         return Err(bad("request must use /v1/ API"));
     }
+    if !valid_uri_path_escapes(target[4..].split('?').next().unwrap_or_default()) {
+        return Err(outer_bad("invalid URI path escape"));
+    }
     let leader_route = target[4..].split('?').next() == Some("sys/leader");
     if !matches!(
         method.as_str(),
-        "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD"
+        "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD" | "HELP"
     ) && !(leader_route && leader::valid_method(&method))
     {
         return Err(bad("unsupported HTTP method or version"));
@@ -1116,6 +1151,13 @@ fn read_request_mode(
         let name = name.to_ascii_lowercase();
         if consistency_headers.push(&name, value.trim())? {
             continue;
+        }
+        if name == "content-length"
+            && map
+                .get(&name)
+                .is_some_and(|previous: &Zeroizing<String>| previous.as_str() != value.trim())
+        {
+            return Err(outer_bad("conflicting content length"));
         }
         if map
             .insert(name, Zeroizing::new(value.trim().to_owned()))
@@ -1170,6 +1212,7 @@ fn read_request_mode(
             message: "requested OpenBao header semantics are not implemented",
             empty_errors: false,
             health_head: None,
+            outer_bad_request: false,
         });
     }
     if !leader_route
@@ -1182,10 +1225,13 @@ fn read_request_mode(
             message: "only opaque response wrapping tokens are supported",
             empty_errors: false,
             health_head: None,
+            outer_bad_request: false,
         });
     }
+    let raw_query = target[4..].split_once('?').map_or("", |(_, query)| query);
+    let help_selected = !leader_route && help::requested(&method, raw_query);
     let health_probe = route == "sys/health" && matches!(method.as_str(), "GET" | "HEAD");
-    let wrap_ttl_seconds = if leader_route || health_probe {
+    let wrap_ttl_seconds = if leader_route || health_probe || help_selected {
         None
     } else {
         map.get("x-vault-wrap-ttl")
@@ -1203,6 +1249,7 @@ fn read_request_mode(
         .get("content-type")
         .is_some_and(|value| value.split(';').next() == Some("application/json"));
     let native_snapshot = native_wire
+        && !help_selected
         && snapshot_route
         && ((download
             && !map
@@ -1252,6 +1299,7 @@ fn read_request_mode(
             message: "request body exceeds limit",
             empty_errors: false,
             health_head: None,
+            outer_bad_request: false,
         });
     }
     let raw_namespace = if leader_route {
@@ -1282,6 +1330,7 @@ fn read_request_mode(
         && !ocsp_form_media
         && !ocsp::post_route(&method, route)
         && !query_only
+        && !help_selected
         && map.get("content-type").is_some_and(|v| {
             !matches!(
                 v.split(';').next(),
@@ -1305,6 +1354,26 @@ fn read_request_mode(
     if !native_snapshot && bytes.len() != header_end + length {
         return Err(bad("pipelining and trailing bytes are not supported"));
     }
+    // Help ignores logical body bytes after ordinary framing and body bounds.
+    if help_selected {
+        let body = help::carrier(&method, route, raw_query)?;
+        if (route.contains('%') || route.contains('#'))
+            && !help::opaque_request("HELP", route, &body)
+        {
+            return Err(bad("ambiguous encoded paths are not supported"));
+        }
+        return Ok(Request {
+            consistency,
+            native_snapshot: None,
+            method: "HELP".to_owned(),
+            path: route.to_owned(),
+            namespace,
+            token,
+            body: SecretJson(body),
+            wrap_ttl_seconds,
+            client_certificates: None,
+        });
+    }
     // Public UI preflight has no PATCH operation. Its JSON media boundary is
     // still evaluated before dispatch, after ordinary framing/size fences.
     if method == "PATCH"
@@ -1322,6 +1391,7 @@ fn read_request_mode(
                 message: "PATCH requires merge-patch JSON",
                 empty_errors: false,
                 health_head: None,
+                outer_bad_request: false,
             });
         }
     }
@@ -1375,7 +1445,10 @@ fn read_request_mode(
         return Err(bad("JSON object required"));
     };
     let (path, query) = target[4..].split_once('?').unwrap_or((&target[4..], ""));
-    if (path.contains('%') || path.contains('#')) && ocsp_get.is_none() {
+    if (path.contains('%') || path.contains('#'))
+        && ocsp_get.is_none()
+        && !ocsp::head_candidate(&method, path)
+    {
         return Err(bad("ambiguous encoded paths are not supported"));
     }
     // Kerberos uses the standard HTTP Negotiate carrier rather than a JSON
@@ -1768,6 +1841,47 @@ mod ocsp_service_tests;
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn head_operation_keeps_original_query_values_and_does_not_select_list() -> io::Result<()> {
+        let wire = "HEAD /v1/secret/ocsp/plainkey?list=true&unknown=one&unknown=two&help= HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\n\r\n";
+        let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+            .map_err(|_| io::Error::other("bounded HEAD query"))?;
+        assert_eq!(request.method, "HEAD");
+        let carrier = ocsp::query_request("HEAD", &request.path, &request.body.0)
+            .ok_or_else(|| io::Error::other("request-local header carrier"))?;
+        let (method, body) = carrier
+            .resolve(true)
+            .map_err(|_| io::Error::other("Go query values"))?;
+        assert_eq!(method, "HEAD");
+        assert_eq!(body.0["unknown"], json!(["one", "two"]));
+        assert_eq!(body.0["list"], "true");
+        assert!(body.0.get("help").is_none());
+        Ok(())
+    }
+
+    #[test]
+    fn invalid_uri_path_and_conflicting_lengths_remain_outer_failures() -> io::Result<()> {
+        for method in ["GET", "HEAD", "HELP"] {
+            let wire = format!(
+                "{method} /v1/pki/ocsp/%GG HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\n\r\n"
+            );
+            let error = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                .err()
+                .ok_or_else(|| io::Error::other("bad URI admitted"))?;
+            assert_eq!(error.status, 400);
+            assert!(error.outer_bad_request);
+        }
+        let wire = "HEAD /v1/secret/a?help=true HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\nContent-Length: 1\r\n\r\n";
+        let error = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+            .err()
+            .ok_or_else(|| io::Error::other("conflicting framing admitted"))?;
+        assert!(error.outer_bad_request);
+        let mut raw = Vec::new();
+        snapshot::NativeReply::HttpBadRequest.write(&mut raw, true)?;
+        assert!(raw.ends_with(b"\r\n\r\n400 Bad Request"));
+        Ok(())
+    }
+
     #[test]
     fn ocsp_raw_transport_retains_framing_mount_namespace_and_closed_output() -> io::Result<()> {
         use base64::Engine as _;

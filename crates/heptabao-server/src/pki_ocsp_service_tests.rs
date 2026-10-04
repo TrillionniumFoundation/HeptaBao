@@ -274,9 +274,21 @@ fn anonymous_ocsp_mount_namespace_restart_seal_deadline_and_audit() -> TestResul
         &call(&mut service, "", "POST", "pki/ocsp", carrier(&request), 102),
         200,
     );
+    let original_get_path = format!("pki/ocsp/{}", BASE64.encode(&request));
     assert_raw(
-        &call(&mut service, "", "GET", "pki/ocsp", carrier(&request), 102),
+        &call(
+            &mut service,
+            "",
+            "GET",
+            &original_get_path,
+            get_carrier(&original_get_path),
+            102,
+        ),
         200,
+    );
+    assert_eq!(
+        call(&mut service, "", "GET", "pki/ocsp", json!({}), 102).status,
+        405
     );
     let malformed = call(
         &mut service,

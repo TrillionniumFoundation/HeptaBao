@@ -2078,7 +2078,12 @@ impl Service {
             admission_started: _,
         } = request;
         let opaque_ocsp_get = crate::http::ocsp::opaque_get_request(method, path, body);
-        if !valid_namespace(namespace) || (!valid_path(path) && !opaque_ocsp_get) {
+        if !valid_namespace(namespace)
+            || (!valid_path(path)
+                && !opaque_ocsp_get
+                && !crate::http::ocsp::opaque_header_request(method, path, body)
+                && !crate::http::help::opaque_request(method, path, body))
+        {
             return Response::error(400, "invalid canonical namespace or path");
         }
         // Early control routes resolve the namespace against admitted state.
@@ -2335,15 +2340,28 @@ impl Service {
                 return Response::error(404, "OCSP mount not found");
             }
         } else if let Some(carrier) = crate::http::ocsp::query_request(method, path, body) {
+            if !valid_path(path)
+                && !self
+                    .state
+                    .as_ref()
+                    .is_some_and(|state| state.engines.is_actual_pki_ocsp_path(namespace, path))
+            {
+                return Response::error(404, "opaque header owner not found");
+            }
             let actual_kv = self
                 .state
                 .as_ref()
                 .is_some_and(|state| state.engines.is_actual_kv_query_owner(namespace, path));
-            ordinary_get = Some(match carrier.resolve(actual_kv) {
+            let actual_ocsp = self
+                .state
+                .as_ref()
+                .is_some_and(|state| state.engines.is_actual_pki_ocsp(namespace, path));
+            ordinary_get = Some(match carrier.resolve(actual_kv || actual_ocsp) {
                 Ok((method, body)) => (
                     match method {
                         "LIST" => "LIST",
                         "SCAN" => "SCAN",
+                        "HEAD" => "HEAD",
                         _ => "GET",
                     },
                     body,
@@ -2418,6 +2436,35 @@ impl Service {
                 }
                 self.state = Some(admitted.clone());
             }
+        }
+        // HeaderOperation is unsupported by this public responder. A GET to
+        // the POST-only bare path also has no request-captured suffix. Resolve
+        // this after the same namespace/HA/barrier/maintenance guards, without
+        // interpreting DER or granting access to another owner.
+        if (method == "HEAD" && admitted.engines.is_actual_pki_ocsp_path(namespace, path))
+            || (!opaque_ocsp_get
+                && matches!(method, "GET" | "LIST" | "SCAN")
+                && admitted.engines.is_actual_pki_ocsp(namespace, path))
+        {
+            return Response::error(405, "unsupported operation");
+        }
+        let help_projection = if method == "HELP" {
+            if crate::http::help::request(method, path, body).is_none() {
+                return Response::error(400, "invalid request-local help carrier");
+            }
+            match admitted.engines.help_projection(namespace, path) {
+                Ok(value) => value,
+                Err(error) => return Response::error(error.status, &error.message),
+            }
+        } else {
+            None
+        };
+        if help_projection.as_ref().is_some_and(|help| help.anonymous) {
+            return Response {
+                consistency_index: None,
+                status: 200,
+                body: help_projection.map_or_else(|| json!({}), |help| help.body),
+            };
         }
         // Public projection classification is bound to the actual namespace
         // and mount after normal HA/unseal and durable lease-owner maintenance.
@@ -2507,6 +2554,26 @@ impl Service {
             && let Err(error) = Self::bind_identity_principal(&admitted, principal, namespace)
         {
             return error;
+        }
+        if method == "HELP" {
+            if principal.is_none() {
+                return Response::error(403, "missing client token");
+            }
+            return help_projection.map_or_else(
+                || Response::error(404, "help route not found"),
+                |mut help| {
+                    if path == "auth/token/lookup-self"
+                        && let Some(object) = help.body.as_object_mut()
+                    {
+                        object.insert("id".into(), Value::String(token.to_owned()));
+                    }
+                    Response {
+                        consistency_index: None,
+                        status: 200,
+                        body: help.body,
+                    }
+                },
+            );
         }
         if !mount_metadata
             && let Some(principal) = principal.as_ref()

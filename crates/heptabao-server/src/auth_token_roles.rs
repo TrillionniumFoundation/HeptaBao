@@ -427,7 +427,7 @@ impl Role {
     pub(super) fn uses(&self, requested: u64) -> u64 {
         lesser_nonzero(requested, self.token_num_uses)
     }
-    pub(super) fn period(&self) -> u64 {
+    pub(super) fn effective_period(&self) -> u64 {
         self.token_period
     }
     pub(super) fn explicit_max(&self) -> u64 {

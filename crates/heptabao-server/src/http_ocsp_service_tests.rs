@@ -783,7 +783,7 @@ fn ordinary_kv_query_uses_actual_owner_go_values_and_keeps_authentication() -> T
         );
     }
     let sentinel = json!({"ordinary":"preserve","__heptabao_pki_ocsp_request":"AA==",
-        "__heptabao_kv_read_query":{"path":"kv-one/ocsp/plainkey","query":"token=forged","wire_method":"GET"}});
+        "__heptabao_kv_read_query":{"path":"kv-one/ocsp/plainkey","query":"token=forged","wire_method":"GET"},"__heptabao_http_help_request":{"path":"kv-one/ocsp/plainkey","query":"help=true","wire_method":"POST"}});
     for path in ["ocsp/plainkey", "plainkey", "ocsp/branch/child"] {
         assert_eq!(
             admin(
@@ -812,7 +812,6 @@ fn ordinary_kv_query_uses_actual_owner_go_values_and_keeps_authentication() -> T
         ("foo=bar", 200, 2),
         ("bare", 200, 2),
         ("=value", 200, 2),
-        ("help=anything", 200, 2),
         ("foo=%00", 200, 2),
         ("foo=%FF", 200, 2),
         ("foo=a;b", 200, 2),
@@ -934,6 +933,31 @@ fn ordinary_kv_query_uses_actual_owner_go_values_and_keeps_authentication() -> T
     )?;
     assert_eq!(denied.status, 200);
     let denied_token = text(&denied.body, "/auth/client_token")?;
+    for (token, expected) in [(&root, 200), (&denied_token, 200), (&String::new(), 403)] {
+        for path in ["kv-one/ocsp/plainkey", "kv-two/data/ocsp/plainkey"] {
+            for (method, suffix) in [
+                ("GET", "?help=anything"),
+                ("HELP", ""),
+                ("POST", "?help=true"),
+            ] {
+                let response = wire(
+                    &mut service,
+                    method,
+                    &format!("{path}{suffix}"),
+                    "",
+                    token,
+                    None,
+                    b"not-json",
+                )?;
+                assert_eq!(response.status, expected);
+                if expected == 200 {
+                    assert!(response.body["help"].is_string());
+                    assert!(response.body["openapi"].is_object());
+                    assert!(response.body.get("data").is_none());
+                }
+            }
+        }
+    }
     for token in ["", denied_token.as_str()] {
         for path in ["kv-one/ocsp/plainkey", "kv-two/data/ocsp/plainkey"] {
             assert_eq!(

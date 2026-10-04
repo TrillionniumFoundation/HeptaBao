@@ -21,6 +21,8 @@ mod identity;
 #[path = "engine_identity.rs"]
 mod identity_projection;
 use identity_projection::IdentityProjection;
+#[path = "engine_help.rs"]
+mod help;
 pub(crate) mod kubernetes;
 mod kv;
 mod kv1_records;
@@ -1494,6 +1496,11 @@ impl EngineState {
     pub(crate) fn is_actual_pki_ocsp(&self, namespace: &str, path: &str) -> bool {
         self.public_pki_mount(namespace, path)
             .is_some_and(|(_, relative)| relative == "ocsp")
+    }
+
+    pub(crate) fn is_actual_pki_ocsp_path(&self, namespace: &str, path: &str) -> bool {
+        self.public_pki_mount(namespace, path)
+            .is_some_and(|(_, relative)| relative == "ocsp" || relative.starts_with("ocsp/"))
     }
 
     pub(crate) fn is_actual_kv_query_owner(&self, namespace: &str, path: &str) -> bool {
