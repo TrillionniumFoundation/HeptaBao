@@ -699,3 +699,242 @@ fn pki_role_bare_domain_default_denies_base_and_explicit_permission_reopens() ->
     }
     Ok(())
 }
+
+#[test]
+fn pki_wildcard_actual_signed_CN_SAN_and_explicit_disabled_precedence() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, admin) = bootstrap_unmounted(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/ca",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status,
+        204
+    );
+    let ca = call(
+        &mut service,
+        "POST",
+        "ca/root/generate/internal",
+        &admin,
+        json!({"common_name":"ca.example.test","key_type":"ec","key_bits":256,"ttl":"4h"}),
+    );
+    assert_eq!(ca.status, 200);
+    let issuer = X509::from_pem(
+        ca.body["data"]["certificate"]
+            .as_str()
+            .ok_or("CA")?
+            .as_bytes(),
+    )?;
+    let public = issuer.public_key()?;
+    assert!(issuer.verify(&public)?);
+    assert_eq!(call(&mut service,"POST","ca/roles/wild",&admin,
+        json!({"allowed_domains":["example.test"],"allow_subdomains":true,"key_type":"ec","key_bits":256})).status,200);
+    for (cn, expected_san) in [
+        ("*.example.test", Some("*.example.test")),
+        ("f*o.example.test", None),
+    ] {
+        let leaf = call(
+            &mut service,
+            "POST",
+            "ca/issue/wild",
+            &admin,
+            json!({"common_name":cn,"ttl":"10m"}),
+        );
+        assert_eq!(leaf.status, 200, "actual wildcard certificate");
+        let cert = X509::from_pem(
+            leaf.body["data"]["certificate"]
+                .as_str()
+                .ok_or("leaf")?
+                .as_bytes(),
+        )?;
+        assert!(cert.verify(&public)?, "actual issuer signature");
+        let name = cert
+            .subject_name()
+            .entries_by_nid(openssl::nid::Nid::COMMONNAME)
+            .next()
+            .ok_or("CN")?;
+        assert_eq!(name.data().as_slice(), cn.as_bytes());
+        let names: Vec<_> = cert
+            .subject_alt_names()
+            .map(|names| {
+                names
+                    .iter()
+                    .filter_map(|n| n.dnsname().map(str::to_owned))
+                    .collect()
+            })
+            .unwrap_or_default();
+        assert_eq!(
+            names,
+            expected_san
+                .into_iter()
+                .map(str::to_owned)
+                .collect::<Vec<_>>()
+        );
+    }
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/roles/disabled",
+            &admin,
+            json!({"allow_any_name":true,"allow_wildcard_certificates":false})
+        )
+        .status,
+        200
+    );
+    let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+    let rejected = call(
+        &mut service,
+        "POST",
+        "ca/issue/disabled",
+        &admin,
+        json!({"common_name":"*.unlisted.test"}),
+    );
+    assert_eq!(rejected.status, 400);
+    assert_eq!(
+        rejected.body["errors"][0],
+        "common name *.unlisted.test not allowed by this role"
+    );
+    assert_eq!(
+        before,
+        serde_json::to_vec(service.state.as_ref().ok_or("state")?)?
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_wildcard_real_owner_schema85_keeps_historical84_and_retired_fences() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/ca",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status,
+        204
+    );
+    let created = call(
+        &mut service,
+        "POST",
+        "ca/roles/owner",
+        &admin,
+        json!({"allowed_domains":["example.test"],"allow_subdomains":true}),
+    );
+    assert_eq!(created.status, 200);
+    assert_eq!(created.body["data"]["allow_wildcard_certificates"], true);
+    let active = service.state.as_ref().ok_or("state")?.clone();
+    assert!(active.engines.has_pki_role_wildcard_state());
+    assert_eq!(active.schema, PKI_ROLE_WILDCARD_STATE_SCHEMA);
+    for floor in [80, 83, 84] {
+        let mut disguised = active.clone();
+        disguised.schema = floor;
+        assert_eq!(disguised.writer_schema(), PKI_ROLE_WILDCARD_STATE_SCHEMA);
+        assert_eq!(
+            disguised
+                .validate_format()
+                .err()
+                .ok_or("format accepted downgrade")?
+                .status,
+            503
+        );
+        assert_eq!(
+            disguised
+                .validate_publication_schema(Some(&active))
+                .err()
+                .ok_or("publication accepted downgrade")?
+                .status,
+            503
+        );
+        assert_eq!(
+            Service::validate_snapshot_protected_floor(&active, &disguised)
+                .err()
+                .ok_or("snapshot accepted downgrade")?
+                .status,
+            400
+        );
+    }
+    assert!(!supported_reader_schema(81) && !supported_reader_schema(82));
+    assert!(
+        supported_reader_schema(83) && supported_reader_schema(84) && supported_reader_schema(85)
+    );
+    // A separate old typed-role format fixture, never a publication of the
+    // active state, proves that the real historical84 reader still works.
+    let mut encoded = serde_json::to_value(&active.engines)?;
+    let old_role = encoded
+        .pointer_mut("/namespaces//mounts/ca~1/backend/Pki/roles/owner")
+        .and_then(Value::as_object_mut)
+        .ok_or("old typed role")?;
+    assert_eq!(
+        old_role.remove("allow_wildcard_certificates"),
+        Some(json!(true))
+    );
+    let mut historical = active.clone();
+    historical.engines = serde_json::from_value(encoded)?;
+    historical.schema = PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA;
+    assert!(
+        historical.engines.has_pki_role_bare_domain_state()
+            && !historical.engines.has_pki_role_wildcard_state()
+    );
+    assert_eq!(
+        historical.writer_schema(),
+        PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+    );
+    assert!(historical.validate_format().is_ok());
+    let bytes = serde_json::to_vec(&historical)?;
+    let reopened: State = serde_json::from_slice(&bytes)?;
+    assert_eq!(bytes, serde_json::to_vec(&reopened)?);
+    assert!(reopened.validate_format().is_ok());
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        service.state.as_ref().ok_or("reopened")?.schema,
+        PKI_ROLE_WILDCARD_STATE_SCHEMA
+    );
+    assert_eq!(
+        call(&mut service, "DELETE", "sys/mounts/ca", &admin, json!({})).status,
+        204
+    );
+    let retired = service.state.as_ref().ok_or("retired")?;
+    assert!(!retired.engines.has_pki_role_wildcard_state());
+    assert_eq!(retired.schema, PKI_ROLE_WILDCARD_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), PKI_ROLE_WILDCARD_STATE_SCHEMA);
+    let mut lower = retired.clone();
+    lower.schema = PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA;
+    assert_eq!(
+        lower
+            .validate_publication_schema(Some(retired))
+            .err()
+            .ok_or("retired floor rolled back")?
+            .status,
+        503
+    );
+    assert_eq!(
+        Service::validate_snapshot_protected_floor(retired, &lower)
+            .err()
+            .ok_or("retired snapshot floor rolled back")?
+            .status,
+        400
+    );
+    Ok(())
+}

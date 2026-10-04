@@ -2374,4 +2374,52 @@ mod bare_domain_legacy_tests {
         }
         Ok(())
     }
+
+    #[test]
+    fn pki_wildcard_syntax_and_permission_do_not_relax_historical_roles() -> Result<()> {
+        let legacy = json!({"allowed_domains":["example.test"],"allow_subdomains":true,
+            "allow_ip_sans":false,"max_ttl":3600,"generate_lease":false});
+        let historical: Role =
+            serde_json::from_value(legacy.clone()).map_err(|_| bad("old role"))?;
+        assert!(!historical.allows("*.example.test"));
+        assert_eq!(
+            serde_json::to_value(&historical).map_err(|_| bad("old role bytes"))?,
+            legacy
+        );
+        let current = Role::from_body(&legacy)?;
+        assert_eq!(current.allow_wildcard_certificates, Some(true));
+        for name in [
+            "*.example.test",
+            "f*o.example.test",
+            "*foo.example.test",
+            "foo*.example.test",
+        ] {
+            assert!(valid_common_name(name) && current.allows(name));
+        }
+        for name in [
+            "**.example.test",
+            "a.*.example.test",
+            "f**o.example.test",
+            "-f*.example.test",
+            "f*-o.example.test",
+        ] {
+            assert!(!valid_common_name(name) && !current.allows(name));
+        }
+        assert!(wildcard_dns_san("*.example.test"));
+        assert!(!wildcard_dns_san("f*o.example.test"));
+        let mut body = json!({"allow_any_name":true,"allow_wildcard_certificates":false});
+        let denied = Role::from_body(&body)?;
+        assert!(denied.allows("plain.unlisted.test") && !denied.allows("*.unlisted.test"));
+        body["allow_wildcard_certificates"] = json!("1");
+        assert!(Role::from_body(&body)?.allows("*.unlisted.test"));
+        body["allow_wildcard_certificates"] = json!(2);
+        assert!(Role::from_body(&body).is_err());
+        let mut encoded = serde_json::to_value(&current).map_err(|_| bad("current role bytes"))?;
+        encoded["allow_wildcard_certificates"] = json!("true");
+        assert!(
+            serde_json::from_value::<Role>(encoded).is_err(),
+            "wire coercion never relaxes durable typed bool"
+        );
+        Ok(())
+    }
 }
