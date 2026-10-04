@@ -231,6 +231,59 @@ struct ClosedInheritedParcel {
     private: State,
 }
 
+/// One disposable authentication view of one verified closed inherited owner.
+/// Neither its complete typed state nor its key can leave this module.
+pub(super) struct ClosedAuthAdmission {
+    parcel: ClosedInheritedParcel,
+    principal: Result<Principal, Response>,
+    needs_commit: bool,
+}
+
+impl ClosedAuthAdmission {
+    pub(super) fn needs_commit(&self) -> bool {
+        self.needs_commit
+    }
+    pub(super) fn actual(&self) -> &str {
+        &self.parcel.actual
+    }
+    pub(super) fn binding(&self) -> &Binding {
+        &self.parcel.binding
+    }
+    pub(super) fn candidate(&self, runtime: &Runtime) -> Result<State, Response> {
+        runtime.close_inherited_parcel(&self.parcel)
+    }
+    pub(super) fn actor(&self) -> Result<&Principal, Response> {
+        self.principal.as_ref().map_err(|error| {
+            Response::error(error.status, "closed namespace token admission rejected")
+        })
+    }
+    fn current_auth(&self, current: &State) -> Result<AuthState, Response> {
+        self.parcel
+            .private
+            .auth
+            .closed_auth_context(&current.auth, &self.parcel.actual)
+            .map_err(|error| Response::error(error.status, &error.message))
+    }
+    pub(super) fn validate_actor(&self, current: &State, now: u64) -> Result<(), Response> {
+        self.current_auth(current)?
+            .validate_closed_actor(self.actor()?, now)
+            .map_err(|error| Response::error(error.status, &error.message))
+    }
+    pub(super) fn authorize(
+        &self,
+        current: &State,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<(), Response> {
+        self.current_auth(current)?
+            .authorize_request_parameters(self.actor()?, namespace, method, path, body, now)
+            .map_err(|error| Response::error(error.status, &error.message))
+    }
+}
+
 impl Drop for Runtime {
     fn drop(&mut self) {
         self.clear();
@@ -384,6 +437,7 @@ impl Runtime {
             }
         }
         let key = key.ok_or_else(unavailable)?;
+        let verifiers = state.auth.namespace_token_verifiers(actual);
         let (mut candidate, assets, cells) = state.partition_namespace_assets(actual, &key)?;
         let bytes = zeroize::Zeroizing::new(
             owner_store::serialize_owner(&assets).map_err(state_serialization_error)?,
@@ -400,6 +454,9 @@ impl Runtime {
             .namespaces
             .install_custody_owner(&candidate.cluster_id, actual, descriptor)?;
         candidate.namespaces.set_sealed(actual, true)?;
+        candidate
+            .namespaces
+            .capture_closed_auth_routes(&binding, verifiers)?;
         candidate.schema = candidate.writer_schema();
         candidate.validate_format()?;
         request_live()?;
@@ -431,7 +488,12 @@ impl Runtime {
                 .custody_binding(&candidate.cluster_id, &path)?;
             let lease = self.loaded.get(&path).ok_or_else(unavailable)?;
             candidate = lease.with_key(&descriptor, |key| {
-                let (mut next, assets, cells) = candidate.partition_namespace_assets(&path, key)?;
+                let mut routed = candidate.clone();
+                routed.namespaces.capture_closed_auth_routes(
+                    &binding,
+                    routed.auth.namespace_token_verifiers(&path),
+                )?;
+                let (mut next, assets, cells) = routed.partition_namespace_assets(&path, key)?;
                 let bytes =
                     owner_store::serialize_owner(&assets).map_err(state_serialization_error)?;
                 let previous = descriptor
@@ -505,6 +567,7 @@ impl Runtime {
         // private candidate, where real assets are immediately encrypted and
         // detached before any publication or runtime grant is possible.
         candidate.namespaces.set_sealed(actual, false)?;
+        let verifiers = candidate.auth.namespace_token_verifiers(actual);
         let (mut closed, assets, cells) = candidate.partition_namespace_assets(actual, &key)?;
         let bytes = owner_store::serialize_owner(&assets).map_err(state_serialization_error)?;
         let descriptor = owner
@@ -515,6 +578,9 @@ impl Runtime {
             .publish_namespace_record_cells(&binding, &cells)
             .map_err(|_| unavailable())?;
         Owner::Inherited(descriptor).install(&mut closed, actual)?;
+        closed
+            .namespaces
+            .capture_closed_auth_routes(&binding, verifiers)?;
         closed.schema = closed.writer_schema();
         closed.validate_format()?;
         request_live()?;
@@ -606,6 +672,37 @@ impl Runtime {
         })
     }
 
+    pub(super) fn closed_auth_attempt(
+        &self,
+        state: &State,
+        actual: &str,
+        root_key: &[u8; 32],
+        raw: &str,
+        now: u64,
+        origin_peer: Option<std::net::IpAddr>,
+    ) -> Result<ClosedAuthAdmission, Response> {
+        let mut parcel = self.closed_inherited_parcel(state, actual, root_key)?;
+        let clock_changed = parcel.private.auth.is_wrapping_token(raw)
+            && parcel.private.auth.advance_wrapping_clock(now);
+        let principal = parcel
+            .private
+            .auth
+            .authenticate_from(raw, now, origin_peer)
+            .map_err(|error| Response::error(error.status, &error.message))
+            .and_then(|actor| {
+                if actor.namespace() != actual {
+                    return Err(unavailable());
+                }
+                Ok(actor)
+            });
+        let needs_commit = clock_changed || principal.as_ref().is_ok_and(Principal::consumed_use);
+        Ok(ClosedAuthAdmission {
+            parcel,
+            principal,
+            needs_commit,
+        })
+    }
+
     pub(super) fn compensate_closed_database(
         &self,
         state: &State,
@@ -618,6 +715,10 @@ impl Runtime {
             return Err(unavailable());
         }
         Service::compensate_closed_database_intent(&mut parcel.private, plan)?;
+        self.close_inherited_parcel(&parcel)
+    }
+
+    fn close_inherited_parcel(&self, parcel: &ClosedInheritedParcel) -> Result<State, Response> {
         let (mut closed, assets, cells) = parcel
             .private
             .partition_namespace_assets(&parcel.actual, &parcel.key)?;

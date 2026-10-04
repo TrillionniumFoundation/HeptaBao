@@ -104,6 +104,8 @@ mod leader;
 mod lifecycle;
 #[path = "service_namespace_assets.rs"]
 mod namespace_assets;
+#[path = "service_namespace_closed_auth.rs"]
+mod namespace_closed_auth;
 #[path = "service_namespace_config.rs"]
 mod namespace_config;
 #[path = "service_namespace_runtime.rs"]
@@ -2537,6 +2539,13 @@ impl Service {
         let mount_metadata =
             path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/");
         let public_login = admitted.auth.is_public_login(namespace, method, path);
+        if let Some(response) = self.closed_namespace_token_response(
+            &admitted,
+            &request,
+            help_projection.as_ref().map(|help| &help.body),
+        ) {
+            return response;
+        }
         let mut principal = if token.is_empty()
             || path == "sys/wrapping/lookup"
             || public_otp_verify

@@ -1245,3 +1245,454 @@ fn ordinary_router_keeps_authenticated_self_context_and_cross_namespace_acl_orde
     }
     Ok(())
 }
+
+fn closed_auth_fixture(
+    service: &mut Service,
+    root: &str,
+    namespace: &str,
+    parent: &str,
+    uses: u32,
+    ttl: &str,
+) -> TestResult<zeroize::Zeroizing<String>> {
+    let relative = namespace.rsplit('/').next().ok_or("actual name")?;
+    assert!(
+        wire(
+            service,
+            "POST",
+            &format!("sys/namespaces/{relative}"),
+            parent,
+            root,
+            json!({})
+        )
+        .status
+            == 200,
+        "actual ordinary namespace creation"
+    );
+    assert!(
+        wire(
+            service,
+            "PUT",
+            "sys/policies/acl/closed-reader",
+            namespace,
+            root,
+            json!({"policy":"path \"*\" { capabilities = [\"read\", \"update\", \"list\"] }"})
+        )
+        .status
+            == 204,
+        "actual namespace policy"
+    );
+    let response = wire(
+        service,
+        "POST",
+        "auth/token/create",
+        namespace,
+        root,
+        json!({"policies":["closed-reader"],"no_default_policy":true,"num_uses":uses,"ttl":ttl}),
+    );
+    assert!(response.status == 200, "actual namespace credential");
+    Ok(zeroize::Zeroizing::new(
+        response.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("credential shape")?
+            .to_owned(),
+    ))
+}
+
+#[test]
+fn closed_auth_affine_help_consumes_only_after_real_owner_commit_and_survives_restart() -> TestResult
+{
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, token) = bootstrap_unmounted(&mut service)?;
+    let actor = closed_auth_fixture(&mut service, &token, "plain", "", 1, "1h")?;
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 204,
+        "genuine inherited resource closure"
+    );
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    assert!(
+        wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "unknown",
+            &actor,
+            json!({})
+        )
+        .status
+            == 404
+            && service.durable.as_ref().ok_or("durable")?.generation() == before,
+        "unknown original header neither authenticates nor consumes"
+    );
+    assert!(
+        wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "",
+            &actor,
+            json!({})
+        )
+        .status
+            == 404,
+        "verified actual self owner is unloaded after atomic finite use"
+    );
+    assert!(
+        service.durable.as_ref().ok_or("durable")?.generation() > before,
+        "404 admission genuinely commits finite use"
+    );
+    let current = service.state.as_ref().ok_or("state")?;
+    assert!(
+        current.auth.namespace_is_empty("plain")
+            && !service.namespace_runtime.is_loaded("plain")
+            && current
+                .engines
+                .help_projection("plain", "secret/plain")?
+                .is_none(),
+        "credential admission never loads a logical auth, engine or shared key"
+    );
+    assert!(
+        wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "",
+            &actor,
+            json!({})
+        )
+        .status
+            == 403,
+        "same one-use capability cannot replay its authenticated404"
+    );
+    drop(service);
+    let mut recovered = root.service()?;
+    assert!(
+        call(&mut recovered, "POST", "sys/unseal", "", json!({"key":key})).status == 200,
+        "genuine root recovery restores the typed parcel"
+    );
+    assert!(
+        wire(
+            &mut recovered,
+            "GET",
+            "auth/token/lookup-self",
+            "plain",
+            &actor,
+            json!({})
+        )
+        .status
+            == 403,
+        "durable consumed state survives recovery"
+    );
+    Ok(())
+}
+
+#[test]
+fn closed_auth_nearest_independent_parent_requires_real_key_and_current_caller_acl() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    let shares = create(&mut service, "", "parent", &token)?;
+    unseal(&mut service, "", "parent", &token, &shares);
+    let actor = closed_auth_fixture(&mut service, &token, "parent/plain", "parent", 2, "1h")?;
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain/seal",
+            "parent",
+            &token,
+            json!({})
+        )
+        .status
+            == 204,
+        "ordinary owner closes under genuine nearest independent parent key"
+    );
+    assert!(
+        wire(&mut service, "GET", "sys/mounts", "", &actor, json!({})).status == 403,
+        "actual token namespace scope runs before other owner dispatch"
+    );
+    assert!(
+        wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "",
+            &actor,
+            json!({})
+        )
+        .status
+            == 404,
+        "second finite use resolves verified closed self context"
+    );
+    assert!(
+        wire(
+            &mut service,
+            "HELP",
+            "auth/token/create",
+            "parent/plain",
+            &actor,
+            json!({})
+        )
+        .status
+            == 403,
+        "two committed uses exhaust the stored closed token"
+    );
+    assert!(
+        !service.namespace_runtime.is_loaded("parent/plain")
+            && service.namespace_runtime.is_loaded("parent"),
+        "transient admission retains only the already genuine parent slot"
+    );
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/parent/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 204,
+        "parent genuine key revocation"
+    );
+    let state = service.state.as_ref().ok_or("state")?;
+    let root_key = service.barrier_key.as_ref().ok_or("root key")?;
+    assert!(
+        service
+            .namespace_runtime
+            .closed_auth_attempt(state, "parent/plain", root_key, &actor, 100, None)
+            .is_err(),
+        "root key cannot substitute for unavailable actual independent parent"
+    );
+    Ok(())
+}
+
+#[test]
+fn closed_auth_failed_commit_never_grants_or_registers_a_transient_key() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    let actor = closed_auth_fixture(&mut service, &token, "plain", "", 1, "1h")?;
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 204,
+        "actual closed owner"
+    );
+    let prior = owner_store::serialize_owner(service.state.as_ref().ok_or("state")?)?;
+    service.durable = None;
+    let response = wire(
+        &mut service,
+        "HELP",
+        "auth/token/lookup-self",
+        "",
+        &actor,
+        json!({}),
+    );
+    let after = owner_store::serialize_owner(service.state.as_ref().ok_or("state")?)?;
+    assert!(
+        response.status == 503
+            && response.body.get("data").is_none()
+            && prior == after
+            && !service.namespace_runtime.is_loaded("plain"),
+        "failed durable admission releases neither a response grant nor a key slot"
+    );
+    Ok(())
+}
+
+#[test]
+fn closed_auth_route_verifier_never_authenticates_wrong_token_or_wrong_key() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    let actor = closed_auth_fixture(&mut service, &token, "plain", "", 0, "1h")?;
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 204,
+        "real closed parcel"
+    );
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let binding = candidate
+        .namespaces
+        .custody_binding(&candidate.cluster_id, "plain")
+        .map_err(|_| "binding")?;
+    candidate
+        .namespaces
+        .capture_closed_auth_routes(
+            &binding,
+            vec![AuthState::namespace_token_route_verifier("hvs.invalid").ok_or("verifier")?],
+        )
+        .map_err(|_| "route candidate")?;
+    candidate
+        .validate_format()
+        .map_err(|_| "valid route-only candidate")?;
+    let root_key = service.barrier_key.as_ref().ok_or("root key")?;
+    let wrong_actor = service
+        .namespace_runtime
+        .closed_auth_attempt(&candidate, "plain", root_key, "hvs.invalid", 100, None)
+        .map_err(|_| "private complete parcel")?;
+    assert!(
+        wrong_actor.actor().is_err(),
+        "structurally valid locator cannot manufacture an authenticated actor"
+    );
+    assert!(
+        service
+            .namespace_runtime
+            .closed_auth_attempt(&candidate, "plain", &[0u8; 32], &actor, 100, None)
+            .is_err(),
+        "matching candidate binding cannot replace the genuine root key"
+    );
+    assert!(
+        !service.namespace_runtime.is_loaded("plain"),
+        "no test path installs transient key custody"
+    );
+    Ok(())
+}
+
+#[test]
+fn closed_auth_wrapping_help_commits_one_use_and_monotonic_clock_without_payload_release()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 200,
+        "actual wrapper owner"
+    );
+    let mut request = ServiceRequest::new(
+        "POST",
+        "sys/wrapping/wrap",
+        "plain",
+        &token,
+        json!({"secret":"private-cfg-wrapper-payload"}),
+    );
+    request.wrap_ttl_seconds = Some(60);
+    let response = service.handle_request_at(request, 100);
+    assert!(
+        response.status == 200 && response.body.get("data").is_none(),
+        "real wrapped payload publication"
+    );
+    let wrapper = zeroize::Zeroizing::new(
+        response.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("wrapper shape")?
+            .to_owned(),
+    );
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 204,
+        "wrapper complete typed owner closes"
+    );
+    let response = service.handle_request_at(ServiceRequest::new("HELP", "auth/token/create", "plain", &wrapper,
+        json!({"__heptabao_http_help_request":{"path":"auth/token/create","query":"","wire_method":"HELP"}})), 110);
+    assert!(
+        response.status == 404 && response.body.get("data").is_none(),
+        "closed Help consumes wrapper without releasing payload"
+    );
+    let current = service.state.as_ref().ok_or("state")?;
+    let private = service
+        .namespace_runtime
+        .closed_auth_attempt(
+            current,
+            "plain",
+            service.barrier_key.as_ref().ok_or("root key")?,
+            &wrapper,
+            100,
+            None,
+        )
+        .map_err(|_| "complete private parcel")?;
+    assert!(
+        private.actor().is_err()
+            && current.auth.namespace_is_empty("plain")
+            && !service.namespace_runtime.is_loaded("plain"),
+        "clock rollback cannot recover the consumed private wrapper"
+    );
+    Ok(())
+}
+
+#[test]
+fn closed_auth_post_commit_actor_expiry_and_original_deadline_withhold_help() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    let _ = closed_auth_fixture(&mut service, &token, "plain", "", 0, "1h")?;
+    let response = service.handle_request(ServiceRequest::new(
+        "POST",
+        "auth/token/create",
+        "plain",
+        &token,
+        json!({"policies":["closed-reader"],"no_default_policy":true,"num_uses":1,"ttl":"2s"}),
+    ));
+    assert!(response.status == 200, "actual short-lived affine actor");
+    let actor = zeroize::Zeroizing::new(
+        response.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("actor shape")?
+            .to_owned(),
+    );
+    let response = service.handle_request(ServiceRequest::new(
+        "POST",
+        "sys/namespaces/plain/seal",
+        "",
+        &token,
+        json!({}),
+    ));
+    assert!(response.status == 204, "real-clock actual closure");
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    let _budget = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let _delay = external_pki::PublicationDelayScope::enter(std::time::Duration::from_millis(2100));
+    let response = service.handle_request(ServiceRequest::new("HELP", "auth/token/create", "plain", &actor,
+        json!({"__heptabao_http_help_request":{"path":"auth/token/create","query":"","wire_method":"HELP"}})));
+    assert!(
+        response.status == 403 && service.durable.as_ref().ok_or("durable")?.generation() > before,
+        "actor expires during genuine committed use before any Help response"
+    );
+    assert!(
+        crate::request_deadline::current() == Some(deadline)
+            && !service.namespace_runtime.is_loaded("plain"),
+        "actual late actor check keeps original deadline and closed slot"
+    );
+    Ok(())
+}

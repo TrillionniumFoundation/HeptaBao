@@ -17,6 +17,10 @@ pub(super) struct NamespaceRegistry {
     retired_custody: BTreeMap<String, crate::namespace_custody::Tombstone>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     custody_frontiers: BTreeMap<String, crate::namespace_custody::Frontier>,
+    /// Private candidate-owner selection. These verifiers never authenticate
+    /// an actor, reveal a catalog entry or grant an unloaded key.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    closed_auth_routes: BTreeMap<String, crate::namespace_custody::Binding>,
     #[serde(default, skip_serializing_if = "workflows::WorkflowState::is_empty")]
     pub(super) workflows: workflows::WorkflowState,
 }
@@ -213,6 +217,42 @@ fn patch_metadata(current: &mut BTreeMap<String, String>, body: &Value) -> Resul
 }
 
 impl NamespaceRegistry {
+    pub(super) fn capture_closed_auth_routes(
+        &mut self,
+        binding: &crate::namespace_custody::Binding,
+        verifiers: Vec<String>,
+    ) -> Result<(), Response> {
+        let mut candidate = self.closed_auth_routes.clone();
+        candidate.retain(|_, owner| owner.namespace() != binding.namespace());
+        for verifier in verifiers {
+            if candidate
+                .get(&verifier)
+                .is_some_and(|owner| owner != binding)
+            {
+                return Err(Response::error(
+                    503,
+                    "conflicting closed auth candidate owner",
+                ));
+            }
+            candidate.insert(verifier, binding.clone());
+        }
+        if candidate.len() > 4096 {
+            return Err(Response::error(
+                507,
+                "closed auth candidate capacity exhausted",
+            ));
+        }
+        self.closed_auth_routes = candidate;
+        Ok(())
+    }
+
+    pub(super) fn closed_auth_route(
+        &self,
+        verifier: &str,
+    ) -> Option<&crate::namespace_custody::Binding> {
+        self.closed_auth_routes.get(verifier)
+    }
+
     pub(super) fn validate_record_custody_binding(
         &self,
         binding: &crate::namespace_custody::Binding,
@@ -462,6 +502,7 @@ impl NamespaceRegistry {
             && self.next_incarnation.is_empty()
             && self.retired_custody.is_empty()
             && self.custody_frontiers.is_empty()
+            && self.closed_auth_routes.is_empty()
             && self.workflows.is_empty()
     }
 
@@ -502,6 +543,7 @@ impl NamespaceRegistry {
             || self.next_incarnation.len() > MAX_NAMESPACE_COUNT.saturating_mul(2)
             || self.retired_custody.len() > MAX_NAMESPACE_COUNT.saturating_mul(2)
             || self.custody_frontiers.len() > MAX_NAMESPACE_COUNT.saturating_mul(2)
+            || self.closed_auth_routes.len() > 4096
         {
             return Err(Response::error(503, "namespace catalog exceeds bounds"));
         }
@@ -611,6 +653,16 @@ impl NamespaceRegistry {
                 ));
             }
         }
+        for (verifier, binding) in &self.closed_auth_routes {
+            let encoding = base64::engine::general_purpose::URL_SAFE_NO_PAD;
+            let bytes = encoding
+                .decode(verifier)
+                .map_err(|_| Response::error(503, "invalid closed auth verifier"))?;
+            if bytes.len() != 32 || encoding.encode(&bytes) != *verifier {
+                return Err(Response::error(503, "noncanonical closed auth verifier"));
+            }
+            self.validate_record_custody_binding(binding)?;
+        }
         self.workflows.validate()?;
         Ok(())
     }
@@ -623,6 +675,9 @@ impl NamespaceRegistry {
         if self.entries.len() >= MAX_NAMESPACE_COUNT {
             return Err(Response::error(507, "namespace catalog capacity exhausted"));
         }
+        // A new incarnation never inherits the old credential routing hints.
+        self.closed_auth_routes
+            .retain(|_, owner| owner.namespace() != path);
         let prior_frontier = self.next_incarnation.get(&path).copied();
         let incarnation = prior_frontier.unwrap_or(1);
         // A tombstone stores the next incarnation to issue. Once it is
@@ -720,6 +775,9 @@ impl NamespaceRegistry {
         if self.entries.len() >= MAX_NAMESPACE_COUNT {
             return Err(Response::error(507, "namespace catalog capacity exhausted"));
         }
+        // A new incarnation never inherits the old credential routing hints.
+        self.closed_auth_routes
+            .retain(|_, owner| owner.namespace() != path);
         let prior_frontier = self.next_incarnation.get(&path).copied();
         let incarnation = prior_frontier.unwrap_or(1);
         let next_frontier = prior_frontier

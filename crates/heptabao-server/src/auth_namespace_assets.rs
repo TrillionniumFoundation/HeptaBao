@@ -45,6 +45,45 @@ impl NamespaceAssets {
 }
 
 impl AuthState {
+    /// Stored verifiers identify a candidate owner only; no token backing leaves it.
+    pub(crate) fn namespace_token_verifiers(&self, actual: &str) -> Vec<String> {
+        self.tokens
+            .iter()
+            .filter(|(_, token)| token.namespace == actual)
+            .map(|(verifier, _)| verifier.clone())
+            .collect()
+    }
+
+    pub(crate) fn namespace_token_route_verifier(raw: &str) -> Option<String> {
+        (raw.len() <= 256 && raw.starts_with("hvs.")).then(|| hash(raw))
+    }
+
+    /// Refresh every other owner from current admitted auth. The sole private
+    /// namespace backing remains in this disposable context, never the live state.
+    pub(crate) fn closed_auth_context(
+        &self,
+        current: &Self,
+        actual: &str,
+    ) -> Result<Self, AuthError> {
+        let mut private = self.clone();
+        let assets = private.detach_namespace(actual)?;
+        let mut context = current.clone();
+        context.attach_namespace(actual, assets)?;
+        Ok(context)
+    }
+
+    pub(crate) fn validate_closed_actor(
+        &self,
+        actor: &Principal,
+        now: u64,
+    ) -> Result<(), AuthError> {
+        if actor.entity_id().is_some() {
+            return Err(err(503, "closed namespace identity owner is not available"));
+        }
+        self.check_principal(actor, actor.namespace(), now)
+            .map(|_| ())
+    }
+
     pub(crate) fn detach_namespace(
         &mut self,
         namespace: &str,
