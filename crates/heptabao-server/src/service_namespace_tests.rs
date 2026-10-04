@@ -729,3 +729,129 @@ fn native_namespace_rejections_do_not_publish_or_rebind_owner_state()
     );
     Ok(())
 }
+
+#[test]
+fn custody_floors_survive_hidden_child_retirement_and_recreation_without_routing_authority()
+-> Result<(), Box<dyn std::error::Error>> {
+    use crate::namespace_custody::{Descriptor, Progress, Submission};
+    let cluster = "namespace-floor-cluster";
+    let mut registry = NamespaceRegistry::default();
+    registry
+        .create(cluster, "outer", BTreeMap::new(), false)
+        .map_err(|_| "outer")?;
+    registry
+        .create(cluster, "outer/inner", BTreeMap::new(), false)
+        .map_err(|_| "inner")?;
+    let outer_binding = registry
+        .custody_binding(cluster, "outer")
+        .map_err(|_| "outer binding")?;
+    let outer = Descriptor::create(outer_binding, 1, 1, b"{}")?;
+    registry
+        .install_custody_owner(cluster, "outer", outer.descriptor)
+        .map_err(|_| "outer descriptor")?;
+    let inner_binding = registry
+        .custody_binding(cluster, "outer/inner")
+        .map_err(|_| "inner binding")?;
+    let inner = Descriptor::create(inner_binding.clone(), 1, 1, b"{}")?;
+    registry
+        .install_custody_owner(cluster, "outer/inner", inner.descriptor.clone())
+        .map_err(|_| "inner descriptor")?;
+    let old_catalog = registry
+        .clone()
+        .detach_catalog("outer")
+        .map_err(|_| "old catalog")?;
+    let mut progress = Progress::new(inner_binding.clone(), &inner.descriptor)?;
+    let key = match progress.submit(&inner.descriptor, &inner.shares[0])? {
+        Submission::Unlocked { key, .. } => key,
+        Submission::Pending => return Err("threshold".into()),
+    };
+    let advanced = inner
+        .descriptor
+        .advance_seal_frontier(&inner_binding, &key)?;
+    registry
+        .install_custody_owner(cluster, "outer/inner", advanced)
+        .map_err(|_| "advanced child")?;
+    let visible = registry.clone();
+    let catalog = registry
+        .detach_catalog("outer")
+        .map_err(|_| "closed catalog")?;
+    registry
+        .validate(cluster)
+        .map_err(|_| "hidden floor validation")?;
+    registry
+        .validate_custody_successor(&visible)
+        .map_err(|_| "retained hidden floor")?;
+    let public = registry.list(cluster, "", true);
+    assert!(
+        !registry.contains("outer/inner") && public.body["data"]["keys"] == json!(["outer/"]),
+        "a hidden child floor cannot make a route or a public catalog entry"
+    );
+    let mut missing = registry.clone();
+    missing.custody_frontiers.remove("outer/inner");
+    assert!(
+        missing.validate_custody_successor(&registry).is_err(),
+        "a publication cannot remove the hidden child's durable floor"
+    );
+    let mut stale_restore = registry.clone();
+    stale_restore
+        .attach_catalog("outer", old_catalog)
+        .map_err(|_| "stale catalog candidate")?;
+    assert!(
+        stale_restore.validate(cluster).is_err(),
+        "restore checks the actual child descriptor against the retained manual frontier"
+    );
+    registry
+        .attach_catalog("outer", catalog)
+        .map_err(|_| "current child restore")?;
+    registry.validate(cluster).map_err(|_| "current floor")?;
+    let previous = registry.clone();
+    registry
+        .remove("outer/inner")
+        .map_err(|_| "typed child retirement")?;
+    registry.validate(cluster).map_err(|_| "retirement floor")?;
+    registry
+        .validate_custody_successor(&previous)
+        .map_err(|_| "retirement successor")?;
+    let retired = registry.clone();
+    registry
+        .create(cluster, "outer/inner", BTreeMap::new(), false)
+        .map_err(|_| "fresh child recreation")?;
+    let next_binding = registry
+        .custody_binding(cluster, "outer/inner")
+        .map_err(|_| "fresh actual binding")?;
+    assert!(
+        next_binding != inner_binding,
+        "recreation has a new actual identity and incarnation"
+    );
+    let next = Descriptor::create(next_binding, 1, 1, b"{}")?;
+    registry
+        .install_custody_owner(cluster, "outer/inner", next.descriptor)
+        .map_err(|_| "fresh floor")?;
+    registry
+        .validate(cluster)
+        .map_err(|_| "fresh owner floor validation")?;
+    registry
+        .validate_custody_successor(&retired)
+        .map_err(|_| "fresh successor")?;
+    assert!(
+        registry
+            .install_custody_owner(cluster, "outer/inner", inner.descriptor)
+            .is_err(),
+        "the old child's descriptor cannot attach to the new actual incarnation"
+    );
+    let recreated = registry.clone();
+    registry
+        .remove("outer/inner")
+        .map_err(|_| "second incarnation retirement")?;
+    registry
+        .validate(cluster)
+        .map_err(|_| "second retirement validation")?;
+    registry
+        .validate_custody_successor(&recreated)
+        .map_err(|_| "second retirement successor")?;
+    assert!(
+        retired.validate_custody_successor(&registry).is_err(),
+        "older retired floor cannot replace a newer incarnation"
+    );
+    Ok(())
+}

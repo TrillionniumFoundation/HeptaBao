@@ -415,6 +415,51 @@ impl Descriptor {
         Ok(next)
     }
 
+    pub(crate) fn frontier(&self) -> Frontier {
+        Frontier {
+            version: VERSION,
+            schema: CUSTODY_SCHEMA,
+            binding: self.binding.clone(),
+            key_epoch: self.key_epoch,
+            generation: self.generation,
+            seal_frontier: self.seal_frontier,
+            retired: false,
+            descriptor_digest: self.frontier_digest(),
+        }
+    }
+
+    fn frontier_digest(&self) -> String {
+        let mut digest = ring::digest::Context::new(&ring::digest::SHA256);
+        digest.update(b"heptabao-namespace-durable-floor-descriptor-v1\0");
+        for value in [
+            self.binding.cluster_id.as_bytes(),
+            self.binding.namespace.as_bytes(),
+            self.binding.namespace_id.as_bytes(),
+            self.wrapped_key.as_bytes(),
+            self.protected_assets.as_bytes(),
+        ] {
+            digest.update(&(value.len() as u64).to_be_bytes());
+            digest.update(value);
+        }
+        digest.update(&self.version.to_be_bytes());
+        digest.update(&self.schema.to_be_bytes());
+        digest.update(&[self.shares, self.threshold]);
+        for value in [
+            self.binding.incarnation,
+            self.key_epoch,
+            self.generation,
+            self.seal_frontier,
+        ] {
+            digest.update(&value.to_be_bytes());
+        }
+        digest
+            .finish()
+            .as_ref()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect()
+    }
+
     pub(crate) fn admits_successor(&self, next: &Self) -> bool {
         self.binding == next.binding
             && self.key_epoch == next.key_epoch
@@ -434,6 +479,79 @@ impl Descriptor {
     }
 }
 
+/// Private durable floor retained when a parent's encrypted catalog hides
+/// this actual child. It is not a catalog entry and grants no routing authority.
+#[derive(Clone, Eq, PartialEq, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct Frontier {
+    version: u32,
+    schema: u32,
+    binding: Binding,
+    key_epoch: u64,
+    generation: u64,
+    seal_frontier: u64,
+    retired: bool,
+    descriptor_digest: String,
+}
+impl Frontier {
+    pub(crate) fn matches_binding(&self, binding: &Binding) -> bool {
+        self.binding == *binding
+    }
+    pub(crate) fn incarnation(&self) -> u64 {
+        self.binding.incarnation
+    }
+    pub(crate) fn validate(&self, cluster: &str, path: &str, id: &str) -> Result<(), Error> {
+        self.binding.validate()?;
+        if self.version != VERSION
+            || self.schema != CUSTODY_SCHEMA
+            || self.binding.cluster_id != cluster
+            || self.binding.namespace != path
+            || self.binding.namespace_id != id
+            || self.key_epoch == 0
+            || self.generation == 0
+            || self.seal_frontier == 0
+            || self.descriptor_digest.len() != 64
+            || self
+                .descriptor_digest
+                .bytes()
+                .any(|byte| !byte.is_ascii_hexdigit() || byte.is_ascii_uppercase())
+        {
+            return Err(Error::CorruptDescriptor);
+        }
+        Ok(())
+    }
+    pub(crate) fn admits(&self, next: &Self) -> bool {
+        if self.binding == next.binding {
+            self.key_epoch == next.key_epoch
+                && next.generation >= self.generation
+                && next.seal_frontier >= self.seal_frontier
+                && (!self.retired || next.retired)
+                && (next.generation != self.generation
+                    || self.descriptor_digest == next.descriptor_digest)
+        } else {
+            self.retired
+                && !next.retired
+                && self.binding.cluster_id == next.binding.cluster_id
+                && self.binding.namespace == next.binding.namespace
+                && next.binding.incarnation > self.binding.incarnation
+        }
+    }
+    pub(crate) fn retirement(&self) -> Self {
+        let mut next = self.clone();
+        next.retired = true;
+        next
+    }
+    pub(crate) fn is_retired(&self) -> bool {
+        self.retired
+    }
+    pub(crate) fn matches_retirement(&self, tombstone: &Tombstone) -> bool {
+        self.retired
+            && self.binding == tombstone.binding
+            && self.key_epoch == tombstone.key_epoch
+            && self.seal_frontier == tombstone.seal_frontier
+    }
+}
+
 #[derive(Clone, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Tombstone {
@@ -445,6 +563,16 @@ pub(crate) struct Tombstone {
 }
 
 impl Tombstone {
+    pub(crate) fn admits(&self, next: &Self) -> bool {
+        if self.binding == next.binding {
+            self.key_epoch == next.key_epoch && next.seal_frontier >= self.seal_frontier
+        } else {
+            self.binding.cluster_id == next.binding.cluster_id
+                && self.binding.namespace == next.binding.namespace
+                && next.binding.incarnation > self.binding.incarnation
+        }
+    }
+
     pub(crate) fn validate(
         &self,
         cluster_id: &str,

@@ -15,6 +15,8 @@ pub(super) struct NamespaceRegistry {
     next_incarnation: BTreeMap<String, u64>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     retired_custody: BTreeMap<String, crate::namespace_custody::Tombstone>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    custody_frontiers: BTreeMap<String, crate::namespace_custody::Frontier>,
     #[serde(default, skip_serializing_if = "workflows::WorkflowState::is_empty")]
     pub(super) workflows: workflows::WorkflowState,
 }
@@ -224,8 +226,26 @@ fn patch_metadata(current: &mut BTreeMap<String, String>, body: &Value) -> Resul
 }
 
 impl NamespaceRegistry {
+    pub(super) fn validate_record_custody_binding(
+        &self,
+        binding: &crate::namespace_custody::Binding,
+    ) -> Result<(), Response> {
+        if self
+            .custody_frontiers
+            .get(binding.namespace())
+            .is_none_or(|floor| !floor.matches_binding(binding))
+        {
+            return Err(Response::error(
+                503,
+                "namespace opaque record owner has no matching durable floor",
+            ));
+        }
+        Ok(())
+    }
+
     pub(super) fn has_custody_state(&self) -> bool {
         !self.retired_custody.is_empty()
+            || !self.custody_frontiers.is_empty()
             || self.entries.values().any(|entry| entry.custody.is_some())
     }
 
@@ -239,19 +259,32 @@ impl NamespaceRegistry {
         descriptor
             .validate(&binding)
             .map_err(|_| Response::error(503, "namespace ciphertext owner is invalid"))?;
+        let frontier = descriptor.frontier();
+        if self
+            .custody_frontiers
+            .get(actual)
+            .is_some_and(|old| !old.admits(&frontier))
+        {
+            return Err(Response::error(
+                503,
+                "namespace ciphertext durable floor cannot decrease",
+            ));
+        }
         let entry = self.entries.get_mut(actual).ok_or_else(|| {
             Response::error(503, "namespace ciphertext catalog owner disappeared")
         })?;
-        if entry.custody.as_ref().is_some_and(|old| {
-            descriptor.generation() < old.generation()
-                || descriptor.seal_frontier() < old.seal_frontier()
-        }) {
+        if entry
+            .custody
+            .as_ref()
+            .is_some_and(|old| !old.admits_successor(&descriptor))
+        {
             return Err(Response::error(
                 503,
                 "namespace ciphertext frontier cannot decrease",
             ));
         }
         entry.custody = Some(descriptor);
+        self.custody_frontiers.insert(actual.to_owned(), frontier);
         Ok(())
     }
 
@@ -301,35 +334,8 @@ impl NamespaceRegistry {
                 .ok_or_else(|| Response::error(503, "namespace catalog disappeared"))?;
             entries.insert(path, entry);
         }
-        let prefix = format!("{actual}/");
-        let paths = self
-            .next_incarnation
-            .keys()
-            .filter(|path| path.starts_with(&prefix))
-            .cloned()
-            .collect::<Vec<_>>();
-        let mut next_incarnation = BTreeMap::new();
-        for path in paths {
-            let value = self
-                .next_incarnation
-                .remove(&path)
-                .ok_or_else(|| Response::error(503, "namespace frontier disappeared"))?;
-            next_incarnation.insert(path, value);
-        }
-        let paths = self
-            .retired_custody
-            .keys()
-            .filter(|path| path.starts_with(&prefix))
-            .cloned()
-            .collect::<Vec<_>>();
-        let mut retired_custody = BTreeMap::new();
-        for path in paths {
-            let value = self
-                .retired_custody
-                .remove(&path)
-                .ok_or_else(|| Response::error(503, "namespace custody retirement disappeared"))?;
-            retired_custody.insert(path, value);
-        }
+        let next_incarnation = BTreeMap::new();
+        let retired_custody = BTreeMap::new();
         Ok(CatalogAssets {
             namespace: actual.to_owned(),
             entries,
@@ -375,6 +381,7 @@ impl NamespaceRegistry {
         self.entries.is_empty()
             && self.next_incarnation.is_empty()
             && self.retired_custody.is_empty()
+            && self.custody_frontiers.is_empty()
             && self.workflows.is_empty()
     }
 
@@ -414,6 +421,7 @@ impl NamespaceRegistry {
         if self.entries.len() > MAX_NAMESPACE_COUNT
             || self.next_incarnation.len() > MAX_NAMESPACE_COUNT.saturating_mul(2)
             || self.retired_custody.len() > MAX_NAMESPACE_COUNT.saturating_mul(2)
+            || self.custody_frontiers.len() > MAX_NAMESPACE_COUNT.saturating_mul(2)
         {
             return Err(Response::error(503, "namespace catalog exceeds bounds"));
         }
@@ -435,6 +443,12 @@ impl NamespaceRegistry {
                 descriptor
                     .validate(&binding)
                     .map_err(|_| Response::error(503, "invalid namespace ciphertext descriptor"))?;
+                if self.custody_frontiers.get(path) != Some(&descriptor.frontier()) {
+                    return Err(Response::error(
+                        503,
+                        "namespace active descriptor differs from durable floor",
+                    ));
+                }
             }
             for (key, value) in &entry.custom_metadata {
                 validate_metadata_value(key, value)
@@ -471,6 +485,27 @@ impl NamespaceRegistry {
             retired
                 .validate(cluster_id, path, next)
                 .map_err(|_| Response::error(503, "invalid retired namespace custody frontier"))?;
+        }
+        for (path, frontier) in &self.custody_frontiers {
+            canonical_path(path)
+                .map_err(|_| Response::error(503, "invalid namespace custody floor path"))?;
+            frontier
+                .validate(
+                    cluster_id,
+                    path,
+                    &namespace_id(cluster_id, path, frontier.incarnation()),
+                )
+                .map_err(|_| Response::error(503, "invalid namespace custody durable floor"))?;
+            if let Some(retired) = self.retired_custody.get(path)
+                && frontier.is_retired()
+                && frontier.incarnation().checked_add(1) == self.next_incarnation.get(path).copied()
+                && !frontier.matches_retirement(retired)
+            {
+                return Err(Response::error(
+                    503,
+                    "namespace retired descriptor differs from durable floor",
+                ));
+            }
         }
         self.workflows.validate()?;
         Ok(())
@@ -539,27 +574,24 @@ impl NamespaceRegistry {
     }
 
     pub(super) fn validate_custody_successor(&self, previous: &Self) -> Result<(), Response> {
-        for (path, old) in &previous.entries {
-            let Some(old) = &old.custody else {
-                continue;
-            };
-            match self
-                .entries
+        for (path, old) in &previous.custody_frontiers {
+            if self
+                .custody_frontiers
                 .get(path)
-                .and_then(|entry| entry.custody.as_ref())
+                .is_none_or(|next| !old.admits(next))
             {
-                Some(next) if old.admits_successor(next) => {}
-                None if self.retired_custody.get(path) == Some(&old.retirement()) => {}
-                _ => {
-                    return Err(Response::error(
-                        503,
-                        "namespace custody publication frontier regressed",
-                    ));
-                }
+                return Err(Response::error(
+                    503,
+                    "namespace custody publication frontier regressed",
+                ));
             }
         }
         for (path, old) in &previous.retired_custody {
-            if self.retired_custody.get(path) != Some(old) {
+            if self
+                .retired_custody
+                .get(path)
+                .is_none_or(|next| !old.admits(next))
+            {
                 return Err(Response::error(
                     503,
                     "namespace custody retirement frontier regressed",
@@ -647,6 +679,8 @@ impl NamespaceRegistry {
             .ok_or_else(|| Response::error(507, "namespace incarnation exhausted"))?;
         self.next_incarnation.insert(path.clone(), next);
         if let Some(custody) = entry.custody {
+            self.custody_frontiers
+                .insert(path.clone(), custody.frontier().retirement());
             self.retired_custody
                 .insert(path.to_owned(), custody.retirement());
         }

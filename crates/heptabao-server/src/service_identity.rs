@@ -747,6 +747,16 @@ impl State {
             ));
         }
         self.namespaces.validate(&self.cluster_id)?;
+        self.engines
+            .visit_namespace_record_owner_bindings(|binding| {
+                self.namespaces
+                    .validate_record_custody_binding(binding)
+                    .map_err(|_| crate::engines::EngineError {
+                        status: 503,
+                        message: "namespace record floor binding rejected".into(),
+                    })
+            })
+            .map_err(|_| Response::error(503, "namespace record floor binding rejected"))?;
         if self.schema < 10 && self.auth.has_plugin_auth_state() {
             return Err(Response::error(
                 503,

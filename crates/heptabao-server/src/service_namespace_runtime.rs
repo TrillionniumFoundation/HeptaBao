@@ -395,6 +395,32 @@ mod tests {
     use crate::service::tests::{Root, bootstrap_unmounted, call};
     type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+    impl Service {
+        fn namespace_fixture_at(
+            &mut self,
+            method: &str,
+            path: &str,
+            namespace: &str,
+            token: &str,
+            body: Value,
+            now: u64,
+        ) -> Response {
+            self.handle_at_mode(RequestDispatch {
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                now,
+                allow_forward: true,
+                enforce_namespace: true,
+                wrap_ttl_seconds: None,
+                origin_peer: None,
+                client_certificates: None,
+            })
+        }
+    }
+
     fn key(descriptor: &Descriptor, created: &Created) -> TestResult<Key> {
         let mut progress = Progress::new(descriptor.binding().clone(), descriptor)?;
         match progress.submit(descriptor, &created.shares[0])? {
@@ -460,7 +486,7 @@ mod tests {
     fn new_namespace(service: &mut Service, root: &str, parent: &str, name: &str) -> TestResult {
         assert!(
             service
-                .handle_at(
+                .namespace_fixture_at(
                     "POST",
                     &format!("sys/namespaces/{name}"),
                     parent,
@@ -483,7 +509,7 @@ mod tests {
     ) -> TestResult {
         assert!(
             service
-                .handle_at(
+                .namespace_fixture_at(
                     "POST",
                     "sys/mounts/records",
                     namespace,
@@ -497,7 +523,7 @@ mod tests {
         );
         assert!(
             service
-                .handle_at(
+                .namespace_fixture_at(
                     "POST",
                     "records/value",
                     namespace,
@@ -530,7 +556,7 @@ mod tests {
         let created = install(&mut service, "custody")?;
         assert!(
             service
-                .handle_at("GET", "records/value", "custody", &token, json!({}), 100)
+                .namespace_fixture_at("GET", "records/value", "custody", &token, json!({}), 100)
                 .status
                 == 200,
             "actual loaded KV route accepts the real root principal"
@@ -538,7 +564,7 @@ mod tests {
         let identity = service.current_state_identity().map_err(|_| "identity")?;
         assert!(
             service
-                .handle_at("GET", "records/value", "custody", &token, json!({}), 100)
+                .namespace_fixture_at("GET", "records/value", "custody", &token, json!({}), 100)
                 .status
                 == 200
                 && service.current_state_identity().map_err(|_| "identity")? == identity,
@@ -546,7 +572,7 @@ mod tests {
         );
         assert!(
             service
-                .handle_at(
+                .namespace_fixture_at(
                     "POST",
                     "records/value",
                     "custody",
@@ -608,17 +634,18 @@ mod tests {
         );
         assert!(
             service
-                .handle_at("GET", "records/value", "custody", &token, json!({}), 100)
+                .namespace_fixture_at("GET", "records/value", "custody", &token, json!({}), 100)
                 .status
                 == 503
                 && service
-                    .handle_at("GET", "records/value", "", &token, json!({}), 100)
+                    .namespace_fixture_at("GET", "records/value", "", &token, json!({}), 100)
                     .status
                     == 200,
             "manual namespace closure preserves the unrelated root owner"
         );
         restore(&mut service, "custody", &created)?;
-        let response = service.handle_at("GET", "records/value", "custody", &token, json!({}), 100);
+        let response =
+            service.namespace_fixture_at("GET", "records/value", "custody", &token, json!({}), 100);
         assert!(
             response.status == 200
                 && response.body["data"]["marker"] == "new-protected-live-marker",
@@ -667,11 +694,11 @@ mod tests {
         restore(&mut service, "outer", &outer)?;
         assert!(
             service
-                .handle_at("GET", "records/value", "outer", &token, json!({}), 100)
+                .namespace_fixture_at("GET", "records/value", "outer", &token, json!({}), 100)
                 .status
                 == 200
                 && service
-                    .handle_at(
+                    .namespace_fixture_at(
                         "GET",
                         "records/value",
                         "outer/inner",
@@ -692,7 +719,7 @@ mod tests {
         for namespace in ["outer/inner", "outer/inner/child"] {
             assert!(
                 service
-                    .handle_at("GET", "records/value", namespace, &token, json!({}), 100)
+                    .namespace_fixture_at("GET", "records/value", namespace, &token, json!({}), 100)
                     .status
                     == 200,
                 "child's own shares restore its resources and ordinary child assets"

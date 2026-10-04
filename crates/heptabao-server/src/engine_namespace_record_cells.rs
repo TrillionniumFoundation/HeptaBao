@@ -44,6 +44,16 @@ pub(super) fn is_cell(key: &Kv1Key) -> bool {
 }
 
 impl EngineState {
+    pub(crate) fn visit_namespace_record_owner_bindings(
+        &self,
+        mut visit: impl FnMut(&Binding) -> Result<()>,
+    ) -> Result<()> {
+        for owner in self.namespace_record_owners.values() {
+            visit(&owner.binding)?;
+        }
+        Ok(())
+    }
+
     pub(crate) fn has_namespace_record_custody(&self) -> bool {
         !self.namespace_record_owners.is_empty()
     }
