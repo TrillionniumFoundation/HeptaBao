@@ -705,7 +705,7 @@ fn pki_role_bare_domain_default_denies_base_and_explicit_permission_reopens() ->
 }
 
 #[test]
-fn pki_wildcard_actual_signed_CN_SAN_and_explicit_disabled_precedence() -> TestResult {
+fn pki_wildcard_actual_signed_cn_san_and_explicit_disabled_precedence() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
     let (_, admin) = bootstrap_unmounted(&mut service)?;
