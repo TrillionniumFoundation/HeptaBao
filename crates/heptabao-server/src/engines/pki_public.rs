@@ -15,6 +15,7 @@ pub(in crate::engines) enum PkiPublicRead<'a> {
     Chain,
     FullCrl,
     ExternalCrl(&'a str),
+    LocalCrl(bool, IssuerCrlFormat),
     Issuers,
     DefaultIssuer,
     IssuerCertificate(&'a str, CertificateFormat),
@@ -54,6 +55,26 @@ fn raw_certificate(der: &[u8], format: CertificateFormat) -> Result<EngineRespon
 }
 
 impl Pki {
+    fn local_crl_response(der: &[u8], format: IssuerCrlFormat) -> Result<EngineResponse> {
+        if matches!(format, IssuerCrlFormat::Json) {
+            return Ok(ok(json!({"crl":pem("X509 CRL",der)}), false));
+        }
+        let is_pem = matches!(format, IssuerCrlFormat::Pem);
+        let bytes = if is_pem {
+            pem("X509 CRL", der).into_bytes()
+        } else {
+            der.to_vec()
+        };
+        if bytes.len() > 512 * 1024 {
+            return Err(error(503, "public CRL exceeds bounds"));
+        }
+        Ok(EngineResponse {
+            status: 200,
+            body: json!({"__heptabao_pki_crl":BASE64.encode(bytes),"pem":is_pem}),
+            mutated: false,
+        })
+    }
+
     pub(in crate::engines) fn public_read_route<'a>(
         &self,
         method: &str,
@@ -77,6 +98,21 @@ impl Pki {
             "cert/crl" => Some(PkiPublicRead::FullCrl),
             "issuer/default/json" if self.public_issuer_metadata().is_some() => {
                 Some(PkiPublicRead::DefaultIssuer)
+            }
+            "cert/delta-crl" if !self.root.as_ref().is_some_and(RootCa::is_external) => {
+                Some(PkiPublicRead::LocalCrl(true, IssuerCrlFormat::Json))
+            }
+            "crl" if !self.root.as_ref().is_some_and(RootCa::is_external) => {
+                Some(PkiPublicRead::LocalCrl(false, IssuerCrlFormat::Der))
+            }
+            "crl/pem" if !self.root.as_ref().is_some_and(RootCa::is_external) => {
+                Some(PkiPublicRead::LocalCrl(false, IssuerCrlFormat::Pem))
+            }
+            "crl/delta" if !self.root.as_ref().is_some_and(RootCa::is_external) => {
+                Some(PkiPublicRead::LocalCrl(true, IssuerCrlFormat::Der))
+            }
+            "crl/delta/pem" if !self.root.as_ref().is_some_and(RootCa::is_external) => {
+                Some(PkiPublicRead::LocalCrl(true, IssuerCrlFormat::Pem))
             }
             "cert/delta-crl" | "crl" | "crl/pem" | "crl/delta" | "crl/delta/pem"
                 if self.root.as_ref().is_some_and(|root| root.is_external()) =>
@@ -233,6 +269,17 @@ impl Pki {
                     false,
                 ))
             }
+            PkiPublicRead::LocalCrl(delta, format) => {
+                let root = self.root.as_ref().ok_or_else(not_found)?;
+                let der = self.cached_local_crl(root, delta)?;
+                if matches!(format, IssuerCrlFormat::Json) {
+                    return Ok(ok(
+                        json!({"certificate":stored_pem("X509 CRL",der),"revocation_time":0,"revocation_time_rfc3339":""}),
+                        false,
+                    ));
+                }
+                Self::local_crl_response(der, format)
+            }
             PkiPublicRead::ExternalCrl(path) => {
                 self.external_crl_read(path, now)?.ok_or_else(not_found)
             }
@@ -312,10 +359,8 @@ impl Pki {
                     self.external_crl_der(delta, now)?
                         .ok_or_else(not_found)?
                         .to_vec()
-                } else if delta {
-                    return Err(error(501, "local PKI delta CRL is not implemented"));
                 } else {
-                    self.crl_der(root, now)?
+                    self.cached_local_crl(root, delta)?.to_vec()
                 };
                 let der = owned_der.as_slice();
                 match format {
