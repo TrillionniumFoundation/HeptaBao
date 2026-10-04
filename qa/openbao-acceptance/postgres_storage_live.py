@@ -19,7 +19,7 @@ import subprocess
 import threading
 import time
 
-from postgres_live import Postgres, Instance, ROOT
+from postgres_live import Postgres, Instance, ROOT, free_loopback_port
 
 
 CORPUS_CASE_IDS = (
@@ -47,6 +47,8 @@ class DropServerReplyProxy:
 
     def __init__(self, target_port, *, listen_port=0):
         self.target = ("127.0.0.1", target_port)
+        if listen_port == 0:
+            listen_port = free_loopback_port()
         self.listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.listener.bind(("127.0.0.1", listen_port))
