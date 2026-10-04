@@ -14,6 +14,11 @@ import ha_rolling_upgrade as upgrade
 
 
 class RollingUpgradeFixtureTests(unittest.TestCase):
+    def base_node(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        return Mock(binary=Path("/base"), root=Path(directory.name))
+
     def cluster(self):
         cluster = upgrade.RollingUpgradeCluster.__new__(upgrade.RollingUpgradeCluster)
         cluster.base_digest = "a" * 64
@@ -25,7 +30,7 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
         cluster = self.cluster()
         cluster.scenarios, cluster.unseal_key = [], "synthetic-unused"
         cluster.candidate_binary = Path("/candidate")
-        node = Mock(binary=Path("/base"))
+        node = self.base_node()
         node.call.side_effect = [(503, {"errors": ["HA configuration belongs to a different cluster"]}), (503, {"sealed": True})]
         with patch.object(upgrade, "checked_binary") as checked, patch.object(upgrade, "running_digest", return_value=cluster.base_digest):
             cluster.assert_misbound_rejection(node)
@@ -41,7 +46,7 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
                 cluster = self.cluster()
                 cluster.scenarios, cluster.unseal_key = [], "synthetic-unused"
                 cluster.candidate_binary = Path("/candidate")
-                node = Mock(binary=Path("/base"))
+                node = self.base_node()
                 node.call.side_effect = replies
                 with patch.object(upgrade, "checked_binary"), patch.object(upgrade, "running_digest", return_value=cluster.base_digest), self.assertRaises(upgrade.FixtureError):
                     cluster.assert_misbound_rejection(node)
@@ -61,10 +66,73 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
     def test_replaced_running_base_cannot_use_legacy_contract(self):
         cluster = self.cluster()
         cluster.scenarios, cluster.candidate_binary = [], Path("/candidate")
-        node = Mock(binary=Path("/base"))
+        node = self.base_node()
         with patch.object(upgrade, "checked_binary"), patch.object(upgrade, "running_digest", return_value=cluster.candidate_digest), self.assertRaisesRegex(upgrade.FixtureError, "base_binary_changed"):
             cluster.assert_misbound_rejection(node)
         node.call.assert_not_called()
+        node.stop.assert_called_once_with()
+        self.assertEqual(cluster.scenarios, [])
+
+    def early_exit(self, returncode, delta, *, stale=b"", error="node_exited_during_startup"):
+        cluster = self.cluster()
+        cluster.scenarios, cluster.candidate_binary = [], Path("/candidate")
+        node = self.base_node()
+        log_path = node.root / "process.log"
+        log_path.write_bytes(stale)
+        node.process.poll.return_value = returncode
+        def start():
+            with log_path.open("ab") as stream:
+                stream.write(delta)
+            raise upgrade.FixtureError(error)
+        node.start.side_effect = start
+        return cluster, node
+
+    def test_modern_pinned_base_accepts_exact_startup_rejection(self):
+        cluster, node = self.early_exit(1, (upgrade.MISBOUND_BOOTSTRAP_ERROR + "\n").encode())
+        with patch.object(upgrade, "checked_binary") as checked, patch.object(upgrade, "running_digest") as running:
+            cluster.assert_misbound_rejection(node)
+        self.assertEqual(checked.call_count, 2)
+        running.assert_not_called()
+        node.call.assert_not_called()
+        node.start.assert_called_once_with()
+        node.stop.assert_called_once_with()
+        self.assertEqual(cluster.scenarios, ["rolling_upgrade_base_misbound_startup_rejected"])
+
+    def test_modern_base_rejects_arbitrary_exit_status_or_log(self):
+        exact = (upgrade.MISBOUND_BOOTSTRAP_ERROR + "\n").encode()
+        for code, delta in [(0, exact), (-9, exact), (2, exact), (None, exact),
+                            (1, b"unrelated failure\n"), (1, b""), (1, b"\xff"),
+                            (1, exact + b"later unrelated failure\n"),
+                            (1, b"x" * (64 * 1024) + exact)]:
+            with self.subTest(code=code, size=len(delta)):
+                cluster, node = self.early_exit(code, delta)
+                with patch.object(upgrade, "checked_binary"), self.assertRaises(upgrade.FixtureError):
+                    cluster.assert_misbound_rejection(node)
+                node.call.assert_not_called()
+                node.stop.assert_called_once_with()
+                self.assertEqual(cluster.scenarios, [])
+
+    def test_old_exact_log_cannot_authorize_new_arbitrary_exit(self):
+        exact = (upgrade.MISBOUND_BOOTSTRAP_ERROR + "\n").encode()
+        cluster, node = self.early_exit(1, b"unrelated failure\n", stale=exact)
+        with patch.object(upgrade, "checked_binary"), self.assertRaises(upgrade.FixtureError):
+            cluster.assert_misbound_rejection(node)
+        node.stop.assert_called_once_with()
+        self.assertEqual(cluster.scenarios, [])
+
+    def test_startup_timeout_cannot_use_modern_base_exception(self):
+        exact = (upgrade.MISBOUND_BOOTSTRAP_ERROR + "\n").encode()
+        cluster, node = self.early_exit(1, exact, error="node_listener_timeout")
+        with patch.object(upgrade, "checked_binary"), self.assertRaisesRegex(upgrade.FixtureError, "node_listener_timeout"):
+            cluster.assert_misbound_rejection(node)
+        node.stop.assert_called_once_with()
+        self.assertEqual(cluster.scenarios, [])
+
+    def test_replaced_base_binary_cannot_use_startup_exception(self):
+        exact = (upgrade.MISBOUND_BOOTSTRAP_ERROR + "\n").encode()
+        cluster, node = self.early_exit(1, exact)
+        with patch.object(upgrade, "checked_binary", side_effect=[None, upgrade.FixtureError("binary_digest_mismatch")]), self.assertRaisesRegex(upgrade.FixtureError, "binary_digest_mismatch"):
+            cluster.assert_misbound_rejection(node)
         node.stop.assert_called_once_with()
         self.assertEqual(cluster.scenarios, [])
 

@@ -19,7 +19,7 @@ import subprocess
 import time
 import urllib.error
 
-from ha_destructive import Cluster, FixtureError, MISBOUND_BOOTSTRAP_ERROR, Node, checked_binary
+from ha_destructive import Cluster, FixtureError, MISBOUND_BOOTSTRAP_ERROR, Node, checked_binary, exact_startup_rejection
 
 
 def executable_identity(metadata: os.stat_result) -> tuple[int, ...]:
@@ -93,12 +93,31 @@ class RollingUpgradeCluster(Cluster):
         if wrong.binary == self.candidate_binary:
             checked_binary(wrong.binary, self.candidate_digest)
             return super().assert_misbound_rejection(wrong)
-        # The pinned PR base predates startup marker admission. Prove the actual
-        # running executable, then require its exact unseal refusal and sealed
-        # health. A candidate or unknown executable never receives this exception.
+        # A recent pinned base already enforces startup marker admission; an
+        # older base may defer refusal until unseal. Admit only the exact strict
+        # rejection or the legacy contract below, never an arbitrary early exit.
         checked_binary(wrong.binary, self.base_digest)
+        log_path = wrong.root / "process.log"
+        before = log_path.stat().st_size if log_path.exists() else 0
         try:
-            wrong.start()
+            try:
+                wrong.start()
+            except FixtureError as error:
+                if str(error) != "node_exited_during_startup":
+                    raise
+                checked_binary(wrong.binary, self.base_digest)
+                if wrong.process is None or wrong.log is None:
+                    raise FixtureError("rolling_upgrade_base_rejection_evidence_missing")
+                wrong.log.flush()
+                with log_path.open("rb") as stream:
+                    stream.seek(before)
+                    delta = stream.read(64 * 1024 + 1)
+                self.check(
+                    "rolling_upgrade_base_misbound_startup_rejected",
+                    len(delta) <= 64 * 1024 and exact_startup_rejection(
+                        wrong.process.poll(), delta, MISBOUND_BOOTSTRAP_ERROR),
+                )
+                return
             if running_digest(wrong) != self.base_digest:
                 raise FixtureError("rolling_upgrade_base_binary_changed")
             status, denied = wrong.call(
