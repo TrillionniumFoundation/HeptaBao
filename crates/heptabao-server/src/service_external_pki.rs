@@ -20,16 +20,31 @@ thread_local! {
 
 #[cfg(test)]
 thread_local! {
-    static POST_PUBLICATION_DELAY: Cell<Option<Duration>> = const { Cell::new(None) };
+    static POST_PUBLICATION_DELAY: Cell<Option<PublicationDelay>> = const { Cell::new(None) };
 }
 
 #[cfg(test)]
-pub(super) struct PublicationDelayScope(Option<Duration>, PhantomData<Rc<()>>);
+#[derive(Clone, Copy)]
+enum PublicationDelay {
+    For(Duration),
+    Until(Instant),
+}
+
+#[cfg(test)]
+pub(super) struct PublicationDelayScope(Option<PublicationDelay>, PhantomData<Rc<()>>);
 #[cfg(test)]
 impl PublicationDelayScope {
     pub(super) fn enter(delay: Duration) -> Self {
         Self(
-            POST_PUBLICATION_DELAY.with(|value| value.replace(Some(delay))),
+            POST_PUBLICATION_DELAY.with(|value| value.replace(Some(PublicationDelay::For(delay)))),
+            PhantomData,
+        )
+    }
+
+    pub(super) fn until(instant: Instant) -> Self {
+        Self(
+            POST_PUBLICATION_DELAY
+                .with(|value| value.replace(Some(PublicationDelay::Until(instant)))),
             PhantomData,
         )
     }
@@ -44,7 +59,10 @@ impl Drop for PublicationDelayScope {
 #[cfg(test)]
 fn delay_after_publication_for_test() {
     if let Some(delay) = POST_PUBLICATION_DELAY.with(Cell::take) {
-        std::thread::sleep(delay);
+        std::thread::sleep(match delay {
+            PublicationDelay::For(delay) => delay,
+            PublicationDelay::Until(instant) => instant.saturating_duration_since(Instant::now()),
+        });
     }
 }
 

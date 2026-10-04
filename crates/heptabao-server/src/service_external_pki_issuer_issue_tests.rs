@@ -111,7 +111,14 @@ fn external_pki270_issuer_issue_seven_real_kinds_original_paths_private_binding_
             let path = format!("external-ca/issuer/{reference}/issue/leaf");
             let fingerprint = service.request_fingerprint("POST", &path, "", &admin);
             let before = issue_signs(&remote)?;
-            let mut issued = call(&mut service, "POST", &path, &admin, issue_body());
+            let (mut issued, lower, upper) = timed_leaf_delivery(
+                &mut service,
+                &admin,
+                &path,
+                issue_body(),
+                std::time::Duration::from_secs(100),
+                std::time::Instant::now(),
+            )?;
             assert!(
                 issued.status == 200 && issue_signs(&remote)? == before + 1,
                 "one actual provider signature per selected leaf"
@@ -130,8 +137,11 @@ fn external_pki270_issuer_issue_seven_real_kinds_original_paths_private_binding_
                 "maintained private parser binds the actually remote-signed leaf"
             );
             assert!(
-                issued.body["renewable"] == false && issued.body["lease_duration"] == 600,
-                "deterministic Service clock retains the original600-second lease"
+                issued.body["renewable"] == false
+                    && issued.body["lease_duration"]
+                        .as_u64()
+                        .is_some_and(|ttl| { (lower..=upper).contains(&ttl) && ttl <= 600 }),
+                "lease duration retains actual elapsed time within the final delivery interval"
             );
             let serial = data["serial_number"].as_str().ok_or("serial")?.to_owned();
             let groups = serial.split(':').collect::<Vec<_>>();
@@ -422,23 +432,20 @@ fn external_pki270_issuer_issue_final_delivery_clock_withholds_expired_private()
     let remote = RemoteTransit::new_kind("ed25519")?;
     let (root, mut service, _unseal, admin, id) = issuer_issue_fixture(&remote)?;
     let path = format!("external-ca/issuer/{id}/issue/leaf");
-    let clock = crate::service::external_pki::PublicationClockScope::enter(
-        std::time::Duration::from_millis(100_750),
-        std::time::Instant::now(),
-    );
-    let delay = crate::service::external_pki::PublicationDelayScope::enter(
-        std::time::Duration::from_millis(400),
+    let started = std::time::Instant::now();
+    let delay = crate::service::external_pki::PublicationDelayScope::until(
+        started + std::time::Duration::from_millis(60_250),
     );
     let before = issue_signs(&remote)?;
-    let response = call(
+    let (response, _, _) = timed_leaf_delivery(
         &mut service,
-        "POST",
-        &path,
         &admin,
-        json!({"common_name":"leaf.example.test","ttl":"1s"}),
-    );
+        &path,
+        json!({"common_name":"leaf.example.test","ttl":"60s"}),
+        std::time::Duration::from_millis(100_750),
+        started,
+    )?;
     drop(delay);
-    drop(clock);
     assert!(
         response.status == 403
             && response.body.get("data").is_none()

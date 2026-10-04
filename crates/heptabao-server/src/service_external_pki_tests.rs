@@ -15,6 +15,68 @@ mod local_tests;
 #[path = "service_external_pki_public_tests.rs"]
 mod public_tests;
 
+// Exercise the same three production completion steps as finish_external_request,
+// sampling the real monotonic interval immediately around final delivery. The
+// expected lease bounds come from certificate expiry and elapsed wall time,
+// independently of PublicationClock's implementation. No clock is frozen or
+// moved, and real provider I/O, encrypted publication and audit remain required.
+fn timed_leaf_delivery(
+    service: &mut Service,
+    token: &str,
+    path: &str,
+    body: Value,
+    unix: std::time::Duration,
+    started: std::time::Instant,
+) -> TestResult<(Response, u64, u64)> {
+    let _clock = crate::service::external_pki::PublicationClockScope::enter(unix, started);
+    let pending = match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path,
+        namespace: "",
+        token,
+        body,
+        now: 100,
+        allow_forward: true,
+        enforce_namespace: false,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    }) {
+        RequestExecution::External(pending) => *pending,
+        RequestExecution::Complete(_) => return Err("real timed leaf did not stage".into()),
+    };
+    let result = pending.execute();
+    let (mut plan, result) = match (pending.effect, result) {
+        (ExternalEffectPlan::ExternalPki(plan), ExternalEffectResult::ExternalPki(result)) => {
+            (plan, result)
+        }
+        _ => return Err("real timed leaf observation type".into()),
+    };
+    let response = service.finalize_external_pki(&mut plan, result);
+    assert!(
+        response.status == 200,
+        "real timed leaf commits before final delivery"
+    );
+    let expiration = response.body["data"]["expiration"]
+        .as_u64()
+        .ok_or("real leaf expiry")?;
+    let response = service.audit_completed_response(&pending.fingerprint, pending.now, response);
+    let before = started.elapsed();
+    let response =
+        service.complete_external_pki_delivery(&mut plan, response, &pending.fingerprint);
+    let after = started.elapsed();
+    let nearest_remaining = |elapsed: std::time::Duration| -> u64 {
+        let remaining = (u128::from(expiration) * 1_000_000_000)
+            .saturating_sub(unix.as_nanos().saturating_add(elapsed.as_nanos()));
+        ((remaining + 500_000_000) / 1_000_000_000) as u64
+    };
+    Ok((
+        response,
+        nearest_remaining(after),
+        nearest_remaining(before),
+    ))
+}
+
 fn pki_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, String)> {
     let (root, mut service, unseal, admin) = remote.fixture()?;
     for (path, body, status) in [
