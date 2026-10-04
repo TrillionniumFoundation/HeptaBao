@@ -327,6 +327,15 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= INDEXED_RECOVERY_WIRE_STATE_SCHEMA && incoming.schema < INDEXED_RECOVERY_WIRE_STATE_SCHEMA {
+            return Err(Response::error(400, "snapshot would downgrade indexed recovery wire reader"));
+        }
+        if current.schema >= RECOVERY_CREDENTIAL_STATE_SCHEMA && incoming.schema < RECOVERY_CREDENTIAL_STATE_SCHEMA {
+            return Err(Response::error(400, "snapshot would downgrade protected recovery state"));
+        }
+        if !current.auth.same_recovery_control(&incoming.auth) {
+            return Err(Response::error(409, "snapshot cannot replace recovery credentials, challenges or private delivery; reconcile separately"));
+        }
         if current.schema >= LOCAL_TYPED_PKI_STATE_SCHEMA
             && incoming.schema < LOCAL_TYPED_PKI_STATE_SCHEMA
         {
@@ -537,3 +546,65 @@ impl Service {
 #[cfg(test)]
 #[path = "service_backup_restore_tests.rs"]
 mod tests;
+
+// Insert after the production impl Service in service_backup_restore.rs.
+// Requires the real native parser's affine VerifiedNativeRestore. The final
+// share is submitted through the ordinary recovery HTTP dispatch on Service.
+// No JSON backup is relabeled as a native archive and no state is overwritten.
+#[cfg(test)]
+impl Service {
+    pub(super) fn fixture_native_restore_after_real_recovery_commit(
+        &mut self,
+        verified: snapshot_transfer::VerifiedNativeRestore,
+        principal: &Principal,
+        restore_request: &RequestView<'_>,
+        recovery_token: &str,
+        final_verification_body: Value,
+        now: u64,
+        isolate_last_protected_floor: bool,
+    ) -> Result<Response, Response> {
+        self.fixture_require_live_recovery_wrapper()?;
+        let mut prepared = verified.into_prepared();
+        let initial = self.state.as_ref().ok_or_else(|| Response::error(503, "server is sealed"))?;
+        if prepared.state.schema != initial.schema
+            || !initial.auth.same_recovery_control(&prepared.state.auth)
+            || self.current_state_identity().ok() != Some(prepared.base) {
+            return Err(Response::error(409, "fixture requires genuine same-schema pre-rotation native preparation"));
+        }
+        let response = self.handle_at("POST", "sys/rotate/recovery/verify", "", recovery_token,
+            final_verification_body, now);
+        if response.status != 200 || response.body["complete"] != true {
+            return Err(response);
+        }
+        self.fixture_require_live_recovery_wrapper()?;
+        let current = self.state.as_ref().ok_or_else(|| Response::error(503, "server is sealed"))?;
+        let live_identity = self.current_state_identity()
+            .map_err(|_| Response::error(503, "fixture post-writer identity unavailable"))?;
+        if current.schema != prepared.state.schema
+            || current.auth.same_recovery_control(&prepared.state.auth)
+            || live_identity == prepared.base {
+            return Err(Response::error(409, "fixture writer did not commit genuine same-schema new recovery authority"));
+        }
+        let live_auth = owner_store::serialize_owner(&current.auth).map_err(state_serialization_error)?;
+        let live_seal = self.seal.clone();
+        if isolate_last_protected_floor {
+            // Existing private cfg(test) seam alters ONLY captured base. It
+            // leaves authenticated native data, archive owners, seal admission,
+            // candidate auth, digest, root and affine durable plan untouched.
+            prepared.fixture_rebind_base_for_protected_floor(live_identity);
+        }
+        let expected_status = if isolate_last_protected_floor { 409 } else { 503 };
+        let expected_message = if isolate_last_protected_floor {
+            "snapshot cannot replace recovery credentials, challenges or private delivery; reconcile separately"
+        } else { "snapshot restore authority changed; prepare again" };
+        let restore = self.commit_snapshot_restore_with_rollback(prepared, principal, restore_request, true);
+        let after = self.state.as_ref().ok_or_else(|| Response::error(503, "fixture live state lost"))?;
+        let after_auth = owner_store::serialize_owner(&after.auth).map_err(state_serialization_error)?;
+        if restore.status != expected_status || restore.body["errors"][0] != expected_message
+            || self.current_state_identity().ok() != Some(live_identity)
+            || after_auth.as_slice() != live_auth.as_slice() || self.seal != live_seal {
+            return Err(Response::error(503, "fixture rejected restore changed current authority or missed the exact final gate"));
+        }
+        Ok(restore)
+    }
+}

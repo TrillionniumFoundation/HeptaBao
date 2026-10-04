@@ -819,6 +819,10 @@ impl Service {
         state: State,
         plan: RecordPlan,
     ) -> Result<(), Response> {
+        if state.auth.has_recovery_state() || self.state.as_ref().is_some_and(|state| state.auth.has_recovery_state()) {
+            self.fence_recovery_delivery();
+            return Err(Response::error(503, "HA recovery state requires a backend-bound public-index consumer"));
+        }
         // Raft already owns this state; a local limit is not a pre-entry rejection.
         if let Err(error) = self.validate_loaded_capacity(&state, Some(&plan.root)) {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);

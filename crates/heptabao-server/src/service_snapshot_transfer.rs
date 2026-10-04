@@ -588,3 +588,160 @@ mod ha_tests;
 #[cfg(test)]
 #[path = "service_snapshot_redirect_tests.rs"]
 mod redirect_tests;
+
+// Append to authentic Source825 service_snapshot_transfer.rs, not production
+// HTTP routing. The normal before/stream importer/metadata-check sequence is
+// retained; this private cfg(test) seam returns only the native parser's affine
+// validated candidate just before the writer final commit.
+#[cfg(test)]
+impl Service {
+    pub(super) fn fixture_begin_native_snapshot_upload(
+        &mut self,
+        request: ServiceRequest<'_>,
+        deadline: Instant,
+    ) -> Result<PendingExternalRequest, Response> {
+        self.fixture_require_live_recovery_wrapper()?;
+        if request.method != "POST" || request.path != "sys/storage/raft/snapshot"
+            || !request.namespace.is_empty() {
+            return Err(Response::error(400, "fixture requires the real local native snapshot upload route"));
+        }
+        match self.begin_native_snapshot_before(request, deadline) {
+            NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(*pending),
+            NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => Err(response),
+            NativeSnapshotAdmission::Redirect(_) => Err(Response::error(501, "fixture refuses a redirected native upload")),
+        }
+    }
+
+    // Call PendingExternalRequest::execute_snapshot_transfer(actual_archive_reader)
+    // once outside the Service writer, preserving its actual raw archive. No
+    // JSON, prepared State, checksum, binding, base identity or generation is
+    // supplied through this interface and no caller can construct Verified.
+    pub(super) fn fixture_prepare_verified_native_restore(
+        &mut self,
+        pending: PendingExternalRequest,
+        observed: ExternalEffectResult,
+    ) -> Result<VerifiedNativeRestore, Response> {
+        let (plan, result) = match (pending.effect, observed) {
+            (ExternalEffectPlan::SnapshotTransfer(plan), ExternalEffectResult::SnapshotTransfer(result)) => (*plan, result),
+            _ => return Err(Response::error(503, "fixture native transport observation mismatch")),
+        };
+        if plan.is_download {
+            return Err(Response::error(400, "fixture requires an actual native upload"));
+        }
+        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
+        if Instant::now() >= plan.deadline {
+            return Err(Response::error(503, "snapshot transfer deadline elapsed"));
+        }
+        let same_ha = match (&plan.ha, &self.ha) {
+            (None, None) => true,
+            (Some(previous), Some(current)) => Arc::ptr_eq(previous, current),
+            _ => false,
+        };
+        if !same_ha {
+            return Err(Response::error(409, "snapshot HA transfer authority changed"));
+        }
+        if self.recovery_required
+            || self.audit_failed
+            || self.barrier_key.is_none()
+            || self.unseal_nonce != plan.activation
+        {
+            return Err(Response::error(409, "snapshot transfer authority changed"));
+        }
+        if let Err(response) = self.revalidate_native_snapshot_ha_leader() {
+            return Err(response);
+        }
+        if Instant::now() >= plan.deadline {
+            return Err(Response::error(503, "snapshot transfer deadline elapsed"));
+        }
+        // ReadIndex can spend the remaining request budget. Revalidate actor
+        // expiry using the clock after that wait, never its admission time.
+        let now = snapshot_observed_time(plan.now, plan.started.elapsed());
+        if self.recovery_required
+            || self.audit_failed
+            || self.barrier_key.is_none()
+            || self.unseal_nonce != plan.activation
+            || self.current_state_identity().ok() != Some(plan.base)
+        {
+            return Err(Response::error(409, "snapshot transfer authority changed"));
+        }
+        let Some(state) = self.state.as_ref() else {
+            return Err(Response::error(503, "server is sealed"));
+        };
+        if let Err(error) = state.auth.authorize_request(
+            &plan.actor,
+            &plan.namespace,
+            &plan.path,
+            if plan.is_download { "read" } else { "update" },
+            now,
+        ) {
+            return Err(Response::error(error.status, &error.message));
+        }
+        let live_seal = match self.current_snapshot_seal_identity(&plan.lease, plan.deadline) {
+            Ok(value) => value,
+            Err(response) => return Err(response),
+        };
+        if live_seal != plan.seal_identity {
+            return Err(Response::error(409, "snapshot transfer seal identity changed"));
+        }
+        let mut imported = match result {
+            Ok(Observation::Upload(value)) => value,
+            Ok(Observation::Download) => return Err(Response::error(503, "fixture native upload observation mismatch")),
+            Err(error) => return Err(error),
+        };
+        let result = (|| -> Result<backup_restore::PreparedSnapshotRestore, Response> {
+            let binding = imported.metadata.seal_identity().ok_or_else(|| {
+                Response::error(
+                    400,
+                    "native snapshot v1 has no seal binding; restore is unsupported",
+                )
+            })?;
+            let key = self
+                .barrier_key
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "server is sealed"))?;
+            let barrier = AeadBarrier::new(**key)
+                .map_err(|_| Response::error(503, "snapshot seal unavailable"))?;
+            let opened = Zeroizing::new(
+                barrier
+                    .open(snapshot_archive::CHECKSUM_CONTEXT, &imported.sealed_sums)
+                    .map_err(|_| {
+                        Response::error(400, "snapshot checksum authentication failed")
+                    })?,
+            );
+            if opened.as_slice() != imported.sums.as_slice() {
+                return Err(Response::error(
+                    400,
+                    "snapshot authenticated checksums differ",
+                ));
+            }
+            if !binding.matches(&live_seal) {
+                return Err(Response::error(
+                    400,
+                    if plan.path == "sys/storage/raft/snapshot-force" {
+                        "cross-seal native snapshot force restore is unsupported"
+                    } else {
+                        "native snapshot seal identity differs"
+                    },
+                ));
+            }
+            let length = imported.state.len();
+            let prepared =
+                self.prepare_snapshot_restore_from_reader(&mut imported.state, length)?;
+            if prepared.generation() != imported.metadata.generation() {
+                return Err(Response::error(400, "snapshot metadata generation differs"));
+            }
+            if Instant::now() >= plan.deadline {
+                return Err(Response::error(
+                    503,
+                    "snapshot restore preparation exceeded deadline",
+                ));
+            }
+            Ok(prepared)
+        })();
+        let prepared = match result {
+            Ok(value) => value,
+            Err(error) => return Err(error),
+        };
+        Ok(VerifiedNativeRestore { prepared, clock: (plan.now, plan.started) })
+    }
+}

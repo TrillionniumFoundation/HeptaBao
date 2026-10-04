@@ -43,9 +43,15 @@ const MAX_BODY: usize = 256 * 1024;
 const MAX_SNAPSHOT_BODY: usize = 32 * 1024 * 1024;
 const MAX_RESPONSE: usize = 32 * 1024 * 1024;
 
+fn default_disable_unauthed_rekey_endpoints() -> bool { true }
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
+    /// Listener-only opt-in for deprecated unauthenticated recovery rekey.
+    /// Root-key legacy rekey still requires its separate root-key consumer.
+    #[serde(default = "default_disable_unauthed_rekey_endpoints")]
+    pub disable_unauthed_rekey_endpoints: bool,
     pub listen: SocketAddr,
     pub data_dir: PathBuf,
     pub audit_file: PathBuf,
@@ -350,6 +356,7 @@ fn serve_inner(
     ));
     let wrapper_launch = {
         let mut service = service.lock().map_err(|_| "service lock unavailable")?;
+        service.install_recovery_listener_policy(config.disable_unauthed_rekey_endpoints)?;
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         {
             service.native_restore_fault = fixture;
@@ -2676,3 +2683,21 @@ mod consistency_tests;
 #[cfg(test)]
 #[path = "http_ui_mounts_tests.rs"]
 mod ui_mounts_tests;
+
+#[cfg(test)]
+mod recovery_listener_policy_tests {
+    use super::*;
+    #[test]
+    fn legacy_recovery_requires_explicit_listener_false_and_rejects_non_boolean() -> Result<(), serde_json::Error> {
+        let mut body = serde_json::json!({"listen": "127.0.0.1:8200", "data_dir": "/synthetic/data",
+            "audit_file": "/synthetic/audit", "tls_cert_file": "/synthetic/cert", "tls_key_file": "/synthetic/key"});
+        let default: Config = serde_json::from_value(body.clone())?;
+        assert!(default.disable_unauthed_rekey_endpoints);
+        body["disable_unauthed_rekey_endpoints"] = serde_json::json!(false);
+        let enabled: Config = serde_json::from_value(body.clone())?;
+        assert!(!enabled.disable_unauthed_rekey_endpoints);
+        body["disable_unauthed_rekey_endpoints"] = serde_json::json!("false");
+        assert!(serde_json::from_value::<Config>(body).is_err());
+        Ok(())
+    }
+}

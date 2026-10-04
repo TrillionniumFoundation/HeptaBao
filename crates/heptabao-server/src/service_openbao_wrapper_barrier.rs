@@ -9,9 +9,10 @@ use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
 use heptabao_openbao_grpc::{BridgeError, OpaqueBlobInfo};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use zeroize::{Zeroize, Zeroizing};
 
-use super::super::{SealMetadata, crypto};
+use super::super::{Response, SealMetadata, bounded_u8_field, crypto, decode_initialization_secret};
 #[cfg(target_os = "linux")]
 use super::super::{Service, hex};
 use super::{OpenBaoWrapperConfig, digest};
@@ -26,6 +27,8 @@ pub(crate) struct Envelope {
     seal_generation: u64,
     deployment_binding: String,
     blobinfo: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    recovery: Option<crate::auth::RecoveryPublic>,
 }
 impl fmt::Debug for Envelope {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -38,6 +41,7 @@ impl Drop for Envelope {
     }
 }
 impl Envelope {
+    pub(in crate::service) fn recovery(&self) -> Option<&crate::auth::RecoveryPublic> { self.recovery.as_ref() }
     pub(crate) fn generation(&self) -> u64 {
         self.seal_generation
     }
@@ -86,8 +90,10 @@ impl Envelope {
         }
         let envelope: Self =
             serde_json::from_slice(&bytes).map_err(|_| "invalid Wrapper seal envelope")?;
-        if envelope.schema != 1 || envelope.seal_generation == 0 {
+        if envelope.seal_generation == 0 || !matches!((envelope.schema, envelope.recovery.as_ref()), (1, None) | (2, Some(_))) {
             return Err("unsupported Wrapper seal envelope");
+        }
+        if let Some(recovery) = &envelope.recovery { recovery.validate().map_err(|_| "invalid public recovery configuration")?;
         }
         envelope.binding()?;
         envelope.blob()?;
@@ -106,10 +112,9 @@ impl Envelope {
             schema: 1,
             seal_generation: generation,
             deployment_binding: hex(&binding),
-            blobinfo: STANDARD.encode(blob.protobuf()),
-        })
+            blobinfo: STANDARD.encode(blob.protobuf()), recovery: None })
     }
-    #[cfg(target_os = "linux")]
+    
     fn encode(&self) -> Result<String, &'static str> {
         let bytes =
             Zeroizing::new(serde_json::to_vec(self).map_err(|_| "cannot encode Wrapper seal")?);
@@ -147,18 +152,73 @@ pub(in crate::service) struct PreparedMaterial {
     pub(in crate::service) deadline: Instant,
 }
 
+/// Admit deferred zero recovery or the implemented positive own-wire configuration.
+/// The optional private nonce is a response-retrieval extension, never a share.
+pub(in crate::service) fn validate_initialization_options(body: &Value) -> Result<bool, Response> {
+    let object = body.as_object().ok_or_else(|| Response::error(400, "initialization body must be an object"))?;
+    if object.keys().any(|key| !matches!(key.as_str(),
+        "secret_shares" | "secret_threshold" | "recovery_shares" | "recovery_threshold" | "recovery_nonce")) {
+        return Err(Response::error(501, "Wrapper initialization options are unavailable"));
+    }
+    let shares = bounded_u8_field(body, "secret_shares", 0).map_err(|message| Response::error(400, message))?;
+    let threshold = bounded_u8_field(body, "secret_threshold", 0).map_err(|message| Response::error(400, message))?;
+    if shares != 0 || threshold != 0 {
+        return Err(Response::error(501, "Wrapper secret shares are unavailable"));
+    }
+    let recovery_shares = bounded_u8_field(body, "recovery_shares", 0).map_err(|message| Response::error(400, message))?;
+    let recovery_threshold = bounded_u8_field(body, "recovery_threshold", 0).map_err(|message| Response::error(400, message))?;
+    if (recovery_shares == 0) != (recovery_threshold == 0) || recovery_threshold > recovery_shares {
+        return Err(Response::error(400, "recovery shares and threshold must both be zero or a valid positive pair"));
+    }
+    // bounded_u8_field enforces the full nonzero GF256 coordinate range; zero/zero stays deferred.
+    if let Some(nonce) = body.get("recovery_nonce") {
+        let _nonce = decode_initialization_secret(nonce).map_err(|message| Response::error(400, message))?;
+    }
+    Ok(body.get("recovery_nonce").is_some())
+}
+
+pub(in crate::service) fn recovery_public(seal: &SealMetadata) -> Result<Option<crate::auth::RecoveryPublic>, &'static str> {
+    let envelope = Envelope::decode(&seal.wrapped_barrier_key)?;
+    Ok(envelope.recovery.clone())
+}
+pub(in crate::service) fn same_provider_material(source: &SealMetadata, target: &SealMetadata) -> Result<bool, &'static str> {
+    let source = Envelope::decode(&source.wrapped_barrier_key)?;
+    let target = Envelope::decode(&target.wrapped_barrier_key)?;
+    Ok(source.binding()? == target.binding()? && source.generation() == target.generation()
+        && source.blob()?.protobuf() == target.blob()?.protobuf())
+}
+pub(in crate::service) fn seal_with_recovery(source: &SealMetadata, credential: &crate::auth::RecoveryCredential) -> Result<SealMetadata, &'static str> {
+    if !source.is_wrapper() { return Err("recovery credential requires Wrapper source"); }
+    let mut envelope = Envelope::decode(&source.wrapped_barrier_key)?;
+    envelope.schema = 2;
+    envelope.recovery = Some(credential.public());
+    let mut target = source.clone();
+    target.schema = 3;
+    target.secret_shares = credential.shares();
+    target.secret_threshold = credential.threshold();
+    target.wrapped_barrier_key = envelope.encode()?;
+    target.validate()?;
+    Ok(target)
+}
+
+#[cfg(any(target_os = "linux", test))]
+fn initialization_activation_failure(response_retrieval: bool) -> &'static str {
+    if response_retrieval {
+        "Wrapper initialization activation unavailable; retrieve the prepared response with the same recovery nonce"
+    } else {
+        "Wrapper initialization activation unavailable; no response-retrieval credential was supplied"
+    }
+}
+
 #[cfg(target_os = "linux")]
 mod linux {
-    use super::super::super::{
-        Response, bounded_u8_field, decode_initialization_secret, load_seal_metadata,
-    };
+    use super::super::super:: load_seal_metadata;
     use super::super::{
         OpenBaoWrapperCompletion, OpenBaoWrapperOperationPlan, WrapperOperation, WrapperReply,
     };
     use super::*;
     use heptabao_openbao_grpc::protocol::wrapping::RpcOptions;
-    use serde_json::Value;
-    use std::sync::Mutex;
+    use  std::sync::Mutex;
 
     struct PrivateBody(Value);
     impl Drop for PrivateBody {
@@ -171,6 +231,7 @@ mod linux {
         key: Zeroizing<[u8; 32]>,
         binding: [u8; 32],
         body: PrivateBody,
+        response_retrieval: bool,
         deadline: Instant,
     }
     impl InitializationPlan {
@@ -253,28 +314,7 @@ mod linux {
                     "Wrapper HA/PostgreSQL initialization requires a supported consumer",
                 ));
             }
-            if body.as_object().is_none_or(|body| {
-                body.keys().any(|key| {
-                    !matches!(
-                        key.as_str(),
-                        "secret_shares" | "secret_threshold" | "recovery_nonce"
-                    )
-                })
-            }) || bounded_u8_field(body, "secret_shares", 0).ok() != Some(0)
-                || bounded_u8_field(body, "secret_threshold", 0).ok() != Some(0)
-            {
-                return Err(Response::error(
-                    501,
-                    "Wrapper recovery shares and initialization options are unavailable",
-                ));
-            }
-            // Preserve an authenticated response-retrieval channel for lost publication replies.
-            // This deployment extension is not an OpenBao recovery-key implementation.
-            let _nonce =
-                decode_initialization_secret(body.get("recovery_nonce").ok_or_else(|| {
-                    Response::error(400, "recovery_nonce is required for Wrapper initialization")
-                })?)
-                .map_err(|_| Response::error(400, "invalid initialization recovery nonce"))?;
+            let response_retrieval = validate_initialization_options(body)?;
             let binding = self
                 .wrapper_barrier_binding()
                 .map_err(|_| Response::error(503, "Wrapper deployment binding unavailable"))?;
@@ -307,7 +347,7 @@ mod linux {
                 operation: Mutex::new(Some(operation)),
                 key,
                 binding,
-                body: PrivateBody(body.clone()),
+                body: PrivateBody(body.clone()), response_retrieval,
                 deadline,
             })
         }
@@ -379,7 +419,7 @@ mod linux {
             let expected_seal = self.seal.clone();
             if Instant::now() >= deadline
                 || load_seal_metadata(&self.data_dir).ok().flatten() != expected_seal
-                || self.activate_barrier(&plan.key).is_err()
+                || self.activate_barrier_with_deadline(&plan.key, Some(deadline)).is_err()
                 || Instant::now() >= deadline
                 || load_seal_metadata(&self.data_dir).ok().flatten() != expected_seal
             {
@@ -387,7 +427,7 @@ mod linux {
                 super::super::super::erase_json(&mut response.body);
                 return Response::error(
                     503,
-                    "Wrapper initialization activation unavailable; retrieve the prepared response with the same recovery nonce",
+                    initialization_activation_failure(plan.response_retrieval),
                 );
             }
             response
@@ -395,7 +435,7 @@ mod linux {
         pub(crate) fn prepare_wrapper_barrier_activation(
             &self,
         ) -> Result<Option<ActivationPlan>, String> {
-            let Some(seal) = self.seal.as_ref().filter(|seal| seal.schema == 2) else {
+            let Some(seal) = self.seal.as_ref().filter(|seal| seal.is_wrapper()) else {
                 return Ok(None);
             };
             if self.state.is_some() || self.recovery_required {
@@ -448,10 +488,14 @@ mod linux {
                     .map_err(|_| "Wrapper barrier key length invalid")?,
             );
             if Instant::now() >= completion.deadline
-                || self.activate_barrier(&key).is_err()
-                || Instant::now() >= completion.deadline
-                || load_seal_metadata(&self.data_dir).ok().flatten().as_ref()
-                    != Some(&completion.seal)
+                { self.fence_wrapper_barrier_delivery(); return Err("Wrapper activation deadline expired".into()); }
+            let admitted = match self.activate_barrier_with_deadline(&key, Some(completion.deadline)) {
+                Ok(admitted) => admitted, Err(_) => { self.fence_wrapper_barrier_delivery()
+                ; return Err("Wrapper private recovery admission failed".into()); }
+            };
+            if Instant::now() >= completion.deadline
+                || load_seal_metadata(&self.data_dir).ok().flatten() != admitted.0 || !admitted.0.as_ref()
+                    .is_some_and(SealMetadata::is_wrapper)
             {
                 self.fence_wrapper_barrier_delivery();
                 return Err("Wrapper barrier activation failed closed".into());
@@ -477,6 +521,41 @@ pub(crate) use linux::InitializationPlan;
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn deferred_and_positive_recovery_admission_share_the_optional_private_nonce_contract() {
+        for body in [serde_json::json!({}), serde_json::json!({"recovery_shares": 0, "recovery_threshold": 0})] {
+            assert_eq!(validate_initialization_options(&body).map_err(|response| response.status), Ok(false));
+        }
+        assert_eq!(validate_initialization_options(&serde_json::json!({"recovery_shares": 5, "recovery_threshold": 3})).map_err(|response| response.status), Ok(false));
+        for body in [
+            serde_json::json!({"recovery_shares": 0, "recovery_threshold": 1}),
+            serde_json::json!({"recovery_shares": 1, "recovery_threshold": 0}),
+            serde_json::json!({"recovery_shares": 2, "recovery_threshold": 3}),
+            serde_json::json!({"recovery_shares": true}),
+            serde_json::json!({"recovery_shares": -1}),
+            serde_json::json!({"recovery_shares": 1.5}),
+            serde_json::json!({"recovery_shares": 256}),
+        ] {
+            assert_eq!(validate_initialization_options(&body).map_err(|response| response.status), Err(400));
+        }
+    }
+
+    #[test]
+    fn optional_response_retrieval_is_validated_and_never_invented() {
+        let body = serde_json::json!({"recovery_nonce": "01".repeat(32), "recovery_shares": 0, "recovery_threshold": 0});
+        assert_eq!(validate_initialization_options(&body).map_err(|response| response.status), Ok(true));
+        assert_eq!(validate_initialization_options(&serde_json::json!({"recovery_nonce": "00".repeat(32)})).map_err(|response| response.status), Err(400));
+        assert_eq!(validate_initialization_options(&serde_json::json!({"recovery_nonce": null})).map_err(|response| response.status), Err(400));
+        for option in ["recovery_pgp_keys", "pgp_keys", "root_token_pgp_key"] {
+            let mut body = serde_json::json!({});
+            body[option] = serde_json::json!([]);
+            assert_eq!(validate_initialization_options(&body).map_err(|response| response.status), Err(501));
+        }
+        assert!(initialization_activation_failure(true).contains("same recovery nonce"));
+        assert!(initialization_activation_failure(false).contains("no response-retrieval credential"));
+        assert!(!initialization_activation_failure(false).contains("retrieve the prepared response"));
+    }
 
     fn encoded(blob: &[u8], binding: &str, generation: u64) -> Result<String, serde_json::Error> {
         Ok(STANDARD.encode(serde_json::to_vec(&serde_json::json!({
@@ -516,6 +595,28 @@ mod tests {
         ] {
             assert!(Envelope::decode(&candidate).is_err());
         }
+        Ok(())
+    }
+
+    #[test]
+    fn recovery_public_metadata_never_changes_provider_generation_or_opaque_blob() -> Result<(), Box<dyn std::error::Error>> {
+        let wire = [0x0a, 2, 0xab, 0xcd, 0x12, 1, 8];
+        let source = SealMetadata { schema: 2, generation: 7, share_format: "wrapper-v1".into(),
+            secret_shares: 0, secret_threshold: 0, wrapped_barrier_key: encoded(&wire, &"11".repeat(32), 7)? };
+        let (credential, _) = crate::auth::RecoveryCredential::generate([9; 32], 4, 3, 2)
+            .map_err(|_| std::io::Error::other("recovery generation failed"))?;
+        let target = seal_with_recovery(&source, &credential).map_err(std::io::Error::other)?;
+        assert_eq!(target.schema, 3);
+        assert_eq!(target.generation, 7);
+        assert_eq!(target.secret_shares, 3);
+        assert_eq!(target.secret_threshold, 2);
+        assert!(same_provider_material(&source, &target).map_err(std::io::Error::other)?);
+        let public = recovery_public(&target).map_err(std::io::Error::other)?.ok_or("missing recovery metadata")?;
+        assert_eq!(public.generation, 4);
+        assert!(target.validate().is_ok());
+        let mut corrupt = target.clone();
+        corrupt.secret_threshold = 1;
+        assert!(corrupt.validate().is_err());
         Ok(())
     }
 }

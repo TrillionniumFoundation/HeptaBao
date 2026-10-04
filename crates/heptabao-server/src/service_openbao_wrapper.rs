@@ -359,7 +359,7 @@ impl Service {
             .transpose()
             .map_err(|error| error.to_string())?;
         if let Some(seal) = self.seal.as_ref() {
-            if seal.schema == 2 {
+            if seal.is_wrapper() {
                 let envelope = barrier::Envelope::decode(&seal.wrapped_barrier_key)
                     .map_err(|_| "Wrapper seal envelope is invalid")?;
                 if barrier_binding != Some(envelope.binding()?) {
@@ -459,7 +459,7 @@ impl Drop for WrapperActivation {
 }
 impl Service {
     pub(super) fn begin_openbao_wrapper_activation(&self) -> WrapperActivation {
-        let required = self.seal.as_ref().is_some_and(|seal| seal.schema == 2);
+        let required = self.seal.as_ref().is_some_and(|seal| seal.is_wrapper());
         let lifecycle = self
             .openbao_wrapper_owner
             .as_ref()

@@ -58,7 +58,9 @@ const JWT_PEM_KEYSET_STATE_SCHEMA: u32 = 69;
 const TRANSIT_BYOK_STATE_SCHEMA: u32 = 70;
 const PKI_ISSUER_PATH_STATE_SCHEMA: u32 = 71;
 const LOCAL_TYPED_PKI_STATE_SCHEMA: u32 = 72;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = LOCAL_TYPED_PKI_STATE_SCHEMA;
+const RECOVERY_CREDENTIAL_STATE_SCHEMA: u32 = 73;
+const INDEXED_RECOVERY_WIRE_STATE_SCHEMA: u32 = 74;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = INDEXED_RECOVERY_WIRE_STATE_SCHEMA;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -82,6 +84,8 @@ mod external_transit;
 mod ha_activation;
 #[path = "service_ha_read.rs"]
 mod ha_read;
+#[path = "service_recovery_keys.rs"]
+mod recovery_keys;
 #[path = "service_identity.rs"]
 mod identity;
 #[path = "service_kubernetes_secrets.rs"]
@@ -238,18 +242,24 @@ fn clone_pg_storage_config(config: &PgStorageConfig) -> PgStorageConfig {
 }
 
 impl SealMetadata {
+    fn is_wrapper(&self) -> bool { matches!(self.schema, 2 | 3) }
     fn validate(&self) -> Result<(), &'static str> {
-        if self.schema == 2 {
+        if self.is_wrapper() {
             if self.generation == 0
                 || self.share_format != "wrapper-v1"
-                || self.secret_shares != 0
-                || self.secret_threshold != 0
+                
             {
                 return Err("invalid Wrapper seal metadata");
             }
             let envelope = openbao_wrapper::barrier::Envelope::decode(&self.wrapped_barrier_key)?;
             if envelope.generation() != self.generation {
                 return Err("Wrapper seal generation mismatch");
+            }
+            let recovery = envelope.recovery();
+            match (self.schema, recovery) {
+                (2, None) if self.secret_shares == 0 && self.secret_threshold == 0 => {},
+                (3, Some(recovery)) if recovery.shares == self.secret_shares && recovery.threshold == self.secret_threshold => {},
+                _ => return Err("invalid Wrapper recovery metadata"),
             }
             return Ok(());
         }
@@ -981,6 +991,7 @@ pub struct Service {
     unseal_shares: BTreeMap<u8, SecretShare>,
     unseal_nonce: String,
     barrier_key: Option<Zeroizing<[u8; 32]>>,
+    disable_unauthed_rekey_endpoints: bool,
     rekey: Option<RekeyState>,
     recovery_required: bool,
     private_shutdown_requested: bool,
@@ -1331,6 +1342,7 @@ impl Service {
             unseal_shares: BTreeMap::new(),
             unseal_nonce,
             barrier_key: None,
+            disable_unauthed_rekey_endpoints: true,
             rekey,
             recovery_required,
             private_shutdown_requested: false,
@@ -1707,7 +1719,7 @@ impl Service {
             self.ha_activation = None;
             erase_json(&mut response.body);
             #[cfg(target_os = "linux")]
-            if self.seal.as_ref().is_some_and(|seal| seal.schema == 2) {
+            if self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) {
                 self.fence_wrapper_barrier_delivery();
             }
             return Response::error(
@@ -2296,6 +2308,9 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
+        if recovery_keys::legacy_recovery_path(path).is_some() {
+            return self.legacy_recovery_route(admitted, method, path, namespace, body, now);
+        }
         let mount_metadata =
             path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/");
         let public_login = admitted.auth.is_public_login(namespace, method, path);
@@ -2483,6 +2498,11 @@ impl Service {
                 return Response::error(403, "permission denied");
             }
             return self.ack_initialization(method, body);
+        }
+        if matches!(path, "sys/rotate/recovery/init" | "sys/rotate/recovery/update" | "sys/rotate/recovery/verify" | "sys/internal/recovery-key-delivery") {
+            return self.recovery_route(admitted, principal.as_ref(), method, path, namespace, body, now);
+        }
+        if path.starts_with("sys/rekey-recovery-key/") { return Response::error(404, "unknown legacy recovery rekey path");
         }
         if matches!(path, "sys/rekey/init" | "sys/rekey/update") {
             if !principal.as_ref().is_some_and(Principal::is_root) {
@@ -3487,7 +3507,7 @@ impl Service {
             .as_ref()
             .map(|seal| {
                 (
-                    if seal.schema == 2 {
+                    if seal.is_wrapper() {
                         "openbao-wrapper"
                     } else if seal.share_format == "raw-v1" {
                         "shamir-legacy"
@@ -3514,7 +3534,7 @@ impl Service {
             "nonce": if progress == 0 { "" } else { self.unseal_nonce.as_str() },
             "version": "HeptaBao-0.2.0",
             "migration": false,
-            "recovery_seal": false,
+            "recovery_seal": self.seal.as_ref().is_some_and(SealMetadata::is_wrapper),
             "storage_type": if self.ha.is_some() { "heptabao-raft-v1" } else { "heptabao-durable-v2" },
             "seal_generation": self.seal.as_ref().map_or(0, |seal| seal.generation),
         }))
@@ -3558,7 +3578,7 @@ impl Service {
         wrapper: Option<openbao_wrapper::barrier::PreparedMaterial>,
     ) -> (Response, bool) {
         let wrapper_mode =
-            wrapper.is_some() || self.seal.as_ref().is_some_and(|seal| seal.schema == 2);
+            wrapper.is_some() || self.seal.as_ref().is_some_and(|seal| seal.is_wrapper());
         if self.ha.is_some() {
             return (
                 Response::error(
@@ -3568,7 +3588,9 @@ impl Service {
                 false,
             );
         }
-        if body.as_object().is_none_or(|object| {
+        if wrapper_mode {
+            if let Err(response) = openbao_wrapper::barrier::validate_initialization_options(body) { return (response, false); }
+        } else if body.as_object().is_none_or(|object| {
             object.keys().any(|key| {
                 !matches!(
                     key.as_str(),
@@ -3605,6 +3627,11 @@ impl Service {
                 false,
             );
         }
+        let recovery_counts = if wrapper_mode {
+            let recovery_shares = match bounded_u8_field(body, "recovery_shares", 0) { Ok(value) => value, Err(error) => return (Response::error(400, error), false) };
+            let recovery_threshold = match bounded_u8_field(body, "recovery_threshold", 0) { Ok(value) => value, Err(error) => return (Response::error(400, error), false) };
+            (recovery_shares, recovery_threshold)
+        } else { (0, 0) };
         let recovery_secret = match body.get("recovery_nonce") {
             None => None,
             Some(value) => match decode_initialization_secret(value) {
@@ -3681,7 +3708,7 @@ impl Service {
             }
             return (
                 match recovery_secret.as_ref() {
-                    Some(secret) => self.recover_initialization(secret, shares, threshold),
+                    Some(secret) => self.recover_initialization(secret, if wrapper_mode { recovery_counts.0 } else { shares }, if wrapper_mode { recovery_counts.1 } else { threshold }),
                     None => Response::error(400, "already initialized"),
                 },
                 false,
@@ -3721,7 +3748,7 @@ impl Service {
         }
 
         let wrapper_deadline = wrapper.as_ref().map(|material| material.deadline);
-        let (seal, generated_shares, barrier_key) = if let Some(material) = wrapper {
+        let (mut seal, generated_shares, barrier_key) = if let Some(material) = wrapper {
             (material.seal, Vec::new(), material.key)
         } else {
             let seal_key = match crypto::random::<32>() {
@@ -3764,7 +3791,7 @@ impl Service {
                 );
             }
         };
-        let (auth, root_token) = match AuthState::bootstrap(now) {
+        let (mut auth, root_token) = match AuthState::bootstrap(now) {
             Ok((auth, token)) => (auth, Zeroizing::new(token)),
             Err(error) => return (Response::error(error.status, &error.message), false),
         };
@@ -3772,7 +3799,17 @@ impl Service {
             Ok(value) => STANDARD.encode(value),
             Err(error) => return (Response::error(503, error), false),
         };
-        let state = State {
+        let recovery_fragments = if recovery_counts.0 != 0 {
+            let fragments = match auth.initialize_recovery_credential(&cluster_id, recovery_counts.0, recovery_counts.1) {
+                Ok(fragments) => fragments, Err(_) => return (Response::error(503, "cannot create independent recovery credential"), false),
+            };
+            let Some(credential) = auth.recovery_credential.as_ref() else { return (Response::error(503, "recovery candidate absent"), false); };
+            seal = match openbao_wrapper::barrier::seal_with_recovery(&seal, credential) {
+                Ok(seal) => seal, Err(_) => return (Response::error(503, "cannot prepare public recovery configuration"), false),
+            };
+            fragments
+        } else { Vec::new() };
+        let mut state = State {
             schema: CURRENT_STATE_SCHEMA,
             cluster_id,
             replay_epoch: 0,
@@ -3782,6 +3819,8 @@ impl Service {
             database: database::DatabaseState::default().into(),
             raft_admin: raft_admin::RaftAdminState::default().into(),
         };
+        state.schema = state.writer_schema();
+        if let Err(error) = state.validate_format() { return (error, false); }
         let mut stage = match InitializationStage::create(&self.data_dir) {
             Ok(value) => value,
             Err(_) => {
@@ -3874,12 +3913,22 @@ impl Service {
             keys.push(hex(&encoded));
             keys_base64.push(STANDARD.encode(encoded.as_slice()));
         }
+        let mut recovery_keys = Zeroizing::new(Vec::<String>::new());
+        let mut recovery_keys_base64 = Zeroizing::new(Vec::<String>::new());
+        for fragment in recovery_fragments {
+            let Some(credential) = state.auth.recovery_credential.as_ref() else { return (Response::error(503, "recovery credential absent during delivery"), false); };
+            let encoded = match credential.encode_share(&fragment) {
+                Ok(encoded) => Zeroizing::new(encoded), Err(_) => return (Response::error(503, "recovery share codec rejected delivery"), false),
+            };
+            recovery_keys.push(hex(&encoded));
+            recovery_keys_base64.push(STANDARD.encode(encoded.as_slice()));
+        }
         let mut response = Response::ok(json!({
             "keys": keys,
             "keys_base64": keys_base64,
             "root_token": root_token.as_str(),
-            "recovery_keys": [],
-            "recovery_keys_base64": [],
+            "recovery_keys": recovery_keys.as_slice(),
+            "recovery_keys_base64": recovery_keys_base64.as_slice(),
         }));
         if let Some(secret) = recovery_secret.as_ref() {
             response.body["init_ack_required"] = json!(true);
@@ -4318,7 +4367,7 @@ impl Service {
     }
 
     fn unseal(&mut self, body: &Value) -> Response {
-        if self.seal.as_ref().is_some_and(|seal| seal.schema == 2) {
+        if self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) {
             return Response::error(
                 501,
                 "Wrapper seal uses trusted startup; manual unseal and migration are unavailable",
@@ -4473,6 +4522,12 @@ impl Service {
     }
 
     fn activate_barrier(&mut self, key: &[u8; 32]) -> Result<(), Response> {
+        self.activate_barrier_with_deadline(key, crate::request_deadline::current()).map(|_| ())
+    }
+
+    fn activate_barrier_with_deadline(&mut self, key: &[u8; 32], deadline: Option<std::time::Instant>)
+        -> Result<recovery_keys::AdmittedRecoverySeal, Response> {
+        if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) { return Err(Response::error(503, "barrier admission deadline expired")); }
         let wrapper_activation = self.begin_openbao_wrapper_activation();
         self.durable = None;
         self.state = None;
@@ -4520,6 +4575,9 @@ impl Service {
         let (state, bytes, state_rewrite_required) = Self::load_state_from_durable(&durable)?;
         let record_root = records::decode_root(&bytes)?;
         self.validate_loaded_capacity(&state, record_root.as_ref())?;
+        // Bind durable identity before any local state is admitted into an HA epoch.
+        if (self.ha.is_some() || self.postgres_durable.is_some()) && state.auth.has_recovery_state() { return Err(Response::error(503, "HA/PostgreSQL recovery startup requires a backend-bound consumer")); }
+        let admitted_seal = self.reconcile_recovery_seal(&state, deadline)?;
         // Bind durable identity before any local state is admitted into an HA epoch.
         if let Some(ha) = self.ha.as_ref() {
             let ha = ha
@@ -4587,6 +4645,8 @@ impl Service {
                 }
             }
         }
+        if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) { return Err(Response::error(503, "barrier deadline expired before publication")); }
+        self.seal = admitted_seal.0.clone();
         self.durable = Some(durable);
         self.state = Some(state);
         self.record_root = record_root;
@@ -4606,6 +4666,10 @@ impl Service {
             self.ha_activation = None;
             return Err(error);
         }
+        if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+            self.fence_recovery_delivery();
+            return Err(Response::error(503, "barrier deadline expired before lifecycle publication"));
+        }
         if wrapper_activation.publish_unsealed().is_err() {
             self.fence_openbao_wrapper();
             self.recovery_required = true;
@@ -4615,7 +4679,7 @@ impl Service {
                 "Wrapper lifecycle publication unavailable",
             ));
         }
-        Ok(())
+        Ok(admitted_seal)
     }
 
     fn transient_ha_unseal_error(response: &Response) -> bool {
@@ -4740,7 +4804,7 @@ impl Service {
     }
 
     fn rekey_route(&mut self, method: &str, path: &str, body: &Value) -> Response {
-        if self.seal.as_ref().is_some_and(|seal| seal.schema == 2) {
+        if self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) {
             return Response::error(
                 501,
                 "Wrapper recovery-key rekey requires a separate supported consumer",
@@ -5762,6 +5826,10 @@ impl Service {
         let state: State = serde_json::from_slice(&committed.bytes)
             .map_err(|_| Response::error(503, "HA committed state schema is invalid"))?;
         state.validate_format()?;
+        if state.auth.has_recovery_state() || self.state.as_ref().is_some_and(|state| state.auth.has_recovery_state()) {
+            self.fence_recovery_delivery();
+            return Err(Response::error(503, "HA recovery state requires a backend-bound public-index consumer"));
+        }
         let expected_cluster = ha
             .lock_for_request()
             .map_err(|_| Response::error(503, "HA control state is unavailable"))?
