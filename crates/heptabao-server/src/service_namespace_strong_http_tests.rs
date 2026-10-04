@@ -10,6 +10,15 @@ fn wire(
     token: &str,
     body: Value,
 ) -> Response {
+    // RequestDispatch is the trusted internal HTTP bridge. A direct HELP still
+    // needs exactly the carrier built by http::help::carrier on the wire path.
+    let body = if method == "HELP" {
+        json!({"__heptabao_http_help_request":{
+            "path":path,"query":"","wire_method":"HELP"
+        }})
+    } else {
+        body
+    };
     service.handle_at_mode(RequestDispatch {
         method,
         path,
@@ -1196,7 +1205,8 @@ fn ordinary_router_keeps_authenticated_self_context_and_cross_namespace_acl_orde
         let response = wire(&mut service, method, path, header, caller, json!({}));
         assert!(
             response.status == expected,
-            "fixed official owner/context priority: {label}"
+            "fixed official owner/context priority: {label}; status={} expected={expected}",
+            response.status
         );
         if method == "HELP" && expected == 200 {
             assert!(
