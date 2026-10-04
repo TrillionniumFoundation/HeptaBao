@@ -45,87 +45,6 @@ pub(crate) fn transport_body(
     Ok(())
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::time::Duration;
-
-    #[test]
-    fn token_number_wire_spelling_survives_http_and_cannot_be_supplied_as_inner_marker() {
-        for (raw, expected) in [
-            ("1e0", "1e0"),
-            ("1E+01", "1E+01"),
-            ("1e+06", "1e+06"),
-            ("-0", "-0"),
-            ("1000000.0", "1000000.0"),
-            ("9007199254740993", "9007199254740993"),
-        ] {
-            let input = format!("{{\"policies\":[{raw},true,null],\"no_default_policy\":{raw}}}");
-            let wire = format!(
-                "POST /v1/auth/token/create HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{input}",
-                input.len()
-            );
-            let parsed = super::super::read_request(&mut wire.as_bytes(), Duration::from_secs(1));
-            assert!(parsed.is_ok());
-            let parsed = parsed.unwrap_or_else(|_| unreachable!());
-            let carrier = request("POST", "auth/token/create", &parsed.body.0)
-                .unwrap_or_else(|_| unreachable!())
-                .unwrap_or_else(|| unreachable!());
-            assert!(carrier.original["policies"][0].is_number());
-            let backend = carrier.backend_body();
-            assert_eq!(backend.0["policies"][0], expected);
-            assert_eq!(backend.0["policies"][1], true);
-            assert!(backend.0["policies"][2].is_null());
-            assert_eq!(backend.0["no_default_policy"], expected);
-        }
-        let input = json!({MARKER:{"wire_method":"POST","path":"auth/token/create",
-            "original_body":{"policies":"root"},"number_fields":{}}})
-        .to_string();
-        let wire = format!(
-            "POST /v1/auth/token/create HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{input}",
-            input.len()
-        );
-        let parsed = super::super::read_request(&mut wire.as_bytes(), Duration::from_secs(1))
-            .unwrap_or_else(|_| unreachable!());
-        let carrier = request("POST", "auth/token/create", &parsed.body.0)
-            .unwrap_or_else(|_| unreachable!())
-            .unwrap_or_else(|| unreachable!());
-        assert_eq!(
-            carrier.original,
-            &serde_json::from_str::<Value>(&input).unwrap_or(Value::Null)
-        );
-        assert!(carrier.number_fields().is_empty());
-    }
-
-    #[test]
-    fn token_number_carrier_requires_exact_path_method_and_numeric_body_binding() {
-        let mut body =
-            crate::auth::parse_strict_json(br#"{"policies":[1e0]}"#).unwrap_or(Value::Null);
-        assert!(
-            transport_body(
-                "POST",
-                "auth/token/create",
-                &mut body,
-                br#"{"policies":[1e0]}"#
-            )
-            .is_ok()
-        );
-        assert!(request("PUT", "auth/token/create", &body).is_err());
-        assert!(request("POST", "auth/token/create/other", &body).is_err());
-        for (field, value) in [
-            ("number_fields", json!({})),
-            ("number_fields", json!({"policies":["2"]})),
-            ("number_fields", json!({"policies":["true"]})),
-            ("original_body", json!({"policies":["1e0"]})),
-        ] {
-            let mut invalid = body.clone();
-            invalid[MARKER][field] = value;
-            assert!(request("POST", "auth/token/create", &invalid).is_err());
-        }
-        assert!(crate::auth::parse_strict_json(br#"{"other":1e9999}"#).is_err());
-    }
-}
-
 fn capture(raw: &RawValue, value: &Value, array: bool) -> Result<Option<Value>, &'static str> {
     if value.is_number() {
         return Ok(Some(Value::String(raw.get().into())));
@@ -249,5 +168,86 @@ impl Carrier<'_> {
             }
         }
         super::ocsp::CarrierBody(body)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::Duration;
+
+    #[test]
+    fn token_number_wire_spelling_survives_http_and_cannot_be_supplied_as_inner_marker() {
+        for (raw, expected) in [
+            ("1e0", "1e0"),
+            ("1E+01", "1E+01"),
+            ("1e+06", "1e+06"),
+            ("-0", "-0"),
+            ("1000000.0", "1000000.0"),
+            ("9007199254740993", "9007199254740993"),
+        ] {
+            let input = format!("{{\"policies\":[{raw},true,null],\"no_default_policy\":{raw}}}");
+            let wire = format!(
+                "POST /v1/auth/token/create HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{input}",
+                input.len()
+            );
+            let parsed = super::super::read_request(&mut wire.as_bytes(), Duration::from_secs(1));
+            assert!(parsed.is_ok());
+            let parsed = parsed.unwrap_or_else(|_| unreachable!());
+            let carrier = request("POST", "auth/token/create", &parsed.body.0)
+                .unwrap_or_else(|_| unreachable!())
+                .unwrap_or_else(|| unreachable!());
+            assert!(carrier.original["policies"][0].is_number());
+            let backend = carrier.backend_body();
+            assert_eq!(backend.0["policies"][0], expected);
+            assert_eq!(backend.0["policies"][1], true);
+            assert!(backend.0["policies"][2].is_null());
+            assert_eq!(backend.0["no_default_policy"], expected);
+        }
+        let input = json!({MARKER:{"wire_method":"POST","path":"auth/token/create",
+            "original_body":{"policies":"root"},"number_fields":{}}})
+        .to_string();
+        let wire = format!(
+            "POST /v1/auth/token/create HTTP/1.1\r\nHost: localhost\r\nContent-Length: {}\r\n\r\n{input}",
+            input.len()
+        );
+        let parsed = super::super::read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+            .unwrap_or_else(|_| unreachable!());
+        let carrier = request("POST", "auth/token/create", &parsed.body.0)
+            .unwrap_or_else(|_| unreachable!())
+            .unwrap_or_else(|| unreachable!());
+        assert_eq!(
+            carrier.original,
+            &serde_json::from_str::<Value>(&input).unwrap_or(Value::Null)
+        );
+        assert!(carrier.number_fields().is_empty());
+    }
+
+    #[test]
+    fn token_number_carrier_requires_exact_path_method_and_numeric_body_binding() {
+        let mut body =
+            crate::auth::parse_strict_json(br#"{"policies":[1e0]}"#).unwrap_or(Value::Null);
+        assert!(
+            transport_body(
+                "POST",
+                "auth/token/create",
+                &mut body,
+                br#"{"policies":[1e0]}"#
+            )
+            .is_ok()
+        );
+        assert!(request("PUT", "auth/token/create", &body).is_err());
+        assert!(request("POST", "auth/token/create/other", &body).is_err());
+        for (field, value) in [
+            ("number_fields", json!({})),
+            ("number_fields", json!({"policies":["2"]})),
+            ("number_fields", json!({"policies":["true"]})),
+            ("original_body", json!({"policies":["1e0"]})),
+        ] {
+            let mut invalid = body.clone();
+            invalid[MARKER][field] = value;
+            assert!(request("POST", "auth/token/create", &invalid).is_err());
+        }
+        assert!(crate::auth::parse_strict_json(br#"{"other":1e9999}"#).is_err());
     }
 }
