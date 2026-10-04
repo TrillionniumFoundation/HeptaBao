@@ -54,8 +54,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             "crypto" => {
                 let plaintext = Zeroizing::new(vec![0x6d; 32]);
                 let options = RpcOptions {
+                    with_key_id: String::new(),
+                    with_aad: Vec::new(),
+                    with_config_map: std::collections::BTreeMap::new(),
                     with_disallow_env_vars: true,
-                    ..RpcOptions::default()
                 };
                 let encrypt =
                     service.prepare_openbao_wrapper_operation(WrapperOperation::Encrypt {
