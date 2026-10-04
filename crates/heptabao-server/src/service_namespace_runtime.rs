@@ -941,10 +941,15 @@ mod tests {
         service
             .prepare_namespace_publication(&mut loaded)
             .map_err(|_| "predecessor protection")?;
-        // Install the genuine new child owner into the actual loaded namespace
-        // candidate. Publication re-protects its already-loaded ancestors; the
-        // canonical root deliberately omits that child's routing catalog.
-        let state = loaded;
+        // Existing canonical targets include closed descendant descriptors.
+        // A new child hidden by its loaded ancestor exists only in the logical
+        // candidate; publication must then re-protect that actual ancestor.
+        let protected = loaded.protected_state().map_err(|_| "predecessor owner")?;
+        let state = if protected.namespace_exists(actual) {
+            protected.clone()
+        } else {
+            loaded
+        };
         let binding = state
             .namespaces
             .custody_binding(&state.cluster_id, actual)
@@ -1650,12 +1655,24 @@ mod tests {
         let plan = service
             .prepare_record_plan(&mut stale)
             .map_err(|_| "old empty plan")?;
+        let response = service.namespace_fixture_at(
+            "DELETE",
+            "sys/namespaces/empty",
+            "",
+            &token,
+            json!({}),
+            100,
+        );
+        let retained = service.state.as_ref().ok_or("delete retained state")?;
         assert!(
-            service
-                .namespace_fixture_at("DELETE", "sys/namespaces/empty", "", &token, json!({}), 100)
-                .status
-                == 200,
-            "empty inherited delete commits real cleanup"
+            response.status == 200,
+            "empty delete status={} auth_empty={} engine_empty={} db_empty={} workflow_empty={} loaded={}",
+            response.status,
+            retained.auth.namespace_is_empty("empty"),
+            retained.engines.namespace_is_empty("empty"),
+            retained.database.namespace_is_empty("empty"),
+            retained.namespaces.workflows.namespace_is_empty("empty"),
+            service.namespace_runtime.is_loaded("empty")
         );
         assert!(
             !service.namespace_runtime.is_loaded("empty")
