@@ -34,10 +34,24 @@ COMMIT, TREE = "1" * 40, "2" * 40
 RUN_ID, RUN_ATTEMPT, RUNNER = "123456", "1", "synthetic-runner"
 EXECUTION_ROOT = Path("/synthetic-run-root")
 
+NATIVE_FIXTURE = json.loads((ROOT / "tests/platform/fixtures/h02_inmemory_v2_native_schedule_variance.json").read_text())
+
+
+def native_output(seed, fail_case=None, *, snapshot_override=None):
+    """Full-shape raw fixture, used only to construct synthetic unit-test inputs."""
+    observation = next(row for row in NATIVE_FIXTURE["observations"] if row["seed"] == seed)
+    records = [json.loads(line) for line in observation["first_raw"].splitlines()]
+    for record in records[1:]:
+        if record["case_id"] == fail_case:
+            record["status"] = "FAIL"
+        if record["case_id"] == current.SNAPSHOT_CASE_ID and snapshot_override:
+            record["detail"].update(snapshot_override)
+    return "\n".join(json.dumps(record, sort_keys=True) for record in records) + "\n"
+
 
 def write_entry(root, toolchain, seed, *, exit_code=0):
     root.mkdir(parents=True, exist_ok=True)
-    raw = legacy.output(seed)
+    raw = native_output(seed)
     for filename in ("cluster-output.jsonl", "cluster-replay.jsonl"):
         (root / filename).write_text(raw)
     shutil.copyfile(ROOT / "probes/h02/openraft-tokio/Cargo.toml", root / "Cargo.toml")
@@ -59,8 +73,8 @@ def write_entry(root, toolchain, seed, *, exit_code=0):
     return args, value
 
 
-class CurrentEvidenceTests(legacy.EvidenceTests):
-    """Run every unchanged V1 semantic assertion against freshly emitted V2 data."""
+class CurrentEvidenceTests(unittest.TestCase):
+    """Exercise full native-shape observations without mutating historical V1 fixtures."""
     def collect(self, first, second=None, exit_code=0, toolchain="1.99.0"):
         td = tempfile.TemporaryDirectory()
         root = Path(td.name)
@@ -73,7 +87,7 @@ class CurrentEvidenceTests(legacy.EvidenceTests):
         self.assertEqual([], [e.message for e in Draft202012Validator(SCHEMA).iter_errors(value)])
 
     def assert_current_mutation_rejected(self, mutate):
-        td, value = self.collect(legacy.output(current.SEEDS[0]))
+        td, value = self.collect(native_output(current.SEEDS[0]))
         self.addCleanup(td.cleanup)
         self.assert_schema(value)
         mutate(value)
@@ -89,7 +103,7 @@ class CurrentEvidenceTests(legacy.EvidenceTests):
         self.assert_current_mutation_rejected(lambda v: v["scope"].update(real_full_snapshot_rpc=False))
 
     def test_effective_floor_is_188_and_185_is_only_a_boundary_probe(self):
-        td, value = self.collect(legacy.output(current.SEEDS[0]), toolchain="1.88.0")
+        td, value = self.collect(native_output(current.SEEDS[0]), toolchain="1.88.0")
         self.addCleanup(td.cleanup)
         self.assert_schema(value)
         value["environment"]["rust_toolchain"] = "1.85.0"
@@ -97,7 +111,7 @@ class CurrentEvidenceTests(legacy.EvidenceTests):
 
     def test_v1_engine_import_has_no_mutation_or_artifact_leak(self):
         before = hashlib.sha256(current.ENGINE.read_bytes()).hexdigest()
-        td, old = legacy.EvidenceTests.collect(self, legacy.output(current.SEEDS[0]))
+        td, old = legacy.EvidenceTests.collect(self, native_output(current.SEEDS[0]))
         self.addCleanup(td.cleanup)
         self.assertEqual("1.98.0", old["environment"]["rust_toolchain"])
         self.assertEqual("heptabao.h02-openraft-cluster-evidence.v1", old["schema"])
@@ -109,7 +123,7 @@ class CurrentEvidenceTests(legacy.EvidenceTests):
         self.assertEqual(current.ENGINE_SHA256, before)
 
     def test_v1_receipt_is_not_an_upgrade_input(self):
-        td, old = legacy.EvidenceTests.collect(self, legacy.output(current.SEEDS[0]))
+        td, old = legacy.EvidenceTests.collect(self, native_output(current.SEEDS[0]))
         self.addCleanup(td.cleanup)
         td2, result = self.collect(json.dumps(old) + "\n")
         self.addCleanup(td2.cleanup)
@@ -137,7 +151,7 @@ class CurrentEvidenceTests(legacy.EvidenceTests):
             self.assertEqual("BLOCKED", value["status"])
 
     def test_duplicate_or_nonobject_raw_records_block(self):
-        raw = legacy.output(current.SEEDS[0])
+        raw = native_output(current.SEEDS[0])
         for tail in (raw.splitlines()[1], "[]", "null", "not json"):
             with self.subTest(tail=tail[:25]):
                 td, value = self.collect(raw + tail + "\n")
@@ -145,7 +159,7 @@ class CurrentEvidenceTests(legacy.EvidenceTests):
                 self.assertEqual("BLOCKED", value["status"])
 
     def test_v1_and_v2_receipt_schemas_are_not_interchangeable(self):
-        td, value = self.collect(legacy.output(current.SEEDS[0]))
+        td, value = self.collect(native_output(current.SEEDS[0]))
         self.addCleanup(td.cleanup)
         self.assert_schema(value)
         self.assertTrue(list(Draft202012Validator(legacy.SCHEMA).iter_errors(value)))
@@ -161,6 +175,408 @@ class CurrentEvidenceTests(legacy.EvidenceTests):
             (scripts / current.ENGINE.name).write_bytes(current.ENGINE.read_bytes() + b"\n# drift\n")
             with self.assertRaisesRegex(RuntimeError, "engine bytes changed"):
                 load("_altered_engine_guard", wrapper)
+
+
+    def test_complete_replay_is_pass_but_promotion_blocked(self):
+        td, value = self.collect(native_output("0x5eed20260828cafe"))
+        self.addCleanup(td.cleanup)
+        self.assert_schema(value)
+        self.assertEqual("EXECUTED_PASS", value["status"])
+        self.assertEqual(6, value["summary"]["passed"])
+        self.assertTrue(value["scope"]["real_full_snapshot_rpc"])
+        self.assertEqual(
+            "BLOCK_PENDING_DURABLE_STORE_AND_HOSTILE_FAULTS",
+            value["promotion_effect"],
+        )
+        self.assertFalse(value["qualification"])
+        self.assertEqual("NONE", value["authority_effect"])
+
+
+    def test_snapshot_pass_requires_real_hostile_rejection(self):
+        raw = native_output(
+            "0x5eed20260828cafe",
+            snapshot_override={
+                "hostile_snapshot_conflict_injection": "NOT_EXECUTED_PROMOTION_BLOCKER",
+                "hostile_snapshot_phase_reached": False,
+            },
+        )
+        td, value = self.collect(raw)
+        self.addCleanup(td.cleanup)
+        self.assert_schema(value)
+        self.assertEqual("EXECUTED_FAIL", value["status"])
+        failed = [
+            case
+            for case in value["cases"]
+            if case["case_id"] == current.SNAPSHOT_CASE_ID
+        ]
+        self.assertEqual(1, len(failed))
+        self.assertEqual("FAIL", failed[0]["status"])
+        self.assertFalse(value["scope"]["real_full_snapshot_rpc"])
+
+
+    def test_snapshot_state_change_forces_executed_fail(self):
+        raw = native_output(
+            "0x5eed20260828cafe",
+            snapshot_override={
+                "hostile_guarded_state_unchanged": False,
+                "hostile_snapshot_observation": {
+                    "phase_reached": True,
+                    "outcome": "ACCEPTED",
+                    "guarded_state_unchanged": False,
+                },
+            },
+        )
+        td, value = self.collect(raw)
+        self.addCleanup(td.cleanup)
+        self.assertEqual("EXECUTED_FAIL", value["status"])
+        self.assertEqual(1, value["summary"]["failed"])
+
+
+    def test_replay_mismatch_blocks(self):
+        first = native_output("0x5eed20260828cafe")
+        second = native_output("0x5eed20260828cafe").replace(
+            '"assertion_count": 2', '"assertion_count": 3', 1
+        )
+        td, value = self.collect(first, second)
+        self.addCleanup(td.cleanup)
+        self.assertEqual("BLOCKED", value["status"])
+        self.assertFalse(value["replay_match"])
+
+
+    def test_nonzero_exit_blocks_and_preserves_evidence(self):
+        td, value = self.collect(
+            native_output("0x5eed20260828cafe"), exit_code=101
+        )
+        self.addCleanup(td.cleanup)
+        self.assertEqual("BLOCKED", value["status"])
+        self.assertEqual(6, len(value["cases"]))
+
+
+    def test_failed_case_is_executed_fail(self):
+        td, value = self.collect(
+            native_output("0x5eed20260828cafe", current.CASES[4])
+        )
+        self.addCleanup(td.cleanup)
+        self.assertEqual("EXECUTED_FAIL", value["status"])
+        self.assertEqual(1, value["summary"]["failed"])
+
+
+    def test_missing_case_blocks(self):
+        raw = native_output("0x5eed20260828cafe")
+        raw = (
+            "\n".join(
+                line for line in raw.splitlines() if current.CASES[0] not in line
+            )
+            + "\n"
+        )
+        td, value = self.collect(raw)
+        self.addCleanup(td.cleanup)
+        self.assertEqual("BLOCKED", value["status"])
+        self.assertEqual(6, value["summary"]["blocked"])
+
+
+    def test_candidate_meta_mismatch_blocks(self):
+        raw = native_output("0x5eed20260828cafe").replace(
+            "HB-DEP-RAFT-OPENRAFT", "WRONG", 1
+        )
+        td, value = self.collect(raw)
+        self.addCleanup(td.cleanup)
+        self.assertEqual("BLOCKED", value["status"])
+
+
+    def test_rust_probe_replaces_not_executed_marker_at_runtime(self):
+        source = (
+            ROOT
+            / "probes/h02/openraft-tokio/src/bin/inmemory_cluster.rs"
+        ).read_text(encoding="utf-8")
+        for marker in (
+            "execute_inmemory_hostile_snapshot",
+            "install_full_snapshot",
+            '"EXECUTED_REJECTED"',
+            "hostile_guarded_state_unchanged",
+            "bind_hostile_snapshot_observation",
+        ):
+            self.assertIn(marker, source)
+        self.assertIn(
+            '"NOT_EXECUTED_PROMOTION_BLOCKER"',
+            source,
+            "the inherited case must be explicitly overwritten rather than silently removed",
+        )
+
+
+
+class BoundedSemanticReplayTests(unittest.TestCase):
+    def setUp(self):
+        self.row = NATIVE_FIXTURE["observations"][0]
+        self.records = [json.loads(line) for line in self.row["first_raw"].splitlines()]
+        self.contract = current.replay_contract
+
+    def raw(self, records):
+        return "\n".join(json.dumps(record) for record in records) + "\n"
+
+    def rejected_on_both_sides(self, change):
+        records = copy.deepcopy(self.records)
+        change(records)
+        result = self.contract.compare(self.raw(records), self.raw(records), self.row["seed"])
+        self.assertFalse(result["matched"], result)
+        self.assertTrue(result["violations"])
+
+    def test_failed_native_observations_are_only_regression_inputs(self):
+        self.assertEqual(6, len(NATIVE_FIXTURE["observations"]))
+        for row in NATIVE_FIXTURE["observations"]:
+            with self.subTest(entry=row["entry"]):
+                self.assertEqual("BLOCKED", row["historical_status"])
+                self.assertIs(False, row["historical_raw_replay_match"])
+                self.assertEqual(row["first_sha256"], hashlib.sha256(row["first_raw"].encode()).hexdigest())
+                self.assertEqual(row["replay_sha256"], hashlib.sha256(row["replay_raw"].encode()).hexdigest())
+                result = self.contract.compare(row["first_raw"], row["replay_raw"], row["seed"])
+                self.assertTrue(result["matched"], result)
+                self.assertTrue(result["permitted_differences"])
+                self.assertTrue(set(change["path"] for change in result["permitted_differences"]) <= self.contract.ALLOWED_PATHS)
+
+    def test_semantic_result_does_not_change_raw_match_or_hashing(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            args, _ = write_entry(root, "1.99.0", self.row["seed"])
+            Path(args.adapter_output).write_text(self.row["first_raw"])
+            Path(args.replay_output).write_text(self.row["replay_raw"])
+            canonical = current.engine.canonical
+            original = current.engine.collect(args)
+            value = current.collect(args)
+            self.assertEqual("BLOCKED", original["status"])
+            self.assertEqual("EXECUTED_PASS", value["status"])
+            self.assertFalse(value["replay_match"])
+            self.assertTrue(value["semantic_replay"]["matched"])
+            self.assertEqual("2.1", value["revision"])
+            self.assertIs(canonical, current.engine.canonical)
+            self.assertEqual([x["details_sha256"] for x in original["cases"]], [x["details_sha256"] for x in value["cases"]])
+            self.assertEqual(self.row["first_sha256"], value["execution"]["adapter_output_sha256"])
+            self.assertEqual(self.row["replay_sha256"], value["execution"]["replay_output_sha256"])
+            self.assertNotEqual(value["semantic_replay"]["raw_case_details_sha256"]["first"], value["semantic_replay"]["raw_case_details_sha256"]["replay"])
+            self.assertFalse(list(Draft202012Validator(SCHEMA).iter_errors(value)))
+
+    def test_same_false_safety_flags_never_become_replay_pass(self):
+        fields = {1: ("replicated_before_restart", "fresh_state_machine_replayed"),
+                  2: ("full_snapshot_rpc_seen", "committed_index_monotonic", "lagging_node_converged", "hostile_snapshot_phase_reached", "hostile_guarded_state_unchanged"),
+                  3: ("read_index_linearizable",),
+                  4: ("old_leader_write_rejected", "new_leader_write_committed"),
+                  5: ("write_rejected_or_timed_out", "committed_index_not_advanced")}
+        for index, keys in fields.items():
+            for key in keys:
+                with self.subTest(case=index, key=key):
+                    self.rejected_on_both_sides(lambda rows: rows[index]["detail"].update({key: False}))
+        for key in ("phase_reached", "guarded_state_unchanged", "metrics_unchanged", "state_machine_unchanged"):
+            self.rejected_on_both_sides(lambda rows: rows[2]["detail"]["hostile_snapshot_observation"].update({key: False}))
+
+    def test_identical_seed_plan_index_member_or_scope_substitution_rejected(self):
+        changes = (
+            lambda rows: rows[1]["detail"].update(baseline_index=1),
+            lambda rows: rows[2]["detail"].update(snapshot_index=10),
+            lambda rows: rows[0].update(seed=current.SEEDS[1]),
+            lambda rows: rows[0].update(execution_scope="UNEXECUTED"),
+            lambda rows: rows[0].update(qualification=True),
+            lambda rows: rows[6]["detail"].update(seed=current.SEEDS[1]),
+            lambda rows: rows[6]["detail"].update(fault_plan=[1, 2, 3, 4, 5, 6]),
+            lambda rows: rows[6]["detail"].update(last_event_index=5),
+            lambda rows: rows[3]["detail"].update(voters=[1, 2, 4]),
+            lambda rows: rows[3]["detail"].update(leaders_reported=[1, 2]),
+            lambda rows: rows[4]["detail"].update(os_process_pause="EXECUTED"),
+        )
+        for index, change in enumerate(changes):
+            with self.subTest(index=index):
+                self.rejected_on_both_sides(change)
+
+    def test_missing_extra_and_swapped_fields_or_records_rejected(self):
+        changes = (
+            lambda rows: rows[0].pop("execution_scope"),
+            lambda rows: rows[0].update(extra=True),
+            lambda rows: rows[1]["detail"].pop("baseline_index"),
+            lambda rows: rows[1]["detail"].update(extra=True),
+            lambda rows: rows[2]["detail"]["hostile_snapshot_observation"]["before"].update(extra=True),
+            lambda rows: rows[1].update(extra=True),
+            lambda rows: rows.__setitem__(slice(1, 3), [rows[2], rows[1]]),
+            lambda rows: rows.pop(),
+            lambda rows: rows.append(copy.deepcopy(rows[1])),
+        )
+        for index, change in enumerate(changes):
+            with self.subTest(index=index):
+                self.rejected_on_both_sides(change)
+
+    def test_bool_as_integer_and_u64_overflow_rejected(self):
+        fields = ((1, "real_raft_nodes"), (1, "baseline_index"), (2, "snapshot_index"),
+                  (4, "transport_paused_node"), (4, "new_leader"), (5, "isolated_leader"), (6, "last_event_index"))
+        for index, key in fields:
+            self.rejected_on_both_sides(lambda rows: rows[index]["detail"].update({key: True}))
+        self.rejected_on_both_sides(lambda rows: rows[1].update(assertion_count=True))
+        self.rejected_on_both_sides(lambda rows: rows[3]["detail"].update(voters=[True, 2, 3]))
+        for key in self.contract.RPC_KEYS:
+            for value in (0, -1, True, 1.5, 1 << 64):
+                with self.subTest(key=key, value=value):
+                    self.rejected_on_both_sides(lambda rows: rows[6]["detail"]["rpc_counts"].update({key: value}))
+        self.rejected_on_both_sides(lambda rows: rows[1]["detail"].update(baseline_index=1 << 64))
+        self.rejected_on_both_sides(lambda rows: rows[6]["detail"]["rpc_counts"].pop("vote"))
+        self.rejected_on_both_sides(lambda rows: rows[6]["detail"]["rpc_counts"].update(extra=1))
+
+    def test_leader_domains_and_legal_post_heal_leader_change(self):
+        for successor in (1, 4, True):
+            self.rejected_on_both_sides(lambda rows: rows[4]["detail"].update(new_leader=successor))
+        for leader in (0, 4, True):
+            self.rejected_on_both_sides(lambda rows: rows[5]["detail"].update(isolated_leader=leader))
+        replay = copy.deepcopy(self.records)
+        replay[4]["detail"]["new_leader"] = 2
+        replay[5]["detail"]["isolated_leader"] = 1
+        replay[6]["detail"]["rpc_counts"]["vote"] += 1
+        result = self.contract.compare(self.row["first_raw"], self.raw(replay), self.row["seed"])
+        self.assertTrue(result["matched"], result)
+
+    def test_hostile_timeout_acceptance_and_hidden_state_change_rejected(self):
+        for outcome in ("ACCEPTED", "TIMED_OUT"):
+            self.rejected_on_both_sides(lambda rows: rows[2]["detail"]["hostile_snapshot_observation"].update(outcome=outcome))
+        self.rejected_on_both_sides(lambda rows: rows[2]["detail"]["hostile_snapshot_observation"].update(transport_outcome="TIMED_OUT"))
+        self.rejected_on_both_sides(lambda rows: rows[2]["detail"]["hostile_snapshot_observation"]["after"].update(last_log_index=999))
+        self.rejected_on_both_sides(lambda rows: rows[2]["detail"]["hostile_snapshot_observation"].update(stale_snapshot_log_id="T1-N1.12"))
+        def corrupt_both_states(rows):
+            observation = rows[2]["detail"]["hostile_snapshot_observation"]
+            for side in ("before", "after"):
+                observation[side]["client_status"] = {"heptabao-h02-linearizable-register": "wrong-seed"}
+        self.rejected_on_both_sides(corrupt_both_states)
+
+    def test_common_mode_hostile_log_order_and_identity_tampering_rejected(self):
+        mutations = (("last_applied", "T1-N1.999"), ("local_committed", "T1-N1.999"),
+                     ("cluster_committed", "T1-N1.999"), ("state_machine_last_applied", "T1-N1.999"),
+                     ("last_applied", "T2-N2.12"), ("local_committed", "T2-N2.12"),
+                     ("purged", "T1-N1.12"), ("snapshot", None),
+                     ("snapshot", "T1-N1.13"))
+        for key, value in mutations:
+            with self.subTest(key=key, value=value):
+                def change(rows):
+                    observation = rows[2]["detail"]["hostile_snapshot_observation"]
+                    for side in ("before", "after"):
+                        observation[side][key] = value
+                self.rejected_on_both_sides(change)
+
+    def test_common_mode_stale_snapshot_source_reproducers_block_collector(self):
+        for stale_id, reason in (
+            ("T99-N1.6", "hostile-committed-leader-order-regression"),
+            ("T1-N1.11", "hostile-snapshot-missing-six-subsequent-writes"),
+            ("T1-N2.6", "hostile-stale-write-not-from-node-one"),
+            ("T0-N1.6", "hostile-stale-write-before-complete-bootstrap"),
+            ("T1-N1.0", "hostile-stale-write-before-complete-bootstrap"),
+            ("T1-N1.5", "hostile-stale-write-before-complete-bootstrap"),
+            ("T1-N1.18446744073709551615", "hostile-snapshot-missing-six-subsequent-writes"),
+        ):
+            with self.subTest(stale_id=stale_id), tempfile.TemporaryDirectory() as temp:
+                records = copy.deepcopy(self.records)
+                records[2]["detail"]["hostile_snapshot_observation"]["stale_snapshot_log_id"] = stale_id
+                raw = self.raw(records)
+                result = self.contract.compare(raw, raw, self.row["seed"])
+                self.assertFalse(result["matched"], result)
+                self.assertEqual([f"first:{reason}", f"replay:{reason}"], result["violations"])
+                args, _ = write_entry(Path(temp), "1.99.0", self.row["seed"])
+                Path(args.adapter_output).write_text(raw)
+                Path(args.replay_output).write_text(raw)
+                value = current.collect(args)
+                self.assertTrue(value["replay_match"])
+                self.assertFalse(value["semantic_replay"]["matched"])
+                self.assertEqual("BLOCKED", value["status"])
+                self.assertEqual(6, value["summary"]["blocked"])
+
+    def test_each_raw_side_rejects_stale_snapshot_source_forgeries(self):
+        for stale_id in ("T99-N1.6", "T1-N1.11"):
+            for label in ("first", "replay"):
+                with self.subTest(stale_id=stale_id, side=label):
+                    records = copy.deepcopy(self.records)
+                    records[2]["detail"]["hostile_snapshot_observation"]["stale_snapshot_log_id"] = stale_id
+                    raw = self.raw(records)
+                    pair = (raw, self.row["first_raw"]) if label == "first" else (self.row["first_raw"], raw)
+                    result = self.contract.compare(*pair, self.row["seed"])
+                    self.assertFalse(result["matched"], result)
+                    self.assertTrue(all(reason.startswith(label + ":") for reason in result["violations"]))
+
+    def test_committed_leader_order_covers_snapshot_and_purge_boundaries(self):
+        for field in ("snapshot", "purged"):
+            with self.subTest(field=field):
+                def change(rows):
+                    observation = rows[2]["detail"]["hostile_snapshot_observation"]
+                    # Distinct indices avoid relying on the equal-index guard.
+                    for side in ("before", "after"):
+                        observation[side]["purged"] = "T1-N1.10"
+                        observation[side][field] = "T99-N1.11" if field == "snapshot" else "T99-N1.10"
+                self.rejected_on_both_sides(change)
+
+    def test_source_contract_allows_extra_entries_and_advanced_leader_changes(self):
+        for later_leader in ("T1-N2", "T2-N1", "T2-N2"):
+            with self.subTest(later_leader=later_leader):
+                records = copy.deepcopy(self.records)
+                observation = records[2]["detail"]["hostile_snapshot_observation"]
+                observation["original_snapshot_log_id"] = f"{later_leader}.13"
+                for side in ("before", "after"):
+                    observation[side]["last_log_index"] = 13
+                    for key in ("local_committed", "cluster_committed", "last_applied", "state_machine_last_applied"):
+                        observation[side][key] = f"{later_leader}.13"
+                raw = self.raw(records)
+                result = self.contract.compare(raw, raw, self.row["seed"])
+                self.assertTrue(result["matched"], result)
+
+    def test_advanced_leader_order_rejects_same_term_node_regression(self):
+        def change(rows):
+            observation = rows[2]["detail"]["hostile_snapshot_observation"]
+            for side in ("before", "after"):
+                observation[side]["snapshot"] = "T1-N2.11"
+                observation[side]["purged"] = "T1-N2.11"
+        self.rejected_on_both_sides(change)
+
+    def test_bootstrap_minimum_is_not_just_cross_stream_equality(self):
+        for baseline in range(4, 9):
+            with self.subTest(baseline=baseline):
+                self.rejected_on_both_sides(lambda rows: rows[1]["detail"].update(baseline_index=baseline))
+        records = copy.deepcopy(self.records)
+        records[1]["detail"]["baseline_index"] = 10
+        records[2]["detail"]["snapshot_index"] = 16
+        raw = self.raw(records)
+        self.assertTrue(self.contract.compare(raw, raw, self.row["seed"])["matched"])
+
+    def test_non_allowlisted_drift_blocks_even_if_both_streams_are_valid(self):
+        replay = copy.deepcopy(self.records)
+        replay[1]["detail"]["baseline_index"] += 1
+        replay[2]["detail"]["snapshot_index"] += 1
+        result = self.contract.compare(self.row["first_raw"], self.raw(replay), self.row["seed"])
+        self.assertFalse(result["matched"])
+        self.assertTrue(any("non-allowlisted" in reason for reason in result["violations"]))
+        replay = copy.deepcopy(self.records)
+        replay[2]["detail"]["hostile_snapshot_observation"]["transport_detail"] += " changed"
+        self.assertFalse(self.contract.compare(self.row["first_raw"], self.raw(replay), self.row["seed"])["matched"])
+
+    def test_duplicate_json_keys_nonfinite_values_and_harness_errors_reject(self):
+        raw = self.row["first_raw"]
+        variants = (raw.replace('"qualification":false', '"qualification":false,"qualification":false', 1),
+                    raw.replace('"baseline_index":9', '"baseline_index":NaN', 1),
+                    raw.replace('"baseline_index":9', '"baseline_index":1e999', 1),
+                    raw + '{"kind":"harness_error"}\n', raw + '[]\n')
+        for variant in variants:
+            self.assertFalse(self.contract.compare(variant, variant, self.row["seed"])["matched"])
+
+    def test_semantic_projection_never_promotes_failed_native_stage(self):
+        with tempfile.TemporaryDirectory() as temp:
+            args, _ = write_entry(Path(temp), "1.99.0", self.row["seed"], exit_code=101)
+            Path(args.adapter_output).write_text(self.row["first_raw"])
+            Path(args.replay_output).write_text(self.row["replay_raw"])
+            value = current.collect(args)
+            self.assertTrue(value["semantic_replay"]["matched"])
+            self.assertEqual("BLOCKED", value["status"])
+            self.assertEqual(6, value["summary"]["blocked"])
+
+    def test_replay_side_genuine_case_failure_is_preserved(self):
+        with tempfile.TemporaryDirectory() as temp:
+            args, _ = write_entry(Path(temp), "1.99.0", self.row["seed"])
+            replay = copy.deepcopy(self.records)
+            replay[5]["status"] = "FAIL"
+            Path(args.replay_output).write_text(self.raw(replay))
+            value = current.collect(args)
+            self.assertFalse(value["semantic_replay"]["matched"])
+            self.assertEqual("EXECUTED_FAIL", value["status"])
+            self.assertEqual("FAIL", value["cases"][4]["status"])
+            self.assertEqual(1, value["summary"]["failed"])
 
 
 class ExactByteLoaderTests(unittest.TestCase):
@@ -179,6 +595,7 @@ class ExactByteLoaderTests(unittest.TestCase):
             if target == "engine":
                 wrapper = scripts / "h02_openraft_inmemory_cluster_evidence_v2.py"
                 shutil.copyfile(ROOT / "scripts" / wrapper.name, wrapper)
+                shutil.copyfile(ROOT / "scripts/h02_openraft_inmemory_replay_v2.py", scripts / "h02_openraft_inmemory_replay_v2.py")
 
             if mode == "foreign-pyc":
                 # A valid timestamp/size header makes this foreign code acceptable
@@ -245,6 +662,31 @@ class CurrentMatrixTests(unittest.TestCase):
 
     def test_complete_exact_six_entries_pass(self):
         self.validate()
+
+    def test_recollected_common_mode_stale_forgeries_cannot_pass_matrix_gate(self):
+        for stale_id in ("T99-N1.6", "T1-N1.11"):
+            with self.subTest(stale_id=stale_id):
+                args, _ = write_entry(self.entry, "1.99.0", current.SEEDS[0])
+                records = [json.loads(line) for line in Path(args.adapter_output).read_text().splitlines()]
+                records[2]["detail"]["hostile_snapshot_observation"]["stale_snapshot_log_id"] = stale_id
+                raw = "\n".join(json.dumps(record) for record in records) + "\n"
+                Path(args.adapter_output).write_text(raw)
+                Path(args.replay_output).write_text(raw)
+                value = current.collect(args)
+                (self.entry / "cluster-evidence.json").write_text(json.dumps(value))
+                self.validate(require_pass=False)
+                with self.assertRaisesRegex(guard.Failure, "did not execute and pass"):
+                    self.validate()
+                # Even fully rebound raw/detail digests do not let a forged
+                # summary overwrite the independently recollected outcome.
+                value["status"] = "EXECUTED_PASS"
+                value["semantic_replay"].update(matched=True, violations=[])
+                for case in value["cases"]:
+                    case["status"] = "PASS"
+                value["summary"].update(passed=6, blocked=0)
+                (self.entry / "cluster-evidence.json").write_text(json.dumps(value))
+                with self.assertRaisesRegex(guard.Failure, "semantic mismatch"):
+                    self.validate()
 
     def test_missing_entry_rejected(self):
         shutil.rmtree(self.entry)

@@ -24,6 +24,7 @@ TRIGGER_PATHS = (
     ".github/workflows/h02-openraft-inmemory-cluster-v2.yml",
     ".github/workflows/h02-openraft-inmemory-cluster.yml",
     "scripts/h02_openraft_inmemory_cluster_evidence_v2.py",
+    "scripts/h02_openraft_inmemory_replay_v2.py",
     "scripts/validate_h02_openraft_inmemory_cluster_v2.py",
     "scripts/h02_openraft_inmemory_cluster_evidence_v1.py",
     "scripts/validate_h02_openraft_inmemory_cluster_v1.py",
@@ -32,6 +33,7 @@ TRIGGER_PATHS = (
     "planning/HEPTABAO_H02_OPENRAFT_INMEMORY_CLUSTER_V2.yaml",
     "planning/HEPTABAO_H02_OPENRAFT_INMEMORY_CLUSTER_V1.yaml",
     "tests/platform/test_h02_openraft_inmemory_cluster_v2.py",
+    "tests/platform/fixtures/h02_inmemory_v2_native_schedule_variance.json",
     "tests/platform/test_h02_openraft_inmemory_cluster_v1.py",
     "probes/h02/openraft-tokio/Cargo.toml",
     "probes/h02/openraft-tokio/Cargo.lock",
@@ -86,8 +88,9 @@ def validate_source_contract() -> None:
     expected = copy.deepcopy(yaml.safe_load(historical.PLAN.read_text(encoding="utf-8")))
     expected.update({
         "schema": "heptabao.h02-openraft-inmemory-cluster.v2",
-        "revision": "2.0",
+        "revision": "2.1",
         "execution_profile_id": collector.EXECUTION_PROFILE_ID,
+        "replay_contract": collector.replay_contract.CONTRACT_ID,
         "historical_profile": "planning/HEPTABAO_H02_OPENRAFT_INMEMORY_CLUSTER_V1.yaml",
     })
     expected["execution_matrix"].update({
@@ -100,6 +103,8 @@ def validate_source_contract() -> None:
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
     properties = schema["properties"]
+    require(properties["revision"]["const"] == "2.1", "V2 replay revision drift")
+    require(properties["semantic_replay"]["properties"]["contract_id"]["const"] == collector.replay_contract.CONTRACT_ID, "V2 semantic replay contract drift")
     require(properties["environment"]["properties"]["rust_toolchain"]["enum"] == list(collector.EFFECTIVE_TOOLCHAINS), "V2 schema current compiler drift")
     require(properties["schema"]["const"] == "heptabao.h02-openraft-cluster-evidence.v2", "V2 schema identity drift")
     require(properties["execution_profile_id"]["const"] == collector.EXECUTION_PROFILE_ID, "V2 profile drift")

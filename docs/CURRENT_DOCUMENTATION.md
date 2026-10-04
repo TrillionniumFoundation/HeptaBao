@@ -203,6 +203,9 @@ inputs trigger the lane; unrelated and documentation-only PRs do not.
 The byte-preserved V1 profile and workflow still accept historical 1.98.0 evidence;
 that workflow checks out its event-selected source and is not an immutable replay.
 No new exact-head execution or qualification is claimed by this source change.
+Revision 2.1 reports canonical raw equality separately from a named, bounded
+safety/outcome replay comparison. The first native V2 run's six revision-2.0
+BLOCKED receipts remain unchanged; a fresh exact-head run is still required.
 
 Historical H01/H02, V1.3, V2.4 and V2.5 admission diagnostic workflows remain
 manual-only for reproducible evidence. Their obsolete branch push triggers and

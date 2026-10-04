@@ -26,7 +26,8 @@
     "promotion_effect",
     "authority_effect",
     "execution_profile_id",
-    "execution"
+    "execution",
+    "semantic_replay"
   ],
   "properties": {
     "execution_profile_id": {
@@ -247,7 +248,7 @@
       "const": "HEPTABAO-PLAN-2026-08-28"
     },
     "revision": {
-      "const": "2.0"
+      "const": "2.1"
     },
     "status": {
       "enum": [
@@ -576,6 +577,109 @@
     },
     "authority_effect": {
       "const": "NONE"
+    },
+    "semantic_replay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_id",
+        "matched",
+        "violations",
+        "permitted_differences",
+        "raw_case_details_sha256"
+      ],
+      "properties": {
+        "contract_id": {
+          "const": "heptabao.h02-inmemory-bounded-semantic-replay.v1"
+        },
+        "matched": {
+          "type": "boolean"
+        },
+        "violations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "permitted_differences": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "first",
+              "replay"
+            ],
+            "properties": {
+              "path": {
+                "enum": [
+                  "raft-process-pause-plus-partition.detail.new_leader",
+                  "raft-quorum-loss-fail-closed.detail.isolated_leader",
+                  "raft-incomplete-run-replay-diagnostics.detail.rpc_counts.append_entries",
+                  "raft-incomplete-run-replay-diagnostics.detail.rpc_counts.vote",
+                  "raft-incomplete-run-replay-diagnostics.detail.rpc_counts.pre_vote",
+                  "raft-incomplete-run-replay-diagnostics.detail.rpc_counts.full_snapshot"
+                ]
+              },
+              "first": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "replay": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              }
+            }
+          }
+        },
+        "raw_case_details_sha256": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "first",
+            "replay"
+          ],
+          "properties": {
+            "first": {
+              "type": "object",
+              "propertyNames": {
+                "enum": [
+                  "raft-deterministic-apply-and-restart",
+                  "raft-committed-snapshot-conflict-rejected",
+                  "raft-joint-membership-single-writer",
+                  "raft-process-pause-plus-partition",
+                  "raft-quorum-loss-fail-closed",
+                  "raft-incomplete-run-replay-diagnostics"
+                ]
+              },
+              "additionalProperties": {
+                "$ref": "#/$defs/sha256"
+              }
+            },
+            "replay": {
+              "type": "object",
+              "propertyNames": {
+                "enum": [
+                  "raft-deterministic-apply-and-restart",
+                  "raft-committed-snapshot-conflict-rejected",
+                  "raft-joint-membership-single-writer",
+                  "raft-process-pause-plus-partition",
+                  "raft-quorum-loss-fail-closed",
+                  "raft-incomplete-run-replay-diagnostics"
+                ]
+              },
+              "additionalProperties": {
+                "$ref": "#/$defs/sha256"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "allOf": [
@@ -637,13 +741,20 @@
               }
             }
           },
-          "replay_match": {
-            "const": true
-          },
           "scope": {
             "properties": {
               "real_full_snapshot_rpc": {
                 "const": true
+              }
+            }
+          },
+          "semantic_replay": {
+            "properties": {
+              "matched": {
+                "const": true
+              },
+              "violations": {
+                "maxItems": 0
               }
             }
           }

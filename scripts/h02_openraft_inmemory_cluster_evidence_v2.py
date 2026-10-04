@@ -7,6 +7,7 @@ receipt. Its private engine instance leaves V1 imports and source bytes unchange
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import types
 import json
@@ -25,6 +26,12 @@ engine = types.ModuleType("_inmemory_v2_observation_engine")
 engine.__file__ = str(ENGINE)
 # Execute the verified buffer, never a second path read or cached bytecode.
 exec(compile(ENGINE_BYTES, str(ENGINE), "exec"), engine.__dict__)
+
+REPLAY_SOURCE = ROOT / "scripts/h02_openraft_inmemory_replay_v2.py"
+REPLAY_BYTES = REPLAY_SOURCE.read_bytes()
+replay_contract = types.ModuleType("_inmemory_v2_semantic_replay")
+replay_contract.__file__ = str(REPLAY_SOURCE)
+exec(compile(REPLAY_BYTES, str(REPLAY_SOURCE), "exec"), replay_contract.__dict__)
 
 EFFECTIVE_TOOLCHAINS = ("1.88.0", "1.99.0")
 SEEDS = ("0x5eed20260828cafe", "0x8badf00d12345678", "0xd15ea5e5cafef00d")
@@ -161,6 +168,41 @@ def execute_stage(context_path: Path, stage: str, stdout: Path, stderr: Path) ->
     return value["return_codes"][stage]
 
 
+def collect_replay_evidence(args: argparse.Namespace) -> dict[str, Any]:
+    original = engine.collect(args)
+    # Independently evaluate each physical stream. Self-pairing here removes only
+    # the cross-run comparison; parse/meta/exit/snapshot/case failures remain.
+    first_args, replay_args = copy.copy(args), copy.copy(args)
+    first_args.replay_output = args.adapter_output
+    replay_args.adapter_output = args.replay_output
+    first = engine.collect(first_args)
+    replay = engine.collect(replay_args)
+    first_path, replay_path = Path(args.adapter_output), Path(args.replay_output)
+    semantic = replay_contract.compare(
+        first_path.read_text(encoding="utf-8") if first_path.is_file() else "",
+        replay_path.read_text(encoding="utf-8") if replay_path.is_file() else "",
+        args.seed,
+    )
+    value = copy.deepcopy(original)
+    both_pass = first["status"] == replay["status"] == "EXECUTED_PASS"
+    accepted = both_pass and semantic["matched"] and args.clean_tree is True
+    priority = {"FAIL": 0, "BLOCKED": 1, "UNKNOWN": 2, "UNEXECUTED": 3, "PASS": 4}
+    for index, case in enumerate(value["cases"]):
+        status = min((first["cases"][index]["status"], replay["cases"][index]["status"]), key=priority.__getitem__)
+        case["status"] = "BLOCKED" if status == "PASS" and not accepted else status
+        # Do not project or replace the original engine's first-side detail hash.
+    counts = {name: sum(case["status"] == label for case in value["cases"])
+              for name, label in (("passed", "PASS"), ("failed", "FAIL"), ("blocked", "BLOCKED"), ("unexecuted", "UNEXECUTED"), ("unknown", "UNKNOWN"))}
+    value["summary"] = {"total": 6, **counts}
+    side_blocked = any(side["status"] not in {"EXECUTED_PASS", "EXECUTED_FAIL"} for side in (first, replay))
+    value["status"] = ("EXECUTED_PASS" if accepted else
+                       "EXECUTED_FAIL" if counts["failed"] and not side_blocked else "BLOCKED")
+    value["scope"]["real_full_snapshot_rpc"] = first["scope"]["real_full_snapshot_rpc"] and replay["scope"]["real_full_snapshot_rpc"]
+    value["semantic_replay"] = semantic
+    # replay_match remains the unchanged V1 engine's actual canonical raw comparison.
+    return value
+
+
 def collect(args: argparse.Namespace) -> dict[str, Any]:
     if args.toolchain not in EFFECTIVE_TOOLCHAINS:
         raise ValueError("V2 toolchain must be exactly 1.88.0 or 1.99.0")
@@ -184,7 +226,7 @@ def collect(args: argparse.Namespace) -> dict[str, Any]:
         if len(releases) != 1 or releases[0] != args.toolchain or not lines or not lines[0].startswith(f"rustc {args.toolchain} "):
             raise ValueError("observed rustc release does not match the exact current toolchain")
         release = releases[0]
-    value = engine.collect(args)
+    value = collect_replay_evidence(args)
     if release is None and value["status"] == "EXECUTED_PASS":
         value["status"] = "BLOCKED"
         for case in value["cases"]:
@@ -192,7 +234,7 @@ def collect(args: argparse.Namespace) -> dict[str, Any]:
         value["summary"].update({"passed": 0, "blocked": 6})
     value.update({
         "schema": "heptabao.h02-openraft-cluster-evidence.v2",
-        "revision": "2.0",
+        "revision": "2.1",
         "execution_profile_id": EXECUTION_PROFILE_ID,
         "execution": {
             "exit_code": args.execution_exit_code,
