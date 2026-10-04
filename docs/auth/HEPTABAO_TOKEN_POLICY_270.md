@@ -138,3 +138,8 @@ ordinary TTL/period/max conversions, unmeasured role fields and the measured
 HTTP envelope/empty identity/permission error differences still require source
 and fresh candidate evidence. New source tests have not run here. This source
 does not establish full replacement of OpenBao 2.7.0.
+
+
+Role list and address field successor (fresh R18)
+
+Fresh pinned official HTTPS observed 337 attempts, including null/empty maps, scalar weak list conversions, exact numeric spellings, alias/glob lists, canonical CIDRs, suffix constraints and token type validation. The successor isolates Role comma-list conversions from ordinary Token API policy decoding, preserves native CIDR containment and caps, and reports the actual failing address and legacy/native error prefix. It preserves atomic rejection and schema80 admission. Four official numeric/bool token_type requests closed the HTTP connection while the server remained healthy; candidate bounded rejection does not match that transport behavior. No panic is introduced. Request number spelling still requires the reviewed transport carrier for all 16 observed Role fields. The source has no Cargo or actual binary qualification, and does not establish full replacement. Complete custody is in native-heptabao-official270-token-role-list-cidr-type-fresh-r18-20261005-complete-original-copy-retry-r01; the early capture failure remains separate.
