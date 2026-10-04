@@ -28,7 +28,7 @@ import tempfile
 import time
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'qa/single-node'))
-from smoke import Instance
+from smoke import Instance, free_loopback_port
 
 USERNAME_RECOVERY_DATABASE = "username_recovery"
 
@@ -90,7 +90,7 @@ class Postgres:
     def __init__(self,bin_dir:Path,root:Path,certificate:Path,key:Path,ca:Path):
         self.bin=bin_dir;self.root=root;self.root.mkdir(mode=0o700);self.process=None
         self.password=secrets.token_hex(32);self.manager_password=secrets.token_hex(32);self.ca=ca
-        with socket.socket() as s:s.bind(('127.0.0.1',0));self.port=s.getsockname()[1]
+        self.port=free_loopback_port()
         self.origin=f'postgresql://localhost:{self.port}'
         self.identity={}
         if os.geteuid()==0:

@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import re
 import secrets
 import socket
 import ssl
@@ -22,13 +23,36 @@ def private_write(path: Path, value: str) -> None:
         stream.write(value)
 
 
+def free_loopback_port() -> int:
+    """Honor an optional operator-supplied range for disposable fixture listeners."""
+    allowed = os.environ.get("HEPTABAO_FIXTURE_PORT_RANGE")
+    if allowed is None:
+        with socket.socket() as sock:
+            sock.bind(("127.0.0.1", 0))
+            return sock.getsockname()[1]
+    if not re.fullmatch(r"[0-9]{1,5}-[0-9]{1,5}", allowed):
+        raise ValueError("invalid_fixture_port_range")
+    lower, upper = map(int, allowed.split("-"))
+    if not 1024 <= lower <= upper <= 65535:
+        raise ValueError("invalid_fixture_port_range")
+    count = upper - lower + 1
+    first = secrets.randbelow(count)
+    for offset in range(count):
+        port = lower + (first + offset) % count
+        with socket.socket() as sock:
+            try:
+                sock.bind(("127.0.0.1", port))
+            except OSError:
+                continue
+            return port
+    raise RuntimeError("fixture_port_range_exhausted")
+
+
 class Instance:
     def __init__(self, binary: Path, root: Path):
         self.root, self.binary = root, binary
         root.mkdir(mode=0o700, parents=True, exist_ok=False)
-        with socket.socket() as sock:
-            sock.bind(("127.0.0.1", 0))
-            self.port = sock.getsockname()[1]
+        self.port = free_loopback_port()
         self.address = f"https://127.0.0.1:{self.port}"
         subprocess.run([
             "openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "2",
