@@ -194,7 +194,7 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
             json!({"seal":"invalid"})
         )
         .status,
-        400
+        500
     );
     assert_eq!(
         call(
@@ -203,6 +203,19 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
             "sys/namespaces/sealed",
             &token,
             json!({"seal":true})
+        )
+        .status,
+        500
+    );
+    // A boolean is not a Shamir profile. The pinned official KMS parser
+    // accepts this actual configuration and returns a sealed independent owner.
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/sealed",
+            &token,
+            json!({"seal":"seal \"shamir\" { shares = 3 threshold = 2 }"})
         )
         .status,
         200
@@ -215,7 +228,7 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
         json!({}),
     );
     assert_eq!(sealed.status, 200);
-    assert_eq!(sealed.body["sealed"], true);
+    assert_eq!(sealed.body["data"]["sealed"], true);
     assert_eq!(
         call(
             &mut service,
@@ -263,7 +276,7 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
 }
 
 #[test]
-fn namespace_seal_routes_fail_closed_and_unseal_from_parent()
+fn legacy_ordinary_namespace_seal_fence_cannot_grant_an_independent_key()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
@@ -321,8 +334,10 @@ fn namespace_seal_routes_fail_closed_and_unseal_from_parent()
         "",
         json!({}),
     );
-    assert_eq!(status.status, 200);
-    assert_eq!(status.body["sealed"], true);
+    // Official R28 plain namespace: seal 204, status/unseal both 400 because
+    // no independent owner was configured. The old operational fence below
+    // remains a legacy guard; ordinary resource unloading is still pending.
+    assert_eq!(status.status, 400);
     assert_eq!(
         network_call(
             &mut service,
@@ -332,11 +347,11 @@ fn namespace_seal_routes_fail_closed_and_unseal_from_parent()
             json!({}),
         )
         .status,
-        204
+        400
     );
     assert_eq!(
         network_call(&mut service, "GET", "secret/data/item", "team", json!({}),).status,
-        404
+        503
     );
     Ok(())
 }

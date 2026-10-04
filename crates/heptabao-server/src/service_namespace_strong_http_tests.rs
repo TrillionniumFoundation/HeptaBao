@@ -122,6 +122,194 @@ fn marker(service: &mut Service, namespace: &str, token: &str) {
     assert_eq!(response.body["data"]["marker"], "durable-public");
 }
 
+fn short_actor(
+    service: &mut Service,
+    root: &str,
+    explicit: bool,
+) -> TestResult<zeroize::Zeroizing<String>> {
+    let request = ServiceRequest::new(
+        "PUT",
+        "sys/policies/acl/namespace-custody",
+        "",
+        root,
+        json!({"policy":"path \"sys/namespaces/*\" { capabilities = [\"read\", \"update\"] }"}),
+    );
+    let response = if explicit {
+        service.handle_request_at(request, 100)
+    } else {
+        service.handle_request(request)
+    };
+    assert_eq!(response.status, 204);
+    let request = ServiceRequest::new(
+        "POST",
+        "auth/token/create",
+        "",
+        root,
+        json!({"policies":["namespace-custody"],"no_default_policy":true,"ttl":"2s"}),
+    );
+    let response = if explicit {
+        service.handle_request_at(request, 100)
+    } else {
+        service.handle_request(request)
+    };
+    assert_eq!(response.status, 200, "real scoped short-lived actor issued");
+    Ok(zeroize::Zeroizing::new(
+        response.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("actor token")?
+            .to_owned(),
+    ))
+}
+
+#[test]
+fn strong_http_actor_expires_after_real_commit_without_share_delivery() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    let actor = short_actor(&mut service, &token, false)?;
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    let _original = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let _delay = external_pki::PublicationDelayScope::enter(std::time::Duration::from_millis(2100));
+    let response = service.handle_request(ServiceRequest::new(
+        "POST",
+        "sys/namespaces/late-actor",
+        "",
+        &actor,
+        json!({"seal":"seal \"shamir\" { shares = 3 threshold = 2 }"}),
+    ));
+    assert!(
+        response.status == 403 && response.body.get("data").is_none(),
+        "expired actor cannot receive committed namespace shares"
+    );
+    assert!(
+        service.durable.as_ref().ok_or("durable")?.generation() != before
+            && service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .namespaces
+                .contains("late-actor"),
+        "the real commit completed before the delayed actor check"
+    );
+    assert!(
+        !service.namespace_runtime.has_loaded_within("late-actor")
+            && crate::request_deadline::current() == Some(deadline),
+        "no key is installed and the original deadline is retained"
+    );
+    Ok(())
+}
+
+#[test]
+fn strong_http_explicit_clock_retains_its_time_under_real_clock_scope() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    let actor = short_actor(&mut service, &token, true)?;
+    let observed = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?;
+    let _listener = external_pki::PublicationClockScope::enter(observed, std::time::Instant::now());
+    let _delay = external_pki::PublicationDelayScope::enter(std::time::Duration::from_millis(2100));
+    let response = service.handle_request_at(
+        ServiceRequest::new(
+            "POST",
+            "sys/namespaces/explicit-clock",
+            "",
+            &actor,
+            json!({"seal":"seal \"shamir\" { shares = 3 threshold = 2 }"}),
+        ),
+        100,
+    );
+    assert!(
+        response.status == 200
+            && response.body["data"]["key_shares"]
+                .as_array()
+                .is_some_and(|shares| shares.len() == 3),
+        "explicit time remains valid despite actual delay and an outer listener clock"
+    );
+    Ok(())
+}
+
+#[test]
+fn strong_http_completed_unseal_late_actor_rejects_before_slot_registration() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    let shares = create(&mut service, "", "late-unseal", &token)?;
+    let actor = short_actor(&mut service, &token, false)?;
+    let first = service.handle_request(ServiceRequest::new(
+        "POST",
+        "sys/namespaces/late-unseal/unseal",
+        "",
+        &actor,
+        json!({"key":shares[0].as_str()}),
+    ));
+    assert_eq!(first.status, 200);
+    let observed = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?;
+    let now = observed.as_secs();
+    let started = std::time::Instant::now();
+    let _clock = external_pki::PublicationClockScope::enter(observed, started);
+    let deadline = started + std::time::Duration::from_secs(30);
+    let _original = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let state = service.state.clone().ok_or("state")?;
+    let principal = state.auth.authenticate(&actor, now)?;
+    let binding = state
+        .namespaces
+        .custody_binding(&state.cluster_id, "late-unseal")
+        .map_err(|_| "binding")?;
+    let caller = state.namespaces.incarnation("").ok_or("caller")?;
+    let before = owner_store::serialize_owner(service.state.as_ref().ok_or("state")?)?;
+    let body = json!({"key":shares[1].as_str()});
+    let request = RequestView {
+        method: "POST",
+        path: "sys/namespaces/late-unseal/unseal",
+        namespace: "",
+        token: &actor,
+        body: &body,
+        now,
+        admission_started: started,
+        allow_forward: true,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    };
+    let fragment = zeroize::Zeroizing::new(decode_hex(&shares[1]).ok_or("fragment")?);
+    let result = service
+        .namespace_runtime
+        .submit(&state, "late-unseal", &fragment, |candidate| {
+            // The real threshold/MAC/typed restoration has already completed.
+            // This callback is still before the sole runtime key is registered.
+            std::thread::sleep(std::time::Duration::from_millis(2100));
+            Service::namespace_custody_gate(
+                candidate,
+                &principal,
+                &request,
+                caller,
+                "late-unseal",
+                &binding,
+            )
+        });
+    assert!(
+        result.is_err_and(|error| error.status == 403)
+            && !service.namespace_runtime.has_loaded_within("late-unseal")
+            && owner_store::serialize_owner(service.state.as_ref().ok_or("state")?)?.as_slice()
+                == before.as_slice()
+            && crate::request_deadline::current() == Some(deadline),
+        "expired actor receives no restored key slot or candidate state"
+    );
+    assert_eq!(
+        service
+            .namespace_runtime
+            .status(service.state.as_ref().ok_or("state")?, "late-unseal")
+            .map_err(|_| "status")?
+            .body["data"]["progress"],
+        0,
+        "completed but denied unseal clears its private progress"
+    );
+    unseal(&mut service, "", "late-unseal", &token, &shares);
+    Ok(())
+}
+
 #[test]
 fn strong_http_progress_manual_seal_restart_and_stale_candidate_frontier() -> TestResult {
     let root = Root::new();
@@ -294,7 +482,18 @@ fn strong_http_nested_actual_parent_control_requires_each_independent_key() -> T
     let outer = create(&mut service, "", "outer", &token)?;
     unseal(&mut service, "", "outer", &token, &outer);
     let inner = create(&mut service, "outer", "inner", &token)?;
+    let closed_bytes = owner_store::serialize_owner(service.state.as_ref().ok_or("state")?)?;
+    let closed_identity = service.current_state_identity().map_err(|_| "identity")?;
     unseal(&mut service, "outer", "inner", &token, &inner);
+    let opened = service.state.as_ref().ok_or("state")?;
+    assert!(
+        owner_store::serialize_owner(opened)?.as_slice() == closed_bytes.as_slice()
+            && owner_store::serialize_owner(opened.protected_state().map_err(|_| "protected")?)?
+                .as_slice()
+                == closed_bytes.as_slice()
+            && service.current_state_identity().map_err(|_| "identity")? == closed_identity,
+        "child restore immediately preserves the exact protected bytes and durable HA identity"
+    );
     write_marker(&mut service, "outer/inner", &token);
     assert_eq!(
         wire(

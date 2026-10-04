@@ -780,7 +780,7 @@ impl Service {
                 request.namespace,
                 request.path,
                 "update",
-                request.now,
+                external_pki::publication_now(request.now),
             )
             .map_err(|error| Response::error(error.status, &error.message))
     }
@@ -916,7 +916,18 @@ impl Service {
                             Some(value) => zeroize::Zeroizing::new(value),
                             None => return Response::error(400, "invalid key encoding"),
                         };
-                    match self.namespace_runtime.submit(&state, &target, &fragment) {
+                    match self
+                        .namespace_runtime
+                        .submit(&state, &target, &fragment, |candidate| {
+                            Self::namespace_custody_gate(
+                                candidate,
+                                principal,
+                                request,
+                                caller_incarnation,
+                                &target,
+                                &binding,
+                            )
+                        }) {
                         Ok(Some(candidate)) => {
                             state = candidate;
                             let response = self
@@ -1095,6 +1106,8 @@ impl Service {
                 if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
+                #[cfg(test)]
+                external_pki::delay_after_publication_for_test();
                 if let Err(error) = Self::namespace_custody_gate(
                     &state,
                     principal,

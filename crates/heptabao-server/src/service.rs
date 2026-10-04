@@ -1452,13 +1452,17 @@ impl Service {
     }
 
     pub fn handle_request(&mut self, request: ServiceRequest<'_>) -> Response {
-        let now = SystemTime::now()
+        let started = std::time::Instant::now();
+        let observed = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .map_or(0, |d| d.as_secs());
+            .unwrap_or(Duration::ZERO);
+        let now = observed.as_secs();
+        let _publication_clock = external_pki::PublicationClockScope::enter(observed, started);
         self.handle_request_clock(request, now, true)
     }
 
     pub fn handle_request_at(&mut self, request: ServiceRequest<'_>, now: u64) -> Response {
+        let _explicit_clock = external_pki::PublicationClockScope::explicit();
         self.handle_request_clock(request, now, false)
     }
 

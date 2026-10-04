@@ -148,6 +148,7 @@ impl Runtime {
         state: &State,
         actual: &str,
         fragment: &[u8],
+        late: impl FnOnce(&State) -> Result<(), Response>,
     ) -> Result<Option<State>, Response> {
         if let Err(error) = request_live() {
             self.progress.remove(actual);
@@ -186,10 +187,16 @@ impl Runtime {
             return Err(error);
         }
         match result {
-            Ok(Submission::Pending) => Ok(None),
+            Ok(Submission::Pending) => {
+                if let Err(error) = late(state) {
+                    self.progress.remove(actual);
+                    return Err(error);
+                }
+                Ok(None)
+            }
             Ok(Submission::Unlocked { key, .. }) => {
                 self.progress.remove(actual);
-                self.restore(state, actual, key).map(Some)
+                self.restore_checked(state, actual, key, late).map(Some)
             }
             Err(error) => {
                 self.progress.remove(actual);
@@ -316,16 +323,33 @@ impl Runtime {
     /// Restore only after descriptor/typed assets/private record graph have all
     /// authenticated under the actual durable owner. Installing a key is never
     /// sufficient by itself to give a caller a principal or namespace grant.
+    #[cfg(test)]
     pub(super) fn restore(
         &mut self,
         state: &State,
         actual: &str,
         key: Key,
     ) -> Result<State, Response> {
+        self.restore_checked(state, actual, key, |_| Ok(()))
+    }
+
+    fn restore_checked(
+        &mut self,
+        state: &State,
+        actual: &str,
+        key: Key,
+        late: impl FnOnce(&State) -> Result<(), Response>,
+    ) -> Result<State, Response> {
         request_live()?;
         if self.loaded.len() >= 1024 || self.loaded.contains_key(actual) {
             return Err(unavailable());
         }
+        // Admission clones intentionally clear their prepared projection. An
+        // already-loaded ancestor must be re-projected before selecting the
+        // durable view; its logical plaintext is never a protected snapshot.
+        let mut prepared = state.clone();
+        self.prepare(&mut prepared)?;
+        let state = &prepared;
         let descriptor = state
             .namespaces
             .custody_owner(actual)
@@ -350,12 +374,8 @@ impl Runtime {
             key_epoch: descriptor.key_epoch(),
             frontier: descriptor.seal_frontier(),
         })));
-        let mut protected = state.clone();
-        // A root/ancestor may already be loaded. Keep its canonical protected
-        // owner, rather than copying its plaintext logical assets into a view.
-        if let Some(previous) = &state.namespace_protected {
-            protected = previous.as_ref().clone();
-        }
+        let protected = state.protected_state()?.clone();
+        late(&candidate)?;
         request_live()?;
         self.loaded.insert(actual.to_owned(), lease);
         candidate.namespace_leases = Leases(self.loaded.values().cloned().collect());
