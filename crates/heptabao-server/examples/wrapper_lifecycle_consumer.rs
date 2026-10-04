@@ -53,8 +53,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         match line?.as_str() {
             "crypto" => {
                 let plaintext = Zeroizing::new(vec![0x6d; 32]);
-                let mut options = RpcOptions::default();
-                options.with_disallow_env_vars = true;
+                let options = RpcOptions {
+                    with_disallow_env_vars: true,
+                    ..RpcOptions::default()
+                };
                 let encrypt =
                     service.prepare_openbao_wrapper_operation(WrapperOperation::Encrypt {
                         plaintext: plaintext.clone(),
