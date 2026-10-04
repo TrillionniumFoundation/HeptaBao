@@ -509,6 +509,7 @@ impl Pki {
                 return Err(bad("invalid external PKI leaf projection"));
             }
             let prepared = LeafTemplate {
+                local_issuer_id: String::new(),
                 serial: serial.clone(),
                 path: issued.path.clone(),
                 lease_id: issued.lease_id.clone(),

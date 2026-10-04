@@ -572,7 +572,7 @@ mod tests {
                 == true,
             "delete retains configuration"
         );
-        let certs = pki.certificate_list(&json!({}))?.body;
+        let certs = pki.certificate_list(&json!({}))?.body.clone();
         pki.delete_local_roots();
         assert!(
             pki.certificate_list(&json!({}))?.body == certs

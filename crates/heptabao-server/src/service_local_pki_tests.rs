@@ -840,3 +840,122 @@ fn external_issuer_default_rsa_and_mldsa_subjects_are_real_and_bound() -> TestRe
     );
     Ok(())
 }
+
+#[test]
+fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &admin,
+            json!({})
+        )
+        .status
+            == 200,
+        "namespace"
+    );
+    assert!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/ca",
+                "team",
+                &admin,
+                json!({"type":"pki"}),
+                100
+            )
+            .status
+            == 204,
+        "PKI mount"
+    );
+    let ordinary = service.state.clone().ok_or("ordinary")?;
+    let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    for name in ["root-a", "root-b"] {
+        assert!(service.handle_at("POST","ca/root/generate/internal","team",&admin,
+            json!({"common_name":format!("{name}.example.test"),"key_type":"ec","issuer_name":name,"key_name":format!("key-{name}"),"ttl":"1h"}),100).status==200,"actual owned root publication");
+    }
+    let active = service.state.clone().ok_or("active")?;
+    assert!(
+        active.schema == LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            && active.engines.has_local_pki_multi_issuer_state(),
+        "independent namespace issuer reader floor"
+    );
+    let mut lower = active.clone();
+    lower.schema = LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA;
+    assert!(
+        lower.writer_schema() == LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            && lower.validate_format().is_err()
+            && service.commit_state(&lower).is_err(),
+        "old fields-only reader cannot drop issuer ownership"
+    );
+    assert!(
+        service.prepare_snapshot_restore(&backup).is_err(),
+        "actual old backup rejected"
+    );
+    assert!(service.handle_at("POST","ca/roles/web","team",&admin,json!({"allowed_domains":["example.test"],"allow_subdomains":true,"issuer_ref":"root-a","max_ttl":"5m"}),100).status==200,"role authority");
+    let issued = service.handle_at(
+        "POST",
+        "ca/issuer/root-b/issue/web",
+        "team",
+        &admin,
+        json!({"common_name":"web.example.test"}),
+        100,
+    );
+    assert!(
+        issued.status == 200,
+        "actual Service explicit issuer issuance"
+    );
+    let issuer = service.handle_at(
+        "GET",
+        "ca/issuer/root-b/json",
+        "team",
+        &admin,
+        json!({}),
+        100,
+    );
+    assert!(
+        issued.body["data"]["issuing_ca"] == issuer.body["data"]["certificate"],
+        "actual selected public issuer certificate"
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":unseal})).status == 200,
+        "encrypted reopen"
+    );
+    let listed = service.handle_at("LIST", "ca/issuers", "team", &admin, json!({}), 100);
+    assert!(
+        listed.status == 200
+            && listed.body["data"]["keys"]
+                .as_array()
+                .ok_or("issuers")?
+                .len()
+                == 2,
+        "all issuers survive reopen"
+    );
+    assert!(
+        service
+            .handle_at("DELETE", "sys/mounts/ca", "team", &admin, json!({}), 100)
+            .status
+            == 204,
+        "retirement"
+    );
+    let retired = service.state.as_ref().ok_or("retired")?;
+    assert!(
+        !retired.engines.has_local_pki_multi_issuer_state()
+            && retired.writer_schema() == LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA,
+        "retirement retains schema77"
+    );
+    let mut lower = retired.clone();
+    lower.schema = LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA;
+    assert!(
+        lower.validate_publication_schema(Some(retired)).is_err()
+            && Service::validate_snapshot_protected_floor(retired, &ordinary).is_err(),
+        "retired issuer floor protects publication and snapshot"
+    );
+    Ok(())
+}
