@@ -463,10 +463,7 @@ impl Service {
             }
         }
         if !namespace.is_empty() {
-            return Response::error(
-                403,
-                "recovery rekey is root namespace only",
-            );
+            return Response::error(403, "recovery rekey is root namespace only");
         }
         if self.ha.is_some() {
             return Response::error(
