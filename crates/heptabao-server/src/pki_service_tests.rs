@@ -454,7 +454,23 @@ fn pki_new_default_identifiers_require_schema75_and_reject_legacy_labels() -> Te
     assert_eq!(role.body["data"]["key_bits"], 2048);
     let state = s.state.as_ref().ok_or("state")?;
     assert!(state.engines.has_local_typed_pki_state());
-    assert_eq!(state.schema, LOCAL_PKI_IDENTIFIER_STATE_SCHEMA);
+    assert!(state.engines.has_local_pki_crl_state());
+    assert_eq!(state.schema, LOCAL_PKI_CRL_STATE_SCHEMA);
+    assert_eq!(state.writer_schema(), LOCAL_PKI_CRL_STATE_SCHEMA);
+    assert!(state.validate_format().is_ok());
+    // Isolate the historical identifier floor from the CRL cache now created
+    // by a real root. The production state above must retain the current floor.
+    let mut encoded = serde_json::to_value(&state.engines)?;
+    encoded
+        .pointer_mut("/namespaces//mounts/pki~1/backend/Pki")
+        .and_then(Value::as_object_mut)
+        .ok_or("identifier-only PKI projection")?
+        .remove("local_crl");
+    let mut state = state.clone();
+    state.engines = serde_json::from_value(encoded)?;
+    state.schema = LOCAL_PKI_IDENTIFIER_STATE_SCHEMA;
+    assert!(state.engines.has_local_pki_identifier_state());
+    assert!(!state.engines.has_local_pki_crl_state());
     assert_eq!(state.writer_schema(), LOCAL_PKI_IDENTIFIER_STATE_SCHEMA);
     assert!(state.validate_format().is_ok());
     for schema in [
@@ -489,6 +505,11 @@ fn pki_default_shape_remains_readable_as_schema57_without_new_fields() -> TestRe
     assert!(!state.engines.has_local_typed_pki_state());
     assert!(!state.engines.has_pki_extension_state());
     let mut encoded = serde_json::to_value(&state.engines)?;
+    encoded
+        .pointer_mut("/namespaces//mounts/pki~1/backend/Pki")
+        .and_then(Value::as_object_mut)
+        .ok_or("legacy PKI projection")?
+        .remove("local_crl");
     let legacy_root = encoded
         .pointer_mut("/namespaces//mounts/pki~1/backend/Pki/root")
         .and_then(Value::as_object_mut)
@@ -502,6 +523,7 @@ fn pki_default_shape_remains_readable_as_schema57_without_new_fields() -> TestRe
     let mut legacy = state.clone();
     legacy.engines = serde_json::from_value(encoded)?;
     assert!(!legacy.engines.has_local_pki_identifier_state());
+    assert!(!legacy.engines.has_local_pki_crl_state());
     legacy.schema = 57;
     assert!(legacy.validate_format().is_ok());
     let bytes = serde_json::to_vec(&legacy)?;
