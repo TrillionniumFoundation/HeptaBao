@@ -1696,3 +1696,116 @@ fn closed_auth_post_commit_actor_expiry_and_original_deadline_withhold_help() ->
     );
     Ok(())
 }
+
+#[test]
+fn closed_auth_public_login_and_lookup_ignore_bearer_without_consuming_its_one_use() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    let actor = closed_auth_fixture(&mut service, &token, "plain", "", 1, "1h")?;
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "auth/userpass/users/public-owner",
+            "",
+            &token,
+            json!({"password":"private-cfg-public-password","policies":["default"]})
+        )
+        .status
+            == 204,
+        "actual root public login identity"
+    );
+    let mut request = ServiceRequest::new(
+        "POST",
+        "sys/wrapping/wrap",
+        "",
+        &token,
+        json!({"secret":"private-cfg-lookup-payload"}),
+    );
+    request.wrap_ttl_seconds = Some(60);
+    let wrapped = service.handle_request_at(request, 100);
+    assert!(wrapped.status == 200, "actual root wrapping lookup target");
+    let wrapper = zeroize::Zeroizing::new(
+        wrapped.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("root wrapper")?
+            .to_owned(),
+    );
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 204,
+        "one-use bearer belongs to genuine closed owner"
+    );
+    for _ in 0..2 {
+        let response = wire(
+            &mut service,
+            "POST",
+            "auth/userpass/login/public-owner",
+            "",
+            &actor,
+            json!({"password":"private-cfg-public-password"}),
+        );
+        assert!(
+            response.status == 200 && response.body["auth"]["client_token"].is_string(),
+            "actual public_login classification ignores closed bearer"
+        );
+        let response = wire(
+            &mut service,
+            "POST",
+            "sys/wrapping/lookup",
+            "",
+            &actor,
+            json!({"token":wrapper.as_str()}),
+        );
+        assert!(
+            response.status == 200 && response.body.get("auth").is_none(),
+            "actual lookup classification uses target token without consuming bearer"
+        );
+    }
+    assert!(
+        wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "",
+            &actor,
+            json!({})
+        )
+        .status
+            == 404,
+        "first original bearer admission still commits its sole use"
+    );
+    assert!(
+        wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "",
+            &actor,
+            json!({})
+        )
+        .status
+            == 403,
+        "second actual bearer admission observes consumed state"
+    );
+    assert!(
+        !service.namespace_runtime.is_loaded("plain")
+            && service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .auth
+                .namespace_is_empty("plain"),
+        "public skips and closed admission never load the bearer owner"
+    );
+    Ok(())
+}

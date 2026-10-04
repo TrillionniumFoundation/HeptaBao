@@ -2539,18 +2539,24 @@ impl Service {
         let mount_metadata =
             path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/");
         let public_login = admitted.auth.is_public_login(namespace, method, path);
-        if let Some(response) = self.closed_namespace_token_response(
-            &admitted,
-            &request,
-            help_projection.as_ref().map(|help| &help.body),
-        ) {
+        let authenticate_bearer = !token.is_empty()
+            && path != "sys/wrapping/lookup"
+            && !public_otp_verify
+            && !public_login;
+        // The closed ordinary-token slice follows exactly the established
+        // bearer admission classification. MountMetadata retains its separate
+        // non-consuming capability and remains on its original path.
+        if authenticate_bearer
+            && !mount_metadata
+            && let Some(response) = self.closed_namespace_token_response(
+                &admitted,
+                &request,
+                help_projection.as_ref().map(|help| &help.body),
+            )
+        {
             return response;
         }
-        let mut principal = if token.is_empty()
-            || path == "sys/wrapping/lookup"
-            || public_otp_verify
-            || public_login
-        {
+        let mut principal = if !authenticate_bearer {
             None
         } else {
             let authenticated = if mount_metadata {
