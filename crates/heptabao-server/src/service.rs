@@ -832,7 +832,12 @@ pub(crate) enum ExternalEffectResult {
     OpenLdap(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
     #[cfg(target_os = "linux")]
-    WrapperBarrierInit(Result<OpenBaoWrapperCompletion, heptabao_openbao_grpc::BridgeError>),
+    WrapperBarrierInit(
+        Result<
+            openbao_wrapper::barrier::InitializationCompletion,
+            heptabao_openbao_grpc::BridgeError,
+        >,
+    ),
 }
 
 pub(crate) struct PendingExternalRequest {
@@ -863,7 +868,7 @@ impl PendingExternalRequest {
         match &self.effect {
             #[cfg(target_os = "linux")]
             ExternalEffectPlan::WrapperBarrierInit(plan) => {
-                ExternalEffectResult::WrapperBarrierInit(plan.execute_before(plan.deadline()))
+                ExternalEffectResult::WrapperBarrierInit(plan.execute())
             }
             ExternalEffectPlan::Database(plan) => ExternalEffectResult::Database(plan.execute()),
             ExternalEffectPlan::DatabaseConfig(plan) => {
@@ -3606,7 +3611,7 @@ impl Service {
         ) -> Result<Box<dyn DurableBackend>, BackendError>,
         wrapper: Option<openbao_wrapper::barrier::PreparedMaterial>,
     ) -> (Response, bool) {
-        let wrapper_deadline = wrapper.as_ref().map(|material| material.deadline);
+        let wrapper_deadline = wrapper.as_ref().and_then(|material| material.deadline);
         let wrapper_mode =
             wrapper.is_some() || self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) || {
                 #[cfg(target_os = "linux")]

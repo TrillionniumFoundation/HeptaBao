@@ -1575,6 +1575,134 @@ mod source825_real_recovery_fixture_tests {
             .expect("live fixture")
             .fence_openbao_wrapper();
     }
+    fn genuine_expired_initialization_deadlines() {
+        let parent = PathBuf::from(
+            std::env::var("HEPTABAO_RECOVERY_FIXTURE_ROOT").expect("actual fixture root"),
+        );
+        let owner = fs::symlink_metadata(&parent)
+            .expect("actual fixture root metadata")
+            .uid();
+        let config = private_raw(
+            "HEPTABAO_RECOVERY_FIXTURE_CONFIG",
+            "HEPTABAO_RECOVERY_FIXTURE_CONFIG_SHA256",
+            owner,
+        );
+        let init_raw = private_raw(
+            "HEPTABAO_RECOVERY_FIXTURE_INIT_BODY",
+            "HEPTABAO_RECOVERY_FIXTURE_INIT_BODY_SHA256",
+            owner,
+        );
+        let init: Value = serde_json::from_slice(&init_raw).expect("actual initialization body");
+        for name in [
+            "deadline-before-admission",
+            "deadline-tightened-before-execution",
+            "deadline-expired-before-finalization",
+        ] {
+            let root = parent.join(name);
+            fs::create_dir(&root).expect("fresh deadline case");
+            fs::set_permissions(&root, fs::Permissions::from_mode(0o700))
+                .expect("private deadline case");
+            let data = root.join("data");
+            let audit = root.join("audit.jsonl");
+            let service = Service::new(data.clone(), &audit).expect("fresh actual Service");
+            let mut c = Case {
+                root,
+                data,
+                audit,
+                config: config.clone(),
+                postgres: None,
+                init: init.clone(),
+                service: Some(service),
+                token: String::new(),
+                old_keys: Vec::new(),
+            };
+            let service = c.service.as_mut().expect("owned deadline case");
+            let launch = service
+                .install_openbao_wrapper(Some(
+                    serde_json::from_slice(&config).expect("actual provider config"),
+                ))
+                .expect("real provider install")
+                .expect("actual provider launch");
+            launch
+                .execute()
+                .expect("real provider deadline-case startup");
+            let r = if name == "deadline-before-admission" {
+                let _scope = crate::request_deadline::RequestDeadlineScope::enter(Instant::now());
+                match service.prepare_wrapper_barrier_initialization(&init) {
+                    Err(r) => r,
+                    Ok(_) => panic!("expired original caller deadline was admitted"),
+                }
+            } else {
+                let original_deadline = Instant::now() + Duration::from_secs(15);
+                let plan = {
+                    let _scope =
+                        crate::request_deadline::RequestDeadlineScope::enter(original_deadline);
+                    service
+                        .prepare_wrapper_barrier_initialization(&init)
+                        .expect("live actual initialization plan")
+                };
+                let completion = if name == "deadline-tightened-before-execution" {
+                    plan.execute_before(Instant::now())
+                } else {
+                    // A later executor bound cannot extend the prepared caller
+                    // deadline. This really dispatches and accepts AES Encrypt.
+                    plan.execute_before(Instant::now() + Duration::from_secs(20))
+                };
+                if name == "deadline-expired-before-finalization" {
+                    let (rpc_deadline, publication_deadline, encrypted) = completion
+                        .as_ref()
+                        .expect("actual Encrypt completion required")
+                        .fixture_deadlines();
+                    assert!(
+                        encrypted,
+                        "real provider AES Encrypt must succeed before caller expiry"
+                    );
+                    assert_eq!(
+                        publication_deadline,
+                        Some(original_deadline),
+                        "later executor extended original caller deadline"
+                    );
+                    assert!(
+                        rpc_deadline < original_deadline,
+                        "provider RPC deadline was extended to publication budget"
+                    );
+                    let _scope =
+                        crate::request_deadline::RequestDeadlineScope::enter(Instant::now());
+                    service.finalize_wrapper_barrier_initialization(
+                        plan,
+                        completion,
+                        now(),
+                        "actual-expired-finalization",
+                    )
+                } else {
+                    service.finalize_wrapper_barrier_initialization(
+                        plan,
+                        completion,
+                        now(),
+                        "actual-expired-execution",
+                    )
+                }
+            };
+            response(&c.root, "expired-caller-response", &r);
+            assert_eq!(r.status, 503);
+            for key in [
+                "root_token",
+                "keys",
+                "keys_base64",
+                "recovery_keys",
+                "recovery_keys_base64",
+            ] {
+                assert!(
+                    r.body.get(key).is_none(),
+                    "expired caller released private output"
+                );
+            }
+            let service = c.service.as_ref().expect("fenced deadline case");
+            assert!(service.state.is_none() && service.seal.is_none() && service.durable.is_none());
+            assert!(!c.data.exists(), "expired caller published a durable store");
+            close(&c);
+        }
+    }
     #[test]
     #[ignore = "requires ROOT-admitted real provider, fresh private store and built candidate; missing inputs UNQUALIFIED"]
     fn genuine_wrapper_bootstrap_and_recovery_capability() {
@@ -1587,6 +1715,7 @@ mod source825_real_recovery_fixture_tests {
                 .is_ok()
         );
         close(&c);
+        genuine_expired_initialization_deadlines();
     }
     #[test]
     #[ignore = "requires real durable store/provider; no simulated state"]
