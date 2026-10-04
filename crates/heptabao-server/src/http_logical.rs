@@ -18,6 +18,46 @@ fn request_id(random: &[u8; 16]) -> String {
     id
 }
 
+fn inject_system_data(path: &str) -> bool {
+    // Match the pinned HTTP router's explicitly registered injector routes.
+    // Ordinary sys logical routes use the standard envelope.
+    [
+        "sys/audit",
+        "sys/audit/",
+        "sys/audit-hash/",
+        "sys/auth",
+        "sys/auth/",
+        "sys/config/cors",
+        "sys/config/auditing/request-headers/",
+        "sys/config/auditing/request-headers",
+        "sys/capabilities",
+        "sys/capabilities-accessor",
+        "sys/capabilities-self",
+        "sys/ha-status",
+        "sys/key-status",
+        "sys/mounts",
+        "sys/mounts/",
+        "sys/policy",
+        "sys/policy/",
+        "sys/rekey/backup",
+        "sys/rekey/recovery-key-backup",
+        "sys/rotate/root/backup",
+        "sys/rotate/recovery/backup",
+        "sys/remount",
+        "sys/rotate",
+        "sys/rotate/keyring",
+        "sys/wrapping/wrap",
+    ]
+    .iter()
+    .any(|route| {
+        if route.ends_with('/') {
+            path.starts_with(route)
+        } else {
+            path == *route
+        }
+    })
+}
+
 pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path: &str) {
     let snapshot::NativeReply::Json(response) = reply else {
         return;
@@ -104,6 +144,15 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
         if data.contains_key("identity_policies") {
             data.entry("external_namespace_policies")
                 .or_insert_with(|| json!({}));
+        }
+    }
+    if inject_system_data(path)
+        && let Some(data) = body.get("data").and_then(Value::as_object).cloned()
+    {
+        for (key, value) in data {
+            // Go writes data keys first and the HTTP envelope last. For a
+            // duplicate key, decoding keeps the envelope's value.
+            body.entry(key).or_insert(value);
         }
     }
 }

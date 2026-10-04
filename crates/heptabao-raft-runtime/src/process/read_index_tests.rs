@@ -510,6 +510,45 @@ async fn transient_quorum_probe_failure_recovers_within_one_read_budget_without_
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn leader_current_local_apply_and_metrics_share_original_read_deadline()
 -> Result<(), Box<dyn std::error::Error>> {
+    // Test-only observations retain each original await, error and budget.
+    fn record(
+        started: std::time::Instant,
+        stage: &str,
+        edge: &str,
+        raft: Option<&crate::network::DurableRaft>,
+    ) {
+        let metrics = raft.map(|raft| raft.metrics().borrow_watched().clone());
+        eprintln!(
+            "actual-leader-own-apply-stage: stage={stage} edge={edge} elapsed_ms={} metrics={metrics:?}",
+            started.elapsed().as_millis()
+        );
+    }
+    fn record_error<T, E: std::fmt::Debug>(stage: &str, result: &Result<T, E>) {
+        if let Err(error) = result {
+            eprintln!("actual-leader-own-apply-error: stage={stage} original={error:?}");
+        }
+    }
+    let diagnostic_started = std::time::Instant::now();
+    macro_rules! observed {
+        ($stage:expr, $raft:expr, $future:expr) => {{
+            let label = $stage;
+            let stage: &str = label.as_ref();
+            let raft = $raft;
+            record(diagnostic_started, stage, "before", raft);
+            let result = $future.await;
+            record(diagnostic_started, stage, "after", raft);
+            result
+        }};
+    }
+    macro_rules! observed_result {
+        ($stage:expr, $raft:expr, $future:expr) => {{
+            let label = $stage;
+            let stage: &str = label.as_ref();
+            let result = observed!(stage, $raft, $future);
+            record_error(stage, &result);
+            result
+        }};
+    }
     let path = std::env::temp_dir().join(format!(
         "heptabao-leader-own-apply-{}-{}",
         std::process::id(),
@@ -523,75 +562,235 @@ async fn leader_current_local_apply_and_metrics_share_original_read_deadline()
             BTreeSet::from([1, 2, 3]),
             Arc::new(Arc::clone(&router)),
         )?;
-        let node = ProcessRaftNode::create(path.join(id.to_string()), id, factory).await?;
+        let node = observed_result!(
+            format!("node-{id}/create"),
+            None,
+            ProcessRaftNode::create(path.join(id.to_string()), id, factory)
+        )?;
         node.raft.runtime_config().elect(false);
-        router.peers.write().await.insert(id, node.rpc_service());
+        observed!(
+            format!("node-{id}/router-register"),
+            Some(&node.raft),
+            router.peers.write()
+        )
+        .insert(id, node.rpc_service());
         nodes.push(node);
     }
-    let result = async {
+    let result = observed_result!("test-body", Some(&nodes[0].raft), async {
         let leader = &nodes[0];
-        leader.raft.initialize(BTreeMap::from([(1, ()), (2, ()), (3, ())])).await?;
-        leader.raft.trigger().elect(false).await?;
-        leader.raft.wait(Some(Duration::from_secs(5))).metrics(
-            |m| m.current_leader == Some(1) && m.last_applied.is_some(), "leader applied initial blank",
-        ).await?;
-        leader.ensure_linearizable().await?;
+        observed_result!(
+            "initial/initialize",
+            Some(&leader.raft),
+            leader
+                .raft
+                .initialize(BTreeMap::from([(1, ()), (2, ()), (3, ())]))
+        )?;
+        observed_result!(
+            "initial/elect",
+            Some(&leader.raft),
+            leader.raft.trigger().elect(false)
+        )?;
+        observed_result!(
+            "initial/applied-metrics",
+            Some(&leader.raft),
+            leader.raft.wait(Some(Duration::from_secs(5))).metrics(
+                |m| m.current_leader == Some(1) && m.last_applied.is_some(),
+                "leader applied initial blank",
+            )
+        )?;
+        observed_result!(
+            "initial/linearizable",
+            Some(&leader.raft),
+            leader.ensure_linearizable()
+        )?;
         for (learner, expire) in [(4, false), (5, true)] {
-            let before_applied = leader.state_machine.last_applied_log_index().await;
+            let before_applied = observed!(
+                format!("learner-{learner}/before-applied"),
+                Some(&leader.raft),
+                leader.state_machine.last_applied_log_index()
+            );
             let store = leader.state_machine.clone();
             let (acquired, locked) = tokio::sync::oneshot::channel();
             let (release, released) = tokio::sync::oneshot::channel();
-            let holder = tokio::spawn(async move { store.hold_application_bundle_until(acquired, released).await; });
-            locked.await?;
+            let hold_raft = leader.raft.clone();
+            let holder = tokio::spawn(async move {
+                observed!(
+                    format!("learner-{learner}/held-store"),
+                    Some(&hold_raft),
+                    store.hold_application_bundle_until(acquired, released)
+                );
+            });
+            observed_result!(
+                format!("learner-{learner}/lock-acquired"),
+                Some(&leader.raft),
+                locked
+            )?;
             let raft = leader.raft.clone();
-            let mutation = tokio::spawn(async move { raft.add_learner(learner, (), false).await });
-            let committed = leader.raft.wait(Some(Duration::from_secs(3))).metrics(
-                |m| m.committed_membership_config.get_node(&learner).is_some()
-                    && m.committed_membership_config.log_id().as_ref().is_some_and(|log| Some(log.index) > before_applied),
-                "real learner membership committed while leader store is held",
-            ).await?;
-            let required = committed.committed_membership_config.log_id().as_ref().ok_or("membership log absent")?.index;
+            let mutation = tokio::spawn(async move {
+                observed_result!(
+                    format!("learner-{learner}/membership-write"),
+                    Some(&raft),
+                    raft.add_learner(learner, (), false)
+                )
+            });
+            let committed = observed_result!(
+                format!("learner-{learner}/committed-metrics"),
+                Some(&leader.raft),
+                leader.raft.wait(Some(Duration::from_secs(3))).metrics(
+                    |m| m.committed_membership_config.get_node(&learner).is_some()
+                        && m.committed_membership_config
+                            .log_id()
+                            .as_ref()
+                            .is_some_and(|log| Some(log.index) > before_applied),
+                    "real learner membership committed while leader store is held",
+                )
+            )?;
+            let required = committed
+                .committed_membership_config
+                .log_id()
+                .as_ref()
+                .ok_or("membership log absent")?
+                .index;
             assert!(committed.last_applied.as_ref().map(|log| log.index) < Some(required));
             // This is a genuine successful ReadIndex, independently observed
             // while this leader's real application mutex prevents own apply.
-            let probe = tokio::time::timeout(Duration::from_secs(2), leader.raft.get_read_linearizer(ReadPolicy::ReadIndex)).await??;
+            let probe = observed_result!(
+                format!("learner-{learner}/genuine-probe-timeout"),
+                Some(&leader.raft),
+                tokio::time::timeout(Duration::from_secs(2), async {
+                    observed_result!(
+                        format!("learner-{learner}/genuine-probe"),
+                        Some(&leader.raft),
+                        leader.raft.get_read_linearizer(ReadPolicy::ReadIndex)
+                    )
+                })
+            )??;
             assert!(probe.read_log_id().index() >= required);
             assert!(probe.applied().map(|log| log.index) < Some(required));
             let before_log = leader.raft.metrics().borrow_watched().last_log_index;
             let started = std::time::Instant::now();
             let absolute = started + Duration::from_millis(250);
             if expire {
-                let denied = crate::with_read_index_deadline(absolute, async {
-                    tokio::time::sleep(Duration::from_millis(40)).await;
-                    leader.ensure_linearizable_with_timeout(Duration::from_secs(2)).await
-                }).await;
-                assert!(matches!(denied, Err(RemoteRaftError::Consensus(ref reason)) if reason == READ_INDEX_TIMEOUT));
+                let denied = observed_result!(
+                    format!("learner-{learner}/denied-scope"),
+                    Some(&leader.raft),
+                    crate::with_read_index_deadline(absolute, async {
+                        observed!(
+                            format!("learner-{learner}/denied-delay"),
+                            Some(&leader.raft),
+                            tokio::time::sleep(Duration::from_millis(40))
+                        );
+                        observed_result!(
+                            format!("learner-{learner}/denied-read"),
+                            Some(&leader.raft),
+                            leader.ensure_linearizable_with_timeout(Duration::from_secs(2))
+                        )
+                    })
+                );
+                assert!(
+                    matches!(denied, Err(RemoteRaftError::Consensus(ref reason)) if reason == READ_INDEX_TIMEOUT)
+                );
                 assert!(started.elapsed() >= Duration::from_millis(250));
                 assert!(started.elapsed() < Duration::from_millis(650));
-                assert_eq!(leader.raft.metrics().borrow_watched().last_log_index, before_log);
-                let _ = release.send(()); holder.await?;
-                assert!(crate::with_read_index_deadline(absolute, leader.ensure_linearizable()).await.is_err(), "release cannot renew expired authority");
+                assert_eq!(
+                    leader.raft.metrics().borrow_watched().last_log_index,
+                    before_log
+                );
+                let _ = release.send(());
+                observed_result!(
+                    format!("learner-{learner}/denied-holder-join"),
+                    Some(&leader.raft),
+                    holder
+                )?;
+                assert!(
+                    observed_result!(
+                        format!("learner-{learner}/expired-read"),
+                        Some(&leader.raft),
+                        crate::with_read_index_deadline(absolute, leader.ensure_linearizable())
+                    )
+                    .is_err(),
+                    "release cannot renew expired authority"
+                );
             } else {
+                let release_raft = leader.raft.clone();
                 let releaser = tokio::spawn(async move {
-                    tokio::time::sleep(Duration::from_millis(150)).await;
+                    observed!(
+                        format!("learner-{learner}/release-delay"),
+                        Some(&release_raft),
+                        tokio::time::sleep(Duration::from_millis(150))
+                    );
                     let _ = release.send(());
                 });
-                crate::with_read_index_deadline(absolute, leader.ensure_linearizable()).await?;
-                releaser.await?; holder.await?;
+                observed_result!(
+                    format!("learner-{learner}/positive-read"),
+                    Some(&leader.raft),
+                    crate::with_read_index_deadline(absolute, leader.ensure_linearizable())
+                )?;
+                observed_result!(
+                    format!("learner-{learner}/releaser-join"),
+                    Some(&leader.raft),
+                    releaser
+                )?;
+                observed_result!(
+                    format!("learner-{learner}/positive-holder-join"),
+                    Some(&leader.raft),
+                    holder
+                )?;
                 assert!(started.elapsed() >= Duration::from_millis(150));
                 assert!(started.elapsed() < Duration::from_millis(250));
-                assert_eq!(leader.raft.metrics().borrow_watched().last_log_index, before_log);
+                assert_eq!(
+                    leader.raft.metrics().borrow_watched().last_log_index,
+                    before_log
+                );
             }
-            mutation.await??;
-            leader.ensure_linearizable().await?;
-            assert!(leader.state_machine.last_applied_log_index().await >= Some(required));
-            assert!(leader.raft.metrics().borrow_watched().last_applied.as_ref().map(|log| log.index) >= Some(required));
+            let mutation_result = observed_result!(
+                format!("learner-{learner}/mutation-join"),
+                Some(&leader.raft),
+                mutation
+            )?;
+            record_error(
+                &format!("learner-{learner}/mutation-result"),
+                &mutation_result,
+            );
+            mutation_result?;
+            observed_result!(
+                format!("learner-{learner}/final-read"),
+                Some(&leader.raft),
+                leader.ensure_linearizable()
+            )?;
+            assert!(
+                observed!(
+                    format!("learner-{learner}/final-own-applied"),
+                    Some(&leader.raft),
+                    leader.state_machine.last_applied_log_index()
+                ) >= Some(required)
+            );
+            assert!(
+                leader
+                    .raft
+                    .metrics()
+                    .borrow_watched()
+                    .last_applied
+                    .as_ref()
+                    .map(|log| log.index)
+                    >= Some(required)
+            );
         }
         Ok::<_, Box<dyn std::error::Error>>(())
-    }.await;
-    router.peers.write().await.clear();
+    });
+    observed!(
+        "cleanup/router-clear",
+        Some(&nodes[0].raft),
+        router.peers.write()
+    )
+    .clear();
     for node in nodes {
-        node.shutdown().await?;
+        let raft = node.raft.clone();
+        observed_result!(
+            format!("cleanup/node-{}/shutdown", node.id),
+            Some(&raft),
+            node.shutdown()
+        )?;
     }
     std::fs::remove_dir_all(path)?;
     result
