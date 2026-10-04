@@ -1104,3 +1104,9 @@ and encrypted Service lifecycle tests accompany this implementation; complete
 runtime parity still requires independently executed official-binary comparison,
 and local delta CRLs, intermediate issuer import, OCSP, and ACME execution remain
 outside this implemented scope.
+
+Generated local roots and leaves include RFC 5280 subject key identifiers computed
+from their actual public key bits. Each new root's authority key identifier refers
+to itself; a leaf refers to its selected signed issuer certificate's subject key
+identifier. Older persisted issuers without that extension remain readable.
+These identifiers do not replace the certificate, owned-key and signature checks.

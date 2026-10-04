@@ -93,6 +93,58 @@ fn verify_signature(spki: &[u8], tbs: &[u8], signature: &[u8]) -> TestResult {
     }
 }
 
+fn verify_key_identifiers(cert: &X509Certificate<'_>, issuer: &X509Certificate<'_>) -> TestResult {
+    use x509_parser::extensions::ParsedExtension;
+    let subject_id = cert
+        .extensions()
+        .iter()
+        .find_map(|extension| {
+            if let ParsedExtension::SubjectKeyIdentifier(key) = extension.parsed_extension() {
+                Some((extension.critical, key.0.to_vec()))
+            } else {
+                None
+            }
+        })
+        .ok_or("actual certificate subject key identifier")?;
+    let digest = ring::digest::digest(
+        &ring::digest::SHA1_FOR_LEGACY_USE_ONLY,
+        cert.public_key().subject_public_key.data.as_ref(),
+    );
+    assert!(
+        !subject_id.0 && subject_id.1.as_slice() == digest.as_ref(),
+        "RFC key identifier binds the actual subject public bits"
+    );
+    let issuer_id = issuer
+        .extensions()
+        .iter()
+        .find_map(|extension| {
+            if let ParsedExtension::SubjectKeyIdentifier(key) = extension.parsed_extension() {
+                Some(key.0.to_vec())
+            } else {
+                None
+            }
+        })
+        .ok_or("actual issuer subject key identifier")?;
+    let authority = cert
+        .extensions()
+        .iter()
+        .find_map(|extension| {
+            if let ParsedExtension::AuthorityKeyIdentifier(key) = extension.parsed_extension() {
+                key.key_identifier
+                    .as_ref()
+                    .map(|id| (extension.critical, id.0.to_vec()))
+            } else {
+                None
+            }
+        })
+        .ok_or("actual certificate authority key identifier")?;
+    assert!(
+        !authority.0 && authority.1 == issuer_id,
+        "authority identifier is the actual selected issuer key identifier"
+    );
+    Ok(())
+}
+
 fn private_public<P>(private: &[u8]) -> TestResult<Vec<u8>>
 where
     P: MlDsaParams + AssociatedAlgorithmIdentifier<Params = AnyRef<'static>>,
@@ -355,6 +407,7 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
         let (tail, root_certificate) =
             X509Certificate::from_der(&root_bytes).map_err(|_| "root parse")?;
         assert!(tail.is_empty(), "canonical root");
+        verify_key_identifiers(&root_certificate, &root_certificate)?;
         let root_spki = root_certificate.public_key().raw.to_vec();
         verify_signature(
             &root_spki,
@@ -375,6 +428,7 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
         );
         let leaf = leaf_binding(&issued, false)?;
         let (_, leaf_certificate) = X509Certificate::from_der(&leaf).map_err(|_| "leaf parse")?;
+        verify_key_identifiers(&leaf_certificate, &root_certificate)?;
         verify_signature(
             &root_spki,
             leaf_certificate.tbs_certificate.as_ref(),

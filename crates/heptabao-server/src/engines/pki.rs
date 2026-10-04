@@ -583,6 +583,7 @@ impl Pki {
                 root_fields::root_expiration(body, now, self.max_ttl, DEFAULT_ROOT_TTL)?;
             let material = LocalPrivateMaterial::generate(kind)?;
             let public = material.public()?;
+            let key_identifier = root_fields::subject_key_identifier(&public.spki()?)?;
             let serial = random_serial()?;
             let not_before = now.saturating_sub(fields.backdate);
             let certificate_der = certificate_der_local(
@@ -595,6 +596,7 @@ impl Pki {
                     issuer_name_der: Some(&fields.subject_der),
                     subject_name_der: Some(&fields.subject_der),
                     public_key: &[],
+                    authority_key_id: Some(&key_identifier),
                     not_before,
                     not_after,
                     is_ca: true,
@@ -1086,6 +1088,7 @@ impl Pki {
         let leaf_public = leaf.public()?;
         let root_pair = root.local_key()?;
         let issuer_name_der = root_fields::certificate_subject(&root.certificate_der)?;
+        let authority_key_id = root_fields::certificate_key_identifier(&root.certificate_der)?;
         let certificate_der = certificate_der_local(
             &root_pair,
             &leaf_public,
@@ -1096,6 +1099,7 @@ impl Pki {
                 issuer_name_der: Some(&issuer_name_der),
                 subject_name_der: None,
                 public_key: &[],
+                authority_key_id: authority_key_id.as_deref(),
                 not_before: prepared.not_before,
                 not_after: prepared.expires,
                 is_ca: false,
@@ -1595,6 +1599,7 @@ struct CertificateSpec<'a> {
     issuer_name_der: Option<&'a [u8]>,
     subject_name_der: Option<&'a [u8]>,
     public_key: &'a [u8],
+    authority_key_id: Option<&'a [u8]>,
     not_before: u64,
     not_after: u64,
     is_ca: bool,
@@ -1667,6 +1672,7 @@ fn certificate_tbs_with(
         issuer_name_der,
         subject_name_der,
         public_key: _,
+        authority_key_id,
         not_before,
         not_after,
         is_ca,
@@ -1688,6 +1694,19 @@ fn certificate_tbs_with(
         seq(&[])
     };
     extensions.push(extension(&[0x55, 0x1d, 0x13], true, &basic));
+    let subject_key_id = root_fields::subject_key_identifier(subject_spki)?;
+    extensions.push(extension(
+        &[0x55, 0x1d, 0x0e],
+        false,
+        &octet_string(&subject_key_id),
+    ));
+    if let Some(authority_key_id) = authority_key_id {
+        extensions.push(extension(
+            &[0x55, 0x1d, 0x23],
+            false,
+            &seq(&[context_primitive(0, authority_key_id)]),
+        ));
+    }
     let usage_byte = if is_ca { 0x06 } else { 0x80 };
     let unused = if is_ca { 1 } else { 7 };
     extensions.push(extension(

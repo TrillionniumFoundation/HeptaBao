@@ -368,6 +368,38 @@ pub(super) fn certificate_subject(der: &[u8]) -> Result<Vec<u8>> {
     Ok(cert.subject().as_raw().to_vec())
 }
 
+/// RFC 5280 method 1, also used by the pinned OpenBao certutil implementation.
+/// SHA-1 identifies the public key bits; signing authority still requires the
+/// owned certificate, actual key binding and full signature verification.
+pub(super) fn subject_key_identifier(spki: &[u8]) -> Result<[u8; 20]> {
+    let (rest, public) = x509_parser::x509::SubjectPublicKeyInfo::from_der(spki)
+        .map_err(|_| error(503, "invalid PKI key identifier input"))?;
+    if !rest.is_empty() || public.subject_public_key.unused_bits != 0 {
+        return Err(error(503, "invalid PKI key identifier input"));
+    }
+    Ok(openssl::sha::sha1(public.subject_public_key.data.as_ref()))
+}
+
+pub(super) fn certificate_key_identifier(der: &[u8]) -> Result<Option<Vec<u8>>> {
+    let (rest, cert) =
+        X509Certificate::from_der(der).map_err(|_| error(503, "invalid PKI issuer certificate"))?;
+    if !rest.is_empty() {
+        return Err(error(503, "invalid PKI issuer certificate"));
+    }
+    let mut identifier = None;
+    for extension in cert.extensions() {
+        if let x509_parser::extensions::ParsedExtension::SubjectKeyIdentifier(key) =
+            extension.parsed_extension()
+        {
+            if identifier.is_some() || key.0.is_empty() || key.0.len() > 64 {
+                return Err(error(503, "invalid PKI issuer key identifier"));
+            }
+            identifier = Some(key.0.to_vec());
+        }
+    }
+    Ok(identifier)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
