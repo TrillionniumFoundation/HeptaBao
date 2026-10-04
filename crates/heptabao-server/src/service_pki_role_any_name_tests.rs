@@ -187,15 +187,15 @@ fn pki_role_any_name_preserves_dns_ip_constraints_and_false_legacy_bytes() -> Te
             json!({"common_name":"outside.other.test"})
         )
         .status,
-        403
+        400
     );
-    for invalid in [json!("true"), json!(1), Value::Null] {
+    for invalid in [json!("not_bool"), json!(2), json!([]), json!({})] {
         let mut body = scoped.clone();
         body["allow_any_name"] = invalid;
         assert_eq!(
             call(&mut service, "POST", "ca/roles/invalid", &admin, body).status,
             400,
-            "actual typed boolean required"
+            "actual framework boolean conversion refuses unsupported values"
         );
     }
     assert_eq!(
@@ -219,7 +219,7 @@ fn pki_role_any_name_preserves_dns_ip_constraints_and_false_legacy_bytes() -> Te
                 json!({"common_name":name})
             )
             .status,
-            403,
+            400,
             "any DNS domain does not bypass hostname validation"
         );
     }
@@ -232,7 +232,7 @@ fn pki_role_any_name_preserves_dns_ip_constraints_and_false_legacy_bytes() -> Te
             json!({"common_name":"outside.other.test","ip_sans":["192.0.2.1"]})
         )
         .status,
-        403,
+        400,
         "allow_any_name retains independent IP SAN permission"
     );
     assert_eq!(call(&mut service,"POST","ca/roles/any",&admin,json!({"allow_any_name":true,"allowed_domains":["bad domain"],"key_type":"ec","key_bits":256})).status,400,"supplied malformed domains still refused");
@@ -491,7 +491,7 @@ fn pki_role_default_ip_sans_signs_ipv4_ipv6_and_retains_explicit_false_on_reopen
                 request.clone()
             )
             .status,
-            403,
+            400,
             "explicit false continues denying actual IPv4 and IPv6 issuance"
         );
         assert_eq!(
@@ -515,7 +515,7 @@ fn pki_role_default_ip_sans_signs_ipv4_ipv6_and_retains_explicit_false_on_reopen
                 json!({"common_name":"outside.other.test","ip_sans":["192.0.2.1"]})
             )
             .status,
-            403,
+            400,
             "IP permission does not widen the independently owned DNS domains"
         );
         let state = service.state.as_ref().ok_or("state")?;
@@ -534,13 +534,13 @@ fn pki_role_default_ip_sans_signs_ipv4_ipv6_and_retains_explicit_false_on_reopen
             == bytes,
         "actual stored booleans roundtrip without default rewrites"
     );
-    for wrong_type in [json!("true"), json!(1), Value::Null] {
+    for wrong_type in [json!("not_bool"), json!(2), json!([]), json!({})] {
         let mut invalid = scoped.clone();
         invalid["allow_ip_sans"] = wrong_type;
         assert_eq!(
             call(&mut service, "POST", "ca/roles/invalid-ip", &admin, invalid).status,
             400,
-            "actual boolean required for explicit permission"
+            "invalid public boolean conversion cannot publish role permission"
         );
     }
     Ok(())
@@ -649,7 +649,7 @@ fn pki_role_bare_domain_default_denies_base_and_explicit_permission_reopens() ->
             base.clone(),
         );
         assert_eq!(
-            denied.status, 403,
+            denied.status, 400,
             "a new default role cannot issue its base domain"
         );
         assert!(denied.body.get("data").is_none());
@@ -682,7 +682,7 @@ fn pki_role_bare_domain_default_denies_base_and_explicit_permission_reopens() ->
                 json!({"common_name":"outside.test"})
             )
             .status,
-            403
+            400
         );
     }
     let active = service.state.clone().ok_or("state")?;

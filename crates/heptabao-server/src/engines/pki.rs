@@ -1020,24 +1020,29 @@ impl Pki {
         }
         let common_name = string(body, "common_name")?;
         if !valid_common_name(common_name) || !role.allows(common_name) {
-            return Err(error(403, "common name is not allowed by PKI role"));
+            return Err(bad(&format!(
+                "common name {common_name} not allowed by this role"
+            )));
         }
         let alt_names = string_list(body.get("alt_names"))?;
-        if alt_names.len() > 32
-            || alt_names
-                .iter()
-                .any(|name| !valid_common_name(name) || !role.allows(name))
+        if alt_names.len() > 32 {
+            return Err(bad("PKI subject alternative name capacity exceeded"));
+        }
+        if let Some(name) = alt_names
+            .iter()
+            .find(|name| !valid_common_name(name) || !role.allows(name))
         {
-            return Err(error(
-                403,
-                "subject alternative name is not allowed by PKI role",
-            ));
+            return Err(bad(&format!(
+                "subject alternate name {name} not allowed by this role"
+            )));
         }
         let ip_sans = ip_list(body.get("ip_sans"))?;
-        if ip_sans.len() > 32 || !role.allow_ip_sans && !ip_sans.is_empty() {
-            return Err(error(
-                403,
-                "IP subject alternative names are not allowed by PKI role",
+        if ip_sans.len() > 32 {
+            return Err(bad("PKI IP subject alternative name capacity exceeded"));
+        }
+        if !role.allow_ip_sans && !ip_sans.is_empty() {
+            return Err(bad(
+                "IP Subject Alternative Names are not allowed in this role, but was provided via the API",
             ));
         }
         if self.issued.len() >= MAX_ISSUED {
@@ -1274,9 +1279,39 @@ impl Pki {
     }
 }
 
+// Only the public role input uses the framework's weak boolean conversion.
+// Durable Role deserialization still requires actual booleans; request text
+// is never retained as an authority marker or copied into the stored owner.
+fn role_optional_bool(body: &Value, name: &str) -> Result<Option<bool>> {
+    let Some(value) = body.get(name) else {
+        return Ok(None);
+    };
+    let detail = match value {
+        Value::Bool(value) => return Ok(Some(*value)),
+        Value::Null => return Ok(Some(false)),
+        Value::String(value) => match value.as_str() {
+            "1" | "t" | "T" | "TRUE" | "true" | "True" => return Ok(Some(true)),
+            "" | "0" | "f" | "F" | "FALSE" | "false" | "False" => return Ok(Some(false)),
+            _ => "cannot parse value as 'bool': strconv.ParseBool: invalid syntax",
+        },
+        Value::Number(value) => match value.to_string().as_str() {
+            "1" => return Ok(Some(true)),
+            "0" => return Ok(Some(false)),
+            _ => "cannot parse value as 'bool': strconv.ParseBool: invalid syntax",
+        },
+        Value::Array(_) => "expected type 'bool', got unconvertible type '[]interface {}'",
+        Value::Object(_) => {
+            "expected type 'bool', got unconvertible type 'map[string]interface {}'"
+        }
+    };
+    Err(bad(&format!(
+        "Field validation failed: error converting input for field \"{name}\": '' {detail}"
+    )))
+}
+
 impl Role {
     fn from_body(body: &Value) -> Result<Self> {
-        let allow_any_name = optional_bool(body, "allow_any_name")?.unwrap_or(false);
+        let allow_any_name = role_optional_bool(body, "allow_any_name")?.unwrap_or(false);
         let allowed_domains = string_list(body.get("allowed_domains"))?;
         if !allow_any_name && allowed_domains.is_empty()
             || allowed_domains.len() > 64
@@ -1300,11 +1335,13 @@ impl Role {
             },
             allowed_domains: allowed_domains.into_iter().collect(),
             allow_any_name,
-            allow_bare_domains: Some(optional_bool(body, "allow_bare_domains")?.unwrap_or(false)),
-            allow_subdomains: optional_bool(body, "allow_subdomains")?.unwrap_or(false),
-            allow_ip_sans: optional_bool(body, "allow_ip_sans")?.unwrap_or(true),
+            allow_bare_domains: Some(
+                role_optional_bool(body, "allow_bare_domains")?.unwrap_or(false),
+            ),
+            allow_subdomains: role_optional_bool(body, "allow_subdomains")?.unwrap_or(false),
+            allow_ip_sans: role_optional_bool(body, "allow_ip_sans")?.unwrap_or(true),
             max_ttl: ttl_field(body, "max_ttl", DEFAULT_LEAF_TTL)?,
-            generate_lease: optional_bool(body, "generate_lease")?.unwrap_or(false),
+            generate_lease: role_optional_bool(body, "generate_lease")?.unwrap_or(false),
             local_key_kind: match LocalKeyKind::from_body(body)? {
                 LocalKeyKind::Ed25519 => None,
                 kind => Some(kind),
@@ -2103,7 +2140,7 @@ mod tests {
             }
             Err(error) => error.status,
         };
-        assert_eq!(denied_status, 403);
+        assert_eq!(denied_status, 400);
         pki.handle_admin(
             "POST",
             "roles/web-ip",

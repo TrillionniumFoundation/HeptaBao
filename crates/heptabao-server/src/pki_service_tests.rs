@@ -269,7 +269,7 @@ fn pki_ip_sans_require_role_permission_and_are_encoded_as_ip_general_names() -> 
         json!({"common_name":"api.example.test","ip_sans":["127.0.0.1"]}),
         101,
     );
-    assert_eq!(denied.status, 403);
+    assert_eq!(denied.status, 400);
     assert_eq!(
         call(
             &mut s,
