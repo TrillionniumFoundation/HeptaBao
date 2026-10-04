@@ -212,9 +212,9 @@ fn kube_delivery_post_audit_revoke_and_policy_change_withhold_real_published_cre
 }
 
 #[test]
-fn kube_delivery_frozen_provider_config_preserves_owner_and_mount_recreation_rejects() -> TestResult
-{
-    for change in ["provider", "mount"] {
+fn kube_delivery_frozen_provider_config_preserves_owner_and_real_mount_revision_rejects()
+-> TestResult {
+    for change in ["provider", "mount-revision"] {
         let mut f = fixture("10m", None, true)?;
         if change == "provider" {
             // Existing leases make this configuration update unreachable:
@@ -271,32 +271,40 @@ fn kube_delivery_frozen_provider_config_preserves_owner_and_mount_recreation_rej
             );
             continue;
         }
-        if change == "mount" {
-            assert_eq!(
-                call(
-                    &mut f.service,
-                    "DELETE",
-                    "sys/mounts/kubernetes",
-                    &f.admin,
-                    json!({})
-                )
-                .status,
-                204
-            );
-            assert_eq!(
-                call(
-                    &mut f.service,
-                    "POST",
-                    "sys/mounts/kubernetes",
-                    &f.admin,
-                    json!({"type":"kubernetes"})
-                )
-                .status,
-                204
-            );
-        }
-        assert_eq!(call(&mut f.service,"POST","kubernetes/config",&f.admin,
-            json!({"kubernetes_host":"https://localhost:8443","service_account_token":"synthetic-replacement-manager"})).status,204);
+        // DELETE/remount are correctly fenced while this actual lease exists.
+        // Tune is reachable and changes the real committed mount revision;
+        // the original Box and committed receipt must reject that new owner.
+        let before_binding = f
+            .service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .kubernetes_mount_binding("", "kubernetes/creds/reader")
+            .ok_or("admitted mount binding")?;
+        let tuned = call(
+            &mut f.service,
+            "POST",
+            "sys/mounts/kubernetes/tune",
+            &f.admin,
+            json!({"description":"real post-audit revision change"}),
+        );
+        assert_eq!(tuned.status, 204, "{}", tuned.body);
+        let after_binding = f
+            .service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .kubernetes_mount_binding("", "kubernetes/creds/reader")
+            .ok_or("changed mount binding")?;
+        assert_eq!(
+            after_binding,
+            (
+                before_binding.0,
+                before_binding.1.checked_add(1).ok_or("revision overflow")?
+            )
+        );
         let response = std::mem::replace(&mut f.response, Response::error(500, "moved"));
         let denied =
             f.service
