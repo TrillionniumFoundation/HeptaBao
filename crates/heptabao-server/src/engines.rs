@@ -674,6 +674,14 @@ impl EngineState {
         pki.fixture_insert_historical_role(name, value)
     }
 
+    pub(crate) fn has_pki_role_wildcard_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_wildcard_state())
+            })
+        })
+    }
+
     pub(crate) fn has_pki_role_bare_domain_state(&self) -> bool {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount| {

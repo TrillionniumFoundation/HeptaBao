@@ -210,6 +210,10 @@ struct Role {
     // explicit effective value so an older reader cannot silently widen it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     allow_bare_domains: Option<bool>,
+    // None is the historical candidate contract. A new API role explicitly
+    // owns its wildcard choice, including the official default true.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    allow_wildcard_certificates: Option<bool>,
     allow_subdomains: bool,
     #[serde(default)]
     allow_ip_sans: bool,
@@ -289,6 +293,16 @@ impl Pki {
         self.default_ttl = default;
         self.max_ttl = max;
         Ok(())
+    }
+
+    pub(in crate::engines) fn has_role_wildcard_state(&self) -> bool {
+        self.roles
+            .values()
+            .any(|role| role.allow_wildcard_certificates.is_some())
+            || self.issued.values().any(|issued| {
+                issued.common_name.contains('*')
+                    || issued.alt_names.iter().any(|name| name.contains('*'))
+            })
     }
 
     pub(in crate::engines) fn has_role_bare_domain_state(&self) -> bool {
@@ -760,7 +774,13 @@ impl Pki {
             match method {
                 "GET" => {
                     reject_unknown(body, &[])?;
-                    let role = self.roles.get(name).ok_or_else(not_found)?;
+                    let Some(role) = self.roles.get(name) else {
+                        return Ok(EngineResponse {
+                            status: 404,
+                            body: json!({"errors":[]}),
+                            mutated: false,
+                        });
+                    };
                     return Ok(ok(role.descriptor(), false));
                 }
                 "DELETE" => {
@@ -774,6 +794,7 @@ impl Pki {
                             "allowed_domains",
                             "allow_any_name",
                             "allow_bare_domains",
+                            "allow_wildcard_certificates",
                             "allow_subdomains",
                             "allow_ip_sans",
                             "max_ttl",
@@ -788,9 +809,17 @@ impl Pki {
                         return Err(error(507, "PKI role capacity exhausted"));
                     }
                     let changed = self.roles.get(name) != Some(&role);
+                    let missing_default_issuer =
+                        role.issuer_ref.is_empty() && self.selected_issuer("default").is_err();
                     let response = role.descriptor();
                     self.roles.insert(name.into(), role);
-                    return Ok(ok(response, changed));
+                    let mut result = ok(response, changed);
+                    if missing_default_issuer {
+                        result.body["warnings"] = json!([
+                            "Issuing Certificate was set to default, but no default issuing certificate (configurable at /config/issuers) is currently set"
+                        ]);
+                    }
+                    return Ok(result);
                 }
                 _ => return Err(unsupported()),
             }
@@ -860,7 +889,10 @@ impl Pki {
         valid_name(name)?;
         let role: Role = serde_json::from_value(value.clone())
             .map_err(|_| bad("historical typed role fixture"))?;
-        if role.allow_bare_domains.is_some() || role.allow_any_name {
+        if role.allow_bare_domains.is_some()
+            || role.allow_wildcard_certificates.is_some()
+            || role.allow_any_name
+        {
             return Err(bad("historical fixture cannot install a new role owner"));
         }
         role.validate()?;
@@ -1041,10 +1073,13 @@ impl Pki {
                 "common name {common_name} not allowed by this role"
             )));
         }
-        let alt_names = string_list(body.get("alt_names"))?;
+        let mut alt_names = string_list(body.get("alt_names"))?;
         if alt_names.len() > 32 {
             return Err(bad("PKI subject alternative name capacity exceeded"));
         }
+        // Official hostname SAN extraction ignores partial wildcard labels.
+        // The original raw entry capacity is checked before this projection.
+        alt_names.retain(|name| !name.contains('*') || wildcard_dns_san(name));
         if let Some(name) = alt_names
             .iter()
             .find(|name| !valid_common_name(name) || !role.allows(name))
@@ -1355,6 +1390,9 @@ impl Role {
             allow_bare_domains: Some(
                 role_optional_bool(body, "allow_bare_domains")?.unwrap_or(false),
             ),
+            allow_wildcard_certificates: Some(
+                role_optional_bool(body, "allow_wildcard_certificates")?.unwrap_or(true),
+            ),
             allow_subdomains: role_optional_bool(body, "allow_subdomains")?.unwrap_or(false),
             allow_ip_sans: role_optional_bool(body, "allow_ip_sans")?.unwrap_or(true),
             max_ttl: ttl_field(body, "max_ttl", DEFAULT_LEAF_TTL)?,
@@ -1384,11 +1422,20 @@ impl Role {
     }
     fn allows(&self, name: &str) -> bool {
         let name = name.to_ascii_lowercase();
+        let wildcard = wildcard_name(&name);
+        if name.contains('*')
+            && (self.allow_wildcard_certificates != Some(true) || wildcard.is_none())
+        {
+            return false;
+        }
         self.allow_any_name
             || self.allowed_domains.iter().any(|domain| {
                 let domain = domain.to_ascii_lowercase();
                 self.allow_bare_domains.unwrap_or(true) && name == domain
-                    || self.allow_subdomains && name.ends_with(&format!(".{domain}"))
+                    || self.allow_subdomains
+                        && (name.ends_with(&format!(".{domain}"))
+                            || wildcard
+                                .is_some_and(|(_, reduced)| reduced.eq_ignore_ascii_case(&domain)))
             })
     }
     fn descriptor(&self) -> Value {
@@ -1397,6 +1444,7 @@ impl Role {
             "allowed_domains": self.allowed_domains,
             "allow_any_name": self.allow_any_name,
             "allow_bare_domains": self.allow_bare_domains.unwrap_or(true),
+            "allow_wildcard_certificates": self.allow_wildcard_certificates.unwrap_or(false),
             "allow_subdomains": self.allow_subdomains,
             "allow_ip_sans": self.allow_ip_sans,
             "max_ttl": self.max_ttl,
@@ -1585,8 +1633,34 @@ fn valid_domain(name: &str) -> bool {
                     .all(|c| c.is_ascii_alphanumeric() || c == b'-')
         })
 }
+// RFC6125 wildcard syntax: exactly one star in the leftmost label. Each
+// nonempty part of that label must itself be a DNS label, and all remaining
+// labels remain ordinary DNS names. This does not broaden allowed_domains.
+fn wildcard_name(name: &str) -> Option<(&str, &str)> {
+    let name = name.trim_end_matches('.');
+    if name.is_empty() || name.len() > 253 || name.bytes().filter(|b| *b == b'*').count() != 1 {
+        return None;
+    }
+    let (label, reduced) = name.split_once('.').unwrap_or((name, ""));
+    if label.len() > 63 || !label.contains('*') || !reduced.is_empty() && !valid_domain(reduced) {
+        return None;
+    }
+    let (prefix, suffix) = label.split_once('*')?;
+    if [prefix, suffix]
+        .into_iter()
+        .any(|part| !part.is_empty() && !valid_domain(part))
+    {
+        return None;
+    }
+    Some((label, reduced))
+}
+
+fn wildcard_dns_san(name: &str) -> bool {
+    wildcard_name(name).is_some_and(|(label, reduced)| label == "*" && !reduced.is_empty())
+}
+
 fn valid_common_name(name: &str) -> bool {
-    valid_domain(name)
+    valid_domain(name) || wildcard_name(name).is_some()
 }
 
 fn validate_uri(value: &str, field: &str) -> Result<()> {
@@ -1844,7 +1918,8 @@ fn certificate_tbs_with(
         &bit_string(&[usage_byte], unused),
     ));
     let mut names = Vec::new();
-    if !exclude_cn_from_sans {
+    if !exclude_cn_from_sans && (is_ca || !subject_cn.contains('*') || wildcard_dns_san(subject_cn))
+    {
         names.push(context_primitive(2, subject_cn.as_bytes()));
     }
     for name in alt_names {

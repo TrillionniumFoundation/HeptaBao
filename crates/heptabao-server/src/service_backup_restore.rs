@@ -327,6 +327,14 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= PKI_ROLE_WILDCARD_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI wildcard ownership",
+            ));
+        }
         if current.schema >= PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
             && incoming.schema < PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
         {
