@@ -1102,7 +1102,7 @@ retirement preserves that writer and snapshot floor. Local leaf responses includ
 `ca_chain`, `not_before`, and colon-separated serial numbers. Multi-issuer unit
 and encrypted Service lifecycle tests accompany this implementation; complete
 runtime parity still requires independently executed official-binary comparison,
-and local delta CRLs, intermediate issuer import, OCSP, and ACME execution remain
+while intermediate issuer import, OCSP, and ACME execution remain
 outside this implemented scope.
 
 Generated local roots and leaves include RFC 5280 subject key identifiers computed
@@ -1110,3 +1110,17 @@ from their actual public key bits. Each new root's authority key identifier refe
 to itself; a leaf refers to its selected signed issuer certificate's subject key
 identifier. Older persisted issuers without that extension remain readable.
 These identifiers do not replace the certificate, owned-key and signature checks.
+
+Local full and delta CRLs are persisted by `engines/pki_local_crl.rs`. Each issuer
+uses one monotonically increasing number sequence. Full rotation captures all
+owned revocations and writes an empty delta with that full number as its base;
+delta rotation signs only revocations added since the full snapshot. Signed DER,
+publication timestamps, numbers, configuration and revocation snapshots survive
+restart. Public PEM/DER and JSON projections read these bytes without signing or
+advancing counters. Actual cached signatures, issuer DN, authority key identifier,
+number/base, timestamps and revocation ownership are validated on state load.
+`config/crl` retains the nine official configuration fields. Automatic maintenance
+returns a fallible mutation to the durable engine transaction; errors do not
+publish a replacement cache. The named regression
+`full_delta_numbers_real_signatures_ownership_cached_reads_and_durable_restart`
+checks real signatures, number/base progression, issuer isolation and restart.

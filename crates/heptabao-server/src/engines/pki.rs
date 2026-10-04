@@ -26,6 +26,9 @@ use root_fields::{LocalRootMetadata, RootFields};
 #[path = "pki_local_issuers.rs"]
 mod local_issuers;
 use local_issuers::LocalIssuers;
+#[path = "pki_local_crl.rs"]
+mod local_crl;
+use local_crl::LocalCrlState;
 
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;
@@ -134,6 +137,8 @@ pub(super) struct Pki {
     root: Option<RootCa>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     local_issuers: Option<Box<LocalIssuers>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_crl: Option<Box<LocalCrlState>>,
     #[serde(default, skip_serializing_if = "external::ExternalState::is_empty")]
     external: Box<external::ExternalState>,
     roles: BTreeMap<String, Role>,
@@ -238,6 +243,7 @@ impl Default for Pki {
             acme: Box::new(AcmeConfig::default()),
             root: None,
             local_issuers: None,
+            local_crl: None,
             external: Box::default(),
             roles: BTreeMap::new(),
             issued: BTreeMap::new(),
@@ -386,6 +392,7 @@ impl Pki {
                 return Err(bad("invalid PKI issued-certificate state"));
             }
         }
+        self.validate_local_crls(clock)?;
         Ok(())
     }
 
@@ -434,6 +441,9 @@ impl Pki {
                 changed = true;
             }
         }
+        if changed {
+            self.mark_local_crl_dirty();
+        }
         changed
     }
 
@@ -468,6 +478,7 @@ impl Pki {
             return Ok(false);
         }
         lease.revoked_at = Some(clock.max(lease.issued));
+        self.local_revocation_changed(clock)?;
         Ok(true)
     }
 
@@ -483,6 +494,9 @@ impl Pki {
                 lease.revoked_at = Some(clock.max(lease.issued));
                 changed = true;
             }
+        }
+        if changed {
+            self.mark_local_crl_dirty();
         }
         changed
     }
@@ -501,6 +515,9 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        if let Some(response) = self.handle_local_crl(method, path, body, now)? {
+            return Ok(response);
+        }
         if path == "config/cluster" {
             return self.handle_cluster_config(method, body);
         }
@@ -521,7 +538,9 @@ impl Pki {
             && !reference.contains('/')
             && !reference.is_empty()
         {
-            return self.local_issuer_delete(reference, body);
+            let response = self.local_issuer_delete(reference, body)?;
+            self.maintain_local_crl(now)?;
+            return Ok(response);
         }
         if path == "config/issuers" {
             return self.local_issuer_config(method, body);
@@ -656,6 +675,7 @@ impl Pki {
                 not_before,
                 not_after,
             })?;
+            self.rebuild_local_crls(now, false)?;
             return Ok(ok(data, true));
         }
         if path == "root/delete" || path == "root" && method == "DELETE" {
@@ -669,6 +689,9 @@ impl Pki {
                 self.delete_local_roots()?
             };
             self.external.clear_root();
+            if self.local_crl.is_some() {
+                self.rebuild_local_crls(now, false)?;
+            }
             return Ok(ok(Value::Null, changed));
         }
         if let Some(route) = self.public_read_route(method, path) {
@@ -744,14 +767,29 @@ impl Pki {
             }
             reject_unknown(body, &["serial_number"])?;
             let serial = normalize_serial(string(body, "serial_number")?)?;
+            let cert = self.issued.get(&serial).ok_or_else(not_found)?;
+            if cert.revoked_at.is_none()
+                && cert.expires < now.saturating_add(2)
+                && !self.local_expired_revocation_allowed()
+            {
+                return Ok(EngineResponse {
+                    status: 200,
+                    body: json!({"warnings":["certificate already expired; refusing to add to CRL"]}),
+                    mutated: false,
+                });
+            }
             let cert = self.issued.get_mut(&serial).ok_or_else(not_found)?;
             let changed = cert.revoked_at.is_none();
             if changed {
                 cert.revoked_at = Some(now.max(cert.issued));
             }
+            let at = cert.revoked_at.unwrap_or(0);
+            if changed {
+                self.local_revocation_changed(now)?;
+            }
             return Ok(ok(
-                json!({"revocation_time":cert.revoked_at.unwrap_or(0),
-                    "revocation_time_rfc3339":timestamp(cert.revoked_at.unwrap_or(0)),"state":"revoked"}),
+                json!({"revocation_time":at,
+                    "revocation_time_rfc3339":timestamp(at),"state":"revoked"}),
                 changed,
             ));
         }
@@ -768,6 +806,9 @@ impl Pki {
             self.issued
                 .retain(|_, cert| cert.expires.saturating_add(buffer) > now);
             self.reconcile_external_leaf_projections();
+            if before != self.issued.len() && self.local_crl.is_some() {
+                self.rebuild_local_crls(now, false)?;
+            }
             return Ok(empty(before != self.issued.len()));
         }
         Err(error(404, "PKI path is not implemented"))
@@ -1180,42 +1221,14 @@ impl Pki {
         Ok(response)
     }
 
-    fn crl_der(&self, root: &RootCa, now: u64) -> Result<Vec<u8>> {
+    fn crl_der(&self, root: &RootCa, _now: u64) -> Result<Vec<u8>> {
         if root.is_external() {
             return Err(error(
                 501,
                 "external PKI CRL requires a qualified signing lane",
             ));
         }
-        let pair = root.local_key()?;
-        let public = pair.public()?;
-        let algorithm = pair.kind().signature_algorithm();
-        let mut revoked = Vec::new();
-        for (serial, cert) in &self.issued {
-            let Some(at) = cert.revoked_at else { continue };
-            if cert.expires <= now
-                || !cert.local_issuer_id.is_empty() && cert.local_issuer_id != root.issuer_id
-            {
-                continue;
-            }
-            revoked.push(seq(&[integer(&serial_bytes(serial)?), time(at)]));
-        }
-        let mut parts = vec![
-            integer(&[1]),
-            algorithm.clone(),
-            root_fields::certificate_subject(&root.certificate_der)?,
-            time(now),
-            time(now.saturating_add(24 * 3600)),
-        ];
-        if !revoked.is_empty() {
-            parts.push(seq(&revoked));
-        }
-        let tbs = seq(&parts);
-        let signature = pair.sign(&tbs)?;
-        if !public.verify(&tbs, &signature)? {
-            return Err(error(503, "local PKI CRL signature failed validation"));
-        }
-        Ok(seq(&[tbs, algorithm, bit_string(&signature, 0)]))
+        Ok(self.cached_local_crl(root, false)?.to_vec())
     }
 }
 
