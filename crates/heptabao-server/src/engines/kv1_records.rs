@@ -14,8 +14,8 @@ enum Pending {
 }
 
 pub(super) struct Runtime {
-    key: Arc<AddressKey>,
-    index: Kv1Index,
+    pub(super) key: Arc<AddressKey>,
+    pub(super) index: Kv1Index,
     // Bookkeeping only, not logical state. Publication clears exactly this
     // root's objects; readers still own their complete immutable graph.
     pending: Mutex<Pending>,
@@ -38,7 +38,7 @@ impl Clone for Runtime {
     }
 }
 
-fn record_error(error_value: RecordError) -> EngineError {
+pub(super) fn record_error(error_value: RecordError) -> EngineError {
     match error_value {
         RecordError::TooLarge => error(507, "KV1 record capacity exhausted"),
         RecordError::Invalid => bad("invalid KV1 record operation"),
@@ -49,6 +49,17 @@ fn record_error(error_value: RecordError) -> EngineError {
 }
 
 impl Runtime {
+    pub(super) fn with_objects(
+        key: Arc<AddressKey>,
+        index: Kv1Index,
+        objects: Vec<Arc<StagedObject>>,
+    ) -> Self {
+        Self {
+            key,
+            index,
+            pending: Mutex::new(Pending::Ready(objects)),
+        }
+    }
     fn new(key: Arc<AddressKey>, index: Kv1Index) -> Self {
         Self {
             key,

@@ -39,6 +39,48 @@ pub(super) struct StoredWorkflow {
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub(super) struct NamespaceAssets {
+    namespace: String,
+    definitions: Option<BTreeMap<String, StoredWorkflow>>,
+}
+
+impl WorkflowState {
+    pub(super) fn detach_namespace(
+        &mut self,
+        namespace: &str,
+    ) -> Result<NamespaceAssets, Response> {
+        if namespace.is_empty() {
+            return Err(Response::error(
+                503,
+                "root workflow owner cannot be partitioned",
+            ));
+        }
+        Ok(NamespaceAssets {
+            namespace: namespace.to_owned(),
+            definitions: self.by_namespace.remove(namespace),
+        })
+    }
+    pub(super) fn attach_namespace(
+        &mut self,
+        actual: &str,
+        assets: NamespaceAssets,
+    ) -> Result<(), Response> {
+        if actual.is_empty() || assets.namespace != actual || self.by_namespace.contains_key(actual)
+        {
+            return Err(Response::error(
+                503,
+                "namespace workflow owner binding or collision rejected",
+            ));
+        }
+        if let Some(definitions) = assets.definitions {
+            self.by_namespace.insert(actual.to_owned(), definitions);
+        }
+        self.validate()
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 struct WorkflowDefinition {
     steps: Vec<WorkflowStep>,
     outputs: BTreeMap<String, OutputMapping>,

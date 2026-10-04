@@ -29,6 +29,7 @@ mod ha_observation;
 pub mod ha_state;
 pub mod http;
 pub mod namespace_custody;
+mod namespace_record_graph;
 pub mod outbound;
 pub mod postgres_durable;
 pub mod postgres_storage;

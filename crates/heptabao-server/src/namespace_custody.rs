@@ -132,6 +132,73 @@ impl std::fmt::Debug for Key {
     }
 }
 
+impl Key {
+    pub(crate) fn matches_binding(&self, actual: &Binding) -> bool {
+        self.binding == *actual
+    }
+    pub(crate) fn owns_namespace(&self, namespace: &str) -> bool {
+        namespace == self.binding.namespace
+            || namespace
+                .strip_prefix(&self.binding.namespace)
+                .is_some_and(|suffix| suffix.starts_with('/'))
+    }
+    fn record_context(&self, id: &[u8; 32]) -> Result<Vec<u8>, Error> {
+        let binding = serde_json::to_vec(&self.binding).map_err(|_| Error::InvalidBinding)?;
+        let mut context = b"heptabao-namespace-record-object-v1\0".to_vec();
+        context.extend_from_slice(&(binding.len() as u64).to_be_bytes());
+        context.extend_from_slice(&binding);
+        context.extend_from_slice(&self.key_epoch.to_be_bytes());
+        context.extend_from_slice(id);
+        Ok(context)
+    }
+
+    /// Independent keyed object addresses cannot reveal private path/value
+    /// hashes to the root owner. This derivation never exposes the barrier key.
+    pub(crate) fn record_address_key(
+        &self,
+    ) -> Result<std::sync::Arc<crate::state_records::AddressKey>, Error> {
+        let context = self.record_context(&[0; 32])?;
+        let mac = ring::hmac::Key::new(ring::hmac::HMAC_SHA256, self.bytes.as_slice());
+        let digest: [u8; 32] = ring::hmac::sign(&mac, &context)
+            .as_ref()
+            .try_into()
+            .map_err(|_| Error::InvalidKey)?;
+        Ok(crate::state_records::AddressKey::from_bytes(digest))
+    }
+
+    pub(crate) fn protect_record_object(
+        &self,
+        id: &[u8; 32],
+        bytes: &[u8],
+    ) -> Result<Zeroizing<Vec<u8>>, Error> {
+        // Every original graph object is bounded by the existing block/page
+        // codec. This is object encryption, never whole-record flattening.
+        if bytes.is_empty() || bytes.len() > crate::state_records::BLOCK_BYTES + 25 {
+            return Err(Error::AssetCapacity);
+        }
+        let barrier = AeadBarrier::new(*self.bytes).map_err(|_| Error::InvalidKey)?;
+        barrier
+            .seal(&self.record_context(id)?, bytes)
+            .map(Zeroizing::new)
+            .map_err(|_| Error::Randomness)
+    }
+
+    pub(crate) fn open_record_object(
+        &self,
+        id: &[u8; 32],
+        bytes: &[u8],
+    ) -> Result<Zeroizing<Vec<u8>>, Error> {
+        if bytes.len() <= 32 || bytes.len() > crate::state_records::BLOCK_BYTES + 25 + 32 {
+            return Err(Error::CorruptDescriptor);
+        }
+        let barrier = AeadBarrier::new(*self.bytes).map_err(|_| Error::InvalidKey)?;
+        barrier
+            .open(&self.record_context(id)?, bytes)
+            .map(Zeroizing::new)
+            .map_err(|_| Error::CorruptDescriptor)
+    }
+}
+
 /// Fresh shares must be delivered privately after the actual owner commits.
 /// This value must never be serialized into a durable owner, template or audit.
 pub struct Created {

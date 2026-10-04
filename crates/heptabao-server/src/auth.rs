@@ -26,6 +26,9 @@ use x509_parser::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "auth_namespace_assets.rs"]
+pub(crate) mod namespace_assets;
+
 #[path = "auth_recovery_ceremony.rs"]
 mod recovery_ceremony;
 #[path = "auth_recovery_keys.rs"]

@@ -30,6 +30,8 @@ mod kv1_records;
 mod kv_versioning;
 #[path = "engine_leases.rs"]
 mod leases;
+#[path = "engine_namespace_assets.rs"]
+pub(crate) mod namespace_assets;
 pub(crate) mod openldap;
 mod pki;
 pub(crate) use pki::local_ocsp::raw_response as raw_ocsp_response;

@@ -101,6 +101,8 @@ mod kubernetes_secret;
 mod leader;
 #[path = "service_lifecycle.rs"]
 mod lifecycle;
+#[path = "service_namespace_assets.rs"]
+mod namespace_assets;
 #[path = "service_namespaces.rs"]
 mod namespaces;
 #[path = "service_online_auth.rs"]

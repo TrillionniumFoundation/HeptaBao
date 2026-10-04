@@ -54,6 +54,47 @@ pub(super) struct DatabaseState {
     provider_fence: u64,
 }
 
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct NamespaceAssets {
+    namespace: String,
+    mounts: Option<BTreeMap<String, DatabaseMount>>,
+}
+
+impl DatabaseState {
+    pub(super) fn detach_namespace(
+        &mut self,
+        namespace: &str,
+    ) -> Result<NamespaceAssets, Response> {
+        if namespace.is_empty() {
+            return Err(Response::error(
+                503,
+                "root database owner cannot be partitioned",
+            ));
+        }
+        Ok(NamespaceAssets {
+            namespace: namespace.to_owned(),
+            mounts: self.mounts.remove(namespace),
+        })
+    }
+    pub(super) fn attach_namespace(
+        &mut self,
+        actual: &str,
+        assets: NamespaceAssets,
+    ) -> Result<(), Response> {
+        if actual.is_empty() || assets.namespace != actual || self.mounts.contains_key(actual) {
+            return Err(Response::error(
+                503,
+                "namespace database owner binding or collision rejected",
+            ));
+        }
+        if let Some(mounts) = assets.mounts {
+            self.mounts.insert(actual.to_owned(), mounts);
+        }
+        Ok(())
+    }
+}
+
 fn provider_fence_is_zero(value: &u64) -> bool {
     *value == 0
 }

@@ -33,6 +33,17 @@ struct NamespaceEntry {
     custom_metadata: BTreeMap<String, String>,
 }
 
+/// Descendant catalog metadata is owned by the longest independent barrier.
+/// Its typed parcel is encrypted together with the real descendants' assets;
+/// closing a parent removes these entries from the active routing catalog.
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct CatalogAssets {
+    namespace: String,
+    entries: BTreeMap<String, NamespaceEntry>,
+    next_incarnation: BTreeMap<String, u64>,
+}
+
 fn is_false(value: &bool) -> bool {
     !*value
 }
@@ -208,6 +219,96 @@ fn patch_metadata(current: &mut BTreeMap<String, String>, body: &Value) -> Resul
 }
 
 impl NamespaceRegistry {
+    pub(super) fn custody_binding(
+        &self,
+        cluster_id: &str,
+        actual: &str,
+    ) -> Result<crate::namespace_custody::Binding, Response> {
+        let entry = self
+            .entries
+            .get(actual)
+            .ok_or_else(|| Response::error(503, "namespace custody owner is absent"))?;
+        crate::namespace_custody::Binding::new(
+            cluster_id.to_owned(),
+            actual.to_owned(),
+            entry.id.clone(),
+            entry.incarnation,
+        )
+        .map_err(|_| Response::error(503, "namespace custody binding is invalid"))
+    }
+    pub(super) fn partition_paths(&self, actual: &str) -> Result<Vec<String>, Response> {
+        if actual.is_empty() || !self.entries.contains_key(actual) {
+            return Err(Response::error(503, "namespace partition owner is absent"));
+        }
+        let prefix = format!("{actual}/");
+        Ok(self
+            .entries
+            .keys()
+            .filter(|path| path.as_str() == actual || path.starts_with(&prefix))
+            .cloned()
+            .collect())
+    }
+
+    pub(super) fn detach_catalog(&mut self, actual: &str) -> Result<CatalogAssets, Response> {
+        let paths = self.partition_paths(actual)?;
+        let mut entries = BTreeMap::new();
+        for path in paths.into_iter().filter(|path| path != actual) {
+            let entry = self
+                .entries
+                .remove(&path)
+                .ok_or_else(|| Response::error(503, "namespace catalog disappeared"))?;
+            entries.insert(path, entry);
+        }
+        let prefix = format!("{actual}/");
+        let paths = self
+            .next_incarnation
+            .keys()
+            .filter(|path| path.starts_with(&prefix))
+            .cloned()
+            .collect::<Vec<_>>();
+        let mut next_incarnation = BTreeMap::new();
+        for path in paths {
+            let value = self
+                .next_incarnation
+                .remove(&path)
+                .ok_or_else(|| Response::error(503, "namespace frontier disappeared"))?;
+            next_incarnation.insert(path, value);
+        }
+        Ok(CatalogAssets {
+            namespace: actual.to_owned(),
+            entries,
+            next_incarnation,
+        })
+    }
+
+    pub(super) fn attach_catalog(
+        &mut self,
+        actual: &str,
+        assets: CatalogAssets,
+    ) -> Result<(), Response> {
+        let prefix = format!("{actual}/");
+        if actual.is_empty()
+            || assets.namespace != actual
+            || !self.entries.contains_key(actual)
+            || assets
+                .entries
+                .keys()
+                .any(|path| !path.starts_with(&prefix) || self.entries.contains_key(path))
+            || assets
+                .next_incarnation
+                .keys()
+                .any(|path| !path.starts_with(&prefix) || self.next_incarnation.contains_key(path))
+        {
+            return Err(Response::error(
+                503,
+                "namespace child catalog binding or collision rejected",
+            ));
+        }
+        self.entries.extend(assets.entries);
+        self.next_incarnation.extend(assets.next_incarnation);
+        Ok(())
+    }
+
     pub(super) fn is_empty(&self) -> bool {
         self.entries.is_empty() && self.next_incarnation.is_empty() && self.workflows.is_empty()
     }
