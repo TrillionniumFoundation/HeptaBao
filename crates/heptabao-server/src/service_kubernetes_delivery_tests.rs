@@ -10,7 +10,7 @@ struct Fixture {
     service: Service,
     admin: String,
     actor: String,
-    plan: KubernetesTokenEffectPlan,
+    plan: Box<KubernetesTokenEffectPlan>,
     fingerprint: String,
     response: Response,
 }
