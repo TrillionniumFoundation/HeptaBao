@@ -254,11 +254,18 @@ fn pki_ip_sans_require_role_permission_and_are_encoded_as_ip_general_names() -> 
     let mut s = f.service()?;
     let (root, _) = start(&mut s)?;
     install(&mut s, &root);
+    assert_eq!(
+        call(&mut s, &root, "GET", "pki/roles/web", json!({}), 101).body["data"]["allow_ip_sans"],
+        true,
+        "real new-role IP default remains independent of explicit denial"
+    );
+    assert_eq!(call(&mut s, &root, "POST", "pki/roles/web-no-ip",
+        json!({"allowed_domains":["example.test"],"allow_subdomains":true,"allow_ip_sans":false}), 101).status, 200);
     let denied = call(
         &mut s,
         &root,
         "POST",
-        "pki/issue/web",
+        "pki/issue/web-no-ip",
         json!({"common_name":"api.example.test","ip_sans":["127.0.0.1"]}),
         101,
     );

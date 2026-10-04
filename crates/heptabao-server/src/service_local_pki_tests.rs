@@ -1044,8 +1044,20 @@ fn external_issuer_default_rsa_and_mldsa_subjects_are_real_and_bound() -> TestRe
     }
     assert!(
         service.state.as_ref().ok_or("external typed state")?.schema
-            == LOCAL_TYPED_PKI_STATE_SCHEMA,
-        "external typed subject requires72"
+            == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            && service
+                .state
+                .as_ref()
+                .ok_or("external typed state")?
+                .engines
+                .has_local_typed_pki_state()
+            && service
+                .state
+                .as_ref()
+                .ok_or("external typed state")?
+                .engines
+                .has_pki_role_bare_domain_state(),
+        "actual external typed subjects and new role permissions retain the highest owner floor"
     );
     drop(service);
     let mut reopened = root.service()?;
@@ -1068,8 +1080,8 @@ fn external_issuer_default_rsa_and_mldsa_subjects_are_real_and_bound() -> TestRe
             .as_ref()
             .ok_or("external reopened state")?
             .schema
-            == LOCAL_TYPED_PKI_STATE_SCHEMA,
-        "external typed subjects retain floor"
+            == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
+        "encrypted reopen retains actual typed subjects and their new role permission floor"
     );
     Ok(())
 }
