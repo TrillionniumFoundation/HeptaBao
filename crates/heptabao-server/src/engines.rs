@@ -213,6 +213,22 @@ impl Default for NamespaceState {
 
 type Mount = CowValue<MountState>;
 
+// Only the Service's actual successful lease publication captures this
+// process-local receipt. Mount identity and private lease snapshot survive audit.
+pub(crate) struct KubernetesDeliveryReceipt {
+    namespace: String,
+    mount: String,
+    incarnation: u64,
+    revision: u64,
+    lease: kubernetes::LeaseDeliveryReceipt,
+}
+
+impl KubernetesDeliveryReceipt {
+    pub(crate) fn expires_at(&self) -> u64 {
+        self.lease.expires_at()
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 struct MountState {
     #[serde(default = "mount_revision_one")]
@@ -1101,6 +1117,67 @@ impl EngineState {
                 matches!(value.backend, Backend::Kubernetes(_)).then_some(mount.clone())
             })
             .max_by_key(String::len)
+    }
+
+    pub(crate) fn kubernetes_mount_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(u64, u64)> {
+        let mount = self.kubernetes_mount(namespace, path)?;
+        let state = self.namespaces.get(namespace)?.mounts.get(&mount)?;
+        Some((state.incarnation, state.revision))
+    }
+
+    pub(crate) fn capture_kubernetes_delivery_receipt(
+        &self,
+        plan: &kubernetes::TokenRequestPlan,
+    ) -> Result<Option<KubernetesDeliveryReceipt>> {
+        let state = self
+            .namespaces
+            .get(&plan.namespace)
+            .and_then(|namespace| namespace.mounts.get(&plan.mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &state.backend else {
+            return Err(error(503, "Kubernetes delivery mount changed"));
+        };
+        engine.capture_delivery_receipt(plan).map(|receipt| {
+            receipt.map(|lease| KubernetesDeliveryReceipt {
+                namespace: plan.namespace.clone(),
+                mount: plan.mount.clone(),
+                incarnation: state.incarnation,
+                revision: state.revision,
+                lease,
+            })
+        })
+    }
+
+    pub(crate) fn validate_kubernetes_delivery_receipt(
+        &self,
+        plan: &kubernetes::TokenRequestPlan,
+        path: &str,
+        admitted_binding: (u64, u64),
+        receipt: &KubernetesDeliveryReceipt,
+        now: u64,
+    ) -> Result<u64> {
+        if receipt.namespace != plan.namespace
+            || receipt.mount != plan.mount
+            || self.kubernetes_mount(&plan.namespace, path).as_deref() != Some(plan.mount.as_str())
+            || self.kubernetes_mount_binding(&plan.namespace, path) != Some(admitted_binding)
+            || admitted_binding != (receipt.incarnation, receipt.revision)
+        {
+            return Err(error(503, "Kubernetes delivery mount owner changed"));
+        }
+        let state = self
+            .namespaces
+            .get(&plan.namespace)
+            .and_then(|namespace| namespace.mounts.get(&plan.mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &state.backend else {
+            return Err(error(503, "Kubernetes delivery mount changed"));
+        };
+        engine.validate_delivery_receipt(plan, &receipt.lease, now)?;
+        Ok(receipt.expires_at().saturating_sub(now))
     }
 
     pub(crate) fn has_kubernetes_mount(&self) -> bool {

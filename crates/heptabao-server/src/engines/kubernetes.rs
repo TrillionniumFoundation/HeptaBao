@@ -89,7 +89,7 @@ pub(crate) struct LeaseAuthority {
     pub expires_at: u64,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct ObservedAuthority {
     admission: LeaseAuthority,
@@ -113,7 +113,7 @@ struct PendingToken {
     authority: Option<LeaseAuthority>,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Lease {
     role: String,
@@ -156,6 +156,20 @@ pub(crate) struct TokenRequestPlan {
 pub(crate) enum Dispatch {
     Immediate(EngineResponse),
     External(Box<TokenRequestPlan>),
+}
+
+// An affine process-local observation of an actual committed lease. It is
+// neither serialized nor constructible from a public credential response.
+pub(super) struct LeaseDeliveryReceipt {
+    lease_id: String,
+    config_digest: String,
+    lease: Lease,
+}
+
+impl LeaseDeliveryReceipt {
+    pub(super) fn expires_at(&self) -> u64 {
+        self.lease.expires_at
+    }
 }
 
 pub(crate) struct TokenMetadata {
@@ -911,6 +925,75 @@ impl Kubernetes {
         }
 
         Err(err(404, "unsupported Kubernetes secrets path"))
+    }
+
+    pub(super) fn capture_delivery_receipt(
+        &self,
+        plan: &TokenRequestPlan,
+    ) -> std::result::Result<Option<LeaseDeliveryReceipt>, EngineError> {
+        let lease = self
+            .leases
+            .get(&plan.lease_id)
+            .ok_or_else(|| err(503, "Kubernetes committed lease is unavailable"))?;
+        let observed = lease
+            .authority
+            .as_ref()
+            .ok_or_else(|| err(503, "Kubernetes committed lease owner is unavailable"))?;
+        if self.pending.contains_key(&plan.lease_id)
+            || observed.admission != plan.authority
+            || lease.kubernetes_namespace != plan.kubernetes_namespace
+            || lease.service_account_name != plan.service_account_name
+            || plan
+                .audiences
+                .iter()
+                .any(|audience| !lease.audiences.contains(audience))
+            || lease.expires_at != observed.provider_expires_at.min(plan.authority.expires_at)
+            || config_digest(
+                self.config
+                    .as_ref()
+                    .ok_or_else(|| err(503, "Kubernetes provider configuration disappeared"))?,
+            )? != plan.config_digest
+        {
+            return Err(err(503, "Kubernetes committed lease binding changed"));
+        }
+        if observed.retired {
+            return Ok(None);
+        }
+        Ok(Some(LeaseDeliveryReceipt {
+            lease_id: plan.lease_id.clone(),
+            config_digest: plan.config_digest.clone(),
+            lease: lease.clone(),
+        }))
+    }
+
+    pub(super) fn validate_delivery_receipt(
+        &self,
+        plan: &TokenRequestPlan,
+        receipt: &LeaseDeliveryReceipt,
+        now: u64,
+    ) -> std::result::Result<(), EngineError> {
+        if receipt.lease_id != plan.lease_id
+            || receipt.config_digest != plan.config_digest
+            || self.pending.contains_key(&plan.lease_id)
+            || self.leases.get(&plan.lease_id) != Some(&receipt.lease)
+            || receipt.lease.expires_at <= now
+            || receipt
+                .lease
+                .authority
+                .as_ref()
+                .is_none_or(|observed| observed.retired || observed.admission != plan.authority)
+            || config_digest(
+                self.config
+                    .as_ref()
+                    .ok_or_else(|| err(503, "Kubernetes provider configuration disappeared"))?,
+            )? != receipt.config_digest
+        {
+            return Err(err(
+                503,
+                "Kubernetes committed delivery lease changed or expired",
+            ));
+        }
+        Ok(())
     }
 
     pub(crate) fn finalize(

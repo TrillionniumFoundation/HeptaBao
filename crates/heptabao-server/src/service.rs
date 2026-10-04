@@ -1767,9 +1767,23 @@ impl Service {
                 );
             }
             (
-                ExternalEffectPlan::KubernetesToken(plan),
+                ExternalEffectPlan::KubernetesToken(mut plan),
                 ExternalEffectResult::KubernetesToken(result),
-            ) => self.finalize_kubernetes_token(plan, result),
+            ) => {
+                let response = self.finalize_kubernetes_token(&mut plan, result);
+                let response = self.audit_completed_response_with_receipt(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                    || plan.mark_response_audited(&pending.fingerprint),
+                );
+                return self.complete_kubernetes_token_delivery(
+                    &mut plan,
+                    response,
+                    &pending.fingerprint,
+                );
+            }
             (ExternalEffectPlan::OpenLdap(plan), ExternalEffectResult::OpenLdap(result)) => {
                 self.finalize_openldap_request(plan, result)
             }
@@ -1797,7 +1811,18 @@ impl Service {
         fingerprint: &str,
         now: u64,
         token_clock: Option<RequestClock>,
+        response: Response,
+    ) -> Response {
+        self.audit_completed_response_with_receipt(fingerprint, now, token_clock, response, || {})
+    }
+
+    fn audit_completed_response_with_receipt(
+        &mut self,
+        fingerprint: &str,
+        now: u64,
+        token_clock: Option<RequestClock>,
         mut response: Response,
+        after_audit: impl FnOnce(),
     ) -> Response {
         if let Err(cause) = self.persist_terminal_token_clock(token_clock, now) {
             erase_json(&mut response.body);
@@ -1824,6 +1849,7 @@ impl Service {
         if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
             authority.mark_response_audited(fingerprint);
         }
+        after_audit();
         response
     }
 

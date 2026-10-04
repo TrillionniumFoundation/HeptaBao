@@ -22,6 +22,12 @@ pub(crate) struct KubernetesTokenEffectPlan {
     last_use: bool,
     // Process-local affine admission; never persisted or reconstructed on replay.
     response_authority: Option<Box<plugin::PluginResponseAuthority>>,
+    // Exact original routing and publication, never response JSON metadata.
+    request_path: Option<String>,
+    mount_binding: Option<(u64, u64)>,
+    deadline: Option<std::time::Instant>,
+    committed_receipt: Option<crate::engines::KubernetesDeliveryReceipt>,
+    audited_fingerprint: Option<String>,
 }
 
 impl KubernetesTokenEffectPlan {
@@ -44,7 +50,16 @@ impl KubernetesTokenEffectPlan {
             activation_nonce,
             last_use,
             response_authority: None,
+            request_path: None,
+            mount_binding: None,
+            deadline: crate::request_deadline::current(),
+            committed_receipt: None,
+            audited_fingerprint: None,
         }
+    }
+
+    pub(super) fn mark_response_audited(&mut self, fingerprint: &str) {
+        self.audited_fingerprint = Some(fingerprint.to_owned());
     }
 
     fn completed_time(&self) -> Result<AuthorityTime, Response> {
@@ -353,6 +368,12 @@ impl Service {
                     last_use,
                 );
                 effect.token_clock = request.token_clock;
+                effect.request_path = Some(request.path.to_owned());
+                effect.mount_binding = self.state.as_ref().and_then(|state| {
+                    state
+                        .engines
+                        .kubernetes_mount_binding(request.namespace, request.path)
+                });
                 effect.response_authority = Some(Box::new(authority));
                 self.pending_kubernetes_token = Some(effect);
                 Response::error(500, "Kubernetes TokenRequest was not dispatched")
@@ -362,12 +383,16 @@ impl Service {
 
     pub(super) fn finalize_kubernetes_token(
         &mut self,
-        mut plan: KubernetesTokenEffectPlan,
+        plan: &mut KubernetesTokenEffectPlan,
         result: Result<TokenMetadata, Response>,
     ) -> Response {
+        if plan.mount_binding.is_none() || plan.request_path.is_none() {
+            return post_provider_completion_failure(&plan.inner.lease_id);
+        }
         let mut authority = plan.response_authority.take();
-        self.finalize_kubernetes_token_checked(
-            &plan,
+        let mut receipt = None;
+        let response = self.finalize_kubernetes_token_checked(
+            plan,
             result,
             || plan.completed_time(),
             |service| {
@@ -376,7 +401,13 @@ impl Service {
                     .ok_or_else(|| post_provider_completion_failure(&plan.inner.lease_id))?;
                 service.validate_plugin_response(authority)
             },
-        )
+            &mut receipt,
+        );
+        // Return the same Box, including the admitted Principal and clock, on
+        // success and error. It remains alive through the outer audit/stamp.
+        plan.response_authority = authority;
+        plan.committed_receipt = receipt;
+        response
     }
 
     // Test seam for provider/owner semantics, not a product delivery entry point.
@@ -387,11 +418,13 @@ impl Service {
         result: Result<TokenMetadata, Response>,
         mut completed_now: impl FnMut() -> u64,
     ) -> Response {
+        let mut receipt = None;
         self.finalize_kubernetes_token_checked(
             plan,
             result,
             || Ok(AuthorityTime::Coarse(completed_now())),
             |_| Ok(()),
+            &mut receipt,
         )
     }
 
@@ -401,6 +434,7 @@ impl Service {
         result: Result<TokenMetadata, Response>,
         mut completed_time: impl FnMut() -> Result<AuthorityTime, Response>,
         mut authorize_delivery: impl FnMut(&mut Self) -> Result<(), Response>,
+        committed_receipt: &mut Option<crate::engines::KubernetesDeliveryReceipt>,
     ) -> Response {
         let metadata = match result {
             Ok(metadata) => metadata,
@@ -415,6 +449,25 @@ impl Service {
                 |service| service.sync_from_ha_with_anchor(false),
             )
             .is_err()
+        {
+            return post_provider_completion_failure(&plan.inner.lease_id);
+        }
+        if plan
+            .mount_binding
+            .zip(plan.request_path.as_deref())
+            .is_some_and(|(binding, path)| {
+                self.state.as_ref().is_none_or(|state| {
+                    state
+                        .engines
+                        .kubernetes_mount(&plan.inner.namespace, path)
+                        .as_deref()
+                        != Some(plan.inner.mount.as_str())
+                        || state
+                            .engines
+                            .kubernetes_mount_binding(&plan.inner.namespace, path)
+                            != Some(binding)
+                })
+            })
         {
             return post_provider_completion_failure(&plan.inner.lease_id);
         }
@@ -451,6 +504,20 @@ impl Service {
             return post_provider_completion_failure(&plan.inner.lease_id);
         }
         self.state = Some(state);
+        // Read only the actual lease graph after successful durable commit.
+        // This typed observation cannot be populated by a public 200/body.
+        *committed_receipt = match self.state.as_ref().and_then(|state| {
+            state
+                .engines
+                .capture_kubernetes_delivery_receipt(&plan.inner)
+                .ok()
+        }) {
+            Some(receipt) => receipt,
+            None => {
+                erase_json(&mut response.body);
+                return post_provider_completion_failure(&plan.inner.lease_id);
+            }
+        };
         if plan.last_use && response.body["local_lease_retired"] == true {
             return Response::error(
                 400,
@@ -458,7 +525,6 @@ impl Service {
             );
         }
         if response.status == 200 {
-            let published_now = now;
             let delivery_allowed = authorize_delivery(self).is_ok();
             // Revalidation can synchronize HA; sample time after it completes.
             let Some(current) = self.state.as_ref() else {
@@ -477,8 +543,9 @@ impl Service {
             };
             let now = time.seconds();
             // Persisted provider expiry may be shorter than the admitted cap.
-            let original_ttl = response.body["lease_duration"].as_u64().unwrap_or(0);
-            let remaining = original_ttl.saturating_sub(now.saturating_sub(published_now));
+            let remaining = committed_receipt
+                .as_ref()
+                .map_or(0, |receipt| receipt.expires_at().saturating_sub(now));
             if !delivery_allowed
                 || !Self::kubernetes_completion_owner_live(current, plan, time)
                 || remaining == 0
@@ -502,6 +569,7 @@ impl Service {
                     return post_provider_completion_failure(&plan.inner.lease_id);
                 }
                 self.state = Some(retired);
+                *committed_receipt = None;
                 return retired_kubernetes_response(&plan.inner.lease_id);
             }
             response.body["lease_duration"] = json!(remaining);
@@ -510,6 +578,116 @@ impl Service {
             consistency_index: None,
             status: response.status,
             body: std::mem::take(&mut response.body),
+        }
+    }
+
+    /// Keep the original Box and its admitted Principal through actual durable
+    /// publication, mandatory response audit and consistency stamping. Neither
+    /// the public response body nor a bearer replay creates a receipt.
+    pub(super) fn complete_kubernetes_token_delivery(
+        &mut self,
+        plan: &mut KubernetesTokenEffectPlan,
+        mut response: Response,
+        fingerprint: &str,
+    ) -> Response {
+        if !(200..300).contains(&response.status) {
+            return response;
+        }
+        let _deadline_scope = plan
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        let checked =
+            (|| {
+                if plan.audited_fingerprint.as_deref() != Some(fingerprint)
+                    || plan
+                        .deadline
+                        .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+                {
+                    return Err(failure(
+                        "Kubernetes delivery audit or deadline proof is unavailable",
+                    ));
+                }
+                let authority = plan.response_authority.as_mut().ok_or_else(|| {
+                    failure("Kubernetes original delivery authority is unavailable")
+                })?;
+                self.validate_plugin_response(authority)?;
+                // This may observe a durable floor, but grants no new authority.
+                // Recheck the same Box after a real publication can consume time.
+                self.persist_terminal_token_clock(plan.token_clock, plan.now)?;
+                self.validate_plugin_response(authority)?;
+                let state = self
+                    .state
+                    .as_ref()
+                    .ok_or_else(|| failure("Kubernetes delivery is sealed"))?;
+                let time = state.auth.token_api_observed_time(authority.token_time()?);
+                if !Self::kubernetes_completion_owner_live(state, plan, time) {
+                    return Err(failure(
+                        "Kubernetes committed lease no longer authorizes credential delivery",
+                    ));
+                }
+                let receipt = plan.committed_receipt.as_ref().ok_or_else(|| {
+                    failure("Kubernetes committed delivery receipt is unavailable")
+                })?;
+                let path = plan
+                    .request_path
+                    .as_deref()
+                    .ok_or_else(|| failure("Kubernetes admitted routing is unavailable"))?;
+                let binding = plan
+                    .mount_binding
+                    .ok_or_else(|| failure("Kubernetes admitted mount owner is unavailable"))?;
+                let remaining = state
+                    .engines
+                    .validate_kubernetes_delivery_receipt(
+                        &plan.inner,
+                        path,
+                        binding,
+                        receipt,
+                        time.seconds(),
+                    )
+                    .map_err(|error| Response::error(error.status, &error.message))?;
+                if remaining == 0
+                    || plan
+                        .deadline
+                        .is_some_and(|deadline| std::time::Instant::now() >= deadline)
+                {
+                    return Err(failure(
+                        "Kubernetes committed lease no longer authorizes credential delivery",
+                    ));
+                }
+                Ok(remaining)
+            })();
+        match checked {
+            Ok(remaining) => {
+                // Only the real persisted lease determines this projection.
+                response.body["lease_duration"] = json!(remaining);
+                response
+            }
+            Err(error) => {
+                erase_json(&mut response.body);
+                response.consistency_index = None;
+                // A failed clock can label only this negative observation. It
+                // cannot grant delivery, start a new clock or retry TokenRequest.
+                let observed = plan
+                    .completed_time()
+                    .map_or(plan.now, AuthorityTime::seconds);
+                if self
+                    .audit_event(
+                        "kubernetes-delivery-veto",
+                        fingerprint,
+                        observed,
+                        Some(error.status),
+                    )
+                    .is_err()
+                {
+                    crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                    self.recovery_required = true;
+                    self.ha_activation = None;
+                    return failure(
+                        "Kubernetes delivery veto audit failed; authoritative recovery required",
+                    );
+                }
+                error
+            }
         }
     }
 
@@ -572,3 +750,7 @@ fn retired_kubernetes_response(lease_id: &str) -> Response {
 #[cfg(test)]
 #[path = "service_kubernetes_lease_tests.rs"]
 mod lease_tests;
+
+#[cfg(test)]
+#[path = "service_kubernetes_delivery_tests.rs"]
+mod delivery_tests;
