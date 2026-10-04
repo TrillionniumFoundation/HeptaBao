@@ -308,7 +308,9 @@ fn cubbyhole_acl_distinguishes_creation_and_update() -> TestResult {
     let denied_token = issue(
         &mut state,
         &root,
-        json!({"policies":[],"no_default_policy":true}),
+        // Empty policies inherit root. Requesting then removing default creates
+        // the intended policy-free token, as the actual 2.7.0 oracle does.
+        json!({"policies":["default"],"no_default_policy":true}),
     )?;
     assert_eq!(
         call(

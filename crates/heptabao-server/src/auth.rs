@@ -92,6 +92,8 @@ mod ldap_native;
 mod ldap_renewal;
 #[path = "auth_mount_visibility.rs"]
 mod mount_visibility;
+#[path = "auth_token_policies.rs"]
+mod token_policies;
 use ldap_native::{LdapNativeConfig, LdapNativeUser};
 #[path = "auth_native_token.rs"]
 mod native_token;
@@ -6093,11 +6095,11 @@ impl AuthState {
         if parent.uses_remaining.is_some() {
             return Err(bad("limited-use tokens cannot create child tokens"));
         }
-        let add_default = !boolean(body, "no_default_policy", false)?;
-        let requested = policies(body, "policies", &parent.policies, add_default)?;
-        if !parent.root && (!requested.is_subset(&parent.policies) || requested.contains("root")) {
-            return Err(denied());
-        }
+        let is_sudo = parent.root
+            || self
+                .authorize_request(actor, namespace, path, "sudo", now)
+                .is_ok();
+        let requested = token_policies::resolve(body, &parent, namespace, is_sudo)?;
         let root = requested.contains("root");
         if root && (requested.len() != 1 || !namespace.is_empty()) {
             return Err(bad("root policy must be exclusive and in root namespace"));
