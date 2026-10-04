@@ -657,7 +657,7 @@ impl Pki {
             return Ok(ok(data, true));
         }
         if path == "root/delete" {
-            if !write_method(method) {
+            if method != "DELETE" && !write_method(method) {
                 return Err(unsupported());
             }
             reject_unknown(body, &[])?;

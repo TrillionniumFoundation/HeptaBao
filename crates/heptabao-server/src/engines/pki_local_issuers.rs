@@ -192,6 +192,7 @@ impl Pki {
             || self.local_roots().count() > MAX_LOCAL_ISSUERS
             || self.local_keys().count() > MAX_ISSUED
             || state.certificates.len() > MAX_ISSUED
+            || state.retired_issuers.len() > MAX_ISSUED
         {
             return Err(bad("invalid local PKI issuer state"));
         }
@@ -563,6 +564,15 @@ mod tests {
                 .is_err(),
             "default required"
         );
+        for body in [
+            json!({"default":"default"}),
+            json!({"default":"unknown-issuer"}),
+        ] {
+            assert!(
+                matches!(pki.local_issuer_config("POST",&body),Err(error) if error.status==400),
+                "invalid configuration reference is400"
+            );
+        }
         assert!(
             serde_json::to_vec(&pki)? == *before,
             "rejected management preserves state"
