@@ -347,7 +347,7 @@ fn legacy_ordinary_namespace_seal_fence_cannot_grant_an_independent_key()
             json!({}),
         )
         .status,
-        400
+        500
     );
     assert_eq!(
         network_call(&mut service, "GET", "secret/data/item", "team", json!({}),).status,

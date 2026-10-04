@@ -122,6 +122,90 @@ fn marker(service: &mut Service, namespace: &str, token: &str) {
     assert_eq!(response.body["data"]["marker"], "durable-public");
 }
 
+#[test]
+fn ordinary_control_input_priority_matches_pinned_official_before_and_after_seal() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (root_key, token) = bootstrap_unmounted(&mut service)?;
+    let root_key = zeroize::Zeroizing::new(root_key);
+    let root_bytes = zeroize::Zeroizing::new(STANDARD.decode(root_key.as_bytes())?);
+    assert_eq!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain",
+            "",
+            &token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    // Pinned genuine R34: 30 observations. Input parsing precedes the
+    // not-sealable rejection; root-key input grants no independent slot.
+    for closed in [false, true] {
+        if closed {
+            assert_eq!(
+                wire(
+                    &mut service,
+                    "POST",
+                    "sys/namespaces/plain/seal",
+                    "",
+                    &token,
+                    json!({})
+                )
+                .status,
+                204
+            );
+        }
+        assert_eq!(
+            wire(
+                &mut service,
+                "GET",
+                "sys/namespaces/plain/seal-status",
+                "",
+                &token,
+                json!({})
+            )
+            .status,
+            400
+        );
+        for (label, body, expected) in [
+            ("missing", json!({}), 500),
+            ("empty-key", json!({"key":""}), 500),
+            ("null-key", json!({"key":null}), 500),
+            ("wrong-type", json!({"key":{}}), 400),
+            ("malformed", json!({"key":"!"}), 400),
+            ("hex-short", json!({"key":"00"}), 400),
+            ("hex-root", json!({"key":hex(&root_bytes)}), 400),
+            ("base64-root", json!({"key":root_key.as_str()}), 400),
+            ("reset-true", json!({"reset":true}), 400),
+            ("reset-false", json!({"reset":false}), 500),
+            ("reset-invalid", json!({"reset":"invalid"}), 400),
+            ("reset-with-malformed", json!({"reset":true,"key":"!"}), 400),
+        ] {
+            assert_eq!(
+                wire(
+                    &mut service,
+                    "POST",
+                    "sys/namespaces/plain/unseal",
+                    "",
+                    &token,
+                    body
+                )
+                .status,
+                expected,
+                "official ordinary input priority: {label}, closed={closed}"
+            );
+            assert!(
+                !service.namespace_runtime.has_loaded_within("plain"),
+                "ordinary controls cannot manufacture an independent key grant"
+            );
+        }
+    }
+    Ok(())
+}
+
 fn short_actor(
     service: &mut Service,
     root: &str,
