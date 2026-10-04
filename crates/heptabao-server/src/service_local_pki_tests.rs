@@ -409,7 +409,8 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
             "actual encrypted restart unseal"
         );
         assert!(
-            reopened.state.as_ref().ok_or("reopened state")?.schema == expected,
+            reopened.state.as_ref().ok_or("reopened state")?.schema
+                == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
             "reopened reader floor"
         );
         verify_local_crl(&root_spki, &current_crl(&mut reopened, &admin)?, 1)?;
