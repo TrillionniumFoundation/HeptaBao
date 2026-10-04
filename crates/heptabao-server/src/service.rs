@@ -3816,10 +3816,9 @@ impl Service {
                 pending,
                 secret,
                 now,
-                response_fingerprint,
                 &parent,
                 &mut import,
-                wrapper_deadline,
+                (response_fingerprint, wrapper_deadline),
             );
         }
         if self.postgres_durable.is_some() && recovery_secret.is_none() {
@@ -4112,10 +4111,9 @@ impl Service {
                 pending,
                 secret,
                 now,
-                response_fingerprint,
                 &parent,
                 &mut import,
-                wrapper_deadline,
+                (response_fingerprint, wrapper_deadline),
             );
         }
         if self
@@ -4195,14 +4193,14 @@ impl Service {
         pending: PendingPostgresInitialization,
         secret: &[u8; 32],
         now: u64,
-        response_fingerprint: &str,
         parent: &ExclusiveDirectory,
         import: &mut impl FnMut(
             &PgStorageConfig,
             &BackendBundle,
         ) -> Result<Box<dyn DurableBackend>, BackendError>,
-        wrapper_deadline: Option<std::time::Instant>,
+        publication: (&str, Option<std::time::Instant>),
     ) -> (Response, bool) {
+        let (response_fingerprint, wrapper_deadline) = publication;
         let Some(config) = self.postgres_durable.as_ref() else {
             return (
                 Response::error(
