@@ -969,7 +969,10 @@ pub(super) struct RecoveryOwnerCut {
 
 #[cfg(test)]
 impl Service {
-    pub(super) fn fixture_require_live_recovery_wrapper(&self) -> Result<(), Response> {
+    pub(super) fn fixture_require_live_recovery_wrapper(&mut self) -> Result<(), Response> {
+        // A PostgreSQL fixture must prove the existing durable session still
+        // owns its writer fence; it never substitutes local storage authority.
+        self.verify_recovery_backend_owner()?;
         let state = self
             .state
             .as_ref()
@@ -979,7 +982,6 @@ impl Service {
             .as_ref()
             .ok_or_else(|| Response::error(503, "fixture requires actual seal"))?;
         if self.ha.is_some()
-            || self.postgres_durable.is_some()
             || self.recovery_required
             || self.audit_failed
             || self.barrier_key.is_none()
@@ -992,7 +994,7 @@ impl Service {
         {
             return Err(Response::error(
                 503,
-                "fixture requires genuine admitted local Wrapper recovery state",
+                "fixture requires genuine admitted backend-owned Wrapper recovery state",
             ));
         }
         state
@@ -1214,7 +1216,7 @@ impl Service {
     }
 
     pub(super) fn fixture_check_reopened_committed_cut(
-        &self,
+        &mut self,
         cut: &RecoveryOwnerCut,
     ) -> Result<(), Response> {
         self.fixture_require_live_recovery_wrapper()?;
@@ -1488,7 +1490,7 @@ mod source825_real_recovery_fixture_tests {
         assert_eq!(ack.status, 204);
         assert!(
             c.service
-                .as_ref()
+                .as_mut()
                 .expect("live fixture")
                 .fixture_require_live_recovery_wrapper()
                 .is_ok(),
@@ -1576,10 +1578,10 @@ mod source825_real_recovery_fixture_tests {
     #[test]
     #[ignore = "requires ROOT-admitted real provider, fresh private store and built candidate; missing inputs UNQUALIFIED"]
     fn genuine_wrapper_bootstrap_and_recovery_capability() {
-        let c = start("genuine-wrapper-bootstrap");
+        let mut c = start("genuine-wrapper-bootstrap");
         assert!(
             c.service
-                .as_ref()
+                .as_mut()
                 .expect("live fixture")
                 .fixture_require_live_recovery_wrapper()
                 .is_ok()
@@ -1618,7 +1620,7 @@ mod source825_real_recovery_fixture_tests {
         c.service = Some(restarted);
         assert!(
             c.service
-                .as_ref()
+                .as_mut()
                 .expect("real reopened provider")
                 .fixture_check_reopened_committed_cut(&cut)
                 .is_ok()
