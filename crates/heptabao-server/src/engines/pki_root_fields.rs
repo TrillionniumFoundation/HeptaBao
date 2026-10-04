@@ -293,7 +293,7 @@ fn rfc3339_seconds(value: &str) -> Result<u64> {
         || bytes.len() > 40
         || [4, 7, 10, 13, 16]
             .into_iter()
-            .zip([b'-', b'-', b'T', b':', b':'])
+            .zip(*b"--T::")
             .any(|(i, b)| bytes[i] != b)
         || (0..19)
             .filter(|i| ![4, 7, 10, 13, 16].contains(i))
