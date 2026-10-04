@@ -18,6 +18,16 @@ struct Fixture {
 fn fixture(ttl: &str, deadline: Option<Instant>, audited: bool) -> TestResult<Fixture> {
     let files = Root::new();
     let mut service = files.service()?;
+    // Exercise the real Service config enrollment gate, even though these
+    // provider completions inject typed metadata and make no network call.
+    service.outbound = crate::outbound::Outbound::new(vec![crate::outbound::EndpointConfig {
+        origin: "https://localhost:8443".into(),
+        address: std::net::SocketAddr::from(([127, 0, 0, 1], 8443)),
+        server_name: "localhost".into(),
+        ca_pem: include_str!("testdata/kubernetes-api-ca.pem").into(),
+        path_prefix: "/api/".into(),
+        shared_secret: String::new(),
+    }])?;
     let (_, admin) = bootstrap(&mut service)?;
     for (path, body) in [
         ("sys/mounts/kubernetes", json!({"type":"kubernetes"})),
@@ -34,10 +44,11 @@ fn fixture(ttl: &str, deadline: Option<Instant>, audited: bool) -> TestResult<Fi
             json!({"policy":r#"path "kubernetes/creds/*" { capabilities=["update"] }"#}),
         ),
     ] {
+        let response = call(&mut service, "POST", path, &admin, body);
         assert_eq!(
-            call(&mut service, "POST", path, &admin, body).status,
-            204,
-            "fixture route {path}"
+            response.status, 204,
+            "fixture route {path}: {}",
+            response.body
         );
     }
     let issued = call(
@@ -201,10 +212,45 @@ fn kube_delivery_post_audit_revoke_and_policy_change_withhold_real_published_cre
 }
 
 #[test]
-fn kube_delivery_post_audit_provider_config_and_mount_recreation_reject_actual_owner() -> TestResult
+fn kube_delivery_frozen_provider_config_preserves_owner_and_mount_recreation_rejects() -> TestResult
 {
     for change in ["provider", "mount"] {
         let mut f = fixture("10m", None, true)?;
+        if change == "provider" {
+            // Existing leases make this configuration update unreachable:
+            // observe the real 409 rather than inventing a changed config.
+            let before = serde_json::to_vec(f.service.state.as_ref().ok_or("state")?)?;
+            let rejected = call(
+                &mut f.service,
+                "POST",
+                "kubernetes/config",
+                &f.admin,
+                json!({"kubernetes_host":"https://localhost:8443","service_account_token":"synthetic-replacement-manager"}),
+            );
+            assert_eq!(rejected.status, 409, "{}", rejected.body);
+            assert_eq!(
+                rejected.body["errors"],
+                json!(["Kubernetes configuration is frozen while token intents or leases exist"])
+            );
+            assert_eq!(
+                serde_json::to_vec(f.service.state.as_ref().ok_or("state")?)?,
+                before
+            );
+            let delivered = f.service.complete_kubernetes_token_delivery(
+                &mut f.plan,
+                f.response,
+                &f.fingerprint,
+            );
+            assert_eq!(
+                delivered.status, 200,
+                "rejected config leaves the owner unchanged"
+            );
+            assert_eq!(
+                delivered.body["data"]["service_account_token"],
+                "synthetic-private-delivery-credential"
+            );
+            continue;
+        }
         if change == "mount" {
             assert_eq!(
                 call(
