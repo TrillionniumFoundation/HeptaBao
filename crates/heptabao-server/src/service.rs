@@ -64,7 +64,9 @@ const INDEXED_RECOVERY_WIRE_STATE_SCHEMA: u32 = 74;
 const LOCAL_PKI_IDENTIFIER_STATE_SCHEMA: u32 = 75;
 const LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA: u32 = 76;
 const LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA: u32 = 77;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA;
+// Signed local CRL caches, counters and delta bases require an irreversible reader floor.
+const LOCAL_PKI_CRL_STATE_SCHEMA: u32 = 78;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = LOCAL_PKI_CRL_STATE_SCHEMA;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -2265,12 +2267,18 @@ impl Service {
         // A trusted wall-clock observation is persisted before a wrapping
         // token can be rejected/consumed. Observed expiry cannot be undone by
         // a later clock rollback, process restart, or HA leader change.
-        if !owner_manifest_migration && Self::reconcile_lease_owners(&mut admitted, now) {
-            admitted.schema = admitted.writer_schema();
-            if let Err(error) = self.commit_state(&admitted) {
-                return error;
+        if !owner_manifest_migration {
+            let changed = match Self::reconcile_lease_owners(&mut admitted, now) {
+                Ok(changed) => changed,
+                Err(error) => return error,
+            };
+            if changed {
+                admitted.schema = admitted.writer_schema();
+                if let Err(error) = self.commit_state(&admitted) {
+                    return error;
+                }
+                self.state = Some(admitted.clone());
             }
-            self.state = Some(admitted.clone());
         }
         // Public projection classification is bound to the actual namespace
         // and mount after normal HA/unseal and durable lease-owner maintenance.
@@ -2750,7 +2758,16 @@ impl Service {
         // Safe-key and custom JWT role candidates need their reader schema
         // before record preflight. Ordinary legacy reads retain their original
         // schema until a proven logical mutation, as before.
-        if admitted.engines.has_local_pki_multi_issuer_state()
+        // Lease-prefix and owner revocations can mark a signed CRL cache dirty.
+        // Rebuild under this same candidate before validation or publication;
+        // a signing failure cannot publish a successful revocation response.
+        if !owner_manifest_migration
+            && let Err(error) = admitted.engines.maintain_local_pki_crl(now)
+        {
+            return Response::error(error.status, &error.message);
+        }
+        if admitted.engines.has_local_pki_crl_state()
+            || admitted.engines.has_local_pki_multi_issuer_state()
             || admitted.engines.has_local_pki_root_fields_state()
             || admitted.engines.has_local_pki_identifier_state()
             || admitted.engines.has_local_typed_pki_state()

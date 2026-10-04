@@ -327,6 +327,14 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= LOCAL_PKI_CRL_STATE_SCHEMA
+            && incoming.schema < LOCAL_PKI_CRL_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade local PKI CRL state",
+            ));
+        }
         if current.schema >= LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
             && incoming.schema < LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
         {

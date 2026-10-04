@@ -5,7 +5,7 @@ use super::*;
 use std::collections::BTreeSet;
 
 impl Service {
-    pub(super) fn reconcile_lease_owners(state: &mut State, now: u64) -> bool {
+    pub(super) fn reconcile_lease_owners(state: &mut State, now: u64) -> Result<bool, Response> {
         let owners = state.engines.lease_owners();
         let mut live = BTreeSet::new();
         for (namespace, stored_owner) in owners {
@@ -25,7 +25,12 @@ impl Service {
                 }
             }
         }
-        state.engines.reconcile_lease_state(now, &live)
+        let reconciled = state.engines.reconcile_lease_state(now, &live);
+        let rebuilt = state
+            .engines
+            .maintain_local_pki_crl(now)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        Ok(reconciled | rebuilt)
     }
     pub(super) fn lease_route(
         state: &mut State,

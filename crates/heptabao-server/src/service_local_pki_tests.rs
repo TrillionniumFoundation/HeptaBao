@@ -279,7 +279,7 @@ fn exported_ed_root_requires_sticky_identifier_floor_and_keeps_private_delivery_
         .clone()
         .ok_or("committed exported root state")?;
     assert!(
-        active.schema == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+        active.schema == LOCAL_PKI_CRL_STATE_SCHEMA
             && active.engines.has_local_pki_identifier_state()
             && !active.engines.has_local_typed_pki_state(),
         "Ed identifiers activate independent reader floor"
@@ -300,7 +300,7 @@ fn exported_ed_root_requires_sticky_identifier_floor_and_keeps_private_delivery_
     let mut lower = active.clone();
     lower.schema = INDEXED_RECOVERY_WIRE_STATE_SCHEMA;
     assert!(
-        lower.writer_schema() == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+        lower.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
             && lower.validate_format().is_err()
             && service.commit_state(&lower).is_err(),
         "actual older writer label cannot publish exported identifiers"
@@ -354,8 +354,8 @@ fn exported_ed_root_requires_sticky_identifier_floor_and_keeps_private_delivery_
     let retired = reopened.state.as_ref().ok_or("retired state")?;
     assert!(
         !retired.engines.has_local_pki_identifier_state()
-            && retired.schema == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
-            && retired.writer_schema() == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+            && retired.schema == LOCAL_PKI_CRL_STATE_SCHEMA
+            && retired.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA,
         "identifier floor survives root retirement"
     );
     let mut retired_lower = retired.clone();
@@ -454,7 +454,7 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
         let crl = current_crl(&mut service, &admin)?;
         verify_local_crl(&root_spki, &crl, 1)?;
         assert!(
-            service.state.as_ref().ok_or("state")?.schema == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+            service.state.as_ref().ok_or("state")?.schema == LOCAL_PKI_CRL_STATE_SCHEMA,
             "local root identifiers require the protected reader floor for every key kind"
         );
         drop(service);
@@ -472,8 +472,7 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
             "actual encrypted restart unseal"
         );
         assert!(
-            reopened.state.as_ref().ok_or("reopened state")?.schema
-                == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+            reopened.state.as_ref().ok_or("reopened state")?.schema == LOCAL_PKI_CRL_STATE_SCHEMA,
             "reopened reader floor"
         );
         verify_local_crl(&root_spki, &current_crl(&mut reopened, &admin)?, 1)?;
@@ -543,7 +542,7 @@ fn extended_root_fields_in_child_namespace_raise_sticky_floor_before_preflight()
     );
     let active = service.state.clone().ok_or("active extended root")?;
     assert!(
-        active.schema == LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+        active.schema == LOCAL_PKI_CRL_STATE_SCHEMA
             && active.engines.has_local_pki_root_fields_state()
             && !active.engines.has_local_typed_pki_state(),
         "independent all-namespace extended Ed reader requirement"
@@ -554,7 +553,7 @@ fn extended_root_fields_in_child_namespace_raise_sticky_floor_before_preflight()
     let mut lower = active.clone();
     lower.schema = LOCAL_PKI_IDENTIFIER_STATE_SCHEMA;
     assert!(
-        lower.writer_schema() == LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+        lower.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
             && lower.validate_format().is_err()
             && service.commit_state(&lower).is_err(),
         "old identifier-only reader cannot publish extended root fields"
@@ -616,7 +615,7 @@ fn extended_root_fields_in_child_namespace_raise_sticky_floor_before_preflight()
     let retired = reopened.state.as_ref().ok_or("retired state")?;
     assert!(
         !retired.engines.has_local_pki_root_fields_state()
-            && retired.writer_schema() == LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA,
+            && retired.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA,
         "extended reader requirement remains after retirement"
     );
     let mut lower = retired.clone();
@@ -673,7 +672,7 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
     assert!(service.handle_at("POST","local-ca/root/generate/internal","team",&admin,json!({"common_name":"local-ca.example.test","ttl":"1h","key_type":"ec","key_bits":224}),100).status==200,"typed root in nonroot namespace");
     let active = service.state.clone().ok_or("active state")?;
     assert!(
-        active.schema == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+        active.schema == LOCAL_PKI_CRL_STATE_SCHEMA
             && active.engines.has_local_typed_pki_state()
             && active.engines.has_local_pki_identifier_state(),
         "all-namespace typed material and identifier floor"
@@ -693,7 +692,7 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
     );
     assert!(
         service.prepare_snapshot_restore(&backup).is_err(),
-        "actual prepared restore75-to65 denied"
+        "actual prepared restore78-to65 denied"
     );
     prepared.fixture_rebind_base_for_protected_floor(
         service
@@ -753,9 +752,9 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
     let retired = service.state.clone().ok_or("retired state")?;
     assert!(
         !retired.engines.has_local_typed_pki_state()
-            && retired.schema == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
-            && retired.writer_schema() == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
-        "retired identifier floor remains75"
+            && retired.schema == LOCAL_PKI_CRL_STATE_SCHEMA
+            && retired.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA,
+        "retired CRL reader floor remains78"
     );
     let mut lower = retired.clone();
     lower.schema = 71;
@@ -794,7 +793,7 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
             .as_ref()
             .ok_or("retired reopened state")?
             .schema
-            == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+            == LOCAL_PKI_CRL_STATE_SCHEMA,
         "sticky identifier floor survives restart"
     );
     Ok(())
@@ -943,14 +942,43 @@ fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -
     }
     let active = service.state.clone().ok_or("active")?;
     assert!(
-        active.schema == LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+        active.schema == LOCAL_PKI_CRL_STATE_SCHEMA
             && active.engines.has_local_pki_multi_issuer_state(),
         "independent namespace issuer reader floor"
+    );
+    assert!(
+        active.engines.has_local_pki_crl_state(),
+        "namespace owns durable CRL state"
+    );
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "CRL identity")?;
+    for schema in [
+        LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+        LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA,
+        LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA,
+    ] {
+        let mut older = active.clone();
+        older.schema = schema;
+        assert!(
+            older.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
+                && older.validate_format().is_err()
+                && service.commit_state(&older).is_err()
+                && Service::validate_snapshot_protected_floor(&active, &older).is_err(),
+            "all older local PKI readers reject cached CRL ownership"
+        );
+    }
+    assert!(
+        service
+            .current_state_identity()
+            .map_err(|_| "CRL identity after refusal")?
+            == identity,
+        "rejected CRL downgrades preserve durable identity"
     );
     let mut lower = active.clone();
     lower.schema = LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA;
     assert!(
-        lower.writer_schema() == LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+        lower.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
             && lower.validate_format().is_err()
             && service.commit_state(&lower).is_err(),
         "old fields-only reader cannot drop issuer ownership"
@@ -1129,9 +1157,26 @@ fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -
     let retired = service.state.as_ref().ok_or("retired")?;
     assert!(
         !retired.engines.has_local_pki_multi_issuer_state()
-            && retired.writer_schema() == LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA,
-        "retirement retains schema77"
+            && retired.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA,
+        "retirement retains schema78"
     );
+    assert!(
+        !retired.engines.has_local_pki_crl_state(),
+        "CRL owner retired with mount"
+    );
+    for schema in [
+        LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+        LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA,
+        LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA,
+    ] {
+        let mut older = retired.clone();
+        older.schema = schema;
+        assert!(
+            older.validate_publication_schema(Some(retired)).is_err()
+                && Service::validate_snapshot_protected_floor(retired, &older).is_err(),
+            "retired CRL floor rejects every older PKI reader and restore"
+        );
+    }
     let mut lower = retired.clone();
     lower.schema = LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA;
     assert!(

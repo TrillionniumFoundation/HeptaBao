@@ -668,6 +668,30 @@ impl EngineState {
         })
     }
 
+    pub(crate) fn has_local_pki_crl_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_local_crl_state())
+            })
+        })
+    }
+
+    pub(crate) fn maintain_local_pki_crl(&mut self, now: u64) -> Result<bool> {
+        let now = now.max(self.lease_clock);
+        let mut changed = false;
+        for namespace in self.namespaces.values_mut() {
+            for mount in namespace.mounts.values_mut() {
+                if let Backend::Pki(engine) = &mut mount.backend {
+                    changed |= engine.maintain_local_crl(now)?;
+                }
+            }
+        }
+        if changed {
+            self.lease_clock = now;
+        }
+        Ok(changed)
+    }
+
     pub(crate) fn has_local_pki_root_fields_state(&self) -> bool {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount| {

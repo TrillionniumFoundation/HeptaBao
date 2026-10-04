@@ -36,11 +36,13 @@ impl Service {
         if !current.auth.has_live_wrappers()
             && !current.engines.has_live_leases()
             && !current.engines.has_auto_rotate_keys()
+            && !current.engines.has_local_pki_crl_state()
         {
             return Ok(false);
         }
         let mut next = current.clone();
         let changed = Self::reconcile_lease_owners(&mut next, now)
+            .map_err(|_| "lease and PKI CRL maintenance failed")?
             | (next.auth.has_live_wrappers() && next.auth.advance_wrapping_clock(now))
             | next
                 .engines
