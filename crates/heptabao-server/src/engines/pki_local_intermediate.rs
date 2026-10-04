@@ -65,11 +65,17 @@ pub(super) struct LocalIntermediateState {
     pending: BTreeMap<String, PendingCsr>,
     public_issuers: BTreeMap<String, ImportedCa>,
     first_pending_key_id: String,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    default_key_unset: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    public_default_issuer_id: Option<String>,
     signed_certificates: BTreeMap<String, SignedCa>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+// A generated CSR and a separately imported/generated key share the same
+// unbound-key owner. Empty CSR bytes mean no CSR has ever been generated.
 struct PendingCsr {
     material: LocalPrivateMaterial,
     csr_der: Vec<u8>,
@@ -154,10 +160,11 @@ fn certificate_signed_by(bytes: &[u8], parent: &[u8]) -> Result<()> {
     Ok(())
 }
 
-fn validate_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
+fn validate_available_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
     if parents.len() > MAX_CHAIN || parents.iter().map(Vec::len).sum::<usize>() > MAX_CA_BUNDLE {
         return Err(bad("CA chain exceeds bounds"));
     }
+    certificate(leaf)?;
     let mut current = leaf;
     let mut seen = BTreeSet::new();
     seen.insert(crypto_digest(leaf));
@@ -168,7 +175,42 @@ fn validate_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
         certificate_signed_by(current, parent)?;
         current = parent;
     }
-    certificate_signed_by(current, current)
+    Ok(())
+}
+
+fn validate_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
+    validate_available_chain(leaf, parents)?;
+    let terminal = parents.last().map_or(leaf, Vec::as_slice);
+    let cert = certificate(terminal)?;
+    if cert.subject() == cert.issuer() {
+        certificate_signed_by(terminal, terminal)?;
+    }
+    Ok(())
+}
+
+fn available_ca_chain(leaf: &[u8], certificates: &[Vec<u8>]) -> Result<Vec<Vec<u8>>> {
+    let mut parents = Vec::new();
+    let mut current = leaf;
+    let mut seen = BTreeSet::from([crypto_digest(leaf)]);
+    loop {
+        let cert = certificate(current)?;
+        if cert.subject() == cert.issuer() && certificate_signed_by(current, current).is_ok() {
+            break;
+        }
+        let next = certificates.iter().find(|candidate| {
+            !seen.contains(&crypto_digest(candidate))
+                && certificate_signed_by(current, candidate).is_ok()
+        });
+        let Some(next) = next else { break };
+        if parents.len() >= MAX_CHAIN {
+            return Err(bad("CA chain exceeds bounds"));
+        }
+        seen.insert(crypto_digest(next));
+        parents.push(next.clone());
+        current = next;
+    }
+    validate_available_chain(leaf, &parents)?;
+    Ok(parents)
 }
 
 fn crypto_digest(bytes: &[u8]) -> Vec<u8> {
@@ -345,10 +387,15 @@ fn csr_der(
 
 impl LocalCaChain {
     pub(super) fn validate(&self, certificate_der: &[u8], public: &LocalPublicKey) -> Result<()> {
-        let csr = parse_csr(&self.csr_der)?;
         let cert = certificate(certificate_der)?;
-        if csr.certification_request_info.subject_pki.raw != public.spki()?
-            || cert.public_key().raw != public.spki()?
+        let spki = public.spki()?;
+        if !self.csr_der.is_empty()
+            && parse_csr(&self.csr_der)?
+                .certification_request_info
+                .subject_pki
+                .raw
+                != spki
+            || cert.public_key().raw != spki
         {
             return Err(bad("CA certificate or CSR does not match its owned key"));
         }
@@ -399,6 +446,7 @@ impl Pki {
         let changed = !state.pending.is_empty() || !state.public_issuers.is_empty();
         state.pending.clear();
         state.public_issuers.clear();
+        state.public_default_issuer_id = None;
         state.first_pending_key_id.clear();
         changed
     }
@@ -478,6 +526,27 @@ impl Pki {
         )))
     }
 
+    pub(super) fn has_unbound_owned_keys(&self) -> bool {
+        self.local_intermediate
+            .as_ref()
+            .is_some_and(|s| !s.pending.is_empty())
+    }
+
+    pub(super) fn local_default_key_unset(&self) -> bool {
+        self.local_intermediate
+            .as_ref()
+            .is_some_and(|s| s.default_key_unset)
+    }
+
+    pub(super) fn set_local_key_default(&mut self, id: &str) {
+        let state = self.local_intermediate.get_or_insert_with(Box::default);
+        state.first_pending_key_id = id.to_owned();
+        state.default_key_unset = false;
+        if let Some(state) = &mut self.local_issuers {
+            state.default_key_id = id.to_owned();
+        }
+    }
+
     pub(super) fn pending_key_default(&self) -> &str {
         self.local_intermediate
             .as_ref()
@@ -506,18 +575,65 @@ impl Pki {
         if let Some(state) = &self.local_intermediate {
             for (id, ca) in &state.public_issuers {
                 let cert = certificate(&ca.certificate_der)?;
-                info.insert(id.clone(),json!({"issuer_name":"","is_default":false,"key_id":"","serial_number":external::formatted_serial(&normalize_serial(&cert.raw_serial_as_string())?)}));
+                info.insert(id.clone(),json!({"issuer_name":"","is_default":id==self.selected_local_issuer_id(),"key_id":"","serial_number":external::formatted_serial(&normalize_serial(&cert.raw_serial_as_string())?)}));
             }
         }
         Ok(())
     }
 
-    pub(super) fn public_imported_ca(&self, reference: &str) -> Option<(&[u8], Vec<String>)> {
-        let ca = self
+    pub(super) fn selected_local_issuer_id(&self) -> &str {
+        if let Some(id) = self
             .local_intermediate
+            .as_ref()
+            .and_then(|s| s.public_default_issuer_id.as_deref())
+        {
+            id
+        } else {
+            self.root.as_ref().map_or("", |r| r.issuer_id.as_str())
+        }
+    }
+
+    pub(super) fn has_public_default_override(&self) -> bool {
+        self.local_intermediate
+            .as_ref()
+            .is_some_and(|s| s.public_default_issuer_id.is_some())
+    }
+
+    pub(super) fn public_default_issuer_id(&self) -> &str {
+        self.local_intermediate
+            .as_ref()
+            .and_then(|s| s.public_default_issuer_id.as_deref())
+            .unwrap_or("")
+    }
+
+    pub(super) fn set_public_default_issuer(&mut self, id: &str) {
+        self.local_intermediate
+            .get_or_insert_with(Box::default)
+            .public_default_issuer_id = Some(id.to_owned());
+    }
+
+    pub(super) fn clear_public_default_override(&mut self) {
+        if let Some(state) = &mut self.local_intermediate {
+            state.public_default_issuer_id = None;
+        }
+    }
+
+    pub(super) fn imported_ca_id<'a>(&'a self, reference: &'a str) -> Option<&'a str> {
+        let id = if reference == "default" {
+            self.public_default_issuer_id()
+        } else {
+            reference
+        };
+        self.local_intermediate
             .as_ref()?
             .public_issuers
-            .get(reference)?;
+            .contains_key(id)
+            .then_some(id)
+    }
+
+    pub(super) fn public_imported_ca(&self, reference: &str) -> Option<(&[u8], Vec<String>)> {
+        let id = self.imported_ca_id(reference)?;
+        let ca = self.local_intermediate.as_ref()?.public_issuers.get(id)?;
         let mut chain = vec![pem("CERTIFICATE", &ca.certificate_der)];
         chain.extend(ca.parents.iter().map(|der| pem("CERTIFICATE", der)));
         Some((&ca.certificate_der, chain))
@@ -535,6 +651,28 @@ impl Pki {
             || state.signed_certificates.len() > MAX_ISSUED
         {
             return Err(bad("intermediate state exceeds bounds"));
+        }
+        if state.default_key_unset
+            && (!state.first_pending_key_id.is_empty()
+                || self
+                    .local_issuers
+                    .as_ref()
+                    .is_some_and(|s| !s.default_key_id.is_empty()))
+        {
+            return Err(bad(
+                "explicitly unset PKI default key has conflicting ownership",
+            ));
+        }
+        if state
+            .public_default_issuer_id
+            .as_deref()
+            .is_some_and(|id| !id.is_empty() && !state.public_issuers.contains_key(id))
+        {
+            return Err(bad("public PKI default issuer lost ownership"));
+        }
+        let mut public_owners = BTreeMap::new();
+        for key in self.local_keys() {
+            public_owners.insert(key.local_key()?.public()?.spki()?, key.key_id.as_str());
         }
         let mut names: BTreeSet<_> = self
             .local_keys()
@@ -554,9 +692,19 @@ impl Pki {
                 key_name: pending.key_name.clone(),
             };
             fields.validate()?;
-            let csr = parse_csr(&pending.csr_der)?;
-            if csr.certification_request_info.subject_pki.raw
-                != pending.material.public()?.spki()?
+            let public = pending.material.public()?;
+            if public_owners
+                .insert(public.spki()?, id.as_str())
+                .is_some_and(|previous| previous != id.as_str())
+            {
+                return Err(bad("pending PKI public key has conflicting identities"));
+            }
+            if !pending.csr_der.is_empty()
+                && parse_csr(&pending.csr_der)?
+                    .certification_request_info
+                    .subject_pki
+                    .raw
+                    != public.spki()?
             {
                 return Err(bad("pending CSR key changed"));
             }
@@ -576,7 +724,7 @@ impl Pki {
             {
                 return Err(bad("invalid public CA identity"));
             }
-            validate_chain(&ca.certificate_der, &ca.parents)?;
+            validate_available_chain(&ca.certificate_der, &ca.parents)?;
         }
         for (serial, ca) in &state.signed_certificates {
             let cert = certificate(&ca.certificate_der)?;
@@ -602,6 +750,45 @@ impl Pki {
         Ok(())
     }
 
+    fn local_issuer_management_read(
+        &self,
+        reference: &str,
+        body: &Value,
+    ) -> Result<EngineResponse> {
+        reject_unknown(body, &[])?;
+        let (id, key, name, certificate, chain) =
+            if let Some((der, chain)) = self.public_imported_ca(reference) {
+                (
+                    self.imported_ca_id(reference).ok_or_else(not_found)?,
+                    "",
+                    "",
+                    pem("CERTIFICATE", der),
+                    chain,
+                )
+            } else {
+                let root = self.local_issuer(reference)?;
+                (
+                    root.issuer_id.as_str(),
+                    root.key_id.as_str(),
+                    root.local_fields
+                        .as_ref()
+                        .map_or("", |m| m.issuer_name.as_str()),
+                    pem("CERTIFICATE", &root.certificate_der),
+                    root.local_ca_chain_pem(),
+                )
+            };
+        // These are the actual defaults of the currently closed local profile.
+        // Writes to unsupported issuer/AIA policies remain rejected.
+        Ok(ok(
+            json!({"issuer_id":id,"key_id":key,"issuer_name":name,"certificate":certificate,
+            "ca_chain":chain,"manual_chain":Value::Null,"leaf_not_after_behavior":"err",
+            "usage":"crl-signing,issuing-certificates,ocsp-signing,read-only","revoked":false,
+            "revocation_signature_algorithm":"","issuing_certificates":[],"crl_distribution_points":[],
+            "delta_crl_distribution_points":[],"ocsp_servers":[]}),
+            false,
+        ))
+    }
+
     pub(super) fn handle_local_intermediate(
         &mut self,
         method: &str,
@@ -609,22 +796,54 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<Option<EngineResponse>> {
+        if method == "GET"
+            && !self.root.as_ref().is_some_and(RootCa::is_external)
+            && let Some(reference) = path.strip_prefix("issuer/")
+            && !reference.is_empty()
+            && !reference.contains('/')
+        {
+            return self.local_issuer_management_read(reference, body).map(Some);
+        }
         if method == "DELETE"
             && let Some(reference) = path.strip_prefix("issuer/")
             && !reference.contains('/')
             && self.public_imported_ca(reference).is_some()
         {
             reject_unknown(body, &[])?;
-            self.local_intermediate
-                .as_mut()
+            let id = self
+                .imported_ca_id(reference)
                 .ok_or_else(not_found)?
-                .public_issuers
-                .remove(reference);
+                .to_owned();
+            let state = self.local_intermediate.as_mut().ok_or_else(not_found)?;
+            state.public_issuers.remove(&id);
+            if state.public_default_issuer_id.as_deref() == Some(id.as_str()) {
+                state.public_default_issuer_id = Some(String::new());
+            }
             return Ok(Some(ok(Value::Null, true)));
+        }
+        if let Some(reference) = path.strip_prefix("key/") {
+            if reference.is_empty() || reference.contains('/') {
+                return Err(not_found());
+            }
+            return self
+                .owned_local_key_operation(method, reference, body)
+                .map(Some);
         }
         let response = match path {
             "config/keys" if !self.root.as_ref().is_some_and(RootCa::is_external) => {
                 self.local_key_config(method, body)?
+            }
+            "keys/import" => {
+                if !write_method(method) {
+                    return Err(unsupported());
+                }
+                self.import_owned_local_key(body, now)?
+            }
+            "keys/generate/internal" | "keys/generate/exported" => {
+                if !write_method(method) {
+                    return Err(unsupported());
+                }
+                self.generate_owned_local_key(body, path.ends_with("exported"))?
             }
             "intermediate/generate/internal" | "intermediate/generate/exported" => {
                 if !write_method(method) {
@@ -703,11 +922,357 @@ impl Pki {
             .ok_or_else(|| bad("default key reference is unavailable"))?;
         let changed = selected != self.default_local_key_id();
         if changed {
-            self.local_intermediate
-                .get_or_insert_with(Box::default)
-                .first_pending_key_id = selected;
+            self.set_local_key_default(&selected);
         }
         Ok(ok(json!({"default":self.default_local_key_id()}), changed))
+    }
+
+    pub(super) fn owned_key(
+        &self,
+        reference: &str,
+    ) -> Result<(String, String, LocalPrivateMaterial)> {
+        let reference = if reference == "default" {
+            self.default_local_key_id()
+        } else {
+            reference
+        };
+        if let Some(root) = self.local_keys().find(|root| {
+            root.key_id == reference
+                || root
+                    .local_fields
+                    .as_ref()
+                    .is_some_and(|m| !m.key_name.is_empty() && m.key_name == reference)
+        }) {
+            return Ok((
+                root.key_id.clone(),
+                root.local_fields
+                    .as_ref()
+                    .map_or("", |m| m.key_name.as_str())
+                    .to_owned(),
+                root.local_key()?,
+            ));
+        }
+        self.local_intermediate
+            .as_ref()
+            .and_then(|s| {
+                s.pending.iter().find(|(id, key)| {
+                    *id == reference || !key.key_name.is_empty() && key.key_name == reference
+                })
+            })
+            .map(|(id, key)| (id.clone(), key.key_name.clone(), key.material.clone()))
+            .ok_or_else(|| error(500, "PKI key reference is unavailable"))
+    }
+
+    fn new_key_name(&self, name: &str, current: Option<&str>) -> Result<()> {
+        LocalRootMetadata {
+            issuer_name: String::new(),
+            key_name: name.to_owned(),
+        }
+        .validate()?;
+        if !name.is_empty()
+            && (self.local_keys().any(|key| {
+                Some(key.key_id.as_str()) != current
+                    && key
+                        .local_fields
+                        .as_ref()
+                        .is_some_and(|m| m.key_name == name)
+            }) || self.local_intermediate.as_ref().is_some_and(|s| {
+                s.pending
+                    .iter()
+                    .any(|(id, key)| Some(id.as_str()) != current && key.key_name == name)
+            }))
+        {
+            return Err(bad("PKI key name already exists"));
+        }
+        Ok(())
+    }
+
+    fn key_projection(id: &str, name: &str, kind: LocalKeyKind, mutated: bool) -> EngineResponse {
+        ok(
+            json!({"key_id":id,"key_name":name,"key_type":kind.key_type()}),
+            mutated,
+        )
+    }
+
+    fn publish_unbound_key(
+        &mut self,
+        material: LocalPrivateMaterial,
+        name: &str,
+    ) -> Result<String> {
+        if self.root.as_ref().is_some_and(RootCa::is_external) {
+            return Err(bad("local key cannot borrow external issuer authority"));
+        }
+        self.new_key_name(name, None)?;
+        if self.local_keys().count()
+            + self
+                .local_intermediate
+                .as_ref()
+                .map_or(0, |s| s.pending.len())
+            >= MAX_PENDING_KEYS
+        {
+            return Err(error(507, "owned PKI key capacity exhausted"));
+        }
+        let id = random_pki_id()?;
+        if self.owned_key(&id).is_ok() {
+            return Err(error(503, "PKI key identifier collision"));
+        }
+        let previous_default = self.default_local_key_id().to_owned();
+        let state = self.local_intermediate.get_or_insert_with(Box::default);
+        if previous_default.is_empty() {
+            state.first_pending_key_id = id.clone();
+            state.default_key_unset = false;
+        }
+        state.pending.insert(
+            id.clone(),
+            PendingCsr {
+                material,
+                csr_der: Vec::new(),
+                key_name: name.to_owned(),
+            },
+        );
+        Ok(id)
+    }
+
+    fn generate_owned_local_key(&mut self, body: &Value, exported: bool) -> Result<EngineResponse> {
+        reject_unknown(body, &["key_type", "key_bits", "key_name"])?;
+        let name = body
+            .get("key_name")
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("PKI key name must be a string"))
+            })
+            .transpose()?
+            .unwrap_or("");
+        self.new_key_name(name, None)?;
+        let material = LocalPrivateMaterial::generate(LocalKeyKind::from_body(body)?)?;
+        let mut candidate = self.clone();
+        let id = candidate.publish_unbound_key(material.clone(), name)?;
+        let mut response = Self::key_projection(&id, name, material.kind(), true);
+        if exported {
+            let (key, label) = material.root_export_der(false)?;
+            let encoded = Zeroizing::new(pem(label, key.as_slice()));
+            response.body["data"]["private_key"] = json!(encoded.as_str());
+        }
+        *self = candidate;
+        Ok(response)
+    }
+
+    fn import_owned_local_key(&mut self, body: &Value, now: u64) -> Result<EngineResponse> {
+        reject_unknown(body, &["pem_bundle", "key_name"])?;
+        let name = body
+            .get("key_name")
+            .map(|value| {
+                value
+                    .as_str()
+                    .ok_or_else(|| bad("PKI key name must be a string"))
+            })
+            .transpose()?
+            .unwrap_or("");
+        self.new_key_name(name, None)?;
+        let text = string(body, "pem_bundle")?;
+        let trimmed = text.trim_start();
+        let label = ["PRIVATE KEY", "RSA PRIVATE KEY", "EC PRIVATE KEY"]
+            .into_iter()
+            .find(|label| trimmed.starts_with(&format!("-----BEGIN {label}-----")))
+            .ok_or_else(|| bad("invalid unencrypted PKI private key PEM"))?;
+        if text.len() > 128 * 1024 {
+            return Err(bad("PKI private key PEM exceeds bounds"));
+        }
+        let begin = format!("-----BEGIN {label}-----");
+        let end = format!("-----END {label}-----");
+        let payload = text
+            .trim()
+            .strip_prefix(&begin)
+            .ok_or_else(|| bad("invalid private key PEM header"))?;
+        let (payload, trailing) = payload
+            .split_once(&end)
+            .ok_or_else(|| bad("invalid private key PEM ending"))?;
+        if !trailing.trim().is_empty() {
+            return Err(bad("exactly one PKI private key must be imported"));
+        }
+        let encoded = Zeroizing::new(payload.split_whitespace().collect::<String>());
+        let bytes = Zeroizing::new(
+            BASE64
+                .decode(encoded.as_bytes())
+                .map_err(|_| bad("invalid private key PEM data"))?,
+        );
+        let material = LocalPrivateMaterial::import_der(label, bytes.as_slice())?;
+        let public = material.public()?.spki()?;
+        let existing = self
+            .local_keys()
+            .find(|key| {
+                key.local_key()
+                    .and_then(|k| k.public())
+                    .is_ok_and(|p| p.spki().is_ok_and(|p| p == public))
+            })
+            .map(|key| key.key_id.clone())
+            .or_else(|| {
+                self.local_intermediate.as_ref().and_then(|s| {
+                    s.pending
+                        .iter()
+                        .find(|(_, key)| {
+                            key.material
+                                .public()
+                                .is_ok_and(|p| p.spki().is_ok_and(|p| p == public))
+                        })
+                        .map(|(id, _)| id.clone())
+                })
+            });
+        if let Some(id) = existing {
+            let (_, name, key) = self.owned_key(&id)?;
+            let mut response = Self::key_projection(&id, &name, key.kind(), false);
+            response.body["warnings"] =
+                json!(["Key already imported, use key/ endpoint to update name."]);
+            return Ok(response);
+        }
+        let mut candidate = self.clone();
+        let id = candidate.publish_unbound_key(material, name)?;
+        let matched: Vec<_> = candidate
+            .local_intermediate
+            .iter()
+            .flat_map(|s| s.public_issuers.iter())
+            .filter(|(_, ca)| {
+                certificate(&ca.certificate_der).is_ok_and(|c| c.public_key().raw == public)
+            })
+            .map(|(issuer, ca)| (issuer.clone(), ca.clone()))
+            .collect();
+        for (issuer, ca) in matched {
+            candidate.bind_public_ca_to_owned_key(&issuer, &ca, &id)?;
+        }
+        candidate.maintain_local_crl(now)?;
+        let (_, _, key) = candidate.owned_key(&id)?;
+        let response = Self::key_projection(&id, name, key.kind(), true);
+        *self = candidate;
+        Ok(response)
+    }
+
+    fn bind_public_ca_to_owned_key(
+        &mut self,
+        issuer: &str,
+        ca: &ImportedCa,
+        key_id: &str,
+    ) -> Result<()> {
+        let (_, name, material) = self.owned_key(key_id)?;
+        let cert = certificate(&ca.certificate_der)?;
+        let root = RootCa {
+            common_name: common_name(cert.subject())?,
+            issuer_id: issuer.to_owned(),
+            key_id: key_id.to_owned(),
+            local_fields: Some(Box::new(LocalRootMetadata {
+                issuer_name: String::new(),
+                key_name: name,
+            })),
+            pkcs8: if material.kind() == LocalKeyKind::Ed25519 {
+                material.private_der()?.to_vec()
+            } else {
+                Vec::new()
+            },
+            local_material: if material.kind() == LocalKeyKind::Ed25519 {
+                None
+            } else {
+                Some(material)
+            },
+            local_chain: Some(Box::new(LocalCaChain {
+                csr_der: Vec::new(),
+                parents: ca.parents.clone(),
+            })),
+            certificate_der: ca.certificate_der.clone(),
+            serial: normalize_serial(&cert.raw_serial_as_string())?,
+            not_before: u64::try_from(cert.validity().not_before.timestamp()).map_err(invalid)?,
+            not_after: u64::try_from(cert.validity().not_after.timestamp()).map_err(invalid)?,
+        };
+        root.validate_local_certificate()?;
+        self.publish_local_root(root)?;
+        let was_default = self.public_default_issuer_id() == issuer;
+        let state = self.local_intermediate.as_mut().ok_or_else(not_found)?;
+        state.public_issuers.remove(issuer);
+        state.pending.remove(key_id);
+        if was_default {
+            self.select_local_owned_default(issuer)?;
+        }
+        Ok(())
+    }
+
+    fn owned_local_key_operation(
+        &mut self,
+        method: &str,
+        reference: &str,
+        body: &Value,
+    ) -> Result<EngineResponse> {
+        let (id, name, material) = self.owned_key(reference)?;
+        match method {
+            "GET" => {
+                reject_unknown(body, &[])?;
+                Ok(Self::key_projection(&id, &name, material.kind(), false))
+            }
+            "POST" | "PUT" => {
+                reject_unknown(body, &["key_name"])?;
+                let new_name = string(body, "key_name")?;
+                self.new_key_name(new_name, Some(&id))?;
+                let changed = new_name != name;
+                for key in self.root.iter_mut().chain(
+                    self.local_issuers
+                        .iter_mut()
+                        .flat_map(|s| s.other.values_mut().chain(s.orphan_keys.values_mut())),
+                ) {
+                    if key.key_id == id {
+                        key.local_fields
+                            .get_or_insert_with(|| {
+                                Box::new(LocalRootMetadata {
+                                    issuer_name: String::new(),
+                                    key_name: String::new(),
+                                })
+                            })
+                            .key_name = new_name.to_owned();
+                    }
+                }
+                if let Some(key) = self
+                    .local_intermediate
+                    .as_mut()
+                    .and_then(|s| s.pending.get_mut(&id))
+                {
+                    key.key_name = new_name.to_owned();
+                }
+                Ok(Self::key_projection(
+                    &id,
+                    new_name,
+                    material.kind(),
+                    changed,
+                ))
+            }
+            "DELETE" => {
+                reject_unknown(body, &[])?;
+                if self.local_roots().any(|r| r.key_id == id) {
+                    return Err(bad("PKI key remains in use by an issuer"));
+                }
+                let selected = self.default_local_key_id() == id;
+                if let Some(state) = &mut self.local_intermediate {
+                    state.pending.remove(&id);
+                    if selected {
+                        state.first_pending_key_id.clear();
+                    }
+                }
+                if let Some(state) = &mut self.local_issuers {
+                    state.orphan_keys.remove(&id);
+                    if selected {
+                        state.default_key_id.clear();
+                    }
+                }
+                if selected {
+                    let state = self.local_intermediate.get_or_insert_with(Box::default);
+                    state.default_key_unset = true;
+                    Ok(EngineResponse {
+                        status: 200,
+                        body: json!({"warnings":[format!("Deleted key {id} (via key_ref {reference}); this was configured as the default key. Operations without an explicit key will not work until a new default is configured.")]}),
+                        mutated: true,
+                    })
+                } else {
+                    Ok(empty(true))
+                }
+            }
+            _ => Err(unsupported()),
+        }
     }
 
     fn generate_local_csr(&mut self, body: &Value, exported: bool) -> Result<EngineResponse> {
@@ -783,6 +1348,7 @@ impl Pki {
         let state = self.local_intermediate.get_or_insert_with(Box::default);
         if state.first_pending_key_id.is_empty() {
             state.first_pending_key_id = if previous_default.is_empty() {
+                state.default_key_unset = false;
                 id.clone()
             } else {
                 previous_default
@@ -977,156 +1543,199 @@ impl Pki {
 
     fn import_local_ca_inner(&mut self, body: &Value, now: u64) -> Result<EngineResponse> {
         reject_unknown(body, &["certificate"])?;
+        if self.root.as_ref().is_some_and(RootCa::is_external) {
+            return Err(bad("local CA import cannot borrow external authority"));
+        }
         let objects = pem_blocks(string(body, "certificate")?, "CERTIFICATE")?;
         for der in &objects {
             certificate(der)?;
         }
-        let mut planned = Vec::new();
-        for der in &objects {
-            let cert = certificate(der)?;
-            let mut parents = Vec::new();
-            let mut current = der.as_slice();
-            loop {
-                let c = certificate(current)?;
-                if c.subject() == c.issuer() {
-                    certificate_signed_by(current, current)?;
-                    break;
-                }
-                if parents.len() >= MAX_CHAIN {
-                    return Err(bad("CA chain exceeds bounds"));
-                }
-                let next = objects
-                    .iter()
-                    .find(|p| certificate(p).is_ok_and(|p| p.subject() == c.issuer()))
-                    .ok_or_else(|| bad("CA chain parent missing"))?;
-                certificate_signed_by(current, next)?;
-                if parents.iter().any(|p| p == next) {
-                    return Err(bad("CA chain cycle"));
-                }
-                parents.push(next.clone());
-                current = next;
-            }
-            validate_chain(der, &parents)?;
-            if let Some(existing) = self.local_roots().find(|r| r.certificate_der == *der) {
-                planned.push((
-                    existing.issuer_id.clone(),
-                    existing.key_id.clone(),
-                    false,
-                    None,
-                ));
+        let mut available = objects.clone();
+        available.extend(self.local_roots().map(|r| r.certificate_der.clone()));
+        available.extend(self.local_intermediate.iter().flat_map(|s| {
+            s.public_issuers
+                .values()
+                .map(|ca| ca.certificate_der.clone())
+        }));
+        let follows_latest = self
+            .local_issuers
+            .as_ref()
+            .is_some_and(|s| s.default_follows_latest_issuer);
+        if let Some(state) = &mut self.local_issuers {
+            state.default_follows_latest_issuer = false;
+        }
+        let mut owned_imported = Vec::new();
+        let mut mapping = serde_json::Map::new();
+        let mut imported = Vec::new();
+        let mut existing = Vec::new();
+        for der in objects {
+            let cert = certificate(&der)?;
+            let old = self
+                .local_roots()
+                .find(|r| r.certificate_der == der)
+                .map(|r| (r.issuer_id.clone(), r.key_id.clone()))
+                .or_else(|| {
+                    self.local_intermediate.as_ref().and_then(|s| {
+                        s.public_issuers
+                            .iter()
+                            .find(|(_, ca)| ca.certificate_der == der)
+                            .map(|(id, _)| (id.clone(), String::new()))
+                    })
+                });
+            if let Some((id, key)) = old {
+                mapping.insert(id.clone(), json!(key));
+                existing.push(id);
                 continue;
             }
-            if let Some((id, _)) = self.local_intermediate.as_ref().and_then(|s| {
-                s.public_issuers
-                    .iter()
-                    .find(|(_, ca)| ca.certificate_der == *der)
-            }) {
-                planned.push((id.clone(), String::new(), false, None));
-                continue;
-            }
-            let matched = self
+            let pending = self
                 .local_intermediate
                 .as_ref()
-                .and_then(|state| {
-                    state.pending.iter().find(|(_, p)| {
+                .and_then(|s| {
+                    s.pending.iter().find(|(_, p)| {
                         p.material
                             .public()
                             .is_ok_and(|k| k.spki().is_ok_and(|spki| spki == cert.public_key().raw))
                     })
                 })
-                .map(|(id, _)| id.clone());
-            planned.push((
-                random_pki_id()?,
-                matched.unwrap_or_default(),
-                true,
-                Some((der.clone(), parents)),
-            ));
-        }
-        if self.local_roots().count() + planned.iter().filter(|p| p.2 && !p.1.is_empty()).count()
-            > 256
-            || self
-                .local_intermediate
-                .as_ref()
-                .map_or(0, |s| s.public_issuers.len())
-                + planned.iter().filter(|p| p.2 && p.1.is_empty()).count()
-                > MAX_ISSUED
-        {
-            return Err(error(507, "CA import capacity exhausted"));
-        }
-        let mut mapping = serde_json::Map::new();
-        let mut imported = Vec::new();
-        let mut existing = Vec::new();
-        for (id, key, new, object) in planned {
-            mapping.insert(id.clone(), json!(key));
-            if !new {
-                existing.push(id);
-                continue;
-            }
-            imported.push(id.clone());
-            let (der, parents) = object.ok_or_else(|| bad("CA import plan changed"))?;
-            if key.is_empty() {
+                .map(|(id, p)| (id.clone(), p.clone()));
+            let owned = self
+                .local_keys()
+                .find(|key| {
+                    key.local_key()
+                        .and_then(|k| k.public())
+                        .is_ok_and(|k| k.spki().is_ok_and(|spki| spki == cert.public_key().raw))
+                })
+                .cloned();
+            let id = random_pki_id()?;
+            let parents = available_ca_chain(&der, &available)?;
+            let (key, key_name, material, csr) = if let Some((key, pending)) = pending {
+                (
+                    key,
+                    pending.key_name,
+                    Some(pending.material),
+                    pending.csr_der,
+                )
+            } else if let Some(root) = owned {
+                (
+                    root.key_id.clone(),
+                    root.local_fields
+                        .as_ref()
+                        .map_or("", |m| m.key_name.as_str())
+                        .to_owned(),
+                    Some(root.local_key()?),
+                    root.local_chain
+                        .as_ref()
+                        .map_or_else(Vec::new, |c| c.csr_der.clone()),
+                )
+            } else {
+                (String::new(), String::new(), None, Vec::new())
+            };
+            if material.is_none() {
+                if self
+                    .local_intermediate
+                    .as_ref()
+                    .map_or(0, |s| s.public_issuers.len())
+                    >= MAX_ISSUED
+                {
+                    return Err(error(507, "CA import capacity exhausted"));
+                }
                 self.local_intermediate
                     .get_or_insert_with(Box::default)
                     .public_issuers
                     .insert(
-                        id,
+                        id.clone(),
                         ImportedCa {
                             certificate_der: der,
                             parents,
                         },
                     );
             } else {
-                let pending = self
-                    .local_intermediate
-                    .as_mut()
-                    .and_then(|s| s.pending.remove(&key))
-                    .ok_or_else(|| bad("owned CSR key changed"))?;
-                let cert = certificate(&der)?;
-                let common_name = common_name(cert.subject())?;
-                let serial = normalize_serial(&cert.raw_serial_as_string())?;
-                let not_before =
-                    u64::try_from(cert.validity().not_before.timestamp()).map_err(invalid)?;
-                let not_after =
-                    u64::try_from(cert.validity().not_after.timestamp()).map_err(invalid)?;
-                let kind = pending.material.kind();
-                let pkcs8 = if kind == LocalKeyKind::Ed25519 {
-                    pending.material.private_der()?.to_vec()
-                } else {
-                    Vec::new()
-                };
-                let material = if kind == LocalKeyKind::Ed25519 {
-                    None
-                } else {
-                    Some(pending.material)
-                };
+                if self.local_roots().count() >= 256 {
+                    return Err(error(507, "CA import capacity exhausted"));
+                }
+                let material = material.ok_or_else(|| bad("owned CA key changed"))?;
+                let kind = material.kind();
                 let root = RootCa {
-                    common_name,
-                    issuer_id: id,
-                    key_id: key,
+                    common_name: common_name(cert.subject())?,
+                    issuer_id: id.clone(),
+                    key_id: key.clone(),
                     local_fields: Some(Box::new(LocalRootMetadata {
                         issuer_name: String::new(),
-                        key_name: pending.key_name,
+                        key_name,
                     })),
-                    pkcs8,
-                    local_material: material,
+                    pkcs8: if kind == LocalKeyKind::Ed25519 {
+                        material.private_der()?.to_vec()
+                    } else {
+                        Vec::new()
+                    },
+                    local_material: if kind == LocalKeyKind::Ed25519 {
+                        None
+                    } else {
+                        Some(material)
+                    },
                     local_chain: Some(Box::new(LocalCaChain {
-                        csr_der: pending.csr_der,
+                        csr_der: csr,
                         parents,
                     })),
+                    serial: normalize_serial(&cert.raw_serial_as_string())?,
+                    not_before: u64::try_from(cert.validity().not_before.timestamp())
+                        .map_err(invalid)?,
+                    not_after: u64::try_from(cert.validity().not_after.timestamp())
+                        .map_err(invalid)?,
                     certificate_der: der,
-                    serial,
-                    not_before,
-                    not_after,
                 };
                 root.validate_local_certificate()?;
                 self.publish_local_root(root)?;
+                owned_imported.push(id.clone());
+                if let Some(state) = &mut self.local_intermediate {
+                    state.pending.remove(&key);
+                }
+            }
+            mapping.insert(id.clone(), json!(key));
+            imported.push(id);
+        }
+        // Chains reflect every currently imported issuer, including a parent
+        // imported after its child. Available edges require true signatures;
+        // a missing parent leaves a bounded partial chain without inventing trust.
+        self.rebuild_available_ca_chains(&available)?;
+        if let Some(state) = &mut self.local_issuers {
+            state.default_follows_latest_issuer = follows_latest;
+        }
+        let mut warnings = Vec::new();
+        if follows_latest {
+            if owned_imported.len() == 1 {
+                self.select_local_owned_default(&owned_imported[0])?;
+            } else if owned_imported.len() > 1 {
+                warnings.push("Default issuer left unchanged: could not select new issuer automatically as multiple imported issuers had key material in Vault.");
             }
         }
+        // config/urls and per-issuer AIA overrides are not supported by this finite local profile yet.
+        warnings.push("This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information.");
         self.maintain_local_crl(now)?;
-        Ok(ok(
+        let mut response = ok(
             json!({"mapping":mapping,"imported_keys":Value::Null,"existing_keys":Value::Null,"imported_issuers":if imported.is_empty(){Value::Null}else{json!(imported)},"existing_issuers":if existing.is_empty(){Value::Null}else{json!(existing)}}),
             true,
-        ))
+        );
+        response.body["warnings"] = json!(warnings);
+        Ok(response)
+    }
+
+    fn rebuild_available_ca_chains(&mut self, available: &[Vec<u8>]) -> Result<()> {
+        for root in self.root.iter_mut().chain(
+            self.local_issuers
+                .iter_mut()
+                .flat_map(|s| s.other.values_mut()),
+        ) {
+            if let Some(chain) = &mut root.local_chain {
+                chain.parents = available_ca_chain(&root.certificate_der, available)?;
+            }
+        }
+        if let Some(state) = &mut self.local_intermediate {
+            for ca in state.public_issuers.values_mut() {
+                ca.parents = available_ca_chain(&ca.certificate_der, available)?;
+            }
+        }
+        Ok(())
     }
 }
 
@@ -1580,6 +2189,793 @@ mod tests {
             X509StoreContext::new()?
                 .init(&store, &leaf, &untrusted, |context| context.verify_cert())?
         );
+        Ok(())
+    }
+    #[test]
+    fn standalone_ca_partial_chain_late_parent_and_repeated_bundle_follow_actual_oracle()
+    -> TestResult {
+        let mut parent = root()?;
+        let mut child = Pki::default();
+        let generated = child.handle_admin("POST", "intermediate/generate/internal", &json!({"common_name":"standalone.example.test","key_type":"ec","key_name":"shared-owned"}), NOW)?;
+        let signed = parent.handle_admin("POST", "root/sign-intermediate", &json!({"csr":generated.body["data"]["csr"],"use_csr_values":true,"ttl":"12h","max_path_length":1}), NOW)?;
+        let ca = signed.body["data"]["certificate"].as_str().ok_or("CA")?;
+        child.handle_admin(
+            "POST",
+            "intermediate/set-signed",
+            &json!({"certificate":ca}),
+            NOW,
+        )?;
+        assert_eq!(
+            child
+                .root
+                .as_ref()
+                .ok_or("owned CA")?
+                .local_ca_chain_pem()
+                .len(),
+            1
+        );
+        child.validate("", "pki/", NOW)?;
+        child.handle_admin(
+            "POST",
+            "roles/web",
+            &json!({"allowed_domains":["example.test"],"allow_subdomains":true,"key_type":"ec"}),
+            NOW,
+        )?;
+        let owner = serde_json::from_value::<LeaseOwner>(json!("a".repeat(43)))?;
+        let leaf = child.issue(
+            "pki/",
+            "web",
+            &json!({"common_name":"standalone-leaf.example.test"}),
+            &owner,
+            None,
+            NOW + 1,
+        )?;
+        let parsed = X509::from_pem(
+            leaf.body["data"]["certificate"]
+                .as_str()
+                .ok_or("leaf")?
+                .as_bytes(),
+        )?;
+        let issuer_key = PKey::public_key_from_der(
+            &child
+                .root
+                .as_ref()
+                .ok_or("issuer")?
+                .local_key()?
+                .public()?
+                .spki()?,
+        )?;
+        assert!(parsed.verify(&issuer_key)?);
+        assert_eq!(
+            leaf.body["data"]["ca_chain"]
+                .as_array()
+                .ok_or("chain")?
+                .len(),
+            1
+        );
+        let raw = Zeroizing::new(serde_json::to_vec(&child)?);
+        let mut child: Pki = serde_json::from_slice(&raw)?;
+        child.validate("", "pki/", NOW + 1)?;
+        let root_pem = pem(
+            "CERTIFICATE",
+            &parent.root.as_ref().ok_or("root")?.certificate_der,
+        );
+        child.handle_admin(
+            "POST",
+            "intermediate/set-signed",
+            &json!({"certificate":root_pem}),
+            NOW + 2,
+        )?;
+        assert_eq!(
+            child
+                .root
+                .as_ref()
+                .ok_or("owned CA")?
+                .local_ca_chain_pem()
+                .len(),
+            2
+        );
+        let repeated = child.handle_admin(
+            "POST",
+            "intermediate/set-signed",
+            &json!({"certificate":format!("{ca}\n{ca}\n{root_pem}\n{root_pem}")}),
+            NOW + 3,
+        )?;
+        assert_eq!(
+            repeated.body["data"]["mapping"]
+                .as_object()
+                .ok_or("mapping")?
+                .len(),
+            2
+        );
+        assert_eq!(
+            repeated.body["data"]["existing_issuers"]
+                .as_array()
+                .ok_or("existing")?
+                .len(),
+            4
+        );
+        assert!(repeated.body["data"]["imported_issuers"].is_null());
+        let mut public = Pki::default();
+        let new_repeated = public.handle_admin(
+            "POST",
+            "intermediate/set-signed",
+            &json!({"certificate":format!("{ca}\n{ca}\n{root_pem}")}),
+            NOW,
+        )?;
+        assert_eq!(
+            new_repeated.body["data"]["imported_issuers"]
+                .as_array()
+                .ok_or("new")?
+                .len(),
+            2
+        );
+        assert_eq!(
+            new_repeated.body["data"]["existing_issuers"]
+                .as_array()
+                .ok_or("existing")?
+                .len(),
+            1
+        );
+        assert!(public.root.is_none());
+        child.validate("", "pki/", NOW + 3)?;
+        public.validate("", "pki/", NOW)?;
+        // A lower CA can also hold only its immediate signer. Its supplied
+        // edge is still cryptographically verified without inventing a root.
+        let mut grandchild = Pki::default();
+        let csr = grandchild.handle_admin(
+            "POST",
+            "intermediate/generate/internal",
+            &json!({"common_name":"partial.example.test","key_type":"ec"}),
+            NOW + 4,
+        )?;
+        let signed = child.handle_admin("POST", "root/sign-intermediate", &json!({"csr":csr.body["data"]["csr"],"use_csr_values":true,"ttl":"1h","max_path_length":0}), NOW+4)?;
+        let lower = signed.body["data"]["certificate"]
+            .as_str()
+            .ok_or("lower CA")?;
+        grandchild.handle_admin(
+            "POST",
+            "intermediate/set-signed",
+            &json!({"certificate":format!("{lower}\n{ca}")}),
+            NOW + 4,
+        )?;
+        assert_eq!(
+            grandchild
+                .root
+                .as_ref()
+                .ok_or("lower issuer")?
+                .local_ca_chain_pem()
+                .len(),
+            2
+        );
+        grandchild.validate("", "pki/", NOW + 4)?;
+        let reopened: Pki =
+            serde_json::from_slice(&Zeroizing::new(serde_json::to_vec(&grandchild)?))?;
+        reopened.validate("", "pki/", NOW + 4)?;
+        assert_eq!(
+            reopened
+                .root
+                .as_ref()
+                .ok_or("reopened issuer")?
+                .local_ca_chain_pem()
+                .len(),
+            2
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn multiple_ca_certificates_share_exact_owned_key_without_duplicate_keys_or_aliases()
+    -> TestResult {
+        let mut parent = root()?;
+        let mut child = Pki::default();
+        let generated = child.handle_admin(
+            "POST",
+            "intermediate/generate/internal",
+            &json!({"common_name":"first.example.test","key_type":"ec","key_name":"one-owned-key"}),
+            NOW,
+        )?;
+        let key = generated.body["data"]["key_id"]
+            .as_str()
+            .ok_or("key ID")?
+            .to_owned();
+        for name in ["first.example.test", "second.example.test"] {
+            let signed = parent.handle_admin("POST", "root/sign-intermediate", &json!({"csr":generated.body["data"]["csr"],"common_name":name,"ttl":"12h","max_path_length":1}), NOW)?;
+            let imported = child.handle_admin(
+                "POST",
+                "intermediate/set-signed",
+                &json!({"certificate":signed.body["data"]["certificate"]}),
+                NOW,
+            )?;
+            assert!(
+                imported.body["data"]["mapping"]
+                    .as_object()
+                    .ok_or("mapping")?
+                    .values()
+                    .all(|id| id == &key)
+            );
+        }
+        assert_eq!(child.local_roots().count(), 2);
+        assert_eq!(child.local_keys().count(), 1);
+        assert_eq!(
+            child.local_key_list(&json!({}))?.body["data"]["keys"]
+                .as_array()
+                .ok_or("keys")?
+                .len(),
+            1
+        );
+        child.validate("", "pki/", NOW)?;
+        let reopened: Pki = serde_json::from_slice(&Zeroizing::new(serde_json::to_vec(&child)?))?;
+        reopened.validate("", "pki/", NOW)?;
+        assert_eq!(reopened.local_roots().count(), 2);
+        assert_eq!(reopened.local_keys().count(), 1);
+        let second = child
+            .local_issuers
+            .as_ref()
+            .ok_or("other")?
+            .other
+            .keys()
+            .next()
+            .ok_or("issuer")?
+            .clone();
+        for field in ["key_id", "local_fields/key_name"] {
+            let mut forged = serde_json::to_value(&child)?;
+            *forged
+                .pointer_mut(&format!("/local_issuers/other/{second}/{field}"))
+                .ok_or("owned field")? = json!(if field == "key_id" {
+                random_pki_id()?
+            } else {
+                "different-alias".to_owned()
+            });
+            let forged: Pki = serde_json::from_value(forged)?;
+            assert!(forged.validate("", "pki/", NOW).is_err());
+        }
+        let mut removed = reopened;
+        removed.handle_admin("DELETE", &format!("issuer/{second}"), &json!({}), NOW)?;
+        removed.validate("", "pki/", NOW)?;
+        assert_eq!(removed.local_keys().count(), 1);
+        assert_eq!(removed.local_roots().count(), 1);
+        Ok(())
+    }
+    #[test]
+    fn eleven_real_unbound_key_exports_imports_and_default_delete_follow_official_contract()
+    -> TestResult {
+        let mut pki = Pki::default();
+        let mut ids = Vec::new();
+        for (key_type, bits) in [
+            ("ed25519", 0),
+            ("rsa", 2048),
+            ("rsa", 3072),
+            ("rsa", 4096),
+            ("ec", 224),
+            ("ec", 256),
+            ("ec", 384),
+            ("ec", 521),
+            ("mldsa", 44),
+            ("mldsa", 65),
+            ("mldsa", 87),
+        ] {
+            let generated = pki.handle_admin("POST", "keys/generate/exported", &json!({"key_type":key_type,"key_bits":bits,"key_name":format!("{key_type}{bits}")}), NOW)?;
+            let id = generated.body["data"]["key_id"]
+                .as_str()
+                .ok_or("key ID")?
+                .to_owned();
+            let key_pem = generated.body["data"]["private_key"]
+                .as_str()
+                .ok_or("exported key")?;
+            let imported =
+                pki.handle_admin("POST", "keys/import", &json!({"pem_bundle":key_pem}), NOW)?;
+            assert_eq!(imported.body["data"]["key_id"], id);
+            assert!(!imported.mutated);
+            assert_eq!(imported.body["data"]["key_type"], key_type);
+            let (_, _, material) = pki.owned_key(&id)?;
+            let signature = material.sign(b"independent key ownership roundtrip")?;
+            assert!(
+                material
+                    .public()?
+                    .verify(b"independent key ownership roundtrip", &signature)?
+            );
+            let read = pki.handle_admin("GET", &format!("key/{id}"), &json!({}), NOW)?;
+            assert!(read.body["data"].get("private_key").is_none());
+            assert_eq!(read.body["data"]["key_type"], key_type);
+            ids.push(id);
+        }
+        assert_eq!(
+            pki.local_key_list(&json!({}))?.body["data"]["keys"]
+                .as_array()
+                .ok_or("keys")?
+                .len(),
+            11
+        );
+        assert!(
+            pki.local_intermediate
+                .as_ref()
+                .ok_or("key owner")?
+                .pending
+                .values()
+                .all(|key| key.csr_der.is_empty())
+        );
+        pki.validate("", "pki/", NOW)?;
+        let before = Zeroizing::new(serde_json::to_vec(&pki)?);
+        let (_, _, material) = pki.owned_key(&ids[10])?;
+        let (private, label) = material.root_export_der(false)?;
+        assert!(
+            pki.handle_admin(
+                "POST",
+                "keys/import",
+                &json!({"pem_bundle":pem(label,private.as_slice()),"key_name":"mldsa87"}),
+                NOW
+            )
+            .is_err()
+        );
+        assert_eq!(*before, serde_json::to_vec(&pki)?);
+        let removed = pki.handle_admin("DELETE", &format!("key/{}", ids[0]), &json!({}), NOW)?;
+        assert_eq!(removed.status, 200);
+        assert!(
+            removed.body["warnings"]
+                .as_array()
+                .is_some_and(|w| !w.is_empty())
+        );
+        assert_eq!(pki.default_local_key_id(), "");
+        pki.validate("", "pki/", NOW)?;
+        assert!(matches!(pki.owned_key(&ids[0]), Err(e) if e.status == 500));
+        pki.handle_admin("POST", "config/keys", &json!({"default":ids[1]}), NOW)?;
+        pki.handle_admin("DELETE", &format!("key/{}", ids[1]), &json!({}), NOW)?;
+        assert_eq!(pki.default_local_key_id(), "");
+        let reopened: Pki = serde_json::from_slice(&Zeroizing::new(serde_json::to_vec(&pki)?))?;
+        reopened.validate("", "pki/", NOW)?;
+        assert_eq!(reopened.default_local_key_id(), "");
+        let generated = pki.handle_admin(
+            "POST",
+            "keys/generate/internal",
+            &json!({"key_type":"ec","key_name":"after-deleted-default"}),
+            NOW,
+        )?;
+        assert_eq!(generated.body["data"]["key_id"], pki.default_local_key_id());
+        assert!(generated.body["data"].get("private_key").is_none());
+        pki.validate("", "pki/", NOW)?;
+        Ok(())
+    }
+
+    #[test]
+    fn private_key_import_before_or_after_public_ca_preserves_actual_issuer_and_signs() -> TestResult
+    {
+        let mut parent = root()?;
+        let mut source = Pki::default();
+        let generated = source.handle_admin("POST", "intermediate/generate/exported", &json!({"common_name":"imported.example.test","key_type":"ec","private_key_format":"pkcs8"}), NOW)?;
+        let signed = parent.handle_admin(
+            "POST",
+            "root/sign-intermediate",
+            &json!({"csr":generated.body["data"]["csr"],"use_csr_values":true,"ttl":"12h"}),
+            NOW,
+        )?;
+        let ca = signed.body["data"]["certificate"]
+            .as_str()
+            .ok_or("signed CA")?;
+        let private_pem = generated.body["data"]["private_key"]
+            .as_str()
+            .ok_or("key")?;
+        for late in [false, true] {
+            let mut imported = Pki::default();
+            let mut original_issuer = None;
+            if late {
+                let public = imported.handle_admin(
+                    "POST",
+                    "intermediate/set-signed",
+                    &json!({"certificate":ca}),
+                    NOW,
+                )?;
+                original_issuer = public.body["data"]["imported_issuers"][0]
+                    .as_str()
+                    .map(str::to_owned);
+                assert!(imported.root.is_none());
+                assert_eq!(imported.default_local_key_id(), "");
+            }
+            let key = imported.handle_admin(
+                "POST",
+                "keys/import",
+                &json!({"pem_bundle":private_pem,"key_name":"owned-imported"}),
+                NOW,
+            )?;
+            let key_id = key.body["data"]["key_id"]
+                .as_str()
+                .ok_or("key ID")?
+                .to_owned();
+            if !late {
+                imported.handle_admin(
+                    "POST",
+                    "intermediate/set-signed",
+                    &json!({"certificate":ca}),
+                    NOW,
+                )?;
+            }
+            let issuer = imported.root.as_ref().ok_or("private owner bound")?;
+            assert_eq!(issuer.key_id, key_id);
+            if let Some(id) = original_issuer {
+                assert_eq!(issuer.issuer_id, id);
+            }
+            assert_eq!(
+                issuer.certificate_der,
+                pem_blocks(ca, "CERTIFICATE")?.remove(0)
+            );
+            assert!(
+                issuer
+                    .local_chain
+                    .as_ref()
+                    .ok_or("imported key chain")?
+                    .csr_der
+                    .is_empty()
+            );
+            assert_eq!(imported.default_local_key_id(), key_id);
+            let before = Zeroizing::new(serde_json::to_vec(&imported)?);
+            let repeat = imported.handle_admin(
+                "POST",
+                "keys/import",
+                &json!({"pem_bundle":private_pem,"key_name":"unused-new-name"}),
+                NOW,
+            )?;
+            assert_eq!(repeat.body["data"]["key_id"], key_id);
+            assert_eq!(repeat.body["data"]["key_name"], "owned-imported");
+            assert!(!repeat.mutated);
+            assert_eq!(*before, serde_json::to_vec(&imported)?);
+            imported.handle_admin("POST", "roles/web", &json!({"allowed_domains":["example.test"],"allow_subdomains":true,"key_type":"ec"}), NOW)?;
+            let owner = serde_json::from_value::<LeaseOwner>(json!("a".repeat(43)))?;
+            let leaf = imported.issue(
+                "pki/",
+                "web",
+                &json!({"common_name":"owned-imported.example.test"}),
+                &owner,
+                None,
+                NOW + 1,
+            )?;
+            let cert = X509::from_pem(
+                leaf.body["data"]["certificate"]
+                    .as_str()
+                    .ok_or("leaf")?
+                    .as_bytes(),
+            )?;
+            let public =
+                PKey::public_key_from_der(&imported.owned_key(&key_id)?.2.public()?.spki()?)?;
+            assert!(cert.verify(&public)?);
+            imported.validate("", "pki/", NOW + 1)?;
+            let reopened: Pki =
+                serde_json::from_slice(&Zeroizing::new(serde_json::to_vec(&imported)?))?;
+            reopened.validate("", "pki/", NOW + 1)?;
+            assert_eq!(
+                reopened.root.as_ref().ok_or("reopened issuer")?.key_id,
+                key_id
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn key_rename_shared_issuers_and_in_use_delete_keep_authority_until_last_issuer_removed()
+    -> TestResult {
+        let mut parent = root()?;
+        let mut child = Pki::default();
+        let csr = child.handle_admin(
+            "POST",
+            "intermediate/generate/internal",
+            &json!({"common_name":"first.example.test","key_type":"ec","key_name":"shared-old"}),
+            NOW,
+        )?;
+        let id = csr.body["data"]["key_id"]
+            .as_str()
+            .ok_or("key ID")?
+            .to_owned();
+        for cn in ["first.example.test", "second.example.test"] {
+            let signed = parent.handle_admin(
+                "POST",
+                "root/sign-intermediate",
+                &json!({"csr":csr.body["data"]["csr"],"common_name":cn,"ttl":"12h"}),
+                NOW,
+            )?;
+            child.handle_admin(
+                "POST",
+                "intermediate/set-signed",
+                &json!({"certificate":signed.body["data"]["certificate"]}),
+                NOW,
+            )?;
+        }
+        child.handle_admin(
+            "POST",
+            "key/shared-old",
+            &json!({"key_name":"shared-new"}),
+            NOW,
+        )?;
+        assert!(child.local_roots().all(|r| {
+            r.local_fields
+                .as_ref()
+                .is_some_and(|m| m.key_name == "shared-new")
+        }));
+        assert_eq!(child.owned_key("shared-new")?.0, id);
+        let before = Zeroizing::new(serde_json::to_vec(&child)?);
+        assert!(
+            matches!(child.handle_admin("DELETE", &format!("key/{id}"), &json!({}), NOW), Err(e) if e.status == 400)
+        );
+        assert_eq!(*before, serde_json::to_vec(&child)?);
+        let issuers: Vec<_> = child.local_roots().map(|r| r.issuer_id.clone()).collect();
+        for issuer in issuers {
+            child.handle_admin("DELETE", &format!("issuer/{issuer}"), &json!({}), NOW)?;
+        }
+        child.validate("", "pki/", NOW)?;
+        assert_eq!(child.local_keys().count(), 1);
+        child.handle_admin("DELETE", &format!("key/{id}"), &json!({}), NOW)?;
+        child.validate("", "pki/", NOW)?;
+        assert_eq!(child.local_keys().count(), 0);
+        assert_eq!(child.default_local_key_id(), "");
+        assert!(
+            child.certificate_list(&json!({}))?.body["data"]["keys"]
+                .as_array()
+                .ok_or("archived public certificates")?
+                .len()
+                >= 2
+        );
+        Ok(())
+    }
+    #[test]
+    fn actual_bundle_default_policy_and_import_warnings_survive_reopen() -> TestResult {
+        let (mut parent, mut child) = setup()?;
+        let original = child.selected_local_issuer_id().to_owned();
+        let csr_a = pem(
+            "CERTIFICATE REQUEST",
+            &child
+                .root
+                .as_ref()
+                .ok_or("owned")?
+                .local_chain
+                .as_ref()
+                .ok_or("chain")?
+                .csr_der,
+        );
+        child.handle_admin(
+            "POST",
+            "config/issuers",
+            &json!({"default":original,"default_follows_latest_issuer":true}),
+            NOW,
+        )?;
+        let b = child.handle_admin(
+            "POST",
+            "intermediate/generate/internal",
+            &json!({"common_name":"b.example.test","key_type":"ec"}),
+            NOW,
+        )?;
+        let csr_b = b.body["data"]["csr"].as_str().ok_or("csr b")?.to_owned();
+        let a2 = parent.handle_admin(
+            "POST",
+            "root/sign-intermediate",
+            &json!({"csr":csr_a,"common_name":"a-second.example.test","ttl":"12h"}),
+            NOW,
+        )?;
+        let b1 = parent.handle_admin(
+            "POST",
+            "root/sign-intermediate",
+            &json!({"csr":csr_b,"common_name":"b.example.test","ttl":"12h"}),
+            NOW,
+        )?;
+        let bundle = format!(
+            "{}\n{}",
+            a2.body["data"]["certificate"].as_str().ok_or("a2")?,
+            b1.body["data"]["certificate"].as_str().ok_or("b")?
+        );
+        let imported = child.handle_admin(
+            "POST",
+            "intermediate/set-signed",
+            &json!({"certificate":bundle}),
+            NOW,
+        )?;
+        assert_eq!(child.selected_local_issuer_id(), original);
+        assert_eq!(
+            imported.body["warnings"][0],
+            "Default issuer left unchanged: could not select new issuer automatically as multiple imported issuers had key material in Vault."
+        );
+        assert_eq!(
+            imported.body["warnings"]
+                .as_array()
+                .ok_or("warnings")?
+                .len(),
+            2
+        );
+        assert!(
+            child.local_issuer_config("GET", &json!({}))?.body["data"]["default_follows_latest_issuer"]
+                == true
+        );
+        let b2 = parent.handle_admin(
+            "POST",
+            "root/sign-intermediate",
+            &json!({"csr":csr_b,"common_name":"b-second.example.test","ttl":"12h"}),
+            NOW,
+        )?;
+        let imported = child.handle_admin(
+            "POST",
+            "intermediate/set-signed",
+            &json!({"certificate":b2.body["data"]["certificate"]}),
+            NOW,
+        )?;
+        assert_eq!(
+            child.selected_local_issuer_id(),
+            imported.body["data"]["imported_issuers"][0]
+                .as_str()
+                .ok_or("new")?
+        );
+        assert_eq!(
+            imported.body["warnings"]
+                .as_array()
+                .ok_or("warnings")?
+                .len(),
+            1
+        );
+        let bytes = Zeroizing::new(serde_json::to_vec(&child)?);
+        let reopened: Pki = serde_json::from_slice(&bytes)?;
+        reopened.validate("", "pki/", NOW)?;
+        assert_eq!(
+            reopened.selected_local_issuer_id(),
+            child.selected_local_issuer_id()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn public_default_is_real_certificate_identity_and_late_key_keeps_it() -> TestResult {
+        let parent = root()?;
+        let owned = parent.root.as_ref().ok_or("root")?;
+        let cert = pem("CERTIFICATE", &owned.certificate_der);
+        let mut child = Pki::default();
+        let imported = child.handle_admin(
+            "POST",
+            "intermediate/set-signed",
+            &json!({"certificate":cert}),
+            NOW,
+        )?;
+        let id = imported.body["data"]["imported_issuers"][0]
+            .as_str()
+            .ok_or("id")?
+            .to_owned();
+        child.handle_admin("POST", "config/issuers", &json!({"default":id}), NOW)?;
+        assert_eq!(child.selected_local_issuer_id(), id);
+        let metadata = child.handle_admin("GET", "issuer/default", &json!({}), NOW)?;
+        assert_eq!(metadata.body["data"]["issuer_id"], id);
+        assert_eq!(metadata.body["data"]["key_id"], "");
+        assert_eq!(
+            metadata.body["data"].as_object().ok_or("metadata")?.len(),
+            14
+        );
+        assert!(child.public_read_route("GET", "issuer/default").is_none());
+        assert!(child.root.is_none());
+        assert!(child.local_issuer("default").is_err());
+        assert_eq!(
+            child
+                .handle_public_read(PkiPublicRead::IssuerJson("default"), &json!({}), NOW)?
+                .body["data"]["issuer_id"],
+            id
+        );
+        let bytes = Zeroizing::new(serde_json::to_vec(&child)?);
+        let mut child: Pki = serde_json::from_slice(&bytes)?;
+        child.validate("", "pki/", NOW)?;
+        let (private, label) = owned.local_key()?.root_export_der(false)?;
+        let encoded = Zeroizing::new(pem(label, &private));
+        child.handle_admin(
+            "POST",
+            "keys/import",
+            &json!({"pem_bundle":encoded.as_str()}),
+            NOW,
+        )?;
+        assert_eq!(child.selected_local_issuer_id(), id);
+        assert_eq!(child.local_issuer("default")?.issuer_id, id);
+        let metadata = child.handle_admin("GET", "issuer/default", &json!({}), NOW)?;
+        assert_eq!(
+            metadata.body["data"]["key_id"],
+            child.default_local_key_id()
+        );
+        child.validate("", "pki/", NOW)?;
+        let original_der = owned.certificate_der.clone();
+        let mut damaged_der = original_der.clone();
+        *damaged_der.last_mut().ok_or("signature")? ^= 1;
+        let damaged = X509::from_der(&damaged_der)?;
+        let public = PKey::public_key_from_der(&owned.local_key()?.public()?.spki()?)?;
+        assert!(!damaged.verify(&public)?);
+        let mut public_only = Pki::default();
+        public_only.handle_admin(
+            "POST",
+            "intermediate/set-signed",
+            &json!({"certificate":pem("CERTIFICATE",&damaged_der)}),
+            NOW,
+        )?;
+        public_only.validate("", "pki/", NOW)?;
+        assert!(public_only.root.is_none());
+        assert_eq!(public_only.local_keys().count(), 0);
+        let cert_id = public_only
+            .local_intermediate
+            .as_ref()
+            .ok_or("public")?
+            .public_issuers
+            .keys()
+            .next()
+            .ok_or("public id")?
+            .clone();
+        assert_eq!(
+            public_only.public_imported_ca(&cert_id).ok_or("read")?.0,
+            damaged_der
+        );
+        Ok(())
+    }
+    #[test]
+    fn public_default_follow_keep_and_cleared_selection_use_real_new_root() -> TestResult {
+        let public_parent = root()?;
+        let public_cert = public_parent
+            .root
+            .as_ref()
+            .ok_or("public")?
+            .certificate_der
+            .clone();
+        for mode in ["follow", "clear", "keep"] {
+            let mut pki = Pki::default();
+            pki.handle_admin(
+                "POST",
+                "root/generate/internal",
+                &json!({"common_name":"old.example.test","key_type":"ec","ttl":"24h"}),
+                NOW,
+            )?;
+            let imported = pki.handle_admin(
+                "POST",
+                "intermediate/set-signed",
+                &json!({"certificate":pem("CERTIFICATE",&public_cert)}),
+                NOW,
+            )?;
+            let public_id = imported.body["data"]["imported_issuers"][0]
+                .as_str()
+                .ok_or("public id")?
+                .to_owned();
+            pki.handle_admin(
+                "POST",
+                "config/issuers",
+                &json!({"default":public_id,"default_follows_latest_issuer":mode=="follow"}),
+                NOW,
+            )?;
+            let route = pki
+                .public_read_route("GET", "issuer/default/json")
+                .ok_or("public route")?;
+            let read = pki.handle_public_read(route, &json!({}), NOW)?;
+            assert_eq!(read.body["data"]["issuer_id"], public_id);
+            assert_eq!(
+                read.body["data"]["certificate"],
+                pem("CERTIFICATE", &public_cert)
+            );
+            assert!(pki.local_issuer("default").is_err());
+            if mode == "clear" {
+                pki.handle_admin("DELETE", &format!("issuer/{public_id}"), &json!({}), NOW)?;
+                assert_eq!(pki.selected_local_issuer_id(), "");
+                assert!(pki.local_issuer("default").is_err());
+                assert!(
+                    pki.handle_public_read(PkiPublicRead::Ca, &json!({}), NOW)
+                        .is_err()
+                );
+            }
+            let generated = pki.handle_admin(
+                "POST",
+                "root/generate/internal",
+                &json!({"common_name":"new.example.test","key_type":"ec","ttl":"24h"}),
+                NOW,
+            )?;
+            let new_id = generated.body["data"]["issuer_id"]
+                .as_str()
+                .ok_or("new id")?;
+            if mode == "keep" {
+                assert_eq!(pki.selected_local_issuer_id(), public_id);
+                assert!(pki.local_issuer("default").is_err());
+            } else {
+                assert_eq!(pki.selected_local_issuer_id(), new_id);
+                assert_eq!(pki.local_issuer("default")?.issuer_id, new_id);
+            }
+            let bytes = Zeroizing::new(serde_json::to_vec(&pki)?);
+            let reopened: Pki = serde_json::from_slice(&bytes)?;
+            reopened.validate("", "pki/", NOW)?;
+            assert_eq!(
+                reopened.selected_local_issuer_id(),
+                pki.selected_local_issuer_id()
+            );
+        }
         Ok(())
     }
 }

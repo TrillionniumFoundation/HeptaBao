@@ -11,9 +11,9 @@ pub(super) struct LocalIssuers {
     pub(super) default_follows_latest_issuer: bool,
     // Key selection is independent of the selected issuer. Removing an issuer
     // retains its key and therefore retains this default until root deletion.
-    default_key_id: String,
+    pub(super) default_key_id: String,
     #[serde(default)]
-    orphan_keys: BTreeMap<String, RootCa>,
+    pub(super) orphan_keys: BTreeMap<String, RootCa>,
     #[serde(default)]
     certificates: BTreeMap<String, Vec<u8>>,
     #[serde(default)]
@@ -74,6 +74,9 @@ impl Pki {
 
     pub(super) fn local_issuer(&self, reference: &str) -> Result<&RootCa> {
         if reference == "default" {
+            if self.has_public_default_override() {
+                return Err(error(500, "default issuer has no owned signing key"));
+            }
             return self
                 .root
                 .as_ref()
@@ -144,8 +147,8 @@ impl Pki {
 
     pub(super) fn publish_local_root(&mut self, next: RootCa) -> Result<()> {
         if self
-            .local_keys()
-            .any(|root| root.issuer_id == next.issuer_id || root.key_id == next.key_id)
+            .local_key_instances()
+            .any(|root| root.issuer_id == next.issuer_id)
             || self
                 .local_issuers
                 .as_ref()
@@ -153,6 +156,34 @@ impl Pki {
         {
             return Err(error(503, "PKI identifier collision"));
         }
+        let public = next.local_key()?.public()?.spki()?;
+        for existing in self
+            .local_key_instances()
+            .filter(|key| key.key_id == next.key_id)
+        {
+            if existing.local_key()?.public()?.spki()? != public
+                || existing
+                    .local_fields
+                    .as_ref()
+                    .map_or("", |m| m.key_name.as_str())
+                    != next
+                        .local_fields
+                        .as_ref()
+                        .map_or("", |m| m.key_name.as_str())
+            {
+                return Err(error(503, "PKI shared key ownership changed"));
+            }
+        }
+        let restore_empty_issuer_default =
+            self.has_public_default_override() && self.public_default_issuer_id().is_empty();
+        let follow_public_default = self.has_public_default_override()
+            && self
+                .local_issuers
+                .as_ref()
+                .is_some_and(|state| state.default_follows_latest_issuer);
+        let restore_default_key =
+            self.local_default_key_unset() && self.owned_key(&next.key_id).is_err();
+        let new_key = next.key_id.clone();
         let Some(current) = self.root.as_mut() else {
             if let Some(state) = &mut self.local_issuers {
                 archive_issuer(state, &next)?;
@@ -161,6 +192,12 @@ impl Pki {
                 }
             }
             self.root = Some(next);
+            if restore_empty_issuer_default || follow_public_default {
+                self.clear_public_default_override();
+            }
+            if restore_default_key {
+                self.set_local_key_default(&new_key);
+            }
             return Ok(());
         };
         // Historical roots predate issuer IDs. Generate both before changing
@@ -191,7 +228,8 @@ impl Pki {
         }
         archive_issuer(state, current)?;
         archive_issuer(state, &next)?;
-        if state.default_follows_latest_issuer {
+        let select_default = state.default_follows_latest_issuer || restore_empty_issuer_default;
+        if select_default {
             let previous = self
                 .root
                 .replace(next)
@@ -199,6 +237,12 @@ impl Pki {
             state.other.insert(previous.issuer_id.clone(), previous);
         } else {
             state.other.insert(next.issuer_id.clone(), next);
+        }
+        if select_default {
+            self.clear_public_default_override();
+        }
+        if restore_default_key {
+            self.set_local_key_default(&new_key);
         }
         Ok(())
     }
@@ -215,28 +259,29 @@ impl Pki {
         {
             return Err(bad("invalid local PKI issuer state"));
         }
-        if if self.local_keys().next().is_none() {
-            !state.default_key_id.is_empty()
-        } else {
-            !valid_pki_id(&state.default_key_id)
-                || !self
-                    .local_keys()
-                    .any(|root| root.key_id == state.default_key_id)
-        } {
+        if !state.default_key_id.is_empty() && self.owned_key(&state.default_key_id).is_err()
+            || self.local_default_key_unset() && !state.default_key_id.is_empty()
+            || !self.local_default_key_unset()
+                && self.default_local_key_id().is_empty()
+                && (self.local_keys().next().is_some() || self.has_unbound_owned_keys())
+            || !self.local_default_key_unset()
+                && !self.default_local_key_id().is_empty()
+                && self.owned_key(self.default_local_key_id()).is_err()
+        {
             return Err(bad("invalid local PKI default key ownership"));
         }
         let mut issuer_ids = BTreeSet::new();
-        let mut key_ids = BTreeSet::new();
+        let mut key_ids = BTreeMap::new();
+        let mut public_key_owners = BTreeMap::new();
         let mut issuer_names = BTreeSet::new();
-        let mut key_names = BTreeSet::new();
-        for root in self.local_keys() {
+        let mut key_names = BTreeMap::new();
+        for root in self.local_key_instances() {
             if root.is_external()
                 || root.issuer_id.is_empty()
                 || root.key_id.is_empty()
                 || !valid_pki_id(&root.issuer_id)
                 || !valid_pki_id(&root.key_id)
                 || !issuer_ids.insert(&root.issuer_id)
-                || !key_ids.insert(&root.key_id)
                 || !external::common_name_valid(&root.common_name)
                 || root.not_before >= root.not_after
                 || root.local_chain.is_none() && root.not_after - root.not_before > MAX_TTL * 2
@@ -246,6 +291,24 @@ impl Pki {
             {
                 return Err(bad("invalid local PKI issuer ownership"));
             }
+            let identity = (
+                root.local_key()?.public()?.spki()?,
+                root.local_fields
+                    .as_ref()
+                    .map_or("", |m| m.key_name.as_str()),
+            );
+            if public_key_owners
+                .insert(identity.0.clone(), &root.key_id)
+                .is_some_and(|id| id != &root.key_id)
+            {
+                return Err(bad("local PKI public key has conflicting identities"));
+            }
+            if key_ids
+                .insert(&root.key_id, identity.clone())
+                .is_some_and(|old| old != identity)
+            {
+                return Err(bad("shared PKI key identity changed"));
+            }
             if let Some(fields) = &root.local_fields {
                 fields.validate()?;
                 if self
@@ -253,7 +316,10 @@ impl Pki {
                     .any(|issuer| issuer.issuer_id == root.issuer_id)
                     && !fields.issuer_name.is_empty()
                     && !issuer_names.insert(&fields.issuer_name)
-                    || !fields.key_name.is_empty() && !key_names.insert(&fields.key_name)
+                    || !fields.key_name.is_empty()
+                        && key_names
+                            .insert(&fields.key_name, &root.key_id)
+                            .is_some_and(|id| id != &root.key_id)
                 {
                     return Err(bad("duplicate local PKI issuer aliases"));
                 }
@@ -327,6 +393,25 @@ impl Pki {
         Ok(())
     }
 
+    pub(super) fn select_local_owned_default(&mut self, id: &str) -> Result<()> {
+        self.local_issuer(id)?;
+        if self.root.as_ref().is_none_or(|root| root.issuer_id != id) {
+            let state = self
+                .local_issuers
+                .as_mut()
+                .ok_or_else(|| bad("owned issuer selection is unavailable"))?;
+            let selected = state
+                .other
+                .remove(id)
+                .ok_or_else(|| bad("owned issuer selection is unavailable"))?;
+            if let Some(previous) = self.root.replace(selected) {
+                state.other.insert(previous.issuer_id.clone(), previous);
+            }
+        }
+        self.clear_public_default_override();
+        Ok(())
+    }
+
     pub(super) fn local_issuer_config(
         &mut self,
         method: &str,
@@ -335,11 +420,8 @@ impl Pki {
         if method == "GET" {
             reject_unknown(body, &[])?;
             return Ok(ok(
-                json!({
-                    "default":self.root.as_ref().map_or("",|root|root.issuer_id.as_str()),
-                    "default_follows_latest_issuer":self.local_issuers.as_ref()
-                        .is_some_and(|state|state.default_follows_latest_issuer)
-                }),
+                json!({"default":self.selected_local_issuer_id(),
+                "default_follows_latest_issuer":self.local_issuers.as_ref().is_some_and(|s| s.default_follows_latest_issuer)}),
                 false,
             ));
         }
@@ -347,9 +429,7 @@ impl Pki {
             return Err(unsupported());
         }
         reject_unknown(body, &["default", "default_follows_latest_issuer"])?;
-        if self.local_roots().next().is_none()
-            || self.root.as_ref().is_some_and(RootCa::is_external)
-        {
+        if self.root.as_ref().is_some_and(RootCa::is_external) {
             return Err(bad("local PKI issuer configuration is unavailable"));
         }
         if body
@@ -362,33 +442,40 @@ impl Pki {
         let selected = body
             .get("default")
             .map(|value| {
-                value
+                let reference = value
                     .as_str()
-                    .ok_or_else(|| bad("PKI default issuer must be a string"))
-            })
-            .transpose()?
-            .map(|reference| {
+                    .ok_or_else(|| bad("PKI default issuer must be a string"))?;
+                if reference.is_empty() || reference == "default" {
+                    return Err(bad("default issuer must be specified"));
+                }
+                if let Some(id) = self.imported_ca_id(reference) {
+                    return Ok((id.to_owned(), true));
+                }
                 self.local_issuer(reference)
-                    .map(|root| root.issuer_id.clone())
+                    .map(|root| (root.issuer_id.clone(), false))
                     .map_err(|_| bad("default issuer reference is unavailable"))
             })
             .transpose()?;
         let follows = optional_bool(body, "default_follows_latest_issuer")?;
-        let change_default = selected.as_ref().is_some_and(|id| {
-            self.root
-                .as_ref()
-                .is_none_or(|current| id != &current.issuer_id)
-        });
+        let change_default = selected
+            .as_ref()
+            .is_some_and(|(id, _)| id != self.selected_local_issuer_id());
         let before_follows = self
             .local_issuers
             .as_ref()
-            .is_some_and(|state| state.default_follows_latest_issuer);
+            .is_some_and(|s| s.default_follows_latest_issuer);
         let change_follows = follows.is_some_and(|value| value != before_follows);
-        if change_default || change_follows {
-            let default_key_id = self
-                .root
-                .as_ref()
-                .map_or_else(String::new, |root| root.key_id.clone());
+        if change_default {
+            let (id, public) =
+                selected.ok_or_else(|| bad("default issuer selection is unavailable"))?;
+            if public {
+                self.set_public_default_issuer(&id);
+            } else {
+                self.select_local_owned_default(&id)?;
+            }
+        }
+        if change_follows {
+            let default_key_id = self.default_local_key_id().to_owned();
             let state = self.local_issuers.get_or_insert_with(|| {
                 Box::new(LocalIssuers {
                     other: BTreeMap::new(),
@@ -399,30 +486,30 @@ impl Pki {
                     retired_issuers: BTreeMap::new(),
                 })
             });
-            if change_default {
-                let id = selected.ok_or_else(|| bad("PKI default issuer is unavailable"))?;
-                let next = state
-                    .other
-                    .remove(&id)
-                    .ok_or_else(|| bad("PKI default issuer is unavailable"))?;
-                if let Some(previous) = self.root.replace(next) {
-                    state.other.insert(previous.issuer_id.clone(), previous);
-                }
-            }
-            if let Some(value) = follows {
-                state.default_follows_latest_issuer = value;
-            }
+            state.default_follows_latest_issuer =
+                follows.ok_or_else(|| bad("issuer follow policy missing"))?;
         }
         let mut response = self.local_issuer_config("GET", &json!({}))?;
         response.mutated = change_default || change_follows;
+        if self.public_imported_ca("default").is_some() {
+            response.body["warnings"] = json!([
+                "This selected default issuer has no key associated with it. Some operations like issuing certificates and signing CRLs will be unavailable with the requested default issuer until a key is imported or the default issuer is changed."
+            ]);
+        }
         Ok(response)
     }
-    pub(super) fn local_keys(&self) -> impl Iterator<Item = &RootCa> {
+    fn local_key_instances(&self) -> impl Iterator<Item = &RootCa> {
         self.local_roots().chain(
             self.local_issuers
                 .iter()
                 .flat_map(|state| state.orphan_keys.values()),
         )
+    }
+
+    pub(super) fn local_keys(&self) -> impl Iterator<Item = &RootCa> {
+        let mut seen = BTreeSet::new();
+        self.local_key_instances()
+            .filter(move |root| seen.insert(&root.key_id))
     }
 
     pub(super) fn local_key_list(&self, body: &Value) -> Result<EngineResponse> {
@@ -454,6 +541,9 @@ impl Pki {
     }
 
     pub(super) fn default_local_key_id(&self) -> &str {
+        if self.local_default_key_unset() {
+            return "";
+        }
         let pending = self.pending_key_default();
         if !pending.is_empty() {
             return pending;

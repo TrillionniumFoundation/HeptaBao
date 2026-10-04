@@ -1131,8 +1131,32 @@ publish a replacement cache. The named regression
 checks real signatures, number/base progression, issuer isolation and restart.
 
 
-Local CSR key and intermediate/public chain ownership requires schema 79 in all
+Local CSR/unbound key and intermediate/public chain ownership requires schema 79 in all
 namespaces. It is discovered before record preflight and stays required after
 its mount is retired. Authenticated snapshots and local writers cannot lower
 that floor. The application label does not grant signing authority: an imported
 CA certificate without a matching owned private key remains a public issuer.
+
+Local `keys/generate/internal`, `keys/generate/exported`, and `keys/import`
+retain actual owned private material without constructing a placeholder CA or
+CSR. Certificate import matches the actual maintained SPKI against either an
+unbound or already associated owned key. A later key import binds existing
+public issuers without changing their identities. Partial chains retain only
+verified available issuer edges and are rebuilt when a parent is imported.
+Repeated certificates preserve one issuer identity and repeat occurrences in
+the `existing_issuers` projection. A shared key retains one key identity and
+name across all associated issuers. Key deletion refuses while any issuer still
+uses it; deleting a selected unbound key durably clears the independent key
+default instead of choosing another old key. An explicit public issuer default
+persists its real certificate identity without granting signing authority; a
+later matching key import retains that identity. Multi-issuer imports honor
+`default_follows_latest_issuer` only when exactly one new issuer has an owned
+key, and retain the previous default with the official warning when more than
+one does. A public-only import may retain a certificate whose terminal
+self-signature is invalid, as the official API does; every connected chain
+edge is still cryptographically verified, and native owned root certificates
+retain their strong self-signature checks. Configured AIA/issuer overrides and
+bad terminal signatures attached to owned keys remain outside this finite
+profile. These are bounded local features;
+full OpenBao 2.7.0 replacement still requires the remaining protocol, provider,
+HA and independent compatibility qualifications.

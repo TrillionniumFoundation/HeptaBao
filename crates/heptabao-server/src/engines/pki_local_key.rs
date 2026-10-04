@@ -336,6 +336,71 @@ impl LocalPrivateMaterial {
         Ok(material)
     }
 
+    pub(super) fn import_der(label: &str, bytes: &[u8]) -> Result<Self> {
+        if bytes.is_empty() || bytes.len() > 64 * 1024 {
+            return Err(bad("PKI imported private key exceeds bounds"));
+        }
+        let document = ml_dsa::pkcs8::SecretDocument::try_from(bytes)
+            .map_err(|_| bad("invalid bounded PKI private key DER"))?;
+        let bytes = document.as_bytes();
+        if label == "PRIVATE KEY" {
+            for kind in [
+                LocalKeyKind::Mldsa44,
+                LocalKeyKind::Mldsa65,
+                LocalKeyKind::Mldsa87,
+            ] {
+                if let Ok(material) = mldsa_dispatch!(kind, mldsa_import_pkcs8, bytes) {
+                    material.public()?;
+                    return Ok(material);
+                }
+            }
+        }
+        let key = match label {
+            "PRIVATE KEY" => PKey::private_key_from_pkcs8(bytes),
+            "RSA PRIVATE KEY" => Rsa::private_key_from_der(bytes).and_then(PKey::from_rsa),
+            "EC PRIVATE KEY" => EcKey::private_key_from_der(bytes).and_then(PKey::from_ec_key),
+            _ => return Err(bad("unsupported PKI private key PEM label")),
+        }
+        .map_err(|_| bad("invalid unencrypted PKI private key"))?;
+        let public = LocalPublicKey::from_spki(&key.public_key_to_der().map_err(crypto_failure)?)?;
+        let kind = public.kind();
+        let canonical = if kind == LocalKeyKind::Ed25519 {
+            let seed = Zeroizing::new(key.raw_private_key().map_err(crypto_failure)?);
+            let public_bytes = key.raw_public_key().map_err(crypto_failure)?;
+            Ed25519KeyPair::from_seed_and_public_key(seed.as_slice(), &public_bytes)
+                .map_err(|_| bad("invalid imported Ed25519 key pair"))?;
+            // Store the same RFC 5958 v2 grammar used by the owned ring path,
+            // including its actual derived public key. Temporary seed-bearing
+            // DER allocations retain explicit erasing owners.
+            let seed_value = Zeroizing::new(octet_string(seed.as_slice()));
+            let private_field = Zeroizing::new(octet_string(seed_value.as_slice()));
+            let mut content = Zeroizing::new(Vec::new());
+            content.extend_from_slice(&integer(&[1]));
+            content.extend_from_slice(&algorithm_ed25519());
+            content.extend_from_slice(private_field.as_slice());
+            let mut bit_value = vec![0];
+            bit_value.extend_from_slice(&public_bytes);
+            content.extend_from_slice(&context_primitive(1, &bit_value));
+            Zeroizing::new(der(0x30, content.as_slice()))
+        } else {
+            Zeroizing::new(key.private_key_to_pkcs8().map_err(crypto_failure)?)
+        };
+        let material = Self::Pkcs8 {
+            kind,
+            der: canonical.to_vec(),
+        };
+        let actual = material.public()?;
+        if actual != public
+            || !actual.verify(
+                b"heptabao-owned-PKI-key-import",
+                &material.sign(b"heptabao-owned-PKI-key-import")?,
+            )?
+        {
+            return Err(bad("imported PKI key ownership verification failed"));
+        }
+        Ok(material)
+    }
+
     fn maintained_private(&self) -> Result<PKey<Private>> {
         let Self::Pkcs8 { kind, der } = self else {
             return Err(invalid_key());

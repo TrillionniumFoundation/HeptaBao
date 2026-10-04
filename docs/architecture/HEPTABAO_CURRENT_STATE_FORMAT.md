@@ -135,7 +135,7 @@ must refuse the first unsupported schema without altering the encrypted record.
 | 76 | Extended local PKI root fields and their exact certificate bindings. |
 | 77 | Multiple local PKI issuers, retained key ownership and certificate history. |
 | 78 | Persisted signed full/delta CRLs, per-issuer counters, delta bases and configuration. |
-| 79 | Pending owned local CSR keys and imported intermediate/public CA chain ownership. |
+| 79 | Owned unbound local keys (with optional CSR), explicit cleared key defaults, imported intermediate/public CA chain ownership, and explicit public default issuer identity without signing authority. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Feature floors are discovered across all namespaces before publication and remain
