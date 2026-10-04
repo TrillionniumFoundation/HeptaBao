@@ -139,7 +139,7 @@ impl Pki {
                         .is_some_and(|existing| existing.key_name == fields.key_name)
                 })
             {
-                return Err(bad("PKI key name already exists"));
+                return Err(bad("key name already in use"));
             }
         }
         Ok(())
