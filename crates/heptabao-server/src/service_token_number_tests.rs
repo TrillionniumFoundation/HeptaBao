@@ -97,7 +97,7 @@ fn token_number_lexemes_have_actual_policies_errors_and_audit_binding() -> TestR
 }
 
 #[test]
-fn token_number_conversion_follows_actual_numeric_parameter_acl() -> TestResult {
+fn token_number_conversion_does_not_retype_original_parameter_acl() -> TestResult {
     let fixture = Root::new();
     let mut service = fixture.service()?;
     let (_, root) = bootstrap(&mut service)?;
@@ -107,7 +107,7 @@ fn token_number_conversion_follows_actual_numeric_parameter_acl() -> TestResult 
             "numeric-create",
             r#"path "auth/token/create" {
             capabilities = ["update"]
-            allowed_parameters = { "policies" = [1] "no_default_policy" = [true] }
+            allowed_parameters = { "policies" = ["1"] "no_default_policy" = [true] }
         }"#,
         ),
     ] {
@@ -138,7 +138,7 @@ fn token_number_conversion_follows_actual_numeric_parameter_acl() -> TestResult 
         "POST",
         "auth/token/create",
         parent,
-        wire_body(r#"{"policies":[1],"no_default_policy":true}"#)?,
+        wire_body(r#"{"policies":"1","no_default_policy":true}"#)?,
     );
     assert_eq!(response.status, 200);
     assert_eq!(response.body["auth"]["policies"], json!(["1"]));
@@ -147,7 +147,7 @@ fn token_number_conversion_follows_actual_numeric_parameter_acl() -> TestResult 
         "POST",
         "auth/token/create",
         parent,
-        wire_body(r#"{"policies":["1"],"no_default_policy":true}"#)?,
+        wire_body(r#"{"policies":1,"no_default_policy":true}"#)?,
     );
     assert_eq!(rejected.status, 403);
     assert!(rejected.body.get("auth").is_none());

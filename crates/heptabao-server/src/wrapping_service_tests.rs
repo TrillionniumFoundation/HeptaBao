@@ -286,11 +286,12 @@ fn wrapping_token_has_no_general_or_policy_manufactured_authority() -> TestResul
         "auth/token/create",
         json!({"policies":["response-wrapping"],"no_default_policy":true}),
     );
-    let forged = text(&r.body, "/auth/client_token")?;
+    assert_eq!(r.status, 400);
     assert_eq!(
-        call(&mut s, &forged, "sys/wrapping/unwrap", json!({})).status,
-        400
+        r.body["errors"],
+        json!(["cannot assign policy \"response-wrapping\""])
     );
+    assert!(r.body.get("auth").is_none());
     assert_eq!(
         call(&mut s, &root, "sys/wrapping/unwrap", json!({"token":root})).status,
         400
