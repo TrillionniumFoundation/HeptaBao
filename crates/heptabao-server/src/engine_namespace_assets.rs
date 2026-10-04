@@ -30,7 +30,7 @@ impl EngineState {
         }
         let (records, cells, retained) = if let Some(runtime) = &self.records {
             let private_key = key
-                .record_address_key()
+                .record_address_key(namespace)
                 .map_err(|_| error(503, "namespace record key is unavailable"))?;
             let (retained, owned) = runtime
                 .index

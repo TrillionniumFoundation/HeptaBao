@@ -142,12 +142,17 @@ impl Key {
                 .strip_prefix(&self.binding.namespace)
                 .is_some_and(|suffix| suffix.starts_with('/'))
     }
-    fn record_context(&self, id: &[u8; 32]) -> Result<Vec<u8>, Error> {
+    fn record_context(&self, namespace: &str, id: &[u8; 32]) -> Result<Vec<u8>, Error> {
+        if !self.owns_namespace(namespace) {
+            return Err(Error::InvalidBinding);
+        }
         let binding = serde_json::to_vec(&self.binding).map_err(|_| Error::InvalidBinding)?;
         let mut context = b"heptabao-namespace-record-object-v1\0".to_vec();
         context.extend_from_slice(&(binding.len() as u64).to_be_bytes());
         context.extend_from_slice(&binding);
         context.extend_from_slice(&self.key_epoch.to_be_bytes());
+        context.extend_from_slice(&(namespace.len() as u64).to_be_bytes());
+        context.extend_from_slice(namespace.as_bytes());
         context.extend_from_slice(id);
         Ok(context)
     }
@@ -156,8 +161,9 @@ impl Key {
     /// hashes to the root owner. This derivation never exposes the barrier key.
     pub(crate) fn record_address_key(
         &self,
+        namespace: &str,
     ) -> Result<std::sync::Arc<crate::state_records::AddressKey>, Error> {
-        let context = self.record_context(&[0; 32])?;
+        let context = self.record_context(namespace, &[0; 32])?;
         let mac = ring::hmac::Key::new(ring::hmac::HMAC_SHA256, self.bytes.as_slice());
         let digest: [u8; 32] = ring::hmac::sign(&mac, &context)
             .as_ref()
@@ -168,6 +174,7 @@ impl Key {
 
     pub(crate) fn protect_record_object(
         &self,
+        namespace: &str,
         id: &[u8; 32],
         bytes: &[u8],
     ) -> Result<Zeroizing<Vec<u8>>, Error> {
@@ -178,13 +185,14 @@ impl Key {
         }
         let barrier = AeadBarrier::new(*self.bytes).map_err(|_| Error::InvalidKey)?;
         barrier
-            .seal(&self.record_context(id)?, bytes)
+            .seal(&self.record_context(namespace, id)?, bytes)
             .map(Zeroizing::new)
             .map_err(|_| Error::Randomness)
     }
 
     pub(crate) fn open_record_object(
         &self,
+        namespace: &str,
         id: &[u8; 32],
         bytes: &[u8],
     ) -> Result<Zeroizing<Vec<u8>>, Error> {
@@ -193,7 +201,7 @@ impl Key {
         }
         let barrier = AeadBarrier::new(*self.bytes).map_err(|_| Error::InvalidKey)?;
         barrier
-            .open(&self.record_context(id)?, bytes)
+            .open(&self.record_context(namespace, id)?, bytes)
             .map(Zeroizing::new)
             .map_err(|_| Error::CorruptDescriptor)
     }

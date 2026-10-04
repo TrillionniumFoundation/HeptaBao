@@ -41,12 +41,14 @@ impl Graph {
             }
             Ok(())
         })?;
-        let address_key = key.record_address_key().map_err(|_| RecordError::Corrupt)?;
+        let address_key = key
+            .record_address_key(namespace)
+            .map_err(|_| RecordError::Corrupt)?;
         let mut cells = BTreeMap::new();
         index.visit_objects(|object| {
             object.reference().verify(&address_key, object.bytes())?;
             let protected = key
-                .protect_record_object(object.reference().id.bytes(), object.bytes())
+                .protect_record_object(namespace, object.reference().id.bytes(), object.bytes())
                 .map_err(|_| RecordError::Corrupt)?;
             if cells
                 .insert(cell_name(object.reference()), protected)
@@ -80,6 +82,7 @@ impl Graph {
             return Err(RecordError::Corrupt);
         }
         struct Reader<'a, F> {
+            namespace: &'a str,
             key: &'a Key,
             read_cell: F,
         }
@@ -91,12 +94,22 @@ impl Graph {
                 let name = cell_name(reference);
                 let ciphertext = (self.read_cell)(&name)?;
                 self.key
-                    .open_record_object(reference.id.bytes(), &ciphertext)
+                    .open_record_object(self.namespace, reference.id.bytes(), &ciphertext)
                     .map_err(|_| RecordError::Corrupt)
             }
         }
-        let address_key = key.record_address_key().map_err(|_| RecordError::Corrupt)?;
-        let index = Kv1Index::open(address_key, self.root.clone(), &Reader { key, read_cell })?;
+        let address_key = key
+            .record_address_key(actual)
+            .map_err(|_| RecordError::Corrupt)?;
+        let index = Kv1Index::open(
+            address_key,
+            self.root.clone(),
+            &Reader {
+                namespace: actual,
+                key,
+                read_cell,
+            },
+        )?;
         index.visit_keys(|record| {
             if record.namespace() != actual {
                 return Err(RecordError::Corrupt);
@@ -142,7 +155,7 @@ mod tests {
             .edit(root_key.clone(), Some(b"root-value"))?
             .next;
         let (retained, private) =
-            original.partition_namespace("custody", owner.record_address_key()?)?;
+            original.partition_namespace("custody", owner.record_address_key("custody")?)?;
         assert!(
             retained.get(&secret_key).is_none()
                 && retained.get(&root_key) == Some(b"root-value".as_slice()),
@@ -213,7 +226,7 @@ mod tests {
     #[test]
     fn namespace_record_graph_exceeds_owner_bound_using_bounded_cipher_objects() -> TestResult {
         let owner = key("custody")?;
-        let mut private = Kv1Index::empty(owner.record_address_key()?);
+        let mut private = Kv1Index::empty(owner.record_address_key("custody")?);
         for number in 0..17_u8 {
             let key = Kv1Key::new("custody", "records/", 1, &format!("large-{number}"))?;
             let value = Zeroizing::new(vec![number + 64; 1024 * 1024]);
