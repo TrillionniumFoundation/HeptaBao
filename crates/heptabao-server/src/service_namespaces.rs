@@ -295,6 +295,14 @@ impl NamespaceRegistry {
         self.entries.get(actual)?.inherited.as_ref()
     }
 
+    pub(super) fn matches_inherited_frontier(
+        &self,
+        actual: &str,
+        owner: &crate::namespace_custody::InheritedDescriptor,
+    ) -> bool {
+        self.custody_frontiers.get(actual) == Some(&owner.frontier())
+    }
+
     pub(super) fn install_inherited_owner(
         &mut self,
         cluster_id: &str,

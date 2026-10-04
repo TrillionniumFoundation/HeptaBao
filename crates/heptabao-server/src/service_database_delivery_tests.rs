@@ -527,7 +527,12 @@ fn database_closed_parcel_rejects_wrong_key_mac_frontier_and_original_deadline()
         "database-only access still verifies the complete typed record owner"
     );
     let mut missing_floor = state.clone();
-    missing_floor.namespaces.custody_frontiers.remove("team");
+    let mut registry = serde_json::to_value(&missing_floor.namespaces)?;
+    registry["custody_frontiers"]
+        .as_object_mut()
+        .ok_or("private serialized frontier registry")?
+        .remove("team");
+    missing_floor.namespaces = serde_json::from_value(registry)?;
     assert!(
         service
             .namespace_runtime

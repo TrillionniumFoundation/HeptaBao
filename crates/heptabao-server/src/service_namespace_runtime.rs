@@ -552,7 +552,10 @@ impl Runtime {
             .inherited_owner(actual)
             .cloned()
             .ok_or_else(unavailable)?;
-        if prepared.namespaces.custody_frontiers.get(actual) != Some(&owner.frontier()) {
+        if !prepared
+            .namespaces
+            .matches_inherited_frontier(actual, &owner)
+        {
             return Err(unavailable());
         }
         let (key, bytes) =
