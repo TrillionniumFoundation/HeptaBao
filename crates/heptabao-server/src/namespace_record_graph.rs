@@ -32,6 +32,15 @@ impl Graph {
         key: &Key,
         index: &Kv1Index,
     ) -> Result<(Self, Cells), RecordError> {
+        Self::protect_reusing(namespace, key, index, |_| Err(RecordError::Missing))
+    }
+
+    pub(crate) fn protect_reusing(
+        namespace: &str,
+        key: &Key,
+        index: &Kv1Index,
+        read_previous: impl Fn(&str) -> Result<Zeroizing<Vec<u8>>, RecordError>,
+    ) -> Result<(Self, Cells), RecordError> {
         if namespace.is_empty() || !key.owns_namespace(namespace) {
             return Err(RecordError::Invalid);
         }
@@ -47,9 +56,21 @@ impl Graph {
         let mut cells = BTreeMap::new();
         index.visit_objects(|object| {
             object.reference().verify(&address_key, object.bytes())?;
-            let protected = key
-                .protect_record_object(namespace, object.reference().id.bytes(), object.bytes())
-                .map_err(|_| RecordError::Corrupt)?;
+            let protected = match read_previous(&cell_name(object.reference())) {
+                Ok(ciphertext) => {
+                    let bytes = key
+                        .open_record_object(namespace, object.reference().id.bytes(), &ciphertext)
+                        .map_err(|_| RecordError::Corrupt)?;
+                    if bytes.as_slice() != object.bytes() {
+                        return Err(RecordError::Corrupt);
+                    }
+                    ciphertext
+                }
+                Err(RecordError::Missing) => key
+                    .protect_record_object(namespace, object.reference().id.bytes(), object.bytes())
+                    .map_err(|_| RecordError::Corrupt)?,
+                Err(error) => return Err(error),
+            };
             if cells
                 .insert(cell_name(object.reference()), protected)
                 .is_some()

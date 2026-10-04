@@ -216,7 +216,7 @@ impl Service {
             self.request_fingerprint("INTERNAL", "openldap/reconcile", &namespace, "");
         self.audit_event("provider-request", &fingerprint, now, None)
             .map_err(|_| "OpenLDAP provider audit unavailable")?;
-        self.commit_state(&next)
+        self.commit_state(&mut next)
             .map_err(|_| "OpenLDAP provider intent commit failed")?;
         self.state = Some(next);
         let in_flight = self.openldap_in_flight.track(&plan);
@@ -425,7 +425,7 @@ impl Service {
                     Err(error) => return Response::error(error.status, &error.message),
                 };
                 state.schema = state.writer_schema();
-                if let Err(error) = self.commit_state(&state) {
+                if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
                 self.state = Some(state);
@@ -446,7 +446,7 @@ impl Service {
                         Err(error) => return Response::error(error.status, &error.message),
                     };
                 state.schema = state.writer_schema();
-                if let Err(error) = self.commit_state(&state) {
+                if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
                 self.state = Some(state);
@@ -482,7 +482,7 @@ impl Service {
                     if let Err(error) = state.validate_format() {
                         return error;
                     }
-                    if let Err(error) = self.commit_state(&state) {
+                    if let Err(error) = self.commit_state(&mut state) {
                         return error;
                     }
                     self.state = Some(state);
@@ -499,7 +499,7 @@ impl Service {
                 if let Err(error) = state.validate_format() {
                     return error;
                 }
-                if let Err(error) = self.commit_state(&state) {
+                if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
                 let authority = plugin::PluginResponseAuthority::new(
@@ -609,7 +609,7 @@ impl Service {
             Err(_) => return openldap_outcome_unknown(&plan.inner.lease_id),
         };
         state.schema = state.writer_schema();
-        if state.validate_format().is_err() || self.commit_state(&state).is_err() {
+        if state.validate_format().is_err() || self.commit_state(&mut state).is_err() {
             return openldap_outcome_unknown(&plan.inner.lease_id);
         }
         self.state = Some(state);
@@ -671,7 +671,7 @@ impl Service {
             .is_ok()
         {
             state.schema = state.writer_schema();
-            if state.validate_format().is_ok() && self.commit_state(&state).is_ok() {
+            if state.validate_format().is_ok() && self.commit_state(&mut state).is_ok() {
                 self.state = Some(state);
             }
         }
@@ -834,7 +834,7 @@ mod completion_tests {
         };
         state.schema = CURRENT_STATE_SCHEMA;
         state.validate_format().map_err(|_| "validate")?;
-        service.commit_state(&state).map_err(|_| "commit")?;
+        service.commit_state(&mut state).map_err(|_| "commit")?;
         service.state = Some(state);
         let flight = service.openldap_in_flight.track(&inner);
         let plan = OpenLdapEffectPlan::new(
@@ -945,7 +945,7 @@ mod completion_tests {
             .map_err(|_| "revoke parent")?
             .ok_or("route")?;
         service
-            .commit_state(&state)
+            .commit_state(&mut state)
             .map_err(|_| "publish revocation")?;
         service.state = Some(state);
         let response = service.finalize_openldap_effect(&plan, Ok(()));
@@ -1014,7 +1014,7 @@ mod completion_tests {
                     .map_err(|_| "revoke")?
                     .ok_or("route")?;
                 service
-                    .commit_state(&state)
+                    .commit_state(&mut state)
                     .map_err(|_| "commit revocation")?;
                 service.state = Some(state);
             } else {
@@ -1137,7 +1137,7 @@ mod completion_tests {
                 same_namespace
             );
             service
-                .commit_state(&state)
+                .commit_state(&mut state)
                 .map_err(|_| "commit identity")?;
             service.state = Some(state);
             // Real admitted intent/typed batch, simulated successful provider result.

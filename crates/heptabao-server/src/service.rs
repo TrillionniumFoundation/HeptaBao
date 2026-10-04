@@ -104,6 +104,8 @@ mod leader;
 mod lifecycle;
 #[path = "service_namespace_assets.rs"]
 mod namespace_assets;
+#[path = "service_namespace_runtime.rs"]
+mod namespace_runtime;
 #[path = "service_namespaces.rs"]
 mod namespaces;
 #[path = "service_online_auth.rs"]
@@ -418,7 +420,7 @@ where
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct State {
     schema: u32,
@@ -442,6 +444,10 @@ struct State {
         skip_serializing_if = "raft_admin::RaftAdminState::is_default"
     )]
     raft_admin: CowOwner<raft_admin::RaftAdminState>,
+    #[serde(skip)]
+    namespace_protected: Option<Arc<State>>,
+    #[serde(skip)]
+    namespace_leases: namespace_runtime::Leases,
 }
 
 #[derive(Clone, Copy, Default)]
@@ -455,7 +461,10 @@ struct OwnerReuseHint {
 
 impl OwnerReuseHint {
     fn between(previous: Option<&State>, next: &State) -> Self {
-        let Some(previous) = previous else {
+        let Some(previous) = previous.and_then(|state| state.protected_state().ok()) else {
+            return Self::default();
+        };
+        let Ok(next) = next.protected_state() else {
             return Self::default();
         };
         Self {
@@ -999,6 +1008,7 @@ pub struct Service {
     durable_profile: Option<DurableProfile>,
     durable: Option<DurableService<AeadBarrier>>,
     state: Option<State>,
+    namespace_runtime: namespace_runtime::Runtime,
     state_digest: Option<[u8; 32]>,
     record_root: Option<RecordStateRoot>,
     record_writes_since_gc: u64,
@@ -1350,6 +1360,7 @@ impl Service {
             durable_profile,
             durable: None,
             state: None,
+            namespace_runtime: namespace_runtime::Runtime::default(),
             state_digest: None,
             record_root: None,
             record_writes_since_gc: 0,
@@ -1491,6 +1502,7 @@ impl Service {
     pub(crate) fn begin_private_shutdown(&mut self) -> Result<(), &'static str> {
         self.private_shutdown_requested = true;
         self.fence_openbao_wrapper();
+        self.namespace_runtime.clear();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -2434,7 +2446,7 @@ impl Service {
             };
             if changed {
                 admitted.schema = admitted.writer_schema();
-                if let Err(error) = self.commit_state(&admitted) {
+                if let Err(error) = self.commit_state(&mut admitted) {
                     return error;
                 }
                 self.state = Some(admitted.clone());
@@ -2501,7 +2513,7 @@ impl Service {
             && admitted.auth.advance_wrapping_clock(now)
         {
             admitted.schema = admitted.writer_schema();
-            if let Err(error) = self.commit_state(&admitted) {
+            if let Err(error) = self.commit_state(&mut admitted) {
                 return error;
             }
             self.state = Some(admitted.clone());
@@ -2545,7 +2557,7 @@ impl Service {
         };
         if principal.as_ref().is_some_and(Principal::consumed_use) {
             admitted.schema = admitted.writer_schema();
-            if let Err(error) = self.commit_state(&admitted) {
+            if let Err(error) = self.commit_state(&mut admitted) {
                 return error;
             }
             self.state = Some(admitted.clone());
@@ -2792,6 +2804,7 @@ impl Service {
                 return Response::error(403, "permission denied");
             }
             self.fence_openbao_wrapper();
+            self.namespace_runtime.clear();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
@@ -2991,7 +3004,7 @@ impl Service {
             admitted.schema = admitted.writer_schema();
         }
         if admitted.engines.record_root().is_some() {
-            let mut plan = match self.prepare_record_plan(&admitted) {
+            let mut plan = match self.prepare_record_plan(&mut admitted) {
                 Ok(plan) => plan,
                 Err(error) => return error,
             };
@@ -3001,7 +3014,7 @@ impl Service {
             };
             if plan.identity != current {
                 admitted.schema = admitted.writer_schema();
-                plan = match self.prepare_record_plan(&admitted) {
+                plan = match self.prepare_record_plan(&mut admitted) {
                     Ok(plan) => plan,
                     Err(error) => return error,
                 };
@@ -3011,6 +3024,9 @@ impl Service {
                 self.state = Some(admitted);
             }
             return response;
+        }
+        if let Err(error) = self.prepare_namespace_publication(&mut admitted) {
+            return error;
         }
         let serialized_digest = match records::legacy_candidate_digest(&admitted) {
             Ok(digest) => digest,
@@ -3038,7 +3054,7 @@ impl Service {
                     Ok(engines) => engines.into(),
                     Err(error) => return Response::error(error.status, &error.message),
                 };
-                let plan = match self.prepare_record_plan(&admitted) {
+                let plan = match self.prepare_record_plan(&mut admitted) {
                     Ok(plan) => plan,
                     Err(error) => return error,
                 };
@@ -3472,6 +3488,9 @@ impl Service {
         target_replay_epoch: u64,
         options: PersistOwnerStateOptions,
     ) -> Result<owner_store::OwnerWritePlan, ServiceError> {
+        let state = state
+            .protected_state()
+            .map_err(|_| ServiceError::CorruptState)?;
         if bytes.len() > MAX_STATE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
@@ -3677,7 +3696,8 @@ impl Service {
         }
     }
 
-    fn commit_state(&mut self, state: &State) -> Result<(), Response> {
+    fn commit_state(&mut self, state: &mut State) -> Result<(), Response> {
+        self.prepare_namespace_publication(state)?;
         state.validate_format()?;
         if state.engines.record_root().is_some() {
             let plan = self.prepare_record_plan(state)?;
@@ -3696,7 +3716,7 @@ impl Service {
 
     fn commit_state_bytes(
         &mut self,
-        state: &State,
+        state: &mut State,
         bytes: &[u8],
         state_schema: u32,
         target_replay_epoch: u64,
@@ -3714,7 +3734,7 @@ impl Service {
 
     fn commit_state_bytes_with_mode(
         &mut self,
-        state: &State,
+        state: &mut State,
         bytes: &[u8],
         state_schema: u32,
         target_replay_epoch: u64,
@@ -4148,6 +4168,8 @@ impl Service {
             Vec::new()
         };
         let mut state = State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: CURRENT_STATE_SCHEMA,
             cluster_id,
             replay_epoch: 0,
@@ -4389,6 +4411,7 @@ impl Service {
         };
         self.seal = Some(seal);
         self.durable_profile = durable_profile;
+        self.namespace_runtime.clear();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -4573,6 +4596,7 @@ impl Service {
         };
         self.seal = Some(pending.seal);
         self.durable_profile = Some(pending.profile);
+        self.namespace_runtime.clear();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -4826,6 +4850,7 @@ impl Service {
             let wrapped = match crypto::wrap_barrier_key(&key, &seal.associated_data(), &key) {
                 Ok(value) => Zeroizing::new(value),
                 Err(_) => {
+                    self.namespace_runtime.clear();
                     self.state = None;
                     self.ha_activation = None;
                     self.record_root = None;
@@ -4838,6 +4863,7 @@ impl Service {
             };
             seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
             if persist_seal_metadata(&self.data_dir, &seal).is_err() {
+                self.namespace_runtime.clear();
                 self.state = None;
                 self.ha_activation = None;
                 self.record_root = None;
@@ -4883,6 +4909,7 @@ impl Service {
         }
         self.unseal_shares.clear();
         if self.rotate_unseal_nonce().is_err() {
+            self.namespace_runtime.clear();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
@@ -4910,6 +4937,7 @@ impl Service {
         }
         let wrapper_activation = self.begin_openbao_wrapper_activation();
         self.durable = None;
+        self.namespace_runtime.clear();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -5678,7 +5706,7 @@ impl Service {
             // In HA mode it is committed by Raft before any node discards its
             // detailed replay ledger. Each node then retires locally immediately
             // before publishing the state batch under the new epoch.
-            if let Err(error) = self.commit_state(&next_state) {
+            if let Err(error) = self.commit_state(&mut next_state) {
                 return error;
             }
             self.state = Some(next_state);
@@ -6215,7 +6243,7 @@ impl Service {
                     let plan = self.full_existing_record_plan(&state)?;
                     self.commit_record_plan(&state, plan)?;
                 } else {
-                    self.commit_state(&state)?;
+                    self.commit_state(&mut state)?;
                 }
             }
             return Ok(());

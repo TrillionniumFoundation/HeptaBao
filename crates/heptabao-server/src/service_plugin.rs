@@ -1322,7 +1322,7 @@ impl Service {
                 Err(error) => return Response::error(error.status, &error.message),
             };
         }
-        let record_plan = match self.prepare_record_plan(&candidate) {
+        let record_plan = match self.prepare_record_plan(&mut candidate) {
             Ok(record_plan) => record_plan,
             Err(error) => return error,
         };
@@ -1611,7 +1611,7 @@ impl Service {
             return error;
         }
         state.schema = state.writer_schema();
-        if let Err(error) = self.commit_state(&state) {
+        if let Err(error) = self.commit_state(&mut state) {
             erase_json(&mut issued.body);
             return error;
         }

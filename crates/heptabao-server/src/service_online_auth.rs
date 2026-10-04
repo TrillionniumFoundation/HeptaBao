@@ -302,7 +302,7 @@ impl Service {
             };
         }
         state.schema = state.writer_schema();
-        if let Err(error) = self.commit_state(&state) {
+        if let Err(error) = self.commit_state(&mut state) {
             erase_json(&mut response.body);
             return error;
         }
@@ -438,7 +438,7 @@ impl Service {
         // committed before staging and is never rolled back by this shortcut.
         if response.mutated {
             state.schema = state.writer_schema();
-            if let Err(error) = self.commit_state(&state) {
+            if let Err(error) = self.commit_state(&mut state) {
                 erase_json(&mut response.body);
                 return error;
             }
@@ -597,7 +597,7 @@ impl Service {
             state.schema = state.writer_schema();
             // Critical order: one-use session removal is replicated and durable
             // before the global Service writer is released for code exchange.
-            if let Err(error) = self.commit_state(&state) {
+            if let Err(error) = self.commit_state(&mut state) {
                 return Some(error);
             }
             self.state = Some(state);
@@ -743,7 +743,7 @@ impl Service {
             };
             if response.mutated {
                 state.schema = state.writer_schema();
-                if let Err(error) = self.commit_state(&state) {
+                if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
                 self.state = Some(state);
@@ -859,7 +859,7 @@ impl Service {
             };
         }
         state.schema = state.writer_schema();
-        if let Err(error) = self.commit_state(&state) {
+        if let Err(error) = self.commit_state(&mut state) {
             erase_json(&mut issued.body);
             if callback {
                 return consumed_oidc_error(Response {
@@ -896,7 +896,7 @@ mod tests {
         state.auth = auth.into();
         state.validate_format().map_err(|_| "invalid test state")?;
         service
-            .commit_state(&state)
+            .commit_state(&mut state)
             .map_err(|_| "test state did not persist")?;
         service.state = Some(state);
         Ok((service, key, callback))

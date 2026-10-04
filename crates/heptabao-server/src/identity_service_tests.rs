@@ -1122,7 +1122,8 @@ fn batch_login_wrapping_capacity_failure_discards_identity_and_key_watermark_tog
             .auth
             .wrap_response("", "fixture", 60, &json!({"data":{"ok":true}}), 100)?;
     }
-    s.commit_state(&candidate).map_err(|_| "fixture commit")?;
+    s.commit_state(&mut candidate)
+        .map_err(|_| "fixture commit")?;
     s.state = Some(candidate);
     let before = s.current_state_digest().map_err(|_| "digest")?;
     let generation = s.durable.as_ref().ok_or("durable")?.generation();
@@ -1326,7 +1327,7 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
     assert!(downgrade.validate_format().is_ok());
     assert!(
         service
-            .prepare_record_plan(&downgrade)
+            .prepare_record_plan(&mut downgrade)
             .err()
             .is_some_and(|response| response.status == 503
                 && response.body["errors"][0] == "AAD-bound convergent keys require schema 66")

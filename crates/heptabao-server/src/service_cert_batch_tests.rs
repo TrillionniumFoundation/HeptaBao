@@ -88,7 +88,9 @@ fn cert_batch_identity_denial_and_wrapper_failure_do_not_publish_candidate_owner
                     .auth
                     .wrap_response("", "fixture", 60, &json!({"data":{"ok":true}}), 100)?;
             }
-            service.commit_state(&state).map_err(|_| "fixture commit")?;
+            service
+                .commit_state(&mut state)
+                .map_err(|_| "fixture commit")?;
             service.state = Some(state);
         }
         let before = owners(&service)?;

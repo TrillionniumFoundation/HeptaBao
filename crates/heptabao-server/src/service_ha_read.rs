@@ -193,7 +193,7 @@ mod tests {
             100,
         )?;
         service
-            .commit_state(&state)
+            .commit_state(&mut state)
             .map_err(|_| "V4 fixture mount publication")?;
         service.state = Some(state);
         assert!(service.record_root.is_none());
@@ -238,7 +238,7 @@ mod tests {
         // An otherwise identical local publication changes durable generation.
         let state = service.state.clone().ok_or("missing state")?;
         service
-            .commit_state(&state)
+            .commit_state(&mut state)
             .map_err(|_| "same-state publication failed")?;
         assert!(service.reusable_ha_cursor().is_none());
         let next = verified(&service)?;

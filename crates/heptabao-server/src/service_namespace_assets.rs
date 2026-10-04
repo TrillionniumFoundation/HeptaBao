@@ -306,14 +306,14 @@ mod tests {
         let mut lower = closed.clone();
         lower.schema = NAMESPACE_CUSTODY_STATE_SCHEMA - 1;
         assert!(
-            lower.validate_format().is_err() && service.commit_state(&lower).is_err(),
+            lower.validate_format().is_err() && service.commit_state(&mut lower).is_err(),
             "old reader labels cannot publish custody assets"
         );
         closed
             .validate_format()
             .map_err(|_| "protected V5 format admission")?;
         let plan = service
-            .prepare_record_plan(&closed)
+            .prepare_record_plan(&mut closed)
             .map_err(|_| "protected V5 plan preparation")?;
         service
             .commit_record_plan(&closed, plan)

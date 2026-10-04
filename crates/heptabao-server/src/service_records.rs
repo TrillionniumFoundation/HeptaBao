@@ -15,6 +15,7 @@ pub(super) struct RecordPlan {
     pub bytes: Zeroizing<Vec<u8>>,
     pub identity: StateIdentity,
     pub objects: Vec<Arc<StagedObject>>,
+    pub namespace_leases: namespace_runtime::Leases,
 }
 
 /// Keep the first occurrence in child-first order, but reject an ID that hides
@@ -90,6 +91,7 @@ pub(super) fn existing_plan(root: RecordStateRoot) -> Result<RecordPlan, Respons
         bytes,
         identity,
         objects: Vec::new(),
+        namespace_leases: namespace_runtime::Leases::default(),
     })
 }
 
@@ -211,6 +213,8 @@ impl Service {
             .map(|owner| owner_bytes(root, owner, reader))
             .collect::<Result<Vec<_>, _>>()?;
         let mut state = State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: root.state_schema,
             cluster_id: root.cluster_id.clone(),
             replay_epoch: root.replay_epoch,
@@ -244,8 +248,11 @@ impl Service {
         Ok(state)
     }
 
-    pub(super) fn prepare_record_plan(&self, state: &State) -> Result<RecordPlan, Response> {
+    pub(super) fn prepare_record_plan(&self, state: &mut State) -> Result<RecordPlan, Response> {
+        self.prepare_namespace_publication(state)?;
         state.validate_publication_schema(self.state.as_ref())?;
+        let namespace_leases = state.namespace_leases.clone();
+        let state = state.protected_state()?;
         let key = state.engines.record_address_key().ok_or_else(unavailable)?;
         let kv1 = state.engines.record_root().ok_or_else(unavailable)?;
         let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
@@ -341,6 +348,7 @@ impl Service {
             bytes,
             identity,
             objects,
+            namespace_leases,
         })
     }
 
@@ -434,6 +442,8 @@ impl Service {
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         mut restore_fault: Option<crate::fixture_native_restore::NativeRestoreFaultContext>,
     ) -> Result<(), Response> {
+        plan.namespace_leases.validate()?;
+        state.namespace_leases.validate()?;
         state.validate_publication_schema(self.state.as_ref())?;
         state.validate_format()?;
         if state.schema != plan.root.state_schema
@@ -799,6 +809,7 @@ impl Service {
             bytes: committed.root_bytes.clone(),
             identity: committed.identity,
             objects,
+            namespace_leases: namespace_runtime::Leases::default(),
         };
         self.install_received_record_state(state, plan)?;
         if let Err(error) = self.cache_verified_ha_records(&committed) {
@@ -1039,7 +1050,7 @@ mod tests {
         let mut next = service.state.clone().ok_or("state")?;
         next.engines
             .handle("", "PUT", "records/shared", &json!({"value":"kept"}), 100)?;
-        let mut plan = service.prepare_record_plan(&next).map_err(|_| "plan")?;
+        let mut plan = service.prepare_record_plan(&mut next).map_err(|_| "plan")?;
         assert!(!plan.objects.is_empty());
         assert!(plan.objects.len() < heptabao_durable_service::MAX_ATOMIC_MUTATIONS / 2);
         let duplicates = plan.objects.clone();
@@ -1184,7 +1195,7 @@ mod tests {
             )?;
         }
         service
-            .commit_state(&candidate)
+            .commit_state(&mut candidate)
             .map_err(|_| "publish graph")?;
         service.state = Some(candidate);
         let previous = service.record_root.clone().ok_or("root")?;
@@ -1196,7 +1207,7 @@ mod tests {
             &json!({"payload":"small replacement"}),
             100,
         )?;
-        let plan = service.prepare_record_plan(&next).map_err(|_| "plan")?;
+        let plan = service.prepare_record_plan(&mut next).map_err(|_| "plan")?;
         assert_eq!(plan.root.owners, previous.owners);
         assert!(
             plan.objects.len() <= 8,
@@ -1239,7 +1250,7 @@ mod tests {
                 100,
             )?;
         }
-        let plan = service.prepare_record_plan(&next).map_err(|_| "plan")?;
+        let plan = service.prepare_record_plan(&mut next).map_err(|_| "plan")?;
         assert!(plan.objects.len() > heptabao_durable_service::MAX_ATOMIC_MUTATIONS);
         let first = plan
             .objects

@@ -148,7 +148,7 @@ fn authenticated_deep_packed_graph_cannot_hide_under_schema36_on_any_load_path()
         ObjectKind::Branch
     );
     let good = service
-        .prepare_record_plan(&next)
+        .prepare_record_plan(&mut next)
         .map_err(|_| "good plan")?;
     service
         .commit_record_plan(&next, good)

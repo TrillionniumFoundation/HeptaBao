@@ -233,6 +233,7 @@ impl Service {
     }
     pub(super) fn fence_recovery_delivery(&mut self) {
         self.fence_openbao_wrapper();
+        self.namespace_runtime.clear();
         self.state = None;
         self.state_digest = None;
         self.ha_activation = None;
@@ -266,7 +267,7 @@ impl Service {
     ) -> Result<State, Response> {
         live(deadline)?;
         state.schema = state.writer_schema();
-        if let Err(error) = self.commit_state(&state) {
+        if let Err(error) = self.commit_state(&mut state) {
             if self.recovery_required {
                 self.fence_recovery_delivery();
             }
@@ -751,6 +752,8 @@ mod tests {
         let (auth, _) =
             AuthState::bootstrap(1).map_err(|_| std::io::Error::other("bootstrap failed"))?;
         let mut state = State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: INDEXED_RECOVERY_WIRE_STATE_SCHEMA,
             cluster_id: "journal-test-cluster".into(),
             replay_epoch: 0,

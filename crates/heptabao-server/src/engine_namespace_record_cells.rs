@@ -145,6 +145,40 @@ impl EngineState {
         Ok(Zeroizing::new(bytes.to_vec()))
     }
 
+    pub(crate) fn namespace_record_cells(
+        &self,
+        binding: &Binding,
+    ) -> std::result::Result<Cells, RecordError> {
+        let owner = self
+            .namespace_record_owners
+            .get(binding.namespace())
+            .ok_or(RecordError::Missing)?;
+        if owner.binding != *binding {
+            return Err(RecordError::Corrupt);
+        }
+        let mut cells = Cells::new();
+        let Some(runtime) = &self.records else {
+            return Ok(cells);
+        };
+        let prefix = format!("{}/", owner.scope);
+        runtime.protected.visit_keys(|key| {
+            if is_cell(key)
+                && let Some(name) = key.path().strip_prefix(&prefix)
+            {
+                let bytes = runtime.protected.get(key).ok_or(RecordError::Missing)?;
+                self.validate_namespace_record_cell(key, bytes)?;
+                if cells
+                    .insert(name.to_owned(), Zeroizing::new(bytes.to_vec()))
+                    .is_some()
+                {
+                    return Err(RecordError::Corrupt);
+                }
+            }
+            Ok(())
+        })?;
+        Ok(cells)
+    }
+
     pub(super) fn validate_namespace_record_cell(
         &self,
         key: &Kv1Key,

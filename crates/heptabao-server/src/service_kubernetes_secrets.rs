@@ -295,7 +295,7 @@ impl Service {
                     if let Err(error) = state.validate_format() {
                         return error;
                     }
-                    if let Err(error) = self.commit_state(&state) {
+                    if let Err(error) = self.commit_state(&mut state) {
                         return error;
                     }
                     self.state = Some(state);
@@ -312,7 +312,7 @@ impl Service {
                 if let Err(error) = state.validate_format() {
                     return error;
                 }
-                if let Err(error) = self.commit_state(&state) {
+                if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
                 let last_use = principal.consumed_last_use();
@@ -413,7 +413,7 @@ impl Service {
             Err(_) => return post_provider_completion_failure(&plan.inner.lease_id),
         };
         state.schema = state.writer_schema();
-        if state.validate_format().is_err() || self.commit_state(&state).is_err() {
+        if state.validate_format().is_err() || self.commit_state(&mut state).is_err() {
             return post_provider_completion_failure(&plan.inner.lease_id);
         }
         self.state = Some(state);
@@ -448,7 +448,7 @@ impl Service {
                     )
                     .is_err()
                     || retired.validate_format().is_err()
-                    || self.commit_state(&retired).is_err()
+                    || self.commit_state(&mut retired).is_err()
                 {
                     return post_provider_completion_failure(&plan.inner.lease_id);
                 }

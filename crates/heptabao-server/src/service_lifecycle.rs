@@ -55,7 +55,7 @@ impl Service {
         self.audit_event("lifecycle-request", &fingerprint, now, None)
             .map_err(|_| "lifecycle request audit unavailable")?;
         next.schema = next.writer_schema();
-        let result = self.commit_state(&next);
+        let result = self.commit_state(&mut next);
         if result.is_ok() {
             self.state = Some(next);
         }

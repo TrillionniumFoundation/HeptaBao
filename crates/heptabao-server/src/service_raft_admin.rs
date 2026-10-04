@@ -404,7 +404,7 @@ impl Service {
     fn publish_raft_policy(&mut self, mut state: State) -> Result<(), Response> {
         state.schema = state.writer_schema();
         state.validate_format()?;
-        self.commit_state(&state)?;
+        self.commit_state(&mut state)?;
         self.state = Some(state);
         Ok(())
     }

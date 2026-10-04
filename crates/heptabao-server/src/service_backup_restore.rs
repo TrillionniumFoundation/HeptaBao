@@ -148,6 +148,8 @@ impl Service {
             let database = Self::load_owner_bytes(resources, &manifest, "database")?;
             let raft_admin = Self::load_owner_bytes(resources, &manifest, "raft_admin")?;
             let state = State {
+                namespace_protected: None,
+                namespace_leases: namespace_runtime::Leases::default(),
                 schema: manifest.state_schema(),
                 cluster_id: manifest.cluster_id().to_owned(),
                 replay_epoch: manifest.replay_epoch(),

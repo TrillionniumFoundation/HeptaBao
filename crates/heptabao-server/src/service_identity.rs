@@ -55,6 +55,13 @@ impl State {
         &self,
         previous: Option<&State>,
     ) -> Result<(), Response> {
+        self.namespace_leases.validate()?;
+        if let Some(previous) = previous {
+            self.protected_state()?
+                .namespaces
+                .validate_custody_successor(&previous.protected_state()?.namespaces)?;
+        }
+
         if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
             return Err(Response::error(
                 503,
@@ -1171,6 +1178,8 @@ mod recovery_state_tests {
     fn state() -> Result<State, crate::auth::AuthError> {
         let (auth, _) = AuthState::bootstrap(1)?;
         Ok(State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: CURRENT_STATE_SCHEMA,
             cluster_id: "recovery-test-cluster".into(),
             replay_epoch: 0,

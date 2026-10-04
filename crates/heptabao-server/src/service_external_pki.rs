@@ -598,7 +598,7 @@ impl Service {
             erase_json(&mut response.body);
             return cause;
         }
-        let record_plan = match self.prepare_record_plan(&candidate) {
+        let record_plan = match self.prepare_record_plan(&mut candidate) {
             Ok(value) => value,
             Err(cause) => {
                 erase_json(&mut response.body);

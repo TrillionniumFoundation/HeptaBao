@@ -631,7 +631,7 @@ impl Service {
                     if let Err(error) = state.validate_format() {
                         return error;
                     }
-                    if let Err(error) = self.commit_state(&state) {
+                    if let Err(error) = self.commit_state(&mut state) {
                         return error;
                     }
                     self.state = Some(state);
@@ -675,7 +675,7 @@ impl Service {
                     if let Err(error) = state.validate_format() {
                         return error;
                     }
-                    if let Err(error) = self.commit_state(&state) {
+                    if let Err(error) = self.commit_state(&mut state) {
                         return error;
                     }
                     self.state = Some(state);
@@ -771,7 +771,7 @@ impl Service {
             if let Err(error) = state.validate_format() {
                 return error;
             }
-            if let Err(error) = self.commit_state(&state) {
+            if let Err(error) = self.commit_state(&mut state) {
                 return error;
             }
             self.state = Some(state);

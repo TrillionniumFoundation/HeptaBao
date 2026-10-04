@@ -104,7 +104,7 @@ fn fixture(parented: bool, identity: bool) -> TestResult<Fixture> {
     };
     state.schema = CURRENT_STATE_SCHEMA;
     state.validate_format().map_err(|_| "validate")?;
-    service.commit_state(&state).map_err(|_| "commit")?;
+    service.commit_state(&mut state).map_err(|_| "commit")?;
     service.state = Some(state);
     let effect = KubernetesTokenEffectPlan::new(
         *plan,
@@ -187,7 +187,9 @@ fn kube_batch_lease_caps_response_only_and_admin_retirement_survives_reopen() ->
         )
         .map_err(|_| "revoke")?;
     assert!(revoke.mutated);
-    service.commit_state(&state).map_err(|_| "commit revoke")?;
+    service
+        .commit_state(&mut state)
+        .map_err(|_| "commit revoke")?;
     service.state = Some(state);
     drop(plan);
     drop(service);
@@ -244,7 +246,7 @@ fn kube_completion_rechecks_parent_and_same_scope_identity_and_keeps_terminal_ob
                 .map_err(|_| "disable")?
                 .ok_or("disable route")?;
             service
-                .commit_state(&state)
+                .commit_state(&mut state)
                 .map_err(|_| "commit identity")?;
             service.state = Some(state);
         } else {

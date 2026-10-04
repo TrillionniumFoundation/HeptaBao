@@ -83,7 +83,7 @@ fn legacy_fixture_constructor_preserves_real_writer_gate_and_rejects_protected_l
     legacy.validate_format().map_err(|_| "legacy format")?;
     assert!(
         service
-            .commit_state(&legacy)
+            .commit_state(&mut legacy)
             .err()
             .is_some_and(|response| response.status == 503),
         "ordinary writer cannot downgrade for fixture setup"

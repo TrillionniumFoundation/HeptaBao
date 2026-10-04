@@ -321,7 +321,7 @@ fn byok_tenant_imports_encrypted_restart_and_retirement_keep70() -> TestResult {
         .current_state_identity()
         .map_err(|_| "test_identity_failed")?;
     assert!(
-        service.commit_state(&lower).is_err(),
+        service.commit_state(&mut lower).is_err(),
         "retired70 publication rejects69"
     );
     assert!(

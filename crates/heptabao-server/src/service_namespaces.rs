@@ -538,6 +538,37 @@ impl NamespaceRegistry {
         Ok(changed)
     }
 
+    pub(super) fn validate_custody_successor(&self, previous: &Self) -> Result<(), Response> {
+        for (path, old) in &previous.entries {
+            let Some(old) = &old.custody else {
+                continue;
+            };
+            match self
+                .entries
+                .get(path)
+                .and_then(|entry| entry.custody.as_ref())
+            {
+                Some(next) if old.admits_successor(next) => {}
+                None if self.retired_custody.get(path) == Some(&old.retirement()) => {}
+                _ => {
+                    return Err(Response::error(
+                        503,
+                        "namespace custody publication frontier regressed",
+                    ));
+                }
+            }
+        }
+        for (path, old) in &previous.retired_custody {
+            if self.retired_custody.get(path) != Some(old) {
+                return Err(Response::error(
+                    503,
+                    "namespace custody retirement frontier regressed",
+                ));
+            }
+        }
+        Ok(())
+    }
+
     fn create(
         &mut self,
         cluster_id: &str,
@@ -586,7 +617,7 @@ impl NamespaceRegistry {
         patch_metadata(&mut entry.custom_metadata, body)
     }
 
-    fn set_sealed(&mut self, path: &str, sealed: bool) -> Result<(), Response> {
+    pub(super) fn set_sealed(&mut self, path: &str, sealed: bool) -> Result<(), Response> {
         let path = canonical_path(path)?;
         let entry = self
             .entries
@@ -811,7 +842,7 @@ impl Service {
             if let Err(error) = state.validate_format() {
                 return error;
             }
-            if let Err(error) = self.commit_state(&state) {
+            if let Err(error) = self.commit_state(&mut state) {
                 return error;
             }
             self.state = Some(state);
@@ -876,7 +907,7 @@ impl Service {
                 if let Err(error) = state.validate_format() {
                     return error;
                 }
-                if let Err(error) = self.commit_state(&state) {
+                if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
                 let response = state
@@ -894,7 +925,7 @@ impl Service {
                 if let Err(error) = state.validate_format() {
                     return error;
                 }
-                if let Err(error) = self.commit_state(&state) {
+                if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
                 let response = state
@@ -929,7 +960,7 @@ impl Service {
                 if let Err(error) = state.validate_format() {
                     return error;
                 }
-                if let Err(error) = self.commit_state(&state) {
+                if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
                 self.state = Some(state);

@@ -549,7 +549,7 @@ fn epoch_publication_expired_actor_after_real_stage_keeps_old_root() -> TestResu
         100,
     )?;
     let plan = service
-        .prepare_record_plan(&candidate)
+        .prepare_record_plan(&mut candidate)
         .map_err(|_| "plan")?;
     service
         .state

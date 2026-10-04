@@ -40,8 +40,10 @@ impl EngineState {
                 .protected
                 .partition_namespace(namespace, private_key)
                 .map_err(kv1_records::record_error)?;
-            let (graph, cells) =
-                Graph::protect(namespace, key, &owned).map_err(kv1_records::record_error)?;
+            let (graph, cells) = Graph::protect_reusing(namespace, key, &owned, |name| {
+                self.read_namespace_record_cell(key.binding(), name)
+            })
+            .map_err(kv1_records::record_error)?;
             let mut objects = Vec::new();
             protected
                 .visit_objects(|object| {

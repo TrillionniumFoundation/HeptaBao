@@ -536,7 +536,7 @@ fn jwt_user_claim_schema68_is_conditional_sticky_and_snapshot_protected() -> Tes
     malformed.auth = serde_json::from_value(owner)?;
     let before_digest = service.state_digest;
     assert!(
-        malformed.validate_format().is_err() && service.commit_state(&malformed).is_err(),
+        malformed.validate_format().is_err() && service.commit_state(&mut malformed).is_err(),
         "malformed persisted selector rejected by real publication gate"
     );
     assert!(

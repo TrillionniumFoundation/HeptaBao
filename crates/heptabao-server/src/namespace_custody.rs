@@ -72,7 +72,7 @@ impl Binding {
 }
 
 /// Durable namespace ciphertext. Keys and partial unseal shares are excluded.
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Descriptor {
     version: u32,
@@ -139,6 +139,10 @@ impl std::fmt::Debug for Key {
 }
 
 impl Key {
+    pub(crate) fn binding(&self) -> &Binding {
+        &self.binding
+    }
+
     pub(crate) fn matches_binding(&self, actual: &Binding) -> bool {
         self.binding == *actual
     }
@@ -278,6 +282,9 @@ impl Descriptor {
     pub fn binding(&self) -> &Binding {
         &self.binding
     }
+    pub(crate) fn key_epoch(&self) -> u64 {
+        self.key_epoch
+    }
     pub fn generation(&self) -> u64 {
         self.generation
     }
@@ -408,6 +415,14 @@ impl Descriptor {
         Ok(next)
     }
 
+    pub(crate) fn admits_successor(&self, next: &Self) -> bool {
+        self.binding == next.binding
+            && self.key_epoch == next.key_epoch
+            && next.generation >= self.generation
+            && next.seal_frontier >= self.seal_frontier
+            && (next.generation != self.generation || self == next)
+    }
+
     pub(crate) fn retirement(&self) -> Tombstone {
         Tombstone {
             version: VERSION,
@@ -419,7 +434,7 @@ impl Descriptor {
     }
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Tombstone {
     version: u32,
