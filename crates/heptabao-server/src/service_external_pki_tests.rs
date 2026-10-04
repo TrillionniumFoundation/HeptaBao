@@ -152,9 +152,21 @@ fn leaf_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, St
             == 200,
         "external root and CRL publication"
     );
-    assert!(call(&mut service,"POST","external-ca/roles/leaf",&admin,json!({
-        "allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"30m","generate_lease":true,"key_type":"ed25519"
-    })).status==200,"bounded Ed25519 leaf role");
+    let role = call(
+        &mut service,
+        "POST",
+        "external-ca/roles/leaf",
+        &admin,
+        json!({
+            "allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"30m","generate_lease":true,"key_type":"ed25519"
+        }),
+    );
+    assert!(
+        role.status == 200,
+        "bounded Ed25519 leaf role: status={} errors={:?}",
+        role.status,
+        role.body.get("errors")
+    );
     Ok((root, service, unseal, admin))
 }
 

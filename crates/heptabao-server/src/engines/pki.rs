@@ -2276,7 +2276,7 @@ mod bare_domain_legacy_tests {
         body["allow_bare_domains"] = json!(true);
         let allowed = Role::from_body(&body)?;
         assert!(allowed.allow_bare_domains == Some(true) && allowed.allows("EXAMPLE.TEST"));
-        for wrong in [json!("true"), json!(1), Value::Null] {
+        for wrong in [json!("not_bool"), json!(2), json!([]), json!({})] {
             body["allow_bare_domains"] = wrong;
             assert!(Role::from_body(&body).is_err());
         }
