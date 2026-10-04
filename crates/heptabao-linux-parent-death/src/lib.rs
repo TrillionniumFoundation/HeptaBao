@@ -43,43 +43,45 @@ pub fn bind_owner_death(command: &mut std::process::Command) {
 #[cfg(all(test, target_os = "linux"))]
 mod tests {
     use super::bind_owner_death;
+    use std::os::unix::process::ExitStatusExt;
     use std::process::{Command, Stdio};
+    use std::time::{Duration, Instant};
 
     #[test]
-    fn fixed_signal_and_parent_survive_actual_exec() -> Result<(), Box<dyn std::error::Error>> {
-        const PROBE: &str = "HEPTABAO_PARENT_DEATH_EXEC_TEST";
-        if let Ok(expected_parent) = std::env::var(PROBE) {
-            let expected_parent: i32 = expected_parent.parse()?;
-            assert_eq!(
-                rustix::process::parent_process_death_signal()?,
-                Some(rustix::process::Signal::KILL),
-                "the actual executed child retains the fixed kernel signal"
-            );
-            assert_eq!(
-                rustix::process::getppid().map(|pid| pid.as_raw_nonzero().get()),
-                Some(expected_parent),
-                "the actual executed child remains owned by its spawning parent"
-            );
-            return Ok(());
+    fn spawning_thread_exit_kills_and_reaps_actual_child() -> Result<(), Box<dyn std::error::Error>>
+    {
+        // spawn waits for the successful exec handshake before this owner exits.
+        // The process containing the parent remains alive throughout the test.
+        let owner = std::thread::spawn(|| {
+            let mut command = Command::new("/bin/sleep");
+            command
+                .arg("30")
+                .stdout(Stdio::null())
+                .stderr(Stdio::null());
+            bind_owner_death(&mut command);
+            command.spawn()
+        });
+        let mut child = owner
+            .join()
+            .map_err(|_| std::io::Error::other("test owner thread failed"))??;
+        let deadline = Instant::now() + Duration::from_secs(2);
+        loop {
+            if let Some(status) = child.try_wait()? {
+                assert_eq!(
+                    status.signal(),
+                    Some(9),
+                    "owner-thread death produces actual kernel SIGKILL and owned wait"
+                );
+                return Ok(());
+            }
+            if Instant::now() >= deadline {
+                // Test failure cleanup targets only this still-owned child.
+                // Administrative termination cannot satisfy the assertion.
+                child.kill()?;
+                child.wait()?;
+                return Err("owner-thread death did not terminate the actual child".into());
+            }
+            std::thread::sleep(Duration::from_millis(10));
         }
-        let mut command = Command::new(std::env::current_exe()?);
-        command
-            .args([
-                "--exact",
-                "tests::fixed_signal_and_parent_survive_actual_exec",
-            ])
-            .env(
-                PROBE,
-                rustix::process::getpid().as_raw_nonzero().get().to_string(),
-            )
-            .stdout(Stdio::null())
-            .stderr(Stdio::null());
-        bind_owner_death(&mut command);
-        let mut child = command.spawn()?;
-        assert!(
-            child.wait()?.success(),
-            "actual child executes and exits normally"
-        );
-        Ok(())
     }
 }

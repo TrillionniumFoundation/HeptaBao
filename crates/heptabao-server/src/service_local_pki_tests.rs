@@ -1058,6 +1058,13 @@ fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -
                 == certs,
         "root deletion removes keys and issuers while preserving certificate history"
     );
+    for path in ["ca/keys", "ca/issuers"] {
+        let empty = service.handle_at("LIST", path, "team", &admin, json!({}), 111);
+        assert!(
+            empty.status == 404 && empty.body["errors"] == json!([]),
+            "empty issuer and key lists retain the official empty error array"
+        );
+    }
     assert!(
         service
             .handle_at("DELETE", "sys/mounts/ca", "team", &admin, json!({}), 100)

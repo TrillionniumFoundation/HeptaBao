@@ -429,7 +429,11 @@ impl Pki {
             );
         }
         if info.is_empty() {
-            return Err(not_found());
+            return Ok(EngineResponse {
+                status: 404,
+                body: json!({"errors":[]}),
+                mutated: false,
+            });
         }
         Ok(ok(
             json!({"keys":info.keys().collect::<Vec<_>>(),"key_info":info}),
@@ -742,7 +746,7 @@ mod tests {
             pki.certificate_list(&json!({}))?.body == certs
                 && pki.roles.len() == 1
                 && pki.issued.len() == 2
-                && pki.local_key_list(&json!({})).is_err(),
+                && pki.local_key_list(&json!({}))?.status == 404,
             "root deletion preserves certs and roles while deleting keys"
         );
         let encoded = Zeroizing::new(serde_json::to_vec(&pki)?);

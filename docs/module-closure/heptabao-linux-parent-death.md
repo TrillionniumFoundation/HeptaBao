@@ -27,8 +27,9 @@ and, when it owns the adopted child, its own wait result.
 
 ## Acceptance evidence
 
-`fixed_signal_and_parent_survive_actual_exec` checks the actual kernel signal and
-parent identity in an executed child and waits for its natural exit.
+`spawning_thread_exit_kills_and_reaps_actual_child` executes a real child, then lets
+its spawning thread exit while the parent process remains alive. The owned wait
+must observe kernel SIGKILL without an administrative signal to satisfy the test.
 Genuine provider executable coverage is supplied
 by `crates/heptabao-server/examples/wrapper_lifecycle_consumer.rs` and the external
 owned-process consumer: real provider AutoMTLS admission, a joined request caller

@@ -6,9 +6,9 @@ The Wrapper runtime invokes it from the persistent child ownership thread, which
 retains its owned Child and pidfd until an actual terminal wait. Request admission
 threads can exit while that ownership thread and provider remain live.
 
-`fixed_signal_and_parent_survive_actual_exec` runs an actual child executable,
-reads the kernel parent-death signal and parent identity after exec, and waits
-for its natural exit. The genuine Wrapper lifecycle consumer separately checks
+`spawning_thread_exit_kills_and_reaps_actual_child` runs an actual child executable,
+lets its spawning ownership thread exit while the parent process remains alive,
+and requires an owned wait with kernel SIGKILL. The genuine Wrapper lifecycle consumer separately checks
 server SIGKILL/SIGTERM, live encryption after the caller thread exits, and normal
 provider retirement with the runtime's actual terminal wait.
 

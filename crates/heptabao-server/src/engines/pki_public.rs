@@ -247,7 +247,11 @@ impl Pki {
                         info.insert(root.issuer_id.clone(),json!({"is_default":self.root.as_ref().is_some_and(|default|default.issuer_id==root.issuer_id),"issuer_name":name,"key_id":root.key_id,"serial_number":external::formatted_serial(&root.serial)}));
                     }
                     if info.is_empty() {
-                        return Err(not_found());
+                        return Ok(EngineResponse {
+                            status: 404,
+                            body: json!({"errors":[]}),
+                            mutated: false,
+                        });
                     }
                     return Ok(ok(
                         json!({"keys":info.keys().collect::<Vec<_>>(),"key_info":info}),
