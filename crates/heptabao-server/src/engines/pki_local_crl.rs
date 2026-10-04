@@ -429,7 +429,7 @@ impl Pki {
             }
             let config = before.updated(body)?;
             let mut next = self.clone();
-            next.local_crl.get_or_insert_with(|| Box::default()).config = config.clone();
+            next.local_crl.get_or_insert_with(Box::default).config = config.clone();
             let maintained = if before.disable != config.disable
                 || before.auto_rebuild && !config.auto_rebuild
                 || before.enable_delta != config.enable_delta
