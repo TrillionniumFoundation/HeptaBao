@@ -220,11 +220,11 @@ impl AuthState {
                 Timestamp::whole(creation_seconds).map_err(|_| denied())?,
                 granted,
             )?;
-            let policy_marker =
-                issued_role.is_none() && policies.iter().any(|name| !valid_name(name));
-            if policy_marker {
-                self.token_api_batch_policy_state = true;
-            }
+            // Every precise stateless grant originates in Token API issuance.
+            // Bind that private provenance in the authenticated claim even
+            // when every policy happens to fit historical ASCII grammar.
+            let policy_marker = true;
+            self.token_api_batch_policy_state = true;
             let claims = batch::BatchClaims {
                 token_role: issued_role,
                 token_api_precision: Some(BatchPrecision {

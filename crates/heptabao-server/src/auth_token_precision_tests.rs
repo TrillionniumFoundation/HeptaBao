@@ -25,7 +25,7 @@ fn service(
             "",
             "POST",
             "auth/token/create",
-            &json!({"ttl":"2s","policies":["default"],"no_default_policy":true,"num_uses":uses}),
+            &json!({"ttl":"2s","policies":["default"],"no_default_policy":false,"num_uses":uses}),
             100,
         )?
         .ok_or("route absent")?;
@@ -411,6 +411,7 @@ fn precise_public_clock_serializes_checked_fraction_without_changing_authority()
     lease.grant_started_at = timestamp(100, 300_000_000)?;
     lease.last_renewed_at = Some(timestamp(100, 300_000_000)?);
     lease.expires_at = Some(timestamp(100, 800_000_000)?);
+    state.observe_token_api_time(AuthorityTime::Precise(timestamp(100, 300_000_000)?))?;
     state.validate_system_lease_defaults()?;
     let lookup = super::super::token_info_observed(
         &state.tokens[&hash(&raw)],
@@ -437,6 +438,7 @@ fn registration_clock_cannot_move_an_already_computed_precise_deadline() -> Test
         .as_mut()
         .ok_or("precision absent")?;
     lease.issued_at = timestamp(100, 200_040_000)?;
+    state.observe_token_api_time(AuthorityTime::Precise(timestamp(100, 200_040_000)?))?;
     state.validate_system_lease_defaults()?;
     assert!(
         state
@@ -456,6 +458,7 @@ fn registration_clock_cannot_move_an_already_computed_precise_deadline() -> Test
     lease.grant_started_at = timestamp(100, 300_000_000)?;
     lease.last_renewed_at = Some(timestamp(100, 300_020_000)?);
     lease.expires_at = Some(timestamp(100, 800_000_000)?);
+    state.observe_token_api_time(AuthorityTime::Precise(timestamp(100, 300_020_000)?))?;
     state.validate_system_lease_defaults()?;
     assert!(
         state
