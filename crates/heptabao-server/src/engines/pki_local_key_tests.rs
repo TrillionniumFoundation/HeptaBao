@@ -164,20 +164,39 @@ fn exported_roots_match_certificate_and_preserve_oracle_bundle_encodings() -> Te
 }
 
 #[test]
-fn invalid_private_export_format_leaves_root_unmodified() -> TestResult {
-    for invalid in [json!("encrypted"), json!(1), json!(null)] {
+fn non_pkcs8_private_export_options_preserve_official_legacy_encoding() -> TestResult {
+    for choice in [
+        json!("encrypted"),
+        json!(123),
+        json!(null),
+        json!(""),
+        json!("pem"),
+        json!("der"),
+    ] {
         let mut pki = Pki::default();
         let result = pki.handle_admin(
             "POST",
             "root/generate/exported",
-            &json!({"common_name":"exported-root.example.test", "private_key_format":invalid}),
+            &json!({"common_name":"exported-root.example.test", "key_type":"ec", "private_key_format":choice}),
             100,
-        );
+        ).map_err(|_| "official scalar private format default")?;
         assert!(
-            matches!(result, Err(error) if error.status == 400),
-            "invalid export format refusal"
+            result.status == 200
+                && result.body["data"]["private_key"]
+                    .as_str()
+                    .is_some_and(|value| value.starts_with("-----BEGIN EC PRIVATE KEY-----")),
+            "unknown scalar private format retains actual legacy EC encoding"
         );
-        assert!(pki.root.is_none(), "failed export does not create root");
+        let root = pki
+            .root
+            .as_ref()
+            .ok_or("stored root after default export")?;
+        root.local_key()
+            .map_err(|_| "stored default export key")?
+            .public()
+            .map_err(|_| "default exported public")?
+            .validate_certificate(&root.certificate_der)
+            .map_err(|_| "default exported actual self-signature")?;
     }
     Ok(())
 }

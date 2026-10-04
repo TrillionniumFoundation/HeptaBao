@@ -2740,7 +2740,8 @@ impl Service {
         // Safe-key and custom JWT role candidates need their reader schema
         // before record preflight. Ordinary legacy reads retain their original
         // schema until a proven logical mutation, as before.
-        if admitted.engines.has_local_typed_pki_state()
+        if admitted.engines.has_local_pki_identifier_state()
+            || admitted.engines.has_local_typed_pki_state()
             || admitted.engines.has_aad_bound_convergent_state()
             || admitted.engines.has_transit_byok_state()
             || admitted.auth.has_jwt_user_claim_state()

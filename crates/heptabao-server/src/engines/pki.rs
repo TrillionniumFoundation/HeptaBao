@@ -492,16 +492,10 @@ impl Pki {
             let output_format = RootOutputFormat::from_body(body)?;
             let exported = path == "root/generate/exported";
             // Internal generation ignores this field, matching the oracle.
-            // Exported generation accepts the legacy encoding and PKCS8.
+            // The oracle converts only the literal PKCS8 choice. Other scalar
+            // values, including an unknown string and null, retain legacy DER.
             let export_pkcs8 = exported
-                && match body.get("private_key_format") {
-                    None => false,
-                    Some(Value::String(value)) if matches!(value.as_str(), "" | "der" | "pem") => {
-                        false
-                    }
-                    Some(Value::String(value)) if value == "pkcs8" => true,
-                    _ => return Err(bad("invalid PKI private key format")),
-                };
+                && matches!(body.get("private_key_format"), Some(Value::String(value)) if value == "pkcs8");
             if self.root.is_some() {
                 return Err(bad("PKI root already exists"));
             }
