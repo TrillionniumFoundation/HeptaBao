@@ -904,6 +904,166 @@ fn external_issuer_default_rsa_and_mldsa_subjects_are_real_and_bound() -> TestRe
 }
 
 #[test]
+fn local_crl_idle_maintenance_commits_signed_delta_and_survives_clock_rollback_restart()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/local-ca",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status
+            == 204,
+        "local CRL mount"
+    );
+    let generated = call(
+        &mut service,
+        "POST",
+        "local-ca/root/generate/internal",
+        &admin,
+        json!({"common_name":"local-ca.example.test","ttl":"3h","key_type":"ed25519"}),
+    );
+    assert!(generated.status == 200, "actual local signing root");
+    let der = decode_pem(
+        generated.body["data"]["certificate"]
+            .as_str()
+            .ok_or("root")?,
+    )?;
+    let (_, certificate) = X509Certificate::from_der(&der).map_err(|_| "root DER")?;
+    let spki = certificate.public_key().raw.to_vec();
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "local-ca/config/crl",
+            &admin,
+            json!({"auto_rebuild":true,"enable_delta":true,"expiry":"2h",
+            "auto_rebuild_grace_period":"5m","delta_rebuild_interval":"1m"})
+        )
+        .status
+            == 200,
+        "actual automatic CRL policy"
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "local-ca/roles/leaf",
+            &admin,
+            json!({"allowed_domains":["example.test"],"allow_subdomains":true,
+            "key_type":"ed25519","max_ttl":"30m","generate_lease":true})
+        )
+        .status
+            == 200,
+        "owned leased leaf role"
+    );
+    let issued = call(
+        &mut service,
+        "POST",
+        "local-ca/issue/leaf",
+        &admin,
+        json!({"common_name":"leaf.example.test","ttl":"10m"}),
+    );
+    assert!(issued.status == 200, "actual owned leaf issuance");
+    let lease = issued.body["lease_id"].as_str().ok_or("lease")?.to_owned();
+    assert!(
+        service
+            .handle_at(
+                "PUT",
+                "sys/leases/revoke",
+                "",
+                &admin,
+                json!({"lease_id":lease}),
+                101
+            )
+            .status
+            == 204,
+        "actual lease revocation"
+    );
+    let old_delta = service.handle_at("GET", "local-ca/cert/delta-crl", "", "", json!({}), 101);
+    assert!(old_delta.status == 200, "anonymous cached delta read");
+    let old_der = decode_pem(
+        old_delta.body["data"]["certificate"]
+            .as_str()
+            .ok_or("old delta")?,
+    )?;
+    verify_local_crl(&spki, &old_der, 0)?;
+    assert!(
+        service
+            .maintain_lifetimes_at(160)
+            .map_err(|_| "idle CRL maintenance")?,
+        "idle worker commits due signed delta"
+    );
+    let updated = service.handle_at("GET", "local-ca/cert/delta-crl", "", "", json!({}), 160);
+    assert!(updated.status == 200, "anonymous committed delta");
+    let delta = decode_pem(
+        updated.body["data"]["certificate"]
+            .as_str()
+            .ok_or("new delta")?,
+    )?;
+    assert!(delta != old_der, "actual cached DER advanced");
+    verify_local_crl(&spki, &delta, 1)?;
+    assert!(
+        !service
+            .maintain_lifetimes_at(180)
+            .map_err(|_| "idle unchanged CRL")?,
+        "unchanged revocations allocate no new CRL"
+    );
+    assert!(
+        service.state.as_ref().ok_or("committed state")?.schema == LOCAL_PKI_CRL_STATE_SCHEMA,
+        "idle signed cache retains reader floor"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "actual encrypted cache reopen"
+    );
+    let rolled_back = call(
+        &mut reopened,
+        "GET",
+        "local-ca/cert/delta-crl",
+        "",
+        json!({}),
+    );
+    assert!(
+        rolled_back.status == 200,
+        "anonymous rollback-clock projection"
+    );
+    let recovered = decode_pem(
+        rolled_back.body["data"]["certificate"]
+            .as_str()
+            .ok_or("reopened delta")?,
+    )?;
+    assert!(
+        recovered == delta,
+        "restart and clock rollback retain exact signed delta"
+    );
+    verify_local_crl(&spki, &recovered, 1)?;
+    assert!(
+        reopened
+            .maintain_lifetimes_at(7000)
+            .map_err(|_| "idle full rebuild")?,
+        "idle worker commits due full CRL"
+    );
+    verify_local_crl(&spki, &current_crl(&mut reopened, "")?, 1)?;
+    Ok(())
+}
+
+#[test]
 fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;

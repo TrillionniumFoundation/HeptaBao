@@ -1119,6 +1119,11 @@ publication timestamps, numbers, configuration and revocation snapshots survive
 restart. Public PEM/DER and JSON projections read these bytes without signing or
 advancing counters. Actual cached signatures, issuer DN, authority key identifier,
 number/base, timestamps and revocation ownership are validated on state load.
+This state activates schema 78 across every namespace before record preflight.
+Retiring its mount preserves the floor, and older writers and snapshots cannot
+remove that reader requirement. Lease-owner reconciliation and the idle worker
+perform fallible CRL maintenance in the same Service commit transaction before
+public cache projection; a failure returns an error and leaves the previous cache.
 `config/crl` retains the nine official configuration fields. Automatic maintenance
 returns a fallible mutation to the durable engine transaction; errors do not
 publish a replacement cache. The named regression
