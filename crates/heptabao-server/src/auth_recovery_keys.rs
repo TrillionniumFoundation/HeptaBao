@@ -353,14 +353,32 @@ mod tests {
     use super::*;
     type TestResult = Result<(), Error>;
 
+    fn random_nonce() -> Result<String, Error> {
+        let bytes = crypto::random::<32>().map_err(|_| Error::RandomnessUnavailable)?;
+        let hex = b"0123456789abcdef";
+        Ok(bytes
+            .into_iter()
+            .flat_map(|byte| {
+                [
+                    char::from(hex[usize::from(byte >> 4)]),
+                    char::from(hex[usize::from(byte & 15)]),
+                ]
+            })
+            .collect())
+    }
+
     #[test]
     fn real_threshold_duplicate_nonce_and_single_consumption() -> TestResult {
+        let nonce = random_nonce()?;
+        let mut wrong_nonce = nonce.clone();
+        let different = if nonce.starts_with('0') { "1" } else { "0" };
+        wrong_nonce.replace_range(..1, different);
         let (credential, fragments) = RecoveryCredential::generate([9; 32], 1, 5, 3)?;
-        let mut attempt = Accumulator::new(&credential, "nonce-1")?;
+        let mut attempt = Accumulator::new(&credential, &nonce)?;
         assert_eq!(
             attempt.submit(
                 &credential,
-                "wrong",
+                &wrong_nonce,
                 &credential.encode_share(&fragments[0])?
             ),
             Err(Error::InvalidNonce)
@@ -368,7 +386,7 @@ mod tests {
         assert_eq!(
             attempt.submit(
                 &credential,
-                "nonce-1",
+                &nonce,
                 &credential.encode_share(&fragments[0])?
             ),
             Ok(Progress::Pending {
@@ -379,7 +397,7 @@ mod tests {
         assert_eq!(
             attempt.submit(
                 &credential,
-                "nonce-1",
+                &nonce,
                 &credential.encode_share(&fragments[0])?
             ),
             Ok(Progress::Pending {
@@ -390,7 +408,7 @@ mod tests {
         assert_eq!(
             attempt.submit(
                 &credential,
-                "nonce-1",
+                &nonce,
                 &credential.encode_share(&fragments[4])?
             ),
             Ok(Progress::Pending {
@@ -401,7 +419,7 @@ mod tests {
         assert_eq!(
             attempt.submit(
                 &credential,
-                "nonce-1",
+                &nonce,
                 &credential.encode_share(&fragments[2])?
             ),
             Ok(Progress::Authorized)
@@ -409,7 +427,7 @@ mod tests {
         assert_eq!(
             attempt.submit(
                 &credential,
-                "nonce-1",
+                &nonce,
                 &credential.encode_share(&fragments[1])?
             ),
             Err(Error::AlreadyAuthorized)
@@ -419,19 +437,20 @@ mod tests {
 
     #[test]
     fn unrelated_threshold_cannot_authorize_and_old_generation_is_rejected() -> TestResult {
+        let nonce = random_nonce()?;
         let (credential, _) = RecoveryCredential::generate([9; 32], 1, 5, 3)?;
         let (_, unrelated) = RecoveryCredential::generate([9; 32], 1, 5, 3)?;
-        let mut attempt = Accumulator::new(&credential, "nonce-2")?;
+        let mut attempt = Accumulator::new(&credential, &nonce)?;
         for fragment in &unrelated[..2] {
             assert!(matches!(
-                attempt.submit(&credential, "nonce-2", &credential.encode_share(fragment)?)?,
+                attempt.submit(&credential, &nonce, &credential.encode_share(fragment)?)?,
                 Progress::Pending { .. }
             ));
         }
         assert_eq!(
             attempt.submit(
                 &credential,
-                "nonce-2",
+                &nonce,
                 &credential.encode_share(&unrelated[2])?
             ),
             Err(Error::VerificationRejected)
@@ -439,13 +458,13 @@ mod tests {
         assert!(attempt.provided.is_empty());
         let (next, _) = RecoveryCredential::generate([9; 32], 2, 5, 3)?;
         assert_eq!(
-            attempt.submit(&next, "nonce-2", &credential.encode_share(&unrelated[0])?),
+            attempt.submit(&next, &nonce, &credential.encode_share(&unrelated[0])?),
             Err(Error::GenerationChanged)
         );
         assert_eq!(
             attempt.submit(
                 &credential,
-                "nonce-2",
+                &nonce,
                 &credential.encode_share(&unrelated[0])?
             ),
             Err(Error::GenerationChanged)
