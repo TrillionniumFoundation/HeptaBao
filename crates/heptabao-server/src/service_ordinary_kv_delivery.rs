@@ -1,5 +1,6 @@
 //! Limited ordinary KV delivery authority. Sensitive non-KV routes retain
 //! their separate completion contracts; this module does not qualify them.
+use super::records::RecordPlan;
 use super::*;
 
 /// One original admission capability; neither this capsule nor Principal is
