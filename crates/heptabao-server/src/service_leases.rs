@@ -5,13 +5,30 @@ use super::*;
 use std::collections::BTreeSet;
 
 impl Service {
+    #[cfg(test)]
     pub(super) fn reconcile_lease_owners(state: &mut State, now: u64) -> Result<bool, Response> {
+        Self::reconcile_lease_owners_observed(state, AuthorityTime::Coarse(now))
+    }
+    pub(super) fn reconcile_lease_owners_observed(
+        state: &mut State,
+        time: AuthorityTime,
+    ) -> Result<bool, Response> {
+        // Missing precise authority is not proof of expiry. Reject before any
+        // engine clock, owner retirement or CRL mutation on the candidate.
+        if time.exact().is_none() && state.has_token_api_precision_state() {
+            return Err(Response::error(503, "trusted token clock is required"));
+        }
+        let time = time
+            .with_seconds_floor(state.engines.lease_clock())
+            .map_err(|_| Response::error(503, "trusted token clock is unavailable"))?;
+        let now = time.seconds();
         let owners = state.engines.lease_owners();
         let mut live = BTreeSet::new();
         for (namespace, stored_owner) in owners {
-            if let Some(owner) = state
-                .auth
-                .resolve_lease_owner(&stored_owner, &namespace, now)
+            if let Some(owner) =
+                state
+                    .auth
+                    .resolve_lease_owner_observed(&stored_owner, &namespace, time)
             {
                 let active = match owner.entity_id.as_deref() {
                     None => true,
@@ -39,8 +56,9 @@ impl Service {
         method: &str,
         path: &str,
         body: &Value,
-        now: u64,
+        time: AuthorityTime,
     ) -> Response {
+        let now = time.seconds();
         let run = (|| {
             let public = state.engines.is_ssh_verification(namespace, method, path);
             let mut owner = None;
@@ -50,21 +68,21 @@ impl Service {
                 let capability = if method == "LIST" { "list" } else { "update" };
                 state
                     .auth
-                    .authorize_request(principal, namespace, path, capability, now)
+                    .authorize_request_observed(principal, namespace, path, capability, time)
                     .map_err(|e| Response::error(e.status, &e.message))?;
                 if path.starts_with("sys/leases/lookup/")
                     || path.starts_with("sys/leases/revoke-prefix/")
                 {
                     state
                         .auth
-                        .authorize_request(principal, namespace, path, "sudo", now)
+                        .authorize_request_observed(principal, namespace, path, "sudo", time)
                         .map_err(|e| Response::error(e.status, &e.message))?;
                 }
                 if state.engines.is_lease_service_route(namespace, path) {
                     owner = Some(
                         state
                             .auth
-                            .typed_lease_issuer(principal, namespace, now)
+                            .typed_lease_issuer_observed(principal, namespace, time)
                             .map_err(|e| Response::error(e.status, &e.message))?,
                     );
                 }

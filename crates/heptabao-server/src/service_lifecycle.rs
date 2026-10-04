@@ -9,7 +9,15 @@ use std::{
 };
 
 impl Service {
+    #[cfg(test)]
     pub(super) fn maintain_lifetimes_at(&mut self, now: u64) -> Result<bool, &'static str> {
+        self.maintain_lifetimes_with_clock(now, None)
+    }
+    fn maintain_lifetimes_with_clock(
+        &mut self,
+        now: u64,
+        clock: Option<RequestClock>,
+    ) -> Result<bool, &'static str> {
         if self.state.is_none() {
             return Ok(false);
         }
@@ -40,8 +48,20 @@ impl Service {
         {
             return Ok(false);
         }
+        // Refresh the original trusted clock after ReadIndex/lock acquisition.
+        // Provider execution below cannot supply or reset this authority time.
+        let time = match clock {
+            Some(clock) => AuthorityTime::Precise(
+                clock
+                    .with_seconds_floor(now)
+                    .and_then(RequestClock::observed_at)
+                    .map_err(|_| "lifecycle precise clock unavailable")?,
+            ),
+            None => AuthorityTime::Coarse(now),
+        };
+        let now = time.seconds();
         let mut next = current.clone();
-        let changed = Self::reconcile_lease_owners(&mut next, now)
+        let changed = Self::reconcile_lease_owners_observed(&mut next, time)
             .map_err(|_| "lease and PKI CRL maintenance failed")?
             | (next.auth.has_live_wrappers() && next.auth.advance_wrapping_clock(now))
             | next
@@ -140,10 +160,14 @@ pub(crate) fn start_lifecycle_worker(
                     break;
                 };
                 // Clock failure is not time zero and may not undo an observed expiry.
-                let Ok(now) = SystemTime::now().duration_since(UNIX_EPOCH) else {
+                let started = std::time::Instant::now();
+                let Ok(wall) = SystemTime::now().duration_since(UNIX_EPOCH) else {
                     continue;
                 };
-                let now = now.as_secs();
+                let Ok(clock) = RequestClock::anchored(wall, started) else {
+                    continue;
+                };
+                let now = wall.as_secs();
                 let pending_provider = {
                     let _read_scope = crate::request_deadline::RequestDeadlineScope::enter(
                         std::time::Instant::now()
@@ -178,7 +202,10 @@ pub(crate) fn start_lifecycle_worker(
                     };
                     // Local expiry is deliberately completed before any remote
                     // provider wait. A failed or slow provider cannot suppress it.
-                    if writer.maintain_lifetimes_at(now).is_err() {
+                    if writer
+                        .maintain_lifetimes_with_clock(now, Some(clock))
+                        .is_err()
+                    {
                         eprintln!("heptabao-lifecycle: maintenance unavailable");
                     }
                     pending

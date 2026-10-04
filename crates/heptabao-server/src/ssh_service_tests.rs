@@ -876,3 +876,56 @@ fn renewed_bearer_echo_is_request_bound_wrapped_and_never_reconstructed_from_acc
     assert_eq!(opened.body["auth"]["client_token"], token);
     Ok(())
 }
+
+#[test]
+fn coarse_owner_maintenance_cannot_destroy_a_live_precise_ssh_lease() -> TestResult {
+    let fixture = Fixture::new()?;
+    let mut service = fixture.service()?;
+    let (root, _) = start(&mut service)?;
+    install(&mut service, &root);
+    assert_eq!(issue(&mut service, &root).status, 200);
+    let state = service.state.as_mut().ok_or("state")?;
+    // This isolated pre-activation fixture is constructed inside cfg(test),
+    // never from a bearer/body. Schema82 publication remains disabled.
+    let mut auth = serde_json::to_value(&state.auth)?;
+    let issuer = auth["tokens"]
+        .as_object_mut()
+        .ok_or("tokens")?
+        .values_mut()
+        .find(|token| token["root"] == true)
+        .ok_or("root issuer")?;
+    issuer["expires_at"] = json!(101);
+    issuer["token_api_lease_ttl"] = json!(1);
+    issuer["auth_provenance"] = json!({"kind":"token_api","issued_creation_ttl":0});
+    issuer["token_api_precision"] = json!({
+        "issued_at":{"seconds":100,"nanoseconds":200000000},
+        "grant_started_at":{"seconds":100,"nanoseconds":200000000},
+        "expires_at":{"seconds":100,"nanoseconds":700000000},
+        "last_renewed_at":null,"previous_grant":500000000,"creation_grant":500000000,
+        "requested_period":0,"requested_explicit_max":0
+    });
+    auth["token_api_precision_state"] = json!(true);
+    state.auth = serde_json::from_value(auth)?;
+    state.auth.validate_system_lease_defaults()?;
+    let before = serde_json::to_vec(state)?;
+    let failure =
+        Service::reconcile_lease_owners(state, 100).expect_err("coarse authority refused");
+    assert_eq!(failure.status, 503);
+    assert_eq!(serde_json::to_vec(state)?, before);
+    assert!(state.engines.has_live_leases());
+    Service::reconcile_lease_owners_observed(
+        state,
+        AuthorityTime::Precise(crate::auth::Timestamp::checked(100, 600000000)?),
+    )
+    .map_err(|_| "live precise owner reconciliation failed")?;
+    assert!(state.engines.has_live_leases());
+    assert!(
+        Service::reconcile_lease_owners_observed(
+            state,
+            AuthorityTime::Precise(crate::auth::Timestamp::checked(100, 800000000)?)
+        )
+        .map_err(|_| "expired precise owner reconciliation failed")?
+    );
+    assert!(!state.engines.has_live_leases());
+    Ok(())
+}

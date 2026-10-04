@@ -2482,7 +2482,11 @@ impl Service {
         // token can be rejected/consumed. Observed expiry cannot be undone by
         // a later clock rollback, process restart, or HA leader change.
         if !owner_manifest_migration {
-            let changed = match Self::reconcile_lease_owners(&mut admitted, now) {
+            let time = match request.token_time() {
+                Ok(time) => time,
+                Err(error) => return error,
+            };
+            let changed = match Self::reconcile_lease_owners_observed(&mut admitted, time) {
                 Ok(changed) => changed,
                 Err(error) => return error,
             };
@@ -3323,7 +3327,7 @@ impl Service {
         }
         if state.engines.is_lease_service_route(namespace, path) || path.starts_with("sys/leases/")
         {
-            return Self::lease_route(state, principal, namespace, method, path, body, now);
+            return Self::lease_route(state, principal, namespace, method, path, body, time);
         }
         if matches!(
             path,
@@ -3401,13 +3405,24 @@ impl Service {
                     return Response::error(error.status, &error.message);
                 }
                 if !path.starts_with("sys/wrapping/")
-                    && let Err(error) = Self::finish_identity_response(
-                        &mut auth,
-                        &mut engines,
-                        &mut response,
-                        namespace,
-                        now,
-                    )
+                    && let Err(error) = (|| {
+                        let completion = match token_clock {
+                            Some(clock) => {
+                                AuthorityTime::Precise(clock.observed_at().map_err(|_| {
+                                    Response::error(503, "trusted token clock is unavailable")
+                                })?)
+                            }
+                            None => AuthorityTime::Coarse(now),
+                        };
+                        Self::finish_identity_response_observed(
+                            &mut auth,
+                            &mut engines,
+                            &mut response,
+                            namespace,
+                            now,
+                            completion,
+                        )
+                    })()
                 {
                     erase_json(&mut response.body);
                     return error;

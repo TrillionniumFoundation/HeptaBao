@@ -592,3 +592,70 @@ fn coarse_maintenance_never_retires_precision_from_closed_clock_authority() -> T
     assert!(state.has_token_api_precision_state());
     Ok(())
 }
+
+#[test]
+fn newly_created_expired_precise_batch_can_be_delivered_but_never_admitted() -> TestResult {
+    let (mut state, root) = setup()?;
+    let recipe = prepared(&state, &root, true)?;
+    let clock = RequestClock::anchored(Duration::new(100, 800_000_000), Instant::now())?;
+    let mut issued = state.finish_precise_token_creation(recipe, &json!({"ttl":"1ns"}), clock)?;
+    state.finish_pending_batch_observed(
+        &mut issued,
+        "",
+        100,
+        AuthorityTime::Precise(timestamp(100, 900_000_000)),
+    )?;
+    assert_eq!(issued.status, 200);
+    assert_eq!(issued.body["auth"]["lease_duration"], 0);
+    let raw = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("opaque token absent")?;
+    assert!(
+        state
+            .authenticate_from_observed(
+                raw,
+                AuthorityTime::Precise(timestamp(100, 900_000_000)),
+                None
+            )
+            .is_err()
+    );
+    assert!(state.authenticate_from(raw, 100, None).is_err());
+    state.validate_system_lease_defaults()?;
+    Ok(())
+}
+#[test]
+fn expired_precise_orphan_cannot_bypass_its_publication_actor_deadline() -> TestResult {
+    let (mut state, raw) = AuthState::bootstrap(100)?;
+    let actor = state.authenticate(&raw, 100)?;
+    let mut recipe = prepared(&state, &actor, true)?;
+    recipe.no_parent = true;
+    precise_service(&mut state, &raw);
+    let clock = RequestClock::anchored(Duration::new(100, 300_000_000), Instant::now())?;
+    let mut issued = state.finish_precise_token_creation(recipe, &json!({"ttl":"1ns"}), clock)?;
+    let before = serde_json::to_vec(&state)?;
+    assert!(
+        state
+            .finish_pending_batch_observed(
+                &mut issued,
+                "",
+                100,
+                AuthorityTime::Precise(timestamp(100, 800_000_000))
+            )
+            .is_err()
+    );
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    assert!(issued.body["auth"].get("client_token").is_none());
+    Ok(())
+}
+#[test]
+fn coarse_publication_cannot_seal_precise_batch_or_reanchor_its_creation() -> TestResult {
+    let (mut state, root) = setup()?;
+    let recipe = prepared(&state, &root, true)?;
+    let clock = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+    let mut issued = state.finish_precise_token_creation(recipe, &json!({"ttl":"500ms"}), clock)?;
+    let before = serde_json::to_vec(&state)?;
+    assert!(state.finish_pending_batch(&mut issued, "", 100).is_err());
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    assert!(issued.body["auth"].get("client_token").is_none());
+    Ok(())
+}

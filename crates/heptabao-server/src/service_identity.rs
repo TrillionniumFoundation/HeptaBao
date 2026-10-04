@@ -1070,6 +1070,23 @@ impl Service {
         namespace: &str,
         now: u64,
     ) -> Result<(), Response> {
+        Self::finish_identity_response_observed(
+            auth,
+            engines,
+            response,
+            namespace,
+            now,
+            AuthorityTime::Coarse(now),
+        )
+    }
+    pub(super) fn finish_identity_response_observed(
+        auth: &mut AuthState,
+        engines: &mut EngineState,
+        response: &mut AuthResponse,
+        namespace: &str,
+        now: u64,
+        time: AuthorityTime,
+    ) -> Result<(), Response> {
         let auth_error = |error: AuthError| Response::error(error.status, &error.message);
         if let Some(login) = response.login_identity.take() {
             let accessor = auth
@@ -1107,7 +1124,7 @@ impl Service {
                 ));
             }
             return auth
-                .finish_pending_batch(response, namespace, now)
+                .finish_pending_batch_observed(response, namespace, now, time)
                 .map_err(auth_error);
         };
         if let Some(groups) = response.external_groups.take() {
@@ -1143,7 +1160,7 @@ impl Service {
             }
             response.body["auth"]["policies"] = json!(all);
         }
-        auth.finish_pending_batch(response, namespace, now)
+        auth.finish_pending_batch_observed(response, namespace, now, time)
             .map_err(auth_error)
     }
 

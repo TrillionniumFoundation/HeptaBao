@@ -328,14 +328,22 @@ impl AuthState {
         namespace: &str,
         now: u64,
     ) -> Result<ResolvedLeaseOwner, AuthError> {
-        self.check_principal(actor, namespace, now)?;
+        self.typed_lease_issuer_observed(actor, namespace, AuthorityTime::Coarse(now))
+    }
+    pub(crate) fn typed_lease_issuer_observed(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<ResolvedLeaseOwner, AuthError> {
+        self.check_principal_observed(actor, namespace, time)?;
         let owner = match &actor.credential {
             VerifiedCredential::Service(_) => {
                 LeaseOwner::service(&actor.digest).map_err(|_| denied())?
             }
             VerifiedCredential::Batch(claims) => LeaseOwner::from_batch(claims),
         };
-        self.resolve_lease_owner(&owner, namespace, now)
+        self.resolve_lease_owner_observed(&owner, namespace, time)
             .ok_or_else(denied)
     }
     /// The admitted final use may execute Kubernetes TokenRequest, but cannot
@@ -347,7 +355,15 @@ impl AuthState {
         namespace: &str,
         now: u64,
     ) -> Result<ResolvedLeaseOwner, AuthError> {
-        match self.check_principal(actor, namespace, now)? {
+        self.admitted_kubernetes_lease_issuer_observed(actor, namespace, AuthorityTime::Coarse(now))
+    }
+    pub(crate) fn admitted_kubernetes_lease_issuer_observed(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<ResolvedLeaseOwner, AuthError> {
+        match self.check_principal_observed(actor, namespace, time)? {
             CheckedCredential::Service(token) => Ok(ResolvedLeaseOwner {
                 owner: LeaseOwner::service(&actor.digest).map_err(|_| denied())?,
                 expires_at: token.expires_at,
@@ -357,7 +373,7 @@ impl AuthState {
                     .and_then(|lease| lease.expires_at),
                 entity_id: token.entity_id.clone(),
             }),
-            CheckedCredential::Batch(_) => self.typed_lease_issuer(actor, namespace, now),
+            CheckedCredential::Batch(_) => self.typed_lease_issuer_observed(actor, namespace, time),
         }
     }
     pub(crate) fn resolve_lease_owner(

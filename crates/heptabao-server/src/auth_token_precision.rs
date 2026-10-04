@@ -330,6 +330,12 @@ impl AuthorityTime {
             None => self.seconds() >= issued && self.seconds() < expiry,
         }
     }
+    pub(crate) fn with_seconds_floor(self, seconds: u64) -> Result<Self, PrecisionError> {
+        Ok(match self {
+            Self::Coarse(now) => Self::Coarse(now.max(seconds)),
+            Self::Precise(now) => Self::Precise(now.max(Timestamp::whole(seconds)?)),
+        })
+    }
     pub(crate) fn exact(self) -> Option<Timestamp> {
         match self {
             Self::Precise(at) => Some(at),

@@ -246,6 +246,17 @@ impl AuthState {
                 claims,
                 entity_alias.as_ref().map(|_| "token".into()),
             );
+            result
+                .pending_batch
+                .as_mut()
+                .ok_or_else(|| err(503, "precise batch grant is unavailable"))?
+                .bind_token_api_publication(
+                    self,
+                    actor,
+                    namespace,
+                    request_path,
+                    AuthorityTime::Precise(issuance_time),
+                )?;
             result.body["auth"]["lease_duration"] = json!(granted.public_seconds());
             result.body["auth"]["num_uses"] = json!(num_uses);
             result
