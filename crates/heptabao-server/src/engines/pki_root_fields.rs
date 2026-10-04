@@ -576,7 +576,7 @@ mod tests {
                 .ok_or("leaf serial")?;
             let der = &reopened
                 .issued
-                .get(serial)
+                .get(&normalize_serial(serial)?)
                 .ok_or("stored leaf")?
                 .certificate_der;
             let (_, leaf) = X509Certificate::from_der(der)?;

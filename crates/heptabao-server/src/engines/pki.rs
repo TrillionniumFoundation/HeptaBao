@@ -926,7 +926,7 @@ impl Pki {
     ) -> Result<LeafTemplate> {
         reject_unknown(body, &["common_name", "alt_names", "ip_sans", "ttl"])?;
         let role = self.roles.get(route.role).ok_or_else(not_found)?.clone();
-        let reference = route.explicit_issuer.unwrap_or_else(|| {
+        let reference = route.explicit_issuer.unwrap_or({
             if role.issuer_ref.is_empty() {
                 "default"
             } else {
@@ -1001,13 +1001,14 @@ impl Pki {
             alt_names,
             ip_sans,
             issued: now,
-            not_before: now.saturating_sub(60).max(root.not_before),
+            not_before: now.saturating_sub(30).max(root.not_before),
             expires: now
                 .checked_add(ttl)
                 .ok_or_else(|| bad("PKI lease TTL overflow"))?,
         })
     }
 
+    #[cfg(test)]
     pub(super) fn issue(
         &mut self,
         mount: &str,
@@ -1147,11 +1148,9 @@ impl Pki {
             "private_key":private_key.as_str(), "private_key_type":prepared.local_key_kind.key_type(),
             "serial_number":prepared.serial, "expiration":prepared.expires,
         });
-        if external {
-            data["serial_number"] = json!(external::formatted_serial(&prepared.serial));
-            data["ca_chain"] = json!([issuing_ca]);
-            data["not_before"] = json!(prepared.not_before);
-        }
+        data["serial_number"] = json!(external::formatted_serial(&prepared.serial));
+        data["ca_chain"] = json!([issuing_ca]);
+        data["not_before"] = json!(prepared.not_before);
         let response = EngineResponse {
             status: 200,
             body: json!({"request_id":"", "lease_id":if prepared.leased {prepared.lease_id.clone()} else {String::new()},

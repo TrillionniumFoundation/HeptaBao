@@ -258,7 +258,7 @@ impl Pki {
         if body
             .get("default")
             .and_then(Value::as_str)
-            .is_none_or(str::is_empty)
+            .is_none_or(|value| value.is_empty() || value == "default")
         {
             return Err(bad("default issuer must be specified"));
         }
@@ -505,7 +505,10 @@ mod tests {
             .ok_or("serial b")?
             .to_owned();
         for (serial, id) in [(&sa, &id_a), (&sb, &id_b)] {
-            let stored = pki.issued.get(serial).ok_or("stored leaf")?;
+            let stored = pki
+                .issued
+                .get(&normalize_serial(serial)?)
+                .ok_or("stored leaf")?;
             let root = pki.local_issuer(id)?;
             let (_, cert) = X509Certificate::from_der(&stored.certificate_der)?;
             assert!(

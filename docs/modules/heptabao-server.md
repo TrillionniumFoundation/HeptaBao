@@ -1080,3 +1080,20 @@ keys from actual audit records. These checks are separate from official-only
 observations and do not establish complete PKI compatibility. Remaining
 signature and constraint options, multiple local issuers, and broader PKI
 lifecycle compatibility still require implementation and actual comparison.
+
+Local PKI issuer management retains each certificate and private key in encrypted
+Service state. The first generated issuer remains the default; an explicit
+`config/issuers` default can select an ID or alias, and
+`default_follows_latest_issuer` selects subsequently generated roots. Roles can
+retain `issuer_ref`; an explicit issuer issuance route overrides that role
+selection. Unknown references fail without substituting another signer. Each
+full local CRL includes only revocations associated with its signing issuer.
+Deleting an issuer retains its key; deleting roots removes issuer/key ownership
+while retaining role and certificate history. These persisted ownership and
+history fields require schema 77 before record preflight across all namespaces;
+retirement preserves that writer and snapshot floor. Local leaf responses include
+`ca_chain`, `not_before`, and colon-separated serial numbers. Multi-issuer unit
+and encrypted Service lifecycle tests accompany this implementation; complete
+runtime parity still requires independently executed official-binary comparison,
+and local delta CRLs, intermediate issuer import, OCSP, and ACME execution remain
+outside this implemented scope.
