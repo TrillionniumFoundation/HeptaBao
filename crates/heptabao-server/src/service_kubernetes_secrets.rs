@@ -10,6 +10,8 @@ use crate::engines::kubernetes::{TokenMetadata, TokenRequestPlan};
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use std::sync::{Arc, Mutex};
 use zeroize::Zeroizing;
+#[path = "service_kubernetes_artifact.rs"]
+mod artifact;
 
 pub(crate) struct KubernetesTokenEffectPlan {
     pub inner: TokenRequestPlan,
@@ -134,6 +136,9 @@ fn token_metadata(
     plan: &TokenRequestPlan,
     now: u64,
 ) -> Result<TokenMetadata, Response> {
+    if plan.artifact_contract.is_some() {
+        return artifact::metadata(value, plan);
+    }
     let status = value
         .get("status")
         .and_then(Value::as_object)
@@ -198,6 +203,7 @@ fn token_metadata(
         token: Zeroizing::new(token.to_owned()),
         expires_at,
         audiences,
+        artifact_lifetime_nanos: None,
     })
 }
 
@@ -338,7 +344,20 @@ impl Service {
                     body: std::mem::take(&mut response.body),
                 }
             }
-            crate::engines::kubernetes::Dispatch::External(plan) => {
+            crate::engines::kubernetes::Dispatch::External(mut plan) => {
+                if crate::engines::kubernetes_artifact::ISSUANCE_ENABLED {
+                    let defaults = match state.auth.secret_lease_defaults() {
+                        Ok(defaults) => defaults,
+                        Err(error) => return Response::error(error.status, &error.message),
+                    };
+                    if let Err(error) = state
+                        .engines
+                        .bind_kubernetes_opaque_artifact_intent(&mut plan, defaults)
+                    {
+                        return Response::error(error.status, &error.message);
+                    }
+                    state.schema = state.writer_schema();
+                }
                 let plan = *plan;
                 state.schema = state.writer_schema();
                 if let Err(error) = state.validate_format() {
@@ -572,7 +591,11 @@ impl Service {
                 *committed_receipt = None;
                 return retired_kubernetes_response(&plan.inner.lease_id);
             }
-            response.body["lease_duration"] = json!(remaining);
+            response.body["lease_duration"] = json!(
+                committed_receipt
+                    .as_ref()
+                    .map_or(0, |receipt| receipt.response_lease_duration(now))
+            );
         }
         Response {
             consistency_index: None,

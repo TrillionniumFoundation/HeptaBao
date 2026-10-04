@@ -331,6 +331,14 @@ impl Service {
             .auth
             .validate_token_api_clock_floor(Some(&current.auth))
             .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            && incoming.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade opaque Kubernetes artifact ownership",
+            ));
+        }
         if current.schema >= TOKEN_ROLE_STATE_SCHEMA && incoming.schema < TOKEN_ROLE_STATE_SCHEMA {
             return Err(Response::error(
                 400,

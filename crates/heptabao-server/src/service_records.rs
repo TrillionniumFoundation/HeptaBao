@@ -18,7 +18,33 @@ pub(super) struct RecordPlan {
 }
 
 impl RecordPlan {
+    fn validate_kubernetes_artifact_owner(&self, state: &State) -> Result<(), Response> {
+        if state.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            && !state.engines.has_kubernetes_opaque_artifact_state()
+        {
+            return Ok(());
+        }
+        // This isolated reader does not support Namespace81. In that combination
+        // serialize the actual prepared protected_state()?.engines, not loaded
+        // logical namespace plaintext or selected artifact fields.
+        let bytes =
+            owner_store::serialize_owner(&state.engines).map_err(state_serialization_error)?;
+        let owner = self
+            .root
+            .owners
+            .iter()
+            .find(|owner| owner.name == "engines")
+            .ok_or_else(unavailable)?;
+        let digest = state_record_root::digest_owner(&self.root.address_key(), "engines", &bytes)
+            .map_err(root_error)?;
+        if owner.total_bytes != bytes.len() as u64 || owner.digest != digest {
+            return Err(unavailable());
+        }
+        Ok(())
+    }
+
     fn validate_precise_auth_owner(&self, state: &State) -> Result<(), Response> {
+        self.validate_kubernetes_artifact_owner(state)?;
         if !state.has_token_api_precision_state() {
             return Ok(());
         }

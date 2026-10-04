@@ -25,10 +25,16 @@ impl State {
     /// into an older supported format. The all-namespace scan also finds safe
     /// material introduced by the current candidate before its first commit.
     pub(super) fn writer_schema(&self) -> u32 {
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        if self.schema == 0
+            || self.schema > MAX_SUPPORTED_STATE_SCHEMA
+            || (TOKEN_ROLE_STATE_SCHEMA < self.schema
+                && self.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA)
+        {
             return self.schema;
         }
-        let required = if self.auth.has_token_api_schema80_state() {
+        let required = if self.engines.has_kubernetes_opaque_artifact_state() {
+            KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+        } else if self.auth.has_token_api_schema80_state() {
             TOKEN_ROLE_STATE_SCHEMA
         } else if self.engines.has_local_pki_intermediate_state() {
             LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
@@ -68,7 +74,11 @@ impl State {
         &self,
         previous: Option<&State>,
     ) -> Result<(), Response> {
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        if self.schema == 0
+            || self.schema > MAX_SUPPORTED_STATE_SCHEMA
+            || (TOKEN_ROLE_STATE_SCHEMA < self.schema
+                && self.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA)
+        {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
@@ -85,6 +95,16 @@ impl State {
             return Err(Response::error(
                 503,
                 "Token API precise lease publication is not enabled",
+            ));
+        }
+        if self.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            && (self.engines.has_kubernetes_opaque_artifact_state()
+                || previous
+                    .is_some_and(|state| state.schema >= KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "opaque Kubernetes artifact ownership requires schema 87",
             ));
         }
         if self.schema < TOKEN_ROLE_STATE_SCHEMA
@@ -232,6 +252,8 @@ impl State {
         if previous.is_some_and(|state| {
             state.schema == 0
                 || state.schema > MAX_SUPPORTED_STATE_SCHEMA
+                || (TOKEN_ROLE_STATE_SCHEMA < state.schema
+                    && state.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA)
                 || self.schema < state.schema
         }) {
             return Err(Response::error(
@@ -243,7 +265,11 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        if self.schema == 0
+            || self.schema > MAX_SUPPORTED_STATE_SCHEMA
+            || (TOKEN_ROLE_STATE_SCHEMA < self.schema
+                && self.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA)
+        {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
@@ -267,6 +293,14 @@ impl State {
         self.auth
             .validate_token_role_state()
             .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            && self.engines.has_kubernetes_opaque_artifact_state()
+        {
+            return Err(Response::error(
+                503,
+                "opaque Kubernetes artifact ownership requires schema 87",
+            ));
+        }
         if self.schema < TOKEN_ROLE_STATE_SCHEMA && self.auth.has_token_api_schema80_state() {
             return Err(Response::error(
                 503,
@@ -1032,7 +1066,8 @@ impl State {
             | LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
             | LOCAL_PKI_CRL_STATE_SCHEMA
             | LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
-            | TOKEN_ROLE_STATE_SCHEMA => Ok(()),
+            | TOKEN_ROLE_STATE_SCHEMA
+            | KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

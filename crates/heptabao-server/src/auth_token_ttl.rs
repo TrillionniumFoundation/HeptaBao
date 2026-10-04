@@ -62,6 +62,12 @@ impl AuthState {
                 .any(|token| token.token_api_lease_ttl.is_some())
     }
 
+    /// Actual durable system defaults for a secrets engine's public lease contract.
+    pub(crate) fn secret_lease_defaults(&self) -> Result<(u64, u64), AuthError> {
+        let defaults = self.system_lease_defaults()?;
+        Ok((defaults.default_ttl, defaults.max_ttl))
+    }
+
     pub(crate) fn validate_system_lease_defaults(&self) -> Result<(), AuthError> {
         self.system_lease_defaults()?;
         self.validate_token_api_precision_state()?;

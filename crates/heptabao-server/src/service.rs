@@ -69,7 +69,10 @@ const LOCAL_PKI_CRL_STATE_SCHEMA: u32 = 78;
 // Pending local CSR keys and imported intermediate/public chain ownership.
 const LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA: u32 = 79;
 const TOKEN_ROLE_STATE_SCHEMA: u32 = 80;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = TOKEN_ROLE_STATE_SCHEMA;
+const KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA: u32 =
+    crate::engines::kubernetes_artifact::STATE_SCHEMA;
+// Reader capability is explicit; production opaque issuance is independently staged.
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -3125,7 +3128,8 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        if admitted.auth.has_token_api_schema80_state()
+        if admitted.engines.has_kubernetes_opaque_artifact_state()
+            || admitted.auth.has_token_api_schema80_state()
             || admitted.engines.has_local_pki_intermediate_state()
             || admitted.engines.has_local_pki_crl_state()
             || admitted.engines.has_local_pki_multi_issuer_state()

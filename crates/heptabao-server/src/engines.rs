@@ -22,6 +22,7 @@ mod identity;
 mod identity_projection;
 use identity_projection::IdentityProjection;
 pub(crate) mod kubernetes;
+pub(crate) mod kubernetes_artifact;
 mod kv;
 mod kv1_records;
 #[path = "engine_kv_versioning.rs"]
@@ -226,6 +227,9 @@ pub(crate) struct KubernetesDeliveryReceipt {
 impl KubernetesDeliveryReceipt {
     pub(crate) fn expires_at(&self) -> u64 {
         self.lease.expires_at()
+    }
+    pub(crate) fn response_lease_duration(&self, now: u64) -> u64 {
+        self.lease.response_lease_duration(now)
     }
 }
 
@@ -1177,7 +1181,7 @@ impl EngineState {
             return Err(error(503, "Kubernetes delivery mount changed"));
         };
         engine.validate_delivery_receipt(plan, &receipt.lease, now)?;
-        Ok(receipt.expires_at().saturating_sub(now))
+        Ok(receipt.response_lease_duration(now))
     }
 
     pub(crate) fn has_kubernetes_mount(&self) -> bool {
@@ -1246,6 +1250,27 @@ impl EngineState {
             }
         }
         Ok(())
+    }
+
+    pub(crate) fn has_kubernetes_opaque_artifact_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Kubernetes(engine) if engine.has_opaque_artifact_state())))
+    }
+
+    pub(crate) fn bind_kubernetes_opaque_artifact_intent(
+        &mut self,
+        plan: &mut kubernetes::TokenRequestPlan,
+        defaults: (u64, u64),
+    ) -> Result<()> {
+        let state = self
+            .namespaces
+            .get_mut(&plan.namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(&plan.mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Err(error(503, "Kubernetes admitted artifact mount changed"));
+        };
+        engine.bind_opaque_artifact_intent(plan, defaults.0, defaults.1)
     }
 
     pub(crate) fn has_kubernetes_typed_lease_owners(&self) -> bool {
