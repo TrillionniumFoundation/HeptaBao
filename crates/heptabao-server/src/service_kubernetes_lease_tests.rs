@@ -812,12 +812,15 @@ fn kube_clock_failure_before_completion_does_not_publish_or_release_provider_tok
     let (_root, mut service, _, _, plan) = fixture(false, false)?;
     let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let mut committed_receipt = None;
     let response = service.finalize_kubernetes_token_checked(
         &plan,
         Ok(metadata()),
         || Err(failure("trusted token clock is unavailable")),
         |_| Ok(()),
+        &mut committed_receipt,
     );
+    assert!(committed_receipt.is_none());
     assert_eq!(response.status, 503);
     assert!(response.body.get("data").is_none());
     assert_eq!(response.body["retry_allowed"], false);
