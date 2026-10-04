@@ -91,12 +91,15 @@ impl AuthState {
                         return Ok(true);
                     }
                 }
-            } else if name == "default"
-                && acl::DEFAULT_RULES
-                    .iter()
-                    .any(|(pattern, _)| intersects_mount(pattern, mount))
-            {
-                return Ok(true);
+            } else if name == "default" {
+                for rule in &default_policy::compiled()?.rules {
+                    if let Some(pattern) =
+                        acl_template::render(&rule.path, &principal.identity_templates)?
+                        && intersects_mount(&pattern, mount)
+                    {
+                        return Ok(true);
+                    }
+                }
             }
         }
         Ok(false)
