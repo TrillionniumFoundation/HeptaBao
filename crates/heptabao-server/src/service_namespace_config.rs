@@ -4,7 +4,7 @@
 //! JSON block maps/arrays; HCL expressions/heredocs and encrypted PGP delivery
 //! remain separate, unqualified contracts.
 use super::*;
-use base64::{Engine as _, engine::general_purpose::STANDARD};
+use base64::engine::general_purpose::STANDARD;
 
 pub(super) struct Config {
     pub(super) shares: u8,

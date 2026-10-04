@@ -373,9 +373,9 @@ fn strong_http_failed_durable_creation_returns_no_shares_or_runtime_slot() -> Te
     let mut state = service.state.clone().ok_or("state")?;
     let principal = state.auth.authenticate(&token, 100)?;
     let body = json!({"seal":"seal \"shamir\" { shares = 3 threshold = 2 }"});
-    // Remove the actual publication key after normal admission. The production
+    // Remove the actual durable writer after normal admission. The production
     // commit path must reject the ciphertext candidate and discard its shares.
-    service.barrier_key = None;
+    service.durable = None;
     let response = service.namespace_route(
         state,
         Some(&principal),
