@@ -1129,3 +1129,10 @@ returns a fallible mutation to the durable engine transaction; errors do not
 publish a replacement cache. The named regression
 `full_delta_numbers_real_signatures_ownership_cached_reads_and_durable_restart`
 checks real signatures, number/base progression, issuer isolation and restart.
+
+
+Local CSR key and intermediate/public chain ownership requires schema 79 in all
+namespaces. It is discovered before record preflight and stays required after
+its mount is retired. Authenticated snapshots and local writers cannot lower
+that floor. The application label does not grant signing authority: an imported
+CA certificate without a matching owned private key remains a public issuer.

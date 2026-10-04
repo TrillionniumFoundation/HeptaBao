@@ -66,7 +66,9 @@ const LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA: u32 = 76;
 const LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA: u32 = 77;
 // Signed local CRL caches, counters and delta bases require an irreversible reader floor.
 const LOCAL_PKI_CRL_STATE_SCHEMA: u32 = 78;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = LOCAL_PKI_CRL_STATE_SCHEMA;
+// Pending local CSR keys and imported intermediate/public chain ownership.
+const LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA: u32 = 79;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -2766,7 +2768,8 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        if admitted.engines.has_local_pki_crl_state()
+        if admitted.engines.has_local_pki_intermediate_state()
+            || admitted.engines.has_local_pki_crl_state()
             || admitted.engines.has_local_pki_multi_issuer_state()
             || admitted.engines.has_local_pki_root_fields_state()
             || admitted.engines.has_local_pki_identifier_state()

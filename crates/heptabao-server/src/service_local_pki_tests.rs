@@ -17,6 +17,166 @@ use openssl::{
     sign::Verifier,
 };
 
+#[test]
+fn pending_local_csr_has_encrypted_namespace_reopen_and_sticky_schema79() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &admin,
+            json!({})
+        )
+        .status
+            == 200,
+        "CSR namespace"
+    );
+    assert!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/ca",
+                "team",
+                &admin,
+                json!({"type":"pki"}),
+                100
+            )
+            .status
+            == 204,
+        "CSR mount"
+    );
+    let previous = service.state.clone().ok_or("previous state")?;
+    let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    let generated = service.handle_at(
+        "POST",
+        "ca/intermediate/generate/internal",
+        "team",
+        &admin,
+        json!({"common_name":"intermediate.example.test","key_type":"ec","key_bits":256}),
+        100,
+    );
+    assert!(generated.status == 200, "actual pending owned CSR");
+    assert!(
+        generated.body["data"].get("private_key").is_none(),
+        "internal CSR does not export key"
+    );
+    let csr = generated.body["data"]["csr"]
+        .as_str()
+        .ok_or("CSR")?
+        .to_owned();
+    let request = openssl::x509::X509Req::from_pem(csr.as_bytes()).map_err(|_| "CSR PEM")?;
+    let public = request.public_key().map_err(|_| "CSR SPKI")?;
+    assert!(
+        request.verify(&public).map_err(|_| "CSR signature")?,
+        "actual owned CSR signature"
+    );
+    let active = service.state.clone().ok_or("pending state")?;
+    assert!(
+        active.schema == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            && active.engines.has_local_pki_intermediate_state()
+            && active.writer_schema() == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA,
+        "namespace pending key requires schema79 without a signed issuer"
+    );
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "pending identity")?;
+    for schema in [
+        CURRENT_STATE_SCHEMA,
+        LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+        LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA,
+        LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA,
+        LOCAL_PKI_CRL_STATE_SCHEMA,
+    ] {
+        let mut older = active.clone();
+        older.schema = schema;
+        assert!(
+            older.writer_schema() == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+                && older.validate_format().is_err()
+                && service.commit_state(&older).is_err()
+                && Service::validate_snapshot_protected_floor(&active, &older).is_err(),
+            "older labels cannot omit a pending owned key"
+        );
+    }
+    assert!(
+        service
+            .current_state_identity()
+            .map_err(|_| "unchanged pending identity")?
+            == identity,
+        "reader refusals preserve actual durable identity"
+    );
+    assert!(
+        service.prepare_snapshot_restore(&backup).is_err(),
+        "older authenticated snapshot denied"
+    );
+    let keys = service.handle_at("LIST", "ca/keys", "team", &admin, json!({}), 100);
+    assert!(
+        keys.status == 200
+            && keys.body["data"]["keys"]
+                .as_array()
+                .is_some_and(|v| v.len() == 1),
+        "pending owned key published without an issuer"
+    );
+    assert!(
+        service
+            .handle_at("LIST", "ca/issuers", "team", &admin, json!({}), 100)
+            .status
+            == 404,
+        "CSR is not relabeled as a signed issuer"
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "actual encrypted pending-key reopen"
+    );
+    assert!(
+        service.state.as_ref().ok_or("reopened")?.schema == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA,
+        "reopen preserves schema79"
+    );
+    assert!(
+        service
+            .handle_at("LIST", "ca/keys", "team", &admin, json!({}), 100)
+            .body
+            == keys.body,
+        "reopen retains exact owned pending-key identity"
+    );
+    assert!(
+        service
+            .handle_at("DELETE", "sys/mounts/ca", "team", &admin, json!({}), 100)
+            .status
+            == 204,
+        "pending-key mount retirement"
+    );
+    let retired = service.state.as_ref().ok_or("retired")?;
+    assert!(
+        !retired.engines.has_local_pki_intermediate_state()
+            && retired.schema == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            && retired.writer_schema() == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA,
+        "retirement preserves intermediate reader floor"
+    );
+    let mut older = retired.clone();
+    older.schema = LOCAL_PKI_CRL_STATE_SCHEMA;
+    assert!(
+        older.validate_format().is_ok()
+            && older.validate_publication_schema(Some(retired)).is_err()
+            && Service::validate_snapshot_protected_floor(retired, &older).is_err()
+            && Service::validate_snapshot_protected_floor(retired, &previous).is_err(),
+        "retired material cannot authorize schema78 publication or restore"
+    );
+    Ok(())
+}
+
 fn key_choices() -> [(&'static str, u32); 11] {
     [
         ("rsa", 2048),

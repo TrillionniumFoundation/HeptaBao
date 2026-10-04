@@ -7,8 +7,8 @@ in retained increment notes. Exact source remains authoritative.
 ## Source and authoritative ownership
 
 The current Service state schema is **65**. This is the ordinary writer schema,
-with conditional sticky feature floors 66–78. `CURRENT_STATE_SCHEMA` and
-`MAX_SUPPORTED_STATE_SCHEMA` (78) are in
+with conditional sticky feature floors 66–79. `CURRENT_STATE_SCHEMA` and
+`MAX_SUPPORTED_STATE_SCHEMA` (79) are in
 `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -135,6 +135,7 @@ must refuse the first unsupported schema without altering the encrypted record.
 | 76 | Extended local PKI root fields and their exact certificate bindings. |
 | 77 | Multiple local PKI issuers, retained key ownership and certificate history. |
 | 78 | Persisted signed full/delta CRLs, per-issuer counters, delta bases and configuration. |
+| 79 | Pending owned local CSR keys and imported intermediate/public CA chain ownership. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
 
 Feature floors are discovered across all namespaces before publication and remain
