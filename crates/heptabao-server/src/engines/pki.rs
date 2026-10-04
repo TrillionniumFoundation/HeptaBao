@@ -240,6 +240,10 @@ pub(super) struct IssuedCertificate {
     pub(super) expires: u64,
     pub(super) revoked_at: Option<u64>,
     common_name: String,
+    // A real leaf producer captures wildcard CN/SAN ownership before its
+    // typed template is consumed. Historical false stays omitted byte-for-byte.
+    #[serde(default, skip_serializing_if = "role_false")]
+    wildcard_names: bool,
     certificate_der: Vec<u8>,
 }
 
@@ -299,10 +303,10 @@ impl Pki {
         self.roles
             .values()
             .any(|role| role.allow_wildcard_certificates.is_some())
-            || self.issued.values().any(|issued| {
-                issued.common_name.contains('*')
-                    || issued.alt_names.iter().any(|name| name.contains('*'))
-            })
+            || self
+                .issued
+                .values()
+                .any(|issued| issued.wildcard_names || issued.common_name.contains('*'))
     }
 
     pub(in crate::engines) fn has_role_bare_domain_state(&self) -> bool {
@@ -404,6 +408,7 @@ impl Pki {
             if (!issued.local_issuer_id.is_empty() && !valid_pki_id(&issued.local_issuer_id))
                 || serial_bytes(serial).is_err()
                 || !valid_common_name(&issued.common_name)
+                || issued.common_name.contains('*') && !issued.wildcard_names
                 || issued
                     .owner
                     .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
@@ -1313,6 +1318,8 @@ impl Pki {
                 issued: prepared.issued,
                 expires: prepared.expires,
                 revoked_at: None,
+                wildcard_names: prepared.common_name.contains('*')
+                    || prepared.alt_names.iter().any(|name| name.contains('*')),
                 common_name: prepared.common_name,
                 certificate_der,
             },

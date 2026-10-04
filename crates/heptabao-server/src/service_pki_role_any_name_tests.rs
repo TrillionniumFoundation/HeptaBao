@@ -776,6 +776,48 @@ fn pki_wildcard_actual_signed_CN_SAN_and_explicit_disabled_precedence() -> TestR
                 .collect::<Vec<_>>()
         );
     }
+    let san_only = call(
+        &mut service,
+        "POST",
+        "ca/issue/wild",
+        &admin,
+        json!({"common_name":"web.example.test","alt_names":["*.example.test"],"ttl":"10m"}),
+    );
+    assert_eq!(san_only.status, 200);
+    let cert = X509::from_pem(
+        san_only.body["data"]["certificate"]
+            .as_str()
+            .ok_or("SAN-only leaf")?
+            .as_bytes(),
+    )?;
+    assert!(cert.verify(&public)?);
+    let names: Vec<_> = cert
+        .subject_alt_names()
+        .ok_or("SAN-only names")?
+        .iter()
+        .filter_map(|name| name.dnsname().map(str::to_owned))
+        .collect();
+    assert_eq!(names, vec!["web.example.test", "*.example.test"]);
+    assert_eq!(
+        call(&mut service, "DELETE", "ca/roles/wild", &admin, json!({})).status,
+        204
+    );
+    let issued_only = service.state.as_ref().ok_or("issued wildcard owner")?;
+    assert!(!issued_only.engines.has_pki_role_bare_domain_state());
+    assert!(
+        issued_only.engines.has_pki_role_wildcard_state(),
+        "actual issued CN/SAN retains owner after role deletion"
+    );
+    let mut lower = issued_only.clone();
+    lower.schema = PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA;
+    assert_eq!(
+        lower
+            .validate_format()
+            .err()
+            .ok_or("issued wildcard relabeled as84")?
+            .status,
+        503
+    );
     assert_eq!(
         call(
             &mut service,
