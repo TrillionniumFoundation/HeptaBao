@@ -216,7 +216,7 @@ fn short_actor(
         "sys/policies/acl/namespace-custody",
         "",
         root,
-        json!({"policy":"path \"sys/namespaces/*\" { capabilities = [\"read\", \"update\"] }"}),
+        json!({"policy":"path \"sys/namespaces/*\" { capabilities = [\"read\", \"update\", \"delete\"] }"}),
     );
     let response = if explicit {
         service.handle_request_at(request, 100)
@@ -889,6 +889,120 @@ fn ordinary_http_late_actor_after_real_commit_closes_assets_without_acknowledgem
     assert!(
         crate::request_deadline::current() == Some(deadline),
         "original actor request budget is retained"
+    );
+    Ok(())
+}
+
+fn reopened_empty_inherited(root: &Root) -> TestResult<(Service, String)> {
+    let mut service = root.service()?;
+    let (root_share, token) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/empty",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 200,
+        "actual empty namespace created"
+    );
+    assert!(
+        wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/empty/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status
+            == 204,
+        "genuine inherited owner closed before restart"
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":root_share})
+        )
+        .status
+            == 200
+            && service.namespace_runtime.is_loaded("empty"),
+        "genuine root key restores the actual inherited slot"
+    );
+    Ok((service, token))
+}
+
+#[test]
+fn ordinary_delete_late_actor_after_commit_retires_and_destroys_old_key() -> TestResult {
+    let root = Root::new();
+    let (mut service, token) = reopened_empty_inherited(&root)?;
+    let actor = short_actor(&mut service, &token, false)?;
+    let stale = service.state.clone().ok_or("loaded owner")?;
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    let _original = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let _delay = external_pki::PublicationDelayScope::enter(std::time::Duration::from_millis(2100));
+    let response = service.handle_request(ServiceRequest::new(
+        "DELETE",
+        "sys/namespaces/empty",
+        "",
+        &actor,
+        json!({}),
+    ));
+    let retired = service.state.as_ref().ok_or("retired owner")?;
+    assert!(
+        response.status == 403
+            && service.durable.as_ref().ok_or("durable")?.generation() != before
+            && !retired.namespace_exists("empty")
+            && retired.namespaces.custody_frontiers["empty"].is_retired()
+            && !service.namespace_runtime.has_loaded_within("empty")
+            && stale.namespace_leases.validate().is_err(),
+        "expired actual actor receives no ACK while durable retirement revokes the sole old key"
+    );
+    assert!(
+        crate::request_deadline::current() == Some(deadline),
+        "original actor budget retained"
+    );
+    Ok(())
+}
+
+#[test]
+fn ordinary_delete_late_original_deadline_retires_without_acknowledgement() -> TestResult {
+    let root = Root::new();
+    let (mut service, token) = reopened_empty_inherited(&root)?;
+    let stale = service.state.clone().ok_or("loaded owner")?;
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_millis(250);
+    let _original = crate::request_deadline::RequestDeadlineScope::enter(deadline);
+    let _delay = external_pki::PublicationDelayScope::enter(std::time::Duration::from_millis(350));
+    let response = service.handle_request(ServiceRequest::new(
+        "DELETE",
+        "sys/namespaces/empty",
+        "",
+        &token,
+        json!({}),
+    ));
+    let retired = service.state.as_ref().ok_or("retired owner")?;
+    assert!(
+        response.status == 503
+            && service.durable.as_ref().ok_or("durable")?.generation() != before
+            && !retired.namespace_exists("empty")
+            && retired.namespaces.custody_frontiers["empty"].is_retired()
+            && !service.namespace_runtime.has_loaded_within("empty")
+            && stale.namespace_leases.validate().is_err(),
+        "original deadline blocks ACK after the real retirement has destroyed the sole key"
+    );
+    assert!(
+        crate::request_deadline::current() == Some(deadline),
+        "deletion does not renew request budget"
     );
     Ok(())
 }

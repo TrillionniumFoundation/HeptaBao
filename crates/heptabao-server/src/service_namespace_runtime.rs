@@ -1655,6 +1655,26 @@ mod tests {
         let plan = service
             .prepare_record_plan(&mut stale)
             .map_err(|_| "old empty plan")?;
+        let canonical_before =
+            owner_store::serialize_owner(service.state.as_ref().ok_or("state")?)?;
+        let durable = service.durable.take();
+        let rejected = service.namespace_fixture_at(
+            "DELETE",
+            "sys/namespaces/empty",
+            "",
+            &token,
+            json!({}),
+            100,
+        );
+        assert!(
+            rejected.status == 503
+                && service.namespace_runtime.is_loaded("empty")
+                && stale.namespace_leases.validate().is_ok()
+                && owner_store::serialize_owner(service.state.as_ref().ok_or("retained")?)?
+                    == canonical_before,
+            "failed actual retirement commit retains ciphertext, live key and prepared lease"
+        );
+        service.durable = durable;
         let response = service.namespace_fixture_at(
             "DELETE",
             "sys/namespaces/empty",

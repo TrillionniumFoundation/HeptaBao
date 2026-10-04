@@ -34,6 +34,10 @@ impl Binding {
         &self.namespace
     }
 
+    pub(crate) fn incarnation(&self) -> u64 {
+        self.incarnation
+    }
+
     pub fn new(
         cluster_id: String,
         namespace: String,

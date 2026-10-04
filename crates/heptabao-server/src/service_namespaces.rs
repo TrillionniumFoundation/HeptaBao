@@ -871,6 +871,49 @@ impl State {
 }
 
 impl Service {
+    fn namespace_delete_gate(
+        state: &State,
+        principal: &Principal,
+        request: &RequestView<'_>,
+        caller_incarnation: u64,
+        binding: &crate::namespace_custody::Binding,
+        retired_floor: Option<&crate::namespace_custody::Frontier>,
+    ) -> Result<(), Response> {
+        namespace_runtime::request_live()?;
+        let actual = binding.namespace();
+        if state.namespaces.incarnation(request.namespace) != Some(caller_incarnation)
+            || state.namespace_is_sealed(request.namespace)
+            || state.namespaces.contains(actual)
+            || binding.incarnation().checked_add(1)
+                != state.namespaces.next_incarnation.get(actual).copied()
+            || retired_floor.is_some_and(|floor| {
+                !floor.matches_binding(binding)
+                    || !floor.is_retired()
+                    || state.namespaces.custody_frontiers.get(actual) != Some(floor)
+                    || state
+                        .namespaces
+                        .retired_custody
+                        .get(actual)
+                        .is_none_or(|tombstone| !floor.matches_retirement(tombstone))
+            })
+        {
+            return Err(Response::error(
+                503,
+                "namespace retirement owner or caller frontier changed",
+            ));
+        }
+        state
+            .auth
+            .authorize_request(
+                principal,
+                request.namespace,
+                request.path,
+                "delete",
+                external_pki::publication_now(request.now),
+            )
+            .map_err(|error| Response::error(error.status, &error.message))
+    }
+
     fn namespace_custody_gate(
         state: &State,
         principal: &Principal,
@@ -1298,10 +1341,12 @@ impl Service {
                 response
             }
             "DELETE" => {
-                if state.namespaces.inherited_owner(&target).is_some() {
+                if state.namespaces.inherited_owner(&target).is_some()
+                    && !self.namespace_runtime.is_loaded(&target)
+                {
                     return Response::error(
                         503,
-                        "inherited namespace runtime adoption is not active",
+                        "unloaded namespace requires owned delete-sealed cleanup",
                     );
                 }
                 if request.body.as_object().is_none_or(|body| !body.is_empty()) {
@@ -1317,6 +1362,10 @@ impl Service {
                         "namespace contains runtime state; owned cleanup is required before deletion",
                     );
                 }
+                let binding = match state.namespaces.custody_binding(&state.cluster_id, &target) {
+                    Ok(binding) => binding,
+                    Err(error) => return error,
+                };
                 let custody = state.namespaces.custody_owner(&target).cloned();
                 let custody_binding = custody
                     .as_ref()
@@ -1339,6 +1388,15 @@ impl Service {
                         Err(error) => return error,
                     };
                 }
+                // Pin the exact closed owner produced with its real loaded key.
+                // This floor is private retirement evidence, never a route grant.
+                let retired_floor = custody_binding.as_ref().and_then(|_| {
+                    state
+                        .namespaces
+                        .custody_frontiers
+                        .get(&target)
+                        .map(crate::namespace_custody::Frontier::retirement)
+                });
                 if let Some(binding) = custody_binding
                     && let Err(error) = state.engines.retire_namespace_record_cells(&binding)
                 {
@@ -1355,10 +1413,35 @@ impl Service {
                 if let Err(error) = state.validate_format() {
                     return error;
                 }
+                if let Err(error) = Self::namespace_delete_gate(
+                    &state,
+                    principal,
+                    request,
+                    caller_incarnation,
+                    &binding,
+                    retired_floor.as_ref(),
+                ) {
+                    return error;
+                }
                 if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
                 self.namespace_runtime.close(&target);
+                #[cfg(test)]
+                external_pki::delay_after_publication_for_test();
+                if let Err(error) = Self::namespace_delete_gate(
+                    &state,
+                    principal,
+                    request,
+                    caller_incarnation,
+                    &binding,
+                    retired_floor.as_ref(),
+                ) {
+                    // Successful retirement always destroys old loaded keys,
+                    // even when the original caller can no longer receive ACK.
+                    self.state = Some(state);
+                    return error;
+                }
                 self.state = Some(state);
                 // Native deletion acknowledges the accepted cleanup. This scoped
                 // empty-owner case is already durably removed; callers still
