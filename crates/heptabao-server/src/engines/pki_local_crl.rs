@@ -216,6 +216,9 @@ fn sign_snapshot(
         revoked,
         der: Vec::new(),
     };
+    if snapshot.next_update > 253_402_300_799 {
+        return Err(bad("CRL time exceeds X.509 bounds"));
+    }
     let pair = root.local_key()?;
     let tbs = crl_tbs(root, &snapshot)?;
     let signature = pair.sign(&tbs)?;
@@ -363,6 +366,7 @@ impl Pki {
         }
         if state.config.enable_delta {
             let interval = duration(&state.config.delta_rebuild_interval)?;
+            let mut due = false;
             for root in self.local_roots() {
                 let cached = state
                     .issuers
@@ -376,8 +380,12 @@ impl Pki {
                 if now >= cached.delta.this_update.saturating_add(interval)
                     && pending != cached.delta.revoked
                 {
-                    return self.rebuild_local_crls(now, true);
+                    due = true;
+                    break;
                 }
+            }
+            if due {
+                return self.rebuild_local_crls(now, true);
             }
         }
         Ok(false)
@@ -469,7 +477,7 @@ impl Pki {
             return Ok(());
         };
         state.config.validate()?;
-        if self.root.as_ref().is_some_and(RootCa::is_external) || state.issuers.len() > 256 {
+        if state.issuers.len() > 256 {
             return Err(bad("invalid local PKI CRL ownership"));
         }
         let roots = self.local_roots().collect::<Vec<_>>();
@@ -498,6 +506,7 @@ impl Pki {
                 if snapshot.number == 0
                     || snapshot.number > MAX_CRL_NUMBER
                     || snapshot.this_update > clock
+                    || snapshot.next_update > 253_402_300_799
                     || snapshot.next_update <= snapshot.this_update
                     || snapshot.next_update - snapshot.this_update > MAX_TTL
                     || snapshot.revoked.len() > MAX_ISSUED
