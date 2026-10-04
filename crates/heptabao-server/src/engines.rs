@@ -240,7 +240,7 @@ enum Backend {
     Kv1Records,
     Kv2(kv::Kv2),
     Transit(transit::Transit),
-    Pki(pki::Pki),
+    Pki(Box<pki::Pki>),
     Ssh(ssh::SshOtp),
     Totp(totp::Totp),
 }
@@ -2305,7 +2305,7 @@ fn handle_mounts(
                 reject_unknown(config, &["default_lease_ttl", "max_lease_ttl"])?;
                 engine.tune(config)?;
             }
-            Backend::Pki(engine)
+            Backend::Pki(Box::new(engine))
         }
         "ssh" => {
             if body

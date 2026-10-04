@@ -7,8 +7,8 @@ in retained increment notes. Exact source remains authoritative.
 ## Source and authoritative ownership
 
 The current Service state schema is **65**. This is the ordinary writer schema,
-with conditional sticky feature floors 66–72. `CURRENT_STATE_SCHEMA` and
-`MAX_SUPPORTED_STATE_SCHEMA` (72) are in
+with conditional sticky feature floors 66–78. `CURRENT_STATE_SCHEMA` and
+`MAX_SUPPORTED_STATE_SCHEMA` (78) are in
 `crates/heptabao-server/src/service.rs`; admission is
 `State::validate_format` in `service_identity.rs`. The Service owns one encrypted
 state transaction. Auth, engines, database intents and Raft administration are
@@ -121,7 +121,29 @@ must refuse the first unsupported schema without altering the encrypted record.
 | 62 | Native Transit `mldsa-44`, `mldsa-65` and `mldsa-87` seed versions. Feature-free schema-61 state remains readable; any retained ML-DSA version requires schema 62 or later. |
 | 63 | Namespace-scoped External Keys config, key-mapping and mount-grant registry. Empty registries preserve earlier NamespaceState serialization; any retained registry entry requires schema 63. Transit external-key versions and references must be absent. |
 | 64 | Bounded remote Transit external-key versions with exact registry references, no local cryptographic material and per-consumption namespace/mount grants. Any retained external-key version or reference requires this reader. |
+| 65 | Ordinary current writer; also admits asymmetric Transit keys and public-key-only external PKI root/CSR state. |
+| 66 | AAD-bound convergent Transit material activates a sticky reader floor. |
+| 67 | Typed external PKI public-key and signature state. |
+| 68 | Explicit custom JWT user-claim identity semantics. |
+| 69 | Persisted JWT PEM verification key sets. |
+| 70 | Transit imported key versions and wrapping-key state. |
+| 71 | PKI issuer-path issuance and lease provenance. |
+| 72 | Typed local PKI issuer and subject key material. |
+| 73 | Protected recovery credential and authority publication state. |
+| 74 | Indexed recovery-share wire representation. |
+| 75 | Durable local PKI issuer and key identifiers. |
+| 76 | Extended local PKI root fields and their exact certificate bindings. |
+| 77 | Multiple local PKI issuers, retained key ownership and certificate history. |
+| 78 | Persisted signed full/delta CRLs, per-issuer counters, delta bases and configuration. |
 | Other or contradictory version/content | Fail closed; do not repair the discriminator or drop unknown state. |
+
+Feature floors are discovered across all namespaces before publication and remain
+sticky after feature or mount retirement. The same floor rejects a snapshot
+created by an older reader. Unknown future schemas are rejected without lowering
+their discriminator. Local CRL maintenance can migrate an admitted historical
+local issuer to schema 78: its owned key signs the cache in the Service candidate,
+and the normal durable commit must finish before public projection. An ordinary
+feature-free read or unseal still does not promote application state.
 
 
 Schema 61 independently gates `AuthState::has_acl_wrapping_ttl_state()` and
