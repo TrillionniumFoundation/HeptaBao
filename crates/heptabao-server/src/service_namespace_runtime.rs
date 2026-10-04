@@ -941,10 +941,10 @@ mod tests {
         service
             .prepare_namespace_publication(&mut loaded)
             .map_err(|_| "predecessor protection")?;
-        let state = loaded
-            .protected_state()
-            .map_err(|_| "predecessor owner")?
-            .clone();
+        // Install the genuine new child owner into the actual loaded namespace
+        // candidate. Publication re-protects its already-loaded ancestors; the
+        // canonical root deliberately omits that child's routing catalog.
+        let state = loaded;
         let binding = state
             .namespaces
             .custody_binding(&state.cluster_id, actual)
@@ -1610,6 +1610,9 @@ mod tests {
         let root = Root::new();
         let mut service = root.service()?;
         let (root_share, token) = bootstrap_unmounted(&mut service)?;
+        // A genuine unrelated KV mutation installs V5 record ownership. An
+        // otherwise empty legacy root has no RecordPlan/address key to pin.
+        mounted_record(&mut service, &token, "", "unrelated-root-record")?;
         new_namespace(&mut service, &token, "", "empty")?;
         assert!(
             service
