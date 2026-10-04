@@ -1282,7 +1282,7 @@ mod tests {
             .ok_or("owned")?
             .local_ca_chain_pem()
             .join("\n");
-        let keys = other.local_key_list(&json!({}))?.body;
+        let keys = other.local_key_list(&json!({}))?.body.clone();
         let imported = other.handle_admin(
             "POST",
             "intermediate/set-signed",
