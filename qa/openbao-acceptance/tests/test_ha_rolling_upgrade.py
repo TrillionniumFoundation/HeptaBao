@@ -1,9 +1,12 @@
 """Rolling wire retirement must preserve quorum without weakening evidence."""
 import hashlib
+import contextlib
+import io
 import json
 import os
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 from types import SimpleNamespace
@@ -21,6 +24,8 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
 
     def cluster(self):
         cluster = upgrade.RollingUpgradeCluster.__new__(upgrade.RollingUpgradeCluster)
+        cluster.base_source_sha = "55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18"
+        cluster.base_wire_profile = "legacy-v1"
         cluster.base_digest = "a" * 64
         cluster.candidate_digest = "b" * 64
         cluster.root_token = "synthetic-unused"
@@ -217,6 +222,88 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
             self.cluster().read(node, "test", "expected")
         self.assertEqual(node.call.call_count, 2)
         self.assertTrue(all(call.args[0] == "GET" for call in node.call.call_args_list))
+
+
+class BaseWireProfileTests(unittest.TestCase):
+    MODERN = "421c19794fa4f772edb9cde7dcc0db68362c1717"
+    LEGACY = "55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18"
+
+    def test_profiles_are_explicit_immutable_sources(self):
+        self.assertEqual(upgrade.base_wire_profile_for_source(self.MODERN), "strict-current")
+        self.assertEqual(upgrade.base_wire_profile_for_source(self.LEGACY), "legacy-v1")
+
+    def test_mismatched_profiles_cannot_relax_or_break_known_base(self):
+        for source, requested in [(self.MODERN, "legacy-v1"), (self.LEGACY, "strict-current")]:
+            with self.subTest(source=source), self.assertRaisesRegex(upgrade.FixtureError, "profile_mismatch"):
+                upgrade.base_wire_profile_for_source(source, requested)
+
+    def test_unknown_or_mutable_source_fails_closed(self):
+        for source in ["a" * 40, "main", self.MODERN.upper(), "", self.MODERN + "\n"]:
+            with self.subTest(source=source), self.assertRaisesRegex(upgrade.FixtureError, "unreviewed_base_source"):
+                upgrade.base_wire_profile_for_source(source)
+
+    def test_upgrade_current_and_legacy_use_distinct_wire_modes(self):
+        for source, profile, expected in [(self.MODERN, "strict-current", False),
+                                          (self.LEGACY, "legacy-v1", True)]:
+            with self.subTest(profile=profile), tempfile.TemporaryDirectory() as directory:
+                cluster = upgrade.RollingUpgradeCluster.__new__(upgrade.RollingUpgradeCluster)
+                cluster.base_source_sha, cluster.base_wire_profile = source, profile
+                cluster.candidate_binary, cluster.candidate_digest = Path("/candidate"), "b" * 64
+                cluster.scenarios, cluster.unseal_key = [], "synthetic-unused"
+                cluster.leader = Mock()
+                node = Mock(binary=Path("/base"), root=Path(directory), process=None)
+                node.call.return_value = (200, {})
+                config = node.root / "ha.json"
+                config.write_text('{"cluster_id":"synthetic"}')
+                with patch.object(upgrade, "running_digest", return_value=cluster.candidate_digest):
+                    cluster.upgrade(node, "test_upgrade")
+                actual = json.loads(config.read_text())
+                self.assertEqual(actual.get("allow_legacy_peer_v1", False), expected)
+                self.assertNotIn("emit_legacy_peer_v1", actual)
+                self.assertEqual(actual["cluster_id"], "synthetic")
+                self.assertEqual(config.stat().st_mode & 0o777, 0o600)
+                node.start.assert_called_once_with()
+                self.assertEqual(cluster.scenarios, ["test_upgrade_candidate_process_digest"])
+
+    def test_profile_and_binary_mismatches_fail_before_cluster_launch(self):
+        for source, requested, fail_digest, expected in [
+            (self.MODERN, "legacy-v1", False, "base_wire_profile_mismatch"),
+            ("a" * 40, "strict-current", False, "unreviewed_base_source"),
+            (self.MODERN, "strict-current", True, "binary_sha256_mismatch"),
+        ]:
+            with self.subTest(source=source, requested=requested, fail_digest=fail_digest):
+                argv = ["ha_rolling_upgrade.py", "--base-binary", "/base", "--base-sha256", "a" * 64,
+                        "--candidate-binary", "/candidate", "--candidate-sha256", "b" * 64,
+                        "--base-source-sha", source, "--base-wire-profile", requested,
+                        "--work-dir", "/fixture"]
+                with patch.object(sys, "argv", argv), patch.object(upgrade, "RollingUpgradeCluster") as cluster, patch.object(upgrade, "checked_binary", side_effect=upgrade.FixtureError("binary_sha256_mismatch")) as checked, contextlib.redirect_stdout(io.StringIO()) as output:
+                    self.assertEqual(upgrade.main(), 1)
+                cluster.assert_not_called()
+                self.assertEqual(checked.call_count, int(fail_digest))
+                self.assertIn(expected, json.loads(output.getvalue())["failure_class"])
+
+
+class BaseSourceWorkflowBindingTests(unittest.TestCase):
+    def test_actual_clean_worktree_must_match_pr_base(self):
+        workflow = (Path(__file__).resolve().parents[3] / ".github/workflows/codex-openbao-replacement-ci.yml").read_text()
+        identity = 'test "$(git -C "$base_dir" rev-parse HEAD)" = "$PR_BASE"'
+        clean = 'test -z "$(git -C "$base_dir" status --porcelain=v1 --untracked-files=all)"'
+        self.assertIn(identity, workflow)
+        self.assertIn(clean, workflow)
+        self.assertIn('--base-source-sha "$PR_BASE"', workflow)
+        with tempfile.TemporaryDirectory() as directory:
+            def git(*args):
+                return subprocess.check_output(["git", "-C", directory, *args], text=True).strip()
+            git("init", "-q")
+            git("-c", "user.name=Fixture Test", "-c", "user.email=fixture@example.invalid", "commit", "--allow-empty", "-qm", "synthetic")
+            actual = git("rev-parse", "HEAD")
+            command = "set -euo pipefail\n" + identity + "\n" + clean
+            env = dict(os.environ, base_dir=directory, PR_BASE=actual)
+            self.assertEqual(subprocess.run(["bash", "-c", command], env=env).returncode, 0)
+            forged = dict(env, PR_BASE="f" * 40)
+            self.assertNotEqual(subprocess.run(["bash", "-c", command], env=forged).returncode, 0)
+            (Path(directory) / "unexpected-source").write_text("synthetic dirty source")
+            self.assertNotEqual(subprocess.run(["bash", "-c", command], env=env).returncode, 0)
 
 
 class RunningBinaryIdentityTests(unittest.TestCase):
