@@ -532,3 +532,50 @@ fn plugin_auth_completion_same_config_cannot_rebind_a_recreated_mount() -> TestR
     );
     Ok(())
 }
+
+#[test]
+fn plugin_private_floor_observation_uses_original_clock_without_historical_auth_write() -> TestResult
+{
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    let mut authority = admitted(&mut service, &root_token, "", false)?;
+    let mut candidate = service.state.clone().ok_or("candidate")?;
+    let before = serde_json::to_vec(&candidate.auth)?;
+    let started = Instant::now() - Duration::from_millis(250);
+    let floor = crate::auth::Timestamp::checked(1000, 800000000)?;
+    authority.token_clock = Some(
+        RequestClock::anchored(Duration::new(100, 200000000), started)?.with_timestamp_floor(floor),
+    );
+    assert_eq!(
+        authority
+            .observe_candidate_time(&mut candidate)
+            .map_err(|_| "candidate observation")?
+            .exact(),
+        Some(floor)
+    );
+    assert_eq!(before, serde_json::to_vec(&candidate.auth)?);
+    let mut auth = serde_json::to_value(&candidate.auth)?;
+    auth["token_api_precision_state"] = json!(true);
+    auth["token_api_observed_at"] = serde_json::to_value(floor)?;
+    candidate.auth = serde_json::from_value(auth)?;
+    candidate.auth.validate_system_lease_defaults()?;
+    let before = serde_json::to_vec(&candidate.auth)?;
+    assert_eq!(
+        authority
+            .observe_candidate_time(&mut candidate)
+            .map_err(|_| "candidate observation")?
+            .exact(),
+        Some(floor)
+    );
+    assert_eq!(before, serde_json::to_vec(&candidate.auth)?);
+    assert_eq!(authority.token_clock.ok_or("clock")?.started(), started);
+    authority.token_clock = None;
+    let error = authority
+        .observe_candidate_time(&mut candidate)
+        .err()
+        .ok_or("coarse accepted")?;
+    assert_eq!(error.status, 503);
+    assert_eq!(before, serde_json::to_vec(&candidate.auth)?);
+    Ok(())
+}

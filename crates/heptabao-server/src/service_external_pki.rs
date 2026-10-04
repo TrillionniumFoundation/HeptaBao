@@ -340,12 +340,19 @@ impl Service {
         else {
             return Response::error(404, "PKI route not found");
         };
-        if let Err(cause) = state.auth.authorize_request(
+        let time = match request.token_time().and_then(|time| {
+            time.with_seconds_floor(state.engines.lease_clock())
+                .map_err(|_| Response::error(503, "trusted token clock is unavailable"))
+        }) {
+            Ok(time) => state.auth.token_api_observed_time(time),
+            Err(error) => return error,
+        };
+        if let Err(cause) = state.auth.authorize_request_observed(
             &principal,
             request.namespace,
             request.path,
             capability,
-            request.now,
+            time,
         ) {
             return Response::error(cause.status, &cause.message);
         }
@@ -359,11 +366,10 @@ impl Service {
             .engines
             .is_pki_issue_route(request.namespace, request.path)
         {
-            match state.auth.typed_lease_issuer(
-                &principal,
-                request.namespace,
-                request.now.max(state.engines.lease_clock()),
-            ) {
+            match state
+                .auth
+                .typed_lease_issuer_observed(&principal, request.namespace, time)
+            {
                 Ok(owner) => Some(owner),
                 Err(cause) => return Response::error(cause.status, &cause.message),
             }
@@ -552,7 +558,18 @@ impl Service {
                 "external PKI result withheld after authority/state changed; remote outcome unknown; no blind retry",
             );
         }
-        let now = plan.authority.now();
+        let time = match plan.authority.token_time() {
+            Ok(time) => self
+                .state
+                .as_ref()
+                .map_or(time, |state| state.auth.token_api_observed_time(time)),
+            Err(error) => return error,
+        };
+        let now = if time.exact().is_some() {
+            time.seconds()
+        } else {
+            plan.authority.now()
+        };
         if plan
             .template
             .leaf_lease_window()
@@ -561,10 +578,11 @@ impl Service {
             return Response::error(403, "external PKI leaf validity window expired");
         }
         if let Some(owner) = plan.template.leaf_owner() {
-            let live = self
-                .state
-                .as_ref()
-                .and_then(|state| state.auth.resolve_lease_owner(owner, &plan.namespace, now));
+            let live = self.state.as_ref().and_then(|state| {
+                state
+                    .auth
+                    .resolve_lease_owner_observed(owner, &plan.namespace, time)
+            });
             let active = live.as_ref().is_some_and(|owner| {
                 owner.entity_id.as_ref().is_none_or(|id| {
                     self.state.as_ref().is_some_and(|state| {
@@ -582,6 +600,9 @@ impl Service {
         let Some(mut candidate) = self.state.clone() else {
             return unknown();
         };
+        if let Err(error) = plan.authority.observe_candidate_time(&mut candidate) {
+            return error;
+        }
         let mut response = match candidate.engines.publish_external_pki(
             &plan.namespace,
             &plan.mount,
@@ -753,12 +774,27 @@ impl Service {
                 "external PKI committed response withheld by delivery fence; public readback required; no blind retry",
             );
         }
-        let now = plan.authority.now();
-        if let Some(owner) = plan.template.leaf_owner() {
-            let live = self
+        let time = match plan.authority.token_time() {
+            Ok(time) => self
                 .state
                 .as_ref()
-                .and_then(|state| state.auth.resolve_lease_owner(owner, &plan.namespace, now));
+                .map_or(time, |state| state.auth.token_api_observed_time(time)),
+            Err(error) => {
+                erase_json(&mut response.body);
+                return error;
+            }
+        };
+        let now = if time.exact().is_some() {
+            time.seconds()
+        } else {
+            plan.authority.now()
+        };
+        if let Some(owner) = plan.template.leaf_owner() {
+            let live = self.state.as_ref().and_then(|state| {
+                state
+                    .auth
+                    .resolve_lease_owner_observed(owner, &plan.namespace, time)
+            });
             let active = live.as_ref().is_some_and(|owner| {
                 owner.entity_id.as_ref().is_none_or(|id| {
                     self.state.as_ref().is_some_and(|state| {

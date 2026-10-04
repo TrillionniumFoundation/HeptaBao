@@ -194,6 +194,18 @@ impl PluginResponseAuthority {
         }
     }
 
+    pub(super) fn observe_candidate_time(
+        &self,
+        state: &mut State,
+    ) -> Result<AuthorityTime, Response> {
+        let time = state.auth.token_api_observed_time(self.token_time()?);
+        state
+            .auth
+            .observe_token_api_time(time)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        Ok(time)
+    }
+
     pub(super) fn deadline_expired(&self) -> bool {
         self.deadline
             .is_some_and(|deadline| std::time::Instant::now() >= deadline)

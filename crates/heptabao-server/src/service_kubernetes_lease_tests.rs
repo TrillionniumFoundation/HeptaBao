@@ -717,3 +717,117 @@ fn kube_completion_clock_includes_admission_before_provider_plan() -> TestResult
     }
     Ok(())
 }
+
+#[test]
+fn kube_precise_batch_owner_expires_inside_one_second_and_floor_cannot_replay_it() -> TestResult {
+    let (_root, mut service, _, _, mut plan) = fixture(false, false)?;
+    let mut keys = BatchKeyAuthority::new(100)?;
+    let raw = keys.seal(
+        BatchClaims {
+            token_role: None,
+            token_api_precision: Some(serde_json::from_value(json!({
+                "granted_ttl":500000000,
+                "expires_at":{"seconds":100,"nanoseconds":500000000}
+            }))?),
+            token_api_policy_names: true,
+            namespace: String::new(),
+            policies: BTreeSet::from(["default".into()]),
+            metadata: BTreeMap::new(),
+            display_name: "precise-provider-owner".into(),
+            path: "auth/token/create-orphan".into(),
+            bound_cidrs: Vec::new(),
+            issued_at: 100,
+            expires_at: 101,
+            entity_id: None,
+            parent: None,
+        },
+        100,
+    )?;
+    let before = AuthorityTime::Precise(crate::auth::Timestamp::checked(100, 400000000)?);
+    let after = AuthorityTime::Precise(crate::auth::Timestamp::checked(100, 600000000)?);
+    let claims = keys.open_authenticated_observed(raw.as_str(), before)?;
+    plan.inner.authority.owner = LeaseOwner::from_batch(&claims);
+    plan.inner.authority.expires_at = 101;
+    let state = service.state.as_mut().ok_or("state")?;
+    let mut auth = serde_json::to_value(&state.auth)?;
+    auth["batch_authority"] = serde_json::to_value(&keys)?;
+    auth["token_api_precision_state"] = json!(true);
+    auth["token_api_observed_at"] = json!({"seconds":100,"nanoseconds":200000000});
+    state.auth = serde_json::from_value(auth)?;
+    state.auth.validate_system_lease_defaults()?;
+    assert!(Service::kubernetes_completion_owner_live(
+        state, &plan, before
+    ));
+    assert!(!Service::kubernetes_completion_owner_live(
+        state, &plan, after
+    ));
+    assert!(!Service::kubernetes_completion_owner_live(
+        state,
+        &plan,
+        AuthorityTime::Coarse(100)
+    ));
+    state.auth.observe_token_api_time(after)?;
+    // A replayed wall fraction stays behind the already authenticated private floor.
+    assert!(!Service::kubernetes_completion_owner_live(
+        state, &plan, before
+    ));
+    let reopened: AuthState = serde_json::from_slice(&serde_json::to_vec(&state.auth)?)?;
+    assert!(
+        reopened
+            .resolve_lease_owner_observed(&plan.inner.authority.owner, "", before)
+            .is_none()
+    );
+    Ok(())
+}
+
+#[test]
+fn kube_completed_time_keeps_original_anchor_and_never_adds_elapsed_to_floor() -> TestResult {
+    let (_root, _service, _, _, mut plan) = fixture(false, false)?;
+    let started = std::time::Instant::now() - std::time::Duration::from_millis(250);
+    let floor = crate::auth::Timestamp::checked(1000, 800000000)?;
+    let clock = RequestClock::anchored(std::time::Duration::new(100, 200000000), started)?
+        .with_timestamp_floor(floor);
+    plan.token_clock = Some(clock);
+    plan.now = 999;
+    assert_eq!(
+        plan.completed_time()
+            .map_err(|_| "completion clock")?
+            .exact(),
+        Some(floor)
+    );
+    assert_eq!(plan.token_clock.ok_or("clock")?.started(), started);
+    // The legacy constructor is explicitly coarse and does not invent a fraction.
+    plan.token_clock = None;
+    assert!(
+        plan.completed_time()
+            .map_err(|_| "completion clock")?
+            .exact()
+            .is_none()
+    );
+    Ok(())
+}
+
+#[test]
+fn kube_clock_failure_before_completion_does_not_publish_or_release_provider_token() -> TestResult {
+    let (_root, mut service, _, _, plan) = fixture(false, false)?;
+    let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let response = service.finalize_kubernetes_token_checked(
+        &plan,
+        Ok(metadata()),
+        || Err(failure("trusted token clock is unavailable")),
+        |_| Ok(()),
+    );
+    assert_eq!(response.status, 503);
+    assert!(response.body.get("data").is_none());
+    assert_eq!(response.body["retry_allowed"], false);
+    assert_eq!(
+        before,
+        serde_json::to_vec(service.state.as_ref().ok_or("state")?)?
+    );
+    assert_eq!(
+        generation,
+        service.durable.as_ref().ok_or("durable")?.generation()
+    );
+    Ok(())
+}

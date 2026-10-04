@@ -17,6 +17,7 @@ pub(crate) struct KubernetesTokenEffectPlan {
     ha: Option<Arc<Mutex<HaProcess>>>,
     now: u64,
     started: std::time::Instant,
+    token_clock: Option<RequestClock>,
     activation_nonce: String,
     last_use: bool,
     // Process-local affine admission; never persisted or reconstructed on replay.
@@ -39,9 +40,21 @@ impl KubernetesTokenEffectPlan {
             ha,
             now,
             started,
+            token_clock: None,
             activation_nonce,
             last_use,
             response_authority: None,
+        }
+    }
+
+    fn completed_time(&self) -> Result<AuthorityTime, Response> {
+        match self.token_clock {
+            Some(clock) => clock
+                .with_seconds_floor(self.now)
+                .and_then(RequestClock::observed_at)
+                .map(AuthorityTime::Precise)
+                .map_err(|_| failure("trusted token clock is unavailable")),
+            None => Ok(AuthorityTime::Coarse(self.completed_now())),
         }
     }
 
@@ -223,12 +236,16 @@ impl Service {
             .engines
             .required_capability(request.namespace, request.method, request.path)
             .unwrap_or("update");
-        if let Err(error) = state.auth.authorize_request(
+        let time = match request.token_time() {
+            Ok(time) => state.auth.token_api_observed_time(time),
+            Err(error) => return error,
+        };
+        if let Err(error) = state.auth.authorize_request_observed(
             &principal,
             request.namespace,
             request.path,
             capability,
-            request.now,
+            time,
         ) {
             return Response::error(error.status, &error.message);
         }
@@ -252,10 +269,10 @@ impl Service {
             }
         }
         let issuer = if relative.starts_with("creds/") {
-            match state.auth.admitted_kubernetes_lease_issuer(
+            match state.auth.admitted_kubernetes_lease_issuer_observed(
                 &principal,
                 request.namespace,
-                request.now,
+                time,
             ) {
                 Ok(owner) => {
                     if owner.entity_id.as_deref().is_some_and(|id| {
@@ -335,6 +352,7 @@ impl Service {
                     self.unseal_nonce.clone(),
                     last_use,
                 );
+                effect.token_clock = request.token_clock;
                 effect.response_authority = Some(Box::new(authority));
                 self.pending_kubernetes_token = Some(effect);
                 Response::error(500, "Kubernetes TokenRequest was not dispatched")
@@ -351,7 +369,7 @@ impl Service {
         self.finalize_kubernetes_token_checked(
             &plan,
             result,
-            || plan.completed_now(),
+            || plan.completed_time(),
             |service| {
                 let authority = authority
                     .as_mut()
@@ -367,16 +385,21 @@ impl Service {
         &mut self,
         plan: &KubernetesTokenEffectPlan,
         result: Result<TokenMetadata, Response>,
-        completed_now: impl FnMut() -> u64,
+        mut completed_now: impl FnMut() -> u64,
     ) -> Response {
-        self.finalize_kubernetes_token_checked(plan, result, completed_now, |_| Ok(()))
+        self.finalize_kubernetes_token_checked(
+            plan,
+            result,
+            || Ok(AuthorityTime::Coarse(completed_now())),
+            |_| Ok(()),
+        )
     }
 
     fn finalize_kubernetes_token_checked(
         &mut self,
         plan: &KubernetesTokenEffectPlan,
         result: Result<TokenMetadata, Response>,
-        mut completed_now: impl FnMut() -> u64,
+        mut completed_time: impl FnMut() -> Result<AuthorityTime, Response>,
         mut authorize_delivery: impl FnMut(&mut Self) -> Result<(), Response>,
     ) -> Response {
         let metadata = match result {
@@ -399,8 +422,18 @@ impl Service {
         let Some(mut state) = self.state.clone() else {
             return post_provider_completion_failure(&plan.inner.lease_id);
         };
-        let now = completed_now().max(state.engines.lease_clock());
-        let live = delivery_allowed && Self::kubernetes_completion_owner_live(&state, plan, now);
+        let time = match completed_time().and_then(|time| {
+            time.with_seconds_floor(state.engines.lease_clock())
+                .map_err(|_| failure("trusted token clock is unavailable"))
+        }) {
+            Ok(time) => state.auth.token_api_observed_time(time),
+            Err(_) => return post_provider_completion_failure(&plan.inner.lease_id),
+        };
+        if state.auth.observe_token_api_time(time).is_err() {
+            return post_provider_completion_failure(&plan.inner.lease_id);
+        }
+        let now = time.seconds();
+        let live = delivery_allowed && Self::kubernetes_completion_owner_live(&state, plan, time);
         let mut response = match state.engines.kubernetes_finalize(
             &plan.inner.namespace,
             &plan.inner.mount,
@@ -414,6 +447,7 @@ impl Service {
         };
         state.schema = state.writer_schema();
         if state.validate_format().is_err() || self.commit_state(&state).is_err() {
+            erase_json(&mut response.body);
             return post_provider_completion_failure(&plan.inner.lease_id);
         }
         self.state = Some(state);
@@ -427,18 +461,33 @@ impl Service {
             let published_now = now;
             let delivery_allowed = authorize_delivery(self).is_ok();
             // Revalidation can synchronize HA; sample time after it completes.
-            let now = completed_now().max(now);
             let Some(current) = self.state.as_ref() else {
+                erase_json(&mut response.body);
                 return post_provider_completion_failure(&plan.inner.lease_id);
             };
+            let time = match completed_time().and_then(|time| {
+                time.with_seconds_floor(now)
+                    .map_err(|_| failure("trusted token clock is unavailable"))
+            }) {
+                Ok(time) => current.auth.token_api_observed_time(time),
+                Err(_) => {
+                    erase_json(&mut response.body);
+                    return post_provider_completion_failure(&plan.inner.lease_id);
+                }
+            };
+            let now = time.seconds();
             // Persisted provider expiry may be shorter than the admitted cap.
             let original_ttl = response.body["lease_duration"].as_u64().unwrap_or(0);
             let remaining = original_ttl.saturating_sub(now.saturating_sub(published_now));
             if !delivery_allowed
-                || !Self::kubernetes_completion_owner_live(current, plan, now)
+                || !Self::kubernetes_completion_owner_live(current, plan, time)
                 || remaining == 0
             {
+                erase_json(&mut response.body);
                 let mut retired = current.clone();
+                if retired.auth.observe_token_api_time(time).is_err() {
+                    return post_provider_completion_failure(&plan.inner.lease_id);
+                }
                 if retired
                     .engines
                     .kubernetes_retire_lease(
@@ -467,14 +516,19 @@ impl Service {
     fn kubernetes_completion_owner_live(
         state: &State,
         plan: &KubernetesTokenEffectPlan,
-        now: u64,
+        time: AuthorityTime,
     ) -> bool {
-        plan.inner.authority.expires_at > now
+        let time = state.auth.token_api_observed_time(time);
+        plan.inner.authority.expires_at > time.seconds()
             && state.namespace_exists(&plan.inner.namespace)
             && !state.namespace_is_sealed(&plan.inner.namespace)
             && state
                 .auth
-                .resolve_lease_owner(&plan.inner.authority.owner, &plan.inner.namespace, now)
+                .resolve_lease_owner_observed(
+                    &plan.inner.authority.owner,
+                    &plan.inner.namespace,
+                    time,
+                )
                 .is_some_and(|owner| {
                     owner.entity_id.as_deref().is_none_or(|id| {
                         state
