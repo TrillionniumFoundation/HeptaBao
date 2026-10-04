@@ -24,11 +24,13 @@ pub(super) struct LocalIssuers {
 struct PublicIssuer {
     serial: String,
     public: LocalPublicKey,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    chain: Option<Box<LocalCaChain>>,
 }
 
 fn archive_issuer(state: &mut LocalIssuers, root: &RootCa) -> Result<()> {
     let public = root.local_key()?.public()?;
-    public.validate_certificate(&root.certificate_der)?;
+    root.validate_local_certificate()?;
     state
         .certificates
         .insert(root.serial.clone(), root.certificate_der.clone());
@@ -37,12 +39,22 @@ fn archive_issuer(state: &mut LocalIssuers, root: &RootCa) -> Result<()> {
         PublicIssuer {
             serial: root.serial.clone(),
             public,
+            chain: root.local_chain.clone(),
         },
     );
     Ok(())
 }
 
 impl Pki {
+    pub(super) fn has_archived_local_ca_chain(&self) -> bool {
+        self.local_keys().any(|root| root.local_chain.is_some())
+            || self.local_issuers.iter().any(|state| {
+                state
+                    .retired_issuers
+                    .values()
+                    .any(|issuer| issuer.chain.is_some())
+            })
+    }
     pub(in crate::engines) fn has_local_multi_issuer_state(&self) -> bool {
         self.local_issuers.is_some()
             || self.roles.values().any(|role| !role.issuer_ref.is_empty())
@@ -246,9 +258,7 @@ impl Pki {
                     return Err(bad("duplicate local PKI issuer aliases"));
                 }
             }
-            root.local_key()?
-                .public()?
-                .validate_certificate(&root.certificate_der)?;
+            root.validate_local_certificate()?;
         }
         if state.other.iter().any(|(id, root)| {
             id != &root.issuer_id
@@ -277,7 +287,11 @@ impl Pki {
                 .certificates
                 .get(&issuer.serial)
                 .ok_or_else(|| bad("archived PKI issuer certificate missing"))?;
-            issuer.public.validate_certificate(der)?;
+            if let Some(chain) = &issuer.chain {
+                chain.validate(der, &issuer.public)?;
+            } else {
+                issuer.public.validate_certificate(der)?;
+            }
         }
         self.validate_local_leaf_associations()
     }
@@ -403,7 +417,7 @@ impl Pki {
         response.mutated = change_default || change_follows;
         Ok(response)
     }
-    fn local_keys(&self) -> impl Iterator<Item = &RootCa> {
+    pub(super) fn local_keys(&self) -> impl Iterator<Item = &RootCa> {
         self.local_roots().chain(
             self.local_issuers
                 .iter()
@@ -414,10 +428,7 @@ impl Pki {
     pub(super) fn local_key_list(&self, body: &Value) -> Result<EngineResponse> {
         reject_unknown(body, &[])?;
         let mut info = serde_json::Map::new();
-        let default_key_id = self.local_issuers.as_ref().map_or_else(
-            || self.root.as_ref().map_or("", |root| root.key_id.as_str()),
-            |state| state.default_key_id.as_str(),
-        );
+        let default_key_id = self.default_local_key_id();
         for root in self.local_keys() {
             let name = root
                 .local_fields
@@ -428,6 +439,7 @@ impl Pki {
                 json!({"key_name":name,"is_default":root.key_id==default_key_id}),
             );
         }
+        self.append_pending_keys(&mut info, default_key_id);
         if info.is_empty() {
             return Ok(EngineResponse {
                 status: 404,
@@ -439,6 +451,17 @@ impl Pki {
             json!({"keys":info.keys().collect::<Vec<_>>(),"key_info":info}),
             false,
         ))
+    }
+
+    pub(super) fn default_local_key_id(&self) -> &str {
+        let pending = self.pending_key_default();
+        if !pending.is_empty() {
+            return pending;
+        }
+        self.local_issuers.as_ref().map_or_else(
+            || self.root.as_ref().map_or("", |root| root.key_id.as_str()),
+            |state| state.default_key_id.as_str(),
+        )
     }
 
     pub(super) fn local_issuer_delete(
@@ -477,7 +500,7 @@ impl Pki {
         Ok(ok(Value::Null, true))
     }
 
-    fn promote_default_associations(&mut self) -> Result<()> {
+    pub(super) fn promote_default_associations(&mut self) -> Result<()> {
         let Some(root) = self.root.as_mut().filter(|root| !root.is_external()) else {
             return Ok(());
         };
@@ -506,7 +529,9 @@ impl Pki {
 
     pub(super) fn delete_local_roots(&mut self) -> Result<bool> {
         self.promote_default_associations()?;
-        let changed = self.root.is_some()
+        let pending_changed = self.delete_intermediate_material();
+        let changed = pending_changed
+            || self.root.is_some()
             || self
                 .local_issuers
                 .as_ref()
@@ -537,10 +562,22 @@ impl Pki {
         Ok(changed)
     }
 
+    pub(super) fn local_issuer_certificate_by_id(&self, id: &str) -> Option<&[u8]> {
+        self.local_roots()
+            .find(|root| root.issuer_id == id)
+            .map(|root| root.certificate_der.as_slice())
+            .or_else(|| {
+                let state = self.local_issuers.as_ref()?;
+                let issuer = state.retired_issuers.get(id)?;
+                state.certificates.get(&issuer.serial).map(Vec::as_slice)
+            })
+    }
+
     pub(super) fn local_certificate(&self, serial: &str) -> Option<&[u8]> {
         self.local_roots()
             .find(|root| root.serial == serial)
             .map(|root| root.certificate_der.as_slice())
+            .or_else(|| self.intermediate_certificate(serial))
             .or_else(|| {
                 self.local_issuers
                     .as_ref()?
@@ -554,6 +591,7 @@ impl Pki {
         reject_unknown(body, &[])?;
         let mut serials = self.issued.keys().cloned().collect::<BTreeSet<_>>();
         serials.extend(self.local_roots().map(|root| root.serial.clone()));
+        serials.extend(self.signed_ca_serials().cloned());
         if let Some(state) = &self.local_issuers {
             serials.extend(state.certificates.keys().cloned());
         }

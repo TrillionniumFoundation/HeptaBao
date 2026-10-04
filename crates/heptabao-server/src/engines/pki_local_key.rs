@@ -508,6 +508,64 @@ impl LocalPrivateMaterial {
 }
 
 impl LocalPublicKey {
+    /// Decode the maintained key representation from the actual CSR/certificate
+    /// SPKI. Key kind is never inferred from a caller supplied label.
+    pub(super) fn from_spki(bytes: &[u8]) -> Result<Self> {
+        if bytes.is_empty() || bytes.len() > MAX_PUBLIC_DER {
+            return Err(invalid_key());
+        }
+        let (rest, info) = SubjectPublicKeyInfo::from_der(bytes).map_err(crypto_failure)?;
+        if !rest.is_empty() || info.subject_public_key.unused_bits != 0 {
+            return Err(invalid_key());
+        }
+        let algorithm = info.algorithm.algorithm.to_id_string();
+        let kind = match algorithm.as_str() {
+            "1.3.101.112" => {
+                let public = info
+                    .subject_public_key
+                    .data
+                    .as_ref()
+                    .try_into()
+                    .map_err(|_| invalid_key())?;
+                let value = Self::Ed25519(public);
+                if value.spki()? != bytes {
+                    return Err(invalid_key());
+                }
+                return Ok(value);
+            }
+            "2.16.840.1.101.3.4.3.17" => LocalKeyKind::Mldsa44,
+            "2.16.840.1.101.3.4.3.18" => LocalKeyKind::Mldsa65,
+            "2.16.840.1.101.3.4.3.19" => LocalKeyKind::Mldsa87,
+            _ => {
+                let key = PKey::public_key_from_der(bytes).map_err(crypto_failure)?;
+                match key.id() {
+                    Id::RSA => match key.bits() {
+                        2048 => LocalKeyKind::Rsa2048,
+                        3072 => LocalKeyKind::Rsa3072,
+                        4096 => LocalKeyKind::Rsa4096,
+                        _ => return Err(invalid_key()),
+                    },
+                    Id::EC => match key.ec_key().map_err(crypto_failure)?.group().curve_name() {
+                        Some(Nid::SECP224R1) => LocalKeyKind::Ec224,
+                        Some(Nid::X9_62_PRIME256V1) => LocalKeyKind::Ec256,
+                        Some(Nid::SECP384R1) => LocalKeyKind::Ec384,
+                        Some(Nid::SECP521R1) => LocalKeyKind::Ec521,
+                        _ => return Err(invalid_key()),
+                    },
+                    _ => return Err(invalid_key()),
+                }
+            }
+        };
+        let public = Self::Typed(LocalPublicDer {
+            kind,
+            spki_der: bytes.to_vec(),
+        });
+        public.validate()?;
+        if public.spki()? != bytes {
+            return Err(invalid_key());
+        }
+        Ok(public)
+    }
     pub(super) fn kind(&self) -> LocalKeyKind {
         match self {
             Self::Ed25519(_) => LocalKeyKind::Ed25519,

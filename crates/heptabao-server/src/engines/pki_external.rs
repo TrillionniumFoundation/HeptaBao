@@ -525,6 +525,7 @@ impl Pki {
                 key_id: String::new(),
                 local_fields: None,
                 pkcs8: Vec::new(),
+                local_chain: None,
                 local_material: None,
                 certificate_der: encoded,
                 serial: template.serial,

@@ -576,6 +576,7 @@ impl ExternalPkiTemplate {
                     local_fields: None,
                     pkcs8: Vec::new(),
                     local_material: None,
+                    local_chain: None,
                     certificate_der: Vec::new(),
                     serial: String::new(),
                     not_before: self.not_before,

@@ -668,6 +668,14 @@ impl EngineState {
         })
     }
 
+    pub(crate) fn has_local_pki_intermediate_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_local_intermediate_state())
+            })
+        })
+    }
+
     pub(crate) fn has_local_pki_crl_state(&self) -> bool {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount| {

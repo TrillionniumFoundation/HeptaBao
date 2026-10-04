@@ -223,13 +223,22 @@ impl Pki {
             }
             PkiPublicRead::RawCa(format) => {
                 let root = self.root.as_ref().ok_or_else(not_found)?;
+                if matches!(format, CertificateFormat::Chain) {
+                    let bytes = root.local_ca_chain_pem().join("\n").into_bytes();
+                    return Ok(EngineResponse {
+                        status: 200,
+                        body: json!({"__heptabao_pki_certificate":BASE64.encode(bytes),"format":"chain"}),
+                        mutated: false,
+                    });
+                }
                 raw_certificate(&root.certificate_der, format)
             }
             PkiPublicRead::Certificate(serial) => {
                 let serial = normalize_serial(serial)?;
                 if let Some(der) = self.local_certificate(&serial) {
+                    let revoked_at = self.signed_ca_revocation_time(&serial);
                     return Ok(ok(
-                        json!({"certificate":stored_pem("CERTIFICATE",der),"revocation_time":0,"revocation_time_rfc3339":""}),
+                        json!({"certificate":stored_pem("CERTIFICATE",der),"revocation_time":revoked_at.unwrap_or(0),"revocation_time_rfc3339":revoked_at.map(timestamp).unwrap_or_default()}),
                         false,
                     ));
                 }
@@ -252,7 +261,7 @@ impl Pki {
             }
             PkiPublicRead::Chain => {
                 let root = self.root.as_ref().ok_or_else(not_found)?;
-                let certificate = stored_pem("CERTIFICATE", &root.certificate_der);
+                let certificate = root.local_ca_chain_pem().join("\n").trim_end().to_owned();
                 Ok(ok(
                     json!({"ca_chain":certificate,"certificate":certificate,"revocation_time":0,"revocation_time_rfc3339":""}),
                     false,
@@ -293,6 +302,7 @@ impl Pki {
                             .map_or("", |fields| fields.issuer_name.as_str());
                         info.insert(root.issuer_id.clone(),json!({"is_default":self.root.as_ref().is_some_and(|default|default.issuer_id==root.issuer_id),"issuer_name":name,"key_id":root.key_id,"serial_number":external::formatted_serial(&root.serial)}));
                     }
+                    self.append_public_issuers(&mut info)?;
                     if info.is_empty() {
                         return Ok(EngineResponse {
                             status: 404,
@@ -313,6 +323,9 @@ impl Pki {
                 ))
             }
             PkiPublicRead::IssuerCertificate(reference, format) => {
+                if let Some((der, _)) = self.public_imported_ca(reference) {
+                    return raw_certificate(der, format);
+                }
                 let root = self.selected_issuer(reference)?;
                 if root.certificate_der.len() > 64 * 1024 {
                     return Err(error(503, "public certificate exceeds bounds"));
@@ -333,6 +346,12 @@ impl Pki {
                 }
             }
             PkiPublicRead::IssuerJson(reference) => {
+                if let Some((der, chain)) = self.public_imported_ca(reference) {
+                    return Ok(ok(
+                        json!({"certificate":pem("CERTIFICATE",der),"ca_chain":chain,"issuer_id":reference,"issuer_name":""}),
+                        false,
+                    ));
+                }
                 let root = self.selected_issuer(reference)?;
                 let name = if root.is_external() {
                     self.public_issuer_metadata()
@@ -349,7 +368,7 @@ impl Pki {
                 };
                 let certificate = pem("CERTIFICATE", &root.certificate_der);
                 Ok(ok(
-                    json!({"certificate":certificate,"ca_chain":[certificate],"issuer_id":issuer,"issuer_name":name}),
+                    json!({"certificate":certificate,"ca_chain":root.local_ca_chain_pem(),"issuer_id":issuer,"issuer_name":name}),
                     false,
                 ))
             }
@@ -388,7 +407,7 @@ impl Pki {
                 let (issuer, _, name) = self.public_issuer_metadata().ok_or_else(not_found)?;
                 let certificate = pem("CERTIFICATE", &root.certificate_der);
                 Ok(ok(
-                    json!({"certificate":certificate,"ca_chain":[certificate],"issuer_id":issuer,"issuer_name":name}),
+                    json!({"certificate":certificate,"ca_chain":root.local_ca_chain_pem(),"issuer_id":issuer,"issuer_name":name}),
                     false,
                 ))
             }

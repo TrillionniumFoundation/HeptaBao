@@ -254,7 +254,8 @@ impl Pki {
     }
 
     fn revoked_for_issuer(&self, root: &RootCa) -> BTreeMap<String, u64> {
-        self.issued
+        let mut revoked: BTreeMap<String, u64> = self
+            .issued
             .iter()
             .filter_map(|(serial, cert)| {
                 let at = cert.revoked_at?;
@@ -267,7 +268,9 @@ impl Pki {
                 };
                 owned.then(|| (serial.clone(), at))
             })
-            .collect()
+            .collect();
+        revoked.extend(self.signed_ca_revocations(root));
+        revoked
     }
 
     pub(super) fn rebuild_local_crls(&mut self, now: u64, delta: bool) -> Result<bool> {

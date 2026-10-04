@@ -29,6 +29,9 @@ use local_issuers::LocalIssuers;
 #[path = "pki_local_crl.rs"]
 mod local_crl;
 use local_crl::LocalCrlState;
+#[path = "pki_local_intermediate.rs"]
+mod local_intermediate;
+use local_intermediate::{LocalCaChain, LocalIntermediateState};
 
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;
@@ -139,6 +142,8 @@ pub(super) struct Pki {
     local_issuers: Option<Box<LocalIssuers>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     local_crl: Option<Box<LocalCrlState>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_intermediate: Option<Box<LocalIntermediateState>>,
     #[serde(default, skip_serializing_if = "external::ExternalState::is_empty")]
     external: Box<external::ExternalState>,
     roles: BTreeMap<String, Role>,
@@ -157,6 +162,8 @@ struct RootCa {
     pkcs8: Vec<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     local_material: Option<LocalPrivateMaterial>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_chain: Option<Box<LocalCaChain>>,
     certificate_der: Vec<u8>,
     serial: String,
     not_before: u64,
@@ -244,6 +251,7 @@ impl Default for Pki {
             root: None,
             local_issuers: None,
             local_crl: None,
+            local_intermediate: None,
             external: Box::default(),
             roles: BTreeMap::new(),
             issued: BTreeMap::new(),
@@ -341,17 +349,13 @@ impl Pki {
                     return Err(bad("invalid local PKI root field ownership"));
                 }
             }
-            if root.local_material.is_some() {
-                let material = root.local_key()?;
-                material
-                    .public()?
-                    .validate_certificate(&root.certificate_der)?;
-            } else if !root.is_external() {
-                Ed25519KeyPair::from_pkcs8(&root.pkcs8).map_err(|_| bad("invalid PKI root key"))?;
+            if !root.is_external() {
+                root.validate_local_certificate()?;
             }
         }
         self.validate_external_state()?;
         self.validate_local_issuers()?;
+        self.validate_local_intermediate(clock)?;
         self.validate_external_consumption(clock)?;
         for (name, role) in &self.roles {
             valid_name(name)?;
@@ -515,6 +519,9 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        if let Some(response) = self.handle_local_intermediate(method, path, body, now)? {
+            return Ok(response);
+        }
         if let Some(response) = self.handle_local_crl(method, path, body, now)? {
             return Ok(response);
         }
@@ -625,6 +632,7 @@ impl Pki {
                     uri_sans: &fields.uri_sans,
                     exclude_cn_from_sans: fields.exclude_cn,
                     max_path_length: fields.max_path_length,
+                    permitted_dns_domains: &[],
                 },
             )?;
             let issuing_ca = output_format.certificate(&certificate_der);
@@ -670,6 +678,7 @@ impl Pki {
                 local_fields: fields.metadata.map(Box::new),
                 pkcs8,
                 local_material,
+                local_chain: None,
                 certificate_der,
                 serial: serial.clone(),
                 not_before,
@@ -767,6 +776,9 @@ impl Pki {
             }
             reject_unknown(body, &["serial_number"])?;
             let serial = normalize_serial(string(body, "serial_number")?)?;
+            if let Some(response) = self.revoke_signed_ca(&serial, now)? {
+                return Ok(response);
+            }
             let cert = self.issued.get(&serial).ok_or_else(not_found)?;
             if cert.revoked_at.is_none()
                 && cert.expires < now.saturating_add(2)
@@ -1150,6 +1162,7 @@ impl Pki {
                 uri_sans: &[],
                 exclude_cn_from_sans: false,
                 max_path_length: None,
+                permitted_dns_domains: &[],
             },
         )?;
         let leaf_pkcs8 = leaf.private_der()?;
@@ -1195,7 +1208,7 @@ impl Pki {
             "serial_number":prepared.serial, "expiration":prepared.expires,
         });
         data["serial_number"] = json!(external::formatted_serial(&prepared.serial));
-        data["ca_chain"] = json!([issuing_ca]);
+        data["ca_chain"] = json!(root.local_ca_chain_pem());
         data["not_before"] = json!(prepared.not_before);
         let response = EngineResponse {
             status: 200,
@@ -1622,6 +1635,7 @@ struct CertificateSpec<'a> {
     uri_sans: &'a [String],
     exclude_cn_from_sans: bool,
     max_path_length: Option<u32>,
+    permitted_dns_domains: &'a [String],
 }
 
 fn certificate_der(signer: &Ed25519KeyPair, spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
@@ -1695,6 +1709,7 @@ fn certificate_tbs_with(
         uri_sans,
         exclude_cn_from_sans,
         max_path_length,
+        permitted_dns_domains,
     } = spec;
     let mut extensions = Vec::new();
     let basic = if is_ca {
@@ -1707,6 +1722,17 @@ fn certificate_tbs_with(
         seq(&[])
     };
     extensions.push(extension(&[0x55, 0x1d, 0x13], true, &basic));
+    if !permitted_dns_domains.is_empty() {
+        let subtrees: Vec<_> = permitted_dns_domains
+            .iter()
+            .map(|domain| seq(&[context_primitive(2, domain.as_bytes())]))
+            .collect();
+        extensions.push(extension(
+            &[0x55, 0x1d, 0x1e],
+            true,
+            &seq(&[der(0xa0, &subtrees.concat())]),
+        ));
+    }
     let subject_key_id = root_fields::subject_key_identifier(subject_spki)?;
     extensions.push(extension(
         &[0x55, 0x1d, 0x0e],
