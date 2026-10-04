@@ -195,6 +195,15 @@ An initial RADIUS attempt failed during fixture bootstrap before business checks
 the diagnostic and normal reruns both passed. Its cause remains unestablished,
 and the earlier failure record is retained in the external-SSD test workspace.
 
+The [current H02 in-memory V2 profile](plan/HEPTABAO_H02_OPENRAFT_INMEMORY_CLUSTER_V2.md)
+uses Rust 1.88.0 (effective MSRV) and 1.99.0 across the unchanged six serial
+compiler/seed entries. Its separate path-filtered pull-request workflow is the
+current entry point, with manual reruns retained. Only this profile's execution
+inputs trigger the lane; unrelated and documentation-only PRs do not.
+The byte-preserved V1 profile and workflow still accept historical 1.98.0 evidence;
+that workflow checks out its event-selected source and is not an immutable replay.
+No new exact-head execution or qualification is claimed by this source change.
+
 Historical H01/H02, V1.3, V2.4 and V2.5 admission diagnostic workflows remain
 manual-only for reproducible evidence. Their obsolete branch push triggers and
 the duplicate V2 Linux assurance schedule are retired. Pull requests use the

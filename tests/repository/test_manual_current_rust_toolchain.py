@@ -43,6 +43,22 @@ class ManualCurrentRustToolchainTests(unittest.TestCase):
             with self.subTest(lane=name):
                 self.assertEqual([], current_root_errors(job, self.compiler))
 
+    def test_native_prerequisites_precede_rust_commands(self):
+        required = "krb5-kdc krb5-admin-server krb5-user libkrb5-dev pkg-config clang"
+        for name, job in self.jobs.items():
+            with self.subTest(lane=name):
+                steps = job["steps"]
+                prerequisite = next(i for i, step in enumerate(steps)
+                                    if step.get("name") == "Install MIT Kerberos build and acceptance prerequisites")
+                commands = steps[prerequisite]["run"]
+                self.assertIn('test "$GITHUB_ACTIONS" = true', commands)
+                self.assertIn("sudo apt-get update -qq", commands)
+                self.assertIn("sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends " + required, commands)
+                native = [i for i, step in enumerate(steps)
+                          if re.search(r"(?m)^\s*cargo (fmt|test|clippy)\b", step.get("run", ""))]
+                self.assertTrue(native)
+                self.assertLess(prerequisite, min(native))
+
     def test_stale_install_or_override_is_rejected(self):
         for selector in ("toolchain install", "override set"):
             for name, original in self.jobs.items():

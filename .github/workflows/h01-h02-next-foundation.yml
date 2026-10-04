@@ -65,6 +65,15 @@ jobs:
           python -m unittest discover -s tests/oracle -p 'test_*.py' -v
           python -m unittest discover -s tests/platform -p 'test_*.py' -v
 
+      - name: Install MIT Kerberos build and acceptance prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTIONS" = true
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends krb5-kdc krb5-admin-server krb5-user libkrb5-dev pkg-config clang
+
+
       - name: Install pinned Rust toolchain
         shell: bash
         run: |

@@ -1,0 +1,217 @@
+name: h02-openraft-inmemory-cluster-v2
+
+on:
+  # Current V2 profile; scoped PR admission plus manual reruns, no qualification or authority.
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/h02-openraft-inmemory-cluster-v2.yml"
+      - ".github/workflows/h02-openraft-inmemory-cluster.yml"
+      - "scripts/h02_openraft_inmemory_cluster_evidence_v2.py"
+      - "scripts/validate_h02_openraft_inmemory_cluster_v2.py"
+      - "scripts/h02_openraft_inmemory_cluster_evidence_v1.py"
+      - "scripts/validate_h02_openraft_inmemory_cluster_v1.py"
+      - "schemas/heptabao_h02_openraft_cluster_evidence_v2.schema.json"
+      - "schemas/heptabao_h02_openraft_cluster_evidence_v1.schema.json"
+      - "planning/HEPTABAO_H02_OPENRAFT_INMEMORY_CLUSTER_V2.yaml"
+      - "planning/HEPTABAO_H02_OPENRAFT_INMEMORY_CLUSTER_V1.yaml"
+      - "tests/platform/test_h02_openraft_inmemory_cluster_v2.py"
+      - "tests/platform/test_h02_openraft_inmemory_cluster_v1.py"
+      - "probes/h02/openraft-tokio/Cargo.toml"
+      - "probes/h02/openraft-tokio/Cargo.lock"
+      - "probes/h02/openraft-tokio/build.rs"
+      - "probes/h02/openraft-tokio/src/**"
+      - "probes/h02/openraft-tokio/tests/**"
+      - "probes/h02/openraft-tokio/examples/**"
+      - "probes/h02/openraft-tokio/benches/**"
+      - "requirements-plan.txt"
+      - ".cargo/config"
+      - ".cargo/config.toml"
+      - "scripts/validate_workflow_trust.py"
+      - "scripts/validate_workflow_trust_v1.py"
+      - "scripts/workflow_trust_v2.py"
+      - "scripts/workflow_trust_action_registry_v2.json"
+      - "scripts/validate_acceptance_immutability.py"
+permissions:
+  contents: read
+
+concurrency:
+  group: h02-openraft-inmemory-cluster-v2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-plan.txt
+      - run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - run: python scripts/validate_h02_openraft_inmemory_cluster_v2.py
+      - run: python -m unittest tests/platform/test_h02_openraft_inmemory_cluster_v2.py -v
+
+  cluster-sequential:
+    needs: validate-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      TOOLCHAINS: "1.88.0 1.99.0"
+      SEEDS: "0x5eed20260828cafe 0x8badf00d12345678 0xd15ea5e5cafef00d"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --disable-pip-version-check --requirement requirements-plan.txt
+      - name: Install exact Rust toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          for toolchain in $TOOLCHAINS; do
+            rustup toolchain install "$toolchain" --profile minimal
+            rustup target add x86_64-unknown-linux-gnu --toolchain "$toolchain"
+            rustup run "$toolchain" rustc --version --verbose
+            rustup run "$toolchain" cargo --version --verbose
+          done
+      - name: Execute all six entries serially and retain every outcome
+        shell: bash
+        run: |
+          set -u
+          root="$RUNNER_TEMP/h02-openraft-v2-sequential"
+          evidence_root="$GITHUB_WORKSPACE/evidence/h02-openraft-inmemory-v2"
+          rm -rf "$root" "$evidence_root"
+          mkdir -p "$root" "$evidence_root"
+
+          for toolchain in $TOOLCHAINS; do
+            work="$root/$toolchain"
+            mkdir -p "$work"
+            cp -a probes/h02/openraft-tokio/. "$work/"
+            manifest="$work/Cargo.toml"
+            export CARGO_TARGET_DIR="$root/target-$toolchain"
+
+            collector=scripts/h02_openraft_inmemory_cluster_evidence_v2.py
+            python "$collector" context \
+              --toolchain "$toolchain" --seed 0x5eed20260828cafe --manifest "$manifest" \
+              --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+              --runner-name "$RUNNER_NAME" --output "$work/build-context.json"
+            toolchain_status=0
+            for stage in rustc lock test; do
+              stdout="$evidence_root/$stage-$toolchain.log"
+              if [ "$stage" = rustc ]; then stdout="$work/rustc-version.txt"; fi
+              python "$collector" execute --context "$work/build-context.json" --stage "$stage" \
+                --stdout "$stdout" --stderr "$evidence_root/$stage-stderr-$toolchain.log" || { toolchain_status=$?; break; }
+            done
+
+            for seed in $SEEDS; do
+              seed_name="${seed#0x}"
+              entry="$evidence_root/$toolchain-$seed_name"
+              mkdir -p "$entry"
+              python "$collector" context \
+                --toolchain "$toolchain" --seed "$seed" --manifest "$manifest" \
+                --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+                --runner-name "$RUNNER_NAME" --build-context "$work/build-context.json" \
+                --output "$entry/execution-context.json"
+              status="$toolchain_status"
+              if [ "$status" -eq 0 ]; then
+                python "$collector" execute --context "$entry/execution-context.json" --stage probe \
+                  --stdout "$entry/cluster-output.jsonl" --stderr "$entry/cluster-stderr.log" || status=$?
+              fi
+              if [ "$status" -eq 0 ]; then
+                python "$collector" execute --context "$entry/execution-context.json" --stage replay \
+                  --stdout "$entry/cluster-replay.jsonl" --stderr "$entry/cluster-replay-stderr.log" || status=$?
+              fi
+              touch "$entry/cluster-output.jsonl" "$entry/cluster-replay.jsonl"
+              cp "$manifest" "$entry/Cargo.toml"
+              cp "$work/rustc-version.txt" "$entry/rustc-version.txt"
+              if [ -f "$work/Cargo.lock" ]; then cp "$work/Cargo.lock" "$entry/Cargo.lock"; else : > "$entry/Cargo.lock"; fi
+              printf '%s\n' "$status" > "$entry/execution-exit-code.txt"
+            done
+          done
+          exit 0
+      - name: Build and validate fail-closed evidence for every entry
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tree_sha="$(git rev-parse 'HEAD^{tree}')"
+          branch="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          evidence_root="$GITHUB_WORKSPACE/evidence/h02-openraft-inmemory-v2"
+          for toolchain in $TOOLCHAINS; do
+            for seed in $SEEDS; do
+              seed_name="${seed#0x}"
+              entry="$evidence_root/$toolchain-$seed_name"
+              status="$(cat "$entry/execution-exit-code.txt" 2>/dev/null || printf '125')"
+              environment_id="github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${RUNNER_NAME}-${toolchain}-${seed}"
+              python scripts/h02_openraft_inmemory_cluster_evidence_v2.py collect \
+                --adapter-output "$entry/cluster-output.jsonl" \
+                --replay-output "$entry/cluster-replay.jsonl" \
+                --execution-exit-code "$status" \
+                --seed "$seed" \
+                --toolchain "$toolchain" \
+                --rustc-version "$entry/rustc-version.txt" \
+                --execution-context "$entry/execution-context.json" \
+                --manifest "$entry/Cargo.toml" \
+                --cargo-lock "$entry/Cargo.lock" \
+                --source-commit "$(git rev-parse HEAD)" \
+                --source-tree "$tree_sha" \
+                --branch "$branch" \
+                --clean-tree \
+                --environment-id "$environment_id" \
+                --executor-kind github-hosted \
+                --runner-id github-api-enrichment-pending \
+                --runner-name "$RUNNER_NAME" \
+                --output "$entry/cluster-evidence.json"
+            done
+          done
+          python scripts/validate_h02_openraft_inmemory_cluster_v2.py \
+            --evidence-root "$evidence_root" \
+            --source-commit "$(git rev-parse HEAD)" --source-tree "$tree_sha" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --runner-name "$RUNNER_NAME" --execution-root "$RUNNER_TEMP/h02-openraft-v2-sequential"
+      - name: Upload all evidence before final gate
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: h02-openraft-inmemory-v2-sequential-${{ github.run_id }}-${{ github.run_attempt }}
+          path: evidence/h02-openraft-inmemory-v2/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Require all six executed passes without qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_h02_openraft_inmemory_cluster_v2.py \
+            --evidence-root evidence/h02-openraft-inmemory-v2 \
+            --source-commit "$(git rev-parse HEAD)" \
+            --source-tree "$(git rev-parse 'HEAD^{tree}')" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --runner-name "$RUNNER_NAME" --execution-root "$RUNNER_TEMP/h02-openraft-v2-sequential" --require-pass
+
+  authority-sentinel:
+    needs: [validate-plan, cluster-sequential]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Keep all authority closed
+        env:
+          VALIDATE_RESULT: ${{ needs.validate-plan.result }}
+          CLUSTER_RESULT: ${{ needs.cluster-sequential.result }}
+        run: |
+          set -euo pipefail
+          printf 'validate=%s\ncluster=%s\n' "$VALIDATE_RESULT" "$CLUSTER_RESULT"
+          test "$VALIDATE_RESULT" = success
+          test "$CLUSTER_RESULT" = success
+          echo 'OpenRaft cluster evidence collected; qualification=false selection=0 authority=NONE.'
