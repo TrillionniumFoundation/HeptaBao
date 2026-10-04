@@ -32,6 +32,8 @@ use local_crl::LocalCrlState;
 #[path = "pki_local_intermediate.rs"]
 mod local_intermediate;
 use local_intermediate::{LocalCaChain, LocalIntermediateState};
+#[path = "pki_local_ocsp.rs"]
+pub(crate) mod local_ocsp;
 
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;

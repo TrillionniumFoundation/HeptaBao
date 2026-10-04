@@ -25,6 +25,8 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "http_ocsp.rs"]
+pub(crate) mod ocsp;
 #[path = "http_snapshot.rs"]
 mod snapshot;
 
@@ -1227,6 +1229,14 @@ fn read_request_mode(
         None => 0,
         _ => return Err(bad("invalid content length")),
     };
+    let ocsp_get = ocsp::get_carrier(&method, route)?;
+    let ocsp_post = ocsp::raw_post(
+        &method,
+        route,
+        map.get("content-type").map(|media| media.as_str()),
+    );
+    let ocsp_form_media = ocsp::post_route(&method, route)
+        && ocsp::form_media(map.get("content-type").map(|media| media.as_str()));
     let maximum_body = if native_snapshot {
         crate::snapshot_file::MAX_NATIVE_ARCHIVE as usize
     } else if snapshot_route {
@@ -1266,6 +1276,9 @@ fn read_request_mode(
     if length > 0
         && !leader_route
         && !native_snapshot
+        && !ocsp_post
+        && !ocsp_form_media
+        && !ocsp::post_route(&method, route)
         && !query_only
         && map.get("content-type").is_some_and(|v| {
             !matches!(
@@ -1327,17 +1340,40 @@ fn read_request_mode(
     // OpenBao reads fields for these operations from the query string only.
     // Still consume and bound the complete body above so ignored bytes cannot
     // become a second request or evade the framing and deadline checks.
-    let mut body = SecretJson(if native_snapshot || length == 0 || query_only {
+    let query = target[4..].split_once('?').map_or("", |(_, query)| query);
+    let ocsp_form = ocsp_form_media
+        && ocsp::form_request(
+            map.get("content-type").map(|media| media.as_str()),
+            &bytes[header_end..],
+        );
+    if ocsp_form {
+        ocsp::validate_form(&bytes[header_end..])?;
+        ocsp::validate_form(query.as_bytes())?;
+    }
+    let carrier = ocsp::carrier_body(
+        ocsp_get.as_ref(),
+        ocsp_post || ocsp_form,
+        route,
+        map.get("content-type").map(|media| media.as_str()),
+        &bytes[header_end..],
+        query,
+    );
+    let mut body = SecretJson(if let Some(carrier) = carrier {
+        carrier
+    } else if native_snapshot || length == 0 || query_only {
         json!({})
     } else {
         crate::auth::parse_strict_json(&bytes[header_end..])
             .map_err(|_| bad("invalid JSON object"))?
     });
+    if !body.0.is_object() {
+        return Err(bad("JSON object required"));
+    }
     let Some(object) = body.0.as_object_mut() else {
         return Err(bad("JSON object required"));
     };
     let (path, query) = target[4..].split_once('?').unwrap_or((&target[4..], ""));
-    if path.contains('%') || path.contains('#') {
+    if (path.contains('%') || path.contains('#')) && ocsp_get.is_none() {
         return Err(bad("ambiguous encoded paths are not supported"));
     }
     // Kerberos uses the standard HTTP Negotiate carrier rather than a JSON
@@ -1362,85 +1398,15 @@ fn read_request_mode(
         );
     }
     let invalid_query = |message| bad(message).with_health_context(&method, path);
-    for pair in query.split('&').filter(|v| !v.is_empty()) {
-        let (key, value) = pair
-            .split_once('=')
-            .ok_or_else(|| invalid_query("query parameters require values"))?;
-        let key = decode_query(key).map_err(|error| error.with_health_context(&method, path))?;
-        let value = Zeroizing::new(
-            decode_query(value).map_err(|error| error.with_health_context(&method, path))?,
-        );
-        if !matches!(
-            key.as_str(),
-            "version"
-                | "depth"
-                | "limit"
-                | "list"
-                | "scan"
-                | "after"
-                | "exclude_deleted"
-                | "standbyok"
-                | "perfstandbyok"
-                | "uninitcode"
-                | "sealedcode"
-                | "standbycode"
-                | "activecode"
-        ) {
-            return Err(invalid_query(
-                "unsupported query parameter; request fields belong in JSON body",
-            ));
-        }
-        if object.contains_key(&key) {
-            return Err(invalid_query("duplicate body/query parameter"));
-        }
-        let parsed = if key == "limit" {
-            // Endpoints that declare this field validate its type. KV v1
-            // ignores it entirely, including values outside the signed range.
-            value
-                .parse::<i64>()
-                .map_or_else(|_| Value::String(value.to_string()), |limit| json!(limit))
-        } else if matches!(key.as_str(), "version" | "depth") {
-            json!(
-                value
-                    .parse::<u64>()
-                    .map_err(|_| invalid_query("invalid numeric query"))?
-            )
-        } else if matches!(
-            key.as_str(),
-            "uninitcode" | "sealedcode" | "standbycode" | "activecode"
-        ) {
-            let status = value
-                .parse::<u16>()
-                .ok()
-                .filter(|status| (100..=999).contains(status))
-                .ok_or_else(|| invalid_query("invalid health status code"))?;
-            json!(status)
-        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
-            && matches!(value.as_str(), "true" | "1")
-        {
-            Value::Bool(true)
-        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
-            && matches!(value.as_str(), "false" | "0")
-        {
-            Value::Bool(false)
-        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok") {
-            return Err(invalid_query("invalid health boolean query"));
-        } else if method == "GET" && matches!(key.as_str(), "list" | "scan") {
-            Value::Bool(match value.as_str() {
-                "true" | "True" | "TRUE" | "t" | "T" | "1" => true,
-                "" | "false" | "False" | "FALSE" | "f" | "F" | "0" => false,
-                _ => return Err(invalid_query("invalid list or scan query")),
-            })
-        } else if key == "after" {
-            Value::String(value.to_string())
-        } else if matches!(value.as_str(), "true" | "false") {
-            Value::Bool(value.as_str() == "true")
-        } else {
-            Value::String(value.to_string())
-        };
-        object.insert(key, parsed);
+    if ocsp_get.is_none() && !ocsp::post_route(&method, route) {
+        merge_query_fields(&method, path, query, &mut body.0)?;
     }
-    let method = if method == "GET" {
+    let Some(object) = body.0.as_object_mut() else {
+        return Err(bad("JSON object required"));
+    };
+    let method = if ocsp_get.is_some() {
+        ocsp::get_query_method(query)?.to_owned()
+    } else if method == "GET" {
         let list = object.get("list") == Some(&Value::Bool(true));
         let scan = object.get("scan") == Some(&Value::Bool(true));
         if list && scan {
@@ -1458,6 +1424,15 @@ fn read_request_mode(
     } else {
         method
     };
+    if ocsp::post_route(&method, route) && !ocsp_post && !ocsp_form {
+        body.0 = ocsp::normal_json_post(
+            route,
+            std::mem::take(&mut body.0),
+            map.get("content-type").map(|media| media.as_str()),
+            length != 0,
+            query,
+        );
+    }
     let native_snapshot = if native_snapshot {
         if download && (length != 0 || bytes.len() != header_end) {
             return Err(bad("snapshot download does not accept a body"));
@@ -1533,6 +1508,97 @@ fn parse_wrap_ttl(value: &str) -> Result<Option<u64>, ParseError> {
         return Err(invalid());
     }
     Ok(Some(total))
+}
+
+fn merge_query_fields(
+    method: &str,
+    path: &str,
+    query: &str,
+    body: &mut Value,
+) -> Result<(), ParseError> {
+    let Some(object) = body.as_object_mut() else {
+        return Err(bad("JSON object required"));
+    };
+    let invalid_query = |message| bad(message).with_health_context(method, path);
+    for pair in query.split('&').filter(|v| !v.is_empty()) {
+        let (key, value) = pair
+            .split_once('=')
+            .ok_or_else(|| invalid_query("query parameters require values"))?;
+        let key = decode_query(key).map_err(|error| error.with_health_context(method, path))?;
+        let value = Zeroizing::new(
+            decode_query(value).map_err(|error| error.with_health_context(method, path))?,
+        );
+        if !matches!(
+            key.as_str(),
+            "version"
+                | "depth"
+                | "limit"
+                | "list"
+                | "scan"
+                | "after"
+                | "exclude_deleted"
+                | "standbyok"
+                | "perfstandbyok"
+                | "uninitcode"
+                | "sealedcode"
+                | "standbycode"
+                | "activecode"
+        ) {
+            return Err(invalid_query(
+                "unsupported query parameter; request fields belong in JSON body",
+            ));
+        }
+        if object.contains_key(&key) {
+            return Err(invalid_query("duplicate body/query parameter"));
+        }
+        let parsed = if key == "limit" {
+            // Endpoints that declare this field validate its type. KV v1
+            // ignores it entirely, including values outside the signed range.
+            value
+                .parse::<i64>()
+                .map_or_else(|_| Value::String(value.to_string()), |limit| json!(limit))
+        } else if matches!(key.as_str(), "version" | "depth") {
+            json!(
+                value
+                    .parse::<u64>()
+                    .map_err(|_| invalid_query("invalid numeric query"))?
+            )
+        } else if matches!(
+            key.as_str(),
+            "uninitcode" | "sealedcode" | "standbycode" | "activecode"
+        ) {
+            let status = value
+                .parse::<u16>()
+                .ok()
+                .filter(|status| (100..=999).contains(status))
+                .ok_or_else(|| invalid_query("invalid health status code"))?;
+            json!(status)
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
+            && matches!(value.as_str(), "true" | "1")
+        {
+            Value::Bool(true)
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok")
+            && matches!(value.as_str(), "false" | "0")
+        {
+            Value::Bool(false)
+        } else if matches!(key.as_str(), "standbyok" | "perfstandbyok") {
+            return Err(invalid_query("invalid health boolean query"));
+        } else if method == "GET" && matches!(key.as_str(), "list" | "scan") {
+            Value::Bool(match value.as_str() {
+                "true" | "True" | "TRUE" | "t" | "T" | "1" => true,
+                "" | "false" | "False" | "FALSE" | "f" | "F" | "0" => false,
+                _ => return Err(invalid_query("invalid list or scan query")),
+            })
+        } else if key == "after" {
+            Value::String(value.to_string())
+        } else if matches!(value.as_str(), "true" | "false") {
+            Value::Bool(value.as_str() == "true")
+        } else {
+            Value::String(value.to_string())
+        };
+        object.insert(key, parsed);
+    }
+    Ok(())
 }
 
 fn decode_query(value: &str) -> Result<String, ParseError> {
@@ -1613,7 +1679,10 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
     } else {
         None
     };
-    let content_type = if let Some((_, media)) = &raw_certificate {
+    let raw_ocsp = crate::engines::raw_ocsp_response(response.status, &response.body);
+    let content_type = if raw_ocsp.is_some() {
+        "application/ocsp-response"
+    } else if let Some((_, media)) = &raw_certificate {
         *media
     } else if raw_crl.is_some() {
         if response.body["pem"] == true {
@@ -1624,7 +1693,9 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
     } else {
         "application/json"
     };
-    let mut bytes = Zeroizing::new(if let Some((raw, _)) = raw_certificate {
+    let mut bytes = Zeroizing::new(if let Some(raw) = raw_ocsp {
+        raw
+    } else if let Some((raw, _)) = raw_certificate {
         raw
     } else if let Some(raw) = raw_crl {
         raw
@@ -1643,6 +1714,7 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
         200 => "OK",
         204 => "No Content",
         400 => "Bad Request",
+        401 => "Unauthorized",
         403 => "Forbidden",
         404 => "Not Found",
         409 => "Conflict",
@@ -1679,7 +1751,85 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
 }
 
 #[cfg(test)]
+#[path = "http_ocsp_service_tests.rs"]
+mod ocsp_service_tests;
+
+#[cfg(test)]
 mod tests {
+    #[test]
+    fn ocsp_raw_transport_retains_framing_mount_namespace_and_closed_output() -> io::Result<()> {
+        use base64::Engine as _;
+        for suffix in ["AA+/=", "AA%2B%2F%3D"] {
+            let wire = format!(
+                "GET /v1/nested/pki/ocsp/{suffix} HTTP/1.1\r\nHost: localhost\r\nX-Vault-Namespace: team/\r\nContent-Length: 2\r\n\r\n{{}}"
+            );
+            let request = read_request(&mut wire.as_bytes(), Duration::from_secs(1))
+                .map_err(|_| io::Error::other("bounded OCSP GET"))?;
+            assert_eq!(request.path, format!("nested/pki/ocsp/{suffix}"));
+            assert_eq!(request.namespace, "team");
+            assert_eq!(request.body.0["__heptabao_pki_ocsp_get_path"], request.path);
+        }
+        for size in [0, 4, 2047, 2048, 4096] {
+            let mut wire=format!("POST /v1/pki/ocsp HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/ocsp-request\r\nContent-Length: {size}\r\n\r\n").into_bytes();
+            wire.extend(vec![7; size]);
+            let request = read_request(&mut wire.as_slice(), Duration::from_secs(1))
+                .map_err(|_| io::Error::other("bounded OCSP POST"))?;
+            assert_eq!(request.path, "pki/ocsp");
+            let encoded = request.body.0["__heptabao_pki_ocsp_raw_post"]["encoded"]
+                .as_str()
+                .ok_or_else(|| io::Error::other("OCSP marker"))?;
+            assert_eq!(
+                base64::engine::general_purpose::STANDARD
+                    .decode(encoded)
+                    .ok(),
+                Some(vec![7; size])
+            );
+        }
+        for wire in [
+            "POST /v1/pki/ocsp HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/ocsp-request\r\nContent-Length: 4\r\nContent-Length: 4\r\n\r\nDER!",
+            "POST /v1/pki/ocsp HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/ocsp-request\r\nContent-Length: 4\r\n\r\nDER!tail",
+            "GET /v1/pki/ocsp/AA== HTTP/1.1\r\nHost: localhost\r\nX-Vault-Namespace: team//other\r\n\r\n",
+            "GET /v1/p%6bi/ocsp/AA== HTTP/1.1\r\nHost: localhost\r\n\r\n",
+        ] {
+            assert!(read_request(&mut wire.as_bytes(), Duration::from_secs(1)).is_err());
+        }
+        for (status, byte) in [(400, 1u8), (401, 6), (500, 2)] {
+            let payload = [0x30, 3, 0x0a, 1, byte];
+            let encoded = base64::engine::general_purpose::STANDARD.encode(payload);
+            let mut output = Vec::new();
+            write_response(
+                &mut output,
+                Response {
+                    status,
+                    consistency_index: None,
+                    body: json!({"__heptabao_pki_ocsp_response":encoded}),
+                },
+                false,
+            )?;
+            assert!(
+                output
+                    .windows(b"Content-Type: application/ocsp-response".len())
+                    .any(|v| v == b"Content-Type: application/ocsp-response")
+            );
+            assert!(output.ends_with(&payload));
+            let mut invalid = Vec::new();
+            write_response(
+                &mut invalid,
+                Response {
+                    status,
+                    consistency_index: None,
+                    body: json!({"__heptabao_pki_ocsp_response":encoded,"extra":true}),
+                },
+                false,
+            )?;
+            assert!(
+                invalid
+                    .windows(b"Content-Type: application/json".len())
+                    .any(|v| v == b"Content-Type: application/json")
+            );
+        }
+        Ok(())
+    }
     #[test]
     fn pki_public_certificate_transport_has_closed_mime_and_canonical_bounds() -> io::Result<()> {
         use base64::Engine as _;

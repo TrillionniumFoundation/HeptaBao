@@ -1401,6 +1401,7 @@ dependencies = [
  "hmac",
  "libc",
  "md5",
+ "mime",
  "ml-dsa",
  "openssl",
  "qrcode",

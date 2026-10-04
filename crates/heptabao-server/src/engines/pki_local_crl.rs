@@ -241,6 +241,11 @@ impl Pki {
         self.local_crl.is_some()
     }
 
+    pub(super) fn local_ocsp_policy(&self) -> Result<(bool, u64)> {
+        let config = self.local_crl_config();
+        Ok((config.ocsp_disable, duration(&config.ocsp_expiry)?))
+    }
+
     fn local_crl_config(&self) -> CrlConfig {
         self.local_crl
             .as_ref()

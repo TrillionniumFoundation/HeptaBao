@@ -1831,6 +1831,13 @@ impl Service {
         // happens only after leader synchronization; the response retains
         // this same fingerprint even when routing adds a KV root separator.
         let mut fingerprint = self.request_fingerprint(method, path, namespace, token);
+        if let Some(payload) = crate::http::ocsp::audit_payload(method, path, &body) {
+            let mut context = hmac::Context::with_key(&self.audit_key);
+            context.update(b"heptabao.audit.ocsp-request.v1");
+            context.update(fingerprint.as_bytes());
+            context.update(payload.as_bytes());
+            fingerprint = STANDARD.encode(context.sign().as_ref());
+        }
         if let Some(ttl) = wrap_ttl_seconds {
             let mut context = hmac::Context::with_key(&self.audit_key);
             context.update(b"heptabao.audit.wrapping-request.v1");
@@ -2043,7 +2050,8 @@ impl Service {
             client_certificates,
             admission_started: _,
         } = request;
-        if !valid_namespace(namespace) || !valid_path(path) {
+        let opaque_ocsp_get = crate::http::ocsp::opaque_get_request(method, path, body);
+        if !valid_namespace(namespace) || (!valid_path(path) && !opaque_ocsp_get) {
             return Response::error(400, "invalid canonical namespace or path");
         }
         // Early control routes resolve the namespace against admitted state.
@@ -2252,6 +2260,60 @@ impl Service {
                 "authoritative recovery required; unseal with the stored key before retry",
             );
         }
+
+        // Opaque GET text is admitted only to the synchronized namespace's
+        // longest actual PKI mount. Unknown/non-PKI candidates stop here and
+        // cannot enter any control, auth, KV, plugin or external-effect route.
+        let ocsp_get = if opaque_ocsp_get {
+            let Some((canonical, suffix)) = self
+                .state
+                .as_ref()
+                .and_then(|state| state.engines.canonical_pki_ocsp_get(namespace, path))
+            else {
+                return Response::error(404, "OCSP mount not found");
+            };
+            if matches!(method, "LIST" | "SCAN") {
+                return Response::error(405, "unsupported OCSP operation");
+            }
+            Some((
+                canonical,
+                crate::http::ocsp::CarrierBody(crate::http::ocsp::decoded_get_body(&suffix)),
+            ))
+        } else {
+            None
+        };
+        let path = ocsp_get
+            .as_ref()
+            .map_or(path, |(canonical, _)| canonical.as_str());
+        let body = ocsp_get.as_ref().map_or(body, |(_, body)| &body.0);
+        let post_body =
+            if let Some(carrier) = crate::http::ocsp::json_post_request(method, path, body) {
+                let actual_pki_ocsp = self
+                    .state
+                    .as_ref()
+                    .is_some_and(|state| state.engines.is_actual_pki_ocsp(namespace, path));
+                match carrier.resolve(actual_pki_ocsp) {
+                    Ok(body) => Some(body),
+                    Err(response) => return response,
+                }
+            } else if let Some(carrier) = crate::http::ocsp::raw_post_request(method, path, body) {
+                let actual_pki_ocsp = self
+                    .state
+                    .as_ref()
+                    .is_some_and(|state| state.engines.is_actual_pki_ocsp(namespace, path));
+                match carrier.resolve(actual_pki_ocsp) {
+                    Ok(body) => Some(body),
+                    Err(response) => return response,
+                }
+            } else {
+                None
+            };
+        let body = post_body.as_ref().map_or(body, |body| &body.0);
+        let request = RequestView {
+            path,
+            body,
+            ..request
+        };
 
         if let Some(response) = self.immutable_kv_response(&request) {
             self.kv_read_only_dispatches = self.kv_read_only_dispatches.saturating_add(1);
@@ -7877,3 +7939,7 @@ mod transit_byok_tests;
 #[cfg(test)]
 #[path = "service_default_mount_tests.rs"]
 mod default_mount_tests;
+
+#[cfg(test)]
+#[path = "pki_ocsp_service_tests.rs"]
+mod pki_ocsp_service_tests;

@@ -473,6 +473,15 @@ impl Pki {
             .flat_map(|state| state.signed_certificates.keys())
     }
 
+    pub(super) fn signed_ca_revocation_for_serial(&self, serial: &str) -> Option<(&str, u64)> {
+        self.local_intermediate
+            .as_ref()?
+            .signed_certificates
+            .iter()
+            .find(|(stored, _)| stored.trim_start_matches('0') == serial.trim_start_matches('0'))
+            .and_then(|(_, ca)| ca.revoked_at.map(|at| (ca.issuer_id.as_str(), at)))
+    }
+
     pub(super) fn signed_ca_revocations(&self, issuer: &RootCa) -> BTreeMap<String, u64> {
         self.local_intermediate
             .iter()

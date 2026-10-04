@@ -30,6 +30,7 @@ mod kv_versioning;
 mod leases;
 pub(crate) mod openldap;
 mod pki;
+pub(crate) use pki::local_ocsp::raw_response as raw_ocsp_response;
 pub(crate) use pki::{ExternalPkiMaterial, ExternalPkiPublicKey, ExternalPkiTemplate};
 mod ssh;
 mod totp;
@@ -1468,11 +1469,31 @@ impl EngineState {
         let (mount_path, mount) = state
             .mounts
             .iter()
-            .find(|(mount, _)| path.starts_with(mount.as_str()))?;
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .max_by_key(|(mount, _)| mount.len())?;
         let Backend::Pki(engine) = &mount.backend else {
             return None;
         };
         Some((engine, &path[mount_path.len()..]))
+    }
+
+    /// Select the longest actual mount across all backends before accepting an
+    /// opaque GET carrier. A more specific non-PKI mount cannot fall through to
+    /// a parent PKI responder, and the suffix never participates in routing.
+    pub(crate) fn canonical_pki_ocsp_get(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(String, String)> {
+        let (_, relative) = self.public_pki_mount(namespace, path)?;
+        let suffix = relative.strip_prefix("ocsp/")?;
+        let prefix = &path[..path.len() - relative.len()];
+        Some((format!("{prefix}ocsp"), suffix.to_owned()))
+    }
+
+    pub(crate) fn is_actual_pki_ocsp(&self, namespace: &str, path: &str) -> bool {
+        self.public_pki_mount(namespace, path)
+            .is_some_and(|(_, relative)| relative == "ocsp")
     }
 
     pub(crate) fn is_public_pki_read(&self, namespace: &str, method: &str, path: &str) -> bool {

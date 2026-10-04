@@ -1102,7 +1102,7 @@ retirement preserves that writer and snapshot floor. Local leaf responses includ
 `ca_chain`, `not_before`, and colon-separated serial numbers. Multi-issuer unit
 and encrypted Service lifecycle tests accompany this implementation; complete
 runtime parity still requires independently executed official-binary comparison,
-while intermediate issuer import, OCSP, and ACME execution remain
+while intermediate issuer import and ACME execution remain
 outside this implemented scope.
 
 Generated local roots and leaves include RFC 5280 subject key identifiers computed
@@ -1160,3 +1160,23 @@ bad terminal signatures attached to owned keys remain outside this finite
 profile. These are bounded local features;
 full OpenBao 2.7.0 replacement still requires the remaining protocol, provider,
 HA and independent compatibility qualifications.
+
+Local OCSP reads existing issuer ownership and revocation state without changing
+persisted fields. `engines/pki_local_ocsp.rs` accepts bounded canonical unsigned
+requests, projects the first CertID, and builds closed ResponseData using the
+selected issuer's full DN, public bits, server clock and actual revoked state.
+RSA/ECDSA signatures are verified against the held local public key before
+projection. Foreign issuers receive a default-owned signed Unknown response;
+matched issuers with unrecorded serials receive Good. Signed intermediate CA
+revocations resolve through their authenticated index and exact signing issuer,
+including after restart; another issuer cannot borrow that revocation. Existing CRL configuration
+controls disabling and response expiry; zero expiry omits NextUpdate. Request
+extensions are accepted but never echoed, and signed requests are rejected.
+
+`http_ocsp.rs` handles the opaque standard-base64 GET suffix and raw DER POST
+media while preserving ordinary framing, namespace, mount, size and original
+request-deadline checks. The Service audit fingerprint includes a domain-separated
+HMAC of the request carrier. Only closed canonical response envelopes produce
+OCSP media bytes. Actual signature, parser, transport and Service tests accompany
+this implementation; independently executed HTTP comparison is required for
+runtime compatibility. External signer, Ed25519 and ML-DSA OCSP remain unqualified.

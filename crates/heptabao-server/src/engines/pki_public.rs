@@ -8,6 +8,7 @@ pub(in crate::engines) enum CertificateFormat {
     Chain,
 }
 pub(in crate::engines) enum PkiPublicRead<'a> {
+    Ocsp(bool, Option<&'a str>),
     Ca,
     Certificate(&'a str),
     RawCa(CertificateFormat),
@@ -82,6 +83,17 @@ impl Pki {
     ) -> Option<PkiPublicRead<'a>> {
         if path.contains('?') {
             return None;
+        }
+        if matches!(method, "POST" | "PUT") && path == "ocsp" {
+            return Some(PkiPublicRead::Ocsp(false, None));
+        }
+        if method == "GET" {
+            if path == "ocsp" {
+                return Some(PkiPublicRead::Ocsp(true, None));
+            }
+            if let Some(suffix) = path.strip_prefix("ocsp/") {
+                return Some(PkiPublicRead::Ocsp(true, Some(suffix)));
+            }
         }
         if method == "LIST" && path == "issuers" {
             return Some(PkiPublicRead::Issuers);
@@ -215,8 +227,12 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        if let PkiPublicRead::Ocsp(get, suffix) = route {
+            return self.local_ocsp(get, suffix, body, now);
+        }
         reject_unknown(body, &[])?;
         match route {
+            PkiPublicRead::Ocsp(_, _) => Err(bad("invalid OCSP dispatch")),
             PkiPublicRead::Ca => {
                 if let Some((der, _)) = self.public_imported_ca("default") {
                     return Ok(ok(
