@@ -180,6 +180,136 @@ fn verify_local_crl(root_spki: &[u8], bytes: &[u8], revoked: usize) -> TestResul
 }
 
 #[test]
+fn exported_ed_root_requires_sticky_identifier_floor_and_keeps_private_delivery_out_of_audit()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/exported-ca",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status
+            == 204,
+        "exported root mount"
+    );
+    let ordinary = service.state.clone().ok_or("ordinary state")?;
+    let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    let response = call(
+        &mut service,
+        "POST",
+        "exported-ca/root/generate/exported",
+        &admin,
+        json!({"common_name":"exported-ca.example.test", "key_type":"ed25519", "format":"pem_bundle", "private_key_format":"pkcs8"}),
+    );
+    assert!(response.status == 200, "actual exported Ed root success");
+    let private = Zeroizing::new(
+        response.body["data"]["private_key"]
+            .as_str()
+            .ok_or("exported private field")?
+            .to_owned(),
+    );
+    let active = service
+        .state
+        .clone()
+        .ok_or("committed exported root state")?;
+    assert!(
+        active.schema == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+            && active.engines.has_local_pki_identifier_state()
+            && !active.engines.has_local_typed_pki_state(),
+        "Ed identifiers activate independent reader floor"
+    );
+    let audit = fs::read(root.path.join("audit.jsonl"))?;
+    assert!(
+        !audit
+            .windows(private.len())
+            .any(|part| part == private.as_bytes())
+            && !audit
+                .windows(b"PRIVATE KEY".len())
+                .any(|part| part == b"PRIVATE KEY"),
+        "private exported key and bundle are absent from real audit records"
+    );
+    let before = service
+        .current_state_identity()
+        .map_err(|_| "committed identity")?;
+    let mut lower = active.clone();
+    lower.schema = INDEXED_RECOVERY_WIRE_STATE_SCHEMA;
+    assert!(
+        lower.writer_schema() == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+            && lower.validate_format().is_err()
+            && service.commit_state(&lower).is_err(),
+        "actual older writer label cannot publish exported identifiers"
+    );
+    assert!(
+        service.prepare_snapshot_restore(&backup).is_err(),
+        "actual old snapshot cannot remove identifier reader floor"
+    );
+    assert!(
+        service
+            .current_state_identity()
+            .map_err(|_| "identity after refused downgrade")?
+            == before,
+        "failed downgrade and restore leave committed state unchanged"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "PUT",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "actual exported key encrypted restart"
+    );
+    assert!(
+        reopened
+            .state
+            .as_ref()
+            .ok_or("reopened state")?
+            .engines
+            .has_local_pki_identifier_state(),
+        "identifiers survived encrypted reopen"
+    );
+    assert!(
+        call(
+            &mut reopened,
+            "DELETE",
+            "sys/mounts/exported-ca",
+            &admin,
+            json!({})
+        )
+        .status
+            == 204,
+        "exported root retirement"
+    );
+    let retired = reopened.state.as_ref().ok_or("retired state")?;
+    assert!(
+        !retired.engines.has_local_pki_identifier_state()
+            && retired.schema == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+            && retired.writer_schema() == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+        "identifier floor survives root retirement"
+    );
+    let mut retired_lower = retired.clone();
+    retired_lower.schema = INDEXED_RECOVERY_WIRE_STATE_SCHEMA;
+    assert!(
+        retired_lower
+            .validate_publication_schema(Some(retired))
+            .is_err()
+            && Service::validate_snapshot_protected_floor(retired, &ordinary).is_err(),
+        "retired identifiers cannot authorize earlier writer or restore"
+    );
+    Ok(())
+}
+
+#[test]
 fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() -> TestResult {
     for (key_type, key_bits) in key_choices() {
         let root = Root::new();
@@ -260,14 +390,9 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
         );
         let crl = current_crl(&mut service, &admin)?;
         verify_local_crl(&root_spki, &crl, 1)?;
-        let expected = if key_type == "ed25519" {
-            CURRENT_STATE_SCHEMA
-        } else {
-            LOCAL_TYPED_PKI_STATE_SCHEMA
-        };
         assert!(
-            service.state.as_ref().ok_or("state")?.schema == expected,
-            "conditional local key floor"
+            service.state.as_ref().ok_or("state")?.schema == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+            "local root identifiers require the protected reader floor for every key kind"
         );
         drop(service);
         let mut reopened = root.service()?;
@@ -350,8 +475,10 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
     assert!(service.handle_at("POST","local-ca/root/generate/internal","team",&admin,json!({"common_name":"local-ca.example.test","ttl":"1h","key_type":"ec","key_bits":224}),100).status==200,"typed root in nonroot namespace");
     let active = service.state.clone().ok_or("active state")?;
     assert!(
-        active.schema == LOCAL_TYPED_PKI_STATE_SCHEMA && active.engines.has_local_typed_pki_state(),
-        "all-namespace typed material floor"
+        active.schema == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+            && active.engines.has_local_typed_pki_state()
+            && active.engines.has_local_pki_identifier_state(),
+        "all-namespace typed material and identifier floor"
     );
     let before = service
         .current_state_identity()
@@ -368,7 +495,7 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
     );
     assert!(
         service.prepare_snapshot_restore(&backup).is_err(),
-        "actual prepared restore72-to65 denied"
+        "actual prepared restore75-to65 denied"
     );
     prepared.fixture_rebind_base_for_protected_floor(
         service
@@ -428,9 +555,9 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
     let retired = service.state.clone().ok_or("retired state")?;
     assert!(
         !retired.engines.has_local_typed_pki_state()
-            && retired.schema == LOCAL_TYPED_PKI_STATE_SCHEMA
-            && retired.writer_schema() == LOCAL_TYPED_PKI_STATE_SCHEMA,
-        "retired floor remains72"
+            && retired.schema == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+            && retired.writer_schema() == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+        "retired identifier floor remains75"
     );
     let mut lower = retired.clone();
     lower.schema = 71;
@@ -469,8 +596,8 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
             .as_ref()
             .ok_or("retired reopened state")?
             .schema
-            == LOCAL_TYPED_PKI_STATE_SCHEMA,
-        "sticky floor survives restart"
+            == LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
+        "sticky identifier floor survives restart"
     );
     Ok(())
 }

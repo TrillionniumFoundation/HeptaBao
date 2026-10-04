@@ -267,6 +267,12 @@ impl Pki {
             || self.has_typed_leaf_subjects()
     }
 
+    pub(in crate::engines) fn has_local_identifier_state(&self) -> bool {
+        self.root
+            .as_ref()
+            .is_some_and(|root| !root.issuer_id.is_empty() || !root.key_id.is_empty())
+    }
+
     pub(super) fn validate(&self, namespace: &str, mount: &str, clock: u64) -> Result<()> {
         if self.default_ttl == 0
             || self.default_ttl > self.max_ttl

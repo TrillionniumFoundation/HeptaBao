@@ -652,6 +652,14 @@ impl EngineState {
         })
     }
 
+    pub(crate) fn has_local_pki_identifier_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_local_identifier_state())
+            })
+        })
+    }
+
     pub(crate) fn has_issuer_path_pki_state(&self) -> bool {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.iter().any(|(path, mount)| {

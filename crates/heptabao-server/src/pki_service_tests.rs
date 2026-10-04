@@ -443,7 +443,7 @@ fn pki_extension_protocol_routes_remain_explicitly_unsupported() -> TestResult {
 }
 
 #[test]
-fn pki_new_default_typed_shape_requires_schema72_and_rejects_legacy_labels() -> TestResult {
+fn pki_new_default_identifiers_require_schema75_and_reject_legacy_labels() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;
     let (root, _) = start(&mut s)?;
@@ -454,10 +454,16 @@ fn pki_new_default_typed_shape_requires_schema72_and_rejects_legacy_labels() -> 
     assert_eq!(role.body["data"]["key_bits"], 2048);
     let state = s.state.as_ref().ok_or("state")?;
     assert!(state.engines.has_local_typed_pki_state());
-    assert_eq!(state.schema, LOCAL_TYPED_PKI_STATE_SCHEMA);
-    assert_eq!(state.writer_schema(), LOCAL_TYPED_PKI_STATE_SCHEMA);
+    assert_eq!(state.schema, LOCAL_PKI_IDENTIFIER_STATE_SCHEMA);
+    assert_eq!(state.writer_schema(), LOCAL_PKI_IDENTIFIER_STATE_SCHEMA);
     assert!(state.validate_format().is_ok());
-    for schema in [57, 59, CURRENT_STATE_SCHEMA] {
+    for schema in [
+        57,
+        59,
+        CURRENT_STATE_SCHEMA,
+        LOCAL_TYPED_PKI_STATE_SCHEMA,
+        INDEXED_RECOVERY_WIRE_STATE_SCHEMA,
+    ] {
         let mut disguised = state.clone();
         disguised.schema = schema;
         let rejected = disguised
@@ -467,7 +473,7 @@ fn pki_new_default_typed_shape_requires_schema72_and_rejects_legacy_labels() -> 
         assert_eq!(rejected.status, 503);
         assert_eq!(
             rejected.body["errors"][0],
-            "typed local PKI keys require schema 72"
+            "local PKI identifiers require schema 75"
         );
     }
     Ok(())
@@ -482,12 +488,20 @@ fn pki_default_shape_remains_readable_as_schema57_without_new_fields() -> TestRe
     let state = s.state.as_ref().ok_or("state")?;
     assert!(!state.engines.has_local_typed_pki_state());
     assert!(!state.engines.has_pki_extension_state());
-    let encoded = serde_json::to_value(&state.engines)?;
-    let text = encoded.to_string();
+    let mut encoded = serde_json::to_value(&state.engines)?;
+    let legacy_root = encoded
+        .pointer_mut("/namespaces//mounts/pki~1/backend/Pki/root")
+        .and_then(Value::as_object_mut)
+        .ok_or("legacy root projection")?;
+    legacy_root.remove("issuer_id");
+    legacy_root.remove("key_id");
+    let text = Zeroizing::new(encoded.to_string());
     assert!(!text.contains("\"cluster_path\""));
     assert!(!text.contains("\"aia_path\""));
     assert!(!text.contains("\"acme\""));
     let mut legacy = state.clone();
+    legacy.engines = serde_json::from_value(encoded)?;
+    assert!(!legacy.engines.has_local_pki_identifier_state());
     legacy.schema = 57;
     assert!(legacy.validate_format().is_ok());
     let bytes = serde_json::to_vec(&legacy)?;
@@ -502,7 +516,18 @@ fn pki_extension_state_requires_schema59_independently() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;
     let (root, _) = start(&mut s)?;
-    install_with_key_type(&mut s, &root, Some("ed25519"));
+    assert_eq!(
+        call(
+            &mut s,
+            &root,
+            "POST",
+            "sys/mounts/pki",
+            json!({"type":"pki"}),
+            100
+        )
+        .status,
+        204
+    );
     assert_eq!(
         call(
             &mut s,
@@ -517,6 +542,7 @@ fn pki_extension_state_requires_schema59_independently() -> TestResult {
     );
     let state = s.state.as_ref().ok_or("state")?;
     assert!(!state.engines.has_local_typed_pki_state());
+    assert!(!state.engines.has_local_pki_identifier_state());
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     assert!(state.engines.has_pki_extension_state());
     assert!(state.validate_format().is_ok());

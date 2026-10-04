@@ -12,7 +12,9 @@ impl State {
         if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
             return self.schema;
         }
-        let required = if self.auth.has_indexed_recovery_wire() {
+        let required = if self.engines.has_local_pki_identifier_state() {
+            LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+        } else if self.auth.has_indexed_recovery_wire() {
             INDEXED_RECOVERY_WIRE_STATE_SCHEMA
         } else if self.auth.has_recovery_state() {
             RECOVERY_CREDENTIAL_STATE_SCHEMA
@@ -53,6 +55,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "protected recovery credential requires schema 73",
+            ));
+        }
+        if self.schema < LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+            && (self.engines.has_local_pki_identifier_state()
+                || previous.is_some_and(|state| state.schema >= LOCAL_PKI_IDENTIFIER_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "local PKI identifiers require schema 75",
             ));
         }
         if self.schema < INDEXED_RECOVERY_WIRE_STATE_SCHEMA
@@ -156,6 +167,14 @@ impl State {
             return Err(Response::error(
                 503,
                 "protected recovery credential requires schema 73",
+            ));
+        }
+        if self.schema < LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+            && self.engines.has_local_pki_identifier_state()
+        {
+            return Err(Response::error(
+                503,
+                "local PKI identifiers require schema 75",
             ));
         }
         if self.schema < INDEXED_RECOVERY_WIRE_STATE_SCHEMA && self.auth.has_indexed_recovery_wire()
@@ -867,7 +886,8 @@ impl State {
             | PKI_ISSUER_PATH_STATE_SCHEMA
             | LOCAL_TYPED_PKI_STATE_SCHEMA
             | RECOVERY_CREDENTIAL_STATE_SCHEMA
-            | INDEXED_RECOVERY_WIRE_STATE_SCHEMA => Ok(()),
+            | INDEXED_RECOVERY_WIRE_STATE_SCHEMA
+            | LOCAL_PKI_IDENTIFIER_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
