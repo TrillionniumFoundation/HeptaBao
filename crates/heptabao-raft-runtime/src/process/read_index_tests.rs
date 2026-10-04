@@ -510,6 +510,7 @@ async fn transient_quorum_probe_failure_recovers_within_one_read_budget_without_
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn leader_current_local_apply_and_metrics_share_original_read_deadline()
 -> Result<(), Box<dyn std::error::Error>> {
+    use crate::process::follower_read::observe_leader_read_scope;
     // Test-only observations retain each original await, error and budget.
     fn record(
         started: std::time::Instant,
@@ -576,6 +577,9 @@ async fn leader_current_local_apply_and_metrics_share_original_read_deadline()
         .insert(id, node.rpc_service());
         nodes.push(node);
     }
+    nodes[0]
+        .state_machine
+        .enable_apply_observation(diagnostic_started);
     let result = observed_result!("test-body", Some(&nodes[0].raft), async {
         let leader = &nodes[0];
         observed_result!(
@@ -601,7 +605,7 @@ async fn leader_current_local_apply_and_metrics_share_original_read_deadline()
         observed_result!(
             "initial/linearizable",
             Some(&leader.raft),
-            leader.ensure_linearizable()
+            observe_leader_read_scope(diagnostic_started, leader.ensure_linearizable())
         )?;
         for (learner, expire) in [(4, false), (5, true)] {
             let before_applied = observed!(
@@ -683,7 +687,10 @@ async fn leader_current_local_apply_and_metrics_share_original_read_deadline()
                         observed_result!(
                             format!("learner-{learner}/denied-read"),
                             Some(&leader.raft),
-                            leader.ensure_linearizable_with_timeout(Duration::from_secs(2))
+                            observe_leader_read_scope(
+                                diagnostic_started,
+                                leader.ensure_linearizable_with_timeout(Duration::from_secs(2))
+                            )
                         )
                     })
                 );
@@ -706,7 +713,13 @@ async fn leader_current_local_apply_and_metrics_share_original_read_deadline()
                     observed_result!(
                         format!("learner-{learner}/expired-read"),
                         Some(&leader.raft),
-                        crate::with_read_index_deadline(absolute, leader.ensure_linearizable())
+                        crate::with_read_index_deadline(
+                            absolute,
+                            observe_leader_read_scope(
+                                diagnostic_started,
+                                leader.ensure_linearizable()
+                            )
+                        )
                     )
                     .is_err(),
                     "release cannot renew expired authority"
@@ -724,7 +737,10 @@ async fn leader_current_local_apply_and_metrics_share_original_read_deadline()
                 observed_result!(
                     format!("learner-{learner}/positive-read"),
                     Some(&leader.raft),
-                    crate::with_read_index_deadline(absolute, leader.ensure_linearizable())
+                    crate::with_read_index_deadline(
+                        absolute,
+                        observe_leader_read_scope(diagnostic_started, leader.ensure_linearizable())
+                    )
                 )?;
                 observed_result!(
                     format!("learner-{learner}/releaser-join"),
@@ -756,7 +772,7 @@ async fn leader_current_local_apply_and_metrics_share_original_read_deadline()
             observed_result!(
                 format!("learner-{learner}/final-read"),
                 Some(&leader.raft),
-                leader.ensure_linearizable()
+                observe_leader_read_scope(diagnostic_started, leader.ensure_linearizable())
             )?;
             assert!(
                 observed!(

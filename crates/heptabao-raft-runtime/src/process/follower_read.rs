@@ -64,6 +64,33 @@ pub(super) fn bound(raft: &DurableRaft, leader: u64, term: u64, require_leader: 
         && (!require_leader || metrics.state == ServerState::Leader)
 }
 
+#[cfg(test)]
+tokio::task_local! {
+    static LEADER_READ_OBSERVATION_START: std::time::Instant;
+}
+
+#[cfg(test)]
+pub(crate) async fn observe_leader_read_scope<F: std::future::Future>(
+    started: std::time::Instant,
+    operation: F,
+) -> F::Output {
+    LEADER_READ_OBSERVATION_START
+        .scope(started, operation)
+        .await
+}
+
+#[cfg(test)]
+fn record_leader_read(stage: &str, raft: &DurableRaft) {
+    let _ = LEADER_READ_OBSERVATION_START.try_with(|started| {
+        let receiver = raft.metrics();
+        eprintln!(
+            "actual-leader-read-stage: stage={stage} elapsed_ms={} metrics={:?}",
+            started.elapsed().as_millis(),
+            receiver.borrow_watched()
+        );
+    });
+}
+
 async fn leader_witness(
     raft: &DurableRaft,
     request: &ReadIndexRequest,
@@ -73,9 +100,20 @@ async fn leader_witness(
         return Err(ReadIndexFailure::NotLeader);
     }
     loop {
+        #[cfg(test)]
+        record_leader_read("first-api-before", raft);
         let result =
             tokio::time::timeout_at(deadline, raft.ensure_linearizable(ReadPolicy::ReadIndex))
                 .await;
+        #[cfg(test)]
+        {
+            record_leader_read("first-api-after", raft);
+            if matches!(result, Err(_) | Ok(Err(_))) {
+                let _ = LEADER_READ_OBSERVATION_START.try_with(|_| {
+                    eprintln!("actual-leader-read-error: stage=first-api original={result:?}");
+                });
+            }
+        }
         // Tokio may poll a ready operation after its timer. A completed probe
         // cannot renew either the caller's or this peer's absolute budget.
         if Instant::now() >= deadline {
@@ -92,10 +130,28 @@ async fn leader_witness(
                 // leader's own applied frontier under the ORIGINAL deadline;
                 // no learner catch-up, new probe budget or write is introduced.
                 let linearizer = Linearizer::<TypeConfig>::new(request.leader, read, None);
+                #[cfg(not(test))]
                 let local = tokio::time::timeout_at(deadline, linearizer.await_ready(raft))
                     .await
                     .map_err(|_| ReadIndexFailure::Deadline)?
                     .map_err(|_| ReadIndexFailure::Unavailable)?;
+                #[cfg(test)]
+                let local = {
+                    record_leader_read("own-metrics-before", raft);
+                    let result =
+                        tokio::time::timeout_at(deadline, linearizer.await_ready(raft)).await;
+                    record_leader_read("own-metrics-after", raft);
+                    if matches!(result, Err(_) | Ok(Err(_))) {
+                        let _ = LEADER_READ_OBSERVATION_START.try_with(|_| {
+                            eprintln!(
+                                "actual-leader-read-error: stage=own-metrics original={result:?}"
+                            );
+                        });
+                    }
+                    result
+                        .map_err(|_| ReadIndexFailure::Deadline)?
+                        .map_err(|_| ReadIndexFailure::Unavailable)?
+                };
                 if Instant::now() >= deadline {
                     return Err(ReadIndexFailure::Deadline);
                 }

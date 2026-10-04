@@ -1206,7 +1206,21 @@ fn initialize_state_journal(path: &Path) -> io::Result<()> {
     atomic_write_raw(path, &STATE_JOURNAL_MAGIC)
 }
 
-fn append_state_journal(path: &Path, event: &StateJournalEvent) -> io::Result<()> {
+#[cfg(test)]
+fn record_apply_observation(observation: Option<(std::time::Instant, u64)>, stage: &str) {
+    if let Some((started, index)) = observation {
+        eprintln!(
+            "actual-leader-store-stage: stage={stage} elapsed_ms={} logindex={index}",
+            started.elapsed().as_millis()
+        );
+    }
+}
+
+fn append_state_journal(
+    path: &Path,
+    event: &StateJournalEvent,
+    #[cfg(test)] observation: Option<(std::time::Instant, u64)>,
+) -> io::Result<()> {
     if !regular_file_status(path, "raft state-machine delta journal")? {
         return Err(invalid("raft state-machine delta journal is missing"));
     }
@@ -1218,6 +1232,19 @@ fn append_state_journal(path: &Path, event: &StateJournalEvent) -> io::Result<()
     let mut file = OpenOptions::new().append(true).open(path)?;
     file.write_all(&frame)?;
     file.flush()?;
+    #[cfg(test)]
+    {
+        record_apply_observation(observation, "fsync-before");
+        let result = file.sync_all();
+        record_apply_observation(observation, "fsync-after");
+        if let Some((_, index)) = observation
+            && let Err(error) = &result
+        {
+            eprintln!("actual-leader-store-error: stage=fsync logindex={index} original={error:?}");
+        }
+        result
+    }
+    #[cfg(not(test))]
     file.sync_all()
 }
 
@@ -1462,6 +1489,9 @@ pub struct DurableStateMachine {
     bundle: Arc<Mutex<PersistentStateBundle>>,
     #[cfg(test)]
     artifact_bound: usize,
+    // Empty except for the selected leader of the existing diagnostic test.
+    #[cfg(test)]
+    apply_observation_start: Arc<std::sync::OnceLock<std::time::Instant>>,
 }
 
 impl DurableStateMachine {
@@ -1482,6 +1512,8 @@ impl DurableStateMachine {
             bundle: Arc::new(Mutex::new(bundle)),
             #[cfg(test)]
             artifact_bound: MAX_DURABLE_ARTIFACT_BYTES,
+            #[cfg(test)]
+            apply_observation_start: Arc::default(),
         })
     }
 
@@ -1528,6 +1560,8 @@ impl DurableStateMachine {
             bundle: Arc::new(Mutex::new(bundle)),
             #[cfg(test)]
             artifact_bound: MAX_DURABLE_ARTIFACT_BYTES,
+            #[cfg(test)]
+            apply_observation_start: Arc::default(),
         })
     }
 
@@ -1572,7 +1606,14 @@ impl DurableStateMachine {
             bundle: Arc::new(Mutex::new(bundle)),
             #[cfg(test)]
             artifact_bound: MAX_DURABLE_ARTIFACT_BYTES,
+            #[cfg(test)]
+            apply_observation_start: Arc::default(),
         })
+    }
+
+    #[cfg(test)]
+    pub(crate) fn enable_apply_observation(&self, started: std::time::Instant) {
+        let _ = self.apply_observation_start.set(started);
     }
 
     fn artifact_bound(&self) -> usize {
@@ -1886,9 +1927,21 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
         Strm: Stream<Item = Result<EntryResponder<TypeConfig>, io::Error>> + Unpin + OptionalSend,
     {
         while let Some((entry, responder)) = entries.try_next().await? {
+            #[cfg(test)]
+            let observation = self
+                .apply_observation_start
+                .get()
+                .copied()
+                .map(|started| (started, entry.log_id.index));
+            #[cfg(test)]
+            record_apply_observation(observation, "lock-before");
             let owner = self.bundle.clone().lock_owned().await;
+            #[cfg(test)]
+            record_apply_observation(observation, "lock-after");
             let path = state_journal_path(&self.bundle_path);
             with_owned_store(owner, move |bundle| {
+                #[cfg(test)]
+                record_apply_observation(observation, "blocking-work-enter");
                 let generation = bundle.next_generation()?;
                 let serialized =
                     serde_json::to_string(&entry).map_err(|error| invalid(error.to_string()))?;
@@ -1896,9 +1949,20 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
                     generation,
                     entry: serialized,
                 };
-                append_state_journal(&path, &event)?;
+                #[cfg(test)]
+                record_apply_observation(observation, "journal-before");
+                append_state_journal(
+                    &path,
+                    &event,
+                    #[cfg(test)]
+                    observation,
+                )?;
+                #[cfg(test)]
+                record_apply_observation(observation, "journal-after");
                 let response = apply_state_journal_event(bundle, event)?
                     .ok_or_else(|| invalid("fresh state-machine event was not applied"))?;
+                #[cfg(test)]
+                record_apply_observation(observation, "memory-apply-after");
                 if let Some(responder) = responder {
                     responder.send(response);
                 }
@@ -2546,6 +2610,7 @@ mod tests {
             bundle_path: blocking_parent.join("state-bundle.bin"),
             bundle: Arc::new(Mutex::new(initial)),
             artifact_bound: super::MAX_DURABLE_ARTIFACT_BYTES,
+            apply_observation_start: Arc::default(),
         };
 
         let result = state_machine.build_snapshot().await;

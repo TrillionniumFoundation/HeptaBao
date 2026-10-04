@@ -5947,12 +5947,16 @@ impl AuthState {
                     self.target_token(namespace, body, operation.ends_with("accessor"), now)?
                 };
                 // permission() above authorized this exact renew operation.
-                // Only a retained record in this namespace with its own expired
+                // Only a retained Token API record here with its own expired
                 // deadline gets the reference token-not-found classification.
                 // Missing/revoked handles and invalid ancestors retain their
                 // existing closed authority checks; absence is not proof.
                 if self.tokens.get(&id).is_some_and(|token| {
                     token.namespace == namespace
+                        && matches!(
+                            token.auth_provenance,
+                            Some(TokenAuthProvenance::TokenApi { .. })
+                        )
                         && token.expires_at.is_some_and(|expiry| now >= expiry)
                 }) {
                     return Err(bad("token not found"));

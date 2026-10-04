@@ -111,6 +111,18 @@ impl AuthState {
             }
         };
         let target = Zeroizing::new(target);
+        // This probe owns online provider selection. A retained Token API
+        // target belongs to its actual offline route, which checks ancestry,
+        // expiry and lease renewal after the same operation's path ACL.
+        if self.tokens.get(target.as_str()).is_some_and(|token| {
+            token.namespace == namespace
+                && matches!(
+                    token.auth_provenance,
+                    Some(TokenAuthProvenance::TokenApi { .. })
+                )
+        }) {
+            return Ok(None);
+        }
         let token = self.active_token(&target, now, false)?;
         let increment = duration(body, "increment", 0)?;
         match token.auth_provenance {
