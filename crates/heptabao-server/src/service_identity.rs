@@ -1009,7 +1009,8 @@ impl State {
             | LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
             | LOCAL_PKI_CRL_STATE_SCHEMA
             | LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
-            | TOKEN_ROLE_STATE_SCHEMA => Ok(()),
+            | TOKEN_ROLE_STATE_SCHEMA
+            | NAMESPACE_CUSTODY_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
