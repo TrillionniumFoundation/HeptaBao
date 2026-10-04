@@ -98,6 +98,7 @@ impl Drop for Fixture {
 fn stat(pid: u32, session: u32, ticks: u64) -> String {
     let mut fields = vec!["0".to_string(); 50];
     fields[0] = "S".into();
+    fields[2] = pid.to_string();
     fields[3] = session.to_string();
     fields[19] = ticks.to_string();
     // ')' and a newline in comm must not affect the numeric frame.
@@ -204,7 +205,7 @@ fn process_reuse_uid_and_lifecycle_races_fail_closed() -> Result<(), Box<dyn std
 
 #[test]
 fn proc_grammar_unknown_or_ambiguous_metadata_is_rejected() {
-    assert!(parse_stat(stat(101, 101, 200).as_bytes()) == Ok((101, 101, 200)));
+    assert!(parse_stat(stat(101, 101, 200).as_bytes()) == Ok((101, 101, 101, 200)));
     for bad in [
         "1 (x) S 0 1",
         "0 (x) S",
@@ -296,5 +297,158 @@ fn replaced_fifo_config_is_rejected_without_waiting_for_a_writer()
     fs::remove_file(&f.config)?;
     rustix::fs::mkfifoat(rustix::fs::CWD, &f.config, Mode::from_bits_truncate(0o600))?;
     assert!(probe.observe().is_err(), "nonregular config admitted");
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+fn kernel_image_fixture(
+    fixture: &mut Fixture,
+    seals: rustix::fs::SealFlags,
+) -> Result<File, Box<dyn std::error::Error>> {
+    use std::io::Write;
+    use std::os::fd::AsRawFd;
+    let mut image = File::from(rustix::fs::memfd_create(
+        "heptabao-immutable-probe-test",
+        rustix::fs::MemfdFlags::CLOEXEC
+            | rustix::fs::MemfdFlags::ALLOW_SEALING
+            | rustix::fs::MemfdFlags::EXEC,
+    )?);
+    image.write_all(b"ACTUAL_KERNEL_SEALED_IMAGE")?;
+    rustix::fs::fchmod(&image, Mode::RUSR | Mode::XUSR)?;
+    rustix::fs::fcntl_add_seals(&image, seals)?;
+    fs::remove_file(fixture.proc_root.join("101/exe"))?;
+    symlink(
+        format!("/proc/self/fd/{}", image.as_raw_fd()),
+        fixture.proc_root.join("101/exe"),
+    )?;
+    let metadata = stable_metadata(&image)?;
+    fixture.expected.executable_device = metadata.device;
+    fixture.expected.executable_inode = metadata.inode;
+    fixture.expected.executable_sha256 = stable_hash(&image, MAX_EXECUTABLE)?;
+    Ok(image)
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn fully_sealed_kernel_image_keeps_process_and_config_fences()
+-> Result<(), Box<dyn std::error::Error>> {
+    use rustix::fs::SealFlags;
+    let required =
+        SealFlags::WRITE | SealFlags::GROW | SealFlags::SHRINK | SealFlags::EXEC | SealFlags::SEAL;
+    let mut fixture = Fixture::new()?;
+    let _image = kernel_image_fixture(&mut fixture, required)?;
+    let probe = fixture.probe(Hook::stable())?;
+    assert!(probe.sealed_executable.is_some());
+    for _ in 0..3 {
+        assert!(probe.observe()?.0 == fixture.expected);
+    }
+    let wrong_group = stat(101, 101, 200).replacen(") S 0 101 101", ") S 0 102 101", 1);
+    fs::write(fixture.proc_root.join("101/stat"), wrong_group)?;
+    assert!(probe.observe() == Err(BridgeError::IdentityChanged));
+    fs::write(fixture.proc_root.join("101/stat"), stat(101, 101, 200))?;
+    fs::write(&fixture.config, b"CHANGED_PRIVATE_CONFIG")?;
+    assert!(probe.observe() == Err(BridgeError::IdentityChanged));
+
+    let mut mutation_fixture = Fixture::new()?;
+    let image = kernel_image_fixture(&mut mutation_fixture, required)?;
+    let mutation_probe = mutation_fixture.probe(Hook::stable())?;
+    let before = stable_metadata(&image)?;
+    assert!(
+        image.write_at(b"X", 0).is_err(),
+        "kernel must reject content changes"
+    );
+    assert!(image.set_len(0).is_err(), "kernel must reject truncation");
+    assert!(
+        rustix::fs::fcntl_add_seals(&image, SealFlags::FUTURE_WRITE).is_err(),
+        "kernel must reject seal changes"
+    );
+    assert!(stable_hash(&image, MAX_EXECUTABLE)? == mutation_fixture.expected.executable_sha256);
+    // Linux may update mtime/ctime even when a sealed write returns EPERM.
+    // The complete metadata fence must still reject that observed change.
+    if stable_metadata(&image)? != before {
+        assert!(mutation_probe.observe() == Err(BridgeError::IdentityChanged));
+    } else {
+        assert!(mutation_probe.observe()?.0 == mutation_fixture.expected);
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn partial_seals_never_admit_a_cached_digest() -> Result<(), Box<dyn std::error::Error>> {
+    use rustix::fs::SealFlags;
+    for seals in [
+        SealFlags::empty(),
+        SealFlags::WRITE | SealFlags::GROW | SealFlags::SHRINK | SealFlags::EXEC,
+    ] {
+        let mut fixture = Fixture::new()?;
+        let image = kernel_image_fixture(&mut fixture, seals)?;
+        let probe = fixture.probe(Hook::stable())?;
+        assert!(probe.sealed_executable.is_none());
+        if seals.is_empty() {
+            image.write_at(b"X", 0)?;
+            assert!(probe.observe() == Err(BridgeError::IdentityChanged));
+        } else {
+            assert!(probe.observe()?.0 == fixture.expected);
+        }
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn sealed_digest_mismatch_and_actual_image_replacement_are_rejected()
+-> Result<(), Box<dyn std::error::Error>> {
+    use rustix::fs::SealFlags;
+    let required =
+        SealFlags::WRITE | SealFlags::GROW | SealFlags::SHRINK | SealFlags::EXEC | SealFlags::SEAL;
+    let mut fixture = Fixture::new()?;
+    let _image = kernel_image_fixture(&mut fixture, required)?;
+    fixture.expected.executable_sha256[0] ^= 1;
+    assert!(matches!(
+        fixture.probe(Hook::stable()),
+        Err(BridgeError::IdentityChanged)
+    ));
+    fixture.expected.executable_sha256[0] ^= 1;
+    let probe = fixture.probe(Hook::stable())?;
+    fs::remove_file(fixture.proc_root.join("101/exe"))?;
+    symlink(&fixture.executable, fixture.proc_root.join("101/exe"))?;
+    assert!(probe.observe() == Err(BridgeError::IdentityChanged));
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn sealed_image_cannot_mask_process_reuse_uid_or_lifecycle_changes()
+-> Result<(), Box<dyn std::error::Error>> {
+    use rustix::fs::SealFlags;
+    let required =
+        SealFlags::WRITE | SealFlags::GROW | SealFlags::SHRINK | SealFlags::EXEC | SealFlags::SEAL;
+    for changed in 0..4 {
+        let mut fixture = Fixture::new()?;
+        let _image = kernel_image_fixture(&mut fixture, required)?;
+        let probe = fixture.probe(Hook::stable())?;
+        assert!(probe.sealed_executable.is_some());
+        match changed {
+            0 => fs::write(fixture.proc_root.join("101/stat"), stat(102, 101, 200))?,
+            1 => fs::write(fixture.proc_root.join("101/stat"), stat(101, 102, 200))?,
+            2 => fs::write(fixture.proc_root.join("101/stat"), stat(101, 101, 201))?,
+            _ => fs::write(fixture.proc_root.join("101/status"), "Uid:\t1\t2\t1\t1\n")?,
+        }
+        assert!(probe.observe().is_err());
+    }
+    let mut fixture = Fixture::new()?;
+    let _image = kernel_image_fixture(&mut fixture, required)?;
+    let hook = Hook::stable();
+    let probe = fixture.probe(hook.clone())?;
+    let calls = hook.calls.load(Ordering::SeqCst);
+    let changing = LinuxIdentityProbe {
+        hook: Hook {
+            change_at: calls + 1,
+            ..hook
+        },
+        ..probe
+    };
+    assert!(changing.observe() == Err(BridgeError::LifecycleDenied));
     Ok(())
 }

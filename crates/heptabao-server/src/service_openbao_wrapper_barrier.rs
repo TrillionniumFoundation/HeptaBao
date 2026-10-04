@@ -1,5 +1,5 @@
-//! Explicit Wrapper barrier consumer proposal. No local-unseal fallback.
-//! This first opt-in profile omits recovery-key, rekey, migration and PG init.
+//! Explicit Wrapper barrier consumer with durable Recovery authority.
+//! Filesystem and PostgreSQL consumers retain the genuine provider binding.
 
 use std::fmt;
 use std::path::Path;
@@ -163,7 +163,7 @@ pub(crate) fn configuration_binding(
 pub(in crate::service) struct PreparedMaterial {
     pub(in crate::service) seal: SealMetadata,
     pub(in crate::service) key: Zeroizing<[u8; 32]>,
-    pub(in crate::service) deadline: Instant,
+    pub(in crate::service) deadline: Option<Instant>,
 }
 
 /// Admit deferred zero recovery or the implemented positive own-wire configuration.
@@ -269,6 +269,13 @@ mod linux {
     use heptabao_openbao_grpc::protocol::wrapping::RpcOptions;
     use std::sync::Mutex;
 
+    fn tighten_deadline(original: Option<Instant>, later: Option<Instant>) -> Option<Instant> {
+        match (original, later) {
+            (Some(original), Some(later)) => Some(original.min(later)),
+            (original, later) => original.or(later),
+        }
+    }
+
     struct PrivateBody(Value);
     impl Drop for PrivateBody {
         fn drop(&mut self) {
@@ -281,42 +288,68 @@ mod linux {
         binding: [u8; 32],
         body: PrivateBody,
         response_retrieval: bool,
-        deadline: Instant,
+        publication_deadline: Option<Instant>,
+    }
+    pub(crate) struct InitializationCompletion {
+        operation: OpenBaoWrapperCompletion,
+        publication_deadline: Option<Instant>,
+    }
+    #[cfg(test)]
+    impl InitializationCompletion {
+        pub(in crate::service) fn fixture_deadlines(&self) -> (Instant, Option<Instant>, bool) {
+            (
+                self.operation.deadline,
+                self.publication_deadline,
+                matches!(&self.operation.result, Ok(WrapperReply::Encrypted(_))),
+            )
+        }
     }
     impl InitializationPlan {
-        pub(crate) fn deadline(&self) -> Instant {
-            self.deadline
+        pub(crate) fn execute(&self) -> Result<InitializationCompletion, BridgeError> {
+            self.execute_with_deadline(None)
         }
         pub(crate) fn execute_before(
             &self,
             deadline: Instant,
-        ) -> Result<OpenBaoWrapperCompletion, BridgeError> {
+        ) -> Result<InitializationCompletion, BridgeError> {
+            self.execute_with_deadline(Some(deadline))
+        }
+        fn execute_with_deadline(
+            &self,
+            deadline: Option<Instant>,
+        ) -> Result<InitializationCompletion, BridgeError> {
             let mut operation = self
                 .operation
                 .lock()
                 .map_err(|_| BridgeError::LifecycleDenied)?
                 .take()
                 .ok_or(BridgeError::BeforeDispatch)?;
-            operation.deadline = operation.deadline.min(deadline);
-            Ok(operation.execute())
+            let publication_deadline = tighten_deadline(self.publication_deadline, deadline);
+            if let Some(deadline) = publication_deadline {
+                operation.deadline = operation.deadline.min(deadline);
+            }
+            Ok(InitializationCompletion {
+                operation: operation.execute(),
+                publication_deadline,
+            })
         }
     }
     pub(crate) struct ActivationPlan {
         operation: OpenBaoWrapperOperationPlan,
         seal: SealMetadata,
-        deadline: Instant,
+        publication_deadline: Option<Instant>,
     }
     pub(crate) struct ActivationCompletion {
         operation: OpenBaoWrapperCompletion,
         seal: SealMetadata,
-        deadline: Instant,
+        publication_deadline: Option<Instant>,
     }
     impl ActivationPlan {
         pub(crate) fn execute(self) -> ActivationCompletion {
             ActivationCompletion {
                 operation: self.operation.execute(),
                 seal: self.seal,
-                deadline: self.deadline,
+                publication_deadline: self.publication_deadline,
             }
         }
     }
@@ -357,10 +390,10 @@ mod linux {
                     "Wrapper initialization requires a fresh sealed store",
                 ));
             }
-            if self.ha.is_some() || self.postgres_durable.is_some() {
+            if self.ha.is_some() {
                 return Err(Response::error(
                     501,
-                    "Wrapper HA/PostgreSQL initialization requires a supported consumer",
+                    "Wrapper HA initialization requires a supported consumer",
                 ));
             }
             let response_retrieval = validate_initialization_options(body)?;
@@ -391,20 +424,23 @@ mod linux {
                     "Wrapper initialization already claimed for this owner",
                 ));
             }
-            let deadline = operation.deadline;
+            // The provider RPC remains bounded by its own timeout. Persistence
+            // and activation retain the caller's original request deadline;
+            // synchronous callers without one do not acquire a new clock.
+            let publication_deadline = crate::request_deadline::current();
             Ok(InitializationPlan {
                 operation: Mutex::new(Some(operation)),
                 key,
                 binding,
                 body: PrivateBody(body.clone()),
                 response_retrieval,
-                deadline,
+                publication_deadline,
             })
         }
         pub(crate) fn finalize_wrapper_barrier_initialization(
             &mut self,
             plan: InitializationPlan,
-            completion: Result<OpenBaoWrapperCompletion, BridgeError>,
+            completion: Result<InitializationCompletion, BridgeError>,
             now: u64,
             fingerprint: &str,
         ) -> Response {
@@ -418,14 +454,24 @@ mod linux {
                 self.fence_openbao_wrapper();
                 return Response::error(503, "Wrapper initialization owner or store changed");
             }
-            // The HTTP executor may tighten the prepared deadline. Its actual
-            // completion retains that effective deadline for every later gate.
-            let deadline = completion
-                .as_ref()
-                .map_or(plan.deadline, |completion| completion.deadline)
-                .min(plan.deadline);
-            let result =
-                completion.and_then(|completion| self.finish_openbao_wrapper_operation(completion));
+            // The executor can only shorten the original caller deadline. The
+            // RPC completion still independently enforces its provider timeout.
+            let deadline = tighten_deadline(
+                completion
+                    .as_ref()
+                    .ok()
+                    .and_then(|completion| completion.publication_deadline),
+                tighten_deadline(
+                    plan.publication_deadline,
+                    crate::request_deadline::current(),
+                ),
+            );
+            let result = completion
+                .and_then(|completion| self.finish_openbao_wrapper_operation(completion.operation));
+            if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
+                self.fence_openbao_wrapper();
+                return Response::error(503, "Wrapper initialization caller deadline expired");
+            }
             let envelope = match result {
                 Ok(WrapperReply::Encrypted(blob)) => {
                     Envelope::new(plan.binding, 1, &blob).and_then(|envelope| envelope.encode())
@@ -459,7 +505,7 @@ mod linux {
                 &plan.body.0,
                 now,
                 fingerprint,
-                |_, _| Err(super::super::super::BackendError::Unsupported),
+                super::super::super::Service::import_postgres_initialization,
                 Some(material),
             );
             if response.status != 200 {
@@ -467,12 +513,12 @@ mod linux {
                 return response;
             }
             let expected_seal = self.seal.clone();
-            if Instant::now() >= deadline
+            if deadline.is_some_and(|deadline| Instant::now() >= deadline)
                 || load_seal_metadata(&self.data_dir).ok().flatten() != expected_seal
                 || self
-                    .activate_barrier_with_deadline(&plan.key, Some(deadline))
+                    .activate_barrier_with_deadline(&plan.key, deadline)
                     .is_err()
-                || Instant::now() >= deadline
+                || deadline.is_some_and(|deadline| Instant::now() >= deadline)
                 || load_seal_metadata(&self.data_dir).ok().flatten() != expected_seal
             {
                 self.fence_wrapper_barrier_delivery();
@@ -509,11 +555,11 @@ mod linux {
                     options: options(binding, seal.generation),
                 })
                 .map_err(|_| "Wrapper startup admission failed")?;
-            let deadline = operation.deadline;
+            let publication_deadline = crate::request_deadline::current();
             Ok(Some(ActivationPlan {
                 operation,
                 seal: seal.clone(),
-                deadline,
+                publication_deadline,
             }))
         }
         pub(crate) fn finish_wrapper_barrier_activation(
@@ -539,19 +585,22 @@ mod linux {
                 <[u8; 32]>::try_from(key.as_slice())
                     .map_err(|_| "Wrapper barrier key length invalid")?,
             );
-            if Instant::now() >= completion.deadline {
+            let deadline = tighten_deadline(
+                completion.publication_deadline,
+                crate::request_deadline::current(),
+            );
+            if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
                 self.fence_wrapper_barrier_delivery();
                 return Err("Wrapper activation deadline expired".into());
             }
-            let admitted =
-                match self.activate_barrier_with_deadline(&key, Some(completion.deadline)) {
-                    Ok(admitted) => admitted,
-                    Err(_) => {
-                        self.fence_wrapper_barrier_delivery();
-                        return Err("Wrapper private recovery admission failed".into());
-                    }
-                };
-            if Instant::now() >= completion.deadline
+            let admitted = match self.activate_barrier_with_deadline(&key, deadline) {
+                Ok(admitted) => admitted,
+                Err(_) => {
+                    self.fence_wrapper_barrier_delivery();
+                    return Err("Wrapper private recovery admission failed".into());
+                }
+            };
+            if deadline.is_some_and(|deadline| Instant::now() >= deadline)
                 || load_seal_metadata(&self.data_dir).ok().flatten() != admitted.0
                 || !admitted.0.as_ref().is_some_and(SealMetadata::is_wrapper)
             {
@@ -574,7 +623,7 @@ mod linux {
     }
 }
 #[cfg(target_os = "linux")]
-pub(crate) use linux::InitializationPlan;
+pub(crate) use linux::{InitializationCompletion, InitializationPlan};
 
 #[cfg(test)]
 mod tests {

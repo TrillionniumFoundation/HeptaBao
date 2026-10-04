@@ -243,6 +243,22 @@ impl Service {
         self.barrier_key = None;
         self.recovery_required = true;
     }
+    fn verify_recovery_backend_owner(&mut self) -> Result<(), Response> {
+        let result = self
+            .durable
+            .as_mut()
+            .ok_or_else(|| Response::error(503, "durable recovery owner absent"))?
+            .verify_live_ownership();
+        if result.is_err() {
+            self.fence_recovery_delivery();
+            return Err(Response::error(
+                503,
+                "durable recovery writer fence unavailable",
+            ));
+        }
+        Ok(())
+    }
+
     fn publish_recovery_owner(
         &mut self,
         mut state: State,
@@ -302,6 +318,7 @@ impl Service {
         state.auth.recovery_intent = Some(intent);
         // This ONE encrypted owner commit switches credential authority AND installs repair intent.
         let committed = self.publish_recovery_owner(state, deadline)?;
+        self.verify_recovery_backend_owner()?;
         let admitted = match self.reconcile_recovery_seal(&committed, deadline) {
             Ok(admitted) => admitted,
             Err(error) => {
@@ -309,6 +326,7 @@ impl Service {
                 return Err(error);
             }
         };
+        self.verify_recovery_backend_owner()?;
         self.seal = admitted.0;
         let mut clean = committed;
         clean.auth.recovery_intent = None;
@@ -445,15 +463,12 @@ impl Service {
             }
         }
         if !namespace.is_empty() {
-            return Response::error(
-                501,
-                "sealable namespace recovery rotation requires its owning credential consumer",
-            );
+            return Response::error(403, "recovery rekey is root namespace only");
         }
-        if self.ha.is_some() || self.postgres_durable.is_some() {
+        if self.ha.is_some() {
             return Response::error(
                 501,
-                "recovery public-index publication on HA/PostgreSQL requires its backend consumer",
+                "recovery public-index publication on HA requires its backend consumer",
             );
         }
         if !self.seal.as_ref().is_some_and(SealMetadata::is_wrapper) {
@@ -471,6 +486,9 @@ impl Service {
                 return Response::error(503, "initialization response delivery state unavailable");
             }
         }
+        if let Err(error) = self.verify_recovery_backend_owner() {
+            return error;
+        }
         let deadline = crate::request_deadline::current();
         if let Err(error) = live(deadline) {
             return error;
@@ -483,6 +501,9 @@ impl Service {
                     return error;
                 }
             };
+            if let Err(error) = self.verify_recovery_backend_owner() {
+                return error;
+            }
             self.seal = admitted.0;
             state.auth.recovery_intent = None;
             state = match self.publish_recovery_owner(state, deadline) {
@@ -945,7 +966,10 @@ pub(super) struct RecoveryOwnerCut {
 
 #[cfg(test)]
 impl Service {
-    pub(super) fn fixture_require_live_recovery_wrapper(&self) -> Result<(), Response> {
+    pub(super) fn fixture_require_live_recovery_wrapper(&mut self) -> Result<(), Response> {
+        // A PostgreSQL fixture must prove the existing durable session still
+        // owns its writer fence; it never substitutes local storage authority.
+        self.verify_recovery_backend_owner()?;
         let state = self
             .state
             .as_ref()
@@ -955,7 +979,6 @@ impl Service {
             .as_ref()
             .ok_or_else(|| Response::error(503, "fixture requires actual seal"))?;
         if self.ha.is_some()
-            || self.postgres_durable.is_some()
             || self.recovery_required
             || self.audit_failed
             || self.barrier_key.is_none()
@@ -968,7 +991,7 @@ impl Service {
         {
             return Err(Response::error(
                 503,
-                "fixture requires genuine admitted local Wrapper recovery state",
+                "fixture requires genuine admitted backend-owned Wrapper recovery state",
             ));
         }
         state
@@ -1113,6 +1136,7 @@ impl Service {
         data_dir: PathBuf,
         audit_path: &Path,
         actual_config: openbao_wrapper::OpenBaoWrapperConfig,
+        actual_postgres_config: Option<PgStorageConfig>,
         actual_initialization_body: Value,
         now: u64,
     ) -> Result<FreshWrapperFixture, String> {
@@ -1133,6 +1157,9 @@ impl Service {
         if service.initialized() || service.state.is_some() || service.seal.is_some() {
             return Err("fixture refuses an initialized or recovered store".into());
         }
+        if let Some(config) = actual_postgres_config {
+            service.install_postgres_durable_storage(config)?;
+        }
         let launch = service
             .install_openbao_wrapper(Some(actual_config))?
             .ok_or("genuine Wrapper launch plan missing")?;
@@ -1152,6 +1179,7 @@ impl Service {
         same_data_dir: PathBuf,
         same_audit_path: &Path,
         same_actual_config: openbao_wrapper::OpenBaoWrapperConfig,
+        same_postgres_config: Option<PgStorageConfig>,
     ) -> Result<Service, String> {
         if !same_actual_config.seal_barrier {
             return Err("fixture restart requires the same real Wrapper provider".into());
@@ -1164,6 +1192,9 @@ impl Service {
             return Err(
                 "fixture restart refuses absent, changed, or non-Wrapper public seal".into(),
             );
+        }
+        if let Some(config) = same_postgres_config {
+            service.install_postgres_durable_storage(config)?;
         }
         let launch = service
             .install_openbao_wrapper(Some(same_actual_config))?
@@ -1182,7 +1213,7 @@ impl Service {
     }
 
     pub(super) fn fixture_check_reopened_committed_cut(
-        &self,
+        &mut self,
         cut: &RecoveryOwnerCut,
     ) -> Result<(), Response> {
         self.fixture_require_live_recovery_wrapper()?;
@@ -1305,6 +1336,7 @@ mod source825_real_recovery_fixture_tests {
         data: PathBuf,
         audit: PathBuf,
         config: Vec<u8>,
+        postgres: Option<PgStorageConfig>,
         init: Value,
         service: Option<Service>,
         token: String,
@@ -1357,10 +1389,30 @@ mod source825_real_recovery_fixture_tests {
         let audit = root.join("audit.jsonl");
         save(&root.join("provider-config.original.json"), &config);
         save(&root.join("initialization-body.original.json"), &init_raw);
+        let postgres = std::env::var_os("HEPTABAO_RECOVERY_FIXTURE_PG_CONFIG").map(|_| {
+            let raw = private_raw(
+                "HEPTABAO_RECOVERY_FIXTURE_PG_CONFIG",
+                "HEPTABAO_RECOVERY_FIXTURE_PG_CONFIG_SHA256",
+                m.uid(),
+            );
+            save(&root.join("postgres-config.original.private.json"), &raw);
+            let mut config: PgStorageConfig =
+                serde_json::from_slice(&raw).expect("actual PostgreSQL deployment configuration");
+            config.scope = format!("{}-{name}", config.scope);
+            config
+                .validate()
+                .expect("actual independent PostgreSQL scope");
+            assert!(
+                init.get("recovery_nonce").is_some(),
+                "real PostgreSQL initialization requires a private retrieval nonce"
+            );
+            config
+        });
         let f = Service::fixture_start_genuine_recovery_wrapper(
             data.clone(),
             &audit,
             serde_json::from_slice(&config).expect("real production wrapper config"),
+            postgres.as_ref().map(clone_pg_storage_config),
             init.clone(),
             now(),
         )
@@ -1373,6 +1425,7 @@ mod source825_real_recovery_fixture_tests {
             data,
             audit,
             config,
+            postgres,
             init,
             service: Some(f.service),
             token: String::new(),
@@ -1396,6 +1449,32 @@ mod source825_real_recovery_fixture_tests {
             .map(|v| v.as_str().expect("real recovery encoding").to_owned())
             .collect::<Vec<_>>();
         assert!(!c.old_keys.is_empty());
+        if c.postgres.is_some() {
+            let retrieved = c
+                .service
+                .as_mut()
+                .expect("live PostgreSQL fixture")
+                .handle_at("PUT", "sys/init", "", "", c.init.clone(), now());
+            response(
+                &c.root,
+                "postgres-initialization-same-nonce-retrieval",
+                &retrieved,
+            );
+            assert_eq!(
+                retrieved.status, 200,
+                "actual PostgreSQL nonce recovery failed"
+            );
+            assert_eq!(
+                retrieved.body, f.initialization.body,
+                "retrieval must preserve the exact already committed candidate"
+            );
+            assert!(
+                ["state.hbs", "ledger.hbl", "journal.hbj"]
+                    .iter()
+                    .all(|name| !c.data.join(name).exists()),
+                "PostgreSQL authority must remain remote"
+            );
+        }
         let ack = c.service.as_mut().expect("live fixture").handle_at(
             "POST",
             "sys/init/ack",
@@ -1408,7 +1487,7 @@ mod source825_real_recovery_fixture_tests {
         assert_eq!(ack.status, 204);
         assert!(
             c.service
-                .as_ref()
+                .as_mut()
                 .expect("live fixture")
                 .fixture_require_live_recovery_wrapper()
                 .is_ok(),
@@ -1493,18 +1572,147 @@ mod source825_real_recovery_fixture_tests {
             .expect("live fixture")
             .fence_openbao_wrapper();
     }
+    fn genuine_expired_initialization_deadlines() {
+        let parent = PathBuf::from(
+            std::env::var("HEPTABAO_RECOVERY_FIXTURE_ROOT").expect("actual fixture root"),
+        );
+        let owner = fs::symlink_metadata(&parent)
+            .expect("actual fixture root metadata")
+            .uid();
+        let config = private_raw(
+            "HEPTABAO_RECOVERY_FIXTURE_CONFIG",
+            "HEPTABAO_RECOVERY_FIXTURE_CONFIG_SHA256",
+            owner,
+        );
+        let init_raw = private_raw(
+            "HEPTABAO_RECOVERY_FIXTURE_INIT_BODY",
+            "HEPTABAO_RECOVERY_FIXTURE_INIT_BODY_SHA256",
+            owner,
+        );
+        let init: Value = serde_json::from_slice(&init_raw).expect("actual initialization body");
+        for name in [
+            "deadline-before-admission",
+            "deadline-tightened-before-execution",
+            "deadline-expired-before-finalization",
+        ] {
+            let root = parent.join(name);
+            fs::create_dir(&root).expect("fresh deadline case");
+            fs::set_permissions(&root, fs::Permissions::from_mode(0o700))
+                .expect("private deadline case");
+            let data = root.join("data");
+            let audit = root.join("audit.jsonl");
+            let service = Service::new(data.clone(), &audit).expect("fresh actual Service");
+            let mut c = Case {
+                root,
+                data,
+                audit,
+                config: config.clone(),
+                postgres: None,
+                init: init.clone(),
+                service: Some(service),
+                token: String::new(),
+                old_keys: Vec::new(),
+            };
+            let service = c.service.as_mut().expect("owned deadline case");
+            let launch = service
+                .install_openbao_wrapper(Some(
+                    serde_json::from_slice(&config).expect("actual provider config"),
+                ))
+                .expect("real provider install")
+                .expect("actual provider launch");
+            launch
+                .execute()
+                .expect("real provider deadline-case startup");
+            let r = if name == "deadline-before-admission" {
+                let _scope = crate::request_deadline::RequestDeadlineScope::enter(Instant::now());
+                match service.prepare_wrapper_barrier_initialization(&init) {
+                    Err(r) => r,
+                    Ok(_) => panic!("expired original caller deadline was admitted"),
+                }
+            } else {
+                let original_deadline = Instant::now() + Duration::from_secs(15);
+                let plan = {
+                    let _scope =
+                        crate::request_deadline::RequestDeadlineScope::enter(original_deadline);
+                    service
+                        .prepare_wrapper_barrier_initialization(&init)
+                        .unwrap_or_else(|_| panic!("live actual initialization plan unavailable"))
+                };
+                let completion = if name == "deadline-tightened-before-execution" {
+                    plan.execute_before(Instant::now())
+                } else {
+                    // A later executor bound cannot extend the prepared caller
+                    // deadline. This really dispatches and accepts AES Encrypt.
+                    plan.execute_before(Instant::now() + Duration::from_secs(20))
+                };
+                if name == "deadline-expired-before-finalization" {
+                    let (rpc_deadline, publication_deadline, encrypted) = completion
+                        .as_ref()
+                        .expect("actual Encrypt completion required")
+                        .fixture_deadlines();
+                    assert!(
+                        encrypted,
+                        "real provider AES Encrypt must succeed before caller expiry"
+                    );
+                    assert_eq!(
+                        publication_deadline,
+                        Some(original_deadline),
+                        "later executor extended original caller deadline"
+                    );
+                    assert!(
+                        rpc_deadline < original_deadline,
+                        "provider RPC deadline was extended to publication budget"
+                    );
+                    let _scope =
+                        crate::request_deadline::RequestDeadlineScope::enter(Instant::now());
+                    service.finalize_wrapper_barrier_initialization(
+                        plan,
+                        completion,
+                        now(),
+                        "actual-expired-finalization",
+                    )
+                } else {
+                    service.finalize_wrapper_barrier_initialization(
+                        plan,
+                        completion,
+                        now(),
+                        "actual-expired-execution",
+                    )
+                }
+            };
+            response(&c.root, "expired-caller-response", &r);
+            assert_eq!(r.status, 503);
+            for key in [
+                "root_token",
+                "keys",
+                "keys_base64",
+                "recovery_keys",
+                "recovery_keys_base64",
+            ] {
+                assert!(
+                    r.body.get(key).is_none(),
+                    "expired caller released private output"
+                );
+            }
+            let service = c.service.as_ref().expect("fenced deadline case");
+            assert!(service.state.is_none() && service.seal.is_none() && service.durable.is_none());
+            assert!(!c.data.exists(), "expired caller published a durable store");
+            close(&c);
+        }
+    }
     #[test]
     #[ignore = "requires ROOT-admitted real provider, fresh private store and built candidate; missing inputs UNQUALIFIED"]
     fn genuine_wrapper_bootstrap_and_recovery_capability() {
-        let c = start("genuine-wrapper-bootstrap");
+        let mut c = start("genuine-wrapper-bootstrap");
         assert!(
             c.service
-                .as_ref()
+                .as_mut()
                 .expect("live fixture")
                 .fixture_require_live_recovery_wrapper()
                 .is_ok()
         );
         close(&c);
+        genuine_expired_initialization_deadlines();
     }
     #[test]
     #[ignore = "requires real durable store/provider; no simulated state"]
@@ -1532,12 +1740,13 @@ mod source825_real_recovery_fixture_tests {
             c.data.clone(),
             &c.audit,
             serde_json::from_slice(&c.config).expect("identical actual provider bytes"),
+            c.postgres.as_ref().map(clone_pg_storage_config),
         )
         .unwrap_or_else(|_| panic!("same-store real provider restart failed"));
         c.service = Some(restarted);
         assert!(
             c.service
-                .as_ref()
+                .as_mut()
                 .expect("real reopened provider")
                 .fixture_check_reopened_committed_cut(&cut)
                 .is_ok()

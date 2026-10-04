@@ -836,7 +836,12 @@ pub(crate) enum ExternalEffectResult {
     OpenLdap(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
     #[cfg(target_os = "linux")]
-    WrapperBarrierInit(Result<OpenBaoWrapperCompletion, heptabao_openbao_grpc::BridgeError>),
+    WrapperBarrierInit(
+        Result<
+            openbao_wrapper::barrier::InitializationCompletion,
+            heptabao_openbao_grpc::BridgeError,
+        >,
+    ),
 }
 
 pub(crate) struct PendingExternalRequest {
@@ -867,7 +872,7 @@ impl PendingExternalRequest {
         match &self.effect {
             #[cfg(target_os = "linux")]
             ExternalEffectPlan::WrapperBarrierInit(plan) => {
-                ExternalEffectResult::WrapperBarrierInit(plan.execute_before(plan.deadline()))
+                ExternalEffectResult::WrapperBarrierInit(plan.execute())
             }
             ExternalEffectPlan::Database(plan) => ExternalEffectResult::Database(plan.execute()),
             ExternalEffectPlan::DatabaseConfig(plan) => {
@@ -1886,7 +1891,10 @@ impl Service {
         }
         if path == "sys/init" && matches!(method, "PUT" | "POST") {
             #[cfg(target_os = "linux")]
-            if self.wrapper_barrier_selected() && !self.initialized() {
+            if self.wrapper_barrier_selected()
+                && !self.initialized()
+                && !postgres_pending_exists(&self.data_dir).unwrap_or(true)
+            {
                 let plan =
                     if !valid_path(path) || !valid_namespace(namespace) || !namespace.is_empty() {
                         Err(Response::error(
@@ -3569,11 +3577,21 @@ impl Service {
         now: u64,
         response_fingerprint: &str,
     ) -> (Response, bool) {
-        self.initialize_with_postgres_import(body, now, response_fingerprint, |config, bundle| {
-            let mut backend = PostgresDurableBackend::initialize(clone_pg_storage_config(config))?;
-            backend.initialize_or_match(bundle)?;
-            Ok(Box::new(backend))
-        })
+        self.initialize_with_postgres_import(
+            body,
+            now,
+            response_fingerprint,
+            Self::import_postgres_initialization,
+        )
+    }
+
+    fn import_postgres_initialization(
+        config: &PgStorageConfig,
+        bundle: &BackendBundle,
+    ) -> Result<Box<dyn DurableBackend>, BackendError> {
+        let mut backend = PostgresDurableBackend::initialize(clone_pg_storage_config(config))?;
+        backend.initialize_or_match(bundle)?;
+        Ok(Box::new(backend))
     }
 
     fn initialize_with_postgres_import(
@@ -3600,8 +3618,19 @@ impl Service {
         ) -> Result<Box<dyn DurableBackend>, BackendError>,
         wrapper: Option<openbao_wrapper::barrier::PreparedMaterial>,
     ) -> (Response, bool) {
+        let wrapper_deadline = wrapper.as_ref().and_then(|material| material.deadline);
         let wrapper_mode =
-            wrapper.is_some() || self.seal.as_ref().is_some_and(|seal| seal.is_wrapper());
+            wrapper.is_some() || self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) || {
+                #[cfg(target_os = "linux")]
+                {
+                    self.wrapper_barrier_selected()
+                        && postgres_pending_exists(&self.data_dir).unwrap_or(true)
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    false
+                }
+            };
         if self.ha.is_some() {
             return (
                 Response::error(
@@ -3664,6 +3693,11 @@ impl Service {
             (recovery_shares, recovery_threshold)
         } else {
             (0, 0)
+        };
+        let response_counts = if wrapper_mode {
+            recovery_counts
+        } else {
+            (shares, threshold)
         };
         let recovery_secret = match body.get("recovery_nonce") {
             None => None,
@@ -3732,8 +3766,8 @@ impl Service {
                 return (
                     self.recover_published_postgres_initialization(
                         recovery_secret.as_deref(),
-                        shares,
-                        threshold,
+                        response_counts.0,
+                        response_counts.1,
                         &parent,
                     ),
                     false,
@@ -3769,7 +3803,12 @@ impl Service {
                     false,
                 );
             };
-            let pending = match load_postgres_pending(&self.data_dir, secret, shares, threshold) {
+            let pending = match load_postgres_pending(
+                &self.data_dir,
+                secret,
+                response_counts.0,
+                response_counts.1,
+            ) {
                 Ok(value) => value,
                 Err(error) => return (error, false),
             };
@@ -3780,6 +3819,7 @@ impl Service {
                 response_fingerprint,
                 &parent,
                 &mut import,
+                wrapper_deadline,
             );
         }
         if self.postgres_durable.is_some() && recovery_secret.is_none() {
@@ -3792,7 +3832,6 @@ impl Service {
             );
         }
 
-        let wrapper_deadline = wrapper.as_ref().map(|material| material.deadline);
         let (mut seal, generated_shares, barrier_key) = if let Some(material) = wrapper {
             (material.seal, Vec::new(), material.key)
         } else {
@@ -4055,10 +4094,17 @@ impl Service {
                     false,
                 );
             }
-            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            // The sealed genuine provider remains owned while this prepared
+            // candidate is imported. Any failure is fenced by its finalizer;
+            // successful publication is admitted only before the same deadline.
             self.recovery_required = true;
             self.ha_activation = None;
-            let pending = match load_postgres_pending(&self.data_dir, secret, shares, threshold) {
+            let pending = match load_postgres_pending(
+                &self.data_dir,
+                secret,
+                response_counts.0,
+                response_counts.1,
+            ) {
                 Ok(value) => value,
                 Err(error) => return (error, false),
             };
@@ -4069,6 +4115,7 @@ impl Service {
                 response_fingerprint,
                 &parent,
                 &mut import,
+                wrapper_deadline,
             );
         }
         if self
@@ -4154,6 +4201,7 @@ impl Service {
             &PgStorageConfig,
             &BackendBundle,
         ) -> Result<Box<dyn DurableBackend>, BackendError>,
+        wrapper_deadline: Option<std::time::Instant>,
     ) -> (Response, bool) {
         let Some(config) = self.postgres_durable.as_ref() else {
             return (
@@ -4236,7 +4284,14 @@ impl Service {
         };
         // The returned backend owns the remote writer fence. Keep it alive
         // until local publication and pending cleanup have completed.
-        let remote_fence = match import(config, &pending.bundle) {
+        if wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
+            self.fence_openbao_wrapper();
+            return (
+                Response::error(503, "Wrapper PostgreSQL initialization deadline expired"),
+                false,
+            );
+        }
+        let mut remote_fence = match import(config, &pending.bundle) {
             Ok(value) => value,
             Err(BackendError::RootNotEmpty) => {
                 return (
@@ -4257,7 +4312,12 @@ impl Service {
                 );
             }
         };
-        if verify_initialization_parent(parent).is_err() || pending.local_fence.verify().is_err() {
+        if wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline)
+            || remote_fence.verify_live_ownership().is_err()
+            || verify_initialization_parent(parent).is_err()
+            || pending.local_fence.verify().is_err()
+        {
+            self.fence_openbao_wrapper();
             return (
                 Response::error(
                     503,
@@ -4289,7 +4349,10 @@ impl Service {
         self.barrier_key = None;
         self.unseal_shares.clear();
         self.rekey = None;
-        if !parent_synced {
+        if !parent_synced
+            || wrapper_deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline)
+            || remote_fence.verify_live_ownership().is_err()
+        {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -4660,14 +4723,27 @@ impl Service {
         let record_root = records::decode_root(&bytes)?;
         self.validate_loaded_capacity(&state, record_root.as_ref())?;
         // Bind durable identity before any local state is admitted into an HA epoch.
-        if (self.ha.is_some() || self.postgres_durable.is_some()) && state.auth.has_recovery_state()
-        {
+        if self.ha.is_some() && state.auth.has_recovery_state() {
             return Err(Response::error(
                 503,
-                "HA/PostgreSQL recovery startup requires a backend-bound consumer",
+                "HA recovery startup requires a backend-bound consumer",
             ));
         }
+        // A PostgreSQL owner must still hold the same server-side session
+        // fence before and after repairing its authenticated local public index.
+        durable.verify_live_ownership().map_err(|_| {
+            Response::error(
+                503,
+                "durable recovery owner unavailable before public-index repair",
+            )
+        })?;
         let admitted_seal = self.reconcile_recovery_seal(&state, deadline)?;
+        durable.verify_live_ownership().map_err(|_| {
+            Response::error(
+                503,
+                "durable recovery owner unavailable after public-index repair",
+            )
+        })?;
         // Bind durable identity before any local state is admitted into an HA epoch.
         if let Some(ha) = self.ha.as_ref() {
             let ha = ha
