@@ -1496,6 +1496,29 @@ impl EngineState {
             .is_some_and(|(_, relative)| relative == "ocsp")
     }
 
+    /// Bind a delivery to the longest actual KV mount and its durable path
+    /// incarnation and configuration revision. Disable/recreate or a KV
+    /// version upgrade cannot deliver a response under an earlier binding.
+    pub(crate) fn ordinary_kv_mount_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(&str, u64, u64)> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .max_by_key(|(mount, _)| mount.len())
+            .and_then(|(path, mount)| {
+                matches!(
+                    mount.backend,
+                    Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
+                )
+                .then_some((path.as_str(), mount.incarnation, mount.revision))
+            })
+    }
+
     pub(crate) fn is_actual_kv_query_owner(&self, namespace: &str, path: &str) -> bool {
         self.namespaces
             .get(namespace)

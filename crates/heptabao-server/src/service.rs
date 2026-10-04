@@ -109,6 +109,8 @@ mod online_auth;
 mod openbao_wrapper;
 #[path = "service_openldap.rs"]
 mod openldap_secret;
+#[path = "service_ordinary_kv_delivery.rs"]
+mod ordinary_kv_delivery;
 #[path = "service_plugin.rs"]
 mod plugin;
 #[path = "service_recovery_keys.rs"]
@@ -982,6 +984,7 @@ pub struct Service {
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
+    pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
     native_snapshot_transport: bool,
     native_snapshot_clock: Option<(std::time::Instant, Duration)>,
     snapshot_spool: Option<Arc<crate::snapshot_file::SnapshotSpool>>,
@@ -1333,6 +1336,7 @@ impl Service {
             pending_kubernetes_token: None,
             pending_openldap_effect: None,
             pending_snapshot_transfer: None,
+            pending_ordinary_kv_authority: None,
             native_snapshot_transport: false,
             native_snapshot_clock: None,
             snapshot_spool: None,
@@ -1881,6 +1885,7 @@ impl Service {
             || self.pending_kubernetes_token.is_some()
             || self.pending_openldap_effect.is_some()
             || self.pending_snapshot_transfer.is_some()
+            || self.pending_ordinary_kv_authority.is_some()
         {
             erase_json(&mut body);
             return RequestExecution::Complete(Response::error(
@@ -2103,6 +2108,7 @@ impl Service {
         let kubernetes_token = self.pending_kubernetes_token.take();
         let openldap = self.pending_openldap_effect.take();
         let snapshot_transfer = self.pending_snapshot_transfer.take();
+        let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
         let staged = usize::from(database.is_some())
             + usize::from(database_config.is_some())
             + usize::from(database_rotation.is_some())
@@ -2117,7 +2123,7 @@ impl Service {
             + usize::from(kubernetes_token.is_some())
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
-        if staged > 1 {
+        if staged > 1 || staged != 0 && ordinary_kv_authority.is_some() {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -2154,12 +2160,13 @@ impl Service {
                 effect,
             }));
         }
-        RequestExecution::Complete(self.audit_completed_response(
-            &fingerprint,
-            now,
-            token_clock,
-            response,
-        ))
+        let response = self.audit_completed_response(&fingerprint, now, token_clock, response);
+        let response = if let Some(authority) = ordinary_kv_authority {
+            self.complete_ordinary_kv_delivery(authority, response)
+        } else {
+            response
+        };
+        RequestExecution::Complete(response)
     }
 
     fn handle_inner(&mut self, request: RequestView<'_>) -> Response {
@@ -2889,6 +2896,27 @@ impl Service {
             .filter(|ttl| *ttl > 0)
             .map(|_| admitted.clone());
         let mut transaction = admitted;
+        let ordinary_kv_authority = if wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+            && transaction
+                .engines
+                .ordinary_kv_mount_binding(namespace, path)
+                .is_some()
+        {
+            match principal.take() {
+                Some(principal) => match ordinary_kv_delivery::OrdinaryKvAuthority::new(
+                    principal,
+                    &transaction,
+                    &request,
+                    &self.unseal_nonce,
+                ) {
+                    Ok(authority) => Some(authority),
+                    Err(error) => return error,
+                },
+                None => None,
+            }
+        } else {
+            None
+        };
         let mut approle_secret_consumption = None;
         let mut response = if path == "sys/wrapping/lookup" {
             match transaction
@@ -2904,6 +2932,21 @@ impl Service {
             }
         } else if path == "sys/wrapping/wrap" && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0) {
             Response::error(400, "endpoint requires response wrapping to be used")
+        } else if let Some(authority) = ordinary_kv_authority.as_ref() {
+            Self::dispatch_authorized_subrequest(
+                &mut transaction,
+                Some(authority.principal()),
+                namespace,
+                method,
+                path,
+                body,
+                token_fields.as_ref(),
+                now,
+                request.token_clock,
+                client_certificates,
+                origin_peer,
+                &mut approle_secret_consumption,
+            )
         } else {
             Self::dispatch(
                 &mut transaction,
@@ -2920,6 +2963,7 @@ impl Service {
                 &mut approle_secret_consumption,
             )
         };
+        self.pending_ordinary_kv_authority = ordinary_kv_authority;
         if response.status < 300
             && matches!(method, "POST" | "PUT")
             && let Err(error) =
@@ -3010,6 +3054,15 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
+        if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
+            let checked = authority
+                .observe_candidate(&mut admitted)
+                .and_then(|()| authority.check(&admitted, &admitted.auth, &self.unseal_nonce));
+            if let Err(error) = checked {
+                erase_json(&mut response.body);
+                return error;
+            }
+        }
         // Safe-key and custom JWT role candidates need their reader schema
         // before record preflight. Ordinary legacy reads retain their original
         // schema until a proven logical mutation, as before.
@@ -3050,7 +3103,8 @@ impl Service {
                     Ok(plan) => plan,
                     Err(error) => return error,
                 };
-                if let Err(error) = self.commit_record_plan(&admitted, plan) {
+                if let Err(error) = self.commit_ordinary_kv_record_plan(&admitted, plan) {
+                    erase_json(&mut response.body);
                     return error;
                 }
                 self.state = Some(admitted);
@@ -3087,7 +3141,8 @@ impl Service {
                     Ok(plan) => plan,
                     Err(error) => return error,
                 };
-                if let Err(error) = self.commit_record_plan(&admitted, plan) {
+                if let Err(error) = self.commit_ordinary_kv_record_plan(&admitted, plan) {
+                    erase_json(&mut response.body);
                     return error;
                 }
                 self.state = Some(admitted);
@@ -3096,10 +3151,14 @@ impl Service {
         response
     }
 
-    fn immutable_kv_response(&self, request: &RequestView<'_>) -> Option<Response> {
+    fn immutable_kv_response(&mut self, request: &RequestView<'_>) -> Option<Response> {
         let state = self.state.as_ref()?;
         if request.wrap_ttl_seconds.is_some()
             || state.has_token_api_precision_state()
+            || state
+                .engines
+                .ordinary_kv_mount_binding(request.namespace, request.path)
+                .is_none()
             || state.engines.has_live_leases()
             || state.auth.is_wrapping_token(request.token)
             || !state
@@ -3154,22 +3213,31 @@ impl Service {
         ) {
             return Some(Response::error(error.status, &error.message));
         }
-        Some(
-            match state.engines.handle_immutable_kv_read(
-                request.namespace,
-                request.method,
-                request.path,
-                request.body,
-                time.seconds(),
-            ) {
-                Ok(mut response) => Response {
-                    consistency_index: None,
-                    status: response.status,
-                    body: std::mem::take(&mut response.body),
-                },
-                Err(error) => Response::error(error.status, &error.message),
+        let authority = match ordinary_kv_delivery::OrdinaryKvAuthority::new(
+            principal,
+            state,
+            request,
+            &self.unseal_nonce,
+        ) {
+            Ok(authority) => authority,
+            Err(error) => return Some(error),
+        };
+        let response = match state.engines.handle_immutable_kv_read(
+            request.namespace,
+            request.method,
+            request.path,
+            request.body,
+            time.seconds(),
+        ) {
+            Ok(mut response) => Response {
+                consistency_index: None,
+                status: response.status,
+                body: std::mem::take(&mut response.body),
             },
-        )
+            Err(error) => Response::error(error.status, &error.message),
+        };
+        self.pending_ordinary_kv_authority = Some(authority);
+        Some(response)
     }
 
     #[allow(clippy::too_many_arguments)]
