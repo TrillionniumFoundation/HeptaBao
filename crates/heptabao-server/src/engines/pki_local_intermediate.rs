@@ -1132,6 +1132,7 @@ impl Pki {
 
 #[cfg(test)]
 mod tests {
+    use super::public::PkiPublicRead;
     use super::*;
     use openssl::{
         stack::Stack,
@@ -1423,14 +1424,15 @@ mod tests {
                     .is_ok_and(|crl| crl.verify(&key).unwrap_or(false)))
         );
         let before = Zeroizing::new(serde_json::to_vec(&root)?);
-        let read = root.public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)?;
+        let read =
+            root.handle_public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)?;
         assert_eq!(read.body["data"]["revocation_time"], NOW + 1);
         assert_eq!(*before, serde_json::to_vec(&root)?);
         let mut reopened: Pki = serde_json::from_slice(&before)?;
         reopened.validate("", "pki/", NOW + 1)?;
         assert_eq!(
             reopened
-                .public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)?
+                .handle_public_read(PkiPublicRead::Certificate(&serial), &json!({}), NOW + 1)?
                 .body,
             read.body
         );
