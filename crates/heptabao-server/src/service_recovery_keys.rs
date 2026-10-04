@@ -1342,8 +1342,13 @@ mod source825_real_recovery_fixture_tests {
         fs::create_dir(&root).expect("UNQUALIFIED: case must be fresh; no reset or replay");
         fs::set_permissions(&root, fs::Permissions::from_mode(0o700)).expect("case private");
         let data = root.join("data");
-        fs::create_dir(&data).expect("fresh physical store");
-        fs::set_permissions(&data, fs::Permissions::from_mode(0o700)).expect("store private");
+        // The real initialization transaction creates and atomically publishes
+        // this private store. Pre-creating its target would make initialization
+        // reject safely before any durable publication.
+        assert!(
+            !data.exists(),
+            "actual initialization target must be absent"
+        );
         let audit = root.join("audit.jsonl");
         save(&root.join("provider-config.original.json"), &config);
         save(&root.join("initialization-body.original.json"), &init_raw);
