@@ -155,7 +155,7 @@ fn pki_issue_persists_encrypted_and_lease_revoke_publishes_crl() -> TestResult {
     let certificate = text(&issued.body, "/data/certificate")?;
     let der = pem_der(&certificate, "CERTIFICATE")?;
     assert_eq!(der.first(), Some(&0x30));
-    assert!(pem_der(&private_key, "PRIVATE KEY")?.len() > 32);
+    assert!(pem_der(&private_key, "RSA PRIVATE KEY")?.len() > 32);
     assert_eq!(
         call(
             &mut s,

@@ -27,6 +27,8 @@ and, when it owns the adopted child, its own wait result.
 
 ## Acceptance evidence
 
+**Named executable anchor:** `spawning_thread_exit_kills_and_reaps_actual_child` in `crates/heptabao-linux-parent-death/src/lib.rs`.
+
 `spawning_thread_exit_kills_and_reaps_actual_child` executes a real child, then lets
 its spawning thread exit while the parent process remains alive. The owned wait
 must observe kernel SIGKILL without an administrative signal to satisfy the test.
