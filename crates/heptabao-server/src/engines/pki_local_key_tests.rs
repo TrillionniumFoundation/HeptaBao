@@ -2,6 +2,186 @@ use super::*;
 
 type TestResult = std::result::Result<(), &'static str>;
 
+#[test]
+fn exported_roots_match_certificate_and_preserve_oracle_bundle_encodings() -> TestResult {
+    for kind in [
+        LocalKeyKind::Rsa2048,
+        LocalKeyKind::Ec256,
+        LocalKeyKind::Ed25519,
+        LocalKeyKind::Mldsa44,
+        LocalKeyKind::Mldsa65,
+        LocalKeyKind::Mldsa87,
+    ] {
+        for format in ["pem", "der", "pem_bundle"] {
+            for pkcs8 in [false, true] {
+                let mut pki = Pki::default();
+                let mut request = json!({"common_name":"exported-root.example.test", "ttl":"1h",
+                    "key_type":kind.key_type(), "key_bits":kind.bits(), "format":format});
+                if pkcs8 {
+                    request["private_key_format"] = json!("pkcs8");
+                }
+                let response = pki
+                    .handle_admin("POST", "root/generate/exported", &request, 100)
+                    .map_err(|_| "exported root generation")?;
+                let data = response.body["data"]
+                    .as_object()
+                    .ok_or("root response data")?;
+                let expected = [
+                    "certificate",
+                    "expiration",
+                    "issuer_id",
+                    "issuer_name",
+                    "issuing_ca",
+                    "key_id",
+                    "key_name",
+                    "private_key",
+                    "private_key_type",
+                    "serial_number",
+                ];
+                assert!(
+                    data.keys().map(String::as_str).eq(expected),
+                    "official root response fields"
+                );
+                assert!(
+                    data["private_key_type"] == kind.key_type(),
+                    "actual exported key algorithm"
+                );
+                let root = pki.root.as_ref().ok_or("stored root")?;
+                assert!(
+                    data["issuer_id"] == root.issuer_id && data["key_id"] == root.key_id,
+                    "returned identifiers belong to stored root"
+                );
+                assert!(root.not_before == 70, "official default root backdating");
+                let stored = root
+                    .local_key()
+                    .map_err(|_| "stored root private ownership")?;
+                let public = stored.public().map_err(|_| "stored root public")?;
+                public
+                    .validate_certificate(&root.certificate_der)
+                    .map_err(|_| "actual root self-signature")?;
+                let private = Zeroizing::new(
+                    data["private_key"]
+                        .as_str()
+                        .ok_or("exported private field")?
+                        .to_owned(),
+                );
+                let private_der = Zeroizing::new(if format == "der" {
+                    BASE64
+                        .decode(private.as_bytes())
+                        .map_err(|_| "DER private decode")?
+                } else {
+                    let encoded = Zeroizing::new(
+                        private
+                            .lines()
+                            .filter(|line| !line.starts_with("-----"))
+                            .collect::<String>(),
+                    );
+                    BASE64
+                        .decode(encoded.as_bytes())
+                        .map_err(|_| "PEM private decode")?
+                });
+                let imported_public = if kind.is_mldsa() {
+                    mldsa_dispatch!(kind, mldsa_import_pkcs8, private_der.as_slice())
+                        .map_err(|_| "actual MLDSA exported import")?
+                        .public()
+                        .map_err(|_| "actual MLDSA exported public")?
+                        .spki()
+                        .map_err(|_| "MLDSA exported SPKI")?
+                } else {
+                    PKey::private_key_from_der(&private_der)
+                        .map_err(|_| "actual classic exported import")?
+                        .public_key_to_der()
+                        .map_err(|_| "actual classic exported SPKI")?
+                };
+                assert!(
+                    imported_public == public.spki().map_err(|_| "root SPKI")?,
+                    "exported private key matches certificate"
+                );
+                let certificate = data["certificate"]
+                    .as_str()
+                    .ok_or("root certificate field")?;
+                let issuing_ca = data["issuing_ca"].as_str().ok_or("root issuing CA")?;
+                if format == "pem_bundle" {
+                    let (legacy_der, legacy_label) = stored
+                        .root_export_der(false)
+                        .map_err(|_| "legacy bundle encoding")?;
+                    let legacy = private_key_pem(legacy_label, &legacy_der)
+                        .map_err(|_| "legacy bundle PEM")?;
+                    assert!(
+                        certificate
+                            .strip_prefix(legacy.as_str())
+                            .and_then(|tail| tail.strip_prefix('\n'))
+                            == Some(issuing_ca),
+                        "oracle bundle keeps legacy private block before certificate"
+                    );
+                    assert!(
+                        issuing_ca.starts_with("-----BEGIN CERTIFICATE-----"),
+                        "issuing CA is public certificate"
+                    );
+                } else {
+                    assert!(
+                        certificate == issuing_ca,
+                        "separate certificate and issuing CA encodings"
+                    );
+                }
+                if pkcs8 && format != "der" {
+                    assert!(
+                        private.starts_with("-----BEGIN PRIVATE KEY-----"),
+                        "PKCS8 private field label"
+                    );
+                }
+                pki.validate("", "pki/", 100)
+                    .map_err(|_| "exported root state validation")?;
+                let bytes = Zeroizing::new(
+                    serde_json::to_vec(&pki).map_err(|_| "root state serialization")?,
+                );
+                let reopened: Pki =
+                    serde_json::from_slice(&bytes).map_err(|_| "root state reopen")?;
+                reopened
+                    .validate("", "pki/", 100)
+                    .map_err(|_| "reopened root state validation")?;
+                let reopened_root = reopened.root.as_ref().ok_or("reopened root")?;
+                assert!(
+                    reopened_root.issuer_id == root.issuer_id
+                        && reopened_root.key_id == root.key_id,
+                    "public identifiers persist across reopen"
+                );
+                let signature = reopened_root
+                    .local_key()
+                    .map_err(|_| "reopened root key")?
+                    .sign(b"public root export restart proof")
+                    .map_err(|_| "reopened root signing")?;
+                assert!(
+                    public
+                        .verify(b"public root export restart proof", &signature)
+                        .map_err(|_| "reopened root verify")?,
+                    "export preserves actual durable signing key"
+                );
+            }
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn invalid_private_export_format_leaves_root_unmodified() -> TestResult {
+    for invalid in [json!("encrypted"), json!(1), json!(null)] {
+        let mut pki = Pki::default();
+        let result = pki.handle_admin(
+            "POST",
+            "root/generate/exported",
+            &json!({"common_name":"exported-root.example.test", "private_key_format":invalid}),
+            100,
+        );
+        assert!(
+            matches!(result, Err(error) if error.status == 400),
+            "invalid export format refusal"
+        );
+        assert!(pki.root.is_none(), "failed export does not create root");
+    }
+    Ok(())
+}
+
 fn kinds() -> [LocalKeyKind; 11] {
     [
         LocalKeyKind::Rsa2048,

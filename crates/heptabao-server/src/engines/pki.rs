@@ -29,7 +29,7 @@ const DEFAULT_LEAF_TTL: u64 = 24 * 3600;
 const MAX_ACME_LIST: usize = 64;
 const MAX_ACME_CONFIG_STRING: usize = 2048;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 enum RootOutputFormat {
     Pem,
     Der,
@@ -135,6 +135,10 @@ pub(super) struct Pki {
 #[derive(Clone, Serialize, Deserialize)]
 struct RootCa {
     common_name: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    issuer_id: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    key_id: String,
     pkcs8: Vec<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     local_material: Option<LocalPrivateMaterial>,
@@ -287,6 +291,9 @@ impl Pki {
                 || root.not_before >= root.not_after
                 || root.not_after - root.not_before > MAX_TTL + 120
                 || serial_bytes(&root.serial).is_err()
+                || !valid_pki_id(&root.issuer_id)
+                || !valid_pki_id(&root.key_id)
+                || root.issuer_id.is_empty() != root.key_id.is_empty()
             {
                 return Err(bad("invalid PKI root state"));
             }
@@ -460,7 +467,7 @@ impl Pki {
         if path == "config/acme" {
             return self.handle_acme_config(method, body);
         }
-        if path == "root/generate/internal" {
+        if matches!(path, "root/generate/internal" | "root/generate/exported") {
             if !write_method(method) {
                 return Err(unsupported());
             }
@@ -477,8 +484,18 @@ impl Pki {
             )?;
             let kind = LocalKeyKind::from_body(body)?;
             let output_format = RootOutputFormat::from_body(body)?;
-            // This internal route never exports private material. The known
-            // private_key_format parameter is ignored, as in the pinned oracle.
+            let exported = path == "root/generate/exported";
+            // Internal generation ignores this field, matching the oracle.
+            // Exported generation accepts the legacy encoding and PKCS8.
+            let export_pkcs8 = exported
+                && match body.get("private_key_format") {
+                    None => false,
+                    Some(Value::String(value)) if matches!(value.as_str(), "" | "der" | "pem") => {
+                        false
+                    }
+                    Some(Value::String(value)) if value == "pkcs8" => true,
+                    _ => return Err(bad("invalid PKI private key format")),
+                };
             if self.root.is_some() {
                 return Err(bad("PKI root already exists"));
             }
@@ -494,7 +511,7 @@ impl Pki {
             let material = LocalPrivateMaterial::generate(kind)?;
             let public = material.public()?;
             let serial = random_serial()?;
-            let not_before = now.saturating_sub(60);
+            let not_before = now.saturating_sub(30);
             let not_after = now
                 .checked_add(ttl)
                 .ok_or_else(|| bad("PKI root TTL overflow"))?;
@@ -513,7 +530,37 @@ impl Pki {
                     ip_sans: &[],
                 },
             )?;
-            let certificate = output_format.certificate(&certificate_der);
+            let issuing_ca = output_format.certificate(&certificate_der);
+            let issuer_id = random_pki_id()?;
+            let key_id = random_pki_id()?;
+            let mut data = json!({
+                "certificate": issuing_ca,
+                "issuing_ca": issuing_ca,
+                "serial_number": serial,
+                "expiration": not_after,
+                "issuer_id": issuer_id,
+                "issuer_name": "",
+                "key_id": key_id,
+                "key_name": "",
+            });
+            if exported {
+                let (private_der, label) = material.root_export_der(export_pkcs8)?;
+                let private_key = if output_format == RootOutputFormat::Der {
+                    Zeroizing::new(BASE64.encode(private_der.as_slice()))
+                } else {
+                    private_key_pem(label, &private_der)?
+                };
+                if output_format == RootOutputFormat::PemBundle {
+                    // The oracle builds the bundle before converting the
+                    // separate private_key field to PKCS8.
+                    let (legacy_der, legacy_label) = material.root_export_der(false)?;
+                    let legacy_key = private_key_pem(legacy_label, &legacy_der)?;
+                    data["certificate"] =
+                        Value::String(format!("{}\n{}", legacy_key.as_str(), issuing_ca));
+                }
+                data["private_key"] = Value::String(private_key.to_string());
+                data["private_key_type"] = Value::String(kind.key_type().into());
+            }
             let (pkcs8, local_material) = if kind == LocalKeyKind::Ed25519 {
                 (material.private_der()?.to_vec(), None)
             } else {
@@ -521,6 +568,8 @@ impl Pki {
             };
             self.root = Some(RootCa {
                 common_name: common_name.into(),
+                issuer_id,
+                key_id,
                 pkcs8,
                 local_material,
                 certificate_der,
@@ -528,15 +577,7 @@ impl Pki {
                 not_before,
                 not_after,
             });
-            return Ok(ok(
-                json!({
-                    "certificate": certificate,
-                    "issuing_ca": certificate,
-                    "serial_number": serial,
-                    "expiration": not_after,
-                }),
-                true,
-            ));
+            return Ok(ok(data, true));
         }
         if path == "root/delete" {
             if !write_method(method) {
@@ -1268,6 +1309,33 @@ fn random_serial() -> Result<String> {
     }
     Ok(serial.iter().map(|b| format!("{b:02x}")).collect())
 }
+
+fn random_pki_id() -> Result<String> {
+    let mut bytes = crate::crypto::random::<16>()
+        .map_err(|_| error(503, "PKI identifier generation failed"))?;
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    let mut value = String::with_capacity(36);
+    for (index, byte) in bytes.iter().enumerate() {
+        if matches!(index, 4 | 6 | 8 | 10) {
+            value.push('-');
+        }
+        value.push_str(&format!("{byte:02x}"));
+    }
+    Ok(value)
+}
+
+fn valid_pki_id(value: &str) -> bool {
+    value.is_empty()
+        || value.len() == 36
+            && value.bytes().enumerate().all(|(index, byte)| {
+                if matches!(index, 8 | 13 | 18 | 23) {
+                    byte == b'-'
+                } else {
+                    byte.is_ascii_hexdigit()
+                }
+            })
+}
 fn normalize_serial(value: &str) -> Result<String> {
     let compact: String = value
         .chars()
@@ -1569,6 +1637,19 @@ fn pem(label: &str, der: &[u8]) -> String {
     }
     out.push_str(&format!("-----END {label}-----\n"));
     out
+}
+
+fn private_key_pem(label: &str, der: &[u8]) -> Result<Zeroizing<String>> {
+    let encoded = Zeroizing::new(BASE64.encode(der));
+    let mut out = Zeroizing::new(format!("-----BEGIN {label}-----\n"));
+    for chunk in encoded.as_bytes().chunks(64) {
+        out.push_str(
+            std::str::from_utf8(chunk).map_err(|_| error(503, "PKI private key export failed"))?,
+        );
+        out.push('\n');
+    }
+    out.push_str(&format!("-----END {label}-----"));
+    Ok(out)
 }
 
 #[cfg(test)]

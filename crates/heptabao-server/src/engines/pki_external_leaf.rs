@@ -570,6 +570,8 @@ impl ExternalPkiTemplate {
                 let leaf_public = leaf.public()?;
                 let root = RootCa {
                     common_name: self.common_name.clone(),
+                    issuer_id: String::new(),
+                    key_id: String::new(),
                     pkcs8: Vec::new(),
                     local_material: None,
                     certificate_der: Vec::new(),

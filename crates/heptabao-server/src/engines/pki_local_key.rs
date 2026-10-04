@@ -441,6 +441,39 @@ impl LocalPrivateMaterial {
         }
     }
 
+    pub(super) fn root_export_der(
+        &self,
+        pkcs8: bool,
+    ) -> Result<(Zeroizing<Vec<u8>>, &'static str)> {
+        if self.kind().is_mldsa() {
+            return Ok((self.private_der()?, "PRIVATE KEY"));
+        }
+        let key = self.maintained_private()?;
+        let (bytes, label) = if pkcs8 || self.kind() == LocalKeyKind::Ed25519 {
+            (
+                key.private_key_to_pkcs8().map_err(crypto_failure)?,
+                "PRIVATE KEY",
+            )
+        } else if self.kind().key_type() == "rsa" {
+            (
+                key.rsa()
+                    .map_err(crypto_failure)?
+                    .private_key_to_der()
+                    .map_err(crypto_failure)?,
+                "RSA PRIVATE KEY",
+            )
+        } else {
+            (
+                key.ec_key()
+                    .map_err(crypto_failure)?
+                    .private_key_to_der()
+                    .map_err(crypto_failure)?,
+                "EC PRIVATE KEY",
+            )
+        };
+        Ok((Zeroizing::new(bytes), label))
+    }
+
     pub(super) fn private_pem(kind: LocalKeyKind, bytes: &[u8]) -> Result<Zeroizing<String>> {
         if kind == LocalKeyKind::Ed25519 {
             return leaf_private_key_pem(bytes);

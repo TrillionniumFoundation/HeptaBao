@@ -504,6 +504,8 @@ impl Pki {
                 "key_id":key.key_id,"key_name":key.key_name,"issuer_id":key.issuer_id,"issuer_name":key.issuer_name});
             self.root = Some(RootCa {
                 common_name: template.common_name,
+                issuer_id: String::new(),
+                key_id: String::new(),
                 pkcs8: Vec::new(),
                 local_material: None,
                 certificate_der: encoded,
