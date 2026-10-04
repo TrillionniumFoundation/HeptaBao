@@ -263,10 +263,6 @@ impl EngineState {
             .ok_or_else(not_found)?
             .to_owned();
         let relative = &path[mount.len()..];
-        let role = relative.strip_prefix("issue/").ok_or_else(not_found)?;
-        if role.is_empty() || role.contains('/') {
-            return Err(not_found());
-        }
         let mut candidate = self
             .namespaces
             .get(namespace)
@@ -285,7 +281,8 @@ impl EngineState {
             .owner
             .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
             .map_err(|_| error(403, "credential owner scope mismatch"))?;
-        let response = engine.issue(&mount, role, body, &owner.owner, owner.expires_at, now)?;
+        let response =
+            engine.issue_route(&mount, relative, body, &owner.owner, owner.expires_at, now)?;
         if response.mutated {
             self.namespaces.insert(namespace.into(), candidate);
             self.lease_clock = now;

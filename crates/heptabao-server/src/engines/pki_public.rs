@@ -62,7 +62,7 @@ impl Pki {
         if path.contains('?') {
             return None;
         }
-        if method == "LIST" && path == "issuers" && self.public_issuer_metadata().is_some() {
+        if method == "LIST" && path == "issuers" {
             return Some(PkiPublicRead::Issuers);
         }
         if method != "GET" {
@@ -154,6 +154,10 @@ impl Pki {
     }
 
     pub(in crate::engines::pki) fn require_public_issuer(&self, reference: &str) -> Result<()> {
+        if !self.root.as_ref().is_some_and(RootCa::is_external) {
+            self.local_issuer(reference)?;
+            return Ok(());
+        }
         let (id, _, name) = self
             .public_issuer_metadata()
             .ok_or_else(|| error(500, "issuer reference is unavailable"))?;
@@ -187,15 +191,26 @@ impl Pki {
             }
             PkiPublicRead::Certificate(serial) => {
                 let serial = normalize_serial(serial)?;
+                if let Some(der) = self.local_certificate(&serial) {
+                    return Ok(ok(
+                        json!({"certificate":stored_pem("CERTIFICATE",der),"revocation_time":0,"revocation_time_rfc3339":""}),
+                        false,
+                    ));
+                }
                 let certificate = self.issued.get(&serial).ok_or_else(not_found)?;
                 let mut projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":certificate.revoked_at.map(timestamp).unwrap_or_default()});
-                if let Some((issuer, _, _)) = self.public_issuer_metadata() {
+                if !certificate.local_issuer_id.is_empty() {
+                    projection["issuer_id"] = json!(certificate.local_issuer_id);
+                } else if let Some((issuer, _, _)) = self.public_issuer_metadata() {
                     projection["issuer_id"] = json!(issuer);
                 }
                 Ok(ok(projection, false))
             }
             PkiPublicRead::RawCertificate(serial, format) => {
                 let serial = normalize_serial(serial)?;
+                if let Some(der) = self.local_certificate(&serial) {
+                    return raw_certificate(der, format);
+                }
                 let certificate = self.issued.get(&serial).ok_or_else(not_found)?;
                 raw_certificate(&certificate.certificate_der, format)
             }
@@ -222,6 +237,23 @@ impl Pki {
                 self.external_crl_read(path, now)?.ok_or_else(not_found)
             }
             PkiPublicRead::Issuers => {
+                if !self.root.as_ref().is_some_and(RootCa::is_external) {
+                    let mut info = serde_json::Map::new();
+                    for root in self.local_roots() {
+                        let name = root
+                            .local_fields
+                            .as_ref()
+                            .map_or("", |fields| fields.issuer_name.as_str());
+                        info.insert(root.issuer_id.clone(),json!({"is_default":self.root.as_ref().is_some_and(|default|default.issuer_id==root.issuer_id),"issuer_name":name,"key_id":root.key_id,"serial_number":external::formatted_serial(&root.serial)}));
+                    }
+                    if info.is_empty() {
+                        return Err(not_found());
+                    }
+                    return Ok(ok(
+                        json!({"keys":info.keys().collect::<Vec<_>>(),"key_info":info}),
+                        false,
+                    ));
+                }
                 let root = self.root.as_ref().ok_or_else(not_found)?;
                 let (issuer, key, name) = self.public_issuer_metadata().ok_or_else(not_found)?;
                 Ok(ok(
@@ -230,8 +262,7 @@ impl Pki {
                 ))
             }
             PkiPublicRead::IssuerCertificate(reference, format) => {
-                self.require_public_issuer(reference)?;
-                let root = self.root.as_ref().ok_or_else(not_found)?;
+                let root = self.selected_issuer(reference)?;
                 if root.certificate_der.len() > 64 * 1024 {
                     return Err(error(503, "public certificate exceeds bounds"));
                 }
@@ -251,12 +282,38 @@ impl Pki {
                 }
             }
             PkiPublicRead::IssuerJson(reference) => {
-                self.require_public_issuer(reference)?;
-                self.handle_public_read(PkiPublicRead::DefaultIssuer, body, now)
+                let root = self.selected_issuer(reference)?;
+                let name = if root.is_external() {
+                    self.public_issuer_metadata()
+                        .map_or("", |(_, _, name)| name)
+                } else {
+                    root.local_fields
+                        .as_ref()
+                        .map_or("", |fields| fields.issuer_name.as_str())
+                };
+                let issuer = if root.is_external() {
+                    self.public_issuer_metadata().map_or("", |(id, _, _)| id)
+                } else {
+                    root.issuer_id.as_str()
+                };
+                let certificate = pem("CERTIFICATE", &root.certificate_der);
+                Ok(ok(
+                    json!({"certificate":certificate,"ca_chain":[certificate],"issuer_id":issuer,"issuer_name":name}),
+                    false,
+                ))
             }
             PkiPublicRead::IssuerCrl(reference, delta, format) => {
-                self.require_public_issuer(reference)?;
-                let der = self.external_crl_der(delta, now)?.ok_or_else(not_found)?;
+                let root = self.selected_issuer(reference)?;
+                let owned_der = if root.is_external() {
+                    self.external_crl_der(delta, now)?
+                        .ok_or_else(not_found)?
+                        .to_vec()
+                } else if delta {
+                    return Err(error(501, "local PKI delta CRL is not implemented"));
+                } else {
+                    self.crl_der(root, now)?
+                };
+                let der = owned_der.as_slice();
                 match format {
                     IssuerCrlFormat::Json => Ok(ok(json!({"crl":pem("X509 CRL",der)}), false)),
                     IssuerCrlFormat::Der | IssuerCrlFormat::Pem => {

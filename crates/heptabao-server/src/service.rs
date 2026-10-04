@@ -63,7 +63,8 @@ const INDEXED_RECOVERY_WIRE_STATE_SCHEMA: u32 = 74;
 // Local issuer/key identifiers must survive retirement and older writers.
 const LOCAL_PKI_IDENTIFIER_STATE_SCHEMA: u32 = 75;
 const LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA: u32 = 76;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA;
+const LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA: u32 = 77;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -2741,7 +2742,8 @@ impl Service {
         // Safe-key and custom JWT role candidates need their reader schema
         // before record preflight. Ordinary legacy reads retain their original
         // schema until a proven logical mutation, as before.
-        if admitted.engines.has_local_pki_root_fields_state()
+        if admitted.engines.has_local_pki_multi_issuer_state()
+            || admitted.engines.has_local_pki_root_fields_state()
             || admitted.engines.has_local_pki_identifier_state()
             || admitted.engines.has_local_typed_pki_state()
             || admitted.engines.has_aad_bound_convergent_state()

@@ -12,7 +12,9 @@ impl State {
         if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
             return self.schema;
         }
-        let required = if self.engines.has_local_pki_root_fields_state() {
+        let required = if self.engines.has_local_pki_multi_issuer_state() {
+            LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+        } else if self.engines.has_local_pki_root_fields_state() {
             LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
         } else if self.engines.has_local_pki_identifier_state() {
             LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
@@ -48,6 +50,16 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            && (self.engines.has_local_pki_multi_issuer_state()
+                || previous
+                    .is_some_and(|state| state.schema >= LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "local PKI issuer ownership requires schema 77",
             ));
         }
         if self.schema < LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
@@ -172,6 +184,14 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            && self.engines.has_local_pki_multi_issuer_state()
+        {
+            return Err(Response::error(
+                503,
+                "local PKI issuer ownership requires schema 77",
             ));
         }
         if self.schema < LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
@@ -907,7 +927,8 @@ impl State {
             | RECOVERY_CREDENTIAL_STATE_SCHEMA
             | INDEXED_RECOVERY_WIRE_STATE_SCHEMA
             | LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
-            | LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA => Ok(()),
+            | LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+            | LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
