@@ -956,7 +956,7 @@ mod tests {
 // genuine final verification share. It publishes through commit_state and
 // deliberately returns before public-index repair. No synthetic provider is
 // admitted and no flags, nonce, schema or credential are fabricated.
-#[cfg(test)]
+#[cfg(all(test, target_os = "linux"))]
 pub(super) struct RecoveryOwnerCut {
     pub(super) committed: State,
     pub(super) source_public: SealMetadata,
@@ -964,7 +964,7 @@ pub(super) struct RecoveryOwnerCut {
     pub(super) committed_identity: crate::state_record_root::StateIdentity,
 }
 
-#[cfg(test)]
+#[cfg(all(test, target_os = "linux"))]
 impl Service {
     pub(super) fn fixture_require_live_recovery_wrapper(&mut self) -> Result<(), Response> {
         // A PostgreSQL fixture must prove the existing durable session still

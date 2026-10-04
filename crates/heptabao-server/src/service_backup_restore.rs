@@ -604,7 +604,7 @@ mod tests;
 // Requires the real native parser's affine VerifiedNativeRestore. The final
 // share is submitted through the ordinary recovery HTTP dispatch on Service.
 // No JSON backup is relabeled as a native archive and no state is overwritten.
-#[cfg(test)]
+#[cfg(all(test, target_os = "linux"))]
 impl Service {
     #[allow(clippy::too_many_arguments)] // Keep the fixture's real restore and recovery inputs explicit.
     pub(super) fn fixture_native_restore_after_real_recovery_commit(
