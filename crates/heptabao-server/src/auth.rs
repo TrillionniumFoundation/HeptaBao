@@ -6170,6 +6170,23 @@ impl AuthState {
         if display_name.len() > 128 {
             return Err(bad("display name too long"));
         }
+        let warnings: Vec<String> = requested
+            .iter()
+            .filter(|name| {
+                name.as_str() != "root"
+                    && name.as_str() != "default"
+                    && !self
+                        .policies
+                        .get(namespace)
+                        .is_some_and(|entries| entries.contains_key(*name))
+            })
+            .map(|name| {
+                format!(
+                    "Policy {} does not exist",
+                    token_policies::quote_policy(name)
+                )
+            })
+            .collect();
         if batch {
             let claims = batch::BatchClaims {
                 namespace: namespace.into(),
@@ -6192,9 +6209,13 @@ impl AuthState {
                 },
             };
             self.system_lease_defaults.get_or_insert(system_defaults);
-            return Ok(batch_issuance::PendingBatchGrant::response(claims, None));
+            let mut response = batch_issuance::PendingBatchGrant::response(claims, None);
+            if !warnings.is_empty() {
+                response.body["warnings"] = json!(warnings);
+            }
+            return Ok(response);
         }
-        let response = self.issue(
+        let mut response = self.issue(
             Token {
                 token_api_lease_ttl: expires_at.map(|expiry| expiry - now),
                 bound_cidrs: if no_parent || expires_at.is_none() {
@@ -6238,6 +6259,9 @@ impl AuthState {
             now,
         )?;
         self.system_lease_defaults.get_or_insert(system_defaults);
+        if !warnings.is_empty() {
+            response.body["warnings"] = json!(warnings);
+        }
         Ok(response)
     }
 

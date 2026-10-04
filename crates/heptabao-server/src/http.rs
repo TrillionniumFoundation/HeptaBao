@@ -29,6 +29,8 @@ use zeroize::{Zeroize, Zeroizing};
 pub(crate) mod ocsp;
 #[path = "http_snapshot.rs"]
 mod snapshot;
+#[path = "http_token_fields.rs"]
+pub(crate) mod token_fields;
 
 #[path = "http_consistency.rs"]
 pub(crate) mod consistency;
@@ -1442,6 +1444,7 @@ fn read_request_mode(
             query,
         );
     }
+    token_fields::transport_body(&method, path, &mut body.0, &bytes[header_end..]).map_err(bad)?;
     let native_snapshot = if native_snapshot {
         if download && (length != 0 || bytes.len() != header_end) {
             return Err(bad("snapshot download does not accept a body"));

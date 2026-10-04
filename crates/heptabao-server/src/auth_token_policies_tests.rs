@@ -432,3 +432,163 @@ fn token_literal_string_and_unicode_names_remain_without_unknown_grants() -> Tes
     }
     Ok(())
 }
+
+#[test]
+fn token_weak_field_inputs_reopen_without_granting_unknown_policy_authority() -> TestResult {
+    let (mut state, root) = setup()?;
+    for (value, expected) in [
+        (json!(123), json!(["123"])),
+        (json!(true), json!(["1"])),
+        (json!(["p-one", 123, true]), json!(["1", "123", "p-one"])),
+        (json!([null]), json!([])),
+        (json!([null, "p-one"]), json!(["p-one"])),
+        (json!({}), json!(["root"])),
+    ] {
+        let (child, auth) = issue(
+            &mut state,
+            &root,
+            "",
+            "auth/token/create",
+            json!({"policies":value,"no_default_policy":true}),
+        )?;
+        assert_eq!(auth["policies"], expected);
+        let reopened: AuthState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
+        assert_eq!(
+            reopened
+                .authorize_request(&child, "", "token-policy-probe/allowed", "read", 100)
+                .is_ok(),
+            expected == json!(["root"])
+                || expected
+                    .as_array()
+                    .is_some_and(|items| items.contains(&json!("p-one")))
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn token_weak_field_refusals_do_not_publish_any_state() -> TestResult {
+    let (mut state, root) = setup()?;
+    for body in [
+        json!({"policies":{"name":"p-one"}}),
+        json!({"policies":[{"name":"p-one"}]}),
+        json!({"policies":[["p-one"]]}),
+        json!({"policies":["p-one"],"no_default_policy":-1}),
+        json!({"policies":["p-one"],"no_default_policy":1.5}),
+        json!({"policies":["p-one"],"no_default_policy":"yes"}),
+        json!({"policies":["p-one"],"no_default_policy":{}}),
+        json!({"policies":["p-one"],"no_default_policy":[]}),
+    ] {
+        let before = serde_json::to_vec(&state)?;
+        let error = request(&mut state, &root, "", "auth/token/create", body)
+            .err()
+            .ok_or("weak invalid input created a token")?;
+        assert_eq!(error.status, 400);
+        assert!(
+            error
+                .message
+                .starts_with("Field validation failed: error converting input for field")
+        );
+        assert_eq!(serde_json::to_vec(&state)?, before);
+    }
+    for (value, expected) in [
+        (json!(null), false),
+        (json!(0), false),
+        (json!(1), true),
+        (json!(""), false),
+        (json!("TRUE"), true),
+        (json!("F"), false),
+    ] {
+        let (_, auth) = issue(
+            &mut state,
+            &root,
+            "",
+            "auth/token/create",
+            json!({"policies":["p-one","default"],"no_default_policy":value}),
+        )?;
+        assert_eq!(
+            auth["policies"],
+            if expected {
+                json!(["p-one"])
+            } else {
+                json!(["default", "p-one"])
+            }
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn token_policy_existence_warnings_follow_final_normalized_policies() -> TestResult {
+    let (mut state, root) = setup()?;
+    for (body, expected) in [
+        (
+            json!({"policies":["Σ",",","Σ","P-ONE"],"no_default_policy":true}),
+            json!(["Policy \",\" does not exist", "Policy \"σ\" does not exist"]),
+        ),
+        (
+            json!({"policies":[" ROOT ","unknown","response-wrapping"],"no_default_policy":true}),
+            Value::Null,
+        ),
+        (
+            json!({"policies":["default"],"no_default_policy":true}),
+            Value::Null,
+        ),
+        (json!({"policies":["p-one"]}), Value::Null),
+    ] {
+        let response = request(&mut state, &root, "", "auth/token/create", body)?;
+        assert_eq!(
+            response.body.get("warnings").unwrap_or(&Value::Null),
+            &expected
+        );
+    }
+    let (nonroot, _) = issue(
+        &mut state,
+        &root,
+        "",
+        "auth/token/create",
+        json!({"policies":["creator","p-one"],"no_default_policy":true}),
+    )?;
+    let before = serde_json::to_vec(&state)?;
+    let error = request(
+        &mut state,
+        &nonroot,
+        "",
+        "auth/token/create",
+        json!({"policies":["unknown"],"no_default_policy":true}),
+    )
+    .err()
+    .ok_or("nonroot unknown policy assigned")?;
+    assert_eq!(error.status, 400);
+    assert_eq!(error.message, "child policies must be subset of parent");
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
+#[test]
+fn token_unknown_warning_uses_exact_pinned_go_unicode_print_categories() -> TestResult {
+    let (mut state, root) = setup()?;
+    for (name, quoted) in [
+        ("a\u{200b}b", "\"a\\u200bb\""),
+        ("a\u{00a0}b", "\"a\\u00a0b\""),
+        ("a\u{2028}b", "\"a\\u2028b\""),
+        ("a\u{e0001}b", "\"a\\U000e0001b\""),
+        ("a\u{0378}b", "\"a\\u0378b\""),
+        ("a\u{e000}b", "\"a\\ue000b\""),
+        ("a\u{0301}b", "\"a\u{0301}b\""),
+        ("a😀b", "\"a😀b\""),
+    ] {
+        let response = request(
+            &mut state,
+            &root,
+            "",
+            "auth/token/create",
+            json!({"policies":[name,name],"no_default_policy":true}),
+        )?;
+        assert_eq!(
+            response.body["warnings"],
+            json!([format!("Policy {quoted} does not exist")])
+        );
+    }
+    Ok(())
+}

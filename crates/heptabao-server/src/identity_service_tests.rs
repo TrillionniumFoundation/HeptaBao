@@ -488,18 +488,20 @@ fn identity_live_children_inherit_identity_but_cannot_convert_it_into_token_poli
     let parent = text(&first.body, "/auth/client_token")?;
     let id = text(&first.body, "/auth/entity_id")?;
     update_entity(&mut s, "", &admin, &id, json!({"policies":["reader"]}));
-    assert_eq!(
-        call(
-            &mut s,
-            "",
-            &parent,
-            "POST",
-            "auth/token/create",
-            json!({"policies":["reader"]})
-        )
-        .status,
-        403
+    let rejected = call(
+        &mut s,
+        "",
+        &parent,
+        "POST",
+        "auth/token/create",
+        json!({"policies":["reader"]}),
     );
+    assert_eq!(rejected.status, 400);
+    assert_eq!(
+        rejected.body["errors"],
+        json!(["child policies must be subset of parent"])
+    );
+    assert!(rejected.body.get("auth").is_none());
     let child = call(&mut s, "", &parent, "POST", "auth/token/create", json!({}));
     assert_eq!(child.status, 200);
     assert_eq!(child.body["auth"]["entity_id"], id);

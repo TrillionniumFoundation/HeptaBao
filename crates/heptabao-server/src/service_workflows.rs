@@ -694,6 +694,7 @@ impl Service {
                 &step.method,
                 &step.path,
                 &step.body,
+                None,
                 request.now,
                 request.client_certificates,
                 request.origin_peer,

@@ -1850,6 +1850,20 @@ impl Service {
             }
             fingerprint = STANDARD.encode(context.sign().as_ref());
         }
+        if let Ok(Some(carrier)) = crate::http::token_fields::request(method, path, &body) {
+            let mut context = hmac::Context::with_key(&self.audit_key);
+            context.update(b"heptabao.audit.token-number-fields.v1");
+            context.update(fingerprint.as_bytes());
+            for field in [method, path] {
+                context.update(&(field.len() as u64).to_le_bytes());
+                context.update(field.as_bytes());
+            }
+            if let Ok(numbers) = serde_json::to_vec(carrier.number_fields()) {
+                context.update(&(numbers.len() as u64).to_le_bytes());
+                context.update(&numbers);
+                fingerprint = STANDARD.encode(context.sign().as_ref());
+            }
+        }
         if let Some(ttl) = wrap_ttl_seconds {
             let mut context = hmac::Context::with_key(&self.audit_key);
             context.update(b"heptabao.audit.wrapping-request.v1");
@@ -2220,6 +2234,18 @@ impl Service {
                 return error;
             }
         }
+        // HA forwards the authenticated transport body above. Interpret this
+        // carrier only at the top-level boundary; workflow step JSON has no
+        // transport provenance. ACLs below continue to see numeric Values.
+        let token_fields = match crate::http::token_fields::request(method, path, body) {
+            Ok(carrier) => carrier,
+            Err(message) => return Response::error(400, message),
+        };
+        let body = token_fields
+            .as_ref()
+            .map_or(body, |carrier| carrier.original);
+        let request = RequestView { body, ..request };
+
         // A standby forwards the original path above. Resolve a bare KV root
         // only against the leader's synchronized mount registry, before ACL
         // and either immutable or ordinary dispatch. Unknown roots stay as-is.
@@ -2771,6 +2797,7 @@ impl Service {
                 method,
                 path,
                 body,
+                token_fields.as_ref(),
                 now,
                 client_certificates,
                 origin_peer,
@@ -3031,6 +3058,7 @@ impl Service {
         method: &str,
         path: &str,
         body: &Value,
+        token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
         now: u64,
         client_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
@@ -3043,6 +3071,7 @@ impl Service {
             method,
             path,
             body,
+            token_fields,
             now,
             client_certificates,
             origin_peer,
@@ -3063,6 +3092,7 @@ impl Service {
         method: &str,
         path: &str,
         body: &Value,
+        token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
         now: u64,
         client_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
@@ -3193,13 +3223,16 @@ impl Service {
         ) {
             return Self::capabilities_route(state, principal, namespace, method, path, body, now);
         }
+        // Restore weak string-field spelling only after the parameter ACL.
+        let token_backend_body = token_fields.map(|carrier| carrier.backend_body());
+        let auth_body = token_backend_body.as_ref().map_or(body, |body| &body.0);
         let mut auth = state.auth.clone();
         match auth.handle_with_connection(
             principal,
             namespace,
             method,
             path,
-            body,
+            auth_body,
             now,
             client_certificates,
             origin_peer,
@@ -7951,6 +7984,10 @@ mod kerberos_schema_tests;
 #[cfg(test)]
 #[path = "service_secret_delivery_tests.rs"]
 mod secret_delivery_tests;
+
+#[cfg(test)]
+#[path = "service_token_number_tests.rs"]
+mod token_number_tests;
 
 #[cfg(test)]
 #[path = "service_acl_parameter_tests.rs"]

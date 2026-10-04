@@ -55,3 +55,9 @@ can allow disjoint parent policies; HeptaBao token-role management and
 does not establish full replacement of OpenBao 2.7.0 or parity for unmeasured
 coercions, arbitrary policy names, policy existence warnings, or every token API
 response field.
+
+The next finite source follows the 33 fresh official weak-input observations: numeric and boolean policy values, null array elements, empty maps, and weak boolean conversion of `no_default_policy`. Invalid compound inputs fail before publication. This source has not run Cargo or candidate HTTPS qualification. Arbitrary numeric JSON lexical spelling and token roles remain unresolved; these bounded observations do not qualify full replacement.
+
+Unknown policy warnings now follow the final normalized, deduplicated policy set and the authoritative namespace policy map. Root collapse, removed default and rejected nonroot subsets do not produce unknown-name warnings. The complete warning field remains in the actual comparator.
+
+The Go quote follow-up derives printability from the exact Go 1.27.1 Unicode 17 tables pinned to the actual official binary, with its BSD license retained. Thirty fresh official observations include Cf/private-use/unassigned/spacing/combining/supplementary warning values and raw numeric spelling. Numeric lexical input remains a separate request-local carrier blocker.

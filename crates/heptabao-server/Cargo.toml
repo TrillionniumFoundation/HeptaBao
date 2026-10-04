@@ -25,7 +25,7 @@ heptabao-plugin-host = { path = "../heptabao-plugin-host" }
 heptabao-openbao-grpc = { path = "../heptabao-openbao-grpc" }
 heptabao-kms-contracts = { path = "../heptabao-kms-contracts" }
 serde = { version = "=1.0.229", features = ["derive"] }
-serde_json = "=1.0.151"
+serde_json = { version = "=1.0.151", features = ["raw_value"] }
 ring = "=0.17.14"
 base64 = "=0.22.1"
 qrcode = { path = "../../vendor/qrcode-0.14.1", default-features = false }
