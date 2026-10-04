@@ -1056,6 +1056,19 @@ reader floor, while historical roots with no identifiers retain their older
 representation. The record writer raises this requirement before record
 preflight. Default root backdating is 30 seconds.
 
+Local roots also accept country, province, locality, street, postal code,
+organization, OU and subject serial-number fields; DNS/email, IP and URI SANs;
+CN SAN exclusion; maximum CA path length; issuer/key names; and explicit
+backdating or RFC3339 expiration. Zero or null backdating uses 30 seconds.
+Zero or omitted root TTL uses 32 days in the default mount profile. Explicit
+nonzero TTL and not_after conflict. Email CNs use RFC822Name; an IPv4-shaped CN
+uses DNSName, matching the pinned reference, while ip_sans selects IPAddress.
+Signed leaf certificates and CRLs copy the root certificate's complete actual
+subject DN as their issuer, including after encrypted restart. Named local
+issuers resolve by their stored name or ID. Extended local root semantics
+activate schema 76 before record preflight; admission, publication, retirement
+and snapshot restoration retain this reader requirement across all namespaces.
+
 The source tests require actual maintained-provider self-signature verification,
 selected Ed/EC/RSA public algorithms, tampered-signature rejection, stored-key
 public binding, serde preservation and encrypted Service reopen/readback. Export
@@ -1064,5 +1077,6 @@ verify self-signatures and reopened signing, and check the official response
 fields and bundle ordering. Service tests exercise identifier reader floors,
 retirement, real encrypted reopen, rejected restoration and absence of private
 keys from actual audit records. These checks are separate from official-only
-observations and do not establish complete PKI compatibility. Additional
-subject/SAN/time/signature options and multiple local issuers remain work.
+observations and do not establish complete PKI compatibility. Remaining
+signature and constraint options, multiple local issuers, and broader PKI
+lifecycle compatibility still require implementation and actual comparison.

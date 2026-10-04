@@ -27,7 +27,7 @@ use root_fields::{LocalRootMetadata, RootFields};
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;
 const MAX_TTL: u64 = 10 * 365 * 24 * 3600;
-const DEFAULT_ROOT_TTL: u64 = 365 * 24 * 3600;
+const DEFAULT_ROOT_TTL: u64 = 32 * 24 * 3600;
 const DEFAULT_LEAF_TTL: u64 = 24 * 3600;
 const MAX_ACME_LIST: usize = 64;
 const MAX_ACME_CONFIG_STRING: usize = 2048;
@@ -521,6 +521,7 @@ impl Pki {
                     "postal_code",
                     "serial_number",
                     "not_before_duration",
+                    "not_after",
                     "max_path_length",
                     "issuer_name",
                     "key_name",
@@ -549,17 +550,12 @@ impl Pki {
                 return Err(bad("invalid PKI common name"));
             }
             let fields = RootFields::from_body(body, common_name)?;
-            let ttl = ttl_field(body, "ttl", DEFAULT_ROOT_TTL)?;
-            if ttl == 0 || ttl > self.max_ttl {
-                return Err(bad("PKI root TTL is outside bounds"));
-            }
+            let not_after =
+                root_fields::root_expiration(body, now, self.max_ttl, DEFAULT_ROOT_TTL)?;
             let material = LocalPrivateMaterial::generate(kind)?;
             let public = material.public()?;
             let serial = random_serial()?;
             let not_before = now.saturating_sub(fields.backdate);
-            let not_after = now
-                .checked_add(ttl)
-                .ok_or_else(|| bad("PKI root TTL overflow"))?;
             let certificate_der = certificate_der_local(
                 &material,
                 &public,

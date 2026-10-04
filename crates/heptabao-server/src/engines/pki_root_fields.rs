@@ -17,6 +17,7 @@ pub(super) const ROOT_FIELDS: &[&str] = &[
     "postal_code",
     "serial_number",
     "not_before_duration",
+    "not_after",
     "max_path_length",
     "issuer_name",
     "key_name",
@@ -191,31 +192,32 @@ impl RootFields {
                 if !dns_valid(&value) {
                     return Err(bad("invalid PKI DNS SAN"));
                 }
-                if value != common_name && !dns_sans.contains(&value) {
+                if (exclude_cn || value != common_name) && !dns_sans.contains(&value) {
                     dns_sans.push(value);
                 }
             }
         }
-        let mut ip_sans = ip_list(body.get("ip_sans"))?;
+        let ip_sans = ip_list(body.get("ip_sans"))?;
         if ip_sans.len() > 64 {
             return Err(bad("PKI IP SAN list is outside bounds"));
         }
-        // A DNS CN is emitted by the certificate builder. Other CN types use
-        // their actual GeneralName tag, never a DNS tag containing an IP/email.
-        if !exclude_cn {
-            if let Ok(ip) = common_name.parse::<IpAddr>() {
-                if !ip_sans.contains(&ip) {
-                    ip_sans.insert(0, ip);
-                }
-            } else if email_valid(common_name) && !email_sans.iter().any(|s| s == common_name) {
-                email_sans.insert(0, common_name.into());
-            }
+        // The oracle treats an IPv4-shaped CN as a DNS SAN. Explicit ip_sans
+        // alone selects the IP GeneralName tag; an email CN uses RFC822Name.
+        if !exclude_cn && email_valid(common_name) && !email_sans.iter().any(|s| s == common_name) {
+            email_sans.insert(0, common_name.into());
         }
         let uri_sans = bounded_list(body, "uri_sans")?;
         if uri_sans.iter().any(|value| !uri_valid(value)) {
             return Err(bad("invalid PKI URI SAN"));
         }
-        let backdate = ttl_field(body, "not_before_duration", 30)?;
+        let backdate = if matches!(body.get("not_before_duration"), None | Some(Value::Null)) {
+            30
+        } else {
+            match ttl_field(body, "not_before_duration", 30)? {
+                0 => 30,
+                value => value,
+            }
+        };
         if backdate > MAX_TTL {
             return Err(bad("PKI root backdating is outside bounds"));
         }
@@ -245,14 +247,106 @@ impl RootFields {
             email_sans,
             ip_sans,
             uri_sans,
-            exclude_cn: exclude_cn
-                || !dns_valid(common_name)
-                || common_name.parse::<IpAddr>().is_ok(),
+            exclude_cn: exclude_cn || !dns_valid(common_name),
             backdate,
             max_path_length,
             metadata,
         })
     }
+}
+
+pub(super) fn root_expiration(
+    body: &Value,
+    now: u64,
+    max_ttl: u64,
+    default_ttl: u64,
+) -> Result<u64> {
+    let not_after = match body.get("not_after") {
+        None | Some(Value::Null) => "",
+        Some(Value::String(value)) => value,
+        _ => return Err(bad("invalid PKI not_after")),
+    };
+    let ttl = ttl_field(body, "ttl", 0)?;
+    let expiration = if !not_after.is_empty() {
+        if ttl != 0 {
+            return Err(bad(
+                "Either ttl or not_after must be provided. Both should not be provided.",
+            ));
+        }
+        rfc3339_seconds(not_after)?
+    } else {
+        now.checked_add(if ttl == 0 { default_ttl } else { ttl })
+            .ok_or_else(|| bad("PKI root TTL overflow"))?
+    };
+    if expiration <= now || expiration - now > max_ttl {
+        return Err(bad("PKI root TTL is outside bounds"));
+    }
+    Ok(expiration)
+}
+
+fn rfc3339_seconds(value: &str) -> Result<u64> {
+    use openssl::asn1::Asn1Time;
+    let invalid = || bad("invalid PKI not_after");
+    let bytes = value.as_bytes();
+    if !value.is_ascii()
+        || bytes.len() < 20
+        || bytes.len() > 40
+        || [4, 7, 10, 13, 16]
+            .into_iter()
+            .zip([b'-', b'-', b'T', b':', b':'])
+            .any(|(i, b)| bytes[i] != b)
+        || (0..19)
+            .filter(|i| ![4, 7, 10, 13, 16].contains(i))
+            .any(|i| !bytes[i].is_ascii_digit())
+        || value[17..19].parse::<u8>().map_or(true, |s| s >= 60)
+    {
+        return Err(invalid());
+    }
+    let mut zone = 19;
+    if bytes[zone] == b'.' {
+        zone += 1;
+        let start = zone;
+        while zone < bytes.len() && bytes[zone].is_ascii_digit() {
+            zone += 1;
+        }
+        if zone == start || zone - start > 9 {
+            return Err(invalid());
+        }
+    }
+    let offset = &value[zone..];
+    let suffix = if offset == "Z" {
+        "Z".to_owned()
+    } else {
+        let offset_bytes = offset.as_bytes();
+        if offset_bytes.len() != 6
+            || !matches!(offset_bytes[0], b'+' | b'-')
+            || offset_bytes[3] != b':'
+            || [1, 2, 4, 5]
+                .into_iter()
+                .any(|i| !offset_bytes[i].is_ascii_digit())
+            || offset[1..3].parse::<u8>().map_or(true, |h| h >= 24)
+            || offset[4..6].parse::<u8>().map_or(true, |m| m >= 60)
+        {
+            return Err(invalid());
+        }
+        format!("{}{}{}", &offset[..1], &offset[1..3], &offset[4..6])
+    };
+    // The maintained ASN.1 time parser validates the Gregorian calendar and
+    // offset. X.509 encodes integer seconds, as does the upstream consumer.
+    let stamp = format!(
+        "{}{}{}{}{}{}{}",
+        &value[..4],
+        &value[5..7],
+        &value[8..10],
+        &value[11..13],
+        &value[14..16],
+        &value[17..19],
+        suffix
+    );
+    let parsed = Asn1Time::from_str(&stamp).map_err(|_| invalid())?;
+    let epoch = Asn1Time::from_unix(0).map_err(|_| invalid())?;
+    let diff = epoch.diff(&parsed).map_err(|_| invalid())?;
+    u64::try_from(i64::from(diff.days) * 86400 + i64::from(diff.secs)).map_err(|_| invalid())
 }
 
 /// The signed certificate owns the issuer's entire DN. Parsing also works for
@@ -274,12 +368,94 @@ mod tests {
     type TestResult = std::result::Result<(), Box<dyn std::error::Error>>;
 
     #[test]
+    fn root_expiry_and_zero_backdating_match_actual_time_oracle() -> TestResult {
+        let now = 1_700_000_000;
+        for value in ["2023-11-15T22:13:20Z", "2023-11-16T06:13:20+08:00"] {
+            let mut pki = Pki::default();
+            pki.handle_admin(
+                "POST",
+                "root/generate/internal",
+                &json!({
+                    "common_name":"ca.example.test","key_type":"ec","not_after":value
+                }),
+                now,
+            )?;
+            let root = pki.root.as_ref().ok_or("root")?;
+            assert!(
+                root.not_after == now + 86400 && root.not_before == now - 30,
+                "actual UTC and timezone expiration select same signed window"
+            );
+        }
+        for value in [Value::Null, json!(0), json!("0")] {
+            let mut pki = Pki::default();
+            pki.handle_admin(
+                "POST",
+                "root/generate/internal",
+                &json!({
+                    "common_name":"ca.example.test","key_type":"ec",
+                    "not_before_duration":value,"ttl":0
+                }),
+                now,
+            )?;
+            let root = pki.root.as_ref().ok_or("root")?;
+            assert!(
+                root.not_before == now - 30 && root.not_after == now + 2764800,
+                "zero/default root durations match actual 32-day and 30-second defaults"
+            );
+        }
+        for body in [
+            json!({"not_after":"2023-11-15T22:13:20Z","ttl":"24h"}),
+            json!({"not_after":"2023-02-30T22:13:20Z"}),
+            json!({"not_after":"2023-11-15T22:13:60Z"}),
+            json!({"not_after":"2023-11-15T22:13:20+25:00"}),
+            json!({"not_after":"2022-11-15T22:13:20Z"}),
+        ] {
+            assert!(
+                root_expiration(&body, now, MAX_TTL, DEFAULT_ROOT_TTL).is_err(),
+                "conflicting malformed or expired windows rejected"
+            );
+        }
+        for (cn, exclude, expected) in [
+            (
+                "email@example.test",
+                false,
+                Some(GeneralName::RFC822Name("email@example.test")),
+            ),
+            ("email@example.test", true, None),
+            ("127.0.0.1", false, Some(GeneralName::DNSName("127.0.0.1"))),
+            ("127.0.0.1", true, None),
+        ] {
+            let mut pki = Pki::default();
+            pki.handle_admin(
+                "POST",
+                "root/generate/internal",
+                &json!({
+                    "common_name":cn,"key_type":"ec","exclude_cn_from_sans":exclude
+                }),
+                now,
+            )?;
+            let root = pki.root.as_ref().ok_or("root")?;
+            let (_, cert) = X509Certificate::from_der(&root.certificate_der)?;
+            let san = cert.subject_alternative_name()?;
+            assert!(
+                match (san, expected) {
+                    (None, None) => true,
+                    (Some(san), Some(expected)) => san.value.general_names == [expected],
+                    _ => false,
+                },
+                "actual email and IPv4-shaped CN SAN behavior"
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
     fn complete_root_dn_sans_constraints_and_reopened_leaf_crl_are_real() -> TestResult {
         for (kind, length, backdate, exclude) in [
             (LocalKeyKind::Rsa2048, 2, 90, false),
             (LocalKeyKind::Ec256, 0, 120, false),
             (LocalKeyKind::Ec384, 1, 45, true),
-            (LocalKeyKind::Ed25519, 1, 0, false),
+            (LocalKeyKind::Ed25519, 1, 30, false),
             (LocalKeyKind::Mldsa65, 1, 90, false),
         ] {
             let now = 1_700_000_000;
