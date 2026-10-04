@@ -138,6 +138,9 @@ impl DurationNanos {
     pub(crate) fn from_seconds(value: u64) -> Result<Self, PrecisionError> {
         Self::checked(value.checked_mul(NANOS).ok_or(PrecisionError::Duration)?)
     }
+    pub(crate) fn nanoseconds(self) -> u64 {
+        self.0
+    }
     pub(crate) fn is_zero(self) -> bool {
         self.0 == 0
     }

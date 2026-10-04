@@ -111,6 +111,10 @@ use radius_native::RadiusNativeConfig;
 mod token_cidrs;
 #[path = "auth_token_creation_ttl.rs"]
 mod token_creation_ttl;
+#[path = "auth_token_duration.rs"]
+mod token_duration;
+#[path = "auth_token_precise_ttl.rs"]
+mod token_precise_ttl;
 #[path = "auth_token_precision.rs"]
 mod token_precision;
 #[path = "auth_token_ttl.rs"]
