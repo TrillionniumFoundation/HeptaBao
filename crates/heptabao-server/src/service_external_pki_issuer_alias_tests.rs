@@ -567,7 +567,7 @@ fn external_pki270_issuer_retirement_keeps_typed_snapshot_floor_and_removes_all_
                     json!({})
                 )
                 .status
-                    == 204,
+                    == 200,
                 "explicit issuer retirement"
             );
         }

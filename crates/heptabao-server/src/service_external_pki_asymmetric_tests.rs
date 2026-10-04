@@ -97,7 +97,7 @@ fn external_pki270_typed67_active_and_retired_snapshot_floor_and_final_commit() 
                     json!({})
                 )
                 .status
-                    == 204,
+                    == 200,
                 "typed retirement"
             );
             let retired_identity = service
@@ -424,7 +424,7 @@ fn external_pki270_all_six_remote_keys_root_leaf_crl_encrypted_restart_and_schem
                 json!({})
             )
             .status
-                == 204,
+                == 200,
             "explicit typed retirement"
         );
         let retired = reopened.state.as_ref().ok_or("retired typed state")?;

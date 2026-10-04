@@ -664,10 +664,10 @@ impl Pki {
             let changed = if self.root.as_ref().is_some_and(RootCa::is_external) {
                 self.root.take().is_some()
             } else {
-                self.delete_local_roots()
+                self.delete_local_roots()?
             };
             self.external.clear_root();
-            return Ok(empty(changed));
+            return Ok(ok(Value::Null, changed));
         }
         if let Some(route) = self.public_read_route(method, path) {
             return self.handle_public_read(route, body, now);

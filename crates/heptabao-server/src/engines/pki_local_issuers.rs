@@ -1,6 +1,7 @@
 //! Owned local issuers. The root slot is the selected default; the remaining
 //! roots retain their actual private key and certificate in encrypted state.
 use super::*;
+use x509_parser::prelude::FromDer;
 
 const MAX_LOCAL_ISSUERS: usize = 256;
 
@@ -12,6 +13,30 @@ pub(super) struct LocalIssuers {
     orphan_keys: BTreeMap<String, RootCa>,
     #[serde(default)]
     certificates: BTreeMap<String, Vec<u8>>,
+    #[serde(default)]
+    retired_issuers: BTreeMap<String, PublicIssuer>,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct PublicIssuer {
+    serial: String,
+    public: LocalPublicKey,
+}
+
+fn archive_issuer(state: &mut LocalIssuers, root: &RootCa) -> Result<()> {
+    let public = root.local_key()?.public()?;
+    public.validate_certificate(&root.certificate_der)?;
+    state
+        .certificates
+        .insert(root.serial.clone(), root.certificate_der.clone());
+    state.retired_issuers.insert(
+        root.issuer_id.clone(),
+        PublicIssuer {
+            serial: root.serial.clone(),
+            public,
+        },
+    );
+    Ok(())
 }
 
 impl Pki {
@@ -106,14 +131,16 @@ impl Pki {
         if self
             .local_keys()
             .any(|root| root.issuer_id == next.issuer_id || root.key_id == next.key_id)
+            || self
+                .local_issuers
+                .as_ref()
+                .is_some_and(|state| state.retired_issuers.contains_key(&next.issuer_id))
         {
             return Err(error(503, "PKI identifier collision"));
         }
         let Some(current) = self.root.as_mut() else {
             if let Some(state) = &mut self.local_issuers {
-                state
-                    .certificates
-                    .insert(next.serial.clone(), next.certificate_der.clone());
+                archive_issuer(state, &next)?;
             }
             self.root = Some(next);
             return Ok(());
@@ -135,6 +162,7 @@ impl Pki {
                 default_follows_latest_issuer: false,
                 orphan_keys: BTreeMap::new(),
                 certificates: BTreeMap::new(),
+                retired_issuers: BTreeMap::new(),
             })
         });
         for issued in self.issued.values_mut() {
@@ -142,12 +170,8 @@ impl Pki {
                 issued.local_issuer_id = current.issuer_id.clone();
             }
         }
-        state
-            .certificates
-            .insert(current.serial.clone(), current.certificate_der.clone());
-        state
-            .certificates
-            .insert(next.serial.clone(), next.certificate_der.clone());
+        archive_issuer(state, current)?;
+        archive_issuer(state, &next)?;
         if state.default_follows_latest_issuer {
             let previous = self
                 .root
@@ -162,7 +186,7 @@ impl Pki {
 
     pub(super) fn validate_local_issuers(&self) -> Result<()> {
         let Some(state) = &self.local_issuers else {
-            return Ok(());
+            return self.validate_local_leaf_associations();
         };
         if self.root.as_ref().is_some_and(RootCa::is_external)
             || self.local_roots().count() > MAX_LOCAL_ISSUERS
@@ -227,6 +251,47 @@ impl Pki {
         {
             return Err(bad("invalid local PKI issuer index"));
         }
+        for (id, issuer) in &state.retired_issuers {
+            if !valid_pki_id(id) {
+                return Err(bad("invalid archived PKI issuer identity"));
+            }
+            let der = state
+                .certificates
+                .get(&issuer.serial)
+                .ok_or_else(|| bad("archived PKI issuer certificate missing"))?;
+            issuer.public.validate_certificate(der)?;
+        }
+        self.validate_local_leaf_associations()
+    }
+
+    fn validate_local_leaf_associations(&self) -> Result<()> {
+        for certificate in self
+            .issued
+            .values()
+            .filter(|cert| !cert.local_issuer_id.is_empty())
+        {
+            let public = if let Some(issuer) = self
+                .local_issuers
+                .as_ref()
+                .and_then(|state| state.retired_issuers.get(&certificate.local_issuer_id))
+            {
+                issuer.public.clone()
+            } else {
+                self.local_issuer(&certificate.local_issuer_id)?
+                    .local_key()?
+                    .public()?
+            };
+            let (rest, cert) =
+                x509_parser::certificate::X509Certificate::from_der(&certificate.certificate_der)
+                    .map_err(|_| bad("invalid local PKI leaf certificate"))?;
+            if !rest.is_empty()
+                || cert.signature_value.unused_bits != 0
+                || cert.signature_algorithm != cert.tbs_certificate.signature
+                || !public.verify(cert.tbs_certificate.as_ref(), &cert.signature_value.data)?
+            {
+                return Err(bad("local PKI leaf signing authority changed"));
+            }
+        }
         Ok(())
     }
 
@@ -273,6 +338,7 @@ impl Pki {
             .map(|reference| {
                 self.local_issuer(reference)
                     .map(|root| root.issuer_id.clone())
+                    .map_err(|_| bad("default issuer reference is unavailable"))
             })
             .transpose()?;
         let follows = optional_bool(body, "default_follows_latest_issuer")?;
@@ -293,6 +359,7 @@ impl Pki {
                     default_follows_latest_issuer: false,
                     orphan_keys: BTreeMap::new(),
                     certificates: BTreeMap::new(),
+                    retired_issuers: BTreeMap::new(),
                 })
             });
             if change_default {
@@ -346,6 +413,8 @@ impl Pki {
         body: &Value,
     ) -> Result<EngineResponse> {
         reject_unknown(body, &[])?;
+        self.local_issuer(reference)?;
+        self.promote_default_associations()?;
         let id = self.local_issuer(reference)?.issuer_id.clone();
         let removed = if self.root.as_ref().is_some_and(|root| root.issuer_id == id) {
             self.root.take().ok_or_else(not_found)?
@@ -360,17 +429,44 @@ impl Pki {
                 other: BTreeMap::new(),
                 orphan_keys: BTreeMap::new(),
                 certificates: BTreeMap::new(),
+                retired_issuers: BTreeMap::new(),
                 default_follows_latest_issuer: false,
             })
         });
-        state
-            .certificates
-            .insert(removed.serial.clone(), removed.certificate_der.clone());
+        archive_issuer(state, &removed)?;
         state.orphan_keys.insert(removed.key_id.clone(), removed);
         Ok(ok(Value::Null, true))
     }
 
-    pub(super) fn delete_local_roots(&mut self) -> bool {
+    fn promote_default_associations(&mut self) -> Result<()> {
+        let Some(root) = self.root.as_mut().filter(|root| !root.is_external()) else {
+            return Ok(());
+        };
+        if root.issuer_id.is_empty() {
+            let issuer = random_pki_id()?;
+            let key = random_pki_id()?;
+            if self.local_issuers.as_ref().is_some_and(|state| {
+                state
+                    .other
+                    .values()
+                    .chain(state.orphan_keys.values())
+                    .any(|root| root.issuer_id == issuer || root.key_id == key)
+            }) {
+                return Err(error(503, "PKI identifier collision"));
+            }
+            root.issuer_id = issuer;
+            root.key_id = key;
+        }
+        for issued in self.issued.values_mut() {
+            if issued.local_issuer_id.is_empty() {
+                issued.local_issuer_id = root.issuer_id.clone();
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn delete_local_roots(&mut self) -> Result<bool> {
+        self.promote_default_associations()?;
         let changed = self.root.is_some()
             || self
                 .local_issuers
@@ -384,23 +480,20 @@ impl Pki {
                     other: BTreeMap::new(),
                     orphan_keys: BTreeMap::new(),
                     certificates: BTreeMap::new(),
+                    retired_issuers: BTreeMap::new(),
                     default_follows_latest_issuer: false,
                 })
             });
-            state
-                .certificates
-                .insert(root.serial.clone(), root.certificate_der.clone());
+            archive_issuer(state, &root)?;
         }
         if let Some(state) = &mut self.local_issuers {
-            for root in state.other.values() {
-                state
-                    .certificates
-                    .insert(root.serial.clone(), root.certificate_der.clone());
+            let other = std::mem::take(&mut state.other);
+            for root in other.values() {
+                archive_issuer(state, root)?;
             }
-            state.other.clear();
             state.orphan_keys.clear();
         }
-        changed
+        Ok(changed)
     }
 
     pub(super) fn local_certificate(&self, serial: &str) -> Option<&[u8]> {
@@ -576,7 +669,11 @@ mod tests {
             "delete retains configuration"
         );
         let certs = pki.certificate_list(&json!({}))?.body.clone();
-        pki.delete_local_roots();
+        let deleted = pki.handle_admin("DELETE", "root/delete", &json!({}), now + 2)?;
+        assert!(
+            deleted.status == 200,
+            "root deletion returns the official status"
+        );
         assert!(
             pki.certificate_list(&json!({}))?.body == certs
                 && pki.roles.len() == 1
@@ -591,6 +688,64 @@ mod tests {
             pki.has_local_multi_issuer_state(),
             "retired history retains reader requirement"
         );
+        Ok(())
+    }
+    #[test]
+    fn old_default_leaf_keeps_its_real_signer_after_delete_and_recreation() -> TestResult {
+        for delete_issuer in [false, true] {
+            let now = 1_700_000_000;
+            let mut pki = Pki::default();
+            generate(&mut pki, "old-root", now)?;
+            let old_id = pki.root.as_ref().ok_or("old root")?.issuer_id.clone();
+            pki.handle_admin("POST","roles/web",&json!({"allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"10m"}),now)?;
+            let owner = serde_json::from_value::<LeaseOwner>(json!("a".repeat(43)))?;
+            let leaf = pki.issue_route(
+                "pki/",
+                "issue/web",
+                &json!({"common_name":"old.example.test"}),
+                &owner,
+                None,
+                now,
+            )?;
+            let serial = normalize_serial(
+                leaf.body["data"]["serial_number"]
+                    .as_str()
+                    .ok_or("serial")?,
+            )?;
+            if delete_issuer {
+                pki.local_issuer_delete("default", &json!({}))?;
+            } else {
+                pki.delete_local_roots()?;
+            }
+            generate(&mut pki, "new-root", now + 1)?;
+            generate(&mut pki, "other-root", now + 1)?;
+            pki.handle_admin("POST", "revoke", &json!({"serial_number":serial}), now + 2)?;
+            let encoded = Zeroizing::new(serde_json::to_vec(&pki)?);
+            let pki: Pki = serde_json::from_slice(&encoded)?;
+            pki.validate("", "pki/", now + 2)?;
+            assert!(
+                pki.issued.get(&serial).ok_or("old leaf")?.local_issuer_id == old_id,
+                "old leaf ownership survives replacement"
+            );
+            for name in ["new-root", "other-root"] {
+                let der = pki.crl_der(pki.local_issuer(name)?, now + 3)?;
+                let (_, crl) = CertificateRevocationList::from_der(&der)?;
+                assert!(
+                    crl.iter_revoked_certificates().next().is_none(),
+                    "replacement CRL never adopts old leaf revocation"
+                );
+            }
+            let mut corrupt = pki.clone();
+            corrupt
+                .issued
+                .get_mut(&serial)
+                .ok_or("old leaf")?
+                .local_issuer_id = pki.local_issuer("new-root")?.issuer_id.clone();
+            assert!(
+                corrupt.validate("", "pki/", now + 2).is_err(),
+                "persisted leaf cannot substitute a different signer"
+            );
+        }
         Ok(())
     }
 }
