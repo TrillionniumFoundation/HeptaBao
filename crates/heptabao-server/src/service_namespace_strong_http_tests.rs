@@ -1602,7 +1602,9 @@ fn closed_auth_wrapping_help_commits_one_use_and_monotonic_clock_without_payload
     request.wrap_ttl_seconds = Some(60);
     let response = service.handle_request_at(request, 100);
     assert!(
-        response.status == 200 && response.body.get("data").is_none(),
+        response.status == 200
+            && response.body.get("data").is_some_and(Value::is_null)
+            && response.body["wrap_info"]["token"].is_string(),
         "real wrapped payload publication"
     );
     let wrapper = zeroize::Zeroizing::new(
