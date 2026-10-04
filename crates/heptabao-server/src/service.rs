@@ -82,7 +82,7 @@ fn supported_reader_schema(schema: u32) -> bool {
             schema,
             PKI_ROLE_ANY_NAME_STATE_SCHEMA
                 | PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
-                | PKI_ROLE_WILDCARD_STATE_SCHEMA
+                | MAX_SUPPORTED_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
