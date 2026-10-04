@@ -1188,7 +1188,8 @@ impl Service {
             .state
             .as_ref()
             .ok_or_else(|| Response::error(503, "fixture live reopened state absent"))?;
-        if actual.cluster_id != cut.committed.cluster_id
+        if self.current_state_identity()? != cut.committed_identity
+            || actual.cluster_id != cut.committed.cluster_id
             || actual.auth.recovery_credential != cut.committed.auth.recovery_credential
             || self.seal.as_ref() != Some(&cut.target_public)
             || load_seal_metadata(&self.data_dir).ok().flatten().as_ref()
