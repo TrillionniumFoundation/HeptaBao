@@ -3012,7 +3012,9 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        if admitted.auth.has_token_api_schema80_state()
+        if admitted.engines.has_pki_role_bare_domain_state()
+            || admitted.engines.has_pki_role_any_name_state()
+            || admitted.auth.has_token_api_schema80_state()
             || admitted.engines.has_local_pki_intermediate_state()
             || admitted.engines.has_local_pki_crl_state()
             || admitted.engines.has_local_pki_multi_issuer_state()

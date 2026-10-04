@@ -152,6 +152,13 @@ fn leaf_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, St
             == 200,
         "external root and CRL publication"
     );
+    let prior = service.state.as_ref().ok_or("actual pre-role state")?;
+    let prior_schema = prior.schema;
+    assert!(
+        prior_schema < PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            && !prior.engines.has_pki_role_bare_domain_state(),
+        "actual root precedes new role owner"
+    );
     let role = call(
         &mut service,
         "POST",
@@ -166,6 +173,26 @@ fn leaf_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, St
         "bounded Ed25519 leaf role: status={} errors={:?}",
         role.status,
         role.body.get("errors")
+    );
+    let current = service
+        .state
+        .as_ref()
+        .ok_or("actual published role state")?;
+    assert!(
+        current.schema == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            && current.engines.has_pki_role_bare_domain_state(),
+        "record preflight publishes the real Ed25519 role owner with floor84"
+    );
+    let mut lowered = current.clone();
+    lowered.schema = prior_schema;
+    assert!(
+        lowered.validate_format().is_err()
+            && lowered.validate_publication_schema(Some(current)).is_err(),
+        "original root floor cannot relabel the actual committed role owner"
+    );
+    assert!(
+        service.prepare_record_plan(&lowered).is_err(),
+        "record preflight does not accept a lower reader label"
     );
     Ok((root, service, unseal, admin))
 }
