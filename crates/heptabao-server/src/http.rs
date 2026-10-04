@@ -25,6 +25,9 @@ use std::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "http_logical.rs"]
+mod logical;
+
 #[path = "http_help.rs"]
 pub(crate) mod help;
 #[path = "http_ocsp.rs"]
@@ -667,7 +670,7 @@ fn serve_inner(
                             origin_peer: Some(peer),
                             client_certificates: request.client_certificates.take(),
                         };
-                        let reply = if let Err(response) = &consistency {
+                        let mut reply = if let Err(response) = &consistency {
                             let mut rejected = audited_wire_rejection(
                                 &service,
                                 &attempt_id,
@@ -703,6 +706,7 @@ fn serve_inner(
                                 false,
                             ))
                         };
+                        logical::project(&mut reply, &attempt_id, &request.path);
                         (reply, is_head)
                     }
                     Err(error) => {
