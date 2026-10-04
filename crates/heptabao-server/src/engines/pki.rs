@@ -206,6 +206,10 @@ struct Role {
     allowed_domains: BTreeSet<String>,
     #[serde(default, skip_serializing_if = "role_false")]
     allow_any_name: bool,
+    // None is the historical candidate contract; new API creates store their
+    // explicit effective value so an older reader cannot silently widen it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    allow_bare_domains: Option<bool>,
     allow_subdomains: bool,
     #[serde(default)]
     allow_ip_sans: bool,
@@ -285,6 +289,12 @@ impl Pki {
         self.default_ttl = default;
         self.max_ttl = max;
         Ok(())
+    }
+
+    pub(in crate::engines) fn has_role_bare_domain_state(&self) -> bool {
+        self.roles
+            .values()
+            .any(|role| role.allow_bare_domains.is_some())
     }
 
     pub(in crate::engines) fn has_role_any_name_state(&self) -> bool {
@@ -763,6 +773,7 @@ impl Pki {
                         &[
                             "allowed_domains",
                             "allow_any_name",
+                            "allow_bare_domains",
                             "allow_subdomains",
                             "allow_ip_sans",
                             "max_ttl",
@@ -1289,6 +1300,7 @@ impl Role {
             },
             allowed_domains: allowed_domains.into_iter().collect(),
             allow_any_name,
+            allow_bare_domains: Some(optional_bool(body, "allow_bare_domains")?.unwrap_or(false)),
             allow_subdomains: optional_bool(body, "allow_subdomains")?.unwrap_or(false),
             allow_ip_sans: optional_bool(body, "allow_ip_sans")?.unwrap_or(true),
             max_ttl: ttl_field(body, "max_ttl", DEFAULT_LEAF_TTL)?,
@@ -1321,7 +1333,8 @@ impl Role {
         self.allow_any_name
             || self.allowed_domains.iter().any(|domain| {
                 let domain = domain.to_ascii_lowercase();
-                name == domain || self.allow_subdomains && name.ends_with(&format!(".{domain}"))
+                self.allow_bare_domains.unwrap_or(true) && name == domain
+                    || self.allow_subdomains && name.ends_with(&format!(".{domain}"))
             })
     }
     fn descriptor(&self) -> Value {
@@ -1329,6 +1342,7 @@ impl Role {
             "issuer_ref": if self.issuer_ref.is_empty() {"default"} else {self.issuer_ref.as_str()},
             "allowed_domains": self.allowed_domains,
             "allow_any_name": self.allow_any_name,
+            "allow_bare_domains": self.allow_bare_domains.unwrap_or(true),
             "allow_subdomains": self.allow_subdomains,
             "allow_ip_sans": self.allow_ip_sans,
             "max_ttl": self.max_ttl,
@@ -2202,3 +2216,33 @@ mod tests {
 #[cfg(test)]
 #[path = "pki_root_format_tests.rs"]
 mod root_format_tests;
+
+#[cfg(test)]
+mod bare_domain_legacy_tests {
+    use super::*;
+
+    #[test]
+    fn pki_role_bare_domain_legacy_bytes_keep_actual_historical_permission() -> Result<()> {
+        let legacy = json!({"allowed_domains":["example.test"],"allow_subdomains":false,
+                           "allow_ip_sans":false,"max_ttl":3600,"generate_lease":false});
+        let historical: Role =
+            serde_json::from_value(legacy.clone()).map_err(|_| bad("legacy role fixture"))?;
+        historical.validate()?;
+        assert!(historical.allow_bare_domains.is_none() && historical.allows("example.test"));
+        assert!(
+            serde_json::to_value(&historical).map_err(|_| bad("legacy serialization"))? == legacy,
+            "historical role JSON stays exact and has no fabricated default field"
+        );
+        let current = Role::from_body(&legacy)?;
+        assert!(current.allow_bare_domains == Some(false) && !current.allows("example.test"));
+        let mut body = legacy.clone();
+        body["allow_bare_domains"] = json!(true);
+        let allowed = Role::from_body(&body)?;
+        assert!(allowed.allow_bare_domains == Some(true) && allowed.allows("EXAMPLE.TEST"));
+        for wrong in [json!("true"), json!(1), Value::Null] {
+            body["allow_bare_domains"] = wrong;
+            assert!(Role::from_body(&body).is_err());
+        }
+        Ok(())
+    }
+}

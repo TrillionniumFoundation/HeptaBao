@@ -81,7 +81,7 @@ fn pki_role_any_name_signs_actual_unlisted_dns_names_and_reopens() -> TestResult
             .any(|n| n.dnsname() == Some("second.unlisted.test"))
     );
     let active = service.state.as_ref().ok_or("active state")?;
-    assert_eq!(active.schema, PKI_ROLE_ANY_NAME_STATE_SCHEMA);
+    assert_eq!(active.schema, PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
     assert!(active.engines.has_pki_role_any_name_state());
     drop(service);
     let mut reopened = root.service()?;
@@ -284,12 +284,12 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
         200
     );
     let active = service.state.clone().ok_or("active")?;
-    assert_eq!(active.schema, PKI_ROLE_ANY_NAME_STATE_SCHEMA);
+    assert_eq!(active.schema, PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
     assert!(active.engines.has_pki_role_any_name_state());
     let identity = service.current_state_identity().map_err(|_| "identity")?;
     let mut lower = active.clone();
     lower.schema = TOKEN_ROLE_STATE_SCHEMA;
-    assert_eq!(lower.writer_schema(), PKI_ROLE_ANY_NAME_STATE_SCHEMA);
+    assert_eq!(lower.writer_schema(), PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
     assert!(lower.validate_format().is_err());
     assert!(service.commit_state(&lower).is_err());
     assert!(Service::validate_snapshot_protected_floor(&active, &lower).is_err());
@@ -323,8 +323,8 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
     );
     let retired = service.state.as_ref().ok_or("retired")?;
     assert!(!retired.engines.has_pki_role_any_name_state());
-    assert_eq!(retired.schema, PKI_ROLE_ANY_NAME_STATE_SCHEMA);
-    assert_eq!(retired.writer_schema(), PKI_ROLE_ANY_NAME_STATE_SCHEMA);
+    assert_eq!(retired.schema, PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
     assert!(previous.validate_publication_schema(Some(retired)).is_err());
     assert!(Service::validate_snapshot_protected_floor(retired, &previous).is_err());
     drop(service);
@@ -342,7 +342,7 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
     );
     assert_eq!(
         reopened.state.as_ref().ok_or("reopened")?.schema,
-        PKI_ROLE_ANY_NAME_STATE_SCHEMA
+        PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
     );
     assert!(
         !reopened
@@ -521,8 +521,9 @@ fn pki_role_default_ip_sans_signs_ipv4_ipv6_and_retains_explicit_false_on_reopen
         let state = service.state.as_ref().ok_or("state")?;
         assert!(
             !state.engines.has_pki_role_any_name_state()
-                && state.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA,
-            "existing owned IP permission does not fabricate a new schema requirement"
+                && state.engines.has_pki_role_bare_domain_state()
+                && state.schema == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
+            "existing IP permission and actual separate base-domain owner keep distinct semantics"
         );
     }
     let state = service.state.as_ref().ok_or("state")?;
@@ -541,6 +542,160 @@ fn pki_role_default_ip_sans_signs_ipv4_ipv6_and_retains_explicit_false_on_reopen
             400,
             "actual boolean required for explicit permission"
         );
+    }
+    Ok(())
+}
+
+#[test]
+fn pki_role_bare_domain_default_denies_base_and_explicit_permission_reopens() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/ca",
+            &admin,
+            json!({"type":"pki"})
+        )
+        .status,
+        204
+    );
+    let ca = call(
+        &mut service,
+        "POST",
+        "ca/root/generate/internal",
+        &admin,
+        json!({"common_name":"ca.example.test","key_type":"ec","key_bits":256,"ttl":"4h"}),
+    );
+    assert_eq!(ca.status, 200);
+    let ca = X509::from_pem(
+        ca.body["data"]["certificate"]
+            .as_str()
+            .ok_or("CA PEM")?
+            .as_bytes(),
+    )?;
+    let public = ca.public_key()?;
+    let role = json!({"allowed_domains":["example.test"],"allow_subdomains":true,"key_type":"ec","key_bits":256});
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/roles/default-bare",
+            &admin,
+            role.clone()
+        )
+        .status,
+        200
+    );
+    let mut allowed = role.clone();
+    allowed["allow_bare_domains"] = json!(true);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/roles/allowed-bare",
+            &admin,
+            allowed
+        )
+        .status,
+        200
+    );
+    let base = json!({"common_name":"example.test","ttl":"10m"});
+    for reopen in [false, true] {
+        if reopen {
+            drop(service);
+            service = root.service()?;
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "sys/unseal",
+                    "",
+                    json!({"key":unseal})
+                )
+                .status,
+                200
+            );
+        }
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "ca/roles/default-bare",
+                &admin,
+                json!({})
+            )
+            .body["data"]["allow_bare_domains"],
+            false
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "ca/roles/allowed-bare",
+                &admin,
+                json!({})
+            )
+            .body["data"]["allow_bare_domains"],
+            true
+        );
+        let denied = call(
+            &mut service,
+            "POST",
+            "ca/issue/default-bare",
+            &admin,
+            base.clone(),
+        );
+        assert_eq!(
+            denied.status, 403,
+            "a new default role cannot issue its base domain"
+        );
+        assert!(denied.body.get("data").is_none());
+        for (path, name) in [
+            ("ca/issue/allowed-bare", "example.test"),
+            ("ca/issue/default-bare", "leaf.example.test"),
+        ] {
+            let leaf = call(
+                &mut service,
+                "POST",
+                path,
+                &admin,
+                json!({"common_name":name,"ttl":"10m"}),
+            );
+            assert_eq!(leaf.status, 200, "actual explicitly scoped issuance");
+            let cert = X509::from_pem(
+                leaf.body["data"]["certificate"]
+                    .as_str()
+                    .ok_or("leaf PEM")?
+                    .as_bytes(),
+            )?;
+            assert!(cert.verify(&public)?, "actual owned issuer signature");
+        }
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "ca/issue/allowed-bare",
+                &admin,
+                json!({"common_name":"outside.test"})
+            )
+            .status,
+            403
+        );
+    }
+    let active = service.state.clone().ok_or("state")?;
+    assert!(
+        active.schema == PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            && active.engines.has_pki_role_bare_domain_state()
+    );
+    for label in [80, 83] {
+        let mut lower = active.clone();
+        lower.schema = label;
+        assert_eq!(lower.writer_schema(), PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA);
+        assert!(lower.validate_format().is_err() && service.commit_state(&lower).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&active, &lower).is_err());
     }
     Ok(())
 }

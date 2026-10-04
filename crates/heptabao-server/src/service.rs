@@ -70,12 +70,17 @@ const LOCAL_PKI_CRL_STATE_SCHEMA: u32 = 78;
 const LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA: u32 = 79;
 const TOKEN_ROLE_STATE_SCHEMA: u32 = 80;
 const PKI_ROLE_ANY_NAME_STATE_SCHEMA: u32 = 83;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ROLE_ANY_NAME_STATE_SCHEMA;
+const PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA: u32 = 84;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA;
 
 // Namespace 81 and precise Token API 82 remain independently staged branches.
 // A higher maximum must not admit either format before its real integration.
 fn supported_reader_schema(schema: u32) -> bool {
-    schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA || schema == MAX_SUPPORTED_STATE_SCHEMA
+    schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
+        || matches!(
+            schema,
+            PKI_ROLE_ANY_NAME_STATE_SCHEMA | PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+        )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
