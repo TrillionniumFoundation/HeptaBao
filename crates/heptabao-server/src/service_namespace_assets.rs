@@ -309,9 +309,31 @@ mod tests {
             lower.validate_format().is_err() && service.commit_state(&lower).is_err(),
             "old reader labels cannot publish custody assets"
         );
+        closed
+            .validate_format()
+            .map_err(|_| "protected V5 format admission")?;
+        let plan = service
+            .prepare_record_plan(&closed)
+            .map_err(|_| "protected V5 plan preparation")?;
         service
-            .commit_state(&closed)
-            .map_err(|_| "actual protected V5 publication")?;
+            .commit_record_plan(&closed, plan)
+            .map_err(|response| {
+                // Only these fixed source literals may reach the test report.
+                // Never format a response, owner, token, key or recovery reference.
+                match response.body["errors"][0].as_str() {
+                    Some("record state failed authenticated validation") => {
+                        "protected V5 commit authenticated validation"
+                    }
+                    Some("record durable validation failed; reopen and reconcile") => {
+                        "protected V5 commit durable validation"
+                    }
+                    Some("record storage capacity exhausted; no response released") => {
+                        "protected V5 commit storage capacity"
+                    }
+                    Some("opaque owner capacity exhausted") => "protected V5 commit owner capacity",
+                    _ => "protected V5 commit other public rejection",
+                }
+            })?;
         service.state = Some(closed.clone());
         let manifest = service
             .record_root
