@@ -1668,6 +1668,8 @@ mod tests {
         );
         assert!(
             rejected.status == 503
+                && service.recovery_required
+                && service.record_writes_since_gc >= 64
                 && service.namespace_runtime.is_loaded("empty")
                 && stale.namespace_leases.validate().is_ok()
                 && owner_store::serialize_owner(service.state.as_ref().ok_or("retained")?)?
@@ -1675,6 +1677,57 @@ mod tests {
             "failed actual retirement commit retains ciphertext, live key and prepared lease"
         );
         service.durable = durable;
+        let fenced = service.namespace_fixture_at(
+            "DELETE",
+            "sys/namespaces/empty",
+            "",
+            &token,
+            json!({}),
+            100,
+        );
+        assert!(
+            fenced.status == 503
+                && fenced.body["errors"][0]
+                    == "authoritative recovery required; unseal with the stored key before retry",
+            "restoring a test storage handle cannot clear actual recovery authority"
+        );
+        // Root restore schedules authenticated record GC. Its real missing
+        // storage failure fences the service; never clear that flag or retry a
+        // state publication by reinstalling a handle in the old process.
+        drop(service);
+        assert!(
+            stale.namespace_leases.validate().is_err(),
+            "process closure revokes old slots"
+        );
+        let mut service = root.service()?;
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":root_share})
+            )
+            .status
+                == 200,
+            "genuine root share restores authority after the actual storage failure"
+        );
+        assert!(
+            service.commit_record_plan(&stale, plan).is_err(),
+            "old plan cannot survive actual reopen"
+        );
+        let mut stale = service.state.clone().ok_or("recovered owner")?;
+        assert!(
+            stale
+                .namespaces
+                .custody_binding(&stale.cluster_id, "empty")
+                .map_err(|_| "recovered binding")?
+                == first,
+            "genuine recovery retains the same actual namespace incarnation"
+        );
+        let plan = service
+            .prepare_record_plan(&mut stale)
+            .map_err(|_| "recovered plan")?;
         let response = service.namespace_fixture_at(
             "DELETE",
             "sys/namespaces/empty",
