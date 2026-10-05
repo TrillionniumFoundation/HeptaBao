@@ -431,9 +431,12 @@ fn pki_history94_every_related_grant_is_current_before_root_or_revoke_effects() 
         before,
         "all current CRL grants precede every revoke effect"
     );
-    assert_eq!(
-        &*original_engines,
-        &serde_json::to_vec(&service.state.as_ref().ok_or("unpublished revoke")?.engines)?
+    let after_engines = Zeroizing::new(serde_json::to_vec(
+        &service.state.as_ref().ok_or("unpublished revoke")?.engines,
+    )?);
+    assert!(
+        original_engines.as_slice() == after_engines.as_slice(),
+        "all current grants precede domain publication"
     );
     Ok(())
 }
@@ -548,9 +551,11 @@ fn pki_history94_root_and_crl_main_and_related_metadata_keep_original_private_ac
             before + cut,
             "no sign or retry after original private actor expiry"
         );
-        assert_eq!(
-            &*original_engines,
-            &serde_json::to_vec(&service.state.as_ref().ok_or("no publication")?.engines)?,
+        let after_engines = Zeroizing::new(serde_json::to_vec(
+            &service.state.as_ref().ok_or("no publication")?.engines,
+        )?);
+        assert!(
+            original_engines.as_slice() == after_engines.as_slice(),
             "all root/CRL publication is atomic"
         );
     }
