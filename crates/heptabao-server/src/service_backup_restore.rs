@@ -358,6 +358,12 @@ impl Service {
             .auth
             .validate_token_api_clock_floor(Some(&current.auth))
             .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= PKI_URLS_STATE_SCHEMA && incoming.schema < PKI_URLS_STATE_SCHEMA {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI URL ownership",
+            ));
+        }
         if current.schema >= SDK_RESPONSE_HEADERS_STATE_SCHEMA
             && incoming.schema < SDK_RESPONSE_HEADERS_STATE_SCHEMA
         {

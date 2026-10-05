@@ -28,7 +28,9 @@ impl State {
         if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.engines.has_external_pki_signer_history() {
+        let required = if self.engines.has_pki_url_state() {
+            PKI_URLS_STATE_SCHEMA
+        } else if self.engines.has_external_pki_signer_history() {
             EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
         } else if self.engines.has_pki_role_names_state() {
             PKI_ROLE_NAMES_STATE_SCHEMA
@@ -167,6 +169,12 @@ impl State {
                 503,
                 "opaque Kubernetes artifact ownership requires schema 87",
             ));
+        }
+        if self.schema < PKI_URLS_STATE_SCHEMA
+            && (self.engines.has_pki_url_state()
+                || previous.is_some_and(|state| state.schema >= PKI_URLS_STATE_SCHEMA))
+        {
+            return Err(Response::error(503, "PKI URL ownership requires schema 97"));
         }
         if self.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
             && (self.engines.has_external_pki_signer_history()
@@ -470,6 +478,9 @@ impl State {
                 503,
                 "unsupported or downgraded identity state schema",
             ));
+        }
+        if self.schema < PKI_URLS_STATE_SCHEMA && self.engines.has_pki_url_state() {
+            return Err(Response::error(503, "PKI URL ownership requires schema 97"));
         }
         if self.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
             && self.engines.has_external_pki_signer_history()
@@ -1352,6 +1363,7 @@ impl State {
             | PKI_ROLE_NAMES_STATE_SCHEMA
             | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
             | SDK_RESPONSE_HEADERS_STATE_SCHEMA
+            | PKI_URLS_STATE_SCHEMA
             | NAMESPACE_BATCH_STATE_SCHEMA
             | SDK_STORAGE_STATE_SCHEMA
             | NAMESPACE_CUSTODY_STATE_SCHEMA

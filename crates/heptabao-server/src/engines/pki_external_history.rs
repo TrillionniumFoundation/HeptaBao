@@ -56,6 +56,17 @@ impl ExternalSignerHistory {
 }
 
 impl Pki {
+    pub(super) fn external_history_has_url_crls(&self) -> bool {
+        self.external
+            .signer_history
+            .as_ref()
+            .is_some_and(|history| {
+                history
+                    .other
+                    .values()
+                    .any(|signer| signer.crls.has_url_state())
+            })
+    }
     pub(in crate::engines) fn has_external_signer_history(&self) -> bool {
         // Some(empty) retains the owner after all private signing keys retire.
         self.external.signer_history.is_some()

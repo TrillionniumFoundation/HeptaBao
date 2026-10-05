@@ -7,6 +7,8 @@ use super::*;
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct ExternalPublicIssuer {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) url_entries: Option<UrlEntries>,
     pub(super) issuer_id: String,
     pub(super) key_id: String,
     pub(super) public_key: ExternalPkiPublicKey,
@@ -48,6 +50,7 @@ impl ExternalPublicIssuer {
             ));
         }
         let captured = Self {
+            url_entries: root.url_entries.clone(),
             issuer_id: key.issuer_id.clone(),
             key_id: key.key_id.clone(),
             public_key: key.public_key.clone(),
@@ -67,6 +70,9 @@ impl ExternalPublicIssuer {
     }
     pub(super) fn validate(&self) -> Result<()> {
         self.public_key.validate()?;
+        if let Some(urls) = &self.url_entries {
+            urls.validate_certificate(&self.certificate_der)?;
+        }
         if !valid_identifier(&self.issuer_id)
             || !valid_identifier(&self.key_id)
             || self.issuer_id == self.key_id
@@ -95,6 +101,7 @@ impl ExternalPublicIssuer {
         }
         let tbs = external_root_tbs(
             ExternalRootSpec {
+                url_entries: self.url_entries.as_ref(),
                 serial: &self.serial,
                 issuer_cn: &self.common_name,
                 subject_cn: &self.common_name,

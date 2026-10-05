@@ -37,6 +37,9 @@ mod role_subjects;
 mod role_templates;
 use role_signatures::LeafSignature;
 use role_time::RoleTimePolicy;
+#[path = "pki_urls.rs"]
+mod urls;
+use urls::{PkiUrls, UrlEntries};
 #[path = "pki_issuer_time.rs"]
 mod issuer_time;
 use issuer_time::IssuerLeafNotAfterBehavior;
@@ -158,6 +161,8 @@ impl AcmeConfig {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub(super) struct Pki {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    urls: Option<PkiUrls>,
     #[serde(default = "default_leaf_ttl")]
     pub(super) default_ttl: u64,
     #[serde(default = "max_pki_ttl")]
@@ -183,6 +188,8 @@ pub(super) struct Pki {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct RootCa {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    url_entries: Option<UrlEntries>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     leaf_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     common_name: String,
@@ -266,6 +273,8 @@ fn role_false(value: &bool) -> bool {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub(super) struct IssuedCertificate {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    url_entries: Option<UrlEntries>,
     #[serde(default, skip_serializing_if = "role_false")]
     role_names_owned: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -317,6 +326,7 @@ impl Default for Pki {
             cluster_path: String::new(),
             aia_path: String::new(),
             acme: Box::new(AcmeConfig::default()),
+            urls: None,
             root: None,
             local_issuers: None,
             local_crl: None,
@@ -408,6 +418,7 @@ impl Pki {
         }
         validate_uri(&self.cluster_path, "PKI cluster path")?;
         validate_uri(&self.aia_path, "PKI AIA path")?;
+        self.validate_urls()?;
         validate_acme_config(&self.acme, &self.roles)?;
         if self.acme.enabled && self.cluster_path.is_empty() {
             return Err(bad("enabled PKI ACME requires a configured cluster path"));
@@ -656,6 +667,9 @@ impl Pki {
         if let Some(response) = self.handle_local_crl(method, path, body, now)? {
             return Ok(response);
         }
+        if path == "config/urls" {
+            return self.handle_urls(method, body);
+        }
         if path == "config/cluster" {
             return self.handle_cluster_config(method, body);
         }
@@ -748,10 +762,13 @@ impl Pki {
             let key_identifier = root_fields::subject_key_identifier(&public.spki()?)?;
             let serial = random_serial()?;
             let not_before = now.saturating_sub(fields.backdate);
+            let (url_entries, url_warnings) = self.capture_root_urls()?;
+            warnings.extend(url_warnings);
             let certificate_der = certificate_der_local(
                 &material,
                 &public,
                 CertificateSpec {
+                    url_entries: url_entries.as_ref(),
                     serial: &serial,
                     issuer_cn: common_name,
                     subject_cn: common_name,
@@ -809,6 +826,7 @@ impl Pki {
                 (Vec::new(), Some(material))
             };
             self.publish_local_root(RootCa {
+                url_entries,
                 leaf_not_after_behavior: None,
                 common_name: common_name.into(),
                 issuer_id,
@@ -823,11 +841,20 @@ impl Pki {
                 not_after,
             })?;
             self.rebuild_local_crls(now, false)?;
-            // The current local root builder emits no AIA extension. Preserve
-            // the observed warning from the actual certificate it just built.
+            // The immutable URL projection determines whether the newly
+            // signed root carries the observed AIA configuration.
             let mut response = ok(data, true);
-            warnings.push("This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information.".into());
-            response.body["warnings"] = json!(warnings);
+            if self
+                .root
+                .as_ref()
+                .and_then(|r| r.url_entries.as_ref())
+                .is_none_or(UrlEntries::aia_empty)
+            {
+                warnings.push(urls::AIA_WARNING.into());
+            }
+            if !warnings.is_empty() {
+                response.body["warnings"] = json!(warnings);
+            }
             return Ok(response);
         }
         if path == "root/delete" || path == "root" && method == "DELETE" {
@@ -1214,6 +1241,7 @@ impl Pki {
             || role.allow_any_name
             || self.has_role_leaf_profile_state()
             || self.has_external_state()
+            || self.has_url_state()
             || owner.batch_claims().is_some()
         {
             return Err(bad(
@@ -1232,6 +1260,7 @@ impl Pki {
             &root_pair,
             &leaf_public,
             CertificateSpec {
+                url_entries: prepared.url_entries.as_ref(),
                 serial: &prepared.serial,
                 issuer_cn: &root.common_name,
                 subject_cn: &prepared.common_name,
@@ -1619,6 +1648,11 @@ impl Pki {
             return Err(error(503, "PKI serial collision"));
         }
         Ok(LeafTemplate {
+            url_entries: self.capture_urls(if root.is_external() {
+                self.public_issuer_metadata().map_or("", |(id, _, _)| id)
+            } else {
+                &root.issuer_id
+            })?,
             role_name_policy: role.role_name_policy.clone(),
             no_store: names.is_some_and(|policy| policy.no_store),
             exclude_cn_from_sans,
@@ -1790,6 +1824,7 @@ impl Pki {
             &root_pair,
             &leaf_public,
             CertificateSpec {
+                url_entries: prepared.url_entries.as_ref(),
                 serial: &prepared.serial,
                 issuer_cn: &root.common_name,
                 subject_cn: &prepared.common_name,
@@ -1884,6 +1919,7 @@ impl Pki {
         self.issued.insert(
             prepared.serial.clone(),
             IssuedCertificate {
+                url_entries: prepared.url_entries,
                 role_names_owned: prepared.role_name_policy.is_some(),
                 issuer_not_after_behavior: prepared.issuer_not_after_behavior,
                 signed_role_time_owned: prepared.signed_role_time_owned,
@@ -2457,6 +2493,7 @@ pub(super) struct LeafAuthority<'a> {
 
 #[derive(Clone)]
 struct LeafTemplate {
+    url_entries: Option<UrlEntries>,
     csr_public_key: Option<LocalPublicKey>,
     role_name_policy: Option<RoleNamePolicy>,
     no_store: bool,
@@ -2518,6 +2555,7 @@ impl LeafTemplate {
 }
 
 struct CertificateSpec<'a> {
+    url_entries: Option<&'a UrlEntries>,
     role_leaf_profile: Option<&'a RoleLeafProfile>,
     serial: &'a str,
     issuer_cn: &'a str,
@@ -2615,6 +2653,7 @@ fn certificate_tbs_with(
     signature_algorithm: &[u8],
 ) -> Result<Vec<u8>> {
     let CertificateSpec {
+        url_entries,
         serial,
         issuer_cn,
         subject_cn,
@@ -2671,6 +2710,9 @@ fn certificate_tbs_with(
             true,
             &seq(&[der(0xa0, &subtrees.concat())]),
         ));
+    }
+    if let Some(urls) = url_entries {
+        extensions.extend(urls.certificate_extensions()?);
     }
     let subject_key_id = root_fields::subject_key_identifier(subject_spki)?;
     extensions.push(extension(

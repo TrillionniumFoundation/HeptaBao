@@ -7,7 +7,7 @@ pub(super) enum ConsumptionTemplate {
     Leaf(Box<LeafTemplate>),
     Crl {
         revoked: Option<(String, u64)>,
-        prepared: CrlSet,
+        prepared: Box<CrlSet>,
     },
 }
 
@@ -20,6 +20,8 @@ pub(super) struct ConsumptionMaterial {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct LeafPublic {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    url_entries: Option<UrlEntries>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     role_name_policy: Option<RoleNamePolicy>,
     #[serde(default, skip_serializing_if = "role_false")]
@@ -45,6 +47,24 @@ pub(super) struct LeafPublic {
 }
 
 impl Pki {
+    pub(in crate::engines::pki) fn has_external_url_state(&self) -> bool {
+        let captured_crl =
+            |crls: &CrlSet| crls.full.url_entries.is_some() || crls.delta.url_entries.is_some();
+        self.external_signers()
+            .any(|(_, root)| root.url_entries.is_some())
+            || self
+                .external
+                .archived_issuers
+                .values()
+                .any(|issuer| issuer.url_entries.is_some())
+            || self
+                .external
+                .issued_public
+                .values()
+                .any(|leaf| leaf.url_entries.is_some())
+            || self.external.crls.as_ref().is_some_and(captured_crl)
+            || self.external_history_has_url_crls()
+    }
     pub(in crate::engines::pki) fn has_external_role_names_state(&self) -> bool {
         self.external.issued_public.values().any(|leaf| {
             leaf.role_name_policy.is_some()
@@ -73,6 +93,8 @@ impl LeafPublic {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Crl {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    url_entries: Option<UrlEntries>,
     pub(super) number: u64,
     base: Option<u64>,
     issued: u64,
@@ -89,11 +111,20 @@ pub(super) struct CrlSet {
 }
 
 impl CrlSet {
-    pub(super) fn empty(now: u64) -> Self {
-        Self::prepare(1, now, BTreeMap::new())
+    pub(super) fn has_url_state(&self) -> bool {
+        self.full.url_entries.is_some() || self.delta.url_entries.is_some()
     }
-    fn prepare(number: u64, now: u64, revoked: BTreeMap<String, u64>) -> Self {
-        let crl = |number, base, revoked| Crl {
+    pub(super) fn empty(now: u64, urls: Option<UrlEntries>) -> Self {
+        Self::prepare(1, now, BTreeMap::new(), urls)
+    }
+    fn prepare(
+        number: u64,
+        now: u64,
+        revoked: BTreeMap<String, u64>,
+        urls: Option<UrlEntries>,
+    ) -> Self {
+        let crl = |number, base: Option<u64>, revoked| Crl {
+            url_entries: if base.is_none() { urls.clone() } else { None },
             number,
             base,
             issued: now,
@@ -209,6 +240,12 @@ fn crl_tbs(issuer: &str, public: &ExternalPkiPublicKey, crl: &Crl) -> Result<Vec
     if let Some(base) = crl.base {
         extensions.push(extension(&[0x55, 0x1d, 0x1b], true, &positive_u64(base)));
     }
+    if let Some(urls) = &crl.url_entries {
+        urls.validate()?;
+        if let Some(freshest) = urls.freshest_extension() {
+            extensions.push(freshest);
+        }
+    }
     parts.push(context_explicit(0, &seq(&extensions)));
     Ok(seq(&parts))
 }
@@ -318,6 +355,9 @@ fn leaf_tbs(
         let mut controlled = profile.leaf_extensions()?;
         controlled.extend(extensions.into_iter().skip(2));
         extensions = controlled;
+    }
+    if let Some(urls) = &prepared.url_entries {
+        extensions.extend(urls.certificate_extensions()?);
     }
     Ok(seq(&[
         context_explicit(0, &integer(&[2])),
@@ -490,12 +530,19 @@ impl Pki {
             }
             ConsumptionTemplate::Crl {
                 revoked,
-                prepared: CrlSet::prepare(number, now, entries),
+                prepared: Box::new(CrlSet::prepare(
+                    number,
+                    now,
+                    entries,
+                    self.capture_urls(&key.issuer_id)?,
+                )),
             }
         } else {
             return Ok(None);
         };
         Ok(Some(ExternalPkiTemplate {
+            url_entries: None,
+            url_warnings: Vec::new(),
             reference: key.reference.clone(),
             operation: "consume",
             output_format: RootOutputFormat::Pem,
@@ -594,6 +641,7 @@ impl Pki {
                 let serial = prepared.serial.clone();
                 let no_store = prepared.no_store;
                 let projection = LeafPublic {
+                    url_entries: prepared.url_entries.clone(),
                     role_name_policy: prepared.role_name_policy.clone(),
                     exclude_cn_from_sans: prepared.exclude_cn_from_sans,
                     email_sans: prepared.email_sans.clone(),
@@ -656,7 +704,7 @@ impl Pki {
                 } else {
                     json!({"success":true})
                 };
-                self.external.crls = Some(prepared);
+                self.external.crls = Some(*prepared);
                 Ok(ok(response, true))
             }
         }
@@ -903,7 +951,8 @@ impl Pki {
                 referenced.insert(projection.issuer_id.clone());
                 issuer
             };
-            if !issued.local_issuer_id.is_empty()
+            if issued.url_entries != projection.url_entries
+                || !issued.local_issuer_id.is_empty()
                 || projection.signed_role_time_owned != issued.signed_role_time_owned
                 || projection.signed_role_time_owned != (projection.not_before < 0)
                 || projection.not_before < 0 && !issued.role_time_owned
@@ -973,6 +1022,7 @@ impl Pki {
                 _ => return Err(bad("external PKI leaf profile projection differs")),
             }
             let prepared = LeafTemplate {
+                url_entries: projection.url_entries.clone(),
                 csr_public_key: None,
                 role_name_policy: projection.role_name_policy.clone(),
                 no_store: false,

@@ -155,6 +155,7 @@ impl Pki {
             parents,
         }));
         let root = RootCa {
+            url_entries: None,
             leaf_not_after_behavior: None,
             common_name: local::common_name(cert.subject())?,
             issuer_id: String::new(),
@@ -181,6 +182,8 @@ impl Pki {
         let (public_parents, existing_parents) =
             self.prepare_external_public_parents(&objects, der)?;
         Ok(ExternalPkiTemplate {
+            url_entries: self.capture_urls(&pending.key.issuer_id)?,
+            url_warnings: Vec::new(),
             reference: key.reference.clone(),
             operation: "import",
             output_format: RootOutputFormat::Pem,
@@ -266,9 +269,9 @@ impl Pki {
             "imported_issuers":ids,"existing_issuers":if imported.existing_parents.is_empty(){Value::Null}else{json!(imported.existing_parents)}}),
             true,
         );
-        response.body["warnings"] = json!([
-            "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information."
-        ]);
+        if self.urls.as_ref().is_none_or(PkiUrls::aia_empty) {
+            response.body["warnings"] = json!([urls::AIA_WARNING]);
+        }
         Ok(response)
     }
 }

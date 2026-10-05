@@ -33,6 +33,7 @@ const FIELDS: &[&str] = &[
 
 #[derive(Clone)]
 pub(super) struct PreparedExternalCaSign {
+    url_entries: Option<UrlEntries>,
     public: LocalPublicKey,
     fields: RootFields,
     permitted: Vec<String>,
@@ -55,6 +56,7 @@ impl PreparedExternalCaSign {
         let ski = root_fields::certificate_key_identifier(&self.issuer.certificate_der)?;
         certificate_tbs_with(
             CertificateSpec {
+                url_entries: self.url_entries.as_ref(),
                 serial: &self.serial,
                 issuer_cn: &self.issuer.common_name,
                 subject_cn: &self.common_name,
@@ -205,6 +207,7 @@ impl Pki {
         let serial = external_serial()?;
         let not_before = role_time::signed_epoch(now.saturating_sub(fields.backdate))?;
         let prepared = PreparedExternalCaSign {
+            url_entries: self.capture_urls(&issuer.issuer_id)?,
             public,
             fields,
             permitted,
@@ -217,6 +220,8 @@ impl Pki {
             format: RootOutputFormat::from_body(body)?,
         };
         Ok(ExternalPkiTemplate {
+            url_entries: None,
+            url_warnings: Vec::new(),
             reference: key.reference.clone(),
             operation: "sign-intermediate",
             output_format: RootOutputFormat::Pem,
@@ -288,11 +293,11 @@ impl Pki {
         let parents = issuer.ca_chain_der();
         self.publish_external_signed_ca(
             der.clone(),
+            prepared.url_entries.clone(),
             parents,
             issuer.issuer_id.clone(),
             prepared.serial.clone(),
-            prepared.issued,
-            prepared.expires,
+            (prepared.issued, prepared.expires),
         )?;
         self.external
             .archived_issuers
@@ -312,9 +317,14 @@ impl Pki {
         } else {
             prepared.format.certificate(&der)
         };
-        let mut warnings = vec![
-            "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information.",
-        ];
+        let mut warnings = Vec::new();
+        if prepared
+            .url_entries
+            .as_ref()
+            .is_none_or(UrlEntries::aia_empty)
+        {
+            warnings.push(urls::AIA_WARNING);
+        }
         if prepared.fields.max_path_length == Some(0) {
             warnings.push("Max path length of the signed certificate is zero. This certificate cannot be used to issue intermediate CA certificates.");
         }
@@ -323,7 +333,9 @@ impl Pki {
             "serial_number":formatted_serial(&prepared.serial),"expiration":prepared.expires}),
             true,
         );
-        response.body["warnings"] = json!(warnings);
+        if !warnings.is_empty() {
+            response.body["warnings"] = json!(warnings);
+        }
         Ok(response)
     }
 }

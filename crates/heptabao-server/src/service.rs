@@ -86,8 +86,9 @@ const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
 const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
 const EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA: u32 = 94;
 const SDK_RESPONSE_HEADERS_STATE_SCHEMA: u32 = 95;
+const PKI_URLS_STATE_SCHEMA: u32 = 97;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = SDK_RESPONSE_HEADERS_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_URLS_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -108,6 +109,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_ROLE_NAMES_STATE_SCHEMA
                 | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
                 | SDK_RESPONSE_HEADERS_STATE_SCHEMA
+                | PKI_URLS_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -3656,6 +3658,7 @@ impl Service {
         if admitted.engines.has_kubernetes_opaque_artifact_state()
             || admitted.has_token_api_precision_state()
             || admitted.has_namespace_batch_state()
+            || admitted.engines.has_pki_url_state()
             || admitted.engines.has_external_pki_signer_history()
             || admitted.engines.has_pki_role_names_state()
             || admitted.engines.has_pki_role_time_state()

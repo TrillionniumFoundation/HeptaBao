@@ -114,6 +114,8 @@ impl CrlConfig {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct CrlSnapshot {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    url_entries: Option<UrlEntries>,
     number: u64,
     base: Option<u64>,
     this_update: u64,
@@ -194,6 +196,12 @@ fn crl_tbs(root: &RootCa, snapshot: &CrlSnapshot) -> Result<Vec<u8>> {
             &integer(&base.to_be_bytes()),
         ));
     }
+    if let Some(urls) = &snapshot.url_entries {
+        urls.validate()?;
+        if let Some(freshest) = urls.freshest_extension() {
+            extensions.push(freshest);
+        }
+    }
     parts.push(context_explicit(0, &seq(&extensions)));
     Ok(seq(&parts))
 }
@@ -205,8 +213,10 @@ fn sign_snapshot(
     base: Option<u64>,
     now: u64,
     expiry: u64,
+    url_entries: Option<UrlEntries>,
 ) -> Result<CrlSnapshot> {
     let mut snapshot = CrlSnapshot {
+        url_entries,
         number,
         base,
         this_update: now,
@@ -237,6 +247,14 @@ fn sign_snapshot(
 }
 
 impl Pki {
+    pub(super) fn has_local_crl_url_state(&self) -> bool {
+        self.local_crl.as_ref().is_some_and(|state| {
+            state
+                .issuers
+                .values()
+                .any(|crls| crls.full.url_entries.is_some() || crls.delta.url_entries.is_some())
+        })
+    }
     pub(in crate::engines) fn has_local_crl_state(&self) -> bool {
         self.local_crl.is_some()
     }
@@ -317,6 +335,7 @@ impl Pki {
                     Some(previous.full.number),
                     now,
                     expiry,
+                    None,
                 )?;
                 previous.last_number = number;
             } else {
@@ -326,7 +345,15 @@ impl Pki {
                         .map_or(0, |previous| previous.last_number),
                 )?;
                 let delta_number = next_number(full_number)?;
-                let full = sign_snapshot(root, revoked, full_number, None, now, expiry)?;
+                let full = sign_snapshot(
+                    root,
+                    revoked,
+                    full_number,
+                    None,
+                    now,
+                    expiry,
+                    self.capture_urls(&root.issuer_id)?,
+                )?;
                 let delta = sign_snapshot(
                     root,
                     BTreeMap::new(),
@@ -334,6 +361,7 @@ impl Pki {
                     Some(full_number),
                     now,
                     expiry,
+                    None,
                 )?;
                 next.issuers.insert(
                     key,

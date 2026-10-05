@@ -93,6 +93,8 @@ struct ImportedCa {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct SignedCa {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    url_entries: Option<UrlEntries>,
     certificate_der: Vec<u8>,
     parents: Vec<Vec<u8>>,
     issuer_id: String,
@@ -789,6 +791,10 @@ impl Pki {
             validate_available_chain(&ca.certificate_der, &ca.parents)?;
         }
         for (serial, ca) in &state.signed_certificates {
+            ca.url_entries
+                .clone()
+                .unwrap_or_default()
+                .validate_certificate(&ca.certificate_der)?;
             let cert = certificate(&ca.certificate_der)?;
             if der(0x02, cert.raw_serial()) != integer(&serial_bytes(serial)?)
                 || !valid_pki_id(&ca.issuer_id)
@@ -1247,6 +1253,7 @@ impl Pki {
         let (_, name, material) = self.owned_key(key_id)?;
         let cert = certificate(&ca.certificate_der)?;
         let root = RootCa {
+            url_entries: None,
             leaf_not_after_behavior: None,
             common_name: common_name(cert.subject())?,
             issuer_id: issuer.to_owned(),
@@ -1652,10 +1659,12 @@ impl Pki {
         let expires = root_fields::root_expiration(body, now, self.max_ttl, self.default_ttl)?;
         let ski = root_fields::certificate_key_identifier(&root.certificate_der)?;
         let issuer_name = root_fields::certificate_subject(&root.certificate_der)?;
+        let url_entries = self.capture_urls(&root.issuer_id)?;
         let cert = certificate_der_local(
             &material,
             &public,
             CertificateSpec {
+                url_entries: url_entries.as_ref(),
                 serial: &serial,
                 issuer_cn: &root.common_name,
                 subject_cn: &cname,
@@ -1712,6 +1721,7 @@ impl Pki {
             .insert(
                 serial.clone(),
                 SignedCa {
+                    url_entries: url_entries.clone(),
                     certificate_der: cert,
                     parents,
                     issuer_id,
@@ -1724,15 +1734,16 @@ impl Pki {
             json!({"certificate":certificate,"issuing_ca":issuing,"ca_chain":chain,"serial_number":external::formatted_serial(&serial),"expiration":expires}),
             true,
         );
-        // The currently admitted issuer profile has no configured AIA URLs.
-        // Keep the native warning order: AIA before the zero-path warning.
-        let mut warnings = vec![
-            "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information.",
-        ];
+        let mut warnings = Vec::new();
+        if url_entries.as_ref().is_none_or(UrlEntries::aia_empty) {
+            warnings.push(urls::AIA_WARNING);
+        }
         if fields.max_path_length == Some(0) {
             warnings.push("Max path length of the signed certificate is zero. This certificate cannot be used to issue intermediate CA certificates.");
         }
-        response.body["warnings"] = json!(warnings);
+        if !warnings.is_empty() {
+            response.body["warnings"] = json!(warnings);
+        }
         Ok(response)
     }
 
@@ -1858,6 +1869,7 @@ impl Pki {
                 let material = material.ok_or_else(|| bad("owned CA key changed"))?;
                 let kind = material.kind();
                 let root = RootCa {
+                    url_entries: None,
                     leaf_not_after_behavior: None,
                     common_name: common_name(cert.subject())?,
                     issuer_id: id.clone(),
@@ -1912,14 +1924,17 @@ impl Pki {
                 warnings.push("Default issuer left unchanged: could not select new issuer automatically as multiple imported issuers had key material in Vault.");
             }
         }
-        // config/urls and per-issuer AIA overrides are not supported by this finite local profile yet.
-        warnings.push("This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information.");
+        if self.urls.as_ref().is_none_or(PkiUrls::aia_empty) {
+            warnings.push(urls::AIA_WARNING);
+        }
         self.maintain_local_crl(now)?;
         let mut response = ok(
             json!({"mapping":mapping,"imported_keys":Value::Null,"existing_keys":Value::Null,"imported_issuers":if imported.is_empty(){Value::Null}else{json!(imported)},"existing_issuers":if existing.is_empty(){Value::Null}else{json!(existing)}}),
             true,
         );
-        response.body["warnings"] = json!(warnings);
+        if !warnings.is_empty() {
+            response.body["warnings"] = json!(warnings);
+        }
         Ok(response)
     }
 
@@ -1943,6 +1958,14 @@ impl Pki {
 }
 
 impl Pki {
+    pub(super) fn has_local_intermediate_url_state(&self) -> bool {
+        self.local_intermediate.as_ref().is_some_and(|state| {
+            state
+                .signed_certificates
+                .values()
+                .any(|ca| ca.url_entries.is_some())
+        })
+    }
     pub(super) fn has_external_signed_ca_issuer_reference(
         &self,
         id: &str,
@@ -2039,12 +2062,13 @@ impl Pki {
     pub(super) fn publish_external_signed_ca(
         &mut self,
         certificate_der: Vec<u8>,
+        url_entries: Option<UrlEntries>,
         parents: Vec<Vec<u8>>,
         issuer_id: String,
         serial: String,
-        issued: u64,
-        expires: u64,
+        validity: (u64, u64),
     ) -> Result<()> {
+        let (issued, expires) = validity;
         if self.intermediate_certificate(&serial).is_some()
             || self.local_certificate(&serial).is_some()
             || self.issued.contains_key(&serial)
@@ -2065,6 +2089,7 @@ impl Pki {
             .insert(
                 serial,
                 SignedCa {
+                    url_entries,
                     certificate_der,
                     parents,
                     issuer_id,

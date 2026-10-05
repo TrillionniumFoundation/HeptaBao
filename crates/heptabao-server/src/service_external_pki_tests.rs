@@ -1623,3 +1623,6 @@ fn external_pki270_optional_provider_host_sign_capability_disable_and_revoke_fen
     }
     Ok(())
 }
+
+#[path = "service_pki_urls_tests.rs"]
+mod urls97;

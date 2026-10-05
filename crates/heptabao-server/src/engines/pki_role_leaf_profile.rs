@@ -408,6 +408,7 @@ impl Pki {
             let authority_key_id = root_fields::certificate_key_identifier(issuer_der)?;
             let expected = certificate_tbs_with(
                 CertificateSpec {
+                    url_entries: issued.url_entries.as_ref(),
                     serial,
                     issuer_cn: "",
                     subject_cn: &issued.common_name,

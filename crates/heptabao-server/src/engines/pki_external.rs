@@ -84,6 +84,8 @@ impl ExternalState {
 
 #[derive(Clone)]
 pub(crate) struct ExternalPkiTemplate {
+    url_entries: Option<UrlEntries>,
+    url_warnings: Vec<String>,
     pub(crate) reference: String,
     operation: &'static str,
     output_format: RootOutputFormat,
@@ -250,6 +252,7 @@ pub(super) fn formatted_serial(serial: &str) -> String {
 // SKI and AKI, plus a DNS SAN when the CN is a valid DNS name. SHA-1 is solely the
 // standard public-key identifier construction, never a signature algorithm.
 struct ExternalRootSpec<'a> {
+    url_entries: Option<&'a UrlEntries>,
     serial: &'a str,
     issuer_cn: &'a str,
     subject_cn: &'a str,
@@ -259,6 +262,7 @@ struct ExternalRootSpec<'a> {
 }
 fn external_root_tbs(spec: ExternalRootSpec<'_>, dns_san: bool) -> Result<Vec<u8>> {
     let ExternalRootSpec {
+        url_entries,
         serial,
         issuer_cn,
         subject_cn,
@@ -280,6 +284,9 @@ fn external_root_tbs(spec: ExternalRootSpec<'_>, dns_san: bool) -> Result<Vec<u8
     ];
     if dns_san {
         extensions.push(dns_san_extension(subject_cn));
+    }
+    if let Some(urls) = url_entries {
+        extensions.extend(urls.certificate_extensions()?);
     }
     Ok(seq(&[
         context_explicit(0, &integer(&[2])),
@@ -338,7 +345,7 @@ impl ExternalPkiTemplate {
             if public_key != imported.pending.key.public_key {
                 return Err(error(503, "external intermediate provider key changed"));
             }
-            let crls = CrlSet::empty(self.generated_at);
+            let crls = CrlSet::empty(self.generated_at, self.url_entries.clone());
             let mut parts = crls.tbs(&self.common_name, &public_key)?;
             let tbs = parts.remove(0);
             return Ok(ExternalPkiMaterial {
@@ -357,6 +364,7 @@ impl ExternalPkiTemplate {
         let tbs = if self.operation == "root" {
             external_root_tbs(
                 ExternalRootSpec {
+                    url_entries: self.url_entries.as_ref(),
                     serial: &self.serial,
                     issuer_cn: &self.common_name,
                     subject_cn: &self.common_name,
@@ -369,7 +377,8 @@ impl ExternalPkiTemplate {
         } else {
             csr_info(&self.common_name, &public_key, self.dns_san)?
         };
-        let root_crls = (self.operation == "root").then(|| CrlSet::empty(self.generated_at));
+        let root_crls = (self.operation == "root")
+            .then(|| CrlSet::empty(self.generated_at, self.url_entries.clone()));
         let extra_tbs = root_crls
             .as_ref()
             .map(|crls| crls.tbs(&self.common_name, &public_key))
@@ -604,7 +613,14 @@ impl Pki {
         if ttl == 0 || ttl > self.max_ttl {
             return Err(bad("PKI root TTL is outside bounds"));
         }
+        let (url_entries, url_warnings) = if operation == "root" {
+            self.capture_root_urls()?
+        } else {
+            (None, Vec::new())
+        };
         Ok(Some(ExternalPkiTemplate {
+            url_entries,
+            url_warnings,
             reference: reference.into(),
             operation,
             output_format,
@@ -696,6 +712,7 @@ impl Pki {
                 "serial_number":formatted_serial(&template.serial),"expiration":template.not_after,
                 "key_id":key.key_id,"key_name":key.key_name,"issuer_id":key.issuer_id,"issuer_name":key.issuer_name});
             let root = RootCa {
+                url_entries: template.url_entries.clone(),
                 leaf_not_after_behavior: None,
                 common_name: template.common_name,
                 issuer_id: String::new(),
@@ -718,9 +735,17 @@ impl Pki {
                 now,
             )?;
             let mut response = ok(response, true);
-            response.body["warnings"] = json!([
-                "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information."
-            ]);
+            let mut warnings = template.url_warnings;
+            if template
+                .url_entries
+                .as_ref()
+                .is_none_or(UrlEntries::aia_empty)
+            {
+                warnings.push(urls::AIA_WARNING.into());
+            }
+            if !warnings.is_empty() {
+                response.body["warnings"] = json!(warnings);
+            }
             Ok(response)
         } else {
             if self.external.intermediate.is_some() {
@@ -781,6 +806,7 @@ impl Pki {
             } else {
                 let tbs = external_root_tbs(
                     ExternalRootSpec {
+                        url_entries: root.url_entries.as_ref(),
                         serial: &root.serial,
                         issuer_cn: &root.common_name,
                         subject_cn: &root.common_name,

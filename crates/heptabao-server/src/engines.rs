@@ -628,6 +628,23 @@ impl EngineState {
         Ok(())
     }
 
+    #[cfg(test)]
+    pub(crate) fn remove_root_url_capture_for_test(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|n| n.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(engine) = &mut mounted.backend else {
+            return Err(bad("URL fixture mount is not PKI"));
+        };
+        engine.remove_root_url_capture_for_test()
+    }
+
     pub(crate) fn ensure_empty_namespace(&mut self, namespace: &str) {
         self.namespaces
             .entry(namespace.into())
@@ -817,6 +834,13 @@ impl EngineState {
         pki.fixture_issue_historical_local_leaf(mount, body, owner, now)
     }
 
+    pub(crate) fn has_pki_url_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(
+                |mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_url_state()),
+            )
+        })
+    }
     pub(crate) fn has_external_pki_signer_history(&self) -> bool {
         self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_external_signer_history())))
     }
