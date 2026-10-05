@@ -275,6 +275,8 @@ fn encoded_oid(value: &str) -> Result<Vec<u8>> {
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct LeafProfilePublicEvidence {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     #[serde(default, skip_serializing_if = "role_false")]
     pub(super) role_time_owned: bool,
     pub(super) profile: RoleLeafProfile,
@@ -288,6 +290,7 @@ impl LeafProfilePublicEvidence {
     pub(super) fn capture(prepared: &LeafTemplate, public_key: &LocalPublicKey) -> Option<Self> {
         prepared.role_leaf_profile.clone().map(|profile| Self {
             profile,
+            issuer_not_after_behavior: prepared.issuer_not_after_behavior,
             role_time_owned: prepared.role_time_owned,
             public_key: public_key.clone(),
             not_before: prepared.not_before,
@@ -326,7 +329,8 @@ impl Pki {
                 self.profile_leaf_issuer_evidence(&issued.local_issuer_id)?;
             evidence.profile.validate_role_oid_strings()?;
             evidence.public_key.validate()?;
-            if evidence.role_time_owned != issued.role_time_owned
+            if evidence.issuer_not_after_behavior != issued.issuer_not_after_behavior
+                || evidence.role_time_owned != issued.role_time_owned
                 || !issued.role_time_owned && evidence.not_before > issued.issued
                 || evidence.alt_names.len() > 32
                 || evidence.ip_sans.len() > 32
@@ -335,6 +339,18 @@ impl Pki {
                 })
             {
                 return Err(bad("invalid PKI profile leaf public evidence"));
+            }
+            let (_, issuer_certificate) = X509Certificate::from_der(issuer_der)
+                .map_err(|_| bad("invalid PKI owned issuer DER"))?;
+            let issuer_not_after =
+                u64::try_from(issuer_certificate.validity().not_after.timestamp())
+                    .map_err(|_| bad("invalid PKI owned issuer expiry"))?;
+            if issued.expires > issuer_not_after
+                && issued.issuer_not_after_behavior != Some(IssuerLeafNotAfterBehavior::Permit)
+            {
+                return Err(bad(
+                    "PKI signed leaf requires captured issuer permit behavior",
+                ));
             }
             let issuer_name = root_fields::certificate_subject(issuer_der)?;
             let authority_key_id = root_fields::certificate_key_identifier(issuer_der)?;

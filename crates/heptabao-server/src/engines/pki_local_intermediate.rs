@@ -760,13 +760,13 @@ impl Pki {
         Ok(())
     }
 
-    fn local_issuer_management_read(
+    pub(super) fn local_issuer_management_read(
         &self,
         reference: &str,
         body: &Value,
     ) -> Result<EngineResponse> {
         reject_unknown(body, &[])?;
-        let (id, key, name, certificate, chain) =
+        let (id, key, name, certificate, chain, behavior) =
             if let Some((der, chain)) = self.public_imported_ca(reference) {
                 (
                     self.imported_ca_id(reference).ok_or_else(not_found)?,
@@ -774,24 +774,34 @@ impl Pki {
                     "",
                     pem("CERTIFICATE", der),
                     chain,
+                    IssuerLeafNotAfterBehavior::Err,
                 )
             } else {
-                let root = self.local_issuer(reference)?;
+                let root = self.selected_issuer(reference)?;
+                let (id, key, name) = if root.is_external() {
+                    self.public_issuer_metadata().ok_or_else(not_found)?
+                } else {
+                    (
+                        root.issuer_id.as_str(),
+                        root.key_id.as_str(),
+                        root.local_fields
+                            .as_ref()
+                            .map_or("", |m| m.issuer_name.as_str()),
+                    )
+                };
                 (
-                    root.issuer_id.as_str(),
-                    root.key_id.as_str(),
-                    root.local_fields
-                        .as_ref()
-                        .map_or("", |m| m.issuer_name.as_str()),
+                    id,
+                    key,
+                    name,
                     pem("CERTIFICATE", &root.certificate_der),
                     root.local_ca_chain_pem(),
+                    root.leaf_not_after_behavior.unwrap_or_default(),
                 )
             };
-        // These are the actual defaults of the currently closed local profile.
-        // Writes to unsupported issuer/AIA policies remain rejected.
+        // Actual certificate and selected issuer policy, independent of the leaf owner history.
         Ok(ok(
             json!({"issuer_id":id,"key_id":key,"issuer_name":name,"certificate":certificate,
-            "ca_chain":chain,"manual_chain":Value::Null,"leaf_not_after_behavior":"err",
+            "ca_chain":chain,"manual_chain":Value::Null,"leaf_not_after_behavior":behavior.label(),
             "usage":"crl-signing,issuing-certificates,ocsp-signing,read-only","revoked":false,
             "revocation_signature_algorithm":"","issuing_certificates":[],"crl_distribution_points":[],
             "delta_crl_distribution_points":[],"ocsp_servers":[]}),
@@ -806,8 +816,14 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<Option<EngineResponse>> {
+        if write_method(method)
+            && let Some(reference) = path.strip_prefix("issuer/")
+            && !reference.is_empty()
+            && !reference.contains('/')
+        {
+            return self.issuer_leaf_time_update(reference, body).map(Some);
+        }
         if method == "GET"
-            && !self.root.as_ref().is_some_and(RootCa::is_external)
             && let Some(reference) = path.strip_prefix("issuer/")
             && !reference.is_empty()
             && !reference.contains('/')
@@ -1172,6 +1188,7 @@ impl Pki {
         let (_, name, material) = self.owned_key(key_id)?;
         let cert = certificate(&ca.certificate_der)?;
         let root = RootCa {
+            leaf_not_after_behavior: None,
             common_name: common_name(cert.subject())?,
             issuer_id: issuer.to_owned(),
             key_id: key_id.to_owned(),
@@ -1754,6 +1771,7 @@ impl Pki {
                 let material = material.ok_or_else(|| bad("owned CA key changed"))?;
                 let kind = material.kind();
                 let root = RootCa {
+                    leaf_not_after_behavior: None,
                     common_name: common_name(cert.subject())?,
                     issuer_id: id.clone(),
                     key_id: key.clone(),

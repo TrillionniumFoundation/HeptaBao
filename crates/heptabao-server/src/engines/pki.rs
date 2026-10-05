@@ -25,6 +25,9 @@ mod role_leaf_profile;
 #[path = "pki_role_time.rs"]
 mod role_time;
 use role_time::RoleTimePolicy;
+#[path = "pki_issuer_time.rs"]
+mod issuer_time;
+use issuer_time::IssuerLeafNotAfterBehavior;
 #[path = "pki_root_fields.rs"]
 mod root_fields;
 use role_leaf_profile::{LeafProfilePublicEvidence, RoleLeafProfile};
@@ -160,6 +163,8 @@ pub(super) struct Pki {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct RootCa {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    leaf_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     common_name: String,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     issuer_id: String,
@@ -239,6 +244,8 @@ fn role_false(value: &bool) -> bool {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub(super) struct IssuedCertificate {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     #[serde(default, skip_serializing_if = "role_false")]
     role_time_owned: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -443,6 +450,7 @@ impl Pki {
                 })
                 || issued.lease_id != format!("{}/{}", issued.path, serial)
                 || issued.issued > clock
+                || issued.issuer_not_after_behavior.is_some() && !issued.role_time_owned
                 || issued.expires <= issued.issued
                 || issued.expires - issued.issued > MAX_TTL
                 || issued
@@ -732,6 +740,7 @@ impl Pki {
                 (Vec::new(), Some(material))
             };
             self.publish_local_root(RootCa {
+                leaf_not_after_behavior: None,
                 common_name: common_name.into(),
                 issuer_id,
                 key_id,
@@ -1322,18 +1331,15 @@ impl Pki {
             self.max_ttl,
             now,
         )?;
-        if resolved.not_after > root.not_after {
-            return Err(bad(&format!(
-                "cannot satisfy request, as TTL would result in notAfter of {} that is beyond the expiration of the CA certificate at {}",
-                timestamp(resolved.not_after),
-                timestamp(root.not_after)
-            )));
-        }
+        let not_after = root
+            .leaf_not_after_behavior
+            .unwrap_or_default()
+            .apply(resolved.not_after, root.not_after)?;
         role.role_time_policy
             .clone()
             .unwrap_or_default()
-            .validate_final_not_after(resolved.not_after)?;
-        let expires = resolved.not_after.min(owner_expires.unwrap_or(u64::MAX));
+            .validate_final_not_after(not_after)?;
+        let expires = not_after.min(owner_expires.unwrap_or(u64::MAX));
         if expires <= now {
             return Err(error(403, "issuer no longer has a live PKI lease window"));
         }
@@ -1349,7 +1355,9 @@ impl Pki {
             return Err(error(503, "PKI serial collision"));
         }
         Ok(LeafTemplate {
-            role_time_owned: role.role_time_policy.is_some()
+            issuer_not_after_behavior: root.leaf_not_after_behavior,
+            role_time_owned: root.leaf_not_after_behavior.is_some()
+                || role.role_time_policy.is_some()
                 || role.max_ttl == 0
                 || body.get("not_before").is_some()
                 || body.get("not_after").is_some(),
@@ -1555,6 +1563,7 @@ impl Pki {
         self.issued.insert(
             prepared.serial.clone(),
             IssuedCertificate {
+                issuer_not_after_behavior: prepared.issuer_not_after_behavior,
                 role_time_owned: prepared.role_time_owned,
                 role_leaf_profile,
                 local_issuer_id: prepared.local_issuer_id,
@@ -2077,6 +2086,7 @@ struct IssuanceRoute<'a> {
 
 #[derive(Clone)]
 struct LeafTemplate {
+    issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     role_time_owned: bool,
     warnings: Vec<String>,
     role_leaf_profile: Option<RoleLeafProfile>,

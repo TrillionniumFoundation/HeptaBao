@@ -500,3 +500,428 @@ fn pki_time89_received_actual88_to89_records_persist_and_reopen() -> TestResult 
     );
     Ok(())
 }
+
+#[test]
+fn pki_time89_mount_default_and_positive_role_max_follow_actual_native_priority() -> TestResult {
+    let (_root, mut service, _unseal, admin, issuer) = local_fixture()?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/ca/tune",
+            &admin,
+            json!({"default_lease_ttl":"5m","max_lease_ttl":"10m"})
+        )
+        .status
+            == 204,
+        "actual mount TTL publication"
+    );
+    timed_role(
+        &mut service,
+        &admin,
+        json!({"ttl":0,"max_ttl":0,"not_before_duration":"45s"}),
+    )?;
+    let fallback = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &admin,
+        json!({"common_name":"leaf.example.test"}),
+    );
+    signed_times(&fallback, &issuer, 55, 400)?;
+    timed_role(
+        &mut service,
+        &admin,
+        json!({"ttl":"20m","max_ttl":"1h","not_before_duration":"45s"}),
+    )?;
+    let override_max = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &admin,
+        json!({"common_name":"leaf.example.test"}),
+    );
+    signed_times(&override_max, &issuer, 55, 1300)?;
+    assert!(
+        override_max.body.get("warnings").is_none(),
+        "positive role max supersedes mount max as native"
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_time89_local_issuer_three_modes_bound_order_captured_owner_and_restart() -> TestResult {
+    let (root, mut service, unseal, admin, _long_issuer) = local_fixture()?;
+    let short = call(
+        &mut service,
+        "POST",
+        "ca/root/generate/internal",
+        &admin,
+        json!({"common_name":"short-ca.example.test","key_type":"ec","key_bits":256,"ttl":"10m"}),
+    );
+    assert!(short.status == 200, "actual shorter CA producer");
+    let issuer = X509::from_pem(
+        short.body["data"]["certificate"]
+            .as_str()
+            .ok_or("short CA")?
+            .as_bytes(),
+    )?;
+    let id = short.body["data"]["issuer_id"]
+        .as_str()
+        .ok_or("short CA identity")?;
+    let route = format!("ca/issuer/{id}");
+    timed_role(&mut service, &admin, json!({"ttl":"20m"}))?;
+    for invalid in [json!("invalid"), json!(""), Value::Null] {
+        let identity = service
+            .current_state_identity()
+            .map_err(|_| "before invalid mode")?;
+        let rejected = call(
+            &mut service,
+            "POST",
+            &route,
+            &admin,
+            json!({"leaf_not_after_behavior":invalid}),
+        );
+        assert!(
+            rejected.status == 400
+                && rejected.body["errors"][0]
+                    == "Unknown value for field `leaf_not_after_behavior`. Possible values are `err`, `truncate`, and `permit`."
+                && service
+                    .current_state_identity()
+                    .map_err(|_| "after invalid mode")?
+                    == identity,
+            "native invalid enum errors preserve complete state"
+        );
+    }
+    let err = call(
+        &mut service,
+        "POST",
+        &route,
+        &admin,
+        json!({"leaf_not_after_behavior":"err"}),
+    );
+    assert!(
+        err.status == 200 && err.body["data"]["leaf_not_after_behavior"] == "err",
+        "actual issuer err policy"
+    );
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "err policy identity")?;
+    let rejected = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &admin,
+        json!({"common_name":"leaf.example.test"}),
+    );
+    assert!(
+        rejected.status == 400
+            && service
+                .current_state_identity()
+                .map_err(|_| "rejected CA identity")?
+                == identity,
+        "err rejects actual leaf beyond signed CA expiry without publication"
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            &route,
+            &admin,
+            json!({"leaf_not_after_behavior":"permit"})
+        )
+        .status
+            == 200,
+        "actual issuer permit policy"
+    );
+    let permitted = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &admin,
+        json!({"common_name":"leaf.example.test"}),
+    );
+    let (serial, pem) = signed_times(&permitted, &issuer, 70, 1300)?;
+    let serial = serial.replace(':', "");
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            &route,
+            &admin,
+            json!({"leaf_not_after_behavior":"truncate"})
+        )
+        .status
+            == 200,
+        "actual issuer truncate policy"
+    );
+    let truncated = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &admin,
+        json!({"common_name":"leaf.example.test"}),
+    );
+    signed_times(&truncated, &issuer, 70, 700)?;
+    timed_role(
+        &mut service,
+        &admin,
+        json!({"ttl":"20m","not_after_bound":"1970-01-01T00:12:30Z"}),
+    )?;
+    let capped_before_bound = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &admin,
+        json!({"common_name":"leaf.example.test"}),
+    );
+    signed_times(&capped_before_bound, &issuer, 70, 700)?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            &route,
+            &admin,
+            json!({"leaf_not_after_behavior":"permit"})
+        )
+        .status
+            == 200,
+        "switch policy after original signed permit leaf"
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "ca/issue/time",
+            &admin,
+            json!({"common_name":"leaf.example.test"})
+        )
+        .status
+            == 400,
+        "permit leaves actual expiry beyond absolute role bound rejected"
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            &route,
+            &admin,
+            json!({"leaf_not_after_behavior":"err"})
+        )
+        .status
+            == 200,
+        "current issuer error policy cannot erase captured older permit authority"
+    );
+    let state = service.state.as_ref().ok_or("actual three-mode state")?;
+    assert!(
+        state.schema == 89 && state.validate_format().is_ok(),
+        "captured permit leaf survives issuer policy update"
+    );
+    let stored = pki_value(&service, "", "ca/")?;
+    assert!(
+        stored.0["issued"][&serial]["issuer_not_after_behavior"] == "permit"
+            && stored.0["issued"][&serial]["role_leaf_profile"]["issuer_not_after_behavior"]
+                == "permit",
+        "actual independent private and signed public owner retain original policy"
+    );
+    let mut false_owner = serde_json::to_value(state)?;
+    false_owner["engines"]["namespaces"][""]["mounts"]["ca/"]["backend"]["Pki"]["issued"]
+        [&serial]["issuer_not_after_behavior"] = json!("err");
+    let false_owner: State = serde_json::from_value(false_owner)?;
+    assert!(
+        false_owner.validate_format().is_err(),
+        "received owner cannot erase captured beyond-CA permit"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "encrypted actual issuer policy state reopens"
+    );
+    let read = call(
+        &mut reopened,
+        "GET",
+        &format!("ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert!(
+        read.status == 200
+            && read.body["data"]["certificate"] == pem
+            && reopened
+                .state
+                .as_ref()
+                .ok_or("reopened issuer state")?
+                .validate_format()
+                .is_ok(),
+        "original signed permit leaf exact DER and owner survive policy changes and restart"
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_time89_external_permit_owner_survives_real_signer_retirement_and_last_tidy() -> TestResult {
+    let remote = RemoteTransit::new_kind("ecdsa-p256")?;
+    let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+    let mut ca_body = body();
+    ca_body["ttl"] = json!("10m");
+    let generated = call(
+        &mut service,
+        "POST",
+        "external-ca/root/generate/kms",
+        &admin,
+        ca_body,
+    );
+    assert!(generated.status == 200, "actual external shorter CA");
+    let issuer = X509::from_pem(
+        generated.body["data"]["certificate"]
+            .as_str()
+            .ok_or("actual external CA")?
+            .as_bytes(),
+    )?;
+    let id = generated.body["data"]["issuer_id"]
+        .as_str()
+        .ok_or("actual external CA ID")?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            &format!("external-ca/issuer/{id}"),
+            &admin,
+            json!({"leaf_not_after_behavior":"permit"})
+        )
+        .status
+            == 200,
+        "actual external issuer policy"
+    );
+    let mut role = role_body(&default_profile());
+    role["ttl"] = json!("20m");
+    assert!(
+        call(&mut service, "POST", "external-ca/roles/time", &admin, role).status == 200,
+        "actual external time role"
+    );
+    let leaf = call(
+        &mut service,
+        "POST",
+        "external-ca/issue/time",
+        &admin,
+        json!({"common_name":"leaf.example.test"}),
+    );
+    let (serial, pem) = signed_times(&leaf, &issuer, 70, 1300)?;
+    let serial = serial.replace(':', "");
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/root/delete",
+            &admin,
+            json!({})
+        )
+        .status
+            == 200,
+        "actual signer retirement retains leaf owner"
+    );
+    let stored = pki_value(&service, "", "external-ca/")?;
+    assert!(
+        stored.0["root"].is_null()
+            && stored.0["issued"][&serial]["issuer_not_after_behavior"] == "permit"
+            && stored.0["external"]["issued_public"][&serial]["issuer_not_after_behavior"]
+                == "permit"
+            && stored.0["issued"][&serial]["external_issuer_owner"]["issuer_id"] == id,
+        "retired signer and independently captured time policy remain precisely owned"
+    );
+    let before = remote.calls()?;
+    let read = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert!(
+        read.status == 200 && read.body["data"]["certificate"] == pem && remote.calls()? == before,
+        "historical permit leaf reads actual signed bytes without KMS access"
+    );
+    let state = service.state.as_ref().ok_or("actual retired time owner")?;
+    assert!(
+        state.validate_format().is_ok(),
+        "actual retired beyond-CA leaf validates against original archived issuer"
+    );
+    let mut altered = serde_json::to_value(state)?;
+    altered["engines"]["namespaces"][""]["mounts"]["external-ca/"]["backend"]["Pki"]["external"]
+        ["issued_public"][&serial]["issuer_not_after_behavior"] = json!("err");
+    assert!(
+        serde_json::from_value::<State>(altered)?
+            .validate_format()
+            .is_err(),
+        "received external projection cannot replace independently captured permit"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "retired original issuer and permit owner reopen encrypted"
+    );
+    let read = call(
+        &mut reopened,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert!(
+        read.status == 200 && read.body["data"]["certificate"] == pem,
+        "retired permit leaf persists"
+    );
+    assert!(
+        call(
+            &mut reopened,
+            "DELETE",
+            "external-ca/roles/time",
+            &admin,
+            json!({})
+        )
+        .status
+            == 204,
+        "last time role removed"
+    );
+    assert!(
+        reopened
+            .handle_at(
+                "POST",
+                "external-ca/tidy",
+                "",
+                &admin,
+                json!({"safety_buffer":"0s"}),
+                1301
+            )
+            .status
+            == 204,
+        "actual expiry removes last retired policy owner"
+    );
+    let state = reopened.state.as_ref().ok_or("retired89 floor")?;
+    assert!(
+        state.schema == 89
+            && state.writer_schema() == 89
+            && !state.engines.has_pki_role_time_state()
+            && state.validate_format().is_ok(),
+        "sticky reader89 survives actual last issuer policy owner removal"
+    );
+    Ok(())
+}

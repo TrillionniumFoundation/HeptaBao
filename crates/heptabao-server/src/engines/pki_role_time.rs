@@ -243,9 +243,23 @@ fn go_duration(seconds: u64) -> String {
 
 impl Pki {
     pub(in crate::engines) fn has_role_time_state(&self) -> bool {
-        self.roles
-            .values()
-            .any(|role| role.role_time_policy.is_some() || role.max_ttl == 0)
-            || self.issued.values().any(|leaf| leaf.role_time_owned)
+        self.root
+            .iter()
+            .any(|root| root.leaf_not_after_behavior.is_some())
+            || self.local_issuers.iter().any(|state| {
+                state
+                    .other
+                    .values()
+                    .chain(state.orphan_keys.values())
+                    .any(|root| root.leaf_not_after_behavior.is_some())
+            })
+            || self
+                .roles
+                .values()
+                .any(|role| role.role_time_policy.is_some() || role.max_ttl == 0)
+            || self
+                .issued
+                .values()
+                .any(|leaf| leaf.role_time_owned || leaf.issuer_not_after_behavior.is_some())
     }
 }
