@@ -715,7 +715,7 @@ impl EngineState {
         namespace: &str,
         mount: &str,
         body: &Value,
-        owner: &LeaseOwner,
+        owner: &crate::auth::LeaseOwner,
         now: u64,
     ) -> Result<EngineResponse> {
         owner
