@@ -79,7 +79,7 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
             r"fn dispatch_authorized_subrequest\(\s*state:\s*&mut State,\s*principal:\s*Option<&Principal>",
         )
         self.assertEqual(
-            2,
+            4,
             len(
                 re.findall(
                     r"Self::dispatch_authorized_subrequest\(",
@@ -87,6 +87,20 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
                 )
             ),
         )
+        # KV and token APIs borrow the one Principal held by their original
+        # final-delivery capsule; ordinary dispatch and workflow own the other
+        # two call sites. Neither capsule reauthenticates or clones authority.
+        for capsule in ("ordinary_kv_authority", "token_api_authority"):
+            branch = re.search(
+                rf"else if let Some\(authority\) = {capsule}\.as_ref\(\) \{{(.*?)\n\s*\}}",
+                text,
+                re.S,
+            )
+            self.assertIsNotNone(branch)
+            self.assertEqual(1, branch.group(1).count("Self::dispatch_authorized_subrequest("))
+            self.assertIn("Some(authority.principal())", branch.group(1))
+            self.assertIn("request.token_clock", branch.group(1))
+            self.assertNotIn("principal.clone()", branch.group(1))
         self.assertEqual(
             1,
             len(re.findall(r"Self::dispatch_authorized_subrequest\(", workflows)),

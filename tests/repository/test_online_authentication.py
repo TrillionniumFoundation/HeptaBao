@@ -13,7 +13,7 @@ class OnlineAuthenticationTests(unittest.TestCase):
         boundary=re.search(r'(?m)^#\[cfg\(test\)\]\nmod tests \{', source)
         self.assertIsNotNone(boundary)
         text=source[:boundary.start()]
-        consume=text.index('.consume_oidc(');commit=text.index('self.commit_state(&state)',consume)
+        consume=text.index('.consume_oidc(');commit=text.index('self.commit_state(&mut state)',consume)
         publish=text.index('self.state = Some(state)',commit)
         plan=text.index('OnlineAuthEffect::OidcCallback {',publish)
         self.assertLess(consume,commit);self.assertLess(commit,publish);self.assertLess(publish,plan)
