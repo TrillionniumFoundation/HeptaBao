@@ -230,7 +230,7 @@ fn acl_parameter_state_requires_schema58_and_survives_reopen() -> TestResult {
     let (root, service, key, _root_token, token) = setup()?;
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        CURRENT_STATE_SCHEMA
+        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
     );
     let mut downgraded = service.state.clone().ok_or("state")?;
     downgraded.schema = 57;
@@ -270,6 +270,9 @@ fn acl_parameter_state_requires_schema58_and_survives_reopen() -> TestResult {
 fn acl_schema58_reopens_under_schema59_and_promotes_only_on_mutation() -> TestResult {
     let (root, mut service, key, root_token, token) = setup()?;
     let mut legacy = service.state.clone().ok_or("state")?;
+    legacy
+        .auth
+        .omit_unwrapped_public_origin_for_legacy_fixture();
     legacy.schema = 58;
     assert!(legacy.validate_format().is_ok());
     assert!(legacy.auth.has_acl_parameter_state());

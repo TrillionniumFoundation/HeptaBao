@@ -377,15 +377,20 @@ fn userpass_legacy_identity_is_not_guessed_and_explicit_token_api_children_stay_
         assert!(
             token_info(&state.tokens[&hash(target)], 101)
                 .get("meta")
-                .is_none()
+                .is_some_and(Value::is_null)
         );
         assert!(renew(&mut state, &root, target, "renew-self", Some(60), 101).is_ok());
     }
-    state.tokens.get_mut(&hash(&child)).unwrap().auth_provenance = None;
+    let child_token = state.tokens.get_mut(&hash(&child)).unwrap();
+    child_token.public_origin = None;
+    child_token.issue_stamp = None;
+    child_token.auth_provenance = None;
     assert!(renew(&mut state, &root, &child, "renew-self", Some(60), 102).is_ok());
     // Recreate the old ambiguous orphan shape, which historically inherited
     // origin mount despite lacking a parent or an explicit issuer marker.
     let orphan_token = state.tokens.get_mut(&hash(&orphan)).unwrap();
+    orphan_token.public_origin = None;
+    orphan_token.issue_stamp = None;
     orphan_token.auth_provenance = None;
     orphan_token.auth_mount = Some("staff".into());
     assert_eq!(

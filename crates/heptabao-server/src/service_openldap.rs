@@ -833,7 +833,8 @@ mod completion_tests {
         let openldap::Dispatch::External(inner) = dispatch else {
             return Err("external plan".into());
         };
-        state.schema = CURRENT_STATE_SCHEMA;
+        state.schema = state.writer_schema();
+        assert_eq!(state.schema, AUTH_PUBLIC_ORIGIN_STATE_SCHEMA);
         state.validate_format().map_err(|_| "validate")?;
         service.commit_state(&mut state).map_err(|_| "commit")?;
         service.state = Some(state);

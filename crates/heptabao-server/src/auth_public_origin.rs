@@ -366,6 +366,23 @@ impl Token {
     }
 }
 impl AuthState {
+    /// Format-only historical service-token fixtures omit all facts unavailable
+    /// before reader 86. Never used by runtime retirement or live publication.
+    #[cfg(test)]
+    pub(crate) fn omit_unwrapped_public_origin_for_legacy_fixture(&mut self) {
+        assert!(self.tokens.values().all(|token| token.wrapping.is_none()));
+        assert!(
+            self.batch_authority
+                .as_ref()
+                .is_none_or(BatchKeyAuthority::is_unused_for_legacy_fixture)
+        );
+        for token in self.tokens.values_mut() {
+            token.public_origin = None;
+            token.issue_stamp = None;
+        }
+        self.public_origin_floor = None;
+        assert!(!self.has_public_origin_state());
+    }
     pub(crate) fn has_public_origin_state(&self) -> bool {
         self.public_origin_floor.is_some() || self.tokens.values().any(Token::has_public_origin)
     }

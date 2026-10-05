@@ -911,6 +911,9 @@ fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestR
             .remove("auth_provenance");
     }
     legacy.auth = serde_json::from_value::<AuthState>(encoded_auth)?.into();
+    legacy
+        .auth
+        .omit_unwrapped_public_origin_for_legacy_fixture();
     // Construct the supported historical implicit engine representation for
     // this schema-one input, without dispatching a current mount publication.
     legacy.engines = EngineState::default().into();
