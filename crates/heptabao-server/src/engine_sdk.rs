@@ -1,13 +1,17 @@
 //! SDK catalog metadata and opaque Storage entries share the existing record
 //! owner. No callback writes a separate DurableService namespace.
 use super::*;
-use crate::state_records::{Kv1Key, Kv1Scope, RecordError};
+#[cfg(any(test, target_os = "linux"))]
+use crate::state_records::Kv1Scope;
+use crate::state_records::{Kv1Key, RecordError};
+#[cfg(any(test, target_os = "linux"))]
 #[derive(Clone)]
 pub(crate) struct StorageEntry {
     pub key: String,
     pub value: zeroize::Zeroizing<Vec<u8>>,
     pub seal_wrap: bool,
 }
+#[cfg(any(test, target_os = "linux"))]
 impl std::fmt::Debug for StorageEntry {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str("SDK StorageEntry([REDACTED])")
@@ -80,9 +84,11 @@ impl Catalog {
     pub(crate) fn get(&self, name: &str, version: &str) -> Option<&Descriptor> {
         self.entries.get(&catalog_key(name, version))
     }
+    #[cfg(target_os = "linux")]
     pub(crate) fn entries(&self) -> impl Iterator<Item = &Descriptor> {
         self.entries.values()
     }
+    #[cfg(any(test, target_os = "linux"))]
     pub(crate) fn register(&mut self, mut descriptor: Descriptor) -> Result<Descriptor> {
         if self.epochs.len() >= 128 && !self.epochs.contains_key(&descriptor.key()) {
             return Err(error(507, "SDK catalog capacity exhausted"));
@@ -100,6 +106,7 @@ impl Catalog {
         self.entries.insert(descriptor.key(), descriptor.clone());
         Ok(descriptor)
     }
+    #[cfg(any(test, target_os = "linux"))]
     pub(crate) fn remove(&mut self, name: &str, version: &str) -> bool {
         self.entries.remove(&catalog_key(name, version)).is_some()
     }
@@ -147,12 +154,15 @@ impl EngineState {
     pub(crate) fn has_sdk_state(&self) -> bool {
         !self.sdk_catalog.is_empty() || self.namespaces.values().any(|ns| !ns.sdk_owners.is_empty())
     }
+    #[cfg(any(test, target_os = "linux"))]
     pub(crate) fn sdk_descriptor(&self, name: &str, version: &str) -> Option<Descriptor> {
         self.sdk_catalog.get(name, version).cloned()
     }
+    #[cfg(target_os = "linux")]
     pub(crate) fn sdk_descriptors(&self) -> Vec<Descriptor> {
         self.sdk_catalog.entries().cloned().collect()
     }
+    #[cfg(any(test, target_os = "linux"))]
     pub(crate) fn register_sdk_descriptor(&mut self, descriptor: Descriptor) -> Result<Descriptor> {
         if self.sdk_descriptor_is_mounted(&descriptor.name, &descriptor.version) {
             return Err(error(
@@ -162,12 +172,14 @@ impl EngineState {
         }
         self.sdk_catalog.register(descriptor)
     }
+    #[cfg(any(test, target_os = "linux"))]
     pub(crate) fn deregister_sdk_descriptor(&mut self, name: &str, version: &str) -> Result<bool> {
         if self.sdk_descriptor_is_mounted(name, version) {
             return Err(error(409, "mounted SDK descriptor cannot be removed"));
         }
         Ok(self.sdk_catalog.remove(name, version))
     }
+    #[cfg(any(test, target_os = "linux"))]
     fn sdk_descriptor_is_mounted(&self, name: &str, version: &str) -> bool {
         self.namespaces.values().any(|ns| {
             ns.sdk_owners
@@ -193,6 +205,7 @@ impl EngineState {
             .max_by_key(|(mount, _)| mount.len())
             .map(|(mount, owner)| (mount.clone(), owner.clone()))
     }
+    #[cfg(any(test, target_os = "linux"))]
     pub(crate) fn bind_sdk_mount(
         &mut self,
         namespace: &str,
@@ -234,6 +247,7 @@ impl EngineState {
         }
         Ok(())
     }
+    #[cfg(any(test, target_os = "linux"))]
     pub(crate) fn sdk_storage_get(
         &self,
         namespace: &str,
@@ -248,10 +262,19 @@ impl EngineState {
             .ok_or_else(|| error(503, "SDK record root absent"))?
             .index
             .get(&key)
-            .map(|bytes| decode_record(owner, key.path(), bytes))
+            .map(|bytes| {
+                decode_record(owner, key.path(), bytes).map(|(key, value, seal_wrap)| {
+                    StorageEntry {
+                        key,
+                        value,
+                        seal_wrap,
+                    }
+                })
+            })
             .transpose()
             .map_err(kv1_records::record_error)
     }
+    #[cfg(any(test, target_os = "linux"))]
     pub(crate) fn sdk_storage_put(
         &mut self,
         namespace: &str,
@@ -276,6 +299,7 @@ impl EngineState {
             .ok_or_else(|| error(503, "SDK record root absent"))?
             .apply(key, Some(&bytes))
     }
+    #[cfg(any(test, target_os = "linux"))]
     pub(crate) fn sdk_storage_delete(
         &mut self,
         namespace: &str,
@@ -290,6 +314,7 @@ impl EngineState {
             .ok_or_else(|| error(503, "SDK record root absent"))?
             .apply(key, None)
     }
+    #[cfg(any(test, target_os = "linux"))]
     pub(crate) fn sdk_storage_list(
         &self,
         namespace: &str,
@@ -339,7 +364,7 @@ impl EngineState {
                     .ok_or_else(|| error(503, "SDK record missing"))?;
                 let entry =
                     decode_record(owner, &full_path, bytes).map_err(kv1_records::record_error)?;
-                if let Some(suffix) = entry.key.strip_prefix(prefix) {
+                if let Some(suffix) = entry.0.strip_prefix(prefix) {
                     let name = suffix
                         .find('/')
                         .map_or_else(|| suffix.to_owned(), |i| suffix[..=i].to_owned());
@@ -360,6 +385,7 @@ impl EngineState {
         };
         Ok(names.into_iter().take(n).collect())
     }
+    #[cfg(any(test, target_os = "linux"))]
     fn sdk_owner_gate(&self, namespace: &str, mount: &str, owner: &MountOwner) -> Result<()> {
         if self
             .sdk_mount_binding(namespace, mount)
@@ -395,6 +421,7 @@ fn storage_path(key: &str) -> String {
             .collect::<String>()
     )
 }
+#[cfg(any(test, target_os = "linux"))]
 fn record_key(namespace: &str, mount: &str, owner: &MountOwner, key: &str) -> Result<Kv1Key> {
     if key.is_empty() || key.len() > 4096 || key.contains('\0') {
         return Err(bad("invalid SDK storage key"));
@@ -407,11 +434,13 @@ fn record_key(namespace: &str, mount: &str, owner: &MountOwner, key: &str) -> Re
     )
     .map_err(kv1_records::record_error)
 }
+type DecodedStorageRecord = (String, zeroize::Zeroizing<Vec<u8>>, bool);
+
 fn decode_record(
     owner: &MountOwner,
     path: &str,
     bytes: &[u8],
-) -> std::result::Result<StorageEntry, RecordError> {
+) -> std::result::Result<DecodedStorageRecord, RecordError> {
     use base64::Engine;
     let value: SecretJson = serde_json::from_slice(bytes).map_err(|_| RecordError::Corrupt)?;
     let canonical = crate::secret_serde::to_vec(&*value, crate::state_records::MAX_VALUE_BYTES)
@@ -452,12 +481,12 @@ fn decode_record(
     if bytes.len() > 256 * 1024 {
         return Err(RecordError::Corrupt);
     }
-    Ok(StorageEntry {
-        key: key.to_owned(),
-        value: zeroize::Zeroizing::new(bytes),
-        seal_wrap: object
+    Ok((
+        key.to_owned(),
+        zeroize::Zeroizing::new(bytes),
+        object
             .get("seal_wrap")
             .and_then(Value::as_bool)
             .ok_or(RecordError::Corrupt)?,
-    })
+    ))
 }
