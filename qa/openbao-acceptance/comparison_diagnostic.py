@@ -203,6 +203,8 @@ REASONS = frozenset(['approle_fixture_role_create_failed',
  'writes_not_authorized'])
 CASE_NAMES = frozenset(module + "." + case for module, names in CASES.items() for case in names)
 SCHEMA_CASES = frozenset(module + ".response_schema" for module in CASES)
+# The producer records this fixture result without selecting it for comparison.
+AUXILIARY_CASES = frozenset({"totp.mount"})
 TOP_KEYS = frozenset(("schema", "target", "observed_at_unix", "tool_source_sha256",
     "full_openbao_compatibility", "production_qualified", "mode", "status", "cases_match",
     "candidate", "oracle", "candidate_results", "oracle_results", "mismatched_cases",
@@ -301,7 +303,7 @@ def write_report(path, value):
         handle.write(raw)
 
 
-def case_projection(value):
+def case_projection(value, case_name=None):
     keys(value, {"result", "reason", "http_status", "expected_http_status", "semantics", "method", "path_template"}, {"result"})
     result = {"result": choice(value["result"], {"passed", "failed", "not_run"})}
     if "reason" in value:
@@ -321,14 +323,25 @@ def case_projection(value):
         require(all(type(x) is bool for x in value["semantics"].values()))
         result["semantics"] = dict(value["semantics"])
     if "method" in value:
-        result["method"] = choice(value["method"], {"GET", "POST", "DELETE", "LIST", "HEAD", "PUT", "PATCH"})
+        if value["method"] == "MULTI":
+            # This exact producer case aggregates POST/GET/POST requests; MULTI
+            # is a fixed aggregation marker, never a single HTTP method.
+            require(type(value["method"]) is str and case_name == "totp.roundtrip"
+                    and result["result"] in {"passed", "failed"}
+                    and type(value.get("http_status")) is int
+                    and value.get("expected_http_status") == [200]
+                    and type(value.get("semantics")) is dict
+                    and set(value["semantics"]) == {"key_created", "code_generated", "validation_true"})
+            result.update(method="MULTI", method_kind="aggregate")
+        else:
+            result["method"] = choice(value["method"], {"GET", "POST", "DELETE", "LIST", "HEAD", "PUT", "PATCH"})
     # Never export even a supposedly normalized request path.
     return result
 
 
 def side_projection(value):
     keys(value, {"cases", "cleanup"}, {"cases", "cleanup"})
-    keys(value["cases"], CASE_NAMES | SCHEMA_CASES)
+    keys(value["cases"], CASE_NAMES | SCHEMA_CASES | AUXILIARY_CASES)
     cleanup = value["cleanup"]
     keys(cleanup, {"result", "failure_count", "scope", "run_id", "reason"}, {"result"})
     safe_cleanup = {"result": choice(cleanup["result"], {"passed", "failed", "not_run"})}
@@ -338,7 +351,7 @@ def side_projection(value):
         safe_cleanup["failure_count"] = count
     if "reason" in cleanup:
         safe_cleanup["reason"] = choice(cleanup["reason"], REASONS)
-    return {"cases": {name: case_projection(case) for name, case in value["cases"].items()},
+    return {"cases": {name: case_projection(case, case_name=name) for name, case in value["cases"].items()},
             "cleanup": safe_cleanup}
 
 

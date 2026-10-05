@@ -1,6 +1,7 @@
-"""Synthetic failure diagnostics only; no native service or qualification evidence."""
+"""Synthetic current-producer integration and diagnostics; no runtime qualification."""
 import ast
 import argparse
+import copy
 import io
 import hashlib
 from types import SimpleNamespace
@@ -12,13 +13,224 @@ import sys
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from email.message import Message
 from unittest.mock import patch
+from urllib.parse import parse_qs, urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import comparison_diagnostic as diagnostic
+import acceptance
 
 ROOT = Path(__file__).resolve().parents[3]
 SECRET = "private-token-and-key-MUST-NOT-BE-EXPORTED"
+
+
+class SyntheticAcceptanceClock:
+    def __init__(self):
+        self.now = 1000.0
+
+    def time(self):
+        return self.now
+
+    def sleep(self, seconds):
+        self.now += seconds
+
+
+class SyntheticAcceptanceTransport:
+    """HTTP-only fixture: the real Client, Suite and report writer run unchanged."""
+
+    def __init__(self, clock, side, *, totp_valid=True, totp_creation_status=204, totp_validation_status=200):
+        self.clock, self.side, self.totp_valid = clock, side, totp_valid
+        self.totp_creation_status = totp_creation_status
+        self.totp_validation_status = totp_validation_status
+        self.calls, self.mounts, self.auth_mounts = [], {}, {}
+        self.versions, self.tokens, self.leases, self.ciphertexts = {}, {}, {}, {}
+        self.current, self.transit_version = 0, 1
+        self.metadata, self.wrapped = {}, None
+        self.wrapper_used, self.approle_used = False, False
+
+    def open(self, request, *, timeout):
+        parsed = urlsplit(request.full_url)
+        payload = json.loads(request.data) if request.data is not None else None
+        method, path = request.get_method(), parsed.path
+        token = request.get_header("X-vault-token")
+        self.calls.append((method, path))
+        status, body = self.respond(method, path, parse_qs(parsed.query), payload, token)
+        response = io.BytesIO(json.dumps(body).encode())
+        response.code, response.headers = status, Message()
+        return response
+
+    def respond(self, method, path, query, payload, token):
+        def data(value, status=200, **fields):
+            return status, {"data": value, **fields}
+
+        def denied(status=404):
+            return status, {"errors": ["synthetic rejection"]}
+
+        if path == "/v1/sys/health":
+            return 200, {"initialized": True, "sealed": False,
+                         "version": "2.7.0" if self.side == "oracle" else "synthetic-candidate",
+                         "cluster_id": "synthetic-" + self.side}
+        if path in ("/v1/sys/init", "/v1/sys/seal-status"):
+            return 200, {"initialized": True, "sealed": False}
+        if path.endswith("-unsupported"):
+            return denied()
+        for prefix, inventory in (("/v1/sys/mounts", self.mounts), ("/v1/sys/auth", self.auth_mounts)):
+            if path == prefix and method == "GET":
+                return data(copy.deepcopy(inventory))
+            if path.startswith(prefix + "/"):
+                key = path[len(prefix) + 1:] + "/"
+                if method == "POST":
+                    inventory[key] = copy.deepcopy(payload)
+                    return 204, {}
+                if method == "DELETE":
+                    del inventory[key]
+                    return 204, {}
+        if path.startswith("/v1/sys/policies/acl/"):
+            return denied() if method == "GET" else (204, {})
+        if path == "/v1/auth/token/create":
+            child = "synthetic-child-" + str(len(self.tokens))
+            ttl = int(payload["ttl"].removesuffix("s"))
+            self.tokens[child] = self.clock.time() + ttl
+            return 200, {"auth": {"client_token": child, "policies": payload["policies"],
+                                  "lease_duration": ttl}}
+        if path == "/v1/auth/token/revoke":
+            self.tokens[payload["token"]] = -1
+            return 204, {}
+        if path.startswith("/v1/auth/userpass/users/") or (
+                path.startswith("/v1/auth/approle/role/") and not path.endswith(("/role-id", "/secret-id"))):
+            return 204, {}
+        if path.endswith("/role-id"):
+            return data({"role_id": "synthetic-role"})
+        if path.endswith("/secret-id"):
+            return data({"secret_id": "synthetic-secret-id"})
+        if path.startswith("/v1/auth/userpass/login/") or path == "/v1/auth/approle/login":
+            if path == "/v1/auth/approle/login":
+                if payload["secret_id"] != "synthetic-secret-id" or self.approle_used:
+                    return denied(400)
+                self.approle_used = True
+            child = "synthetic-child-" + str(len(self.tokens))
+            self.tokens[child] = self.clock.time() + 60
+            return 200, {"auth": {"client_token": child, "policies": ["default"]}}
+        if path == "/v1/sys/wrapping/wrap":
+            self.wrapped = copy.deepcopy(payload)
+            return 200, {"wrap_info": {"token": "synthetic-wrapper", "ttl": 60}}
+        if path == "/v1/sys/wrapping/unwrap":
+            if self.wrapper_used:
+                return denied(400)
+            self.wrapper_used = True
+            return data(copy.deepcopy(self.wrapped))
+        if path.startswith("/v1/sys/leases/"):
+            lease = self.leases[payload["lease_id"]]
+            if path.endswith("/revoke"):
+                lease["expires"] = -1
+                return 204, {}
+            ttl = lease["expires"] - self.clock.time()
+            return data({"id": payload["lease_id"], "renewable": False, "ttl": ttl}) if ttl > 0 else denied()
+        mount, _, rest = path.removeprefix("/v1/").partition("/")
+        kind = self.mounts.get(mount + "/", {}).get("type")
+        if kind == "kv":
+            if token != "synthetic-parent":
+                if self.tokens.get(token, -1) <= self.clock.time() or method != "GET":
+                    return denied(403)
+            if rest == "data/item":
+                if method == "POST":
+                    if payload["options"]["cas"] != self.current:
+                        return denied(400)
+                    self.current += 1
+                    self.versions[self.current] = {"data": copy.deepcopy(payload["data"]),
+                                                   "destroyed": False, "deletion_time": ""}
+                    return data({"version": self.current})
+                if method == "DELETE":
+                    self.versions[self.current]["deletion_time"] = "synthetic-deletion"
+                    return 204, {}
+                version = int(query.get("version", [self.current])[0])
+                item = self.versions[version]
+                return denied() if item["destroyed"] or item["deletion_time"] else data(
+                    {"data": copy.deepcopy(item["data"]), "metadata": {"version": version}})
+            if rest == "metadata/" and method == "LIST":
+                return data({"keys": ["item"]})
+            if rest == "metadata/item":
+                if method == "POST":
+                    self.metadata = copy.deepcopy(payload)
+                    return 204, {}
+                return data({"current_version": self.current,
+                             "versions": {str(k): {"destroyed": v["destroyed"], "deletion_time": v["deletion_time"]}
+                                          for k, v in self.versions.items()}, **self.metadata})
+            if rest in ("undelete/item", "destroy/item"):
+                for version in payload["versions"]:
+                    self.versions[version]["deletion_time" if rest.startswith("undelete") else "destroyed"] = (
+                        "" if rest.startswith("undelete") else True)
+                return 204, {}
+        if kind == "transit":
+            if rest.endswith("/rotate"):
+                self.transit_version += 1
+            if rest.startswith("keys/"):
+                return data({"latest_version": self.transit_version, "type": "aes256-gcm96"})
+            if rest.startswith("encrypt/"):
+                ciphertext = f"vault:v{self.transit_version}:synthetic"
+                self.ciphertexts[ciphertext] = payload["plaintext"]
+                return data({"ciphertext": ciphertext})
+            if rest.startswith("decrypt/"):
+                return data({"plaintext": self.ciphertexts[payload["ciphertext"]]})
+        if kind == "pki":
+            certificate = "-----BEGIN CERTIFICATE----- synthetic transport placeholder"
+            if rest == "root/generate/internal":
+                return data({"certificate": certificate, "issuing_ca": certificate,
+                             "serial_number": "synthetic-serial", "expiration": 9999})
+            if rest == "roles/web":
+                return data({"allowed_domains": ["example.test"], "allow_subdomains": True,
+                             "max_ttl": 7200, "generate_lease": True, "key_type": "ed25519"})
+            if rest == "issue/web":
+                ttl = 2 if payload["ttl"] == "2s" else 3600
+                lease = "synthetic-lease-" + str(len(self.leases))
+                self.leases[lease] = {"expires": self.clock.time() + ttl}
+                return data({"certificate": certificate, "issuing_ca": certificate,
+                             "serial_number": "synthetic-serial", "private_key_type": "ed25519",
+                             "private_key": "-----BEGIN " + "PRIVATE KEY----- synthetic transport placeholder"},
+                            lease_id=lease, renewable=False, lease_duration=ttl)
+            if rest.startswith("cert/"):
+                return data({"certificate": "-----BEGIN X509 CRL----- synthetic" if rest == "cert/crl" else certificate})
+        if kind == "totp":
+            if rest == "keys/fixture" and method == "POST":
+                return (self.totp_creation_status, {}) if self.totp_creation_status in (200, 204) else denied(self.totp_creation_status)
+            if rest == "code/fixture":
+                if method == "POST" and self.totp_validation_status != 200:
+                    return data({"valid": False}, self.totp_validation_status)
+                return data({"code": "123456"} if method == "GET" else
+                            {"valid": self.totp_valid and payload["code"] == "123456"})
+        raise AssertionError(f"unhandled synthetic HTTP request: {method} {path}")
+
+
+def current_producer_report(*, totp_valid=True, totp_creation_status=204, totp_validation_status=200, allow_writes=True):
+    """Run both unchanged default Suites and acceptance.main's actual file output."""
+    clock = SyntheticAcceptanceClock()
+    clients, transports = {}, {}
+    for prefix, side in (("HB_CANDIDATE", "candidate"), ("HB_ORACLE", "oracle")):
+        transport = SyntheticAcceptanceTransport(clock, side, totp_valid=totp_valid if side == "candidate" else True,
+            totp_creation_status=totp_creation_status if side == "candidate" else 204,
+            totp_validation_status=totp_validation_status if side == "candidate" else 200)
+        client = acceptance.Client.__new__(acceptance.Client)
+        client.address, client.namespace, client.timeout = f"https://{side}.example.test:443", "", 1
+        client._token, client._opener = "synthetic-parent", transport
+        clients[prefix], transports[side] = client, transport
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        identity, output = root / "synthetic-oracle.json", root / "producer.json"
+        archive, _binary = sorted(diagnostic.ORACLES["2.7.0"])[0]
+        identity.write_text(json.dumps({"product": "OpenBao", "version": "2.7.0",
+            "artifact_sha256": archive, "provenance_url": "https://github.com/openbao/openbao/releases/tag/v2.7.0",
+            "endpoint": clients["HB_ORACLE"].address, "cluster_id": "synthetic-oracle"}))
+        identity.chmod(0o600)
+        args = ["--compare", "--oracle-version", "2.7.0", "--oracle-identity-file", str(identity), "--output", str(output)]
+        if allow_writes:
+            args.append("--allow-test-writes")
+        with patch.object(acceptance.Client, "from_env", side_effect=lambda prefix: clients[prefix]), \
+                patch.object(acceptance, "time", clock), \
+                patch.object(acceptance, "secrets", SimpleNamespace(token_hex=lambda _n: "0123456789abcdef",
+                                                                 token_urlsafe=lambda _n: "synthetic-invalid")):
+            code = acceptance.main(args)
+        return code, json.loads(output.read_text()), transports, output.stat().st_mode & 0o777
 
 
 class ComparisonDiagnosticTests(unittest.TestCase):
@@ -68,6 +280,163 @@ class ComparisonDiagnosticTests(unittest.TestCase):
 
     def project(self, report=None):
         return diagnostic.project(self.report() if report is None else report, self.binding(), "2.7.0")
+
+    def producer_report(self, **options):
+        code, report, transports, mode = current_producer_report(**options)
+        self.assertEqual(mode, 0o600)
+        self.assertEqual(report["tool_source_sha256"], hashlib.sha256(
+            (ROOT / "qa/openbao-acceptance/acceptance.py").read_bytes()
+            + (ROOT / "qa/openbao-acceptance/bao_http.py").read_bytes()).hexdigest())
+        # run_official_comparison adds this binding after acceptance.main writes
+        # its report. No Suite result or report case is manufactured here.
+        report["execution_binding"] = copy.deepcopy(self.report()["execution_binding"])
+        return code, report, transports
+
+    def assert_complete_default_producer(self, report):
+        self.assertEqual(set(report["scope"]), set(acceptance.CASES) - {"identity"})
+        selected = {module + "." + name for module in report["scope"] for name in acceptance.CASES[module]}
+        self.assertEqual(len(selected), 62)
+        for side in ("candidate_results", "oracle_results"):
+            cases = report[side]["cases"]
+            self.assertEqual(set(cases), diagnostic.CASE_NAMES | {"totp.mount"})
+            self.assertEqual(len(cases), 69)
+            self.assertEqual(cases["totp.mount"]["result"], "passed")
+            self.assertEqual(report[side]["cleanup"]["result"], "passed")
+            self.assertEqual(report[side]["cleanup"]["failure_count"], 0)
+            for name in acceptance.CASES["identity"]:
+                self.assertEqual(cases["identity." + name], {
+                    "result": "not_run", "reason": "module_not_selected_or_writes_not_authorized"})
+        return selected
+
+    def test_full_current_producer_success_projects_all_default_cases(self):
+        code, report, transports = self.producer_report()
+        self.assertEqual(code, 0)
+        self.assertEqual(report["status"], "passed_scoped_cases")
+        self.assertIs(report["cases_match"], True)
+        self.assertEqual(report["mismatched_cases"], [])
+        selected = self.assert_complete_default_producer(report)
+        for side in ("candidate_results", "oracle_results"):
+            for name in selected:
+                row = report[side]["cases"][name]
+                self.assertEqual(row["result"], "passed", name)
+                self.assertTrue(all(value is True for value in row["semantics"].values()), name)
+        for transport in transports.values():
+            totp = [(method, path.rsplit("/", 2)[-2:]) for method, path in transport.calls
+                    if "-totp/" in path]
+            self.assertEqual(totp, [("POST", ["keys", "fixture"]),
+                                    ("GET", ["code", "fixture"]), ("POST", ["code", "fixture"])])
+        with tempfile.TemporaryDirectory() as directory:
+            code, safe, log, _output = self.invoke(directory, report, process_exit=0)
+        self.assertEqual(code, 0)
+        self.assertEqual(safe["status"], "available")
+        self.assertEqual(safe["comparison_status"], "passed_scoped_cases")
+        self.assertIs(safe["cases_match"], True)
+        for side in ("candidate_results", "oracle_results"):
+            self.assertEqual(set(safe[side]["cases"]), set(report[side]["cases"]))
+            self.assertEqual(safe[side]["cases"]["totp.mount"]["method"], "POST")
+            aggregate = safe[side]["cases"]["totp.roundtrip"]
+            self.assertEqual(aggregate["method"], "MULTI")
+            self.assertEqual(aggregate["method_kind"], "aggregate")
+            self.assertEqual(aggregate["semantics"], {"key_created": True, "code_generated": True, "validation_true": True})
+            for name in ("pki.lease_expire_lookup", "pki.revoked_lease_absent"):
+                self.assertEqual(safe[side]["cases"][name]["http_status"], report[side]["cases"][name]["http_status"])
+        for name in ("independent_admission", "full_openbao_compatibility", "production_qualified"):
+            self.assertIs(safe[name], False)
+        self.assertNotIn("path_template", json.dumps(safe))
+        self.assertNotIn("example.test", json.dumps(safe) + log)
+
+    def test_real_failed_totp_aggregate_remains_failed_with_false_predicate(self):
+        for validation_status in (200, 400):
+            with self.subTest(validation_status=validation_status):
+                code, report, _transports = self.producer_report(totp_valid=False, totp_validation_status=validation_status)
+                self.assertEqual(code, 2)
+                self.assertEqual(report["status"], "failed")
+                selected = self.assert_complete_default_producer(report)
+                self.assertEqual(report["mismatched_cases"], ["totp.roundtrip"])
+                for name in selected - {"totp.roundtrip"}:
+                    self.assertEqual(report["candidate_results"]["cases"][name]["result"], "passed", name)
+                original = report["candidate_results"]["cases"]["totp.roundtrip"]
+                self.assertEqual(original["method"], "MULTI")
+                self.assertEqual(original["http_status"], validation_status)
+                self.assertIs(original["semantics"]["validation_true"], False)
+                with tempfile.TemporaryDirectory() as directory:
+                    code, safe, _log, _output = self.invoke(directory, report, process_exit=2)
+                self.assertEqual(code, 0)
+                projected = safe["candidate_results"]["cases"]["totp.roundtrip"]
+                self.assertEqual(projected["result"], "failed")
+                self.assertEqual(projected["http_status"], original["http_status"])
+                self.assertEqual(projected["semantics"], original["semantics"])
+                self.assertEqual(projected["method_kind"], "aggregate")
+                self.assertEqual(safe["comparison_status"], "failed")
+                for name in ("cases_match", "independent_admission", "full_openbao_compatibility", "production_qualified"):
+                    self.assertIs(safe[name], False)
+
+    def test_multi_is_rejected_for_every_other_actual_producer_case(self):
+        _code, report, _transports = self.producer_report()
+        for side in ("candidate_results", "oracle_results"):
+            for name in report[side]["cases"]:
+                if name == "totp.roundtrip":
+                    continue
+                changed = copy.deepcopy(report)
+                changed[side]["cases"][name]["method"] = "MULTI"
+                with self.subTest(side=side, case=name), self.assertRaises(diagnostic.Rejected):
+                    self.project(changed)
+
+    def test_actual_not_run_and_pre_aggregate_failure_cannot_forge_multi(self):
+        code, report, _transports = self.producer_report(allow_writes=False)
+        self.assertEqual(code, 2)
+        self.assertEqual(report["status"], "not_run")
+        self.assertEqual(self.project(report)["comparison_status"], "not_run")
+        for side in ("candidate_results", "oracle_results"):
+            self.assertEqual(report[side]["cases"]["totp.roundtrip"]["result"], "not_run")
+            changed = copy.deepcopy(report)
+            changed[side]["cases"]["totp.roundtrip"]["method"] = "MULTI"
+            with self.subTest(side=side), self.assertRaises(diagnostic.Rejected):
+                self.project(changed)
+        code, failed, _transports = self.producer_report(totp_creation_status=400)
+        self.assertEqual(code, 2)
+        row = failed["candidate_results"]["cases"]["totp.roundtrip"]
+        self.assertEqual(row["method"], "POST")
+        self.assertEqual(row["semantics"], {"key_created": False})
+        self.assertEqual(self.project(failed)["candidate_results"]["cases"]["totp.roundtrip"]["method"], "POST")
+        row["method"] = "MULTI"
+        with self.assertRaises(diagnostic.Rejected):
+            self.project(failed)
+
+    def test_full_producer_unknown_method_and_closed_fields_fail_cli(self):
+        _code, report, _transports = self.producer_report()
+        for method in ("CONNECT", "SCAN", SECRET, "multi", "MULTI ", None, True):
+            changed = copy.deepcopy(report)
+            changed["candidate_results"]["cases"]["totp.roundtrip"]["method"] = method
+            with self.subTest(method=method), tempfile.TemporaryDirectory() as directory:
+                code, safe, log, _output = self.invoke(directory, changed, process_exit=0)
+                self.assertEqual(code, 2)
+                self.assertEqual(safe["status"], "report_rejected")
+                self.assertNotIn("candidate_results", safe)
+                self.assertNotIn(SECRET, json.dumps(safe) + log)
+                for name in ("independent_admission", "full_openbao_compatibility", "production_qualified"):
+                    self.assertIs(safe[name], False)
+        for field, value in (("http_status", True), ("http_status", None),
+                             ("http_status", "rejected_after_ttl"), ("expected_http_status", [200, 204]),
+                             ("expected_http_status", [True]), ("method_kind", "aggregate"),
+                             ("semantics", {"key_created": True, "code_generated": True, "validation_true": 1}),
+                             ("semantics", {"key_created": True, "code_generated": True, "validation_true": True, "extra": True})):
+            changed = copy.deepcopy(report)
+            changed["candidate_results"]["cases"]["totp.roundtrip"][field] = value
+            with self.subTest(field=field, value=value), self.assertRaises(diagnostic.Rejected):
+                self.project(changed)
+
+    def test_actual_auxiliary_mount_does_not_expand_selected_or_mismatch_vocabulary(self):
+        _code, report, _transports = self.producer_report()
+        for field in ("scope", "mismatched_cases"):
+            changed = copy.deepcopy(report)
+            changed[field] = ["totp.mount"]
+            with self.subTest(field=field), self.assertRaises(diagnostic.Rejected):
+                self.project(changed)
+        changed = copy.deepcopy(report)
+        changed["candidate_results"]["cases"]["totp.extra_mount"] = changed["candidate_results"]["cases"].pop("totp.mount")
+        with self.assertRaises(diagnostic.Rejected):
+            self.project(changed)
 
     def test_observed_http_difference_and_dependency_reason_survive(self):
         safe = self.project()
@@ -149,7 +518,7 @@ class ComparisonDiagnosticTests(unittest.TestCase):
             with self.subTest(status=status), self.assertRaises(diagnostic.Rejected):
                 diagnostic.case_projection({"result": "failed", "http_status": status})
 
-    def invoke(self, directory, report=None, raw=None):
+    def invoke(self, directory, report=None, raw=None, process_exit=2):
         root = Path(directory)
         source, output = root / "comparison-bound.json", root / "diagnostic.json"
         if report is not None or raw is not None:
@@ -158,7 +527,7 @@ class ComparisonDiagnosticTests(unittest.TestCase):
         log = io.StringIO()
         with patch.object(diagnostic, "observe", return_value=self.binding()), redirect_stdout(log):
             code = diagnostic.main(["--report", str(source), "--output", str(output), "--binary", "/synthetic/binary",
-                                    "--candidate-source", "/synthetic/source", "--oracle-version", "2.7.0", "--process-exit", "2"])
+                                    "--candidate-source", "/synthetic/source", "--oracle-version", "2.7.0", "--process-exit", str(process_exit)])
         return code, json.loads(output.read_text()), log.getvalue(), output
 
     def test_missing_report_emits_bound_diagnostic_and_fails(self):
