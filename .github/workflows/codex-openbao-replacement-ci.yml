@@ -767,10 +767,19 @@ jobs:
             --work-dir "$work/snapshot" > "$reports/snapshot.json"
           timeout 300 python qa/openbao-acceptance/transit_migration_live.py \
             --oracle-version 2.7.0 --binary "$binary" --output "$reports/transit.json"
+          comparison_exit=0
           timeout 300 python qa/openbao-acceptance/run_official_comparison.py \
             --oracle-version 2.7.0 --binary "$binary" --candidate-source "$PWD" \
-            --work-dir "$work/comparison"
-          cp "$work/comparison/comparison-bound.json" "$reports/comparison.json"
+            --work-dir "$work/comparison" || comparison_exit=$?
+          diagnostic_exit=0
+          python qa/openbao-acceptance/comparison_diagnostic.py \
+            --report "$work/comparison/comparison-bound.json" \
+            --output "$RUNNER_TEMP/heptabao-safe-reports/comparison270-diagnostic.json" \
+            --binary "$binary" --candidate-source "$PWD" \
+            --oracle-version 2.7.0 --process-exit "$comparison_exit" || diagnostic_exit=$?
+          # Retain sanitized diagnostics without masking mismatch, timeout or missing-oracle exits.
+          if test "$comparison_exit" -ne 0; then exit "$comparison_exit"; fi
+          if test "$diagnostic_exit" -ne 0; then exit "$diagnostic_exit"; fi
           timeout 300 python qa/openbao-acceptance/live_migration_rehearsal.py \
             --oracle-version 2.7.0 --binary "$binary" \
             --oracle-launcher "$PWD/qa/openbao-acceptance/official_openbao_launcher.py" \
@@ -1148,6 +1157,15 @@ jobs:
           set -euo pipefail
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           git diff --check
+
+      - name: Retain sanitized OpenBao 2.7 comparison diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: comparison270-diagnostic-${{ matrix.source_kind }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/heptabao-safe-reports/comparison270-diagnostic.json
+          if-no-files-found: warn
+          retention-days: 7
 
   qualification-verdict:
     name: OpenBao replacement / exact-head-and-merge verdict

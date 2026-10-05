@@ -38,13 +38,36 @@ TARGET = 'x86_64-unknown-linux-gnu'
 STAGES = ('rustc', 'cargo', 'lock', 'metadata', 'dependency-tree', 'package-features', 'check', 'test')
 PLAN = 'planning/HEPTABAO_H02_CANDIDATE_PROBE_MATRIX_V2.yaml'
 LEGACY_PLAN = 'planning/HEPTABAO_H02_CANDIDATE_PROBE_MATRIX_V1.yaml'
+FULL_CONTRACT = 'planning/HEPTABAO_H02_OPENRAFT_FULL_PROBE_PROFILE_V1.yaml'
+FULL_PROFILE = 'HB-H02-PROBE-OPENRAFT-TOKIO-FULL-CURRENT-V1'
+FULL_FEATURES = ('clap', 'default', 'serde', 'tokio-rt', 'type-alias')
 
 
-def profiles():
+def minimal_profiles():
     result = copy.deepcopy(legacy.profiles(legacy.load_yaml(ROOT / LEGACY_PLAN)))
     for item in result.values():
         item['probe_toolchains'][-1] = '1.99.0'
     return result
+
+
+def profiles():
+    result = minimal_profiles()
+    old_id = 'HB-H02-PROBE-OPENRAFT-TOKIO'
+    item = result.pop(old_id)
+    item.update(profile_id=FULL_PROFILE, historical_minimal_profile_id=old_id,
+                expected_resolved_features=list(FULL_FEATURES),
+                full_probe_contract='heptabao.h02-openraft-full-probe-profile.v1',
+                forbidden_feature_expansion=['runtime-stats'])
+    result[FULL_PROFILE] = item
+    return result
+
+
+def profile_digest(item):
+    if item['profile_id'] != FULL_PROFILE:
+        return legacy.profile_digest(item)
+    return sha(canonical({'normalized_profile': legacy.normalized_profile(item),
+                          'full_probe_contract': legacy.load_yaml(ROOT / FULL_CONTRACT),
+                          'expected_resolved_features': item['expected_resolved_features']}))
 
 
 def entries():
@@ -89,7 +112,7 @@ def context(item, compiler, work, source, run_id, attempt, runner, base, source_
     require(re.fullmatch(r'[1-9][0-9]*', run_id) and re.fullmatch(r'[1-9][0-9]*', attempt) and runner, 'run identity')
     env = common.controlled_environment(work, compiler, base)
     return {'schema': 'heptabao.h02-mechanical-context.v2', 'execution_profile_id': PROFILE,
-            'profile_id': item['profile_id'], 'profile_digest_sha256': legacy.profile_digest(item),
+            'profile_id': item['profile_id'], 'profile_digest_sha256': profile_digest(item),
             'toolchain': compiler, 'target': TARGET, 'run_id': run_id, 'run_attempt': attempt, 'runner_name': runner,
             'source_before': source, 'source_after': None, 'lock_policy': policy(item),
             'source_root': str(source_root), 'cwd': str(work), 'environment': env, 'environment_sha256': sha(canonical(env)),
@@ -136,6 +159,11 @@ def requirement_text(value):
     require(isinstance(value, str) and bool(value), 'missing declared version requirement')
     # Cargo reports a bare TOML requirement as a caret requirement. We compare
     # declarations, without implementing an independent version resolver.
+    # Cargo accepts comparator whitespace (for example '= 0.1.0-beta.1')
+    # and prints '=0.1.0-beta.1'. Preserve every version character/operator.
+    value = value.strip()
+    require(bool(value), 'empty declared version requirement')
+    value = re.sub(r'(?<![<>=~^])([<>=~^]{1,2})[ \t]+(?=[0-9*])', r'\1', value)
     return '^' + value if value[0].isdigit() else value
 
 
@@ -152,11 +180,40 @@ def metadata_declarations(package):
     return result
 
 
+def manifest_feature_definitions(manifest):
+    """Cargo's explicit feature table plus unsuppressed optional-dependency names.
+
+    A `dep:name` reference suppresses the otherwise implicit name=[dep:name]
+    feature. Preserve declared feature names, aliases and references exactly;
+    this normalizes declarations, not target selection or feature resolution.
+    """
+    raw = manifest.get('features', {})
+    require(isinstance(raw, dict), 'invalid authenticated feature table')
+    expected = {}
+    for name, references in raw.items():
+        require(isinstance(name, str) and isinstance(references, list) and all(isinstance(x, str) for x in references), 'invalid authenticated feature definition')
+        expected[name] = sorted(references)
+    namespaced = {ref[4:] for refs in expected.values() for ref in refs if ref.startswith('dep:')}
+    for group in (manifest, *manifest.get('target', {}).values()):
+        for section in ('dependencies', 'build-dependencies'):
+            for alias, dependency in group.get(section, {}).items():
+                if isinstance(dependency, dict) and dependency.get('optional') is True and alias not in namespaced and alias not in expected:
+                    expected[alias] = ['dep:' + alias]
+    return expected
+
+
+def bind_feature_definitions(package, manifest):
+    observed = package.get('features')
+    require(isinstance(observed, dict) and all(isinstance(name, str) and isinstance(refs, list) and all(isinstance(ref, str) for ref in refs) for name, refs in observed.items()), 'invalid recorded feature definitions')
+    require(canonical({name: sorted(refs) for name, refs in observed.items()}) == canonical(manifest_feature_definitions(manifest)), 'metadata feature definitions differ from authenticated manifest')
+
+
 def bind_declarations(package, manifest):
     expected, actual = declarations(manifest), metadata_declarations(package)
     for values in (expected, actual):
         for dep in values: dep['req'] = requirement_text(dep['req'])
     require(sorted(canonical(x) for x in actual) == sorted(canonical(x) for x in expected), 'metadata declarations differ from authenticated manifest')
+    bind_feature_definitions(package, manifest)
 
 
 def locked_identity(package):
@@ -243,8 +300,18 @@ def metadata_graph(value, item, work, lock, candidate_manifest=None):
     require(selected['source'] == 'registry+https://github.com/rust-lang/crates.io-index', 'wrong candidate source')
     features = set(nodes[selected['id']]['features'])
     require(set(item['features']) <= features and not features.intersection(item['forbidden_feature_expansion']), 'resolved feature expansion/drift')
+    if item['profile_id'] == FULL_PROFILE:
+        require(features == set(FULL_FEATURES) == set(item['expected_resolved_features']), 'full-probe resolved feature set drift')
+        support = [p for p in packages if p['name'] == 'openraft-memstore' and p['version'] == item['version']]
+        require(len(support) == 1 and support[0]['id'] in nodes[root]['dependencies'], 'full-probe memstore root dependency missing')
+        declarations_ = [d for d in support[0]['dependencies'] if d['name'] == 'openraft' and d['kind'] is None and d['target'] is None]
+        require(len(declarations_) == 1 and declarations_[0]['uses_default_features'] is True and sorted(declarations_[0]['features']) == ['serde', 'type-alias'], 'full-probe memstore feature-chain drift')
+        require(selected['id'] in nodes[support[0]['id']]['dependencies'] and selected['features'].get('default') == ['tokio-rt', 'clap'], 'full-probe candidate default chain drift')
     require(locked[locked_identity(selected)].get('checksum') == item['expected_registry_checksum_sha256'], 'locked candidate checksum')
-    if candidate_manifest is not None: bind_declarations(selected, candidate_manifest)
+    if candidate_manifest is not None:
+        bind_declarations(selected, candidate_manifest)
+        if item['profile_id'] == FULL_PROFILE:
+            require(candidate_manifest.get('features', {}).get('default') == ['tokio-rt', 'clap'], 'authenticated candidate default feature chain drift')
     return selected, legacy.summarize_metadata(value)
 
 
@@ -271,6 +338,52 @@ def tree_package(text, packages):
     return package['id']
 
 
+def projected_graph(metadata):
+    """Normal/build feature-enabled view of Cargo's recorded resolve graph.
+
+    Cargo metadata can retain an optional dependency reached only by a weak
+    `dep?/feature` reference. Weak references do not activate that dependency;
+    Cargo tree correctly omits its unreachable subgraph. This handles that
+    documented feature syntax, not target cfg evaluation or a second resolver.
+    """
+    packages = {p['id']: p for p in metadata['packages']}
+    nodes = {n['id']: n for n in metadata['resolve']['nodes']}
+    all_edges = set()
+    for node_id, node in nodes.items():
+        package = packages[node_id]; definitions = package.get('features')
+        require(isinstance(definitions, dict), 'missing recorded feature definitions')
+        activated = set()
+        for feature in node['features']:
+            require(feature in definitions and isinstance(definitions[feature], list), 'resolved feature has no declaration')
+            for reference in definitions[feature]:
+                require(isinstance(reference, str), 'invalid feature reference')
+                if reference.startswith('dep:'):
+                    activated.add(reference[4:].replace('-', '_'))
+                elif '/' in reference:
+                    dependency, requested = reference.split('/', 1)
+                    require(dependency and requested, 'invalid dependency feature reference')
+                    if not dependency.endswith('?'): activated.add(dependency.replace('-', '_'))
+                else:
+                    require(reference in definitions and reference in node['features'], 'enabled named feature omitted from recorded closure')
+                # Each enabled named feature is inspected in its own turn. Weak
+                # dependency-feature references alone never activate an edge.
+        declared = metadata_declarations(package)
+        for edge in node['deps']:
+            for kind in edge['dep_kinds']:
+                if kind['kind'] not in (None, 'build'): continue
+                matches = [d for d in declared if (d['alias'], d['kind'], d['target']) == (edge['name'], kind['kind'], kind['target'])]
+                require(len(matches) == 1, 'projection edge declaration missing/ambiguous')
+                dep = matches[0]
+                if not dep['optional'] or dep['alias'] in activated:
+                    all_edges.add((node_id, edge['pkg']))
+    visited = set(); pending = [metadata['resolve']['root']]
+    while pending:
+        node = pending.pop()
+        if node in visited: continue
+        visited.add(node); pending.extend(child for parent, child in all_edges if parent == node)
+    return visited, {(parent, child) for parent, child in all_edges if parent in visited}
+
+
 def tree_observation(text, metadata, *, depth):
     packages, nodes = metadata['packages'], {n['id']: n for n in metadata['resolve']['nodes']}
     features, edges, stack = {}, set(), []
@@ -293,13 +406,12 @@ def tree_observation(text, metadata, *, depth):
                 roots += 1; require(package_id == metadata['resolve']['root'], 'wrong tree root')
             else: edges.add((stack[level-1], package_id))
             stack[level:] = [package_id]
-    require(set(features) == set(nodes), 'tree/projection package coverage differs from resolved metadata')
-    require(all(features[node_id] == set(node['features']) for node_id, node in nodes.items()), 'tree/projection feature union differs from resolved metadata')
+    expected_nodes, expected_edges = projected_graph(metadata)
+    require(set(features) == expected_nodes, 'tree/projection package coverage differs from enabled metadata view')
+    require(all(features[node_id] == set(nodes[node_id]['features']) for node_id in expected_nodes), 'tree/projection feature union differs from resolved metadata')
     if depth:
         require(roots == 1, 'tree root count')
-        expected = {(node['id'], dep['pkg']) for node in nodes.values() for dep in node['deps']
-                    if any(kind['kind'] in (None, 'build') for kind in dep['dep_kinds'])}
-        require(edges == expected, 'tree/metadata edge disagreement')
+        require(edges == expected_edges, 'tree/enabled metadata edge disagreement')
     return features
 
 
@@ -310,6 +422,7 @@ def bind_trees(entry, metadata):
 
 
 def inspect_archive(path, item, actual_source=None):
+    require(path.is_file() and not path.is_symlink(), 'candidate archive evidence missing or nonregular')
     require(file_sha(path) == item['expected_registry_checksum_sha256'], 'actual crate checksum mismatch')
     prefix = item['package'] + '-' + item['version']
     with tempfile.TemporaryDirectory(prefix='h02-crate-scan-') as tmp:
@@ -344,7 +457,10 @@ def inspect_archive(path, item, actual_source=None):
 def capture_package(entry, ctx, item):
     metadata = read(entry / 'metadata.stdout')
     lock = tomllib.loads((entry / 'Cargo.lock').read_text())
-    selected, _ = metadata_graph(metadata, item, Path(ctx['cwd']), lock)
+    matches = [package for package in metadata['packages'] if package['name'] == item['package'] and package['version'] == item['version']]
+    require(len(matches) == 1, 'candidate missing/ambiguous before archive capture')
+    selected = matches[0]
+    require(selected['source'] == 'registry+https://github.com/rust-lang/crates.io-index', 'candidate archive source mismatch')
     home = Path(ctx['environment']['CARGO_HOME'])
     source = Path(selected['manifest_path']).parent
     require(source.is_relative_to(home / 'registry/src') and not source.is_symlink(), 'candidate outside isolated registry')
@@ -352,9 +468,12 @@ def capture_package(entry, ctx, item):
     require(len(relative.parts) == 2 and relative.name == item['package'] + '-' + item['version'], 'registry source path')
     archive = home / 'registry/cache' / relative.parts[0] / (relative.name + '.crate')
     require(not archive.is_symlink(), 'symlinked crate')
+    require(file_sha(archive) == item['expected_registry_checksum_sha256'], 'actual cached crate checksum mismatch')
+    # Retain authentic bytes even if VCS/source/manifest/profile admission later
+    # rejects them. Retention is not successful package or graph admission.
+    shutil.copyfile(archive, entry / 'package.crate')
     binding = inspect_archive(archive, item, source)
     metadata_graph(metadata, item, Path(ctx['cwd']), lock, binding['manifest'])
-    shutil.copyfile(archive, entry / 'package.crate')
 
 
 def collect(entry, ctx, item):
@@ -392,7 +511,7 @@ def collect(entry, ctx, item):
         require(path.is_file() and not path.is_symlink(), 'nonregular evidence artifact')
         artifacts[path.name] = {'sha256': file_sha(path), 'byte_length': path.stat().st_size}
     return {'schema': SCHEMA, 'execution_profile_id': PROFILE, 'profile_id': item['profile_id'],
-            'profile_digest_sha256': legacy.profile_digest(item), 'toolchain': compiler,
+            'profile_digest_sha256': profile_digest(item), 'toolchain': compiler,
             'graph_scope': 'ALL_TARGET_ENABLED_NORMAL_BUILD_OBSERVATION',
             'feature_artifact_kind': 'RESOLVED_PACKAGE_FEATURE_PROJECTION',
             'mechanical_status': 'EXECUTED_PASS' if not problems else 'EXECUTED_FAIL' if any(type(code) is int and code != 0 for code in ctx['return_codes'].values()) else 'BLOCKED',

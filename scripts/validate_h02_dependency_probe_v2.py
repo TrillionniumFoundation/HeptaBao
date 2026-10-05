@@ -14,12 +14,13 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = '.github/workflows/h02-probe-sbom-msrv-v2.yml'
 SCHEMA = 'schemas/heptabao_dependency_probe_evidence_v2.schema.json'
-TRIGGERS = [WORKFLOW, probe.PLAN, probe.LEGACY_PLAN,
+TRIGGERS = [WORKFLOW, probe.PLAN, probe.LEGACY_PLAN, probe.FULL_CONTRACT,
             'scripts/h02_dependency_probe_v2.py', 'scripts/validate_h02_dependency_probe_v2.py',
             'scripts/h02_dependency_probe_v1.py', 'scripts/h02_openraft_fault_lab_evidence_v2.py',
             'scripts/h02_linearizability_checker_v1.py', 'scripts/yaml12_loader.py',
             SCHEMA, 'schemas/heptabao_dependency_probe_evidence_v1.schema.json',
             'tests/platform/test_h02_dependency_probe_v2.py', 'tests/platform/test_h02_dependency_probe_v1.py',
+            'tests/platform/fixtures/h02_mechanical_hosted_37247651462.json',
             'probes/h02/**', 'requirements-plan.txt', 'scripts/validate_workflow_trust.py',
             'scripts/validate_workflow_trust_v1.py', 'scripts/workflow_trust_v2.py',
             'scripts/workflow_trust_action_registry_v2.json', 'scripts/validate_acceptance_immutability.py']
@@ -37,12 +38,17 @@ def source_contract():
                           'feature_artifact_kind': 'RESOLVED_PACKAGE_FEATURE_PROJECTION',
                           'root_dev_dependencies': 'UNSUPPORTED_IN_THIS_PROFILE'}, 'successor plan drift')
     probe.require(len(probe.entries()) == 8, 'entry count')
+    expected_full_contract = {'schema': 'heptabao.h02-openraft-full-probe-profile.v1', 'profile_id': 'HB-H02-PROBE-OPENRAFT-TOKIO-FULL-CURRENT-V1', 'historical_minimal_profile_id': 'HB-H02-PROBE-OPENRAFT-TOKIO', 'execution_scope': 'FULL_COMMITTED_PROBE_WITH_TEST_MEMSTORE', 'expected_resolved_features': ['clap', 'default', 'serde', 'tokio-rt', 'type-alias'], 'forbidden_resolved_features': ['runtime-stats'], 'direct_openraft_dependency': {'default_features': False, 'features': ['serde', 'tokio-rt', 'type-alias']}, 'feature_chain': {'support_package': 'openraft-memstore', 'support_version': '0.10.0-alpha.33', 'candidate_dependency_default_features': True, 'candidate_dependency_features': ['serde', 'type-alias'], 'candidate_default_features': ['tokio-rt', 'clap']}, 'historical_effect': 'NONE_OLD_MINIMAL_PROHIBITION_AND_FAILED_RECEIPTS_RETAINED', 'qualification': False, 'selection_effect': 'NONE', 'authority_effect': 'NONE'}
+    probe.require(probe.legacy.load_yaml(ROOT / probe.FULL_CONTRACT) == expected_full_contract, 'explicit full-probe contract drift')
+    minimal = probe.minimal_profiles()['HB-H02-PROBE-OPENRAFT-TOKIO']
+    probe.require(minimal['forbidden_feature_expansion'] == ['clap', 'runtime-stats'], 'historical minimal prohibition changed')
+    probe.require(probe.profile_digest(probe.profiles()[probe.FULL_PROFILE]) != probe.profile_digest(minimal), 'full/minimal digest collision')
     for item in probe.profiles().values():
         expected = ['1.88.0', '1.99.0'] if item['package'] == 'openraft' else ['1.71.0', '1.99.0']
         probe.require(item['probe_toolchains'] == expected, 'floor/current compiler drift')
         probe.legacy.validate_manifest(item, ROOT)
-        old = probe.legacy.profiles(probe.legacy.load_yaml(ROOT / probe.LEGACY_PLAN))[item['profile_id']]
-        probe.require(probe.legacy.profile_digest(old) != probe.legacy.profile_digest(item), 'reused historical profile digest')
+        old = probe.legacy.profiles(probe.legacy.load_yaml(ROOT / probe.LEGACY_PLAN))[item.get('historical_minimal_profile_id', item['profile_id'])]
+        probe.require(probe.legacy.profile_digest(old) != probe.profile_digest(item), 'reused historical profile digest')
         lock = ROOT / Path(item['probe_manifest']).with_name('Cargo.lock')
         probe.require(lock.is_file() == (item['package'] != 'tokio'), 'committed/generated graph policy drift')
     schema = probe.read(ROOT / SCHEMA); Draft202012Validator.check_schema(schema)

@@ -11,6 +11,11 @@
   "schema": "heptabao.workflow-trust-action-registry.v2",
   "uploads": [
     {
+      "file": "codex-openbao-replacement-ci.yml",
+      "location": "workflow.jobs.qualify.steps[73]",
+      "path": "${{ runner.temp }}/heptabao-safe-reports/comparison270-diagnostic.json"
+    },
+    {
       "file": "codex-openbao-replacement-source-export.yml",
       "location": "workflow.jobs.export.steps[2]",
       "path": "${{ runner.temp }}/heptabao-openbao-replacement-source/"

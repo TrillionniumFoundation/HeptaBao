@@ -24,7 +24,7 @@ Workflow admission is scoped pull requests plus manual execution, pinned existin
 
 ## Verification boundary
 
-Python tests use synthetic metadata/compiler output for receipt logic and tiny real test archives for archive semantics; these are not native executions or candidate evidence. No local toolchain installation, package download or native build is required for source review. Completion still requires fresh hosted execution on the published exact commit/tree, independently bound eight-entry artifacts and terminal check results. This document does not record such a run.
+Python tests use synthetic metadata/compiler output for receipt logic and tiny real test archives for archive semantics; these are not native executions or candidate evidence. No local toolchain installation, package download or native build is required for source review. Completion still requires fresh hosted execution on the published exact commit/tree, independently bound eight-entry artifacts and terminal check results. This document does not claim a passing run of the proposed corrected source; the earlier failed run is recorded below.
 
 ## R2 graph and feature observation boundary
 
@@ -39,3 +39,27 @@ Cargo 1.71 support for the chosen flags and package row grammar was checked agai
 - https://github.com/rust-lang/cargo/blob/rust-1.71.0/src/cargo/ops/tree/mod.rs
 - https://github.com/rust-lang/cargo/blob/rust-1.71.0/src/cargo/ops/tree/format/mod.rs
 Current semantics: https://doc.rust-lang.org/cargo/commands/cargo-metadata.html and https://doc.rust-lang.org/cargo/commands/cargo-tree.html.
+
+## First hosted run and proposed correction
+
+Published source fe021e4995fda5c73ca11dcfbfea28409b015a23 ran as GitHub Actions run 37247651462. Its original eight receipts are preserved: both rustls/ring entries passed; both rustls/aws-lc entries completed check/test but were blocked by the view-comparison guard; Tokio and OpenRaft entries were blocked before check/test. These are historical results of that exact source contract, not passing receipts for this correction.
+
+Tokio's pinned release manifest declares tracing-mock as `= 0.1.0-beta.1`; Cargo metadata represents the same requirement as `=0.1.0-beta.1`. The corrected comparison normalizes spaces/tabs after a comparator only. It does not alter operators or characters inside versions. The original failed capture did not retain Tokio's crate archive, so its exact archive manifest is unavailable; the regression records the actual native metadata and pinned upstream manifest separately, without substituting the latter for an authenticated archive.
+
+The aws-lc metadata contains an optional ring branch reached through rustls-webpki's weak `ring?/alloc` reference; the actual Cargo tree does not activate that branch. The enabled normal/build projection retains mandatory and activated optional edges, then computes root reachability. Weak references alone never activate a dependency. Raw metadata is preserved alongside the checked projection. Reference: https://doc.rust-lang.org/cargo/reference/features.html#dependency-features . This remains a bounded consistency check, not an independent general Cargo resolver.
+
+The OpenRaft failure was a real profile mismatch. The committed full probe includes openraft-memstore, whose OpenRaft dependency retains default features. The pinned upstream OpenRaft default feature activates tokio-rt and clap. The original minimal profile forbids clap and remains blocked for that graph. It is not weakened or relabelled.
+
+The new explicit `HB-H02-PROBE-OPENRAFT-TOKIO-FULL-CURRENT-V1` contract is defined by `planning/HEPTABAO_H02_OPENRAFT_FULL_PROBE_PROFILE_V1.yaml`. It preserves the native source, memstore dependency and direct OpenRaft declaration. It requires exactly clap/default/serde/tokio-rt/type-alias, binds the recorded memstore-to-OpenRaft default-feature chain and candidate archive's default definition, and still forbids runtime-stats. Its distinct identity and digest include the exact feature set. No minimal-profile qualification or old result transfers to it.
+
+Exact pinned upstream source trace at commit 2be3f99a23c0ec734aefc18d1c8e756b35567c35:
+- `stores/memstore/Cargo.toml` blob 5ff8d3a6483b5df76582ef24289d853a7270108d declares OpenRaft with serde/type-alias and leaves defaults enabled.
+- `openraft/Cargo.toml` blob c50ed79de92cd527d37aa20b607b64d6503f1837 defines default as tokio-rt/clap.
+- The committed probe's direct OpenRaft declaration still disables defaults; feature unification through memstore is the additional source.
+
+Future captures retain a checksum-verified crate archive before later VCS/source/manifest/profile admission, so a rejected contract keeps the actual bytes needed for diagnosis. Retention is not successful admission. Missing archives are labelled missing evidence, not checksum mismatch.
+
+The checked-in regression fixture is a bounded gzip/base64 text encoding of original native metadata, both tree streams and original receipts, plus provenance-labelled manifest inputs. It preserves the original ZIP SHA-256 b9193de0c2529a18e550741341f53548951de3960ffb3aabeaf06ec0a275b8ec. Regression passes do not rewrite those receipts or constitute a new hosted run. Fresh exact-head execution remains required after independent source review.
+
+
+The enabled-view guard also binds root and direct-candidate feature-definition maps to their actual manifests before any pruning. Normalization preserves explicit features and synthesizes Cargo's implicit optional-dependency feature only when no dep: reference suppresses it. This includes target-specific optional dependencies and dependency aliases. An edited metadata map cannot erase an authenticated candidate activation such as rustls logging→log→dep:log and then omit that branch from both trees. Transitive feature definitions retain the previously stated recorded-observation boundary.

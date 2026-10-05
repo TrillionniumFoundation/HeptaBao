@@ -354,4 +354,4 @@ bounded profile do not grant whole-product compatibility or production authority
 
 ## Current H02 mechanical probe profile
 
-- `docs/plan/HEPTABAO_H02_MECHANICAL_PROBE_V2.md` describes the additive eight-entry 1.71/1.88-floor and 1.99 mechanical lane. Source implementation is not executed evidence or behavioral qualification.
+- `docs/plan/HEPTABAO_H02_MECHANICAL_PROBE_V2.md` describes the eight-entry 1.71/1.88-floor and 1.99 mechanical lane, its retained failed first run, and the distinct current full-OpenRaft probe contract. Proposed corrections require fresh exact-head execution and confer no behavioral qualification.

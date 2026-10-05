@@ -6,6 +6,7 @@ name: h02-probe-sbom-msrv-v2
     - .github/workflows/h02-probe-sbom-msrv-v2.yml
     - planning/HEPTABAO_H02_CANDIDATE_PROBE_MATRIX_V2.yaml
     - planning/HEPTABAO_H02_CANDIDATE_PROBE_MATRIX_V1.yaml
+    - planning/HEPTABAO_H02_OPENRAFT_FULL_PROBE_PROFILE_V1.yaml
     - scripts/h02_dependency_probe_v2.py
     - scripts/validate_h02_dependency_probe_v2.py
     - scripts/h02_dependency_probe_v1.py
@@ -16,6 +17,7 @@ name: h02-probe-sbom-msrv-v2
     - schemas/heptabao_dependency_probe_evidence_v1.schema.json
     - tests/platform/test_h02_dependency_probe_v2.py
     - tests/platform/test_h02_dependency_probe_v1.py
+    - tests/platform/fixtures/h02_mechanical_hosted_37247651462.json
     - probes/h02/**
     - requirements-plan.txt
     - scripts/validate_workflow_trust.py

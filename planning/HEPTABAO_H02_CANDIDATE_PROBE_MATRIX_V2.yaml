@@ -109,7 +109,7 @@ profiles:
   - ring
   state: SPECIFIED_UNEXECUTED
   evidence_refs: []
-- profile_id: HB-H02-PROBE-OPENRAFT-TOKIO
+- profile_id: HB-H02-PROBE-OPENRAFT-TOKIO-FULL-CURRENT-V1
   candidate_id: HB-DEP-RAFT-OPENRAFT
   capability: RAFT
   package: openraft
@@ -136,10 +136,17 @@ profiles:
   - membership-transition-trace
   - quorum-loss-fail-closed
   forbidden_feature_expansion:
-  - clap
   - runtime-stats
   state: SPECIFIED_UNEXECUTED
   evidence_refs: []
+  historical_minimal_profile_id: HB-H02-PROBE-OPENRAFT-TOKIO
+  expected_resolved_features:
+  - clap
+  - default
+  - serde
+  - tokio-rt
+  - type-alias
+  full_probe_contract: heptabao.h02-openraft-full-probe-profile.v1
 entry_count: 8
 graph_policy:
   tokio: GENERATE_REAL_LOCK_ONCE_THEN_LOCKED

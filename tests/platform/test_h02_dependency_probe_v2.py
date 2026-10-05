@@ -1,5 +1,8 @@
 from __future__ import annotations
 import argparse
+import base64
+import gzip
+import hashlib
 import copy
 import shutil
 import io
@@ -35,6 +38,7 @@ class ProbeV2Tests(unittest.TestCase):
         locked, edges = p.lock_edges(tomllib.loads(self.fixture_lock(item).decode()))
         identity = next(k for k in locked if k[0] == item['package'] and k[1] == item['version'])
         return {'package': {'name': item['package'], 'version': item['version']},
+                'features': {feature: (['tokio-rt', 'clap'] if feature == 'default' and item['profile_id'] == p.FULL_PROFILE else []) for feature in item.get('expected_resolved_features', item['features'])},
                 'dependencies': {child[0]: {'version': '=' + child[1]} for child in sorted(edges[identity])}}
 
     def mock_archive(self, path, item, actual_source=None):
@@ -53,7 +57,7 @@ class ProbeV2Tests(unittest.TestCase):
         root_manifest = tomllib.loads((ROOT / item['probe_manifest']).read_text())
         features = {key: set() for key in active}
         selected = next(k for k in active if k[0] == item['package'] and k[1] == item['version'])
-        features[selected].update(item['features'])
+        features[selected].update(item.get('expected_resolved_features', item['features']))
         for dep in p.declarations(root_manifest):
             for key in active:
                 if key[0] == dep['name']: features[key].update(dep['features'])
@@ -67,9 +71,11 @@ class ProbeV2Tests(unittest.TestCase):
             dependencies = [{**{k:d[k] for k in ('name','kind','target','optional','features','uses_default_features','req')},
                              'rename': None if d['alias'] == d['name'].replace('-', '_') else d['alias'],
                              'source': 'registry+https://github.com/rust-lang/crates.io-index'} for d in decls]
+            if name == 'openraft-memstore' and item['profile_id'] == p.FULL_PROFILE:
+                next(d for d in dependencies if d['name'] == 'openraft')['features'] = ['serde', 'type-alias']
             manifest_path = str(work / 'Cargo.toml') if source is None else '/registry/' + name + '-' + version + '/Cargo.toml'
             packages.append({'id': ids[key], 'name': name, 'version': version, 'source': source,
-                             'manifest_path': manifest_path, 'targets': [], 'dependencies': dependencies, 'features': {f:[] for f in features[key]}})
+                             'manifest_path': manifest_path, 'targets': [], 'dependencies': dependencies, 'features': {f:(['tokio-rt', 'clap'] if f == 'default' and key == selected and item['profile_id'] == p.FULL_PROFILE else []) for f in features[key]}})
             deps = [{'name': child[0].replace('-', '_'), 'pkg': ids[child], 'dep_kinds':[{'kind':None,'target':None}]} for child in sorted(children[key])]
             nodes.append({'id':ids[key], 'features':sorted(features[key]), 'dependencies':[d['pkg'] for d in deps], 'deps':deps})
         return {'packages':packages, 'workspace_members':[ids[root_identity]], 'resolve':{'root':ids[root_identity], 'nodes':nodes}}
@@ -132,8 +138,8 @@ class ProbeV2Tests(unittest.TestCase):
 
     def test_profile_digests_not_relabelled(self):
         for item in p.profiles().values():
-            old = p.legacy.profiles(p.legacy.load_yaml(ROOT / p.LEGACY_PLAN))[item['profile_id']]
-            self.assertNotEqual(p.legacy.profile_digest(old), p.legacy.profile_digest(item))
+            old = p.legacy.profiles(p.legacy.load_yaml(ROOT / p.LEGACY_PLAN))[item.get('historical_minimal_profile_id', item['profile_id'])]
+            self.assertNotEqual(p.legacy.profile_digest(old), p.profile_digest(item))
             self.assertEqual(old['probe_toolchains'][-1], '1.98.0')
 
     def test_context_relabel_negative_set(self):
@@ -278,7 +284,8 @@ class ProbeV2Tests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); fixtures=root/'fixtures';fixtures.mkdir(); e,x=self.fixture(fixtures)
             entries=p.entries(); calls=[]
-            source=root/'source';source.mkdir()
+            source=root/'source';source.mkdir();(source/'planning').mkdir()
+            shutil.copyfile(ROOT/p.FULL_CONTRACT,source/p.FULL_CONTRACT)
             args=argparse.Namespace(source_root=source,evidence_root=root/'out',execution_root=root/'exec',expected_commit='1'*40,run_id='42',run_attempt='1',runner_name='runner')
             def snap(_root,item):
                 name=next(n for n,(i,c) in entries.items() if i['profile_id']==item['profile_id'])
@@ -365,5 +372,145 @@ class ProbeV2Tests(unittest.TestCase):
         for mutation in (text.replace('0heptabao','2heptabao',1),text.replace('/expected/probe','/wrong/probe',1),text.replace('|','|unknown_feature,',1),text.splitlines()[0]+'\n',text.replace('7016fa5e072a86092928144b3a3040381e6964e9)','0000000)',1)):
             with self.subTest(mutation=mutation[:70]),self.assertRaises(ValueError):p.tree_observation(mutation,metadata,depth=True)
         p.tree_observation(text,metadata,depth=True);p.tree_observation(projection,metadata,depth=False)
+
+
+    @classmethod
+    def native_fixture(cls):
+        if not hasattr(cls, '_native_fixture'):
+            outer=json.loads((ROOT/'tests/platform/fixtures/h02_mechanical_hosted_37247651462.json').read_text())
+            raw=gzip.decompress(base64.b64decode(outer['payload'],validate=True))
+            assert len(raw)==outer['decompressed_bytes'] and hashlib.sha256(raw).hexdigest()==outer['decompressed_sha256']
+            cls._native_fixture=json.loads(raw)
+        return cls._native_fixture
+
+    def native_item(self, record):
+        return p.profiles()[p.FULL_PROFILE if record['profile_id']=='HB-H02-PROBE-OPENRAFT-TOKIO' else record['profile_id']]
+
+    def test_native_all_eight_typed_views_and_original_failures_retained(self):
+        fixture=self.native_fixture();self.assertEqual(fixture['source_commit'],'fe021e4995fda5c73ca11dcfbfea28409b015a23')
+        self.assertEqual(fixture['original_zip_sha256'],'b9193de0c2529a18e550741341f53548951de3960ffb3aabeaf06ec0a275b8ec')
+        statuses=[]
+        for record in fixture['entries']:
+            with self.subTest(entry=record['name']):
+                metadata=json.loads(record['metadata_raw']);self.assertEqual(hashlib.sha256(record['metadata_raw'].encode()).hexdigest(),record['metadata_sha256'])
+                p.tree_observation(record['dependency_tree'],metadata,depth=True)
+                p.tree_observation(record['package_features'],metadata,depth=False)
+                p.metadata_graph(metadata,self.native_item(record),Path(record['work']),tomllib.loads(record['lock_raw']))
+                original=record['original_evidence'];statuses.append(original['mechanical_status']);self.assertFalse(original['qualification'])
+                if 'OPENRAFT' in record['profile_id'] or 'TOKIO-MINIMAL' in record['profile_id']:
+                    self.assertIsNone(record['return_codes']['check']);self.assertIsNone(record['return_codes']['test'])
+        self.assertEqual(statuses.count('EXECUTED_PASS'),2);self.assertEqual(statuses.count('BLOCKED'),6)
+
+    def test_native_tokio_comparator_whitespace_and_inequivalent_negatives(self):
+        fixture=self.native_fixture();source=fixture['tokio_upstream_manifest'];raw=source['content'].encode()
+        self.assertEqual(hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest(),source['sha'])
+        manifest=tomllib.loads(source['content'])
+        self.assertEqual(manifest['target']['cfg(all(tokio_unstable, target_has_atomic = "64"))']['dev-dependencies']['tracing-mock'],'= 0.1.0-beta.1')
+        for record in fixture['entries']:
+            if 'TOKIO-MINIMAL' not in record['profile_id']:continue
+            metadata=json.loads(record['metadata_raw']);candidate=next(x for x in metadata['packages'] if x['name']=='tokio')
+            p.bind_declarations(candidate,manifest)
+            for replacement in ('<0.1.0-beta.1','=0.1.0-beta.2','=0.1 .0-beta.1'):
+                forged=copy.deepcopy(candidate);next(d for d in forged['dependencies'] if d['name']=='tracing-mock')['req']=replacement
+                with self.assertRaises(ValueError):p.bind_declarations(forged,manifest)
+        self.assertEqual(p.requirement_text('= 0.1.0-beta.1'),'=0.1.0-beta.1')
+        self.assertNotEqual(p.requirement_text('=0.1 .0-beta.1'),'=0.1.0-beta.1')
+
+    def test_native_rustls_authenticated_manifest_binding(self):
+        fixture=self.native_fixture();binding=fixture['authenticated_rustls_manifest']
+        self.assertEqual(binding['crate_sha256'],'0283386ce02abc0151e1761d08802dfe86c173b0b494af5cbc086574e453da06')
+        self.assertEqual(hashlib.sha256(binding['manifest_raw'].encode()).hexdigest(),binding['manifest_sha256'])
+        manifest=tomllib.loads(binding['manifest_raw'])
+        for record in fixture['entries']:
+            if 'RUSTLS' not in record['profile_id']:continue
+            metadata=json.loads(record['metadata_raw'])
+            p.metadata_graph(metadata,self.native_item(record),Path(record['work']),tomllib.loads(record['lock_raw']),manifest)
+
+    def test_native_weak_reference_does_not_admit_active_node_removal(self):
+        record=next(x for x in self.native_fixture()['entries'] if 'AWS-LC' in x['profile_id'])
+        metadata=json.loads(record['metadata_raw']);nodes,edges=p.projected_graph(metadata)
+        self.assertEqual(len(metadata['packages']),34);self.assertEqual(len(nodes),20)
+        for mode in ('weak-to-strong','optional-to-mandatory','drop-active-tree-row','drop-mandatory-metadata-edge'):
+            with self.subTest(mode=mode):
+                forged=copy.deepcopy(metadata);text=record['dependency_tree'];webpki=next(x for x in forged['packages'] if x['name']=='rustls-webpki')
+                if mode=='weak-to-strong':webpki['features']['alloc']=[r.replace('ring?/','ring/') for r in webpki['features']['alloc']]
+                elif mode=='optional-to-mandatory':next(d for d in webpki['dependencies'] if d['name']=='ring')['optional']=False
+                elif mode=='drop-active-tree-row':text='\n'.join(row for row in text.splitlines() if 'rustls-webpki v' not in row)+'\n'
+                else:
+                    root=next(n for n in forged['resolve']['nodes'] if n['id']==forged['resolve']['root']);root['deps']=root['deps'][1:];root['dependencies']=[d['pkg'] for d in root['deps']]
+                    with self.assertRaises(ValueError):p.metadata_graph(forged,self.native_item(record),Path(record['work']),tomllib.loads(record['lock_raw']))
+                    continue
+                with self.assertRaises(ValueError):p.tree_observation(text,forged,depth=True)
+
+    def test_native_full_profile_is_distinct_and_minimal_remains_blocked(self):
+        minimal=p.minimal_profiles()['HB-H02-PROBE-OPENRAFT-TOKIO'];full=p.profiles()[p.FULL_PROFILE]
+        self.assertEqual(minimal['forbidden_feature_expansion'],['clap','runtime-stats']);self.assertNotEqual(p.profile_digest(minimal),p.profile_digest(full))
+        for record in self.native_fixture()['entries']:
+            if 'OPENRAFT' not in record['profile_id']:continue
+            metadata=json.loads(record['metadata_raw']);lock=tomllib.loads(record['lock_raw'])
+            with self.assertRaisesRegex(ValueError,'resolved feature expansion/drift'):p.metadata_graph(metadata,minimal,Path(record['work']),lock)
+            p.metadata_graph(metadata,full,Path(record['work']),lock)
+            for feature in ('runtime-stats','missing-clap'):
+                changed=copy.deepcopy(metadata);candidate=next(x for x in changed['packages'] if x['name']=='openraft');node=next(n for n in changed['resolve']['nodes'] if n['id']==candidate['id'])
+                if feature=='runtime-stats':node['features'].append(feature)
+                else:node['features'].remove('clap')
+                with self.assertRaises(ValueError):p.metadata_graph(changed,full,Path(record['work']),lock)
+
+    def test_verified_archive_retained_before_contract_rejection(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);archive,item=self.archive(root);home=root/'cargo';source=home/'registry/src/index/fixture-1.0';source.mkdir(parents=True);cache=home/'registry/cache/index';cache.mkdir(parents=True)
+            shutil.copyfile(archive,cache/'fixture-1.0.crate')
+            (source/'.cargo_vcs_info.json').write_text(json.dumps({'git':{'sha1':'b'*40}}));(source/'Cargo.toml').write_bytes(b'[package]\nname="fixture"\nversion="1.0"\n');(source/'lib.rs').write_bytes(b'unsafe fn f() {}')
+            entry=root/'entry';entry.mkdir();(entry/'Cargo.lock').write_text('version=3\n')
+            p.write(entry/'metadata.stdout',{'packages':[{'name':'fixture','version':'1.0','source':'registry+https://github.com/rust-lang/crates.io-index','manifest_path':str(source/'Cargo.toml')}]})
+            ctx={'environment':{'CARGO_HOME':str(home)},'cwd':str(root/'work')}
+            with patch.object(p,'metadata_graph',side_effect=ValueError('later profile rejection')),self.assertRaisesRegex(ValueError,'later profile rejection'):p.capture_package(entry,ctx,item)
+            self.assertEqual((entry/'package.crate').read_bytes(),archive.read_bytes())
+            (entry/'package.crate').unlink();bad=dict(item,expected_registry_checksum_sha256='0'*64)
+            with self.assertRaises(ValueError):p.capture_package(entry,ctx,bad)
+            self.assertFalse((entry/'package.crate').exists())
+
+    def test_missing_archive_is_not_reported_as_checksum_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(ValueError,'archive evidence missing'):p.inspect_archive(Path(tmp)/'missing.crate',{'expected_registry_checksum_sha256':'0'*64})
+
+
+    def test_authenticated_explicit_and_implicit_feature_normalization(self):
+        manifest={'features':{'logging':['log'],'hidden-group':['dep:hidden'],'weak':['other?/x'],'strong':['alias-name/x']},
+                  'dependencies':{'log':{'version':'1','optional':True},'hidden':{'version':'1','optional':True},'other':{'version':'1','optional':True},'alias-name':{'package':'renamed-package','version':'1','optional':True}},
+                  'target':{'cfg(unix)':{'build-dependencies':{'conditional':{'version':'1','optional':True}}}}}
+        expected={'logging':['log'],'hidden-group':['dep:hidden'],'weak':['other?/x'],'strong':['alias-name/x'],
+                  'log':['dep:log'],'other':['dep:other'],'alias-name':['dep:alias-name'],'conditional':['dep:conditional']}
+        self.assertEqual(p.manifest_feature_definitions(manifest),expected)
+        p.bind_feature_definitions({'features':expected},manifest)
+        for key in ('log','other','alias-name','conditional'):
+            forged=copy.deepcopy(expected);forged[key]=[]
+            with self.assertRaises(ValueError):p.bind_feature_definitions({'features':forged},manifest)
+        self.assertNotIn('hidden',expected)
+
+    def test_review_native_log_erasure_rejected_after_recollection(self):
+        fixture=self.native_fixture();manifest=tomllib.loads(fixture['authenticated_rustls_manifest']['manifest_raw'])
+        self.assertNotIn('log',manifest['features'])
+        self.assertEqual(p.manifest_feature_definitions(manifest)['log'],['dep:log'])
+        for record in fixture['entries']:
+            if 'RUSTLS-RING' not in record['profile_id']:continue
+            with self.subTest(entry=record['name']),tempfile.TemporaryDirectory() as tmp:
+                e,x=self.fixture(Path(tmp));entry=e/record['name'];item=self.native_item(record);metadata=json.loads(record['metadata_raw'])
+                candidate=next(pkg for pkg in metadata['packages'] if pkg['name']=='rustls');candidate['features']['log']=[]
+                dep='\n'.join(row for row in record['dependency_tree'].splitlines() if 'log v0.4.' not in row)+'\n'
+                features='\n'.join(row for row in record['package_features'].splitlines() if 'log v0.4.' not in row)+'\n'
+                with self.assertRaisesRegex(ValueError,'feature definitions differ'):
+                    p.metadata_graph(metadata,item,Path(record['work']),tomllib.loads(record['lock_raw']),manifest)
+                p.write(entry/'metadata.stdout',metadata);(entry/'dependency-tree.stdout').write_text(dep);(entry/'package-features.stdout').write_text(features)
+                ctx=p.read(entry/'execution-context.json');ctx['cwd']=record['work'];p.write(entry/'execution-context.json',ctx)
+                with patch.object(p,'inspect_archive',return_value={**PACKAGE,'manifest':manifest}):value=p.collect(entry,ctx,item)
+                self.assertNotEqual(value['mechanical_status'],'EXECUTED_PASS')
+                self.assertTrue(any('feature definitions differ' in problem for problem in value['problems']))
+
+    def test_native_root_feature_definition_forgery_rejected(self):
+        record=next(x for x in self.native_fixture()['entries'] if 'RUSTLS-RING' in x['profile_id'])
+        metadata=json.loads(record['metadata_raw']);root=next(pkg for pkg in metadata['packages'] if pkg['id']==metadata['resolve']['root']);root['features']['forged']=[]
+        with self.assertRaisesRegex(ValueError,'feature definitions differ'):
+            p.metadata_graph(metadata,self.native_item(record),Path(record['work']),tomllib.loads(record['lock_raw']))
 
 if __name__ == '__main__': unittest.main()
