@@ -1450,6 +1450,34 @@ path "external-ca/sign/*" { capabilities = ["update"] }"#;
     Ok((token, entity_id, accessor))
 }
 
+fn actual_template_signed_csr(
+    service: &mut Service,
+    issuer: &X509,
+    token: &str,
+    csr: &str,
+    public: &[u8],
+    path: &str,
+    uri: &str,
+) -> TestResult {
+    let response = call(
+        service,
+        "POST",
+        path,
+        token,
+        json!({"csr":csr,"uri_sans":uri}),
+    );
+    let cert = signed_leaf(&response, issuer)?;
+    assert_eq!(cert.public_key()?.public_key_to_der()?, public);
+    assert!(response.body["data"].get("private_key").is_none());
+    assert!(
+        cert.subject_alt_names()
+            .ok_or("actual template CSR URI")?
+            .iter()
+            .any(|name| name.uri() == Some(uri))
+    );
+    Ok(())
+}
+
 #[test]
 fn pki_templates93_native_entity_alias_metadata_glob_and_fresh_private_projection() -> TestResult {
     let (root, mut service, unseal, admin, issuer) = local_fixture()?;
@@ -1535,10 +1563,51 @@ fn pki_templates93_native_entity_alias_metadata_glob_and_fresh_private_projectio
             "allowed_uri_sans":["spiffe://example.test/{{identity.entity.metadata.team}}/*"],"allowed_uri_sans_template":true
         }),
     )?;
+    let (csr, public) = actual_csr_fixture()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PATCH",
+            "ca/roles/time",
+            &admin,
+            json!({"use_csr_sans":false})
+        )
+        .status,
+        200
+    );
+    actual_template_signed_csr(
+        &mut service,
+        &issuer,
+        &token,
+        &csr,
+        &public,
+        "ca/sign/time",
+        "spiffe://example.test/demo/service",
+    )?;
     assert_eq!(call(&mut service, "POST", &format!("identity/entity/id/{entity_id}"), &admin,
         json!({"metadata":{"dns":"domain.example.test","team":"next","wildcard":"*.example.test"}})).status, 204);
     assert_eq!(call(&mut service, "POST", "ca/issue/time", &token,
         json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/demo/service"})).status, 400);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/sign/time",
+            &token,
+            json!({"csr":csr,"uri_sans":"spiffe://example.test/demo/service"})
+        )
+        .status,
+        400
+    );
+    actual_template_signed_csr(
+        &mut service,
+        &issuer,
+        &token,
+        &csr,
+        &public,
+        "ca/sign/time",
+        "spiffe://example.test/next/service",
+    )?;
     let admitted = call(
         &mut service,
         "POST",
@@ -1578,6 +1647,15 @@ fn pki_templates93_native_entity_alias_metadata_glob_and_fresh_private_projectio
         json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/next/service"}),
     );
     signed_leaf(&admitted, &issuer)?;
+    actual_template_signed_csr(
+        &mut reopened,
+        &issuer,
+        &token,
+        &csr,
+        &public,
+        "ca/sign/time",
+        "spiffe://example.test/next/service",
+    )?;
     assert_eq!(
         call(
             &mut reopened,
@@ -1591,6 +1669,17 @@ fn pki_templates93_native_entity_alias_metadata_glob_and_fresh_private_projectio
     );
     assert_eq!(call(&mut reopened, "POST", "ca/issue/time", &token,
         json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/next/service"})).status, 403);
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "ca/sign/time",
+            &token,
+            json!({"csr":csr,"uri_sans":"spiffe://example.test/next/service"})
+        )
+        .status,
+        403
+    );
     Ok(())
 }
 
@@ -1634,6 +1723,27 @@ fn pki_templates93_external_signed_uri_owner_retirement_and_encrypted_reopen() -
         &token,
         json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/demo/service"}),
     );
+    let (csr, public) = actual_csr_fixture()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PATCH",
+            "external-ca/roles/template",
+            &admin,
+            json!({"use_csr_sans":false})
+        )
+        .status,
+        200
+    );
+    actual_template_signed_csr(
+        &mut service,
+        &issuer,
+        &token,
+        &csr,
+        &public,
+        "external-ca/sign/template",
+        "spiffe://example.test/demo/service",
+    )?;
     let certificate = signed_leaf(&response, &issuer)?;
     assert!(
         certificate
