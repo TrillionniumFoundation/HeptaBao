@@ -477,14 +477,16 @@ impl Service {
                 }
                 self.state = Some(state);
                 let in_flight = self.openldap_in_flight.track(&plan);
-                self.pending_openldap_effect = Some(OpenLdapEffectPlan::new(
+                let mut effect = OpenLdapEffectPlan::new(
                     plan,
                     self.outbound.clone(),
                     self.ha.clone(),
                     in_flight,
                     request.now,
                     started,
-                ));
+                );
+                effect.token_clock = request.token_clock;
+                self.pending_openldap_effect = Some(effect);
                 return Response::error(500, "OpenLDAP revoke was not dispatched");
             }
             return Response::error(501, "OpenLDAP lease operation is not implemented");
@@ -995,6 +997,92 @@ mod completion_tests {
             std::time::Instant::now(),
         );
         Ok((root, service, key, token, plan))
+    }
+
+    #[test]
+    fn openldap_precise_http_revoke_keeps_original_clock_for_intent_retirement() -> TestResult {
+        let (_files, mut service, _, root, issued) = fixture()?;
+        let lease = issued.inner.lease_id.clone();
+        // This fixture injects a completed provider result only to test the
+        // Service clock/intent transition. Real LDAP execution is a separate
+        // native driver scope, never a qualification of this unit test.
+        assert_eq!(
+            service.finalize_openldap_effect(&issued, Ok(())).status,
+            200
+        );
+        drop(issued);
+        let clock =
+            RequestClock::anchored(Duration::new(100, 200_000_000), std::time::Instant::now())?;
+        let created = service.begin_at_mode_precise(
+            RequestDispatch {
+                method: "POST",
+                path: "auth/token/create",
+                namespace: "",
+                token: &root,
+                body: json!({"ttl":"60.5s","policies":["default"]}),
+                now: 100,
+                allow_forward: true,
+                enforce_namespace: true,
+                wrap_ttl_seconds: None,
+                origin_peer: None,
+                client_certificates: None,
+            },
+            clock,
+        );
+        assert_eq!(service.finish_synchronous_request(created).status, 200);
+        assert!(
+            service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .has_token_api_precision_state()
+        );
+        let body = json!({"lease_id":lease});
+        let response = service.handle_inner(RequestView {
+            method: "POST",
+            path: "sys/leases/revoke",
+            namespace: "",
+            token: &root,
+            body: &body,
+            now: 100,
+            admission_started: clock.started(),
+            token_clock: Some(clock),
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        });
+        assert_eq!(response.status, 500, "provider effect must be staged");
+        let mut plan = service
+            .pending_openldap_effect
+            .take()
+            .ok_or("original revoke plan")?;
+        let retained = plan.token_clock.take().ok_or("original HTTP clock")?;
+        assert_eq!(retained.started(), clock.started());
+        assert!(retained.admitted_at() == clock.admitted_at());
+        let original = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+        assert_eq!(service.finalize_openldap_effect(&plan, Ok(())).status, 503);
+        assert_eq!(
+            serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
+            original
+        );
+        plan.token_clock = Some(retained);
+        assert_eq!(service.finalize_openldap_effect(&plan, Ok(())).status, 204);
+        assert!(
+            service
+                .state
+                .as_ref()
+                .ok_or("state")?
+                .engines
+                .openldap_lease_authority(
+                    &plan.inner.namespace,
+                    &plan.inner.mount,
+                    &plan.inner.lease_id,
+                )
+                .is_none()
+        );
+        Ok(())
     }
 
     #[test]
