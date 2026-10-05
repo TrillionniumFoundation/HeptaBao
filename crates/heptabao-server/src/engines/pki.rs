@@ -727,7 +727,13 @@ impl Pki {
                 not_after,
             })?;
             self.rebuild_local_crls(now, false)?;
-            return Ok(ok(data, true));
+            // The current local root builder emits no AIA extension. Preserve
+            // the observed warning from the actual certificate it just built.
+            let mut response = ok(data, true);
+            response.body["warnings"] = json!([
+                "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information."
+            ]);
+            return Ok(response);
         }
         if path == "root/delete" || path == "root" && method == "DELETE" {
             if method != "DELETE" && !write_method(method) {
@@ -816,13 +822,23 @@ impl Pki {
                     let changed = self.roles.get(name) != Some(&role);
                     let missing_default_issuer =
                         role.issuer_ref.is_empty() && self.selected_issuer("default").is_err();
+                    let generated_lease = role.generate_lease;
                     let response = role.descriptor();
                     self.roles.insert(name.into(), role);
                     let mut result = ok(response, changed);
+                    let mut warnings = Vec::new();
                     if missing_default_issuer {
-                        result.body["warnings"] = json!([
+                        warnings.push(
                             "Issuing Certificate was set to default, but no default issuing certificate (configurable at /config/issuers) is currently set"
-                        ]);
+                        );
+                    }
+                    if generated_lease {
+                        warnings.push(
+                            "it is encouraged to disable generate_lease and rely on PKI's native capabilities when possible; this option can cause instance-wide issues with large numbers of issued certificates"
+                        );
+                    }
+                    if !warnings.is_empty() {
+                        result.body["warnings"] = json!(warnings);
                     }
                     return Ok(result);
                 }
