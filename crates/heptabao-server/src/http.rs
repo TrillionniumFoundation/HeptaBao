@@ -1791,6 +1791,14 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
 // Reflect the parsed namespace even when the logical service rejects it. This
 // transport field does not establish namespace membership or caller authority.
 fn write_standard_headers(writer: &mut impl Write, namespace: &str) -> io::Result<()> {
+    write_standard_headers_with_date(writer, namespace, false)
+}
+
+fn write_standard_headers_with_date(
+    writer: &mut impl Write,
+    namespace: &str,
+    custom_date: bool,
+) -> io::Result<()> {
     if !namespace.is_ascii() || namespace.bytes().any(|byte| byte < 32 || byte == 127) {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
@@ -1799,9 +1807,16 @@ fn write_standard_headers(writer: &mut impl Write, namespace: &str) -> io::Resul
     }
     write!(
         writer,
-        "Cache-Control: no-store\r\nStrict-Transport-Security: max-age=31536000; includeSubDomains\r\nDate: {}\r\nConnection: close\r\n",
-        chrono::Utc::now().format("%a, %d %b %Y %H:%M:%S GMT"),
+        "Cache-Control: no-store\r\nStrict-Transport-Security: max-age=31536000; includeSubDomains\r\n",
     )?;
+    if !custom_date {
+        write!(
+            writer,
+            "Date: {}\r\n",
+            chrono::Utc::now().format("%a, %d %b %Y %H:%M:%S GMT")
+        )?;
+    }
+    writer.write_all(b"Connection: close\r\n")?;
     if !namespace.is_empty() {
         write!(writer, "X-Vault-Namespace: {namespace}\r\n")?;
     }
@@ -2006,7 +2021,11 @@ fn write_response_with_namespace(
         writer.write_all(b"Transfer-Encoding: chunked\r\n")?;
     }
     write!(writer, "{retry_after}{index}")?;
-    write_standard_headers(writer, namespace)?;
+    write_standard_headers_with_date(
+        writer,
+        namespace,
+        status == response.status && response.response_headers.has_date(),
+    )?;
     if status == response.status {
         response.response_headers.write(writer)?;
     }

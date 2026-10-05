@@ -25,10 +25,7 @@ fn valid_name(name: &str) -> bool {
 fn transport_owned(name: &str) -> bool {
     matches!(
         name.to_ascii_lowercase().as_str(),
-        "content-type"
-            | "date"
-            | "cache-control"
-            | "content-length"
+        "content-length"
             | "transfer-encoding"
             | "connection"
             | "keep-alive"
@@ -39,7 +36,6 @@ fn transport_owned(name: &str) -> bool {
             | "host"
             | "x-vault-index"
             | "x-vault-namespace"
-            | "strict-transport-security"
     )
 }
 pub(crate) fn validate_allowlist(names: &[String]) -> bool {
@@ -150,11 +146,19 @@ impl Headers {
     }
     pub(crate) fn write(&self, writer: &mut impl Write) -> io::Result<()> {
         for (name, values) in &self.0 {
+            // OpenBao's final JSON and outer listener writers overwrite these
+            // two allowed fields after logical response headers were added.
+            if matches!(name.as_str(), "Content-Type" | "Strict-Transport-Security") {
+                continue;
+            }
             for value in values {
                 write!(writer, "{name}: {}\r\n", value.as_str())?
             }
         }
         Ok(())
+    }
+    pub(crate) fn has_date(&self) -> bool {
+        self.0.get("Date").is_some_and(|values| !values.is_empty())
     }
     pub(crate) fn is_empty(&self) -> bool {
         self.0.is_empty()

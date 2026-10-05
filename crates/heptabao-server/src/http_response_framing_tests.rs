@@ -209,3 +209,74 @@ fn sdk_headers95_exact_allowlist_multivalue_and_transport_framing() -> io::Resul
     assert!(!split_wire(&wire)?.0.contains("X-Sdk-"));
     Ok(())
 }
+
+#[test]
+fn sdk_headers95_transport_owned_primary_json_precedence() -> io::Result<()> {
+    let offered = json!({
+        "Date":["Mon, 01 Jan 2001 00:00:00 GMT","Tue, 02 Jan 2001 00:00:00 GMT"],
+        "Content-Type":["application/x-sdk-first","application/x-sdk-second"],
+        "Cache-Control":["sdk-cache-first","sdk-cache-second"],
+        "Strict-Transport-Security":["max-age=17","max-age=19"]
+    });
+    let allowed = [
+        "Date",
+        "Content-Type",
+        "Cache-Control",
+        "Strict-Transport-Security",
+    ]
+    .map(str::to_owned);
+    for head in [false, true] {
+        let mut response = json_response(json!({"data":{"marker":"preserved"}}));
+        response.response_headers =
+            crate::service::ResponseHeaders::from_sdk(Some(&offered), &allowed)
+                .map_err(|()| io::Error::other("primary transport header selection"))?;
+        let mut wire = Vec::new();
+        write_response(&mut wire, response, head)?;
+        let (headers, body) = split_wire(&wire)?;
+        let values = |name: &str| {
+            headers
+                .lines()
+                .filter_map(|line| line.strip_prefix(name))
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(
+            values("Date: "),
+            [
+                "Mon, 01 Jan 2001 00:00:00 GMT",
+                "Tue, 02 Jan 2001 00:00:00 GMT"
+            ]
+        );
+        assert_eq!(values("Content-Type: "), ["application/json"]);
+        assert_eq!(
+            values("Cache-Control: "),
+            ["no-store", "sdk-cache-first", "sdk-cache-second"]
+        );
+        assert_eq!(
+            values("Strict-Transport-Security: "),
+            ["max-age=31536000; includeSubDomains"]
+        );
+        assert!(!headers.contains("application/x-sdk") && !headers.contains("max-age=17"));
+        if head {
+            assert!(body.is_empty());
+        } else {
+            assert_eq!(
+                serde_json::from_slice::<Value>(body)?,
+                json!({"data":{"marker":"preserved"}})
+            );
+        }
+    }
+    let mut response = json_response(json!({}));
+    response.response_headers =
+        crate::service::ResponseHeaders::from_sdk(Some(&json!({"Date":[]})), &["Date".into()])
+            .map_err(|()| io::Error::other("empty Date values"))?;
+    let mut wire = Vec::new();
+    write_response(&mut wire, response, false)?;
+    let (headers, _) = split_wire(&wire)?;
+    let dates = headers
+        .lines()
+        .filter_map(|line| line.strip_prefix("Date: "))
+        .collect::<Vec<_>>();
+    assert_eq!(dates.len(), 1);
+    assert!(chrono::DateTime::parse_from_rfc2822(dates[0]).is_ok());
+    Ok(())
+}
