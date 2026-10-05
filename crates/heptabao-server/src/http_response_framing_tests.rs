@@ -106,7 +106,7 @@ fn rejected_unknown_namespace_is_reflected_without_becoming_an_authority() -> io
             .as_bytes(),
         Duration::from_secs(1),
     )
-    .expect("valid namespace request");
+    .unwrap_or_else(|_| panic!("valid namespace request"));
     assert_eq!(request.namespace, "unknown");
     let mut wire = Vec::new();
     write_response_with_namespace(
