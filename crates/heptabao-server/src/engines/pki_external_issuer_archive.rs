@@ -98,7 +98,11 @@ impl ExternalPublicIssuer {
 }
 
 impl Pki {
-    pub(in crate::engines::pki) fn external_pki_identifiers_in_use(&self, issuer: &str, key: &str) -> bool {
+    pub(in crate::engines::pki) fn external_pki_identifiers_in_use(
+        &self,
+        issuer: &str,
+        key: &str,
+    ) -> bool {
         self.external
             .root
             .iter()
