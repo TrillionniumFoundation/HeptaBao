@@ -16,13 +16,24 @@ fn realtime(
     service.handle_request(ServiceRequest::new(method, path, namespace, token, body))
 }
 fn bearer(response: &Response) -> TestResult<Zeroizing<String>> {
-    assert_eq!(response.status, 200);
+    assert_eq!(
+        response.status,
+        200,
+        "public error fingerprint {:?}",
+        response_error_fingerprint(response)
+    );
     Ok(Zeroizing::new(
         response.body["auth"]["client_token"]
             .as_str()
             .ok_or("mint bearer shape")?
             .into(),
     ))
+}
+fn response_error_fingerprint(response: &Response) -> [u8; 32] {
+    serde_json::to_vec(&response.body["errors"]).map_or_else(
+        |_| crypto::digest(b"cfg-error-encoding-failed"),
+        |bytes| crypto::digest(&bytes),
+    )
 }
 fn wall() -> Duration {
     SystemTime::now()
@@ -62,6 +73,20 @@ fn public_origin_real_meta_and_service_issue_stamp_survive_process_reopen() -> T
         .status,
         200
     );
+    for namespace in ["", "plain"] {
+        assert_eq!(
+            realtime(
+                &mut service,
+                "PUT",
+                "sys/policies/acl/public-origin-reader",
+                namespace,
+                &admin,
+                json!({"policy":"path \"*\" { capabilities = [\"create\", \"read\", \"update\", \"delete\", \"list\", \"sudo\", \"patch\"] }"})
+            )
+            .status,
+            204
+        );
+    }
     let mut samples = Vec::new();
     for namespace in ["", "plain"] {
         for kind in ["service", "batch"] {
@@ -71,7 +96,7 @@ fn public_origin_real_meta_and_service_issue_stamp_survive_process_reopen() -> T
                 Some(json!({})),
                 Some(json!({"public_marker":"native-origin"})),
             ] {
-                let mut input = json!({"policies":["default"], "no_default_policy":true, "type":kind, "ttl":"1h"});
+                let mut input = json!({"policies":["public-origin-reader"], "no_default_policy":true, "type":kind, "ttl":"1h"});
                 if let Some(meta) = &meta {
                     input["meta"] = meta.clone();
                 }
@@ -237,6 +262,19 @@ fn public_origin_explicit_clock_never_fabricates_a_fractional_observation() -> T
     let root = Root::new();
     let mut service = root.service()?;
     let (_, admin) = bootstrap_unmounted(&mut service)?;
+    assert_eq!(
+        service.handle_request_at(
+            ServiceRequest::new(
+                "PUT",
+                "sys/policies/acl/public-origin-reader",
+                "",
+                &admin,
+                json!({"policy":"path \"*\" { capabilities = [\"create\", \"read\", \"update\", \"delete\", \"list\", \"sudo\", \"patch\"] }"})
+            ),
+            100,
+        ).status,
+        204
+    );
     let _outer_listener =
         external_pki::PublicationClockScope::enter(wall(), std::time::Instant::now());
     let issued = service.handle_request_at(
@@ -245,7 +283,7 @@ fn public_origin_explicit_clock_never_fabricates_a_fractional_observation() -> T
             "auth/token/create",
             "",
             &admin,
-            json!({"policies":["default"], "no_default_policy":true, "meta":{}}),
+            json!({"policies":["public-origin-reader"], "no_default_policy":true, "meta":{}}),
         ),
         100,
     );

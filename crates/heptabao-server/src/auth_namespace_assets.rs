@@ -327,13 +327,24 @@ mod tests {
         let actor = state
             .authenticate_read_only(&root, 100)?
             .ok_or("actual root principal")?;
+        let policy = state
+            .handle(
+                Some(&actor),
+                "custody",
+                "PUT",
+                "sys/policies/acl/public-origin-reader",
+                &json!({"policy":"path \"*\" { capabilities = [\"create\", \"read\", \"update\", \"delete\", \"list\", \"sudo\", \"patch\"] }"}),
+                100,
+            )?
+            .ok_or("actual reader policy producer")?;
+        assert_eq!(policy.status, 204);
         let minted = state
             .handle(
                 Some(&actor),
                 "custody",
                 "POST",
                 "auth/token/create",
-                &json!({"policies":["default"],"no_default_policy":true,"meta":{}}),
+                &json!({"policies":["public-origin-reader"],"no_default_policy":true,"meta":{}}),
                 100,
             )?
             .ok_or("actual token producer")?;

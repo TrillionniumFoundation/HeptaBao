@@ -2089,7 +2089,15 @@ fn public_origin_closed_auth_complete_ciphertext_and_canonical_floor_survive_con
         &token,
         json!({"policies":["origin-reader"],"no_default_policy":true,"num_uses":2,"ttl":"1h","meta":{"public_marker":"complete-private-origin-owner"}}),
     );
-    assert_eq!(minted.status, 200);
+    assert_eq!(
+        minted.status,
+        200,
+        "public error fingerprint {:?}",
+        serde_json::to_vec(&minted.body["errors"]).map_or_else(
+            |_| crate::crypto::digest(b"cfg-error-encoding-failed"),
+            |bytes| crate::crypto::digest(&bytes),
+        )
+    );
     let actor = Zeroizing::new(
         minted.body["auth"]["client_token"]
             .as_str()
@@ -2263,7 +2271,15 @@ fn public_origin_independent_assets_restore_exact_stamp_and_empty_map_after_real
         &token,
         json!({"policies":["default"],"no_default_policy":true,"ttl":"1h","meta":{}}),
     );
-    assert_eq!(minted.status, 200);
+    assert_eq!(
+        minted.status,
+        200,
+        "public error fingerprint {:?}",
+        serde_json::to_vec(&minted.body["errors"]).map_or_else(
+            |_| crate::crypto::digest(b"cfg-error-encoding-failed"),
+            |bytes| crate::crypto::digest(&bytes),
+        )
+    );
     assert_eq!(minted.body["auth"]["metadata"], json!({}));
     let actor = Zeroizing::new(
         minted.body["auth"]["client_token"]
