@@ -51,7 +51,11 @@ fn sign(service: &mut Service, admin: &str, csr: &Response) -> TestResult<Respon
         admin,
         json!({"csr":csr.body["data"]["csr"],"use_csr_values":true,"ttl":"2h","max_path_length":1}),
     );
-    assert_eq!(response.status, 200);
+    assert_eq!(
+        response.status, 200,
+        "parent sign errors={}",
+        response.body["errors"]
+    );
     Ok(response)
 }
 fn bundle(child: &Response, parent: &Response) -> TestResult<Value> {
@@ -416,7 +420,11 @@ fn pki_external_intermediate94_seven_remote_parents_sign_current_csr_and_restart
             &admin,
             json!({"csr":csr.body["data"]["csr"],"use_csr_values":true,"ttl":"1h","max_path_length":0}),
         );
-        assert_eq!(signed_again.status, 200);
+        assert_eq!(
+            signed_again.status, 200,
+            "kind={kind} restart parent sign errors={}",
+            signed_again.body["errors"]
+        );
         assert!(certificate(&signed_again)?.verify(&parent_key)?);
     }
     Ok(())
@@ -727,5 +735,369 @@ fn pki_native_kms_csr_multiple_pending_distinct_keys_and_explicit_types_reject_b
             .validate_format()
             .is_ok()
     );
+    Ok(())
+}
+
+#[test]
+fn pki_external_signed_ca94_seven_parent_certificate_revoke_crl_rotation_restart_retirement()
+-> TestResult {
+    for kind in [
+        "ed25519",
+        "ecdsa-p256",
+        "ecdsa-p384",
+        "ecdsa-p521",
+        "rsa-2048",
+        "rsa-3072",
+        "rsa-4096",
+    ] {
+        let remote = RemoteTransit::new_kind(kind)?;
+        let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+        let parent = call(
+            &mut service,
+            "POST",
+            "external-ca/root/generate/kms",
+            &admin,
+            json!({"external_key_ref":"remote:v2","common_name":"old-parent.example.test","ttl":"4h","issuer_name":"old-parent"}),
+        );
+        assert_eq!(parent.status, 200);
+        let parent_public = certificate(&parent)?.public_key()?;
+        let parent_id = parent.body["data"]["issuer_id"]
+            .as_str()
+            .ok_or("actual parent id")?
+            .to_owned();
+        let csr = local_child_csr(&mut service, &admin)?;
+        let signed = call(
+            &mut service,
+            "POST",
+            &format!("external-ca/issuer/{parent_id}/sign-intermediate"),
+            &admin,
+            json!({"csr":csr.body["data"]["csr"],"use_csr_values":true,"ttl":"2h","max_path_length":1}),
+        );
+        assert_eq!(signed.status, 200);
+        let child = certificate(&signed)?;
+        let child_public = child.public_key()?;
+        assert!(child.verify(&parent_public)?);
+        let serial = signed.body["data"]["serial_number"]
+            .as_str()
+            .ok_or("signed CA serial")?
+            .to_owned();
+        let cert_path = format!("external-ca/cert/{serial}");
+        let fetched = call(&mut service, "GET", &cert_path, "", json!({}));
+        assert_eq!(fetched.status, 200);
+        assert_eq!(certificate(&fetched)?.to_der()?, child.to_der()?);
+        let before = remote.calls()?;
+        let revoked = call(
+            &mut service,
+            "POST",
+            "external-ca/revoke",
+            &admin,
+            json!({"serial_number":serial}),
+        );
+        assert_eq!(
+            revoked.status, 200,
+            "actual externally signed CA index must be revocable"
+        );
+        assert_eq!(
+            remote.calls()?,
+            before + 3,
+            "original parent metadata plus full/delta signatures"
+        );
+        let crl_path = format!("external-ca/issuer/{parent_id}/crl");
+        let read_crl = |service: &mut Service| -> TestResult<X509Crl> {
+            let response = call(service, "GET", &crl_path, "", json!({}));
+            assert_eq!(response.status, 200);
+            Ok(X509Crl::from_pem(
+                response.body["data"]["crl"]
+                    .as_str()
+                    .ok_or("actual parent CRL")?
+                    .as_bytes(),
+            )?)
+        };
+        let crl = read_crl(&mut service)?;
+        assert!(crl.verify(&parent_public)?);
+        assert!(!crl.verify(&child_public)?);
+        let entries = crl.get_revoked().ok_or("actual revoked CA")?;
+        assert_eq!(entries.len(), 1);
+        assert_eq!(
+            entries[0].serial_number().to_bn()?.to_vec(),
+            child.serial_number().to_bn()?.to_vec()
+        );
+        assert!(
+            service
+                .state
+                .as_ref()
+                .ok_or("revocation state")?
+                .validate_format()
+                .is_ok()
+        );
+        let next = call(
+            &mut service,
+            "POST",
+            "external-ca/root/generate/kms",
+            &admin,
+            json!({"external_key_ref":"remote:v2","common_name":"new-parent.example.test","ttl":"4h","issuer_name":"new-parent"}),
+        );
+        assert_eq!(next.status, 200);
+        assert_ne!(
+            next.body["data"]["issuer_id"],
+            parent.body["data"]["issuer_id"]
+        );
+        let old = read_crl(&mut service)?;
+        // Root rotation rebuilds the original parent's CRL as part of the
+        // same multi-signer transaction; the number/signature advance.
+        assert!(old.verify(&parent_public)?);
+        assert!(!old.verify(&child_public)?);
+        assert_eq!(old.issuer_name().to_der()?, crl.issuer_name().to_der()?);
+        let old_entries = old
+            .get_revoked()
+            .ok_or("rotated original parent's revoked CA")?;
+        assert_eq!(old_entries.len(), 1);
+        assert_eq!(
+            old_entries[0].serial_number().to_bn()?.to_vec(),
+            child.serial_number().to_bn()?.to_vec()
+        );
+        let rotated_crl = old.to_der()?;
+        drop(service);
+        let mut reopened = root.service()?;
+        reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+        assert_eq!(
+            call(
+                &mut reopened,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":unseal})
+            )
+            .status,
+            200
+        );
+        assert_eq!(read_crl(&mut reopened)?.to_der()?, rotated_crl);
+        let retired = call(
+            &mut reopened,
+            "DELETE",
+            &format!("external-ca/issuer/{parent_id}"),
+            &admin,
+            json!({}),
+        );
+        assert_eq!(
+            retired.status, 204,
+            "retirement errors={}",
+            retired.body["errors"]
+        );
+        let defaults = call(
+            &mut reopened,
+            "GET",
+            "external-ca/config/issuers",
+            &admin,
+            json!({}),
+        );
+        assert_eq!(defaults.status, 200);
+        assert_eq!(defaults.body["data"]["default"], "");
+        let next_id = next.body["data"]["issuer_id"]
+            .as_str()
+            .ok_or("remaining actual signer")?;
+        let sibling = call(
+            &mut reopened,
+            "POST",
+            &format!("external-ca/issuer/{next_id}/sign-intermediate"),
+            &admin,
+            json!({"csr":csr.body["data"]["csr"],"ttl":"1h","use_csr_values":true,"max_path_length":0}),
+        );
+        assert_eq!(
+            sibling.status, 200,
+            "kind={kind} sibling errors={}",
+            sibling.body["errors"]
+        );
+        let sibling_public = certificate(&next)?.public_key()?;
+        assert!(certificate(&sibling)?.verify(&sibling_public)?);
+        let before = remote.calls()?;
+        assert_eq!(
+            call(
+                &mut reopened,
+                "POST",
+                "external-ca/revoke",
+                &admin,
+                json!({"serial_number":serial})
+            )
+            .status,
+            404,
+            "retired original private parent is not recreated from the public CA"
+        );
+        assert_eq!(remote.calls()?, before);
+        assert!(
+            reopened
+                .state
+                .as_ref()
+                .ok_or("retirement")?
+                .validate_format()
+                .is_ok()
+        );
+        let still_public = call(&mut reopened, "GET", &cert_path, "", json!({}));
+        assert_eq!(still_public.status, 200);
+        assert_eq!(certificate(&still_public)?.to_der()?, child.to_der()?);
+        drop(reopened);
+        let mut retired_reopen = root.service()?;
+        retired_reopen.install_outbound_endpoints(vec![remote.endpoint()])?;
+        assert_eq!(
+            call(
+                &mut retired_reopen,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":unseal})
+            )
+            .status,
+            200
+        );
+        let still_public = call(&mut retired_reopen, "GET", &cert_path, "", json!({}));
+        assert_eq!(still_public.status, 200);
+        assert_eq!(certificate(&still_public)?.to_der()?, child.to_der()?);
+        let before = remote.calls()?;
+        assert_eq!(
+            call(
+                &mut retired_reopen,
+                "POST",
+                "external-ca/revoke",
+                &admin,
+                json!({"serial_number":serial})
+            )
+            .status,
+            404
+        );
+        assert_eq!(
+            remote.calls()?,
+            before,
+            "encrypted reopen retains no original private signer"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn pki_signed_ca_canonical_http_serial_resolves_original_zero_prefix_records_and_restart()
+-> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+    parent(&mut service, &admin)?;
+    let mut candidate = service.state.as_ref().ok_or("actual parent state")?.clone();
+    candidate
+        .engines
+        .install_canonical_pki_serial_fixture("", "parent/", 100)?;
+    candidate.schema = candidate.writer_schema();
+    candidate
+        .validate_format()
+        .map_err(|_| "canonical fixture format rejected")?;
+    let before = remote.calls()?;
+    service
+        .commit_state(&mut candidate)
+        .map_err(|_| "canonical fixture commit rejected")?;
+    service.state = Some(candidate);
+    for canonical in [
+        "0123456789abcdef112233445566778899aabbcc",
+        "8123456789abcdef112233445566778899aabbcc",
+    ] {
+        let read = call(
+            &mut service,
+            "GET",
+            &format!("parent/cert/{canonical}"),
+            "",
+            json!({}),
+        );
+        assert_eq!(read.status, 200);
+        let cert = certificate(&read)?;
+        assert_eq!(
+            cert.serial_number().to_bn()?.to_vec(),
+            (0..canonical.len())
+                .step_by(2)
+                .map(|i| u8::from_str_radix(&canonical[i..i + 2], 16))
+                .collect::<std::result::Result<Vec<_>, _>>()?
+        );
+        let raw = call(
+            &mut service,
+            "GET",
+            &format!("parent/cert/{canonical}/raw"),
+            "",
+            json!({}),
+        );
+        assert_eq!(raw.status, 200);
+        let revoked = call(
+            &mut service,
+            "POST",
+            "parent/revoke",
+            &admin,
+            json!({"serial_number":canonical}),
+        );
+        assert_eq!(revoked.status, 200);
+        let original = call(
+            &mut service,
+            "GET",
+            &format!("parent/cert/00{canonical}"),
+            "",
+            json!({}),
+        );
+        assert_eq!(original.status, 200);
+        assert_eq!(
+            original.body["data"]["certificate"],
+            read.body["data"]["certificate"]
+        );
+        assert_eq!(
+            original.body["data"]["revocation_time"],
+            revoked.body["data"]["revocation_time"]
+        );
+    }
+    assert_eq!(
+        remote.calls()?,
+        before,
+        "local old issuer never uses remote signing authority"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    for canonical in [
+        "0123456789abcdef112233445566778899aabbcc",
+        "8123456789abcdef112233445566778899aabbcc",
+    ] {
+        let read = call(
+            &mut reopened,
+            "GET",
+            &format!("parent/cert/{canonical}"),
+            "",
+            json!({}),
+        );
+        assert_eq!(read.status, 200);
+        assert_eq!(read.body["data"]["revocation_time"], 100);
+        let original = call(
+            &mut reopened,
+            "GET",
+            &format!("parent/cert/00{canonical}"),
+            "",
+            json!({}),
+        );
+        assert_eq!(read.body["data"], original.body["data"]);
+    }
+    assert_eq!(
+        call(
+            &mut reopened,
+            "GET",
+            "parent/cert/0223456789abcdef112233445566778899aabbcc",
+            "",
+            json!({})
+        )
+        .status,
+        404
+    );
+    drop(reopened);
+    drop(remote);
+    drop(root);
     Ok(())
 }

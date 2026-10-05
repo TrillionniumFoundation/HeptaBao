@@ -268,7 +268,7 @@ impl Pki {
                 raw_certificate(&root.certificate_der, format)
             }
             PkiPublicRead::Certificate(serial) => {
-                let serial = normalize_serial(serial)?;
+                let serial = self.resolve_certificate_serial(serial)?;
                 if let Some(der) = self.local_certificate(&serial) {
                     let revoked_at = self.signed_ca_revocation_time(&serial);
                     return Ok(ok(
@@ -281,7 +281,7 @@ impl Pki {
                 Ok(ok(projection, false))
             }
             PkiPublicRead::RawCertificate(serial, format) => {
-                let serial = normalize_serial(serial)?;
+                let serial = self.resolve_certificate_serial(serial)?;
                 if let Some(der) = self.local_certificate(&serial) {
                     return raw_certificate(der, format);
                 }
@@ -420,7 +420,7 @@ impl Pki {
                 };
                 let certificate = pem("CERTIFICATE", &root.certificate_der);
                 Ok(ok(
-                    json!({"certificate":certificate,"ca_chain":self.external_ca_chain_pem(root)?,"issuer_id":issuer,"issuer_name":name}),
+                    json!({"certificate":certificate,"ca_chain":self.issuer_management_ca_chain_pem(root)?,"issuer_id":issuer,"issuer_name":name}),
                     false,
                 ))
             }
@@ -458,7 +458,7 @@ impl Pki {
                 let (issuer, _, name) = self.public_issuer_metadata().ok_or_else(not_found)?;
                 let certificate = pem("CERTIFICATE", &root.certificate_der);
                 Ok(ok(
-                    json!({"certificate":certificate,"ca_chain":self.external_ca_chain_pem(root)?,"issuer_id":issuer,"issuer_name":name}),
+                    json!({"certificate":certificate,"ca_chain":self.issuer_management_ca_chain_pem(root)?,"issuer_id":issuer,"issuer_name":name}),
                     false,
                 ))
             }

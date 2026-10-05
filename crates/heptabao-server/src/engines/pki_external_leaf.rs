@@ -369,13 +369,13 @@ impl Pki {
         let owner = context.owner;
         let time = context.observed_time(context.time.seconds())?;
         let now = time.seconds();
-        if self.external.root.is_some()
+        if (self.has_external_signer_history() || self.external.root.is_some())
             && let Some(selected) = self.external_route_issuer(path, body)?
             && self
                 .external
                 .root
                 .as_ref()
-                .is_some_and(|key| key.issuer_id != selected)
+                .is_none_or(|key| key.issuer_id != selected)
         {
             let mut candidate = self.clone();
             candidate.select_external_default(&selected)?;
@@ -441,15 +441,24 @@ impl Pki {
             }
             let revoked = if path == "revoke" {
                 reject_unknown(body, &["serial_number"])?;
-                let serial = normalize_serial(string(body, "serial_number")?)?;
-                let issued = self.issued.get(&serial).ok_or_else(not_found)?;
-                if !self.external_leaf_belongs_to_active(&serial) {
-                    return Err(error(
-                        501,
-                        "retired issuer revocation requires its original signing authority",
-                    ));
-                }
-                Some((serial, issued.revoked_at.unwrap_or(now.max(issued.issued))))
+                let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+                let at = if let Some(issued) = self.issued.get(&serial) {
+                    if !self.external_leaf_belongs_to_active(&serial) {
+                        return Err(error(
+                            501,
+                            "retired issuer revocation requires its original signing authority",
+                        ));
+                    }
+                    issued.revoked_at.unwrap_or(now.max(issued.issued))
+                } else if let Some((issuer, issued, _, revoked)) = self.signed_ca_owner(&serial) {
+                    if issuer != key.issuer_id {
+                        return Err(bad("signed CA requires its original external parent"));
+                    }
+                    revoked.unwrap_or(now.max(issued))
+                } else {
+                    return Err(not_found());
+                };
+                Some((serial, at))
             } else {
                 reject_unknown(body, &[])?;
                 None
@@ -466,6 +475,7 @@ impl Pki {
                         .map(|at| (serial.clone(), at))
                 })
                 .collect::<BTreeMap<_, _>>();
+            entries.extend(self.external_signed_ca_revocations(&key.issuer_id, now));
             if let Some((serial, at)) = &revoked {
                 entries.insert(serial.clone(), *at);
             }
@@ -518,21 +528,15 @@ impl Pki {
             .external
             .root
             .as_ref()
-            .is_some_and(|key| key.issuer_id != material.template.issuer_id)
+            .is_none_or(|key| key.issuer_id != material.template.issuer_id)
         {
-            let original = self
-                .external
-                .root
-                .as_ref()
-                .ok_or_else(|| bad("default missing"))?
-                .issuer_id
-                .clone();
+            let original = self.external.root.as_ref().map(|key| key.issuer_id.clone());
             let mut candidate = self.clone();
             candidate
                 .select_external_default(&material.template.issuer_id)
                 .map_err(|_| error(503, "captured external issuer is unavailable"))?;
             let response = candidate.publish_consumption(material, signatures, now)?;
-            candidate.select_external_default(&original)?;
+            candidate.restore_external_default(original.as_deref())?;
             *self = candidate;
             return Ok(response);
         }
@@ -638,10 +642,16 @@ impl Pki {
                     signatures,
                 )?;
                 let response = if let Some((serial, at)) = revoked {
-                    self.issued
-                        .get_mut(&serial)
-                        .ok_or_else(not_found)?
-                        .revoked_at = Some(at);
+                    if let Some(issued) = self.issued.get_mut(&serial) {
+                        issued.revoked_at = Some(at);
+                    } else {
+                        self.publish_external_signed_ca_revocation(
+                            &serial,
+                            &captured_issuer.issuer_id,
+                            &captured_issuer.certificate_der,
+                            at,
+                        )?;
+                    }
                     json!({"revocation_time":at,"revocation_time_rfc3339":timestamp(at),"state":"revoked"})
                 } else {
                     json!({"success":true})
@@ -830,7 +840,11 @@ impl Pki {
             if crls.full.revoked.iter().any(|(serial, at)| {
                 self.issued.get(serial).is_some_and(|issued| {
                     !self.external_leaf_belongs_to_active(serial) || issued.revoked_at != Some(*at)
-                })
+                }) || self
+                    .signed_ca_owner(serial)
+                    .is_some_and(|(id, _, _, revoked)| {
+                        id != issuer.issuer_id || revoked != Some(*at)
+                    })
             }) {
                 return Err(bad("external CRL certificate issuer ownership mismatch"));
             }

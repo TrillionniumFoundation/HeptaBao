@@ -232,7 +232,7 @@ fn external_serial() -> Result<String> {
     if bytes.iter().all(|byte| *byte == 0) {
         bytes[19] = 1;
     }
-    Ok(bytes.iter().map(|byte| format!("{byte:02x}")).collect())
+    Ok(canonical_serial_bytes(&bytes))
 }
 
 pub(super) fn formatted_serial(serial: &str) -> String {
@@ -508,7 +508,7 @@ impl Pki {
             path,
             "root/generate/kms" | "intermediate/generate/kms" | "intermediate/generate/kms-remote"
         ) || path == "intermediate/set-signed" && self.external.intermediate.is_some()
-            || self.external.root.is_some()
+            || self.external_signers().next().is_some()
                 && (path.starts_with("issue/")
                     || path.starts_with("sign/")
                     || Self::issuer_sign_route(path).is_some()
@@ -528,7 +528,7 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<Option<ExternalPkiTemplate>> {
-        if self.external.root.is_some()
+        if (self.external.root.is_some() || self.has_external_signer_history())
             && (path == "root/sign-intermediate"
                 || Self::external_sign_intermediate_route(path).is_some())
         {

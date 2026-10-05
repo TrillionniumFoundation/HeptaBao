@@ -632,7 +632,7 @@ impl Pki {
                 return Err(unsupported());
             }
             reject_unknown(body, &["serial_number"])?;
-            let serial = normalize_serial(string(body, "serial_number")?)?;
+            let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
             self.external_leaf_issuer_reference(&serial)?;
             let issued = self.issued.get_mut(&serial).ok_or_else(not_found)?;
             let changed = issued.revoked_at.is_none();
@@ -641,6 +641,14 @@ impl Pki {
                 json!({"revocation_time":at,"revocation_time_rfc3339":timestamp(at),"state":"revoked"}),
                 changed,
             ));
+        }
+        if method == "DELETE"
+            && let Some(reference) = path.strip_prefix("issuer/")
+            && !reference.is_empty()
+            && !reference.contains('/')
+            && self.external_issuer_key(reference).is_ok()
+        {
+            return self.delete_external_issuer(reference, body, now);
         }
         if let Some(response) = self.handle_local_intermediate(method, path, body, now)? {
             return Ok(response);
@@ -856,7 +864,7 @@ impl Pki {
             if serial == "ca" || serial == "crl" {
                 return Err(not_found());
             }
-            let serial = normalize_serial(serial)?;
+            let serial = self.resolve_certificate_serial(serial)?;
             let cert = self.issued.get(&serial).ok_or_else(not_found)?;
             return Ok(ok(
                 json!({
@@ -1013,7 +1021,7 @@ impl Pki {
                 return Err(unsupported());
             }
             reject_unknown(body, &["serial_number"])?;
-            let serial = normalize_serial(string(body, "serial_number")?)?;
+            let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
             if let Some(response) = self.revoke_signed_ca(&serial, now)? {
                 return Ok(response);
             }
@@ -2368,7 +2376,7 @@ fn random_serial() -> Result<String> {
     if serial.iter().all(|v| *v == 0) {
         serial[15] = 1;
     }
-    Ok(serial.iter().map(|b| format!("{b:02x}")).collect())
+    Ok(canonical_serial_bytes(&serial))
 }
 
 fn random_pki_id() -> Result<String> {
@@ -2397,6 +2405,14 @@ fn valid_pki_id(value: &str) -> bool {
                 }
             })
 }
+fn canonical_serial_bytes(bytes: &[u8]) -> String {
+    let start = bytes
+        .iter()
+        .position(|b| *b != 0)
+        .unwrap_or(bytes.len() - 1);
+    bytes[start..].iter().map(|b| format!("{b:02x}")).collect()
+}
+
 fn normalize_serial(value: &str) -> Result<String> {
     let compact: String = value
         .chars()

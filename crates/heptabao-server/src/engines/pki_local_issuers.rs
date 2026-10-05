@@ -878,6 +878,48 @@ impl Pki {
             })
     }
 
+    pub(super) fn resolve_certificate_serial(&self, value: &str) -> Result<String> {
+        let normalized = normalize_serial(value)?;
+        let wanted = integer(&serial_bytes(&normalized)?);
+        let mut keys = self.issued.keys().cloned().collect::<BTreeSet<_>>();
+        keys.extend(self.local_roots().map(|root| root.serial.clone()));
+        keys.extend(self.signed_ca_serials().cloned());
+        if let Some(state) = &self.local_issuers {
+            keys.extend(state.certificates.keys().cloned());
+        }
+        let mut matches = BTreeSet::new();
+        for key in keys {
+            if integer(&serial_bytes(&key)?) != wanted {
+                continue;
+            }
+            let bytes = self
+                .local_certificate(&key)
+                .or_else(|| {
+                    self.issued
+                        .get(&key)
+                        .map(|leaf| leaf.certificate_der.as_slice())
+                })
+                .ok_or_else(|| bad("certificate serial index has no signed material"))?;
+            let (rest, certificate) = x509_parser::parse_x509_certificate(bytes)
+                .map_err(|_| bad("invalid indexed certificate DER"))?;
+            if !rest.is_empty()
+                || certificate.signature_value.unused_bits != 0
+                || certificate.signature_algorithm != certificate.tbs_certificate.signature
+            {
+                return Err(bad("invalid indexed signed certificate"));
+            }
+            if der(0x02, certificate.raw_serial()) == wanted {
+                // Match the actual signed INTEGER and preserve its original
+                // durable key. Multiple old records cannot borrow an alias.
+                matches.insert(key);
+            }
+        }
+        if matches.len() > 1 {
+            return Err(bad("certificate serial is ambiguous"));
+        }
+        Ok(matches.into_iter().next().unwrap_or(normalized))
+    }
+
     pub(super) fn local_certificate(&self, serial: &str) -> Option<&[u8]> {
         self.local_roots()
             .find(|root| root.serial == serial)

@@ -159,25 +159,95 @@ impl Pki {
             .get(&id)
             .cloned()
             .ok_or_else(|| bad("external signing issuer missing"))?;
-        let current = ExternalSigner::new(
-            self.external
-                .root
-                .clone()
-                .ok_or_else(|| bad("external default key missing"))?,
-            self.root
-                .clone()
-                .ok_or_else(|| bad("external default root missing"))?,
-            self.external
-                .crls
-                .clone()
-                .ok_or_else(|| bad("external default CRL missing"))?,
-        )?;
+        let current = self
+            .external
+            .root
+            .as_ref()
+            .map(|key| {
+                ExternalSigner::new(
+                    key.clone(),
+                    self.root
+                        .clone()
+                        .ok_or_else(|| bad("external default root missing"))?,
+                    self.external
+                        .crls
+                        .clone()
+                        .ok_or_else(|| bad("external default CRL missing"))?,
+                )
+            })
+            .transpose()?;
         history.other.remove(&id);
-        history.other.insert(current.key.issuer_id.clone(), current);
+        if let Some(current) = current {
+            history.other.insert(current.key.issuer_id.clone(), current);
+        }
         self.root = Some(next.root);
         self.external.root = Some(next.key);
         self.external.crls = Some(next.crls);
         Ok(())
+    }
+
+    pub(super) fn restore_external_default(&mut self, reference: Option<&str>) -> Result<()> {
+        if let Some(reference) = reference {
+            return self.select_external_default(reference);
+        }
+        let key = self
+            .external
+            .root
+            .as_ref()
+            .ok_or_else(|| bad("temporary external key missing"))?;
+        let signer = ExternalSigner::new(
+            key.clone(),
+            self.root
+                .clone()
+                .ok_or_else(|| bad("temporary external root missing"))?,
+            self.external
+                .crls
+                .clone()
+                .ok_or_else(|| bad("temporary external CRL missing"))?,
+        )?;
+        self.external
+            .signer_history
+            .get_or_insert_with(Default::default)
+            .other
+            .insert(key.issuer_id.clone(), signer);
+        self.root = None;
+        self.external.root = None;
+        self.external.crls = None;
+        Ok(())
+    }
+
+    pub(in crate::engines::pki) fn delete_external_issuer(
+        &mut self,
+        reference: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        reject_unknown(body, &[])?;
+        self.validate_external_consumption(now)?;
+        let id = self.external_issuer_key(reference)?.issuer_id.clone();
+        if self
+            .external
+            .root
+            .as_ref()
+            .is_some_and(|key| key.issuer_id == id)
+        {
+            self.retire_external_leaf_issuer(now)?;
+            self.root = None;
+            self.external.root = None;
+            self.external.crls = None;
+            self.external
+                .signer_history
+                .get_or_insert_with(Default::default);
+        } else {
+            self.external
+                .signer_history
+                .as_mut()
+                .and_then(|history| history.other.remove(&id))
+                .ok_or_else(not_found)?;
+        }
+        // Actual public SignedCa/leaf records retain their verified original CA.
+        // No public archive or remaining sibling can restore this private key.
+        Ok(empty(true))
     }
 
     pub(super) fn admit_external_root_generation(&self, body: &Value) -> Result<()> {
@@ -332,13 +402,37 @@ impl Pki {
                 })
                 .to_owned()
         } else if path == "revoke" {
-            let serial = normalize_serial(string(body, "serial_number")?)?;
-            self.external_leaf_issuer_reference(&serial)?.to_owned()
+            let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+            if let Some((issuer, _, _, _)) = self.signed_ca_owner(&serial) {
+                issuer.to_owned()
+            } else {
+                self.external_leaf_issuer_reference(&serial)?.to_owned()
+            }
         } else if path == "crl/rotate" {
             "default".to_owned()
         } else {
             return Ok(None);
         };
+        if path == "revoke"
+            && self.external.archived_issuers.contains_key(&reference)
+            && !self
+                .external_signers()
+                .any(|(key, _)| key.issuer_id == reference)
+        {
+            // A fully retired mount retains public leaf revocation records;
+            // its normal admin route updates those without a signing effect.
+            // Signed CAs still require their actual parent signing authority.
+            if self.root.is_none()
+                && self
+                    .signed_ca_owner(
+                        &self.resolve_certificate_serial(string(body, "serial_number")?)?,
+                    )
+                    .is_none()
+            {
+                return Ok(None);
+            }
+            return Err(not_found());
+        }
         Ok(Some(
             self.external_issuer_key(&reference)?.issuer_id.clone(),
         ))
@@ -399,12 +493,8 @@ impl Pki {
         let Some(history) = &self.external.signer_history else {
             return Ok(());
         };
-        if history.other.len() >= MAX_EXTERNAL_ISSUERS
-            || !history.other.is_empty() && self.external.root.is_none()
-        {
-            return Err(bad(
-                "external signing history has no default or exceeds bounds",
-            ));
+        if history.other.len() + usize::from(self.external.root.is_some()) > MAX_EXTERNAL_ISSUERS {
+            return Err(bad("external signing history exceeds bounds"));
         }
         let mut ids = BTreeSet::new();
         let mut key_ids = BTreeSet::new();

@@ -115,7 +115,7 @@ impl Pki {
             .external
             .root
             .as_ref()
-            .is_some_and(|active| active.issuer_id != key.issuer_id)
+            .is_none_or(|active| active.issuer_id != key.issuer_id)
         {
             let mut candidate = self.clone();
             candidate.select_external_default(&key.issuer_id)?;
@@ -248,19 +248,13 @@ impl Pki {
             .external
             .root
             .as_ref()
-            .is_some_and(|key| key.issuer_id != material.template.issuer_id)
+            .is_none_or(|key| key.issuer_id != material.template.issuer_id)
         {
-            let original = self
-                .external
-                .root
-                .as_ref()
-                .ok_or_else(|| bad("default missing"))?
-                .issuer_id
-                .clone();
+            let original = self.external.root.as_ref().map(|key| key.issuer_id.clone());
             let mut candidate = self.clone();
             candidate.select_external_default(&material.template.issuer_id)?;
             let response = candidate.publish_external_ca_sign(material, signatures, now)?;
-            candidate.select_external_default(&original)?;
+            candidate.restore_external_default(original.as_deref())?;
             *self = candidate;
             return Ok(response);
         }

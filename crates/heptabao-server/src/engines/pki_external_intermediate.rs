@@ -79,6 +79,19 @@ impl ExternalIntermediateOwner {
 }
 
 impl Pki {
+    pub(in crate::engines::pki) fn issuer_management_ca_chain_pem(
+        &self,
+        root: &RootCa,
+    ) -> Result<Vec<String>> {
+        let mut chain = self.external_ca_chain_pem(root)?;
+        for pem in &mut chain {
+            if !pem.ends_with('\n') {
+                pem.push('\n');
+            }
+        }
+        Ok(chain)
+    }
+
     pub(in crate::engines::pki) fn external_ca_chain_pem(
         &self,
         root: &RootCa,
