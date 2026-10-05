@@ -44,7 +44,7 @@ path "auth/token/lookup-self" { capabilities = ["read"] }"#,
             "meta-number-acl",
             r#"path "auth/token/create" {
  capabilities = ["update", "sudo"]
- allowed_parameters = { "policies" = ["reader-meta"] "no_default_policy" = [true] "meta" = [] }
+ allowed_parameters = { "policies" = [["reader-meta"]] "no_default_policy" = [true] "meta" = [] }
  denied_parameters = { "meta" = [{ "n" = "1" }] }
 }"#,
         ),
