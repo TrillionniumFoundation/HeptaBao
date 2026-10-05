@@ -618,7 +618,16 @@ impl Service {
                         .is_ok(),
                     // Only the existing cfg injected completion seam lacks routing.
                     // Product finalize rejects absent routing before entering here.
-                    None => plan.mount_binding.is_none() && plan.request_path.is_none(),
+                    None => {
+                        #[cfg(test)]
+                        {
+                            plan.mount_binding.is_none() && plan.request_path.is_none()
+                        }
+                        #[cfg(not(test))]
+                        {
+                            false
+                        }
+                    }
                 }
             });
             if !delivery_allowed
