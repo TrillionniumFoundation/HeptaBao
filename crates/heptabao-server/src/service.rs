@@ -3210,6 +3210,7 @@ impl Service {
         let state = self.state.as_ref()?;
         if request.wrap_ttl_seconds.is_some()
             || state.has_token_api_precision_state()
+            || state.engines.has_kubernetes_opaque_artifact_state()
             || state
                 .engines
                 .ordinary_kv_mount_binding(request.namespace, request.path)

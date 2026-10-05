@@ -1390,6 +1390,9 @@ impl EngineState {
     }
 
     pub(crate) fn validate_kubernetes_artifact_clock(&self, previous: Option<&Self>) -> Result<()> {
+        if let Some(previous) = previous {
+            self.validate_kubernetes_artifact_publication(previous)?;
+        }
         if previous
             .and_then(|p| p.kubernetes_artifact_clock)
             .is_some_and(|floor| self.kubernetes_artifact_clock.is_none_or(|at| at < floor))
@@ -1398,6 +1401,91 @@ impl EngineState {
                 503,
                 "opaque Kubernetes artifact clock floor was lost or downgraded",
             ));
+        }
+        Ok(())
+    }
+
+    fn validate_kubernetes_artifact_publication(&self, previous: &Self) -> Result<()> {
+        if !previous.has_kubernetes_opaque_artifact_state()
+            && !self.has_kubernetes_opaque_artifact_state()
+        {
+            return Ok(());
+        }
+        for (scope, before_namespace) in &previous.namespaces {
+            let has_opaque_mount = before_namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Kubernetes(engine) if engine.has_opaque_artifact_state()));
+            if before_namespace.mount_epochs.is_empty() && !has_opaque_mount {
+                continue;
+            }
+            let after_namespace = self.namespaces.get(scope).ok_or_else(|| {
+                error(503, "opaque Kubernetes retirement namespace was discarded")
+            })?;
+            // Retained epochs fence old snapshots even after the last mount was
+            // deleted. Namespace81 retirement needs its protected-view adapter;
+            // this isolated reader has not admitted that schema.
+            for (path, epoch) in &before_namespace.mount_epochs {
+                if after_namespace.mount_epochs.get(path).copied().unwrap_or(0) < *epoch {
+                    return Err(error(
+                        503,
+                        "opaque Kubernetes mount retirement epoch was lost or downgraded",
+                    ));
+                }
+            }
+            for (path, before_mount) in &before_namespace.mounts {
+                let Backend::Kubernetes(before) = &before_mount.backend else {
+                    continue;
+                };
+                if !before.has_opaque_artifact_state() {
+                    continue;
+                }
+                let after_mount = after_namespace.mounts.get(path);
+                if let Some(after_mount) = after_mount
+                    && after_mount.incarnation == before_mount.incarnation
+                    && let Backend::Kubernetes(after) = &after_mount.backend
+                {
+                    after.validate_opaque_publication(before, scope)?;
+                    continue;
+                }
+                if before.has_unresolved()
+                    || after_namespace.mount_epochs.get(path).copied().unwrap_or(0)
+                        <= before_mount.incarnation
+                    || after_mount
+                        .is_some_and(|mount| mount.incarnation <= before_mount.incarnation)
+                {
+                    return Err(error(
+                        503,
+                        "opaque Kubernetes mount owner was discarded before committed retirement",
+                    ));
+                }
+            }
+        }
+        // A new mount/first typed lease cannot resurrect a removed observation.
+        // Pending intents remain admissible; new registered rows need an actual
+        // earlier durable intent in the same mount incarnation.
+        for (scope, namespace) in &self.namespaces {
+            for (path, mount) in &namespace.mounts {
+                let Backend::Kubernetes(after) = &mount.backend else {
+                    continue;
+                };
+                if !after.has_opaque_artifact_state() {
+                    continue;
+                }
+                let before = previous
+                    .namespaces
+                    .get(scope)
+                    .and_then(|ns| ns.mounts.get(path))
+                    .filter(|before| before.incarnation == mount.incarnation)
+                    .and_then(|before| match &before.backend {
+                        Backend::Kubernetes(before) => Some(before),
+                        _ => None,
+                    });
+                if before.is_some_and(kubernetes::Kubernetes::has_opaque_artifact_state) {
+                    continue;
+                }
+                after.validate_opaque_publication(
+                    before.unwrap_or(&kubernetes::Kubernetes::default()),
+                    scope,
+                )?;
+            }
         }
         Ok(())
     }

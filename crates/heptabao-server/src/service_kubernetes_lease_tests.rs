@@ -1069,3 +1069,339 @@ fn kube_opaque_artifact_precise_floor_rollback_and_coarse_maintenance_preserve_c
     assert!(stripped.validate_publication_schema(Some(&before)).is_err());
     Ok(())
 }
+
+fn registered_opaque_fixture() -> TestResult<Fixture> {
+    let (root, mut service, key, token, plan) = opaque_fixture()?;
+    let metadata = token_metadata(
+        &opaque_reply(json!({"iat":null,"exp":null}))?,
+        &plan.inner,
+        101,
+    )
+    .map_err(|_| "metadata")?;
+    let at = AuthorityTime::Precise(crate::auth::Timestamp::whole(101)?);
+    let response =
+        service.finalize_kubernetes_token_with_observed_clock(&plan, Ok(metadata), || at);
+    assert_eq!(response.status, 200, "{}", response.body);
+    Ok((root, service, key, token, plan))
+}
+
+fn retire_opaque(service: &mut Service, plan: &KubernetesTokenEffectPlan) -> TestResult {
+    let mut state = service.state.clone().ok_or("state")?;
+    let response = state.engines.handle_lease_admin_observed(
+        "",
+        "POST",
+        "sys/leases/revoke",
+        &json!({"lease_id":plan.inner.lease_id}),
+        AuthorityTime::Precise(crate::auth::Timestamp::whole(102)?),
+    )?;
+    assert_eq!(response.status, 204);
+    service
+        .commit_state(&state)
+        .map_err(|_| "actual retirement publication")?;
+    service.state = Some(state);
+    Ok(())
+}
+
+fn precise_lifecycle_call(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: Value,
+    seconds: u64,
+) -> TestResult<Response> {
+    let clock = RequestClock::anchored(
+        std::time::Duration::from_secs(seconds),
+        std::time::Instant::now(),
+    )?;
+    let execution = service.begin_at_mode_precise(
+        RequestDispatch {
+            method,
+            path,
+            namespace: "",
+            token,
+            body,
+            now: seconds,
+            allow_forward: false,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        clock,
+    );
+    let RequestExecution::Complete(response) = execution else {
+        return Err("unexpected provider effect".into());
+    };
+    Ok(response)
+}
+
+#[test]
+fn kube_opaque_artifact_retired_config_role_changes_and_compaction_survive_real_durable_reopen()
+-> TestResult {
+    let (root, mut service, key, token, plan) = registered_opaque_fixture()?;
+    let active = service.state.clone().ok_or("active")?;
+    let receipt = active
+        .engines
+        .capture_kubernetes_delivery_receipt(&plan.inner)?
+        .ok_or("receipt")?;
+    let binding = active
+        .engines
+        .kubernetes_mount_binding("", "kubernetes/creds/reader")
+        .ok_or("mount")?;
+    retire_opaque(&mut service, &plan)?;
+    let retired = service.state.clone().ok_or("retired")?;
+    let changed = precise_lifecycle_call(
+        &mut service,
+        "POST",
+        "kubernetes/config",
+        &token,
+        json!({"kubernetes_host":"https://localhost:9443", "service_account_token":"changed-synthetic-manager"}),
+        103,
+    )?;
+    assert_eq!(changed.status, 204, "{}", changed.body);
+    let state = service.state.as_ref().ok_or("state")?;
+    let encoded = serde_json::to_value(&state.engines)?;
+    let kube = &encoded["namespaces"][""]["mounts"]["kubernetes/"]["backend"]["Kubernetes"];
+    assert!(kube.get("leases").is_none());
+    assert_eq!(kube["compacted_opaque"]["count"], 1);
+    assert!(
+        state
+            .engines
+            .validate_kubernetes_delivery_receipt_observed(
+                &plan.inner,
+                "kubernetes/creds/reader",
+                binding,
+                &receipt,
+                AuthorityTime::Precise(crate::auth::Timestamp::whole(103)?)
+            )
+            .is_err()
+    );
+    assert!(Service::validate_snapshot_protected_floor(state, &retired).is_err());
+    assert!(Service::validate_snapshot_protected_floor(state, &active).is_err());
+    for path in ["kubernetes/roles/reader", "kubernetes/config"] {
+        let response =
+            precise_lifecycle_call(&mut service, "DELETE", path, &token, json!({}), 104)?;
+        assert_eq!(response.status, 204, "{}", response.body);
+    }
+    let digest = service.current_state_digest().map_err(|_| "digest")?;
+    let original = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let mut forged = serde_json::to_value(service.state.as_ref().ok_or("state")?)?;
+    forged["engines"]["namespaces"][""]["mounts"]["kubernetes/"]["backend"]["Kubernetes"]["compacted_opaque"]
+        ["count"] = json!(2);
+    let forged: State = serde_json::from_value(forged)?;
+    assert!(service.commit_state(&forged).is_err());
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(
+        serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
+        original
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert_eq!(reopened.unseal(&json!({"key":key})).status, 200);
+    assert_eq!(
+        reopened.current_state_digest().map_err(|_| "digest")?,
+        digest
+    );
+    let state = reopened.state.as_ref().ok_or("restored")?;
+    assert_eq!(state.schema, KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA);
+    assert!(state.engines.has_kubernetes_opaque_artifact_state());
+    state.engines.validate_kubernetes_state()?;
+    let lookup = precise_lifecycle_call(
+        &mut reopened,
+        "POST",
+        "sys/leases/lookup",
+        &token,
+        json!({"lease_id":plan.inner.lease_id}),
+        105,
+    )?;
+    assert_eq!(lookup.status, 400, "{}", lookup.body);
+    assert!(lookup.body.get("data").is_none());
+    Ok(())
+}
+
+#[test]
+fn kube_opaque_artifact_actual_unmount_recreate_preserves_epoch_and_last_mount_kv_clock()
+-> TestResult {
+    let (root, mut service, key, token, plan) = registered_opaque_fixture()?;
+    let mut seed = service.state.clone().ok_or("state")?;
+    let seeded = seed
+        .engines
+        .handle(
+            "",
+            "PUT",
+            "secret/data/lifecycle",
+            &json!({"data":{"value":"durable-secret"}}),
+            101,
+        )?
+        .ok_or("KV seed")?;
+    assert_eq!(seeded.status, 200);
+    service
+        .commit_state(&seed)
+        .map_err(|_| "seed publication")?;
+    service.state = Some(seed);
+    let active = service.state.clone().ok_or("active")?;
+    let binding = active
+        .engines
+        .kubernetes_mount_binding("", "kubernetes/creds/reader")
+        .ok_or("mount")?;
+    let receipt = active
+        .engines
+        .capture_kubernetes_delivery_receipt(&plan.inner)?
+        .ok_or("receipt")?;
+    let rejected = precise_lifecycle_call(
+        &mut service,
+        "DELETE",
+        "sys/mounts/kubernetes",
+        &token,
+        json!({"cas_revision":binding.1}),
+        102,
+    )?;
+    assert_eq!(rejected.status, 409, "{}", rejected.body);
+    retire_opaque(&mut service, &plan)?;
+    let removed = precise_lifecycle_call(
+        &mut service,
+        "DELETE",
+        "sys/mounts/kubernetes",
+        &token,
+        json!({"cas_revision":binding.1}),
+        103,
+    )?;
+    assert_eq!(removed.status, 204, "{}", removed.body);
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .has_kubernetes_mount()
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .has_kubernetes_opaque_artifact_state()
+    );
+    let encoded = serde_json::to_value(&service.state.as_ref().ok_or("state")?.engines)?;
+    assert_eq!(
+        encoded["namespaces"][""]["mount_epochs"]["kubernetes/"],
+        binding.0 + 1
+    );
+    let reads = service.kv_read_only_dispatches;
+    let original = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let coarse = call(
+        &mut service,
+        "GET",
+        "secret/data/lifecycle",
+        &token,
+        json!({}),
+    );
+    assert_eq!(coarse.status, 503);
+    assert!(coarse.body.get("data").is_none());
+    assert_eq!(service.kv_read_only_dispatches, reads);
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert_eq!(
+        serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
+        original
+    );
+    let observed = precise_lifecycle_call(
+        &mut service,
+        "GET",
+        "secret/data/lifecycle",
+        &token,
+        json!({}),
+        104,
+    )?;
+    assert_eq!(observed.status, 200, "{}", observed.body);
+    assert_eq!(observed.body["data"]["data"]["value"], "durable-secret");
+    assert_eq!(service.kv_read_only_dispatches, reads);
+    assert!(service.durable.as_ref().ok_or("durable")?.generation() > generation);
+    let state = service.state.as_ref().ok_or("state")?;
+    let encoded = serde_json::to_value(&state.engines)?;
+    assert!(
+        encoded["kubernetes_artifact_clock"]["seconds"]
+            .as_u64()
+            .ok_or("clock")?
+            >= 104
+    );
+    let mut downgraded = serde_json::to_value(state)?;
+    downgraded["engines"]["namespaces"][""]["mount_epochs"]
+        .as_object_mut()
+        .ok_or("epochs")?
+        .remove("kubernetes/");
+    let downgraded: State = serde_json::from_value(downgraded)?;
+    assert!(Service::validate_snapshot_protected_floor(state, &downgraded).is_err());
+    assert!(service.commit_state(&downgraded).is_err());
+    let recreated = precise_lifecycle_call(
+        &mut service,
+        "POST",
+        "sys/mounts/kubernetes",
+        &token,
+        json!({"type":"kubernetes", "cas_revision":0}),
+        105,
+    )?;
+    assert_eq!(recreated.status, 204, "{}", recreated.body);
+    let state = service.state.as_ref().ok_or("state")?;
+    let next_binding = state
+        .engines
+        .kubernetes_mount_binding("", "kubernetes/creds/reader")
+        .ok_or("recreated")?;
+    assert!(next_binding.0 > binding.0);
+    assert!(
+        state
+            .engines
+            .validate_kubernetes_delivery_receipt_observed(
+                &plan.inner,
+                "kubernetes/creds/reader",
+                binding,
+                &receipt,
+                AuthorityTime::Precise(crate::auth::Timestamp::whole(105)?)
+            )
+            .is_err()
+    );
+    let mut resurrected = serde_json::to_value(state)?;
+    let old = serde_json::to_value(&active.engines)?;
+    resurrected["engines"]["namespaces"][""]["mounts"]["kubernetes/"]["backend"] =
+        old["namespaces"][""]["mounts"]["kubernetes/"]["backend"].clone();
+    let resurrected: State = serde_json::from_value(resurrected)?;
+    assert!(service.commit_state(&resurrected).is_err());
+    let digest = service.current_state_digest().map_err(|_| "digest")?;
+    drop(service);
+    let mut reopened = root.service()?;
+    assert_eq!(reopened.unseal(&json!({"key":key})).status, 200);
+    assert_eq!(
+        reopened.current_state_digest().map_err(|_| "digest")?,
+        digest
+    );
+    assert!(
+        reopened
+            .state
+            .as_ref()
+            .ok_or("restored")?
+            .engines
+            .has_kubernetes_opaque_artifact_state()
+    );
+    let reads = reopened.kv_read_only_dispatches;
+    let observed = precise_lifecycle_call(
+        &mut reopened,
+        "GET",
+        "secret/data/lifecycle",
+        &token,
+        json!({}),
+        106,
+    )?;
+    assert_eq!(observed.status, 200, "{}", observed.body);
+    assert_eq!(observed.body["data"]["data"]["value"], "durable-secret");
+    assert_eq!(reopened.kv_read_only_dispatches, reads);
+    Ok(())
+}

@@ -130,6 +130,18 @@ struct Lease {
     opaque_artifact: Option<ArtifactLease>,
 }
 
+/// Constant-space commitment to complete, genuinely retired typed records.
+/// The encrypted Engine owner authenticates this history. It cannot authorize a
+/// credential or replace a live row; publication verifies the exact removals.
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct CompactedOpaqueHistory {
+    namespace: String,
+    count: u64,
+    digest: String,
+    received_through: crate::auth::Timestamp,
+}
+
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Kubernetes {
@@ -141,6 +153,8 @@ pub(crate) struct Kubernetes {
     pending: BTreeMap<String, PendingToken>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     leases: BTreeMap<String, Lease>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    compacted_opaque: Option<CompactedOpaqueHistory>,
 }
 
 pub(crate) struct TokenRequestPlan {
@@ -371,7 +385,195 @@ fn request_digest(
 
 impl Kubernetes {
     pub(crate) fn has_unresolved(&self) -> bool {
-        !self.pending.is_empty() || !self.leases.is_empty()
+        !self.pending.is_empty() || self.leases.values().any(Self::lease_fences_mutation)
+    }
+
+    fn lease_fences_mutation(lease: &Lease) -> bool {
+        // Only the committed typed opaque retirement stops fencing mutations.
+        // Historical None and every legacy observed lease keep their old gate.
+        lease
+            .opaque_artifact
+            .as_ref()
+            .is_none_or(|artifact| !artifact.retired)
+    }
+
+    fn role_has_unresolved(&self, role: &str) -> bool {
+        self.pending.values().any(|pending| pending.role == role)
+            || self
+                .leases
+                .values()
+                .any(|lease| lease.role == role && Self::lease_fences_mutation(lease))
+    }
+
+    fn append_compacted<'a>(
+        previous: Option<&CompactedOpaqueHistory>,
+        namespace: &str,
+        rows: impl Iterator<Item = (&'a String, &'a Lease)>,
+    ) -> Result<Option<CompactedOpaqueHistory>> {
+        let mut history = previous.cloned();
+        if history.as_ref().is_some_and(|h| h.namespace != namespace) {
+            return Err(err(
+                503,
+                "opaque Kubernetes compacted history scope changed",
+            ));
+        }
+        for (id, lease) in rows {
+            let artifact = lease
+                .opaque_artifact
+                .as_ref()
+                .filter(|artifact| artifact.retired)
+                .ok_or_else(|| err(503, "only committed opaque retirement can be compacted"))?;
+            let count = history
+                .as_ref()
+                .map_or(0, |h| h.count)
+                .checked_add(1)
+                .ok_or_else(|| err(507, "opaque retirement history capacity exhausted"))?;
+            let received_through = history.as_ref().map_or(artifact.received_at, |h| {
+                h.received_through.max(artifact.received_at)
+            });
+            // This buffer contains private owner metadata. Bounded secret_serde
+            // wipes every allocation, including any replaced growing buffer.
+            let bytes = crate::secret_serde::to_vec(
+                &(
+                    "heptabao:kubernetes:retired-opaque:v1",
+                    &history,
+                    namespace,
+                    id,
+                    lease,
+                ),
+                crate::MAX_APPLICATION_STATE_BYTES,
+            )
+            .map_err(|_| err(503, "opaque retirement history encoding failed"))?;
+            history = Some(CompactedOpaqueHistory {
+                namespace: namespace.to_owned(),
+                count,
+                digest: hex(&crypto::digest(&bytes)),
+                received_through,
+            });
+        }
+        Ok(history)
+    }
+
+    fn compact_retired_observations(&mut self, namespace: &str) -> Result<bool> {
+        if !self
+            .leases
+            .values()
+            .any(|lease| lease.opaque_artifact.as_ref().is_some_and(|a| a.retired))
+        {
+            return Ok(false);
+        }
+        self.validate_scope(namespace)?;
+        // Compute the complete successor before any deletion. Newly retired rows
+        // are deliberately retained until a later publication sees them retired.
+        let history = Self::append_compacted(
+            self.compacted_opaque.as_ref(),
+            namespace,
+            self.leases
+                .iter()
+                .filter(|(_, lease)| lease.opaque_artifact.as_ref().is_some_and(|a| a.retired)),
+        )?;
+        self.leases
+            .retain(|_, lease| !lease.opaque_artifact.as_ref().is_some_and(|a| a.retired));
+        self.compacted_opaque = history;
+        Ok(true)
+    }
+
+    pub(super) fn validate_opaque_publication(
+        &self,
+        previous: &Self,
+        namespace: &str,
+    ) -> Result<()> {
+        for (id, previous_lease) in &previous.leases {
+            let Some(before) = &previous_lease.opaque_artifact else {
+                continue;
+            };
+            let Some(next) = self.leases.get(id) else {
+                if !before.retired {
+                    return Err(err(
+                        503,
+                        "active opaque Kubernetes observation was discarded",
+                    ));
+                }
+                continue;
+            };
+            let after = next
+                .opaque_artifact
+                .as_ref()
+                .ok_or_else(|| err(503, "opaque Kubernetes observation producer was removed"))?;
+            // Compare complete persisted metadata without cloning live authority
+            // or serializing loaded namespace plaintext. Retirement is one way.
+            if before.retired && !after.retired
+                || previous_lease.role != next.role
+                || previous_lease.kubernetes_namespace != next.kubernetes_namespace
+                || previous_lease.service_account_name != next.service_account_name
+                || previous_lease.expires_at != next.expires_at
+                || previous_lease.audiences != next.audiences
+                || previous_lease.authority != next.authority
+                || before.admission != after.admission
+                || before.contract != after.contract
+                || before.request_digest != after.request_digest
+                || before.config_digest != after.config_digest
+                || before.received_at != after.received_at
+                || before.public_expires_at != after.public_expires_at
+                || before.lifetime_nanos != after.lifetime_nanos
+                || before.public_ttl != after.public_ttl
+            {
+                return Err(err(
+                    503,
+                    "opaque Kubernetes observation was changed or reactivated",
+                ));
+            }
+        }
+        let expected = Self::append_compacted(
+            previous.compacted_opaque.as_ref(),
+            namespace,
+            previous.leases.iter().filter(|(id, lease)| {
+                !self.leases.contains_key(*id)
+                    && lease.opaque_artifact.as_ref().is_some_and(|a| a.retired)
+            }),
+        )?;
+        if self.compacted_opaque != expected {
+            return Err(err(
+                503,
+                "opaque Kubernetes compacted history was lost or replaced",
+            ));
+        }
+        for (id, lease) in &self.leases {
+            let Some(artifact) = &lease.opaque_artifact else {
+                continue;
+            };
+            if previous
+                .leases
+                .get(id)
+                .is_some_and(|lease| lease.opaque_artifact.is_some())
+            {
+                continue;
+            }
+            // A compacted ID cannot be reintroduced as a new lease. Only the
+            // actual previous durable TokenRequest intent proves a new row.
+            let pending = previous
+                .pending
+                .get(id)
+                .ok_or_else(|| err(503, "opaque Kubernetes observation lacks committed intent"))?;
+            if pending.authority.as_ref() != Some(&artifact.admission)
+                || pending.artifact_contract.as_ref() != Some(&artifact.contract)
+                || pending.request_digest != artifact.request_digest
+                || pending.config_digest != artifact.config_digest
+                || pending.role != lease.role
+                || pending.kubernetes_namespace != lease.kubernetes_namespace
+                || pending.service_account_name != lease.service_account_name
+                || pending.audiences != lease.audiences
+                || pending.requested_ttl != artifact.contract.requested_ttl
+                || pending.created_at != artifact.admission.issued_at
+                || self.pending.contains_key(id)
+            {
+                return Err(err(
+                    503,
+                    "opaque Kubernetes observation changed its committed intent",
+                ));
+            }
+        }
+        Ok(())
     }
 
     pub(crate) fn validate(&self) -> std::result::Result<(), EngineError> {
@@ -383,6 +585,18 @@ impl Kubernetes {
                 503,
                 "Kubernetes secrets state exceeds bounded capacity",
             ));
+        }
+        if let Some(history) = &self.compacted_opaque
+            && (history.count == 0
+                || (history.digest.len() != 64
+                    || !history
+                        .digest
+                        .bytes()
+                        .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)))
+                || history.namespace.len() > 1024
+                || history.namespace.contains('\0'))
+        {
+            return Err(err(503, "invalid opaque Kubernetes compacted history"));
         }
         if let Some(config) = &self.config {
             let target = Target::parse(&config.kubernetes_host, "https")
@@ -489,13 +703,14 @@ impl Kubernetes {
                             &lease.audiences,
                             &artifact.config_digest,
                         )?
-                    || artifact.config_digest
-                        != config_digest(self.config.as_ref().ok_or_else(|| {
-                            err(
-                                503,
-                                "opaque Kubernetes owner lacks actual provider configuration",
-                            )
-                        })?)?
+                    || !artifact.retired
+                        && artifact.config_digest
+                            != config_digest(self.config.as_ref().ok_or_else(|| {
+                                err(
+                                    503,
+                                    "opaque Kubernetes owner lacks actual provider configuration",
+                                )
+                            })?)?
                 {
                     return Err(err(
                         503,
@@ -527,6 +742,16 @@ impl Kubernetes {
         &self,
         floor: Option<crate::auth::Timestamp>,
     ) -> Result<()> {
+        if self
+            .compacted_opaque
+            .as_ref()
+            .is_some_and(|history| floor.is_none_or(|at| at < history.received_through))
+        {
+            return Err(err(
+                503,
+                "opaque artifact clock floor does not cover compacted history",
+            ));
+        }
         for lease in self.leases.values() {
             if let Some(artifact) = &lease.opaque_artifact
                 && floor.is_none_or(|at| at < artifact.received_at)
@@ -541,7 +766,8 @@ impl Kubernetes {
     }
 
     pub(crate) fn has_opaque_artifact_state(&self) -> bool {
-        self.pending.values().any(|p| p.artifact_contract.is_some())
+        self.compacted_opaque.is_some()
+            || self.pending.values().any(|p| p.artifact_contract.is_some())
             || self.leases.values().any(|p| p.opaque_artifact.is_some())
     }
 
@@ -606,6 +832,16 @@ impl Kubernetes {
 
     pub(crate) fn validate_scope(&self, namespace: &str) -> std::result::Result<(), EngineError> {
         self.validate()?;
+        if self
+            .compacted_opaque
+            .as_ref()
+            .is_some_and(|history| history.namespace != namespace)
+        {
+            return Err(err(
+                503,
+                "opaque Kubernetes compacted history scope mismatch",
+            ));
+        }
         for owner in self.all_owners() {
             owner
                 .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
@@ -628,7 +864,12 @@ impl Kubernetes {
         } else {
             None
         };
-        let mut changed = self.reconcile_owners(time.seconds(), namespace, live);
+        let mut changed = if at.is_some() {
+            self.compact_retired_observations(namespace)?
+        } else {
+            false
+        };
+        changed |= self.reconcile_owners(time.seconds(), namespace, live);
         if let Some(at) = at {
             for lease in self.leases.values_mut() {
                 if let Some(artifact) = &mut lease.opaque_artifact
@@ -812,7 +1053,7 @@ impl Kubernetes {
         let at = time
             .exact()
             .ok_or_else(|| err(503, "trusted opaque artifact clock is required"))?;
-        let mut retired = false;
+        let mut retired = self.compact_retired_observations(service_namespace)?;
         for lease in self.leases.values_mut() {
             if let Some(artifact) = &mut lease.opaque_artifact
                 && !artifact.retired
@@ -893,7 +1134,7 @@ impl Kubernetes {
                     }
                 }
                 "DELETE" => {
-                    if !self.pending.is_empty() || !self.leases.is_empty() {
+                    if self.has_unresolved() {
                         return Err(err(
                             409,
                             "Kubernetes configuration is fenced while token intents or leases exist",
@@ -908,7 +1149,7 @@ impl Kubernetes {
                     }) {
                         return Err(err(400, "unsupported Kubernetes config field"));
                     }
-                    if !self.pending.is_empty() || !self.leases.is_empty() {
+                    if self.has_unresolved() {
                         return Err(err(
                             409,
                             "Kubernetes configuration is frozen while token intents or leases exist",
@@ -983,12 +1224,7 @@ impl Kubernetes {
                     )))
                 }
                 "DELETE" => {
-                    if self
-                        .pending
-                        .values()
-                        .any(|pending| pending.role == role_name)
-                        || self.leases.values().any(|lease| lease.role == role_name)
-                    {
+                    if self.role_has_unresolved(role_name) {
                         return Err(err(
                             409,
                             "Kubernetes role is fenced while token intents or leases exist",
@@ -1013,12 +1249,7 @@ impl Kubernetes {
                     if self.roles.len() >= MAX_ROLES && !self.roles.contains_key(role_name) {
                         return Err(err(507, "Kubernetes role capacity exhausted"));
                     }
-                    if self
-                        .pending
-                        .values()
-                        .any(|pending| pending.role == role_name)
-                        || self.leases.values().any(|lease| lease.role == role_name)
-                    {
+                    if self.role_has_unresolved(role_name) {
                         return Err(err(
                             409,
                             "Kubernetes role is frozen while token intents or leases exist",
@@ -2012,6 +2243,271 @@ mod owner_tests {
                 .expires_at(),
             200
         );
+        Ok(())
+    }
+
+    fn register_opaque(
+        engine: &mut Kubernetes,
+        issuer: &ResolvedLeaseOwner,
+    ) -> TestResult<TokenRequestPlan> {
+        let Dispatch::External(plan) = engine.dispatch_observed(
+            ("", "kubernetes/"),
+            "POST",
+            "creds/reader",
+            &json!({"kubernetes_namespace":"default"}),
+            (100, exact(101, 0)?),
+            Some(issuer),
+        )?
+        else {
+            return Err("external intent expected".into());
+        };
+        let mut plan = *plan;
+        engine.bind_opaque_artifact_intent(&mut plan, 32 * 24 * 3600, 32 * 24 * 3600)?;
+        let pending = engine.clone();
+        let response = engine.finalize_observed(
+            &plan,
+            TokenMetadata {
+                token: Zeroizing::new("synthetic-opaque-no-authority".into()),
+                expires_at: 0,
+                audiences: plan.audiences.clone(),
+                artifact_lifetime_nanos: Some(0),
+            },
+            exact(101, 0)?,
+            true,
+        )?;
+        assert_eq!(response.status, 200);
+        engine.validate_opaque_publication(&pending, "")?;
+        Ok(plan)
+    }
+
+    #[test]
+    fn kube_opaque_artifact_closed_compaction_reuses_real_capacity_without_changing_active_limit()
+    -> TestResult {
+        let (mut engine, issuer) = ready()?;
+        for _ in 0..MAX_LEASES {
+            register_opaque(&mut engine, &issuer)?;
+        }
+        assert_eq!(engine.leases.len(), MAX_LEASES);
+        let full = serde_json::to_vec(&engine)?;
+        let rejected = engine
+            .dispatch_observed(
+                ("", "kubernetes/"),
+                "POST",
+                "creds/reader",
+                &json!({"kubernetes_namespace":"default"}),
+                (100, exact(101, 0)?),
+                Some(&issuer),
+            )
+            .err()
+            .ok_or("active capacity accepted")?;
+        assert_eq!(rejected.status, 507);
+        assert_eq!(serde_json::to_vec(&engine)?, full);
+        assert!(engine.revoke_prefix("kubernetes"));
+        let retired = engine.clone();
+        engine.validate_opaque_publication(&serde_json::from_slice(&full)?, "")?;
+        let live = BTreeSet::from([("".into(), issuer.owner.clone())]);
+        assert!(engine.reconcile_owners_observed(exact(102, 0)?, "", &live)?);
+        engine.validate_opaque_publication(&retired, "")?;
+        assert!(engine.leases.is_empty());
+        assert_eq!(
+            engine.compacted_opaque.as_ref().ok_or("history")?.count,
+            MAX_LEASES as u64
+        );
+        assert!(engine.has_opaque_artifact_state());
+        assert!(!engine.has_unresolved());
+        let next = register_opaque(&mut engine, &issuer)?;
+        assert!(engine.contains_lease(&next.lease_id));
+        assert_eq!(engine.leases.len(), 1);
+        let bytes = serde_json::to_vec(&engine)?;
+        assert!(!String::from_utf8_lossy(&bytes).contains("synthetic-opaque-no-authority"));
+        let restored: Kubernetes = serde_json::from_slice(&bytes)?;
+        restored.validate_scope("")?;
+        restored.validate_artifact_clock(Some(crate::auth::Timestamp::whole(102)?))?;
+        assert!(restored.validate_scope("other").is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn kube_opaque_artifact_compaction_requires_committed_retirement_and_prevents_resurrection()
+    -> TestResult {
+        let (mut engine, issuer) = ready()?;
+        let plan = register_opaque(&mut engine, &issuer)?;
+        let active = engine.clone();
+        let mut lost = engine.clone();
+        lost.leases.clear();
+        assert!(lost.validate_opaque_publication(&active, "").is_err());
+        assert!(engine.retire_lease(&plan.lease_id));
+        engine.validate_opaque_publication(&active, "")?;
+        let retired = engine.clone();
+        let original = serde_json::to_vec(&engine)?;
+        assert!(
+            engine
+                .reconcile_owners_observed(
+                    crate::auth::AuthorityTime::Coarse(102),
+                    "",
+                    &BTreeSet::new()
+                )
+                .is_err()
+        );
+        assert_eq!(serde_json::to_vec(&engine)?, original);
+        assert!(engine.reconcile_owners_observed(exact(102, 0)?, "", &BTreeSet::new())?);
+        engine.validate_opaque_publication(&retired, "")?;
+        assert!(engine.leases.is_empty());
+        assert!(engine.validate_opaque_publication(&active, "").is_err());
+        let mut dropped = engine.clone();
+        dropped.compacted_opaque = None;
+        assert!(dropped.validate_opaque_publication(&engine, "").is_err());
+        let mut forged = engine.clone();
+        forged.compacted_opaque.as_mut().ok_or("history")?.count += 1;
+        assert!(forged.validate_opaque_publication(&engine, "").is_err());
+        let mut replayed = engine.clone();
+        replayed.leases = retired.leases.clone();
+        assert!(replayed.validate_opaque_publication(&engine, "").is_err());
+        let mut reactivated = retired.clone();
+        reactivated
+            .leases
+            .get_mut(&plan.lease_id)
+            .ok_or("row")?
+            .opaque_artifact
+            .as_mut()
+            .ok_or("artifact")?
+            .retired = false;
+        assert!(
+            reactivated
+                .validate_opaque_publication(&retired, "")
+                .is_err()
+        );
+        let mut changed = retired.clone();
+        changed
+            .leases
+            .get_mut(&plan.lease_id)
+            .ok_or("row")?
+            .opaque_artifact
+            .as_mut()
+            .ok_or("artifact")?
+            .config_digest = "a".repeat(64);
+        assert!(changed.validate_opaque_publication(&retired, "").is_err());
+        assert!(
+            engine
+                .validate_artifact_clock(Some(crate::auth::Timestamp::whole(100)?))
+                .is_err()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn kube_opaque_artifact_true_retirement_allows_config_role_lifecycle_but_pending_active_and_legacy_stay_fenced()
+    -> TestResult {
+        let config = json!({"kubernetes_host":"https://localhost:9443", "service_account_token":"new-synthetic-manager"});
+        let (mut pending, issuer) = ready()?;
+        let mut plan = issue(&mut pending, &issuer)?;
+        pending.bind_opaque_artifact_intent(&mut plan, 3600, 3600)?;
+        for (method, relative, body) in [
+            ("POST", "config", config.clone()),
+            ("DELETE", "config", json!({})),
+            ("DELETE", "roles/reader", json!({})),
+        ] {
+            let bytes = serde_json::to_vec(&pending)?;
+            let rejected = pending
+                .dispatch_observed(
+                    ("", "kubernetes/"),
+                    method,
+                    relative,
+                    &body,
+                    (100, exact(101, 0)?),
+                    None,
+                )
+                .err()
+                .ok_or("pending mutation accepted")?;
+            assert_eq!(rejected.status, 409);
+            assert_eq!(serde_json::to_vec(&pending)?, bytes);
+        }
+        let (mut active, issuer) = ready()?;
+        let issued = register_opaque(&mut active, &issuer)?;
+        for (method, relative, body) in [
+            ("POST", "config", config.clone()),
+            ("DELETE", "config", json!({})),
+            ("DELETE", "roles/reader", json!({})),
+        ] {
+            let bytes = serde_json::to_vec(&active)?;
+            let rejected = active
+                .dispatch_observed(
+                    ("", "kubernetes/"),
+                    method,
+                    relative,
+                    &body,
+                    (100, exact(102, 0)?),
+                    None,
+                )
+                .err()
+                .ok_or("active mutation accepted")?;
+            assert_eq!(rejected.status, 409);
+            assert_eq!(serde_json::to_vec(&active)?, bytes);
+        }
+        let receipt = active.capture_delivery_receipt(&issued)?.ok_or("receipt")?;
+        assert!(active.retire_lease(&issued.lease_id));
+        let retired = active.clone();
+        // Real dispatch compacts a previously retired record, then changes config.
+        let Dispatch::Immediate(changed) = active.dispatch_observed(
+            ("", "kubernetes/"),
+            "POST",
+            "config",
+            &config,
+            (100, exact(103, 0)?),
+            None,
+        )?
+        else {
+            return Err("immediate config expected".into());
+        };
+        assert_eq!(changed.status, 204);
+        active.validate_opaque_publication(&retired, "")?;
+        assert!(
+            active
+                .validate_delivery_receipt_observed(&issued, &receipt, exact(103, 0)?)
+                .is_err()
+        );
+        for relative in ["roles/reader", "config"] {
+            let Dispatch::Immediate(deleted) = active.dispatch_observed(
+                ("", "kubernetes/"),
+                "DELETE",
+                relative,
+                &json!({}),
+                (100, exact(104, 0)?),
+                None,
+            )?
+            else {
+                return Err("immediate delete expected".into());
+            };
+            assert_eq!(deleted.status, 204);
+        }
+        active.validate_scope("")?;
+        assert!(active.has_opaque_artifact_state());
+        let (mut legacy, issuer) = ready()?;
+        let legacy_plan = issue(&mut legacy, &issuer)?;
+        legacy.finalize(&legacy_plan, metadata(), 101, true)?;
+        assert!(legacy.retire_lease(&legacy_plan.lease_id));
+        let bytes = serde_json::to_vec(&legacy)?;
+        let rejected = legacy
+            .dispatch("", "kubernetes/", "POST", "config", &config, 102, None)
+            .err()
+            .ok_or("legacy gate removed")?;
+        assert_eq!(rejected.status, 409);
+        assert_eq!(serde_json::to_vec(&legacy)?, bytes);
+        let mut old = serde_json::to_value(&legacy)?;
+        old["leases"][&legacy_plan.lease_id]
+            .as_object_mut()
+            .ok_or("old lease")?
+            .remove("authority");
+        let mut old: Kubernetes = serde_json::from_value(old)?;
+        let bytes = serde_json::to_vec(&old)?;
+        assert_eq!(
+            old.dispatch("", "kubernetes/", "DELETE", "config", &json!({}), 102, None)
+                .err()
+                .ok_or("historical gate removed")?
+                .status,
+            409
+        );
+        assert_eq!(serde_json::to_vec(&old)?, bytes);
         Ok(())
     }
 }

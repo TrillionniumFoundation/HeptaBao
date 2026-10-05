@@ -328,6 +328,10 @@ impl Service {
         incoming: &State,
     ) -> Result<(), Response> {
         incoming
+            .engines
+            .validate_kubernetes_artifact_clock(Some(&current.engines))
+            .map_err(|error| Response::error(400, &error.message))?;
+        incoming
             .auth
             .validate_token_api_clock_floor(Some(&current.auth))
             .map_err(|error| Response::error(400, &error.message))?;
