@@ -366,14 +366,21 @@ mod tests {
             .map_err(|_| "actual encrypted owner")?;
         closed.schema = closed.writer_schema();
         assert!(
-            closed.schema == NAMESPACE_CUSTODY_STATE_SCHEMA,
-            "typed ciphertext activates reader floor 81"
+            closed.schema == AUTH_PUBLIC_ORIGIN_STATE_SCHEMA,
+            "typed ciphertext and actual native Token API facts require reader floor 86"
         );
         let mut lower = closed.clone();
         lower.schema = NAMESPACE_CUSTODY_STATE_SCHEMA - 1;
         assert!(
             lower.validate_format().is_err() && service.commit_state(&mut lower).is_err(),
             "old reader labels cannot publish custody assets"
+        );
+        let mut before_origin = closed.clone();
+        before_origin.schema = NAMESPACE_CUSTODY_STATE_SCHEMA;
+        assert!(
+            before_origin.validate_format().is_err()
+                && service.commit_state(&mut before_origin).is_err(),
+            "supported custody reader 81 cannot relabel authentic native producer facts"
         );
         closed
             .validate_format()
