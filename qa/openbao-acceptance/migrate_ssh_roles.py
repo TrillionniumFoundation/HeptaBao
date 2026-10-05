@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded OpenBao 2.6.2 -> HeptaBao SSH OTP role transfer with durable resume.
+"""Bounded OpenBao 2.6.2/2.7.0 -> HeptaBao SSH OTP role transfer with durable resume.
 
 Only explicitly supported OTP role configuration is transferred. Issued OTPs,
 leases, CA issuers/keys, zero-address registration and live SSH authority are
@@ -126,7 +126,7 @@ def main(argv=None):
     try:
         sm,tm=canonical_mount(a.source_mount),canonical_mount(a.target_mount); source,target=Client.from_env(a.source_prefix),Client.from_env(a.target_prefix)
         sh,th=source.health(),target.health()
-        if sh["version"]!="2.6.2": raise BaoError("unsupported_source_version")
+        if sh["version"] not in ("2.6.2","2.7.0"): raise BaoError("unsupported_source_version")
         distinct_endpoints(source,sh,target,th); records,inv=snapshot_inventory(source,sm); result["objects_checked"]=len(records)
         binding={"profile":SCHEMA,"source_identity":{"cluster_id":sh["cluster_id"],"version":sh["version"],"namespace":source.namespace,"mount":sm},"target_identity":{"cluster_id":th["cluster_id"],"version":th["version"],"namespace":target.namespace,"mount":tm},"inventory_digest":inv}
         checkpoint=None

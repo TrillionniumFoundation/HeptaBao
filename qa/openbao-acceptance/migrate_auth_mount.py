@@ -445,8 +445,8 @@ def main(argv=None):
         source = Client.from_env(args.source_prefix)
         target = Client.from_env(args.target_prefix)
         source_health, target_health = source.health(), target.health()
-        if source_health["version"] != "2.6.2":
-            raise BaoError("openbao_2_6_2_source_required")
+        if source_health["version"] not in ("2.6.2", "2.7.0"):
+            raise BaoError("unsupported_source_version")
         distinct_endpoints(source, source_health, target, target_health)
         if source.namespace != target.namespace:
             raise BaoError("namespace_remapping_not_supported")
