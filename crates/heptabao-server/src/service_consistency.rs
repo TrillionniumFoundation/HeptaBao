@@ -78,40 +78,6 @@ impl Service {
             response.consistency_index = IndexValue::for_raft(ha.cluster_id(), index).wire();
         }
     }
-
-    pub(crate) fn forward_consistency_request(
-        &self,
-        mut request: ServiceRequest<'_>,
-        deadline: Instant,
-    ) -> Response {
-        let result = self
-            .ha
-            .as_ref()
-            .ok_or(())
-            .and_then(|ha| ha.lock_for_request().map_err(|_| ()))
-            .and_then(|ha| {
-                ha.forward_request(
-                    request.method,
-                    request.path,
-                    request.namespace,
-                    request.token,
-                    &request.body,
-                    request.wrap_ttl_seconds,
-                    request.origin_peer,
-                    request.client_certificates.as_deref(),
-                    Some(deadline),
-                )
-                .map_err(|_| ())
-            })
-            .unwrap_or_else(|()| {
-                Response::error(
-                    503,
-                    "consistency forwarding unavailable; outcome may be committed",
-                )
-            });
-        erase_json(&mut request.body);
-        result
-    }
 }
 
 #[cfg(all(test, target_os = "linux"))]

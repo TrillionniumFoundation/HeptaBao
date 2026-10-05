@@ -336,18 +336,15 @@ pub(crate) fn admit(
 
 pub(super) fn forward(
     service: &Arc<Mutex<Service>>,
-    mut request: ServiceRequest<'_>,
+    request: ServiceRequest<'_>,
     transport_deadline: Instant,
 ) -> Response {
-    let deadline = execution_deadline_with_response_reserve(Instant::now(), transport_deadline);
-    let _scope = RequestDeadlineScope::enter(deadline);
-    match lock_until(service, deadline) {
-        Ok(service) => service.forward_consistency_request(request, deadline),
-        Err(_) => {
-            crate::service::erase_json(&mut request.body);
-            Response::error(503, "consistency forwarding deadline exceeded")
-        }
-    }
+    // The index decision grants no authority. Dispatch this original request
+    // once through the ordinary execution boundary: standby forwarding retains
+    // its completed peer receipt and local mandatory audit; if leadership has
+    // changed, an external provider still executes outside the Service writer.
+    // The shared boundary reserves reply time once from this original deadline.
+    execute_service_request(service, request, transport_deadline, false)
 }
 
 #[cfg(all(test, target_os = "linux"))]

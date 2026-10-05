@@ -343,18 +343,48 @@ fn precise_step_down_original_deadline_elapsed_after_real_transfer_withholds_suc
     let files = Root::new();
     let (mut service, cluster, _, root) = cluster(&files)?;
     let (actor, accessor) = issue(&mut service, &root, "10m", 2)?;
+    let original_started = Instant::now();
     let _original = crate::request_deadline::RequestDeadlineScope::enter(
-        Instant::now() + Duration::from_secs(1),
+        original_started + Duration::from_secs(1),
     );
+    let hook_entered = std::cell::Cell::new(false);
+    let hook_entry_leader = std::cell::Cell::new(None);
     let (plan, response, clock) = admitted(&mut service, &actor)?;
     assert_eq!(uses(&service, &accessor)?, Some(1));
     let fingerprint = service.request_fingerprint("POST", "sys/step-down", "", &actor);
     let response = service.audit_completed_response(&fingerprint, 100, Some(clock), response);
     assert_eq!(response.status, 204);
+    println!(
+        "STEP_DOWN_OBSERVER before_complete_elapsed_ms={}",
+        original_started.elapsed().as_millis()
+    );
     let response =
         service.complete_ha_step_down_observed(true, Some(plan), response, &fingerprint, || {
+            hook_entered.set(true);
+            let leader = cluster.processes[0]
+                .lock()
+                .ok()
+                .and_then(|process| process.leader().ok())
+                .flatten();
+            hook_entry_leader.set(leader);
+            println!(
+                "STEP_DOWN_OBSERVER hook_entered=true entry_leader={leader:?} entry_elapsed_ms={}",
+                original_started.elapsed().as_millis()
+            );
             std::thread::sleep(Duration::from_millis(1100))
         });
+    let terminal_leader = cluster.processes[0]
+        .lock()
+        .ok()
+        .and_then(|process| process.leader().ok())
+        .flatten();
+    println!(
+        "STEP_DOWN_OBSERVER hook_entered={} hook_entry_leader={:?} terminal_leader={terminal_leader:?} terminal_elapsed_ms={} response_status={}",
+        hook_entered.get(),
+        hook_entry_leader.get(),
+        original_started.elapsed().as_millis(),
+        response.status
+    );
     assert_eq!(response.status, 503, "{}", response.body);
     assert_ne!(
         cluster.processes[0].lock().map_err(|_| "HA")?.leader()?,

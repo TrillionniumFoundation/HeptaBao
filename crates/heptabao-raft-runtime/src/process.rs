@@ -13,7 +13,7 @@ mod snapshot;
 pub use network::{
     RaftPeerRpc, RaftRpcKind, RaftRpcService, RemoteNetworkFactory, RemoteRaftError,
 };
-pub use node::{ApplicationReadWitness, ProcessRaftNode};
+pub use node::{ApplicationReadWitness, CommittedApplicationPrefix, ProcessRaftNode};
 
 #[cfg(test)]
 mod replication_tests;

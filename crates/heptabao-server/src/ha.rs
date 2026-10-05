@@ -603,6 +603,40 @@ impl fmt::Debug for HaProcess {
     }
 }
 
+// These are duration classes, not authorization. Both retain the same actual
+// inbound origin; choosing the business class cannot restart a TLS/queue budget.
+pub(crate) struct InboundPeerDeadlines {
+    pub(crate) read_rpc: Instant,
+    pub(crate) forward_request: Instant,
+}
+impl InboundPeerDeadlines {
+    pub(crate) fn new(started: Instant, peer: Duration, forward: Duration) -> Self {
+        Self {
+            read_rpc: started + peer,
+            forward_request: started + forward,
+        }
+    }
+}
+#[cfg(test)]
+mod inbound_deadline_tests {
+    use super::*;
+    #[test]
+    fn inbound_deadline_classes_charge_elapsed_queue_time_without_renewal() {
+        let admitted = Instant::now() - Duration::from_millis(600);
+        let deadlines =
+            InboundPeerDeadlines::new(admitted, Duration::from_millis(500), Duration::from_secs(5));
+        assert!(Instant::now() >= deadlines.read_rpc);
+        assert!(Instant::now() < deadlines.forward_request);
+        assert_eq!(deadlines.read_rpc, admitted + Duration::from_millis(500));
+        assert_eq!(deadlines.forward_request, admitted + Duration::from_secs(5));
+        let old = Instant::now() - Duration::from_secs(6);
+        let queued =
+            InboundPeerDeadlines::new(old, Duration::from_millis(500), Duration::from_secs(5));
+        assert!(Instant::now() >= queued.read_rpc);
+        assert!(Instant::now() >= queued.forward_request);
+    }
+}
+
 impl HaProcess {
     pub fn start(config: HaProcessConfig) -> Result<Self, String> {
         validate_config(&config)?;
@@ -751,7 +785,12 @@ impl HaProcess {
                         let service = rpc_service.clone();
                         let ids = &ids_by_node;
                         let handle = &runtime_handle;
-                        let inbound_read_deadline = Instant::now() + timeout;
+                        // One actual inbound origin charges TLS/frame/queue time.
+                        // Consensus RPCs keep their peer-attempt budget; forwarding
+                        // has the separately configured business-request budget.
+                        let inbound_started = Instant::now();
+                        let inbound_deadlines =
+                            InboundPeerDeadlines::new(inbound_started, timeout, forward_timeout);
                         let result = serve_one_mtls_peer_frame(
                             &listener,
                             server_tls.clone(),
@@ -787,7 +826,19 @@ impl HaProcess {
                                         .map_err(|_| heptabao_ha_service::HaError::Transport)?
                                         .clone()
                                         .ok_or(heptabao_ha_service::HaError::NotLeader)?;
+                                    let acknowledgement_route = request.path.starts_with("auth/token/revoke") && matches!(request.method.as_str(),"POST"|"PUT");
+                                    let completion_scope = crate::ha_forward_completion::CompletionScope::enter(
+                                        request.completion_nonce, &frame, inbound_deadlines.forward_request,
+                                        &listener_cluster_id, local_id, acknowledgement_route,
+                                    );
+                                    let step_down = request.path == "sys/step-down";
+                                    crate::ha_forward_completion::diagnostic_step_down(step_down);
                                     let response = handler(request);
+                                    crate::ha_forward_completion::diagnostic_response("source_final", &response);
+                                    let completion = completion_scope.finish();
+                                    if step_down {
+                                        eprintln!("heptabao-forward-diagnostic: phase=source_step_down original_status={} completion={}", response.status, completion.is_some());
+                                    }
                                     return if legacy_v1 {
                                         encode_legacy_response_for_transition(
                                             local_id,
@@ -796,11 +847,12 @@ impl HaProcess {
                                             &response.body,
                                         )
                                     } else if index_response {
-                                        crate::ha_forward::encode_index_response_for_cluster(
+                                        crate::ha_forward::encode_completed_index_response_for_cluster(
                                             &listener_cluster_id,
                                             local_id,
                                             source,
                                             &response,
+                                            completion,
                                         )
                                     } else {
                                         encode_forward_response(
@@ -842,7 +894,7 @@ impl HaProcess {
                                 let payload = if request.kind == RaftRpcKind::ReadIndex {
                                     handle.block_on(
                                         heptabao_raft_runtime::with_read_index_deadline(
-                                            inbound_read_deadline,
+                                            inbound_deadlines.read_rpc,
                                             service.handle(source, request.kind, request.payload),
                                         ),
                                     )
@@ -1002,21 +1054,77 @@ impl HaProcess {
         Ok(())
     }
 
-    // Forwarding preserves the existing wire tuple plus the verified client
-    // chain; keep fields explicit so no identity is silently omitted.
-    #[allow(clippy::too_many_arguments)]
-    pub(crate) fn forward_request(
+    pub(crate) fn forward_request_completed(
         &self,
-        method: &str,
-        path: &str,
-        namespace: &str,
-        token: &str,
-        body: &serde_json::Value,
-        wrap_ttl_seconds: Option<u64>,
-        origin_peer: Option<std::net::IpAddr>,
-        client_certificates: Option<&[Vec<u8>]>,
-        caller_deadline: Option<Instant>,
-    ) -> Result<Response, String> {
+        context: crate::ha_forward::ForwardContext<'_>,
+    ) -> Result<
+        (
+            Response,
+            crate::ha_forward_completion::CompletedForwardReceipt,
+        ),
+        String,
+    > {
+        self.forward_request_exchange(context, true)
+            .and_then(|(response, receipt)| {
+                receipt
+                    .map(|receipt| (response, receipt))
+                    .ok_or_else(|| "HA completed-forward proof is missing".into())
+            })
+    }
+
+    pub(crate) fn wait_forward_applied(
+        &self,
+        receipt: &crate::ha_forward_completion::CompletedForwardReceipt,
+    ) -> Result<(), String> {
+        if receipt.cluster != self.cluster_id
+            || receipt.target != self.local_id()?
+            || !self.enrolled(receipt.source)
+        {
+            return Err("HA completed-forward owner differs".into());
+        }
+        loop {
+            if Instant::now() >= receipt.deadline {
+                return Err("HA completed-forward original deadline elapsed".into());
+            }
+            let seen = self.leader_status()?;
+            if seen
+                .committed_index
+                .is_some_and(|index| index >= receipt.applied_index())
+                && seen
+                    .applied_index
+                    .is_some_and(|index| index >= receipt.applied_index())
+            {
+                return Ok(());
+            }
+            std::thread::sleep(
+                Duration::from_millis(5)
+                    .min(receipt.deadline.saturating_duration_since(Instant::now())),
+            );
+        }
+    }
+
+    fn forward_request_exchange(
+        &self,
+        context: crate::ha_forward::ForwardContext<'_>,
+        completed: bool,
+    ) -> Result<
+        (
+            Response,
+            Option<crate::ha_forward_completion::CompletedForwardReceipt>,
+        ),
+        String,
+    > {
+        let crate::ha_forward::ForwardContext {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+            caller_deadline,
+        } = context;
         let deadline = Instant::now() + self.forward_timeout;
         let deadline = caller_deadline.map_or(deadline, |caller| caller.min(deadline));
         let local = self.local_id()?;
@@ -1031,6 +1139,14 @@ impl HaProcess {
             .get(&leader)
             .ok_or_else(|| "HA elected leader is absent from peer registry".to_owned())?;
         let legacy_v1 = self.emit_legacy_peer_v1;
+        if completed && legacy_v1 {
+            return Err("legacy forwarding has no completion authority".into());
+        }
+        let nonce = if completed {
+            Some(crate::crypto::random::<32>().map_err(|_| "HA forward nonce unavailable")?)
+        } else {
+            None
+        };
         let request = Zeroizing::new(if legacy_v1 {
             // HBFQ1 predates trusted origin and client-certificate forwarding.
             // Omit those optional contexts only for the bounded transition: the
@@ -1046,17 +1162,21 @@ impl HaProcess {
                 local, leader, method, path, namespace, token, body,
             )?
         } else {
-            crate::ha_forward::encode_index_request_for_cluster(
+            crate::ha_forward::encode_completed_index_request_for_cluster(
                 &self.cluster_id,
                 (local, leader),
-                method,
-                path,
-                namespace,
-                token,
-                body,
-                wrap_ttl_seconds,
-                client_certificates,
-                origin_peer,
+                &crate::ha_forward::ForwardContext {
+                    method,
+                    path,
+                    namespace,
+                    token,
+                    body,
+                    wrap_ttl_seconds,
+                    origin_peer,
+                    client_certificates,
+                    caller_deadline,
+                },
+                nonce,
             )?
         });
         let response = zeroize::Zeroizing::new(
@@ -1075,14 +1195,43 @@ impl HaProcess {
         if Instant::now() >= deadline {
             return Err("HA forwarding deadline exceeded; outcome may be committed".into());
         }
-        Ok(Response {
-            response_headers: std::mem::take(&mut response.response_headers),
-            consistency_index: response.consistency_index.and_then(|index| {
-                crate::http::consistency::IndexValue::for_raft(&self.cluster_id, index).wire()
-            }),
-            status: response.status,
-            body: std::mem::take(&mut response.body),
-        })
+        let receipt = if let Some(nonce) = nonce {
+            let response_digest = crate::ha_forward_completion::wire_response_digest(&response)?;
+            let wire = response
+                .completion
+                .take()
+                .ok_or("HA completed-forward proof is missing")?;
+            Some(
+                crate::ha_forward_completion::CompletedForwardReceipt::verified(
+                    wire,
+                    crate::ha_forward_completion::CompletedExchange {
+                        cluster: self.cluster_id.clone(),
+                        source: leader,
+                        target: local,
+                        deadline,
+                        nonce,
+                        request: &request,
+                        response_digest,
+                    },
+                )?,
+            )
+        } else {
+            None
+        };
+        if let Some(receipt) = &receipt {
+            self.wait_forward_applied(receipt)?;
+        }
+        Ok((
+            Response {
+                response_headers: std::mem::take(&mut response.response_headers),
+                consistency_index: response.consistency_index.and_then(|index| {
+                    crate::http::consistency::IndexValue::for_raft(&self.cluster_id, index).wire()
+                }),
+                status: response.status,
+                body: std::mem::take(&mut response.body),
+            },
+            receipt,
+        ))
     }
 
     pub fn local_id(&self) -> Result<u64, String> {

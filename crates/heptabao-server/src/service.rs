@@ -140,6 +140,8 @@ pub(crate) fn public_origin_observation() -> Option<Duration> {
 }
 #[path = "service_external_transit.rs"]
 mod external_transit;
+#[path = "service_forward_delivery.rs"]
+mod forward_delivery;
 #[path = "service_ha_activation.rs"]
 mod ha_activation;
 #[path = "service_ha_read.rs"]
@@ -1112,6 +1114,7 @@ pub struct Service {
     pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
     pending_token_api_authority: Option<plugin::PluginResponseAuthority>,
     pending_ha_step_down: Option<ha_step_down::StepDownPlan>,
+    pending_forward_delivery: Option<forward_delivery::PendingForwardDelivery>,
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
     pending_ordinary_kv_commit_notice: Option<ordinary_kv_delivery::OrdinaryKvCommitNoticeCapture>,
     native_snapshot_transport: bool,
@@ -1483,6 +1486,7 @@ impl Service {
             pending_ordinary_kv_authority: None,
             pending_token_api_authority: None,
             pending_ha_step_down: None,
+            pending_forward_delivery: None,
             pending_help_authority: None,
             pending_ordinary_kv_commit_notice: None,
             native_snapshot_transport: false,
@@ -2036,11 +2040,17 @@ impl Service {
         retain_clock_receipt: bool,
     ) -> (Response, Option<token_precision::TerminalClockReceipt>) {
         let (now, token_clock) = request_clock;
-        let receipt = match self.persist_terminal_token_clock_with_receipt(
-            token_clock,
-            now,
-            retain_clock_receipt,
-        ) {
+        let terminal_floor = if self.pending_forward_delivery.is_some() {
+            self.check_pending_forward_delivery(&response)
+                .map(|()| None)
+        } else {
+            self.persist_terminal_token_clock_with_receipt(token_clock, now, retain_clock_receipt)
+        };
+        if let Err(error) = &terminal_floor {
+            crate::ha_forward_completion::diagnostic_response("terminal_floor_veto", error);
+        }
+        let terminal_floor_succeeded = terminal_floor.is_ok();
+        let receipt = match terminal_floor {
             Ok(receipt) => receipt,
             Err(cause) => {
                 erase_json(&mut response.body);
@@ -2068,6 +2078,11 @@ impl Service {
                 None,
             );
         }
+        crate::ha_forward_completion::audited(if terminal_floor_succeeded {
+            token_clock
+        } else {
+            None
+        });
         self.stamp_consistency_index(&mut response);
         if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
             authority.mark_response_audited(fingerprint);
@@ -2148,6 +2163,7 @@ impl Service {
             || self.pending_ordinary_kv_authority.is_some()
             || self.pending_token_api_authority.is_some()
             || self.pending_ha_step_down.is_some()
+            || self.pending_forward_delivery.is_some()
             || self.pending_help_authority.is_some()
             || self.pending_ordinary_kv_commit_notice.is_some()
         {
@@ -2372,6 +2388,7 @@ impl Service {
             origin_peer,
             client_certificates: client_certificates.as_deref(),
         });
+        crate::ha_forward_completion::diagnostic_response("route_complete", &response);
         erase_json(&mut body);
         let database = self.pending_database_effect.take();
         let database_config = self.pending_database_config_effect.take();
@@ -2467,7 +2484,7 @@ impl Service {
         let ordinary_kv_expected = ordinary_kv_authority.is_some();
         let token_expected = token_api_authority.is_some();
         let help_expected = help_authority.is_some();
-        let step_down_expected = path == "sys/step-down" && response.status == 204;
+        let step_down_expected = self.expects_local_ha_step_down(path, &response);
         // Retain the exact moved capsule through terminal-floor publication and
         // mandatory audit. A typed unknown floor outcome attaches to this same
         // request, rather than being reconstructed from the public response.
@@ -2506,6 +2523,7 @@ impl Service {
         let response = self.complete_pending_help_delivery(help_expected, response, &fingerprint);
         let response =
             self.complete_ha_step_down(step_down_expected, step_down, response, &fingerprint);
+        let response = self.complete_forward_delivery(response, &fingerprint);
         RequestExecution::Complete(response)
     }
 
@@ -2523,7 +2541,7 @@ impl Service {
             origin_peer,
             client_certificates,
             admission_started: _,
-            token_clock: _,
+            token_clock,
         } = request;
         let opaque_ocsp_get = crate::http::ocsp::opaque_get_request(method, path, body);
         if !valid_namespace(namespace)
@@ -2687,9 +2705,11 @@ impl Service {
                 if !allow_forward {
                     return Response::error(503, "forwarded request reached a standby node");
                 }
-                return match ha.lock_for_request() {
-                    Ok(ha) => ha
-                        .forward_request(
+                self.pending_forward_delivery =
+                    Some(forward_delivery::PendingForwardDelivery::Rejected);
+                let forwarded = match ha.lock_for_request() {
+                    Ok(process) => {
+                        process.forward_request_completed(crate::ha_forward::ForwardContext {
                             method,
                             path,
                             namespace,
@@ -2698,10 +2718,38 @@ impl Service {
                             wrap_ttl_seconds,
                             origin_peer,
                             client_certificates,
-                            crate::request_deadline::current(),
-                        )
-                        .unwrap_or_else(|_| Response::error(503, "HA leader forwarding failed")),
-                    Err(_) => Response::error(503, "HA process lock is unavailable"),
+                            caller_deadline: crate::request_deadline::current(),
+                        })
+                    }
+                    Err(_) => return Response::error(503, "HA process lock is unavailable"),
+                };
+                return match forwarded {
+                    Ok((response, receipt)) => {
+                        if path == "sys/step-down" {
+                            eprintln!(
+                                "heptabao-forward-diagnostic: phase=received_step_down original_status={} original_actor={} receipt_index={} receipt_floor={:?}",
+                                response.status,
+                                receipt.actor().is_some(),
+                                receipt.applied_index(),
+                                receipt.floor()
+                            );
+                        }
+                        match self.stage_forward_delivery(receipt, ha, namespace, token_clock, now)
+                        {
+                            Ok(authority) => {
+                                self.pending_forward_delivery =
+                                    Some(forward_delivery::PendingForwardDelivery::Completed(
+                                        Box::new(authority),
+                                    ));
+                                response
+                            }
+                            Err(error) => error,
+                        }
+                    }
+                    Err(_) => Response::error(
+                        503,
+                        "HA leader forwarding completion failed; outcome may be committed",
+                    ),
                 };
             }
             if let Err(error) = self.sync_from_ha() {

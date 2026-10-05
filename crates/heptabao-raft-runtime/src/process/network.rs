@@ -516,10 +516,14 @@ impl RaftRpcService {
             RaftRpcKind::TransferLeader => {
                 let request: TransferLeaderRequest<TypeConfig> =
                     serde_json::from_slice(&payload).map_err(|_| RemoteRaftError::InvalidRpc)?;
-                // Bind the claimed leader and recipient to the authenticated
-                // transport direction before asking OpenRaft to check vote/log progress.
+                // The authenticated RPC recipient remains this local node.
+                // OpenRaft broadcasts the SAME assigned next-leader request to
+                // every voter; other voters must clear their current leader lease.
+                // Bind the claimed old leader to transport source and the assigned
+                // successor to configured peers, then retain Raft's vote/log checks.
                 if request.from_leader().leader_id.node_id != source
-                    || *request.to_node_id() != self.local_id
+                    || *request.to_node_id() == source
+                    || !self.peers.contains(request.to_node_id())
                 {
                     return Err(RemoteRaftError::InvalidRpc);
                 }

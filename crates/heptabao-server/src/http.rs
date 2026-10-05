@@ -451,7 +451,10 @@ fn serve_inner(
                     origin_peer: request.origin_peer,
                     client_certificates: request.client_certificates.take(),
                 },
-                Instant::now() + forward_timeout,
+                crate::ha_forward_completion::CompletionScope::deadline().map_or_else(
+                    || Instant::now() + forward_timeout,
+                    |original| original.min(Instant::now() + forward_timeout),
+                ),
                 true,
             );
             request.token.zeroize();
@@ -858,7 +861,15 @@ fn execute_service_request(
         response
     };
     let execution = match lock_until(service, deadline) {
-        Ok(mut writer) => writer.begin_request_before(request, deadline, forwarded),
+        Ok(mut writer) => {
+            let execution = writer.begin_request_before(request, deadline, forwarded);
+            if let RequestExecution::Complete(response) = &execution {
+                let _original_deadline =
+                    crate::request_deadline::RequestDeadlineScope::enter(deadline);
+                writer.seal_forward_completion(response);
+            }
+            execution
+        }
         Err(LockWaitError::Busy) => {
             crate::service::erase_json(&mut request.body);
             return unavailable("service state lock deadline exceeded");
@@ -875,7 +886,11 @@ fn execute_service_request(
             pending,
             deadline,
             |pending| pending.execute_with_service_before(service, deadline),
-            |writer, pending, result| writer.finish_external_request(*pending, result),
+            |writer, pending, result| {
+                let response = writer.finish_external_request(*pending, result);
+                writer.seal_forward_completion(&response);
+                response
+            },
         ),
     }
 }

@@ -355,6 +355,9 @@ impl AuthorityTime {
 }
 
 impl super::AuthState {
+    pub(crate) fn terminal_token_clock_floor(&self) -> Option<Timestamp> {
+        self.token_api_observed_at
+    }
     pub(crate) fn has_token_api_precision_state(&self) -> bool {
         self.token_api_precision_state
             || self.token_api_observed_at.is_some()

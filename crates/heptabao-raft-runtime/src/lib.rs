@@ -38,9 +38,9 @@ use cluster::DurableCluster;
 
 pub use process::with_read_index_deadline;
 pub use process::{
-    ApplicationReadWitness, LocalLeaderObservation, MembershipObservation, ProcessRaftNode,
-    RaftPeerRpc, RaftRpcKind, RaftRpcService, RemoteNetworkFactory, RemoteRaftError,
-    SnapshotObservation,
+    ApplicationReadWitness, CommittedApplicationPrefix, LocalLeaderObservation,
+    MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RaftRpcService,
+    RemoteNetworkFactory, RemoteRaftError, SnapshotObservation,
 };
 
 const MAX_OPERATION_ID_BYTES: usize = 128;

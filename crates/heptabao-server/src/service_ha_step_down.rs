@@ -50,9 +50,11 @@ impl Service {
         };
         // A failed floor write or mandatory audit never triggers the handoff.
         if response.status != 204 {
+            crate::ha_forward_completion::diagnostic_response("pre_transfer_veto", &response);
             return response;
         }
         if let Err(error) = self.transfer_ha_step_down(&mut plan, after_transfer) {
+            crate::ha_forward_completion::diagnostic_response("transfer_veto", &error);
             if self
                 .audit_event(
                     "ha-step-down-veto",

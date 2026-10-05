@@ -36,11 +36,11 @@ impl RecordPlan {
             .owners
             .iter()
             .find(|owner| owner.name == "engines")
-            .ok_or_else(unavailable)?;
+            .ok_or_else(|| unavailable_at("record_r25_line_39"))?;
         let digest = state_record_root::digest_owner(&self.root.address_key(), "engines", &bytes)
             .map_err(root_error)?;
         if owner.total_bytes != bytes.len() as u64 || owner.digest != digest {
-            return Err(unavailable());
+            return Err(unavailable_at("record_r25_line_43"));
         }
         Ok(())
     }
@@ -61,11 +61,11 @@ impl RecordPlan {
             .owners
             .iter()
             .find(|owner| owner.name == "auth")
-            .ok_or_else(unavailable)?;
+            .ok_or_else(|| unavailable_at("record_r25_line_64"))?;
         let digest = state_record_root::digest_owner(&self.root.address_key(), "auth", &bytes)
             .map_err(root_error)?;
         if owner.total_bytes != bytes.len() as u64 || owner.digest != digest {
-            return Err(unavailable());
+            return Err(unavailable_at("record_r25_line_68"));
         }
         Ok(())
     }
@@ -108,7 +108,8 @@ fn unique_record_objects(
     })
 }
 
-fn unavailable() -> Response {
+fn unavailable_at(guard: &'static str) -> Response {
+    crate::ha_forward_completion::diagnostic_record_guard(guard);
     Response::error(503, "record state failed authenticated validation")
 }
 fn engine_error(error: crate::engines::EngineError) -> Response {
@@ -119,7 +120,7 @@ fn root_error(error: state_record_root::RootError) -> Response {
         state_record_root::RootError::TooLarge => {
             Response::error(507, "record owner capacity exhausted")
         }
-        _ => unavailable(),
+        _ => unavailable_at("record_r25_line_122"),
     }
 }
 
@@ -129,7 +130,8 @@ pub(super) fn decode_root(bytes: &[u8]) -> Result<Option<RecordStateRoot>, Respo
         #[serde(default)]
         storage_format: Option<String>,
     }
-    let probe: Probe = serde_json::from_slice(bytes).map_err(|_| unavailable())?;
+    let probe: Probe =
+        serde_json::from_slice(bytes).map_err(|_| unavailable_at("record_r25_line_132"))?;
     if probe.storage_format.as_deref() != Some(state_record_root::STORAGE_FORMAT) {
         return Ok(None);
     }
@@ -195,7 +197,7 @@ pub(super) fn legacy_candidate_digest(state: &State) -> Result<[u8; 32], Respons
         .finish()
         .as_ref()
         .try_into()
-        .map_err(|_| unavailable())
+        .map_err(|_| unavailable_at("record_r25_line_198"))
 }
 
 pub(super) struct DurableReader<'a>(pub &'a DurableService<AeadBarrier>);
@@ -216,26 +218,29 @@ fn owner_bytes(
     reader: &impl RecordReader,
 ) -> Result<Zeroizing<Vec<u8>>, Response> {
     let key = root.address_key();
-    let length = usize::try_from(owner.total_bytes).map_err(|_| unavailable())?;
+    let length =
+        usize::try_from(owner.total_bytes).map_err(|_| unavailable_at("record_r25_line_219"))?;
     let mut bytes = Zeroizing::new(Vec::with_capacity(length));
     for reference in &owner.chunks {
-        let encoded = reader.read_object(reference).map_err(|_| unavailable())?;
+        let encoded = reader
+            .read_object(reference)
+            .map_err(|_| unavailable_at("record_r25_line_222"))?;
         let payload = reference
             .owner_chunk_payload(&key, &encoded)
-            .map_err(|_| unavailable())?;
+            .map_err(|_| unavailable_at("record_r25_line_225"))?;
         if bytes
             .len()
             .checked_add(payload.len())
             .is_none_or(|size| size > length)
         {
-            return Err(unavailable());
+            return Err(unavailable_at("record_r25_line_231"));
         }
         bytes.extend_from_slice(payload);
     }
     if bytes.len() != length
         || root.owner_digest(&owner.name, &bytes).map_err(root_error)? != owner.digest
     {
-        return Err(unavailable());
+        return Err(unavailable_at("record_r25_line_238"));
     }
     Ok(bytes)
 }
@@ -247,7 +252,7 @@ impl Service {
             Some(root) => {
                 let identity = root.identity().map_err(root_error)?;
                 if identity.digest() != digest {
-                    return Err(unavailable());
+                    return Err(unavailable_at("record_r25_line_250"));
                 }
                 Ok(identity)
             }
@@ -271,11 +276,16 @@ impl Service {
             schema: root.state_schema,
             cluster_id: root.cluster_id.clone(),
             replay_epoch: root.replay_epoch,
-            namespaces: serde_json::from_slice(&owners[0]).map_err(|_| unavailable())?,
-            auth: serde_json::from_slice(&owners[1]).map_err(|_| unavailable())?,
-            engines: serde_json::from_slice(&owners[2]).map_err(|_| unavailable())?,
-            database: serde_json::from_slice(&owners[3]).map_err(|_| unavailable())?,
-            raft_admin: serde_json::from_slice(&owners[4]).map_err(|_| unavailable())?,
+            namespaces: serde_json::from_slice(&owners[0])
+                .map_err(|_| unavailable_at("record_r25_line_274"))?,
+            auth: serde_json::from_slice(&owners[1])
+                .map_err(|_| unavailable_at("record_r25_line_275"))?,
+            engines: serde_json::from_slice(&owners[2])
+                .map_err(|_| unavailable_at("record_r25_line_276"))?,
+            database: serde_json::from_slice(&owners[3])
+                .map_err(|_| unavailable_at("record_r25_line_277"))?,
+            raft_admin: serde_json::from_slice(&owners[4])
+                .map_err(|_| unavailable_at("record_r25_line_278"))?,
         };
         for (index, expected) in owners.iter().enumerate() {
             let canonical = match index {
@@ -287,12 +297,12 @@ impl Service {
             }
             .map_err(state_serialization_error)?;
             if canonical.as_slice() != expected.as_slice() {
-                return Err(unavailable());
+                return Err(unavailable_at("record_r25_line_290"));
             }
         }
         let key = root.address_key();
         let index = Kv1Index::open(Arc::clone(&key), root.kv1.clone(), reader)
-            .map_err(|_| unavailable())?;
+            .map_err(|_| unavailable_at("record_r25_line_295"))?;
         state
             .engines
             .install_record_index(key, index)
@@ -306,8 +316,14 @@ impl Service {
         state.validate_publication_schema(self.state.as_ref())?;
         let namespace_leases = state.namespace_leases.clone();
         let state = state.protected_state()?;
-        let key = state.engines.record_address_key().ok_or_else(unavailable)?;
-        let kv1 = state.engines.record_root().ok_or_else(unavailable)?;
+        let key = state
+            .engines
+            .record_address_key()
+            .ok_or_else(|| unavailable_at("record_r25_line_309"))?;
+        let kv1 = state
+            .engines
+            .record_root()
+            .ok_or_else(|| unavailable_at("record_r25_line_310"))?;
         let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
         let reuse = [
             reuse.namespaces,
@@ -323,7 +339,7 @@ impl Service {
                 && let Some(previous) = &self.record_root
             {
                 if previous.address_key().expose() != key.expose() {
-                    return Err(unavailable());
+                    return Err(unavailable_at("record_r25_line_326"));
                 }
                 owners.push(previous.owners[index].clone());
                 continue;
@@ -338,7 +354,8 @@ impl Service {
             .map_err(state_serialization_error)?;
             let mut chunks = Vec::new();
             for bytes in bytes.chunks(OWNER_CHUNK_BYTES) {
-                let object = StagedObject::owner_chunk(&key, bytes).map_err(|_| unavailable())?;
+                let object = StagedObject::owner_chunk(&key, bytes)
+                    .map_err(|_| unavailable_at("record_r25_line_341"))?;
                 chunks.push(object.reference().clone());
                 objects.push(object);
             }
@@ -349,7 +366,9 @@ impl Service {
                 digest: state_record_root::digest_owner(&key, name, &bytes).map_err(root_error)?,
             });
         }
-        let owners = owners.try_into().map_err(|_| unavailable())?;
+        let owners = owners
+            .try_into()
+            .map_err(|_| unavailable_at("record_r25_line_352"))?;
         let root = RecordStateRoot::new(
             state.schema,
             state.cluster_id.clone(),
@@ -368,7 +387,7 @@ impl Service {
             if let Some(prior) = staged.insert(object.reference().id, Arc::clone(&object))
                 && (prior.reference() != object.reference() || prior.bytes() != object.bytes())
             {
-                return Err(unavailable());
+                return Err(unavailable_at("record_r25_line_371"));
             }
         }
         fn visit(
@@ -382,7 +401,7 @@ impl Service {
             }
             if let Some(object) = staged.get(&reference.id) {
                 if object.reference() != reference {
-                    return Err(unavailable());
+                    return Err(unavailable_at("record_r25_line_385"));
                 }
                 for child in object.children() {
                     visit(child, staged, seen, out)?;
@@ -408,19 +427,25 @@ impl Service {
     /// Only the authenticated, explicitly permitted Absent→anchor path uses
     /// this full closure. Normal commits never re-emit the committed graph.
     pub(super) fn full_existing_record_plan(&self, state: &State) -> Result<RecordPlan, Response> {
-        let root = self.record_root.clone().ok_or_else(unavailable)?;
+        let root = self
+            .record_root
+            .clone()
+            .ok_or_else(|| unavailable_at("record_r25_line_411"))?;
         if state.engines.record_root().as_ref() != Some(&root.kv1)
             || root.identity().map_err(root_error)? != self.current_state_identity()?
         {
-            return Err(unavailable());
+            return Err(unavailable_at("record_r25_line_415"));
         }
-        let durable = self.durable.as_ref().ok_or_else(unavailable)?;
+        let durable = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| unavailable_at("record_r25_line_417"))?;
         let stored = durable
             .get("system", "state")
-            .map_err(|_| unavailable())?
-            .ok_or_else(unavailable)?;
+            .map_err(|_| unavailable_at("record_r25_line_420"))?
+            .ok_or_else(|| unavailable_at("record_r25_line_421"))?;
         if stored.expose() != root.encode().map_err(root_error)?.as_slice() {
-            return Err(unavailable());
+            return Err(unavailable_at("record_r25_line_423"));
         }
         let mut plan = existing_plan(root)?;
         state
@@ -442,13 +467,16 @@ impl Service {
                 if !seen.insert(reference.id) {
                     continue;
                 }
-                let bytes = reader.read_object(reference).map_err(|_| unavailable())?;
+                let bytes = reader
+                    .read_object(reference)
+                    .map_err(|_| unavailable_at("record_r25_line_445"))?;
                 let payload = reference
                     .owner_chunk_payload(&key, &bytes)
-                    .map_err(|_| unavailable())?;
-                let object = StagedObject::owner_chunk(&key, payload).map_err(|_| unavailable())?;
+                    .map_err(|_| unavailable_at("record_r25_line_448"))?;
+                let object = StagedObject::owner_chunk(&key, payload)
+                    .map_err(|_| unavailable_at("record_r25_line_449"))?;
                 if object.reference() != reference {
-                    return Err(unavailable());
+                    return Err(unavailable_at("record_r25_line_451"));
                 }
                 plan.objects.push(object);
             }
@@ -509,7 +537,7 @@ impl Service {
                 .record_address_key()
                 .is_none_or(|key| key.expose() != plan.root.address_key().expose())
         {
-            return Err(unavailable());
+            return Err(unavailable_at("record_r25_line_512"));
         }
         let opaque_owner_bytes = plan
             .root
@@ -550,7 +578,10 @@ impl Service {
         {
             self.maybe_collect_record_objects()?;
         }
-        let durable = self.durable.as_ref().ok_or_else(unavailable)?;
+        let durable = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| unavailable_at("record_r25_line_553"))?;
         let objects = plan
             .objects
             .iter()
@@ -569,7 +600,9 @@ impl Service {
             })
             .map_err(|error| self.record_storage_error(error))?;
         if let Some(ha) = &self.ha {
-            let process = ha.lock_for_request().map_err(|_| unavailable())?;
+            let process = ha
+                .lock_for_request()
+                .map_err(|_| unavailable_at("record_r25_line_572"))?;
             if activation.is_some() {
                 process
                     .preflight_record_replacement(&operation, &base, &plan.bytes, &plan.objects)
@@ -577,10 +610,16 @@ impl Service {
                         crate::ha::RecordPublicationPreflightError::Capacity => {
                             Response::error(507, "HA replacement capacity exhausted before staging")
                         }
-                        crate::ha::RecordPublicationPreflightError::Unavailable => unavailable(),
+                        crate::ha::RecordPublicationPreflightError::Unavailable => {
+                            unavailable_at("record_r25_line_580")
+                        }
                     })?;
             }
-            let live_auth = &self.state.as_ref().ok_or_else(unavailable)?.auth;
+            let live_auth = &self
+                .state
+                .as_ref()
+                .ok_or_else(|| unavailable_at("record_r25_line_583"))?
+                .auth;
             let mut authority_rejection = None;
             let result = if let Some(before_publish) = before_publish {
                 process.commit_record_state_with_before_publish(
@@ -627,7 +666,7 @@ impl Service {
             }
             #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
             if let Some(context) = restore_fault.as_mut() {
-                let receipt = result.map_err(|_| unavailable())?;
+                let receipt = result.map_err(|_| unavailable_at("record_r25_line_630"))?;
                 let gated = self
                     .durable
                     .as_ref()
@@ -644,7 +683,13 @@ impl Service {
                 }
             }
         } else if let Some(before_publish) = before_publish {
-            before_publish(&self.state.as_ref().ok_or_else(unavailable)?.auth)?;
+            before_publish(
+                &self
+                    .state
+                    .as_ref()
+                    .ok_or_else(|| unavailable_at("record_r25_line_647"))?
+                    .auth,
+            )?;
         }
         let result = self.persist_record_plan_local(&plan, &operation, false);
         if let Err(error) = result {
@@ -677,7 +722,10 @@ impl Service {
         operation: &str,
         allow_epoch_catchup: bool,
     ) -> Result<(), Response> {
-        let durable = self.durable.as_mut().ok_or_else(unavailable)?;
+        let durable = self
+            .durable
+            .as_mut()
+            .ok_or_else(|| unavailable_at("record_r25_line_680"))?;
         let prior_epoch = durable.replay_epoch();
         let target = plan.root.replay_epoch;
         if target < prior_epoch
@@ -685,7 +733,7 @@ impl Service {
                 && !allow_epoch_catchup
                 && prior_epoch.checked_add(1) != Some(target))
         {
-            return Err(unavailable());
+            return Err(unavailable_at("record_r25_line_688"));
         }
         let result = Self::persist_record_batch(durable, plan, operation);
         if durable.recovery_required() || (result.is_err() && durable.replay_epoch() != prior_epoch)
@@ -718,7 +766,7 @@ impl Service {
                 507,
                 "record durable capacity exhausted; no response released",
             )),
-            Err(_) => Err(unavailable()),
+            Err(_) => Err(unavailable_at("record_r25_line_721")),
         }
     }
 
@@ -868,9 +916,11 @@ impl Service {
             }
         }
         let (state, objects) = {
-            let process = ha.lock_for_request().map_err(|_| unavailable())?;
+            let process = ha
+                .lock_for_request()
+                .map_err(|_| unavailable_at("record_r25_line_871"))?;
             if committed.root.cluster_id != process.cluster_id() {
-                return Err(unavailable());
+                return Err(unavailable_at("record_r25_line_873"));
             }
             let reader = HaReader {
                 ha: &process,
@@ -888,19 +938,22 @@ impl Service {
             let key = committed.root.address_key();
             for owner in &committed.root.owners {
                 for reference in &owner.chunks {
-                    let bytes = reader.read_object(reference).map_err(|_| unavailable())?;
+                    let bytes = reader
+                        .read_object(reference)
+                        .map_err(|_| unavailable_at("record_r25_line_891"))?;
                     let payload = reference
                         .owner_chunk_payload(&key, &bytes)
-                        .map_err(|_| unavailable())?;
-                    let object =
-                        StagedObject::owner_chunk(&key, payload).map_err(|_| unavailable())?;
+                        .map_err(|_| unavailable_at("record_r25_line_894"))?;
+                    let object = StagedObject::owner_chunk(&key, payload)
+                        .map_err(|_| unavailable_at("record_r25_line_896"))?;
                     if object.reference() != reference {
-                        return Err(unavailable());
+                        return Err(unavailable_at("record_r25_line_898"));
                     }
                     objects.push(object);
                 }
             }
-            let objects = unique_record_objects(&objects).map_err(|_| unavailable())?;
+            let objects = unique_record_objects(&objects)
+                .map_err(|_| unavailable_at("record_r25_line_903"))?;
             (state, objects)
         };
         let plan = RecordPlan {
@@ -1029,13 +1082,16 @@ impl Service {
         if self.record_writes_since_gc < 64 {
             return Ok(());
         }
-        let durable = self.durable.as_ref().ok_or_else(unavailable)?;
+        let durable = self
+            .durable
+            .as_ref()
+            .ok_or_else(|| unavailable_at("record_r25_line_1032"))?;
         let stored = durable
             .get("system", "state")
-            .map_err(|_| unavailable())?
-            .ok_or_else(unavailable)?;
+            .map_err(|_| unavailable_at("record_r25_line_1035"))?
+            .ok_or_else(|| unavailable_at("record_r25_line_1036"))?;
         if root.encode().map_err(root_error)?.as_slice() != stored.expose() {
-            return Err(unavailable());
+            return Err(unavailable_at("record_r25_line_1038"));
         }
         let mut reachable = root
             .references()
@@ -1043,7 +1099,7 @@ impl Service {
             .collect::<BTreeSet<_>>();
         self.state
             .as_ref()
-            .ok_or_else(unavailable)?
+            .ok_or_else(|| unavailable_at("record_r25_line_1046"))?
             .engines
             .visit_record_objects(|object| {
                 reachable.insert(object.reference().resource());
@@ -1057,7 +1113,10 @@ impl Service {
             "state-chunks".to_owned(),
         ];
         while let Some(prefix) = prefixes.pop() {
-            for name in durable.list("system", &prefix).map_err(|_| unavailable())? {
+            for name in durable
+                .list("system", &prefix)
+                .map_err(|_| unavailable_at("record_r25_line_1060"))?
+            {
                 let resource = format!("{prefix}/{name}");
                 if resource.ends_with('/') {
                     prefixes.push(resource.trim_end_matches('/').to_owned());
@@ -1071,7 +1130,10 @@ impl Service {
             "record-gc-{}",
             hex(&crypto::random::<16>().map_err(|e| Response::error(503, e))?)
         );
-        let durable = self.durable.as_mut().ok_or_else(unavailable)?;
+        let durable = self
+            .durable
+            .as_mut()
+            .ok_or_else(|| unavailable_at("record_r25_line_1074"))?;
         for (number, chunk) in deletes
             .chunks(heptabao_durable_service::MAX_ATOMIC_MUTATIONS)
             .enumerate()

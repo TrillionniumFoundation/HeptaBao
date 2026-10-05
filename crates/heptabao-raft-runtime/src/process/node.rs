@@ -39,7 +39,51 @@ pub struct ApplicationReadWitness {
     applied_log: openraft::type_config::alias::LogIdOf<crate::state_machine::TypeConfig>,
 }
 
+/// An authenticated application's completed snapshot belongs to this actual
+/// committed log prefix. Deserializing the stamp alone grants no read authority.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CommittedApplicationPrefix {
+    term: u64,
+    node: u64,
+    index: u64,
+}
+impl CommittedApplicationPrefix {
+    pub fn index(&self) -> u64 {
+        self.index
+    }
+    pub fn valid(&self) -> bool {
+        self.term > 0 && self.node > 0 && self.index > 0
+    }
+}
+
 impl ApplicationReadWitness {
+    /// Caller first authenticates the selected application and validates this
+    /// opaque witness under its original quorum deadline.
+    pub fn completed_prefix(&self) -> CommittedApplicationPrefix {
+        let leader = self.applied_log.committed_leader_id();
+        CommittedApplicationPrefix {
+            term: leader.term,
+            node: leader.node_id,
+            index: self.applied_log.index,
+        }
+    }
+    /// Raft's fresh quorum and this same store's real applied snapshot cover
+    /// the authenticated peer completion. Passive numeric metrics never enter.
+    pub fn covers_completed_prefix(&self, prefix: &CommittedApplicationPrefix) -> bool {
+        let read = self.read_log.committed_leader_id();
+        let applied = self.applied_log.committed_leader_id();
+        prefix.valid()
+            && self.read_log.index >= prefix.index
+            && self.applied_log.index >= prefix.index
+            && read.term >= prefix.term
+            && applied.term >= prefix.term
+            && (self.read_log.index != prefix.index
+                || (read.term == prefix.term && read.node_id == prefix.node))
+            && (self.applied_log.index != prefix.index
+                || (applied.term == prefix.term && applied.node_id == prefix.node))
+    }
+
     /// A later quorum covers a strictly newer applied prefix of the same live
     /// local store. Application identity and monotonic owners are separately
     /// authenticated by the application before interpreting supersession.

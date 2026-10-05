@@ -1538,6 +1538,13 @@ impl Service {
         let _deadline_scope = authority
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);
+        crate::ha_forward_completion::diagnostic_delivery_state(
+            "capsule_entry",
+            authority.deadline_expired(),
+            self.recovery_required,
+            self.state.is_none(),
+            self.unseal_nonce == authority.activation_nonce,
+        );
         if authority.deadline_expired()
             || self.recovery_required
             || self.state.is_none()
@@ -1556,6 +1563,13 @@ impl Service {
                 "plugin response withheld after HA synchronization failure",
             ));
         }
+        crate::ha_forward_completion::diagnostic_delivery_state(
+            "capsule_after_sync",
+            authority.deadline_expired(),
+            self.recovery_required,
+            self.state.is_none(),
+            self.unseal_nonce == authority.activation_nonce,
+        );
         let Some(state) = self.state.as_ref() else {
             return Err(Response::error(
                 503,

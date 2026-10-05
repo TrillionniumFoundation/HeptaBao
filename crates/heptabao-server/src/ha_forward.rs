@@ -23,6 +23,18 @@ const MAX_CLUSTER_ID_BYTES: usize = 128;
 #[cfg(test)]
 const TEST_CLUSTER_ID: &str = "test-cluster";
 
+pub(crate) struct ForwardContext<'a> {
+    pub method: &'a str,
+    pub path: &'a str,
+    pub namespace: &'a str,
+    pub token: &'a str,
+    pub body: &'a Value,
+    pub wrap_ttl_seconds: Option<u64>,
+    pub origin_peer: Option<std::net::IpAddr>,
+    pub client_certificates: Option<&'a [Vec<u8>]>,
+    pub caller_deadline: Option<std::time::Instant>,
+}
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct ForwardRequest {
@@ -40,6 +52,8 @@ pub(crate) struct ForwardRequest {
     pub client_certificates: Option<Vec<Vec<u8>>>,
     #[serde(default)]
     pub origin_peer: Option<std::net::IpAddr>,
+    #[serde(default)]
+    pub completion_nonce: Option<[u8; 32]>,
     /// True only when an explicitly enabled one-step rolling transition
     /// admitted the pre-cluster-bound HBFQ1 wire after mTLS peer identity.
     #[serde(skip)]
@@ -134,6 +148,8 @@ struct ForwardRequestRef<'a> {
     client_certificates: Option<&'a [Vec<u8>]>,
     #[serde(skip_serializing_if = "Option::is_none")]
     origin_peer: Option<std::net::IpAddr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    completion_nonce: Option<[u8; 32]>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -151,6 +167,8 @@ pub(crate) struct ForwardResponse {
     pub response_headers: crate::service::ResponseHeaders,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub consistency_index: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub completion: Option<crate::ha_forward_completion::CompletionWire>,
 }
 
 impl fmt::Debug for ForwardResponse {
@@ -249,6 +267,7 @@ pub(crate) fn encode_request_for_cluster(
             wrap_ttl_seconds: None,
             client_certificates,
             origin_peer: None,
+            completion_nonce: None,
         },
     )
 }
@@ -328,6 +347,7 @@ pub(crate) fn encode_wrapped_request_for_cluster(
             wrap_ttl_seconds: Some(ttl),
             client_certificates,
             origin_peer: None,
+            completion_nonce: None,
         },
     )
 }
@@ -369,6 +389,7 @@ pub(crate) fn encode_peer_request_for_cluster(
             wrap_ttl_seconds,
             client_certificates,
             origin_peer: Some(origin_peer),
+            completion_nonce: None,
         },
     )
 }
@@ -376,6 +397,7 @@ pub(crate) fn encode_peer_request_for_cluster(
 /// Index-capable forwarding keeps the complete authority tuple and explicitly
 /// negotiates response metadata. Unknown versions fail before handler admission.
 #[allow(clippy::too_many_arguments)]
+#[cfg(test)]
 pub(crate) fn encode_index_request_for_cluster(
     cluster_id: &str,
     direction: (u64, u64),
@@ -388,6 +410,38 @@ pub(crate) fn encode_index_request_for_cluster(
     client_certificates: Option<&[Vec<u8>]>,
     origin_peer: Option<std::net::IpAddr>,
 ) -> Result<Vec<u8>, String> {
+    encode_completed_index_request_for_cluster(
+        cluster_id,
+        direction,
+        &ForwardContext {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            wrap_ttl_seconds,
+            origin_peer,
+            client_certificates,
+            caller_deadline: None,
+        },
+        None,
+    )
+}
+
+pub(crate) fn encode_completed_index_request_for_cluster(
+    cluster_id: &str,
+    direction: (u64, u64),
+    context: &ForwardContext<'_>,
+    completion_nonce: Option<[u8; 32]>,
+) -> Result<Vec<u8>, String> {
+    let method = context.method;
+    let path = context.path;
+    let namespace = context.namespace;
+    let token = context.token;
+    let body = context.body;
+    let wrap_ttl_seconds = context.wrap_ttl_seconds;
+    let origin_peer = context.origin_peer;
+    let client_certificates = context.client_certificates;
     validate_cluster_id(cluster_id)?;
     validate_direction(direction.0, direction.1)?;
     validate_request_fields(method, path, namespace, token)?;
@@ -409,6 +463,7 @@ pub(crate) fn encode_index_request_for_cluster(
             wrap_ttl_seconds,
             client_certificates,
             origin_peer,
+            completion_nonce,
         },
     )
 }
@@ -427,6 +482,9 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
         REQUEST_MAGIC
     };
     let mut request: ForwardRequest = decode(magic, encoded)?;
+    if request.completion_nonce.is_some() && !index_response {
+        return Err("HA completion nonce requires negotiated version".into());
+    }
     request.index_response = index_response;
     if !index_response
         && (with_peer != request.origin_peer.is_some()
@@ -522,6 +580,7 @@ pub(crate) fn decode_request_for_cluster_compatible(
                 origin_peer: None,
                 legacy_v1: true,
                 index_response: false,
+                completion_nonce: None,
             })
         }
         Err(error) => Err(error),
@@ -560,15 +619,27 @@ pub(crate) fn encode_response_for_cluster(
             body: body.clone(),
             response_headers: Default::default(),
             consistency_index: None,
+            completion: None,
         },
     )
 }
 
+#[cfg(test)]
 pub(crate) fn encode_index_response_for_cluster(
     cluster_id: &str,
     source: u64,
     target: u64,
     response: &crate::Response,
+) -> Result<Vec<u8>, String> {
+    encode_completed_index_response_for_cluster(cluster_id, source, target, response, None)
+}
+
+pub(crate) fn encode_completed_index_response_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    response: &crate::Response,
+    completion: Option<crate::ha_forward_completion::CompletionWire>,
 ) -> Result<Vec<u8>, String> {
     validate_cluster_id(cluster_id)?;
     validate_direction(source, target)?;
@@ -594,6 +665,7 @@ pub(crate) fn encode_index_response_for_cluster(
             body: response.body.clone(),
             response_headers: response.response_headers.copy_for_forward(),
             consistency_index,
+            completion,
         },
     )
 }
@@ -614,7 +686,10 @@ pub(crate) fn decode_index_response_for_cluster(
 #[cfg(test)]
 pub(crate) fn decode_response(encoded: &[u8]) -> Result<ForwardResponse, String> {
     let response: ForwardResponse = decode(RESPONSE_MAGIC, encoded)?;
-    if response.consistency_index.is_some() || !response.response_headers.is_empty() {
+    if response.consistency_index.is_some()
+        || response.completion.is_some()
+        || !response.response_headers.is_empty()
+    {
         return Err("HA response index requires negotiated version".into());
     }
     validate_direction(response.source, response.target)?;
@@ -677,6 +752,7 @@ pub(crate) fn decode_legacy_response_for_transition(
         body: std::mem::take(&mut response.body),
         response_headers: Default::default(),
         consistency_index: None,
+        completion: None,
     })
 }
 

@@ -136,7 +136,7 @@ async fn large_log_reconnect_snapshot_then_new_leader_commits_its_blank()
         nodes.push(node);
     }
     let result = async {
-        for (from, to) in [(3, 2), (1, 3)] {
+        for (from, to) in [(3, 2), (1, 0), (1, 1), (1, 99)] {
             let request = openraft::raft::TransferLeaderRequest::<crate::TypeConfig>::new(
                 openraft::Vote::new_committed(1, from),
                 to,
@@ -914,6 +914,92 @@ async fn interrupted_snapshot_restarts_do_not_exhaust_receive_slots()
     }
     .await;
     node.shutdown().await?;
+    std::fs::remove_dir_all(path)?;
+    result
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn transfer_broadcast_preserves_peer_direction_and_other_voter_lease_reset()
+-> Result<(), Box<dyn std::error::Error>> {
+    let path = std::env::temp_dir().join(format!(
+        "heptabao-transfer-broadcast-{}",
+        std::process::id()
+    ));
+    let router = Arc::new(Router::default());
+    let mut nodes = Vec::new();
+    for id in 1..=3 {
+        let factory = RemoteNetworkFactory::new(
+            id,
+            BTreeSet::from([1, 2, 3]),
+            Arc::new(Arc::clone(&router)),
+        )?;
+        let node = ProcessRaftNode::create(path.join(id.to_string()), id, factory).await?;
+        router.peers.write().await.insert(id, node.rpc_service());
+        nodes.push(node);
+    }
+    let result = async {
+        nodes[0].initialize_single().await?;
+        leader(&nodes[0], 1).await?;
+        nodes[0].add_learner(2).await?;
+        nodes[0].add_learner(3).await?;
+        nodes[0]
+            .change_membership(BTreeSet::from([1, 2, 3]))
+            .await?;
+        nodes[0].ensure_linearizable().await?;
+        let service = nodes[0].rpc_service();
+        let receiver = service.raft.metrics();
+        let (vote, applied) = {
+            let metrics = receiver.borrow_watched();
+            (metrics.vote, metrics.last_applied)
+        };
+        // Every request uses the same true cluster/recipient handler. Reject an
+        // unauthenticated claimed old leader and unenrolled/self successor.
+        for (from, to) in [(3, 2), (1, 0), (1, 1), (1, 99)] {
+            let request = openraft::raft::TransferLeaderRequest::<crate::TypeConfig>::new(
+                openraft::Vote::new_committed(vote.leader_id.term, from),
+                to,
+                applied,
+            );
+            assert!(matches!(
+                nodes[2]
+                    .rpc_service()
+                    .handle(
+                        1,
+                        RaftRpcKind::TransferLeader,
+                        serde_json::to_vec(&request)?
+                    )
+                    .await,
+                Err(RemoteRaftError::InvalidRpc)
+            ));
+        }
+        let request =
+            openraft::raft::TransferLeaderRequest::<crate::TypeConfig>::new(vote, 2, applied);
+        // This receiver is node 3, while the assigned next leader is node 2.
+        // It must reach the genuine Raft handler to clear the old leader lease.
+        let payload = nodes[2]
+            .rpc_service()
+            .handle(
+                1,
+                RaftRpcKind::TransferLeader,
+                serde_json::to_vec(&request)?,
+            )
+            .await?;
+        let response: Result<
+            openraft::raft::TransferLeaderResponse<crate::TypeConfig>,
+            openraft::error::RaftError<crate::TypeConfig>,
+        > = serde_json::from_slice(&payload)?;
+        assert!(matches!(response, Ok(Ok(()))));
+        nodes[0].transfer_leadership(2).await?;
+        leader(&nodes[1], 2).await?;
+        nodes[1].ensure_linearizable().await?;
+        nodes[0].ensure_linearizable().await?;
+        Ok::<_, Box<dyn std::error::Error>>(())
+    }
+    .await;
+    router.peers.write().await.clear();
+    for node in nodes {
+        node.shutdown().await?;
+    }
     std::fs::remove_dir_all(path)?;
     result
 }

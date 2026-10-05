@@ -1647,6 +1647,16 @@ fn acl_denied() -> AuthError {
     // credential, identity and admission failures on their distinct paths.
     err(403, "1 error occurred:\n\t* permission denied\n\n")
 }
+// Lookup-accessor reports an unavailable target as the native backend's
+// invalid-accessor response. Actor admission, ACL, and clock failures are
+// checked separately and must never be projected as a target input error.
+fn lookup_accessor_target_error(error: AuthError) -> AuthError {
+    if error.status == 403 {
+        bad("1 error occurred:\n\t* invalid accessor\n\n")
+    } else {
+        error
+    }
+}
 fn response(data: Value, mutated: bool) -> AuthResponse {
     AuthResponse {
         approle_secret_consumption: None,
@@ -2724,6 +2734,7 @@ impl AuthState {
         {
             return Err(denied());
         }
+        self.capture_forward_actor(principal, namespace);
         Ok(view)
     }
 
@@ -6304,13 +6315,18 @@ impl AuthState {
                         false,
                     ));
                 }
-                let id = self.target_token_observed(namespace, body, true, time)?;
+                let id = self
+                    .target_token_observed(namespace, body, true, time)
+                    .map_err(lookup_accessor_target_error)?;
                 let time = self.principal_token_api_time(actor, time)?;
-                let token = self.active_token_observed(&id, time, true)?;
+                let token = self
+                    .active_token_observed(&id, time, true)
+                    .map_err(lookup_accessor_target_error)?;
                 let time = self.principal_token_api_time(actor, time)?;
                 // Projection cannot deliver a target that expired during its
                 // preceding accessor resolution.
-                self.active_token_observed(&id, time, true)?;
+                self.active_token_observed(&id, time, true)
+                    .map_err(lookup_accessor_target_error)?;
                 Ok(response(token_info_observed(token, time)?, false))
             }
             "accessors" => {
@@ -9205,8 +9221,12 @@ pub(crate) use batch::{BatchClaims, BatchKeyAuthority};
 mod batch_issuance;
 #[path = "auth_batch_principal.rs"]
 mod batch_principal;
+#[path = "auth_forward_actor.rs"]
+mod forward_actor;
 #[path = "auth_lease_owner.rs"]
 mod lease_owner;
+pub(crate) use forward_actor::ForwardActorWitness;
+
 pub(crate) use batch_principal::ResolvedLeaseOwner;
 pub(crate) use lease_owner::{BatchLeaseClaims, LeaseOwner, ServiceOwnerProfile};
 #[cfg(test)]

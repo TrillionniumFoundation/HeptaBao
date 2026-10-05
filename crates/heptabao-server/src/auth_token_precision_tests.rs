@@ -1283,3 +1283,103 @@ fn precise_local_projection_uses_actual_process_timezone_without_changing_author
     }
     Ok(())
 }
+
+#[test]
+fn token_lookup_accessor_spent_target_matches_native_error_without_refund() -> TestResult {
+    let (mut state, mut root) = setup()?;
+    let raw = service(&mut state, &root, 1)?;
+    let denied_raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw)?;
+    let clock = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+    root.bind_request_clock(Some(clock))?;
+    let mut actor = state.authenticate_from_observed(
+        &raw,
+        AuthorityTime::Precise(clock.observed_at()?),
+        None,
+    )?;
+    actor.bind_request_clock(Some(clock))?;
+    let mut denied_actor = state.authenticate_from_observed(
+        &denied_raw,
+        AuthorityTime::Precise(clock.observed_at()?),
+        None,
+    )?;
+    denied_actor.bind_request_clock(Some(clock))?;
+    let accessor = state
+        .tokens
+        .get(&hash(&raw))
+        .ok_or("target")?
+        .accessor
+        .clone();
+    assert_eq!(
+        state
+            .tokens
+            .get(&hash(&raw))
+            .ok_or("target")?
+            .uses_remaining,
+        Some(0)
+    );
+    let before = serde_json::to_vec(&state)?;
+    for target in [&accessor, "a.absent"] {
+        let error = state
+            .token_route_observed(
+                Some(&root),
+                "",
+                "POST",
+                "auth/token/lookup-accessor",
+                &json!({"accessor":target}),
+                AuthorityTime::Precise(clock.observed_at()?),
+                None,
+            )
+            .err()
+            .ok_or("unavailable target was delivered")?;
+        assert_eq!(error.status, 400);
+        assert_eq!(error.message, "1 error occurred:\n\t* invalid accessor\n\n");
+    }
+    let error = state
+        .token_route_observed(
+            Some(&root),
+            "",
+            "POST",
+            "auth/token/lookup",
+            &json!({"token":raw}),
+            AuthorityTime::Precise(clock.observed_at()?),
+            None,
+        )
+        .err()
+        .ok_or("spent raw target was delivered")?;
+    assert_eq!(error.status, 403);
+    assert_eq!(error.message, "bad token");
+    let denied = state
+        .token_route_observed(
+            Some(&denied_actor),
+            "",
+            "POST",
+            "auth/token/lookup-accessor",
+            &json!({"accessor":accessor}),
+            AuthorityTime::Precise(clock.observed_at()?),
+            None,
+        )
+        .err()
+        .ok_or("lookup ACL was bypassed")?;
+    assert_eq!(denied.status, 403);
+    assert_eq!(
+        denied.message,
+        "1 error occurred:\n\t* permission denied\n\n"
+    );
+    assert!(
+        state
+            .authenticate_from_observed(&raw, AuthorityTime::Precise(clock.observed_at()?), None,)
+            .is_err()
+    );
+    // Only the original affine admission retains final-use delivery. This
+    // read-only guard must not refund the use or readmit the spent credential.
+    state.validate_token_api_delivery_target(
+        &actor,
+        "",
+        "auth/token/lookup-accessor",
+        &json!({"accessor":accessor}),
+        AuthorityTime::Precise(clock.observed_at()?),
+    )?;
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
