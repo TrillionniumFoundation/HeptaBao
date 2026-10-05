@@ -276,7 +276,6 @@ impl PluginResponseAuthority {
         Ok(time)
     }
 
-    #[cfg(any(target_os = "linux", target_os = "macos"))]
     pub(super) fn validate_live_auth(&self, auth: &AuthState) -> Result<(), Response> {
         if self.deadline_expired() {
             return Err(Response::error(

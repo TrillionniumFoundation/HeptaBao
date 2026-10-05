@@ -136,6 +136,8 @@ mod ha_activation;
 mod ha_read;
 #[path = "service_ha_received.rs"]
 mod ha_received;
+#[path = "service_ha_step_down.rs"]
+mod ha_step_down;
 #[path = "service_help_delivery.rs"]
 mod help_delivery;
 #[path = "service_identity.rs"]
@@ -1090,6 +1092,7 @@ pub struct Service {
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
     pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
     pending_token_api_authority: Option<plugin::PluginResponseAuthority>,
+    pending_ha_step_down: Option<ha_step_down::StepDownPlan>,
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
     pending_ordinary_kv_commit_notice: Option<ordinary_kv_delivery::OrdinaryKvCommitNoticeCapture>,
     native_snapshot_transport: bool,
@@ -1460,6 +1463,7 @@ impl Service {
             pending_snapshot_transfer: None,
             pending_ordinary_kv_authority: None,
             pending_token_api_authority: None,
+            pending_ha_step_down: None,
             pending_help_authority: None,
             pending_ordinary_kv_commit_notice: None,
             native_snapshot_transport: false,
@@ -2124,6 +2128,7 @@ impl Service {
             || self.pending_snapshot_transfer.is_some()
             || self.pending_ordinary_kv_authority.is_some()
             || self.pending_token_api_authority.is_some()
+            || self.pending_ha_step_down.is_some()
             || self.pending_help_authority.is_some()
             || self.pending_ordinary_kv_commit_notice.is_some()
         {
@@ -2377,6 +2382,7 @@ impl Service {
         let snapshot_transfer = self.pending_snapshot_transfer.take();
         let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
         let token_api_authority = self.pending_token_api_authority.take();
+        let step_down = self.pending_ha_step_down.take();
         let help_authority = self.pending_help_authority.take();
         let staged = sdk_staged
             + usize::from(database.is_some())
@@ -2396,6 +2402,7 @@ impl Service {
         let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
             + usize::from(token_api_authority.is_some())
             + usize::from(help_authority.is_some())
+            + usize::from(step_down.is_some())
             + usize::from(sdk_control_present);
         if staged > 1 || delivery_capsules > 1 || staged != 0 && delivery_capsules != 0 {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
@@ -2441,6 +2448,7 @@ impl Service {
         let ordinary_kv_expected = ordinary_kv_authority.is_some();
         let token_expected = token_api_authority.is_some();
         let help_expected = help_authority.is_some();
+        let step_down_expected = path == "sys/step-down" && response.status == 204;
         // Retain the exact moved capsule through terminal-floor publication and
         // mandatory audit. A typed unknown floor outcome attaches to this same
         // request, rather than being reconstructed from the public response.
@@ -2477,6 +2485,8 @@ impl Service {
         let response =
             self.complete_pending_token_api_delivery(token_expected, response, &fingerprint);
         let response = self.complete_pending_help_delivery(help_expected, response, &fingerprint);
+        let response =
+            self.complete_ha_step_down(step_down_expected, step_down, response, &fingerprint);
         RequestExecution::Complete(response)
     }
 
@@ -3233,28 +3243,35 @@ impl Service {
             if body.as_object().is_none_or(|object| !object.is_empty()) {
                 return Response::error(400, "step-down accepts an empty JSON object");
             }
-            let Some(principal) = principal.as_ref() else {
+            let Some(principal) = principal else {
                 return Response::error(403, "missing client token");
             };
             if let Err(error) = admitted
                 .auth
-                .authorize_sudo_request(principal, namespace, path, "update", now)
+                .authorize_sudo_request(&principal, namespace, path, "update", now)
             {
                 return Response::error(error.status, &error.message);
             }
-            let Some(ha) = self.ha.as_ref() else {
+            let Some(process) = self.ha.as_ref() else {
                 return Response::error(400, "HA is not enabled");
             };
-            return match ha.lock_for_request() {
-                Ok(ha) => match ha.step_down() {
-                    Ok(_) => Response {
-                        consistency_index: None,
-                        status: 204,
-                        body: Value::Null,
-                    },
-                    Err(_) => Response::error(503, "HA leadership transfer failed"),
-                },
-                Err(_) => Response::error(503, "HA process lock is unavailable"),
+            // Keep the original affine actor while the current leader still
+            // commits the terminal clock floor and mandatory response audit.
+            self.pending_ha_step_down = Some(ha_step_down::StepDownPlan::new(
+                Arc::clone(process),
+                plugin::PluginResponseAuthority::new(
+                    principal,
+                    &admitted,
+                    &request,
+                    "update",
+                    true,
+                    &self.unseal_nonce,
+                ),
+            ));
+            return Response {
+                consistency_index: None,
+                status: 204,
+                body: Value::Null,
             };
         }
         if path == "sys/init/ack" {
