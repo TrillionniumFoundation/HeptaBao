@@ -3212,6 +3212,7 @@ impl Service {
                 path,
                 body,
                 token_fields.as_ref(),
+                pki_role_fields.as_ref(),
                 now,
                 request.token_clock,
                 client_certificates,

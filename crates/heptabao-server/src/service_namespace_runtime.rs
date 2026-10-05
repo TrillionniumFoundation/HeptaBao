@@ -293,7 +293,14 @@ impl ClosedAuthAdmission {
         now: u64,
     ) -> Result<(), Response> {
         self.current_auth(current)?
-            .authorize_request_parameters(self.actor()?, namespace, method, path, body, now)
+            .authorize_request_parameters_observed(
+                self.actor()?,
+                namespace,
+                method,
+                path,
+                body,
+                AuthorityTime::Coarse(now),
+            )
             .map_err(|error| Response::error(error.status, &error.message))
     }
 }
@@ -701,7 +708,7 @@ impl Runtime {
         let principal = parcel
             .private
             .auth
-            .authenticate_from(raw, now, origin_peer)
+            .authenticate_from_observed(raw, AuthorityTime::Coarse(now), origin_peer)
             .map_err(|error| Response::error(error.status, &error.message))
             .and_then(|actor| {
                 if actor.namespace() != actual {

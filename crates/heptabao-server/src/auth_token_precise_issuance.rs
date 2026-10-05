@@ -297,7 +297,10 @@ impl AuthState {
             let expires_at = deadline.map(ceil).transpose()?;
             let token = Token {
                 token_api_precision: Some(lease),
-                public_origin: Some(public_origin::TokenApiOrigin::new(metadata, creation_path)?),
+                public_origin: Some(public_origin::TokenApiOrigin::new(
+                    metadata,
+                    &creation_path,
+                )?),
                 issue_stamp: None,
                 token_api_lease_ttl: deadline.map(|_| granted.ceil_seconds()),
                 token_role: issued_role,

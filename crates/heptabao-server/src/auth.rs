@@ -6789,7 +6789,10 @@ impl AuthState {
         let mut response = self.issue(
             Token {
                 token_api_precision: None,
-                public_origin: Some(public_origin::TokenApiOrigin::new(metadata, creation_path)?),
+                public_origin: Some(public_origin::TokenApiOrigin::new(
+                    metadata,
+                    &creation_path,
+                )?),
                 issue_stamp: None,
                 token_api_lease_ttl: expires_at.map(|expiry| expiry - now),
                 token_role: issued_role,
