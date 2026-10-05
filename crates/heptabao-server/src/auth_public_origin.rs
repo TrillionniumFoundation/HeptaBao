@@ -19,6 +19,9 @@ pub(super) enum Floor {
 pub(super) enum MetadataInput {
     Absent,
     ExplicitNull,
+    // WeakDecode can retain a nil map for a non-null JSON input such as [null].
+    // Keep that genuine decoded fact separate from an explicit input null.
+    DecodedNull,
     Map(BTreeMap<String, String>),
 }
 impl Drop for MetadataInput {
@@ -33,34 +36,40 @@ impl MetadataInput {
         match body.get("meta") {
             None => Ok(Self::Absent),
             Some(Value::Null) => Ok(Self::ExplicitNull),
-            Some(Value::Object(values)) => {
-                let mut map = BTreeMap::new();
-                for (name, value) in values {
-                    let Some(value) = value.as_str() else {
-                        approle_metadata::erase(&mut map);
-                        return Err(bad("meta must be a map of strings"));
+            Some(value) => {
+                // Pinned TypeKVPairs first WeakDecodes into map[string]string.
+                // A failed map attempt is discarded before the independent
+                // []string attempt; no partial map can escape on an error.
+                let mut decoded = None;
+                let mut map = if weak_map(value, &mut decoded) {
+                    let Some(map) = decoded else {
+                        return Ok(Self::DecodedNull);
                     };
-                    map.insert(name.clone(), value.to_owned());
-                }
+                    map
+                } else {
+                    if let Some(mut map) = decoded {
+                        approle_metadata::erase(&mut map);
+                    }
+                    weak_pairs(value)?
+                };
                 if !crate::login_metadata::within_limit(&map) {
                     approle_metadata::erase(&mut map);
                     return Err(err(413, "token metadata exceeds supported bounds"));
                 }
                 Ok(Self::Map(map))
             }
-            _ => Err(bad("meta must be a map of strings")),
         }
     }
     pub(super) fn issued_json(&self) -> Value {
         match self {
-            Self::Absent | Self::ExplicitNull => Value::Null,
+            Self::Absent | Self::ExplicitNull | Self::DecodedNull => Value::Null,
             Self::Map(map) => json!(map),
         }
     }
     pub(super) fn map(&self) -> BTreeMap<String, String> {
         match self {
             Self::Map(map) => map.clone(),
-            Self::Absent | Self::ExplicitNull => BTreeMap::new(),
+            Self::Absent | Self::ExplicitNull | Self::DecodedNull => BTreeMap::new(),
         }
     }
     fn validate(&self) -> Result<(), AuthError> {
@@ -76,10 +85,90 @@ impl MetadataInput {
             input: match self {
                 Self::Absent => BatchMetadataInput::Absent,
                 Self::ExplicitNull => BatchMetadataInput::ExplicitNull,
+                Self::DecodedNull => BatchMetadataInput::DecodedNull,
                 Self::Map(_) => BatchMetadataInput::Map,
             },
         }
     }
+}
+
+/// The JSON domain of pinned mapstructure v2.5.0 WeakDecode. JSON null leaves
+/// the destination unchanged; an empty object/slice allocates an empty map;
+/// nonempty slices recursively merge into the same destination in input order.
+/// JSON depth is already bounded by the ordinary strict HTTP JSON decoder.
+fn weak_map(value: &Value, result: &mut Option<BTreeMap<String, String>>) -> bool {
+    match value {
+        Value::Null => true,
+        Value::Object(values) => {
+            let map = result.get_or_insert_with(BTreeMap::new);
+            for (name, value) in values {
+                let Some(value) = token_policies::weak_string(value) else {
+                    return false;
+                };
+                replace_value(map, name, value);
+            }
+            true
+        }
+        Value::Array(values) => {
+            if values.is_empty() {
+                result.get_or_insert_with(BTreeMap::new);
+            }
+            values.iter().all(|value| weak_map(value, result))
+        }
+        _ => false,
+    }
+}
+
+fn replace_value(map: &mut BTreeMap<String, String>, name: &str, value: String) {
+    if let Some(previous) = map.get_mut(name) {
+        previous.zeroize();
+        *previous = value;
+    } else {
+        map.insert(name.into(), value);
+    }
+}
+
+fn weak_pairs(value: &Value) -> Result<BTreeMap<String, String>, AuthError> {
+    // WeakDecode lifts a scalar or a nonempty map into a single-element slice;
+    // []string conversion errors accumulate in actual input index order. Null
+    // string elements decode to an empty slot, rather than being filtered out.
+    let values = match value {
+        Value::Array(values) => values.as_slice(),
+        _ => std::slice::from_ref(value),
+    };
+    let mut strings = Zeroizing::new(Vec::with_capacity(values.len()));
+    let mut failures = Vec::new();
+    for (index, value) in values.iter().enumerate() {
+        if let Some(value) = token_policies::weak_string(value) {
+            strings.push(value);
+        } else {
+            let kind = if value.is_object() {
+                "map[string]interface {}"
+            } else {
+                "[]interface {}"
+            };
+            failures.push(format!(
+                "'[{index}]' expected type 'string', got unconvertible type '{kind}'"
+            ));
+        }
+    }
+    if !failures.is_empty() {
+        return Err(bad(&format!(
+            "Field validation failed: error converting input for field \"meta\": decoding failed due to the following error(s):\n\n{}",
+            failures.join("\n")
+        )));
+    }
+    let mut map = BTreeMap::new();
+    for (index, pair) in strings.iter().enumerate() {
+        let Some((name, value)) = pair.split_once('=').filter(|(name, _)| !name.is_empty()) else {
+            approle_metadata::erase(&mut map);
+            return Err(bad(&format!(
+                "Field validation failed: error converting input for field \"meta\": invalid key pair at index {index} in field \"meta\""
+            )));
+        };
+        replace_value(&mut map, name, value.into());
+    }
+    Ok(map)
 }
 
 #[derive(Clone, Copy, Serialize, Deserialize)]
@@ -87,6 +176,7 @@ impl MetadataInput {
 enum BatchMetadataInput {
     Absent,
     ExplicitNull,
+    DecodedNull,
     Map,
 }
 /// Actual native Token API batch provenance. The metadata map remains owned
@@ -107,7 +197,9 @@ impl BatchOrigin {
     }
     pub(super) fn issued_json(&self, metadata: &BTreeMap<String, String>) -> Value {
         match self.input {
-            BatchMetadataInput::Absent | BatchMetadataInput::ExplicitNull => Value::Null,
+            BatchMetadataInput::Absent
+            | BatchMetadataInput::ExplicitNull
+            | BatchMetadataInput::DecodedNull => Value::Null,
             BatchMetadataInput::Map => json!(metadata),
         }
     }
@@ -309,6 +401,115 @@ impl AuthState {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn token_metadata_weak_decode_map_first_nil_allocation_and_ordered_merge()
+    -> Result<(), Box<dyn std::error::Error>> {
+        // Public synthetic outputs observed by the pinned official R45/R47
+        // matrices, including recursive slice merges and nil-map provenance.
+        for (value, expected) in [
+            (
+                json!({"": "synthetic-public"}),
+                json!({"": "synthetic-public"}),
+            ),
+            (
+                json!({"yes":true,"no":false,"n":123,"nil":null}),
+                json!({"yes":"1","no":"0","n":"123","nil":""}),
+            ),
+            (
+                json!([{"marker":"first"},{"marker":"last","flag":true}]),
+                json!({"marker":"last","flag":"1"}),
+            ),
+            (json!([[{"a":1}],[{"b":null}]]), json!({"a":"1","b":""})),
+            (json!([null]), Value::Null),
+            (
+                json!([null,{"marker":"public"}]),
+                json!({"marker":"public"}),
+            ),
+            (json!([[], []]), json!({})),
+            (json!([]), json!({})),
+            (
+                json!([" key = spaced ", "value=x=y"]),
+                json!({" key ":" spaced ","value":"x=y"}),
+            ),
+            (
+                json!(["marker=first", "marker=last", "empty="]),
+                json!({"marker":"last","empty":""}),
+            ),
+            (json!("marker=value"), json!({"marker":"value"})),
+        ] {
+            let parsed = MetadataInput::parse(&json!({"meta":value}))?;
+            assert_eq!(parsed.issued_json(), expected);
+            let encoded = serde_json::to_vec(&parsed)?;
+            let restored: MetadataInput = serde_json::from_slice(&encoded)?;
+            restored.validate()?;
+            assert_eq!(restored.issued_json(), expected);
+            let batch = restored.batch_origin();
+            let map = restored.map();
+            batch.validate(&map)?;
+            assert_eq!(batch.issued_json(&map), expected);
+            assert_eq!(
+                batch.lookup_json(&map),
+                if map.is_empty() {
+                    Value::Null
+                } else {
+                    expected
+                }
+            );
+        }
+        assert!(matches!(
+            MetadataInput::parse(&json!({"meta":[null]}))?,
+            MetadataInput::DecodedNull
+        ));
+        assert!(matches!(
+            MetadataInput::parse(&json!({"meta":null}))?,
+            MetadataInput::ExplicitNull
+        ));
+        assert!(
+            serde_json::from_value::<MetadataInput>(
+                json!({"input":"decoded_null","permission":true})
+            )
+            .is_err()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn token_metadata_weak_decode_independent_fallback_has_exact_joined_errors() {
+        let prefix = "Field validation failed: error converting input for field \"meta\": ";
+        for (value, suffix) in [
+            (
+                json!({"nested":{}}),
+                "decoding failed due to the following error(s):\n\n'[0]' expected type 'string', got unconvertible type 'map[string]interface {}'",
+            ),
+            (
+                json!([{},[],{"bad":[1]}]),
+                "decoding failed due to the following error(s):\n\n'[0]' expected type 'string', got unconvertible type 'map[string]interface {}'\n'[1]' expected type 'string', got unconvertible type '[]interface {}'\n'[2]' expected type 'string', got unconvertible type 'map[string]interface {}'",
+            ),
+            (
+                json!([{"valid":"first"},"bad=second"]),
+                "decoding failed due to the following error(s):\n\n'[0]' expected type 'string', got unconvertible type 'map[string]interface {}'",
+            ),
+            (
+                json!([["a=1"], ["b=2"]]),
+                "decoding failed due to the following error(s):\n\n'[0]' expected type 'string', got unconvertible type '[]interface {}'\n'[1]' expected type 'string', got unconvertible type '[]interface {}'",
+            ),
+            (json!(true), "invalid key pair at index 0 in field \"meta\""),
+            (json!(""), "invalid key pair at index 0 in field \"meta\""),
+            (json!(42), "invalid key pair at index 0 in field \"meta\""),
+            (
+                json!(["good=first", "=invalid"]),
+                "invalid key pair at index 1 in field \"meta\"",
+            ),
+        ] {
+            let error = MetadataInput::parse(&json!({"meta":value})).err();
+            assert!(error.is_some());
+            if let Some(error) = error {
+                assert_eq!(error.status, 400);
+                assert_eq!(error.message, format!("{prefix}{suffix}"));
+            }
+        }
+    }
+
     #[test]
     fn real_input_nil_empty_and_batch_proto_lookup_remain_distinct()
     -> Result<(), Box<dyn std::error::Error>> {

@@ -3,10 +3,28 @@
 //! client JSON resembling this marker consequently remains ordinary inner data.
 use serde_json::{Map, Value, json, value::RawValue};
 use std::collections::BTreeMap;
+use zeroize::Zeroize;
 
 const MARKER: &str = "__heptabao_token_number_fields";
 const INVALID: &str = "invalid request-local token number carrier";
-const FIELDS: [&str; 4] = ["policies", "no_default_policy", "no_parent", "renewable"];
+const FIELDS: [&str; 5] = [
+    "policies",
+    "no_default_policy",
+    "no_parent",
+    "renewable",
+    "meta",
+];
+
+// Raw JSON object keys can themselves be private metadata. These temporary
+// indexes retain only borrowed raw values and erase their owned key copies.
+struct RawFields<'a>(BTreeMap<String, &'a RawValue>);
+impl Drop for RawFields<'_> {
+    fn drop(&mut self) {
+        for (mut key, _) in std::mem::take(&mut self.0) {
+            key.zeroize();
+        }
+    }
+}
 
 pub(crate) fn eligible(method: &str, path: &str) -> bool {
     matches!(method, "POST" | "PUT")
@@ -23,27 +41,84 @@ pub(crate) fn transport_body(
     if !eligible(method, path) {
         return Ok(());
     }
-    let raw: BTreeMap<String, &RawValue> = if bytes.is_empty() {
+    let raw = RawFields(if bytes.is_empty() {
         BTreeMap::new()
     } else {
         serde_json::from_slice(bytes).map_err(|_| INVALID)?
-    };
-    let mut numbers = Map::new();
+    });
+    let mut numbers = super::ocsp::CarrierBody(Value::Object(Map::new()));
     for field in FIELDS {
-        if let Some(raw) = raw.get(field)
+        if let Some(raw) = raw.0.get(field)
             && let Some(value) = body.get(field)
-            && let Some(spelling) = capture(raw, value, field == "policies")?
         {
-            numbers.insert(field.into(), spelling);
+            let spelling = if field == "meta" {
+                capture_metadata(raw, value)?
+            } else {
+                capture(raw, value, field == "policies")?
+            };
+            if let Some(spelling) = spelling {
+                numbers
+                    .0
+                    .as_object_mut()
+                    .ok_or(INVALID)?
+                    .insert(field.into(), spelling);
+            }
         }
     }
     *body = json!({MARKER:{
         "wire_method":method,
         "path":path,
         "original_body":std::mem::take(body),
-        "number_fields":numbers
+        "number_fields":std::mem::take(&mut numbers.0)
     }});
     Ok(())
+}
+
+// TypeKVPairs accepts recursively nested JSON slices/maps. Preserve a sparse
+// numeric spelling tree, not a retyped copy of the original parameter ACL data.
+// Intermediate carrier values use the same private erase-on-drop body owner.
+fn capture_metadata(raw: &RawValue, value: &Value) -> Result<Option<Value>, &'static str> {
+    match value {
+        Value::Number(_) => Ok(Some(Value::String(raw.get().into()))),
+        Value::Array(values) => {
+            let raw: Vec<&RawValue> = serde_json::from_str(raw.get()).map_err(|_| INVALID)?;
+            if raw.len() != values.len() {
+                return Err(INVALID);
+            }
+            let mut sparse =
+                super::ocsp::CarrierBody(Value::Array(Vec::with_capacity(values.len())));
+            let mut present = false;
+            for (raw, value) in raw.into_iter().zip(values) {
+                let spelling = capture_metadata(raw, value)?;
+                present |= spelling.is_some();
+                sparse
+                    .0
+                    .as_array_mut()
+                    .ok_or(INVALID)?
+                    .push(spelling.unwrap_or(Value::Null));
+            }
+            Ok(present.then(|| std::mem::take(&mut sparse.0)))
+        }
+        Value::Object(values) => {
+            let raw = RawFields(serde_json::from_str(raw.get()).map_err(|_| INVALID)?);
+            if raw.0.len() != values.len() {
+                return Err(INVALID);
+            }
+            let mut sparse = super::ocsp::CarrierBody(Value::Object(Map::new()));
+            for (name, value) in values {
+                if let Some(spelling) = capture_metadata(raw.0.get(name).ok_or(INVALID)?, value)? {
+                    sparse
+                        .0
+                        .as_object_mut()
+                        .ok_or(INVALID)?
+                        .insert(name.clone(), spelling);
+                }
+            }
+            Ok((!sparse.0.as_object().ok_or(INVALID)?.is_empty())
+                .then(|| std::mem::take(&mut sparse.0)))
+        }
+        _ => Ok(None),
+    }
 }
 
 fn capture(raw: &RawValue, value: &Value, array: bool) -> Result<Option<Value>, &'static str> {
@@ -110,11 +185,69 @@ pub(crate) fn request<'a>(
         return Err(INVALID);
     }
     for field in FIELDS {
-        if !valid_mapping(original.get(field), numbers.get(field), field == "policies") {
+        let valid = if field == "meta" {
+            match original.get(field) {
+                Some(value) => valid_metadata_mapping(value, numbers.get(field)),
+                None => !numbers.contains_key(field),
+            }
+        } else {
+            valid_mapping(original.get(field), numbers.get(field), field == "policies")
+        };
+        if !valid {
             return Err(INVALID);
         }
     }
     Ok(Some(Carrier { original, numbers }))
+}
+
+fn valid_metadata_mapping(value: &Value, spelling: Option<&Value>) -> bool {
+    match (value, spelling) {
+        (Value::Number(_), Some(spelling)) => valid_number(value, spelling),
+        (Value::Number(_), None) => false,
+        (Value::Array(values), Some(Value::Array(spellings))) => {
+            values.len() == spellings.len()
+                && spellings.iter().any(|spelling| !spelling.is_null())
+                && values.iter().zip(spellings).all(|(value, spelling)| {
+                    valid_metadata_mapping(value, (!spelling.is_null()).then_some(spelling))
+                })
+        }
+        (Value::Object(values), Some(Value::Object(spellings))) => {
+            !spellings.is_empty()
+                && spellings.keys().all(|name| values.contains_key(name))
+                && values
+                    .iter()
+                    .all(|(name, value)| valid_metadata_mapping(value, spellings.get(name)))
+        }
+        (Value::Array(values), None) => values
+            .iter()
+            .all(|value| valid_metadata_mapping(value, None)),
+        (Value::Object(values), None) => values
+            .values()
+            .all(|value| valid_metadata_mapping(value, None)),
+        (_, None) => true,
+        _ => false,
+    }
+}
+
+fn restore_metadata_spelling(value: &mut Value, spelling: &Value) {
+    match (value, spelling) {
+        (value @ Value::Number(_), spelling) => *value = spelling.clone(),
+        (Value::Array(values), Value::Array(spellings)) => {
+            for (value, spelling) in values.iter_mut().zip(spellings) {
+                if !spelling.is_null() {
+                    restore_metadata_spelling(value, spelling);
+                }
+            }
+        }
+        (Value::Object(values), Value::Object(spellings)) => {
+            for (name, spelling) in spellings {
+                if let Some(value) = values.get_mut(name) {
+                    restore_metadata_spelling(value, spelling);
+                }
+            }
+        }
+        _ => {}
+    }
 }
 
 fn valid_number(value: &Value, spelling: &Value) -> bool {
@@ -156,7 +289,11 @@ impl Carrier<'_> {
     pub(crate) fn backend_body(&self) -> super::ocsp::CarrierBody {
         let mut body = self.original.clone();
         for (field, spelling) in self.numbers {
-            if let Value::Array(spellings) = spelling {
+            if field == "meta" {
+                if let Some(value) = body.get_mut(field) {
+                    restore_metadata_spelling(value, spelling);
+                }
+            } else if let Value::Array(spellings) = spelling {
                 if let Some(Value::Array(values)) = body.get_mut(field) {
                     for (value, spelling) in values.iter_mut().zip(spellings) {
                         if value.is_number() {
@@ -176,6 +313,50 @@ impl Carrier<'_> {
 mod tests {
     use super::*;
     use std::time::Duration;
+
+    #[test]
+    fn token_metadata_weak_decode_recursive_numbers_require_original_numeric_binding() {
+        let input = br#"{"meta":[[{"exp":1E+01,"negzero":-0}],null,{"wide":900719925474099312345,"decimal":1000000.0}]}"#;
+        let mut body = crate::auth::parse_strict_json(input).unwrap_or(Value::Null);
+        assert!(transport_body("POST", "auth/token/create", &mut body, input).is_ok());
+        let carrier = request("POST", "auth/token/create", &body)
+            .unwrap_or_else(|_| unreachable!())
+            .unwrap_or_else(|| unreachable!());
+        assert!(carrier.original["meta"][0][0]["exp"].is_number());
+        assert_eq!(
+            carrier.backend_body().0["meta"],
+            json!([[{"exp":"1E+01","negzero":"-0"}],null,{"wide":"900719925474099312345","decimal":"1000000.0"}])
+        );
+        for (tree, value) in [
+            ("number_fields", json!({})),
+            (
+                "number_fields",
+                json!({"meta":[[{"exp":"10","negzero":"-0"}],null,{"wide":"1","decimal":"1000000.0"}]}),
+            ),
+            (
+                "number_fields",
+                json!({"meta":[[{"exp":"1E+01","negzero":"-0","extra":"1"}],null,{"wide":"900719925474099312345","decimal":"1000000.0"}]}),
+            ),
+            (
+                "number_fields",
+                json!({"meta":[[{"exp":"1E+01","negzero":"-0"}],"forged",{"wide":"900719925474099312345","decimal":"1000000.0"}]}),
+            ),
+            (
+                "original_body",
+                json!({"meta":[[{"exp":"1E+01","negzero":-0}],null,{"wide":900719925474099312345u128.to_string(),"decimal":1000000.0}]}),
+            ),
+        ] {
+            let mut invalid = body.clone();
+            invalid[MARKER][tree] = value;
+            assert!(request("POST", "auth/token/create", &invalid).is_err());
+        }
+        assert!(request("PUT", "auth/token/create", &body).is_err());
+        assert!(request("POST", "auth/token/create/other", &body).is_err());
+        let mut ordinary = json!({"meta":{"anything":1},MARKER:{"client":"userdata"}});
+        let original = ordinary.clone();
+        assert!(transport_body("POST", "secret/ocsp", &mut ordinary, br#"{}"#).is_ok());
+        assert_eq!(ordinary, original);
+    }
 
     #[test]
     fn token_number_wire_spelling_survives_http_and_cannot_be_supplied_as_inner_marker() {

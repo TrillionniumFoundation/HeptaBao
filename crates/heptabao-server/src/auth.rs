@@ -6120,6 +6120,9 @@ impl AuthState {
         now: u64,
         force_orphan: bool,
     ) -> Result<AuthResponse, AuthError> {
+        // Framework field validation happens only after the original bearer
+        // and parameter ACL admission, before the Token API creation rules.
+        let metadata = public_origin::MetadataInput::parse(body)?;
         reject_unknown(
             body,
             &[
@@ -6310,7 +6313,6 @@ impl AuthState {
             .collect();
         role_warnings.append(&mut warnings);
         let warnings = role_warnings;
-        let metadata = public_origin::MetadataInput::parse(body)?;
         if batch {
             let claims = batch::BatchClaims {
                 public_origin: Some(metadata.batch_origin()),
