@@ -84,6 +84,9 @@ impl State {
                 "unsupported or downgraded identity state schema",
             ));
         }
+        self.engines
+            .validate_kubernetes_artifact_clock(previous.map(|state| &*state.engines))
+            .map_err(|error| Response::error(503, &error.message))?;
         self.auth
             .validate_token_api_clock_floor(previous.map(|state| &*state.auth))
             .map_err(|error| Response::error(503, &error.message))?;

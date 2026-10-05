@@ -261,6 +261,10 @@ impl Service {
             Ok(time) => state.auth.token_api_observed_time(time),
             Err(error) => return error,
         };
+        let time = match state.engines.kubernetes_artifact_time(time) {
+            Ok(time) => time,
+            Err(error) => return Response::error(error.status, &error.message),
+        };
         if let Err(error) = state.auth.authorize_request_observed(
             &principal,
             request.namespace,
@@ -314,12 +318,12 @@ impl Service {
         } else {
             None
         };
-        let dispatch = match state.engines.kubernetes_dispatch(
+        let dispatch = match state.engines.kubernetes_dispatch_observed(
             request.namespace,
             request.path,
             request.method,
             request.body,
-            request.now,
+            (request.now, time),
             issuer.as_ref(),
         ) {
             Ok(Some(value)) => value,
@@ -354,6 +358,9 @@ impl Service {
                         .engines
                         .bind_kubernetes_opaque_artifact_intent(&mut plan, defaults)
                     {
+                        return Response::error(error.status, &error.message);
+                    }
+                    if let Err(error) = state.engines.observe_kubernetes_artifact_time(time) {
                         return Response::error(error.status, &error.message);
                     }
                     state.schema = state.writer_schema();
@@ -498,7 +505,13 @@ impl Service {
             time.with_seconds_floor(state.engines.lease_clock())
                 .map_err(|_| failure("trusted token clock is unavailable"))
         }) {
-            Ok(time) => state.auth.token_api_observed_time(time),
+            Ok(time) => match state
+                .engines
+                .kubernetes_artifact_time(state.auth.token_api_observed_time(time))
+            {
+                Ok(time) => time,
+                Err(_) => return post_provider_completion_failure(&plan.inner.lease_id),
+            },
             Err(_) => return post_provider_completion_failure(&plan.inner.lease_id),
         };
         if state.auth.observe_token_api_time(time).is_err() {
@@ -506,12 +519,12 @@ impl Service {
         }
         let now = time.seconds();
         let live = delivery_allowed && Self::kubernetes_completion_owner_live(&state, plan, time);
-        let mut response = match state.engines.kubernetes_finalize(
+        let mut response = match state.engines.kubernetes_finalize_observed(
             &plan.inner.namespace,
             &plan.inner.mount,
             &plan.inner,
             metadata,
-            now,
+            time,
             live,
         ) {
             Ok(response) => response,
@@ -642,7 +655,12 @@ impl Service {
                     .state
                     .as_ref()
                     .ok_or_else(|| failure("Kubernetes delivery is sealed"))?;
-                let time = state.auth.token_api_observed_time(authority.token_time()?);
+                let time = state
+                    .engines
+                    .kubernetes_artifact_time(
+                        state.auth.token_api_observed_time(authority.token_time()?),
+                    )
+                    .map_err(|error| Response::error(error.status, &error.message))?;
                 if !Self::kubernetes_completion_owner_live(state, plan, time) {
                     return Err(failure(
                         "Kubernetes committed lease no longer authorizes credential delivery",
@@ -660,15 +678,15 @@ impl Service {
                     .ok_or_else(|| failure("Kubernetes admitted mount owner is unavailable"))?;
                 let remaining = state
                     .engines
-                    .validate_kubernetes_delivery_receipt(
+                    .validate_kubernetes_delivery_receipt_observed(
                         &plan.inner,
                         path,
                         binding,
                         receipt,
-                        time.seconds(),
+                        time,
                     )
                     .map_err(|error| Response::error(error.status, &error.message))?;
-                if remaining == 0
+                if (remaining == 0 && plan.inner.artifact_contract.is_none())
                     || plan
                         .deadline
                         .is_some_and(|deadline| std::time::Instant::now() >= deadline)

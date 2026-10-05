@@ -523,6 +523,23 @@ impl Kubernetes {
         Ok(())
     }
 
+    pub(super) fn validate_artifact_clock(
+        &self,
+        floor: Option<crate::auth::Timestamp>,
+    ) -> Result<()> {
+        for lease in self.leases.values() {
+            if let Some(artifact) = &lease.opaque_artifact
+                && floor.is_none_or(|at| at < artifact.received_at)
+            {
+                return Err(err(
+                    503,
+                    "opaque artifact clock floor does not cover registered owner",
+                ));
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn has_opaque_artifact_state(&self) -> bool {
         self.pending.values().any(|p| p.artifact_contract.is_some())
             || self.leases.values().any(|p| p.opaque_artifact.is_some())
@@ -597,6 +614,37 @@ impl Kubernetes {
         Ok(())
     }
 
+    pub(super) fn reconcile_owners_observed(
+        &mut self,
+        time: crate::auth::AuthorityTime,
+        namespace: &str,
+        live: &BTreeSet<(String, LeaseOwner)>,
+    ) -> Result<bool> {
+        let at = if self.has_opaque_artifact_state() {
+            Some(
+                time.exact()
+                    .ok_or_else(|| err(503, "trusted opaque artifact clock is required"))?,
+            )
+        } else {
+            None
+        };
+        let mut changed = self.reconcile_owners(time.seconds(), namespace, live);
+        if let Some(at) = at {
+            for lease in self.leases.values_mut() {
+                if let Some(artifact) = &mut lease.opaque_artifact
+                    && !artifact.retired
+                    && (artifact.public_expires_at <= at
+                        || !live
+                            .contains(&(namespace.to_owned(), artifact.admission.owner.clone())))
+                {
+                    artifact.retired = true;
+                    changed = true;
+                }
+            }
+        }
+        Ok(changed)
+    }
+
     pub(crate) fn reconcile_owners(
         &mut self,
         now: u64,
@@ -605,13 +653,6 @@ impl Kubernetes {
     ) -> bool {
         let mut changed = self.reconcile(now);
         for lease in self.leases.values_mut() {
-            if let Some(artifact) = &mut lease.opaque_artifact
-                && !artifact.retired
-                && !live.contains(&(namespace.to_owned(), artifact.admission.owner.clone()))
-            {
-                artifact.retired = true;
-                changed = true;
-            }
             if let Some(observed) = &mut lease.authority
                 && !observed.retired
                 && !live.contains(&(namespace.to_owned(), observed.admission.owner.clone()))
@@ -639,6 +680,35 @@ impl Kubernetes {
         self.lease_ids().any(|candidate| candidate == id)
     }
 
+    pub(super) fn lease_lookup_observed(
+        &self,
+        id: &str,
+        time: crate::auth::AuthorityTime,
+    ) -> Result<Value> {
+        let lease = self
+            .leases
+            .get(id)
+            .filter(|l| {
+                l.authority.as_ref().is_none_or(|a| !a.retired)
+                    && l.opaque_artifact.as_ref().is_none_or(|a| !a.retired)
+            })
+            .ok_or_else(|| err(400, "lease not found"))?;
+        if let Some(artifact) = &lease.opaque_artifact {
+            let at = time
+                .exact()
+                .ok_or_else(|| err(503, "trusted opaque artifact clock is required"))?;
+            if artifact.public_expires_at <= at {
+                return Err(err(400, "lease not found"));
+            }
+            return Ok(
+                json!({"id":id,"path":id.rsplit_once('/').map(|(path,_)|path).unwrap_or(id),
+                "issue_time":artifact.received_at.rfc3339(),"expire_time":artifact.public_expires_at.rfc3339(),
+                "last_renewal":Value::Null,"renewable":false,"ttl":artifact.lookup_ttl(at).map_err(|e|err(503,e))?}),
+            );
+        }
+        self.lease_lookup(id, time.seconds())
+    }
+
     pub(crate) fn lease_lookup(
         &self,
         id: &str,
@@ -652,9 +722,12 @@ impl Kubernetes {
                     && l.opaque_artifact.as_ref().is_none_or(|a| !a.retired)
             })
             .ok_or_else(|| err(400, "lease not found"))?;
+        if lease.opaque_artifact.is_some() {
+            return Err(err(503, "trusted opaque artifact clock is required"));
+        }
         Ok(
             json!({"id":id, "path":id.rsplit_once('/').map(|(path,_)| path).unwrap_or(id),
-            "issue_time":lease.opaque_artifact.as_ref().map(|a| timestamp(a.received_at))
+            "issue_time":lease.opaque_artifact.as_ref().map(|a| a.received_at.rfc3339())
                 .or_else(|| lease.authority.as_ref().map(|a| timestamp(a.admission.issued_at))),
             "expire_time":timestamp(lease.expires_at), "last_renewal":Value::Null,
             "renewable":false, "ttl":lease.expires_at.saturating_sub(now)}),
@@ -697,12 +770,10 @@ impl Kubernetes {
         let before = self.leases.len();
         let mut changed = false;
         self.leases.retain(|_, lease| {
-            if let Some(artifact) = &mut lease.opaque_artifact {
-                if lease.expires_at <= now && !artifact.retired {
-                    artifact.retired = true;
-                    changed = true;
-                }
-                lease.expires_at > now
+            if lease.opaque_artifact.is_some() {
+                // Retain the complete new owner, including retired observations.
+                // Only the explicit precise maintenance path may retire it.
+                true
             } else if let Some(observed) = &mut lease.authority {
                 if lease.expires_at <= now && !observed.retired {
                     observed.retired = true;
@@ -716,9 +787,83 @@ impl Kubernetes {
         changed || before != self.leases.len()
     }
 
+    pub(super) fn dispatch_observed(
+        &mut self,
+        service_namespace: &str,
+        mount: &str,
+        method: &str,
+        relative: &str,
+        body: &Value,
+        admitted_clock: (u64, crate::auth::AuthorityTime),
+        issuer: Option<&ResolvedLeaseOwner>,
+    ) -> Result<Dispatch> {
+        let (admitted_now, time) = admitted_clock;
+        if !self.has_opaque_artifact_state() {
+            return self.dispatch(
+                service_namespace,
+                mount,
+                method,
+                relative,
+                body,
+                admitted_now,
+                issuer,
+            );
+        }
+        let at = time
+            .exact()
+            .ok_or_else(|| err(503, "trusted opaque artifact clock is required"))?;
+        let mut retired = false;
+        for lease in self.leases.values_mut() {
+            if let Some(artifact) = &mut lease.opaque_artifact
+                && !artifact.retired
+                && artifact.public_expires_at <= at
+            {
+                artifact.retired = true;
+                retired = true;
+            }
+        }
+        let mut response = self.dispatch_with_observation(
+            service_namespace,
+            mount,
+            method,
+            relative,
+            body,
+            admitted_now,
+            issuer,
+        )?;
+        if let Dispatch::Immediate(value) = &mut response {
+            value.mutated |= retired;
+        }
+        Ok(response)
+    }
+
     // Existing route arguments stay explicit; the added issuer is borrowed authority.
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn dispatch(
+        &mut self,
+        service_namespace: &str,
+        mount: &str,
+        method: &str,
+        relative: &str,
+        body: &Value,
+        now: u64,
+        issuer: Option<&ResolvedLeaseOwner>,
+    ) -> std::result::Result<Dispatch, EngineError> {
+        if self.has_opaque_artifact_state() {
+            return Err(err(503, "trusted opaque artifact dispatch is required"));
+        }
+        self.dispatch_with_observation(
+            service_namespace,
+            mount,
+            method,
+            relative,
+            body,
+            now,
+            issuer,
+        )
+    }
+
+    fn dispatch_with_observation(
         &mut self,
         service_namespace: &str,
         mount: &str,
@@ -1133,11 +1278,36 @@ impl Kubernetes {
         }))
     }
 
+    pub(super) fn validate_delivery_receipt_observed(
+        &self,
+        plan: &TokenRequestPlan,
+        receipt: &LeaseDeliveryReceipt,
+        time: crate::auth::AuthorityTime,
+    ) -> std::result::Result<(), EngineError> {
+        if plan.artifact_contract.is_none() {
+            return self.validate_delivery_receipt(plan, receipt, time.seconds());
+        }
+        let at = time
+            .exact()
+            .ok_or_else(|| err(503, "trusted opaque artifact clock is required"))?;
+        self.validate_delivery_receipt_with_observation(plan, receipt, time.seconds(), Some(at))
+    }
+
     pub(super) fn validate_delivery_receipt(
         &self,
         plan: &TokenRequestPlan,
         receipt: &LeaseDeliveryReceipt,
         now: u64,
+    ) -> std::result::Result<(), EngineError> {
+        self.validate_delivery_receipt_with_observation(plan, receipt, now, None)
+    }
+
+    fn validate_delivery_receipt_with_observation(
+        &self,
+        plan: &TokenRequestPlan,
+        receipt: &LeaseDeliveryReceipt,
+        now: u64,
+        at: Option<crate::auth::Timestamp>,
     ) -> std::result::Result<(), EngineError> {
         if receipt.lease_id != plan.lease_id
             || receipt.config_digest != plan.config_digest
@@ -1148,6 +1318,7 @@ impl Kubernetes {
             || match (&receipt.lease.opaque_artifact, &receipt.lease.authority) {
                 (Some(artifact), None) => {
                     artifact.retired
+                        || at.is_none_or(|at| artifact.public_expires_at <= at)
                         || artifact.admission != plan.authority
                         || plan.artifact_contract.as_ref() != Some(&artifact.contract)
                         || artifact.request_digest != plan.request_digest
@@ -1174,12 +1345,39 @@ impl Kubernetes {
         Ok(())
     }
 
+    pub(crate) fn finalize_observed(
+        &mut self,
+        plan: &TokenRequestPlan,
+        metadata: TokenMetadata,
+        time: crate::auth::AuthorityTime,
+        owner_live: bool,
+    ) -> std::result::Result<EngineResponse, EngineError> {
+        if plan.artifact_contract.is_none() {
+            return self.finalize(plan, metadata, time.seconds(), owner_live);
+        }
+        let at = time
+            .exact()
+            .ok_or_else(|| err(503, "trusted opaque artifact clock is required"))?;
+        self.finalize_with_observation(plan, metadata, time.seconds(), owner_live, Some(at))
+    }
+
     pub(crate) fn finalize(
         &mut self,
         plan: &TokenRequestPlan,
         metadata: TokenMetadata,
         now: u64,
         owner_live: bool,
+    ) -> std::result::Result<EngineResponse, EngineError> {
+        self.finalize_with_observation(plan, metadata, now, owner_live, None)
+    }
+
+    fn finalize_with_observation(
+        &mut self,
+        plan: &TokenRequestPlan,
+        metadata: TokenMetadata,
+        now: u64,
+        owner_live: bool,
+        received_at: Option<crate::auth::Timestamp>,
     ) -> std::result::Result<EngineResponse, EngineError> {
         let pending = self
             .pending
@@ -1225,23 +1423,35 @@ impl Kubernetes {
                     "opaque Kubernetes artifact carried legacy provider authority",
                 ));
             }
-            let public_ttl = contract
-                .public_ttl(lifetime_nanos)
-                .map_err(|e| err(503, e))?;
-            let expires_at = now
-                .checked_add(public_ttl)
-                .ok_or_else(|| err(503, "opaque artifact lease expiry overflow"))?;
-            let retired = !owner_live || plan.authority.expires_at <= now || public_ttl == 0;
-            let artifact = ArtifactLease {
+            let received_at =
+                received_at.ok_or_else(|| err(503, "trusted opaque artifact clock is required"))?;
+            if received_at.seconds() != now {
+                return Err(err(503, "opaque artifact clock binding changed"));
+            }
+            let mut artifact = ArtifactLease {
                 admission: plan.authority.clone(),
                 contract: contract.clone(),
                 request_digest: plan.request_digest.clone(),
                 config_digest: plan.config_digest.clone(),
-                received_at: now,
+                received_at,
+                public_expires_at: received_at,
                 lifetime_nanos,
-                public_ttl,
-                retired,
+                public_ttl: 0,
+                retired: false,
             };
+            artifact.public_expires_at = artifact.registration_expiry().map_err(|e| err(503, e))?;
+            artifact.public_ttl = artifact
+                .registered_response_ttl()
+                .map_err(|e| err(503, e))?;
+            let public_ttl = artifact.public_ttl;
+            let expires_at = artifact
+                .public_expires_at
+                .ceil_seconds()
+                .map_err(|_| err(503, "opaque artifact expiry overflow"))?;
+            let retired = !owner_live
+                || plan.authority.expires_at <= now
+                || artifact.public_expires_at <= received_at;
+            artifact.retired = retired;
             self.pending.remove(&plan.lease_id);
             self.leases.insert(
                 plan.lease_id.clone(),

@@ -43,6 +43,8 @@ pub struct EngineState {
     records: Option<kv1_records::Runtime>,
     #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
     lease_clock: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    kubernetes_artifact_clock: Option<crate::auth::Timestamp>,
     namespaces: BTreeMap<String, CowNamespace>,
 }
 
@@ -1156,6 +1158,44 @@ impl EngineState {
         })
     }
 
+    pub(crate) fn validate_kubernetes_delivery_receipt_observed(
+        &self,
+        plan: &kubernetes::TokenRequestPlan,
+        path: &str,
+        admitted_binding: (u64, u64),
+        receipt: &KubernetesDeliveryReceipt,
+        time: crate::auth::AuthorityTime,
+    ) -> Result<u64> {
+        if plan.artifact_contract.is_none() {
+            return self.validate_kubernetes_delivery_receipt(
+                plan,
+                path,
+                admitted_binding,
+                receipt,
+                time.seconds(),
+            );
+        }
+        if receipt.namespace != plan.namespace
+            || receipt.mount != plan.mount
+            || self.kubernetes_mount(&plan.namespace, path).as_deref() != Some(plan.mount.as_str())
+            || self.kubernetes_mount_binding(&plan.namespace, path) != Some(admitted_binding)
+            || admitted_binding != (receipt.incarnation, receipt.revision)
+        {
+            return Err(error(503, "Kubernetes delivery mount owner changed"));
+        }
+        let state = self
+            .namespaces
+            .get(&plan.namespace)
+            .and_then(|namespace| namespace.mounts.get(&plan.mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &state.backend else {
+            return Err(error(503, "Kubernetes delivery mount changed"));
+        };
+        let time = self.kubernetes_artifact_time(time)?;
+        engine.validate_delivery_receipt_observed(plan, &receipt.lease, time)?;
+        Ok(receipt.response_lease_duration(time.seconds()))
+    }
+
     pub(crate) fn validate_kubernetes_delivery_receipt(
         &self,
         plan: &kubernetes::TokenRequestPlan,
@@ -1192,6 +1232,50 @@ impl EngineState {
         })
     }
 
+    pub(crate) fn kubernetes_dispatch_observed(
+        &mut self,
+        namespace: &str,
+        path: &str,
+        method: &str,
+        body: &Value,
+        admitted_clock: (u64, crate::auth::AuthorityTime),
+        issuer: Option<&ResolvedLeaseOwner>,
+    ) -> Result<Option<kubernetes::Dispatch>> {
+        let (admitted_now, time) = admitted_clock;
+        if !self.has_kubernetes_opaque_artifact_state() {
+            return self.kubernetes_dispatch(namespace, path, method, body, admitted_now, issuer);
+        }
+        let time = self.kubernetes_artifact_time(time)?;
+        let changed = self.observe_kubernetes_artifact_time(time)?;
+        let Some(mount) = self.kubernetes_mount(namespace, path) else {
+            return Ok(None);
+        };
+        let relative = path
+            .strip_prefix(&mount)
+            .ok_or_else(|| bad("invalid Kubernetes mount routing"))?;
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(&mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Ok(None);
+        };
+        let mut response = engine.dispatch_observed(
+            namespace,
+            &mount,
+            method,
+            relative,
+            body,
+            (admitted_now, time),
+            issuer,
+        )?;
+        if let kubernetes::Dispatch::Immediate(value) = &mut response {
+            value.mutated |= changed;
+        }
+        Ok(Some(response))
+    }
+
     pub(crate) fn kubernetes_dispatch(
         &mut self,
         namespace: &str,
@@ -1221,6 +1305,38 @@ impl EngineState {
             .map(Some)
     }
 
+    pub(crate) fn kubernetes_finalize_observed(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        plan: &kubernetes::TokenRequestPlan,
+        metadata: kubernetes::TokenMetadata,
+        time: crate::auth::AuthorityTime,
+        owner_live: bool,
+    ) -> Result<EngineResponse> {
+        if plan.artifact_contract.is_none() {
+            return self.kubernetes_finalize(
+                namespace,
+                mount,
+                plan,
+                metadata,
+                time.seconds(),
+                owner_live,
+            );
+        }
+        self.observe_kubernetes_artifact_time(time)?;
+        let time = self.kubernetes_artifact_time(time)?;
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Err(error(503, "Kubernetes mount changed after provider entry"));
+        };
+        engine.finalize_observed(plan, metadata, time, owner_live)
+    }
+
     pub(crate) fn kubernetes_finalize(
         &mut self,
         namespace: &str,
@@ -1241,11 +1357,57 @@ impl EngineState {
         engine.finalize(plan, metadata, now, owner_live)
     }
 
+    pub(crate) fn kubernetes_artifact_time(
+        &self,
+        time: crate::auth::AuthorityTime,
+    ) -> Result<crate::auth::AuthorityTime> {
+        if !self.has_kubernetes_opaque_artifact_state() {
+            return Ok(time);
+        }
+        let at = time
+            .exact()
+            .ok_or_else(|| error(503, "trusted opaque artifact clock is required"))?;
+        Ok(crate::auth::AuthorityTime::Precise(
+            self.kubernetes_artifact_clock
+                .map_or(at, |floor| at.max(floor)),
+        ))
+    }
+
+    pub(crate) fn observe_kubernetes_artifact_time(
+        &mut self,
+        time: crate::auth::AuthorityTime,
+    ) -> Result<bool> {
+        if !self.has_kubernetes_opaque_artifact_state() {
+            return Ok(false);
+        }
+        let time = self.kubernetes_artifact_time(time)?;
+        let at = time
+            .exact()
+            .ok_or_else(|| error(503, "trusted opaque artifact clock is required"))?;
+        let changed = self.kubernetes_artifact_clock != Some(at);
+        self.kubernetes_artifact_clock = Some(at);
+        Ok(changed)
+    }
+
+    pub(crate) fn validate_kubernetes_artifact_clock(&self, previous: Option<&Self>) -> Result<()> {
+        if previous
+            .and_then(|p| p.kubernetes_artifact_clock)
+            .is_some_and(|floor| self.kubernetes_artifact_clock.is_none_or(|at| at < floor))
+        {
+            return Err(error(
+                503,
+                "opaque Kubernetes artifact clock floor was lost or downgraded",
+            ));
+        }
+        Ok(())
+    }
+
     pub(crate) fn validate_kubernetes_state(&self) -> Result<()> {
         for (scope, namespace) in &self.namespaces {
             for mount in namespace.mounts.values() {
                 if let Backend::Kubernetes(engine) = &mount.backend {
                     engine.validate_scope(scope)?;
+                    engine.validate_artifact_clock(self.kubernetes_artifact_clock)?;
                 }
             }
         }
@@ -1253,7 +1415,8 @@ impl EngineState {
     }
 
     pub(crate) fn has_kubernetes_opaque_artifact_state(&self) -> bool {
-        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
+        self.kubernetes_artifact_clock.is_some()
+            || self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
             matches!(&mount.backend, Backend::Kubernetes(engine) if engine.has_opaque_artifact_state())))
     }
 

@@ -15,9 +15,16 @@ impl Service {
     ) -> Result<bool, Response> {
         // Missing precise authority is not proof of expiry. Reject before any
         // engine clock, owner retirement or CRL mutation on the candidate.
-        if time.exact().is_none() && state.has_token_api_precision_state() {
+        if time.exact().is_none()
+            && (state.has_token_api_precision_state()
+                || state.engines.has_kubernetes_opaque_artifact_state())
+        {
             return Err(Response::error(503, "trusted token clock is required"));
         }
+        let time = state
+            .engines
+            .kubernetes_artifact_time(time)
+            .map_err(|error| Response::error(error.status, &error.message))?;
         let time = time
             .with_seconds_floor(state.engines.lease_clock())
             .map_err(|_| Response::error(503, "trusted token clock is unavailable"))?;
@@ -47,7 +54,10 @@ impl Service {
                 }
             }
         }
-        let reconciled = state.engines.reconcile_lease_state(now, &live);
+        let reconciled = state
+            .engines
+            .reconcile_lease_state_observed(time, &live)
+            .map_err(|error| Response::error(error.status, &error.message))?;
         let rebuilt = state
             .engines
             .maintain_local_pki_crl(now)
@@ -94,7 +104,7 @@ impl Service {
             }
             let mut engines = state.engines.clone();
             let mut response = if path.starts_with("sys/leases/") {
-                engines.handle_lease_admin(namespace, method, path, body, now)
+                engines.handle_lease_admin_observed(namespace, method, path, body, time)
             } else if engines.is_pki_issue_route(namespace, path) {
                 let owner = owner
                     .as_ref()

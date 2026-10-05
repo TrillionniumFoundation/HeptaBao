@@ -1,6 +1,7 @@
 //! Public artifact metadata is an observation, never provider execution authority.
 //! Missing durable contract fields retain the original strict provider-expiry mode.
 use super::kubernetes::{LeaseAuthority, MAX_TOKEN_TTL};
+use crate::auth::Timestamp;
 use serde::{Deserialize, Serialize};
 
 pub(crate) const ISSUANCE_ENABLED: bool = false;
@@ -9,7 +10,7 @@ const MAX_PUBLIC_TTL: u64 = 32 * 24 * 60 * 60;
 
 #[derive(Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum Producer {
-    #[serde(rename = "authenticated-token-request-opaque-artifact-v1")]
+    #[serde(rename = "authenticated-token-request-opaque-artifact-registration-v2")]
     AuthenticatedTokenRequest,
 }
 
@@ -110,19 +111,72 @@ pub(crate) struct LeaseObservation {
     pub(super) contract: Contract,
     pub(super) request_digest: String,
     pub(super) config_digest: String,
-    pub(super) received_at: u64,
+    pub(super) received_at: Timestamp,
+    pub(super) public_expires_at: Timestamp,
     pub(super) lifetime_nanos: i64,
     pub(super) public_ttl: u64,
     pub(super) retired: bool,
 }
 
 impl LeaseObservation {
+    pub(super) fn registration_expiry(&self) -> Result<Timestamp, &'static str> {
+        let public_ttl = self.contract.public_ttl(self.lifetime_nanos)?;
+        let expiry = self
+            .received_at
+            .duration_since_epoch()
+            .checked_add(std::time::Duration::from_secs(public_ttl))
+            .ok_or("artifact expiry overflow")?;
+        let mut end = Timestamp::checked(expiry.as_secs(), expiry.subsec_nanos())
+            .map_err(|_| "artifact expiry overflow")?;
+        // This type comes from actual authenticated owner resolution, never
+        // public claims/type/body or the narrower effective private parent cap.
+        if let Some(batch) = self.admission.owner.batch_claims() {
+            let intrinsic = batch
+                .precision()
+                .map_or_else(
+                    || Timestamp::whole(batch.expires_at()),
+                    |lease| Ok(lease.expires_at),
+                )
+                .map_err(|_| "batch intrinsic expiry overflow")?;
+            end = end.min(intrinsic);
+        }
+        Ok(end)
+    }
+    pub(super) fn registered_response_ttl(&self) -> Result<u64, &'static str> {
+        // Official Register time.Until(actual public expiry).Round(time.Second).
+        let end = self.public_expires_at.duration_since_epoch();
+        let now = self.received_at.duration_since_epoch();
+        let remaining = end.checked_sub(now).unwrap_or_default();
+        remaining
+            .as_secs()
+            .checked_add(u64::from(remaining.subsec_nanos() >= 500_000_000))
+            .ok_or("artifact duration overflow")
+    }
+    pub(super) fn lookup_ttl(&self, at: Timestamp) -> Result<u64, &'static str> {
+        // Official leaseEntry.ttl: expire.Sub(now.Round(1s)).Seconds() -> int64.
+        // This differs from registration Round and from floor(now).
+        let now = at.duration_since_epoch();
+        let rounded = now
+            .as_secs()
+            .checked_add(u64::from(now.subsec_nanos() >= 500_000_000))
+            .ok_or("artifact clock overflow")?;
+        Ok(self
+            .public_expires_at
+            .duration_since_epoch()
+            .checked_sub(std::time::Duration::from_secs(rounded))
+            .unwrap_or_default()
+            .as_secs())
+    }
     pub(super) fn validate(&self, public_expires_at: u64) -> Result<(), &'static str> {
         self.contract.validate()?;
-        if self.received_at < self.admission.issued_at
-            || self.public_ttl == 0
-            || self.public_ttl != self.contract.public_ttl(self.lifetime_nanos)?
-            || self.received_at.checked_add(self.public_ttl) != Some(public_expires_at)
+        if self.received_at.seconds() < self.admission.issued_at
+            || self.public_expires_at != self.registration_expiry()?
+            || self.public_ttl != self.registered_response_ttl()?
+            || self
+                .public_expires_at
+                .ceil_seconds()
+                .map_err(|_| "artifact expiry overflow")?
+                != public_expires_at
             || ![&self.request_digest, &self.config_digest]
                 .into_iter()
                 .all(|value| {
