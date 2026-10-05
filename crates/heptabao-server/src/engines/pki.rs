@@ -1464,11 +1464,7 @@ impl Pki {
         if let Some(profile) = &prepared.role_leaf_profile {
             profile.validate_created_leaf_der(&certificate_der)?;
         }
-        let certificate = if external {
-            public::stored_pem("CERTIFICATE", &certificate_der)
-        } else {
-            pem("CERTIFICATE", &certificate_der)
-        };
+        let certificate = public::stored_pem("CERTIFICATE", &certificate_der);
         let issuing_ca = if external {
             public::stored_pem("CERTIFICATE", &root.certificate_der)
         } else {
