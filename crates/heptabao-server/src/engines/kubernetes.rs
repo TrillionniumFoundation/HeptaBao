@@ -1731,6 +1731,12 @@ mod owner_tests {
         Ok(())
     }
 
+    fn exact(seconds: u64, nanos: u32) -> TestResult<crate::auth::AuthorityTime> {
+        Ok(crate::auth::AuthorityTime::Precise(
+            crate::auth::Timestamp::checked(seconds, nanos)?,
+        ))
+    }
+
     #[test]
     fn kube_opaque_artifact_public_lifetime_never_extends_original_private_batch_cap() -> TestResult
     {
@@ -1739,7 +1745,19 @@ mod owner_tests {
         engine.bind_opaque_artifact_intent(&mut plan, 32 * 24 * 3600, 32 * 24 * 3600)?;
         assert!(engine.has_opaque_artifact_state());
         assert_eq!(plan.authority.expires_at, 200);
-        let issued = engine.finalize(
+        let before = serde_json::to_vec(&engine)?;
+        assert!(
+            engine
+                .finalize_observed(
+                    &plan,
+                    metadata(),
+                    crate::auth::AuthorityTime::Coarse(103),
+                    true
+                )
+                .is_err()
+        );
+        assert_eq!(serde_json::to_vec(&engine)?, before);
+        let issued = engine.finalize_observed(
             &plan,
             TokenMetadata {
                 token: Zeroizing::new("synthetic-opaque-artifact-not-a-grant".into()),
@@ -1747,11 +1765,11 @@ mod owner_tests {
                 audiences: plan.audiences.clone(),
                 artifact_lifetime_nanos: Some(0),
             },
-            103,
+            exact(103, 0)?,
             true,
         )?;
         assert_eq!(issued.status, 200);
-        assert_eq!(issued.body["lease_duration"], 3600);
+        assert_eq!(issued.body["lease_duration"], 97);
         assert_eq!(
             issued.body["warnings"][0],
             "the created Kubernetes service accout token TTL 0s is less than the OpenBao lease TTL 10m0s; capping the lease TTL accordingly"
@@ -1760,17 +1778,17 @@ mod owner_tests {
             issued.body["warnings"][1],
             "TTL of \"768h\" exceeded the effective max_ttl of \"1h\"; TTL value is capped accordingly"
         );
-        let lookup = engine.lease_lookup(&plan.lease_id, 103)?;
-        assert_eq!(lookup["ttl"], 3600);
+        let lookup = engine.lease_lookup_observed(&plan.lease_id, exact(103, 0)?)?;
+        assert_eq!(lookup["ttl"], 97);
         let receipt = engine
             .capture_delivery_receipt(&plan)?
             .ok_or("actual receipt")?;
         assert_eq!(receipt.expires_at(), 200);
-        assert_eq!(receipt.response_lease_duration(150), 3600);
-        engine.validate_delivery_receipt(&plan, &receipt, 199)?;
+        assert_eq!(receipt.response_lease_duration(150), 97);
+        engine.validate_delivery_receipt_observed(&plan, &receipt, exact(199, 0)?)?;
         assert!(
             engine
-                .validate_delivery_receipt(&plan, &receipt, 200)
+                .validate_delivery_receipt_observed(&plan, &receipt, exact(200, 0)?)
                 .is_err()
         );
         assert!(
@@ -1794,7 +1812,11 @@ mod owner_tests {
         let (mut engine, issuer) = ready()?;
         let mut plan = issue(&mut engine, &issuer)?;
         engine.bind_opaque_artifact_intent(&mut plan, 32 * 24 * 3600, 32 * 24 * 3600)?;
-        assert!(engine.finalize(&plan, metadata(), 101, true).is_err());
+        assert!(
+            engine
+                .finalize_observed(&plan, metadata(), exact(101, 0)?, true)
+                .is_err()
+        );
         assert!(engine.pending.contains_key(&plan.lease_id));
         let new_metadata = TokenMetadata {
             token: Zeroizing::new("synthetic-opaque-result".into()),
@@ -1803,8 +1825,10 @@ mod owner_tests {
             artifact_lifetime_nanos: Some(300_000_000_000),
         };
         assert_eq!(
-            engine.finalize(&plan, new_metadata, 101, true)?.body["lease_duration"],
-            300
+            engine
+                .finalize_observed(&plan, new_metadata, exact(101, 0)?, true)?
+                .body["lease_duration"],
+            99
         );
         let mut value = serde_json::to_value(&engine)?;
         value["leases"][&plan.lease_id]["opaque_artifact"]["request_digest"] =
@@ -1827,6 +1851,133 @@ mod owner_tests {
                 .all_owners()
                 .any(|owner| owner == &plan.authority.owner)
         );
+        Ok(())
+    }
+
+    #[test]
+    fn kube_opaque_artifact_registration_round_and_lookup_clock_round_are_distinct() -> TestResult {
+        let (mut engine, issuer) = ready()?;
+        let mut plan = issue(&mut engine, &issuer)?;
+        engine.bind_opaque_artifact_intent(&mut plan, 32 * 24 * 3600, 32 * 24 * 3600)?;
+        let issued = engine.finalize_observed(
+            &plan,
+            TokenMetadata {
+                token: Zeroizing::new("opaque-rounding-boundary".into()),
+                expires_at: 0,
+                audiences: plan.audiences.clone(),
+                artifact_lifetime_nanos: Some(0),
+            },
+            exact(103, 600_000_000)?,
+            true,
+        )?;
+        assert_eq!(issued.body["lease_duration"], 96);
+        assert_eq!(
+            engine.lease_lookup_observed(&plan.lease_id, exact(104, 600_000_000)?)?["ttl"],
+            95
+        );
+        assert_eq!(
+            engine.lease_lookup_observed(&plan.lease_id, exact(104, 400_000_000)?)?["ttl"],
+            96
+        );
+        assert!(engine.lease_lookup(&plan.lease_id, 104).is_err());
+        let before = serde_json::to_vec(&engine)?;
+        assert!(
+            engine
+                .reconcile_owners_observed(
+                    crate::auth::AuthorityTime::Coarse(201),
+                    "",
+                    &BTreeSet::new()
+                )
+                .is_err()
+        );
+        assert_eq!(serde_json::to_vec(&engine)?, before);
+        let live = BTreeSet::from([(String::new(), issuer.owner.clone())]);
+        assert!(engine.reconcile_owners_observed(exact(200, 0)?, "", &live)?);
+        assert!(engine.has_opaque_artifact_state());
+        assert!(engine.leases.contains_key(&plan.lease_id));
+        assert!(
+            engine
+                .lease_lookup_observed(&plan.lease_id, exact(199, 0)?)
+                .is_err()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn kube_opaque_artifact_zero_rounded_public_ttl_does_not_replace_actual_private_expiry()
+    -> TestResult {
+        let (mut engine, issuer) = ready()?;
+        let mut plan = issue(&mut engine, &issuer)?;
+        engine.bind_opaque_artifact_intent(&mut plan, 32 * 24 * 3600, 32 * 24 * 3600)?;
+        let at = exact(199, 600_000_000)?;
+        let response = engine.finalize_observed(
+            &plan,
+            TokenMetadata {
+                token: Zeroizing::new("opaque-less-than-half-second".into()),
+                expires_at: 0,
+                audiences: plan.audiences.clone(),
+                artifact_lifetime_nanos: Some(0),
+            },
+            at,
+            true,
+        )?;
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["lease_duration"], 0);
+        let receipt = engine
+            .capture_delivery_receipt(&plan)?
+            .ok_or("future precise receipt")?;
+        engine.validate_delivery_receipt_observed(&plan, &receipt, at)?;
+        assert!(
+            engine
+                .validate_delivery_receipt_observed(&plan, &receipt, exact(200, 0)?)
+                .is_err()
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn kube_opaque_artifact_service_public_default_is_independent_of_original_private_delivery_cap()
+    -> TestResult {
+        let (mut engine, _) = ready()?;
+        let issuer = ResolvedLeaseOwner {
+            owner: LeaseOwner::service("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")?,
+            expires_at: Some(104),
+            precise_expires_at: None,
+            entity_id: None,
+        };
+        let mut plan = issue(&mut engine, &issuer)?;
+        engine.bind_opaque_artifact_intent(&mut plan, 32 * 24 * 3600, 32 * 24 * 3600)?;
+        assert_eq!(plan.authority.expires_at, 700);
+        let issued = engine.finalize_observed(
+            &plan,
+            TokenMetadata {
+                token: Zeroizing::new("opaque-service-default".into()),
+                expires_at: 0,
+                audiences: plan.audiences.clone(),
+                artifact_lifetime_nanos: Some(0),
+            },
+            exact(103, 400_000_000)?,
+            true,
+        )?;
+        assert_eq!(issued.body["lease_duration"], 3600);
+        let receipt = engine
+            .capture_delivery_receipt(&plan)?
+            .ok_or("actual service receipt")?;
+        assert_eq!(receipt.expires_at(), 700);
+        assert!(
+            engine
+                .validate_delivery_receipt_observed(&plan, &receipt, exact(700, 0)?)
+                .is_err()
+        );
+        // Service caller expiration is resolved by the authenticated live-owner
+        // inventory, not a public registration cap or JWT iat/exp projection.
+        assert!(engine.reconcile_owners_observed(exact(105, 0)?, "", &BTreeSet::new())?);
+        assert!(
+            engine
+                .lease_lookup_observed(&plan.lease_id, exact(105, 0)?)
+                .is_err()
+        );
+        assert!(engine.has_opaque_artifact_state());
         Ok(())
     }
 

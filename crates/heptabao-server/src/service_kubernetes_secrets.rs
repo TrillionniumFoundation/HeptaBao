@@ -454,6 +454,23 @@ impl Service {
         )
     }
 
+    #[cfg(test)]
+    fn finalize_kubernetes_token_with_observed_clock(
+        &mut self,
+        plan: &KubernetesTokenEffectPlan,
+        result: Result<TokenMetadata, Response>,
+        mut clock: impl FnMut() -> AuthorityTime,
+    ) -> Response {
+        let mut receipt = None;
+        self.finalize_kubernetes_token_checked(
+            plan,
+            result,
+            || Ok(clock()),
+            |_| Ok(()),
+            &mut receipt,
+        )
+    }
+
     fn finalize_kubernetes_token_checked(
         &mut self,
         plan: &KubernetesTokenEffectPlan,

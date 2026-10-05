@@ -848,6 +848,12 @@ fn opaque_fixture() -> TestResult<Fixture> {
         .engines
         .bind_kubernetes_opaque_artifact_intent(&mut plan.inner, defaults)
         .map_err(|_| "actual admitted opaque contract")?;
+    state
+        .engines
+        .observe_kubernetes_artifact_time(AuthorityTime::Precise(crate::auth::Timestamp::whole(
+            100,
+        )?))
+        .map_err(|_| "actual admitted precise observation")?;
     state.schema = state.writer_schema();
     assert_eq!(state.schema, KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA);
     state.validate_format().map_err(|_| "opaque state")?;
@@ -931,31 +937,34 @@ fn kube_opaque_artifact_durable_registration_and_retirement_preserve_schema_and_
         101,
     )
     .map_err(|_| "metadata")?;
-    let response = service.finalize_kubernetes_token_with_clock(&plan, Ok(metadata), || 101);
+    let completed_time = AuthorityTime::Precise(crate::auth::Timestamp::whole(101)?);
+    let response =
+        service
+            .finalize_kubernetes_token_with_observed_clock(&plan, Ok(metadata), || completed_time);
     assert_eq!(response.status, 200, "{}", response.body);
-    assert_eq!(response.body["lease_duration"], 3600);
+    assert_eq!(response.body["lease_duration"], 99);
     assert_eq!(plan.inner.authority.expires_at, 200);
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA);
     let lookup = state
         .engines
-        .handle_lease_admin(
+        .handle_lease_admin_observed(
             "",
             "POST",
             "sys/leases/lookup",
             &json!({"lease_id":plan.inner.lease_id}),
-            101,
+            AuthorityTime::Precise(crate::auth::Timestamp::whole(101)?),
         )
         .map_err(|_| "lookup")?;
-    assert_eq!(lookup.body["data"]["ttl"], 3600);
+    assert_eq!(lookup.body["data"]["ttl"], 99);
     let retired = state
         .engines
-        .handle_lease_admin(
+        .handle_lease_admin_observed(
             "",
             "POST",
             "sys/leases/revoke",
             &json!({"lease_id":plan.inner.lease_id}),
-            102,
+            AuthorityTime::Precise(crate::auth::Timestamp::whole(102)?),
         )
         .map_err(|_| "retire")?;
     assert_eq!(retired.status, 204);
@@ -967,10 +976,7 @@ fn kube_opaque_artifact_durable_registration_and_retirement_preserve_schema_and_
     let digest = service.current_state_digest().map_err(|_| "digest")?;
     drop(service);
     let mut reopened = root.service()?;
-    assert_eq!(
-        call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
-        200
-    );
+    assert_eq!(reopened.unseal(&json!({"key":key})).status, 200);
     assert_eq!(
         reopened
             .current_state_digest()
@@ -981,17 +987,30 @@ fn kube_opaque_artifact_durable_registration_and_retirement_preserve_schema_and_
         reopened.state.as_ref().ok_or("state")?.schema,
         KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
     );
-    assert_eq!(
-        call(
-            &mut reopened,
+    let observed_lookup = reopened
+        .state
+        .as_ref()
+        .ok_or("restored state")?
+        .engines
+        .clone()
+        .handle_lease_admin_observed(
+            "",
             "POST",
             "sys/leases/lookup",
-            &token,
-            json!({"lease_id":plan.inner.lease_id})
+            &json!({"lease_id":plan.inner.lease_id}),
+            AuthorityTime::Precise(crate::auth::Timestamp::whole(103)?),
         )
-        .status,
-        400
+        .err()
+        .ok_or("retired lease accepted")?;
+    assert_eq!(observed_lookup.status, 400);
+    let coarse = call(
+        &mut reopened,
+        "POST",
+        "sys/leases/lookup",
+        &token,
+        json!({"lease_id":plan.inner.lease_id}),
     );
+    assert_eq!(coarse.status, 503);
     assert!(
         reopened
             .state
@@ -1000,5 +1019,53 @@ fn kube_opaque_artifact_durable_registration_and_retirement_preserve_schema_and_
             .engines
             .has_kubernetes_opaque_artifact_state()
     );
+    Ok(())
+}
+
+#[test]
+fn kube_opaque_artifact_precise_floor_rollback_and_coarse_maintenance_preserve_complete_owner()
+-> TestResult {
+    let (_root, service, _, _, _plan) = opaque_fixture()?;
+    let mut before = service.state.clone().ok_or("state")?;
+    let floor = crate::auth::Timestamp::checked(100, 800_000_000)?;
+    assert!(
+        before
+            .engines
+            .observe_kubernetes_artifact_time(AuthorityTime::Precise(floor))
+            .map_err(|_| "floor")?
+    );
+    let original = serde_json::to_vec(&before)?;
+    let lower = AuthorityTime::Precise(crate::auth::Timestamp::checked(100, 200_000_000)?);
+    assert_eq!(
+        before
+            .engines
+            .kubernetes_artifact_time(lower)
+            .map_err(|_| "observed floor")?
+            .exact(),
+        Some(floor)
+    );
+    assert!(
+        !before
+            .engines
+            .observe_kubernetes_artifact_time(lower)
+            .map_err(|_| "unchanged floor")?
+    );
+    assert_eq!(serde_json::to_vec(&before)?, original);
+    assert!(
+        Service::reconcile_lease_owners_observed(&mut before, AuthorityTime::Coarse(201)).is_err()
+    );
+    assert_eq!(serde_json::to_vec(&before)?, original);
+    let mut encoded = serde_json::to_value(&before)?;
+    encoded["engines"]["kubernetes_artifact_clock"] =
+        json!({"seconds":100,"nanoseconds":200_000_000});
+    let rollback: State = serde_json::from_value(encoded)?;
+    assert!(rollback.validate_publication_schema(Some(&before)).is_err());
+    let mut encoded = serde_json::to_value(&before)?;
+    encoded["engines"]
+        .as_object_mut()
+        .ok_or("engine owner")?
+        .remove("kubernetes_artifact_clock");
+    let stripped: State = serde_json::from_value(encoded)?;
+    assert!(stripped.validate_publication_schema(Some(&before)).is_err());
     Ok(())
 }
