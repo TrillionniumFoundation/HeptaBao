@@ -285,13 +285,14 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
         200
     );
     let active = service.state.clone().ok_or("active")?;
-    assert_eq!(active.schema, PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
+    assert_eq!(active.schema, PKI_ROLE_TIME_STATE_SCHEMA);
     assert!(active.engines.has_pki_role_wildcard_state());
     assert!(active.engines.has_pki_role_any_name_state());
+    assert!(active.engines.has_pki_role_time_state());
     let identity = service.current_state_identity().map_err(|_| "identity")?;
     let mut lower = active.clone();
     lower.schema = TOKEN_ROLE_STATE_SCHEMA;
-    assert_eq!(lower.writer_schema(), PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
+    assert_eq!(lower.writer_schema(), PKI_ROLE_TIME_STATE_SCHEMA);
     assert!(lower.validate_format().is_err());
     assert!(service.commit_state(&mut lower).is_err());
     assert!(Service::validate_snapshot_protected_floor(&active, &lower).is_err());
@@ -300,8 +301,8 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
         integrated_lower.schema = schema;
         assert_eq!(
             integrated_lower.writer_schema(),
-            PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA,
-            "supported earlier readers still require the actual profile88 owner"
+            PKI_ROLE_TIME_STATE_SCHEMA,
+            "supported earlier readers still require the actual profile88 and time89 owners"
         );
         assert!(
             integrated_lower.validate_format().is_err()
@@ -309,7 +310,7 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
                     .validate_publication_schema(Some(&active))
                     .is_err()
                 && service.commit_state(&mut integrated_lower).is_err(),
-            "integrated readers cannot relabel a signed profile88 graph"
+            "integrated readers cannot relabel a actual profile88 and time89 graph"
         );
     }
     for schema in [82, MAX_SUPPORTED_STATE_SCHEMA + 1] {
@@ -342,8 +343,8 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
     );
     let retired = service.state.as_ref().ok_or("retired")?;
     assert!(!retired.engines.has_pki_role_any_name_state());
-    assert_eq!(retired.schema, PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
-    assert_eq!(retired.writer_schema(), PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
+    assert_eq!(retired.schema, PKI_ROLE_TIME_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), PKI_ROLE_TIME_STATE_SCHEMA);
     assert!(previous.validate_publication_schema(Some(retired)).is_err());
     assert!(Service::validate_snapshot_protected_floor(retired, &previous).is_err());
     drop(service);
@@ -361,7 +362,7 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
     );
     assert_eq!(
         reopened.state.as_ref().ok_or("reopened")?.schema,
-        PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        PKI_ROLE_TIME_STATE_SCHEMA
     );
     assert!(
         !reopened
@@ -707,14 +708,15 @@ fn pki_role_bare_domain_default_denies_base_and_explicit_permission_reopens() ->
     }
     let active = service.state.clone().ok_or("state")?;
     assert!(
-        active.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        active.schema == PKI_ROLE_TIME_STATE_SCHEMA
             && active.engines.has_pki_role_bare_domain_state()
             && active.engines.has_pki_role_wildcard_state()
+            && active.engines.has_pki_role_time_state()
     );
     for label in [80, 83, 84] {
         let mut lower = active.clone();
         lower.schema = label;
-        assert_eq!(lower.writer_schema(), PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
+        assert_eq!(lower.writer_schema(), PKI_ROLE_TIME_STATE_SCHEMA);
         assert!(lower.validate_format().is_err() && service.commit_state(&mut lower).is_err());
         assert!(Service::validate_snapshot_protected_floor(&active, &lower).is_err());
     }
