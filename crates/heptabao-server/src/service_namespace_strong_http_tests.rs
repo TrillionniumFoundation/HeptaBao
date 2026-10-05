@@ -2250,7 +2250,19 @@ fn public_origin_closed_auth_complete_ciphertext_and_canonical_floor_survive_con
         .status,
         403
     );
-    assert!(!service.namespace_runtime.is_loaded("plain"));
+    // Pinned official R48 returns the original ordinary KV resource after
+    // genuine root process restart and root-share unseal. This activation uses
+    // the actual root key to restore inherited parcels; closed bearer attempts
+    // above still install no namespace slot and cannot revive consumed actors.
+    assert!(service.namespace_runtime.is_loaded("plain"));
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("restored logical auth")?
+            .auth
+            .namespace_is_empty("plain")
+    );
     Ok(())
 }
 
