@@ -8,7 +8,7 @@ use crate::{
 };
 use rustls::pki_types::CertificateRevocationListDer;
 use rustls::server::WebPkiClientVerifier;
-use rustls::{RootCertStore, ServerConfig, ServerConnection, StreamOwned};
+use rustls::{RootCertStore, ServerConfig, StreamOwned};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use std::{
@@ -24,6 +24,8 @@ use std::{
     time::{Duration, Instant},
 };
 
+#[path = "http_h2.rs"]
+mod h2_transport;
 #[path = "http_logical.rs"]
 mod logical;
 use zeroize::{Zeroize, Zeroizing};
@@ -347,7 +349,7 @@ fn serve_inner(
             .with_single_cert(certificates, key)
             .map_err(|_| "TLS key and certificate do not match")?,
     };
-    tls.alpn_protocols = vec![b"http/1.1".to_vec()];
+    tls.alpn_protocols = vec![b"h2".to_vec(), b"http/1.1".to_vec()];
     let tls = Arc::new(tls);
     #[cfg(feature = "fixture-capacity-limit")]
     let fixture_opaque_owner_limit_bytes = config.fixture_opaque_owner_limit_bytes;
@@ -592,6 +594,7 @@ fn serve_inner(
             .lock()
             .map_or(true, |mut limiter| !limiter.allow(peer));
         let request_service = Arc::clone(&service);
+        let rate_limiter = Arc::clone(&limiter);
         let tls = Arc::clone(&tls);
         let spawn = std::thread::Builder::new()
             .name("heptabao-request".into())
@@ -603,10 +606,19 @@ fn serve_inner(
                 {
                     return;
                 }
-                let Ok(connection) = ServerConnection::new(tls) else {
+                let Some(mut stream) = h2_transport::negotiate(
+                    stream,
+                    tls,
+                    deadline,
+                    timeout,
+                    Arc::clone(&service),
+                    rate_limiter,
+                    peer,
+                    consistency_settings,
+                    rate_limited,
+                ) else {
                     return;
                 };
-                let mut stream = StreamOwned::new(connection, DeadlineStream { stream, deadline });
                 let attempt_id = match crypto::random::<16>() {
                     Ok(value) => value,
                     Err(_) => return,
@@ -633,111 +645,22 @@ fn serve_inner(
                     .saturating_duration_since(Instant::now());
                 let parsed = read_request_mode(&mut stream, read_budget, true);
                 stream.sock.deadline = deadline;
-                let (reply, head, namespace) = match parsed {
-                    Ok(mut request) => {
-                        request.client_certificates =
-                            stream.conn.peer_certificates().map(|certificates| {
-                                certificates
-                                    .iter()
-                                    .map(|certificate| certificate.as_ref().to_vec())
-                                    .collect()
-                            });
-                        let is_head = request.method == "HEAD"
-                            || help::request(&request.method, &request.path, &request.body.0)
-                                .is_some_and(|(method, _, _)| method == "HEAD");
-                        let native_snapshot = request.native_snapshot.take();
-                        // Index admission precedes logical dispatch and any snapshot body I/O.
-                        // It never authenticates the caller or creates permission to retry.
-                        let consistency = consistency::admit(
-                            &service,
-                            &request.consistency,
-                            consistency_settings,
-                            deadline,
-                        );
-                        let mut service_request = ServiceRequest {
-                            method: if request.method == "HEAD"
-                                && request.path != "sys/leader"
-                                && request.path != "sys/internal/ui/mounts"
-                                && !request.path.starts_with("sys/internal/ui/mounts/")
-                                && request.wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
-                                && ocsp::query_request("HEAD", &request.path, &request.body.0)
-                                    .is_none()
-                            {
-                                "GET"
-                            } else {
-                                &request.method
-                            },
-                            path: &request.path,
-                            namespace: &request.namespace,
-                            token: &request.token,
-                            body: std::mem::take(&mut request.body.0),
-                            wrap_ttl_seconds: request.wrap_ttl_seconds,
-                            origin_peer: Some(peer),
-                            client_certificates: request.client_certificates.take(),
-                        };
-                        let mut reply = if let Err(response) = &consistency {
-                            let mut rejected = audited_wire_rejection(
-                                &service,
-                                &attempt_id,
-                                WireRejection::ParseRejected,
-                                response.status,
-                                "consistency prerequisite was not satisfied",
-                                execution_deadline_with_response_reserve(Instant::now(), deadline),
-                            );
-                            if rejected.status == response.status {
-                                rejected.body = response.body.clone();
-                            }
-                            crate::service::erase_json(&mut service_request.body);
-                            snapshot::NativeReply::Json(rejected)
-                        } else if let Some(native) = native_snapshot {
-                            snapshot::execute(
-                                &service,
-                                service_request,
-                                native,
-                                &mut stream,
-                                deadline,
-                            )
-                        } else if matches!(consistency, Ok(true)) {
-                            snapshot::NativeReply::Json(consistency::forward(
-                                &service,
-                                service_request,
-                                deadline,
-                            ))
-                        } else {
-                            snapshot::NativeReply::Json(execute_service_request(
-                                &service,
-                                service_request,
-                                deadline,
-                                false,
-                            ))
-                        };
-                        logical::project(&mut reply, &attempt_id, &request.path);
-                        (reply, is_head, request.namespace)
-                    }
-                    Err(error) => {
-                        let mut response = if error.health_head.is_some() {
-                            Response::error(error.status, error.message)
-                        } else {
-                            audited_wire_rejection(
-                                &service,
-                                &attempt_id,
-                                WireRejection::ParseRejected,
-                                error.status,
-                                error.message,
-                                execution_deadline_with_response_reserve(Instant::now(), deadline),
-                            )
-                        };
-                        if error.empty_errors && response.status == error.status {
-                            response.body = json!({"errors": []});
-                        }
-                        let reply = if error.outer_bad_request && response.status == 400 {
-                            snapshot::NativeReply::HttpBadRequest
-                        } else {
-                            snapshot::NativeReply::Json(response)
-                        };
-                        (reply, error.health_head == Some(true), String::new())
-                    }
-                };
+                let client_certificates = stream.conn.peer_certificates().map(|certificates| {
+                    certificates
+                        .iter()
+                        .map(|certificate| certificate.as_ref().to_vec())
+                        .collect()
+                });
+                let (reply, head, namespace) = process_parsed_request(
+                    &service,
+                    parsed,
+                    &mut stream,
+                    client_certificates,
+                    peer,
+                    &attempt_id,
+                    consistency_settings,
+                    deadline,
+                );
                 let _ = reply.write_with_namespace(&mut stream, head, &namespace);
             });
         if spawn.is_err() {
@@ -755,6 +678,111 @@ fn serve_inner(
                 );
             }
             return Err("cannot create bounded request worker".into());
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn process_parsed_request(
+    service: &Arc<Mutex<Service>>,
+    parsed: Result<Request, ParseError>,
+    source: &mut impl Read,
+    client_certificates: Option<Vec<Vec<u8>>>,
+    peer: IpAddr,
+    attempt_id: &[u8; 16],
+    consistency_settings: consistency::Settings,
+    deadline: Instant,
+) -> (snapshot::NativeReply, bool, String) {
+    match parsed {
+        Ok(mut request) => {
+            request.client_certificates = client_certificates;
+            let is_head = request.method == "HEAD"
+                || help::request(&request.method, &request.path, &request.body.0)
+                    .is_some_and(|(method, _, _)| method == "HEAD");
+            let native_snapshot = request.native_snapshot.take();
+            // Index admission precedes logical dispatch and any snapshot body I/O.
+            // It never authenticates the caller or creates permission to retry.
+            let consistency = consistency::admit(
+                service,
+                &request.consistency,
+                consistency_settings,
+                deadline,
+            );
+            let mut service_request = ServiceRequest {
+                method: if request.method == "HEAD"
+                    && request.path != "sys/leader"
+                    && request.path != "sys/internal/ui/mounts"
+                    && !request.path.starts_with("sys/internal/ui/mounts/")
+                    && request.wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+                    && ocsp::query_request("HEAD", &request.path, &request.body.0).is_none()
+                {
+                    "GET"
+                } else {
+                    &request.method
+                },
+                path: &request.path,
+                namespace: &request.namespace,
+                token: &request.token,
+                body: std::mem::take(&mut request.body.0),
+                wrap_ttl_seconds: request.wrap_ttl_seconds,
+                origin_peer: Some(peer),
+                client_certificates: request.client_certificates.take(),
+            };
+            let mut reply = if let Err(response) = &consistency {
+                let mut rejected = audited_wire_rejection(
+                    service,
+                    attempt_id,
+                    WireRejection::ParseRejected,
+                    response.status,
+                    "consistency prerequisite was not satisfied",
+                    execution_deadline_with_response_reserve(Instant::now(), deadline),
+                );
+                if rejected.status == response.status {
+                    rejected.body = response.body.clone();
+                }
+                crate::service::erase_json(&mut service_request.body);
+                snapshot::NativeReply::Json(rejected)
+            } else if let Some(native) = native_snapshot {
+                snapshot::execute(service, service_request, native, source, deadline)
+            } else if matches!(consistency, Ok(true)) {
+                snapshot::NativeReply::Json(consistency::forward(
+                    service,
+                    service_request,
+                    deadline,
+                ))
+            } else {
+                snapshot::NativeReply::Json(execute_service_request(
+                    service,
+                    service_request,
+                    deadline,
+                    false,
+                ))
+            };
+            logical::project(&mut reply, attempt_id, &request.path);
+            (reply, is_head, request.namespace)
+        }
+        Err(error) => {
+            let mut response = if error.health_head.is_some() {
+                Response::error(error.status, error.message)
+            } else {
+                audited_wire_rejection(
+                    service,
+                    attempt_id,
+                    WireRejection::ParseRejected,
+                    error.status,
+                    error.message,
+                    execution_deadline_with_response_reserve(Instant::now(), deadline),
+                )
+            };
+            if error.empty_errors && response.status == error.status {
+                response.body = json!({"errors": []});
+            }
+            let reply = if error.outer_bad_request && response.status == 400 {
+                snapshot::NativeReply::HttpBadRequest
+            } else {
+                snapshot::NativeReply::Json(response)
+            };
+            (reply, error.health_head == Some(true), String::new())
         }
     }
 }
