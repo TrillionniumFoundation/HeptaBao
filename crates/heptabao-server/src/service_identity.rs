@@ -1224,6 +1224,7 @@ impl State {
             | PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
             | PKI_ROLE_WILDCARD_STATE_SCHEMA
             | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            | PKI_ROLE_TIME_STATE_SCHEMA
             | NAMESPACE_CUSTODY_STATE_SCHEMA
             | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(

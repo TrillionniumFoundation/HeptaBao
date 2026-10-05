@@ -8330,6 +8330,9 @@ fn token_info(token: &Token, now: u64) -> Value {
     }
     if let Some(origin) = &token.public_origin {
         origin.project_lookup(&mut info);
+        if !token.namespace.is_empty() {
+            info["namespace_path"] = json!(format!("{}/", token.namespace));
+        }
     }
     if let Some(stamp) = &token.issue_stamp
         && let Ok(time) = stamp.render()
