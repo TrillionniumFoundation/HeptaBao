@@ -173,12 +173,12 @@ def verify_target_descriptor(data, record):
     if not isinstance(accessor, str) or not accessor:
         raise BaoError("target_auth_mount_accessor_missing")
     revision = data.get("revision")
-    if type(revision) is not int or revision < 1:
+    if type(revision) is not int or not 1 <= revision <= 2**64 - 1:
         raise BaoError("target_auth_mount_revision_invalid")
     return accessor, revision
 
 
-def verify_target_tune(data, record):
+def target_tune_config(data):
     if not isinstance(data, dict):
         raise BaoError("target_auth_mount_tune_missing")
     observed = {
@@ -186,17 +186,48 @@ def verify_target_tune(data, record):
         "default_lease_ttl": data.get("default_lease_ttl"),
         "max_lease_ttl": data.get("max_lease_ttl"),
     }
-    expected = {
-        "description": record["description"],
-        "default_lease_ttl": record["default_lease_ttl"],
-        "max_lease_ttl": record["max_lease_ttl"],
-    }
-    if observed != expected:
+    if (not isinstance(observed["description"], str)
+            or any(type(observed[field]) is not int or not 0 <= observed[field] <= MAX_TTL
+                   for field in ("default_lease_ttl", "max_lease_ttl"))):
         raise BaoError("target_auth_mount_tune_mismatch")
-    revision = data.get("revision")
-    if type(revision) is not int or revision < 1:
-        raise BaoError("target_auth_mount_tune_revision_invalid")
-    return revision
+    return observed
+
+
+def expected_tune_config(record):
+    return {field: record[field] for field in
+            ("description", "default_lease_ttl", "max_lease_ttl")}
+
+
+def verify_target_tune(data, record):
+    if target_tune_config(data) != expected_tune_config(record):
+        raise BaoError("target_auth_mount_tune_mismatch")
+
+
+def coherent_target_tune(target, record, state, expected_revision, *, stored_config=False):
+    """Bind native tune readback to the private descriptor incarnation and CAS."""
+    if type(expected_revision) is not int or not 1 <= expected_revision <= 2**64 - 1:
+        raise BaoError("target_auth_mount_revision_invalid")
+    observed = None
+    original_stored = None
+    for after_tune in (False, True):
+        descriptor = read_target_descriptor(target, record["mount"])
+        accessor, revision = verify_target_descriptor(descriptor, record)
+        if digest(accessor) != state.get("target_accessor_digest"):
+            raise BaoError("target_auth_mount_incarnation_changed")
+        if revision != expected_revision:
+            raise BaoError("target_auth_mount_revision_changed")
+        config = descriptor.get("config")
+        if not isinstance(config, dict):
+            raise BaoError("target_auth_mount_stored_config_missing")
+        stored = target_tune_config({"description": descriptor.get("description"),
+                                     "default_lease_ttl": config.get("default_lease_ttl"),
+                                     "max_lease_ttl": config.get("max_lease_ttl")})
+        if not after_tune:
+            original_stored = stored
+            observed = target_tune_config(read_target_tune(target, record["mount"]))
+        elif stored != original_stored:
+            raise BaoError("target_auth_mount_revision_changed")
+    return original_stored if stored_config else observed
 
 
 class CheckpointLock:
@@ -332,7 +363,14 @@ def transfer(target, record, checkpoint):
         accessor, revision = verify_target_descriptor(descriptor, record)
         if digest(accessor) != state.get("target_accessor_digest"):
             raise BaoError("target_auth_mount_incarnation_changed")
-        state.update({"phase": "tune_inflight", "revision": revision})
+        if revision != state.get("revision"):
+            raise BaoError("target_auth_mount_revision_changed")
+        before_tune = coherent_target_tune(target, record, state, revision, stored_config=True)
+        expected_revision = revision + int(before_tune != expected_tune_config(record))
+        if expected_revision > 2**64 - 1:
+            raise BaoError("target_auth_mount_revision_invalid")
+        state.update({"phase": "tune_inflight", "revision": revision,
+                      "tune_expected_revision": expected_revision})
         checkpoint.save()
         response = target.request(
             "POST",
@@ -345,33 +383,26 @@ def transfer(target, record, checkpoint):
             },
         )
         expect(response, (200, 204))
-        tune_revision = verify_target_tune(
-            read_target_tune(target, record["mount"]),
-            record,
-        )
-        state.update({"phase": "complete", "revision": tune_revision})
+        observed = coherent_target_tune(
+            target, record, state, state["tune_expected_revision"])
+        verify_target_tune(observed, record)
+        state.update({"phase": "complete", "revision": state["tune_expected_revision"]})
         checkpoint.save()
         return "copied_and_verified"
 
     if state.get("phase") == "tune_inflight":
-        tune = read_target_tune(target, record["mount"], absent_ok=True)
-        if tune is None:
-            raise BaoError("target_auth_mount_disappeared_during_tune")
-        tune_revision = verify_target_tune(tune, record)
-        descriptor = read_target_descriptor(target, record["mount"])
-        accessor, _ = verify_target_descriptor(descriptor, record)
-        if digest(accessor) != state.get("target_accessor_digest"):
-            raise BaoError("target_auth_mount_incarnation_changed")
-        state.update({"phase": "complete", "revision": tune_revision})
+        if "tune_expected_revision" not in state:
+            raise BaoError("ambiguous_pending_auth_mount_tune_requires_authoritative_reconciliation")
+        observed = coherent_target_tune(
+            target, record, state, state["tune_expected_revision"])
+        verify_target_tune(observed, record)
+        state.update({"phase": "complete", "revision": state["tune_expected_revision"]})
         checkpoint.save()
         return "copied_and_verified"
 
     if state.get("phase") == "complete":
-        descriptor = read_target_descriptor(target, record["mount"])
-        accessor, _ = verify_target_descriptor(descriptor, record)
-        if digest(accessor) != state.get("target_accessor_digest"):
-            raise BaoError("target_auth_mount_incarnation_changed")
-        verify_target_tune(read_target_tune(target, record["mount"]), record)
+        observed = coherent_target_tune(target, record, state, state.get("revision"))
+        verify_target_tune(observed, record)
         return "already_verified"
 
     raise BaoError("invalid_auth_mount_checkpoint_phase")

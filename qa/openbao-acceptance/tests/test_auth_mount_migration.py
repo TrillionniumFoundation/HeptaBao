@@ -55,12 +55,12 @@ class FaultTarget:
                 "description": payload["description"],
                 "accessor": "auth_target_1",
                 "revision": 1,
+                "config": {"default_lease_ttl": 0, "max_lease_ttl": 0},
             }
             self.tune = {
                 "description": payload["description"],
                 "default_lease_ttl": 0,
                 "max_lease_ttl": 0,
-                "revision": 1,
             }
             if self.fault == "create_after_effect":
                 self.fault = None
@@ -90,7 +90,8 @@ class FaultTarget:
             if changed:
                 self.descriptor["description"] = payload["description"]
                 self.descriptor["revision"] += 1
-                self.tune["revision"] = self.descriptor["revision"]
+                self.descriptor["config"].update(default_lease_ttl=payload["default_lease_ttl"],
+                                                 max_lease_ttl=payload["max_lease_ttl"])
             if self.fault == "tune_after_effect":
                 self.fault = None
                 raise BaoError("transport_outcome_unknown")
@@ -207,7 +208,7 @@ class AuthMountMigrationTests(unittest.TestCase):
             self.assertEqual(target.create_writes, 1)
             self.assertEqual(target.tune_writes, 1)
             with self.assertRaisesRegex(
-                BaoError, "target_auth_mount_tune_mismatch"
+                BaoError, "target_auth_mount_(tune_mismatch|revision_changed)"
             ):
                 transfer(target, record(), self.checkpoint(directory))
             self.assertEqual(target.tune_writes, 1)
@@ -266,6 +267,99 @@ class AuthMountMigrationTests(unittest.TestCase):
         ):
             with self.subTest(changes=changes), self.assertRaises(BaoError):
                 read_source_record(ChangedSource(changes), "migration-approle")
+
+    def test_native_tune_has_no_private_revision_but_descriptor_binds_completion(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = FaultTarget()
+            checkpoint = self.checkpoint(directory)
+            self.assertEqual(transfer(target, record(), checkpoint), "copied_and_verified")
+            self.assertNotIn("revision", target.tune)
+            self.assertEqual(checkpoint.state["transfer"]["revision"], 2)
+
+    def test_completed_mount_revision_or_incarnation_change_is_rejected(self):
+        for change in ({"revision": 3}, {"accessor": "auth_recreated"}):
+            with self.subTest(change=change), tempfile.TemporaryDirectory() as directory:
+                target = FaultTarget()
+                transfer(target, record(), self.checkpoint(directory))
+                target.descriptor.update(change)
+                with self.assertRaises(BaoError):
+                    transfer(target, record(), self.checkpoint(directory))
+                self.assertEqual(target.tune_writes, 1)
+
+    def test_descriptor_change_during_native_tune_readback_is_rejected(self):
+        class RacingTarget(FaultTarget):
+            def request(self, method, path, payload=None):
+                response = super().request(method, path, payload)
+                if method == "GET" and path.endswith("/tune") and self.tune_writes:
+                    self.descriptor["revision"] += 1
+                return response
+        with tempfile.TemporaryDirectory() as directory:
+            target = RacingTarget()
+            with self.assertRaisesRegex(BaoError, "revision_changed"):
+                transfer(target, record(), self.checkpoint(directory))
+            self.assertEqual(target.tune_writes, 1)
+            self.assertEqual(self.checkpoint(directory).state["transfer"]["phase"], "tune_inflight")
+
+    def test_unchanged_cas_tune_keeps_original_revision(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = FaultTarget("create_after_effect")
+            with self.assertRaises(BaoError):
+                transfer(target, record(), self.checkpoint(directory))
+            target.tune.update(description="migration boundary", default_lease_ttl=120,
+                               max_lease_ttl=300)
+            target.descriptor["config"].update(default_lease_ttl=120, max_lease_ttl=300)
+            checkpoint = self.checkpoint(directory)
+            self.assertEqual(transfer(target, record(), checkpoint), "copied_and_verified")
+            self.assertEqual(checkpoint.state["transfer"]["revision"], 1)
+            self.assertEqual(target.tune_writes, 1)
+
+    def test_inflight_config_match_with_unexpected_revision_is_not_acknowledged(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = FaultTarget("tune_after_effect")
+            with self.assertRaises(BaoError):
+                transfer(target, record(), self.checkpoint(directory))
+            target.descriptor["revision"] += 1
+            with self.assertRaisesRegex(BaoError, "revision_changed"):
+                transfer(target, record(), self.checkpoint(directory))
+            self.assertEqual(target.tune_writes, 1)
+
+    def test_legacy_inflight_checkpoint_requires_authoritative_reconciliation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = FaultTarget("tune_after_effect")
+            with self.assertRaises(BaoError):
+                transfer(target, record(), self.checkpoint(directory))
+            checkpoint = self.checkpoint(directory)
+            del checkpoint.state["transfer"]["tune_expected_revision"]
+            checkpoint.save()
+            with self.assertRaisesRegex(BaoError, "authoritative_reconciliation"):
+                transfer(target, record(), self.checkpoint(directory))
+            self.assertEqual(target.tune_writes, 1)
+
+    def test_boolean_ttl_cannot_match_integer_readback(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = FaultTarget()
+            transfer(target, record(), self.checkpoint(directory))
+            target.tune["default_lease_ttl"] = True
+            with self.assertRaisesRegex(BaoError, "tune_mismatch"):
+                transfer(target, record(), self.checkpoint(directory))
+
+    def test_effective_tune_defaults_do_not_hide_a_real_stored_config_change(self):
+        class EffectiveDefaults(FaultTarget):
+            def request(self, method, path, payload=None):
+                response = super().request(method, path, payload)
+                if method == "GET" and path.endswith("/tune") and response.status == 200:
+                    for field in ("default_lease_ttl", "max_lease_ttl"):
+                        if response.body["data"][field] == 0:
+                            response.body["data"][field] = 32 * 24 * 3600
+                return response
+        with tempfile.TemporaryDirectory() as directory:
+            target = EffectiveDefaults()
+            desired = record() | {"default_lease_ttl": 32 * 24 * 3600,
+                                  "max_lease_ttl": 32 * 24 * 3600}
+            checkpoint = self.checkpoint(directory)
+            self.assertEqual(transfer(target, desired, checkpoint), "copied_and_verified")
+            self.assertEqual(checkpoint.state["transfer"]["revision"], 2)
+            self.assertEqual(target.descriptor["config"]["max_lease_ttl"], 32 * 24 * 3600)
 
     def test_checkpoint_binding_cannot_change(self):
         with tempfile.TemporaryDirectory() as directory:
