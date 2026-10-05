@@ -5,6 +5,7 @@
 //! Namespace, mount and resource identifiers are separate map dimensions. No
 //! delimiter-concatenated value is ever used as a storage identity.
 
+use crate::auth::ResolvedLeaseOwner;
 use heptabao_domain::SecretValue;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
