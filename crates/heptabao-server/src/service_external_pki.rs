@@ -380,7 +380,7 @@ impl Service {
         ) {
             Ok(Some(plan)) => plan,
             Ok(None) => return Response::error(404, "external PKI route not found"),
-            Err(cause) => return Response::error(cause.status, &cause.message),
+            Err(cause) => return Response::from_engine_error(cause),
         };
         let envelope = match crate::auth::parse_strict_json(plan.request.expose()) {
             Ok(value) => SensitiveJson(value),
@@ -591,7 +591,7 @@ impl Service {
             now,
         ) {
             Ok(value) => value,
-            Err(cause) => return Response::error(cause.status, &cause.message),
+            Err(cause) => return Response::from_engine_error(cause),
         };
         candidate.schema = candidate.writer_schema();
         if let Err(cause) = candidate.validate_format() {

@@ -674,6 +674,72 @@ impl EngineState {
         pki.fixture_insert_historical_role(name, value)
     }
 
+    #[cfg(test)]
+    pub(crate) fn fixture_promote_historical_pki_role_to85(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        name: &str,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|state| state.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(pki) = &mut mounted.backend else {
+            return Err(bad("schema85 role fixture requires actual PKI mount"));
+        };
+        pki.fixture_promote_historical_role_to85(name)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fixture_prepare_historical_pki_root(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|state| state.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(pki) = &mut mounted.backend else {
+            return Err(bad("historical root fixture requires actual PKI mount"));
+        };
+        pki.fixture_prepare_historical_local_root()
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fixture_issue_historical_pki_leaf(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        body: &Value,
+        owner: &LeaseOwner,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        owner
+            .validate_scope(namespace, crate::auth::ServiceOwnerProfile::DigestAlphabet)
+            .map_err(|_| bad("historical leaf fixture requires scoped original owner"))?;
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|state| state.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(pki) = &mut mounted.backend else {
+            return Err(bad("historical leaf fixture requires actual PKI mount"));
+        };
+        pki.fixture_issue_historical_local_leaf(mount, body, owner, now)
+    }
+
+    pub(crate) fn has_pki_role_leaf_profile_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_leaf_profile_state())
+            })
+        })
+    }
+
     pub(crate) fn has_pki_role_wildcard_state(&self) -> bool {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount| {
@@ -766,6 +832,21 @@ impl EngineState {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount|
             matches!(&mount.backend, Backend::Transit(engine) if engine.has_asymmetric_state()))
+        })
+    }
+
+    pub(crate) fn is_pki_role_write(&self, namespace: &str, method: &str, path: &str) -> bool {
+        if !matches!(method, "POST" | "PUT" | "PATCH") {
+            return false;
+        }
+        self.namespaces.get(namespace).is_some_and(|state| {
+            state.mounts.iter().any(|(prefix, mount)| {
+                matches!(&mount.backend, Backend::Pki(_))
+                    && path
+                        .strip_prefix(prefix.as_str())
+                        .and_then(|relative| relative.strip_prefix("roles/"))
+                        .is_some_and(|name| !name.is_empty() && !name.contains('/'))
+            })
         })
     }
 

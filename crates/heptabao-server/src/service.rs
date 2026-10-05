@@ -72,17 +72,20 @@ const TOKEN_ROLE_STATE_SCHEMA: u32 = 80;
 const PKI_ROLE_ANY_NAME_STATE_SCHEMA: u32 = 83;
 const PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA: u32 = 84;
 const PKI_ROLE_WILDCARD_STATE_SCHEMA: u32 = 85;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ROLE_WILDCARD_STATE_SCHEMA;
+// Typed role/leaf evidence is admitted only at its explicit protected floor.
+const PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA: u32 = 88;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA;
 
-// Namespace 81 and precise Token API 82 remain independently staged branches.
-// A higher maximum must not admit either format before its real integration.
+// 81/82/86/87 belong to unintegrated reader work. Explicit admission keeps
+// these gaps closed when a later protected format is enabled.
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
         || matches!(
             schema,
             PKI_ROLE_ANY_NAME_STATE_SCHEMA
                 | PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
-                | MAX_SUPPORTED_STATE_SCHEMA
+                | PKI_ROLE_WILDCARD_STATE_SCHEMA
+                | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -513,6 +516,9 @@ impl Drop for Response {
 }
 
 impl Response {
+    fn from_engine_error(error: crate::engines::EngineError) -> Self {
+        Self::error(error.status, &error.message)
+    }
     pub fn error(status: u16, message: &str) -> Self {
         Self {
             status,
@@ -1888,6 +1894,21 @@ impl Service {
                 fingerprint = STANDARD.encode(context.sign().as_ref());
             }
         }
+        if let Ok(Some(carrier)) = crate::http::pki_role_fields::request(method, path, &body) {
+            let mut context = hmac::Context::with_key(&self.audit_key);
+            context.update(b"heptabao.audit.pki-role-number-fields.v1");
+            context.update(fingerprint.as_bytes());
+            for field in [method, path] {
+                context.update(&(field.len() as u64).to_le_bytes());
+                context.update(field.as_bytes());
+            }
+            if let Ok(binding) = serde_json::to_vec(&(carrier.original, carrier.number_fields())) {
+                let binding = Zeroizing::new(binding);
+                context.update(&(binding.len() as u64).to_le_bytes());
+                context.update(&binding);
+                fingerprint = STANDARD.encode(context.sign().as_ref());
+            }
+        }
         if let Some(ttl) = wrap_ttl_seconds {
             let mut context = hmac::Context::with_key(&self.audit_key);
             context.update(b"heptabao.audit.wrapping-request.v1");
@@ -2290,6 +2311,13 @@ impl Service {
             Err(message) => return Response::error(400, message),
         };
         let body = token_fields
+            .as_ref()
+            .map_or(body, |carrier| carrier.original);
+        let pki_role_fields = match crate::http::pki_role_fields::request(method, path, body) {
+            Ok(carrier) => carrier,
+            Err(message) => return Response::error(400, message),
+        };
+        let body = pki_role_fields
             .as_ref()
             .map_or(body, |carrier| carrier.original);
         let request = RequestView { body, ..request };
@@ -2908,6 +2936,7 @@ impl Service {
                 path,
                 body,
                 token_fields.as_ref(),
+                pki_role_fields.as_ref(),
                 now,
                 client_certificates,
                 origin_peer,
@@ -3015,7 +3044,8 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        if admitted.engines.has_pki_role_wildcard_state()
+        if admitted.engines.has_pki_role_leaf_profile_state()
+            || admitted.engines.has_pki_role_wildcard_state()
             || admitted.engines.has_pki_role_bare_domain_state()
             || admitted.engines.has_pki_role_any_name_state()
             || admitted.auth.has_token_api_schema80_state()
@@ -3227,6 +3257,7 @@ impl Service {
         path: &str,
         body: &Value,
         token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
+        pki_role_fields: Option<&crate::http::pki_role_fields::Carrier<'_>>,
         now: u64,
         client_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
@@ -3240,6 +3271,7 @@ impl Service {
             path,
             body,
             token_fields,
+            pki_role_fields,
             now,
             client_certificates,
             origin_peer,
@@ -3261,6 +3293,7 @@ impl Service {
         path: &str,
         body: &Value,
         token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
+        pki_role_fields: Option<&crate::http::pki_role_fields::Carrier<'_>>,
         now: u64,
         client_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
@@ -3536,8 +3569,14 @@ impl Service {
         {
             return error;
         }
+        let pki_backend_body = if state.engines.is_pki_role_write(namespace, method, path) {
+            pki_role_fields.map(|carrier| carrier.backend_body())
+        } else {
+            None
+        };
+        let engine_body = pki_backend_body.as_ref().map_or(body, |carrier| &carrier.0);
         let mut engines = state.engines.clone();
-        match engines.handle(namespace, method, path, body, now) {
+        match engines.handle(namespace, method, path, engine_body, now) {
             Ok(Some(mut response)) => {
                 if let Err(error) = Self::project_kv1_read_lease(
                     state,
@@ -3560,7 +3599,7 @@ impl Service {
                 }
             }
             Ok(None) => Response::error(404, "unsupported path"),
-            Err(error) => Response::error(error.status, &error.message),
+            Err(error) => Response::from_engine_error(error),
         }
     }
 

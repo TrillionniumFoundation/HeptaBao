@@ -264,7 +264,13 @@ impl Pki {
             .iter()
             .filter_map(|(serial, cert)| {
                 let at = cert.revoked_at?;
+                if self.profile_leaf_is_external(serial) || cert.external_issuer_owner.is_some() {
+                    return None;
+                }
                 let owned = if cert.local_issuer_id.is_empty() {
+                    if !Self::legacy_leaf_is_signed_by(root, cert) {
+                        return None;
+                    }
                     self.root
                         .as_ref()
                         .is_some_and(|default| issuer_key(default) == issuer_key(root))

@@ -80,7 +80,7 @@ impl Service {
             } else {
                 engines.handle_service_ssh(namespace, method, path, body, owner.as_ref(), now)
             }
-            .map_err(|e| Response::error(e.status, &e.message))?;
+            .map_err(Response::from_engine_error)?;
             if response.mutated {
                 state.engines = engines;
             }

@@ -327,6 +327,14 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI role leaf profiles",
+            ));
+        }
         if current.schema >= PKI_ROLE_WILDCARD_STATE_SCHEMA
             && incoming.schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
         {

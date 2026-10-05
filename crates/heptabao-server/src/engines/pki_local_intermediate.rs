@@ -1579,6 +1579,7 @@ impl Pki {
                 exclude_cn_from_sans: fields.exclude_cn,
                 max_path_length: fields.max_path_length,
                 permitted_dns_domains: &permitted,
+                role_leaf_profile: None,
             },
         )?;
         certificate_signed_by(&cert, &root.certificate_der)?;

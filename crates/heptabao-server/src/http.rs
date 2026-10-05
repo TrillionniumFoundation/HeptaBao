@@ -32,6 +32,8 @@ use zeroize::{Zeroize, Zeroizing};
 pub(crate) mod help;
 #[path = "http_ocsp.rs"]
 pub(crate) mod ocsp;
+#[path = "http_pki_role_fields.rs"]
+pub(crate) mod pki_role_fields;
 #[path = "http_snapshot.rs"]
 mod snapshot;
 #[path = "http_token_fields.rs"]
@@ -1525,6 +1527,25 @@ fn read_request_mode(
         );
     }
     token_fields::transport_body(&method, path, &mut body.0, &bytes[header_end..]).map_err(bad)?;
+    if method == "PATCH" && pki_role_fields::eligible(&method, path) {
+        if length == 0 {
+            return Err(bad("PATCH requires a JSON body"));
+        }
+        if !map
+            .get("content-type")
+            .is_some_and(|value| value.split(';').next() == Some("application/merge-patch+json"))
+        {
+            return Err(ParseError {
+                status: 415,
+                message: "PATCH requires merge-patch JSON",
+                empty_errors: false,
+                health_head: None,
+                outer_bad_request: false,
+            });
+        }
+    }
+    pki_role_fields::transport_body(&method, path, &mut body.0, &bytes[header_end..])
+        .map_err(bad)?;
     let native_snapshot = if native_snapshot {
         if download && (length != 0 || bytes.len() != header_end) {
             return Err(bad("snapshot download does not accept a body"));

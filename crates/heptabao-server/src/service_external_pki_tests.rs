@@ -12,6 +12,8 @@ mod issuer_issue_tests;
 mod leaf_tests;
 #[path = "service_pki_role_any_name_tests.rs"]
 mod role_any_name;
+#[path = "service_pki_role_leaf_profile_tests.rs"]
+mod role_leaf_profile;
 
 #[path = "service_local_pki_tests.rs"]
 mod local_tests;
@@ -179,10 +181,10 @@ fn leaf_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, St
         .as_ref()
         .ok_or("actual published role state")?;
     assert!(
-        current.schema == PKI_ROLE_WILDCARD_STATE_SCHEMA
+        current.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
             && current.engines.has_pki_role_bare_domain_state()
             && current.engines.has_pki_role_wildcard_state(),
-        "record preflight publishes the real Ed25519 role owner with floor85"
+        "record preflight publishes the real Ed25519 role owner with floor88"
     );
     let mut lowered = current.clone();
     lowered.schema = prior_schema;
@@ -349,7 +351,7 @@ fn exercise_external_pki270_leaf_crls_with_schema(safe_schema: bool) -> TestResu
             == 200,
         "mixed schema bounded leaf role"
     );
-    let expected_schema = PKI_ROLE_WILDCARD_STATE_SCHEMA;
+    let expected_schema = PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA;
     assert!(
         service.state.as_ref().ok_or("mixed root state")?.schema == expected_schema
             && service
@@ -358,7 +360,7 @@ fn exercise_external_pki270_leaf_crls_with_schema(safe_schema: bool) -> TestResu
                 .ok_or("mixed root state")?
                 .engines
                 .has_pki_role_bare_domain_state(),
-        "actual new role carries its distinct85 owner above65 or66"
+        "actual new role carries its distinct88 owner above65 or66"
     );
     let descriptor = call(
         &mut *remote.service.lock().map_err(|_| "remote lock")?,

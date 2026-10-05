@@ -12,7 +12,9 @@ impl State {
         if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.engines.has_pki_role_wildcard_state() {
+        let required = if self.engines.has_pki_role_leaf_profile_state() {
+            PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        } else if self.engines.has_pki_role_wildcard_state() {
             PKI_ROLE_WILDCARD_STATE_SCHEMA
         } else if self.engines.has_pki_role_bare_domain_state() {
             PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
@@ -62,6 +64,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && (self.engines.has_pki_role_leaf_profile_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI role leaf profiles require schema 88",
             ));
         }
         if self.schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
@@ -249,6 +260,14 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && self.engines.has_pki_role_leaf_profile_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI role leaf profiles require schema 88",
             ));
         }
         if self.schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
@@ -1046,7 +1065,8 @@ impl State {
             | TOKEN_ROLE_STATE_SCHEMA
             | PKI_ROLE_ANY_NAME_STATE_SCHEMA
             | PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
-            | PKI_ROLE_WILDCARD_STATE_SCHEMA => Ok(()),
+            | PKI_ROLE_WILDCARD_STATE_SCHEMA
+            | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
