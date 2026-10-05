@@ -584,7 +584,16 @@ impl Service {
                 time.with_seconds_floor(now)
                     .map_err(|_| failure("trusted token clock is unavailable"))
             }) {
-                Ok(time) => current.auth.token_api_observed_time(time),
+                Ok(time) => match current
+                    .engines
+                    .kubernetes_artifact_time(current.auth.token_api_observed_time(time))
+                {
+                    Ok(time) => time,
+                    Err(_) => {
+                        erase_json(&mut response.body);
+                        return post_provider_completion_failure(&plan.inner.lease_id);
+                    }
+                },
                 Err(_) => {
                     erase_json(&mut response.body);
                     return post_provider_completion_failure(&plan.inner.lease_id);
@@ -595,7 +604,25 @@ impl Service {
             let remaining = committed_receipt
                 .as_ref()
                 .map_or(0, |receipt| receipt.expires_at().saturating_sub(now));
+            let receipt_live = committed_receipt.as_ref().is_some_and(|receipt| {
+                match plan.mount_binding.zip(plan.request_path.as_deref()) {
+                    Some((binding, path)) => current
+                        .engines
+                        .validate_kubernetes_delivery_receipt_observed(
+                            &plan.inner,
+                            path,
+                            binding,
+                            receipt,
+                            time,
+                        )
+                        .is_ok(),
+                    // Only the existing cfg injected completion seam lacks routing.
+                    // Product finalize rejects absent routing before entering here.
+                    None => plan.mount_binding.is_none() && plan.request_path.is_none(),
+                }
+            });
             if !delivery_allowed
+                || !receipt_live
                 || !Self::kubernetes_completion_owner_live(current, plan, time)
                 || remaining == 0
             {
@@ -754,7 +781,13 @@ impl Service {
         plan: &KubernetesTokenEffectPlan,
         time: AuthorityTime,
     ) -> bool {
-        let time = state.auth.token_api_observed_time(time);
+        let time = match state
+            .engines
+            .kubernetes_artifact_time(state.auth.token_api_observed_time(time))
+        {
+            Ok(time) => time,
+            Err(_) => return false,
+        };
         plan.inner.authority.expires_at > time.seconds()
             && state.namespace_exists(&plan.inner.namespace)
             && !state.namespace_is_sealed(&plan.inner.namespace)
