@@ -232,6 +232,8 @@ def run(binary, launcher_path, work_dir, oracle_port, *, oracle_version=VERSION)
         check("target_sigkill_preserves_all_versions", results["after_sigkill"]["objects_already_verified"] == len(keys))
         stage = "checkpoint_ack_loss"
         mount(target, "resumed")
+        migration.expect(target.request("POST", "/v1/resumed/config",
+                                        {"metadata_cas_required": True}), (204,))
         single_file = work_dir / "single-key.json"
         private_write(single_file, [keys[0]])
         resume_file = work_dir / "resume-checkpoint.json"
@@ -328,8 +330,18 @@ def run(binary, launcher_path, work_dir, oracle_port, *, oracle_version=VERSION)
                      "options": {"cas": version - 1}}))
         changed_custom_metadata = {"purpose": "synthetic-post-cutover", "generation": "metadata-only",
                                    "new-field": "observed-in-real-target"}
+        metadata_before_change = migration.read_metadata(target, "secret", keys[0])
+        check("forward_copy_keeps_original_metadata_cas_requirement",
+              all(migration.read_metadata(target, "secret", record["key"])["metadata_cas_required"]
+                  == record["source_metadata"]["metadata_cas_required"] for record in original))
+        for label, payload in [("missing", {"custom_metadata": changed_custom_metadata}),
+                               ("stale", {"custom_metadata": changed_custom_metadata, "metadata_cas": 0})]:
+            check("post_cutover_target_metadata_cas_" + label + "_has_no_effect",
+                  target.request("POST", migration.api("secret", "metadata", keys[0]), payload).status == 400
+                  and migration.read_metadata(target, "secret", keys[0]) == metadata_before_change)
         migration.expect(target.request("POST", migration.api("secret", "metadata", keys[0]),
-                                        {"custom_metadata": changed_custom_metadata}), (204,))
+                                        {"custom_metadata": changed_custom_metadata,
+                                         "metadata_cas": metadata_before_change["current_metadata_version"]}), (204,))
         check("post_cutover_existing_custom_metadata_changed_with_source_stopped",
               oracle["process"].poll() is not None
               and migration.read_metadata(target, "secret", keys[0])["custom_metadata"] == changed_custom_metadata)
@@ -448,7 +460,7 @@ def run(binary, launcher_path, work_dir, oracle_port, *, oracle_version=VERSION)
         check("rollback_target_remains_stopped_during_source_append", instance.process is None)
         report["post_cutover_existing_custom_metadata_changes_covered"] = True
         report["existing_source_metadata_cas_required_preserved_during_rollback"] = True
-        report["metadata_cas_policy_migration_to_candidate_covered"] = False
+        report["metadata_cas_policy_migration_to_candidate_covered"] = True
         report["metadata_cas_counter_migration_to_candidate_covered"] = False
         report["existing_source_prefix_version_metadata_preserved"] = True
         report["post_cutover_retention_cas_or_delete_policy_changes_covered"] = False

@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from bao_http import BaoError, Response, digest
-from migrate_kv2 import Checkpoint, active_history, transfer_record, append_existing_record, verified_existing_prefix
+from migrate_kv2 import Checkpoint, active_history, transfer_record, append_existing_record, verified_existing_prefix, snapshot, validate_export_record
 
 
 def fixture_record():
@@ -442,3 +442,98 @@ class CustomMetadataAppendTests(unittest.TestCase):
                 with self.assertRaises(BaoError):
                     self.append(target, record, cp)
                 self.assertEqual((target.writes, target.metadata_writes), (1, 1))
+
+
+class MetadataPolicyMigrationTests(unittest.TestCase):
+    def record(self):
+        record = fixture_record()
+        record["source_metadata"]["metadata_cas_required"] = True
+        record["source_metadata"]["current_metadata_version"] = 7
+        record["target_metadata"]["metadata_cas_required"] = True
+        return record
+
+    def test_observed_policy_survives_snapshot_export_and_required_target_initial_cas(self):
+        record = self.record()
+        source = FaultTarget()
+        source.meta = copy.deepcopy(record["source_metadata"])
+        source.values = [copy.deepcopy(v["data"]) for v in record["versions"]]
+        observed = snapshot(source, "secret", record["key"])
+        self.assertEqual(observed, record)
+        validate_export_record(observed)
+        class RequiredTarget(FaultTarget):
+            def request(self, method, path, payload=None):
+                if method == "POST" and "/metadata/" in path and "metadata_cas" not in payload:
+                    return Response(400, {"errors": ["synthetic backend requires metadata CAS"]})
+                return super().request(method, path, payload)
+        target = RequiredTarget()
+        with tempfile.TemporaryDirectory() as directory:
+            cp = Checkpoint(Path(directory) / "cp", {})
+            self.assertEqual(transfer_record(target, "secret", observed, cp), "copied_and_verified")
+            self.assertTrue(target.meta["metadata_cas_required"])
+            self.assertEqual(target.meta["current_metadata_version"], 1)
+            self.assertEqual(transfer_record(target, "secret", observed, Checkpoint(cp.filename, {})),
+                             "already_verified")
+        self.assertEqual(target.values, source.values)
+        self.assertEqual(source.meta["current_metadata_version"], 7)
+
+    def test_policy_dropped_or_malformed_export_is_rejected_before_writes(self):
+        for field, value in [("metadata_cas_required", "true"),
+                             ("current_metadata_version", True),
+                             ("current_metadata_version", -1),
+                             ("current_metadata_version", 2**63),
+                             ("drop", None)]:
+            with self.subTest(field=field, value=value), tempfile.TemporaryDirectory() as directory:
+                record = self.record()
+                if field == "drop":
+                    del record["target_metadata"]["metadata_cas_required"]
+                else:
+                    record["source_metadata"][field] = value
+                target = FaultTarget()
+                with self.assertRaises(BaoError):
+                    transfer_record(target, "secret", record, Checkpoint(Path(directory) / "cp", {}))
+                self.assertIsNone(target.meta)
+                self.assertEqual(target.writes, 0)
+
+    def test_lost_initial_metadata_ack_reconciles_once_and_counter_conflict_cannot_be_adopted(self):
+        record = self.record()
+        class MetadataAckLoss(FaultTarget):
+            metadata_calls = 0
+            def request(self, method, path, payload=None):
+                result = super().request(method, path, payload)
+                if method == "POST" and "/metadata/" in path:
+                    self.metadata_calls += 1
+                    if self.metadata_calls == 1:
+                        raise BaoError("transport_outcome_unknown")
+                return result
+        for conflicted in (False, True):
+            with self.subTest(conflicted=conflicted), tempfile.TemporaryDirectory() as directory:
+                target = MetadataAckLoss()
+                path = Path(directory) / "cp"
+                with self.assertRaisesRegex(BaoError, "transport_outcome_unknown"):
+                    transfer_record(target, "secret", record, Checkpoint(path, {}))
+                self.assertEqual(target.metadata_calls, 1)
+                self.assertEqual(target.values, [])
+                if conflicted:
+                    target.meta["current_metadata_version"] = 2
+                    with self.assertRaisesRegex(BaoError, "initial_version_conflicts"):
+                        transfer_record(target, "secret", record, Checkpoint(path, {}))
+                    self.assertEqual(target.values, [])
+                else:
+                    self.assertEqual(transfer_record(target, "secret", record, Checkpoint(path, {})),
+                                     "copied_and_verified")
+                    self.assertEqual(target.meta["current_metadata_version"], 1)
+                    self.assertTrue(target.meta["metadata_cas_required"])
+                self.assertEqual(target.metadata_calls, 1)
+
+    def test_same_metadata_rewrite_after_completion_does_not_reuse_owned_initial_counter(self):
+        record = self.record()
+        target = FaultTarget()
+        with tempfile.TemporaryDirectory() as directory:
+            cp = Checkpoint(Path(directory) / "cp", {})
+            transfer_record(target, "secret", record, cp)
+            self.assertEqual(target.request("POST", "/v1/secret/metadata/synthetic/item",
+                                           {"metadata_cas": 1, "custom_metadata": record["target_metadata"]["custom_metadata"]}).status, 204)
+            with self.assertRaisesRegex(BaoError, "initial_version_conflicts"):
+                transfer_record(target, "secret", record, Checkpoint(cp.filename, {}))
+            self.assertEqual(target.meta["current_metadata_version"], 2)
+            self.assertEqual(target.writes, 2)

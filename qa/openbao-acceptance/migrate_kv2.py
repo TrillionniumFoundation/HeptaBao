@@ -102,6 +102,17 @@ def active_history(meta, *, allow_empty=False):
     return current
 
 
+
+def metadata_policy(meta):
+    """Keep an observed metadata CAS policy; legacy snapshots may omit it."""
+    if ("metadata_cas_required" in meta and type(meta["metadata_cas_required"]) is not bool
+            or "current_metadata_version" in meta and (type(meta["current_metadata_version"]) is not int
+                or not 0 <= meta["current_metadata_version"] < 2**63)):
+        raise BaoError("unsupported_metadata_cas_schema")
+    return ({"metadata_cas_required": meta["metadata_cas_required"]}
+            if "metadata_cas_required" in meta else {})
+
+
 def snapshot(client, mount, key):
     before = read_metadata(client, mount, key)
     current = active_history(before)
@@ -129,7 +140,7 @@ def snapshot(client, mount, key):
         raise BaoError("source_changed_during_snapshot")
     return {"key": key, "source_metadata": before, "versions": versions,
             "target_metadata": {"custom_metadata": custom, "cas_required": before.get("cas_required", False),
-                                "max_versions": max(current, maximum), "delete_version_after": "0s"}}
+                                "max_versions": max(current, maximum), "delete_version_after": "0s", **metadata_policy(before)}}
 
 
 def selected_inventory_digest(mount, records):
@@ -217,7 +228,7 @@ def validate_export_record(record):
             or any(not isinstance(k, str) or not isinstance(v, str) for k, v in custom.items())):
         raise BaoError("unsupported_export_metadata")
     expected = {"custom_metadata": custom, "cas_required": source_meta.get("cas_required", False),
-                "max_versions": max(current, maximum), "delete_version_after": "0s"}
+                "max_versions": max(current, maximum), "delete_version_after": "0s", **metadata_policy(source_meta)}
     if record.get("target_metadata") != expected or len(canonical(record)) > MAX_BODY:
         raise BaoError("export_target_metadata_or_size_mismatch")
 
@@ -341,6 +352,16 @@ def reconcile_custom_metadata(target, mount, record, checkpoint):
     return True
 
 
+
+def verify_initial_metadata_version(meta, entry, settings):
+    if "metadata_cas_required" not in settings or entry.get("admission") == APPEND_PREFIX_ADMISSION:
+        return
+    if (type(entry.get("metadata_initial_version")) is not int or entry["metadata_initial_version"] != 1
+            or type(meta.get("current_metadata_version")) is not int
+            or meta["current_metadata_version"] != 1):
+        raise BaoError("owned_metadata_initial_version_conflicts")
+
+
 def transfer_record(target, mount, record, checkpoint, *, new_object_admission=None):
     """Resume a committed-but-unacknowledged CAS using exact durable readback.
 
@@ -360,12 +381,15 @@ def transfer_record(target, mount, record, checkpoint, *, new_object_admission=N
         if read_metadata(target, mount, record["key"], absent_ok=True) is not None:
             raise BaoError("target_object_exists_without_owned_checkpoint")
         entry = {"source_digest": source_digest, "completed_version": 0, "phase": "initializing_metadata"}
+        if "metadata_cas_required" in settings:
+            entry["metadata_initial_version"] = 1
         if new_object_admission is not None:
             entry["admission"] = new_object_admission
         checkpoint.state["objects"][object_id] = entry
         checkpoint.save()
-        expect(target.request("POST", metadata_path, settings), (204,))
+        expect(target.request("POST", metadata_path, {**settings, "metadata_cas": 0}), (204,))
         observed = read_metadata(target, mount, record["key"])
+        verify_initial_metadata_version(observed, entry, settings)
         if metadata_version(observed) != 0 or not settings_match(observed, settings):
             raise BaoError("target_metadata_initialization_readback_mismatch")
         entry["phase"] = "copying"
@@ -386,6 +410,7 @@ def transfer_record(target, mount, record, checkpoint, *, new_object_admission=N
         observed = read_metadata(target, mount, record["key"], absent_ok=True)
         if observed is None:
             raise BaoError("ambiguous_pending_write_requires_authoritative_reconciliation")
+        verify_initial_metadata_version(observed, entry, settings)
         if entry["phase"] == "initializing_metadata":
             if metadata_version(observed) != 0 or not settings_match(observed, settings):
                 raise BaoError("ambiguous_metadata_initialization")
@@ -419,6 +444,7 @@ def transfer_record(target, mount, record, checkpoint, *, new_object_admission=N
         entry.pop("inflight_version", None)
         checkpoint.save()
     meta = verify_target(target, mount, record, len(record["versions"]))
+    verify_initial_metadata_version(meta, entry, settings)
     if not settings_match(meta, settings):
         raise BaoError("target_final_metadata_mismatch")
     entry["phase"] = "complete"
@@ -534,6 +560,8 @@ def main(argv=None):
               "action": args.action, "objects_checked": 0, "objects_copied": 0, "objects_already_verified": 0,
               "source_modified": False, "source_cutover": False, "full_format_migration": False,
               "preserves_original_timestamps": False, "preserves_deleted_destroyed_pruned_history": False,
+              "preserves_original_metadata_cas_counter": False,
+              "metadata_counter_rule": "new_metadata_initialization_rebases_to_one",
               "scope": "contiguous_readable_active_versions_1_to_n_and_selected_metadata"}
     code = 2
     try:
