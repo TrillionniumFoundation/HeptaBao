@@ -270,6 +270,13 @@ func run() (outcome error) {
 	if first.Kind != "setup" || first.Call != 1 || first.Plugin == "" || first.SocketDir == "" || first.TimeoutMS <= 0 || first.TimeoutMS > 30000 || first.DefaultTTLSeconds < 0 || first.MaxTTLSeconds < first.DefaultTTLSeconds {
 		return errors.New("invalid setup")
 	}
+	// Old secret-only callers omit this field. Auth must be explicitly admitted.
+	if first.BackendType == "" {
+		first.BackendType = "secret"
+	}
+	if first.BackendType != "secret" && first.BackendType != "auth" {
+		return errors.New("invalid admitted SDK backend family")
+	}
 	if err = admit(first); err != nil {
 		return err
 	}
@@ -306,11 +313,23 @@ func run() (outcome error) {
 	if !ok {
 		return errors.New("missing SDK backend")
 	}
+	actualType := ""
 	hostStorage := &storage{w: w}
 	ctx, cancel := w.ownerContext(timeout)
 	w.active.Store(first.Call)
 	err = backend.Setup(ctx, &logical.BackendConfig{StorageView: hostStorage, System: &logical.StaticSystemView{DefaultLeaseTTLVal: time.Duration(first.DefaultTTLSeconds) * time.Second, MaxLeaseTTLVal: time.Duration(first.MaxTTLSeconds) * time.Second}, Logger: logger, Config: map[string]string{"plugin_name": "heptabao-sdk-backend"}})
 	if err == nil {
+		switch backend.Type() {
+		case logical.TypeLogical:
+			actualType = "secret"
+		case logical.TypeCredential:
+			actualType = "auth"
+		default:
+			return errors.New("unsupported actual SDK backend family")
+		}
+		if actualType != first.BackendType {
+			return errors.New("actual SDK backend family differs from admitted catalog family")
+		}
 		err = backend.Initialize(ctx, &logical.InitializationRequest{Storage: hostStorage})
 	}
 	w.active.Store(0)
@@ -318,10 +337,7 @@ func run() (outcome error) {
 	if err != nil {
 		return err
 	}
-	if backend.Type() != logical.TypeLogical {
-		return errors.New("first bridge supports logical secret backends")
-	}
-	if err = w.send(message{Kind: "ready", Call: 1, BackendType: "secret"}); err != nil {
+	if err = w.send(message{Kind: "ready", Call: 1, BackendType: actualType}); err != nil {
 		return err
 	}
 	last := uint64(1)

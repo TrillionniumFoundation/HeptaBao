@@ -144,6 +144,22 @@ impl std::fmt::Display for SdkBridgeError {
 }
 impl std::error::Error for SdkBridgeError {}
 
+/// Backend family admitted by the owning Service catalog. A plugin's reported
+/// family can only confirm this value and never grants token authority.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SdkBackendType {
+    Secret,
+    Auth,
+}
+impl SdkBackendType {
+    fn label(self) -> &'static str {
+        match self {
+            Self::Secret => "secret",
+            Self::Auth => "auth",
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct SdkLaunch {
     pub companion: PathBuf,
@@ -200,6 +216,15 @@ impl SdkBackendHost {
     pub fn launch_before(
         config: &SdkLaunch,
         storage: &mut dyn SdkStorage,
+        original_deadline: Instant,
+    ) -> Result<Self, SdkBridgeError> {
+        Self::launch_typed_before(config, storage, SdkBackendType::Secret, original_deadline)
+    }
+
+    pub fn launch_typed_before(
+        config: &SdkLaunch,
+        storage: &mut dyn SdkStorage,
+        backend_type: SdkBackendType,
         original_deadline: Instant,
     ) -> Result<Self, SdkBridgeError> {
         if Instant::now() >= original_deadline {
@@ -354,7 +379,7 @@ impl SdkBackendHost {
         };
         nonblocking(&host.input)?;
         nonblocking(&host.output)?;
-        let setup = json!({"version":1,"kind":"setup","call":1,
+        let setup = json!({"version":1,"kind":"setup","call":1,"backend_type":backend_type.label(),
             "plugin":host._plugin.descriptor_path(),"args":config.plugin_args,
             "socket_dir":socket_alias,"timeout_ms":config.timeout.as_millis(),
             "default_ttl_seconds":config.default_ttl_seconds,"max_ttl_seconds":config.max_ttl_seconds});
@@ -366,7 +391,7 @@ impl SdkBackendHost {
         };
         host.send(&setup, deadline)?;
         let ready = host.exchange(storage, "ready", deadline)?;
-        if ready.get("backend_type").and_then(Value::as_str) != Some("secret") {
+        if ready.get("backend_type").and_then(Value::as_str) != Some(backend_type.label()) {
             return Err(SdkBridgeError::OutcomeUnknown);
         }
         Ok(host)
