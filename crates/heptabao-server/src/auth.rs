@@ -1407,7 +1407,10 @@ impl Principal {
         Ok(())
     }
 
-    fn request_authority_time(&self, time: AuthorityTime) -> Result<AuthorityTime, AuthError> {
+    pub(super) fn request_authority_time(
+        &self,
+        time: AuthorityTime,
+    ) -> Result<AuthorityTime, AuthError> {
         let Some(clock) = self.request_clock else {
             // Explicit historical callers do not acquire precision from a
             // rounded token projection or a caller-supplied integer.
@@ -2406,6 +2409,17 @@ impl AuthState {
         let raw = random_id("hvs.")?;
         state.tokens.insert(hash(&raw), token);
         Ok((state, raw))
+    }
+
+    fn principal_token_api_time(
+        &self,
+        actor: &Principal,
+        time: AuthorityTime,
+    ) -> Result<AuthorityTime, AuthError> {
+        let time = self.token_api_observed_time(time);
+        actor
+            .request_authority_time(time)
+            .map(|time| self.token_api_observed_time(time))
     }
 
     fn active_token(&self, id: &str, now: u64, consume_check: bool) -> Result<&Token, AuthError> {
@@ -6099,7 +6113,6 @@ impl AuthState {
     ) -> Result<AuthResponse, AuthError> {
         let time = self.token_api_observed_time(time);
         let clock = clock.map(|clock| self.token_api_request_clock(clock));
-        let now = time.seconds();
         let operation = path
             .strip_prefix("auth/token/")
             .ok_or_else(|| bad("invalid token path"))?;
@@ -6121,6 +6134,10 @@ impl AuthState {
             _ => "update",
         };
         let actor = self.permission_observed(principal, namespace, path, capability, time)?;
+        // Actor ACL admission may reobserve the original Service clock. Carry
+        // that actual observation into target resolution and public projections.
+        let time = self.principal_token_api_time(actor, time)?;
+        let now = time.seconds();
         match operation {
             "create" | "create-orphan" => {
                 if time.exact().is_none() {
@@ -6154,6 +6171,7 @@ impl AuthState {
             "lookup-self" => {
                 reject_unknown(body, &[])?;
                 let token = self.check_principal_observed(actor, namespace, time)?;
+                let time = self.principal_token_api_time(actor, time)?;
                 Ok(response(token.info_observed(time)?, false))
             }
             "lookup" | "lookup-accessor" => {
@@ -6171,6 +6189,7 @@ impl AuthState {
                         .is_none_or(|value| value.is_null() || value.as_str() == Some(""))
                 {
                     let token = self.check_principal_observed(actor, namespace, time)?;
+                    let time = self.principal_token_api_time(actor, time)?;
                     return Ok(response(token.info_observed(time)?, false));
                 }
                 if operation == "lookup" {
@@ -6183,17 +6202,24 @@ impl AuthState {
                                 error
                             }
                         })?;
+                    let time = self.principal_token_api_time(actor, time)?;
                     return Ok(response(
                         target.view_observed(self, time)?.info_observed(time)?,
                         false,
                     ));
                 }
                 let id = self.target_token_observed(namespace, body, true, time)?;
+                let time = self.principal_token_api_time(actor, time)?;
                 let token = self.active_token_observed(&id, time, true)?;
+                let time = self.principal_token_api_time(actor, time)?;
+                // Projection cannot deliver a target that expired during its
+                // preceding accessor resolution.
+                self.active_token_observed(&id, time, true)?;
                 Ok(response(token_info_observed(token, time)?, false))
             }
             "accessors" => {
                 self.authorize_request_observed(actor, namespace, path, "sudo", time)?;
+                let time = self.principal_token_api_time(actor, time)?;
                 let keys: Vec<&str> = self
                     .tokens
                     .values()
@@ -6214,6 +6240,7 @@ impl AuthState {
                         "trusted precise clock required for token maintenance",
                     ));
                 }
+                let time = self.principal_token_api_time(actor, time)?;
                 let stale: Vec<String> = self
                     .tokens
                     .iter()
@@ -6338,6 +6365,8 @@ impl AuthState {
                 }) {
                     return Err(bad("token not found"));
                 }
+                let time = self.principal_token_api_time(actor, time)?;
+                let now = time.seconds();
                 self.active_token_observed(&id, time, false)?;
                 self.require_offline_renewal_origin(&id)?;
                 if let Some(response) =

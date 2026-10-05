@@ -269,7 +269,11 @@ impl Service {
         let Some(mut state) = self.state.clone() else {
             return Response::error(503, "provider renewal authority is unavailable");
         };
-        let now = plan.observed_now();
+        let now = match plan.observed_now_for(&actor) {
+            Ok(now) => now.max(state.engines.lease_clock()),
+            Err(error) => return auth_error(error),
+        };
+        let delivery_target = Zeroizing::new(plan.delivery_target().to_owned());
         if let Err(error) = Self::bind_identity_principal(&state, &mut actor, namespace) {
             return error;
         }
@@ -305,10 +309,35 @@ impl Service {
                 Err(error) => return auth_error(error),
             };
         }
+        if let Err(error) = state.auth.validate_provider_renewal_delivery(
+            &actor,
+            namespace,
+            &path,
+            &delivery_target,
+            now,
+        ) {
+            erase_json(&mut response.body);
+            return auth_error(error);
+        }
         state.schema = state.writer_schema();
         if let Err(error) = self.commit_state(&mut state) {
             erase_json(&mut response.body);
             return error;
+        }
+        #[cfg(test)]
+        external_pki::delay_after_publication_for_test();
+        if let Err(error) = state.auth.validate_provider_renewal_delivery(
+            &actor,
+            namespace,
+            &path,
+            &delivery_target,
+            now,
+        ) {
+            // Publication is already durable. Keep the actual committed owner
+            // and the consumed admission; deliver no token or wrapped payload.
+            erase_json(&mut response.body);
+            self.state = Some(state);
+            return auth_error(error);
         }
         self.state = Some(state);
         Response {

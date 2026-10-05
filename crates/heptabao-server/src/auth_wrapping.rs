@@ -305,6 +305,11 @@ impl AuthState {
             return Err(err(405, "method not allowed"));
         }
         let actor = self.permission(principal, namespace, path, "update", now)?;
+        // Wrappers keep their existing whole-second owner. Only the actor's
+        // original clock refreshes the time used to resolve a body target.
+        let now = self
+            .principal_token_api_time(actor, AuthorityTime::Coarse(now))?
+            .seconds();
         if path == "sys/wrapping/wrap" {
             if !body.is_object() {
                 return Err(bad("wrapping payload must be a JSON object"));

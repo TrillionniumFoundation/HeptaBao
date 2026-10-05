@@ -47,6 +47,22 @@ impl RadiusRenewalPlan {
         }
     }
 
+    pub(super) fn observed_now_for(&self, actor: &Principal) -> Result<u64, AuthError> {
+        if actor.request_clock.is_some() {
+            // The original trusted clock owns fractional elapsed time. The
+            // historical ceil(elapsed) is not a new precise observation.
+            actor
+                .request_authority_time(AuthorityTime::Coarse(self.now))
+                .map(AuthorityTime::seconds)
+        } else {
+            Ok(self.observed_now())
+        }
+    }
+
+    pub(super) fn delivery_target(&self) -> &str {
+        &self.target
+    }
+
     pub(crate) fn observed_now(&self) -> u64 {
         let elapsed = self.started.elapsed();
         self.now.saturating_add(
@@ -169,9 +185,11 @@ impl AuthState {
         path: &str,
         target: Zeroizing<String>,
         increment: u64,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<RadiusRenewalPlan, AuthError> {
-        let token = self.active_token(&target, now, false)?;
+        let time = self.token_api_observed_time(time);
+        let now = time.seconds();
+        let token = self.active_token_observed(&target, time, false)?;
         let (username, credential, native) = match &token.auth_provenance {
             Some(TokenAuthProvenance::Radius {
                 username,
@@ -232,8 +250,11 @@ impl AuthState {
         _observation: RadiusRenewalObservation,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
-        self.authorize_request(actor, &plan.namespace, &plan.path, "update", now)?;
-        let token = self.active_token(&plan.target, now, false)?;
+        let time = self.principal_token_api_time(actor, AuthorityTime::Coarse(now))?;
+        self.authorize_request_observed(actor, &plan.namespace, &plan.path, "update", time)?;
+        let time = self.principal_token_api_time(actor, time)?;
+        let now = time.seconds();
+        let token = self.active_token_observed(&plan.target, time, false)?;
         if token.namespace != plan.namespace
             || !token.renewable
             || state_revision(token)? != plan.target_revision
@@ -265,7 +286,7 @@ impl AuthState {
                 &plan.target,
                 &plan.username,
                 plan.increment,
-                now,
+                time,
             );
         }
         if !same_policies(&plan.config.policies, &token.policies) {

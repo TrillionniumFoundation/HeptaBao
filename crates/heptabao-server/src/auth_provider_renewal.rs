@@ -42,10 +42,17 @@ impl ProviderRenewalPlan {
         }
     }
 
-    pub(crate) fn observed_now(&self) -> u64 {
+    pub(crate) fn observed_now_for(&self, actor: &Principal) -> Result<u64, AuthError> {
         match self {
-            Self::Radius(plan) => plan.observed_now(),
-            Self::Ldap(plan) => plan.observed_now(),
+            Self::Radius(plan) => plan.observed_now_for(actor),
+            Self::Ldap(plan) => plan.observed_now_for(actor),
+        }
+    }
+
+    pub(crate) fn delivery_target(&self) -> &str {
+        match self {
+            Self::Radius(plan) => plan.delivery_target(),
+            Self::Ldap(plan) => plan.delivery_target(),
         }
     }
 }
@@ -107,7 +114,6 @@ impl AuthState {
         body: &Value,
         time: AuthorityTime,
     ) -> Result<Option<ProviderRenewalPlan>, AuthError> {
-        let now = time.seconds();
         if !matches!(method, "POST" | "PUT")
             || !matches!(
                 path,
@@ -117,6 +123,7 @@ impl AuthState {
             return Ok(None);
         }
         let actor = self.permission_observed(principal, namespace, path, "update", time)?;
+        let time = self.principal_token_api_time(actor, time)?;
         let target = match path {
             "auth/token/renew-self" => {
                 reject_unknown(body, &["increment"])?;
@@ -150,12 +157,12 @@ impl AuthState {
         let increment = duration(body, "increment", 0)?;
         match token.auth_provenance {
             Some(TokenAuthProvenance::Radius { .. } | TokenAuthProvenance::RadiusNative { .. }) => {
-                self.prepare_radius_renewal_target(namespace, path, target, increment, now)
+                self.prepare_radius_renewal_target(namespace, path, target, increment, time)
                     .map(ProviderRenewalPlan::Radius)
                     .map(Some)
             }
             Some(TokenAuthProvenance::Ldap { .. } | TokenAuthProvenance::LdapNative { .. }) => self
-                .prepare_ldap_renewal_target(namespace, path, target, increment, now)
+                .prepare_ldap_renewal_target(namespace, path, target, increment, time)
                 .map(ProviderRenewalPlan::Ldap)
                 .map(Some),
             _ => {
@@ -163,6 +170,24 @@ impl AuthState {
                 Ok(None)
             }
         }
+    }
+
+    pub(crate) fn validate_provider_renewal_delivery(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        path: &str,
+        target: &str,
+        now: u64,
+    ) -> Result<(), AuthError> {
+        let time = self.principal_token_api_time(actor, AuthorityTime::Coarse(now))?;
+        self.authorize_request_observed(actor, namespace, path, "update", time)?;
+        let time = self.principal_token_api_time(actor, time)?;
+        let token = self.active_token_observed(target, time, false)?;
+        if token.namespace != namespace {
+            return Err(denied());
+        }
+        Ok(())
     }
 
     pub(crate) fn finish_provider_renewal(

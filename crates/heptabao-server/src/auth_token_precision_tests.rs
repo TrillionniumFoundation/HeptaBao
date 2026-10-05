@@ -910,3 +910,104 @@ fn precise_observation_floor_is_bounded_and_cannot_be_forged_through_creation_bo
     assert!(missing.validate_token_api_precision_state().is_err());
     Ok(())
 }
+
+#[test]
+fn original_actor_clock_drives_plain_target_lookup_and_provider_delivery_gate() -> TestResult {
+    let (mut state, root_raw) = AuthState::bootstrap(100)?;
+    let mut root = state.authenticate(&root_raw, 100)?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw)?;
+    let accessor = state
+        .tokens
+        .get(&hash(&raw))
+        .ok_or("target absent")?
+        .accessor
+        .clone();
+    let clock = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+    root.bind_request_clock(Some(clock))?;
+    // These explicit legacy argument projections must use the bound actual
+    // ingress clock, rather than claim that integer 100 is precise authority.
+    for (path, body) in [
+        ("auth/token/lookup", json!({"token":raw})),
+        ("auth/token/lookup-accessor", json!({"accessor":accessor})),
+    ] {
+        let response = state
+            .handle(Some(&root), "", "POST", path, &body, 100)?
+            .ok_or("lookup route absent")?;
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["data"]["ttl"], 0);
+    }
+    state.validate_provider_renewal_delivery(&root, "", "auth/token/renew", &hash(&raw), 100)?;
+    let unbound_root = state.authenticate(&root_raw, 100)?;
+    assert!(
+        state
+            .validate_provider_renewal_delivery(
+                &unbound_root,
+                "",
+                "auth/token/renew",
+                &hash(&raw),
+                100
+            )
+            .is_err()
+    );
+    Ok(())
+}
+
+#[test]
+fn original_actor_clock_rejects_expired_target_and_keeps_wrapping_whole_owner() -> TestResult {
+    let (mut state, mut root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw)?;
+    let wrapped = state.wrap_response(
+        "",
+        "sys/wrapping/wrap",
+        2,
+        &json!({"data":{"marker":"actual-owner"}}),
+        100,
+    )?;
+    let wrapper = wrapped.body["wrap_info"]["token"]
+        .as_str()
+        .ok_or("wrapper")?
+        .to_owned();
+    let clock = RequestClock::anchored(
+        Duration::new(100, 200_000_000),
+        Instant::now()
+            .checked_sub(Duration::from_secs(1))
+            .ok_or("old anchor")?,
+    )?;
+    root.bind_request_clock(Some(clock))?;
+    let before = serde_json::to_vec(&state)?;
+    assert!(
+        state
+            .handle(
+                Some(&root),
+                "",
+                "POST",
+                "auth/token/lookup",
+                &json!({"token":raw}),
+                100
+            )
+            .is_err()
+    );
+    assert!(
+        state
+            .validate_provider_renewal_delivery(&root, "", "auth/token/renew", &hash(&raw), 100)
+            .is_err()
+    );
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    let response = state.wrapping_route(
+        Some(&root),
+        "",
+        "PUT",
+        "sys/wrapping/unwrap",
+        &json!({"token":wrapper}),
+        100,
+    )?;
+    assert_eq!(response.body["data"]["marker"], "actual-owner");
+    assert!(
+        state
+            .lookup_wrapping_request(&wrapper, "", "POST", &json!({}), 101)
+            .is_err()
+    );
+    Ok(())
+}
