@@ -44,6 +44,8 @@ impl State {
             PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
         } else if self.engines.has_pki_role_any_name_state() {
             PKI_ROLE_ANY_NAME_STATE_SCHEMA
+        } else if self.has_token_api_precision_state() {
+            TOKEN_API_PRECISION_STATE_SCHEMA
         } else if self.namespaces.has_custody_state() || self.engines.has_namespace_record_custody()
         {
             NAMESPACE_CUSTODY_STATE_SCHEMA
@@ -114,14 +116,16 @@ impl State {
         self.auth
             .validate_token_api_clock_floor(previous.map(|state| &*state.auth))
             .map_err(|error| Response::error(503, &error.message))?;
-        if self.has_token_api_precision_state()
-            || previous.is_some_and(|state| state.has_token_api_precision_state())
+        if self.schema < TOKEN_API_PRECISION_STATE_SCHEMA
+            && (self.has_token_api_precision_state()
+                || previous.is_some_and(|state| {
+                    state.has_token_api_precision_state()
+                        || state.schema >= TOKEN_API_PRECISION_STATE_SCHEMA
+                }))
         {
-            // Schema82 issuance/publication is staged until all explicit
-            // response and provider owner paths preserve precise authority.
             return Err(Response::error(
                 503,
-                "Token API precise lease publication is not enabled",
+                "Token API precise lease publication requires schema 82",
             ));
         }
         if self.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
@@ -437,7 +441,7 @@ impl State {
                 "private precise lease owners require an observation floor",
             ));
         }
-        if self.has_token_api_precision_state() {
+        if self.schema < TOKEN_API_PRECISION_STATE_SCHEMA && self.has_token_api_precision_state() {
             return Err(Response::error(
                 503,
                 "Token API precise lease reader requires schema 82",

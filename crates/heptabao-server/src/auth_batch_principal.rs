@@ -237,15 +237,6 @@ impl AuthState {
         self.batch_parent_expiry_observed(claims.parent(), namespace, time)?;
         Ok(())
     }
-    pub(super) fn batch_principal(
-        &self,
-        raw: &str,
-        now: u64,
-        origin_peer: Option<std::net::IpAddr>,
-    ) -> Result<Principal, AuthError> {
-        self.batch_principal_observed(raw, AuthorityTime::Coarse(now), origin_peer)
-    }
-
     pub(super) fn batch_principal_observed(
         &self,
         raw: &str,
@@ -311,6 +302,7 @@ impl AuthState {
         }
         Ok(InspectionCredential::Service(digest))
     }
+    #[cfg(test)]
     pub(crate) fn typed_lease_issuer(
         &self,
         actor: &Principal,
@@ -358,6 +350,7 @@ impl AuthState {
             CheckedCredential::Batch(_) => self.typed_lease_issuer_observed(actor, namespace, time),
         }
     }
+    #[cfg(test)]
     pub(crate) fn resolve_lease_owner(
         &self,
         owner: &LeaseOwner,

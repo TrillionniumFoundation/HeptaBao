@@ -70,6 +70,7 @@ const LOCAL_PKI_CRL_STATE_SCHEMA: u32 = 78;
 const LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA: u32 = 79;
 const TOKEN_ROLE_STATE_SCHEMA: u32 = 80;
 const NAMESPACE_CUSTODY_STATE_SCHEMA: u32 = 81;
+const TOKEN_API_PRECISION_STATE_SCHEMA: u32 = 82;
 const AUTH_PUBLIC_ORIGIN_STATE_SCHEMA: u32 = 86;
 const KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA: u32 =
     crate::engines::kubernetes_artifact::STATE_SCHEMA;
@@ -83,12 +84,12 @@ const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
 #[cfg(test)]
 const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_SIGNED_ROLE_TIME_STATE_SCHEMA;
 
-// Precise Token API schema 82 remains staged until its provider paths are integrated.
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
         || matches!(
             schema,
             NAMESPACE_CUSTODY_STATE_SCHEMA
+                | TOKEN_API_PRECISION_STATE_SCHEMA
                 | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
                 | PKI_ROLE_ANY_NAME_STATE_SCHEMA
                 | PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
@@ -159,6 +160,8 @@ mod ordinary_kv_delivery;
 mod plugin;
 #[path = "service_recovery_keys.rs"]
 mod recovery_keys;
+#[path = "service_token_delivery.rs"]
+mod token_delivery;
 #[path = "service_token_precision.rs"]
 mod token_precision;
 #[path = "service_wrapper_ha.rs"]
@@ -1041,6 +1044,7 @@ pub struct Service {
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
     pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
+    pending_token_api_authority: Option<plugin::PluginResponseAuthority>,
     pending_ordinary_kv_commit_notice: Option<ordinary_kv_delivery::OrdinaryKvCommitNoticeCapture>,
     native_snapshot_transport: bool,
     native_snapshot_clock: Option<(std::time::Instant, Duration)>,
@@ -1399,6 +1403,7 @@ impl Service {
             pending_openldap_effect: None,
             pending_snapshot_transfer: None,
             pending_ordinary_kv_authority: None,
+            pending_token_api_authority: None,
             pending_ordinary_kv_commit_notice: None,
             native_snapshot_transport: false,
             native_snapshot_clock: None,
@@ -1780,8 +1785,15 @@ impl Service {
                 pending.now,
                 &pending.fingerprint,
             ),
-            (ExternalEffectPlan::Database(plan), ExternalEffectResult::Database(result)) => {
-                self.finalize_database_request(*plan, result)
+            (ExternalEffectPlan::Database(mut plan), ExternalEffectResult::Database(result)) => {
+                let response = self.finalize_database_request(&mut plan, result);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_database_delivery(&mut plan, response, &pending.fingerprint);
             }
             (
                 ExternalEffectPlan::DatabaseConfig(plan),
@@ -1796,7 +1808,19 @@ impl Service {
                 ExternalEffectResult::DatabaseBatch(result),
             ) => self.finalize_database_batch_effect(&plan, result),
             (ExternalEffectPlan::OnlineAuth(plan), ExternalEffectResult::OnlineAuth(result)) => {
-                self.finalize_online_auth_effect(plan, result)
+                let token_expected = plan.is_provider_renewal();
+                let response = self.finalize_online_auth_effect(plan, result);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_pending_token_api_delivery(
+                    token_expected && response.status < 300,
+                    response,
+                    &pending.fingerprint,
+                );
             }
             (ExternalEffectPlan::PluginAuth(plan), ExternalEffectResult::PluginAuth(result)) => {
                 self.finalize_plugin_auth(plan, result)
@@ -1849,8 +1873,15 @@ impl Service {
                     &pending.fingerprint,
                 );
             }
-            (ExternalEffectPlan::OpenLdap(plan), ExternalEffectResult::OpenLdap(result)) => {
-                self.finalize_openldap_request(plan, result)
+            (ExternalEffectPlan::OpenLdap(mut plan), ExternalEffectResult::OpenLdap(result)) => {
+                let response = self.finalize_openldap_request(&mut plan, result);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_openldap_delivery(&mut plan, response, &pending.fingerprint);
             }
             (
                 ExternalEffectPlan::SnapshotTransfer(plan),
@@ -1982,6 +2013,7 @@ impl Service {
             || self.pending_openldap_effect.is_some()
             || self.pending_snapshot_transfer.is_some()
             || self.pending_ordinary_kv_authority.is_some()
+            || self.pending_token_api_authority.is_some()
             || self.pending_ordinary_kv_commit_notice.is_some()
         {
             erase_json(&mut body);
@@ -2221,6 +2253,7 @@ impl Service {
         let openldap = self.pending_openldap_effect.take();
         let snapshot_transfer = self.pending_snapshot_transfer.take();
         let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
+        let token_api_authority = self.pending_token_api_authority.take();
         let staged = usize::from(database.is_some())
             + usize::from(database_config.is_some())
             + usize::from(database_rotation.is_some())
@@ -2235,7 +2268,10 @@ impl Service {
             + usize::from(kubernetes_token.is_some())
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
-        if staged > 1 || staged != 0 && ordinary_kv_authority.is_some() {
+        if staged > 1
+            || staged != 0 && (ordinary_kv_authority.is_some() || token_api_authority.is_some())
+            || ordinary_kv_authority.is_some() && token_api_authority.is_some()
+        {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -2275,10 +2311,12 @@ impl Service {
             }));
         }
         let ordinary_kv_expected = ordinary_kv_authority.is_some();
+        let token_expected = token_api_authority.is_some();
         // Retain the exact moved capsule through terminal-floor publication and
         // mandatory audit. A typed unknown floor outcome attaches to this same
         // request, rather than being reconstructed from the public response.
         self.pending_ordinary_kv_authority = ordinary_kv_authority;
+        self.pending_token_api_authority = token_api_authority;
         let mut response = self.audit_completed_response(&fingerprint, now, token_clock, response);
         let response = match (
             ordinary_kv_expected,
@@ -2297,6 +2335,8 @@ impl Service {
                 Response::error(503, "ordinary KV delivery capsule was lost")
             }
         };
+        let response =
+            self.complete_pending_token_api_delivery(token_expected, response, &fingerprint);
         RequestExecution::Complete(response)
     }
 
@@ -3197,6 +3237,25 @@ impl Service {
         } else {
             None
         };
+        let token_api_authority = if path.starts_with("auth/token/")
+            && !path
+                .strip_prefix("auth/token/")
+                .is_some_and(|op| op.starts_with("revoke"))
+        {
+            principal.take().map(|principal| {
+                plugin::PluginResponseAuthority::new(
+                    principal,
+                    &transaction,
+                    &request,
+                    token_delivery::capability(method, path),
+                    false,
+                    &self.unseal_nonce,
+                )
+                .with_time_floor(now)
+            })
+        } else {
+            None
+        };
         let mut approle_secret_consumption = None;
         let mut response = if path == "sys/wrapping/lookup" {
             match transaction
@@ -3213,6 +3272,22 @@ impl Service {
         } else if path == "sys/wrapping/wrap" && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0) {
             Response::error(400, "endpoint requires response wrapping to be used")
         } else if let Some(authority) = ordinary_kv_authority.as_ref() {
+            Self::dispatch_authorized_subrequest(
+                &mut transaction,
+                Some(authority.principal()),
+                namespace,
+                method,
+                path,
+                body,
+                token_fields.as_ref(),
+                pki_role_fields.as_ref(),
+                now,
+                request.token_clock,
+                client_certificates,
+                origin_peer,
+                &mut approle_secret_consumption,
+            )
+        } else if let Some(authority) = token_api_authority.as_ref() {
             Self::dispatch_authorized_subrequest(
                 &mut transaction,
                 Some(authority.principal()),
@@ -3246,6 +3321,7 @@ impl Service {
             )
         };
         self.pending_ordinary_kv_authority = ordinary_kv_authority;
+        self.pending_token_api_authority = token_api_authority;
         if response.status < 300
             && matches!(method, "POST" | "PUT")
             && let Err(error) =
@@ -3345,6 +3421,23 @@ impl Service {
                 return error;
             }
         }
+        if response.status < 300
+            && let Some(authority) = self.pending_token_api_authority.as_mut()
+        {
+            let checked = authority
+                .observe_candidate_time(&mut admitted)
+                .and_then(|_| {
+                    authority.check_token_api_candidate(
+                        &admitted,
+                        &admitted.auth,
+                        &self.unseal_nonce,
+                    )
+                });
+            if let Err(error) = checked {
+                erase_json(&mut response.body);
+                return error;
+            }
+        }
         // Safe-key and custom JWT role candidates need their reader schema
         // before record preflight. Ordinary legacy reads retain their original
         // schema until a proven logical mutation, as before.
@@ -3357,6 +3450,7 @@ impl Service {
             return Response::error(error.status, &error.message);
         }
         if admitted.engines.has_kubernetes_opaque_artifact_state()
+            || admitted.has_token_api_precision_state()
             || admitted.engines.has_pki_role_time_state()
             || admitted.engines.has_pki_role_leaf_profile_state()
             || admitted.engines.has_pki_role_wildcard_state()

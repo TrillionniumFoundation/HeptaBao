@@ -263,6 +263,7 @@ impl Service {
             ));
         }
         let mut authority = self.pending_ordinary_kv_authority.take();
+        let token_authority = self.pending_token_api_authority.take();
         self.pending_ordinary_kv_commit_notice =
             authority
                 .as_ref()
@@ -276,6 +277,15 @@ impl Service {
                 state,
                 plan,
                 |auth| authority.check(state, auth, &activation_nonce),
+                #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                None,
+            )
+        } else if let Some(authority) = token_authority.as_ref() {
+            let activation = self.unseal_nonce.clone();
+            self.commit_record_plan_with_before_publish(
+                state,
+                plan,
+                |auth| authority.check_token_api_candidate(state, auth, &activation),
                 #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
                 None,
             )
@@ -299,6 +309,7 @@ impl Service {
             }
         }
         self.pending_ordinary_kv_authority = authority;
+        self.pending_token_api_authority = token_authority;
         result
     }
 

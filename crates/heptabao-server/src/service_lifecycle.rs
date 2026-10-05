@@ -108,20 +108,24 @@ enum ProviderMaintenance {
     DatabaseRotation(Box<database::DatabaseRotationMaintenance>),
     OpenLdap(Box<openldap_secret::OpenLdapMaintenance>),
 }
-fn prepare_database_provider(writer: &mut Service, now: u64) -> Option<ProviderMaintenance> {
+fn prepare_database_provider(
+    writer: &mut Service,
+    now: u64,
+    clock: RequestClock,
+) -> Option<ProviderMaintenance> {
     let prefer_rotation = writer.lifecycle_database_rotation_cursor;
     writer.lifecycle_database_rotation_cursor = !prefer_rotation;
     if prefer_rotation {
         match writer.prepare_database_rotation_maintenance(now) {
             Ok(Some(value)) => Some(ProviderMaintenance::DatabaseRotation(Box::new(value))),
             Ok(None) | Err(_) => writer
-                .prepare_database_maintenance(now)
+                .prepare_database_maintenance_with_clock(now, Some(clock))
                 .ok()
                 .flatten()
                 .map(|value| ProviderMaintenance::Database(Box::new(value))),
         }
     } else {
-        match writer.prepare_database_maintenance(now) {
+        match writer.prepare_database_maintenance_with_clock(now, Some(clock)) {
             Ok(Some(value)) => Some(ProviderMaintenance::Database(Box::new(value))),
             Ok(None) | Err(_) => writer
                 .prepare_database_rotation_maintenance(now)
@@ -185,14 +189,16 @@ pub(crate) fn start_lifecycle_worker(
                     let prefer_openldap = writer.lifecycle_provider_cursor;
                     writer.lifecycle_provider_cursor = !prefer_openldap;
                     let pending = if prefer_openldap {
-                        match writer.prepare_openldap_maintenance(now) {
+                        match writer.prepare_openldap_maintenance_with_clock(now, Some(clock)) {
                             Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(Box::new(value))),
-                            Ok(None) | Err(_) => prepare_database_provider(&mut writer, now),
+                            Ok(None) | Err(_) => prepare_database_provider(&mut writer, now, clock),
                         }
                     } else {
-                        match prepare_database_provider(&mut writer, now) {
+                        match prepare_database_provider(&mut writer, now, clock) {
                             Some(value) => Some(value),
-                            None => match writer.prepare_openldap_maintenance(now) {
+                            None => match writer
+                                .prepare_openldap_maintenance_with_clock(now, Some(clock))
+                            {
                                 Ok(Some(value)) => {
                                     Some(ProviderMaintenance::OpenLdap(Box::new(value)))
                                 }

@@ -146,6 +146,57 @@ pub(super) struct PluginResponseAuthority {
 }
 
 impl PluginResponseAuthority {
+    pub(super) fn principal(&self) -> &Principal {
+        &self.principal
+    }
+    pub(super) fn check_token_api_candidate(
+        &self,
+        state: &State,
+        auth: &AuthState,
+        activation: &str,
+    ) -> Result<(), Response> {
+        state.namespace_leases.validate()?;
+        if self.deadline_expired()
+            || activation != self.activation_nonce
+            || state.cluster_id != self.cluster_id
+            || !state.namespace_exists(&self.namespace)
+            || state.namespace_is_sealed(&self.namespace)
+            || state.namespaces.incarnation(&self.namespace) != self.namespace_incarnation
+            || namespace_runtime::DeliveryBinding::capture(state, &self.namespace)
+                != self.namespace_delivery_binding
+        {
+            return Err(Response::error(
+                503,
+                "token response owner or deadline changed",
+            ));
+        }
+        let time = auth.token_api_observed_time(self.token_time()?);
+        auth.authorize_request_parameters_observed(
+            &self.principal,
+            &self.namespace,
+            &self.method,
+            &self.path,
+            &self.body,
+            time,
+        )
+        .map_err(|error| Response::error(error.status, &error.message))?;
+        auth.authorize_request_observed(
+            &self.principal,
+            &self.namespace,
+            &self.path,
+            self.capability,
+            time,
+        )
+        .map_err(|error| Response::error(error.status, &error.message))?;
+        auth.validate_token_api_delivery_target(
+            &self.principal,
+            &self.namespace,
+            &self.path,
+            &self.body,
+            time,
+        )
+        .map_err(|error| Response::error(error.status, &error.message))
+    }
     pub(super) fn new(
         principal: Principal,
         state: &State,

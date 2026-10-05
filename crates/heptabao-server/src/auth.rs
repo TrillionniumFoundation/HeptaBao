@@ -6631,6 +6631,12 @@ impl AuthState {
         clock: Option<RequestClock>,
         force_orphan: bool,
     ) -> Result<AuthResponse, AuthError> {
+        if clock.is_none() && self.has_token_api_precision_state() {
+            return Err(err(
+                503,
+                "trusted precise token issuer clock is unavailable",
+            ));
+        }
         let now = time.seconds();
         // Framework metadata is parsed only after bearer and parameter ACL admission.
         let metadata = public_origin::MetadataInput::parse(body)?;
@@ -6648,7 +6654,7 @@ impl AuthState {
             "entity_alias",
             "meta",
         ];
-        if token_precise_issuance::ENABLED {
+        if token_precise_issuance::ENABLED && clock.is_some() {
             fields.push("lease");
         }
         reject_unknown(body, &fields)?;
@@ -6720,9 +6726,9 @@ impl AuthState {
         let creation_path = issued_role
             .as_ref()
             .map_or_else(|| path.to_owned(), |role| role.path.clone());
-        if token_precise_issuance::ENABLED {
-            let clock = clock
-                .ok_or_else(|| err(503, "trusted precise token issuer clock is unavailable"))?;
+        if token_precise_issuance::ENABLED
+            && let Some(clock) = clock
+        {
             return self.finish_precise_token_creation(
                 token_precise_issuance::PreparedCreation {
                     actor,

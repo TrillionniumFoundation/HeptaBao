@@ -1,9 +1,9 @@
-//! Staged ordinary Token API precise issuance. The global publisher remains off
-//! until the full final-delivery and persistent lease-owner graph is migrated.
+//! Ordinary Token API issuance preserves the actual original trusted clock.
+//! Historical callers with no clock retain their original whole-second graph.
 use super::token_precision::{BatchPrecision, DurationNanos, ServicePrecision};
 use super::*;
 
-pub(super) const ENABLED: bool = false;
+pub(super) const ENABLED: bool = true;
 pub(super) struct PreparedCreation<'a> {
     pub(super) actor: &'a Principal,
     pub(super) namespace: &'a str,

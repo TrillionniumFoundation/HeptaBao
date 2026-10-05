@@ -75,6 +75,10 @@ impl RemoteJwtEffect {
 }
 
 impl OnlineAuthEffectPlan {
+    pub(super) fn is_provider_renewal(&self) -> bool {
+        matches!(&self.effect, OnlineAuthEffect::ProviderRenewal(_))
+    }
+
     pub(super) fn use_realtime_remote_jwt_clock(&mut self) {
         if let OnlineAuthEffect::RemoteJwt(effect) = &mut self.effect {
             effect.completion_clock = RemoteJwtCompletionClock::Realtime;
@@ -96,7 +100,7 @@ pub(super) struct OidcConfigEffect {
 
 pub(super) struct ProviderRenewalEffect {
     plan: ProviderRenewalPlan,
-    actor: Principal,
+    authority: plugin::PluginResponseAuthority,
     echo_token: Option<Zeroizing<String>>,
     path: String,
     wrap_ttl_seconds: Option<u64>,
@@ -233,7 +237,15 @@ impl Service {
             login_wrapping: None,
             effect: OnlineAuthEffect::ProviderRenewal(Box::new(ProviderRenewalEffect {
                 plan,
-                actor,
+                authority: plugin::PluginResponseAuthority::new(
+                    actor,
+                    admitted,
+                    request,
+                    "update",
+                    false,
+                    &self.unseal_nonce,
+                )
+                .with_time_floor(request.now),
                 echo_token: match request.path {
                     "auth/token/renew-self" => Some(Zeroizing::new(request.token.to_owned())),
                     "auth/token/renew" => request
@@ -261,29 +273,32 @@ impl Service {
     ) -> Response {
         let ProviderRenewalEffect {
             plan,
-            mut actor,
+            mut authority,
             echo_token,
             path,
             wrap_ttl_seconds,
         } = renewal;
+        // Keep the exact ingress capsule through provider I/O. Rebinding live
+        // identity checks its original Principal without bearer authentication.
+        if let Err(error) = self.validate_plugin_response(&mut authority) {
+            return error;
+        }
         let Some(mut state) = self.state.clone() else {
             return Response::error(503, "provider renewal authority is unavailable");
         };
-        let now = match plan.observed_now_for(&actor) {
+        let now = match plan.observed_now_for(authority.principal()) {
             Ok(now) => now.max(state.engines.lease_clock()),
             Err(error) => return auth_error(error),
         };
         let delivery_target = Zeroizing::new(plan.delivery_target().to_owned());
-        if let Err(error) = Self::bind_identity_principal(&state, &mut actor, namespace) {
-            return error;
-        }
-        let mut response = match state
-            .auth
-            .finish_provider_renewal(plan, &actor, observation, now)
-        {
-            Ok(response) => response,
-            Err(error) => return auth_error(error),
-        };
+        let mut response =
+            match state
+                .auth
+                .finish_provider_renewal(plan, authority.principal(), observation, now)
+            {
+                Ok(response) => response,
+                Err(error) => return auth_error(error),
+            };
         if let Err(error) = Self::finish_identity_response(
             &mut state.auth,
             &mut state.engines,
@@ -310,7 +325,7 @@ impl Service {
             };
         }
         if let Err(error) = state.auth.validate_provider_renewal_delivery(
-            &actor,
+            authority.principal(),
             namespace,
             &path,
             &delivery_target,
@@ -319,15 +334,39 @@ impl Service {
             erase_json(&mut response.body);
             return auth_error(error);
         }
+        let checked = authority.observe_candidate_time(&mut state).and_then(|_| {
+            authority.check_token_api_candidate(&state, &state.auth, &self.unseal_nonce)
+        });
+        if let Err(error) = checked {
+            erase_json(&mut response.body);
+            return error;
+        }
         state.schema = state.writer_schema();
-        if let Err(error) = self.commit_state(&mut state) {
+        let committed = (|| {
+            self.prepare_namespace_publication(&mut state)?;
+            state.validate_format()?;
+            if state.engines.record_root().is_some() {
+                let plan = self.prepare_record_plan(&mut state)?;
+                let activation = self.unseal_nonce.clone();
+                self.commit_record_plan_with_before_publish(
+                    &state,
+                    plan,
+                    |auth| authority.check_token_api_candidate(&state, auth, &activation),
+                    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                    None,
+                )
+            } else {
+                self.commit_state(&mut state)
+            }
+        })();
+        if let Err(error) = committed {
             erase_json(&mut response.body);
             return error;
         }
         #[cfg(test)]
         external_pki::delay_after_publication_for_test();
         if let Err(error) = state.auth.validate_provider_renewal_delivery(
-            &actor,
+            authority.principal(),
             namespace,
             &path,
             &delivery_target,
@@ -340,6 +379,16 @@ impl Service {
             return auth_error(error);
         }
         self.state = Some(state);
+        if self.pending_token_api_authority.is_some() {
+            erase_json(&mut response.body);
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Response::error(503, "provider renewal delivery capsule is occupied");
+        }
+        // This same moved capsule survives terminal floor publication and
+        // mandatory response audit, then checks the actual final target again.
+        self.pending_token_api_authority = Some(authority);
         Response {
             consistency_index: None,
             status: response.status,

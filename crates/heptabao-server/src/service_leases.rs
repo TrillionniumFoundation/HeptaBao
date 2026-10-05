@@ -5,6 +5,39 @@ use super::*;
 use std::collections::BTreeSet;
 
 impl Service {
+    /// Reobserve the original request/idle clock after a writer or provider wait.
+    /// Missing precise authority cannot classify a durable owner as expired.
+    pub(super) fn provider_owner_time(
+        state: &State,
+        clock: Option<RequestClock>,
+        now: u64,
+    ) -> Result<AuthorityTime, Response> {
+        if clock.is_none()
+            && (state.has_token_api_precision_state()
+                || state.engines.has_kubernetes_opaque_artifact_state())
+        {
+            return Err(Response::error(
+                503,
+                "trusted provider owner clock is required",
+            ));
+        }
+        let floor = now
+            .max(state.database.lease_clock())
+            .max(state.engines.lease_clock());
+        let time = match clock {
+            Some(clock) => clock
+                .with_seconds_floor(floor)
+                .and_then(RequestClock::observed_at)
+                .map(AuthorityTime::Precise)
+                .map_err(|_| Response::error(503, "trusted provider owner clock is unavailable"))?,
+            None => AuthorityTime::Coarse(floor),
+        };
+        let time = state
+            .engines
+            .kubernetes_artifact_time(time)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        Ok(state.auth.token_api_observed_time(time))
+    }
     #[cfg(all(test, target_os = "linux"))]
     pub(super) fn reconcile_lease_owners(state: &mut State, now: u64) -> Result<bool, Response> {
         Self::reconcile_lease_owners_observed(state, AuthorityTime::Coarse(now))
