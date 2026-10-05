@@ -191,6 +191,7 @@ pub struct SdkBackendHost {
     _socket: File,
     _thread_owner: PhantomData<Rc<()>>,
     timeout: Duration,
+    backend_type: SdkBackendType,
     call: u64,
     storage_rpc: u64,
     fenced: bool,
@@ -373,6 +374,7 @@ impl SdkBackendHost {
             _socket: socket_directory,
             _thread_owner: PhantomData,
             timeout: config.timeout,
+            backend_type,
             call: 1,
             storage_rpc: 0,
             fenced: false,
@@ -503,12 +505,13 @@ impl SdkBackendHost {
         if response.is_null() {
             Ok(None)
         } else {
-            if !response.is_object()
-                || response.get("auth").is_none_or(|v| !v.is_null())
-                || response
-                    .get("secret")
-                    .is_none_or(|v| !v.is_null() && !v.is_object())
-            {
+            let auth_valid = response.get("auth").is_some_and(|value| {
+                value.is_null() || self.backend_type == SdkBackendType::Auth && value.is_object()
+            });
+            let secret_valid = response.get("secret").is_some_and(|value| {
+                value.is_null() || self.backend_type == SdkBackendType::Secret && value.is_object()
+            });
+            if !response.is_object() || !auth_valid || !secret_valid {
                 self.fenced = true;
                 return Err(SdkBridgeError::OutcomeUnknown);
             }
