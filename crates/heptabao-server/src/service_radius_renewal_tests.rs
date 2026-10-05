@@ -292,6 +292,19 @@ fn radius_renewal_schema_fence_rejects_downgrade_and_token_api_provenance_is_dis
     downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 16;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
+    assert!(downgraded.auth.has_public_origin_state());
+    let origin_fence = downgraded
+        .validate_format()
+        .err()
+        .ok_or("typed public origin downgraded to schema 16")?;
+    assert_eq!(origin_fence.status, 503);
+    assert_eq!(
+        origin_fence.body["errors"][0],
+        "native public origin requires schema 86"
+    );
+    downgraded
+        .auth
+        .omit_unwrapped_public_origin_for_legacy_fixture();
     assert!(downgraded.validate_format().is_ok());
     Ok(())
 }

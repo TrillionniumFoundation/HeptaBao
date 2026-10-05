@@ -81,6 +81,8 @@ mod cert_metadata;
 mod cert_ttl;
 #[path = "auth_cubbyhole.rs"]
 mod cubbyhole;
+#[path = "auth_token_go_print.rs"]
+pub(crate) mod go_print;
 #[path = "auth_identity.rs"]
 mod identity;
 #[path = "auth_jwt_batch.rs"]

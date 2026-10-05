@@ -848,8 +848,29 @@ fn pki_profile88_last_external_archive_tidy_preserves_actual85_input_and_sticky8
     let rejected = service.commit_snapshot_restore(old_restore, &principal, &request);
     assert!(
         rejected.status == 400
-            && rejected.body["errors"][0] == "snapshot would downgrade PKI role leaf profiles",
-        "held actual85 restore reaches final protected gate after original last-archive tidy"
+            && rejected.body["errors"][0]
+                == "snapshot would downgrade opaque Kubernetes artifact ownership",
+        "held immutable actual85 restore reaches the earlier integrated reader87 gate after last-archive tidy"
+    );
+    // Isolated typed format fixture preserves current auth/namespace/clock
+    // owners. It is neither relabeled authenticated backup nor publication.
+    let mut format87 = retired.clone();
+    format87.schema = KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA;
+    assert!(
+        format87.validate_format().is_ok(),
+        "actual retired owner graph admits isolated reader87 format"
+    );
+    let floor = Service::validate_snapshot_protected_floor(&retired, &format87)
+        .err()
+        .ok_or("last archive floor accepted typed format87")?;
+    assert!(
+        floor.status == 400
+            && floor.body["errors"][0] == "snapshot would downgrade PKI role leaf profiles",
+        "exact reader88 gate independently remains after real last-archive tidy"
+    );
+    assert!(
+        rejected.status == 400,
+        "authenticated original85 restore remains rejected"
     );
     assert!(
         service

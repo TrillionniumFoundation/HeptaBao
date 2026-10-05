@@ -3451,7 +3451,7 @@ impl Service {
             return None;
         }
         if request.token.is_empty() {
-            return Some(Response::error(403, "missing client token"));
+            return Some(Response::error(403, "permission denied"));
         }
         let time = match request.token_time() {
             Ok(time) => time,
@@ -3877,7 +3877,7 @@ impl Service {
             Ok(None) => {}
         }
         let Some(principal) = principal else {
-            return Response::error(403, "missing client token");
+            return Response::error(403, "permission denied");
         };
         if path == "sys/internal/specs/openapi" {
             if let Err(error) = state
@@ -4398,11 +4398,16 @@ impl Service {
                 return (response, false);
             }
         } else if body.as_object().is_none_or(|object| {
-            object.keys().any(|key| {
-                !matches!(
-                    key.as_str(),
-                    "secret_shares" | "secret_threshold" | "recovery_nonce"
-                )
+            object.iter().any(|(key, value)| match key.as_str() {
+                "secret_shares" | "secret_threshold" | "recovery_nonce" => false,
+                // The official Go InitRequest includes these unset fields.
+                // Empty values request no PGP or recovery-key operation.
+                "pgp_keys" | "recovery_pgp_keys" => {
+                    !value.is_null() && !value.as_array().is_some_and(Vec::is_empty)
+                }
+                "root_token_pgp_key" => !value.is_null() && value.as_str() != Some(""),
+                "recovery_shares" | "recovery_threshold" => value.as_u64() != Some(0),
+                _ => true,
             })
         }) {
             return (

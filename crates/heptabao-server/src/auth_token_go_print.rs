@@ -2,7 +2,7 @@
 // Copyright The Go Authors; BSD-3-Clause terms in docs/licenses/GO_UNICODE_LICENSE.
 // Exact complement of unicode.PrintRanges (L,M,N,P,S), with ASCII space.
 // Source SHA256 ac0e5d5d1b58ed4b02d7cb4a0085bdefbdb4f7aae6fadddbc9477f8463da8bd8.
-pub(super) fn is_print(character: char) -> bool {
+pub(crate) fn is_print(character: char) -> bool {
     let point = character as u32;
     let index = NON_PRINT.partition_point(|(start, _)| *start <= point);
     index == 0 || NON_PRINT[index - 1].1 < point

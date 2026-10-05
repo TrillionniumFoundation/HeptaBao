@@ -183,6 +183,12 @@ fn token_role_batch_provenance_cidrs_and_lookup_survive_retirement_and_encrypted
         204
     );
     assert_eq!(call(&mut service, "POST", "auth/token/roles/batch", &admin, json!({"allowed_policies":["reader"],"token_type":"batch","orphan":true,"renewable":false,"token_num_uses":2,"path_suffix":"v123","token_bound_cidrs":["127.0.0.1/32"]})).status, 204);
+    // The role alone owns schema 80. A newly issued Token API batch also
+    // authenticates its public origin and therefore retains schema 86.
+    assert_eq!(
+        service.state.as_ref().ok_or("state")?.schema,
+        TOKEN_ROLE_STATE_SCHEMA
+    );
     let records = serde_json::to_value(&service.state.as_ref().ok_or("state")?.auth)?["tokens"]
         .as_object()
         .ok_or("token records")?
@@ -209,8 +215,11 @@ fn token_role_batch_provenance_cidrs_and_lookup_survive_retirement_and_encrypted
     );
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        TOKEN_ROLE_STATE_SCHEMA
+        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
     );
+    let mut missing_origin_floor = service.state.clone().ok_or("state")?;
+    missing_origin_floor.schema = TOKEN_ROLE_STATE_SCHEMA;
+    assert!(missing_origin_floor.validate_format().is_err());
     let peer = "127.0.0.1".parse()?;
     for _ in 0..4 {
         let lookup = service.handle_request_at(
@@ -256,7 +265,7 @@ fn token_role_batch_provenance_cidrs_and_lookup_survive_retirement_and_encrypted
     );
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        TOKEN_ROLE_STATE_SCHEMA
+        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
     );
     drop(service);
     let mut service = root.service()?;
@@ -299,10 +308,13 @@ fn ordinary_unicode_batch_schema80_floor_and_authenticated_lookup_survive_encryp
             .to_owned(),
     );
     let active = service.state.clone().ok_or("active")?;
-    assert_eq!(active.schema, TOKEN_ROLE_STATE_SCHEMA);
+    assert_eq!(active.schema, AUTH_PUBLIC_ORIGIN_STATE_SCHEMA);
     assert!(active.auth.has_token_api_schema80_state());
+    assert!(active.auth.has_public_origin_state());
     assert!(!active.auth.has_token_role_state());
     let mut lower = active.clone();
+    lower.schema = TOKEN_ROLE_STATE_SCHEMA;
+    assert!(lower.validate_format().is_err());
     lower.schema = LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA;
     assert!(lower.validate_format().is_err());
     assert!(service.prepare_snapshot_restore(&backup).is_err());
@@ -329,7 +341,7 @@ fn ordinary_unicode_batch_schema80_floor_and_authenticated_lookup_survive_encryp
     assert_eq!(lookup.body["data"]["path"], "auth/token/create");
     assert!(lookup.body["data"].get("role").is_none());
     let reopened = service.state.as_ref().ok_or("reopened")?;
-    assert_eq!(reopened.schema, TOKEN_ROLE_STATE_SCHEMA);
+    assert_eq!(reopened.schema, AUTH_PUBLIC_ORIGIN_STATE_SCHEMA);
     assert!(Service::validate_snapshot_protected_floor(reopened, &lower).is_err());
     Ok(())
 }

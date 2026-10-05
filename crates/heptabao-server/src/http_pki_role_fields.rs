@@ -51,10 +51,10 @@ pub(crate) fn transport_body(
     };
     let mut numbers = Map::new();
     for &field in FIELDS {
-        if let (Some(raw), Some(value)) = (raw.get(field), body.get(field)) {
-            if let Some(spelling) = capture(raw, value)? {
-                numbers.insert(field.into(), spelling);
-            }
+        if let (Some(raw), Some(value)) = (raw.get(field), body.get(field))
+            && let Some(spelling) = capture(raw, value)?
+        {
+            numbers.insert(field.into(), spelling);
         }
     }
     *body = json!({MARKER:{"wire_method":method,"path":path,"original_body":std::mem::take(body),"number_fields":numbers}});

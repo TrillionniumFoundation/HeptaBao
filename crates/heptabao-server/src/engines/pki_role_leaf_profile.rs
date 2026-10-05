@@ -563,8 +563,7 @@ fn simple_lowercase(value: &str) -> String {
         .collect()
 }
 
-#[path = "../auth_token_go_print.rs"]
-mod go_print;
+use crate::auth::go_print;
 fn go_quote(value: &str) -> String {
     // Go fmt %q uses printable Unicode and Go string escapes, rather than
     // inventing a different name after the policy-existence lookup.

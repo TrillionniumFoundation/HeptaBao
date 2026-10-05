@@ -110,12 +110,16 @@ fn native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_b
         let mut response = Vec::new();
         reply.write(&mut response, head)?;
         assert_eq!(source.0, 0);
-        assert_eq!(
-            std::str::from_utf8(&response)?,
-            format!(
-                "HTTP/1.1 307 Temporary Redirect\r\nLocation: https://[::1]:18200/v1/sys/storage/raft/{route}\r\nContent-Length: 0\r\nConnection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
-            )
+        let wire = std::str::from_utf8(&response)?;
+        assert!(wire.starts_with(&format!(
+            "HTTP/1.1 307 Temporary Redirect\r\nLocation: https://[::1]:18200/v1/sys/storage/raft/{route}\r\nContent-Length: 0\r\n",
+        )));
+        assert!(
+            wire.contains("\r\nStrict-Transport-Security: max-age=31536000; includeSubDomains\r\n")
         );
+        assert!(wire.contains("\r\nDate: "));
+        assert!(wire.ends_with("\r\nConnection: close\r\n\r\n"));
+        assert!(!wire.contains("X-Content-Type-Options:"));
     }
     let mut source = UnreadBody(0);
     let (reply, _) = dispatch(

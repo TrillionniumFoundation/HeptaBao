@@ -2778,12 +2778,22 @@ fn handle_mounts(
             return Err(error(501, "requested mount option is not implemented"));
         }
     }
-    if !matches!(
-        body.get("type").and_then(Value::as_str),
-        Some("ssh" | "pki" | "plugin")
-    ) && body
-        .get("config")
-        .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+    let mount_kind = body.get("type").and_then(Value::as_str);
+    if !matches!(mount_kind, Some("ssh" | "pki" | "plugin"))
+        && body.get("config").is_some_and(|value| {
+            value.as_object().is_none_or(|config| {
+                !config.is_empty()
+                    && !(matches!(mount_kind, Some("kv" | "kv-v1" | "kv-v2"))
+                        && config.iter().all(|(key, value)| match key.as_str() {
+                            // These exact defaults are serialized by the official
+                            // Go MountInput without requesting lease/cache changes.
+                            "options" => value.is_null(),
+                            "default_lease_ttl" | "max_lease_ttl" => value.as_str() == Some(""),
+                            "force_no_cache" => value.as_bool() == Some(false),
+                            _ => false,
+                        }))
+            })
+        })
     {
         return Err(error(
             501,

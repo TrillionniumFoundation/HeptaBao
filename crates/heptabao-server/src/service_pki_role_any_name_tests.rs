@@ -930,13 +930,15 @@ fn pki_profile_real_owner_schema88_keeps_historical83_84_85_and_retired_fences()
         );
     }
     assert!(
-        [0, 81, 82, 86, 87, 89]
+        [0, 82, MAX_SUPPORTED_STATE_SCHEMA + 1]
             .into_iter()
             .all(|schema| !supported_reader_schema(schema))
     );
     assert!(
         (1..=80).all(supported_reader_schema)
-            && [83, 84, 85, 88].into_iter().all(supported_reader_schema)
+            && [81, 83, 84, 85, 86, 87, 88]
+                .into_iter()
+                .all(supported_reader_schema)
     );
     // A separate old typed-role format fixture, never a publication of the
     // active state, proves that the real historical84 reader still works.

@@ -3452,3 +3452,56 @@ fn initialization_stage_rejects_dangling_target_without_replacing_it()
     assert!(!stage.retain_on_drop);
     Ok(())
 }
+
+#[test]
+fn official_go_init_defaults_do_not_request_unsupported_seal_options()
+-> Result<(), Box<dyn std::error::Error>> {
+    for pgp_keys in [Value::Null, json!([])] {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let initialized = call(
+            &mut service,
+            "PUT",
+            "sys/init",
+            "",
+            json!({
+                "secret_shares": 1, "secret_threshold": 1,
+                "pgp_keys": pgp_keys, "recovery_shares": 0,
+                "recovery_threshold": 0, "recovery_pgp_keys": null,
+                "root_token_pgp_key": ""
+            }),
+        );
+        assert_eq!(initialized.status, 200);
+        let key = initialized.body["keys_base64"][0]
+            .as_str()
+            .ok_or("missing genuine init share")?;
+        let unsealed = call(&mut service, "PUT", "sys/unseal", "", json!({"key":key}));
+        assert_eq!(unsealed.status, 200);
+        assert_eq!(unsealed.body["sealed"], false);
+    }
+    for (key, value) in [
+        ("pgp_keys", json!(["unimplemented-encryption-request"])),
+        (
+            "recovery_pgp_keys",
+            json!(["unimplemented-encryption-request"]),
+        ),
+        (
+            "root_token_pgp_key",
+            json!("unimplemented-encryption-request"),
+        ),
+        ("recovery_shares", json!(1)),
+        ("recovery_threshold", json!(1)),
+        ("unknown_option", json!(true)),
+    ] {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let mut body = json!({"secret_shares":1,"secret_threshold":1});
+        body[key] = value;
+        assert_eq!(call(&mut service, "PUT", "sys/init", "", body).status, 400);
+        assert!(
+            !service.initialized(),
+            "unsupported option initialized a store"
+        );
+    }
+    Ok(())
+}

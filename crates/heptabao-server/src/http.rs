@@ -633,7 +633,7 @@ fn serve_inner(
                     .saturating_duration_since(Instant::now());
                 let parsed = read_request_mode(&mut stream, read_budget, true);
                 stream.sock.deadline = deadline;
-                let (reply, head) = match parsed {
+                let (reply, head, namespace) = match parsed {
                     Ok(mut request) => {
                         request.client_certificates =
                             stream.conn.peer_certificates().map(|certificates| {
@@ -712,7 +712,7 @@ fn serve_inner(
                             ))
                         };
                         logical::project(&mut reply, &attempt_id, &request.path);
-                        (reply, is_head)
+                        (reply, is_head, request.namespace)
                     }
                     Err(error) => {
                         let mut response = if error.health_head.is_some() {
@@ -735,10 +735,10 @@ fn serve_inner(
                         } else {
                             snapshot::NativeReply::Json(response)
                         };
-                        (reply, error.health_head == Some(true))
+                        (reply, error.health_head == Some(true), String::new())
                     }
                 };
-                let _ = reply.write(&mut stream, head);
+                let _ = reply.write_with_namespace(&mut stream, head, &namespace);
             });
         if spawn.is_err() {
             #[cfg(target_os = "linux")]
@@ -1641,6 +1641,17 @@ fn merge_query_fields(
         let value = Zeroizing::new(
             decode_query(value).map_err(|error| error.with_health_context(method, path))?,
         );
+        // OpenBao's health handler consumes these five query fields. Its Go
+        // client also sends compatibility fields (including "haunhealhty")
+        // which that handler ignores; they do not select an unimplemented mode.
+        if path == "sys/health"
+            && !matches!(
+                key.as_str(),
+                "standbyok" | "uninitcode" | "sealedcode" | "standbycode" | "activecode"
+            )
+        {
+            continue;
+        }
         if !matches!(
             key.as_str(),
             "version"
@@ -1739,6 +1750,35 @@ fn decode_query(value: &str) -> Result<String, ParseError> {
 }
 
 fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io::Result<()> {
+    write_response_with_namespace(writer, response, head, "")
+}
+
+// Reflect the parsed namespace even when the logical service rejects it. This
+// transport field does not establish namespace membership or caller authority.
+fn write_standard_headers(writer: &mut impl Write, namespace: &str) -> io::Result<()> {
+    if !namespace.is_ascii() || namespace.bytes().any(|byte| byte < 32 || byte == 127) {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "invalid response namespace",
+        ));
+    }
+    write!(
+        writer,
+        "Cache-Control: no-store\r\nStrict-Transport-Security: max-age=31536000; includeSubDomains\r\nDate: {}\r\nConnection: close\r\n",
+        chrono::Utc::now().format("%a, %d %b %Y %H:%M:%S GMT"),
+    )?;
+    if !namespace.is_empty() {
+        write!(writer, "X-Vault-Namespace: {namespace}\r\n")?;
+    }
+    Ok(())
+}
+
+fn write_response_with_namespace(
+    writer: &mut impl Write,
+    response: Response,
+    head: bool,
+    namespace: &str,
+) -> io::Result<()> {
     // Only the engine's closed certificate envelope selects these constants.
     // Neither caller data nor provider JSON supplies an arbitrary MIME type.
     let raw_certificate = if response.status == 200
@@ -1806,6 +1846,7 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
     } else {
         "application/json"
     };
+    let raw_body = raw_ocsp.is_some() || raw_certificate.is_some() || raw_crl.is_some();
     let mut bytes = Zeroizing::new(if let Some(raw) = raw_ocsp {
         raw
     } else if let Some((raw, _)) = raw_certificate {
@@ -1815,28 +1856,87 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
     } else if response.status == 204 {
         Vec::new()
     } else {
-        serde_json::to_vec(&response.body)?
+        let mut json = serde_json::to_vec(&response.body)?;
+        // OpenBao's JSON encoder terminates each JSON value with a newline.
+        json.push(b'\n');
+        json
     });
     let status = if bytes.len() > MAX_RESPONSE {
-        bytes = Zeroizing::new(br#"{"errors":["response exceeds limit"]}"#.to_vec());
+        bytes = Zeroizing::new(b"{\"errors\":[\"response exceeds limit\"]}\n".to_vec());
         500
     } else {
         response.status
     };
+    // Use Go HTTP status text, including its custom health-code fallback.
     let reason = match status {
+        100 => "Continue",
+        101 => "Switching Protocols",
+        102 => "Processing",
+        103 => "Early Hints",
         200 => "OK",
+        201 => "Created",
+        202 => "Accepted",
+        203 => "Non-Authoritative Information",
         204 => "No Content",
+        205 => "Reset Content",
+        206 => "Partial Content",
+        207 => "Multi-Status",
+        208 => "Already Reported",
+        226 => "IM Used",
+        300 => "Multiple Choices",
+        301 => "Moved Permanently",
+        302 => "Found",
+        303 => "See Other",
+        304 => "Not Modified",
+        305 => "Use Proxy",
+        307 => "Temporary Redirect",
+        308 => "Permanent Redirect",
         400 => "Bad Request",
         401 => "Unauthorized",
+        402 => "Payment Required",
         403 => "Forbidden",
         404 => "Not Found",
+        405 => "Method Not Allowed",
+        406 => "Not Acceptable",
+        407 => "Proxy Authentication Required",
+        408 => "Request Timeout",
         409 => "Conflict",
-        413 => "Payload Too Large",
+        410 => "Gone",
+        411 => "Length Required",
+        412 => "Precondition Failed",
+        413 => "Request Entity Too Large",
+        414 => "Request URI Too Long",
+        415 => "Unsupported Media Type",
+        416 => "Requested Range Not Satisfiable",
+        417 => "Expectation Failed",
+        418 => "I'm a teapot",
+        421 => "Misdirected Request",
+        422 => "Unprocessable Entity",
+        423 => "Locked",
+        424 => "Failed Dependency",
+        425 => "Too Early",
+        426 => "Upgrade Required",
+        428 => "Precondition Required",
         429 => "Too Many Requests",
+        431 => "Request Header Fields Too Large",
+        451 => "Unavailable For Legal Reasons",
+        500 => "Internal Server Error",
         501 => "Not Implemented",
+        502 => "Bad Gateway",
         503 => "Service Unavailable",
+        504 => "Gateway Timeout",
+        505 => "HTTP Version Not Supported",
+        506 => "Variant Also Negotiates",
         507 => "Insufficient Storage",
-        _ => "Error",
+        508 => "Loop Detected",
+        510 => "Not Extended",
+        511 => "Network Authentication Required",
+        _ => "",
+    };
+    let reason = if reason.is_empty() {
+        format!("status code {status}")
+    } else {
+        reason.to_owned()
     };
     let retry_after = if status == 429 {
         "Retry-After: 1\r\n"
@@ -1852,16 +1952,39 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
     } else {
         String::new()
     };
+    // Go net/http buffers 2048 bytes before choosing framing. A completed
+    // small response gets Content-Length; a larger HTTP/1.1 response uses
+    // chunked encoding. HEAD has the same small-body length, with no chunks.
+    // https://github.com/golang/go/blob/go1.25.1/src/net/http/server.go
+    let no_body = status == 204 || status == 304 || (100..200).contains(&status);
+    let chunked = !no_body && !head && !raw_body && bytes.len() > 2048;
     write!(
         writer,
-        "HTTP/1.1 {status} {reason}\r\nContent-Type: {content_type}\r\nContent-Length: {}\r\n{retry_after}{index}Connection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
-        bytes.len()
+        "HTTP/1.1 {status} {reason}\r\nContent-Type: {content_type}\r\n"
     )?;
-    if !head {
-        writer.write_all(&bytes)?;
+    if !no_body && (raw_body || bytes.len() <= 2048) {
+        write!(writer, "Content-Length: {}\r\n", bytes.len())?;
+    } else if chunked {
+        writer.write_all(b"Transfer-Encoding: chunked\r\n")?;
+    }
+    write!(writer, "{retry_after}{index}")?;
+    write_standard_headers(writer, namespace)?;
+    writer.write_all(b"\r\n")?;
+    if !head && !no_body {
+        if chunked {
+            write!(writer, "{:x}\r\n", bytes.len())?;
+            writer.write_all(&bytes)?;
+            writer.write_all(b"\r\n0\r\n\r\n")?;
+        } else {
+            writer.write_all(&bytes)?;
+        }
     }
     writer.flush()
 }
+
+#[cfg(test)]
+#[path = "http_response_framing_tests.rs"]
+mod response_framing_tests;
 
 #[cfg(test)]
 #[path = "http_ocsp_service_tests.rs"]
@@ -2958,6 +3081,24 @@ mod wrapping_header_tests {
             let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
             assert!(read_request(&mut request.as_bytes(), Duration::from_secs(1)).is_err());
         }
+    }
+
+    #[test]
+    fn official_go_api_health_compatibility_queries_keep_only_consumed_fields() {
+        let query = "drsecondarycode=299&haunhealhty=299&performancestandbycode=299&removedcode=299&sealedcode=299&standbycode=299&uninitcode=299";
+        let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: local\r\n\r\n");
+        let parsed = read_request(&mut request.as_bytes(), Duration::from_secs(1))
+            .expect("official Go API health request");
+        assert_eq!(
+            parsed.body.0,
+            json!({"sealedcode":299,"standbycode":299,"uninitcode":299})
+        );
+        let request = b"GET /v1/sys/health?haunhealhty=not-a-code&removedcode=ignored&standbyok=true HTTP/1.1\r\nHost: local\r\n\r\n";
+        let parsed = read_request(&mut request.as_slice(), Duration::from_secs(1))
+            .expect("unused health options do not select a status");
+        assert_eq!(parsed.body.0, json!({"standbyok":true}));
+        let request = b"GET /v1/secret/value?haunhealhty=299 HTTP/1.1\r\nHost: local\r\n\r\n";
+        assert!(read_request(&mut request.as_slice(), Duration::from_secs(1)).is_err());
     }
 
     #[test]

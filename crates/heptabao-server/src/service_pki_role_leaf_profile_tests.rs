@@ -873,8 +873,31 @@ fn pki_profile88_namespace_final_restore_record_gate_and_last_owner_sticky_reope
         let rejected = service.commit_snapshot_restore(prepared, &principal, &request);
         assert!(
             rejected.status == 400
-                && rejected.body["errors"][0] == "snapshot would downgrade PKI role leaf profiles",
-            "final authenticated85 restore gate independently rejects sticky88 downgrade"
+                && rejected.body["errors"][0]
+                    == "snapshot would downgrade opaque Kubernetes artifact ownership",
+            "immutable original85 restore reaches the earlier integrated reader87 floor before reader88"
+        );
+        if retired {
+            // A separate typed format fixture, never authenticated old backup
+            // bytes or a publication, isolates reader88 after its last owner.
+            let mut format87 = current.clone();
+            format87.schema = KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA;
+            assert!(
+                format87.validate_format().is_ok(),
+                "retired typed format87 remains valid in isolation"
+            );
+            let floor = Service::validate_snapshot_protected_floor(&current, &format87)
+                .err()
+                .ok_or("last profile floor accepted typed format87")?;
+            assert!(
+                floor.status == 400
+                    && floor.body["errors"][0] == "snapshot would downgrade PKI role leaf profiles",
+                "independent exact reader88 floor remains enforced after actual owner retirement"
+            );
+        }
+        assert!(
+            rejected.status == 400,
+            "authenticated original85 restore remains rejected"
         );
         assert!(
             service.current_state_identity().map_err(|_| "identity")? == identity,

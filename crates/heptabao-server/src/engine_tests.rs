@@ -2352,3 +2352,96 @@ fn kv_v1_enumeration_ignores_undeclared_pagination_fields() -> TestResult {
     );
     Ok(())
 }
+
+#[test]
+fn official_go_mount_defaults_support_real_kv_lifecycle_without_adding_configuration() -> TestResult
+{
+    let mut state = EngineState::default();
+    let config =
+        json!({"options":null,"default_lease_ttl":"","max_lease_ttl":"","force_no_cache":false});
+    for namespace in ["", "team"] {
+        for version in ["1", "2"] {
+            let name = format!("sdk-kv{version}");
+            let mounted = request(
+                &mut state,
+                namespace,
+                "POST",
+                &format!("sys/mounts/{name}"),
+                json!({"type":"kv","description":"","config":config.clone(),"local":false,
+                    "seal_wrap":false,"external_entropy_access":false,"options":{"version":version}}),
+                1700000000,
+            )?;
+            assert_eq!(mounted.status, 204);
+            let path = if version == "1" {
+                format!("{name}/item")
+            } else {
+                format!("{name}/data/item")
+            };
+            let data = json!({"namespace":namespace,"version":version,"nested":{"present":true}});
+            let body = if version == "1" {
+                data.clone()
+            } else {
+                json!({"data":data.clone()})
+            };
+            request(&mut state, namespace, "PUT", &path, body, 1700000001)?;
+            let mut reopened: EngineState = serde_json::from_slice(&serde_json::to_vec(&state)?)?;
+            let stored = request(
+                &mut reopened,
+                namespace,
+                "GET",
+                &path,
+                json!({}),
+                1700000002,
+            )?;
+            let observed = if version == "1" {
+                &stored.body["data"]
+            } else {
+                &stored.body["data"]["data"]
+            };
+            assert_eq!(observed, &data);
+            assert_eq!(
+                request(
+                    &mut state,
+                    namespace,
+                    "DELETE",
+                    &format!("sys/mounts/{name}"),
+                    json!({}),
+                    1700000003
+                )?
+                .status,
+                204
+            );
+        }
+    }
+    for (key, value) in [
+        ("default_lease_ttl", json!("1s")),
+        ("max_lease_ttl", json!("1s")),
+        ("force_no_cache", json!(true)),
+        ("options", json!({"nondefault":"requested"})),
+        ("unknown_setting", json!(true)),
+    ] {
+        let before = serde_json::to_vec(&state)?;
+        let mut unsupported = config.clone();
+        unsupported[key] = value;
+        assert_eq!(
+            request(
+                &mut state,
+                "",
+                "POST",
+                "sys/mounts/unsupported-sdk",
+                json!({"type":"kv","config":unsupported}),
+                1700000004
+            )
+            .err()
+            .ok_or("nonneutral mount was admitted")?
+            .status,
+            501
+        );
+        assert_eq!(
+            serde_json::to_vec(&state)?,
+            before,
+            "unsupported config published mount state"
+        );
+    }
+    Ok(())
+}

@@ -4,7 +4,7 @@ use super::*;
 
 #[derive(Clone)]
 pub(super) enum ConsumptionTemplate {
-    Leaf(LeafTemplate),
+    Leaf(Box<LeafTemplate>),
     Crl {
         revoked: Option<(String, u64)>,
         prepared: CrlSet,
@@ -327,7 +327,7 @@ impl Pki {
             prepared.serial = external_serial()?;
             prepared.lease_id = format!("{}/{}", prepared.path, prepared.serial);
             prepared.not_before = now.saturating_sub(30).max(root.not_before);
-            ConsumptionTemplate::Leaf(prepared)
+            ConsumptionTemplate::Leaf(Box::new(prepared))
         } else if path == "revoke" || path == "crl/rotate" {
             if (path == "revoke" && !write_method(method))
                 || (path == "crl/rotate" && method != "GET")
@@ -462,7 +462,7 @@ impl Pki {
                     ip_sans: prepared.ip_sans.clone(),
                 };
                 let response = self.publish_leaf(
-                    prepared,
+                    *prepared,
                     signed_der(&material.tbs, &signatures[0], &material.public_key),
                     &consumption.leaf_pkcs8,
                     &projection.public_key,

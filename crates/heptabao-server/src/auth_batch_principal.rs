@@ -84,6 +84,12 @@ impl<'a> CheckedCredential<'a> {
                     info["creation_ttl"] = json!(claims.expires_at() - claims.issued_at());
                 }
                 if let Some(origin) = claims.public_origin() {
+                    // The authenticated Token API origin owns this creation
+                    // grant even when no named token role was selected.
+                    info["creation_ttl"] = json!(claims.expires_at() - claims.issued_at());
+                    if !claims.namespace().is_empty() {
+                        info["namespace_path"] = json!(format!("{}/", claims.namespace()));
+                    }
                     info["meta"] = origin.lookup_json(claims.metadata());
                     if let Some(time) = origin.issue_time(claims.issued_at()) {
                         info["issue_time"] = json!(time);

@@ -37,22 +37,36 @@ pub(super) enum NativeReply {
     },
 }
 impl NativeReply {
+    #[cfg(test)]
     pub(super) fn write(self, writer: &mut impl Write, head: bool) -> io::Result<()> {
+        self.write_with_namespace(writer, head, "")
+    }
+
+    pub(super) fn write_with_namespace(
+        self,
+        writer: &mut impl Write,
+        head: bool,
+        namespace: &str,
+    ) -> io::Result<()> {
         match self {
             // This transport failure has a body even for HEAD, as in Go's HTTP reader.
             Self::HttpBadRequest => {
                 writer.write_all(b"HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain; charset=utf-8\r\nConnection: close\r\n\r\n400 Bad Request")?;
                 writer.flush()
             }
-            Self::Json(response) => write_response(writer, response, head),
-            Self::File(file) => write_file_response(writer, file, head),
+            Self::Json(response) => {
+                write_response_with_namespace(writer, response, head, namespace)
+            }
+            Self::File(file) => write_file_response(writer, file, head, namespace),
             Self::Redirect { origin, target } => {
                 write!(
                     writer,
-                    "HTTP/1.1 307 Temporary Redirect\r\nLocation: {}{}\r\nContent-Length: 0\r\nConnection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
+                    "HTTP/1.1 307 Temporary Redirect\r\nLocation: {}{}\r\nContent-Length: 0\r\n",
                     origin.as_str(),
                     target.0.as_str(),
                 )?;
+                write_standard_headers(writer, namespace)?;
+                writer.write_all(b"\r\n")?;
                 writer.flush()
             }
         }
@@ -301,12 +315,15 @@ pub(super) fn write_file_response(
     writer: &mut impl Write,
     mut file: SnapshotFile,
     head: bool,
+    namespace: &str,
 ) -> io::Result<()> {
     write!(
         writer,
-        "HTTP/1.1 200 OK\r\nContent-Type: application/gzip\r\nContent-Disposition: attachment; filename=\"heptabao-native.snap\"\r\nContent-Length: {}\r\nConnection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n\r\n",
+        "HTTP/1.1 200 OK\r\nContent-Type: application/gzip\r\nContent-Disposition: attachment; filename=\"heptabao-native.snap\"\r\nContent-Length: {}\r\n",
         file.len()
     )?;
+    write_standard_headers(writer, namespace)?;
+    writer.write_all(b"\r\n")?;
     if !head {
         let mut buffer = Zeroizing::new([0; 64 * 1024]);
         loop {
@@ -351,7 +368,7 @@ mod tests {
             let mut wire = Vec::new();
             reply.write(&mut wire, false)?;
             assert!(wire.starts_with(b"HTTP/1.1 403 Forbidden\r\n"));
-            assert!(wire.ends_with(br#"{"errors":["permission denied"]}"#));
+            assert!(wire.ends_with(b"{\"errors\":[\"permission denied\"]}\n"));
         }
         struct Unread(usize);
         impl Read for Unread {
