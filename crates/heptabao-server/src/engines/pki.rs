@@ -22,8 +22,11 @@ mod public;
 use local_key::{LocalKeyKind, LocalPrivateMaterial, LocalPublicKey};
 #[path = "pki_role_leaf_profile.rs"]
 mod role_leaf_profile;
+#[path = "pki_role_names.rs"]
+mod role_names;
 #[path = "pki_role_time.rs"]
 mod role_time;
+use role_names::RoleNamePolicy;
 use role_time::RoleTimePolicy;
 #[path = "pki_issuer_time.rs"]
 mod issuer_time;
@@ -213,6 +216,8 @@ impl RootCa {
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 struct Role {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    role_name_policy: Option<RoleNamePolicy>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     role_time_policy: Option<RoleTimePolicy>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     role_leaf_profile: Option<RoleLeafProfile>,
@@ -244,6 +249,8 @@ fn role_false(value: &bool) -> bool {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub(super) struct IssuedCertificate {
+    #[serde(default, skip_serializing_if = "role_false")]
+    role_names_owned: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     #[serde(default, skip_serializing_if = "role_false")]
@@ -433,7 +440,16 @@ impl Pki {
         for (serial, issued) in &self.issued {
             if (!issued.local_issuer_id.is_empty() && !valid_pki_id(&issued.local_issuer_id))
                 || serial_bytes(serial).is_err()
-                || !valid_common_name(&issued.common_name)
+                || !(if issued.role_names_owned {
+                    role_names::bounded_subject(&issued.common_name)
+                } else {
+                    valid_common_name(&issued.common_name)
+                })
+                || issued.role_names_owned
+                    && issued
+                        .role_leaf_profile
+                        .as_ref()
+                        .is_none_or(|evidence| evidence.role_name_policy.is_none())
                 || issued.common_name.contains('*') && !issued.wildcard_names
                 || issued
                     .owner
@@ -873,6 +889,14 @@ impl Pki {
                             "ou",
                             "basic_constraints_valid_for_non_ca",
                             "allow_token_displayname",
+                            "allow_localhost",
+                            "require_cn",
+                            "enforce_hostnames",
+                            "cn_validations",
+                            "allow_glob_domains",
+                            "allowed_ip_sans_cidr",
+                            "allowed_uri_sans",
+                            "no_store",
                         ],
                     )?;
                     let role_result = if method == "PATCH" {
@@ -899,6 +923,11 @@ impl Pki {
                     let changed = self.roles.get(name) != Some(&role);
                     let missing_default_issuer =
                         role.issuer_ref.is_empty() && self.selected_issuer("default").is_err();
+                    let no_store_lease_warning = role
+                        .role_name_policy
+                        .as_ref()
+                        .is_some_and(|policy| policy.no_store)
+                        && role_optional_bool(body, "generate_lease")?.unwrap_or(false);
                     let generated_lease = role.generate_lease;
                     let response = role.descriptor();
                     self.roles.insert(name.into(), role);
@@ -911,6 +940,9 @@ impl Pki {
                         warnings.push(
                             "Issuing Certificate was set to default, but no default issuing certificate (configurable at /config/issuers) is currently set"
                         );
+                    }
+                    if no_store_lease_warning {
+                        warnings.push("mutually exclusive values no_store=true and generate_lease=true were both specified; no_store=true takes priority");
                     }
                     if generated_lease {
                         warnings.push(
@@ -1280,6 +1312,7 @@ impl Pki {
                 "common_name",
                 "alt_names",
                 "ip_sans",
+                "uri_sans",
                 "ttl",
                 "not_before",
                 "not_after",
@@ -1301,26 +1334,71 @@ impl Pki {
         if now >= root.not_after {
             return Err(error(503, "PKI root has expired"));
         }
-        let common_name = string(body, "common_name")?;
-        if !valid_common_name(common_name) || !role.allows(common_name) {
+        let common_name = match body.get("common_name") {
+            None | Some(Value::Null) => "",
+            Some(Value::String(value)) => value,
+            _ => return Err(bad("common_name must be a string")),
+        };
+        let names = role.role_name_policy.as_ref();
+        if common_name.is_empty() && names.is_none_or(|policy| policy.require_cn) {
+            return Err(bad(
+                r#"the common_name field is required, or must be provided in a CSR with "use_csr_common_name" set to true, unless "require_cn" is set to false"#,
+            ));
+        }
+        if !common_name.is_empty()
+            && !names.map_or_else(
+                || valid_common_name(common_name) && role.allows(common_name),
+                |policy| policy.allows_common_name(&role, common_name),
+            )
+        {
             return Err(bad(&format!(
                 "common name {common_name} not allowed by this role"
             )));
         }
-        let mut alt_names = string_list(body.get("alt_names"))?;
-        if alt_names.len() > 32 {
+        let raw_alt_names = string_list(body.get("alt_names"))?;
+        if raw_alt_names.len() > 32 {
             return Err(bad("PKI subject alternative name capacity exceeded"));
         }
-        // Official hostname SAN extraction ignores partial wildcard labels.
-        // The original raw entry capacity is checked before this projection.
-        alt_names.retain(|name| !name.contains('*') || wildcard_dns_san(name));
-        if let Some(name) = alt_names
-            .iter()
-            .find(|name| !valid_common_name(name) || !role.allows(name))
+        let mut email_sans = Vec::new();
+        let mut alt_names = Vec::new();
+        for name in raw_alt_names {
+            if names.is_some() && name.contains('@') {
+                email_sans.push(name);
+            } else if (names.is_some() && valid_common_name(&name))
+                || (names.is_none() && (!name.contains('*') || wildcard_dns_san(&name)))
+            {
+                alt_names.push(name);
+            }
+        }
+        for name in alt_names.iter().chain(&email_sans) {
+            if !names.map_or_else(
+                || valid_common_name(name) && role.allows(name),
+                |policy| policy.allows_name(&role, name),
+            ) {
+                return Err(bad(&format!(
+                    "{} {name} not allowed by this role",
+                    if name.contains('@') {
+                        "email address"
+                    } else {
+                        "subject alternate name"
+                    }
+                )));
+            }
+        }
+        if valid_common_name(common_name)
+            && names.is_some_and(|policy| !policy.allows_name(&role, common_name))
         {
             return Err(bad(&format!(
-                "subject alternate name {name} not allowed by this role"
+                "subject alternate name {common_name} not allowed by this role"
             )));
+        }
+        let exclude_cn_from_sans = names.is_some() && !valid_common_name(common_name);
+        if names.is_some() && common_name.contains('@') {
+            email_sans.push(common_name.into());
+        }
+        let uri_sans = string_list(body.get("uri_sans"))?;
+        if uri_sans.len() > 32 {
+            return Err(bad("PKI URI subject alternative name capacity exceeded"));
         }
         let ip_sans = ip_list(body.get("ip_sans"))?;
         if ip_sans.len() > 32 {
@@ -1331,7 +1409,14 @@ impl Pki {
                 "IP Subject Alternative Names are not allowed in this role, but was provided via the API",
             ));
         }
-        if self.issued.len() >= MAX_ISSUED {
+        if let Some(policy) = names {
+            policy.validate_sans(&ip_sans, &uri_sans)?;
+        } else if !uri_sans.is_empty() {
+            return Err(bad(
+                "URI Subject Alternative Names are not allowed in this role, but were provided via the API",
+            ));
+        }
+        if !names.is_some_and(|policy| policy.no_store) && self.issued.len() >= MAX_ISSUED {
             return Err(error(507, "PKI issued-certificate capacity exhausted"));
         }
         let resolved = role.role_time_policy.clone().unwrap_or_default().resolve(
@@ -1372,6 +1457,11 @@ impl Pki {
             return Err(error(503, "PKI serial collision"));
         }
         Ok(LeafTemplate {
+            role_name_policy: role.role_name_policy.clone(),
+            no_store: names.is_some_and(|policy| policy.no_store),
+            exclude_cn_from_sans,
+            email_sans,
+            uri_sans,
             signed_role_time_owned: resolved.not_before < 0,
             issuer_not_after_behavior: root.leaf_not_after_behavior,
             role_time_owned: root.leaf_not_after_behavior.is_some()
@@ -1504,10 +1594,10 @@ impl Pki {
                 not_after: prepared.expires,
                 is_ca: false,
                 alt_names: &prepared.alt_names,
-                email_sans: &[],
+                email_sans: &prepared.email_sans,
                 ip_sans: &prepared.ip_sans,
-                uri_sans: &[],
-                exclude_cn_from_sans: false,
+                uri_sans: &prepared.uri_sans,
+                exclude_cn_from_sans: prepared.exclude_cn_from_sans,
                 max_path_length: None,
                 permitted_dns_domains: &[],
                 role_leaf_profile: prepared.role_leaf_profile.as_ref(),
@@ -1577,10 +1667,15 @@ impl Pki {
         if !prepared.warnings.is_empty() {
             response.body["warnings"] = json!(prepared.warnings);
         }
+        if prepared.no_store {
+            response.mutated = false;
+            return Ok(response);
+        }
         let role_leaf_profile = LeafProfilePublicEvidence::capture(&prepared, leaf_public);
         self.issued.insert(
             prepared.serial.clone(),
             IssuedCertificate {
+                role_names_owned: prepared.role_name_policy.is_some(),
                 issuer_not_after_behavior: prepared.issuer_not_after_behavior,
                 signed_role_time_owned: prepared.signed_role_time_owned,
                 role_time_owned: prepared.role_time_owned,
@@ -1667,20 +1762,28 @@ impl Role {
         {
             role.role_time_policy = None;
         }
+        if previous.role_name_policy.is_none()
+            && !role_names::ROLE_NAME_FIELDS
+                .iter()
+                .any(|name| patch.get(*name).is_some())
+        {
+            role.role_name_policy = None;
+        }
         Ok(role)
     }
     fn from_body(body: &Value) -> Result<Self> {
         let allow_any_name = role_optional_bool(body, "allow_any_name")?.unwrap_or(false);
+        let names = RoleNamePolicy::from_body(body)?;
         let allowed_domains = string_list(body.get("allowed_domains"))?;
-        if !allow_any_name && allowed_domains.is_empty()
-            || allowed_domains.len() > 64
-            || allowed_domains.iter().any(|v| !valid_domain(v))
+        if allowed_domains.len() > 64
+            || allowed_domains.iter().any(|v| !names.valid_domain_entry(v))
         {
             return Err(bad("allowed_domains must contain 1..=64 DNS domains"));
         }
         let max_ttl = role_time::role_duration(body, "max_ttl", 0)?;
         let time_policy = RoleTimePolicy::from_body(body, max_ttl)?;
         let role = Self {
+            role_name_policy: Some(names.clone()),
             role_time_policy: role_time::ROLE_TIME_FIELDS
                 .iter()
                 .any(|name| body.get(*name).is_some())
@@ -1710,7 +1813,8 @@ impl Role {
             allow_subdomains: role_optional_bool(body, "allow_subdomains")?.unwrap_or(false),
             allow_ip_sans: role_optional_bool(body, "allow_ip_sans")?.unwrap_or(true),
             max_ttl,
-            generate_lease: role_optional_bool(body, "generate_lease")?.unwrap_or(false),
+            generate_lease: !names.no_store
+                && role_optional_bool(body, "generate_lease")?.unwrap_or(false),
             local_key_kind: match LocalKeyKind::from_body(body)? {
                 LocalKeyKind::Ed25519 => None,
                 kind => Some(kind),
@@ -1720,6 +1824,9 @@ impl Role {
         Ok(role)
     }
     fn validate(&self) -> Result<()> {
+        if let Some(names) = &self.role_name_policy {
+            names.validate()?;
+        }
         if let Some(profile) = &self.role_leaf_profile {
             profile.validate_role_oid_strings()?;
         }
@@ -1730,9 +1837,16 @@ impl Role {
             || self.issuer_ref.contains('/')
             || self.issuer_ref.chars().any(char::is_control)
             || self.local_key_kind == Some(LocalKeyKind::Ed25519)
-            || !self.allow_any_name && self.allowed_domains.is_empty()
+            || self.role_name_policy.is_none()
+                && !self.allow_any_name
+                && self.allowed_domains.is_empty()
             || self.allowed_domains.len() > 64
-            || self.allowed_domains.iter().any(|v| !valid_domain(v))
+            || self.allowed_domains.iter().any(|v| {
+                !self
+                    .role_name_policy
+                    .as_ref()
+                    .map_or_else(|| valid_domain(v), |policy| policy.valid_domain_entry(v))
+            })
             || self.max_ttl > MAX_TTL
         {
             return Err(bad("invalid PKI role"));
@@ -1789,6 +1903,13 @@ impl Role {
             .unwrap_or_default()
             .descriptor()
             .as_object()
+        {
+            for (name, value) in fields {
+                descriptor[name] = value.clone();
+            }
+        }
+        if let Some(names) = &self.role_name_policy
+            && let Some(fields) = names.descriptor().as_object()
         {
             for (name, value) in fields {
                 descriptor[name] = value.clone();
@@ -2105,6 +2226,11 @@ struct IssuanceRoute<'a> {
 
 #[derive(Clone)]
 struct LeafTemplate {
+    role_name_policy: Option<RoleNamePolicy>,
+    no_store: bool,
+    exclude_cn_from_sans: bool,
+    email_sans: Vec<String>,
+    uri_sans: Vec<String>,
     issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     signed_role_time_owned: bool,
     role_time_owned: bool,
@@ -2227,6 +2353,11 @@ fn certificate_tbs_with(
             "PKI leaf profile cannot control a CA certificate",
         ));
     }
+    let subject_der = if let Some(profile) = role_leaf_profile {
+        profile.subject_der(subject_cn)
+    } else {
+        subject_name_der.map_or_else(|| name(subject_cn), <[u8]>::to_vec)
+    };
     let mut extensions = role_leaf_profile
         .map(RoleLeafProfile::leaf_extensions)
         .transpose()?
@@ -2300,7 +2431,11 @@ fn certificate_tbs_with(
         names.push(context_primitive(6, uri.as_bytes()));
     }
     if !names.is_empty() {
-        extensions.push(extension(&[0x55, 0x1d, 0x11], false, &seq(&names)));
+        extensions.push(extension(
+            &[0x55, 0x1d, 0x11],
+            subject_der.as_slice() == [0x30, 0],
+            &seq(&names),
+        ));
     }
     let tbs = seq(&[
         context_explicit(0, &integer(&[2])),
@@ -2308,11 +2443,7 @@ fn certificate_tbs_with(
         signature_algorithm.to_vec(),
         issuer_name_der.map_or_else(|| name(issuer_cn), <[u8]>::to_vec),
         seq(&[time_signed(not_before), time(not_after)]),
-        if let Some(profile) = role_leaf_profile {
-            profile.subject_der(subject_cn)
-        } else {
-            subject_name_der.map_or_else(|| name(subject_cn), <[u8]>::to_vec)
-        },
+        subject_der,
         subject_spki.to_vec(),
         context_explicit(3, &seq(&extensions)),
     ]);

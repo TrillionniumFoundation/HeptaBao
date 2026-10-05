@@ -21,6 +21,14 @@ pub(super) struct ConsumptionMaterial {
 #[serde(deny_unknown_fields)]
 pub(super) struct LeafPublic {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    role_name_policy: Option<RoleNamePolicy>,
+    #[serde(default, skip_serializing_if = "role_false")]
+    exclude_cn_from_sans: bool,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    email_sans: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    uri_sans: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     #[serde(default, skip_serializing_if = "role_false")]
     pub(super) signed_role_time_owned: bool,
@@ -37,6 +45,13 @@ pub(super) struct LeafPublic {
 }
 
 impl Pki {
+    pub(in crate::engines::pki) fn has_external_role_names_state(&self) -> bool {
+        self.external.issued_public.values().any(|leaf| {
+            leaf.role_name_policy.is_some()
+                || !leaf.email_sans.is_empty()
+                || !leaf.uri_sans.is_empty()
+        })
+    }
     pub(in crate::engines::pki) fn has_external_signed_role_time_state(&self) -> bool {
         self.external
             .issued_public
@@ -205,12 +220,18 @@ fn leaf_tbs(
     }
     leaf_public.validate()?;
     let leaf_bits = leaf_public.subject_key_bits()?;
+    let subject_der = prepared.role_leaf_profile.as_ref().map_or_else(
+        || name(&prepared.common_name),
+        |profile| profile.subject_der(&prepared.common_name),
+    );
     let mut names = Vec::new();
     // Keep the historical None encoding; new captured profiles use the same
     // admitted DNS CN projection as the local certificate producer.
-    if prepared.role_leaf_profile.is_none()
-        || (!prepared.common_name.is_empty()
-            && (!prepared.common_name.contains('*') || wildcard_dns_san(&prepared.common_name)))
+    if !prepared.exclude_cn_from_sans
+        && (prepared.role_leaf_profile.is_none()
+            || (!prepared.common_name.is_empty()
+                && (!prepared.common_name.contains('*')
+                    || wildcard_dns_san(&prepared.common_name))))
     {
         names.push(context_primitive(2, prepared.common_name.as_bytes()));
     }
@@ -220,12 +241,18 @@ fn leaf_tbs(
             .iter()
             .map(|name| context_primitive(2, name.as_bytes())),
     );
+    for email in &prepared.email_sans {
+        names.push(context_primitive(1, email.as_bytes()));
+    }
     for ip in &prepared.ip_sans {
         let bytes = match ip {
             IpAddr::V4(ip) => ip.octets().to_vec(),
             IpAddr::V6(ip) => ip.octets().to_vec(),
         };
         names.push(context_primitive(7, &bytes));
+    }
+    for uri in &prepared.uri_sans {
+        names.push(context_primitive(6, uri.as_bytes()));
     }
     let mut extensions = vec![
         extension(&[0x55, 0x1d, 0x0f], true, &bit_string(&[0xa8], 3)),
@@ -252,7 +279,11 @@ fn leaf_tbs(
         ),
     ];
     if prepared.role_leaf_profile.is_none() || !names.is_empty() {
-        extensions.push(extension(&[0x55, 0x1d, 0x11], false, &seq(&names)));
+        extensions.push(extension(
+            &[0x55, 0x1d, 0x11],
+            subject_der.as_slice() == [0x30, 0],
+            &seq(&names),
+        ));
     }
     if let Some(profile) = &prepared.role_leaf_profile {
         let mut controlled = profile.leaf_extensions()?;
@@ -269,10 +300,7 @@ fn leaf_tbs(
             name(&root.common_name)
         },
         seq(&[time_signed(prepared.not_before), time(prepared.expires)]),
-        prepared.role_leaf_profile.as_ref().map_or_else(
-            || name(&prepared.common_name),
-            |profile| profile.subject_der(&prepared.common_name),
-        ),
+        subject_der,
         leaf_public.spki()?,
         context_explicit(3, &seq(&extensions)),
     ]))
@@ -471,7 +499,12 @@ impl Pki {
                     return Err(bad("external PKI captured leaf TBS changed"));
                 }
                 let serial = prepared.serial.clone();
+                let no_store = prepared.no_store;
                 let projection = LeafPublic {
+                    role_name_policy: prepared.role_name_policy.clone(),
+                    exclude_cn_from_sans: prepared.exclude_cn_from_sans,
+                    email_sans: prepared.email_sans.clone(),
+                    uri_sans: prepared.uri_sans.clone(),
                     issuer_not_after_behavior: prepared.issuer_not_after_behavior,
                     signed_role_time_owned: prepared.signed_role_time_owned,
                     role_time_owned: prepared.role_time_owned,
@@ -489,6 +522,9 @@ impl Pki {
                     &projection.public_key,
                     true,
                 )?;
+                if no_store {
+                    return Ok(response);
+                }
                 // All fallible capture, owner and signature checks precede the
                 // private leaf insertion; these closed values publish together.
                 if let Some(issued) = self.issued.get_mut(&serial) {
@@ -746,10 +782,32 @@ impl Pki {
             {
                 return Err(bad("invalid external PKI leaf projection"));
             }
+            if let Some(policy) = &projection.role_name_policy {
+                policy.validate()?;
+            }
+            if issued.role_names_owned != projection.role_name_policy.is_some()
+                || projection.role_name_policy.is_none()
+                    && (projection.exclude_cn_from_sans
+                        || !projection.email_sans.is_empty()
+                        || !projection.uri_sans.is_empty())
+                || projection.email_sans.len() > 33
+                || projection.uri_sans.len() > 32
+                || projection
+                    .email_sans
+                    .iter()
+                    .chain(&projection.uri_sans)
+                    .any(|value| !role_names::bounded_name(value))
+            {
+                return Err(bad("invalid external PKI captured role name evidence"));
+            }
             match (&issued.role_leaf_profile, &projection.role_leaf_profile) {
                 (None, None) => {}
                 (Some(evidence), Some(profile))
-                    if evidence.signed_role_time_owned == issued.signed_role_time_owned
+                    if evidence.role_name_policy == projection.role_name_policy
+                        && evidence.exclude_cn_from_sans == projection.exclude_cn_from_sans
+                        && evidence.email_sans == projection.email_sans
+                        && evidence.uri_sans == projection.uri_sans
+                        && evidence.signed_role_time_owned == issued.signed_role_time_owned
                         && evidence.issuer_not_after_behavior
                             == issued.issuer_not_after_behavior
                         && evidence.role_time_owned == issued.role_time_owned
@@ -761,6 +819,11 @@ impl Pki {
                 _ => return Err(bad("external PKI leaf profile projection differs")),
             }
             let prepared = LeafTemplate {
+                role_name_policy: projection.role_name_policy.clone(),
+                no_store: false,
+                exclude_cn_from_sans: projection.exclude_cn_from_sans,
+                email_sans: projection.email_sans.clone(),
+                uri_sans: projection.uri_sans.clone(),
                 issuer_not_after_behavior: issued.issuer_not_after_behavior,
                 signed_role_time_owned: issued.signed_role_time_owned,
                 role_time_owned: issued.role_time_owned,

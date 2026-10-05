@@ -1408,3 +1408,6 @@ fn pki_time90_external_pre_epoch_owner_survives_real_signer_retirement_and_last_
     );
     Ok(())
 }
+
+#[path = "service_pki_role_names_tests.rs"]
+mod role_names;

@@ -276,6 +276,14 @@ fn encoded_oid(value: &str) -> Result<Vec<u8>> {
 #[serde(deny_unknown_fields)]
 pub(super) struct LeafProfilePublicEvidence {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) role_name_policy: Option<RoleNamePolicy>,
+    #[serde(default, skip_serializing_if = "role_false")]
+    pub(super) exclude_cn_from_sans: bool,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub(super) email_sans: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub(super) uri_sans: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     #[serde(default, skip_serializing_if = "role_false")]
     pub(super) signed_role_time_owned: bool,
@@ -291,6 +299,10 @@ pub(super) struct LeafProfilePublicEvidence {
 impl LeafProfilePublicEvidence {
     pub(super) fn capture(prepared: &LeafTemplate, public_key: &LocalPublicKey) -> Option<Self> {
         prepared.role_leaf_profile.clone().map(|profile| Self {
+            role_name_policy: prepared.role_name_policy.clone(),
+            exclude_cn_from_sans: prepared.exclude_cn_from_sans,
+            email_sans: prepared.email_sans.clone(),
+            uri_sans: prepared.uri_sans.clone(),
             profile,
             issuer_not_after_behavior: prepared.issuer_not_after_behavior,
             signed_role_time_owned: prepared.signed_role_time_owned,
@@ -331,6 +343,24 @@ impl Pki {
             let (issuer_der, issuer_public) =
                 self.profile_leaf_issuer_evidence(&issued.local_issuer_id)?;
             evidence.profile.validate_role_oid_strings()?;
+            if let Some(policy) = &evidence.role_name_policy {
+                policy.validate()?;
+            }
+            if issued.role_names_owned != evidence.role_name_policy.is_some()
+                || evidence.role_name_policy.is_none()
+                    && (evidence.exclude_cn_from_sans
+                        || !evidence.email_sans.is_empty()
+                        || !evidence.uri_sans.is_empty())
+                || evidence.email_sans.len() > 33
+                || evidence.uri_sans.len() > 32
+                || evidence
+                    .email_sans
+                    .iter()
+                    .chain(&evidence.uri_sans)
+                    .any(|value| !role_names::bounded_name(value))
+            {
+                return Err(bad("invalid PKI captured role name evidence"));
+            }
             evidence.public_key.validate()?;
             if evidence.signed_role_time_owned != issued.signed_role_time_owned
                 || evidence.signed_role_time_owned != (evidence.not_before < 0)
@@ -375,10 +405,10 @@ impl Pki {
                     not_after: issued.expires,
                     is_ca: false,
                     alt_names: &evidence.alt_names,
-                    email_sans: &[],
+                    email_sans: &evidence.email_sans,
                     ip_sans: &evidence.ip_sans,
-                    uri_sans: &[],
-                    exclude_cn_from_sans: false,
+                    uri_sans: &evidence.uri_sans,
+                    exclude_cn_from_sans: evidence.exclude_cn_from_sans,
                     max_path_length: None,
                     permitted_dns_domains: &[],
                     role_leaf_profile: Some(&evidence.profile),
@@ -518,7 +548,7 @@ fn profile_tlv(bytes: &[u8]) -> Option<(u8, &[u8], &[u8])> {
 // Only JSON request input is weak. Durable fields remain typed Vec<String>.
 // Actual HTTP numbers are converted from their original spelling after ACLs;
 // trusted in-process callers with a Value use that Value's numeric spelling.
-fn weak_comma_list(name: &str, value: &Value) -> Result<Vec<String>> {
+pub(super) fn weak_comma_list(name: &str, value: &Value) -> Result<Vec<String>> {
     let values: Vec<&Value> = match value {
         Value::Null => return Ok(Vec::new()),
         Value::Object(values) if values.is_empty() => return Ok(Vec::new()),

@@ -81,8 +81,9 @@ const PKI_ROLE_WILDCARD_STATE_SCHEMA: u32 = 85;
 const PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA: u32 = 88;
 const PKI_ROLE_TIME_STATE_SCHEMA: u32 = 89;
 const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
+const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_SIGNED_ROLE_TIME_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ROLE_NAMES_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -98,6 +99,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
                 | PKI_ROLE_TIME_STATE_SCHEMA
                 | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+                | PKI_ROLE_NAMES_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -3451,6 +3453,7 @@ impl Service {
         }
         if admitted.engines.has_kubernetes_opaque_artifact_state()
             || admitted.has_token_api_precision_state()
+            || admitted.engines.has_pki_role_names_state()
             || admitted.engines.has_pki_role_time_state()
             || admitted.engines.has_pki_role_leaf_profile_state()
             || admitted.engines.has_pki_role_wildcard_state()
