@@ -789,14 +789,14 @@ impl Kubernetes {
 
     pub(super) fn dispatch_observed(
         &mut self,
-        service_namespace: &str,
-        mount: &str,
+        route: (&str, &str),
         method: &str,
         relative: &str,
         body: &Value,
         admitted_clock: (u64, crate::auth::AuthorityTime),
         issuer: Option<&ResolvedLeaseOwner>,
     ) -> Result<Dispatch> {
+        let (service_namespace, mount) = route;
         let (admitted_now, time) = admitted_clock;
         if !self.has_opaque_artifact_state() {
             return self.dispatch(
@@ -823,8 +823,7 @@ impl Kubernetes {
             }
         }
         let mut response = self.dispatch_with_observation(
-            service_namespace,
-            mount,
+            (service_namespace, mount),
             method,
             relative,
             body,
@@ -853,8 +852,7 @@ impl Kubernetes {
             return Err(err(503, "trusted opaque artifact dispatch is required"));
         }
         self.dispatch_with_observation(
-            service_namespace,
-            mount,
+            (service_namespace, mount),
             method,
             relative,
             body,
@@ -865,14 +863,14 @@ impl Kubernetes {
 
     fn dispatch_with_observation(
         &mut self,
-        service_namespace: &str,
-        mount: &str,
+        route: (&str, &str),
         method: &str,
         relative: &str,
         body: &Value,
         now: u64,
         issuer: Option<&ResolvedLeaseOwner>,
     ) -> std::result::Result<Dispatch, EngineError> {
+        let (service_namespace, mount) = route;
         let mut mutated = self.reconcile(now);
         let body_object = body
             .as_object()

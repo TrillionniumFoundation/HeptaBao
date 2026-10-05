@@ -1263,8 +1263,7 @@ impl EngineState {
             return Ok(None);
         };
         let mut response = engine.dispatch_observed(
-            namespace,
-            &mount,
+            (namespace, &mount),
             method,
             relative,
             body,
