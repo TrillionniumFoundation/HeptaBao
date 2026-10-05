@@ -8,12 +8,12 @@ independent qualification, or complete OpenBao replacement.
 from __future__ import annotations
 import json
 from pathlib import Path
-from bao_http import Client
+from bao_http import BaoError, Client
 from core_isolation import ScenarioFailure
 import core_isolation
 
 
-def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dict]:
+def run_scenarios(client: Client, results: list[dict] | None = None, *, side=None) -> list[dict]:
     results = [] if results is None else results
     def call(path, body=None, *, token=None, ttl=None, method="POST"):
         return client.request(method, "/v1/" + path, body, token=token, wrap_ttl=ttl)
@@ -78,7 +78,23 @@ def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dic
     mount = "wrapping-differential"
     check("wrap.mount", call("sys/mounts/" + mount, {"type": "kv", "options": {"version": "2"}}), 204)
     path = mount + "/data/item"
-    check("wrap.seed", call(path, {"data": {"value": "synthetic-kv"}}))
+    def diagnose_seed(detail):
+        fixed_side = side if type(side) is str and side in ("candidate", "oracle") else "unknown"
+        try:
+            print(json.dumps({"case": "wrap.seed", "side": fixed_side,
+                              "expected_status": 200, **detail}))
+        except (OSError, ValueError):
+            pass
+    try:
+        seed_response = call(path, {"data": {"value": "synthetic-kv"}})
+    except BaoError:
+        diagnose_seed({"transport_error": "request_failed"})
+        raise
+    if seed_response.status != 200:
+        detail = ({"actual_status": seed_response.status} if type(seed_response.status) is int
+                  else {"transport_error": "status_unavailable"})
+        diagnose_seed(detail)
+    check("wrap.seed", seed_response)
     captured = check("wrap.kv_read", call(path, method="GET", ttl="1m"))
     truth("wrap.kv_not_released", captured.get("data") is None and "synthetic-kv" not in json.dumps(captured))
     info = captured["wrap_info"]
@@ -95,7 +111,10 @@ def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dic
 
 
 def main() -> int:
-    return core_isolation.main(scenario_runner=run_scenarios, profile="response-wrapping",
+    return core_isolation.main(
+        scenario_runner=lambda client, rows: run_scenarios(client, rows, side="candidate"),
+        oracle_scenario_runner=lambda client, rows: run_scenarios(client, rows, side="oracle"),
+        profile="response-wrapping",
         scope="selected_opaque_wrapping_lookup_unwrap_rewrap_and_response_capture", runner_path=Path(__file__))
 
 
