@@ -316,8 +316,7 @@ fn external_pki270_issuer_issue_seven_real_kinds_original_paths_private_binding_
             "encrypted alias-state restart"
         );
         assert!(
-            reopened.state.as_ref().ok_or("reopened state")?.schema
-                == PKI_ROLE_NAMES_STATE_SCHEMA,
+            reopened.state.as_ref().ok_or("reopened state")?.schema == PKI_ROLE_NAMES_STATE_SCHEMA,
             "encrypted restart keeps the real alias and new role88 floor"
         );
         for (serial, certificate, lease) in readbacks {
