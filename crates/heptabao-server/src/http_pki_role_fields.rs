@@ -16,6 +16,8 @@ const FIELDS: &[&str] = &[
     "allowed_ip_sans_cidr",
     "allowed_uri_sans",
     "no_store",
+    "use_csr_common_name",
+    "use_csr_sans",
     "allowed_serial_numbers",
     "allowed_user_ids",
     "allowed_other_sans",

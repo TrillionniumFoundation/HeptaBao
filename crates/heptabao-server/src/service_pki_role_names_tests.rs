@@ -975,3 +975,393 @@ fn pki_names93_external_structured_subject_and_policy_survive_real_signer_retire
     check_extended_der(&read, &issuer)?;
     Ok(())
 }
+
+fn actual_csr_fixture() -> TestResult<(String, Vec<u8>)> {
+    let group = openssl::ec::EcGroup::from_curve_name(openssl::nid::Nid::X9_62_PRIME256V1)?;
+    let key = PKey::from_ec_key(openssl::ec::EcKey::generate(&group)?)?;
+    let mut name = openssl::x509::X509Name::builder()?;
+    name.append_entry_by_text("CN", "csr.example.test")?;
+    let mut request = openssl::x509::X509Req::builder()?;
+    request.set_subject_name(&name.build())?;
+    request.set_pubkey(&key)?;
+    let extension = openssl::x509::extension::SubjectAlternativeName::new()
+        .dns("csr-san.example.test")
+        .build(&request.x509v3_context(None))?;
+    let mut extensions = openssl::stack::Stack::new()?;
+    extensions.push(extension)?;
+    request.add_extensions(&extensions)?;
+    request.sign(&key, openssl::hash::MessageDigest::sha256())?;
+    Ok((
+        String::from_utf8(request.build().to_pem()?)?,
+        key.public_key_to_der()?,
+    ))
+}
+
+fn check_actual_csr_leaf(
+    response: &Response,
+    issuer: &X509,
+    public: &[u8],
+    cn: &str,
+    dns: &[&str],
+) -> TestResult<String> {
+    let cert = signed_leaf(response, issuer)?;
+    assert!(
+        response.body["data"].get("private_key").is_none()
+            && response.body["data"].get("private_key_type").is_none(),
+        "sign releases no new private key"
+    );
+    assert_eq!(
+        cert.public_key()?.public_key_to_der()?,
+        public,
+        "actual CSR SPKI is the signed subject key"
+    );
+    let der = cert.to_der()?;
+    let (_, parsed) = X509Certificate::from_der(&der).map_err(|_| "CSR signed DER")?;
+    assert_eq!(
+        parsed
+            .subject()
+            .iter_common_name()
+            .next()
+            .ok_or("CN")?
+            .as_str()?,
+        cn
+    );
+    let names = cert
+        .subject_alt_names()
+        .ok_or("CSR signed SAN")?
+        .iter()
+        .filter_map(|name| name.dnsname().map(str::to_owned))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        names, dns,
+        "actual native CSR/API SAN precedence and ordering"
+    );
+    assert_eq!(parsed.validity().not_before.timestamp(), 55);
+    assert_eq!(parsed.validity().not_after.timestamp(), 700);
+    Ok(response.body["data"]["serial_number"]
+        .as_str()
+        .ok_or("serial")?
+        .to_owned())
+}
+
+#[test]
+fn pki_csr93_real_signature_spki_native_precedence_rejections_and_encrypted_reopen() -> TestResult {
+    let (root, mut service, unseal, admin, issuer) = local_fixture()?;
+    let (csr, public) = actual_csr_fixture()?;
+    let mut last = String::new();
+    for (flags, inputs, cn, names, warnings) in [
+        (
+            json!({}),
+            json!({"common_name":"api.example.test","alt_names":"api-san.example.test"}),
+            "csr.example.test",
+            vec!["csr-san.example.test", "csr.example.test"],
+            json!([
+                "the common_name field was provided but the role is set with \"use_csr_common_name\" set to true",
+                "the alt_names field was provided but the role is set with \"use_csr_sans\" set to true"
+            ]),
+        ),
+        (
+            json!({"use_csr_common_name":false}),
+            json!({"common_name":"api.example.test","alt_names":"api-san.example.test"}),
+            "api.example.test",
+            vec!["csr-san.example.test", "api.example.test"],
+            json!([
+                "the alt_names field was provided but the role is set with \"use_csr_sans\" set to true"
+            ]),
+        ),
+        (
+            json!({"use_csr_sans":false}),
+            json!({"common_name":"api.example.test","alt_names":"api-san.example.test"}),
+            "csr.example.test",
+            vec!["csr.example.test", "api-san.example.test"],
+            json!([
+                "the common_name field was provided but the role is set with \"use_csr_common_name\" set to true"
+            ]),
+        ),
+    ] {
+        let mut flags = flags;
+        flags["not_before_duration"] = json!("45s");
+        named_role(&mut service, &admin, flags)?;
+        let mut request = inputs;
+        request["csr"] = json!(csr);
+        let response = call(&mut service, "POST", "ca/sign/time", &admin, request);
+        last = check_actual_csr_leaf(&response, &issuer, &public, cn, &names)?;
+        assert_eq!(response.body["warnings"], warnings);
+        service
+            .state
+            .as_ref()
+            .ok_or("signed CSR state")?
+            .validate_format()
+            .map_err(|_| "CSR durable signed ownership")?;
+    }
+    named_role(&mut service, &admin, json!({"use_csr_common_name":false}))?;
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "before CSR rejection")?;
+    let rejected = call(
+        &mut service,
+        "POST",
+        "ca/sign/time",
+        &admin,
+        json!({"csr":csr}),
+    );
+    assert_eq!(rejected.status, 400);
+    assert_eq!(
+        rejected.body["errors"],
+        json!([
+            r#"the common_name field is required, or must be provided in a CSR with "use_csr_common_name" set to true, unless "require_cn" is set to false"#
+        ])
+    );
+    let mut corrupt = openssl::x509::X509Req::from_pem(csr.as_bytes())?.to_der()?;
+    *corrupt.last_mut().ok_or("CSR signature byte")? ^= 1;
+    let corrupt = format!(
+        "-----BEGIN CERTIFICATE REQUEST-----\n{}\n-----END CERTIFICATE REQUEST-----\n",
+        base64::Engine::encode(&BASE64, &corrupt)
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/sign/time",
+            &admin,
+            json!({"csr":corrupt,"common_name":"api.example.test"})
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "after CSR rejection")?,
+        identity
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let stored = call(
+        &mut reopened,
+        "GET",
+        &format!("ca/cert/{last}"),
+        &admin,
+        json!({}),
+    );
+    let cert = signed_leaf(&stored, &issuer)?;
+    assert_eq!(cert.public_key()?.public_key_to_der()?, public);
+    assert_eq!(
+        call(&mut reopened, "GET", "ca/roles/time", &admin, json!({})).body["data"]["use_csr_common_name"],
+        false
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_csr93_external_issuer_alias_real_key_custody_no_store_and_retirement() -> TestResult {
+    let remote = RemoteTransit::new_kind("ecdsa-p256")?;
+    let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+    let generated = call(
+        &mut service,
+        "POST",
+        "external-ca/root/generate/kms",
+        &admin,
+        body(),
+    );
+    assert_eq!(generated.status, 200);
+    let issuer = X509::from_pem(
+        generated.body["data"]["certificate"]
+            .as_str()
+            .ok_or("CA")?
+            .as_bytes(),
+    )?;
+    let issuer_id = generated.body["data"]["issuer_id"]
+        .as_str()
+        .ok_or("actual issuer")?
+        .to_owned();
+    let mut role = role_body(&default_profile());
+    role["ttl"] = json!("10m");
+    role["not_before_duration"] = json!("45s");
+    assert_eq!(
+        call(&mut service, "POST", "external-ca/roles/csr", &admin, role).status,
+        200
+    );
+    let (csr, public) = actual_csr_fixture()?;
+    let response = call(
+        &mut service,
+        "POST",
+        &format!("external-ca/issuer/{issuer_id}/sign/csr"),
+        &admin,
+        json!({"csr":csr}),
+    );
+    let serial = check_actual_csr_leaf(
+        &response,
+        &issuer,
+        &public,
+        "csr.example.test",
+        &["csr-san.example.test", "csr.example.test"],
+    )?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PATCH",
+            "external-ca/roles/csr",
+            &admin,
+            json!({"no_store":true})
+        )
+        .status,
+        200
+    );
+    let delivered = call(
+        &mut service,
+        "POST",
+        "external-ca/sign/csr",
+        &admin,
+        json!({"csr":csr}),
+    );
+    let not_stored = check_actual_csr_leaf(
+        &delivered,
+        &issuer,
+        &public,
+        "csr.example.test",
+        &["csr-san.example.test", "csr.example.test"],
+    )?;
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            &format!("external-ca/cert/{not_stored}"),
+            &admin,
+            json!({})
+        )
+        .status,
+        404
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/root/delete",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    let before = remote.calls()?;
+    let stored = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert_eq!(
+        signed_leaf(&stored, &issuer)?
+            .public_key()?
+            .public_key_to_der()?,
+        public
+    );
+    assert_eq!(remote.calls()?, before);
+    service
+        .state
+        .as_ref()
+        .ok_or("retired CSR")?
+        .validate_format()
+        .map_err(|_| "archived true CSR public owner")?;
+    drop(service);
+    let mut reopened = root.service()?;
+    reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let stored = call(
+        &mut reopened,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert_eq!(
+        signed_leaf(&stored, &issuer)?
+            .public_key()?
+            .public_key_to_der()?,
+        public
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_csr93_small_rsa_native_bad_request_after_actual_signature_and_no_publication() -> TestResult
+{
+    let (_root, mut service, _, admin, _) = local_fixture()?;
+    named_role(
+        &mut service,
+        &admin,
+        json!({"key_type":"rsa","key_bits":2048}),
+    )?;
+    let key = PKey::from_rsa(openssl::rsa::Rsa::generate(1024)?)?;
+    let mut name = openssl::x509::X509Name::builder()?;
+    name.append_entry_by_text("CN", "csr.example.test")?;
+    let mut request = openssl::x509::X509Req::builder()?;
+    request.set_subject_name(&name.build())?;
+    request.set_pubkey(&key)?;
+    request.sign(&key, openssl::hash::MessageDigest::sha256())?;
+    let request = request.build();
+    assert!(request.verify(&key)?);
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "before small CSR")?;
+    let rejected = call(
+        &mut service,
+        "POST",
+        "ca/sign/time",
+        &admin,
+        json!({"csr":String::from_utf8(request.to_pem()?)?}),
+    );
+    assert_eq!(rejected.status, 400);
+    assert_eq!(
+        rejected.body["errors"],
+        json!(["role requires a minimum of a 2048-bit key, but CSR's key is 1024 bits"])
+    );
+    let mut corrupt = request.to_der()?;
+    *corrupt.last_mut().ok_or("small CSR signature byte")? ^= 1;
+    let corrupt = format!(
+        "-----BEGIN CERTIFICATE REQUEST-----\n{}\n-----END CERTIFICATE REQUEST-----\n",
+        base64::Engine::encode(&BASE64, &corrupt)
+    );
+    let rejected = call(
+        &mut service,
+        "POST",
+        "ca/sign/time",
+        &admin,
+        json!({"csr":corrupt}),
+    );
+    assert_eq!(rejected.status, 400);
+    assert_eq!(
+        rejected.body["errors"],
+        json!(["request signature invalid"])
+    );
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "after small CSR rejection")?,
+        identity
+    );
+    Ok(())
+}

@@ -3,6 +3,8 @@
 use super::*;
 
 pub(super) const ROLE_NAME_FIELDS: &[&str] = &[
+    "use_csr_common_name",
+    "use_csr_sans",
     "allow_localhost",
     "require_cn",
     "enforce_hostnames",
@@ -20,6 +22,16 @@ pub(super) const ROLE_NAME_FIELDS: &[&str] = &[
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct RoleNamePolicy {
+    #[serde(
+        default = "role_csr::default_true",
+        skip_serializing_if = "role_csr::is_true"
+    )]
+    pub(super) use_csr_common_name: bool,
+    #[serde(
+        default = "role_csr::default_true",
+        skip_serializing_if = "role_csr::is_true"
+    )]
+    pub(super) use_csr_sans: bool,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub(super) allowed_serial_numbers: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -41,6 +53,8 @@ pub(super) struct RoleNamePolicy {
 impl Default for RoleNamePolicy {
     fn default() -> Self {
         Self {
+            use_csr_common_name: true,
+            use_csr_sans: true,
             allowed_serial_numbers: Vec::new(),
             allowed_user_ids: Vec::new(),
             allowed_other_sans: Vec::new(),
@@ -61,6 +75,8 @@ impl RoleNamePolicy {
     pub(super) fn from_body(body: &Value) -> Result<Self> {
         let mut policy = Self::default();
         for (name, target) in [
+            ("use_csr_common_name", &mut policy.use_csr_common_name),
+            ("use_csr_sans", &mut policy.use_csr_sans),
             ("allow_localhost", &mut policy.allow_localhost),
             ("require_cn", &mut policy.require_cn),
             ("enforce_hostnames", &mut policy.enforce_hostnames),
@@ -148,7 +164,7 @@ impl RoleNamePolicy {
     }
 
     pub(super) fn descriptor(&self) -> Value {
-        json!({"allow_localhost":self.allow_localhost,"require_cn":self.require_cn,
+        json!({"use_csr_common_name":self.use_csr_common_name,"use_csr_sans":self.use_csr_sans,"allow_localhost":self.allow_localhost,"require_cn":self.require_cn,
             "enforce_hostnames":self.enforce_hostnames,"cn_validations":self.cn_validations,
             "allow_glob_domains":self.allow_glob_domains,"allowed_ip_sans_cidr":self.allowed_ip_sans_cidr,
             "allowed_uri_sans":self.allowed_uri_sans,"no_store":self.no_store,
@@ -225,6 +241,16 @@ impl RoleNamePolicy {
     }
 
     pub(super) fn validate_sans(&self, ip_sans: &[IpAddr], uri_sans: &[String]) -> Result<()> {
+        self.validate_sans_from(ip_sans, uri_sans, false)
+    }
+
+    pub(super) fn validate_sans_from(
+        &self,
+        ip_sans: &[IpAddr],
+        uri_sans: &[String],
+        from_csr: bool,
+    ) -> Result<()> {
+        let source = if from_csr { "CSR" } else { "the API" };
         for ip in ip_sans {
             if !self.allowed_ip_sans_cidr.is_empty()
                 && !self
@@ -238,9 +264,9 @@ impl RoleNamePolicy {
             }
         }
         if !uri_sans.is_empty() && self.allowed_uri_sans.is_empty() {
-            return Err(bad(
-                "URI Subject Alternative Names are not allowed in this role, but were provided via the API",
-            ));
+            return Err(bad(&format!(
+                "URI Subject Alternative Names are not allowed in this role, but were provided via {source}",
+            )));
         }
         for uri in uri_sans {
             if !self
@@ -248,9 +274,9 @@ impl RoleNamePolicy {
                 .iter()
                 .any(|pattern| glob_match(pattern, uri))
             {
-                return Err(bad(
-                    "URI Subject Alternative Names were provided via the API which are not valid for this role",
-                ));
+                return Err(bad(&format!(
+                    "URI Subject Alternative Names were provided via {source} which are not valid for this role",
+                )));
             }
             if !bounded_name(uri)
                 || uri.bytes().any(|byte| byte.is_ascii_whitespace())

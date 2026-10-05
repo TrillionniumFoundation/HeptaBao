@@ -375,11 +375,16 @@ impl Pki {
         let captured_issuer = self.captured_external_issuer()?;
         let issue = path
             .strip_prefix("issue/")
-            .map(|role| (None, role))
+            .map(|role| (None, role, false))
+            .or_else(|| path.strip_prefix("sign/").map(|role| (None, role, true)))
             .or_else(|| {
-                Self::issuer_issue_route(path).map(|(reference, role)| (Some(reference), role))
+                Self::issuer_issue_route(path)
+                    .map(|(reference, role)| (Some(reference), role, false))
+            })
+            .or_else(|| {
+                Self::issuer_sign_route(path).map(|(reference, role)| (Some(reference), role, true))
             });
-        let consumption = if let Some((reference, role)) = issue {
+        let consumption = if let Some((reference, role, sign)) = issue {
             if !write_method(method) {
                 return Err(unsupported());
             }
@@ -390,12 +395,19 @@ impl Pki {
                 self.require_public_issuer(reference)?;
             }
             let owner = owner.ok_or_else(|| error(403, "credential issuer is required"))?;
-            let mut prepared =
-                self.prepare_leaf(mount, role, body, &owner.owner, owner.expires_at, now)?;
-            if reference.is_some() {
-                // Preserve the actual authorized issuer route in the lease graph.
-                prepared.path = format!("{mount}{path}");
-            }
+            let mut prepared = self.prepare_leaf_route(
+                IssuanceRoute {
+                    mount,
+                    role,
+                    explicit_issuer: None,
+                    sign,
+                },
+                body,
+                &owner.owner,
+                owner.expires_at,
+                now,
+            )?;
+            prepared.path = format!("{mount}{path}");
             prepared.serial = external_serial()?;
             prepared.lease_id = format!("{}/{}", prepared.path, prepared.serial);
             // Role time policy already owns the actual signed validity.
@@ -859,6 +871,7 @@ impl Pki {
                 _ => return Err(bad("external PKI leaf profile projection differs")),
             }
             let prepared = LeafTemplate {
+                csr_public_key: None,
                 role_name_policy: projection.role_name_policy.clone(),
                 no_store: false,
                 exclude_cn_from_sans: projection.exclude_cn_from_sans,
@@ -941,9 +954,12 @@ impl ExternalPkiTemplate {
             .ok_or_else(|| bad("external PKI consumption missing"))?;
         let (tbs, extra, leaf_pkcs8, leaf_public) = match &consumption {
             ConsumptionTemplate::Leaf(prepared) => {
-                let leaf = LocalPrivateMaterial::generate(prepared.local_key_kind)?;
-                let pkcs8 = leaf.private_der()?;
-                let leaf_public = leaf.public()?;
+                let (leaf_public, pkcs8) = if let Some(public) = &prepared.csr_public_key {
+                    (public.clone(), Zeroizing::new(Vec::new()))
+                } else {
+                    let leaf = LocalPrivateMaterial::generate(prepared.local_key_kind)?;
+                    (leaf.public()?, leaf.private_der()?)
+                };
                 let root = self
                     .bound_issuer
                     .as_ref()

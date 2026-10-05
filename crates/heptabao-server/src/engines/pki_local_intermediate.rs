@@ -220,7 +220,7 @@ fn crypto_digest(bytes: &[u8]) -> Vec<u8> {
         .to_vec()
 }
 
-fn parse_csr(bytes: &[u8]) -> Result<X509CertificationRequest<'_>> {
+pub(super) fn parse_csr(bytes: &[u8]) -> Result<X509CertificationRequest<'_>> {
     if bytes.is_empty() || bytes.len() > 64 * 1024 {
         return Err(bad("CSR exceeds bounds"));
     }
@@ -292,15 +292,19 @@ fn pem_blocks(input: &str, label: &str) -> Result<Vec<Vec<u8>>> {
     Ok(values)
 }
 
-fn csr_from_body(body: &Value) -> Result<Vec<u8>> {
+pub(super) fn csr_from_body(body: &Value) -> Result<Vec<u8>> {
+    let bytes = csr_bytes_from_body(body)?;
+    parse_csr(&bytes)?;
+    Ok(bytes)
+}
+
+pub(super) fn csr_bytes_from_body(body: &Value) -> Result<Vec<u8>> {
     let text = string(body, "csr")?;
     let mut values = pem_blocks(text, "CERTIFICATE REQUEST")?;
     if values.len() != 1 {
         return Err(bad("one CSR is required"));
     }
-    let bytes = values.remove(0);
-    parse_csr(&bytes)?;
-    Ok(bytes)
+    Ok(values.remove(0))
 }
 
 fn common_name(subject: &x509_parser::x509::X509Name<'_>) -> Result<String> {

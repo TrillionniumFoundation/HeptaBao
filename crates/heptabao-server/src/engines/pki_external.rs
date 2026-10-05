@@ -393,10 +393,24 @@ impl Pki {
         .then_some((reference, role))
     }
 
+    pub(in crate::engines) fn issuer_sign_route(path: &str) -> Option<(&str, &str)> {
+        let (reference, role) = path.strip_prefix("issuer/")?.split_once("/sign/")?;
+        (!reference.is_empty()
+            && reference.len() <= 128
+            && !reference.contains('/')
+            && !role.is_empty()
+            && role.len() <= 128
+            && !role.contains('/')
+            && !path.contains('?'))
+        .then_some((reference, role))
+    }
+
     pub(in crate::engines) fn external_handles(&self, path: &str) -> bool {
         matches!(path, "root/generate/kms" | "intermediate/generate/kms")
             || self.external.root.is_some()
                 && (path.starts_with("issue/")
+                    || path.starts_with("sign/")
+                    || Self::issuer_sign_route(path).is_some()
                     || Self::issuer_issue_route(path).is_some()
                     || matches!(path, "revoke" | "crl/rotate"))
     }

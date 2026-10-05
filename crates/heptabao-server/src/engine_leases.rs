@@ -31,7 +31,10 @@ impl EngineState {
     pub(crate) fn is_pki_issue_route(&self, namespace: &str, path: &str) -> bool {
         self.pki_mount(namespace, path).is_some_and(|mount| {
             let relative = &path[mount.len()..];
-            relative.starts_with("issue/") || pki::Pki::issuer_issue_route(relative).is_some()
+            relative.starts_with("issue/")
+                || relative.starts_with("sign/")
+                || pki::Pki::issuer_issue_route(relative).is_some()
+                || pki::Pki::issuer_sign_route(relative).is_some()
         })
     }
     pub(crate) fn is_lease_service_route(&self, namespace: &str, path: &str) -> bool {
@@ -415,6 +418,10 @@ impl EngineState {
                             prefix == name.trim_end_matches('/')
                                 || prefix == format!("{name}issue")
                                 || prefix.starts_with(&format!("{name}issue/"))
+                                || prefix == format!("{name}sign")
+                                || prefix.starts_with(&format!("{name}sign/"))
+                                || prefix.starts_with(&format!("{name}issuer/"))
+                                    && (prefix.contains("/issue/") || prefix.contains("/sign/"))
                         }
                         _ => false,
                     })

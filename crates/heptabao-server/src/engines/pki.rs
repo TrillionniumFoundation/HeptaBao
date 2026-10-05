@@ -27,6 +27,8 @@ mod role_names;
 #[path = "pki_role_time.rs"]
 mod role_time;
 use role_names::RoleNamePolicy;
+#[path = "pki_role_csr.rs"]
+mod role_csr;
 #[path = "pki_role_subjects.rs"]
 mod role_subjects;
 use role_time::RoleTimePolicy;
@@ -438,6 +440,7 @@ impl Pki {
             role.validate()?;
         }
         let prefix = format!("{mount}issue/");
+        let sign_prefix = format!("{mount}sign/");
         let mut leases = BTreeSet::new();
         for (serial, issued) in &self.issued {
             if (!issued.local_issuer_id.is_empty() && !valid_pki_id(&issued.local_issuer_id))
@@ -462,11 +465,14 @@ impl Pki {
                 })
                 || !(if issued.path.starts_with(&prefix) {
                     !issued.path[prefix.len()..].contains('/')
+                } else if issued.role_names_owned && issued.path.starts_with(&sign_prefix) {
+                    !issued.path[sign_prefix.len()..].is_empty()
+                        && !issued.path[sign_prefix.len()..].contains('/')
                 } else {
-                    issued
-                        .path
-                        .strip_prefix(mount)
-                        .is_some_and(|path| Self::issuer_issue_route(path).is_some())
+                    issued.path.strip_prefix(mount).is_some_and(|path| {
+                        Self::issuer_issue_route(path).is_some()
+                            || issued.role_names_owned && Self::issuer_sign_route(path).is_some()
+                    })
                 })
                 || issued.lease_id != format!("{}/{}", issued.path, serial)
                 || issued.issued > clock
@@ -493,10 +499,10 @@ impl Pki {
     // Selection at request time is separate from this closed persisted grammar.
     pub(super) fn has_issuer_path_state(&self, mount: &str) -> bool {
         self.issued.values().any(|issued| {
-            issued
-                .path
-                .strip_prefix(mount)
-                .is_some_and(|relative| Self::issuer_issue_route(relative).is_some())
+            issued.path.strip_prefix(mount).is_some_and(|relative| {
+                Self::issuer_issue_route(relative).is_some()
+                    || Self::issuer_sign_route(relative).is_some()
+            })
         })
     }
 
@@ -899,6 +905,8 @@ impl Pki {
                             "allowed_ip_sans_cidr",
                             "allowed_uri_sans",
                             "no_store",
+                            "use_csr_common_name",
+                            "use_csr_sans",
                             "allowed_serial_numbers",
                             "allowed_user_ids",
                             "allowed_other_sans",
@@ -1327,6 +1335,7 @@ impl Pki {
         }
     }
 
+    #[cfg(test)]
     fn prepare_leaf(
         &self,
         mount: &str,
@@ -1341,6 +1350,7 @@ impl Pki {
                 mount,
                 role: role_name,
                 explicit_issuer: None,
+                sign: false,
             },
             body,
             owner,
@@ -1360,6 +1370,8 @@ impl Pki {
         reject_unknown(
             body,
             &[
+                "csr",
+                "exclude_cn_from_sans",
                 "common_name",
                 "alt_names",
                 "ip_sans",
@@ -1377,6 +1389,15 @@ impl Pki {
             .get(route.role)
             .ok_or_else(|| bad(&format!("unknown role: {}", route.role)))?
             .clone();
+        let csr = if route.sign {
+            Some(role_csr::CsrInput::from_request(&role, body)?)
+        } else {
+            if body.get("csr").is_some() {
+                return Err(bad("csr is only supported by the sign route"));
+            }
+            None
+        };
+        let body = csr.as_ref().map_or(body, |csr| &csr.body);
         let reference = route.explicit_issuer.unwrap_or({
             if role.issuer_ref.is_empty() {
                 "default"
@@ -1446,8 +1467,10 @@ impl Pki {
                 "subject alternate name {common_name} not allowed by this role"
             )));
         }
-        let exclude_cn_from_sans = names.is_some() && !valid_common_name(common_name);
-        if names.is_some() && common_name.contains('@') {
+        let exclude_cn_from_sans = names.is_some()
+            && (!valid_common_name(common_name)
+                || role_optional_bool(body, "exclude_cn_from_sans")?.unwrap_or(false));
+        if names.is_some() && common_name.contains('@') && !exclude_cn_from_sans {
             email_sans.push(common_name.into());
         }
         let uri_sans = string_list(body.get("uri_sans"))?;
@@ -1458,13 +1481,15 @@ impl Pki {
         if ip_sans.len() > 32 {
             return Err(bad("PKI IP subject alternative name capacity exceeded"));
         }
+        let sans_from_csr = csr.is_some() && names.is_some_and(|policy| policy.use_csr_sans);
         if !role.allow_ip_sans && !ip_sans.is_empty() {
-            return Err(bad(
-                "IP Subject Alternative Names are not allowed in this role, but was provided via the API",
-            ));
+            let source = if sans_from_csr { "CSR" } else { "the API" };
+            return Err(bad(&format!(
+                "IP Subject Alternative Names are not allowed in this role, but was provided via {source}",
+            )));
         }
         if let Some(policy) = names {
-            policy.validate_sans(&ip_sans, &uri_sans)?;
+            policy.validate_sans_from(&ip_sans, &uri_sans, sans_from_csr)?;
         } else if !uri_sans.is_empty() {
             return Err(bad(
                 "URI Subject Alternative Names are not allowed in this role, but were provided via the API",
@@ -1500,10 +1525,14 @@ impl Pki {
             )));
         }
         let serial = random_serial()?;
+        let operation = if route.sign { "sign" } else { "issue" };
         let path = if let Some(reference) = route.explicit_issuer {
-            format!("{}issuer/{reference}/issue/{}", route.mount, route.role)
+            format!(
+                "{}issuer/{reference}/{operation}/{}",
+                route.mount, route.role
+            )
         } else {
-            format!("{}issue/{}", route.mount, route.role)
+            format!("{}{operation}/{}", route.mount, route.role)
         };
         let lease_id = format!("{path}/{serial}");
         if self.issued.contains_key(&serial) || self.issued.values().any(|v| v.lease_id == lease_id)
@@ -1523,7 +1552,13 @@ impl Pki {
                 || role.max_ttl == 0
                 || body.get("not_before").is_some()
                 || body.get("not_after").is_some(),
-            warnings: resolved.warnings,
+            warnings: {
+                let mut warnings = csr
+                    .as_ref()
+                    .map_or_else(Vec::new, |csr| csr.warnings.clone());
+                warnings.extend(resolved.warnings);
+                warnings
+            },
             role_leaf_profile: Some(if let Some(policy) = names {
                 policy.capture_subject(body, role.effective_leaf_profile())?
             } else {
@@ -1547,7 +1582,11 @@ impl Pki {
             owner_expires,
             leased: role.generate_lease,
             common_name: common_name.into(),
-            local_key_kind: role.local_key_kind.unwrap_or(LocalKeyKind::Ed25519),
+            local_key_kind: csr.as_ref().map_or(
+                role.local_key_kind.unwrap_or(LocalKeyKind::Ed25519),
+                |csr| csr.public.kind(),
+            ),
+            csr_public_key: csr.map(|csr| csr.public),
             alt_names,
             ip_sans,
             issued: now,
@@ -1571,6 +1610,7 @@ impl Pki {
                 mount,
                 role: role_name,
                 explicit_issuer: None,
+                sign: false,
             },
             body,
             owner,
@@ -1593,12 +1633,28 @@ impl Pki {
                 mount,
                 role,
                 explicit_issuer: None,
+                sign: false,
+            }
+        } else if let Some(role) = relative.strip_prefix("sign/") {
+            IssuanceRoute {
+                mount,
+                role,
+                explicit_issuer: None,
+                sign: true,
             }
         } else if let Some((reference, role)) = Self::issuer_issue_route(relative) {
             IssuanceRoute {
                 mount,
                 role,
                 explicit_issuer: Some(reference),
+                sign: false,
+            }
+        } else if let Some((reference, role)) = Self::issuer_sign_route(relative) {
+            IssuanceRoute {
+                mount,
+                role,
+                explicit_issuer: Some(reference),
+                sign: true,
             }
         } else {
             return Err(not_found());
@@ -1638,8 +1694,12 @@ impl Pki {
                 "external PKI leaf issuance requires a qualified signing lane",
             ));
         }
-        let leaf = LocalPrivateMaterial::generate(prepared.local_key_kind)?;
-        let leaf_public = leaf.public()?;
+        let (leaf_public, leaf_pkcs8) = if let Some(public) = &prepared.csr_public_key {
+            (public.clone(), Zeroizing::new(Vec::new()))
+        } else {
+            let leaf = LocalPrivateMaterial::generate(prepared.local_key_kind)?;
+            (leaf.public()?, leaf.private_der()?)
+        };
         let root_pair = root.local_key()?;
         let issuer_name_der = root_fields::certificate_subject(&root.certificate_der)?;
         let authority_key_id = root_fields::certificate_key_identifier(&root.certificate_der)?;
@@ -1667,7 +1727,6 @@ impl Pki {
                 role_leaf_profile: prepared.role_leaf_profile.as_ref(),
             },
         )?;
-        let leaf_pkcs8 = leaf.private_der()?;
         self.publish_leaf(prepared, certificate_der, &leaf_pkcs8, &leaf_public, false)
     }
 
@@ -1692,19 +1751,20 @@ impl Pki {
         }
         let certificate = public::stored_pem("CERTIFICATE", &certificate_der);
         let issuing_ca = public::stored_pem("CERTIFICATE", &root.certificate_der);
-        let mut private_key =
-            LocalPrivateMaterial::private_pem(prepared.local_key_kind, leaf_pkcs8, external)?;
-        // OpenBao's issuance bundle omits the canonical final LF.
-        // Remove it in the existing zeroizing response owner, not a new clone.
-        if private_key.ends_with('\n') {
-            private_key.pop();
-        }
         let ttl = prepared.expires.saturating_sub(prepared.issued);
-        let mut data = json!({
-            "certificate":certificate, "issuing_ca":issuing_ca,
-            "private_key":private_key.as_str(), "private_key_type":prepared.local_key_kind.key_type(),
-            "serial_number":prepared.serial, "expiration":prepared.expires,
-        });
+        let mut data = json!({"certificate":certificate, "issuing_ca":issuing_ca,
+            "serial_number":prepared.serial, "expiration":prepared.expires});
+        if prepared.csr_public_key.is_none() {
+            let mut private_key =
+                LocalPrivateMaterial::private_pem(prepared.local_key_kind, leaf_pkcs8, external)?;
+            if private_key.ends_with('\n') {
+                private_key.pop();
+            }
+            data["private_key"] = json!(private_key.as_str());
+            data["private_key_type"] = json!(prepared.local_key_kind.key_type());
+        } else if !leaf_pkcs8.is_empty() || prepared.csr_public_key.as_ref() != Some(leaf_public) {
+            return Err(bad("CSR signed leaf has an unexpected private key owner"));
+        }
         data["serial_number"] = json!(external::formatted_serial(&prepared.serial));
         data["ca_chain"] = if external {
             json!([issuing_ca])
@@ -2289,10 +2349,12 @@ struct IssuanceRoute<'a> {
     mount: &'a str,
     role: &'a str,
     explicit_issuer: Option<&'a str>,
+    sign: bool,
 }
 
 #[derive(Clone)]
 struct LeafTemplate {
+    csr_public_key: Option<LocalPublicKey>,
     role_name_policy: Option<RoleNamePolicy>,
     no_store: bool,
     exclude_cn_from_sans: bool,
