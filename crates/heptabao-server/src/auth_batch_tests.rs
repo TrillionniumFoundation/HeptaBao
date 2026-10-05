@@ -4,6 +4,7 @@ type TestResult = Result<(), Box<dyn std::error::Error>>;
 
 fn claims(now: u64, ttl: u64) -> BatchClaims {
     BatchClaims {
+        public_origin: None,
         namespace: "team/one".into(),
         policies: BTreeSet::from(["default".into(), "reader".into()]),
         metadata: BTreeMap::from([("username".into(), "alice".into())]),

@@ -176,7 +176,7 @@ impl AuthState {
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expires_at);
         token.token_api_lease_ttl = Some(expires_at - now);
-        let response = AuthResponse {
+        let mut response = AuthResponse {
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
@@ -189,6 +189,9 @@ impl AuthState {
                 "lease_duration":expires_at-now,"renewable":true,"token_type":"service"
             }}),
         };
+        if let Some(origin) = &token.public_origin {
+            response.body["auth"]["metadata"] = origin.issued_json();
+        }
         self.system_lease_defaults.get_or_insert(system_defaults);
         Ok(Some(response))
     }

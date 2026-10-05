@@ -329,6 +329,19 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        if current.schema >= AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+            && incoming.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade public origin ownership",
+            ));
+        }
+        incoming
+            .protected_state()?
+            .auth
+            .validate_public_origin_successor(&current.protected_state()?.auth)
+            .map_err(|_| Response::error(400, "snapshot would retire public origin ownership"))?;
         if current.schema >= TOKEN_ROLE_STATE_SCHEMA && incoming.schema < TOKEN_ROLE_STATE_SCHEMA {
             return Err(Response::error(
                 400,

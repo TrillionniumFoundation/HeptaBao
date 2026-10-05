@@ -182,6 +182,8 @@ impl TryFrom<StoredAuthority> for BatchKeyAuthority {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct BatchClaims {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) public_origin: Option<super::public_origin::BatchOrigin>,
     pub(crate) namespace: String,
     pub(crate) policies: BTreeSet<String>,
     pub(crate) metadata: BTreeMap<String, String>,
@@ -228,6 +230,9 @@ impl VerifiedBatchClaims {
     }
     pub(crate) fn policies(&self) -> &BTreeSet<String> {
         &self.claims.policies
+    }
+    pub(super) fn public_origin(&self) -> Option<&super::public_origin::BatchOrigin> {
+        self.claims.public_origin.as_ref()
     }
     pub(crate) fn metadata(&self) -> &BTreeMap<String, String> {
         &self.claims.metadata
@@ -318,6 +323,11 @@ impl BatchClaims {
                 .any(|p| !super::valid_name(p) || p == "root")
         {
             return Err(BatchError::InvalidClaims);
+        }
+        if let Some(origin) = &self.public_origin {
+            origin
+                .validate(&self.metadata)
+                .map_err(|_| BatchError::InvalidClaims)?;
         }
         super::token_cidrs::validate(&self.bound_cidrs).map_err(|_| BatchError::InvalidClaims)
     }

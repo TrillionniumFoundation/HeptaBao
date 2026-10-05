@@ -80,7 +80,7 @@ impl PendingBatchGrant {
     ) -> AuthResponse {
         let body = json!({"auth":{
             "accessor":"", "policies":claims.policies, "token_policies":claims.policies,
-            "entity_id":claims.entity_id.as_deref().unwrap_or(""), "metadata":claims.metadata,
+            "entity_id":claims.entity_id.as_deref().unwrap_or(""), "metadata":claims.public_origin.as_ref().map_or_else(|| json!(claims.metadata), |origin| origin.issued_json(&claims.metadata)),
             "lease_duration":claims.expires_at-claims.issued_at, "renewable":false,
             "token_type":"batch", "orphan":claims.parent.is_none(), "num_uses":0
         }});
@@ -256,6 +256,9 @@ impl AuthState {
             .seal(pending.claims.clone(), now)
             .map_err(|_| err(503, "batch sealing unavailable"))?;
         response.body["auth"]["client_token"] = json!(raw.as_str());
+        if pending.claims.public_origin.is_some() {
+            self.public_origin_floor = Some(public_origin::Floor::V1);
+        }
         self.batch_authority = Some(authority);
         response.mutated = true;
         Ok(())

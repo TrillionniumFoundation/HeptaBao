@@ -34,10 +34,29 @@ fn bounded_wrapped_response(response: &Value) -> bool {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct WrappedResponse {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    creation_stamp: Option<public_origin::CreationStamp>,
     response: Value,
     creation_path: String,
     creation_ttl: u64,
     wrapped_accessor: Option<String>,
+}
+impl WrappedResponse {
+    pub(super) fn has_creation_stamp(&self) -> bool {
+        self.creation_stamp.is_some()
+    }
+    pub(super) fn validate_creation_stamp(&self, created_at: u64) -> Result<(), AuthError> {
+        if let Some(stamp) = &self.creation_stamp {
+            stamp.validate_since(created_at)?;
+        }
+        Ok(())
+    }
+    fn creation_time(&self, created_at: u64) -> Result<String, AuthError> {
+        self.creation_stamp.as_ref().map_or_else(
+            || Ok(crate::engines::timestamp(created_at)),
+            public_origin::CreationStamp::render,
+        )
+    }
 }
 impl Drop for WrappedResponse {
     fn drop(&mut self) {
@@ -148,13 +167,17 @@ impl AuthState {
             .and_then(|a| a.get("accessor"))
             .and_then(Value::as_str)
             .map(str::to_owned);
+        let creation_stamp = public_origin::CreationStamp::capture(now)?;
         let wrapped = WrappedResponse {
+            creation_stamp: creation_stamp.clone(),
             response: response.clone(),
             creation_path: path.into(),
             creation_ttl: ttl,
             wrapped_accessor: wrapped_accessor.clone(),
         };
         let token = Token {
+            public_origin: None,
+            issue_stamp: creation_stamp,
             token_api_lease_ttl: None,
             token_role: None,
             bound_cidrs: Vec::new(),
@@ -180,7 +203,7 @@ impl AuthState {
             auth_provenance: None,
         };
         let mut info = json!({"token":raw.as_str(),"accessor":accessor,"ttl":ttl,
-            "creation_time":crate::engines::timestamp(now),"creation_path":path});
+            "creation_time":token.wrapping.as_ref().ok_or_else(|| err(503,"wrapping owner missing"))?.creation_time(now)?,"creation_path":path});
         if let Some(accessor) = wrapped_accessor {
             info["wrapped_accessor"] = json!(accessor);
         }
@@ -195,7 +218,7 @@ impl AuthState {
                 "data":null,"auth":null,"warnings":null,"wrap_info":info}),
         };
         self.wrapping_clock = now;
-        self.tokens.insert(id, token);
+        self.store_token(id, token);
         Ok(result)
     }
 
@@ -238,7 +261,7 @@ impl AuthState {
             .ok_or_else(|| bad("wrapping response unavailable"))?;
         Ok(response(
             json!({"creation_path":wrapped.creation_path,
-            "creation_time":crate::engines::timestamp(token.created_at),"creation_ttl":wrapped.creation_ttl}),
+            "creation_time":wrapped.creation_time(token.created_at)?,"creation_ttl":wrapped.creation_ttl}),
             false,
         ))
     }

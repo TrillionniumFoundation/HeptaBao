@@ -100,6 +100,12 @@ struct PublicationClock(Option<(Duration, Instant)>);
 /// Reuse the listener's trusted wall-time observation plus its original
 /// monotonic anchor. Explicit-clock embedders without a scope retain exactly
 /// their supplied integer time; no request payload can select this clock.
+pub(super) fn public_origin_observation() -> Option<Duration> {
+    PUBLICATION_CLOCK
+        .with(Cell::get)
+        .and_then(|(unix, started)| unix.checked_add(started.elapsed()))
+}
+
 pub(super) fn publication_now(logical_now: u64) -> u64 {
     PublicationClock::capture()
         .0

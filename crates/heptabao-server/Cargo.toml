@@ -11,6 +11,7 @@ fixture-native-restore-faults = ["rustix/net", "rustix/process"]
 fixture-capacity-limit = []
 
 [dependencies]
+chrono = { version = "=0.4.45", default-features = false, features = ["clock", "std"] }
 bcrypt = { path = "../../vendor/bcrypt-0.19.3", version = "=0.19.3", default-features = false, features = ["std", "zeroize"] }
 # Feature-unify bcrypt's cipher so its expanded key schedule is cleared on Drop.
 blowfish = { version = "=0.10.0", default-features = false, features = ["zeroize"] }

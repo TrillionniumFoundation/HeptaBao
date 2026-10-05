@@ -9,45 +9,50 @@ impl State {
     /// into an older supported format. The all-namespace scan also finds safe
     /// material introduced by the current candidate before its first commit.
     pub(super) fn writer_schema(&self) -> u32 {
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        if self.schema == 0
+            || self.schema > MAX_SUPPORTED_STATE_SCHEMA
+            || (82..=85).contains(&self.schema)
+        {
             return self.schema;
         }
-        let required =
-            if self.namespaces.has_custody_state() || self.engines.has_namespace_record_custody() {
-                NAMESPACE_CUSTODY_STATE_SCHEMA
-            } else if self.auth.has_token_role_state() {
-                TOKEN_ROLE_STATE_SCHEMA
-            } else if self.engines.has_local_pki_intermediate_state() {
-                LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
-            } else if self.engines.has_local_pki_crl_state() {
-                LOCAL_PKI_CRL_STATE_SCHEMA
-            } else if self.engines.has_local_pki_multi_issuer_state() {
-                LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
-            } else if self.engines.has_local_pki_root_fields_state() {
-                LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
-            } else if self.engines.has_local_pki_identifier_state() {
-                LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
-            } else if self.auth.has_indexed_recovery_wire() {
-                INDEXED_RECOVERY_WIRE_STATE_SCHEMA
-            } else if self.auth.has_recovery_state() {
-                RECOVERY_CREDENTIAL_STATE_SCHEMA
-            } else if self.engines.has_local_typed_pki_state() {
-                LOCAL_TYPED_PKI_STATE_SCHEMA
-            } else if self.engines.has_issuer_path_pki_state() {
-                PKI_ISSUER_PATH_STATE_SCHEMA
-            } else if self.engines.has_transit_byok_state() {
-                TRANSIT_BYOK_STATE_SCHEMA
-            } else if self.auth.has_jwt_pem_keyset_state() {
-                JWT_PEM_KEYSET_STATE_SCHEMA
-            } else if self.auth.has_jwt_user_claim_state() {
-                JWT_USER_CLAIM_STATE_SCHEMA
-            } else if self.engines.has_typed_external_pki_state() {
-                TYPED_PKI_STATE_SCHEMA
-            } else if self.engines.has_aad_bound_convergent_state() {
-                AAD_BOUND_STATE_SCHEMA
-            } else {
-                CURRENT_STATE_SCHEMA
-            };
+        let required = if self.auth.has_public_origin_state() {
+            AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        } else if self.namespaces.has_custody_state() || self.engines.has_namespace_record_custody()
+        {
+            NAMESPACE_CUSTODY_STATE_SCHEMA
+        } else if self.auth.has_token_role_state() {
+            TOKEN_ROLE_STATE_SCHEMA
+        } else if self.engines.has_local_pki_intermediate_state() {
+            LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+        } else if self.engines.has_local_pki_crl_state() {
+            LOCAL_PKI_CRL_STATE_SCHEMA
+        } else if self.engines.has_local_pki_multi_issuer_state() {
+            LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+        } else if self.engines.has_local_pki_root_fields_state() {
+            LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+        } else if self.engines.has_local_pki_identifier_state() {
+            LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
+        } else if self.auth.has_indexed_recovery_wire() {
+            INDEXED_RECOVERY_WIRE_STATE_SCHEMA
+        } else if self.auth.has_recovery_state() {
+            RECOVERY_CREDENTIAL_STATE_SCHEMA
+        } else if self.engines.has_local_typed_pki_state() {
+            LOCAL_TYPED_PKI_STATE_SCHEMA
+        } else if self.engines.has_issuer_path_pki_state() {
+            PKI_ISSUER_PATH_STATE_SCHEMA
+        } else if self.engines.has_transit_byok_state() {
+            TRANSIT_BYOK_STATE_SCHEMA
+        } else if self.auth.has_jwt_pem_keyset_state() {
+            JWT_PEM_KEYSET_STATE_SCHEMA
+        } else if self.auth.has_jwt_user_claim_state() {
+            JWT_USER_CLAIM_STATE_SCHEMA
+        } else if self.engines.has_typed_external_pki_state() {
+            TYPED_PKI_STATE_SCHEMA
+        } else if self.engines.has_aad_bound_convergent_state() {
+            AAD_BOUND_STATE_SCHEMA
+        } else {
+            CURRENT_STATE_SCHEMA
+        };
         self.schema.max(required)
     }
 
@@ -56,16 +61,36 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.namespace_leases.validate()?;
+        self.protected_state()?
+            .auth
+            .validate_public_origin_state()
+            .map_err(|_| Response::error(503, "invalid public origin protected owner"))?;
         if let Some(previous) = previous {
+            self.protected_state()?
+                .auth
+                .validate_public_origin_successor(&previous.protected_state()?.auth)
+                .map_err(|_| Response::error(503, "public origin floor cannot retire"))?;
             self.protected_state()?
                 .namespaces
                 .validate_custody_successor(&previous.protected_state()?.namespaces)?;
         }
 
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        if self.schema == 0
+            || self.schema > MAX_SUPPORTED_STATE_SCHEMA
+            || (82..=85).contains(&self.schema)
+        {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+            && (self.auth.has_public_origin_state()
+                || previous.is_some_and(|state| state.schema >= AUTH_PUBLIC_ORIGIN_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "native public origin requires schema 86",
             ));
         }
         if self.schema < NAMESPACE_CUSTODY_STATE_SCHEMA
@@ -223,6 +248,7 @@ impl State {
         if previous.is_some_and(|state| {
             state.schema == 0
                 || state.schema > MAX_SUPPORTED_STATE_SCHEMA
+                || (82..=85).contains(&state.schema)
                 || self.schema < state.schema
         }) {
             return Err(Response::error(
@@ -234,7 +260,19 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        self.auth
+            .validate_public_origin_state()
+            .map_err(|_| Response::error(503, "invalid public origin owner"))?;
+        if self.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA && self.auth.has_public_origin_state() {
+            return Err(Response::error(
+                503,
+                "native public origin requires schema 86",
+            ));
+        }
+        if self.schema == 0
+            || self.schema > MAX_SUPPORTED_STATE_SCHEMA
+            || (82..=85).contains(&self.schema)
+        {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
@@ -1027,7 +1065,8 @@ impl State {
             | LOCAL_PKI_CRL_STATE_SCHEMA
             | LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
             | TOKEN_ROLE_STATE_SCHEMA
-            | NAMESPACE_CUSTODY_STATE_SCHEMA => Ok(()),
+            | NAMESPACE_CUSTODY_STATE_SCHEMA
+            | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",

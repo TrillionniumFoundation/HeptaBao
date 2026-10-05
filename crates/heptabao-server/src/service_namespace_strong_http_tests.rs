@@ -2016,3 +2016,325 @@ fn closed_auth_strong_token_check_error_keeps_original_header_priority() -> Test
     );
     Ok(())
 }
+
+fn origin_wire(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: Value,
+) -> Response {
+    let observed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or(Duration::ZERO);
+    let now = observed.as_secs();
+    let _clock = external_pki::PublicationClockScope::enter(observed, std::time::Instant::now());
+    let body = if method == "HELP" {
+        json!({"__heptabao_http_help_request":{"path":path,"query":"","wire_method":"HELP"}})
+    } else {
+        body
+    };
+    service.handle_at_mode(RequestDispatch {
+        method,
+        path,
+        namespace,
+        token,
+        body,
+        now,
+        allow_forward: true,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    })
+}
+
+#[test]
+fn public_origin_closed_auth_complete_ciphertext_and_canonical_floor_survive_consumption_and_reopen()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, token) = bootstrap_unmounted(&mut service)?;
+    write_marker(&mut service, "", &token);
+    assert_eq!(
+        origin_wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain",
+            "",
+            &token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        origin_wire(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/origin-reader",
+            "plain",
+            &token,
+            json!({"policy":"path \"*\" { capabilities = [\"read\", \"update\"] }"})
+        )
+        .status,
+        204
+    );
+    let minted = origin_wire(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        "plain",
+        &token,
+        json!({"policies":["origin-reader"],"no_default_policy":true,"num_uses":2,"ttl":"1h","meta":{"public_marker":"complete-private-origin-owner"}}),
+    );
+    assert_eq!(minted.status, 200);
+    let actor = Zeroizing::new(
+        minted.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("genuine actor")?
+            .to_owned(),
+    );
+    let lookup = origin_wire(
+        &mut service,
+        "GET",
+        "auth/token/lookup-self",
+        "plain",
+        &actor,
+        json!({}),
+    );
+    assert_eq!(lookup.status, 200);
+    let stamp = lookup.body["data"]["issue_time"].clone();
+    assert!(stamp.is_string());
+    assert_eq!(
+        lookup.body["data"]["meta"],
+        json!({"public_marker":"complete-private-origin-owner"})
+    );
+    assert_eq!(
+        origin_wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/plain/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    let state = service.state.as_ref().ok_or("state")?;
+    assert_eq!(state.schema, AUTH_PUBLIC_ORIGIN_STATE_SCHEMA);
+    assert!(
+        state.auth.namespace_is_empty("plain") && !service.namespace_runtime.is_loaded("plain")
+    );
+    let canonical = state.protected_state().map_err(|_| "protected state")?;
+    assert!(canonical.auth.has_public_origin_state());
+    let protected_bytes =
+        owner_store::serialize_owner(&canonical.auth).map_err(|_| "canonical owner")?;
+    assert!(
+        !protected_bytes
+            .windows(b"complete-private-origin-owner".len())
+            .any(|window| window == b"complete-private-origin-owner"),
+        "unloaded metadata is inside the typed ciphertext parcel, never root plaintext auth"
+    );
+    let admitted = service
+        .namespace_runtime
+        .closed_auth_attempt(
+            state,
+            "plain",
+            service.barrier_key.as_deref().ok_or("root key")?,
+            &actor,
+            SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
+            None,
+        )
+        .map_err(|_| "real closed auth admission")?;
+    assert!(admitted.actor().is_ok());
+    assert!(!service.namespace_runtime.is_loaded("plain"));
+    let mut candidate = admitted
+        .candidate(&service.namespace_runtime)
+        .map_err(|_| "closed candidate")?;
+    service
+        .namespace_runtime
+        .prepare(&mut candidate)
+        .map_err(|_| "protected candidate")?;
+    let plan = service
+        .prepare_record_plan(&mut candidate)
+        .map_err(|_| "protected record plan")?;
+    let actual = candidate
+        .protected_state()
+        .map_err(|_| "prepared protected state")?;
+    let full_bytes =
+        owner_store::serialize_owner(&actual.auth).map_err(|_| "prepared protected owner")?;
+    assert_eq!(
+        plan.root.owners[1].digest,
+        crate::state_record_root::digest_owner(&plan.root.address_key(), "auth", &full_bytes)
+            .map_err(|_| "complete auth digest")?
+    );
+    assert!(!service.namespace_runtime.is_loaded("plain"));
+    drop(admitted);
+    // The inspection above never publishes a consumed token. Only the real
+    // bearer classification and commit below may consume its remaining use.
+    let before = service.durable.as_ref().ok_or("durable")?.generation();
+    let response = origin_wire(
+        &mut service,
+        "HELP",
+        "auth/token/lookup-self",
+        "",
+        &actor,
+        json!({}),
+    );
+    assert_eq!(response.status, 404);
+    assert!(response.body.get("auth").is_none() && response.body.get("data").is_none());
+    assert!(service.durable.as_ref().ok_or("durable")?.generation() > before);
+    assert!(!service.namespace_runtime.is_loaded("plain"));
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("live")?
+            .protected_state()
+            .map_err(|_| "canonical origin state")?
+            .auth
+            .has_public_origin_state()
+    );
+    assert_eq!(
+        origin_wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "",
+            &actor,
+            json!({})
+        )
+        .status,
+        403
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        service.state.as_ref().ok_or("restored")?.schema,
+        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("restored")?
+            .protected_state()
+            .map_err(|_| "canonical origin state")?
+            .auth
+            .has_public_origin_state()
+    );
+    assert_eq!(
+        origin_wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "",
+            &actor,
+            json!({})
+        )
+        .status,
+        403
+    );
+    assert!(!service.namespace_runtime.is_loaded("plain"));
+    Ok(())
+}
+
+#[test]
+fn public_origin_independent_assets_restore_exact_stamp_and_empty_map_after_real_unseal()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap_unmounted(&mut service)?;
+    write_marker(&mut service, "", &token);
+    let shares = create(&mut service, "", "barrier", &token)?;
+    unseal(&mut service, "", "barrier", &token, &shares);
+    let minted = origin_wire(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        "barrier",
+        &token,
+        json!({"policies":["default"],"no_default_policy":true,"ttl":"1h","meta":{}}),
+    );
+    assert_eq!(minted.status, 200);
+    assert_eq!(minted.body["auth"]["metadata"], json!({}));
+    let actor = Zeroizing::new(
+        minted.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("native actor")?
+            .to_owned(),
+    );
+    let before = origin_wire(
+        &mut service,
+        "GET",
+        "auth/token/lookup-self",
+        "barrier",
+        &actor,
+        json!({}),
+    );
+    assert_eq!(before.status, 200);
+    let stamp = before.body["data"]["issue_time"].clone();
+    assert!(stamp.is_string());
+    assert_eq!(
+        origin_wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/barrier/seal",
+            "",
+            &token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    assert!(!service.namespace_runtime.is_loaded("barrier"));
+    // Use the same real shares and current owner, with a fresh trusted request
+    // clock. An origin is restored only after the ordinary custody MAC/floors.
+    for (index, share) in shares.iter().take(2).enumerate() {
+        let result = origin_wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/barrier/unseal",
+            "",
+            &token,
+            json!({"key":share.as_str()}),
+        );
+        assert_eq!(result.status, 200);
+        assert_eq!(result.body["data"]["sealed"], index == 0);
+    }
+    assert!(service.namespace_runtime.is_loaded("barrier"));
+    let after = origin_wire(
+        &mut service,
+        "GET",
+        "auth/token/lookup-self",
+        "barrier",
+        &actor,
+        json!({}),
+    );
+    assert_eq!(after.status, 200);
+    assert_eq!(after.body["data"]["meta"], json!({}));
+    assert_eq!(after.body["data"]["issue_time"], stamp);
+    assert_eq!(after.body["data"]["path"], "auth/token/create");
+    assert_eq!(
+        service.state.as_ref().ok_or("live")?.schema,
+        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("live")?
+            .protected_state()
+            .map_err(|_| "canonical origin state")?
+            .auth
+            .has_public_origin_state()
+    );
+    Ok(())
+}

@@ -1022,6 +1022,7 @@ mod owner_tests {
         let mut keys = BatchKeyAuthority::new(100)?;
         let token = keys.seal(
             BatchClaims {
+                public_origin: None,
                 namespace: String::new(),
                 policies: BTreeSet::from(["default".into()]),
                 metadata: BTreeMap::new(),

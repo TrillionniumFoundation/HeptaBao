@@ -78,6 +78,12 @@ impl<'a> CheckedCredential<'a> {
                     "type":"batch", "namespace":claims.namespace(),
                     "entity_id":claims.entity_id().unwrap_or(""), "meta":claims.metadata()
                 });
+                if let Some(origin) = claims.public_origin() {
+                    info["meta"] = origin.lookup_json(claims.metadata());
+                    if let Some(time) = origin.issue_time(claims.issued_at()) {
+                        info["issue_time"] = json!(time);
+                    }
+                }
                 if !claims.bound_cidrs().is_empty() {
                     info["bound_cidrs"] = json!(claims.bound_cidrs());
                 }

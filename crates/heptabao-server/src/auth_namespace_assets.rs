@@ -40,6 +40,9 @@ impl NamespaceAssets {
         {
             return Err(err(503, "namespace auth owner binding rejected"));
         }
+        for token in self.tokens.values() {
+            token.validate_public_origin()?;
+        }
         Ok(())
     }
 }
@@ -136,6 +139,11 @@ impl AuthState {
         assets: NamespaceAssets,
     ) -> Result<(), AuthError> {
         assets.validate(actual)?;
+        if self.public_origin_floor.is_none()
+            && assets.tokens.values().any(Token::has_public_origin)
+        {
+            return Err(err(503, "namespace public origin floor is missing"));
+        }
         // Complete collision checks precede every mutation, so a rejected
         // parcel cannot partially replace tokens, policies or auth providers.
         if assets.tokens.keys().any(|id| self.tokens.contains_key(id))
@@ -309,6 +317,75 @@ mod tests {
             after.as_slice() == restored.as_slice(),
             "failed restoration cannot partially change authority"
         );
+        Ok(())
+    }
+    #[test]
+    fn public_origin_namespace_full_partition_requires_retained_floor_before_attach() -> TestResult
+    {
+        let (mut state, root) = AuthState::bootstrap(100)?;
+        state.initialize_fresh_namespace_auth("custody")?;
+        let actor = state.authenticate_read_only(&root, 100)?;
+        let minted = state
+            .handle(
+                Some(&actor),
+                "custody",
+                "POST",
+                "auth/token/create",
+                &json!({"policies":["default"],"no_default_policy":true,"meta":{}}),
+                100,
+            )?
+            .ok_or("actual token producer")?;
+        let bearer = Zeroizing::new(
+            minted.body["auth"]["client_token"]
+                .as_str()
+                .ok_or("actual native bearer")?
+                .to_owned(),
+        );
+        assert!(state.has_public_origin_state());
+        let original = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| "complete auth owner")?;
+        let assets = state.detach_namespace("custody")?;
+        assert!(state.public_origin_floor.is_some() && state.namespace_is_empty("custody"));
+        let bytes = crate::secret_serde::to_vec(&assets, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| "complete namespace owner")?;
+        let restored: NamespaceAssets = serde_json::from_slice(&bytes)?;
+        let mut missing_floor = state.clone();
+        missing_floor.public_origin_floor = None;
+        let before =
+            crate::secret_serde::to_vec(&missing_floor, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| "missing floor before")?;
+        assert!(
+            missing_floor
+                .attach_namespace("custody", restored.clone())
+                .is_err()
+        );
+        assert_eq!(
+            crate::secret_serde::to_vec(&missing_floor, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| "missing floor after")?
+                .as_slice(),
+            before.as_slice()
+        );
+        state.attach_namespace("custody", restored)?;
+        state.validate_public_origin_state()?;
+        assert_eq!(
+            crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| "restored auth")?
+                .as_slice(),
+            original.as_slice()
+        );
+        let genuine = state.authenticate_read_only(&bearer, 100)?;
+        assert_eq!(genuine.namespace(), "custody");
+        let lookup = state
+            .handle(
+                Some(&genuine),
+                "custody",
+                "GET",
+                "auth/token/lookup-self",
+                &json!({}),
+                100,
+            )?
+            .ok_or("actual lookup")?;
+        assert_eq!(lookup.body["data"]["meta"], json!({}));
         Ok(())
     }
 }

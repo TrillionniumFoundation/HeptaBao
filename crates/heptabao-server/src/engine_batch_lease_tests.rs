@@ -12,6 +12,7 @@ fn batch_owner(
     ttl: u64,
 ) -> std::result::Result<LeaseOwner, Box<dyn std::error::Error>> {
     let claims = BatchClaims {
+            public_origin: None,
         namespace: namespace.into(),
         policies: BTreeSet::from(["default".into()]),
         metadata: BTreeMap::new(),

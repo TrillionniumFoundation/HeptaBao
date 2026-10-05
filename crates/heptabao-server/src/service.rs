@@ -70,7 +70,8 @@ const LOCAL_PKI_CRL_STATE_SCHEMA: u32 = 78;
 const LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA: u32 = 79;
 const TOKEN_ROLE_STATE_SCHEMA: u32 = 80;
 const NAMESPACE_CUSTODY_STATE_SCHEMA: u32 = 81;
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = NAMESPACE_CUSTODY_STATE_SCHEMA;
+const AUTH_PUBLIC_ORIGIN_STATE_SCHEMA: u32 = 86;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = AUTH_PUBLIC_ORIGIN_STATE_SCHEMA;
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
 const MAX_OPERATIONS: usize = 32_000;
 const MAX_AUDIT_BYTES: u64 = 32 * 1024 * 1024;
@@ -88,6 +89,11 @@ mod database;
 mod epoch_activation;
 #[path = "service_external_pki.rs"]
 mod external_pki;
+
+/// Read-only access to the original trusted clock scope, never an authority.
+pub(crate) fn public_origin_observation() -> Option<Duration> {
+    external_pki::public_origin_observation()
+}
 #[path = "service_external_transit.rs"]
 mod external_transit;
 #[path = "service_ha_activation.rs"]
@@ -8194,3 +8200,7 @@ mod pki_ocsp_service_tests;
 #[cfg(test)]
 #[path = "service_token_roles_tests.rs"]
 mod token_roles_tests;
+
+#[cfg(test)]
+#[path = "service_public_origin_tests.rs"]
+mod public_origin_tests;

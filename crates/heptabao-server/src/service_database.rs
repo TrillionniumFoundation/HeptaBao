@@ -4309,6 +4309,7 @@ mod tests {
         let token = authority
             .seal(
                 BatchClaims {
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::new(),
                     metadata: BTreeMap::new(),
@@ -4896,6 +4897,7 @@ mod tests {
             });
             let raw = authority.seal(
                 BatchClaims {
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),
                     metadata: BTreeMap::new(),
@@ -4995,6 +4997,7 @@ mod tests {
             let mut authority = BatchKeyAuthority::new(100)?;
             let raw = authority.seal(
                 BatchClaims {
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),
                     metadata: BTreeMap::new(),
@@ -5101,6 +5104,7 @@ mod tests {
             let mut authority = BatchKeyAuthority::new(100)?;
             let raw = authority.seal(
                 BatchClaims {
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),
                     metadata: BTreeMap::new(),
