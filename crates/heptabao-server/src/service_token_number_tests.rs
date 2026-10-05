@@ -44,7 +44,8 @@ path "auth/token/lookup-self" { capabilities = ["read"] }"#,
             "meta-number-acl",
             r#"path "auth/token/create" {
  capabilities = ["update", "sudo"]
- allowed_parameters = { "policies" = ["reader-meta"] "no_default_policy" = [true] "meta" = [{ "n" = 1 }] }
+ allowed_parameters = { "policies" = ["reader-meta"] "no_default_policy" = [true] "meta" = [] }
+ denied_parameters = { "meta" = [{ "n" = "1" }] }
 }"#,
         ),
     ] {
@@ -157,8 +158,10 @@ path "auth/token/lookup-self" { capabilities = ["read"] }"#,
         403
     );
 
-    // The ACL sees the actual original numeric map. Restoring string spelling
-    // before admission would turn this authorized numeric request into 403.
+    // HTTP and HCL numeric types never DeepEqual in the pinned ACL contract.
+    // A denied string map, plus any-value allowance, distinguishes the actual
+    // numeric input from its backend string conversion. Converting before ACL
+    // would deny the numeric positive; the genuine string negative stays 403.
     let numeric = metadata_actor(
         &mut service,
         &root,
