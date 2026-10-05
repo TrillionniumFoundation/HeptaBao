@@ -330,6 +330,7 @@ impl Service {
             // This is exclusively a public negative storage observation. Never
             // reuse the handler/audit body or stamp an index; it proves no grant.
             return Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 503,
                 body: json!({"errors":[notice.error],

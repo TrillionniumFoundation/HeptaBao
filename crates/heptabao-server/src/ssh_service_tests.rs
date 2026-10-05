@@ -955,6 +955,7 @@ fn terminal_clock_commit_failure_erases_a_successful_private_response() -> TestR
         100,
         Some(clock),
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 200,
             body: json!({"auth":{"client_token":"withheld-terminal-credential"}}),

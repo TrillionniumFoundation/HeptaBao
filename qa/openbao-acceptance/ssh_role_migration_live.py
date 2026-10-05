@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Scoped real OpenBao 2.6.2 -> HeptaBao SSH OTP role migration rehearsal."""
+"""Scoped real OpenBao 2.6.2/2.7.0 -> HeptaBao SSH OTP role migration rehearsal."""
 from __future__ import annotations
 import contextlib, importlib.util, io, json, os, shutil, socket, tempfile
 from pathlib import Path
 from bao_http import BaoError, Client, SafeArgumentParser, private_write
 import migrate_ssh_roles as migration
-from official_openbao_launcher import BINARY_SHA256, file_digest, start_oracle, stop_oracle
+from official_openbao_launcher import (SUPPORTED_VERSIONS, VERSION, file_digest,
+                                      start_oracle, stop_oracle, verify_selected_oracle)
 from heptabao.private_state import StateDirectory
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -16,7 +17,7 @@ def tool(args):
     if code: raise BaoError("ssh_role_live_cli_"+result.get("reason","failed"))
     return result
 
-def run(binary, output):
+def run(binary, output, *, oracle_version=VERSION):
     checks=[]
     def check(name, ok):
         if not ok: raise BaoError("ssh_role_live_"+name)
@@ -33,8 +34,9 @@ def run(binary, output):
               "cidr_list":"127.0.0.0/8","exclude_cidr_list":"127.1.0.0/16","port":22}
         try:
             with socket.socket() as s: s.bind(("127.0.0.1",0)); port=s.getsockname()[1]
-            oracle=start_oracle(port)
+            oracle=start_oracle(port, version=oracle_version)
             source=Client(oracle["address"],oracle["ca_file"],Path(oracle["token_file"]).read_text().strip())
+            oracle_identity=verify_selected_oracle(oracle, source.health(), version=oracle_version)
             check("source_mount",source.request("POST",f"/v1/sys/mounts/{mount}",{"type":"ssh"}).status==204)
             check("source_role",source.request("POST",f"/v1/{mount}/roles/{name}",role).status==204)
             src=migration.read_role(source,mount,name)
@@ -68,7 +70,8 @@ def run(binary, output):
             check("source_lease_owned",source.request("POST","/v1/sys/leases/lookup",{"lease_id":lease}).status==200)
             result={"schema":"heptabao.ssh-otp-role-migration-live.v1","status":"passed_scoped_ssh_role_transfer",
                 "checks":checks,"count":len(checks),"candidate_binary_sha256":file_digest(binary),
-                "oracle_binary_sha256":BINARY_SHA256,"official_openbao_version":source.health()["version"],
+                "oracle_binary_sha256":oracle_identity["binary_sha256"],
+                "oracle_version":oracle_version,"oracle_storage_backend":oracle_identity["storage"],"official_openbao_version":source.health()["version"],
                 "issued_credentials_transferred":False,"lease_state_transferred":False,"ca_authority_transferred":False,
                 "full_asset_migration":False,"source_cutover":False,"cutover_authority":False,
                 "rollback_authority":False,"independent_qualification":False}
@@ -78,10 +81,10 @@ def run(binary, output):
             if oracle is not None: stop_oracle(oracle); shutil.rmtree(oracle["root"],ignore_errors=True)
 
 def main(argv=None):
-    p=SafeArgumentParser(description=__doc__); p.add_argument("--binary",type=Path,required=True); p.add_argument("--output",type=Path,required=True); a=p.parse_args(argv)
+    p=SafeArgumentParser(description=__doc__); p.add_argument("--binary",type=Path,required=True); p.add_argument("--output",type=Path,required=True); p.add_argument("--oracle-version",choices=SUPPORTED_VERSIONS,default=VERSION); a=p.parse_args(argv)
     if os.path.lexists(a.output): raise BaoError("output_already_exists")
     with StateDirectory(a.output.absolute().parent): pass
-    r=run(a.binary.resolve(),a.output); print(json.dumps({"status":r["status"],"count":r["count"],"full_asset_migration":False})); return 0
+    r=run(a.binary.resolve(),a.output,oracle_version=a.oracle_version); print(json.dumps({"status":r["status"],"count":r["count"],"full_asset_migration":False})); return 0
 if __name__=="__main__":
     try: raise SystemExit(main())
     except FileNotFoundError: print(json.dumps({"status":"blocked_prerequisite","full_asset_migration":False})); raise SystemExit(77) from None

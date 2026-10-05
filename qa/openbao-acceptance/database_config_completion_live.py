@@ -123,7 +123,11 @@ def check_case(binary, root, case):
         if case == "seal":
             require(instance.call("POST", "sys/unseal", {"key": unseal_key})[0] == 200, "unseal_for_readback")
         elif case == "namespace_seal":
-            require(instance.call("POST", "sys/namespaces/team/unseal", {})[0] == 204, "namespace_unseal_for_readback")
+            require(instance.call("POST", "sys/namespaces/team/unseal", {})[0] == 500,
+                    "empty_key_cannot_restore_inherited_namespace")
+            require(instance.call("POST", "sys/seal", {})[0] == 204, "inherited_global_seal_for_readback")
+            require(instance.call("POST", "sys/unseal", {"key": unseal_key})[0] == 200,
+                    "actual_global_key_for_namespace_readback")
         read_status, observed = instance.call("GET", path, namespace=namespace)
         expected_url = "plugin://replacement" if positive else "plugin://original"
         preserved = read_status == 200 and observed.get("data", {}).get("connection_url") == expected_url

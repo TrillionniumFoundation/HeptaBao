@@ -252,6 +252,18 @@ impl PluginResponseAuthority {
         }
     }
 
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pub(super) fn observe_candidate_time_changed(
+        &self,
+        state: &mut State,
+    ) -> Result<bool, Response> {
+        let time = state.auth.token_api_observed_time(self.token_time()?);
+        state
+            .auth
+            .observe_token_api_time(time)
+            .map_err(|error| Response::error(error.status, &error.message))
+    }
+
     pub(super) fn observe_candidate_time(
         &self,
         state: &mut State,
@@ -262,6 +274,47 @@ impl PluginResponseAuthority {
             .observe_token_api_time(time)
             .map_err(|error| Response::error(error.status, &error.message))?;
         Ok(time)
+    }
+
+    pub(super) fn validate_live_auth(&self, auth: &AuthState) -> Result<(), Response> {
+        if self.deadline_expired() {
+            return Err(Response::error(
+                503,
+                "SDK original deadline expired before publication",
+            ));
+        }
+        let time = self.token_time()?;
+        auth.authorize_request_parameters_observed(
+            &self.principal,
+            &self.namespace,
+            &self.method,
+            &self.path,
+            &self.body,
+            time,
+        )
+        .map_err(|e| Response::error(e.status, &e.message))?;
+        let result = if self.sudo {
+            auth.authorize_sudo_request_observed(
+                &self.principal,
+                &self.namespace,
+                &self.path,
+                self.capability,
+                time,
+            )
+        } else {
+            auth.authorize_request_observed(
+                &self.principal,
+                &self.namespace,
+                &self.path,
+                self.capability,
+                time,
+            )
+        };
+        result.map_err(|e| Response::error(e.status, &e.message))?;
+        if self.deadline_expired() {
+            return Err(Response::error(503, "SDK publication deadline expired"));
+        }
+        Ok(())
     }
 
     pub(super) fn deadline_expired(&self) -> bool {
@@ -343,6 +396,7 @@ pub(super) struct PluginAuthPlan {
 struct PluginAuthResponseContext {
     namespace: String,
     namespace_incarnation: Option<u64>,
+    namespace_delivery_binding: namespace_runtime::DeliveryBinding,
     cluster_id: String,
     activation_nonce: String,
     deadline: Option<std::time::Instant>,
@@ -353,6 +407,10 @@ impl PluginAuthResponseContext {
         Self {
             namespace: request.namespace.to_owned(),
             namespace_incarnation: state.namespaces.incarnation(request.namespace),
+            namespace_delivery_binding: namespace_runtime::DeliveryBinding::capture(
+                state,
+                request.namespace,
+            ),
             cluster_id: state.cluster_id.clone(),
             activation_nonce: activation_nonce.to_owned(),
             deadline: crate::request_deadline::current(),
@@ -1414,6 +1472,7 @@ impl Service {
         }
         self.state = Some(candidate);
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 204,
             body: Value::Null,
@@ -1636,6 +1695,13 @@ impl Service {
         if state.cluster_id != context.cluster_id
             || state.namespaces.incarnation(&context.namespace) != context.namespace_incarnation
             || binding.namespace() != context.namespace
+            || (state
+                .namespaces
+                .inherited_owner(&context.namespace)
+                .is_some()
+                && !self.namespace_runtime.is_loaded(&context.namespace))
+            || namespace_runtime::DeliveryBinding::capture(state, &context.namespace)
+                != context.namespace_delivery_binding
         {
             return Err(Response::error(
                 503,
@@ -1690,13 +1756,9 @@ impl Service {
             Ok(response) => response,
             Err(error) => return Response::error(error.status, &error.message),
         };
-        if let Err(error) = Self::finish_identity_response(
-            &mut state.auth,
-            &mut state.engines,
-            &mut issued,
-            &namespace,
-            now,
-        ) {
+        if let Err(error) =
+            Self::finish_state_identity_response(&mut state, &mut issued, &namespace, now)
+        {
             erase_json(&mut issued.body);
             return error;
         }
@@ -1711,6 +1773,7 @@ impl Service {
             return error;
         }
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: issued.status,
             body: issued.body,

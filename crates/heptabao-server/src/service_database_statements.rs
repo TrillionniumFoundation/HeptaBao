@@ -501,6 +501,7 @@ impl DatabaseState {
 
 fn statement_failure(message: &str, lease_id: &str) -> Response {
     Response {
+        response_headers: Default::default(),
         consistency_index: None,
         status: 503,
         body: json!({

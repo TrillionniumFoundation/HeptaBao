@@ -7,7 +7,9 @@
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::marker::PhantomData;
-use std::os::fd::{AsFd, AsRawFd};
+use std::os::fd::AsFd;
+#[cfg(target_os = "linux")]
+use std::os::fd::AsRawFd;
 use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
 use std::os::unix::process::CommandExt;
 use std::path::{Path, PathBuf};
@@ -123,6 +125,17 @@ impl SdkBackendHost {
         config: &SdkLaunch,
         storage: &mut dyn SdkStorage,
     ) -> Result<Self, SdkBridgeError> {
+        Self::launch_before(config, storage, Instant::now() + config.timeout)
+    }
+
+    pub fn launch_before(
+        config: &SdkLaunch,
+        storage: &mut dyn SdkStorage,
+        original_deadline: Instant,
+    ) -> Result<Self, SdkBridgeError> {
+        if Instant::now() >= original_deadline {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
         if config.timeout.is_zero()
             || config.timeout > Duration::from_secs(30)
             || config.default_ttl_seconds > config.max_ttl_seconds
@@ -163,17 +176,54 @@ impl SdkBackendHost {
         {
             return Err(SdkBridgeError::BeforeEntry);
         }
-        let socket_alias = format!(
-            "/proc/{}/fd/{}",
-            std::process::id(),
-            socket_directory.as_raw_fd()
-        );
+        #[cfg(target_os = "linux")]
+        let socket_alias = {
+            let proc_self =
+                std::fs::read_link("/proc/self").map_err(|_| SdkBridgeError::BeforeEntry)?;
+            if proc_self.components().count() != 1
+                || proc_self
+                    .to_str()
+                    .is_none_or(|s| s.is_empty() || !s.bytes().all(|b| b.is_ascii_digit()))
+            {
+                return Err(SdkBridgeError::BeforeEntry);
+            }
+            format!(
+                "/proc/{}/fd/{}",
+                proc_self.display(),
+                socket_directory.as_raw_fd()
+            )
+        };
+        #[cfg(target_os = "macos")]
+        let socket_alias = ".".to_owned();
+        #[cfg(target_os = "linux")]
         let companion = OwnedExecutableImage::open(&config.companion, config.companion_sha256)
             .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        #[cfg(target_os = "linux")]
         let plugin = OwnedExecutableImage::open(&config.plugin, config.plugin_sha256)
             .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        #[cfg(target_os = "macos")]
+        let companion = OwnedExecutableImage::open_in(
+            &config.companion,
+            config.companion_sha256,
+            &config.socket_directory,
+        )
+        .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        #[cfg(target_os = "macos")]
+        let plugin = OwnedExecutableImage::open_in(
+            &config.plugin,
+            config.plugin_sha256,
+            &config.socket_directory,
+        )
+        .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        #[cfg(target_os = "macos")]
+        {
+            companion
+                .verify()
+                .map_err(|_| SdkBridgeError::BeforeEntry)?;
+            plugin.verify().map_err(|_| SdkBridgeError::BeforeEntry)?;
+        }
         let log = private_log(&config.private_log)?;
-        let deadline = Instant::now() + config.timeout;
+        let deadline = original_deadline.min(Instant::now() + config.timeout);
         let mut command = companion.command();
         command
             .env_clear()
@@ -182,7 +232,34 @@ impl SdkBackendHost {
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::from(log));
+        #[cfg(target_os = "linux")]
         heptabao_linux_parent_death::bind_owner_death(&mut command);
+        #[cfg(target_os = "macos")]
+        heptabao_linux_parent_death::bind_private_directory(&mut command, &socket_directory)
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        #[cfg(target_os = "macos")]
+        let owned_images = {
+            let cfd = heptabao_linux_parent_death::inherit_owned_file(
+                &mut command,
+                companion.original_file(),
+            )
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+            let pfd = heptabao_linux_parent_death::inherit_owned_file(
+                &mut command,
+                plugin.original_file(),
+            )
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+            let (cdev, cino, csize) = companion.cleanup_identity();
+            let (pdev, pino, psize) = plugin.cleanup_identity();
+            let images = json!([
+                {"role":"companion","path":companion.descriptor_path(),"fd":cfd,
+                 "device":cdev,"inode":cino,"bytes":csize,"sha256":hex_encode(&config.companion_sha256)},
+                {"role":"plugin","path":plugin.descriptor_path(),"fd":pfd,
+                 "device":pdev,"inode":pino,"bytes":psize,"sha256":hex_encode(&config.plugin_sha256)}
+            ]);
+            command.env("HBP_SDK_OWNED_IMAGES", images.to_string());
+            images
+        };
         let child = command.spawn().map_err(|_| SdkBridgeError::BeforeEntry)?;
         let mut pending = PendingChild(Some(child));
         let child = pending.0.as_mut().ok_or(SdkBridgeError::OutcomeUnknown)?;
@@ -212,6 +289,12 @@ impl SdkBackendHost {
             "plugin":host._plugin.descriptor_path(),"args":config.plugin_args,
             "socket_dir":socket_alias,"timeout_ms":config.timeout.as_millis(),
             "default_ttl_seconds":config.default_ttl_seconds,"max_ttl_seconds":config.max_ttl_seconds});
+        #[cfg(target_os = "macos")]
+        let setup = {
+            let mut setup = setup;
+            setup["owned_images"] = owned_images;
+            setup
+        };
         host.send(&setup, deadline)?;
         let ready = host.exchange(storage, "ready", deadline)?;
         if ready.get("backend_type").and_then(Value::as_str) != Some("secret") {
@@ -227,6 +310,26 @@ impl SdkBackendHost {
         data: Value,
         storage: &mut dyn SdkStorage,
     ) -> Result<Option<Value>, SdkBridgeError> {
+        self.handle_request_before(
+            operation,
+            path,
+            data,
+            storage,
+            Instant::now() + self.timeout,
+        )
+    }
+
+    pub fn handle_request_before(
+        &mut self,
+        operation: &str,
+        path: &str,
+        data: Value,
+        storage: &mut dyn SdkStorage,
+        original_deadline: Instant,
+    ) -> Result<Option<Value>, SdkBridgeError> {
+        if Instant::now() >= original_deadline {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
         if self.fenced {
             return Err(SdkBridgeError::Fenced);
         }
@@ -241,7 +344,7 @@ impl SdkBackendHost {
             return Err(SdkBridgeError::BeforeEntry);
         }
         self.call = self.call.checked_add(1).ok_or(SdkBridgeError::Fenced)?;
-        let deadline = Instant::now() + self.timeout;
+        let deadline = original_deadline.min(Instant::now() + self.timeout);
         let request = json!({"version":1,"kind":"request","call":self.call,
             "operation":operation,"path":path,"data":data});
         let result = (|| {

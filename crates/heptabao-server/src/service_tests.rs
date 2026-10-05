@@ -3287,6 +3287,7 @@ fn http_request_deadline_scope_restores_and_expired_request_cannot_initialize()
         assert!(matches!(
             response,
             RequestExecution::Complete(Response {
+                response_headers: _,
                 consistency_index: None,
                 status: 503,
                 ..
@@ -3351,6 +3352,7 @@ fn original_http_deadline_bounds_a_contended_ha_lock_without_poisoning_next_requ
             false,
         ),
         RequestExecution::Complete(Response {
+            response_headers: _,
             consistency_index: None,
             status: 200,
             ..

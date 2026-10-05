@@ -1,8 +1,8 @@
 //! Real SDK callbacks to HeptaBao's encrypted DurableService and mutation ledger.
 //! The owner and authorization inputs are explicit test fixtures; no server API
 //! catalog, namespace authority, seal/HA fencing or plugin ABI qualification.
-#[cfg(target_os = "linux")]
-mod linux_fixture {
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+mod unix_fixture {
     use std::error::Error;
     use std::fs::OpenOptions;
     use std::io::Write;
@@ -504,12 +504,12 @@ mod linux_fixture {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    linux_fixture::main()
+    unix_fixture::main()
 }
 
-#[cfg(not(target_os = "linux"))]
+#[cfg(not(any(target_os = "linux", target_os = "macos")))]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    Err("this native SDK fixture requires Linux".into())
+    Err("this native SDK fixture requires Linux or Darwin".into())
 }

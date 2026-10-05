@@ -319,7 +319,7 @@ Current named source scenarios:
 - `ha_commit_rejects_owner_binding_for_different_operation_or_state` — `crates/heptabao-server/src/ha.rs`.
 - `owner_plan_publication_binding_covers_operation_and_logical_state` — `crates/heptabao-server/src/service_owner_store.rs`.
 
-Run `cargo +1.99.0 test --locked -p heptabao-server --all-targets`. These are source anchors; a current test receipt is separate. `qa/openbao-acceptance/replay_epoch_ha.py` is the exact-binary three-process mTLS/Raft lifecycle fixture: it retires an epoch, kills the acknowledged leader, forces a former follower to become authoritative and write, rejoins and re-elects the old leader, then repeats retirement/failover. A checked-in fixture is not a passing receipt; exact-head CI must execute it.
+Run `cargo +1.98.0 test --locked -p heptabao-server --all-targets`. These are source anchors; a current test receipt is separate. `qa/openbao-acceptance/replay_epoch_ha.py` is the exact-binary three-process mTLS/Raft lifecycle fixture: it retires an epoch, kills the acknowledged leader, forces a former follower to become authoritative and write, rejoins and re-elects the old leader, then repeats retirement/failover. A checked-in fixture is not a passing receipt; exact-head CI must execute it.
 
 Run `cargo test --locked -p heptabao-server` and the workspace gates from the current README. Tests cover real AEAD context/tamper rejection, canonical HTTP framing, auth TTL/usage/revocation, RFC crypto vectors, KV CAS/namespace isolation, partial batch semantics and service transaction/response-audit failure. `tests/repository/test_auth_capability_boundary_v2_6.py` additionally rejects a public raw auth module or any public `Service` signature that exposes `Principal` or `AuthState`. Run `python qa/single-node/smoke.py --binary /absolute/target/debug/heptabao-server --work-dir /new/absolute/private-directory` for a real TLS process, initialization/sealing, invalid credentials, durable finite-use denial and SIGKILL/restart recovery with ciphertext/redacted-audit checks. `qa/openbao-acceptance/acceptance.py` separately executes named KV/token/Transit cases against an independent OpenBao binary. Current results belong in `docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md`; commands listed here are requirements, not implied passes.
 
@@ -437,18 +437,8 @@ explicit deployment transition, not transport-error negotiation or retry in a
 weaker format. Each response must use its admitted request's format; current
 senders reject legacy responses even while their inbound listener remains dual.
 
-`ha_rolling_upgrade.py` requires `--base-source-sha`, bound in CI to the actual
-clean base worktree and `PR_BASE`, together with the exact base executable digest.
-Only reviewed immutable sources select a wire profile: `55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18`
-selects `legacy-v1`; `421c19794fa4f772edb9cde7dcc0db68362c1717` and
-`8c1e43718c30ce5185c55b258c0460bd48936a2a` select `strict-current`.
-An unknown source or a conflicting explicit `--base-wire-profile`
-fails before cluster launch. The source claim is bound by the CI build, not inferred
-from startup errors or protocol retries. The legacy profile exercises every sender
-phase and receiver retirement above; the strict-current profile keeps both legacy
-flags absent during upgrades. Both require mixed-binary writes/readback, strict
-restarts and replay retirement. Each report names its source, binary digest and
-profile; a current-profile pass does not establish historical bridge coverage. The Rust
+`ha_rolling_upgrade.py` exercises writes and readback through every sender phase,
+then strict receiver retirement, replay retirement and restart. The Rust
 `peer_wire_upgrade` tests enumerate all directed links during each transition,
 preserve the historical omitted-field behavior, reject invalid policy, and
 retain strict legacy and foreign-cluster rejection. Running binary evidence is
@@ -631,7 +621,7 @@ ambiguous merge lineage and capacity overflow reject authorization. Service
 state size and existing transaction/audit limits still apply. The general
 performance profile is not upgraded by these pilot bounds.
 
-Run `cargo +1.99.0 test --locked -p heptabao-server --lib identity_` together with
+Run `cargo +1.98.0 test --locked -p heptabao-server --lib identity_` together with
 the complete workspace and real TLS/HA suites. `identity_service_tests.rs` names
 the actual caller tests. External-group membership synchronization, templated
 ACLs, broader subject formats, full MFA/OIDC, migration and destructive HA

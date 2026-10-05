@@ -1076,6 +1076,7 @@ impl HaProcess {
             return Err("HA forwarding deadline exceeded; outcome may be committed".into());
         }
         Ok(Response {
+            response_headers: std::mem::take(&mut response.response_headers),
             consistency_index: response.consistency_index.and_then(|index| {
                 crate::http::consistency::IndexValue::for_raft(&self.cluster_id, index).wire()
             }),
@@ -1141,12 +1142,26 @@ impl HaProcess {
         if targets.is_empty() {
             return Err("HA cluster has no alternate voter".into());
         }
+        let original_deadline = crate::request_deadline::current();
         self.runtime.block_on(async {
             for target in targets {
-                if node.transfer_leadership(target).await.is_err() {
+                let deadline = original_deadline
+                    .map(tokio::time::Instant::from_std)
+                    .map_or_else(
+                        || tokio::time::Instant::now() + Duration::from_secs(3),
+                        |original| {
+                            original.min(tokio::time::Instant::now() + Duration::from_secs(3))
+                        },
+                    );
+                if tokio::time::Instant::now() >= deadline {
+                    return Err("HA leadership transfer original deadline elapsed".into());
+                }
+                if !tokio::time::timeout_at(deadline, node.transfer_leadership(target))
+                    .await
+                    .is_ok_and(|result| result.is_ok())
+                {
                     continue;
                 }
-                let deadline = tokio::time::Instant::now() + Duration::from_secs(3);
                 loop {
                     if let Some(leader) = node.current_leader().await
                         && leader != local

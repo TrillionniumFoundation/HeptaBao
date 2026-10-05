@@ -47,16 +47,22 @@ def run_tool(arguments, expected_code=0):
 
 
 class LoseOneAcknowledgement:
-    """Every request reaches real HTTPS; discard one successful data-write result."""
-    def __init__(self, client):
-        self.client, self.discarded = client, False
+    """Every request reaches real HTTPS; discard one selected successful write result."""
+    def __init__(self, client, *, data_path=None, metadata_path=None):
+        self.client, self.discarded, self.data_path = client, False, data_path
+        self.metadata_path, self.selected_metadata_requests = metadata_path, 0
 
     def __getattr__(self, name):
         return getattr(self.client, name)
 
     def request(self, method, path, payload=None):
+        selected_metadata = method == "POST" and self.metadata_path is not None and path == self.metadata_path
+        if selected_metadata:
+            self.selected_metadata_requests += 1
         response = self.client.request(method, path, payload)
-        if not self.discarded and method == "POST" and "/data/" in path and response.status == 200:
+        selected_data = (self.metadata_path is None and method == "POST" and "/data/" in path
+                         and response.status == 200 and (self.data_path is None or path == self.data_path))
+        if not self.discarded and (selected_data or (selected_metadata and response.status == 204)):
             self.discarded = True
             raise BaoError("transport_outcome_unknown")
         return response
@@ -127,7 +133,8 @@ def run(binary, launcher_path, work_dir, oracle_port, *, oracle_version=VERSION)
         for offset, key in enumerate(keys):
             stage = "source_metadata_fixture"
             migration.expect(source.request("POST", migration.api(source_mount, "metadata", key),
-                {"custom_metadata": {"purpose": "synthetic-migration-only"}, "max_versions": 10, "cas_required": True}), (204,))
+                {"custom_metadata": {"purpose": "synthetic-migration-only"}, "max_versions": 10, "cas_required": True,
+                 "metadata_cas_required": True, "metadata_cas": 0}), (204,))
             for version in range(1, 4 - offset):
                 stage = "source_version_fixture"
                 value = {"synthetic": secrets.token_hex(16), "generation": version,
@@ -225,6 +232,8 @@ def run(binary, launcher_path, work_dir, oracle_port, *, oracle_version=VERSION)
         check("target_sigkill_preserves_all_versions", results["after_sigkill"]["objects_already_verified"] == len(keys))
         stage = "checkpoint_ack_loss"
         mount(target, "resumed")
+        migration.expect(target.request("POST", "/v1/resumed/config",
+                                        {"metadata_cas_required": True}), (204,))
         single_file = work_dir / "single-key.json"
         private_write(single_file, [keys[0]])
         resume_file = work_dir / "resume-checkpoint.json"
@@ -319,12 +328,40 @@ def run(binary, launcher_path, work_dir, oracle_port, *, oracle_version=VERSION)
                 migration.expect(target.request("POST", migration.api("secret", "data", record["key"]),
                     {"data": {"synthetic_post_cutover": secrets.token_hex(16), "generation": version},
                      "options": {"cas": version - 1}}))
-        post_cutover = [migration.snapshot(target, "secret", key) for key in keys]
+        changed_custom_metadata = {"purpose": "synthetic-post-cutover", "generation": "metadata-only",
+                                   "new-field": "observed-in-real-target"}
+        metadata_before_change = migration.read_metadata(target, "secret", keys[0])
+        check("forward_copy_keeps_original_metadata_cas_requirement",
+              all(migration.read_metadata(target, "secret", record["key"])["metadata_cas_required"]
+                  == record["source_metadata"]["metadata_cas_required"] for record in original))
+        for label, payload in [("missing", {"custom_metadata": changed_custom_metadata}),
+                               ("stale", {"custom_metadata": changed_custom_metadata, "metadata_cas": 0})]:
+            check("post_cutover_target_metadata_cas_" + label + "_has_no_effect",
+                  target.request("POST", migration.api("secret", "metadata", keys[0]), payload).status == 400
+                  and migration.read_metadata(target, "secret", keys[0]) == metadata_before_change)
+        migration.expect(target.request("POST", migration.api("secret", "metadata", keys[0]),
+                                        {"custom_metadata": changed_custom_metadata,
+                                         "metadata_cas": metadata_before_change["current_metadata_version"]}), (204,))
+        check("post_cutover_existing_custom_metadata_changed_with_source_stopped",
+              oracle["process"].poll() is not None
+              and migration.read_metadata(target, "secret", keys[0])["custom_metadata"] == changed_custom_metadata)
+        new_key = "synthetic/new-after-cutover"
+        migration.expect(target.request("POST", migration.api("secret", "metadata", new_key),
+                         {"custom_metadata": {"purpose": "synthetic-new-after-cutover"},
+                          "max_versions": 10, "cas_required": True}), (204,))
+        for version in range(1, 3):
+            migration.expect(target.request("POST", migration.api("secret", "data", new_key),
+                             {"data": {"synthetic_new": secrets.token_hex(16), "generation": version},
+                              "options": {"cas": version - 1}}))
+        rollback_keys = keys + [new_key]
+        rollback_keys_file = work_dir / "post-cutover-keys.json"
+        private_write(rollback_keys_file, rollback_keys)
+        post_cutover = [migration.snapshot(target, "secret", key) for key in rollback_keys]
         check("post_cutover_appends_observed_only_with_source_stopped", oracle["process"].poll() is not None)
         reverse_export = work_dir / "synthetic-post-cutover-export.json"
         results["post_cutover_export"] = run_tool([
             "export", "--source-prefix", "HB_TARGET", "--source-mount", "secret",
-            "--keys-file", str(keys_file), "--export-file", str(reverse_export),
+            "--keys-file", str(rollback_keys_file), "--export-file", str(reverse_export),
             "--apply", "--source-writes-frozen", "--allow-plaintext-export"])
         check("post_cutover_export_is_private", reverse_export.stat().st_mode & 0o777 == 0o600)
 
@@ -339,11 +376,22 @@ def run(binary, launcher_path, work_dir, oracle_port, *, oracle_version=VERSION)
                 "rollback_source_same_root_preserves_original_history",
                 migration.snapshot(source, source_mount, key) == record,
             )
+        check("rollback_new_key_absent_in_original_source",
+              migration.read_metadata(source, source_mount, new_key, absent_ok=True) is None)
         stage = "rollback_append_new_versions"
         rollback_checkpoint = work_dir / "rollback-append-checkpoint.json"
         rollback_args = ["import", "--target-prefix", "HB_SOURCE", "--target-mount", source_mount,
-                         "--export-file", str(reverse_export), "--append-verified-prefix"]
+                         "--export-file", str(reverse_export), "--append-verified-prefix",
+                          "--allow-custom-metadata-update"]
+        unapproved_args = [arg for arg in rollback_args if arg != "--allow-custom-metadata-update"]
+        results["rollback_without_metadata_opt_in"] = run_tool(unapproved_args, expected_code=2)
+        check("rollback_custom_metadata_update_requires_explicit_opt_in",
+              results["rollback_without_metadata_opt_in"].get("reason") == "append_target_metadata_mismatch"
+              and not rollback_checkpoint.exists())
         results["rollback_dry_run"] = run_tool(rollback_args)
+        check("rollback_preflight_admits_one_new_absent_key_and_two_prefixes",
+              results["rollback_dry_run"].get("new_absent_objects") == 1
+              and results["rollback_dry_run"].get("verified_prefix_objects") == len(keys))
         check("rollback_prefix_preflight_is_read_only", not rollback_checkpoint.exists()
               and all(migration.snapshot(source, source_mount, key) == record for key, record in zip(keys, original)))
         rollback_apply = rollback_args + ["--apply", "--target-exclusive", "--checkpoint", str(rollback_checkpoint)]
@@ -358,15 +406,67 @@ def run(binary, launcher_path, work_dir, oracle_port, *, oracle_version=VERSION)
         launcher.stop_oracle(oracle)
         launcher.restart_oracle(oracle)
         verify_selected_oracle(oracle, source.health(), version=oracle_version)
+        metadata_path = migration.api(source_mount, "metadata", keys[0])
+        metadata_loss = LoseOneAcknowledgement(source, metadata_path=metadata_path)
+        with patch.object(migration.Client, "from_env", return_value=metadata_loss):
+            results["rollback_metadata_lost_ack"] = run_tool(rollback_apply, expected_code=2)
+        metadata_cp = json.loads(rollback_checkpoint.read_text())
+        check("rollback_actual_custom_metadata_committed_before_lost_ack",
+              metadata_loss.discarded and metadata_loss.selected_metadata_requests == 1
+              and results["rollback_metadata_lost_ack"].get("reason") == "transport_outcome_unknown"
+              and metadata_cp["objects"][digest(keys[0])]["custom_metadata_update"]["phase"] == "inflight"
+              and migration.read_metadata(source, source_mount, keys[0])["custom_metadata"] == changed_custom_metadata)
+        metadata_after = migration.read_metadata(source, source_mount, keys[0])
+        check("rollback_custom_metadata_uses_real_required_metadata_cas",
+              metadata_after["metadata_cas_required"] is True
+              and metadata_after["current_metadata_version"]
+                  == metadata_cp["objects"][digest(keys[0])]["custom_metadata_update"]["intent_metadata"]["current_metadata_version"] + 1)
+        check("rollback_wrong_metadata_cas_rejected_before_effect",
+              source.request("POST", metadata_path,
+                             {"custom_metadata": {"synthetic": "must-not-commit"}, "metadata_cas": 0}).status == 400
+              and migration.read_metadata(source, source_mount, keys[0]) == metadata_after)
+        launcher.stop_oracle(oracle)
+        launcher.restart_oracle(oracle)
+        verify_selected_oracle(oracle, source.health(), version=oracle_version)
+        check("rollback_committed_custom_metadata_survives_original_source_restart",
+              migration.read_metadata(source, source_mount, keys[0])["custom_metadata"] == changed_custom_metadata)
+        new_key_loss = LoseOneAcknowledgement(source,
+                            data_path=migration.api(source_mount, "data", new_key))
+        with patch.object(migration.Client, "from_env", return_value=new_key_loss):
+            results["rollback_new_key_lost_ack"] = run_tool(rollback_apply, expected_code=2)
+        check("rollback_new_key_actual_commit_before_lost_ack",
+              new_key_loss.discarded
+              and results["rollback_new_key_lost_ack"].get("reason") == "transport_outcome_unknown"
+              and migration.read_metadata(source, source_mount, new_key)["current_version"] == 1)
+        launcher.stop_oracle(oracle)
+        launcher.restart_oracle(oracle)
+        verify_selected_oracle(oracle, source.health(), version=oracle_version)
         results["rollback_resume_after_source_restart"] = run_tool(rollback_apply)
         for record in post_cutover:
             meta = migration.verify_target(source, source_mount, record, len(record["versions"]))
             check("rollback_preserves_original_prefix_and_post_cutover_versions",
                   migration.settings_match(meta, record["target_metadata"]))
-        results["rollback_repeat"] = run_tool(rollback_apply)
-        check("rollback_repeat_does_not_duplicate_versions", results["rollback_repeat"]["objects_already_verified"] == len(keys))
+        for original_record in original:
+            final_meta = migration.read_metadata(source, source_mount, original_record["key"])
+            check("rollback_keeps_original_source_prefix_version_metadata",
+                  all(final_meta["versions"][version] == value
+                      for version, value in original_record["source_metadata"]["versions"].items()))
+        repeated_metadata_guard = LoseOneAcknowledgement(source, metadata_path=metadata_path)
+        with patch.object(migration.Client, "from_env", return_value=repeated_metadata_guard):
+            results["rollback_repeat"] = run_tool(rollback_apply)
+        check("rollback_repeat_does_not_reissue_custom_metadata_write",
+              not repeated_metadata_guard.discarded and repeated_metadata_guard.selected_metadata_requests == 0)
+        check("rollback_repeat_does_not_duplicate_versions", results["rollback_repeat"]["objects_already_verified"] == len(rollback_keys))
         check("rollback_target_remains_stopped_during_source_append", instance.process is None)
+        report["post_cutover_existing_custom_metadata_changes_covered"] = True
+        report["existing_source_metadata_cas_required_preserved_during_rollback"] = True
+        report["metadata_cas_policy_migration_to_candidate_covered"] = True
+        report["metadata_cas_counter_migration_to_candidate_covered"] = False
+        report["existing_source_prefix_version_metadata_preserved"] = True
+        report["post_cutover_retention_cas_or_delete_policy_changes_covered"] = False
         report["post_cutover_kv_appends_repatriated"] = True
+        report["post_cutover_new_keys_repatriated"] = True
+        report["post_cutover_deletes_or_existing_metadata_changes_covered"] = False
         report["post_cutover_new_keys_deletes_or_metadata_changes_covered"] = False
         report["writer_overlap_scope"] = "cutover_and_rollback_activation"
 

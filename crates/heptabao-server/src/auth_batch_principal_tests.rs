@@ -8,6 +8,7 @@ fn peer(last: u8) -> Option<IpAddr> {
 }
 fn claims() -> batch::BatchClaims {
     batch::BatchClaims {
+        namespace_binding: None,
         token_role: None,
         token_api_precision: None,
         token_api_policy_names: false,

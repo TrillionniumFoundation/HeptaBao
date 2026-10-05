@@ -17,7 +17,8 @@ impl IssuerLeafNotAfterBehavior {
             Self::Truncate => "truncate",
         }
     }
-    pub(super) fn apply(self, not_after: u64, ca_not_after: u64) -> Result<u64> {
+    pub(super) fn apply(self, not_after: PkiInstant, ca_not_after: u64) -> Result<PkiInstant> {
+        let ca_not_after = PkiInstant::whole(ca_not_after)?;
         if not_after <= ca_not_after {
             return Ok(not_after);
         }
@@ -26,8 +27,8 @@ impl IssuerLeafNotAfterBehavior {
             Self::Truncate => Ok(ca_not_after),
             Self::Err => Err(bad(&format!(
                 "cannot satisfy request, as TTL would result in notAfter of {} that is beyond the expiration of the CA certificate at {}",
-                timestamp(not_after),
-                timestamp(ca_not_after)
+                not_after.render(),
+                ca_not_after.render()
             ))),
         }
     }

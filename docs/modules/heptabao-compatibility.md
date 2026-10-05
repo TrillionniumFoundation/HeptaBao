@@ -102,7 +102,7 @@ Current executable anchors (source assertions, not a claim that tests were rerun
 - [`tests::side_effect_mismatch_blocks_admission`](../../crates/heptabao-compatibility/src/lib.rs) rejects matching responses whose side-effect digests differ.
 - [`tests::unknown_surface_and_inventory_rebinding_fail_closed`](../../crates/heptabao-compatibility/src/lib.rs) checks unknown surfaces and evidence rebound to a different inventory.
 
-`cargo +1.99.0 test -p heptabao-compatibility` proves exact-denominator enforcement, minimum observation counts, inventory/artifact binding, repository self-admission rejection and side-effect mismatch blocking. `python scripts/validate_compatibility_corpus.py` proves that all inventoried surfaces are present exactly once and every current scoped case is mapped exactly once. The source-derived counts below must match the corpus.
+`cargo +1.98.0 test -p heptabao-compatibility` proves exact-denominator enforcement, minimum observation counts, inventory/artifact binding, repository self-admission rejection and side-effect mismatch blocking. `python scripts/validate_compatibility_corpus.py` proves that all inventoried surfaces are present exactly once and every current scoped case is mapped exactly once. The source-derived counts below must match the corpus.
 
 <!-- BEGIN CURRENT COMPATIBILITY COVERAGE -->
 | Source-derived coverage metric | Count |

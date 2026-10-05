@@ -131,6 +131,9 @@ pub struct Config {
     pub plugin_kms: Vec<crate::PluginKmsConfig>,
     #[serde(default)]
     pub plugin_secrets: Vec<crate::PluginSecretConfig>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    #[serde(default)]
+    pub openbao_sdk: Option<crate::SdkBackendConfig>,
     /// Optional, deployment-owned SDK Wrapper runtime with per-launch AutoMTLS.
     /// This does not select a KMS/barrier consumer or the HBP1 transport.
     #[serde(default)]
@@ -383,6 +386,8 @@ fn serve_inner(
         service.install_database_plugins(config.plugin_database)?;
         service.install_kms_plugins(config.plugin_kms)?;
         service.install_secret_plugins(config.plugin_secrets)?;
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        service.install_sdk_backend(config.openbao_sdk)?;
         service.install_audit_http_endpoint(config.audit_http_url)?;
         service.install_audit_socket(config.audit_socket)?;
         service.install_audit_syslog(config.audit_syslog)?;
@@ -869,7 +874,7 @@ fn execute_service_request(
             service,
             pending,
             deadline,
-            |pending| pending.execute_before(deadline),
+            |pending| pending.execute_with_service_before(service, deadline),
             |writer, pending, result| writer.finish_external_request(*pending, result),
         ),
     }
@@ -1709,6 +1714,8 @@ fn merge_query_fields(
             value
                 .parse::<i64>()
                 .map_or_else(|_| Value::String(value.to_string()), |limit| json!(limit))
+        } else if key == "version" && path.starts_with("sys/plugins/catalog/") {
+            Value::String(value.to_string())
         } else if matches!(key.as_str(), "version" | "depth") {
             json!(
                 value
@@ -1784,6 +1791,14 @@ fn write_response(writer: &mut impl Write, response: Response, head: bool) -> io
 // Reflect the parsed namespace even when the logical service rejects it. This
 // transport field does not establish namespace membership or caller authority.
 fn write_standard_headers(writer: &mut impl Write, namespace: &str) -> io::Result<()> {
+    write_standard_headers_with_date(writer, namespace, false)
+}
+
+fn write_standard_headers_with_date(
+    writer: &mut impl Write,
+    namespace: &str,
+    custom_date: bool,
+) -> io::Result<()> {
     if !namespace.is_ascii() || namespace.bytes().any(|byte| byte < 32 || byte == 127) {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
@@ -1792,9 +1807,16 @@ fn write_standard_headers(writer: &mut impl Write, namespace: &str) -> io::Resul
     }
     write!(
         writer,
-        "Cache-Control: no-store\r\nStrict-Transport-Security: max-age=31536000; includeSubDomains\r\nDate: {}\r\nConnection: close\r\n",
-        chrono::Utc::now().format("%a, %d %b %Y %H:%M:%S GMT"),
+        "Cache-Control: no-store\r\nStrict-Transport-Security: max-age=31536000; includeSubDomains\r\n",
     )?;
+    if !custom_date {
+        write!(
+            writer,
+            "Date: {}\r\n",
+            chrono::Utc::now().format("%a, %d %b %Y %H:%M:%S GMT")
+        )?;
+    }
+    writer.write_all(b"Connection: close\r\n")?;
     if !namespace.is_empty() {
         write!(writer, "X-Vault-Namespace: {namespace}\r\n")?;
     }
@@ -1999,7 +2021,14 @@ fn write_response_with_namespace(
         writer.write_all(b"Transfer-Encoding: chunked\r\n")?;
     }
     write!(writer, "{retry_after}{index}")?;
-    write_standard_headers(writer, namespace)?;
+    write_standard_headers_with_date(
+        writer,
+        namespace,
+        status == response.status && response.response_headers.has_date(),
+    )?;
+    if status == response.status {
+        response.response_headers.write(writer)?;
+    }
     writer.write_all(b"\r\n")?;
     if !head && !no_body {
         if chunked {
@@ -2113,6 +2142,7 @@ mod tests {
                 &mut output,
                 Response {
                     status,
+                    response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_ocsp_response":encoded}),
                 },
@@ -2129,6 +2159,7 @@ mod tests {
                 &mut invalid,
                 Response {
                     status,
+                    response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_ocsp_response":encoded,"extra":true}),
                 },
@@ -2154,6 +2185,7 @@ mod tests {
         ] {
             let response = || Response {
                 status: 200,
+                response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"__heptabao_pki_certificate":encoded,"format":format}),
             };
@@ -2187,6 +2219,7 @@ mod tests {
                 &mut wire,
                 Response {
                     status: 200,
+                    response_headers: Default::default(),
                     consistency_index: None,
                     body,
                 },
@@ -2208,6 +2241,7 @@ mod tests {
                 &mut wire,
                 Response {
                     status: 204,
+                    response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
                 },
@@ -2231,6 +2265,7 @@ mod tests {
         let encoded = base64::engine::general_purpose::STANDARD.encode(der);
         let response = || Response {
             status: 200,
+            response_headers: Default::default(),
             consistency_index: None,
             body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
         };
@@ -2253,6 +2288,7 @@ mod tests {
             &mut rejected,
             Response {
                 status: 200,
+                response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"__heptabao_pki_crl":encoded,"pem":"text/html"}),
             },
@@ -2832,6 +2868,7 @@ mod service_lock_deadline_tests {
                     assert_eq!(crate::request_deadline::current(), Some(deadline));
                     *value = result + 1;
                     Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,
                         body: json!({"data":{"completed":true}}),
@@ -2894,6 +2931,7 @@ mod service_lock_deadline_tests {
                     worker_finished.store(true, Ordering::Release);
                     *value = observed;
                     Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,
                         body: json!({"data":{"completed":true}}),

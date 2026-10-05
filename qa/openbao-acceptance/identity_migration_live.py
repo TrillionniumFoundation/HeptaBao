@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scoped real OpenBao 2.6.2 -> HeptaBao Identity recreation rehearsal.
+"""Scoped real OpenBao 2.6.2/2.7.0 -> HeptaBao Identity recreation rehearsal.
 
 The fixture recreates only entities and internal groups. Source authentication
 aliases are deliberately introduced only after the positive rehearsal and must
@@ -19,7 +19,8 @@ import tempfile
 
 from bao_http import BaoError, Client, SafeArgumentParser, private_write
 import migrate_identity as migration
-from official_openbao_launcher import BINARY_SHA256, file_digest, start_oracle, stop_oracle
+from official_openbao_launcher import (SUPPORTED_VERSIONS, VERSION, file_digest,
+                                      start_oracle, stop_oracle, verify_selected_oracle)
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -61,7 +62,7 @@ def private_text(path, value):
         handle.write(value)
 
 
-def run(binary, output):
+def run(binary, output, *, oracle_version=VERSION):
     checks = []
 
     def check(name, condition):
@@ -89,13 +90,14 @@ def run(binary, output):
             with socket.socket() as listener:
                 listener.bind(("127.0.0.1", 0))
                 oracle_port = listener.getsockname()[1]
-            oracle = start_oracle(oracle_port)
+            oracle = start_oracle(oracle_port, version=oracle_version)
             source = Client(
                 oracle["address"],
                 oracle["ca_file"],
                 Path(oracle["token_file"]).read_text().strip(),
             )
 
+            oracle_identity = verify_selected_oracle(oracle, source.health(), version=oracle_version)
             instance = smoke.Instance(binary.resolve(), root / "candidate")
             instance.start()
             status, initialized = instance.call(
@@ -362,7 +364,9 @@ def run(binary, output):
                 "checks": checks,
                 "count": len(checks),
                 "candidate_binary_sha256": file_digest(binary),
-                "oracle_binary_sha256": BINARY_SHA256,
+                "oracle_binary_sha256": oracle_identity["binary_sha256"],
+                "oracle_version": oracle_version,
+                "oracle_storage_backend": oracle_identity["storage"],
                 "official_openbao_version": source.health()["version"],
                 "entities_recreated": 2,
                 "internal_groups_recreated": 2,
@@ -391,10 +395,11 @@ def main(argv=None):
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument("--binary", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--oracle-version", choices=SUPPORTED_VERSIONS, default=VERSION)
     args = parser.parse_args(argv)
     if os.path.lexists(args.output):
         raise BaoError("output_already_exists")
-    result = run(args.binary.resolve(), args.output.absolute())
+    result = run(args.binary.resolve(), args.output.absolute(), oracle_version=args.oracle_version)
     print(
         json.dumps(
             {

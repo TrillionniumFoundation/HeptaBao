@@ -26,7 +26,7 @@ from core_isolation import ROOT, file_hash
 from ha_destructive import FixtureError, free_port
 from ha_network_partition import inactive_health
 from native_snapshot_cli_live import contains_any, private_parent
-from native_snapshot_ha_live import SaveCluster, capacity
+from native_snapshot_ha_live import SaveCluster, capacity_data
 from official_openbao_launcher import certificates, oracle_environment, verify_inputs
 from online_evidence import admit_output, complete_checks, source_identity
 from remote_jwks_live import Instance
@@ -40,6 +40,7 @@ HA_PHASES = frozenset({'ha_initial','ha_finite_issued','ha_standby_finite','ha_u
     'ha_reads_unchanged','ha_restarted_sealed','ha_reunsealed','ha_quorum_lost',
     'ha_partition_diagnostic','ha_partition_read_rejected','ha_recovered','ha_step_down',
     'ha_successor','ha_successor_changed','ha_value_retained','ha_cleanup','plaintext_absent',
+    'ha_capacity_observer_baseline','ha_secret_before','ha_secret_after',
     'ha_activation_stable','ha_activation_seal','ha_activation_sealed_diagnostic',
     'ha_activation_unseal','ha_activation_reunseal','ha_activation_changed','ha_activation_successor_stable'})
 ALLOWED = frozenset({'ha_enabled','is_self','leader_address','leader_cluster_address','raft_committed_index','raft_applied_index','active_time'})
@@ -276,6 +277,54 @@ class LeaderCluster(SaveCluster):
             self.peers[str(node.node_id)]['cluster_address'] = f'https://127.0.0.1:{node.raft_port}'
 
 
+def capacity_observer_effect(samples):
+    """Measure this execution's observer effects; an unstable baseline fails."""
+    if len(samples) != 5 or not all(isinstance(row, dict) for row in samples):
+        return None
+    counters = ('generation', 'retained_operations')
+    growth = ('journal_bytes', 'durable_payload_bytes')
+    numeric = counters + growth + ('state_bytes', 'state_limit_bytes',
+        'state_remaining_bytes', 'state_schema', 'kv_read_only_dispatches')
+    if any(type(row.get(key)) is not int or row[key] < 0
+           for row in samples for key in numeric):
+        return None
+    if any(not isinstance(row.get(key),str) or not row[key]
+           for row in samples for key in ('state_size_basis','state_storage_format')):
+        return None
+    # Two controls before and one after the diagnostic detect concurrent writes
+    # or a changing observer. No fixed number of token-clock commits is assumed.
+    deltas = [{key: samples[b][key] - samples[a][key] for key in counters}
+              for a, b in ((0, 1), (1, 2), (3, 4))]
+    diagnostic = {key: samples[3][key] - samples[2][key] for key in counters}
+    baseline = deltas[0]
+    stable = all(delta == baseline for delta in deltas) and all(v >= 0 for v in baseline.values())
+    logical = ('state_schema', 'state_size_basis', 'state_storage_format',
+               'kv_read_only_dispatches')
+    format_dispatch_unchanged = all(all(key in row and row[key] == samples[0].get(key)
+                                for key in logical) for row in samples)
+    # Actual no-leader controls also changed owner JSON byte length, because
+    # the graph includes observed clock metadata. Preserve every sampled byte
+    # value and require exact capacity arithmetic; compare logical KV data and
+    # the finite token's remaining uses separately in the live fixture.
+    capacity_arithmetic_valid = all(row['state_bytes'] <= row['state_limit_bytes']
+        and row['state_remaining_bytes'] == row['state_limit_bytes'] - row['state_bytes']
+        for row in samples)
+    growth_deltas = [{key: samples[b][key] - samples[a][key] for key in growth}
+                     for a, b in ((0, 1), (1, 2), (2, 3), (3, 4))]
+    # Clock/record metadata lengths vary; record the exact bytes and reject
+    # regression rather than pretending each legal observer has a fixed size.
+    growth_monotonic = all(v >= 0 for delta in growth_deltas for v in delta.values())
+    return {'control_deltas': deltas, 'diagnostic_delta': diagnostic,
+            'baseline_stable': stable, 'net_extra_operations':
+                {key: diagnostic[key] - baseline[key] for key in counters},
+            'format_and_dispatch_unchanged': format_dispatch_unchanged,
+            'observed_state_bytes': [row['state_bytes'] for row in samples],
+            'capacity_arithmetic_valid': capacity_arithmetic_valid,
+            'exact_artifact_growth_deltas': growth_deltas,
+            'passed': stable and diagnostic == baseline and format_dispatch_unchanged
+                and capacity_arithmetic_valid and growth_monotonic}
+
+
 def candidate_ha(binary,root,check,observations,samples):
     cluster=None
     try:
@@ -304,12 +353,22 @@ def candidate_ha(binary,root,check,observations,samples):
         cluster.write(leader,'leader-diagnostic',marker)
         status,issued=leader.call('POST','auth/token/create',{'policies':['default'],'num_uses':2,'ttl':600},token=cluster.root_token)
         check('ha_finite_issued',status==200 and bool(issued.get('auth',{}).get('client_token')))
-        limited=issued['auth']['client_token'];before=capacity(leader,cluster.root_token)
+        limited=issued['auth']['client_token']
+        secret_status,secret_before=leader.call('GET','secret/data/leader-diagnostic',token=cluster.root_token)
+        check('ha_secret_before',secret_status==200 and secret_before.get('data',{}).get('data',{}).get('value')==marker)
+        before=[capacity_data(leader,cluster.root_token) for _ in range(3)]
         standby=next(n for n in cluster.nodes if n is not leader)
         status,body=endpoints[standby.node_id].call('GET',token=limited)
         check('ha_standby_finite',shape(status,body,ha=True,is_self=False,address=endpoints[leader.node_id].address,
               cluster_address=f'https://127.0.0.1:{leader.raft_port}'))
-        check('ha_reads_unchanged',capacity(leader,cluster.root_token)==before)
+        after=[capacity_data(leader,cluster.root_token) for _ in range(2)]
+        effect=capacity_observer_effect(before+after)
+        observations.append({'case':'ha_reads_unchanged','capacity_observations':before+after,
+                             'measured_observer_effect':effect})
+        check('ha_capacity_observer_baseline',effect is not None and effect['baseline_stable'])
+        check('ha_reads_unchanged',effect is not None and effect['passed'])
+        secret_status,secret_after=leader.call('GET','secret/data/leader-diagnostic',token=cluster.root_token)
+        check('ha_secret_after',secret_status==200 and secret_after.get('data')==secret_before.get('data'))
         status,body=leader.call('POST','auth/token/lookup',{'token':limited},token=cluster.root_token)
         check('ha_uses_unchanged',status==200 and body.get('data',{}).get('num_uses')==2)
         standby.stop();standby.start()

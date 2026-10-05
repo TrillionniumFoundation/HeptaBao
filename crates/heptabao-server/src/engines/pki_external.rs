@@ -13,6 +13,15 @@ use leaf::{ConsumptionMaterial, ConsumptionTemplate, CrlSet, LeafPublic};
 mod issuer_archive;
 pub(super) use issuer_archive::ExternalLeafIssuerOwner;
 use issuer_archive::ExternalPublicIssuer;
+#[path = "pki_external_history.rs"]
+mod history;
+use history::ExternalSignerHistory;
+#[path = "pki_external_intermediate.rs"]
+mod intermediate;
+use intermediate::{ExternalIntermediateOwner, PreparedExternalImport};
+#[path = "pki_external_sign_intermediate.rs"]
+mod sign_intermediate;
+use sign_intermediate::PreparedExternalCaSign;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
@@ -27,19 +36,23 @@ pub(super) struct ExternalState {
     issued_public: BTreeMap<String, LeafPublic>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     archived_issuers: BTreeMap<String, ExternalPublicIssuer>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    signer_history: Option<Box<ExternalSignerHistory>>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct ExternalKey {
-    reference: String,
-    public_key: ExternalPkiPublicKey,
-    key_id: String,
-    issuer_id: String,
-    key_name: String,
-    issuer_name: String,
+pub(super) struct ExternalKey {
+    pub(super) reference: String,
+    pub(super) public_key: ExternalPkiPublicKey,
+    pub(super) key_id: String,
+    pub(super) issuer_id: String,
+    pub(super) key_name: String,
+    pub(super) issuer_name: String,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    dns_san: bool,
+    pub(super) dns_san: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) intermediate_owner: Option<Box<ExternalIntermediateOwner>>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -57,10 +70,14 @@ impl ExternalState {
             && self.crls.is_none()
             && self.issued_public.is_empty()
             && self.archived_issuers.is_empty()
+            && self.signer_history.is_none()
     }
     pub(super) fn clear_root(&mut self) {
         self.root = None;
         self.crls = None;
+        if let Some(history) = &mut self.signer_history {
+            history.clear_private_signers();
+        }
         // Verified leaf projections and public signer archives survive retirement.
     }
 }
@@ -69,6 +86,7 @@ impl ExternalState {
 pub(crate) struct ExternalPkiTemplate {
     pub(crate) reference: String,
     operation: &'static str,
+    output_format: RootOutputFormat,
     common_name: String,
     serial: String,
     not_before: u64,
@@ -85,6 +103,9 @@ pub(crate) struct ExternalPkiTemplate {
     // binds this to its namespace, mount incarnation, config, request, state
     // identity, generation and provider enrollment; publication checks it again.
     bound_issuer: Option<ExternalPublicIssuer>,
+    imported: Option<Box<PreparedExternalImport>>,
+    signed_ca: Option<Box<PreparedExternalCaSign>>,
+    native_csr_body: Option<Value>,
 }
 
 pub(crate) struct ExternalPkiMaterial {
@@ -94,6 +115,7 @@ pub(crate) struct ExternalPkiMaterial {
     extra_tbs: Vec<Vec<u8>>,
     root_crls: Option<CrlSet>,
     consumption: Option<ConsumptionMaterial>,
+    native_csr: Option<(Value, LocalPrivateMaterial)>,
 }
 
 fn reference_valid(reference: &str) -> bool {
@@ -210,7 +232,7 @@ fn external_serial() -> Result<String> {
     if bytes.iter().all(|byte| *byte == 0) {
         bytes[19] = 1;
     }
-    Ok(bytes.iter().map(|byte| format!("{byte:02x}")).collect())
+    Ok(canonical_serial_bytes(&bytes))
 }
 
 pub(super) fn formatted_serial(serial: &str) -> String {
@@ -278,6 +300,57 @@ impl ExternalPkiTemplate {
     ) -> Result<ExternalPkiMaterial> {
         let public_key = public_key.into();
         public_key.validate()?;
+        if let Some(body) = &self.native_csr_body {
+            // OpenBao 2.7.0 reads the external key's public type, then creates
+            // a fresh locally owned CSR key. It does not ask the provider to
+            // sign this CSR or persist that provider as the new key's owner.
+            let mut body = body.clone();
+            let (key_type, bits) = public_key.native_csr_key_type()?;
+            body["key_type"] = json!(key_type);
+            body["key_bits"] = json!(bits);
+            let material = LocalPrivateMaterial::generate(LocalKeyKind::from_body(&body)?)?;
+            return Ok(ExternalPkiMaterial {
+                template: self,
+                public_key,
+                tbs: Vec::new(),
+                extra_tbs: Vec::new(),
+                root_crls: None,
+                consumption: None,
+                native_csr: Some((body, material)),
+            });
+        }
+        if let Some(prepared) = &self.signed_ca {
+            if self.bound_public.as_ref() != Some(&public_key) {
+                return Err(error(503, "external CA signing key changed"));
+            }
+            let tbs = prepared.tbs(&public_key)?;
+            return Ok(ExternalPkiMaterial {
+                template: self,
+                public_key,
+                tbs,
+                extra_tbs: Vec::new(),
+                root_crls: None,
+                consumption: None,
+                native_csr: None,
+            });
+        }
+        if let Some(imported) = &self.imported {
+            if public_key != imported.pending.key.public_key {
+                return Err(error(503, "external intermediate provider key changed"));
+            }
+            let crls = CrlSet::empty(self.generated_at);
+            let mut parts = crls.tbs(&self.common_name, &public_key)?;
+            let tbs = parts.remove(0);
+            return Ok(ExternalPkiMaterial {
+                template: self,
+                public_key,
+                tbs,
+                extra_tbs: parts,
+                root_crls: Some(crls),
+                consumption: None,
+                native_csr: None,
+            });
+        }
         if self.is_consumption() {
             return self.materialize_consumption(public_key);
         }
@@ -309,29 +382,54 @@ impl ExternalPkiTemplate {
             extra_tbs,
             root_crls,
             consumption: None,
+            native_csr: None,
         })
     }
 }
 
 impl ExternalPkiMaterial {
+    fn leaf_signature(&self) -> LeafSignature {
+        let policy =
+            self.consumption
+                .as_ref()
+                .and_then(|consumption| match &consumption.template {
+                    ConsumptionTemplate::Leaf(prepared) => prepared.role_name_policy.as_ref(),
+                    ConsumptionTemplate::Crl { .. } => None,
+                });
+        self.public_key.leaf_signature(policy)
+    }
+    pub(crate) fn signature_algorithm(&self) -> &'static str {
+        if self.leaf_signature().pss() {
+            "pss"
+        } else {
+            "pkcs1v15"
+        }
+    }
     pub(crate) fn signing_input(&self, tbs: &[u8]) -> Result<Vec<u8>> {
-        self.public_key.signing_input(tbs)
+        self.public_key
+            .signing_input_leaf(tbs, self.leaf_signature())
     }
     pub(crate) fn hash_algorithm(&self) -> Option<&'static str> {
-        self.public_key.hash_algorithm()
+        self.leaf_signature().hash_algorithm()
     }
     pub(crate) fn signature_size_bound(&self) -> usize {
         self.public_key.signature_size_bound()
     }
     pub(crate) fn tbs_parts(&self) -> impl Iterator<Item = &Vec<u8>> {
-        std::iter::once(&self.tbs).chain(self.extra_tbs.iter())
+        std::iter::once(&self.tbs)
+            .chain(self.extra_tbs.iter())
+            .filter(|_| self.native_csr.is_none())
     }
     pub(crate) fn verify_at(&self, index: usize, signature: &[u8]) -> Result<()> {
         let tbs = self
             .tbs_parts()
             .nth(index)
             .ok_or_else(|| bad("external PKI signature index"))?;
-        if self.public_key.verify(tbs, signature).is_err() {
+        if self
+            .public_key
+            .verify_leaf(tbs, signature, self.leaf_signature())
+            .is_err()
+        {
             return Err(error(
                 503,
                 "external PKI unknown after entry: cryptographic signature mismatch; no blind retry",
@@ -393,12 +491,30 @@ impl Pki {
         .then_some((reference, role))
     }
 
+    pub(in crate::engines) fn issuer_sign_route(path: &str) -> Option<(&str, &str)> {
+        let (reference, role) = path.strip_prefix("issuer/")?.split_once("/sign/")?;
+        (!reference.is_empty()
+            && reference.len() <= 128
+            && !reference.contains('/')
+            && !role.is_empty()
+            && role.len() <= 128
+            && !role.contains('/')
+            && !path.contains('?'))
+        .then_some((reference, role))
+    }
+
     pub(in crate::engines) fn external_handles(&self, path: &str) -> bool {
-        matches!(path, "root/generate/kms" | "intermediate/generate/kms")
-            || self.external.root.is_some()
+        matches!(
+            path,
+            "root/generate/kms" | "intermediate/generate/kms" | "intermediate/generate/kms-remote"
+        ) || path == "intermediate/set-signed" && self.external.intermediate.is_some()
+            || self.external_signers().next().is_some()
                 && (path.starts_with("issue/")
+                    || path.starts_with("sign/")
+                    || Self::issuer_sign_route(path).is_some()
                     || Self::issuer_issue_route(path).is_some()
-                    || matches!(path, "revoke" | "crl/rotate"))
+                    || matches!(path, "revoke" | "crl/rotate" | "root/sign-intermediate")
+                    || Self::external_sign_intermediate_route(path).is_some())
     }
 
     pub(in crate::engines) fn has_external_state(&self) -> bool {
@@ -412,11 +528,36 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<Option<ExternalPkiTemplate>> {
-        if !matches!(path, "root/generate/kms" | "intermediate/generate/kms") {
+        if (self.external.root.is_some() || self.has_external_signer_history())
+            && (path == "root/sign-intermediate"
+                || Self::external_sign_intermediate_route(path).is_some())
+        {
+            if !write_method(method) {
+                return Err(unsupported());
+            }
+            return self.prepare_external_ca_sign(path, body, now).map(Some);
+        }
+        if path == "intermediate/set-signed" && self.external.intermediate.is_some() {
+            if !write_method(method) {
+                return Err(unsupported());
+            }
+            return self.prepare_external_import(body, now).map(Some);
+        }
+        if !matches!(
+            path,
+            "root/generate/kms" | "intermediate/generate/kms" | "intermediate/generate/kms-remote"
+        ) {
             return Ok(None);
         }
         if !write_method(method) {
             return Err(unsupported());
+        }
+        if path == "intermediate/generate/kms"
+            && (body.get("key_type").is_some() || body.get("key_bits").is_some())
+        {
+            return Err(bad(
+                "invalid parameter for the kms/existing path parameter, key_type nor key_bits arguments can be set in this mode",
+            ));
         }
         reject_unknown(
             body,
@@ -430,15 +571,7 @@ impl Pki {
                 "format",
             ],
         )?;
-        if body
-            .get("format")
-            .is_some_and(|value| value.as_str() != Some("pem"))
-        {
-            return Err(error(
-                501,
-                "external PKI format requires a qualified DER/PEM lane",
-            ));
-        }
+        let output_format = RootOutputFormat::from_body(body)?;
         if body
             .get("key_type")
             .is_some_and(|value| value.as_str() != Some("ed25519"))
@@ -450,10 +583,10 @@ impl Pki {
         } else {
             "intermediate"
         };
-        if operation == "root" && self.root.is_some() {
-            return Err(bad("PKI root already exists"));
+        if operation == "root" {
+            self.admit_external_root_generation(body)?;
         }
-        if operation == "intermediate" && self.external.intermediate.is_some() {
+        if path == "intermediate/generate/kms-remote" && self.external.intermediate.is_some() {
             return Err(error(
                 501,
                 "multiple external intermediate keys require a qualified issuer lane",
@@ -474,6 +607,7 @@ impl Pki {
         Ok(Some(ExternalPkiTemplate {
             reference: reference.into(),
             operation,
+            output_format,
             common_name: common_name.into(),
             serial: external_serial()?,
             not_before: now.saturating_sub(30),
@@ -489,6 +623,17 @@ impl Pki {
             consumption: None,
             bound_public: None,
             bound_issuer: None,
+            imported: None,
+            signed_ca: None,
+            native_csr_body: (path == "intermediate/generate/kms").then(|| {
+                let mut local = body.clone();
+                if let Some(fields) = local.as_object_mut() {
+                    fields.remove("external_key_ref");
+                    fields.remove("ttl");
+                    fields.remove("issuer_name");
+                }
+                local
+            }),
         }))
     }
 
@@ -504,8 +649,17 @@ impl Pki {
         for (index, signature) in signatures.iter().enumerate() {
             material.verify_at(index, signature)?;
         }
+        if let Some((body, local_key)) = material.native_csr.take() {
+            return self.generate_local_csr_with_material(&body, false, Some(local_key));
+        }
         if material.consumption.is_some() {
             return self.publish_consumption(material, signatures, now);
+        }
+        if material.template.signed_ca.is_some() {
+            return self.publish_external_ca_sign(material, signatures, now);
+        }
+        if material.template.imported.is_some() {
+            return self.publish_external_import(material, signatures, now);
         }
         let mut root_crls = material.root_crls.take();
         if let Some(crls) = root_crls.as_mut() {
@@ -524,6 +678,7 @@ impl Pki {
             key_name: template.key_name,
             issuer_name: template.issuer_name,
             dns_san: template.dns_san,
+            intermediate_owner: None,
         };
         let encoded = signed_der(&material.tbs, &signatures[0], &key.public_key);
         if key.issuer_id == key.key_id
@@ -533,14 +688,14 @@ impl Pki {
             return Err(error(503, "external PKI identifier collision"));
         }
         if template.operation == "root" {
-            if self.root.is_some() {
-                return Err(bad("PKI root already exists"));
-            }
-            let certificate = public::stored_pem("CERTIFICATE", &encoded);
+            self.admit_external_root_generation(
+                &json!({"issuer_name":key.issuer_name,"key_name":key.key_name}),
+            )?;
+            let certificate = template.output_format.certificate(&encoded);
             let response = json!({"certificate":certificate,"issuing_ca":certificate,
                 "serial_number":formatted_serial(&template.serial),"expiration":template.not_after,
                 "key_id":key.key_id,"key_name":key.key_name,"issuer_id":key.issuer_id,"issuer_name":key.issuer_name});
-            self.root = Some(RootCa {
+            let root = RootCa {
                 leaf_not_after_behavior: None,
                 common_name: template.common_name,
                 issuer_id: String::new(),
@@ -553,21 +708,35 @@ impl Pki {
                 serial: template.serial,
                 not_before: template.not_before,
                 not_after: template.not_after,
-            });
-            self.external.root = Some(key);
-            self.external.crls = root_crls;
-            Ok(ok(response, true))
+            };
+            self.install_external_root(
+                root,
+                key,
+                root_crls
+                    .take()
+                    .ok_or_else(|| bad("external root CRLs missing"))?,
+                now,
+            )?;
+            let mut response = ok(response, true);
+            response.body["warnings"] = json!([
+                "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information."
+            ]);
+            Ok(response)
         } else {
             if self.external.intermediate.is_some() {
                 return Err(bad("external intermediate already exists"));
             }
-            let response = json!({"csr":pem("CERTIFICATE REQUEST", &encoded),"key_id":key.key_id});
+            let response = json!({"csr":template.output_format.public("CERTIFICATE REQUEST", &encoded),"key_id":key.key_id});
             self.external.intermediate = Some(ExternalCsr {
                 key,
                 common_name: template.common_name,
                 csr_der: encoded,
             });
-            Ok(ok(response, true))
+            let mut response = ok(response, true);
+            response.body["warnings"] = json!([
+                "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information. Since this certificate is an intermediate, it might be useful to regenerate this certificate after fixing this problem for the root mount."
+            ]);
+            Ok(response)
         }
     }
 
@@ -598,26 +767,45 @@ impl Pki {
                 .root
                 .as_ref()
                 .ok_or_else(|| bad("external PKI root missing"))?;
-            if key.dns_san && !valid_domain(&root.common_name) {
+            if key.intermediate_owner.is_some() && self.external.signer_history.is_none() {
+                return Err(bad("external intermediate signer-history owner missing"));
+            }
+            if key.intermediate_owner.is_none() && key.dns_san && !valid_domain(&root.common_name) {
                 return Err(bad("external PKI DNS SAN subject is invalid"));
             }
             if !root.is_external() {
                 return Err(bad("external PKI must not contain local private key"));
             }
-            let tbs = external_root_tbs(
-                ExternalRootSpec {
-                    serial: &root.serial,
-                    issuer_cn: &root.common_name,
-                    subject_cn: &root.common_name,
-                    public_key: &key.public_key,
-                    not_before: root.not_before,
-                    not_after: root.not_after,
-                },
-                key.dns_san,
-            )?;
-            validate_signed_der(&key.public_key, &tbs, &root.certificate_der)?;
+            if let Some(owner) = &key.intermediate_owner {
+                owner.validate(root, key)?;
+            } else {
+                let tbs = external_root_tbs(
+                    ExternalRootSpec {
+                        serial: &root.serial,
+                        issuer_cn: &root.common_name,
+                        subject_cn: &root.common_name,
+                        public_key: &key.public_key,
+                        not_before: root.not_before,
+                        not_after: root.not_after,
+                    },
+                    key.dns_san,
+                )?;
+                validate_signed_der(&key.public_key, &tbs, &root.certificate_der)?;
+            }
+        }
+        if self
+            .external
+            .archived_issuers
+            .values()
+            .any(ExternalPublicIssuer::has_intermediate_chain)
+            && self.external.signer_history.is_none()
+        {
+            return Err(bad("external intermediate public owner floor missing"));
         }
         if let Some(csr) = &self.external.intermediate {
+            if csr.key.intermediate_owner.is_some() {
+                return Err(bad("pending external CSR cannot borrow an imported owner"));
+            }
             validate_key(&csr.key)?;
             if !common_name_valid(&csr.common_name) {
                 return Err(bad("invalid external CSR subject"));
@@ -670,6 +858,19 @@ fn validate_signed_der(
     tbs: &[u8],
     document: &[u8],
 ) -> Result<()> {
+    validate_signed_der_with_scheme(public_key, tbs, document, public_key.leaf_signature(None))
+}
+
+fn signed_der_with_scheme(tbs: &[u8], signature: &[u8], scheme: LeafSignature) -> Vec<u8> {
+    seq(&[tbs.to_vec(), scheme.algorithm(), bit_string(signature, 0)])
+}
+
+fn validate_signed_der_with_scheme(
+    public_key: &ExternalPkiPublicKey,
+    tbs: &[u8],
+    document: &[u8],
+    scheme: LeafSignature,
+) -> Result<()> {
     let (tag, fields, rest) = take_der(document)?;
     if tag != 0x30 || !rest.is_empty() {
         return Err(bad("invalid external PKI document"));
@@ -679,7 +880,7 @@ fn validate_signed_der(
         return Err(bad("external PKI TBS mismatch"));
     }
     let (tag, content, fields) = take_der(fields)?;
-    if tag != 0x30 || der(tag, content) != public_key.signature_algorithm() {
+    if tag != 0x30 || der(tag, content) != scheme.algorithm() {
         return Err(bad("external PKI algorithm mismatch"));
     }
     let (tag, bits, rest) = take_der(fields)?;
@@ -689,8 +890,8 @@ fn validate_signed_der(
     if tag != 0x03
         || bits.first() != Some(&0)
         || !rest.is_empty()
-        || signed_der(tbs, signature, public_key) != document
-        || public_key.verify(tbs, signature).is_err()
+        || signed_der_with_scheme(tbs, signature, scheme) != document
+        || public_key.verify_leaf(tbs, signature, scheme).is_err()
     {
         return Err(bad("invalid external PKI document or signature"));
     }
@@ -787,8 +988,12 @@ mod tests {
                     "common_name":"leaf.example.test","ttl":"10m"
                 }),
                 "legacy/",
-                Some(&owner),
-                100,
+                crate::engines::PkiRequestContext {
+                    owner: Some(&owner),
+                    time: crate::auth::AuthorityTime::Coarse(100),
+                    clock: None,
+                    identity_templates: None,
+                },
             )?
             .ok_or_else(|| bad("actual leaf template"))?;
         // This finite predecessor fixture executes the real old None DER

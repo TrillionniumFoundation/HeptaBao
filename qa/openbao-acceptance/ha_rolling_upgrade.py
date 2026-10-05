@@ -19,26 +19,7 @@ import subprocess
 import time
 import urllib.error
 
-from ha_destructive import Cluster, FixtureError, MISBOUND_BOOTSTRAP_ERROR, Node, checked_binary, exact_startup_rejection
-
-
-# Reviewed immutable source contracts, not capability inference from an error.
-# The legacy source uses HBRT1/HBFQ1; the current source defaults to cluster-bound
-# consensus/forwarding and rejects legacy frames unless explicitly enrolled.
-BASE_WIRE_PROFILES = {
-    "55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18": "legacy-v1",
-    "421c19794fa4f772edb9cde7dcc0db68362c1717": "strict-current",
-    "8c1e43718c30ce5185c55b258c0460bd48936a2a": "strict-current",
-}
-
-
-def base_wire_profile_for_source(source_sha: str, requested: str | None = None) -> str:
-    profile = BASE_WIRE_PROFILES.get(source_sha)
-    if profile is None:
-        raise FixtureError("rolling_upgrade_unreviewed_base_source")
-    if requested is not None and requested != profile:
-        raise FixtureError("rolling_upgrade_base_wire_profile_mismatch")
-    return profile
+from ha_destructive import Cluster, FixtureError, MISBOUND_BOOTSTRAP_ERROR, Node, checked_binary
 
 
 def executable_identity(metadata: os.stat_result) -> tuple[int, ...]:
@@ -84,10 +65,7 @@ def health_flag(body: dict, field: str) -> bool | None:
 
 
 class RollingUpgradeCluster(Cluster):
-    def __init__(self, base_binary: Path, candidate_binary: Path, root: Path,
-                 base_source_sha: str, base_wire_profile: str):
-        self.base_source_sha = base_source_sha
-        self.base_wire_profile = base_wire_profile_for_source(base_source_sha, base_wire_profile)
+    def __init__(self, base_binary: Path, candidate_binary: Path, root: Path):
         self.candidate_binary = candidate_binary
         self.base_digest = hashlib.sha256(base_binary.read_bytes()).hexdigest()
         self.candidate_digest = hashlib.sha256(candidate_binary.read_bytes()).hexdigest()
@@ -115,35 +93,14 @@ class RollingUpgradeCluster(Cluster):
         if wrong.binary == self.candidate_binary:
             checked_binary(wrong.binary, self.candidate_digest)
             return super().assert_misbound_rejection(wrong)
-        # A recent pinned base already enforces startup marker admission; an
-        # older base may defer refusal until unseal. A strict profile must use
-        # the exact startup rejection; only legacy-v1 may use the HTTP contract.
+        # The pinned PR base predates startup marker admission. Prove the actual
+        # running executable, then require its exact unseal refusal and sealed
+        # health. A candidate or unknown executable never receives this exception.
         checked_binary(wrong.binary, self.base_digest)
-        log_path = wrong.root / "process.log"
-        before = log_path.stat().st_size if log_path.exists() else 0
         try:
-            try:
-                wrong.start()
-            except FixtureError as error:
-                if str(error) != "node_exited_during_startup":
-                    raise
-                checked_binary(wrong.binary, self.base_digest)
-                if wrong.process is None or wrong.log is None:
-                    raise FixtureError("rolling_upgrade_base_rejection_evidence_missing")
-                wrong.log.flush()
-                with log_path.open("rb") as stream:
-                    stream.seek(before)
-                    delta = stream.read(64 * 1024 + 1)
-                self.check(
-                    "rolling_upgrade_base_misbound_startup_rejected",
-                    len(delta) <= 64 * 1024 and exact_startup_rejection(
-                        wrong.process.poll(), delta, MISBOUND_BOOTSTRAP_ERROR),
-                )
-                return
+            wrong.start()
             if running_digest(wrong) != self.base_digest:
                 raise FixtureError("rolling_upgrade_base_binary_changed")
-            if self.base_wire_profile != "legacy-v1":
-                raise FixtureError("rolling_upgrade_strict_base_started_with_misbound_cluster")
             status, denied = wrong.call(
                 "POST", "sys/unseal", {"key": self.unseal_key}
             )
@@ -262,7 +219,7 @@ class RollingUpgradeCluster(Cluster):
     def upgrade(self, node: Node, label: str) -> None:
         node.stop()
         node.binary = self.candidate_binary
-        self.set_legacy_forward_transition(node, self.base_wire_profile == "legacy-v1")
+        self.set_legacy_forward_transition(node, True)
         node.start()
         if node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] != 200:
             raise FixtureError(label + "_candidate_unseal_failed")
@@ -344,35 +301,26 @@ class RollingUpgradeCluster(Cluster):
         upgraded.add(old.node_id)
         self.check("rolling_upgrade_all_three_candidate_voters", len(upgraded) == 3)
 
-        if self.base_wire_profile == "legacy-v1":
-            # First retire legacy *senders* while every receiver still accepts
-            # both formats. Closing receive admission at the same time would
-            # partition the remaining legacy senders during a rolling restart.
-            for node in self.nodes:
-                node.stop()
-                self.set_legacy_forward_transition(node, True, emit_legacy=False)
-                node.start()
-                if node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] != 200:
-                    raise FixtureError(f"rolling_upgrade_node_{node.node_id}_sender_restart_unseal_failed")
-                self.leader()
-                config = json.loads((node.root / "ha.json").read_text())
-                self.check(f"rolling_upgrade_node_{node.node_id}_strict_sender_dual_receiver",
-                           config.get("allow_legacy_peer_v1") is True
-                           and config.get("emit_legacy_peer_v1") is False)
-                marker = secrets.token_hex(16)
-                self.write(node, f"rolling-new-wire-{node.node_id}", marker)
-                for observer in self.nodes:
-                    self.read(observer, f"rolling-new-wire-{node.node_id}", marker)
-                self.check(f"rolling_upgrade_node_{node.node_id}_new_wire_write_observed", True)
-            self.check("rolling_upgrade_all_senders_current_before_any_receiver_closes", True)
-
-        else:
-            self.check(
-                "rolling_upgrade_current_base_keeps_strict_wire",
-                all(not {"allow_legacy_peer_v1", "emit_legacy_peer_v1"}
-                    & json.loads((node.root / "ha.json").read_text()).keys()
-                    for node in self.nodes),
-            )
+        # First retire legacy *senders* while every receiver still accepts
+        # both formats. Closing receive admission at the same time would
+        # partition the remaining legacy senders during a rolling restart.
+        for node in self.nodes:
+            node.stop()
+            self.set_legacy_forward_transition(node, True, emit_legacy=False)
+            node.start()
+            if node.call("POST", "sys/unseal", {"key": self.unseal_key})[0] != 200:
+                raise FixtureError(f"rolling_upgrade_node_{node.node_id}_sender_restart_unseal_failed")
+            self.leader()
+            config = json.loads((node.root / "ha.json").read_text())
+            self.check(f"rolling_upgrade_node_{node.node_id}_strict_sender_dual_receiver",
+                       config.get("allow_legacy_peer_v1") is True
+                       and config.get("emit_legacy_peer_v1") is False)
+            marker = secrets.token_hex(16)
+            self.write(node, f"rolling-new-wire-{node.node_id}", marker)
+            for observer in self.nodes:
+                self.read(observer, f"rolling-new-wire-{node.node_id}", marker)
+            self.check(f"rolling_upgrade_node_{node.node_id}_new_wire_write_observed", True)
+        self.check("rolling_upgrade_all_senders_current_before_any_receiver_closes", True)
 
         # The compatibility wire is an upgrade-only bridge. Restart each
         # candidate one at a time with the flag removed, preserving quorum,
@@ -423,8 +371,6 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-binary", required=True, type=Path)
     parser.add_argument("--base-sha256", required=True)
-    parser.add_argument("--base-source-sha", required=True)
-    parser.add_argument("--base-wire-profile", choices=("strict-current", "legacy-v1"))
     parser.add_argument("--candidate-binary", required=True, type=Path)
     parser.add_argument("--candidate-sha256", required=True)
     parser.add_argument("--work-dir", required=True, type=Path)
@@ -440,7 +386,6 @@ def main() -> int:
         "release_authority": False,
         "independent_attestation": False,
         "mixed_version_replay_epoch_transition": False,
-        "base_source_sha": args.base_source_sha,
         "uncovered": [
             "multi_host_upgrade",
             "skipped_version_upgrade",
@@ -454,9 +399,6 @@ def main() -> int:
     code = 1
     started = time.monotonic()
     try:
-        profile = base_wire_profile_for_source(args.base_source_sha, args.base_wire_profile)
-        report["base_wire_profile"] = profile
-        report["legacy_bridge_profile"] = profile == "legacy-v1"
         report["base_binary_sha256"] = checked_binary(args.base_binary, args.base_sha256)
         report["candidate_binary_sha256"] = checked_binary(
             args.candidate_binary, args.candidate_sha256
@@ -464,8 +406,7 @@ def main() -> int:
         if report["base_binary_sha256"] == report["candidate_binary_sha256"]:
             raise FixtureError("rolling_upgrade_requires_distinct_binaries")
         cluster = RollingUpgradeCluster(
-            args.base_binary, args.candidate_binary, args.work_dir,
-            args.base_source_sha, profile,
+            args.base_binary, args.candidate_binary, args.work_dir
         )
         report["status"] = "running"
         cluster.run()

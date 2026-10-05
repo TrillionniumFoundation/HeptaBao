@@ -85,3 +85,10 @@ mod tests {
         }
     }
 }
+
+// Fixed Darwin syscall boundary; SDK callers still forbid unsafe Rust.
+#[cfg(target_os = "macos")]
+#[allow(unsafe_code)]
+mod darwin;
+#[cfg(target_os = "macos")]
+pub use darwin::{bind_private_directory, inherit_owned_file, set_owned_file_immutable};

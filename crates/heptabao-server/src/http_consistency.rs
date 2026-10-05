@@ -318,6 +318,7 @@ pub(crate) fn admit(
             Decision::Forward => return Ok(true),
             Decision::Reject => {
                 return Err(Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 429,
                     body: json!({"errors": []}),

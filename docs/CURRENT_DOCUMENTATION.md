@@ -17,15 +17,6 @@ This is the current entry point for all 48 workspace packages. It records reposi
 
 The exact Git commit and tree outrank generated status prose.
 
-The Rust 1.99 build-channel handoff derives from reviewed product source
-`8c1e43718c30ce5185c55b258c0460bd48936a2a`, retaining its Cargo.lock and product
-changes. Qualification of the resulting tree is execution-pending. Earlier
-`5a2f7132021fcd514a3472f7d0f3d9b14365271e` head and
-`1ea61aed3085d9aeb38c74cd4ffb6369a38ca543` merge receipts apply only to their
-original sources. The owner's Rust 1.98 Full run `37318731003` failed nine
-end-to-end steps in each source lane; those failures remain unresolved and
-are not evidence about Rust 1.99.
-
 ## Architecture
 
 - `docs/architecture/HEPTABAO_CURRENT_STATE_FORMAT.md` — the current discriminator, legacy read admission, commit promotion and rollback boundaries.
@@ -204,29 +195,6 @@ An initial RADIUS attempt failed during fixture bootstrap before business checks
 the diagnostic and normal reruns both passed. Its cause remains unestablished,
 and the earlier failure record is retained in the external-SSD test workspace.
 
-The [current H02 in-memory V2 profile](plan/HEPTABAO_H02_OPENRAFT_INMEMORY_CLUSTER_V2.md)
-uses Rust 1.88.0 (effective MSRV) and 1.99.0 across the unchanged six serial
-compiler/seed entries. Its separate path-filtered pull-request workflow is the
-current entry point, with manual reruns retained. Only this profile's execution
-inputs trigger the lane; unrelated and documentation-only PRs do not.
-The byte-preserved V1 profile and workflow still accept historical 1.98.0 evidence;
-that workflow checks out its event-selected source and is not an immutable replay.
-No new exact-head execution or qualification is claimed by this source change.
-Revision 2.1 reports canonical raw equality separately from a named, bounded
-safety/outcome replay comparison. The first native V2 run's six revision-2.0
-BLOCKED receipts remain unchanged; a fresh exact-head run is still required.
-
-The [current H02 fault-lab V2 source profile](plan/HEPTABAO_H02_OPENRAFT_FAULT_LAB_V2.md)
-prepares a separate six-entry Rust 1.88.0/1.99.0 hostile-snapshot and external
-linearizability lane. It copies the committed probe lock with `--locked`, binds
-fresh source/compiler/run observations, and retains every failure before the
-final gate. Each actual concurrent history is checked independently; raw
-history, RPC or witness equality across runs is not required. The V1/native/raw
-schema/checker contracts remain unchanged. Source-only validation does not
-establish a native 1.99.0 pass or qualification; fresh exact-head hosted evidence
-is still required. Its explicit execution-input PR filter and manual dispatch
-introduce no repository permission or protection change.
-
 Historical H01/H02, V1.3, V2.4 and V2.5 admission diagnostic workflows remain
 manual-only for reproducible evidence. Their obsolete branch push triggers and
 the duplicate V2 Linux assurance schedule are retired. Pull requests use the
@@ -360,7 +328,3 @@ not a completed 2.7.0 denominator. The continuation records wrapping self-discar
 token orphan revocation, explicit standby leader status, and bounded replay
 batches with local-frontier recovery checks. Source presence and a passing
 bounded profile do not grant whole-product compatibility or production authority.
-
-## Current H02 mechanical probe profile
-
-- `docs/plan/HEPTABAO_H02_MECHANICAL_PROBE_V2.md` describes the eight-entry 1.71/1.88-floor and 1.99 mechanical lane, its retained failed first run, and the distinct current full-OpenRaft probe contract. Proposed corrections require fresh exact-head execution and confer no behavioral qualification.

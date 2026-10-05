@@ -22,6 +22,7 @@ impl RecordPlan {
     fn validate_kubernetes_artifact_owner(&self, state: &State) -> Result<(), Response> {
         if state.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
             && !state.engines.has_kubernetes_opaque_artifact_state()
+            && !state.engines.has_sdk_state()
         {
             return Ok(());
         }
@@ -705,6 +706,7 @@ impl Service {
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Err(Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
                     body: json!({"errors":["record durable outcome unknown; do not blindly retry"],"recovery_reference":recovery_reference}),
@@ -991,6 +993,7 @@ impl Service {
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
                     body: json!({"errors":["record durable outcome unknown; reopen and reconcile; do not blindly retry"],
@@ -1570,3 +1573,25 @@ mod tests {
 #[cfg(test)]
 #[path = "service_record_schema_tests.rs"]
 mod schema_tests;
+
+impl Service {
+    #[cfg(any(test, target_os = "linux", target_os = "macos"))]
+    pub(super) fn prepare_sdk_mount_record_root(&self, state: &mut State) -> Result<(), Response> {
+        if state.engines.record_root().is_some() {
+            return Ok(());
+        }
+        if self.record_root.is_some() {
+            return Err(Response::error(
+                503,
+                "SDK mount cannot downgrade an authenticated record root",
+            ));
+        }
+        let key = crypto::random::<32>().map_err(|e| Response::error(503, e))?;
+        state.engines = state
+            .engines
+            .migrate_kv1_records(crate::state_records::AddressKey::from_bytes(key))
+            .map_err(|e| Response::error(e.status, &e.message))?
+            .into();
+        Ok(())
+    }
+}

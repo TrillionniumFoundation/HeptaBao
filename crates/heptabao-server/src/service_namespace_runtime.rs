@@ -5,6 +5,7 @@ use super::*;
 use crate::namespace_custody::{
     Binding, Descriptor, InheritedDescriptor, InheritedParent, Key, Progress, Submission,
 };
+use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
 
 pub(super) fn unloaded_route(path: &str) -> Response {
@@ -205,6 +206,77 @@ impl Lease {
 pub(super) struct Leases(Vec<Lease>);
 
 impl Leases {
+    /// Full migration evidence comes from the same captured key slots and
+    /// authenticated typed catalogs used by normal namespace restoration.
+    /// A missing descendant, slot, generation or key leaves the old graph closed.
+    pub(super) fn validate_full_batch_catalog(
+        &self,
+        namespaces: &namespaces::NamespaceRegistry,
+        cluster_id: &str,
+    ) -> Result<(), Response> {
+        request_live()?;
+        let actuals = namespaces.batch_custody_paths();
+        let visible = namespaces.batch_visible_paths();
+        let mut proved: BTreeSet<String> = visible
+            .iter()
+            .filter(|path| {
+                !actuals.iter().any(|actual| {
+                    path.as_str() == actual
+                        || path
+                            .strip_prefix(actual.as_str())
+                            .is_some_and(|suffix| suffix.starts_with('/'))
+                })
+            })
+            .cloned()
+            .collect();
+        for actual in actuals {
+            let descriptor = match (
+                namespaces.custody_owner(&actual),
+                namespaces.inherited_owner(&actual),
+            ) {
+                (Some(owner), None) => Owner::Independent(owner.clone()),
+                (None, Some(owner)) => Owner::Inherited(owner.clone()),
+                _ => return Err(unavailable()),
+            };
+            let binding = namespaces.custody_binding(cluster_id, &actual)?;
+            if descriptor.binding() != &binding {
+                return Err(unavailable());
+            }
+            let mut matching = None;
+            for lease in &self.0 {
+                if lease
+                    .0
+                    .lock()
+                    .map_err(|_| unavailable())?
+                    .binding
+                    .namespace()
+                    == actual
+                    && matching.replace(lease).is_some()
+                {
+                    return Err(unavailable());
+                }
+            }
+            let paths = matching
+                .ok_or_else(unavailable)?
+                .with_key(&descriptor, |key| {
+                    let raw = descriptor
+                        .open_assets(&binding, key)
+                        .map_err(|_| unavailable())?;
+                    let assets: namespace_assets::NamespaceAssets =
+                        serde_json::from_slice(&raw).map_err(|_| unavailable())?;
+                    assets.batch_hydrated_paths(namespaces, &actual)
+                })?;
+            proved.extend(paths);
+        }
+        if proved != visible {
+            return Err(unavailable());
+        }
+        // Reobserve every original captured slot after the last actual MAC
+        // read; a key revoked during another owner's read cannot authorize adoption.
+        self.validate()?;
+        request_live()
+    }
+
     pub(super) fn validate(&self) -> Result<(), Response> {
         for lease in &self.0 {
             lease.validate()?;

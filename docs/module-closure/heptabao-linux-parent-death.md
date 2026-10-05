@@ -6,10 +6,10 @@ This dossier is the independently reviewable design, boundary, failure-semantics
 
 - **Capability domain:** fixed Linux provider owner-thread death binding and owned terminal wait
 - **Repository state:** `IMPLEMENTED_REVIEW_REQUIRED`.
-- **Source root:** `crates/heptabao-linux-parent-death`; Rust files: `crates/heptabao-linux-parent-death/src/lib.rs`.
+- **Source root:** `crates/heptabao-linux-parent-death`; Rust files: `crates/heptabao-linux-parent-death/src/darwin.rs`, `crates/heptabao-linux-parent-death/src/lib.rs`.
 - **Internal dependencies:** none.
 - **Runtime placement:** `no/standalone or indirect; verify CURRENT_RUNTIME_MAP`. The current runtime map is authoritative for whether this package is in the executable server dependency closure.
-- **Public design surface:** fn `bind_owner_death`
+- **Public design surface:** fn `set_owned_file_immutable`; fn `bind_private_directory`; fn `inherit_owned_file`; fn `bind_owner_death`
 
 The module owns only the state and transitions described by its source files. It must not silently create an HTTP route, persistence format, authorization decision, external effect, or production guarantee unless that responsibility is visible in the source and in the current runtime map. Cross-module state is passed through typed APIs; callers remain responsible for transaction scope and durable publication where this package has no storage dependency.
 
@@ -29,7 +29,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** portable repository-relative source SHA-256 `5f814ea0b2c4be5a15e7f39e71f0b08b8edcce7662d4cdcff9e04d6b35e19bf8`; manifest SHA-256 `a5b16877d5d9a454961bf43ae24ee54e04c62bda833eedab268124cdad0b0a32`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `766f76f183233fb1068d0ede1cb8f15a4067a8449e95eb1866890eddddcf670e`; manifest SHA-256 `a5b16877d5d9a454961bf43ae24ee54e04c62bda833eedab268124cdad0b0a32`.
 - **Named executable anchor:** `spawning_thread_exit_kills_and_reaps_actual_child` in `crates/heptabao-linux-parent-death/src/lib.rs`.
 - **Required command:** `cargo +1.99.0 test --locked -p heptabao-linux-parent-death` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.

@@ -230,8 +230,7 @@ impl Pki {
 
     pub(super) fn selected_issuer(&self, reference: &str) -> Result<&RootCa> {
         if self.root.as_ref().is_some_and(RootCa::is_external) {
-            self.require_public_issuer(reference)?;
-            return self.root.as_ref().ok_or_else(not_found);
+            return self.external_issuer_root(reference);
         }
         self.local_issuer(reference)
     }
@@ -541,10 +540,26 @@ impl Pki {
             let (rest, cert) =
                 x509_parser::certificate::X509Certificate::from_der(&certificate.certificate_der)
                     .map_err(|_| bad("invalid local PKI leaf certificate"))?;
+            let scheme = LeafSignature::for_key(
+                public.kind(),
+                certificate
+                    .role_leaf_profile
+                    .as_ref()
+                    .and_then(|evidence| evidence.role_name_policy.as_ref()),
+            );
+            let expected_algorithm = scheme.algorithm();
+            let (_, expected_algorithm) =
+                x509_parser::x509::AlgorithmIdentifier::from_der(&expected_algorithm)
+                    .map_err(|_| bad("invalid local PKI leaf signature algorithm"))?;
             if !rest.is_empty()
                 || cert.signature_value.unused_bits != 0
                 || cert.signature_algorithm != cert.tbs_certificate.signature
-                || !public.verify(cert.tbs_certificate.as_ref(), &cert.signature_value.data)?
+                || cert.signature_algorithm != expected_algorithm
+                || !public.verify_leaf(
+                    cert.tbs_certificate.as_ref(),
+                    &cert.signature_value.data,
+                    scheme,
+                )?
             {
                 return Err(bad("local PKI leaf signing authority changed"));
             }
@@ -863,6 +878,48 @@ impl Pki {
             })
     }
 
+    pub(super) fn resolve_certificate_serial(&self, value: &str) -> Result<String> {
+        let normalized = normalize_serial(value)?;
+        let wanted = integer(&serial_bytes(&normalized)?);
+        let mut keys = self.issued.keys().cloned().collect::<BTreeSet<_>>();
+        keys.extend(self.local_roots().map(|root| root.serial.clone()));
+        keys.extend(self.signed_ca_serials().cloned());
+        if let Some(state) = &self.local_issuers {
+            keys.extend(state.certificates.keys().cloned());
+        }
+        let mut matches = BTreeSet::new();
+        for key in keys {
+            if integer(&serial_bytes(&key)?) != wanted {
+                continue;
+            }
+            let bytes = self
+                .local_certificate(&key)
+                .or_else(|| {
+                    self.issued
+                        .get(&key)
+                        .map(|leaf| leaf.certificate_der.as_slice())
+                })
+                .ok_or_else(|| bad("certificate serial index has no signed material"))?;
+            let (rest, certificate) = x509_parser::parse_x509_certificate(bytes)
+                .map_err(|_| bad("invalid indexed certificate DER"))?;
+            if !rest.is_empty()
+                || certificate.signature_value.unused_bits != 0
+                || certificate.signature_algorithm != certificate.tbs_certificate.signature
+            {
+                return Err(bad("invalid indexed signed certificate"));
+            }
+            if der(0x02, certificate.raw_serial()) == wanted {
+                // Match the actual signed INTEGER and preserve its original
+                // durable key. Multiple old records cannot borrow an alias.
+                matches.insert(key);
+            }
+        }
+        if matches.len() > 1 {
+            return Err(bad("certificate serial is ambiguous"));
+        }
+        Ok(matches.into_iter().next().unwrap_or(normalized))
+    }
+
     pub(super) fn local_certificate(&self, serial: &str) -> Option<&[u8]> {
         self.local_roots()
             .find(|root| root.serial == serial)
@@ -960,17 +1017,27 @@ mod tests {
             "pki/",
             "issue/web",
             &json!({"common_name":"a.example.test"}),
-            &owner,
-            None,
-            now,
+            LeafAuthority {
+                owner: &owner,
+                owner_expires: None,
+                precise_owner_expires: None,
+                time: crate::auth::AuthorityTime::Coarse(now),
+                clock: None,
+                identity_templates: None,
+            },
         )?;
         let b = pki.issue_route(
             "pki/",
             "issuer/root-b/issue/web",
             &json!({"common_name":"b.example.test"}),
-            &owner,
-            None,
-            now,
+            LeafAuthority {
+                owner: &owner,
+                owner_expires: None,
+                precise_owner_expires: None,
+                time: crate::auth::AuthorityTime::Coarse(now),
+                clock: None,
+                identity_templates: None,
+            },
         )?;
         for leaf in [&a, &b] {
             assert!(
@@ -1099,9 +1166,14 @@ mod tests {
                 "pki/",
                 "issue/web",
                 &json!({"common_name":"old.example.test"}),
-                &owner,
-                None,
-                now,
+                LeafAuthority {
+                    owner: &owner,
+                    owner_expires: None,
+                    precise_owner_expires: None,
+                    time: crate::auth::AuthorityTime::Coarse(now),
+                    clock: None,
+                    identity_templates: None,
+                },
             )?;
             let serial = normalize_serial(
                 leaf.body["data"]["serial_number"]

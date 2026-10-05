@@ -114,6 +114,7 @@ fn setup_with_historical_token(
         Response {
             status: response.status,
             body: response.body.clone(),
+            response_headers: Default::default(),
             consistency_index: None,
         }
     } else {

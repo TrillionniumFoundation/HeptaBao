@@ -1,5 +1,7 @@
 use super::*;
 use std::collections::{BTreeMap, BTreeSet};
+#[path = "service_namespace_batch.rs"]
+mod batch_lifecycle;
 
 const MAX_NAMESPACE_COUNT: usize = 1024;
 const MAX_NAMESPACE_METADATA: usize = 64;
@@ -11,6 +13,9 @@ const MAX_METADATA_VALUE_BYTES: usize = 1024;
 pub(super) struct NamespaceRegistry {
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     entries: BTreeMap<String, NamespaceEntry>,
+    /// Sticky actual lifecycle, independent of encrypted catalog hydration.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    batch_lifecycle: Option<crate::auth::batch_namespace::Registry>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     next_incarnation: BTreeMap<String, u64>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
@@ -499,6 +504,7 @@ impl NamespaceRegistry {
 
     pub(super) fn is_empty(&self) -> bool {
         self.entries.is_empty()
+            && self.batch_lifecycle.is_none()
             && self.next_incarnation.is_empty()
             && self.retired_custody.is_empty()
             && self.custody_frontiers.is_empty()
@@ -539,6 +545,7 @@ impl NamespaceRegistry {
     }
 
     pub(super) fn validate(&self, cluster_id: &str) -> Result<(), Response> {
+        self.validate_batch_lifecycle(cluster_id)?;
         if self.entries.len() > MAX_NAMESPACE_COUNT
             || self.next_incarnation.len() > MAX_NAMESPACE_COUNT.saturating_mul(2)
             || self.retired_custody.len() > MAX_NAMESPACE_COUNT.saturating_mul(2)
@@ -702,6 +709,11 @@ impl NamespaceRegistry {
                 custom_metadata: BTreeMap::new(),
             },
         );
+        if let Some(lifecycle) = &mut self.batch_lifecycle {
+            lifecycle
+                .record_create(&path, incarnation, next_frontier)
+                .map_err(|error| Response::error(error.status, &error.message))?;
+        }
         if let Some(next) = next_frontier {
             self.next_incarnation.insert(path, next);
         }
@@ -734,6 +746,15 @@ impl NamespaceRegistry {
     }
 
     pub(super) fn validate_custody_successor(&self, previous: &Self) -> Result<(), Response> {
+        match (&self.batch_lifecycle, &previous.batch_lifecycle) {
+            (Some(next), Some(old)) => next
+                .validate_successor(old)
+                .map_err(|error| Response::error(error.status, &error.message))?,
+            (None, Some(_)) => {
+                return Err(Response::error(503, "namespace lifecycle cannot retire"));
+            }
+            _ => {}
+        }
         for (path, old) in &previous.custody_frontiers {
             if self
                 .custody_frontiers
@@ -798,6 +819,11 @@ impl NamespaceRegistry {
                 custom_metadata: metadata,
             },
         );
+        if let Some(lifecycle) = &mut self.batch_lifecycle {
+            lifecycle
+                .record_create(&path, incarnation, next_frontier)
+                .map_err(|error| Response::error(error.status, &error.message))?;
+        }
         if let Some(next) = next_frontier {
             self.next_incarnation.insert(path, next);
         }
@@ -841,6 +867,11 @@ impl NamespaceRegistry {
             .incarnation
             .checked_add(1)
             .ok_or_else(|| Response::error(507, "namespace incarnation exhausted"))?;
+        if let Some(lifecycle) = &mut self.batch_lifecycle {
+            lifecycle
+                .record_remove(&path, entry.incarnation, next)
+                .map_err(|error| Response::error(error.status, &error.message))?;
+        }
         self.next_incarnation.insert(path.clone(), next);
         if let Some(custody) = entry.custody {
             self.custody_frontiers
@@ -1245,6 +1276,7 @@ impl Service {
                 }
             }
             return Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
                 body: Value::Null,
@@ -1294,6 +1326,13 @@ impl Service {
                     Ok(seal) => seal,
                     Err(error) => return error,
                 };
+                // Pure historical catalog creation does not invent a batch
+                // ledger. An existing ledger must remain synchronized below.
+                if state.namespaces.batch_lifecycle.is_some()
+                    && let Err(error) = state.ensure_namespace_batch_registry()
+                {
+                    return error;
+                }
                 let exists = state.namespaces.contains(&target);
                 if exists {
                     if seal.is_some() {
@@ -1318,6 +1357,11 @@ impl Service {
                         return Response::error(error.status, &error.message);
                     }
                     state.engines.ensure_empty_namespace(&target);
+                }
+                if state.namespaces.batch_lifecycle.is_some()
+                    && let Err(error) = state.sync_namespace_batch_registry()
+                {
+                    return error;
                 }
                 let mut shares = None;
                 let mut threshold = 0;
@@ -1429,17 +1473,20 @@ impl Service {
                     // Terminal observation of an absent namespace is read-only.
                     return Response::ok(json!({"data": null}));
                 }
-                if !state.auth.namespace_batch_retirement_safe() {
-                    return Response::error(
-                        409,
-                        "namespace deletion requires stateless batch incarnation retirement",
-                    );
-                }
                 let populated = !state.namespace_payload_is_empty(&target);
                 if populated && !state.namespace_has_only_local_cleanup(&target) {
                     return Response::error(
                         409,
                         "namespace contains runtime state; owned cleanup is required before deletion",
+                    );
+                }
+                if let Err(error) = state.ensure_namespace_batch_registry() {
+                    return error;
+                }
+                if !state.auth.namespace_batch_retirement_safe() {
+                    return Response::error(
+                        409,
+                        "namespace deletion requires stateless batch incarnation retirement",
                     );
                 }
                 let binding = match state.namespaces.custody_binding(&state.cluster_id, &target) {
@@ -1502,6 +1549,9 @@ impl Service {
                     return Response::error(error.status, &error.message);
                 }
                 if let Err(error) = state.namespaces.remove(&target) {
+                    return error;
+                }
+                if let Err(error) = state.sync_namespace_batch_registry() {
                     return error;
                 }
                 state.auth.remove_fresh_namespace_auth_defaults(&target);

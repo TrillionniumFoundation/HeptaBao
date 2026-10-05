@@ -1,5 +1,7 @@
 //! Native name/SAN/no-store cases and genuine protected format publication.
 use super::*;
+#[path = "service_pki_role_signature_tests.rs"]
+mod signature_policy;
 
 fn named_role(service: &mut Service, admin: &str, extra: Value) -> TestResult {
     timed_role(service, admin, json!({"ttl":"10m"}))?;
@@ -973,5 +975,848 @@ fn pki_names93_external_structured_subject_and_policy_survive_real_signer_retire
         json!({}),
     );
     check_extended_der(&read, &issuer)?;
+    Ok(())
+}
+
+fn actual_csr_fixture() -> TestResult<(String, Vec<u8>)> {
+    let group = openssl::ec::EcGroup::from_curve_name(openssl::nid::Nid::X9_62_PRIME256V1)?;
+    let key = PKey::from_ec_key(openssl::ec::EcKey::generate(&group)?)?;
+    let mut name = openssl::x509::X509Name::builder()?;
+    name.append_entry_by_text("CN", "csr.example.test")?;
+    let mut request = openssl::x509::X509Req::builder()?;
+    request.set_subject_name(&name.build())?;
+    request.set_pubkey(&key)?;
+    let extension = openssl::x509::extension::SubjectAlternativeName::new()
+        .dns("csr-san.example.test")
+        .build(&request.x509v3_context(None))?;
+    let mut extensions = openssl::stack::Stack::new()?;
+    extensions.push(extension)?;
+    request.add_extensions(&extensions)?;
+    request.sign(&key, openssl::hash::MessageDigest::sha256())?;
+    Ok((
+        String::from_utf8(request.build().to_pem()?)?,
+        key.public_key_to_der()?,
+    ))
+}
+
+fn check_actual_csr_leaf(
+    response: &Response,
+    issuer: &X509,
+    public: &[u8],
+    cn: &str,
+    dns: &[&str],
+) -> TestResult<String> {
+    let cert = signed_leaf(response, issuer)?;
+    assert!(
+        response.body["data"].get("private_key").is_none()
+            && response.body["data"].get("private_key_type").is_none(),
+        "sign releases no new private key"
+    );
+    assert_eq!(
+        cert.public_key()?.public_key_to_der()?,
+        public,
+        "actual CSR SPKI is the signed subject key"
+    );
+    let der = cert.to_der()?;
+    let (_, parsed) = X509Certificate::from_der(&der).map_err(|_| "CSR signed DER")?;
+    assert_eq!(
+        parsed
+            .subject()
+            .iter_common_name()
+            .next()
+            .ok_or("CN")?
+            .as_str()?,
+        cn
+    );
+    let names = cert
+        .subject_alt_names()
+        .ok_or("CSR signed SAN")?
+        .iter()
+        .filter_map(|name| name.dnsname().map(str::to_owned))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        names, dns,
+        "actual native CSR/API SAN precedence and ordering"
+    );
+    assert_eq!(parsed.validity().not_before.timestamp(), 55);
+    assert_eq!(parsed.validity().not_after.timestamp(), 700);
+    Ok(response.body["data"]["serial_number"]
+        .as_str()
+        .ok_or("serial")?
+        .to_owned())
+}
+
+#[test]
+fn pki_csr93_real_signature_spki_native_precedence_rejections_and_encrypted_reopen() -> TestResult {
+    let (root, mut service, unseal, admin, issuer) = local_fixture()?;
+    let (csr, public) = actual_csr_fixture()?;
+    let mut last = String::new();
+    for (flags, inputs, cn, names, warnings) in [
+        (
+            json!({}),
+            json!({"common_name":"api.example.test","alt_names":"api-san.example.test"}),
+            "csr.example.test",
+            vec!["csr-san.example.test", "csr.example.test"],
+            json!([
+                "the common_name field was provided but the role is set with \"use_csr_common_name\" set to true",
+                "the alt_names field was provided but the role is set with \"use_csr_sans\" set to true"
+            ]),
+        ),
+        (
+            json!({"use_csr_common_name":false}),
+            json!({"common_name":"api.example.test","alt_names":"api-san.example.test"}),
+            "api.example.test",
+            vec!["csr-san.example.test", "api.example.test"],
+            json!([
+                "the alt_names field was provided but the role is set with \"use_csr_sans\" set to true"
+            ]),
+        ),
+        (
+            json!({"use_csr_sans":false}),
+            json!({"common_name":"api.example.test","alt_names":"api-san.example.test"}),
+            "csr.example.test",
+            vec!["csr.example.test", "api-san.example.test"],
+            json!([
+                "the common_name field was provided but the role is set with \"use_csr_common_name\" set to true"
+            ]),
+        ),
+    ] {
+        let mut flags = flags;
+        flags["not_before_duration"] = json!("45s");
+        named_role(&mut service, &admin, flags)?;
+        let mut request = inputs;
+        request["csr"] = json!(csr);
+        let response = call(&mut service, "POST", "ca/sign/time", &admin, request);
+        last = check_actual_csr_leaf(&response, &issuer, &public, cn, &names)?;
+        assert_eq!(response.body["warnings"], warnings);
+        service
+            .state
+            .as_ref()
+            .ok_or("signed CSR state")?
+            .validate_format()
+            .map_err(|_| "CSR durable signed ownership")?;
+    }
+    named_role(&mut service, &admin, json!({"use_csr_common_name":false}))?;
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "before CSR rejection")?;
+    let rejected = call(
+        &mut service,
+        "POST",
+        "ca/sign/time",
+        &admin,
+        json!({"csr":csr}),
+    );
+    assert_eq!(rejected.status, 400);
+    assert_eq!(
+        rejected.body["errors"],
+        json!([
+            r#"the common_name field is required, or must be provided in a CSR with "use_csr_common_name" set to true, unless "require_cn" is set to false"#
+        ])
+    );
+    let mut corrupt = openssl::x509::X509Req::from_pem(csr.as_bytes())?.to_der()?;
+    *corrupt.last_mut().ok_or("CSR signature byte")? ^= 1;
+    let corrupt = format!(
+        "-----BEGIN CERTIFICATE REQUEST-----\n{}\n-----END CERTIFICATE REQUEST-----\n",
+        base64::Engine::encode(&BASE64, &corrupt)
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/sign/time",
+            &admin,
+            json!({"csr":corrupt,"common_name":"api.example.test"})
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "after CSR rejection")?,
+        identity
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let stored = call(
+        &mut reopened,
+        "GET",
+        &format!("ca/cert/{last}"),
+        &admin,
+        json!({}),
+    );
+    let cert = signed_leaf(&stored, &issuer)?;
+    assert_eq!(cert.public_key()?.public_key_to_der()?, public);
+    assert_eq!(
+        call(&mut reopened, "GET", "ca/roles/time", &admin, json!({})).body["data"]["use_csr_common_name"],
+        false
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_csr93_external_issuer_alias_real_key_custody_no_store_and_retirement() -> TestResult {
+    let remote = RemoteTransit::new_kind("ecdsa-p256")?;
+    let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+    let generated = call(
+        &mut service,
+        "POST",
+        "external-ca/root/generate/kms",
+        &admin,
+        body(),
+    );
+    assert_eq!(generated.status, 200);
+    let issuer = X509::from_pem(
+        generated.body["data"]["certificate"]
+            .as_str()
+            .ok_or("CA")?
+            .as_bytes(),
+    )?;
+    let issuer_id = generated.body["data"]["issuer_id"]
+        .as_str()
+        .ok_or("actual issuer")?
+        .to_owned();
+    let mut role = role_body(&default_profile());
+    role["ttl"] = json!("10m");
+    role["not_before_duration"] = json!("45s");
+    assert_eq!(
+        call(&mut service, "POST", "external-ca/roles/csr", &admin, role).status,
+        200
+    );
+    let (csr, public) = actual_csr_fixture()?;
+    let response = call(
+        &mut service,
+        "POST",
+        &format!("external-ca/issuer/{issuer_id}/sign/csr"),
+        &admin,
+        json!({"csr":csr}),
+    );
+    let serial = check_actual_csr_leaf(
+        &response,
+        &issuer,
+        &public,
+        "csr.example.test",
+        &["csr-san.example.test", "csr.example.test"],
+    )?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PATCH",
+            "external-ca/roles/csr",
+            &admin,
+            json!({"no_store":true})
+        )
+        .status,
+        200
+    );
+    let delivered = call(
+        &mut service,
+        "POST",
+        "external-ca/sign/csr",
+        &admin,
+        json!({"csr":csr}),
+    );
+    let not_stored = check_actual_csr_leaf(
+        &delivered,
+        &issuer,
+        &public,
+        "csr.example.test",
+        &["csr-san.example.test", "csr.example.test"],
+    )?;
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            &format!("external-ca/cert/{not_stored}"),
+            &admin,
+            json!({})
+        )
+        .status,
+        404
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/root/delete",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    let before = remote.calls()?;
+    let stored = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert_eq!(
+        signed_leaf(&stored, &issuer)?
+            .public_key()?
+            .public_key_to_der()?,
+        public
+    );
+    assert_eq!(remote.calls()?, before);
+    service
+        .state
+        .as_ref()
+        .ok_or("retired CSR")?
+        .validate_format()
+        .map_err(|_| "archived true CSR public owner")?;
+    drop(service);
+    let mut reopened = root.service()?;
+    reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let stored = call(
+        &mut reopened,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert_eq!(
+        signed_leaf(&stored, &issuer)?
+            .public_key()?
+            .public_key_to_der()?,
+        public
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_csr93_small_rsa_native_bad_request_after_actual_signature_and_no_publication() -> TestResult
+{
+    let (_root, mut service, _, admin, _) = local_fixture()?;
+    named_role(
+        &mut service,
+        &admin,
+        json!({"key_type":"rsa","key_bits":2048}),
+    )?;
+    let key = PKey::from_rsa(openssl::rsa::Rsa::generate(1024)?)?;
+    let mut name = openssl::x509::X509Name::builder()?;
+    name.append_entry_by_text("CN", "csr.example.test")?;
+    let mut request = openssl::x509::X509Req::builder()?;
+    request.set_subject_name(&name.build())?;
+    request.set_pubkey(&key)?;
+    request.sign(&key, openssl::hash::MessageDigest::sha256())?;
+    let request = request.build();
+    assert!(request.verify(&key)?);
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "before small CSR")?;
+    let rejected = call(
+        &mut service,
+        "POST",
+        "ca/sign/time",
+        &admin,
+        json!({"csr":String::from_utf8(request.to_pem()?)?}),
+    );
+    assert_eq!(rejected.status, 400);
+    assert_eq!(
+        rejected.body["errors"],
+        json!(["role requires a minimum of a 2048-bit key, but CSR's key is 1024 bits"])
+    );
+    let mut corrupt = request.to_der()?;
+    *corrupt.last_mut().ok_or("small CSR signature byte")? ^= 1;
+    let corrupt = format!(
+        "-----BEGIN CERTIFICATE REQUEST-----\n{}\n-----END CERTIFICATE REQUEST-----\n",
+        base64::Engine::encode(&BASE64, &corrupt)
+    );
+    let rejected = call(
+        &mut service,
+        "POST",
+        "ca/sign/time",
+        &admin,
+        json!({"csr":corrupt}),
+    );
+    assert_eq!(rejected.status, 400);
+    assert_eq!(
+        rejected.body["errors"],
+        json!(["request signature invalid"])
+    );
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "after small CSR rejection")?,
+        identity
+    );
+    Ok(())
+}
+
+fn actual_template_identity(
+    service: &mut Service,
+    admin: &str,
+) -> TestResult<(String, String, String)> {
+    assert_eq!(
+        call(
+            service,
+            "POST",
+            "sys/auth/pki-userpass",
+            admin,
+            json!({"type":"userpass"})
+        )
+        .status,
+        204
+    );
+    let mounts = call(service, "GET", "sys/auth", admin, json!({}));
+    assert_eq!(mounts.status, 200);
+    let accessor = mounts.body["data"]["pki-userpass/"]["accessor"]
+        .as_str()
+        .ok_or("actual accessor")?
+        .to_owned();
+    let entity = call(
+        service,
+        "POST",
+        "identity/entity",
+        admin,
+        json!({
+            "name":"entity.example.test","metadata":{"dns":"domain.example.test","team":"demo","wildcard":"*.example.test"}
+        }),
+    );
+    assert_eq!(entity.status, 200);
+    let entity_id = entity.body["data"]["id"]
+        .as_str()
+        .ok_or("canonical entity ID")?
+        .to_owned();
+    assert_eq!(
+        call(
+            service,
+            "POST",
+            "identity/entity-alias",
+            admin,
+            json!({
+                "name":"pki-fixture","canonical_id":entity_id,"mount_accessor":accessor
+            })
+        )
+        .status,
+        200
+    );
+    let policy = r#"path "ca/issue/*" { capabilities = ["update"] }
+path "ca/sign/*" { capabilities = ["update"] }
+path "external-ca/issue/*" { capabilities = ["update"] }
+path "external-ca/sign/*" { capabilities = ["update"] }"#;
+    assert_eq!(
+        call(
+            service,
+            "PUT",
+            "sys/policies/acl/pki-entity",
+            admin,
+            json!({"policy":policy})
+        )
+        .status,
+        204
+    );
+    assert_eq!(call(service, "POST", "auth/pki-userpass/users/pki-fixture", admin, json!({
+        "password":"actual ephemeral template fixture password","token_policies":["pki-entity"]
+    })).status, 204);
+    let login = call(
+        service,
+        "POST",
+        "auth/pki-userpass/login/pki-fixture",
+        "",
+        json!({
+            "password":"actual ephemeral template fixture password"
+        }),
+    );
+    assert_eq!(login.status, 200);
+    assert_eq!(login.body["auth"]["entity_id"], entity_id);
+    let token = login.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("actual entity token")?
+        .to_owned();
+    Ok((token, entity_id, accessor))
+}
+
+fn actual_template_signed_csr(
+    service: &mut Service,
+    issuer: &X509,
+    token: &str,
+    csr: &str,
+    public: &[u8],
+    path: &str,
+    uri: &str,
+) -> TestResult {
+    let response = call(
+        service,
+        "POST",
+        path,
+        token,
+        json!({"csr":csr,"uri_sans":uri}),
+    );
+    let cert = signed_leaf(&response, issuer)?;
+    assert_eq!(cert.public_key()?.public_key_to_der()?, public);
+    assert!(response.body["data"].get("private_key").is_none());
+    assert!(
+        cert.subject_alt_names()
+            .ok_or("actual template CSR URI")?
+            .iter()
+            .any(|name| name.uri() == Some(uri))
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_templates93_native_entity_alias_metadata_glob_and_fresh_private_projection() -> TestResult {
+    let (root, mut service, unseal, admin, issuer) = local_fixture()?;
+    let (token, entity_id, accessor) = actual_template_identity(&mut service, &admin)?;
+    for (changes, request, status, error) in [
+        (
+            json!({"allowed_domains":["{{identity.entity.name}}"],"allowed_domains_template":true,"allow_bare_domains":true}),
+            json!({"common_name":"entity.example.test"}),
+            200,
+            "",
+        ),
+        (
+            json!({"allowed_domains":["{{identity.entity.name}}"],"allowed_domains_template":false,"allow_bare_domains":true}),
+            json!({"common_name":"entity.example.test"}),
+            400,
+            "common name entity.example.test not allowed by this role",
+        ),
+        (
+            json!({"allowed_domains":["{{identity.entity.metadata.dns}}"],"allowed_domains_template":true}),
+            json!({"common_name":"leaf.domain.example.test"}),
+            200,
+            "",
+        ),
+        (
+            json!({"allowed_domains":[format!("{{{{identity.entity.aliases.{accessor}.name}}}}.example.test")],"allowed_domains_template":true,"allow_bare_domains":true}),
+            json!({"common_name":"pki-fixture.example.test"}),
+            200,
+            "",
+        ),
+        (
+            json!({"allowed_uri_sans":["spiffe://example.test/{{identity.entity.metadata.team}}/*"],"allowed_uri_sans_template":true}),
+            json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/demo/service"}),
+            200,
+            "",
+        ),
+        (
+            json!({"allowed_uri_sans":["spiffe://example.test/{{identity.entity.metadata.team}}/*"],"allowed_uri_sans_template":false}),
+            json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/demo/service"}),
+            400,
+            "URI Subject Alternative Names were provided via the API which are not valid for this role",
+        ),
+        (
+            json!({"allowed_domains":["{{identity.entity.metadata.wildcard}}"],"allowed_domains_template":true,"allow_glob_domains":true}),
+            json!({"common_name":"leaf.example.test"}),
+            400,
+            "common name leaf.example.test not allowed by this role",
+        ),
+        (
+            json!({"allowed_domains":["{{identity.entity.metadata.wildcard}}"],"allowed_domains_template":true,"allow_glob_domains":true,"allow_globs_in_identity_templates":true}),
+            json!({"common_name":"leaf.example.test"}),
+            200,
+            "",
+        ),
+    ] {
+        named_role(&mut service, &admin, changes)?;
+        let before = service
+            .current_state_identity()
+            .map_err(|_| "before native template")?;
+        let response = call(&mut service, "POST", "ca/issue/time", &token, request);
+        assert_eq!(response.status, status, "native entity template outcome");
+        if status == 200 {
+            signed_leaf(&response, &issuer)?;
+            service
+                .state
+                .as_ref()
+                .ok_or("template state")?
+                .validate_format()
+                .map_err(|_| "signed template state")?;
+        } else {
+            assert_eq!(response.body["errors"], json!([error]));
+            assert_eq!(
+                service
+                    .current_state_identity()
+                    .map_err(|_| "after native template rejection")?,
+                before
+            );
+        }
+    }
+    named_role(
+        &mut service,
+        &admin,
+        json!({
+            "allowed_uri_sans":["spiffe://example.test/{{identity.entity.metadata.team}}/*"],"allowed_uri_sans_template":true
+        }),
+    )?;
+    let (csr, public) = actual_csr_fixture()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PATCH",
+            "ca/roles/time",
+            &admin,
+            json!({"use_csr_sans":false})
+        )
+        .status,
+        200
+    );
+    actual_template_signed_csr(
+        &mut service,
+        &issuer,
+        &token,
+        &csr,
+        &public,
+        "ca/sign/time",
+        "spiffe://example.test/demo/service",
+    )?;
+    assert_eq!(call(&mut service, "POST", &format!("identity/entity/id/{entity_id}"), &admin,
+        json!({"metadata":{"dns":"domain.example.test","team":"next","wildcard":"*.example.test"}})).status, 204);
+    assert_eq!(call(&mut service, "POST", "ca/issue/time", &token,
+        json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/demo/service"})).status, 400);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "ca/sign/time",
+            &token,
+            json!({"csr":csr,"uri_sans":"spiffe://example.test/demo/service"})
+        )
+        .status,
+        400
+    );
+    actual_template_signed_csr(
+        &mut service,
+        &issuer,
+        &token,
+        &csr,
+        &public,
+        "ca/sign/time",
+        "spiffe://example.test/next/service",
+    )?;
+    let admitted = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &token,
+        json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/next/service"}),
+    );
+    let cert = signed_leaf(&admitted, &issuer)?;
+    assert!(
+        cert.subject_alt_names()
+            .ok_or("actual URI SAN")?
+            .iter()
+            .any(|name| name.uri() == Some("spiffe://example.test/next/service"))
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(&mut reopened, "GET", "ca/roles/time", &admin, json!({})).body["data"]["allowed_uri_sans_template"],
+        true
+    );
+    let admitted = call(
+        &mut reopened,
+        "POST",
+        "ca/issue/time",
+        &token,
+        json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/next/service"}),
+    );
+    signed_leaf(&admitted, &issuer)?;
+    actual_template_signed_csr(
+        &mut reopened,
+        &issuer,
+        &token,
+        &csr,
+        &public,
+        "ca/sign/time",
+        "spiffe://example.test/next/service",
+    )?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            &format!("identity/entity/id/{entity_id}"),
+            &admin,
+            json!({"disabled":true})
+        )
+        .status,
+        204
+    );
+    assert_eq!(call(&mut reopened, "POST", "ca/issue/time", &token,
+        json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/next/service"})).status, 403);
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "ca/sign/time",
+            &token,
+            json!({"csr":csr,"uri_sans":"spiffe://example.test/next/service"})
+        )
+        .status,
+        403
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_templates93_external_signed_uri_owner_retirement_and_encrypted_reopen() -> TestResult {
+    let remote = RemoteTransit::new_kind("ecdsa-p256")?;
+    let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+    let generated = call(
+        &mut service,
+        "POST",
+        "external-ca/root/generate/kms",
+        &admin,
+        body(),
+    );
+    assert_eq!(generated.status, 200);
+    let issuer = X509::from_pem(
+        generated.body["data"]["certificate"]
+            .as_str()
+            .ok_or("actual KMS CA")?
+            .as_bytes(),
+    )?;
+    let (token, _, _) = actual_template_identity(&mut service, &admin)?;
+    let mut role = role_body(&default_profile());
+    role["allowed_uri_sans"] = json!(["spiffe://example.test/{{identity.entity.metadata.team}}/*"]);
+    role["allowed_uri_sans_template"] = json!(true);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/roles/template",
+            &admin,
+            role
+        )
+        .status,
+        200
+    );
+    let response = call(
+        &mut service,
+        "POST",
+        "external-ca/issue/template",
+        &token,
+        json!({"common_name":"leaf.example.test","uri_sans":"spiffe://example.test/demo/service"}),
+    );
+    let (csr, public) = actual_csr_fixture()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PATCH",
+            "external-ca/roles/template",
+            &admin,
+            json!({"use_csr_sans":false})
+        )
+        .status,
+        200
+    );
+    actual_template_signed_csr(
+        &mut service,
+        &issuer,
+        &token,
+        &csr,
+        &public,
+        "external-ca/sign/template",
+        "spiffe://example.test/demo/service",
+    )?;
+    let certificate = signed_leaf(&response, &issuer)?;
+    assert!(
+        certificate
+            .subject_alt_names()
+            .ok_or("external actual URI")?
+            .iter()
+            .any(|name| name.uri() == Some("spiffe://example.test/demo/service"))
+    );
+    let serial = response.body["data"]["serial_number"]
+        .as_str()
+        .ok_or("serial")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/root/delete",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    let calls = remote.calls()?;
+    let stored = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert_eq!(
+        signed_leaf(&stored, &issuer)?.to_der()?,
+        certificate.to_der()?
+    );
+    assert_eq!(remote.calls()?, calls);
+    service
+        .state
+        .as_ref()
+        .ok_or("retired template")?
+        .validate_format()
+        .map_err(|_| "actual template public owner")?;
+    drop(service);
+    let mut reopened = root.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let stored = call(
+        &mut reopened,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert_eq!(
+        signed_leaf(&stored, &issuer)?.to_der()?,
+        certificate.to_der()?
+    );
+    reopened
+        .state
+        .as_ref()
+        .ok_or("reopened template")?
+        .validate_format()
+        .map_err(|_| "template reopened owner")?;
     Ok(())
 }

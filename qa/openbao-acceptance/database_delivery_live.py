@@ -174,7 +174,11 @@ def check_case(binary, root, case):
             lookup_status, lookup = instance.call("POST", "auth/token/lookup", {"token": token})
             require(lookup_status == 200 and lookup.get("data", {}).get("num_uses") == 1, "finite_use_not_reauthenticated")
         if case == "issue_namespace_seal":
-            require(instance.call("POST", "sys/namespaces/team/unseal", {})[0] == 204, "namespace_unseal")
+            require(instance.call("POST", "sys/namespaces/team/unseal", {})[0] == 500,
+                    "empty_key_cannot_restore_inherited_namespace")
+            require(instance.call("POST", "sys/seal", {})[0] == 204, "inherited_global_seal")
+            require(instance.call("POST", "sys/unseal", {"key": unseal_key})[0] == 200,
+                    "actual_global_key_restores_inherited_namespace")
         # Reopen encrypted service state before any explicit cleanup.
         instance.stop()
         instance.start()

@@ -40,6 +40,7 @@ impl LocalRootMetadata {
     }
 }
 
+#[derive(Clone)]
 pub(super) struct RootFields {
     pub(super) subject_der: Vec<u8>,
     pub(super) dns_sans: Vec<String>,
@@ -261,12 +262,45 @@ pub(super) fn root_expiration(
     max_ttl: u64,
     default_ttl: u64,
 ) -> Result<u64> {
+    resolve_root_expiration(body, now, max_ttl, default_ttl, false).map(|(expires, _)| expires)
+}
+
+pub(super) fn root_expiration_capped(
+    body: &Value,
+    now: u64,
+    max_ttl: u64,
+    default_ttl: u64,
+) -> Result<(u64, Vec<String>)> {
+    resolve_root_expiration(body, now, max_ttl, default_ttl, true)
+}
+
+fn resolve_root_expiration(
+    body: &Value,
+    now: u64,
+    max_ttl: u64,
+    default_ttl: u64,
+    cap_ttl: bool,
+) -> Result<(u64, Vec<String>)> {
     let not_after = match body.get("not_after") {
         None | Some(Value::Null) => "",
         Some(Value::String(value)) => value,
         _ => return Err(bad("invalid PKI not_after")),
     };
     let ttl = ttl_field(body, "ttl", 0)?;
+    let requested_ttl = if ttl == 0 { default_ttl } else { ttl };
+    let mut warnings = Vec::new();
+    let ttl = if cap_ttl && not_after.is_empty() && requested_ttl > max_ttl {
+        warnings.push(format!(
+            "TTL \"{}\" is longer than permitted maxTTL \"{}\", so maxTTL is being used",
+            role_time::go_duration(requested_ttl),
+            role_time::go_duration(max_ttl)
+        ));
+        max_ttl
+    } else if not_after.is_empty() {
+        requested_ttl
+    } else {
+        ttl
+    };
     let expiration = if !not_after.is_empty() {
         if ttl != 0 {
             return Err(bad(
@@ -275,13 +309,13 @@ pub(super) fn root_expiration(
         }
         rfc3339_seconds(not_after)?
     } else {
-        now.checked_add(if ttl == 0 { default_ttl } else { ttl })
+        now.checked_add(ttl)
             .ok_or_else(|| bad("PKI root TTL overflow"))?
     };
-    if expiration <= now || expiration - now > max_ttl {
+    if expiration <= now || (!cap_ttl && expiration - now > max_ttl) {
         return Err(bad("PKI root TTL is outside bounds"));
     }
-    Ok(expiration)
+    Ok((expiration, warnings))
 }
 
 pub(super) fn rfc3339_seconds(value: &str) -> Result<u64> {
@@ -497,6 +531,64 @@ mod tests {
     }
 
     #[test]
+    fn root_mount_defaults_cap_warnings_and_absolute_override_match_native() -> TestResult {
+        let now = 1_700_000_000;
+        let pki = Pki::default();
+        assert_eq!((pki.default_ttl, pki.max_ttl), (2_764_800, 2_764_800));
+        for (fields, expiration, capped) in [
+            (json!({"ttl":"4h"}), now + 600, true),
+            (json!({}), now + 300, false),
+            (json!({"ttl":0}), now + 300, false),
+            (json!({"ttl":"0s"}), now + 300, false),
+            (
+                json!({"not_after":"2023-11-15T00:13:20Z"}),
+                now + 7200,
+                false,
+            ),
+        ] {
+            let mut pki = Pki::default();
+            pki.tune(&json!({"default_lease_ttl":"5m","max_lease_ttl":"10m"}))?;
+            let mut body = json!({"common_name":"ca.example.test","key_type":"ec"});
+            body.as_object_mut()
+                .ok_or("root body")?
+                .extend(fields.as_object().ok_or("root time fields")?.clone());
+            let response = pki.handle_admin("POST", "root/generate/internal", &body, now)?;
+            assert_eq!(response.body["data"]["expiration"], expiration);
+            let warnings = response.body["warnings"]
+                .as_array()
+                .ok_or("root warnings")?;
+            assert_eq!(warnings.len(), if capped { 2 } else { 1 });
+            if capped {
+                assert_eq!(
+                    warnings[0],
+                    "TTL \"4h0m0s\" is longer than permitted maxTTL \"10m0s\", so maxTTL is being used"
+                );
+            }
+            let root = pki.root.as_ref().ok_or("stored root")?;
+            let (_, cert) = X509Certificate::from_der(&root.certificate_der)?;
+            assert_eq!(
+                cert.validity().not_after.timestamp(),
+                i64::try_from(expiration)?
+            );
+            root.local_key()?
+                .public()?
+                .validate_certificate(&root.certificate_der)?;
+            let bytes = Zeroizing::new(serde_json::to_vec(&pki)?);
+            let reopened: Pki = serde_json::from_slice(&bytes)?;
+            reopened.validate("", "pki/", now)?;
+            assert_eq!(
+                reopened
+                    .root
+                    .as_ref()
+                    .ok_or("reopened root")?
+                    .certificate_der,
+                root.certificate_der
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
     fn complete_root_dn_sans_constraints_and_reopened_leaf_crl_are_real() -> TestResult {
         for (kind, length, backdate, exclude) in [
             (LocalKeyKind::Rsa2048, 2, 90, false),
@@ -605,7 +697,7 @@ mod tests {
             let issued = reopened.issue(
                 "pki/",
                 "web",
-                &json!({"common_name":"api.example.test"}),
+                &json!({"common_name":"api.example.test","ttl":"1h"}),
                 &serde_json::from_value::<LeaseOwner>(json!("a".repeat(43)))?,
                 None,
                 now,

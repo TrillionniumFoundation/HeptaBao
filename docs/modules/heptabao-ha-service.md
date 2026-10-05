@@ -68,7 +68,7 @@ Current named source scenarios:
 - `accepted_peer_frame_waits_for_delayed_bytes_after_nonblocking_accept` — `crates/heptabao-ha-service/src/lib.rs`.
 - `tls_endpoint_and_pinned_client_identity_are_strict` — `crates/heptabao-ha-service/src/lib.rs`.
 
-Run `cargo +1.99.0 test --locked -p heptabao-ha-service --all-targets`. These are source anchors; a current test receipt is separate.
+Run `cargo +1.98.0 test --locked -p heptabao-ha-service --all-targets`. These are source anchors; a current test receipt is separate.
 
 Tests cover leader execution, follower forwarding, deduplication, quorum loss, persistent replay, tampering, receiver binding, snapshots, joint quorum, exact Raft ALPN binding and TCP framing.
 

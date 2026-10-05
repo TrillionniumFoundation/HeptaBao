@@ -215,7 +215,22 @@ fn token_role_batch_provenance_cidrs_and_lookup_survive_retirement_and_encrypted
     );
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        NAMESPACE_BATCH_STATE_SCHEMA
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .auth
+            .has_public_origin_state()
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .has_namespace_batch_state()
     );
     let mut missing_origin_floor = service.state.clone().ok_or("state")?;
     missing_origin_floor.schema = TOKEN_ROLE_STATE_SCHEMA;
@@ -265,7 +280,7 @@ fn token_role_batch_provenance_cidrs_and_lookup_survive_retirement_and_encrypted
     );
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        NAMESPACE_BATCH_STATE_SCHEMA
     );
     drop(service);
     let mut service = root.service()?;
@@ -308,7 +323,8 @@ fn ordinary_unicode_batch_schema80_floor_and_authenticated_lookup_survive_encryp
             .to_owned(),
     );
     let active = service.state.clone().ok_or("active")?;
-    assert_eq!(active.schema, AUTH_PUBLIC_ORIGIN_STATE_SCHEMA);
+    assert_eq!(active.schema, NAMESPACE_BATCH_STATE_SCHEMA);
+    assert!(active.has_namespace_batch_state());
     assert!(active.auth.has_token_api_schema80_state());
     assert!(active.auth.has_public_origin_state());
     assert!(!active.auth.has_token_role_state());
@@ -341,7 +357,7 @@ fn ordinary_unicode_batch_schema80_floor_and_authenticated_lookup_survive_encryp
     assert_eq!(lookup.body["data"]["path"], "auth/token/create");
     assert!(lookup.body["data"].get("role").is_none());
     let reopened = service.state.as_ref().ok_or("reopened")?;
-    assert_eq!(reopened.schema, AUTH_PUBLIC_ORIGIN_STATE_SCHEMA);
+    assert_eq!(reopened.schema, NAMESPACE_BATCH_STATE_SCHEMA);
     assert!(Service::validate_snapshot_protected_floor(reopened, &lower).is_err());
     Ok(())
 }

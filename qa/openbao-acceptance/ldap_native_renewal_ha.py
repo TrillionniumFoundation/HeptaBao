@@ -19,6 +19,7 @@ import threading
 import time
 
 from bao_http import SafeArgumentParser, private_write
+from native_token_expiry import expiry_nanoseconds
 from core_isolation import ROOT
 from ha_destructive import Cluster, FixtureError
 from ldap_native_live import NativeDirectory, configuration
@@ -309,8 +310,8 @@ def run(binary, root, checks, observations, inherited):
             return body.get("data", {})
 
         def expiry(node, token):
-            value = lookup(node, token).get("expire_time_unix")
-            if type(value) is not int or value <= time.time():
+            value = expiry_nanoseconds(lookup(node, token).get("expire_time"))
+            if type(value) is not int or value <= time.time_ns():
                 raise FixtureError("token_expiry_invalid")
             return value
 

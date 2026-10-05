@@ -48,13 +48,15 @@ impl NamespaceAssets {
 }
 
 impl AuthState {
-    /// Stateless batch claims currently bind a namespace path, not its actual
-    /// incarnation. Retire neither an empty nor populated namespace after any
-    /// observed batch signing; leave global keys and siblings unchanged.
+    /// The actual global lifecycle gives every new claim its incarnation and
+    /// permanently retires legacy unbound claims only at the deleted path.
+    /// Historical states retain the original unused-key structural guard.
     pub(crate) fn namespace_batch_retirement_safe(&self) -> bool {
-        self.batch_authority
-            .as_ref()
-            .is_none_or(batch::BatchKeyAuthority::has_no_issued_claims)
+        self.namespace_batch_registry.is_some()
+            || self
+                .batch_authority
+                .as_ref()
+                .is_none_or(batch::BatchKeyAuthority::has_no_issued_claims)
     }
 
     /// Local Token API cleanup is only admitted under the Service's genuine

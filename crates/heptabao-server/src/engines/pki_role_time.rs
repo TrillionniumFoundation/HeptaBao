@@ -36,8 +36,8 @@ impl Default for RoleTimePolicy {
 }
 
 pub(super) struct ResolvedRoleTime {
-    pub(super) not_before: i64,
-    pub(super) not_after: u64,
+    pub(super) not_before: PkiInstant,
+    pub(super) not_after: PkiInstant,
     pub(super) warnings: Vec<String>,
 }
 
@@ -151,35 +151,39 @@ impl RoleTimePolicy {
         role_max_ttl: u64,
         mount_default_ttl: u64,
         mount_max_ttl: u64,
-        now: u64,
+        time: crate::auth::AuthorityTime,
     ) -> Result<ResolvedRoleTime> {
+        let now = PkiInstant::authority(time)?;
         self.validate(role_max_ttl)?;
         let requested_before = text_field(request, "not_before", "")?;
         let before = if !self.not_before.is_empty() {
-            absolute_before(&self.not_before)?
+            PkiInstant::absolute(&self.not_before, "not_before")?
         } else if !requested_before.is_empty() {
             if self.not_before_bound == "forbid" {
                 return Err(bad(
                     "not_before_bound is set to forbid. not_before cannot be provided.",
                 ));
             }
-            let before = absolute_before(&requested_before)?;
+            let before = PkiInstant::absolute(&requested_before, "not_before")?;
             if self.not_before_bound == "duration"
-                && i128::from(before) < i128::from(now.saturating_sub(self.not_before_duration))
+                && before < now.backdate(self.not_before_duration, time.exact().is_some())?
             {
                 return Err(bad(&format!(
                     "not_before_bound is set to duration. Cannot satisfy request as it would result in notBefore of {} that is older than the allowed not_before_duration of {}",
-                    signed_timestamp(before),
+                    before.render(),
                     go_duration(self.not_before_duration)
                 )));
             }
             before
         } else {
-            signed_epoch(now.saturating_sub(if self.not_before_duration == 0 {
-                30
-            } else {
-                self.not_before_duration
-            }))?
+            now.backdate(
+                if self.not_before_duration == 0 {
+                    30
+                } else {
+                    self.not_before_duration
+                },
+                time.exact().is_some(),
+            )?
         };
         let requested_after = text_field(request, "not_after", "")?;
         let after_text = if !self.not_after.is_empty() {
@@ -219,19 +223,19 @@ impl RoleTimePolicy {
             ));
             ttl = max_ttl;
         }
-        let ttl_expiry = now
-            .checked_add(ttl)
-            .ok_or_else(|| bad("PKI lease TTL overflow"))?;
+        let ttl_expiry = now.add(ttl)?;
         let after = if after_text.is_empty() {
             ttl_expiry
         } else {
-            absolute_time(after_text, "not_after")?
+            let after = PkiInstant::absolute(after_text, "not_after")?;
+            after.positive_seconds()?;
+            after
         };
         if self.not_after_bound == "ttl-limited" && self.not_after.is_empty() && after > ttl_expiry
         {
             return Err(bad(&format!(
                 "not_after_bound is set to ttl-limited. Cannot satisfy request as that would result in notAfter of {} that is beyond the TTL of {}",
-                timestamp(after),
+                after.render(),
                 go_duration(ttl)
             )));
         }
@@ -241,18 +245,18 @@ impl RoleTimePolicy {
             warnings,
         })
     }
-    pub(super) fn validate_final_not_after(&self, not_after: u64) -> Result<()> {
+    pub(super) fn validate_final_not_after(&self, not_after: PkiInstant) -> Result<()> {
         if !matches!(
             self.not_after_bound.as_str(),
             "permit" | "ttl-limited" | "forbid"
         ) {
-            let bound = absolute_time(&self.not_after_bound, "not_after_bound")?;
+            let bound = PkiInstant::absolute(&self.not_after_bound, "not_after_bound")?;
             if not_after > bound {
                 return Err(bad(&format!(
                     "not_after_bound is set to {}. Cannot statisfy request as that would result in notAfter of {} that is beyond the maximum timestamp of {}",
                     self.not_after_bound,
-                    timestamp(not_after),
-                    timestamp(bound)
+                    not_after.render(),
+                    bound.render()
                 )));
             }
         }
@@ -260,7 +264,7 @@ impl RoleTimePolicy {
     }
 }
 
-fn go_duration(seconds: u64) -> String {
+pub(super) fn go_duration(seconds: u64) -> String {
     let hours = seconds / 3600;
     let minutes = seconds % 3600 / 60;
     let seconds = seconds % 60;

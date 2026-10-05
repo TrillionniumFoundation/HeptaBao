@@ -299,13 +299,9 @@ impl Service {
                 Ok(response) => response,
                 Err(error) => return auth_error(error),
             };
-        if let Err(error) = Self::finish_identity_response(
-            &mut state.auth,
-            &mut state.engines,
-            &mut response,
-            namespace,
-            now,
-        ) {
+        if let Err(error) =
+            Self::finish_state_identity_response(&mut state, &mut response, namespace, now)
+        {
             erase_json(&mut response.body);
             return error;
         }
@@ -390,6 +386,7 @@ impl Service {
         // mandatory response audit, then checks the actual final target again.
         self.pending_token_api_authority = Some(authority);
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: response.status,
             body: response.body,
@@ -527,6 +524,7 @@ impl Service {
             self.state = Some(state);
         }
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: response.status,
             body: response.body,
@@ -831,6 +829,7 @@ impl Service {
                 self.state = Some(state);
             }
             return Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: response.status,
                 body: response.body,
@@ -915,9 +914,8 @@ impl Service {
                 };
             }
         };
-        if let Err(error) = Self::finish_identity_response(
-            &mut state.auth,
-            &mut state.engines,
+        if let Err(error) = Self::finish_state_identity_response(
+            &mut state,
             &mut issued,
             &request_namespace,
             request_now,
@@ -945,6 +943,7 @@ impl Service {
             erase_json(&mut issued.body);
             if callback {
                 return consumed_oidc_error(Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
                     body: json!({
@@ -959,6 +958,7 @@ impl Service {
         }
         self.state = Some(state);
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: issued.status,
             body: issued.body,

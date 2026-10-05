@@ -112,7 +112,7 @@ fn invalid<T>(_: T) -> EngineError {
     bad("invalid local PKI CSR or CA chain")
 }
 
-fn certificate(bytes: &[u8]) -> Result<X509Certificate<'_>> {
+pub(super) fn certificate(bytes: &[u8]) -> Result<X509Certificate<'_>> {
     if bytes.is_empty() || bytes.len() > 64 * 1024 {
         return Err(bad("CA certificate is outside bounds"));
     }
@@ -134,7 +134,7 @@ fn certificate(bytes: &[u8]) -> Result<X509Certificate<'_>> {
     Ok(cert)
 }
 
-fn certificate_signed_by(bytes: &[u8], parent: &[u8]) -> Result<()> {
+pub(super) fn certificate_signed_by(bytes: &[u8], parent: &[u8]) -> Result<()> {
     let cert = certificate(bytes)?;
     let issuer = certificate(parent)?;
     if cert.issuer() != issuer.subject() {
@@ -179,7 +179,7 @@ fn validate_available_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
     Ok(())
 }
 
-fn validate_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
+pub(super) fn validate_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
     validate_available_chain(leaf, parents)?;
     let terminal = parents.last().map_or(leaf, Vec::as_slice);
     let cert = certificate(terminal)?;
@@ -189,7 +189,7 @@ fn validate_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
     Ok(())
 }
 
-fn available_ca_chain(leaf: &[u8], certificates: &[Vec<u8>]) -> Result<Vec<Vec<u8>>> {
+pub(super) fn available_ca_chain(leaf: &[u8], certificates: &[Vec<u8>]) -> Result<Vec<Vec<u8>>> {
     let mut parents = Vec::new();
     let mut current = leaf;
     let mut seen = BTreeSet::from([crypto_digest(leaf)]);
@@ -220,7 +220,7 @@ fn crypto_digest(bytes: &[u8]) -> Vec<u8> {
         .to_vec()
 }
 
-fn parse_csr(bytes: &[u8]) -> Result<X509CertificationRequest<'_>> {
+pub(super) fn parse_csr(bytes: &[u8]) -> Result<X509CertificationRequest<'_>> {
     if bytes.is_empty() || bytes.len() > 64 * 1024 {
         return Err(bad("CSR exceeds bounds"));
     }
@@ -260,7 +260,7 @@ fn parse_csr(bytes: &[u8]) -> Result<X509CertificationRequest<'_>> {
     Ok(csr)
 }
 
-fn pem_blocks(input: &str, label: &str) -> Result<Vec<Vec<u8>>> {
+pub(super) fn pem_blocks(input: &str, label: &str) -> Result<Vec<Vec<u8>>> {
     if input.len() > MAX_CA_BUNDLE || input.is_empty() {
         return Err(bad("PEM input exceeds bounds"));
     }
@@ -292,18 +292,22 @@ fn pem_blocks(input: &str, label: &str) -> Result<Vec<Vec<u8>>> {
     Ok(values)
 }
 
-fn csr_from_body(body: &Value) -> Result<Vec<u8>> {
+pub(super) fn csr_from_body(body: &Value) -> Result<Vec<u8>> {
+    let bytes = csr_bytes_from_body(body)?;
+    parse_csr(&bytes)?;
+    Ok(bytes)
+}
+
+pub(super) fn csr_bytes_from_body(body: &Value) -> Result<Vec<u8>> {
     let text = string(body, "csr")?;
     let mut values = pem_blocks(text, "CERTIFICATE REQUEST")?;
     if values.len() != 1 {
         return Err(bad("one CSR is required"));
     }
-    let bytes = values.remove(0);
-    parse_csr(&bytes)?;
-    Ok(bytes)
+    Ok(values.remove(0))
 }
 
-fn common_name(subject: &x509_parser::x509::X509Name<'_>) -> Result<String> {
+pub(super) fn common_name(subject: &x509_parser::x509::X509Name<'_>) -> Result<String> {
     let value = subject
         .iter_common_name()
         .next()
@@ -413,7 +417,7 @@ impl RootCa {
                 chain.validate(&self.certificate_der, &public)?;
                 let cert = certificate(&self.certificate_der)?;
                 if common_name(cert.subject())? != self.common_name
-                    || normalize_serial(&cert.raw_serial_as_string())? != self.serial
+                    || der(0x02, cert.raw_serial()) != integer(&serial_bytes(&self.serial)?)
                     || u64::try_from(cert.validity().not_before.timestamp()).ok()
                         != Some(self.not_before)
                     || u64::try_from(cert.validity().not_after.timestamp()).ok()
@@ -458,6 +462,54 @@ impl Pki {
             .signed_certificates
             .get(serial)
             .map(|ca| ca.certificate_der.as_slice())
+    }
+
+    pub(super) fn signed_ca_owner(&self, serial: &str) -> Option<(&str, u64, u64, Option<u64>)> {
+        let ca = self
+            .local_intermediate
+            .as_ref()?
+            .signed_certificates
+            .get(serial)?;
+        Some((&ca.issuer_id, ca.issued, ca.expires, ca.revoked_at))
+    }
+
+    pub(super) fn external_signed_ca_revocations(
+        &self,
+        issuer: &str,
+        now: u64,
+    ) -> BTreeMap<String, u64> {
+        self.local_intermediate
+            .iter()
+            .flat_map(|state| state.signed_certificates.iter())
+            .filter_map(|(serial, ca)| {
+                ca.revoked_at
+                    .filter(|_| ca.issuer_id == issuer && ca.expires > now)
+                    .map(|at| (serial.clone(), at))
+            })
+            .collect()
+    }
+
+    pub(super) fn publish_external_signed_ca_revocation(
+        &mut self,
+        serial: &str,
+        issuer: &str,
+        issuer_der: &[u8],
+        at: u64,
+    ) -> Result<()> {
+        let ca = self
+            .local_intermediate
+            .as_mut()
+            .and_then(|state| state.signed_certificates.get_mut(serial))
+            .ok_or_else(not_found)?;
+        if ca.issuer_id != issuer
+            || ca.parents.first().map(Vec::as_slice) != Some(issuer_der)
+            || at < ca.issued
+            || ca.revoked_at.is_some_and(|original| original != at)
+        {
+            return Err(bad("signed CA original external issuer changed"));
+        }
+        ca.revoked_at = Some(at);
+        Ok(())
     }
 
     pub(super) fn signed_ca_revocation_time(&self, serial: &str) -> Option<u64> {
@@ -738,7 +790,7 @@ impl Pki {
         }
         for (serial, ca) in &state.signed_certificates {
             let cert = certificate(&ca.certificate_der)?;
-            if normalize_serial(&cert.raw_serial_as_string())? != *serial
+            if der(0x02, cert.raw_serial()) != integer(&serial_bytes(serial)?)
                 || !valid_pki_id(&ca.issuer_id)
                 || ca.issuer_id.is_empty()
                 || ca.parents.is_empty()
@@ -750,7 +802,9 @@ impl Pki {
                 || cert.validity().not_before.timestamp()
                     > i64::try_from(ca.issued).map_err(invalid)?
                 || self.issued.contains_key(serial)
-                || self.local_issuer_certificate_by_id(&ca.issuer_id)
+                || self
+                    .local_issuer_certificate_by_id(&ca.issuer_id)
+                    .or_else(|| self.external_ca_owner_certificate(&ca.issuer_id))
                     != ca.parents.first().map(Vec::as_slice)
             {
                 return Err(bad("signed CA issuer ownership changed"));
@@ -779,7 +833,12 @@ impl Pki {
             } else {
                 let root = self.selected_issuer(reference)?;
                 let (id, key, name) = if root.is_external() {
-                    self.public_issuer_metadata().ok_or_else(not_found)?
+                    let key = self.external_issuer_key(reference)?;
+                    (
+                        key.issuer_id.as_str(),
+                        key.key_id.as_str(),
+                        key.issuer_name.as_str(),
+                    )
                 } else {
                     (
                         root.issuer_id.as_str(),
@@ -794,7 +853,7 @@ impl Pki {
                     key,
                     name,
                     pem("CERTIFICATE", &root.certificate_der),
-                    root.local_ca_chain_pem(),
+                    self.issuer_management_ca_chain_pem(root)?,
                     root.leaf_not_after_behavior.unwrap_or_default(),
                 )
             };
@@ -1390,12 +1449,21 @@ impl Pki {
     }
 
     fn generate_local_csr(&mut self, body: &Value, exported: bool) -> Result<EngineResponse> {
+        self.generate_local_csr_with_material(body, exported, None)
+    }
+
+    pub(super) fn generate_local_csr_with_material(
+        &mut self,
+        body: &Value,
+        exported: bool,
+        prepared: Option<LocalPrivateMaterial>,
+    ) -> Result<EngineResponse> {
         reject_unknown(body, CSR_FIELDS)?;
         let common_name = string(body, "common_name")?;
         if !external::common_name_valid(common_name) {
             return Err(bad("invalid CSR common name"));
         }
-        if self.root.as_ref().is_some_and(RootCa::is_external) {
+        if prepared.is_none() && self.root.as_ref().is_some_and(RootCa::is_external) {
             return Err(bad("local CSR cannot borrow external authority"));
         }
         if self
@@ -1426,7 +1494,16 @@ impl Pki {
         {
             return Err(bad("key name already in use"));
         }
-        let material = LocalPrivateMaterial::generate(LocalKeyKind::from_body(body)?)?;
+        let kind = LocalKeyKind::from_body(body)?;
+        let material = match prepared {
+            Some(material) => {
+                if material.kind() != kind {
+                    return Err(bad("native CSR prepared key type changed"));
+                }
+                material
+            }
+            None => LocalPrivateMaterial::generate(kind)?,
+        };
         let csr = csr_der(&material, &fields, common_name)?;
         let id = random_pki_id()?;
         if self.local_keys().any(|key| key.key_id == id)
@@ -1601,9 +1678,15 @@ impl Pki {
         )?;
         certificate_signed_by(&cert, &root.certificate_der)?;
         let format = RootOutputFormat::from_body(body)?;
-        let mut chain = vec![pem("CERTIFICATE", &cert)];
-        chain.extend(root.local_ca_chain_pem());
-        let issuing = pem("CERTIFICATE", &root.certificate_der);
+        let mut chain = vec![public::stored_pem("CERTIFICATE", &cert)];
+        let mut parent_chain = root.local_ca_chain_pem();
+        for pem in &mut parent_chain {
+            if pem.ends_with('\n') {
+                pem.pop();
+            }
+        }
+        chain.extend(parent_chain);
+        let issuing = public::stored_pem("CERTIFICATE", &root.certificate_der);
         let certificate = if matches!(format, RootOutputFormat::PemBundle) {
             chain.join("\n")
         } else {
@@ -1641,11 +1724,15 @@ impl Pki {
             json!({"certificate":certificate,"issuing_ca":issuing,"ca_chain":chain,"serial_number":external::formatted_serial(&serial),"expiration":expires}),
             true,
         );
+        // The currently admitted issuer profile has no configured AIA URLs.
+        // Keep the native warning order: AIA before the zero-path warning.
+        let mut warnings = vec![
+            "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information.",
+        ];
         if fields.max_path_length == Some(0) {
-            response.body["warnings"] = json!([
-                "Max path length of the signed certificate is zero. This certificate cannot be used to issue intermediate CA certificates."
-            ]);
+            warnings.push("Max path length of the signed certificate is zero. This certificate cannot be used to issue intermediate CA certificates.");
         }
+        response.body["warnings"] = json!(warnings);
         Ok(response)
     }
 
@@ -1855,6 +1942,203 @@ impl Pki {
     }
 }
 
+impl Pki {
+    pub(super) fn has_external_signed_ca_issuer_reference(
+        &self,
+        id: &str,
+        issuer_der: &[u8],
+    ) -> Result<bool> {
+        for ca in self
+            .local_intermediate
+            .iter()
+            .flat_map(|state| state.signed_certificates.values())
+        {
+            if ca.issuer_id == id
+                && ca
+                    .parents
+                    .first()
+                    .is_some_and(|parent| parent == issuer_der)
+            {
+                certificate_signed_by(&ca.certificate_der, issuer_der)?;
+                return Ok(true);
+            }
+        }
+        Ok(false)
+    }
+}
+
+pub(super) type ExternalPublicCaPlan = (String, Vec<u8>, Vec<Vec<u8>>);
+pub(super) type ExternalPublicCaPlans = Vec<ExternalPublicCaPlan>;
+
+impl Pki {
+    pub(super) fn prepare_external_public_parents(
+        &self,
+        objects: &[Vec<u8>],
+        child: &[u8],
+    ) -> Result<(ExternalPublicCaPlans, Vec<String>)> {
+        let mut imported = Vec::new();
+        let mut existing = Vec::new();
+        let mut seen = BTreeSet::new();
+        for der in objects.iter().filter(|der| der.as_slice() != child) {
+            certificate(der)?;
+            if !seen.insert(crypto_digest(der)) {
+                continue;
+            }
+            if let Some((id, _)) = self
+                .local_intermediate
+                .iter()
+                .flat_map(|s| &s.public_issuers)
+                .find(|(_, ca)| ca.certificate_der == *der)
+            {
+                existing.push(id.clone());
+                continue;
+            }
+            if self
+                .local_intermediate
+                .as_ref()
+                .map_or(0, |s| s.public_issuers.len())
+                + imported.len()
+                >= MAX_ISSUED
+            {
+                return Err(error(507, "public CA import capacity exhausted"));
+            }
+            imported.push((
+                random_pki_id()?,
+                der.clone(),
+                available_ca_chain(der, objects)?,
+            ));
+        }
+        Ok((imported, existing))
+    }
+    pub(super) fn publish_external_public_parents(
+        &mut self,
+        objects: &[ExternalPublicCaPlan],
+    ) -> Result<()> {
+        for (id, der, parents) in objects {
+            if !valid_pki_id(id) || id.is_empty() {
+                return Err(bad("invalid public CA import identity"));
+            }
+            validate_chain(der, parents)?;
+            let state = self.local_intermediate.get_or_insert_with(Box::default);
+            if state.public_issuers.contains_key(id) || state.public_issuers.len() >= MAX_ISSUED {
+                return Err(error(503, "public CA import changed before publication"));
+            }
+            state.public_issuers.insert(
+                id.clone(),
+                ImportedCa {
+                    certificate_der: der.clone(),
+                    parents: parents.clone(),
+                },
+            );
+        }
+        Ok(())
+    }
+}
+
+impl Pki {
+    pub(super) fn publish_external_signed_ca(
+        &mut self,
+        certificate_der: Vec<u8>,
+        parents: Vec<Vec<u8>>,
+        issuer_id: String,
+        serial: String,
+        issued: u64,
+        expires: u64,
+    ) -> Result<()> {
+        if self.intermediate_certificate(&serial).is_some()
+            || self.local_certificate(&serial).is_some()
+            || self.issued.contains_key(&serial)
+            || self
+                .local_intermediate
+                .as_ref()
+                .is_some_and(|s| s.signed_certificates.len() >= MAX_ISSUED)
+        {
+            return Err(error(
+                503,
+                "signed CA publication changed or exceeds bounds",
+            ));
+        }
+        validate_chain(&certificate_der, &parents)?;
+        self.local_intermediate
+            .get_or_insert_with(Box::default)
+            .signed_certificates
+            .insert(
+                serial,
+                SignedCa {
+                    certificate_der,
+                    parents,
+                    issuer_id,
+                    issued,
+                    expires,
+                    revoked_at: None,
+                },
+            );
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+impl Pki {
+    pub(in crate::engines) fn canonical_serial_http_fixture(now: u64) -> Result<Self> {
+        let mut pki = Self::default();
+        pki.handle_admin(
+            "POST",
+            "root/generate/internal",
+            &json!({"common_name":"actual historical parent","key_type":"ed25519","ttl":"4h"}),
+            now,
+        )?;
+        for serial in [
+            "000123456789abcdef112233445566778899aabbcc",
+            "008123456789abcdef112233445566778899aabbcc",
+        ] {
+            let parent = pki
+                .root
+                .as_ref()
+                .ok_or_else(|| bad("fixture parent missing"))?
+                .clone();
+            let material = parent.local_key()?;
+            let child = LocalPrivateMaterial::generate(LocalKeyKind::Ed25519)?.public()?;
+            let issuer_name = root_fields::certificate_subject(&parent.certificate_der)?;
+            let issuer_ski = root_fields::certificate_key_identifier(&parent.certificate_der)?;
+            let certificate = certificate_der_local(
+                &material,
+                &child,
+                CertificateSpec {
+                    serial,
+                    issuer_cn: &parent.common_name,
+                    subject_cn: "actual signed child",
+                    issuer_name_der: Some(&issuer_name),
+                    subject_name_der: None,
+                    public_key: &[],
+                    authority_key_id: issuer_ski.as_deref(),
+                    not_before: role_time::signed_epoch(now - 30)?,
+                    not_after: now + 3600,
+                    is_ca: true,
+                    alt_names: &[],
+                    email_sans: &[],
+                    ip_sans: &[],
+                    uri_sans: &[],
+                    exclude_cn_from_sans: true,
+                    max_path_length: Some(0),
+                    permitted_dns_domains: &[],
+                    role_leaf_profile: None,
+                },
+            )?;
+            certificate_signed_by(&certificate, &parent.certificate_der)?;
+            pki.publish_external_signed_ca(
+                certificate.clone(),
+                vec![parent.certificate_der.clone()],
+                parent.issuer_id.clone(),
+                serial.into(),
+                now,
+                now + 3600,
+            )?;
+        }
+        pki.validate("", "parent/", now)?;
+        Ok(pki)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::public::PkiPublicRead;
@@ -1898,6 +2182,128 @@ mod tests {
         )?;
         intermediate.validate("", "pki/", NOW)?;
         Ok((root, intermediate))
+    }
+
+    #[test]
+    fn signed_ca_original_zero_prefix_map_key_matches_exact_der_integer_and_revoke() -> TestResult {
+        let mut pki = Pki::default();
+        pki.handle_admin(
+            "POST",
+            "root/generate/internal",
+            &json!({"common_name":"actual parent","key_type":"ed25519","ttl":"4h"}),
+            NOW,
+        )?;
+        let parent = pki.root.as_ref().ok_or("parent")?.clone();
+        let material = parent.local_key()?;
+        let child = LocalPrivateMaterial::generate(LocalKeyKind::Ed25519)?.public()?;
+        let serial = "000123456789abcdef";
+        let issuer_name = root_fields::certificate_subject(&parent.certificate_der)?;
+        let issuer_ski = root_fields::certificate_key_identifier(&parent.certificate_der)?;
+        let certificate = certificate_der_local(
+            &material,
+            &child,
+            CertificateSpec {
+                serial,
+                issuer_cn: &parent.common_name,
+                subject_cn: "actual signed child",
+                issuer_name_der: Some(&issuer_name),
+                subject_name_der: None,
+                public_key: &[],
+                authority_key_id: issuer_ski.as_deref(),
+                not_before: role_time::signed_epoch(NOW - 30)?,
+                not_after: NOW + 3600,
+                is_ca: true,
+                alt_names: &[],
+                email_sans: &[],
+                ip_sans: &[],
+                uri_sans: &[],
+                exclude_cn_from_sans: true,
+                max_path_length: Some(0),
+                permitted_dns_domains: &[],
+                role_leaf_profile: None,
+            },
+        )?;
+        certificate_signed_by(&certificate, &parent.certificate_der)?;
+        assert_ne!(
+            normalize_serial(&super::certificate(&certificate)?.raw_serial_as_string())?,
+            serial
+        );
+        pki.publish_external_signed_ca(
+            certificate.clone(),
+            vec![parent.certificate_der.clone()],
+            parent.issuer_id.clone(),
+            serial.into(),
+            NOW,
+            NOW + 3600,
+        )?;
+        pki.validate("", "pki/", NOW)?;
+        assert_eq!(
+            pki.intermediate_certificate(serial),
+            Some(certificate.as_slice())
+        );
+        let canonical = canonical_serial_bytes(super::certificate(&certificate)?.raw_serial());
+        assert_ne!(canonical, serial);
+        let read = pki.handle_admin("GET", &format!("cert/{canonical}"), &json!({}), NOW)?;
+        assert_eq!(
+            read.body["data"]["certificate"],
+            public::stored_pem("CERTIFICATE", &certificate)
+        );
+        assert_eq!(
+            pki.handle_admin(
+                "POST",
+                "revoke",
+                &json!({"serial_number":canonical}),
+                NOW + 1
+            )?
+            .status,
+            200
+        );
+        pki.validate("", "pki/", NOW + 1)?;
+        let encoded = serde_json::to_vec(&pki)?;
+        let reopened: Pki = serde_json::from_slice(&encoded)?;
+        reopened.validate("", "pki/", NOW + 1)?;
+        assert_eq!(
+            reopened.intermediate_certificate(serial),
+            Some(certificate.as_slice())
+        );
+        assert_eq!(reopened.signed_ca_revocation_time(serial), Some(NOW + 1));
+        let mut ambiguous = reopened.clone();
+        let original = ambiguous
+            .local_intermediate
+            .as_ref()
+            .ok_or("owner")?
+            .signed_certificates
+            .get(serial)
+            .ok_or("record")?
+            .clone();
+        ambiguous
+            .local_intermediate
+            .as_mut()
+            .ok_or("owner")?
+            .signed_certificates
+            .insert(format!("00{serial}"), original);
+        assert!(
+            matches!(ambiguous.resolve_certificate_serial(&canonical), Err(e) if e.status==400)
+        );
+        let mut wrong = reopened.clone();
+        let record = wrong
+            .local_intermediate
+            .as_mut()
+            .ok_or("owner")?
+            .signed_certificates
+            .remove(serial)
+            .ok_or("record")?;
+        wrong
+            .local_intermediate
+            .as_mut()
+            .ok_or("owner")?
+            .signed_certificates
+            .insert("000223456789abcdef".into(), record);
+        assert!(
+            wrong.validate("", "pki/", NOW + 1).is_err(),
+            "different DER serial cannot borrow the original owner"
+        );
+        Ok(())
     }
 
     #[test]

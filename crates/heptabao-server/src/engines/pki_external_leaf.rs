@@ -35,7 +35,7 @@ pub(super) struct LeafPublic {
     #[serde(default, skip_serializing_if = "role_false")]
     pub(super) role_time_owned: bool,
     #[serde(default, skip_serializing_if = "String::is_empty")]
-    issuer_id: String,
+    pub(super) issuer_id: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     role_leaf_profile: Option<RoleLeafProfile>,
     public_key: LocalPublicKey,
@@ -73,19 +73,19 @@ impl LeafPublic {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Crl {
-    number: u64,
+    pub(super) number: u64,
     base: Option<u64>,
     issued: u64,
-    expires: u64,
-    revoked: BTreeMap<String, u64>,
-    der: Vec<u8>,
+    pub(super) expires: u64,
+    pub(super) revoked: BTreeMap<String, u64>,
+    pub(super) der: Vec<u8>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct CrlSet {
-    full: Crl,
-    delta: Crl,
+    pub(super) full: Crl,
+    pub(super) delta: Crl,
 }
 
 impl CrlSet {
@@ -162,7 +162,7 @@ impl CrlSet {
         }
         Ok(())
     }
-    fn selected(&self, delta: bool) -> &Crl {
+    pub(super) fn selected(&self, delta: bool) -> &Crl {
         if delta { &self.delta } else { &self.full }
     }
 }
@@ -322,8 +322,10 @@ fn leaf_tbs(
     Ok(seq(&[
         context_explicit(0, &integer(&[2])),
         integer(&serial_bytes(&prepared.serial)?),
-        public.signature_algorithm(),
-        if prepared.role_leaf_profile.is_some() {
+        public
+            .leaf_signature(prepared.role_name_policy.as_ref())
+            .algorithm(),
+        if prepared.role_leaf_profile.is_some() || root.has_intermediate_chain() {
             root_fields::certificate_subject(&root.certificate_der)?
         } else {
             name(&root.common_name)
@@ -362,9 +364,23 @@ impl Pki {
         path: &str,
         body: &Value,
         mount: &str,
-        owner: Option<&crate::auth::ResolvedLeaseOwner>,
-        now: u64,
+        context: crate::engines::PkiRequestContext<'_>,
     ) -> Result<Option<ExternalPkiTemplate>> {
+        let owner = context.owner;
+        let time = context.observed_time(context.time.seconds())?;
+        let now = time.seconds();
+        if (self.has_external_signer_history() || self.external.root.is_some())
+            && let Some(selected) = self.external_route_issuer(path, body)?
+            && self
+                .external
+                .root
+                .as_ref()
+                .is_none_or(|key| key.issuer_id != selected)
+        {
+            let mut candidate = self.clone();
+            candidate.select_external_default(&selected)?;
+            return candidate.prepare_external_consumption(method, path, body, mount, context);
+        }
         let Some(key) = self.external.root.as_ref() else {
             return Ok(None);
         };
@@ -375,11 +391,16 @@ impl Pki {
         let captured_issuer = self.captured_external_issuer()?;
         let issue = path
             .strip_prefix("issue/")
-            .map(|role| (None, role))
+            .map(|role| (None, role, false))
+            .or_else(|| path.strip_prefix("sign/").map(|role| (None, role, true)))
             .or_else(|| {
-                Self::issuer_issue_route(path).map(|(reference, role)| (Some(reference), role))
+                Self::issuer_issue_route(path)
+                    .map(|(reference, role)| (Some(reference), role, false))
+            })
+            .or_else(|| {
+                Self::issuer_sign_route(path).map(|(reference, role)| (Some(reference), role, true))
             });
-        let consumption = if let Some((reference, role)) = issue {
+        let consumption = if let Some((reference, role, sign)) = issue {
             if !write_method(method) {
                 return Err(unsupported());
             }
@@ -390,12 +411,24 @@ impl Pki {
                 self.require_public_issuer(reference)?;
             }
             let owner = owner.ok_or_else(|| error(403, "credential issuer is required"))?;
-            let mut prepared =
-                self.prepare_leaf(mount, role, body, &owner.owner, owner.expires_at, now)?;
-            if reference.is_some() {
-                // Preserve the actual authorized issuer route in the lease graph.
-                prepared.path = format!("{mount}{path}");
-            }
+            let mut prepared = self.prepare_leaf_route(
+                IssuanceRoute {
+                    mount,
+                    role,
+                    explicit_issuer: reference,
+                    sign,
+                },
+                body,
+                LeafAuthority {
+                    owner: &owner.owner,
+                    owner_expires: owner.expires_at,
+                    precise_owner_expires: owner.precise_expires_at,
+                    time,
+                    clock: context.clock,
+                    identity_templates: context.identity_templates,
+                },
+            )?;
+            prepared.path = format!("{mount}{path}");
             prepared.serial = external_serial()?;
             prepared.lease_id = format!("{}/{}", prepared.path, prepared.serial);
             // Role time policy already owns the actual signed validity.
@@ -408,15 +441,24 @@ impl Pki {
             }
             let revoked = if path == "revoke" {
                 reject_unknown(body, &["serial_number"])?;
-                let serial = normalize_serial(string(body, "serial_number")?)?;
-                let issued = self.issued.get(&serial).ok_or_else(not_found)?;
-                if !self.external_leaf_belongs_to_active(&serial) {
-                    return Err(error(
-                        501,
-                        "retired issuer revocation requires its original signing authority",
-                    ));
-                }
-                Some((serial, issued.revoked_at.unwrap_or(now.max(issued.issued))))
+                let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+                let at = if let Some(issued) = self.issued.get(&serial) {
+                    if !self.external_leaf_belongs_to_active(&serial) {
+                        return Err(error(
+                            501,
+                            "retired issuer revocation requires its original signing authority",
+                        ));
+                    }
+                    issued.revoked_at.unwrap_or(now.max(issued.issued))
+                } else if let Some((issuer, issued, _, revoked)) = self.signed_ca_owner(&serial) {
+                    if issuer != key.issuer_id {
+                        return Err(bad("signed CA requires its original external parent"));
+                    }
+                    revoked.unwrap_or(now.max(issued))
+                } else {
+                    return Err(not_found());
+                };
+                Some((serial, at))
             } else {
                 reject_unknown(body, &[])?;
                 None
@@ -433,6 +475,7 @@ impl Pki {
                         .map(|at| (serial.clone(), at))
                 })
                 .collect::<BTreeMap<_, _>>();
+            entries.extend(self.external_signed_ca_revocations(&key.issuer_id, now));
             if let Some((serial, at)) = &revoked {
                 entries.insert(serial.clone(), *at);
             }
@@ -455,6 +498,7 @@ impl Pki {
         Ok(Some(ExternalPkiTemplate {
             reference: key.reference.clone(),
             operation: "consume",
+            output_format: RootOutputFormat::Pem,
             common_name: root.common_name.clone(),
             serial: String::new(),
             not_before: now,
@@ -468,6 +512,9 @@ impl Pki {
             consumption: Some(consumption),
             bound_public: Some(key.public_key.clone()),
             bound_issuer: Some(captured_issuer),
+            imported: None,
+            signed_ca: None,
+            native_csr_body: None,
         }))
     }
 
@@ -477,6 +524,22 @@ impl Pki {
         signatures: &[Zeroizing<Vec<u8>>],
         now: u64,
     ) -> Result<EngineResponse> {
+        if self
+            .external
+            .root
+            .as_ref()
+            .is_none_or(|key| key.issuer_id != material.template.issuer_id)
+        {
+            let original = self.external.root.as_ref().map(|key| key.issuer_id.clone());
+            let mut candidate = self.clone();
+            candidate
+                .select_external_default(&material.template.issuer_id)
+                .map_err(|_| error(503, "captured external issuer is unavailable"))?;
+            let response = candidate.publish_consumption(material, signatures, now)?;
+            candidate.restore_external_default(original.as_deref())?;
+            *self = candidate;
+            return Ok(response);
+        }
         let captured_issuer = self.captured_external_issuer()?;
         let active_key = self
             .external
@@ -503,6 +566,7 @@ impl Pki {
             .ok_or_else(|| bad("external PKI consumption missing"))?;
         match consumption.template {
             ConsumptionTemplate::Leaf(prepared) => {
+                prepared.validate_publication(now)?;
                 if prepared.expires <= now
                     || prepared.owner_expires.is_some_and(|expires| expires <= now)
                 {
@@ -544,9 +608,12 @@ impl Pki {
                     alt_names: prepared.alt_names.clone(),
                     ip_sans: prepared.ip_sans.clone(),
                 };
+                let scheme = material
+                    .public_key
+                    .leaf_signature(prepared.role_name_policy.as_ref());
                 let response = self.publish_leaf(
                     *prepared,
-                    signed_der(&material.tbs, &signatures[0], &material.public_key),
+                    signed_der_with_scheme(&material.tbs, &signatures[0], scheme),
                     &consumption.leaf_pkcs8,
                     &projection.public_key,
                     true,
@@ -575,10 +642,16 @@ impl Pki {
                     signatures,
                 )?;
                 let response = if let Some((serial, at)) = revoked {
-                    self.issued
-                        .get_mut(&serial)
-                        .ok_or_else(not_found)?
-                        .revoked_at = Some(at);
+                    if let Some(issued) = self.issued.get_mut(&serial) {
+                        issued.revoked_at = Some(at);
+                    } else {
+                        self.publish_external_signed_ca_revocation(
+                            &serial,
+                            &captured_issuer.issuer_id,
+                            &captured_issuer.certificate_der,
+                            at,
+                        )?;
+                    }
                     json!({"revocation_time":at,"revocation_time_rfc3339":timestamp(at),"state":"revoked"})
                 } else {
                     json!({"success":true})
@@ -655,6 +728,39 @@ impl Pki {
         }))
     }
 
+    pub(in crate::engines::pki) fn external_leaf_issuer_reference(
+        &self,
+        serial: &str,
+    ) -> Result<&str> {
+        let leaf = self
+            .external
+            .issued_public
+            .get(serial)
+            .ok_or_else(not_found)?;
+        if leaf.issuer_id.is_empty() {
+            return self
+                .external
+                .root
+                .as_ref()
+                .map(|key| key.issuer_id.as_str())
+                .ok_or_else(not_found);
+        }
+        let issuer = self
+            .external
+            .archived_issuers
+            .get(&leaf.issuer_id)
+            .ok_or_else(|| bad("external leaf issuer archive missing"))?;
+        if self
+            .issued
+            .get(serial)
+            .and_then(|issued| issued.external_issuer_owner.as_ref())
+            != Some(&issuer.owner()?)
+        {
+            return Err(bad("external leaf issuer owner differs"));
+        }
+        Ok(&leaf.issuer_id)
+    }
+
     fn external_leaf_belongs_to_active(&self, serial: &str) -> bool {
         let Some(key) = &self.external.root else {
             return false;
@@ -719,6 +825,7 @@ impl Pki {
     }
 
     pub(in crate::engines::pki) fn validate_external_consumption(&self, clock: u64) -> Result<()> {
+        self.validate_external_signer_history(clock)?;
         let active = self
             .external
             .root
@@ -733,7 +840,11 @@ impl Pki {
             if crls.full.revoked.iter().any(|(serial, at)| {
                 self.issued.get(serial).is_some_and(|issued| {
                     !self.external_leaf_belongs_to_active(serial) || issued.revoked_at != Some(*at)
-                })
+                }) || self
+                    .signed_ca_owner(serial)
+                    .is_some_and(|(id, _, _, revoked)| {
+                        id != issuer.issuer_id || revoked != Some(*at)
+                    })
             }) {
                 return Err(bad("external CRL certificate issuer ownership mismatch"));
             }
@@ -753,6 +864,9 @@ impl Pki {
                 return Err(bad("external PKI archive identity mismatch"));
             }
             issuer.validate()?;
+            if self.has_external_signed_ca_issuer_reference(id, &issuer.certificate_der)? {
+                referenced.insert(id.clone());
+            }
             if self.local_pki_identifiers_in_use(&issuer.issuer_id, &issuer.key_id) {
                 return Err(bad("external PKI archive conflicts with local ownership"));
             }
@@ -859,6 +973,7 @@ impl Pki {
                 _ => return Err(bad("external PKI leaf profile projection differs")),
             }
             let prepared = LeafTemplate {
+                csr_public_key: None,
                 role_name_policy: projection.role_name_policy.clone(),
                 no_store: false,
                 exclude_cn_from_sans: projection.exclude_cn_from_sans,
@@ -875,6 +990,9 @@ impl Pki {
                 lease_id: issued.lease_id.clone(),
                 owner: issued.owner.clone(),
                 owner_expires: None,
+                precise_owner_expires: None,
+                publication_time: crate::auth::AuthorityTime::Coarse(issued.issued),
+                publication_clock: None,
                 leased: issued.leased,
                 common_name: issued.common_name.clone(),
                 local_key_kind: projection.public_key.kind(),
@@ -884,7 +1002,7 @@ impl Pki {
                 not_before: projection.not_before,
                 expires: issued.expires,
             };
-            validate_signed_der(
+            validate_signed_der_with_scheme(
                 &issuer.public_key,
                 &leaf_tbs(
                     issuer,
@@ -893,6 +1011,9 @@ impl Pki {
                     &prepared,
                 )?,
                 &issued.certificate_der,
+                issuer
+                    .public_key
+                    .leaf_signature(projection.role_name_policy.as_ref()),
             )?;
         }
         if self
@@ -910,6 +1031,17 @@ impl Pki {
 }
 
 impl ExternalPkiTemplate {
+    pub(crate) fn validate_private_leaf_time(
+        &self,
+        time: crate::auth::AuthorityTime,
+    ) -> Result<()> {
+        match &self.consumption {
+            Some(ConsumptionTemplate::Leaf(prepared)) => {
+                prepared.validate_publication_observed(time)
+            }
+            _ => Ok(()),
+        }
+    }
     pub(crate) fn leaf_lease_window(&self) -> Option<(u64, bool)> {
         match self.consumption.as_ref() {
             Some(ConsumptionTemplate::Leaf(prepared)) => Some((prepared.expires, prepared.leased)),
@@ -941,9 +1073,12 @@ impl ExternalPkiTemplate {
             .ok_or_else(|| bad("external PKI consumption missing"))?;
         let (tbs, extra, leaf_pkcs8, leaf_public) = match &consumption {
             ConsumptionTemplate::Leaf(prepared) => {
-                let leaf = LocalPrivateMaterial::generate(prepared.local_key_kind)?;
-                let pkcs8 = leaf.private_der()?;
-                let leaf_public = leaf.public()?;
+                let (leaf_public, pkcs8) = if let Some(public) = &prepared.csr_public_key {
+                    (public.clone(), Zeroizing::new(Vec::new()))
+                } else {
+                    let leaf = LocalPrivateMaterial::generate(prepared.local_key_kind)?;
+                    (leaf.public()?, leaf.private_der()?)
+                };
                 let root = self
                     .bound_issuer
                     .as_ref()
@@ -974,6 +1109,7 @@ impl ExternalPkiTemplate {
             tbs,
             extra_tbs: extra,
             root_crls: None,
+            native_csr: None,
             consumption: Some(ConsumptionMaterial {
                 template: consumption,
                 leaf_pkcs8,

@@ -3,6 +3,18 @@
 use super::*;
 use crate::auth::{LeaseOwner, ResolvedLeaseOwner, ServiceOwnerProfile};
 
+pub(crate) struct PkiRequestContext<'a> {
+    pub(crate) owner: Option<&'a ResolvedLeaseOwner>,
+    pub(crate) time: crate::auth::AuthorityTime,
+    pub(crate) clock: Option<crate::auth::RequestClock>,
+    pub(crate) identity_templates: Option<&'a crate::auth::IdentityTemplateValues>,
+}
+impl PkiRequestContext<'_> {
+    pub(crate) fn observed_time(&self, floor: u64) -> Result<crate::auth::AuthorityTime> {
+        pki::precise_time::observe(self.time, self.clock, floor)
+    }
+}
+
 impl EngineState {
     fn ssh_mount(&self, namespace: &str, path: &str) -> Option<&str> {
         let state = self.namespaces.get(namespace)?;
@@ -31,7 +43,10 @@ impl EngineState {
     pub(crate) fn is_pki_issue_route(&self, namespace: &str, path: &str) -> bool {
         self.pki_mount(namespace, path).is_some_and(|mount| {
             let relative = &path[mount.len()..];
-            relative.starts_with("issue/") || pki::Pki::issuer_issue_route(relative).is_some()
+            relative.starts_with("issue/")
+                || relative.starts_with("sign/")
+                || pki::Pki::issuer_issue_route(relative).is_some()
+                || pki::Pki::issuer_sign_route(relative).is_some()
         })
     }
     pub(crate) fn is_lease_service_route(&self, namespace: &str, path: &str) -> bool {
@@ -268,6 +283,7 @@ impl EngineState {
         }
         Ok(response)
     }
+    #[cfg(test)]
     pub(crate) fn handle_service_pki(
         &mut self,
         namespace: &str,
@@ -277,6 +293,48 @@ impl EngineState {
         owner: &ResolvedLeaseOwner,
         now: u64,
     ) -> Result<EngineResponse> {
+        self.handle_service_pki_context(
+            namespace,
+            method,
+            path,
+            body,
+            PkiRequestContext {
+                owner: Some(owner),
+                time: crate::auth::AuthorityTime::Coarse(now),
+                clock: None,
+                identity_templates: None,
+            },
+        )
+    }
+
+    pub(crate) fn pki_identity_selectors(&self, namespace: &str, path: &str) -> BTreeSet<String> {
+        let Some(mount) = self.pki_mount(namespace, path) else {
+            return BTreeSet::new();
+        };
+        let Some(Backend::Pki(engine)) = self
+            .namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(mount))
+            .map(|mount| &mount.backend)
+        else {
+            return BTreeSet::new();
+        };
+        engine.identity_selectors(&path[mount.len()..])
+    }
+
+    pub(crate) fn handle_service_pki_context(
+        &mut self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        context: PkiRequestContext<'_>,
+    ) -> Result<EngineResponse> {
+        let owner = context
+            .owner
+            .ok_or_else(|| error(403, "credential issuer is required"))?;
+        let time = context.observed_time(self.lease_clock)?;
+        let now = time.seconds();
         if !write_method(method) {
             return Err(unsupported());
         }
@@ -303,11 +361,33 @@ impl EngineState {
             .owner
             .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
             .map_err(|_| error(403, "credential owner scope mismatch"))?;
-        let response =
-            engine.issue_route(&mount, relative, body, &owner.owner, owner.expires_at, now)?;
+        let response = engine.issue_route(
+            &mount,
+            relative,
+            body,
+            pki::LeafAuthority {
+                owner: &owner.owner,
+                owner_expires: owner.expires_at,
+                precise_owner_expires: owner.precise_expires_at,
+                time,
+                clock: context.clock,
+                identity_templates: context.identity_templates,
+            },
+        )?;
+        let delivered = context.observed_time(now)?;
+        if owner
+            .precise_expires_at
+            .is_some_and(|end| delivered.exact().is_none_or(|at| at > end))
+            || owner.precise_expires_at.is_none()
+                && owner
+                    .expires_at
+                    .is_some_and(|end| delivered.seconds() >= end)
+        {
+            return Err(error(403, "issuer no longer has a live PKI lease window"));
+        }
         if response.mutated {
             self.namespaces.insert(namespace.into(), candidate);
-            self.lease_clock = now;
+            self.lease_clock = delivered.seconds();
         }
         Ok(response)
     }
@@ -415,6 +495,10 @@ impl EngineState {
                             prefix == name.trim_end_matches('/')
                                 || prefix == format!("{name}issue")
                                 || prefix.starts_with(&format!("{name}issue/"))
+                                || prefix == format!("{name}sign")
+                                || prefix.starts_with(&format!("{name}sign/"))
+                                || prefix.starts_with(&format!("{name}issuer/"))
+                                    && (prefix.contains("/issue/") || prefix.contains("/sign/"))
                         }
                         _ => false,
                     })

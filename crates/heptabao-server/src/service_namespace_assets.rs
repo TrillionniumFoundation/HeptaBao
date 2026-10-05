@@ -31,6 +31,40 @@ fn failed() -> Response {
     Response::error(503, "namespace typed owner validation rejected")
 }
 
+impl NamespaceAssets {
+    pub(super) fn batch_hydrated_paths(
+        &self,
+        current: &namespaces::NamespaceRegistry,
+        actual: &str,
+    ) -> Result<BTreeSet<String>, Response> {
+        if self.version != 1
+            || self.namespace != actual
+            || current.incarnation(actual) != Some(self.incarnation)
+            || self.owners.is_empty()
+            || self.owners.len() > 1024
+        {
+            return Err(failed());
+        }
+        let mut expected = self.catalog.batch_hydrated_paths(current, actual)?;
+        expected.insert(actual.to_owned());
+        let mut seen = BTreeSet::new();
+        for owned in &self.owners {
+            if !seen.insert(owned.namespace.clone())
+                || !expected.contains(&owned.namespace)
+                || current.incarnation(&owned.namespace) != Some(owned.incarnation)
+                || owned.auth.namespace() != owned.namespace
+                || owned.engines.namespace() != owned.namespace
+            {
+                return Err(failed());
+            }
+        }
+        if seen != expected {
+            return Err(failed());
+        }
+        Ok(expected)
+    }
+}
+
 impl State {
     pub(super) fn partition_namespace_assets(
         &self,

@@ -39,6 +39,7 @@ fn post_provider_publication_failure(error: Response, id: &str) -> Response {
         body["recovery_reference"] = json!(reference);
     }
     Response {
+        response_headers: Default::default(),
         consistency_index: None,
         status: 503,
         body,
@@ -629,6 +630,7 @@ impl DatabaseEffectPlan {
     /// bounded network operation is in flight.
     pub(super) fn execute(&self) -> Result<(), Response> {
         let indeterminate = || Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 503,
             body: json!({
@@ -744,6 +746,7 @@ impl DatabaseEffectPlan {
         };
         if !matched || !valid {
             return Err(Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 503,
                 body: json!({
@@ -845,6 +848,7 @@ impl DatabaseEffectPlan {
 
     fn execute_valkey(&self) -> Result<(), Response> {
         let indeterminate = || Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 503,
             body: json!({
@@ -1040,6 +1044,7 @@ impl DatabaseEffectPlan {
                 "renewable":true
             }))),
             Phase::PendingRevoke => Ok(Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
                 body: Value::Null,
@@ -1518,6 +1523,7 @@ fn database_plugin_config_failure(error: PluginHostError) -> Response {
 
 fn database_plugin_indeterminate(lease_id: &str) -> Response {
     Response {
+        response_headers: Default::default(),
         consistency_index: None,
         status: 503,
         body: json!({
@@ -1531,6 +1537,7 @@ fn database_plugin_indeterminate(lease_id: &str) -> Response {
 fn database_plugin_effect_failure(error: PluginHostError, lease_id: &str) -> Response {
     match error {
         PluginHostError::ProcessBeforeEntry | PluginHostError::SandboxUnavailable => Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 503,
             body: json!({
@@ -2309,6 +2316,7 @@ impl Service {
                         state.database.mount_mut(ns, &mount).connections.remove(key);
                         self.publish_database(state)?;
                         Ok(Response {
+                            response_headers: Default::default(),
                             consistency_index: None,
                             status: 204,
                             body: Value::Null,
@@ -2470,6 +2478,7 @@ impl Service {
                         );
                         self.publish_database(state)?;
                         Ok(Response {
+                            response_headers: Default::default(),
                             consistency_index: None,
                             status: 204,
                             body: Value::Null,
@@ -2531,6 +2540,7 @@ impl Service {
                         }
                         self.publish_database(state)?;
                         Ok(Response {
+                            response_headers: Default::default(),
                             consistency_index: None,
                             status: 204,
                             body: Value::Null,
@@ -2760,6 +2770,7 @@ impl Service {
         mount.connections.insert(plan.key, plan.connection);
         match self.publish_database(state) {
             Ok(()) => Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
                 body: Value::Null,
@@ -3278,6 +3289,7 @@ impl Service {
         }
         if attempted < plan.plans.len() && first_error.is_none() {
             first_error = Some(Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 503,
                 body: json!({
@@ -3289,6 +3301,7 @@ impl Service {
             });
         }
         first_error.unwrap_or(Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 204,
             body: Value::Null,
@@ -3409,6 +3422,7 @@ impl Service {
             }
             if matches.is_empty() {
                 return Ok(Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
                     body: Value::Null,
@@ -3495,6 +3509,7 @@ impl Service {
                 && state.database.mount_for_lease_prefix(ns, id).is_some() =>
             {
                 return Ok(Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
                     body: Value::Null,
@@ -3567,6 +3582,7 @@ impl Service {
         }
         if l.phase == Phase::Revoked {
             return Ok(Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
                 body: Value::Null,
@@ -3587,6 +3603,7 @@ impl Service {
 
     fn database_effect_in_flight(id: &str) -> Response {
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 503,
             body: json!({
@@ -3968,6 +3985,7 @@ mod tests {
     fn provider_completion_publication_failure_is_never_before_entry_rejection() {
         for status in [400, 503, 507] {
             let error = Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status,
                 body: json!({"recovery_reference":"synthetic-local-reference", "password":"must-not-escape"}),
@@ -4470,6 +4488,81 @@ mod tests {
     }
 
     #[test]
+    fn namespace_batch_database_pending_and_revoked_binding_alone_carries91_floor()
+    -> Result<(), TestFailure> {
+        use crate::auth::BatchKeyAuthority;
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service().map_err(|_| TestFailure)?;
+        let (_, root) =
+            super::super::tests::bootstrap_unmounted(&mut service).map_err(|_| TestFailure)?;
+        let issued = service.handle_at(
+            "POST",
+            "auth/token/create-orphan",
+            "",
+            &root,
+            json!({"type":"batch","ttl":3600,"policies":["default"]}),
+            100,
+        );
+        assert_eq!(issued.status, 200);
+        let bearer = issued.body["auth"]["client_token"]
+            .as_str()
+            .ok_or(TestFailure)?;
+        let original = service.state.clone().ok_or(TestFailure)?;
+        let auth_wire = serde_json::to_value(&*original.auth).map_err(|_| TestFailure)?;
+        let authority: BatchKeyAuthority =
+            serde_json::from_value(auth_wire["batch_authority"].clone())
+                .map_err(|_| TestFailure)?;
+        let verified = authority.open(bearer, "", 101).map_err(|_| TestFailure)?;
+        assert!(verified.namespace_binding().is_some());
+        let owner = LeaseOwner::from_batch(&verified);
+        let (database, id) = sample()?;
+        let mut retained = original.clone();
+        retained.database = database.into();
+        for phase in [Phase::PendingRevoke, Phase::Revoked] {
+            let lease = retained
+                .database
+                .mount_mut("", "database/")
+                .leases
+                .get_mut(&id)
+                .ok_or(TestFailure)?;
+            lease.provider_id = provider_identity(&retained.cluster_id, "", &id)?;
+            lease.owner = owner.clone();
+            lease.phase = phase;
+            lease.expires = 0;
+            lease.password = None;
+            lease.provider_password = None;
+            lease.request_digest = digest_lease(lease)?;
+            retained.database.validate_scope(&retained.cluster_id)?;
+            assert!(
+                retained
+                    .database
+                    .all_lease_owners()
+                    .contains(&(String::new(), owner.clone()))
+            );
+            retained.schema = retained.writer_schema();
+            retained.validate_format()?;
+            let mut wire = serde_json::to_value(&retained).map_err(|_| TestFailure)?;
+            wire["auth"]
+                .as_object_mut()
+                .ok_or(TestFailure)?
+                .remove("namespace_batch_registry");
+            wire["namespaces"]
+                .as_object_mut()
+                .ok_or(TestFailure)?
+                .remove("batch_lifecycle");
+            let mut missing: State = serde_json::from_value(wire).map_err(|_| TestFailure)?;
+            assert!(missing.has_namespace_batch_state());
+            for schema in [80, NAMESPACE_BATCH_STATE_SCHEMA] {
+                missing.schema = schema;
+                assert!(missing.writer_schema() >= NAMESPACE_BATCH_STATE_SCHEMA);
+                assert!(missing.validate_namespace_batch_state().is_err());
+                assert!(missing.validate_format().is_err());
+            }
+        }
+        Ok(())
+    }
+
+    #[test]
     fn pending_and_revoked_database_batch_owners_remain_scoped_and_enumerated()
     -> Result<(), TestFailure> {
         use crate::auth::{BatchClaims, BatchKeyAuthority};
@@ -4477,6 +4570,7 @@ mod tests {
         let token = authority
             .seal(
                 BatchClaims {
+                    namespace_binding: None,
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
@@ -4659,7 +4753,7 @@ mod tests {
                 path: "auth/token/create",
                 namespace: "",
                 token: &root,
-                body: json!({"ttl":"500ms","policies":["default"]}),
+                body: json!({"ttl":"5500ms","policies":["default"]}),
                 now: 100,
                 allow_forward: true,
                 enforce_namespace: true,
@@ -4710,7 +4804,9 @@ mod tests {
         };
         assert_eq!(error.status, 503);
         assert_eq!(serde_json::to_vec(state)?, before);
-        std::thread::sleep(Duration::from_millis(600));
+        // Retain fractional expiry and the same original clock while allowing
+        // actual durable setup to complete under a loaded whole-suite run.
+        std::thread::sleep(Duration::from_millis(5600));
         assert!(!Service::database_completion_owner_live(
             service.state.as_ref().ok_or("state")?,
             &plan,
@@ -5161,6 +5257,7 @@ mod tests {
             });
             let raw = authority.seal(
                 BatchClaims {
+                    namespace_binding: None,
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
@@ -5264,6 +5361,7 @@ mod tests {
             let mut authority = BatchKeyAuthority::new(100)?;
             let raw = authority.seal(
                 BatchClaims {
+                    namespace_binding: None,
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
@@ -5374,6 +5472,7 @@ mod tests {
             let mut authority = BatchKeyAuthority::new(100)?;
             let raw = authority.seal(
                 BatchClaims {
+                    namespace_binding: None,
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,

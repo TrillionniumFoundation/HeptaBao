@@ -15,7 +15,7 @@ use openssl::{
     nid::Nid,
     pkey::{Id, PKey, Private, Public},
     rsa::{Padding, Rsa},
-    sign::{Signer, Verifier},
+    sign::{RsaPssSaltlen, Signer, Verifier},
 };
 use x509_parser::prelude::{FromDer, SubjectPublicKeyInfo, X509Certificate};
 
@@ -496,6 +496,34 @@ impl LocalPrivateMaterial {
         }
     }
 
+    pub(super) fn sign_leaf(&self, input: &[u8], scheme: LeafSignature) -> Result<Vec<u8>> {
+        let Some(digest) = scheme.digest() else {
+            return self.sign(input);
+        };
+        let key = self.maintained_private()?;
+        if (key.id() == Id::RSA) != matches!(scheme, LeafSignature::Rsa { .. }) {
+            return Err(invalid_key());
+        }
+        let mut signer = Signer::new(digest, &key).map_err(crypto_failure)?;
+        if key.id() == Id::RSA {
+            signer
+                .set_rsa_padding(if scheme.pss() {
+                    Padding::PKCS1_PSS
+                } else {
+                    Padding::PKCS1
+                })
+                .map_err(crypto_failure)?;
+            if scheme.pss() {
+                signer.set_rsa_mgf1_md(digest).map_err(crypto_failure)?;
+                signer
+                    .set_rsa_pss_saltlen(RsaPssSaltlen::DIGEST_LENGTH)
+                    .map_err(crypto_failure)?;
+            }
+        }
+        signer.update(input).map_err(crypto_failure)?;
+        signer.sign_to_vec().map_err(crypto_failure)
+    }
+
     pub(super) fn private_der(&self) -> Result<Zeroizing<Vec<u8>>> {
         match self {
             Self::Pkcs8 { der, .. } => {
@@ -714,6 +742,39 @@ impl LocalPublicKey {
                 verifier.verify(signature).map_err(crypto_failure)
             }
         }
+    }
+
+    pub(super) fn verify_leaf(
+        &self,
+        input: &[u8],
+        signature: &[u8],
+        scheme: LeafSignature,
+    ) -> Result<bool> {
+        let Some(digest) = scheme.digest() else {
+            return self.verify(input, signature);
+        };
+        let key = self.maintained_public()?;
+        if (key.id() == Id::RSA) != matches!(scheme, LeafSignature::Rsa { .. }) {
+            return Err(invalid_key());
+        }
+        let mut verifier = Verifier::new(digest, &key).map_err(crypto_failure)?;
+        if key.id() == Id::RSA {
+            verifier
+                .set_rsa_padding(if scheme.pss() {
+                    Padding::PKCS1_PSS
+                } else {
+                    Padding::PKCS1
+                })
+                .map_err(crypto_failure)?;
+            if scheme.pss() {
+                verifier.set_rsa_mgf1_md(digest).map_err(crypto_failure)?;
+                verifier
+                    .set_rsa_pss_saltlen(RsaPssSaltlen::DIGEST_LENGTH)
+                    .map_err(crypto_failure)?;
+            }
+        }
+        verifier.update(input).map_err(crypto_failure)?;
+        verifier.verify(signature).map_err(crypto_failure)
     }
 
     pub(super) fn validate_certificate(&self, bytes: &[u8]) -> Result<()> {

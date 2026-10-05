@@ -25,7 +25,7 @@ CASES = (
     "secret_final_use", "secret_batch", "secret_identity_disabled", "secret_identity_group_revoked",
     "kms_revoke", "kms_policy", "kms_expiry", "kms_seal", "kms_seal_cycle", "kms_final_use", "kms_identity_disabled", "kms_identity_group_revoked",
     "auth_current", "auth_unrelated_write", "auth_delayed_ttl", "auth_seal",
-    "auth_seal_cycle", "auth_namespace_seal", "auth_config_change", "auth_mount_recreate",
+    "auth_seal_cycle", "auth_namespace_seal", "auth_namespace_seal_cycle", "auth_config_change", "auth_mount_recreate",
 )
 
 
@@ -94,15 +94,29 @@ def identity_requester(instance):
 def check_auth_case(binary, root, case):
     instance, entered, release, count = configure(binary, root / case, "auth")
     pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-    namespace = "team" if case == "auth_namespace_seal" else ""
+    namespace = "team" if case in ("auth_namespace_seal", "auth_namespace_seal_cycle") else ""
     try:
         instance.start()
         status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
         require(status == 200, "initialize")
         instance.token, key = initialized["root_token"], initialized["keys_base64"][0]
         require(instance.call("POST", "sys/unseal", {"key": key})[0] == 200, "unseal")
+        namespace_shares = []
+        fresh_status = None
         if namespace:
-            require(instance.call("POST", "sys/namespaces/team", {})[0] == 200, "create_namespace")
+            independent = case == "auth_namespace_seal_cycle"
+            body = {"seal": 'seal "shamir" { shares = 3\n threshold = 2 }'} if independent else {}
+            created_status, created = instance.call("POST", "sys/namespaces/team", body)
+            require(created_status == 200, "create_namespace")
+            if independent:
+                namespace_shares = created.get("data", {}).get("key_shares", [])
+                require(isinstance(namespace_shares, list) and len(namespace_shares) == 3
+                        and all(isinstance(share, str) and share for share in namespace_shares),
+                        "auth_actual_namespace_shares")
+                for index, share in enumerate(namespace_shares[:2]):
+                    status, response = instance.call("POST", "sys/namespaces/team/unseal", {"key": share})
+                    require(status == 200 and response.get("data", {}).get("sealed") is (index == 0),
+                            "auth_namespace_initial_threshold")
         mount = {"type": "plugin"}
         config = {"plugin_id": "auth_fixture", "policies": ["reader"],
                   "token_ttl": "2s" if case == "auth_delayed_ttl" else "10m", "token_max_ttl": "30m"}
@@ -120,8 +134,15 @@ def check_auth_case(binary, root, case):
             require(instance.call("POST", "sys/seal", {})[0] == 204, "auth_global_seal")
             if case == "auth_seal_cycle":
                 require(instance.call("POST", "sys/unseal", {"key": key})[0] == 200, "auth_new_activation")
-        elif case == "auth_namespace_seal":
+        elif case in ("auth_namespace_seal", "auth_namespace_seal_cycle"):
             require(instance.call("POST", "sys/namespaces/team/seal", {})[0] == 204, "auth_namespace_seal")
+            require(instance.call("POST", "sys/namespaces/team/unseal", {})[0] == 500,
+                    "auth_empty_key_cannot_restore_namespace")
+            if case == "auth_namespace_seal_cycle":
+                for index, share in enumerate(namespace_shares[:2]):
+                    status, response = instance.call("POST", "sys/namespaces/team/unseal", {"key": share})
+                    require(status == 200 and response.get("data", {}).get("sealed") is (index == 0),
+                            "auth_namespace_actual_threshold_reactivation")
         elif case == "auth_config_change":
             config = dict(config, token_ttl="20m")
             require(instance.call("POST", "auth/external/config", config)[0] == 204, "auth_config_replaced")
@@ -145,12 +166,17 @@ def check_auth_case(binary, root, case):
             if case == "auth_seal":
                 require(instance.call("POST", "sys/unseal", {"key": key})[0] == 200, "auth_recover_global_seal")
             elif case == "auth_namespace_seal":
-                require(instance.call("POST", "sys/namespaces/team/unseal", {})[0] == 204, "auth_recover_namespace_seal")
+                require(instance.call("POST", "sys/seal", {})[0] == 204, "auth_recover_inherited_global_seal")
+                require(instance.call("POST", "sys/unseal", {"key": key})[0] == 200,
+                        "auth_recover_inherited_actual_global_key")
             fresh_status, fresh = instance.call("POST", "auth/external/login", login, token="", namespace=namespace)
             fresh_token = fresh.get("auth", {}).get("client_token")
             correct = fresh_status == 200 and isinstance(fresh_token, str) and instance.call("GET", "auth/token/lookup-self", token=fresh_token, namespace=namespace)[0] == 200
         return {"case": case, "passed": bool(correct), "status": status, "expected_status": expected,
-                "token_released": released, "lookup_status": lookup, "provider_decision_before_change": True}
+                "token_released": released, "lookup_status": lookup, "provider_decision_before_change": True,
+                "fresh_login_status": fresh_status,
+                "namespace_recovery": "actual_shamir_threshold" if namespace_shares else
+                    "actual_global_key" if namespace else None}
     finally:
         release.touch()
         pool.shutdown(wait=True, cancel_futures=True)

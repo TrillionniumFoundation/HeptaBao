@@ -3,6 +3,7 @@ use super::*;
 fn json_response(body: Value) -> Response {
     Response {
         status: 200,
+        response_headers: Default::default(),
         consistency_index: None,
         body,
     }
@@ -78,6 +79,7 @@ fn no_content_has_neither_length_nor_entity_and_retains_standard_headers() -> io
             &mut wire,
             Response {
                 status: 204,
+                response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"not_a_wire_entity": true}),
             },
@@ -149,6 +151,7 @@ fn custom_health_statuses_keep_go_status_lines_and_json_entities() -> io::Result
             &mut wire,
             Response {
                 status,
+                response_headers: Default::default(),
                 consistency_index: None,
                 body: body.clone(),
             },
@@ -158,5 +161,122 @@ fn custom_health_statuses_keep_go_status_lines_and_json_entities() -> io::Result
         assert!(headers.starts_with(&format!("HTTP/1.1 {status} {reason}\r\n")));
         assert_eq!(serde_json::from_slice::<Value>(entity)?, body);
     }
+    Ok(())
+}
+
+#[test]
+fn sdk_headers95_exact_allowlist_multivalue_and_transport_framing() -> io::Result<()> {
+    let offered = json!({
+        "x-sdk-one":["one"], "X-SDK-Multi":["first","second"],
+        "X-SDK-Blocked":["secret"], "X-SDK-Prefix-Item":["no-glob"],
+        "X-SDK-Whitespace":["  line\r\nvalue\t  "]
+    });
+    for head in [false, true] {
+        let mut response = json_response(json!({"data":{"marker":"preserved"}}));
+        response.response_headers = crate::service::ResponseHeaders::from_sdk(
+            Some(&offered),
+            &[
+                "X-SDK-One".into(),
+                "x-sdk-multi".into(),
+                "X-SDK-Prefix-*".into(),
+                "X-SDK-Whitespace".into(),
+            ],
+        )
+        .map_err(|()| io::Error::other("header filter"))?;
+        let mut wire = Vec::new();
+        write_response(&mut wire, response, head)?;
+        let (headers, body) = split_wire(&wire)?;
+        assert!(headers.contains("\r\nX-Sdk-One: one\r\n"));
+        assert!(headers.contains("\r\nX-Sdk-Multi: first\r\nX-Sdk-Multi: second\r\n"));
+        assert!(headers.contains("\r\nX-Sdk-Whitespace: line  value"));
+        assert!(!headers.contains("Blocked"));
+        assert!(!headers.contains("Prefix-Item"));
+        assert_eq!(headers.matches("Content-Length:").count(), 1);
+        if head {
+            assert!(body.is_empty());
+        } else {
+            assert_eq!(
+                serde_json::from_slice::<Value>(body)?,
+                json!({"data":{"marker":"preserved"}})
+            );
+        }
+    }
+    let mut default = json_response(json!({"data":{}}));
+    default.response_headers = crate::service::ResponseHeaders::from_sdk(Some(&offered), &[])
+        .map_err(|()| io::Error::other("empty allowlist"))?;
+    let mut wire = Vec::new();
+    write_response(&mut wire, default, false)?;
+    assert!(!split_wire(&wire)?.0.contains("X-Sdk-"));
+    Ok(())
+}
+
+#[test]
+fn sdk_headers95_transport_owned_primary_json_precedence() -> io::Result<()> {
+    let offered = json!({
+        "Date":["Mon, 01 Jan 2001 00:00:00 GMT","Tue, 02 Jan 2001 00:00:00 GMT"],
+        "Content-Type":["application/x-sdk-first","application/x-sdk-second"],
+        "Cache-Control":["sdk-cache-first","sdk-cache-second"],
+        "Strict-Transport-Security":["max-age=17","max-age=19"]
+    });
+    let allowed = [
+        "Date",
+        "Content-Type",
+        "Cache-Control",
+        "Strict-Transport-Security",
+    ]
+    .map(str::to_owned);
+    for head in [false, true] {
+        let mut response = json_response(json!({"data":{"marker":"preserved"}}));
+        response.response_headers =
+            crate::service::ResponseHeaders::from_sdk(Some(&offered), &allowed)
+                .map_err(|()| io::Error::other("primary transport header selection"))?;
+        let mut wire = Vec::new();
+        write_response(&mut wire, response, head)?;
+        let (headers, body) = split_wire(&wire)?;
+        let values = |name: &str| {
+            headers
+                .lines()
+                .filter_map(|line| line.strip_prefix(name))
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(
+            values("Date: "),
+            [
+                "Mon, 01 Jan 2001 00:00:00 GMT",
+                "Tue, 02 Jan 2001 00:00:00 GMT"
+            ]
+        );
+        assert_eq!(values("Content-Type: "), ["application/json"]);
+        assert_eq!(
+            values("Cache-Control: "),
+            ["no-store", "sdk-cache-first", "sdk-cache-second"]
+        );
+        assert_eq!(
+            values("Strict-Transport-Security: "),
+            ["max-age=31536000; includeSubDomains"]
+        );
+        assert!(!headers.contains("application/x-sdk") && !headers.contains("max-age=17"));
+        if head {
+            assert!(body.is_empty());
+        } else {
+            assert_eq!(
+                serde_json::from_slice::<Value>(body)?,
+                json!({"data":{"marker":"preserved"}})
+            );
+        }
+    }
+    let mut response = json_response(json!({}));
+    response.response_headers =
+        crate::service::ResponseHeaders::from_sdk(Some(&json!({"Date":[]})), &["Date".into()])
+            .map_err(|()| io::Error::other("empty Date values"))?;
+    let mut wire = Vec::new();
+    write_response(&mut wire, response, false)?;
+    let (headers, _) = split_wire(&wire)?;
+    let dates = headers
+        .lines()
+        .filter_map(|line| line.strip_prefix("Date: "))
+        .collect::<Vec<_>>();
+    assert_eq!(dates.len(), 1);
+    assert!(chrono::DateTime::parse_from_rfc2822(dates[0]).is_ok());
     Ok(())
 }

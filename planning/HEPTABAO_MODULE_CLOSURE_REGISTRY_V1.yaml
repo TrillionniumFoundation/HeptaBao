@@ -192,7 +192,7 @@ modules:
   guide: docs/modules/heptabao-linux-parent-death.md
   source: crates/heptabao-linux-parent-death/src
   manifest_sha256: a5b16877d5d9a454961bf43ae24ee54e04c62bda833eedab268124cdad0b0a32
-  source_sha256: 5f814ea0b2c4be5a15e7f39e71f0b08b8edcce7662d4cdcff9e04d6b35e19bf8
+  source_sha256: 766f76f183233fb1068d0ede1cb8f15a4067a8449e95eb1866890eddddcf670e
   test_anchor: spawning_thread_exit_kills_and_reaps_actual_child
   test_anchor_path: crates/heptabao-linux-parent-death/src/lib.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -299,8 +299,8 @@ modules:
   dossier: docs/module-closure/heptabao-plugin-host.md
   guide: docs/modules/heptabao-plugin-host.md
   source: crates/heptabao-plugin-host/src
-  manifest_sha256: 57b8832085da9f907924d54be2f9992130c6aa96c79b4d713b73ddfce47f5164
-  source_sha256: 2d4d7339caf6e2764f0e78d7b53e17d678c45e76369d9e2e7930c552fdab4ec7
+  manifest_sha256: 4107770b8dce805dcf409f7972306cef0314e32fd8863a7e300ca945d1b568b9
+  source_sha256: 067fa46f93bc446a640a1077ef6bc5ea7dd9716ba536a595e87324d99bdc8513
   test_anchor: blocked_stdin_obeys_deadline_before_any_output
   test_anchor_path: crates/heptabao-plugin-host/src/command_runner_tests.rs
   state: IMPLEMENTED_REVIEW_REQUIRED
@@ -381,7 +381,7 @@ modules:
   guide: docs/modules/heptabao-server.md
   source: crates/heptabao-server/src
   manifest_sha256: badf03e17d13852f641496a297933137b5a613e93210aaeef83142afd9cf01f3
-  source_sha256: e859b557cff1b9cf3d9f8db192b8cf5e798a5ce570ebf8a6e8a2e80508f414a0
+  source_sha256: 7d7fd97a18cdd4cf137b59d44f722b9807247da05ddaad83e67fe2f920fe602c
   test_anchor: target_abi_opens_private_regular_files_and_real_directories
   test_anchor_path: crates/heptabao-server/src/audit_platform_tests.rs
   state: IMPLEMENTED_REVIEW_REQUIRED

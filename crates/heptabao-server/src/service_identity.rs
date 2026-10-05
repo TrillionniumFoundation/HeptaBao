@@ -28,8 +28,12 @@ impl State {
         if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.engines.has_pki_role_names_state() {
+        let required = if self.engines.has_external_pki_signer_history() {
+            EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+        } else if self.engines.has_pki_role_names_state() {
             PKI_ROLE_NAMES_STATE_SCHEMA
+        } else if self.has_namespace_batch_state() {
+            NAMESPACE_BATCH_STATE_SCHEMA
         } else if self.engines.has_pki_signed_role_time_state() {
             PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
         } else if self.engines.has_pki_role_time_state() {
@@ -84,6 +88,16 @@ impl State {
         } else {
             CURRENT_STATE_SCHEMA
         };
+        let required = if self.engines.has_sdk_state() {
+            required.max(SDK_STORAGE_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.engines.has_sdk_response_header_state() {
+            required.max(SDK_RESPONSE_HEADERS_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -92,11 +106,16 @@ impl State {
         previous: Option<&State>,
     ) -> Result<(), Response> {
         self.namespace_leases.validate()?;
+        self.validate_namespace_batch_state()?;
         self.protected_state()?
             .auth
             .validate_public_origin_state()
             .map_err(|_| Response::error(503, "invalid public origin protected owner"))?;
         if let Some(previous) = previous {
+            self.protected_state()?
+                .auth
+                .validate_namespace_batch_successor(&previous.protected_state()?.auth)
+                .map_err(|error| Response::error(error.status, &error.message))?;
             self.protected_state()?
                 .auth
                 .validate_public_origin_successor(&previous.protected_state()?.auth)
@@ -118,6 +137,15 @@ impl State {
         self.auth
             .validate_token_api_clock_floor(previous.map(|state| &*state.auth))
             .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < NAMESPACE_BATCH_STATE_SCHEMA
+            && (self.has_namespace_batch_state()
+                || previous.is_some_and(|old| old.schema >= NAMESPACE_BATCH_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "namespace batch lifecycle requires schema 91",
+            ));
+        }
         if self.schema < TOKEN_API_PRECISION_STATE_SCHEMA
             && (self.has_token_api_precision_state()
                 || previous.is_some_and(|state| {
@@ -140,6 +168,16 @@ impl State {
                 "opaque Kubernetes artifact ownership requires schema 87",
             ));
         }
+        if self.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+            && (self.engines.has_external_pki_signer_history()
+                || previous
+                    .is_some_and(|state| state.schema >= EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "external PKI signer history requires schema 94",
+            ));
+        }
         if self.schema < PKI_ROLE_NAMES_STATE_SCHEMA
             && (self.engines.has_pki_role_names_state()
                 || previous.is_some_and(|state| state.schema >= PKI_ROLE_NAMES_STATE_SCHEMA))
@@ -147,6 +185,24 @@ impl State {
             return Err(Response::error(
                 503,
                 "PKI role name ownership requires schema 93",
+            ));
+        }
+        if self.schema < SDK_RESPONSE_HEADERS_STATE_SCHEMA
+            && (self.engines.has_sdk_response_header_state()
+                || previous.is_some_and(|state| state.schema >= SDK_RESPONSE_HEADERS_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "SDK response header ownership requires schema 95",
+            ));
+        }
+        if self.schema < SDK_STORAGE_STATE_SCHEMA
+            && (self.engines.has_sdk_state()
+                || previous.is_some_and(|state| state.schema >= SDK_STORAGE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "SDK catalog and storage ownership requires schema 92",
             ));
         }
         if self.schema < PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
@@ -376,6 +432,24 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        self.validate_namespace_batch_state()?;
+        self.engines
+            .validate_sdk_state()
+            .map_err(|e| Response::error(503, &e.message))?;
+        if self.schema < SDK_RESPONSE_HEADERS_STATE_SCHEMA
+            && self.engines.has_sdk_response_header_state()
+        {
+            return Err(Response::error(
+                503,
+                "SDK response header ownership requires schema 95",
+            ));
+        }
+        if self.schema < SDK_STORAGE_STATE_SCHEMA && self.engines.has_sdk_state() {
+            return Err(Response::error(
+                503,
+                "SDK catalog and storage ownership requires schema 92",
+            ));
+        }
         self.auth
             .validate_public_origin_state()
             .map_err(|_| Response::error(503, "invalid public origin owner"))?;
@@ -395,6 +469,14 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+            && self.engines.has_external_pki_signer_history()
+        {
+            return Err(Response::error(
+                503,
+                "external PKI signer history requires schema 94",
             ));
         }
         if self.schema < PKI_ROLE_NAMES_STATE_SCHEMA && self.engines.has_pki_role_names_state() {
@@ -1268,6 +1350,10 @@ impl State {
             | PKI_ROLE_TIME_STATE_SCHEMA
             | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
             | PKI_ROLE_NAMES_STATE_SCHEMA
+            | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+            | SDK_RESPONSE_HEADERS_STATE_SCHEMA
+            | NAMESPACE_BATCH_STATE_SCHEMA
+            | SDK_STORAGE_STATE_SCHEMA
             | NAMESPACE_CUSTODY_STATE_SCHEMA
             | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(

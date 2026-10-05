@@ -15,7 +15,7 @@ struct Fixture {
     response: Response,
 }
 
-fn fixture(ttl: &str, deadline: Option<Instant>, audited: bool) -> TestResult<Fixture> {
+fn fixture(ttl: &str, deadline_budget: Option<Duration>, audited: bool) -> TestResult<Fixture> {
     let files = Root::new();
     let mut service = files.service()?;
     // Exercise the real Service config enrollment gate, even though these
@@ -63,6 +63,9 @@ fn fixture(ttl: &str, deadline: Option<Instant>, audited: bool) -> TestResult<Fi
         .as_str()
         .ok_or("actor")?
         .to_owned();
+    // Fixture setup precedes the request. Capture its one original budget only
+    // when actual admission starts, then retain that deadline through delivery.
+    let deadline = deadline_budget.map(|budget| Instant::now() + budget);
     let _deadline_scope = deadline.map(crate::request_deadline::RequestDeadlineScope::enter);
     let pending = match service.begin_at_mode(RequestDispatch {
         method: "POST",
@@ -380,7 +383,7 @@ fn kube_delivery_actual_actor_expiry_after_audit_erases_credential() -> TestResu
 
 #[test]
 fn kube_delivery_original_deadline_expiry_after_audit_has_no_new_budget() -> TestResult {
-    let mut f = fixture("10m", Some(Instant::now() + Duration::from_secs(2)), true)?;
+    let mut f = fixture("10m", Some(Duration::from_secs(2)), true)?;
     std::thread::sleep(Duration::from_millis(2100));
     let response = std::mem::replace(&mut f.response, Response::error(500, "moved"));
     let denied =

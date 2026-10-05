@@ -119,6 +119,7 @@ fn read_admitted(
             .handle_immutable_kv_read("", "GET", "kv-late/item", body, 100)?;
     assert_eq!(domain.status, 200);
     let response = Response {
+        response_headers: Default::default(),
         consistency_index: None,
         status: domain.status,
         body: std::mem::take(&mut domain.body),
@@ -408,6 +409,7 @@ fn ordinary_kv_delivery_preserves_trusted_native_scope_without_bypassing_http_or
             .handle_immutable_kv_read(namespace, "GET", "kv-late/item", &body, 100)?;
     assert_eq!(domain.status, 200);
     let response = Response {
+        response_headers: Default::default(),
         consistency_index: None,
         status: domain.status,
         body: std::mem::take(&mut domain.body),
@@ -555,6 +557,7 @@ fn ordinary_kv_deleted_version_404_metadata_still_requires_original_actor() -> T
     assert_eq!(domain.body["data"]["metadata"]["version"], 1);
     assert!(domain.body["data"]["metadata"]["deletion_time"].is_string());
     let response = Response {
+        response_headers: Default::default(),
         consistency_index: None,
         status: domain.status,
         body: std::mem::take(&mut domain.body),

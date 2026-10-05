@@ -41,6 +41,8 @@ impl Drop for ServiceOwner {
 #[derive(Clone, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize)]
 #[serde(try_from = "BatchOwnerWire")]
 pub(crate) struct BatchLeaseClaims {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    namespace_binding: Option<Box<super::batch_namespace::Binding>>,
     kind: BatchOwnerTag,
     authority_id: BatchAuthorityId,
     key_id: BatchKeyId,
@@ -63,6 +65,8 @@ enum BatchOwnerTag {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct BatchOwnerWire {
+    #[serde(default)]
+    namespace_binding: Option<super::batch_namespace::Binding>,
     kind: BatchOwnerTag,
     authority_id: BatchAuthorityId,
     key_id: BatchKeyId,
@@ -81,6 +85,7 @@ impl TryFrom<BatchOwnerWire> for BatchLeaseClaims {
     fn try_from(value: BatchOwnerWire) -> Result<Self, Self::Error> {
         let claims = Self {
             kind: value.kind,
+            namespace_binding: value.namespace_binding.map(Box::new),
             authority_id: value.authority_id,
             key_id: value.key_id,
             token_digest: value.token_digest,
@@ -109,6 +114,7 @@ impl BatchLeaseClaims {
     fn from_verified(claims: &VerifiedBatchClaims) -> Self {
         Self {
             kind: BatchOwnerTag::V1,
+            namespace_binding: claims.namespace_binding().cloned().map(Box::new),
             authority_id: claims.authority_id(),
             key_id: claims.key_id(),
             token_digest: claims.token_digest().to_owned(),
@@ -122,6 +128,13 @@ impl BatchLeaseClaims {
     }
 
     pub(crate) fn validate(&self) -> Result<(), BatchError> {
+        if self
+            .namespace_binding
+            .as_ref()
+            .is_some_and(|binding| binding.validate(&self.namespace).is_err())
+        {
+            return Err(BatchError::InvalidClaims);
+        }
         if self
             .token_api_precision
             .as_ref()
@@ -142,6 +155,9 @@ impl BatchLeaseClaims {
             self.parent.as_deref(),
             self.entity_id.as_deref(),
         )
+    }
+    pub(crate) fn namespace_binding(&self) -> Option<&super::batch_namespace::Binding> {
+        self.namespace_binding.as_deref()
     }
     pub(crate) fn authority_id(&self) -> BatchAuthorityId {
         self.authority_id

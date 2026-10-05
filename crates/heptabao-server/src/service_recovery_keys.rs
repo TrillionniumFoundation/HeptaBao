@@ -974,6 +974,7 @@ impl Service {
             state.auth.recovery_delivery = None;
             return match self.publish_recovery_owner(state, deadline) {
                 Ok(_) => Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
                     body: Value::Null,
@@ -997,6 +998,7 @@ impl Service {
                 state.auth.recovery_attempt = None;
                 return match self.publish_recovery_owner(state, deadline) {
                     Ok(_) => Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: 204,
                         body: Value::Null,

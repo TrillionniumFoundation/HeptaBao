@@ -330,6 +330,27 @@ impl Service {
         incoming: &State,
     ) -> Result<(), Response> {
         incoming
+            .validate_namespace_batch_state()
+            .map_err(|_| Response::error(400, "invalid snapshot namespace batch lifecycle"))?;
+        incoming
+            .protected_state()?
+            .auth
+            .validate_namespace_batch_successor(&current.protected_state()?.auth)
+            .map_err(|error| Response::error(400, &error.message))?;
+        incoming
+            .protected_state()?
+            .namespaces
+            .validate_custody_successor(&current.protected_state()?.namespaces)
+            .map_err(|_| Response::error(400, "snapshot would regress namespace lifecycle"))?;
+        if current.schema >= NAMESPACE_BATCH_STATE_SCHEMA
+            && incoming.schema < NAMESPACE_BATCH_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade namespace batch lifecycle",
+            ));
+        }
+        incoming
             .engines
             .validate_kubernetes_artifact_clock(Some(&current.engines))
             .map_err(|error| Response::error(400, &error.message))?;
@@ -337,6 +358,22 @@ impl Service {
             .auth
             .validate_token_api_clock_floor(Some(&current.auth))
             .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= SDK_RESPONSE_HEADERS_STATE_SCHEMA
+            && incoming.schema < SDK_RESPONSE_HEADERS_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade SDK response header ownership",
+            ));
+        }
+        if current.schema >= EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+            && incoming.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade external PKI signer history",
+            ));
+        }
         if current.schema >= PKI_ROLE_NAMES_STATE_SCHEMA
             && incoming.schema < PKI_ROLE_NAMES_STATE_SCHEMA
         {

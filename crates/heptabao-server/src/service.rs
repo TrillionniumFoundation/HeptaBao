@@ -81,9 +81,13 @@ const PKI_ROLE_WILDCARD_STATE_SCHEMA: u32 = 85;
 const PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA: u32 = 88;
 const PKI_ROLE_TIME_STATE_SCHEMA: u32 = 89;
 const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
+const NAMESPACE_BATCH_STATE_SCHEMA: u32 = 91;
+const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
 const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
+const EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA: u32 = 94;
+const SDK_RESPONSE_HEADERS_STATE_SCHEMA: u32 = 95;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ROLE_NAMES_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = SDK_RESPONSE_HEADERS_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -99,7 +103,11 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
                 | PKI_ROLE_TIME_STATE_SCHEMA
                 | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+                | NAMESPACE_BATCH_STATE_SCHEMA
+                | SDK_STORAGE_STATE_SCHEMA
                 | PKI_ROLE_NAMES_STATE_SCHEMA
+                | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+                | SDK_RESPONSE_HEADERS_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -132,6 +140,8 @@ mod ha_activation;
 mod ha_read;
 #[path = "service_ha_received.rs"]
 mod ha_received;
+#[path = "service_ha_step_down.rs"]
+mod ha_step_down;
 #[path = "service_help_delivery.rs"]
 mod help_delivery;
 #[path = "service_identity.rs"]
@@ -185,6 +195,11 @@ mod ui_mounts;
 #[path = "service_workflows.rs"]
 mod workflows;
 pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, PluginSecretConfig};
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[path = "service_sdk_backend.rs"]
+mod sdk_backend;
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+pub use sdk_backend::SdkBackendConfig;
 pub(crate) use snapshot_transfer::{NativeSnapshotAdmission, TrustedSnapshotOrigin};
 #[path = "service_openapi.rs"]
 mod openapi;
@@ -546,9 +561,16 @@ fn replay_epoch_is_zero(value: &u64) -> bool {
     *value == 0
 }
 
+#[path = "service_response_headers.rs"]
+mod response_headers;
+pub(crate) use response_headers::{
+    Headers as ResponseHeaders, validate_allowlist as validate_sdk_header_allowlist,
+};
+
 pub struct Response {
     pub status: u16,
     pub body: Value,
+    pub(crate) response_headers: ResponseHeaders,
     pub(crate) consistency_index: Option<crate::http::consistency::ResponseIndex>,
 }
 impl Drop for Response {
@@ -565,6 +587,7 @@ impl Response {
         Self {
             status,
             body: json!({"errors":[message]}),
+            response_headers: Default::default(),
             consistency_index: None,
         }
     }
@@ -572,6 +595,7 @@ impl Response {
         Self {
             status: 200,
             body,
+            response_headers: Default::default(),
             consistency_index: None,
         }
     }
@@ -895,6 +919,8 @@ enum ExternalEffectPlan {
     OnlineAuth(online_auth::OnlineAuthEffectPlan),
     PluginAuth(plugin::PluginAuthPlan),
     PluginRead(plugin::PluginReadPlan),
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    SdkBackend(sdk_backend::Plan),
     PluginKms(plugin::PluginKmsPlan),
     ExternalKey(plugin::ExternalKeyPlan),
     ExternalTransit(external_transit::ExternalTransitPlan),
@@ -914,6 +940,8 @@ pub(crate) enum ExternalEffectResult {
     OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
     PluginAuth(Result<plugin::PluginAuthObservation, Response>),
     PluginRead(Result<Value, Response>),
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    SdkBackend(Result<Option<Value>, Response>),
     PluginKms(Result<plugin::PluginKmsObservation, Response>),
     ExternalKey(Result<(), Response>),
     ExternalTransit(Result<external_transit::Observation, Response>),
@@ -940,6 +968,20 @@ pub(crate) struct PendingExternalRequest {
 impl PendingExternalRequest {
     /// Carry the listener's original deadline into scoped auth HTTPS; the
     /// existing finalize boundary still rejects every late external result.
+    pub(crate) fn execute_with_service_before(
+        &self,
+        service: &Arc<Mutex<Service>>,
+        deadline: std::time::Instant,
+    ) -> ExternalEffectResult {
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if let ExternalEffectPlan::SdkBackend(plan) = &self.effect {
+            return ExternalEffectResult::SdkBackend(plan.execute(service, deadline));
+        }
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let _ = service;
+        self.execute_before(deadline)
+    }
+
     pub(crate) fn execute_before(&self, deadline: std::time::Instant) -> ExternalEffectResult {
         match &self.effect {
             #[cfg(target_os = "linux")]
@@ -961,6 +1003,10 @@ impl PendingExternalRequest {
             ExternalEffectPlan::WrapperBarrierInit(plan) => {
                 ExternalEffectResult::WrapperBarrierInit(plan.execute())
             }
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            ExternalEffectPlan::SdkBackend(_) => ExternalEffectResult::SdkBackend(Err(
+                Response::error(501, "SDK backend requires the Service owner dispatcher"),
+            )),
             ExternalEffectPlan::Database(plan) => ExternalEffectResult::Database(plan.execute()),
             ExternalEffectPlan::DatabaseConfig(plan) => {
                 ExternalEffectResult::DatabaseConfig(plan.execute())
@@ -1040,6 +1086,16 @@ pub struct Service {
     pending_online_auth_effect: Option<online_auth::OnlineAuthEffectPlan>,
     pending_plugin_auth: Option<plugin::PluginAuthPlan>,
     pending_plugin_read: Option<plugin::PluginReadPlan>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pending_sdk_request: Option<sdk_backend::Plan>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pending_sdk_control_authority: Option<plugin::PluginResponseAuthority>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_configuration: Option<sdk_backend::SdkBackendConfig>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_hosts: BTreeMap<String, Arc<sdk_backend::Control>>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_migrations: BTreeMap<String, sdk_backend::MigrationStatus>,
     pending_plugin_kms: Option<plugin::PluginKmsPlan>,
     pending_external_key: Option<plugin::ExternalKeyPlan>,
     pending_external_transit: Option<external_transit::ExternalTransitPlan>,
@@ -1049,6 +1105,7 @@ pub struct Service {
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
     pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
     pending_token_api_authority: Option<plugin::PluginResponseAuthority>,
+    pending_ha_step_down: Option<ha_step_down::StepDownPlan>,
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
     pending_ordinary_kv_commit_notice: Option<ordinary_kv_delivery::OrdinaryKvCommitNoticeCapture>,
     native_snapshot_transport: bool,
@@ -1400,6 +1457,16 @@ impl Service {
             pending_online_auth_effect: None,
             pending_plugin_auth: None,
             pending_plugin_read: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            pending_sdk_request: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            pending_sdk_control_authority: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_configuration: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_hosts: BTreeMap::new(),
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_migrations: BTreeMap::new(),
             pending_plugin_kms: None,
             pending_external_key: None,
             pending_external_transit: None,
@@ -1409,6 +1476,7 @@ impl Service {
             pending_snapshot_transfer: None,
             pending_ordinary_kv_authority: None,
             pending_token_api_authority: None,
+            pending_ha_step_down: None,
             pending_help_authority: None,
             pending_ordinary_kv_commit_notice: None,
             native_snapshot_transport: false,
@@ -1598,6 +1666,8 @@ impl Service {
         self.private_shutdown_requested = true;
         self.fence_openbao_wrapper();
         self.namespace_runtime.clear();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        self.retire_sdk_hosts();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -1834,6 +1904,20 @@ impl Service {
             (ExternalEffectPlan::PluginRead(plan), ExternalEffectResult::PluginRead(result)) => {
                 self.finalize_plugin_read(plan, result)
             }
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            (
+                ExternalEffectPlan::SdkBackend(mut plan),
+                ExternalEffectResult::SdkBackend(result),
+            ) => {
+                let response = self.finalize_sdk_request(&mut plan, result);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_sdk_delivery(&mut plan, response, &pending.fingerprint);
+            }
             (ExternalEffectPlan::PluginKms(plan), ExternalEffectResult::PluginKms(result)) => {
                 self.finalize_plugin_kms(plan, result)
             }
@@ -1849,11 +1933,12 @@ impl Service {
                 ExternalEffectResult::ExternalPki(result),
             ) => {
                 let response = self.finalize_external_pki(&mut plan, result);
-                let response = self.audit_completed_response(
+                let response = self.audit_external_pki_response(
+                    &mut plan,
                     &pending.fingerprint,
-                    pending.now,
-                    pending.token_clock,
+                    (pending.now, pending.token_clock),
                     response,
+                    || {},
                 );
                 return self.complete_external_pki_delivery(
                     &mut plan,
@@ -1923,13 +2008,40 @@ impl Service {
         fingerprint: &str,
         now: u64,
         token_clock: Option<RequestClock>,
-        mut response: Response,
+        response: Response,
         after_audit: impl FnOnce(),
     ) -> Response {
-        if let Err(cause) = self.persist_terminal_token_clock(token_clock, now) {
-            erase_json(&mut response.body);
-            response = cause;
-        }
+        self.audit_completed_response_with_clock_receipt(
+            fingerprint,
+            (now, token_clock),
+            response,
+            after_audit,
+            false,
+        )
+        .0
+    }
+
+    fn audit_completed_response_with_clock_receipt(
+        &mut self,
+        fingerprint: &str,
+        request_clock: (u64, Option<RequestClock>),
+        mut response: Response,
+        after_audit: impl FnOnce(),
+        retain_clock_receipt: bool,
+    ) -> (Response, Option<token_precision::TerminalClockReceipt>) {
+        let (now, token_clock) = request_clock;
+        let receipt = match self.persist_terminal_token_clock_with_receipt(
+            token_clock,
+            now,
+            retain_clock_receipt,
+        ) {
+            Ok(receipt) => receipt,
+            Err(cause) => {
+                erase_json(&mut response.body);
+                response = cause;
+                None
+            }
+        };
         if self
             .audit_event("response", fingerprint, now, Some(response.status))
             .is_err()
@@ -1942,9 +2054,12 @@ impl Service {
             if self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) {
                 self.fence_wrapper_barrier_delivery();
             }
-            return Response::error(
-                503,
-                "response audit failed; outcome unknown; authoritative recovery required",
+            return (
+                Response::error(
+                    503,
+                    "response audit failed; outcome unknown; authoritative recovery required",
+                ),
+                None,
             );
         }
         self.stamp_consistency_index(&mut response);
@@ -1952,7 +2067,7 @@ impl Service {
             authority.mark_response_audited(fingerprint);
         }
         after_audit();
-        response
+        (response, receipt)
     }
 
     fn begin_at_mode(&mut self, request: RequestDispatch<'_>) -> RequestExecution {
@@ -2004,7 +2119,13 @@ impl Service {
             erase_json(&mut body);
             return RequestExecution::Complete(self.leader_response(method));
         }
-        if self.pending_database_effect.is_some()
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_pending =
+            self.pending_sdk_request.is_some() || self.pending_sdk_control_authority.is_some();
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let sdk_pending = false;
+        if sdk_pending
+            || self.pending_database_effect.is_some()
             || self.pending_database_config_effect.is_some()
             || self.pending_database_rotation_effect.is_some()
             || self.pending_database_batch_effect.is_some()
@@ -2020,6 +2141,7 @@ impl Service {
             || self.pending_snapshot_transfer.is_some()
             || self.pending_ordinary_kv_authority.is_some()
             || self.pending_token_api_authority.is_some()
+            || self.pending_ha_step_down.is_some()
             || self.pending_help_authority.is_some()
             || self.pending_ordinary_kv_commit_notice.is_some()
         {
@@ -2252,6 +2374,18 @@ impl Service {
         let online_auth = self.pending_online_auth_effect.take();
         let plugin_auth = self.pending_plugin_auth.take();
         let plugin_read = self.pending_plugin_read.take();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_request = self.pending_sdk_request.take();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_control = self.pending_sdk_control_authority.take();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_control_present = sdk_control.is_some();
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let sdk_control_present = false;
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_staged = usize::from(sdk_request.is_some());
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let sdk_staged = 0;
         let plugin_kms = self.pending_plugin_kms.take();
         let external_key = self.pending_external_key.take();
         let external_transit = self.pending_external_transit.take();
@@ -2261,8 +2395,10 @@ impl Service {
         let snapshot_transfer = self.pending_snapshot_transfer.take();
         let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
         let token_api_authority = self.pending_token_api_authority.take();
+        let step_down = self.pending_ha_step_down.take();
         let help_authority = self.pending_help_authority.take();
-        let staged = usize::from(database.is_some())
+        let staged = sdk_staged
+            + usize::from(database.is_some())
             + usize::from(database_config.is_some())
             + usize::from(database_rotation.is_some())
             + usize::from(database_batch.is_some())
@@ -2278,7 +2414,9 @@ impl Service {
             + usize::from(snapshot_transfer.is_some());
         let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
             + usize::from(token_api_authority.is_some())
-            + usize::from(help_authority.is_some());
+            + usize::from(help_authority.is_some())
+            + usize::from(step_down.is_some())
+            + usize::from(sdk_control_present);
         if staged > 1 || delivery_capsules > 1 || staged != 0 && delivery_capsules != 0 {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
@@ -2310,6 +2448,8 @@ impl Service {
             .or_else(|| {
                 snapshot_transfer.map(|plan| ExternalEffectPlan::SnapshotTransfer(Box::new(plan)))
             });
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let effect = effect.or_else(|| sdk_request.map(ExternalEffectPlan::SdkBackend));
         if let Some(effect) = effect {
             return RequestExecution::External(Box::new(PendingExternalRequest {
                 fingerprint,
@@ -2321,13 +2461,23 @@ impl Service {
         let ordinary_kv_expected = ordinary_kv_authority.is_some();
         let token_expected = token_api_authority.is_some();
         let help_expected = help_authority.is_some();
+        let step_down_expected = path == "sys/step-down" && response.status == 204;
         // Retain the exact moved capsule through terminal-floor publication and
         // mandatory audit. A typed unknown floor outcome attaches to this same
         // request, rather than being reconstructed from the public response.
         self.pending_ordinary_kv_authority = ordinary_kv_authority;
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        {
+            self.pending_sdk_control_authority = sdk_control;
+        }
         self.pending_token_api_authority = token_api_authority;
         self.pending_help_authority = help_authority;
-        let mut response = self.audit_completed_response(&fingerprint, now, token_clock, response);
+        let response = self.audit_completed_response(&fingerprint, now, token_clock, response);
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let mut response =
+            self.complete_pending_sdk_control_delivery(sdk_control_present, response, &fingerprint);
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let mut response = response;
         let response = match (
             ordinary_kv_expected,
             self.pending_ordinary_kv_authority.take(),
@@ -2348,6 +2498,8 @@ impl Service {
         let response =
             self.complete_pending_token_api_delivery(token_expected, response, &fingerprint);
         let response = self.complete_pending_help_delivery(help_expected, response, &fingerprint);
+        let response =
+            self.complete_ha_step_down(step_down_expected, step_down, response, &fingerprint);
         RequestExecution::Complete(response)
     }
 
@@ -2479,6 +2631,7 @@ impl Service {
                 health_codes,
             );
             return Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status,
                 // OpenBao 2.6.2 removed the legacy performance_standby and last_wal response fields.
@@ -2776,6 +2929,7 @@ impl Service {
         };
         if help_projection.as_ref().is_some_and(|help| help.anonymous) {
             return Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 200,
                 body: help_projection.map_or_else(|| json!({}), |help| help.body),
@@ -2794,6 +2948,7 @@ impl Service {
                 .handle_public_pki_read(namespace, method, path, body, now)
             {
                 Ok(Some(mut response)) => Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
@@ -2943,6 +3098,7 @@ impl Service {
                         object.insert("id".into(), Value::String(token.to_owned()));
                     }
                     Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,
                         body: help.body,
@@ -3036,6 +3192,10 @@ impl Service {
         if Self::is_raft_admin_path(path) {
             return self.raft_admin_route(admitted, principal.as_ref(), &request);
         }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if self.sdk_control_handles(&admitted, &request) {
+            return self.sdk_control_route(admitted, principal, &request);
+        }
         if Self::plugin_catalog_handles(path) {
             return self.plugin_catalog_route(&admitted, principal.as_ref(), &request);
         }
@@ -3082,6 +3242,14 @@ impl Service {
         if Self::plugin_kms_handles(path) {
             return self.plugin_kms_route(&admitted, principal, &request);
         }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if admitted
+            .engines
+            .sdk_mount_binding(namespace, path)
+            .is_some()
+        {
+            return self.stage_sdk_request(admitted, principal, &request);
+        }
         if self.plugin_secret_handles(&admitted, namespace, path) {
             return self.plugin_secret_route(admitted, principal, &request);
         }
@@ -3092,28 +3260,36 @@ impl Service {
             if body.as_object().is_none_or(|object| !object.is_empty()) {
                 return Response::error(400, "step-down accepts an empty JSON object");
             }
-            let Some(principal) = principal.as_ref() else {
+            let Some(principal) = principal else {
                 return Response::error(403, "missing client token");
             };
             if let Err(error) = admitted
                 .auth
-                .authorize_sudo_request(principal, namespace, path, "update", now)
+                .authorize_sudo_request(&principal, namespace, path, "update", now)
             {
                 return Response::error(error.status, &error.message);
             }
-            let Some(ha) = self.ha.as_ref() else {
+            let Some(process) = self.ha.as_ref() else {
                 return Response::error(400, "HA is not enabled");
             };
-            return match ha.lock_for_request() {
-                Ok(ha) => match ha.step_down() {
-                    Ok(_) => Response {
-                        consistency_index: None,
-                        status: 204,
-                        body: Value::Null,
-                    },
-                    Err(_) => Response::error(503, "HA leadership transfer failed"),
-                },
-                Err(_) => Response::error(503, "HA process lock is unavailable"),
+            // Keep the original affine actor while the current leader still
+            // commits the terminal clock floor and mandatory response audit.
+            self.pending_ha_step_down = Some(ha_step_down::StepDownPlan::new(
+                Arc::clone(process),
+                plugin::PluginResponseAuthority::new(
+                    principal,
+                    &admitted,
+                    &request,
+                    "update",
+                    true,
+                    &self.unseal_nonce,
+                ),
+            ));
+            return Response {
+                response_headers: Default::default(),
+                consistency_index: None,
+                status: 204,
+                body: Value::Null,
             };
         }
         if path == "sys/init/ack" {
@@ -3186,6 +3362,8 @@ impl Service {
             }
             self.fence_openbao_wrapper();
             self.namespace_runtime.clear();
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            self.retire_sdk_hosts();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
@@ -3209,6 +3387,7 @@ impl Service {
                 return Response::error(503, "operating system randomness unavailable");
             }
             return Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
                 body: Value::Null,
@@ -3286,6 +3465,7 @@ impl Service {
                 .lookup_wrapping_request(token, namespace, method, body, now)
             {
                 Ok(value) => Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: value.status,
                     body: value.body,
@@ -3405,6 +3585,7 @@ impl Service {
             {
                 Ok(wrapped) => {
                     response = Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: wrapped.status,
                         body: wrapped.body,
@@ -3474,6 +3655,8 @@ impl Service {
         }
         if admitted.engines.has_kubernetes_opaque_artifact_state()
             || admitted.has_token_api_precision_state()
+            || admitted.has_namespace_batch_state()
+            || admitted.engines.has_external_pki_signer_history()
             || admitted.engines.has_pki_role_names_state()
             || admitted.engines.has_pki_role_time_state()
             || admitted.engines.has_pki_role_leaf_profile_state()
@@ -3644,6 +3827,7 @@ impl Service {
             time.seconds(),
         ) {
             Ok(mut response) => Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: response.status,
                 body: std::mem::take(&mut response.body),
@@ -3775,6 +3959,7 @@ impl Service {
         {
             Ok(Some(mut response)) => {
                 return Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
@@ -3858,6 +4043,7 @@ impl Service {
                 (Some(from), Some(to)) => {
                     return match state.auth.remount_mount(namespace, from, to, cas_revision) {
                         Ok(response) => Response {
+                            response_headers: Default::default(),
                             consistency_index: None,
                             status: response.status,
                             body: response.body,
@@ -3880,6 +4066,7 @@ impl Service {
                     }
                     return match state.engines.remount(namespace, from, to, cas_revision) {
                         Ok(mut response) => Response {
+                            response_headers: Default::default(),
                             consistency_index: None,
                             status: response.status,
                             body: std::mem::take(&mut response.body),
@@ -3961,6 +4148,7 @@ impl Service {
                     }
                 }
                 let mut engines = state.engines.clone();
+                let mut namespaces = state.namespaces.clone();
                 if response.mutated
                     && method == "DELETE"
                     && let Some(mount) = path.strip_prefix("sys/auth/")
@@ -3984,6 +4172,13 @@ impl Service {
                             }
                             None => AuthorityTime::Coarse(now),
                         };
+                        Self::prepare_identity_batch_namespace(
+                            &mut auth,
+                            &mut namespaces,
+                            &state.cluster_id,
+                            &state.namespace_leases,
+                            &response,
+                        )?;
                         Self::finish_identity_response_observed(
                             &mut auth,
                             &mut engines,
@@ -4000,8 +4195,10 @@ impl Service {
                 if response.mutated {
                     state.auth = auth;
                     state.engines = engines;
+                    state.namespaces = namespaces;
                 }
                 return Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
                     body: response.body,
@@ -4086,6 +4283,7 @@ impl Service {
                     state.engines = engines;
                 }
                 Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
@@ -5106,6 +5304,8 @@ impl Service {
         self.seal = Some(seal);
         self.durable_profile = durable_profile;
         self.namespace_runtime.clear();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        self.retire_sdk_hosts();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -5291,6 +5491,8 @@ impl Service {
         self.seal = Some(pending.seal);
         self.durable_profile = Some(pending.profile);
         self.namespace_runtime.clear();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        self.retire_sdk_hosts();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -5480,6 +5682,7 @@ impl Service {
             );
         }
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 204,
             body: Value::Null,
@@ -5573,6 +5776,8 @@ impl Service {
                 Ok(value) => Zeroizing::new(value),
                 Err(_) => {
                     self.namespace_runtime.clear();
+                    #[cfg(any(target_os = "linux", target_os = "macos"))]
+                    self.retire_sdk_hosts();
                     self.state = None;
                     self.ha_activation = None;
                     self.record_root = None;
@@ -5586,6 +5791,8 @@ impl Service {
             seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
             if persist_seal_metadata(&self.data_dir, &seal).is_err() {
                 self.namespace_runtime.clear();
+                #[cfg(any(target_os = "linux", target_os = "macos"))]
+                self.retire_sdk_hosts();
                 self.state = None;
                 self.ha_activation = None;
                 self.record_root = None;
@@ -5632,6 +5839,8 @@ impl Service {
         self.unseal_shares.clear();
         if self.rotate_unseal_nonce().is_err() {
             self.namespace_runtime.clear();
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            self.retire_sdk_hosts();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
@@ -5660,6 +5869,8 @@ impl Service {
         let wrapper_activation = self.begin_openbao_wrapper_activation();
         self.durable = None;
         self.namespace_runtime.clear();
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        self.retire_sdk_hosts();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -5771,6 +5982,7 @@ impl Service {
                 Ok(_) => {}
                 Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                     return Err(Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: 503,
                         body: json!({
@@ -6005,6 +6217,7 @@ impl Service {
                 }
                 self.rekey = None;
                 return Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
                     body: Value::Null,
@@ -6405,6 +6618,7 @@ impl Service {
                     }
                 })),
                 ReconciliationStatus::Unknown => Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 404,
                     body: json!({"errors":["recovery reference is unknown"]}),
@@ -6903,6 +7117,7 @@ impl Service {
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Err(Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
                     body: json!({"errors":["durable outcome unknown; do not blindly retry"],"recovery_reference":recovery_reference}),
@@ -7416,6 +7631,7 @@ impl Service {
                     }
                 }
                 Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
                     body: Value::Null,
@@ -8910,3 +9126,7 @@ mod token_roles_tests;
 #[cfg(test)]
 #[path = "service_public_origin_tests.rs"]
 mod public_origin_tests;
+
+#[cfg(test)]
+#[path = "service_sdk_storage_tests.rs"]
+mod sdk_storage_tests;

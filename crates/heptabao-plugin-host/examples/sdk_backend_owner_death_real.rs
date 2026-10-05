@@ -1,7 +1,7 @@
 //! A deliberately blocked genuine SDK plugin for an owned host-death test.
 //! Its external test launcher owns and observes all three real processes.
-#[cfg(target_os = "linux")]
-mod linux_fixture {
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+mod unix_fixture {
     use std::collections::BTreeMap;
     use std::error::Error;
     use std::fs::OpenOptions;
@@ -105,12 +105,12 @@ mod linux_fixture {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    linux_fixture::main()
+    unix_fixture::main()
 }
 
-#[cfg(not(target_os = "linux"))]
+#[cfg(not(any(target_os = "linux", target_os = "macos")))]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    Err("this native SDK fixture requires Linux".into())
+    Err("this native SDK fixture requires Linux or Darwin".into())
 }

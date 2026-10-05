@@ -9,11 +9,12 @@ from unittest.mock import patch
 
 SOURCE = Path(__file__).resolve().parents[1] / "ldap_openldap_live.py"
 TREE = ast.parse(SOURCE.read_text())
-FUNCTIONS = [n for n in TREE.body if isinstance(n, ast.FunctionDef) and n.name in ("openldap_paths", "openldap_environment")]
+FUNCTIONS = [n for n in TREE.body if isinstance(n, ast.FunctionDef) and n.name in ("openldap_paths", "openldap_environment", "private_work_parent")]
 NAMESPACE = {"Path": Path, "os": os, "shutil": shutil}
 exec(compile(ast.Module(body=FUNCTIONS, type_ignores=[]), str(SOURCE), "exec"), NAMESPACE)
 resolve = NAMESPACE["openldap_paths"]
 child_env = NAMESPACE["openldap_environment"]
+work_parent = NAMESPACE["private_work_parent"]
 
 
 class OpenLdapPrerequisiteTests(unittest.TestCase):
@@ -108,6 +109,25 @@ class OpenLdapPrerequisiteTests(unittest.TestCase):
             (other / "libslapi.so.2").write_text("second architecture")
             with self.assertRaises(ValueError):
                 child_env(exe, True)
+
+    def test_explicit_work_parent_remains_in_private_canonical_storage(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            self.assertEqual(work_parent(root), root)
+            self.assertEqual(work_parent(None), Path("/var/tmp"))
+            root.chmod(0o755)
+            with self.assertRaises(ValueError):
+                work_parent(root)
+            root.chmod(0o700)
+            link = root / "link"
+            link.symlink_to(root, target_is_directory=True)
+            for path in (link, root / "absent", Path(".")):
+                with self.subTest(path=path), self.assertRaises(ValueError):
+                    work_parent(path)
+            file = root / "file"
+            file.write_text("owned fixture")
+            with self.assertRaises(ValueError):
+                work_parent(file)
 
     def test_relative_root_is_never_implicitly_resolved(self):
         with patch.dict(os.environ, {"HB_QA_OPENLDAP_ROOT": "."}):

@@ -383,6 +383,7 @@ fn ha_sealed_status_and_lost_quorum_diagnosis_do_not_replace_read_index() -> Tes
     assert!(matches!(
         result,
         RequestExecution::Complete(Response {
+            response_headers: _,
             consistency_index: None,
             status: 503,
             ..
@@ -469,6 +470,7 @@ fn health_quorum_loss_replies_within_probe_budget_without_admitting_reads() -> T
     assert!(matches!(
         result,
         RequestExecution::Complete(Response {
+            response_headers: _,
             consistency_index: None,
             status: 503,
             ..

@@ -12,6 +12,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"os/signal"
 	"runtime"
 	"sync"
 	"sync/atomic"
@@ -32,7 +33,18 @@ type entry struct {
 	ValueHex string `json:"value_hex"`
 	SealWrap bool   `json:"seal_wrap"`
 }
+type ownedImage struct {
+	FD     int    `json:"fd"`
+	Role   string `json:"role"`
+	Path   string `json:"path"`
+	Device uint64 `json:"device"`
+	Inode  uint64 `json:"inode"`
+	Bytes  int64  `json:"bytes"`
+	SHA256 string `json:"sha256"`
+}
+
 type message struct {
+	OwnedImages       []ownedImage      `json:"owned_images,omitempty"`
 	Version           int               `json:"version"`
 	Kind              string            `json:"kind"`
 	Call              uint64            `json:"call"`
@@ -221,7 +233,32 @@ func (s *storage) Delete(ctx context.Context, key string) error {
 	return e
 }
 
-func run() error {
+// The same owner EOF cancels every outstanding SDK request. No fresh caller
+// authority or storage acknowledgement is created by this cancellation.
+func (w *wire) ownerContext(timeout time.Duration) (context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	go func() {
+		select {
+		case <-w.failed:
+			cancel()
+		case <-ctx.Done():
+		}
+	}()
+	return ctx, cancel
+}
+
+func run() (outcome error) {
+	admit, cleanup, err := bindLaunchOwnedImages()
+	if err != nil {
+		return err
+	}
+	// Original inherited file ownership is held before waiting for any setup.
+	defer func() { outcome = errors.Join(outcome, cleanup()) }()
+	if len(os.Getenv("HBP_SDK_OWNED_IMAGES")) > 0 {
+		if _, err = fmt.Fprintln(os.Stderr, "HBP_SDK_DARWIN_OWNERSHIP_BOUND_V1"); err != nil {
+			return err
+		}
+	}
 	w := newWire()
 	first, err := w.nextRequest()
 	if err != nil {
@@ -230,10 +267,14 @@ func run() error {
 	if first.Kind != "setup" || first.Call != 1 || first.Plugin == "" || first.SocketDir == "" || first.TimeoutMS <= 0 || first.TimeoutMS > 30000 || first.DefaultTTLSeconds < 0 || first.MaxTTLSeconds < first.DefaultTTLSeconds {
 		return errors.New("invalid setup")
 	}
+	if err = admit(first); err != nil {
+		return err
+	}
+
 	timeout := time.Duration(first.TimeoutMS) * time.Millisecond
 	logger := hclog.New(&hclog.LoggerOptions{Level: hclog.Trace, Output: os.Stderr, JSONFormat: true})
 	command := exec.Command(first.Plugin, first.Args...)
-	command.SysProcAttr = &syscall.SysProcAttr{Pdeathsig: syscall.SIGKILL}
+	bindPluginOwner(command)
 	command.Env = []string{"PATH=/usr/bin:/bin", "TMPDIR=" + first.SocketDir, "PLUGIN_UNIX_SOCKET_DIR=" + first.SocketDir}
 	client := goplugin.NewClient(&goplugin.ClientConfig{
 		HandshakeConfig:  sdkplugin.HandshakeConfig,
@@ -242,9 +283,17 @@ func run() error {
 		Logger: logger, StartTimeout: timeout,
 	})
 	defer client.Kill()
+	// Start owns its lock through negotiation. Kill observes that same client;
+	// the post-Start EOF gate also covers EOF arriving before its runner exists.
+	go func() { <-w.failed; client.Kill() }()
 	rpc, err := client.Client()
 	if err != nil {
 		return err
+	}
+	select {
+	case <-w.failed:
+		return io.EOF
+	default:
 	}
 	raw, err := rpc.Dispense("backend")
 	if err != nil {
@@ -255,7 +304,7 @@ func run() error {
 		return errors.New("missing SDK backend")
 	}
 	hostStorage := &storage{w: w}
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := w.ownerContext(timeout)
 	w.active.Store(first.Call)
 	err = backend.Setup(ctx, &logical.BackendConfig{StorageView: hostStorage, System: &logical.StaticSystemView{DefaultLeaseTTLVal: time.Duration(first.DefaultTTLSeconds) * time.Second, MaxLeaseTTLVal: time.Duration(first.MaxTTLSeconds) * time.Second}, Logger: logger, Config: map[string]string{"plugin_name": "heptabao-sdk-backend"}})
 	if err == nil {
@@ -283,7 +332,7 @@ func run() error {
 		}
 		last = m.Call
 		if m.Kind == "close" {
-			ctx, cancel := context.WithTimeout(context.Background(), timeout)
+			ctx, cancel := w.ownerContext(timeout)
 			w.active.Store(m.Call)
 			backend.Cleanup(ctx)
 			w.active.Store(0)
@@ -299,7 +348,7 @@ func run() error {
 		default:
 			return errors.New("operation outside first bridge")
 		}
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		ctx, cancel := w.ownerContext(timeout)
 		w.active.Store(m.Call)
 		response, problem := backend.HandleRequest(ctx, &logical.Request{Operation: logical.Operation(m.Operation), Path: m.Path, Data: m.Data, Storage: hostStorage})
 		w.active.Store(0)
@@ -314,6 +363,9 @@ func run() error {
 	}
 }
 func main() {
+	// A closed owner pipe must return EPIPE through run's owned terminal cleanup.
+	// Go otherwise exits on SIGPIPE for stdout/stderr without executing defers.
+	signal.Ignore(syscall.SIGPIPE)
 	// Linux parent-death follows the thread that starts the plugin. Retain
 	// this ownership thread for the complete companion/plugin lifetime.
 	runtime.LockOSThread()

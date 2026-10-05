@@ -4,6 +4,7 @@ type TestResult = Result<(), Box<dyn std::error::Error>>;
 
 fn claims(now: u64, ttl: u64) -> BatchClaims {
     BatchClaims {
+        namespace_binding: None,
         token_role: None,
         token_api_precision: None,
         token_api_policy_names: false,

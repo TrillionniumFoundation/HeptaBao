@@ -144,6 +144,11 @@ pub(crate) struct ForwardResponse {
     pub target: u64,
     pub status: u16,
     pub body: Value,
+    #[serde(
+        default,
+        skip_serializing_if = "crate::service::ResponseHeaders::is_empty"
+    )]
+    pub response_headers: crate::service::ResponseHeaders,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub consistency_index: Option<u64>,
 }
@@ -553,6 +558,7 @@ pub(crate) fn encode_response_for_cluster(
             target,
             status,
             body: body.clone(),
+            response_headers: Default::default(),
             consistency_index: None,
         },
     )
@@ -586,6 +592,7 @@ pub(crate) fn encode_index_response_for_cluster(
             target,
             status: response.status,
             body: response.body.clone(),
+            response_headers: response.response_headers.copy_for_forward(),
             consistency_index,
         },
     )
@@ -607,7 +614,7 @@ pub(crate) fn decode_index_response_for_cluster(
 #[cfg(test)]
 pub(crate) fn decode_response(encoded: &[u8]) -> Result<ForwardResponse, String> {
     let response: ForwardResponse = decode(RESPONSE_MAGIC, encoded)?;
-    if response.consistency_index.is_some() {
+    if response.consistency_index.is_some() || !response.response_headers.is_empty() {
         return Err("HA response index requires negotiated version".into());
     }
     validate_direction(response.source, response.target)?;
@@ -668,6 +675,7 @@ pub(crate) fn decode_legacy_response_for_transition(
         target: response.target,
         status: response.status,
         body: std::mem::take(&mut response.body),
+        response_headers: Default::default(),
         consistency_index: None,
     })
 }
@@ -1065,6 +1073,7 @@ mod consistency270_tests {
         assert_eq!(request.token, "synthetic-token");
         assert!(decode_request_for_cluster(&bytes, "another-cluster").is_err());
         let response = crate::Response {
+            response_headers: Default::default(),
             status: 204,
             body: Value::Null,
             consistency_index: crate::http::consistency::IndexValue::for_raft("synthetic", 42)
@@ -1084,6 +1093,93 @@ mod consistency270_tests {
                 .is_none()
         );
         assert!(decode_index_response_for_cluster(&old, "synthetic").is_err());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod sdk_response_header_tests {
+    use super::*;
+    #[test]
+    fn sdk_headers95_negotiated_forward_multivalue_and_bounded_metadata()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let mut response = crate::Response {
+            status: 200,
+            body: serde_json::json!({"data":{"marker":"same-approved-response"}}),
+            response_headers: Default::default(),
+            consistency_index: None,
+        };
+        response.response_headers = crate::service::ResponseHeaders::from_sdk(Some(&serde_json::json!({"X-SDK-One":["one"],"x-sdk-multi":["first","second"],"X-SDK-Blocked":["withheld"]})), &["X-SDK-One".into(),"X-SDK-Multi".into()]).map_err(|()| "response header fixture")?;
+        let frame = encode_index_response_for_cluster("sdk-forward95", 1, 2, &response)?;
+        let received = decode_index_response_for_cluster(&frame, "sdk-forward95")?;
+        assert_eq!(
+            (received.source, received.target, received.status),
+            (1, 2, 200)
+        );
+        assert_eq!(received.body, response.body);
+        let mut headers = Vec::new();
+        received.response_headers.write(&mut headers)?;
+        assert_eq!(
+            std::str::from_utf8(&headers)?,
+            "X-Sdk-Multi: first\r\nX-Sdk-Multi: second\r\nX-Sdk-One: one\r\n"
+        );
+        let mut merged = crate::Response {
+            status: 200,
+            body: serde_json::json!({"data":{"marker":"case-variant-merged"}}),
+            response_headers: Default::default(),
+            consistency_index: None,
+        };
+        merged.response_headers = crate::service::ResponseHeaders::from_sdk(
+            Some(&serde_json::json!({
+                "X-SDK-Variant":vec!["first";32], "x-sdk-variant":vec!["second";32]
+            })),
+            &["X-SDK-Variant".into()],
+        )
+        .map_err(|()| "merged local headers")?;
+        let frame_merged = encode_index_response_for_cluster("sdk-forward95", 1, 2, &merged)?;
+        let received_merged = decode_index_response_for_cluster(&frame_merged, "sdk-forward95")?;
+        let mut merged_wire = Vec::new();
+        received_merged.response_headers.write(&mut merged_wire)?;
+        assert_eq!(
+            std::str::from_utf8(&merged_wire)?
+                .matches("X-Sdk-Variant:")
+                .count(),
+            64
+        );
+        assert!(decode_index_response_for_cluster(&frame, "other-cluster").is_err());
+        assert!(
+            serde_json::from_value::<crate::service::ResponseHeaders>(
+                serde_json::json!({"Content-Length":["123"]})
+            )
+            .is_err()
+        );
+        assert!(
+            serde_json::from_value::<crate::service::ResponseHeaders>(
+                serde_json::json!({"X-SDK-One":["x".repeat(4097)]})
+            )
+            .is_err()
+        );
+        let legacy = encode_response_for_cluster(
+            "sdk-forward95",
+            1,
+            2,
+            403,
+            &serde_json::json!({"errors":["denied"]}),
+        )?;
+        assert!(
+            decode_response_for_cluster(&legacy, "sdk-forward95")?
+                .response_headers
+                .is_empty()
+        );
+        let mut response = received;
+        response.target = 1;
+        assert!(
+            decode_index_response_for_cluster(
+                &encode(INDEX_RESPONSE_MAGIC, &response)?,
+                "sdk-forward95"
+            )
+            .is_err()
+        );
         Ok(())
     }
 }

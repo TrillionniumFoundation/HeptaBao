@@ -675,6 +675,7 @@ struct RemoteTransit {
     ack_only: Arc<AtomicBool>,
     ack_at_call: Arc<std::sync::atomic::AtomicUsize>,
     trace: Arc<Mutex<Vec<String>>>,
+    response_delay: Arc<Mutex<Option<(usize, std::time::Instant)>>>,
     thread: Option<thread::JoinHandle<()>>,
 }
 
@@ -795,6 +796,8 @@ impl RemoteTransit {
         let ack_at_call = Arc::new(std::sync::atomic::AtomicUsize::new(0));
         let ack_at = Arc::clone(&ack_at_call);
         let trace = Arc::new(Mutex::new(Vec::new()));
+        let response_delay = Arc::new(Mutex::new(None::<(usize, std::time::Instant)>));
+        let delayed = Arc::clone(&response_delay);
         let (remote, stopped, ack, trace_clone) = (
             Arc::clone(&service),
             Arc::clone(&stop),
@@ -883,6 +886,16 @@ impl RemoteTransit {
                             100,
                         )
                     };
+                let delay = delayed.lock().ok().and_then(|mut delay| {
+                    if delay.as_ref().is_some_and(|(call, _)| *call == call_number) {
+                        delay.take().map(|(_, until)| until)
+                    } else {
+                        None
+                    }
+                });
+                if let Some(until) = delay {
+                    thread::sleep(until.saturating_duration_since(std::time::Instant::now()));
+                }
                 let Ok(encoded) = serde_json::to_vec(&response.body) else {
                     continue;
                 };
@@ -907,6 +920,7 @@ impl RemoteTransit {
             ack_only,
             ack_at_call,
             trace,
+            response_delay,
             thread: Some(thread),
         })
     }
@@ -972,6 +986,13 @@ impl RemoteTransit {
             assert_eq!(response.status, status, "fixture setup: {path}");
         }
         Ok((root, service, unseal, admin))
+    }
+    fn delay_response_at(&self, call: usize, until: std::time::Instant) -> TestResult {
+        *self
+            .response_delay
+            .lock()
+            .map_err(|_| "response delay lock")? = Some((call, until));
+        Ok(())
     }
     fn calls(&self) -> TestResult<usize> {
         Ok(self.trace.lock().map_err(|_| "trace lock")?.len())

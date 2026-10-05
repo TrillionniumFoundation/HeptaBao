@@ -116,6 +116,7 @@ impl KubernetesTokenEffectPlan {
 
 fn outcome_unknown(lease_id: &str) -> Response {
     Response {
+        response_headers: Default::default(),
         consistency_index: None,
         status: 503,
         body: json!({
@@ -343,6 +344,7 @@ impl Service {
                     self.state = Some(state);
                 }
                 Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
@@ -664,6 +666,7 @@ impl Service {
             );
         }
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: response.status,
             body: std::mem::take(&mut response.body),
@@ -824,6 +827,7 @@ impl Service {
 
 fn post_provider_completion_failure(lease_id: &str) -> Response {
     Response {
+        response_headers: Default::default(),
         consistency_index: None,
         status: 503,
         body: json!({
@@ -837,6 +841,7 @@ fn post_provider_completion_failure(lease_id: &str) -> Response {
 
 fn retired_kubernetes_response(lease_id: &str) -> Response {
     Response {
+        response_headers: Default::default(),
         consistency_index: None,
         status: 503,
         body: json!({

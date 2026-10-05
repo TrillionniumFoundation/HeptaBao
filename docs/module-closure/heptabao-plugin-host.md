@@ -6,10 +6,10 @@ This dossier is the independently reviewable design, boundary, failure-semantics
 
 - **Capability domain:** durable sandbox-wrapper invocation and dynamic lease lifecycle
 - **Repository state:** `IMPLEMENTED_REVIEW_REQUIRED`.
-- **Source root:** `crates/heptabao-plugin-host`; Rust files: `crates/heptabao-plugin-host/src/command_runner.rs`, `crates/heptabao-plugin-host/src/command_runner_tests.rs`, `crates/heptabao-plugin-host/src/durable.rs`, `crates/heptabao-plugin-host/src/lib.rs`, `crates/heptabao-plugin-host/src/sdk_backend.rs`, `crates/heptabao-plugin-host/src/sdk_durable.rs`.
+- **Source root:** `crates/heptabao-plugin-host`; Rust files: `crates/heptabao-plugin-host/src/command_runner.rs`, `crates/heptabao-plugin-host/src/command_runner_tests.rs`, `crates/heptabao-plugin-host/src/darwin_sdk_image.rs`, `crates/heptabao-plugin-host/src/durable.rs`, `crates/heptabao-plugin-host/src/lib.rs`, `crates/heptabao-plugin-host/src/sdk_backend.rs`, `crates/heptabao-plugin-host/src/sdk_durable.rs`.
 - **Internal dependencies:** `heptabao-domain`, `heptabao-durable-service`, `heptabao-plugin-contracts`.
 - **Runtime placement:** `no/standalone or indirect; verify CURRENT_RUNTIME_MAP`. The current runtime map is authoritative for whether this package is in the executable server dependency closure.
-- **Public design surface:** struct `OwnedExecutableImage`; fn `open`; fn `command`; fn `descriptor_path`; fn `identity`; struct `PluginMutationContext`; fn `new`; fn `principal`; fn `request_id`; fn `authorization_digest`; struct `PendingPluginInvocation`; enum `DurableReconciliationDecision`; struct `DurableDynamicSecretBroker`; fn `create_new`; fn `reopen`; fn `host_state`; fn `pending_invocation`; fn `upgrade`; fn `view`; fn `issue`; fn `renew`; fn `revoke`; fn `revoke_prefix`; fn `reconcile`; mod `sdk_backend`; mod `sdk_durable`; enum `PluginOperation`; struct `PluginLimits`; fn `validate`; struct `SandboxBinding`
+- **Public design surface:** struct `OwnedExecutableImage`; fn `open`; fn `command`; fn `descriptor_path`; fn `identity`; struct `OwnedExecutableImage`; fn `open_in`; fn `verify`; fn `command`; fn `descriptor_path`; fn `original_file`; fn `cleanup_identity`; fn `identity`; struct `PluginMutationContext`; fn `new`; fn `principal`; fn `request_id`; fn `authorization_digest`; struct `PendingPluginInvocation`; enum `DurableReconciliationDecision`; struct `DurableDynamicSecretBroker`; fn `create_new`; fn `reopen`; fn `host_state`; fn `pending_invocation`; fn `upgrade`; fn `view`; fn `issue`; fn `renew`; fn `revoke`
 
 The module owns only the state and transitions described by its source files. It must not silently create an HTTP route, persistence format, authorization decision, external effect, or production guarantee unless that responsibility is visible in the source and in the current runtime map. Cross-module state is passed through typed APIs; callers remain responsible for transaction scope and durable publication where this package has no storage dependency.
 
@@ -29,7 +29,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** portable repository-relative source SHA-256 `2d4d7339caf6e2764f0e78d7b53e17d678c45e76369d9e2e7930c552fdab4ec7`; manifest SHA-256 `57b8832085da9f907924d54be2f9992130c6aa96c79b4d713b73ddfce47f5164`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `067fa46f93bc446a640a1077ef6bc5ea7dd9716ba536a595e87324d99bdc8513`; manifest SHA-256 `4107770b8dce805dcf409f7972306cef0314e32fd8863a7e300ca945d1b568b9`.
 - **Named executable anchor:** `blocked_stdin_obeys_deadline_before_any_output` in `crates/heptabao-plugin-host/src/command_runner_tests.rs`.
 - **Required command:** `cargo +1.99.0 test --locked -p heptabao-plugin-host` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.

@@ -323,47 +323,6 @@ def validate_evidence_schemas() -> None:
         fail("revocation schema must require target and effective time")
 
 
-def reviewed_public_pem_spans(relative: str, text: str) -> set[int]:
-    """Permit only the five reviewed non-secret source uses, never an entire file.
-
-    Each complete literal/expression must occur exactly once at its known site.
-    Header-only construction/assertions contain no key body; the two negative
-    fixtures contain only invalid DER (empty sequence or three zero bytes).
-    New markers, changed bodies/contexts and duplicate uses remain failures.
-    This is a bounded marker check, not a general secret/dataflow detector.
-    """
-    header = "-----BEGIN " + "PRIVATE KEY-----"
-    footer = "-----END " + "PRIVATE KEY-----"
-    contexts = {
-        "crates/heptabao-server/src/engines/pki_local_key_tests.rs": (
-            fr'private.starts_with("{header}")',
-            fr'pem.starts_with("{header}\n")',
-        ),
-        "crates/heptabao-server/src/engines/pki_local_intermediate.rs": (
-            'assert!(\n'
-            '                response.body["data"]["private_key"]\n'
-            '                    .as_str()\n'
-            f'                    .is_some_and(|v| v.starts_with("{header}"))\n'
-            '            );',
-        ),
-        "crates/heptabao-server/src/service_external_key_native_tests.rs": (
-            fr'"{{}}\n{header}\nMAA=\n{footer}"',
-        ),
-        "crates/heptabao-server/src/outbound_ldap_transport.rs": (
-            fr'format!("{{CA}}{header}\nAAAA\n{footer}")',
-        ),
-    }.get(relative, ())
-    if not contexts or any(text.count(context) != 1 for context in contexts):
-        return set()
-    spans = set()
-    for context in contexts:
-        start = text.index(context)
-        if start and (text[start - 1].isalnum() or text[start - 1] in "_:.#"):
-            return set()
-        spans.add(start + context.index(header))
-    return spans
-
-
 def scan_secret_hygiene() -> None:
     forbidden = [
         "-----BEGIN " + "PRIVATE KEY-----",
@@ -382,13 +341,9 @@ def scan_secret_hygiene() -> None:
         if path.suffix.lower() not in {".md", ".yaml", ".yml", ".json", ".py", ".rs", ".toml", ".txt"}:
             continue
         text = path.read_text(encoding="utf-8", errors="ignore")
-        public_pem = reviewed_public_pem_spans(relative, text)
         for marker in forbidden:
-            start = 0
-            while (position := text.find(marker, start)) != -1:
-                if marker != forbidden[0] or position not in public_pem:
-                    fail(f"possible secret/private-key marker in {relative}: {marker}")
-                start = position + len(marker)
+            if marker in text:
+                fail(f"possible secret/private-key marker in {relative}: {marker}")
 
 
 def main() -> int:

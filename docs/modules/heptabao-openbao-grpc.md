@@ -47,7 +47,7 @@ Deployment must enroll the exact provider executable and private configuration, 
 
 ## Tests and executable evidence
 
-`cargo +1.99.0 test --locked -p heptabao-openbao-grpc` exercises the crate. Named source scenarios in `src/tests.rs` include `seven_exact_rpc_paths_options_wrapper_identity_and_opaque_blob_are_used`, `timeout_fences_and_never_replays`, `dropped_rpc_waiter_leaves_unknown_outcome_without_replay` and `expired_ready_deadline_does_not_even_poll_readiness`. Transport tests exercise authenticated Unix-socket TLS. These are executable anchors; current-head test results and genuine provider runs must be recorded separately.
+`cargo +1.98.0 test --locked -p heptabao-openbao-grpc` exercises the crate. Named source scenarios in `src/tests.rs` include `seven_exact_rpc_paths_options_wrapper_identity_and_opaque_blob_are_used`, `timeout_fences_and_never_replays`, `dropped_rpc_waiter_leaves_unknown_outcome_without_replay` and `expired_ready_deadline_does_not_even_poll_readiness`. Transport tests exercise authenticated Unix-socket TLS. These are executable anchors; current-head test results and genuine provider runs must be recorded separately.
 
 ## Evolution and open boundaries
 

@@ -3,6 +3,13 @@
 use super::*;
 
 pub(super) const ROLE_NAME_FIELDS: &[&str] = &[
+    "signature_bits",
+    "use_pss",
+    "allowed_domains_template",
+    "allowed_uri_sans_template",
+    "allow_globs_in_identity_templates",
+    "use_csr_common_name",
+    "use_csr_sans",
     "allow_localhost",
     "require_cn",
     "enforce_hostnames",
@@ -20,6 +27,26 @@ pub(super) const ROLE_NAME_FIELDS: &[&str] = &[
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct RoleNamePolicy {
+    #[serde(default, skip_serializing_if = "signature_zero")]
+    pub(super) signature_bits: i64,
+    #[serde(default, skip_serializing_if = "role_false")]
+    pub(super) use_pss: bool,
+    #[serde(default, skip_serializing_if = "role_false")]
+    pub(super) allowed_domains_template: bool,
+    #[serde(default, skip_serializing_if = "role_false")]
+    pub(super) allowed_uri_sans_template: bool,
+    #[serde(default, skip_serializing_if = "role_false")]
+    pub(super) allow_globs_in_identity_templates: bool,
+    #[serde(
+        default = "role_csr::default_true",
+        skip_serializing_if = "role_csr::is_true"
+    )]
+    pub(super) use_csr_common_name: bool,
+    #[serde(
+        default = "role_csr::default_true",
+        skip_serializing_if = "role_csr::is_true"
+    )]
+    pub(super) use_csr_sans: bool,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub(super) allowed_serial_numbers: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -41,6 +68,13 @@ pub(super) struct RoleNamePolicy {
 impl Default for RoleNamePolicy {
     fn default() -> Self {
         Self {
+            signature_bits: 0,
+            use_pss: false,
+            allowed_domains_template: false,
+            allowed_uri_sans_template: false,
+            allow_globs_in_identity_templates: false,
+            use_csr_common_name: true,
+            use_csr_sans: true,
             allowed_serial_numbers: Vec::new(),
             allowed_user_ids: Vec::new(),
             allowed_other_sans: Vec::new(),
@@ -59,8 +93,26 @@ impl Default for RoleNamePolicy {
 
 impl RoleNamePolicy {
     pub(super) fn from_body(body: &Value) -> Result<Self> {
-        let mut policy = Self::default();
+        let mut policy = Self {
+            signature_bits: role_signatures::signature_bits(body)?,
+            ..Self::default()
+        };
         for (name, target) in [
+            ("use_pss", &mut policy.use_pss),
+            (
+                "allowed_domains_template",
+                &mut policy.allowed_domains_template,
+            ),
+            (
+                "allowed_uri_sans_template",
+                &mut policy.allowed_uri_sans_template,
+            ),
+            (
+                "allow_globs_in_identity_templates",
+                &mut policy.allow_globs_in_identity_templates,
+            ),
+            ("use_csr_common_name", &mut policy.use_csr_common_name),
+            ("use_csr_sans", &mut policy.use_csr_sans),
             ("allow_localhost", &mut policy.allow_localhost),
             ("require_cn", &mut policy.require_cn),
             ("enforce_hostnames", &mut policy.enforce_hostnames),
@@ -148,7 +200,11 @@ impl RoleNamePolicy {
     }
 
     pub(super) fn descriptor(&self) -> Value {
-        json!({"allow_localhost":self.allow_localhost,"require_cn":self.require_cn,
+        json!({"signature_bits":self.signature_bits,"use_pss":self.use_pss,
+            "allowed_domains_template":self.allowed_domains_template,
+            "allowed_uri_sans_template":self.allowed_uri_sans_template,
+            "allow_globs_in_identity_templates":self.allow_globs_in_identity_templates,
+            "use_csr_common_name":self.use_csr_common_name,"use_csr_sans":self.use_csr_sans,"allow_localhost":self.allow_localhost,"require_cn":self.require_cn,
             "enforce_hostnames":self.enforce_hostnames,"cn_validations":self.cn_validations,
             "allow_glob_domains":self.allow_glob_domains,"allowed_ip_sans_cidr":self.allowed_ip_sans_cidr,
             "allowed_uri_sans":self.allowed_uri_sans,"no_store":self.no_store,
@@ -225,6 +281,17 @@ impl RoleNamePolicy {
     }
 
     pub(super) fn validate_sans(&self, ip_sans: &[IpAddr], uri_sans: &[String]) -> Result<()> {
+        self.validate_sans_from(ip_sans, uri_sans, false, !self.allowed_uri_sans.is_empty())
+    }
+
+    pub(super) fn validate_sans_from(
+        &self,
+        ip_sans: &[IpAddr],
+        uri_sans: &[String],
+        from_csr: bool,
+        declared_uri_patterns: bool,
+    ) -> Result<()> {
+        let source = if from_csr { "CSR" } else { "the API" };
         for ip in ip_sans {
             if !self.allowed_ip_sans_cidr.is_empty()
                 && !self
@@ -237,10 +304,10 @@ impl RoleNamePolicy {
                 )));
             }
         }
-        if !uri_sans.is_empty() && self.allowed_uri_sans.is_empty() {
-            return Err(bad(
-                "URI Subject Alternative Names are not allowed in this role, but were provided via the API",
-            ));
+        if !uri_sans.is_empty() && !declared_uri_patterns {
+            return Err(bad(&format!(
+                "URI Subject Alternative Names are not allowed in this role, but were provided via {source}",
+            )));
         }
         for uri in uri_sans {
             if !self
@@ -248,9 +315,9 @@ impl RoleNamePolicy {
                 .iter()
                 .any(|pattern| glob_match(pattern, uri))
             {
-                return Err(bad(
-                    "URI Subject Alternative Names were provided via the API which are not valid for this role",
-                ));
+                return Err(bad(&format!(
+                    "URI Subject Alternative Names were provided via {source} which are not valid for this role",
+                )));
             }
             if !bounded_name(uri)
                 || uri.bytes().any(|byte| byte.is_ascii_whitespace())
@@ -368,4 +435,8 @@ impl Pki {
                 })
         }) || self.has_external_role_names_state()
     }
+}
+
+fn signature_zero(value: &i64) -> bool {
+    *value == 0
 }

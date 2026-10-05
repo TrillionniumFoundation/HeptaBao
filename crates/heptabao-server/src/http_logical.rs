@@ -170,6 +170,7 @@ mod tests {
         for path in ["sys/mounts/probe/tune", "sys/auth/token/tune"] {
             let mut reply = snapshot::NativeReply::Json(Response {
                 status: 200,
+                response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"data":data}),
             });
@@ -186,6 +187,7 @@ mod tests {
         }
         let mut reply = snapshot::NativeReply::Json(Response {
             status: 200,
+            response_headers: Default::default(),
             consistency_index: None,
             body: json!({"data":data}),
         });
@@ -199,6 +201,7 @@ mod tests {
     fn logical_wire_projection_keeps_grants_and_raw_transport_distinct() -> io::Result<()> {
         let mut reply = snapshot::NativeReply::Json(Response {
             status: 200,
+            response_headers: Default::default(),
             consistency_index: None,
             body: json!({"auth":{"client_token":"test-token","policies":["p"],
                 "token_policies":["p"],"identity_policies":[],"lease_duration":10}}),
@@ -222,6 +225,7 @@ mod tests {
         let raw = json!({"initialized":true,"sealed":false});
         let mut reply = snapshot::NativeReply::Json(Response {
             status: 200,
+            response_headers: Default::default(),
             consistency_index: None,
             body: raw.clone(),
         });
@@ -239,6 +243,7 @@ mod tests {
             "nonce":"actual-runtime-progress", "sealed":true});
         let mut reply = snapshot::NativeReply::Json(Response {
             status: 200,
+            response_headers: Default::default(),
             consistency_index: None,
             body: json!({"data":data}),
         });
@@ -264,6 +269,7 @@ mod tests {
         ] {
             let mut reply = snapshot::NativeReply::Json(Response {
                 status: 200,
+                response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"auth":{"metadata":metadata,"policies":["reader"],
                     "token_policies":["reader"],"identity_policies":[],"lease_duration":3600}}),
@@ -281,6 +287,7 @@ mod tests {
             let body = json!({"data":{"auth":{"metadata":{},"policies":["userdata"]}}});
             let mut reply = snapshot::NativeReply::Json(Response {
                 status: 200,
+                response_headers: Default::default(),
                 consistency_index: None,
                 body: body.clone(),
             });

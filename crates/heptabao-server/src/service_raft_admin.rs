@@ -302,6 +302,7 @@ impl Service {
                 self.publish_raft_policy(state)?;
                 self.raft_stabilization = Stabilization::default();
                 return Ok(Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
                     body: Value::Null,
@@ -394,7 +395,7 @@ impl Service {
                 .ok_or_else(|| Response::error(503, "HA disappeared"))?
                 .lock_for_request()
                 .map_err(|_| Response::error(503, "HA lock unavailable"))?;
-            let observed=ha.modify_membership(index,target,operation).map_err(|_|Response { consistency_index: None,status:503,body:json!({"errors":["membership completion unknown; re-read configuration before retry"],"reconcile_required":true,"server_id":target.to_string()})})?;
+            let observed=ha.modify_membership(index,target,operation).map_err(|_|Response { response_headers: Default::default(), consistency_index: None,status:503,body:json!({"errors":["membership completion unknown; re-read configuration before retry"],"reconcile_required":true,"server_id":target.to_string()})})?;
             Ok(Response::ok(
                 json!({"data":{"joined":operation=="add_learner","membership_index":observed.membership_index,"voters":observed.voters,"nodes":observed.nodes,"committed":observed.committed,"joint":observed.joint}}),
             ))

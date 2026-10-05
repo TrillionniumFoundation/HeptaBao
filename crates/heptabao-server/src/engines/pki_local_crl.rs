@@ -597,9 +597,14 @@ mod tests {
             "pki/",
             "issue/web",
             &json!({"common_name":"leaf.example.test","ttl":"1h"}),
-            &owner,
-            None,
-            now,
+            LeafAuthority {
+                owner: &owner,
+                owner_expires: None,
+                precise_owner_expires: None,
+                time: crate::auth::AuthorityTime::Coarse(now),
+                clock: None,
+                identity_templates: None,
+            },
         )?;
         normalize_serial(
             response.body["data"]["serial_number"]

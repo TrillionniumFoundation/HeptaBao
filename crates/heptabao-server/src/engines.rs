@@ -32,8 +32,12 @@ mod kv1_records;
 mod kv_versioning;
 #[path = "engine_leases.rs"]
 mod leases;
+pub(crate) use leases::PkiRequestContext;
 #[path = "engine_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
+#[path = "engine_sdk.rs"]
+pub(crate) mod sdk;
+
 #[path = "engine_namespace_record_cells.rs"]
 mod namespace_record_cells;
 pub(crate) mod openldap;
@@ -46,6 +50,8 @@ mod transit;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub struct EngineState {
+    #[serde(default, skip_serializing_if = "sdk::Catalog::is_empty")]
+    sdk_catalog: sdk::Catalog,
     #[serde(skip)]
     records: Option<kv1_records::Runtime>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
@@ -168,6 +174,8 @@ impl<'de> Deserialize<'de> for CowNamespace {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct NamespaceState {
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    sdk_owners: BTreeMap<String, sdk::MountOwner>,
     mounts: BTreeMap<String, Mount>,
     /// Next path incarnation after disable/recreate. The active Mount carries
     /// its own incarnation; this tombstone map prevents stale path identity
@@ -184,6 +192,7 @@ impl NamespaceState {
     fn initialized_empty() -> Self {
         Self {
             mounts: BTreeMap::new(),
+            sdk_owners: BTreeMap::new(),
             mount_epochs: BTreeMap::new(),
             identity: identity::IdentityState::default(),
             external_keys: external_keys::Registry::default(),
@@ -192,6 +201,7 @@ impl NamespaceState {
 
     fn is_pristine(&self) -> bool {
         self.mounts.is_empty()
+            && self.sdk_owners.is_empty()
             && self.mount_epochs.is_empty()
             && self.identity.is_pristine()
             && self.external_keys.is_empty()
@@ -216,6 +226,7 @@ impl Default for NamespaceState {
                     ),
                 ),
             ]),
+            sdk_owners: BTreeMap::new(),
             mount_epochs: BTreeMap::new(),
             identity: identity::IdentityState::default(),
             external_keys: external_keys::Registry::default(),
@@ -412,9 +423,15 @@ pub(crate) struct ExternalTransitRequest {
     pub(crate) mount_incarnation: u64,
 }
 
+pub(crate) struct ExternalPkiRelatedRequest {
+    pub(crate) request: SecretValue,
+    pub(crate) template: ExternalPkiTemplate,
+}
+
 pub(crate) struct ExternalPkiRequest {
     pub(crate) request: SecretValue,
     pub(crate) template: ExternalPkiTemplate,
+    pub(crate) related: Vec<ExternalPkiRelatedRequest>,
     pub(crate) mount: String,
     pub(crate) mount_incarnation: u64,
 }
@@ -591,6 +608,26 @@ impl EngineState {
     }
 
     /// Only a newly registered namespace calls this; existing owners are retained.
+    #[cfg(test)]
+    pub(crate) fn install_canonical_pki_serial_fixture(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        now: u64,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|n| n.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(engine) = &mut mounted.backend else {
+            return Err(bad("fixture mount is not PKI"));
+        };
+        **engine = pki::Pki::canonical_serial_http_fixture(now)?;
+        self.lease_clock = self.lease_clock.max(now);
+        Ok(())
+    }
+
     pub(crate) fn ensure_empty_namespace(&mut self, namespace: &str) {
         self.namespaces
             .entry(namespace.into())
@@ -780,6 +817,10 @@ impl EngineState {
         pki.fixture_issue_historical_local_leaf(mount, body, owner, now)
     }
 
+    pub(crate) fn has_external_pki_signer_history(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_external_signer_history())))
+    }
+
     pub(crate) fn has_pki_role_names_state(&self) -> bool {
         self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_names_state())))
     }
@@ -948,9 +989,11 @@ impl EngineState {
         method: &str,
         path: &str,
         body: &Value,
-        now: u64,
-        owner: Option<&crate::auth::ResolvedLeaseOwner>,
+        context: PkiRequestContext<'_>,
     ) -> Result<Option<ExternalPkiRequest>> {
+        let time = context.observed_time(self.lease_clock)?;
+        let now = time.seconds();
+        let owner = context.owner;
         if path.contains('?') {
             return Err(bad("external PKI query parameters are not implemented"));
         }
@@ -981,8 +1024,7 @@ impl EngineState {
                 relative,
                 body,
                 mount_path,
-                owner,
-                now.max(self.lease_clock),
+                PkiRequestContext { time, ..context },
             )?);
         let Some(template) = template else {
             return Ok(None);
@@ -1003,9 +1045,29 @@ impl EngineState {
                     cause
                 }
             })?;
+        let related = engine
+            .prepare_related_external_crls(
+                &template,
+                mount_path,
+                PkiRequestContext { time, ..context },
+            )?
+            .into_iter()
+            .map(|template| {
+                let request = state.external_keys.transit_consumer_request(
+                    &template.reference,
+                    mount_path,
+                    "sign",
+                    SecretJson(
+                        json!({"input":"","prehashed":false,"signature_algorithm":"pkcs1v15"}),
+                    ),
+                )?;
+                Ok(ExternalPkiRelatedRequest { request, template })
+            })
+            .collect::<Result<Vec<_>>>()?;
         Ok(Some(ExternalPkiRequest {
             request,
             template,
+            related,
             mount: mount_path.clone(),
             mount_incarnation: mount.incarnation,
         }))
@@ -2192,6 +2254,10 @@ impl EngineState {
             .cloned()
             .ok_or_else(not_found)?;
         require_mount_revision(cas_revision, current.revision)?;
+        let sdk_owner = candidate.sdk_owners.get(&from_name).cloned();
+        if sdk_owner.is_some() {
+            self.validate_sdk_state()?;
+        }
         if candidate.mounts.keys().any(|existing| {
             existing != &from_name
                 && (existing.starts_with(&to_name) || to_name.starts_with(existing))
@@ -2213,7 +2279,7 @@ impl EngineState {
         candidate.mount_epochs.insert(from_name, old_next);
         let revision = moved.revision;
         let incarnation = moved.incarnation;
-        if matches!(current.backend, Backend::Kv1Records) {
+        if matches!(current.backend, Backend::Kv1Records) || sdk_owner.is_some() {
             self.remount_record_kv1(
                 namespace,
                 &format!("{from}/"),
@@ -2221,6 +2287,11 @@ impl EngineState {
                 &to_name,
                 incarnation,
             )?;
+        }
+        if let Some(mut owner) = sdk_owner {
+            owner.mount_incarnation = incarnation;
+            candidate.sdk_owners.remove(&format!("{from}/"));
+            candidate.sdk_owners.insert(to_name.clone(), owner);
         }
         candidate.mounts.insert(to_name, moved);
         self.namespaces.insert(namespace.into(), candidate);

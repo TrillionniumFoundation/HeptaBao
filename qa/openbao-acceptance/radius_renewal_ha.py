@@ -19,6 +19,7 @@ import time
 import urllib.error
 
 from bao_http import SafeArgumentParser
+from native_token_expiry import expiry_nanoseconds
 from ha_destructive import Cluster, FixtureError
 from online_evidence import admit_output, source_identity, publish
 from radius_renewal_live import RADIUS_MATERIAL, USERNAME, PAP_VALUE, pap_packet_response
@@ -268,8 +269,8 @@ def run(binary, root, checks, observations, inherited, *, native=False):
 
         def expiry(node, token, label):
             status, body = node.call("GET", "auth/token/lookup-self", token=token)
-            value = body.get("data", {}).get("expire_time_unix")
-            check(label + "_lookup", status == 200 and type(value) is int and value > time.time())
+            value = expiry_nanoseconds(body.get("data", {}).get("expire_time"))
+            check(label + "_lookup", status == 200 and type(value) is int and value > time.time_ns())
             return value
 
         def login(node, label):

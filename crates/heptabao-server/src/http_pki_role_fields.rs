@@ -8,6 +8,8 @@ use std::collections::BTreeMap;
 const MARKER: &str = "__heptabao_pki_role_number_fields";
 const INVALID: &str = "invalid request-local PKI role number carrier";
 const FIELDS: &[&str] = &[
+    "signature_bits",
+    "use_pss",
     "allow_localhost",
     "require_cn",
     "enforce_hostnames",
@@ -16,6 +18,11 @@ const FIELDS: &[&str] = &[
     "allowed_ip_sans_cidr",
     "allowed_uri_sans",
     "no_store",
+    "allowed_domains_template",
+    "allowed_uri_sans_template",
+    "allow_globs_in_identity_templates",
+    "use_csr_common_name",
+    "use_csr_sans",
     "allowed_serial_numbers",
     "allowed_user_ids",
     "allowed_other_sans",

@@ -71,29 +71,14 @@
       "path": "${{ runner.temp }}/results/"
     },
     {
-      "file": "h02-openraft-fault-lab-v2.yml",
-      "location": "workflow.jobs.fault-sequential.steps[6]",
-      "path": "${{ runner.temp }}/h02-fault-v2-evidence/\n${{ runner.temp }}/h02-fault-v2-setup/\n"
-    },
-    {
       "file": "h02-openraft-fault-lab.yml",
       "location": "workflow.jobs.fault-sequential.steps[6]",
       "path": "evidence/h02-openraft-fault-lab/"
     },
     {
-      "file": "h02-openraft-inmemory-cluster-v2.yml",
-      "location": "workflow.jobs.cluster-sequential.steps[6]",
-      "path": "evidence/h02-openraft-inmemory-v2/"
-    },
-    {
       "file": "h02-openraft-inmemory-cluster.yml",
       "location": "workflow.jobs.cluster-sequential.steps[6]",
       "path": "evidence/h02-openraft-inmemory/"
-    },
-    {
-      "file": "h02-probe-sbom-msrv-v2.yml",
-      "location": "workflow.jobs.mechanical.steps[6]",
-      "path": "${{ runner.temp }}/h02-mechanical-v2-evidence/\n${{ runner.temp }}/h02-mechanical-v2-setup/\n"
     },
     {
       "file": "h02-probe-sbom-msrv.yml",

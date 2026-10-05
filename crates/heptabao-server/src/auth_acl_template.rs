@@ -16,6 +16,10 @@ pub(crate) struct IdentityTemplateValues {
 }
 
 impl IdentityTemplateValues {
+    pub(crate) fn value(&self, selector: &str) -> Option<&str> {
+        self.values.get(selector).map(String::as_str)
+    }
+
     pub(crate) fn insert(&mut self, selector: &str, value: &str) {
         self.values.insert(selector.to_owned(), value.to_owned());
     }
