@@ -478,7 +478,7 @@ fn public_origin_complete_auth_digest_and_received_graph_reject_malformed_stamp_
         };
         assert!(Service::materialize_record_state(&changed_root, &overlay).is_err());
         let mut candidate = current.clone();
-        candidate.auth = typed;
+        candidate.auth = typed.into();
         assert!(candidate.validate_format().is_err());
         assert!(Service::validate_snapshot_protected_floor(current, &candidate).is_err());
     }

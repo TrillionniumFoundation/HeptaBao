@@ -324,7 +324,9 @@ mod tests {
     {
         let (mut state, root) = AuthState::bootstrap(100)?;
         state.initialize_fresh_namespace_auth("custody")?;
-        let actor = state.authenticate_read_only(&root, 100)?;
+        let actor = state
+            .authenticate_read_only(&root, 100)?
+            .ok_or("actual root principal")?;
         let minted = state
             .handle(
                 Some(&actor),
@@ -373,7 +375,9 @@ mod tests {
                 .as_slice(),
             original.as_slice()
         );
-        let genuine = state.authenticate_read_only(&bearer, 100)?;
+        let genuine = state
+            .authenticate_read_only(&bearer, 100)?
+            .ok_or("actual restored principal")?;
         assert_eq!(genuine.namespace(), "custody");
         let lookup = state
             .handle(
