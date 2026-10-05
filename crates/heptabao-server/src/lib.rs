@@ -60,3 +60,6 @@ pub(crate) mod state_record_root;
 mod state_records;
 
 mod login_metadata;
+
+#[cfg(target_os = "linux")]
+pub use service::SdkBackendConfig;

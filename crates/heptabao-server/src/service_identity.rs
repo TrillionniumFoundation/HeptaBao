@@ -84,6 +84,11 @@ impl State {
         } else {
             CURRENT_STATE_SCHEMA
         };
+        let required = if self.engines.has_sdk_state() {
+            required.max(SDK_STORAGE_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -147,6 +152,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "PKI role name ownership requires schema 93",
+            ));
+        }
+        if self.schema < SDK_STORAGE_STATE_SCHEMA
+            && (self.engines.has_sdk_state()
+                || previous.is_some_and(|state| state.schema >= SDK_STORAGE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "SDK catalog and storage ownership requires schema 92",
             ));
         }
         if self.schema < PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
@@ -376,6 +390,15 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        self.engines
+            .validate_sdk_state()
+            .map_err(|e| Response::error(503, &e.message))?;
+        if self.schema < SDK_STORAGE_STATE_SCHEMA && self.engines.has_sdk_state() {
+            return Err(Response::error(
+                503,
+                "SDK catalog and storage ownership requires schema 92",
+            ));
+        }
         self.auth
             .validate_public_origin_state()
             .map_err(|_| Response::error(503, "invalid public origin owner"))?;
@@ -1268,6 +1291,7 @@ impl State {
             | PKI_ROLE_TIME_STATE_SCHEMA
             | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
             | PKI_ROLE_NAMES_STATE_SCHEMA
+            | SDK_STORAGE_STATE_SCHEMA
             | NAMESPACE_CUSTODY_STATE_SCHEMA
             | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(

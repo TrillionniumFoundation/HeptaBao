@@ -131,6 +131,9 @@ pub struct Config {
     pub plugin_kms: Vec<crate::PluginKmsConfig>,
     #[serde(default)]
     pub plugin_secrets: Vec<crate::PluginSecretConfig>,
+    #[cfg(target_os = "linux")]
+    #[serde(default)]
+    pub openbao_sdk: Option<crate::SdkBackendConfig>,
     /// Optional, deployment-owned SDK Wrapper runtime with per-launch AutoMTLS.
     /// This does not select a KMS/barrier consumer or the HBP1 transport.
     #[serde(default)]
@@ -383,6 +386,8 @@ fn serve_inner(
         service.install_database_plugins(config.plugin_database)?;
         service.install_kms_plugins(config.plugin_kms)?;
         service.install_secret_plugins(config.plugin_secrets)?;
+        #[cfg(target_os = "linux")]
+        service.install_sdk_backend(config.openbao_sdk)?;
         service.install_audit_http_endpoint(config.audit_http_url)?;
         service.install_audit_socket(config.audit_socket)?;
         service.install_audit_syslog(config.audit_syslog)?;
@@ -869,7 +874,7 @@ fn execute_service_request(
             service,
             pending,
             deadline,
-            |pending| pending.execute_before(deadline),
+            |pending| pending.execute_with_service_before(service, deadline),
             |writer, pending, result| writer.finish_external_request(*pending, result),
         ),
     }
@@ -1709,6 +1714,8 @@ fn merge_query_fields(
             value
                 .parse::<i64>()
                 .map_or_else(|_| Value::String(value.to_string()), |limit| json!(limit))
+        } else if key == "version" && path.starts_with("sys/plugins/catalog/") {
+            Value::String(value.to_string())
         } else if matches!(key.as_str(), "version" | "depth") {
             json!(
                 value

@@ -82,6 +82,7 @@ const PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA: u32 = 88;
 const PKI_ROLE_TIME_STATE_SCHEMA: u32 = 89;
 const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
 const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
+const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
 #[cfg(test)]
 const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ROLE_NAMES_STATE_SCHEMA;
 
@@ -100,6 +101,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_ROLE_TIME_STATE_SCHEMA
                 | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
                 | PKI_ROLE_NAMES_STATE_SCHEMA
+                | SDK_STORAGE_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -185,6 +187,11 @@ mod ui_mounts;
 #[path = "service_workflows.rs"]
 mod workflows;
 pub use plugin::{PluginAuthConfig, PluginDatabaseConfig, PluginKmsConfig, PluginSecretConfig};
+#[cfg(target_os = "linux")]
+#[path = "service_sdk_backend.rs"]
+mod sdk_backend;
+#[cfg(target_os = "linux")]
+pub use sdk_backend::SdkBackendConfig;
 pub(crate) use snapshot_transfer::{NativeSnapshotAdmission, TrustedSnapshotOrigin};
 #[path = "service_openapi.rs"]
 mod openapi;
@@ -895,6 +902,8 @@ enum ExternalEffectPlan {
     OnlineAuth(online_auth::OnlineAuthEffectPlan),
     PluginAuth(plugin::PluginAuthPlan),
     PluginRead(plugin::PluginReadPlan),
+    #[cfg(target_os = "linux")]
+    SdkBackend(sdk_backend::Plan),
     PluginKms(plugin::PluginKmsPlan),
     ExternalKey(plugin::ExternalKeyPlan),
     ExternalTransit(external_transit::ExternalTransitPlan),
@@ -914,6 +923,8 @@ pub(crate) enum ExternalEffectResult {
     OnlineAuth(Result<online_auth::OnlineAuthObservation, Response>),
     PluginAuth(Result<plugin::PluginAuthObservation, Response>),
     PluginRead(Result<Value, Response>),
+    #[cfg(target_os = "linux")]
+    SdkBackend(Result<Option<Value>, Response>),
     PluginKms(Result<plugin::PluginKmsObservation, Response>),
     ExternalKey(Result<(), Response>),
     ExternalTransit(Result<external_transit::Observation, Response>),
@@ -940,6 +951,20 @@ pub(crate) struct PendingExternalRequest {
 impl PendingExternalRequest {
     /// Carry the listener's original deadline into scoped auth HTTPS; the
     /// existing finalize boundary still rejects every late external result.
+    pub(crate) fn execute_with_service_before(
+        &self,
+        service: &Arc<Mutex<Service>>,
+        deadline: std::time::Instant,
+    ) -> ExternalEffectResult {
+        #[cfg(target_os = "linux")]
+        if let ExternalEffectPlan::SdkBackend(plan) = &self.effect {
+            return ExternalEffectResult::SdkBackend(plan.execute(service, deadline));
+        }
+        #[cfg(not(target_os = "linux"))]
+        let _ = service;
+        self.execute_before(deadline)
+    }
+
     pub(crate) fn execute_before(&self, deadline: std::time::Instant) -> ExternalEffectResult {
         match &self.effect {
             #[cfg(target_os = "linux")]
@@ -961,6 +986,10 @@ impl PendingExternalRequest {
             ExternalEffectPlan::WrapperBarrierInit(plan) => {
                 ExternalEffectResult::WrapperBarrierInit(plan.execute())
             }
+            #[cfg(target_os = "linux")]
+            ExternalEffectPlan::SdkBackend(_) => ExternalEffectResult::SdkBackend(Err(
+                Response::error(501, "SDK backend requires the Service owner dispatcher"),
+            )),
             ExternalEffectPlan::Database(plan) => ExternalEffectResult::Database(plan.execute()),
             ExternalEffectPlan::DatabaseConfig(plan) => {
                 ExternalEffectResult::DatabaseConfig(plan.execute())
@@ -1040,6 +1069,14 @@ pub struct Service {
     pending_online_auth_effect: Option<online_auth::OnlineAuthEffectPlan>,
     pending_plugin_auth: Option<plugin::PluginAuthPlan>,
     pending_plugin_read: Option<plugin::PluginReadPlan>,
+    #[cfg(target_os = "linux")]
+    pending_sdk_request: Option<sdk_backend::Plan>,
+    #[cfg(target_os = "linux")]
+    pending_sdk_control_authority: Option<plugin::PluginResponseAuthority>,
+    #[cfg(target_os = "linux")]
+    sdk_configuration: Option<sdk_backend::SdkBackendConfig>,
+    #[cfg(target_os = "linux")]
+    sdk_hosts: BTreeMap<String, Arc<sdk_backend::Control>>,
     pending_plugin_kms: Option<plugin::PluginKmsPlan>,
     pending_external_key: Option<plugin::ExternalKeyPlan>,
     pending_external_transit: Option<external_transit::ExternalTransitPlan>,
@@ -1400,6 +1437,14 @@ impl Service {
             pending_online_auth_effect: None,
             pending_plugin_auth: None,
             pending_plugin_read: None,
+            #[cfg(target_os = "linux")]
+            pending_sdk_request: None,
+            #[cfg(target_os = "linux")]
+            pending_sdk_control_authority: None,
+            #[cfg(target_os = "linux")]
+            sdk_configuration: None,
+            #[cfg(target_os = "linux")]
+            sdk_hosts: BTreeMap::new(),
             pending_plugin_kms: None,
             pending_external_key: None,
             pending_external_transit: None,
@@ -1598,6 +1643,8 @@ impl Service {
         self.private_shutdown_requested = true;
         self.fence_openbao_wrapper();
         self.namespace_runtime.clear();
+        #[cfg(target_os = "linux")]
+        self.retire_sdk_hosts();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -1834,6 +1881,20 @@ impl Service {
             (ExternalEffectPlan::PluginRead(plan), ExternalEffectResult::PluginRead(result)) => {
                 self.finalize_plugin_read(plan, result)
             }
+            #[cfg(target_os = "linux")]
+            (
+                ExternalEffectPlan::SdkBackend(mut plan),
+                ExternalEffectResult::SdkBackend(result),
+            ) => {
+                let response = self.finalize_sdk_request(&mut plan, result);
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_sdk_delivery(&mut plan, response);
+            }
             (ExternalEffectPlan::PluginKms(plan), ExternalEffectResult::PluginKms(result)) => {
                 self.finalize_plugin_kms(plan, result)
             }
@@ -2004,7 +2065,13 @@ impl Service {
             erase_json(&mut body);
             return RequestExecution::Complete(self.leader_response(method));
         }
-        if self.pending_database_effect.is_some()
+        #[cfg(target_os = "linux")]
+        let sdk_pending =
+            self.pending_sdk_request.is_some() || self.pending_sdk_control_authority.is_some();
+        #[cfg(not(target_os = "linux"))]
+        let sdk_pending = false;
+        if sdk_pending
+            || self.pending_database_effect.is_some()
             || self.pending_database_config_effect.is_some()
             || self.pending_database_rotation_effect.is_some()
             || self.pending_database_batch_effect.is_some()
@@ -2252,6 +2319,18 @@ impl Service {
         let online_auth = self.pending_online_auth_effect.take();
         let plugin_auth = self.pending_plugin_auth.take();
         let plugin_read = self.pending_plugin_read.take();
+        #[cfg(target_os = "linux")]
+        let sdk_request = self.pending_sdk_request.take();
+        #[cfg(target_os = "linux")]
+        let sdk_control = self.pending_sdk_control_authority.take();
+        #[cfg(target_os = "linux")]
+        let sdk_control_present = sdk_control.is_some();
+        #[cfg(not(target_os = "linux"))]
+        let sdk_control_present = false;
+        #[cfg(target_os = "linux")]
+        let sdk_staged = usize::from(sdk_request.is_some());
+        #[cfg(not(target_os = "linux"))]
+        let sdk_staged = 0;
         let plugin_kms = self.pending_plugin_kms.take();
         let external_key = self.pending_external_key.take();
         let external_transit = self.pending_external_transit.take();
@@ -2262,7 +2341,8 @@ impl Service {
         let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
         let token_api_authority = self.pending_token_api_authority.take();
         let help_authority = self.pending_help_authority.take();
-        let staged = usize::from(database.is_some())
+        let staged = sdk_staged
+            + usize::from(database.is_some())
             + usize::from(database_config.is_some())
             + usize::from(database_rotation.is_some())
             + usize::from(database_batch.is_some())
@@ -2278,7 +2358,8 @@ impl Service {
             + usize::from(snapshot_transfer.is_some());
         let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
             + usize::from(token_api_authority.is_some())
-            + usize::from(help_authority.is_some());
+            + usize::from(help_authority.is_some())
+            + usize::from(sdk_control_present);
         if staged > 1 || delivery_capsules > 1 || staged != 0 && delivery_capsules != 0 {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
@@ -2310,6 +2391,8 @@ impl Service {
             .or_else(|| {
                 snapshot_transfer.map(|plan| ExternalEffectPlan::SnapshotTransfer(Box::new(plan)))
             });
+        #[cfg(target_os = "linux")]
+        let effect = effect.or_else(|| sdk_request.map(ExternalEffectPlan::SdkBackend));
         if let Some(effect) = effect {
             return RequestExecution::External(Box::new(PendingExternalRequest {
                 fingerprint,
@@ -2327,7 +2410,33 @@ impl Service {
         self.pending_ordinary_kv_authority = ordinary_kv_authority;
         self.pending_token_api_authority = token_api_authority;
         self.pending_help_authority = help_authority;
+        #[cfg(target_os = "linux")]
+        {
+            self.pending_sdk_control_authority = sdk_control;
+        }
         let mut response = self.audit_completed_response(&fingerprint, now, token_clock, response);
+        #[cfg(target_os = "linux")]
+        match (
+            sdk_control_present,
+            self.pending_sdk_control_authority.take(),
+        ) {
+            (true, Some(mut authority)) => {
+                if let Err(error) = self.validate_plugin_response(&mut authority) {
+                    erase_json(&mut response.body);
+                    response.consistency_index = None;
+                    return RequestExecution::Complete(error);
+                }
+            }
+            (false, None) => {}
+            _ => {
+                erase_json(&mut response.body);
+                response.consistency_index = None;
+                return RequestExecution::Complete(Response::error(
+                    503,
+                    "SDK control delivery capsule unavailable",
+                ));
+            }
+        }
         let response = match (
             ordinary_kv_expected,
             self.pending_ordinary_kv_authority.take(),
@@ -3036,6 +3145,10 @@ impl Service {
         if Self::is_raft_admin_path(path) {
             return self.raft_admin_route(admitted, principal.as_ref(), &request);
         }
+        #[cfg(target_os = "linux")]
+        if self.sdk_control_handles(&admitted, &request) {
+            return self.sdk_control_route(admitted, principal, &request);
+        }
         if Self::plugin_catalog_handles(path) {
             return self.plugin_catalog_route(&admitted, principal.as_ref(), &request);
         }
@@ -3081,6 +3194,14 @@ impl Service {
         }
         if Self::plugin_kms_handles(path) {
             return self.plugin_kms_route(&admitted, principal, &request);
+        }
+        #[cfg(target_os = "linux")]
+        if admitted
+            .engines
+            .sdk_mount_binding(namespace, path)
+            .is_some()
+        {
+            return self.stage_sdk_request(admitted, principal, &request);
         }
         if self.plugin_secret_handles(&admitted, namespace, path) {
             return self.plugin_secret_route(admitted, principal, &request);
@@ -3186,6 +3307,8 @@ impl Service {
             }
             self.fence_openbao_wrapper();
             self.namespace_runtime.clear();
+            #[cfg(target_os = "linux")]
+            self.retire_sdk_hosts();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
@@ -5106,6 +5229,8 @@ impl Service {
         self.seal = Some(seal);
         self.durable_profile = durable_profile;
         self.namespace_runtime.clear();
+        #[cfg(target_os = "linux")]
+        self.retire_sdk_hosts();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -5291,6 +5416,8 @@ impl Service {
         self.seal = Some(pending.seal);
         self.durable_profile = Some(pending.profile);
         self.namespace_runtime.clear();
+        #[cfg(target_os = "linux")]
+        self.retire_sdk_hosts();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -5573,6 +5700,8 @@ impl Service {
                 Ok(value) => Zeroizing::new(value),
                 Err(_) => {
                     self.namespace_runtime.clear();
+                    #[cfg(target_os = "linux")]
+                    self.retire_sdk_hosts();
                     self.state = None;
                     self.ha_activation = None;
                     self.record_root = None;
@@ -5586,6 +5715,8 @@ impl Service {
             seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
             if persist_seal_metadata(&self.data_dir, &seal).is_err() {
                 self.namespace_runtime.clear();
+                #[cfg(target_os = "linux")]
+                self.retire_sdk_hosts();
                 self.state = None;
                 self.ha_activation = None;
                 self.record_root = None;
@@ -5632,6 +5763,8 @@ impl Service {
         self.unseal_shares.clear();
         if self.rotate_unseal_nonce().is_err() {
             self.namespace_runtime.clear();
+            #[cfg(target_os = "linux")]
+            self.retire_sdk_hosts();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
@@ -5660,6 +5793,8 @@ impl Service {
         let wrapper_activation = self.begin_openbao_wrapper_activation();
         self.durable = None;
         self.namespace_runtime.clear();
+        #[cfg(target_os = "linux")]
+        self.retire_sdk_hosts();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -8910,3 +9045,7 @@ mod token_roles_tests;
 #[cfg(test)]
 #[path = "service_public_origin_tests.rs"]
 mod public_origin_tests;
+
+#[cfg(test)]
+#[path = "service_sdk_storage_tests.rs"]
+mod sdk_storage_tests;

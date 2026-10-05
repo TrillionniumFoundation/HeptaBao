@@ -264,6 +264,48 @@ impl PluginResponseAuthority {
         Ok(time)
     }
 
+    #[cfg(target_os = "linux")]
+    pub(super) fn validate_live_auth(&self, auth: &AuthState) -> Result<(), Response> {
+        if self.deadline_expired() {
+            return Err(Response::error(
+                503,
+                "SDK original deadline expired before publication",
+            ));
+        }
+        let time = self.token_time()?;
+        auth.authorize_request_parameters_observed(
+            &self.principal,
+            &self.namespace,
+            &self.method,
+            &self.path,
+            &self.body,
+            time,
+        )
+        .map_err(|e| Response::error(e.status, &e.message))?;
+        let result = if self.sudo {
+            auth.authorize_sudo_request_observed(
+                &self.principal,
+                &self.namespace,
+                &self.path,
+                self.capability,
+                time,
+            )
+        } else {
+            auth.authorize_request_observed(
+                &self.principal,
+                &self.namespace,
+                &self.path,
+                self.capability,
+                time,
+            )
+        };
+        result.map_err(|e| Response::error(e.status, &e.message))?;
+        if self.deadline_expired() {
+            return Err(Response::error(503, "SDK publication deadline expired"));
+        }
+        Ok(())
+    }
+
     pub(super) fn deadline_expired(&self) -> bool {
         self.deadline
             .is_some_and(|deadline| std::time::Instant::now() >= deadline)

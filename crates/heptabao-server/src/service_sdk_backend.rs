@@ -1,0 +1,1097 @@
+//! Linux SDK secret backends. Worker threads own processes; each Storage RPC
+//! returns to the existing Service writer before an acknowledgement is emitted.
+use super::*;
+use crate::engines::sdk::{Descriptor, MountOwner, StorageEntry};
+use heptabao_plugin_host::sdk_backend::{
+    SdkBackendHost, SdkBridgeError, SdkLaunch, SdkStorage, SdkStorageEntry,
+};
+use std::collections::BTreeSet;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc::{self, Receiver, Sender, SyncSender};
+use std::time::{Duration, Instant};
+
+fn timeout_ms() -> u64 {
+    5_000
+}
+#[derive(Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SdkBackendConfig {
+    pub plugin_directory: PathBuf,
+    pub companion: PathBuf,
+    pub companion_sha256: String,
+    pub runtime_directory: PathBuf,
+    #[serde(default = "timeout_ms")]
+    pub timeout_ms: u64,
+}
+impl SdkBackendConfig {
+    fn validate(&self) -> Result<(), String> {
+        use std::os::unix::fs::MetadataExt;
+        if !(1..=30_000).contains(&self.timeout_ms) || !self.companion.is_absolute() {
+            return Err("SDK runtime requires a bounded timeout and absolute companion".into());
+        }
+        checksum(&self.companion_sha256).map_err(|_| "invalid SDK companion checksum")?;
+        for path in [&self.plugin_directory, &self.runtime_directory] {
+            let meta = fs::symlink_metadata(path).map_err(|_| "SDK directory is unavailable")?;
+            if !path.is_absolute() || !meta.is_dir() || meta.mode() & 0o077 != 0 {
+                return Err("SDK directories must be absolute and private".into());
+            }
+        }
+        Ok(())
+    }
+}
+fn checksum(text: &str) -> Result<[u8; 32], Response> {
+    if text.len() != 64
+        || text
+            .bytes()
+            .any(|b| !b.is_ascii_hexdigit() || b.is_ascii_uppercase())
+    {
+        return Err(Response::error(400, "invalid SDK checksum"));
+    }
+    let mut out = [0; 32];
+    for (i, byte) in out.iter_mut().enumerate() {
+        *byte = u8::from_str_radix(&text[i * 2..i * 2 + 2], 16)
+            .map_err(|_| Response::error(400, "invalid SDK checksum"))?;
+    }
+    Ok(out)
+}
+
+enum StorageOp {
+    Get(String),
+    Put(StorageEntry),
+    Delete(String),
+    List(String, String, i64),
+}
+enum StorageReply {
+    Entry(Option<SdkStorageEntry>),
+    Empty,
+    Keys(Vec<String>),
+}
+enum Event {
+    Storage(StorageOp, Sender<Result<StorageReply, SdkBridgeError>>),
+    Complete(Result<Option<Value>, SdkBridgeError>),
+}
+struct WorkerJob {
+    operation: String,
+    path: String,
+    data: Value,
+    deadline: Instant,
+    events: Sender<Event>,
+}
+impl Drop for WorkerJob {
+    fn drop(&mut self) {
+        erase_json(&mut self.data);
+    }
+}
+enum WorkerCommand {
+    Invoke(WorkerJob),
+    Stop,
+}
+pub(super) struct Control {
+    sender: SyncSender<WorkerCommand>,
+    busy: Arc<AtomicBool>,
+    fenced: Arc<AtomicBool>,
+}
+impl Control {
+    fn retire(&self) {
+        self.fenced.store(true, Ordering::Release);
+        let _ = self.sender.try_send(WorkerCommand::Stop);
+    }
+}
+impl Drop for Control {
+    fn drop(&mut self) {
+        self.retire();
+    }
+}
+
+struct CallbackView {
+    events: Sender<Event>,
+    deadline: Instant,
+}
+impl CallbackView {
+    fn exchange(&self, op: StorageOp, deadline: Instant) -> Result<StorageReply, SdkBridgeError> {
+        let deadline = deadline.min(self.deadline);
+        let remaining = deadline
+            .checked_duration_since(Instant::now())
+            .ok_or(SdkBridgeError::Fenced)?;
+        let (reply, received) = mpsc::channel();
+        self.events
+            .send(Event::Storage(op, reply))
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        received
+            .recv_timeout(remaining)
+            .map_err(|_| SdkBridgeError::Fenced)?
+    }
+}
+impl SdkStorage for CallbackView {
+    fn get(
+        &mut self,
+        key: &str,
+        deadline: Instant,
+    ) -> Result<Option<SdkStorageEntry>, SdkBridgeError> {
+        match self.exchange(StorageOp::Get(key.into()), deadline)? {
+            StorageReply::Entry(e) => Ok(e),
+            _ => Err(SdkBridgeError::Fenced),
+        }
+    }
+    fn put(&mut self, entry: SdkStorageEntry, deadline: Instant) -> Result<(), SdkBridgeError> {
+        match self.exchange(
+            StorageOp::Put(StorageEntry {
+                key: entry.key,
+                value: entry.value,
+                seal_wrap: entry.seal_wrap,
+            }),
+            deadline,
+        )? {
+            StorageReply::Empty => Ok(()),
+            _ => Err(SdkBridgeError::Fenced),
+        }
+    }
+    fn delete(&mut self, key: &str, deadline: Instant) -> Result<(), SdkBridgeError> {
+        match self.exchange(StorageOp::Delete(key.into()), deadline)? {
+            StorageReply::Empty => Ok(()),
+            _ => Err(SdkBridgeError::Fenced),
+        }
+    }
+    fn list_page(
+        &mut self,
+        prefix: &str,
+        after: &str,
+        limit: i64,
+        deadline: Instant,
+    ) -> Result<Vec<String>, SdkBridgeError> {
+        match self.exchange(
+            StorageOp::List(prefix.into(), after.into(), limit),
+            deadline,
+        )? {
+            StorageReply::Keys(k) => Ok(k),
+            _ => Err(SdkBridgeError::Fenced),
+        }
+    }
+}
+
+fn start_worker(config: SdkLaunch) -> Result<Arc<Control>, Response> {
+    let (sender, commands) = mpsc::sync_channel(1);
+    let busy = Arc::new(AtomicBool::new(false));
+    let fenced = Arc::new(AtomicBool::new(false));
+    let worker_busy = Arc::clone(&busy);
+    let worker_fenced = Arc::clone(&fenced);
+    std::thread::Builder::new()
+        .name("sdk-mount-owner".into())
+        .spawn(move || {
+            let mut host: Option<SdkBackendHost> = None;
+            while let Ok(command) = commands.recv() {
+                let WorkerCommand::Invoke(mut job) = command else {
+                    break;
+                };
+                let mut view = CallbackView {
+                    events: job.events.clone(),
+                    deadline: job.deadline,
+                };
+                let result = (|| {
+                    if worker_fenced.load(Ordering::Acquire) || Instant::now() >= job.deadline {
+                        return Err(SdkBridgeError::Fenced);
+                    }
+                    if host.is_none() {
+                        host = Some(SdkBackendHost::launch_before(
+                            &config,
+                            &mut view,
+                            job.deadline,
+                        )?);
+                    }
+                    if job.operation == "_mount" {
+                        return Ok(None);
+                    }
+                    host.as_mut()
+                        .ok_or(SdkBridgeError::Fenced)?
+                        .handle_request_before(
+                            &job.operation,
+                            &job.path,
+                            std::mem::take(&mut job.data),
+                            &mut view,
+                            job.deadline,
+                        )
+                })();
+                if matches!(
+                    result,
+                    Err(SdkBridgeError::OutcomeUnknown | SdkBridgeError::Fenced)
+                ) {
+                    worker_fenced.store(true, Ordering::Release);
+                }
+                let _ = job.events.send(Event::Complete(result));
+                worker_busy.store(false, Ordering::Release);
+                if worker_fenced.load(Ordering::Acquire) {
+                    break;
+                }
+            }
+            drop(host); // Same persistent owner thread retains the owned process until cleanup.
+        })
+        .map_err(|_| Response::error(503, "SDK owner thread unavailable before entry"))?;
+    Ok(Arc::new(Control {
+        sender,
+        busy,
+        fenced,
+    }))
+}
+
+pub(super) struct Plan {
+    namespace: String,
+    mount: String,
+    owner: MountOwner,
+    descriptor: Descriptor,
+    control: Arc<Control>,
+    authority: Mutex<plugin::PluginResponseAuthority>,
+    operation: String,
+    path: String,
+    data: Value,
+    deadline: Instant,
+}
+impl Drop for Plan {
+    fn drop(&mut self) {
+        erase_json(&mut self.data);
+    }
+}
+
+impl Plan {
+    pub(super) fn execute(
+        &self,
+        service: &Arc<Mutex<Service>>,
+        deadline: Instant,
+    ) -> Result<Option<Value>, Response> {
+        let deadline = deadline.min(self.deadline);
+        if self.control.fenced.load(Ordering::Acquire) || Instant::now() >= deadline {
+            return Err(Response::error(
+                503,
+                "SDK owner or original deadline unavailable before entry",
+            ));
+        }
+        if self
+            .control
+            .busy
+            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+            .is_err()
+        {
+            return Err(Response::error(503, "SDK mount is busy before entry"));
+        }
+        let (events, received) = mpsc::channel();
+        let job = WorkerJob {
+            operation: self.operation.clone(),
+            path: self.path.clone(),
+            data: self.data.clone(),
+            deadline,
+            events,
+        };
+        if self
+            .control
+            .sender
+            .try_send(WorkerCommand::Invoke(job))
+            .is_err()
+        {
+            self.control.busy.store(false, Ordering::Release);
+            return Err(Response::error(
+                503,
+                "SDK owner queue unavailable before entry",
+            ));
+        }
+        self.pump(service, received, deadline)
+    }
+    fn pump(
+        &self,
+        service: &Arc<Mutex<Service>>,
+        events: Receiver<Event>,
+        deadline: Instant,
+    ) -> Result<Option<Value>, Response> {
+        loop {
+            let remaining = match deadline.checked_duration_since(Instant::now()) {
+                Some(t) => t,
+                None => {
+                    self.control.retire();
+                    return Err(Response::error(
+                        503,
+                        "SDK original deadline expired; owner fenced",
+                    ));
+                }
+            };
+            match events.recv_timeout(remaining) {
+                Ok(Event::Complete(result)) => return result.map_err(bridge_failure),
+                Ok(Event::Storage(op, reply)) => {
+                    let result = loop {
+                        match service.try_lock() {
+                            Ok(mut writer) => {
+                                break writer.sdk_storage_callback(self, op, deadline);
+                            }
+                            Err(std::sync::TryLockError::Poisoned(_)) => {
+                                break Err(SdkBridgeError::Fenced);
+                            }
+                            Err(std::sync::TryLockError::WouldBlock) => {
+                                if Instant::now() >= deadline {
+                                    break Err(SdkBridgeError::Fenced);
+                                }
+                                std::thread::park_timeout(Duration::from_millis(1));
+                            }
+                        }
+                    };
+                    if matches!(
+                        result,
+                        Err(SdkBridgeError::OutcomeUnknown | SdkBridgeError::Fenced)
+                    ) {
+                        self.control.retire();
+                    }
+                    if reply.send(result).is_err() {
+                        self.control.retire();
+                        return Err(Response::error(
+                            503,
+                            "SDK Storage acknowledgement outcome unknown; owner fenced",
+                        ));
+                    }
+                }
+                Err(_) => {
+                    self.control.retire();
+                    return Err(Response::error(
+                        503,
+                        "SDK execution outcome unavailable; owner fenced",
+                    ));
+                }
+            }
+        }
+    }
+}
+fn bridge_failure(e: SdkBridgeError) -> Response {
+    match e {
+        SdkBridgeError::Backend => Response::error(400, "SDK backend rejected request"),
+        SdkBridgeError::BeforeEntry => Response::error(503, "SDK plugin unavailable before entry"),
+        SdkBridgeError::OutcomeUnknown => {
+            Response::error(503, "SDK execution outcome unknown; mount owner fenced")
+        }
+        _ => Response::error(503, "SDK execution fenced or Storage unavailable"),
+    }
+}
+
+impl Service {
+    pub(super) fn sdk_control_handles(&self, state: &State, request: &RequestView<'_>) -> bool {
+        if request.method == "DELETE" && request.path.starts_with("sys/mounts/") {
+            let mount = format!(
+                "{}/",
+                request
+                    .path
+                    .trim_start_matches("sys/mounts/")
+                    .trim_end_matches('/')
+            );
+            if state
+                .engines
+                .sdk_mount_binding(request.namespace, &mount)
+                .is_some()
+            {
+                return true;
+            }
+        }
+        if request.path == "sys/plugins/catalog" {
+            return true;
+        }
+        if request.path == "sys/plugins/catalog/secret"
+            || request.path.starts_with("sys/plugins/catalog/secret/")
+        {
+            return self.sdk_configuration.is_some() || state.engines.has_sdk_state();
+        }
+        if matches!(request.method, "POST" | "PUT")
+            && request.path.starts_with("sys/mounts/")
+            && !request.path.ends_with("/tune")
+        {
+            let name = request
+                .body
+                .get("plugin_name")
+                .and_then(Value::as_str)
+                .filter(|s| !s.is_empty())
+                .or_else(|| request.body.get("type").and_then(Value::as_str));
+            let version = request
+                .body
+                .get("config")
+                .and_then(|v| v.get("plugin_version"))
+                .and_then(Value::as_str)
+                .unwrap_or("");
+            return name.is_some_and(|name| state.engines.sdk_descriptor(name, version).is_some());
+        }
+        false
+    }
+    pub(super) fn sdk_control_route(
+        &mut self,
+        mut state: State,
+        principal: Option<Principal>,
+        request: &RequestView<'_>,
+    ) -> Response {
+        let Some(principal) = principal else {
+            return Response::error(403, "missing client token");
+        };
+        let capability = if matches!(request.method, "GET" | "HEAD") {
+            "read"
+        } else if matches!(request.method, "LIST" | "SCAN") {
+            "list"
+        } else if request.method == "DELETE" {
+            "delete"
+        } else {
+            "update"
+        };
+        if let Err(e) = state.auth.authorize_sudo_request(
+            &principal,
+            request.namespace,
+            request.path,
+            capability,
+            request.now,
+        ) {
+            return Response::error(e.status, &e.message);
+        }
+        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
+            return Response::error(501, "SDK catalog and mount wrapping is not implemented");
+        }
+        if request.method == "DELETE" && request.path.starts_with("sys/mounts/") {
+            let mount = format!(
+                "{}/",
+                request
+                    .path
+                    .trim_start_matches("sys/mounts/")
+                    .trim_end_matches('/')
+            );
+            let Some((actual, owner)) = state
+                .engines
+                .sdk_mount_binding(request.namespace, &mount)
+                .filter(|(actual, _)| actual == &mount)
+            else {
+                return Response::error(404, "SDK mount not found");
+            };
+            let host_key = self.sdk_host_key(request.namespace, &actual, &owner);
+            self.pending_sdk_control_authority = Some(plugin::PluginResponseAuthority::new(
+                principal,
+                &state,
+                request,
+                capability,
+                true,
+                &self.unseal_nonce,
+            ));
+            if let Err(e) = state.engines.handle(
+                request.namespace,
+                "DELETE",
+                request.path,
+                request.body,
+                request.now,
+            ) {
+                return Response::error(e.status, &e.message);
+            }
+            state.schema = state.writer_schema();
+            if let Err(e) = self.commit_state(&mut state) {
+                return e;
+            }
+            self.state = Some(state);
+            if let Some(control) = self.sdk_hosts.remove(&host_key) {
+                control.retire();
+            }
+            return Response {
+                status: 204,
+                body: json!({}),
+                consistency_index: None,
+            };
+        }
+        if request.path.starts_with("sys/mounts/") {
+            let Some(config) = self.sdk_configuration.as_ref() else {
+                return Response::error(503, "SDK runtime is not configured");
+            };
+            if config.validate().is_err() {
+                return Response::error(503, "SDK deployment directories changed");
+            }
+            let name = request
+                .body
+                .get("plugin_name")
+                .and_then(Value::as_str)
+                .filter(|s| !s.is_empty())
+                .or_else(|| request.body.get("type").and_then(Value::as_str))
+                .unwrap_or("");
+            let version = request
+                .body
+                .get("config")
+                .and_then(|v| v.get("plugin_version"))
+                .and_then(Value::as_str)
+                .unwrap_or("");
+            let Some(descriptor) = state.engines.sdk_descriptor(name, version) else {
+                return Response::error(400, "SDK catalog descriptor not found");
+            };
+            let mut body = request.body.clone();
+            let Some(object) = body.as_object_mut() else {
+                return Response::error(400, "mount body must be an object");
+            };
+            object.remove("plugin_name");
+            object.insert("type".into(), json!("plugin"));
+            if object.get("options").is_some_and(Value::is_null) {
+                object.remove("options");
+            }
+            let configuration = object.entry("config").or_insert_with(|| json!({}));
+            let Some(configuration) = configuration.as_object_mut() else {
+                return Response::error(400, "mount config must be an object");
+            };
+            configuration.remove("plugin_version");
+            configuration.remove("plugin_name");
+            for field in [
+                "options",
+                "default_lease_ttl",
+                "max_lease_ttl",
+                "force_no_cache",
+            ] {
+                let Some(value) = configuration.get(field) else {
+                    continue;
+                };
+                let neutral = match field {
+                    "options" => value.is_null(),
+                    "force_no_cache" => value.as_bool() == Some(false),
+                    _ => value.as_str() == Some(""),
+                };
+                if !neutral {
+                    return Response::error(
+                        501,
+                        "SDK nondefault mount configuration is not implemented",
+                    );
+                }
+                configuration.remove(field);
+            }
+            configuration.insert("plugin_id".into(), json!(descriptor.name));
+            let response = match state.engines.handle(
+                request.namespace,
+                request.method,
+                request.path,
+                &body,
+                request.now,
+            ) {
+                Ok(Some(r)) if r.status == 204 => r,
+                Ok(_) => return Response::error(503, "SDK mount admission returned no ownership"),
+                Err(e) => return Response::error(e.status, &e.message),
+            };
+            let _ = response;
+            let mount = format!(
+                "{}/",
+                request
+                    .path
+                    .trim_start_matches("sys/mounts/")
+                    .trim_end_matches('/')
+            );
+            let owner = match state
+                .engines
+                .bind_sdk_mount(request.namespace, &mount, &descriptor)
+            {
+                Ok(o) => o,
+                Err(e) => return Response::error(e.status, &e.message),
+            };
+            if let Err(error) = self.prepare_sdk_mount_record_root(&mut state) {
+                return error;
+            }
+            state.schema = state.writer_schema();
+            if let Err(e) = self.commit_state(&mut state) {
+                return e;
+            }
+            self.state = Some(state.clone());
+            // Setup callbacks see the already admitted exact durable mount.
+            // A failed external Setup preserves that mount for explicit cleanup.
+            return self.stage_sdk_plan(
+                &state, principal, request, mount, owner, "_mount", "", "update",
+            );
+        }
+        if !request.namespace.is_empty() {
+            return Response::error(403, "SDK catalog is root-namespace only");
+        }
+        self.pending_sdk_control_authority = Some(plugin::PluginResponseAuthority::new(
+            principal,
+            &state,
+            request,
+            capability,
+            true,
+            &self.unseal_nonce,
+        ));
+        if request.path == "sys/plugins/catalog" {
+            if !matches!(request.method, "GET" | "HEAD") {
+                return Response::error(405, "catalog listing requires GET");
+            }
+            let descriptors = state.engines.sdk_descriptors();
+            let mut names = self.plugins.keys().cloned().collect::<BTreeSet<_>>();
+            names.extend(descriptors.iter().map(|d| d.name.clone()));
+            let detailed = descriptors
+                .iter()
+                .map(|d| json!({"type":"secret","name":d.name,"version":d.version,"builtin":false}))
+                .collect::<Vec<_>>();
+            return Response::ok(
+                json!({"data":{"secret":names,"auth":self.auth_plugins.keys().collect::<Vec<_>>(),"database":self.database_plugins.keys().collect::<Vec<_>>(),"detailed":detailed}}),
+            );
+        }
+        let suffix = request
+            .path
+            .strip_prefix("sys/plugins/catalog/secret")
+            .unwrap_or("");
+        if suffix.is_empty() {
+            if !matches!(request.method, "GET" | "HEAD" | "LIST" | "SCAN") {
+                return Response::error(405, "catalog listing requires GET or LIST");
+            }
+            return Response::ok(
+                json!({"data":{"keys":state.engines.sdk_descriptors().into_iter().map(|d|d.name).collect::<BTreeSet<_>>()}}),
+            );
+        }
+        let Some(name) = suffix
+            .strip_prefix('/')
+            .filter(|s| !s.is_empty() && !s.contains('/'))
+        else {
+            return Response::error(404, "catalog entry not found");
+        };
+        let version = request
+            .body
+            .get("version")
+            .and_then(Value::as_str)
+            .unwrap_or("");
+        match request.method {
+            "GET" | "HEAD" => {
+                let Some(d) = state.engines.sdk_descriptor(name, version) else {
+                    return Response::error(404, "SDK catalog entry not found");
+                };
+                Response::ok(
+                    json!({"data":{"name":d.name,"command":d.command,"args":d.args,"sha256":d.sha256,"version":d.version,"builtin":false}}),
+                )
+            }
+            "POST" | "PUT" => {
+                if self.sdk_configuration.is_none() {
+                    return Response::error(503, "SDK runtime is not configured");
+                }
+                let Some(object) = request.body.as_object() else {
+                    return Response::error(400, "SDK descriptor must be an object");
+                };
+                if object.keys().any(|k| {
+                    !matches!(
+                        k.as_str(),
+                        "type" | "args" | "command" | "sha256" | "version"
+                    )
+                }) || object
+                    .get("type")
+                    .is_some_and(|t| t.as_str() != Some("secret") && t.as_u64() != Some(3))
+                {
+                    return Response::error(400, "SDK secret descriptor fields rejected");
+                }
+                let args = match object.get("args") {
+                    None | Some(Value::Null) => Vec::new(),
+                    Some(v) => match serde_json::from_value::<Vec<String>>(v.clone()) {
+                        Ok(a) => a,
+                        Err(_) => return Response::error(400, "invalid SDK arguments"),
+                    },
+                };
+                let d = Descriptor {
+                    name: name.into(),
+                    version: version.into(),
+                    command: object
+                        .get("command")
+                        .and_then(Value::as_str)
+                        .unwrap_or("")
+                        .into(),
+                    args,
+                    sha256: object
+                        .get("sha256")
+                        .and_then(Value::as_str)
+                        .unwrap_or("")
+                        .into(),
+                    generation: 1,
+                };
+                if let Err(e) = state.engines.register_sdk_descriptor(d) {
+                    return Response::error(e.status, &e.message);
+                }
+                state.schema = state.writer_schema();
+                if let Err(e) = self.commit_state(&mut state) {
+                    return e;
+                }
+                self.state = Some(state);
+                Response {
+                    status: 204,
+                    body: json!({}),
+                    consistency_index: None,
+                }
+            }
+            "DELETE" => {
+                if let Err(e) = state.engines.deregister_sdk_descriptor(name, version) {
+                    return Response::error(e.status, &e.message);
+                }
+                state.schema = state.writer_schema();
+                if let Err(e) = self.commit_state(&mut state) {
+                    return e;
+                }
+                self.state = Some(state);
+                Response {
+                    status: 204,
+                    body: json!({}),
+                    consistency_index: None,
+                }
+            }
+            _ => Response::error(405, "SDK catalog method unsupported"),
+        }
+    }
+    pub fn install_sdk_backend(&mut self, config: Option<SdkBackendConfig>) -> Result<(), String> {
+        if self.state.is_some() {
+            return Err("SDK runtime configuration is immutable while unsealed".into());
+        }
+        if let Some(c) = &config {
+            c.validate()?;
+        }
+        self.retire_sdk_hosts();
+        self.sdk_configuration = config;
+        Ok(())
+    }
+    pub(super) fn retire_sdk_hosts(&mut self) {
+        for host in self.sdk_hosts.values() {
+            host.retire();
+        }
+        self.sdk_hosts.clear();
+    }
+    fn sdk_binding_gate(&self, plan: &Plan) -> Result<(), SdkBridgeError> {
+        if Instant::now() >= plan.deadline
+            || plan.control.fenced.load(Ordering::Acquire)
+            || self.recovery_required
+        {
+            return Err(SdkBridgeError::Fenced);
+        }
+        let state = self.state.as_ref().ok_or(SdkBridgeError::Fenced)?;
+        if state
+            .engines
+            .sdk_mount_binding(&plan.namespace, &plan.mount)
+            != Some((plan.mount.clone(), plan.owner.clone()))
+            || state
+                .engines
+                .sdk_descriptor(&plan.owner.plugin, &plan.owner.version)
+                != Some(plan.descriptor.clone())
+            || self
+                .sdk_hosts
+                .get(&self.sdk_host_key(&plan.namespace, &plan.mount, &plan.owner))
+                .is_none_or(|current| !Arc::ptr_eq(current, &plan.control))
+        {
+            return Err(SdkBridgeError::Fenced);
+        }
+        Ok(())
+    }
+    fn sdk_host_key(&self, namespace: &str, mount: &str, owner: &MountOwner) -> String {
+        hex(&crypto::digest(
+            format!(
+                "{}\0{namespace}\0{mount}\0{}\0{}\0{}",
+                self.unseal_nonce, owner.mount_incarnation, owner.catalog_generation, owner.version
+            )
+            .as_bytes(),
+        ))
+    }
+    fn sdk_storage_callback(
+        &mut self,
+        plan: &Plan,
+        op: StorageOp,
+        deadline: Instant,
+    ) -> Result<StorageReply, SdkBridgeError> {
+        let _scope =
+            crate::request_deadline::RequestDeadlineScope::enter(deadline.min(plan.deadline));
+        let mut authority = plan.authority.lock().map_err(|_| SdkBridgeError::Fenced)?;
+        self.validate_plugin_response(&mut authority)
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        self.sdk_binding_gate(plan)?;
+        let mut state = self.state.clone().ok_or(SdkBridgeError::Fenced)?;
+        authority
+            .observe_candidate_time(&mut state)
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        let (reply, changed) = match op {
+            StorageOp::Get(key) => {
+                let entry = state
+                    .engines
+                    .sdk_storage_get(&plan.namespace, &plan.mount, &plan.owner, &key)
+                    .map_err(|_| SdkBridgeError::Storage)?;
+                (
+                    StorageReply::Entry(entry.map(|e| SdkStorageEntry {
+                        key: e.key,
+                        value: e.value,
+                        seal_wrap: e.seal_wrap,
+                    })),
+                    false,
+                )
+            }
+            StorageOp::List(prefix, after, limit) => {
+                let keys = state
+                    .engines
+                    .sdk_storage_list(
+                        &plan.namespace,
+                        &plan.mount,
+                        &plan.owner,
+                        &prefix,
+                        &after,
+                        limit,
+                    )
+                    .map_err(|_| SdkBridgeError::Storage)?;
+                (StorageReply::Keys(keys), false)
+            }
+            StorageOp::Put(entry) => (
+                StorageReply::Empty,
+                state
+                    .engines
+                    .sdk_storage_put(&plan.namespace, &plan.mount, &plan.owner, entry)
+                    .map_err(|_| SdkBridgeError::Storage)?,
+            ),
+            StorageOp::Delete(key) => (
+                StorageReply::Empty,
+                state
+                    .engines
+                    .sdk_storage_delete(&plan.namespace, &plan.mount, &plan.owner, &key)
+                    .map_err(|_| SdkBridgeError::Storage)?,
+            ),
+        };
+        if changed {
+            state.schema = state.writer_schema();
+            let publication = self
+                .prepare_record_plan(&mut state)
+                .map_err(|_| SdkBridgeError::Storage)?;
+            self.validate_plugin_response(&mut authority)
+                .map_err(|_| SdkBridgeError::Fenced)?;
+            self.sdk_binding_gate(plan)?;
+            if self
+                .commit_record_plan_with_before_publish(
+                    &state,
+                    publication,
+                    |auth| authority.validate_live_auth(auth),
+                    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                    None,
+                )
+                .is_err()
+            {
+                return Err(if self.recovery_required {
+                    SdkBridgeError::OutcomeUnknown
+                } else {
+                    SdkBridgeError::Fenced
+                });
+            }
+            // Publish the actual committed owner even when the following gate fails.
+            self.state = Some(state);
+        }
+        self.validate_plugin_response(&mut authority).map_err(|_| {
+            if changed {
+                SdkBridgeError::OutcomeUnknown
+            } else {
+                SdkBridgeError::Fenced
+            }
+        })?;
+        self.sdk_binding_gate(plan)?;
+        Ok(reply)
+    }
+    pub(super) fn stage_sdk_request(
+        &mut self,
+        state: State,
+        principal: Option<Principal>,
+        request: &RequestView<'_>,
+    ) -> Response {
+        let Some((mount, owner)) = state
+            .engines
+            .sdk_mount_binding(request.namespace, request.path)
+        else {
+            return Response::error(404, "SDK mount not found");
+        };
+        let Some(principal) = principal else {
+            return Response::error(403, "missing client token");
+        };
+        let operation = match kv_authorization_method(request.method, request.body) {
+            "GET" | "HEAD" => "read",
+            "PUT" | "POST" => "update",
+            "PATCH" => "patch",
+            "DELETE" => "delete",
+            "LIST" => "list",
+            "SCAN" => "scan",
+            _ => return Response::error(405, "SDK operation unsupported"),
+        };
+        let capability = match operation {
+            "read" => "read",
+            "list" => "list",
+            "scan" => "scan",
+            "delete" => "delete",
+            _ => "update",
+        };
+        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
+            return Response::error(501, "SDK response wrapping is not implemented");
+        }
+        if let Err(e) = state.auth.authorize_request(
+            &principal,
+            request.namespace,
+            request.path,
+            capability,
+            request.now,
+        ) {
+            return Response::error(e.status, &e.message);
+        }
+        let path = request.path.strip_prefix(&mount).unwrap_or("").to_owned();
+        self.stage_sdk_plan(
+            &state, principal, request, mount, owner, operation, &path, capability,
+        )
+    }
+    fn stage_sdk_plan(
+        &mut self,
+        state: &State,
+        principal: Principal,
+        request: &RequestView<'_>,
+        mount: String,
+        owner: MountOwner,
+        operation: &str,
+        path: &str,
+        capability: &'static str,
+    ) -> Response {
+        let Some(config) = self.sdk_configuration.clone() else {
+            return Response::error(503, "SDK runtime is not configured");
+        };
+        let Some(descriptor) = state.engines.sdk_descriptor(&owner.plugin, &owner.version) else {
+            return Response::error(503, "SDK descriptor absent");
+        };
+        let key = self.sdk_host_key(request.namespace, &mount, &owner);
+        let control = if let Some(c) = self.sdk_hosts.get(&key) {
+            Arc::clone(c)
+        } else {
+            let suffix = match crypto::random::<16>() {
+                Ok(bytes) => hex(&bytes),
+                Err(_) => return Response::error(503, "SDK runtime randomness unavailable"),
+            };
+            let socket = config.runtime_directory.join(suffix);
+            if private_directory(&socket).is_err() {
+                return Response::error(503, "SDK runtime directory unavailable");
+            }
+            let launch = SdkLaunch {
+                companion: config.companion,
+                companion_sha256: match checksum(&config.companion_sha256) {
+                    Ok(v) => v,
+                    Err(e) => return e,
+                },
+                plugin: config.plugin_directory.join(&descriptor.command),
+                plugin_sha256: match checksum(&descriptor.sha256) {
+                    Ok(v) => v,
+                    Err(e) => return e,
+                },
+                plugin_args: descriptor.args.clone(),
+                socket_directory: socket.clone(),
+                private_log: socket.join("companion.private"),
+                timeout: Duration::from_millis(config.timeout_ms),
+                default_ttl_seconds: 2_764_800,
+                max_ttl_seconds: 2_764_800,
+            };
+            let control = match start_worker(launch) {
+                Ok(c) => c,
+                Err(e) => return e,
+            };
+            self.sdk_hosts.insert(key, Arc::clone(&control));
+            control
+        };
+        let authority = plugin::PluginResponseAuthority::new(
+            principal,
+            &state,
+            request,
+            capability,
+            operation == "_mount",
+            &self.unseal_nonce,
+        );
+        let data = if request.body.is_null() {
+            json!({})
+        } else {
+            request.body.clone()
+        };
+        let path = path.to_owned();
+        let deadline = crate::request_deadline::current()
+            .unwrap_or(request.admission_started + Duration::from_millis(config.timeout_ms));
+        self.pending_sdk_request = Some(Plan {
+            namespace: request.namespace.into(),
+            mount,
+            owner,
+            descriptor,
+            control,
+            authority: Mutex::new(authority),
+            operation: operation.into(),
+            path,
+            data,
+            deadline,
+        });
+        Response::error(500, "SDK request was not dispatched")
+    }
+    pub(super) fn complete_sdk_delivery(
+        &mut self,
+        plan: &mut Plan,
+        mut response: Response,
+    ) -> Response {
+        let gate = (|| {
+            let mut authority = plan.authority.lock().map_err(|_| {
+                Response::error(503, "SDK affine authority unavailable after audit")
+            })?;
+            self.validate_plugin_response(&mut authority)?;
+            self.sdk_binding_gate(plan).map_err(bridge_failure)
+        })();
+        if let Err(e) = gate {
+            erase_json(&mut response.body);
+            plan.control.retire();
+            return e;
+        }
+        response
+    }
+    pub(super) fn finalize_sdk_request(
+        &mut self,
+        plan: &mut Plan,
+        result: Result<Option<Value>, Response>,
+    ) -> Response {
+        let mut value = match result {
+            Ok(v) => v,
+            Err(e) => return e,
+        };
+        let gate = (|| {
+            let mut authority = plan
+                .authority
+                .lock()
+                .map_err(|_| Response::error(503, "SDK affine authority unavailable"))?;
+            self.validate_plugin_response(&mut authority)?;
+            self.sdk_binding_gate(&plan).map_err(bridge_failure)
+        })();
+        if let Err(e) = gate {
+            if let Some(v) = &mut value {
+                erase_json(v);
+            }
+            plan.control.retire();
+            return e;
+        }
+        let Some(mut response) = value else {
+            return if plan.operation == "read" {
+                Response::error(404, "secret not found")
+            } else {
+                Response {
+                    status: 204,
+                    body: json!({}),
+                    consistency_index: None,
+                }
+            };
+        };
+        let unsupported = ["secret", "auth", "wrap_info"]
+            .into_iter()
+            .any(|key| response.get(key).is_none_or(|v| !v.is_null()))
+            || response
+                .get("redirect")
+                .is_none_or(|v| v.as_str() != Some(""))
+            || response
+                .get("headers")
+                .is_some_and(|v| !v.is_null() && v.as_object().is_none_or(|m| !m.is_empty()));
+        if unsupported {
+            erase_json(&mut response);
+            plan.control.retire();
+            return Response::error(
+                501,
+                "SDK auth, leases, redirect, wrapping and custom headers are not implemented",
+            );
+        }
+        let data = response
+            .get_mut("data")
+            .map(std::mem::take)
+            .unwrap_or(Value::Null);
+        let warnings = response
+            .get_mut("warnings")
+            .map(std::mem::take)
+            .unwrap_or(Value::Null);
+        erase_json(&mut response);
+        if data.get("errors").is_some() {
+            return Response {
+                status: 400,
+                body: json!({"errors":data["errors"]}),
+                consistency_index: None,
+            };
+        }
+        let mut body = json!({"data":data});
+        if !warnings.is_null() {
+            body["warnings"] = warnings;
+        }
+        Response::ok(body)
+    }
+}

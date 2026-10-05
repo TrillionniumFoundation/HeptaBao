@@ -34,6 +34,9 @@ mod kv_versioning;
 mod leases;
 #[path = "engine_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
+#[path = "engine_sdk.rs"]
+pub(crate) mod sdk;
+
 #[path = "engine_namespace_record_cells.rs"]
 mod namespace_record_cells;
 pub(crate) mod openldap;
@@ -46,6 +49,8 @@ mod transit;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub struct EngineState {
+    #[serde(default, skip_serializing_if = "sdk::Catalog::is_empty")]
+    sdk_catalog: sdk::Catalog,
     #[serde(skip)]
     records: Option<kv1_records::Runtime>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
@@ -168,6 +173,8 @@ impl<'de> Deserialize<'de> for CowNamespace {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct NamespaceState {
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    sdk_owners: BTreeMap<String, sdk::MountOwner>,
     mounts: BTreeMap<String, Mount>,
     /// Next path incarnation after disable/recreate. The active Mount carries
     /// its own incarnation; this tombstone map prevents stale path identity
@@ -184,6 +191,7 @@ impl NamespaceState {
     fn initialized_empty() -> Self {
         Self {
             mounts: BTreeMap::new(),
+            sdk_owners: BTreeMap::new(),
             mount_epochs: BTreeMap::new(),
             identity: identity::IdentityState::default(),
             external_keys: external_keys::Registry::default(),
@@ -192,6 +200,7 @@ impl NamespaceState {
 
     fn is_pristine(&self) -> bool {
         self.mounts.is_empty()
+            && self.sdk_owners.is_empty()
             && self.mount_epochs.is_empty()
             && self.identity.is_pristine()
             && self.external_keys.is_empty()
@@ -216,6 +225,7 @@ impl Default for NamespaceState {
                     ),
                 ),
             ]),
+            sdk_owners: BTreeMap::new(),
             mount_epochs: BTreeMap::new(),
             identity: identity::IdentityState::default(),
             external_keys: external_keys::Registry::default(),

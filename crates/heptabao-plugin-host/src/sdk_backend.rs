@@ -123,6 +123,17 @@ impl SdkBackendHost {
         config: &SdkLaunch,
         storage: &mut dyn SdkStorage,
     ) -> Result<Self, SdkBridgeError> {
+        Self::launch_before(config, storage, Instant::now() + config.timeout)
+    }
+
+    pub fn launch_before(
+        config: &SdkLaunch,
+        storage: &mut dyn SdkStorage,
+        original_deadline: Instant,
+    ) -> Result<Self, SdkBridgeError> {
+        if Instant::now() >= original_deadline {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
         if config.timeout.is_zero()
             || config.timeout > Duration::from_secs(30)
             || config.default_ttl_seconds > config.max_ttl_seconds
@@ -163,9 +174,18 @@ impl SdkBackendHost {
         {
             return Err(SdkBridgeError::BeforeEntry);
         }
+        let proc_self =
+            std::fs::read_link("/proc/self").map_err(|_| SdkBridgeError::BeforeEntry)?;
+        if proc_self.components().count() != 1
+            || proc_self
+                .to_str()
+                .is_none_or(|s| s.is_empty() || !s.bytes().all(|b| b.is_ascii_digit()))
+        {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
         let socket_alias = format!(
             "/proc/{}/fd/{}",
-            std::process::id(),
+            proc_self.display(),
             socket_directory.as_raw_fd()
         );
         let companion = OwnedExecutableImage::open(&config.companion, config.companion_sha256)
@@ -173,7 +193,7 @@ impl SdkBackendHost {
         let plugin = OwnedExecutableImage::open(&config.plugin, config.plugin_sha256)
             .map_err(|_| SdkBridgeError::BeforeEntry)?;
         let log = private_log(&config.private_log)?;
-        let deadline = Instant::now() + config.timeout;
+        let deadline = original_deadline.min(Instant::now() + config.timeout);
         let mut command = companion.command();
         command
             .env_clear()
@@ -227,6 +247,26 @@ impl SdkBackendHost {
         data: Value,
         storage: &mut dyn SdkStorage,
     ) -> Result<Option<Value>, SdkBridgeError> {
+        self.handle_request_before(
+            operation,
+            path,
+            data,
+            storage,
+            Instant::now() + self.timeout,
+        )
+    }
+
+    pub fn handle_request_before(
+        &mut self,
+        operation: &str,
+        path: &str,
+        data: Value,
+        storage: &mut dyn SdkStorage,
+        original_deadline: Instant,
+    ) -> Result<Option<Value>, SdkBridgeError> {
+        if Instant::now() >= original_deadline {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
         if self.fenced {
             return Err(SdkBridgeError::Fenced);
         }
@@ -241,7 +281,7 @@ impl SdkBackendHost {
             return Err(SdkBridgeError::BeforeEntry);
         }
         self.call = self.call.checked_add(1).ok_or(SdkBridgeError::Fenced)?;
-        let deadline = Instant::now() + self.timeout;
+        let deadline = original_deadline.min(Instant::now() + self.timeout);
         let request = json!({"version":1,"kind":"request","call":self.call,
             "operation":operation,"path":path,"data":data});
         let result = (|| {

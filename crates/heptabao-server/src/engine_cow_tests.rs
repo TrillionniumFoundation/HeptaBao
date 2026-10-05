@@ -32,12 +32,14 @@ fn fixed_legacy_mounts_and_payloads_keep_identical_serialized_bytes() -> TestRes
         let decoded: Mount = serde_json::from_slice(bytes)?;
         assert_eq!(serde_json::to_vec(&decoded)?, bytes);
         let namespace = NamespaceState {
+            sdk_owners: BTreeMap::new(),
             mounts: BTreeMap::from([("legacy/".into(), decoded)]),
             mount_epochs: BTreeMap::new(),
             identity: identity::IdentityState::default(),
             external_keys: external_keys::Registry::default(),
         };
         let mut state = EngineState {
+            sdk_catalog: sdk::Catalog::default(),
             records: None,
             namespace_record_owners: BTreeMap::new(),
             lease_clock: 0,

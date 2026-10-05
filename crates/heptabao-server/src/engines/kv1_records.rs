@@ -200,6 +200,7 @@ impl EngineState {
                 .mounts
                 .values()
                 .any(|mount| matches!(mount.backend, Backend::Kv1Records))
+                || !namespace.sdk_owners.is_empty()
         })
     }
 
@@ -252,7 +253,8 @@ impl EngineState {
     }
 
     pub(crate) fn owner_metadata_shared_with(&self, previous: &Self) -> bool {
-        self.lease_clock == previous.lease_clock
+        self.sdk_catalog == previous.sdk_catalog
+            && self.lease_clock == previous.lease_clock
             && self.kubernetes_artifact_clock == previous.kubernetes_artifact_clock
             && self.namespace_record_owners == previous.namespace_record_owners
             && self.namespaces.len() == previous.namespaces.len()
@@ -362,6 +364,7 @@ impl EngineState {
 
     pub(crate) fn validate_record_registry(&self) -> Result<()> {
         self.validate_namespace_record_owners()?;
+        self.validate_sdk_state()?;
         let Some(runtime) = &self.records else {
             return if self.has_record_kv1() {
                 Err(error(503, "KV1 record root is absent"))
@@ -383,6 +386,12 @@ impl EngineState {
                 let bytes = runtime.index.get(key).ok_or(RecordError::Corrupt)?;
                 if namespace_record_cells::is_cell(key) {
                     return self.validate_namespace_record_cell(key, bytes);
+                }
+                if self
+                    .sdk_mount_binding(key.namespace(), key.mount())
+                    .is_some_and(|(mount, _)| mount == key.mount())
+                {
+                    return self.validate_sdk_record(key, bytes);
                 }
                 let registered = self
                     .namespaces
@@ -592,15 +601,32 @@ impl EngineState {
         namespace: &str,
         candidate: &mut CowNamespace,
     ) -> Result<()> {
+        let retained_sdk_owners = candidate
+            .sdk_owners
+            .iter()
+            .filter(|(mount, owner)| {
+                candidate.mounts.get(*mount).is_some_and(|m| {
+                    m.incarnation == owner.mount_incarnation
+                        && matches!(&m.backend,Backend::PluginSecret(id) if id==&owner.plugin)
+                })
+            })
+            .map(|(mount, owner)| (mount.clone(), owner.clone()))
+            .collect();
+        candidate.sdk_owners = retained_sdk_owners;
         let Some(current) = &self.records else {
             return Ok(());
         };
         let mut next = current.clone();
         if let Some(previous) = self.namespaces.get(namespace) {
             for (name, mount) in &previous.mounts {
-                if matches!(mount.backend, Backend::Kv1Records)
+                let was_sdk = previous
+                    .sdk_owners
+                    .get(name)
+                    .is_some_and(|o| o.mount_incarnation == mount.incarnation);
+                if (matches!(mount.backend, Backend::Kv1Records) || was_sdk)
                     && !candidate.mounts.get(name).is_some_and(|next| {
-                        matches!(next.backend, Backend::Kv1Records)
+                        (matches!(next.backend, Backend::Kv1Records)
+                            || (was_sdk && candidate.sdk_owners.contains_key(name)))
                             && next.incarnation == mount.incarnation
                     })
                 {
