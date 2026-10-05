@@ -211,6 +211,7 @@ impl EngineState {
 
     pub(crate) fn owner_metadata_shared_with(&self, previous: &Self) -> bool {
         self.lease_clock == previous.lease_clock
+            && self.kubernetes_artifact_clock == previous.kubernetes_artifact_clock
             && self.namespaces.len() == previous.namespaces.len()
             && self.namespaces.iter().all(|(name, state)| {
                 previous
