@@ -719,3 +719,360 @@ fn sdk_headers95_durable_configuration_stale_owner_and_sticky_floor() -> TestRes
     assert_eq!(service.state.as_ref().ok_or("retired")?.schema, 95);
     Ok(())
 }
+
+fn sdk96_fixture(
+    candidate: &mut State,
+    token: &str,
+) -> Result<(crate::engines::sdk_lease::Lease, MountOwner), Box<dyn std::error::Error>> {
+    use crate::engines::sdk_lease::{Binding, Grant, Lease};
+    let owner = mount(candidate, "sdk_probe")?;
+    let principal = candidate.auth.authenticate(token, 100)?;
+    let issuer =
+        candidate
+            .auth
+            .typed_lease_issuer_observed(&principal, "", AuthorityTime::Coarse(100))?;
+    let at = crate::auth::Timestamp::checked(100, 123_456_789)?;
+    let lease = Lease::new(
+        Binding {
+            id: "sdk_probe/leased/abcdef".into(),
+            namespace: String::new(),
+            cluster: candidate.cluster_id.clone(),
+            mount: "sdk_probe/".into(),
+            path: "sdk_probe/leased".into(),
+            backend: owner.clone(),
+            issuer: issuer.owner,
+        },
+        Grant {
+            issued: at,
+            ttl_ns: 20_000_000_000,
+            max_ttl_ns: 90_000_000_000,
+            renewable: true,
+            secret: json!({"LeaseID":"","lease":20_000_000_000_u64,"max_ttl":90_000_000_000_u64,"renewable":true,"internal_data":{"secret_type":"sdk_credential","storage_key":"credential-record"}}),
+            data: json!({"credential":"registered-secret96"}),
+        },
+    )?;
+    candidate.engines.observe_sdk_lease_clock(at);
+    candidate.engines.store_sdk_lease(lease.clone())?;
+    candidate.engines.sdk_storage_put(
+        "",
+        "sdk_probe/",
+        &owner,
+        entry("credential-record", b"registered-secret96"),
+    )?;
+    Ok((lease, owner))
+}
+
+#[test]
+fn sdk96_encrypted_registry_storage_backup_reopen_and_sticky_retirement() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let (mut lease, owner) = sdk96_fixture(&mut candidate, &token)?;
+    publish(&mut service, candidate)?;
+    assert_eq!(service.state.as_ref().ok_or("state")?.schema, 96);
+    let backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    assert!(
+        !backup
+            .windows(b"registered-secret96".len())
+            .any(|w| w == b"registered-secret96")
+    );
+    service
+        .prepare_snapshot_restore(&backup)
+        .map_err(|_| "real backup admission")?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &token, json!({})).status,
+        204
+    );
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let state = service.state.as_ref().ok_or("reopened state")?;
+    let restored = state
+        .engines
+        .sdk_lease("", &lease.id)
+        .ok_or("registered lease")?;
+    assert!(restored.issuer == lease.issuer);
+    assert_eq!(restored.issued, lease.issued);
+    assert_eq!(
+        restored.response_data(),
+        json!({"credential":"registered-secret96"})
+    );
+    assert_eq!(
+        state
+            .engines
+            .sdk_storage_get("", "sdk_probe/", &owner, "credential-record")?
+            .ok_or("Storage")?
+            .value
+            .as_slice(),
+        b"registered-secret96"
+    );
+    let at = crate::auth::Timestamp::checked(105, 777_000_000)?;
+    let mut candidate = state.clone();
+    lease.renew(crate::engines::sdk_lease::Grant {
+        issued: at,
+        ttl_ns: 30_000_000_000,
+        max_ttl_ns: 90_000_000_000,
+        renewable: true,
+        secret: lease.callback(),
+        data: lease.response_data(),
+    })?;
+    candidate.engines.observe_sdk_lease_clock(at);
+    candidate.engines.store_sdk_lease(lease.clone())?;
+    candidate.engines.sdk_storage_put(
+        "",
+        "sdk_probe/",
+        &owner,
+        entry("credential-record", b"renewed-secret96"),
+    )?;
+    publish(&mut service, candidate)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    lease.revoke();
+    candidate.engines.store_sdk_lease(lease.clone())?;
+    candidate
+        .engines
+        .sdk_storage_delete("", "sdk_probe/", &owner, "credential-record")?;
+    publish(&mut service, candidate)?;
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let state = service.state.as_ref().ok_or("state")?;
+    assert_eq!(state.schema, 96);
+    assert!(
+        state
+            .engines
+            .sdk_lease("", &lease.id)
+            .ok_or("retired lease")?
+            .lookup(at)
+            .is_err()
+    );
+    assert!(
+        state
+            .engines
+            .sdk_storage_get("", "sdk_probe/", &owner, "credential-record")?
+            .is_none()
+    );
+    Ok(())
+}
+
+#[test]
+fn sdk96_floor_rollback_or_old_reader_cannot_publish_or_restore() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let old_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    sdk96_fixture(&mut candidate, &token)?;
+    publish(&mut service, candidate)?;
+    assert!(service.prepare_snapshot_restore(&old_backup).is_err());
+    let actual = service.state.clone().ok_or("state")?;
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    for floor in [Value::Null, json!({"seconds":99,"nanoseconds":0})] {
+        let mut wire = serde_json::to_value(&actual)?;
+        wire["engines"]["sdk_lease_clock"] = floor;
+        let mut downgraded: State = serde_json::from_value(wire)?;
+        assert!(
+            downgraded
+                .validate_publication_schema(Some(&actual))
+                .is_err()
+        );
+        assert!(service.commit_state(&mut downgraded).is_err());
+        assert_eq!(
+            service.current_state_identity().map_err(|_| "identity")?,
+            identity
+        );
+    }
+    let mut old_reader = actual.clone();
+    old_reader.schema = 95;
+    assert!(old_reader.validate_format().is_err());
+    assert!(service.commit_state(&mut old_reader).is_err());
+    Ok(())
+}
+
+#[test]
+fn sdk96_exact_cluster_mount_and_go_secret_wire_tampering_rejected() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let (lease, _) = sdk96_fixture(&mut candidate, &token)?;
+    for field in ["cluster", "mount_incarnation", "LeaseID", "lease"] {
+        let mut wire = serde_json::to_value(&lease)?;
+        match field {
+            "cluster" => wire["cluster"] = json!("foreign-cluster"),
+            "mount_incarnation" => wire["backend"]["mount_incarnation"] = json!(999),
+            "LeaseID" => wire["secret"]["LeaseID"] = json!("plugin-chosen-identity"),
+            _ => wire["secret"]["lease"] = json!(-1),
+        }
+        let altered: crate::engines::sdk_lease::Lease = serde_json::from_value(wire)?;
+        let mut rejected = candidate.clone();
+        if rejected.engines.store_sdk_lease(altered).is_ok() {
+            assert!(rejected.validate_format().is_err());
+        }
+    }
+    assert!(
+        lease
+            .lookup(crate::auth::Timestamp::checked(121, 0)?)
+            .is_err()
+    );
+    Ok(())
+}
+
+#[test]
+fn sdk96_clock_only_commit_changes_exact_engine_owner_and_reopens() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    mount(&mut candidate, "sdk_probe")?;
+    let initial = crate::auth::Timestamp::checked(100, 1)?;
+    candidate.engines.observe_sdk_lease_clock(initial);
+    publish(&mut service, candidate)?;
+    let original = service.state.clone().ok_or("state")?;
+    let original_owner = service.record_root.as_ref().ok_or("record root")?.owners[2].digest;
+    let old_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    let later = crate::auth::Timestamp::checked(101, 999)?;
+    let mut candidate = original.clone();
+    assert!(candidate.engines.observe_sdk_lease_clock(later));
+    assert!(
+        !candidate
+            .engines
+            .owner_metadata_shared_with(&original.engines)
+    );
+    assert_eq!(original.engines.sdk_lease_clock_floor(), Some(initial));
+    publish(&mut service, candidate)?;
+    assert!(service.record_root.as_ref().ok_or("record root")?.owners[2].digest != original_owner);
+    let backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    service
+        .prepare_snapshot_restore(&backup)
+        .map_err(|_| "fresh clock-only backup")?;
+    assert!(service.prepare_snapshot_restore(&old_backup).is_err());
+    assert!(
+        Service::validate_snapshot_protected_floor(
+            service.state.as_ref().ok_or("state")?,
+            &original
+        )
+        .is_err()
+    );
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &token, json!({})).status,
+        204
+    );
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .sdk_lease_clock_floor(),
+        Some(later)
+    );
+    Ok(())
+}
+
+#[test]
+fn sdk96_pki97_joint_encrypted_owners_floor_backup_and_reopen() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    let old_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let (lease, owner) = sdk96_fixture(&mut candidate, &token)?;
+    candidate
+        .engines
+        .handle("", "POST", "sys/mounts/ca", &json!({"type":"pki"}), 100)?;
+    candidate.engines.handle(
+        "",
+        "POST",
+        "ca/config/urls",
+        &json!({"issuing_certificates":["https://ca.example.test/issuer"]}),
+        100,
+    )?;
+    assert_eq!(candidate.writer_schema(), PKI_URLS_STATE_SCHEMA);
+    publish(&mut service, candidate)?;
+    let joint = service.state.as_ref().ok_or("joint state")?;
+    assert_eq!(joint.schema, PKI_URLS_STATE_SCHEMA);
+    assert!(joint.engines.has_sdk_lease_state());
+    assert!(joint.engines.has_pki_url_state());
+    joint.validate_format().map_err(|_| "joint format")?;
+    for lower in [
+        SDK_RESPONSE_HEADERS_STATE_SCHEMA,
+        SDK_SECRET_LEASE_STATE_SCHEMA,
+    ] {
+        let mut lowered = joint.clone();
+        lowered.schema = lower;
+        assert!(lowered.validate_format().is_err());
+        assert!(lowered.validate_publication_schema(Some(joint)).is_err());
+    }
+    let joint_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    assert!(
+        !joint_backup
+            .windows(b"registered-secret96".len())
+            .any(|bytes| bytes == b"registered-secret96")
+    );
+    service
+        .prepare_snapshot_restore(&joint_backup)
+        .map_err(|_| "joint backup")?;
+    assert!(service.prepare_snapshot_restore(&old_backup).is_err());
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &token, json!({})).status,
+        204
+    );
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let reopened = service.state.as_ref().ok_or("reopened joint")?;
+    assert_eq!(reopened.schema, PKI_URLS_STATE_SCHEMA);
+    assert!(reopened.engines.has_pki_url_state());
+    let restored = reopened
+        .engines
+        .sdk_lease("", &lease.id)
+        .ok_or("restored lease")?;
+    assert!(restored.issuer == lease.issuer);
+    assert_eq!(restored.issued, lease.issued);
+    assert_eq!(restored.response_data(), lease.response_data());
+    assert_eq!(
+        reopened
+            .engines
+            .sdk_storage_get("", "sdk_probe/", &owner, "credential-record")?
+            .ok_or("restored storage")?
+            .value
+            .as_slice(),
+        b"registered-secret96"
+    );
+    let mut candidate = reopened.clone();
+    candidate
+        .engines
+        .handle("", "DELETE", "sys/mounts/ca", &json!({}), 101)?;
+    let later = crate::auth::Timestamp::checked(105, 777_000_000)?;
+    assert!(candidate.engines.observe_sdk_lease_clock(later));
+    assert!(!candidate.engines.has_pki_url_state());
+    assert_eq!(candidate.writer_schema(), PKI_URLS_STATE_SCHEMA);
+    publish(&mut service, candidate)?;
+    // Both backups have schema 97: the clock value itself prevents rollback.
+    assert!(service.prepare_snapshot_restore(&joint_backup).is_err());
+    let current_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    service
+        .prepare_snapshot_restore(&current_backup)
+        .map_err(|_| "current joint backup")?;
+    let retired = service.state.as_ref().ok_or("retired URL owner")?;
+    let mut lowered = retired.clone();
+    lowered.schema = SDK_SECRET_LEASE_STATE_SCHEMA;
+    assert!(lowered.validate_publication_schema(Some(retired)).is_err());
+    Ok(())
+}

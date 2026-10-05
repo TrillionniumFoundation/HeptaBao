@@ -21,13 +21,82 @@ use std::time::{Duration, Instant};
 use rustix::fs::OFlags;
 use rustix::process::{Pid, Signal};
 use serde_json::{Value, json};
-use zeroize::Zeroizing;
+use zeroize::{Zeroize, Zeroizing};
 
 use crate::OwnedExecutableImage;
 
 const MAX_FRAME: usize = 1024 * 1024;
 const MAX_VALUE: usize = 256 * 1024;
 const MAX_STORAGE_CALLS: usize = 4096;
+
+/// Registered lease metadata supplied by the owning Service writer. These
+/// values carry SDK callback input only and never create caller authority.
+pub struct SdkLeaseCallback {
+    pub secret: Value,
+    pub issue_time_ns: u64,
+    pub increment_ns: u64,
+}
+impl std::fmt::Debug for SdkLeaseCallback {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("SdkLeaseCallback([REDACTED])")
+    }
+}
+impl Drop for SdkLeaseCallback {
+    fn drop(&mut self) {
+        wipe_json(&mut self.secret);
+    }
+}
+pub struct SdkLogicalRequest<'a> {
+    pub operation: &'a str,
+    pub path: &'a str,
+    pub data: Value,
+    pub lease: Option<SdkLeaseCallback>,
+}
+impl std::fmt::Debug for SdkLogicalRequest<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("SdkLogicalRequest([REDACTED])")
+    }
+}
+impl Drop for SdkLogicalRequest<'_> {
+    fn drop(&mut self) {
+        wipe_json(&mut self.data);
+    }
+}
+struct SensitiveJson(Value);
+impl std::ops::Deref for SensitiveJson {
+    type Target = Value;
+    fn deref(&self) -> &Value {
+        &self.0
+    }
+}
+impl std::ops::DerefMut for SensitiveJson {
+    fn deref_mut(&mut self) -> &mut Value {
+        &mut self.0
+    }
+}
+impl Drop for SensitiveJson {
+    fn drop(&mut self) {
+        wipe_json(&mut self.0);
+    }
+}
+fn wipe_json(value: &mut Value) {
+    match value {
+        Value::String(value) => value.zeroize(),
+        Value::Array(values) => {
+            for value in values {
+                wipe_json(value)
+            }
+        }
+        Value::Object(values) => {
+            for (mut key, mut value) in std::mem::take(values) {
+                key.zeroize();
+                wipe_json(&mut value)
+            }
+        }
+        _ => {}
+    }
+    *value = Value::Null;
+}
 
 #[derive(Clone, Eq, PartialEq)]
 pub struct SdkStorageEntry {
@@ -327,32 +396,69 @@ impl SdkBackendHost {
         storage: &mut dyn SdkStorage,
         original_deadline: Instant,
     ) -> Result<Option<Value>, SdkBridgeError> {
+        self.handle_logical_request_before(
+            SdkLogicalRequest {
+                operation,
+                path,
+                data,
+                lease: None,
+            },
+            storage,
+            original_deadline,
+        )
+    }
+
+    pub fn handle_logical_request_before(
+        &mut self,
+        mut logical: SdkLogicalRequest<'_>,
+        storage: &mut dyn SdkStorage,
+        original_deadline: Instant,
+    ) -> Result<Option<Value>, SdkBridgeError> {
+        let operation = logical.operation;
+        let path = logical.path;
         if Instant::now() >= original_deadline {
             return Err(SdkBridgeError::BeforeEntry);
         }
         if self.fenced {
             return Err(SdkBridgeError::Fenced);
         }
-        if !matches!(
-            operation,
-            "read" | "create" | "update" | "patch" | "delete" | "list" | "scan"
-        ) || path.is_empty()
+        let operation_valid = match &logical.lease {
+            None => matches!(
+                operation,
+                "read" | "create" | "update" | "patch" | "delete" | "list" | "scan"
+            ),
+            Some(lease) => {
+                matches!(operation, "renew" | "revoke")
+                    && lease.secret.is_object()
+                    && lease.issue_time_ns > 0
+                    && lease.issue_time_ns <= i64::MAX as u64
+                    && lease.increment_ns <= i64::MAX as u64
+            }
+        };
+        if !operation_valid
+            || path.is_empty()
             || path.len() > 4096
             || path.contains('\0')
-            || !data.is_object()
+            || !logical.data.is_object()
         {
             return Err(SdkBridgeError::BeforeEntry);
         }
         self.call = self.call.checked_add(1).ok_or(SdkBridgeError::Fenced)?;
         let deadline = original_deadline.min(Instant::now() + self.timeout);
-        let request = json!({"version":1,"kind":"request","call":self.call,
-            "operation":operation,"path":path,"data":data});
+        let mut request = SensitiveJson(json!({"version":1,"kind":"request","call":self.call,
+            "operation":operation,"path":path}));
+        request["data"] = std::mem::take(&mut logical.data);
+        if let Some(mut lease) = logical.lease.take() {
+            request["secret"] = std::mem::take(&mut lease.secret);
+            request["issue_time_ns"] = json!(lease.issue_time_ns);
+            request["increment_ns"] = json!(lease.increment_ns);
+        }
         let result = (|| {
             self.send(&request, deadline)?;
             self.exchange(storage, "result", deadline)
         })();
         let result = match result {
-            Ok(v) => v,
+            Ok(v) => SensitiveJson(v),
             Err(e) => {
                 self.fenced = true;
                 return Err(e);
@@ -374,7 +480,9 @@ impl SdkBackendHost {
         } else {
             if !response.is_object()
                 || response.get("auth").is_none_or(|v| !v.is_null())
-                || response.get("secret").is_none_or(|v| !v.is_null())
+                || response
+                    .get("secret")
+                    .is_none_or(|v| !v.is_null() && !v.is_object())
             {
                 self.fenced = true;
                 return Err(SdkBridgeError::OutcomeUnknown);

@@ -352,6 +352,10 @@ impl Service {
         }
         incoming
             .engines
+            .validate_sdk_lease_clock(Some(&current.engines))
+            .map_err(|error| Response::error(400, &error.message))?;
+        incoming
+            .engines
             .validate_kubernetes_artifact_clock(Some(&current.engines))
             .map_err(|error| Response::error(400, &error.message))?;
         incoming
@@ -362,6 +366,14 @@ impl Service {
             return Err(Response::error(
                 400,
                 "snapshot would downgrade PKI URL ownership",
+            ));
+        }
+        if current.schema >= SDK_SECRET_LEASE_STATE_SCHEMA
+            && incoming.schema < SDK_SECRET_LEASE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade SDK secret lease ownership",
             ));
         }
         if current.schema >= SDK_RESPONSE_HEADERS_STATE_SCHEMA

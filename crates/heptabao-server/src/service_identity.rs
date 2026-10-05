@@ -100,6 +100,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.engines.has_sdk_lease_state() {
+            required.max(SDK_SECRET_LEASE_STATE_SCHEMA)
+        } else {
+            required
+        };
         self.schema.max(required)
     }
 
@@ -133,6 +138,9 @@ impl State {
                 "unsupported or downgraded identity state schema",
             ));
         }
+        self.engines
+            .validate_sdk_lease_clock(previous.map(|state| &*state.engines))
+            .map_err(|error| Response::error(503, &error.message))?;
         self.engines
             .validate_kubernetes_artifact_clock(previous.map(|state| &*state.engines))
             .map_err(|error| Response::error(503, &error.message))?;
@@ -193,6 +201,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "PKI role name ownership requires schema 93",
+            ));
+        }
+        if self.schema < SDK_SECRET_LEASE_STATE_SCHEMA
+            && (self.engines.has_sdk_lease_state()
+                || previous.is_some_and(|state| state.schema >= SDK_SECRET_LEASE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "SDK secret lease ownership requires schema 96",
             ));
         }
         if self.schema < SDK_RESPONSE_HEADERS_STATE_SCHEMA
@@ -441,6 +458,33 @@ impl State {
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
         self.validate_namespace_batch_state()?;
+        self.engines
+            .validate_sdk_lease_cluster(&self.cluster_id)
+            .map_err(|e| Response::error(503, &e.message))?;
+        self.engines
+            .validate_sdk_leases()
+            .map_err(|e| Response::error(503, &e.message))?;
+        if self.schema < SDK_SECRET_LEASE_STATE_SCHEMA && self.engines.has_sdk_lease_state() {
+            return Err(Response::error(
+                503,
+                "SDK secret lease ownership requires schema 96",
+            ));
+        }
+        if self
+            .engines
+            .sdk_lease_owners()
+            .iter()
+            .any(|(namespace, owner)| {
+                owner.batch_claims().is_some_and(|claims| {
+                    self.auth
+                        .validate_batch_lease_owner(claims, namespace)
+                        .is_err()
+                })
+            })
+        {
+            return Err(Response::error(503, "SDK lease issuer rejected"));
+        }
+
         self.engines
             .validate_sdk_state()
             .map_err(|e| Response::error(503, &e.message))?;
@@ -1363,6 +1407,7 @@ impl State {
             | PKI_ROLE_NAMES_STATE_SCHEMA
             | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
             | SDK_RESPONSE_HEADERS_STATE_SCHEMA
+            | SDK_SECRET_LEASE_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
             | NAMESPACE_BATCH_STATE_SCHEMA
             | SDK_STORAGE_STATE_SCHEMA

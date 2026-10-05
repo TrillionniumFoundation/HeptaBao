@@ -37,6 +37,8 @@ pub(crate) use leases::PkiRequestContext;
 pub(crate) mod namespace_assets;
 #[path = "engine_sdk.rs"]
 pub(crate) mod sdk;
+#[path = "engine_sdk_lease.rs"]
+pub(crate) mod sdk_lease;
 
 #[path = "engine_namespace_record_cells.rs"]
 mod namespace_record_cells;
@@ -60,6 +62,8 @@ pub struct EngineState {
     lease_clock: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     kubernetes_artifact_clock: Option<crate::auth::Timestamp>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_lease_clock: Option<crate::auth::Timestamp>,
     namespaces: BTreeMap<String, CowNamespace>,
 }
 
@@ -176,6 +180,8 @@ impl<'de> Deserialize<'de> for CowNamespace {
 struct NamespaceState {
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     sdk_owners: BTreeMap<String, sdk::MountOwner>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    sdk_leases: BTreeMap<String, sdk_lease::Lease>,
     mounts: BTreeMap<String, Mount>,
     /// Next path incarnation after disable/recreate. The active Mount carries
     /// its own incarnation; this tombstone map prevents stale path identity
@@ -193,6 +199,7 @@ impl NamespaceState {
         Self {
             mounts: BTreeMap::new(),
             sdk_owners: BTreeMap::new(),
+            sdk_leases: BTreeMap::new(),
             mount_epochs: BTreeMap::new(),
             identity: identity::IdentityState::default(),
             external_keys: external_keys::Registry::default(),
@@ -202,6 +209,7 @@ impl NamespaceState {
     fn is_pristine(&self) -> bool {
         self.mounts.is_empty()
             && self.sdk_owners.is_empty()
+            && self.sdk_leases.is_empty()
             && self.mount_epochs.is_empty()
             && self.identity.is_pristine()
             && self.external_keys.is_empty()
@@ -227,6 +235,7 @@ impl Default for NamespaceState {
                 ),
             ]),
             sdk_owners: BTreeMap::new(),
+            sdk_leases: BTreeMap::new(),
             mount_epochs: BTreeMap::new(),
             identity: identity::IdentityState::default(),
             external_keys: external_keys::Registry::default(),

@@ -142,6 +142,7 @@ pub(super) struct PluginResponseAuthority {
     sudo: bool,
     admitted_at: u64,
     token_clock: Option<RequestClock>,
+    sdk_clock_bound: bool,
     started: std::time::Instant,
     deadline: Option<std::time::Instant>,
 }
@@ -224,9 +225,27 @@ impl PluginResponseAuthority {
             sudo,
             admitted_at: request.now,
             token_clock: request.token_clock,
+            sdk_clock_bound: false,
             started: request.admission_started,
             deadline: crate::request_deadline::current(),
         }
+    }
+
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    pub(super) fn with_sdk_clock(mut self) -> Self {
+        self.sdk_clock_bound = true;
+        self
+    }
+    fn apply_sdk_clock_floor(&mut self, engines: &EngineState) -> Result<(), Response> {
+        if self.sdk_clock_bound
+            && let Some(floor) = engines.sdk_lease_clock_floor()
+        {
+            let clock = self
+                .token_clock
+                .ok_or_else(|| Response::error(503, "SDK original precise clock unavailable"))?;
+            self.token_clock = Some(clock.with_timestamp_floor(floor));
+        }
+        Ok(())
     }
 
     /// Domain clocks may already be ahead of the request's wall-clock sample.
@@ -1562,6 +1581,7 @@ impl Service {
                 "plugin response withheld because owner binding changed",
             ));
         }
+        authority.apply_sdk_clock_floor(&state.engines)?;
         Self::bind_identity_principal(state, &mut authority.principal, &authority.namespace)?;
         let time = authority.token_time()?;
         state

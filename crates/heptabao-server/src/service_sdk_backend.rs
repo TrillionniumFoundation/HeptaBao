@@ -3,7 +3,8 @@
 use super::*;
 use crate::engines::sdk::{Descriptor, MountOwner, StorageEntry};
 use heptabao_plugin_host::sdk_backend::{
-    SdkBackendHost, SdkBridgeError, SdkLaunch, SdkStorage, SdkStorageEntry,
+    SdkBackendHost, SdkBridgeError, SdkLaunch, SdkLeaseCallback, SdkLogicalRequest, SdkStorage,
+    SdkStorageEntry,
 };
 use std::collections::BTreeSet;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -105,11 +106,15 @@ fn migration_id() -> Result<String, Response> {
     ))
 }
 
+#[path = "service_sdk_lease.rs"]
+mod secret_lease;
+
 struct StageTarget<'a> {
     mount: String,
     owner: MountOwner,
     operation: &'a str,
     path: &'a str,
+    lease: Option<secret_lease::LeaseCall>,
 }
 
 enum StorageOp {
@@ -131,6 +136,7 @@ struct WorkerJob {
     operation: String,
     path: String,
     data: Value,
+    lease: Option<SdkLeaseCallback>,
     deadline: Instant,
     events: Sender<Event>,
 }
@@ -260,10 +266,13 @@ fn start_worker(config: SdkLaunch) -> Result<Arc<Control>, Response> {
                     }
                     host.as_mut()
                         .ok_or(SdkBridgeError::Fenced)?
-                        .handle_request_before(
-                            &job.operation,
-                            &job.path,
-                            std::mem::take(&mut job.data),
+                        .handle_logical_request_before(
+                            SdkLogicalRequest {
+                                operation: &job.operation,
+                                path: &job.path,
+                                data: std::mem::take(&mut job.data),
+                                lease: job.lease.take(),
+                            },
                             &mut view,
                             job.deadline,
                         )
@@ -290,6 +299,12 @@ fn start_worker(config: SdkLaunch) -> Result<Arc<Control>, Response> {
     }))
 }
 
+struct StorageTransaction {
+    engines: CowOwner<EngineState>,
+    identity: crate::state_record_root::StateIdentity,
+    changed: bool,
+}
+
 pub(super) struct Plan {
     namespace: String,
     mount: String,
@@ -300,6 +315,8 @@ pub(super) struct Plan {
     operation: String,
     path: String,
     data: Value,
+    lease: Option<Box<secret_lease::LeaseCall>>,
+    transaction: Mutex<StorageTransaction>,
     deadline: Instant,
 }
 impl Drop for Plan {
@@ -334,6 +351,11 @@ impl Plan {
             operation: self.operation.clone(),
             path: self.path.clone(),
             data: self.data.clone(),
+            lease: self
+                .lease
+                .as_ref()
+                .map(|call| call.callback())
+                .transpose()?,
             deadline,
             events,
         };
@@ -530,7 +552,8 @@ impl Service {
             capability,
             !request.path.starts_with("sys/remount/status/"),
             &self.unseal_nonce,
-        );
+        )
+        .with_sdk_clock();
         if let Err(error) = self.validate_plugin_response(&mut authority) {
             return error;
         }
@@ -884,6 +907,7 @@ impl Service {
                     owner,
                     operation: "_mount",
                     path: "",
+                    lease: None,
                 },
             );
         }
@@ -1129,12 +1153,28 @@ impl Service {
             .map_err(|_| SdkBridgeError::Fenced)?;
         self.sdk_binding_gate(plan)?;
         let mut state = self.state.clone().ok_or(SdkBridgeError::Fenced)?;
-        let clock_changed = authority
+        let auth_clock_changed = authority
             .observe_candidate_time_changed(&mut state)
             .map_err(|_| SdkBridgeError::Fenced)?;
+        let observed =
+            secret_lease::precise(&authority, &state).map_err(|_| SdkBridgeError::Fenced)?;
+        let sdk_clock_changed = state.engines.observe_sdk_lease_clock(observed);
+        let clock_changed = auth_clock_changed || sdk_clock_changed;
+        let mut transaction = plan
+            .transaction
+            .lock()
+            .map_err(|_| SdkBridgeError::Fenced)?;
+        if self
+            .current_state_identity()
+            .map_err(|_| SdkBridgeError::Fenced)?
+            != transaction.identity
+        {
+            return Err(SdkBridgeError::Fenced);
+        }
+        transaction.engines.observe_sdk_lease_clock(observed);
         let (reply, storage_changed) = match op {
             StorageOp::Get(key) => {
-                let entry = state
+                let entry = transaction
                     .engines
                     .sdk_storage_get(&plan.namespace, &plan.mount, &plan.owner, &key)
                     .map_err(|_| SdkBridgeError::Storage)?;
@@ -1148,7 +1188,7 @@ impl Service {
                 )
             }
             StorageOp::List(prefix, after, limit) => {
-                let keys = state
+                let keys = transaction
                     .engines
                     .sdk_storage_list(
                         &plan.namespace,
@@ -1163,20 +1203,21 @@ impl Service {
             }
             StorageOp::Put(entry) => (
                 StorageReply::Empty,
-                state
+                transaction
                     .engines
                     .sdk_storage_put(&plan.namespace, &plan.mount, &plan.owner, entry)
                     .map_err(|_| SdkBridgeError::Storage)?,
             ),
             StorageOp::Delete(key) => (
                 StorageReply::Empty,
-                state
+                transaction
                     .engines
                     .sdk_storage_delete(&plan.namespace, &plan.mount, &plan.owner, &key)
                     .map_err(|_| SdkBridgeError::Storage)?,
             ),
         };
-        let changed = storage_changed || clock_changed;
+        transaction.changed |= storage_changed;
+        let changed = clock_changed;
         if changed {
             state.schema = state.writer_schema();
             let publication = self
@@ -1203,6 +1244,9 @@ impl Service {
             }
             // Publish the actual committed owner even when the following gate fails.
             self.state = Some(state);
+            transaction.identity = self
+                .current_state_identity()
+                .map_err(|_| SdkBridgeError::OutcomeUnknown)?;
         }
         self.validate_plugin_response(&mut authority).map_err(|_| {
             if changed {
@@ -1255,7 +1299,8 @@ impl Service {
             capability,
             false,
             &self.unseal_nonce,
-        );
+        )
+        .with_sdk_clock();
         if let Err(error) = self.validate_plugin_response(&mut authority) {
             return error;
         }
@@ -1269,6 +1314,7 @@ impl Service {
                 owner,
                 operation,
                 path: &path,
+                lease: None,
             },
         )
     }
@@ -1284,6 +1330,7 @@ impl Service {
             owner,
             operation,
             path,
+            lease,
         } = target;
         let Some(config) = self.sdk_configuration.clone() else {
             return Response::error(503, "SDK runtime is not configured");
@@ -1329,7 +1376,9 @@ impl Service {
             control
         };
 
-        let data = if request.body.is_null() {
+        let data = if let Some(call) = &lease {
+            call.request_data()
+        } else if request.body.is_null() {
             json!({})
         } else {
             request.body.clone()
@@ -1337,6 +1386,10 @@ impl Service {
         let path = path.to_owned();
         let deadline = crate::request_deadline::current()
             .unwrap_or(request.admission_started + Duration::from_millis(config.timeout_ms));
+        let identity = match self.current_state_identity() {
+            Ok(identity) => identity,
+            Err(error) => return error,
+        };
         self.pending_sdk_request = Some(Plan {
             namespace: request.namespace.into(),
             mount,
@@ -1347,6 +1400,12 @@ impl Service {
             operation: operation.into(),
             path,
             data,
+            lease: lease.map(Box::new),
+            transaction: Mutex::new(StorageTransaction {
+                engines: state.engines.clone(),
+                identity,
+                changed: false,
+            }),
             deadline,
         });
         Response::error(500, "SDK request was not dispatched")
@@ -1454,70 +1513,7 @@ impl Service {
             plan.control.retire();
             return e;
         }
-        let Some(mut response) = value else {
-            return if plan.operation == "read" {
-                Response::error(404, "secret not found")
-            } else {
-                Response {
-                    status: 204,
-                    body: json!({}),
-                    response_headers: Default::default(),
-                    consistency_index: None,
-                }
-            };
-        };
-        let unsupported = ["secret", "auth", "wrap_info"]
-            .into_iter()
-            .any(|key| response.get(key).is_none_or(|v| !v.is_null()))
-            || response
-                .get("redirect")
-                .is_none_or(|v| v.as_str() != Some(""));
-        if unsupported {
-            erase_json(&mut response);
-            plan.control.retire();
-            return Response::error(
-                501,
-                "SDK auth, leases, redirect and wrapping are not implemented",
-            );
-        }
-        let headers = match ResponseHeaders::from_sdk(
-            response.get("headers"),
-            &plan.owner.allowed_response_headers,
-        ) {
-            Ok(headers) => headers,
-            Err(()) => {
-                erase_json(&mut response);
-                plan.control.retire();
-                return Response::error(
-                    501,
-                    "SDK response header value is invalid or exceeds transport bounds",
-                );
-            }
-        };
-        let data = response
-            .get_mut("data")
-            .map(std::mem::take)
-            .unwrap_or(Value::Null);
-        let warnings = response
-            .get_mut("warnings")
-            .map(std::mem::take)
-            .unwrap_or(Value::Null);
-        erase_json(&mut response);
-        if data.get("errors").is_some() {
-            return Response {
-                status: 400,
-                body: json!({"errors":data["errors"]}),
-                response_headers: Default::default(),
-                consistency_index: None,
-            };
-        }
-        let mut body = json!({"data":data});
-        if !warnings.is_null() {
-            body["warnings"] = warnings;
-        }
-        let mut response = Response::ok(body);
-        response.response_headers = headers;
-        response
+        self.finalize_sdk_transaction(plan, value.take())
     }
 }
 

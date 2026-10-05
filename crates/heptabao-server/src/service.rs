@@ -86,6 +86,7 @@ const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
 const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
 const EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA: u32 = 94;
 const SDK_RESPONSE_HEADERS_STATE_SCHEMA: u32 = 95;
+const SDK_SECRET_LEASE_STATE_SCHEMA: u32 = 96;
 const PKI_URLS_STATE_SCHEMA: u32 = 97;
 #[cfg(test)]
 const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_URLS_STATE_SCHEMA;
@@ -109,6 +110,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_ROLE_NAMES_STATE_SCHEMA
                 | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
                 | SDK_RESPONSE_HEADERS_STATE_SCHEMA
+                | SDK_SECRET_LEASE_STATE_SCHEMA
                 | PKI_URLS_STATE_SCHEMA
         )
 }
@@ -3197,6 +3199,10 @@ impl Service {
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         if self.sdk_control_handles(&admitted, &request) {
             return self.sdk_control_route(admitted, principal, &request);
+        }
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        if self.sdk_lease_handles(&admitted, &request) {
+            return self.sdk_lease_route(admitted, principal, &request);
         }
         if Self::plugin_catalog_handles(path) {
             return self.plugin_catalog_route(&admitted, principal.as_ref(), &request);

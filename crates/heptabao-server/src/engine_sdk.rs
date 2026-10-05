@@ -81,6 +81,11 @@ impl Catalog {
     pub(crate) fn is_empty(&self) -> bool {
         self.entries.is_empty() && self.epochs.is_empty()
     }
+    pub(super) fn known_generation(&self, name: &str, version: &str, generation: u64) -> bool {
+        self.epochs
+            .get(&catalog_key(name, version))
+            .is_some_and(|g| *g >= generation)
+    }
     pub(crate) fn get(&self, name: &str, version: &str) -> Option<&Descriptor> {
         self.entries.get(&catalog_key(name, version))
     }

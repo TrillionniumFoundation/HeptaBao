@@ -89,7 +89,7 @@ impl Timestamp {
         )
     }
     /// Public local-zone rendering never changes the private epoch authority.
-    pub(super) fn local_rfc3339(self) -> Result<String, super::AuthError> {
+    pub(crate) fn local_rfc3339(self) -> Result<String, super::AuthError> {
         super::public_origin::CreationStamp::local_epoch(self.seconds, self.nanoseconds)?.render()
     }
     pub(crate) fn truncate_seconds(self) -> Self {

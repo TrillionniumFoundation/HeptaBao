@@ -135,7 +135,7 @@ impl EngineState {
     /// Every retained owner, including revoked/non-leased certificates and
     /// pending external intents. Format validation must not depend on liveness.
     pub(crate) fn all_lease_owners(&self) -> BTreeSet<(String, LeaseOwner)> {
-        let mut owners = BTreeSet::new();
+        let mut owners = self.sdk_lease_owners();
         for (namespace, state) in &self.namespaces {
             for mount in state.mounts.values() {
                 match &mount.backend {

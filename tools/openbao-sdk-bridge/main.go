@@ -58,6 +58,9 @@ type message struct {
 	Operation         string            `json:"operation,omitempty"`
 	Path              string            `json:"path,omitempty"`
 	Data              map[string]any    `json:"data,omitempty"`
+	Secret            *logical.Secret   `json:"secret,omitempty"`
+	IssueTimeNS       int64             `json:"issue_time_ns,omitempty"`
+	IncrementNS       int64             `json:"increment_ns,omitempty"`
 	Method            string            `json:"method,omitempty"`
 	Key               string            `json:"key,omitempty"`
 	After             string            `json:"after,omitempty"`
@@ -345,12 +348,22 @@ func run() (outcome error) {
 		}
 		switch logical.Operation(m.Operation) {
 		case logical.ReadOperation, logical.UpdateOperation, logical.CreateOperation, logical.DeleteOperation, logical.ListOperation, logical.ScanOperation, logical.PatchOperation:
+			if m.Secret != nil || m.IssueTimeNS != 0 || m.IncrementNS != 0 {
+				return errors.New("lease metadata on ordinary operation")
+			}
+		case logical.RenewOperation, logical.RevokeOperation:
+			if m.Secret == nil || m.Secret.InternalData == nil || m.IssueTimeNS <= 0 || m.IncrementNS < 0 {
+				return errors.New("missing registered lease metadata")
+			}
+			m.Secret.IssueTime = time.Unix(0, m.IssueTimeNS).UTC()
+			m.Secret.Increment = time.Duration(m.IncrementNS)
+			m.Secret.LeaseID = ""
 		default:
 			return errors.New("operation outside first bridge")
 		}
 		ctx, cancel := w.ownerContext(timeout)
 		w.active.Store(m.Call)
-		response, problem := backend.HandleRequest(ctx, &logical.Request{Operation: logical.Operation(m.Operation), Path: m.Path, Data: m.Data, Storage: hostStorage})
+		response, problem := backend.HandleRequest(ctx, &logical.Request{Operation: logical.Operation(m.Operation), Path: m.Path, Data: m.Data, Secret: m.Secret, Storage: hostStorage})
 		w.active.Store(0)
 		cancel()
 		result := message{Kind: "result", Call: m.Call, Response: response}
