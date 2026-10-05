@@ -769,7 +769,11 @@ mod tests {
             "allow_subdomains":true,"allow_ip_sans":false,"max_ttl":3600,"generate_lease":false}),
         )?;
         let owner = crate::auth::ResolvedLeaseOwner {
-            owner: LeaseOwner::service(&"a".repeat(43)).map_err(|_| bad("test owner"))?,
+            owner: LeaseOwner::service(&base64::Engine::encode(
+                &base64::engine::general_purpose::URL_SAFE_NO_PAD,
+                crate::crypto::digest(b"actual retired-issuer fixture owner"),
+            ))
+            .map_err(|_| bad("test owner"))?,
             expires_at: None,
             entity_id: None,
         };
