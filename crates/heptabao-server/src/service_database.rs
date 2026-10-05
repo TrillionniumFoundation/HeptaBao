@@ -39,6 +39,7 @@ fn post_provider_publication_failure(error: Response, id: &str) -> Response {
         body["recovery_reference"] = json!(reference);
     }
     Response {
+        response_headers: Default::default(),
         consistency_index: None,
         status: 503,
         body,
@@ -629,6 +630,7 @@ impl DatabaseEffectPlan {
     /// bounded network operation is in flight.
     pub(super) fn execute(&self) -> Result<(), Response> {
         let indeterminate = || Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 503,
             body: json!({
@@ -744,6 +746,7 @@ impl DatabaseEffectPlan {
         };
         if !matched || !valid {
             return Err(Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 503,
                 body: json!({
@@ -845,6 +848,7 @@ impl DatabaseEffectPlan {
 
     fn execute_valkey(&self) -> Result<(), Response> {
         let indeterminate = || Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 503,
             body: json!({
@@ -1040,6 +1044,7 @@ impl DatabaseEffectPlan {
                 "renewable":true
             }))),
             Phase::PendingRevoke => Ok(Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
                 body: Value::Null,
@@ -1518,6 +1523,7 @@ fn database_plugin_config_failure(error: PluginHostError) -> Response {
 
 fn database_plugin_indeterminate(lease_id: &str) -> Response {
     Response {
+        response_headers: Default::default(),
         consistency_index: None,
         status: 503,
         body: json!({
@@ -1531,6 +1537,7 @@ fn database_plugin_indeterminate(lease_id: &str) -> Response {
 fn database_plugin_effect_failure(error: PluginHostError, lease_id: &str) -> Response {
     match error {
         PluginHostError::ProcessBeforeEntry | PluginHostError::SandboxUnavailable => Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 503,
             body: json!({
@@ -2309,6 +2316,7 @@ impl Service {
                         state.database.mount_mut(ns, &mount).connections.remove(key);
                         self.publish_database(state)?;
                         Ok(Response {
+                            response_headers: Default::default(),
                             consistency_index: None,
                             status: 204,
                             body: Value::Null,
@@ -2470,6 +2478,7 @@ impl Service {
                         );
                         self.publish_database(state)?;
                         Ok(Response {
+                            response_headers: Default::default(),
                             consistency_index: None,
                             status: 204,
                             body: Value::Null,
@@ -2531,6 +2540,7 @@ impl Service {
                         }
                         self.publish_database(state)?;
                         Ok(Response {
+                            response_headers: Default::default(),
                             consistency_index: None,
                             status: 204,
                             body: Value::Null,
@@ -2760,6 +2770,7 @@ impl Service {
         mount.connections.insert(plan.key, plan.connection);
         match self.publish_database(state) {
             Ok(()) => Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
                 body: Value::Null,
@@ -3278,6 +3289,7 @@ impl Service {
         }
         if attempted < plan.plans.len() && first_error.is_none() {
             first_error = Some(Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 503,
                 body: json!({
@@ -3289,6 +3301,7 @@ impl Service {
             });
         }
         first_error.unwrap_or(Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 204,
             body: Value::Null,
@@ -3409,6 +3422,7 @@ impl Service {
             }
             if matches.is_empty() {
                 return Ok(Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
                     body: Value::Null,
@@ -3495,6 +3509,7 @@ impl Service {
                 && state.database.mount_for_lease_prefix(ns, id).is_some() =>
             {
                 return Ok(Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
                     body: Value::Null,
@@ -3567,6 +3582,7 @@ impl Service {
         }
         if l.phase == Phase::Revoked {
             return Ok(Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
                 body: Value::Null,
@@ -3587,6 +3603,7 @@ impl Service {
 
     fn database_effect_in_flight(id: &str) -> Response {
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 503,
             body: json!({
@@ -3968,6 +3985,7 @@ mod tests {
     fn provider_completion_publication_failure_is_never_before_entry_rejection() {
         for status in [400, 503, 507] {
             let error = Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status,
                 body: json!({"recovery_reference":"synthetic-local-reference", "password":"must-not-escape"}),

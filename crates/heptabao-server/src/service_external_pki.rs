@@ -778,6 +778,7 @@ impl Service {
         #[cfg(test)]
         delay_after_publication_for_test();
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: response.status,
             body: std::mem::take(&mut response.body),

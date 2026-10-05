@@ -576,3 +576,146 @@ fn sdk_remount92_actual_control_capsule_and_status_read_without_sudo() -> TestRe
     );
     Ok(())
 }
+
+#[test]
+fn sdk_headers95_durable_configuration_stale_owner_and_sticky_floor() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let old = mount(&mut candidate, "sdk_probe")?;
+    candidate.engines.sdk_storage_put(
+        "",
+        "sdk_probe/",
+        &old,
+        entry("item", b"configuration-independent-value"),
+    )?;
+    publish(&mut service, candidate)?;
+    let old_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+    let original = service.state.clone().ok_or("published state")?;
+    let mut candidate = original.clone();
+    let configured = candidate.engines.set_sdk_response_headers(
+        "",
+        "sdk_probe/",
+        &old,
+        vec![
+            "X-SDK-One".into(),
+            "x-sdk-Multi".into(),
+            "X-SDK-Prefix-*".into(),
+        ],
+    )?;
+    assert_ne!(
+        configured.response_config_revision,
+        old.response_config_revision
+    );
+    assert!(
+        candidate
+            .engines
+            .sdk_storage_get("", "sdk_probe/", &old, "item")
+            .is_err()
+    );
+    assert_eq!(
+        candidate
+            .engines
+            .sdk_storage_get("", "sdk_probe/", &configured, "item")?
+            .ok_or("item")?
+            .value
+            .as_slice(),
+        b"configuration-independent-value"
+    );
+    assert_eq!(
+        original
+            .engines
+            .sdk_mount_binding("", "sdk_probe/item")
+            .ok_or("COW original owner")?
+            .1,
+        old
+    );
+    candidate.schema = candidate.writer_schema();
+    assert_eq!(candidate.schema, 95);
+    for lower in [92, 93, 94] {
+        let mut downgraded = candidate.clone();
+        downgraded.schema = lower;
+        assert!(downgraded.validate_format().is_err());
+        assert!(
+            downgraded
+                .validate_publication_schema(Some(&original))
+                .is_err()
+        );
+    }
+    publish(&mut service, candidate)?;
+    let rejected = match service.prepare_snapshot_restore(&old_backup) {
+        Err(error) => error,
+        Ok(_) => return Err("old snapshot downgraded SDK header ownership".into()),
+    };
+    assert_eq!(rejected.status, 400);
+    assert!(
+        rejected
+            .body
+            .to_string()
+            .contains("snapshot would downgrade SDK response header ownership"),
+        "{}",
+        rejected.body
+    );
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &token, json!({})).status,
+        204
+    );
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let reopened = service.state.as_ref().ok_or("reopened")?;
+    assert_eq!(reopened.schema, 95);
+    assert_eq!(
+        reopened
+            .engines
+            .sdk_mount_binding("", "sdk_probe/item")
+            .ok_or("reopened owner")?
+            .1,
+        configured
+    );
+    assert_eq!(
+        reopened
+            .engines
+            .sdk_storage_get("", "sdk_probe/", &configured, "item")?
+            .ok_or("reopened item")?
+            .value
+            .as_slice(),
+        b"configuration-independent-value"
+    );
+    let mut retired = reopened.clone();
+    retired
+        .engines
+        .handle("", "DELETE", "sys/mounts/sdk_probe", &json!({}), 100)?;
+    retired
+        .engines
+        .deregister_sdk_descriptor("sdk_probe", "v1.0.0")?;
+    assert!(!retired.engines.has_sdk_response_header_state());
+    assert_eq!(retired.writer_schema(), 95);
+    let mut downgraded = retired.clone();
+    downgraded.schema = 93;
+    assert!(
+        downgraded
+            .validate_publication_schema(Some(reopened))
+            .is_err()
+    );
+    publish(&mut service, retired)?;
+    let rejected = match service.prepare_snapshot_restore(&old_backup) {
+        Err(error) => error,
+        Ok(_) => return Err("old snapshot downgraded SDK header ownership".into()),
+    };
+    assert_eq!(rejected.status, 400);
+    assert!(
+        rejected
+            .body
+            .to_string()
+            .contains("snapshot would downgrade SDK response header ownership"),
+        "{}",
+        rejected.body
+    );
+    assert_eq!(service.state.as_ref().ok_or("retired")?.schema, 95);
+    Ok(())
+}

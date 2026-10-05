@@ -148,6 +148,19 @@ pub(crate) struct MountOwner {
     pub version: String,
     pub catalog_generation: u64,
     pub mount_incarnation: u64,
+    #[serde(
+        default = "response_config_revision_one",
+        skip_serializing_if = "response_config_revision_is_one"
+    )]
+    pub response_config_revision: u64,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub allowed_response_headers: Vec<String>,
+}
+const fn response_config_revision_one() -> u64 {
+    1
+}
+fn response_config_revision_is_one(value: &u64) -> bool {
+    *value == 1
 }
 
 impl EngineState {
@@ -227,9 +240,55 @@ impl EngineState {
             version: descriptor.version.clone(),
             catalog_generation: descriptor.generation,
             mount_incarnation: current.incarnation,
+            response_config_revision: 1,
+            allowed_response_headers: Vec::new(),
         };
         ns.sdk_owners.insert(mount.to_owned(), owner.clone());
         Ok(owner)
+    }
+    pub(crate) fn has_sdk_response_header_state(&self) -> bool {
+        self.namespaces.values().any(|ns| {
+            ns.sdk_owners.values().any(|owner| {
+                owner.response_config_revision != 1 || !owner.allowed_response_headers.is_empty()
+            })
+        })
+    }
+    #[cfg(any(test, target_os = "linux", target_os = "macos"))]
+    pub(crate) fn set_sdk_response_headers(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        expected: &MountOwner,
+        headers: Vec<String>,
+    ) -> Result<MountOwner> {
+        if !crate::service::validate_sdk_header_allowlist(&headers) {
+            return Err(bad(
+                "SDK response header configuration unsupported or invalid",
+            ));
+        }
+        let ns = self.namespaces.get_mut(namespace).ok_or_else(not_found)?;
+        let owner = ns.sdk_owners.get(mount).ok_or_else(not_found)?;
+        if owner != expected {
+            return Err(error(409, "SDK response configuration owner changed"));
+        }
+        if owner.allowed_response_headers == headers {
+            return Ok(owner.clone());
+        }
+        let revision = owner
+            .response_config_revision
+            .checked_add(1)
+            .ok_or_else(|| error(507, "SDK response configuration revision exhausted"))?;
+        let mut updated = owner.clone();
+        updated.allowed_response_headers = headers;
+        updated.response_config_revision = revision;
+        let current = ns.mounts.get_mut(mount).ok_or_else(not_found)?;
+        let mount_revision = current
+            .revision
+            .checked_add(1)
+            .ok_or_else(|| error(507, "SDK mount revision exhausted"))?;
+        current.revision = mount_revision;
+        ns.sdk_owners.insert(mount.to_owned(), updated.clone());
+        Ok(updated)
     }
     pub(crate) fn validate_sdk_state(&self) -> Result<()> {
         self.sdk_catalog.validate()?;
@@ -240,7 +299,13 @@ impl EngineState {
                         && matches!(&m.backend,Backend::PluginSecret(id) if id==&owner.plugin)
                 });
                 let descriptor = self.sdk_catalog.get(&owner.plugin, &owner.version);
-                if !valid || descriptor.is_none_or(|d| d.generation != owner.catalog_generation) {
+                if !valid
+                    || descriptor.is_none_or(|d| d.generation != owner.catalog_generation)
+                    || owner.response_config_revision == 0
+                    || !crate::service::validate_sdk_header_allowlist(
+                        &owner.allowed_response_headers,
+                    )
+                {
                     return Err(error(503, "SDK mount owner rejected"));
                 }
             }

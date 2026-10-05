@@ -85,8 +85,9 @@ const NAMESPACE_BATCH_STATE_SCHEMA: u32 = 91;
 const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
 const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
 const EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA: u32 = 94;
+const SDK_RESPONSE_HEADERS_STATE_SCHEMA: u32 = 95;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = SDK_RESPONSE_HEADERS_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -106,6 +107,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | SDK_STORAGE_STATE_SCHEMA
                 | PKI_ROLE_NAMES_STATE_SCHEMA
                 | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+                | SDK_RESPONSE_HEADERS_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -559,9 +561,16 @@ fn replay_epoch_is_zero(value: &u64) -> bool {
     *value == 0
 }
 
+#[path = "service_response_headers.rs"]
+mod response_headers;
+pub(crate) use response_headers::{
+    Headers as ResponseHeaders, validate_allowlist as validate_sdk_header_allowlist,
+};
+
 pub struct Response {
     pub status: u16,
     pub body: Value,
+    pub(crate) response_headers: ResponseHeaders,
     pub(crate) consistency_index: Option<crate::http::consistency::ResponseIndex>,
 }
 impl Drop for Response {
@@ -578,6 +587,7 @@ impl Response {
         Self {
             status,
             body: json!({"errors":[message]}),
+            response_headers: Default::default(),
             consistency_index: None,
         }
     }
@@ -585,6 +595,7 @@ impl Response {
         Self {
             status: 200,
             body,
+            response_headers: Default::default(),
             consistency_index: None,
         }
     }
@@ -2620,6 +2631,7 @@ impl Service {
                 health_codes,
             );
             return Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status,
                 // OpenBao 2.6.2 removed the legacy performance_standby and last_wal response fields.
@@ -2917,6 +2929,7 @@ impl Service {
         };
         if help_projection.as_ref().is_some_and(|help| help.anonymous) {
             return Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 200,
                 body: help_projection.map_or_else(|| json!({}), |help| help.body),
@@ -2935,6 +2948,7 @@ impl Service {
                 .handle_public_pki_read(namespace, method, path, body, now)
             {
                 Ok(Some(mut response)) => Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
@@ -3084,6 +3098,7 @@ impl Service {
                         object.insert("id".into(), Value::String(token.to_owned()));
                     }
                     Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,
                         body: help.body,
@@ -3271,6 +3286,7 @@ impl Service {
                 ),
             ));
             return Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
                 body: Value::Null,
@@ -3371,6 +3387,7 @@ impl Service {
                 return Response::error(503, "operating system randomness unavailable");
             }
             return Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
                 body: Value::Null,
@@ -3448,6 +3465,7 @@ impl Service {
                 .lookup_wrapping_request(token, namespace, method, body, now)
             {
                 Ok(value) => Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: value.status,
                     body: value.body,
@@ -3567,6 +3585,7 @@ impl Service {
             {
                 Ok(wrapped) => {
                     response = Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: wrapped.status,
                         body: wrapped.body,
@@ -3808,6 +3827,7 @@ impl Service {
             time.seconds(),
         ) {
             Ok(mut response) => Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: response.status,
                 body: std::mem::take(&mut response.body),
@@ -3939,6 +3959,7 @@ impl Service {
         {
             Ok(Some(mut response)) => {
                 return Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
@@ -4022,6 +4043,7 @@ impl Service {
                 (Some(from), Some(to)) => {
                     return match state.auth.remount_mount(namespace, from, to, cas_revision) {
                         Ok(response) => Response {
+                            response_headers: Default::default(),
                             consistency_index: None,
                             status: response.status,
                             body: response.body,
@@ -4044,6 +4066,7 @@ impl Service {
                     }
                     return match state.engines.remount(namespace, from, to, cas_revision) {
                         Ok(mut response) => Response {
+                            response_headers: Default::default(),
                             consistency_index: None,
                             status: response.status,
                             body: std::mem::take(&mut response.body),
@@ -4175,6 +4198,7 @@ impl Service {
                     state.namespaces = namespaces;
                 }
                 return Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
                     body: response.body,
@@ -4259,6 +4283,7 @@ impl Service {
                     state.engines = engines;
                 }
                 Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
                     body: std::mem::take(&mut response.body),
@@ -5657,6 +5682,7 @@ impl Service {
             );
         }
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 204,
             body: Value::Null,
@@ -5956,6 +5982,7 @@ impl Service {
                 Ok(_) => {}
                 Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
                     return Err(Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: 503,
                         body: json!({
@@ -6190,6 +6217,7 @@ impl Service {
                 }
                 self.rekey = None;
                 return Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
                     body: Value::Null,
@@ -6590,6 +6618,7 @@ impl Service {
                     }
                 })),
                 ReconciliationStatus::Unknown => Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 404,
                     body: json!({"errors":["recovery reference is unknown"]}),
@@ -7088,6 +7117,7 @@ impl Service {
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Err(Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
                     body: json!({"errors":["durable outcome unknown; do not blindly retry"],"recovery_reference":recovery_reference}),
@@ -7601,6 +7631,7 @@ impl Service {
                     }
                 }
                 Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 204,
                     body: Value::Null,

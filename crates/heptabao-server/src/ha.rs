@@ -1076,6 +1076,7 @@ impl HaProcess {
             return Err("HA forwarding deadline exceeded; outcome may be committed".into());
         }
         Ok(Response {
+            response_headers: std::mem::take(&mut response.response_headers),
             consistency_index: response.consistency_index.and_then(|index| {
                 crate::http::consistency::IndexValue::for_raft(&self.cluster_id, index).wire()
             }),

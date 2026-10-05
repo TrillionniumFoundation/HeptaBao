@@ -680,6 +680,7 @@ impl Service {
                     }
                     self.state = Some(state);
                     Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: 204,
                         body: Value::Null,

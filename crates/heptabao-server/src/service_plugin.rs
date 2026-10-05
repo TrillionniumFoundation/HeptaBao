@@ -1472,6 +1472,7 @@ impl Service {
         }
         self.state = Some(candidate);
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: 204,
             body: Value::Null,
@@ -1772,6 +1773,7 @@ impl Service {
             return error;
         }
         Response {
+            response_headers: Default::default(),
             consistency_index: None,
             status: issued.status,
             body: issued.body,

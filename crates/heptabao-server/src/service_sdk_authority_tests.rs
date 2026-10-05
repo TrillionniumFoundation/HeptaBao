@@ -110,7 +110,13 @@ fn sdk_authority_control_expired_during_actual_audit_erases_and_records_veto() -
     let mut service = files.service()?;
     let (_, root) = bootstrap(&mut service)?;
     let actor = issue(&mut service, &root)?;
-    let (authority, response, clock) = admitted(&mut service, &actor)?;
+    let (authority, mut response, clock) = admitted(&mut service, &actor)?;
+    response.response_headers = ResponseHeaders::from_sdk(
+        Some(&json!({"X-SDK-Secret":["original-header-secret"]})),
+        &["X-SDK-Secret".into()],
+    )
+    .map_err(|()| "header metadata")?;
+    assert!(!response.response_headers.is_empty());
     service.pending_sdk_control_authority = Some(authority);
     let response = service.audit_completed_response_with_receipt(
         "sdk-real-audit-expiry",
@@ -124,7 +130,19 @@ fn sdk_authority_control_expired_during_actual_audit_erases_and_records_veto() -
         service.complete_pending_sdk_control_delivery(true, response, "sdk-real-audit-expiry");
     assert_eq!(response.status, 403, "{}", response.body);
     assert!(response.body.get("data").is_none());
+    assert!(response.response_headers.is_empty());
     assert!(response.consistency_index.is_none());
+    let forwarded = crate::ha_forward::encode_index_response_for_cluster(
+        "sdk-headers95-audit",
+        1,
+        2,
+        &response,
+    )?;
+    let received =
+        crate::ha_forward::decode_index_response_for_cluster(&forwarded, "sdk-headers95-audit")?;
+    assert_eq!(received.status, 403);
+    assert!(received.response_headers.is_empty());
+    assert!(received.body.get("data").is_none());
     let records = fs::read_to_string(files.path.join("audit.jsonl"))?
         .lines()
         .map(serde_json::from_str::<Value>)
@@ -150,6 +168,7 @@ fn sdk_authority_missing_control_capsule_fences_original_service() -> TestResult
         service.complete_pending_sdk_control_delivery(true, response, "sdk-real-capsule-loss");
     assert_eq!(response.status, 503);
     assert!(response.body.get("data").is_none());
+    assert!(response.response_headers.is_empty());
     assert!(response.consistency_index.is_none());
     assert!(service.recovery_required);
     assert!(service.ha_activation.is_none());

@@ -1276,6 +1276,7 @@ impl Service {
                 }
             }
             return Response {
+                response_headers: Default::default(),
                 consistency_index: None,
                 status: 204,
                 body: Value::Null,

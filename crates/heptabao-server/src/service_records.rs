@@ -706,6 +706,7 @@ impl Service {
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Err(Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
                     body: json!({"errors":["record durable outcome unknown; do not blindly retry"],"recovery_reference":recovery_reference}),
@@ -992,6 +993,7 @@ impl Service {
                 self.recovery_required = true;
                 self.ha_activation = None;
                 Response {
+                    response_headers: Default::default(),
                     consistency_index: None,
                     status: 503,
                     body: json!({"errors":["record durable outcome unknown; reopen and reconcile; do not blindly retry"],

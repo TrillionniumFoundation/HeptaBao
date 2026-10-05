@@ -65,6 +65,30 @@ pub(super) struct MigrationStatus {
     from: String,
     to: String,
 }
+fn parse_header_allowlist(value: Option<&Value>) -> Result<Vec<String>, Response> {
+    let Some(value) = value.filter(|value| !value.is_null()) else {
+        return Ok(Vec::new());
+    };
+    let values = value
+        .as_array()
+        .ok_or_else(|| Response::error(400, "allowed_response_headers requires strings"))?;
+    let names = values
+        .iter()
+        .map(|value| {
+            value
+                .as_str()
+                .map(str::to_owned)
+                .ok_or_else(|| Response::error(400, "allowed_response_headers requires strings"))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    if !validate_sdk_header_allowlist(&names) {
+        return Err(Response::error(
+            501,
+            "SDK response transport header policy is not implemented or exceeds bounds",
+        ));
+    }
+    Ok(names)
+}
 fn migration_id() -> Result<String, Response> {
     let mut bytes = crypto::random::<16>()
         .map_err(|_| Response::error(503, "remount identity entropy unavailable"))?;
@@ -401,6 +425,20 @@ fn bridge_failure(e: SdkBridgeError) -> Response {
 
 impl Service {
     pub(super) fn sdk_control_handles(&self, state: &State, request: &RequestView<'_>) -> bool {
+        if let Some(mount) = request
+            .path
+            .strip_prefix("sys/mounts/")
+            .and_then(|p| p.strip_suffix("/tune"))
+        {
+            let mount = format!("{}/", mount.trim_end_matches('/'));
+            if state
+                .engines
+                .sdk_mount_binding(request.namespace, &mount)
+                .is_some_and(|(actual, _)| actual == mount)
+            {
+                return true;
+            }
+        }
         if request.path.starts_with("sys/remount/status/") {
             return self.sdk_configuration.is_some() || state.engines.has_sdk_state();
         }
@@ -501,6 +539,84 @@ impl Service {
         }
         if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(501, "SDK catalog and mount wrapping is not implemented");
+        }
+        if let Some(mount) = request
+            .path
+            .strip_prefix("sys/mounts/")
+            .and_then(|p| p.strip_suffix("/tune"))
+        {
+            let mount = format!("{}/", mount.trim_end_matches('/'));
+            let Some((actual, owner)) = state
+                .engines
+                .sdk_mount_binding(request.namespace, &mount)
+                .filter(|(actual, _)| actual == &mount)
+            else {
+                return Response::error(404, "SDK mount not found");
+            };
+            if matches!(request.method, "GET" | "HEAD") {
+                self.pending_sdk_control_authority = Some(authority);
+                return Response::ok(
+                    json!({"data":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false,"allowed_response_headers":owner.allowed_response_headers}}),
+                );
+            }
+            if !matches!(request.method, "POST" | "PUT") {
+                return Response::error(405, "SDK tune requires GET, POST or PUT");
+            }
+            let Some(mut object) = request.body.as_object().cloned() else {
+                return Response::error(400, "SDK tune requires object");
+            };
+            for field in [
+                "options",
+                "default_lease_ttl",
+                "max_lease_ttl",
+                "force_no_cache",
+            ] {
+                let Some(value) = object.get(field) else {
+                    continue;
+                };
+                let neutral = match field {
+                    "options" => value.is_null(),
+                    "force_no_cache" => value.as_bool() == Some(false),
+                    _ => value.as_str() == Some(""),
+                };
+                if !neutral {
+                    return Response::error(
+                        501,
+                        "SDK nondefault lease configuration is not implemented",
+                    );
+                }
+                object.remove(field);
+            }
+            if object.len() != 1 || !object.contains_key("allowed_response_headers") {
+                return Response::error(501, "SDK tune parameter not implemented");
+            }
+            let headers = match parse_header_allowlist(object.get("allowed_response_headers")) {
+                Ok(headers) => headers,
+                Err(error) => return error,
+            };
+            let host_key = self.sdk_host_key(request.namespace, &actual, &owner);
+            if let Err(error) =
+                state
+                    .engines
+                    .set_sdk_response_headers(request.namespace, &actual, &owner, headers)
+            {
+                return Response::error(error.status, &error.message);
+            }
+            state.schema = state.writer_schema();
+            if let Err(error) = self.commit_sdk_control(&mut state, &mut authority, &expected) {
+                return error;
+            }
+            self.state = Some(state);
+            self.pending_sdk_control_authority = Some(authority);
+            if let Some(control) = self.sdk_hosts.remove(&host_key) {
+                control.retire()
+            }
+            return Response {
+                status: 204,
+                body: json!({}),
+                response_headers: Default::default(),
+                consistency_index: None,
+            };
         }
         if let Some(id) = request.path.strip_prefix("sys/remount/status/") {
             if !matches!(request.method, "GET" | "HEAD") {
@@ -643,6 +759,7 @@ impl Service {
             return Response {
                 status: 204,
                 body: json!({}),
+                response_headers: Default::default(),
                 consistency_index: None,
             };
         }
@@ -681,6 +798,12 @@ impl Service {
             let configuration = object.entry("config").or_insert_with(|| json!({}));
             let Some(configuration) = configuration.as_object_mut() else {
                 return Response::error(400, "mount config must be an object");
+            };
+            let allowed_headers = match parse_header_allowlist(
+                configuration.remove("allowed_response_headers").as_ref(),
+            ) {
+                Ok(headers) => headers,
+                Err(error) => return error,
             };
             configuration.remove("plugin_version");
             configuration.remove("plugin_name");
@@ -732,6 +855,15 @@ impl Service {
             {
                 Ok(o) => o,
                 Err(e) => return Response::error(e.status, &e.message),
+            };
+            let owner = match state.engines.set_sdk_response_headers(
+                request.namespace,
+                &mount,
+                &owner,
+                allowed_headers,
+            ) {
+                Ok(owner) => owner,
+                Err(error) => return Response::error(error.status, &error.message),
             };
             if let Err(error) = self.prepare_sdk_mount_record_root(&mut state) {
                 return error;
@@ -867,6 +999,7 @@ impl Service {
                 Response {
                     status: 204,
                     body: json!({}),
+                    response_headers: Default::default(),
                     consistency_index: None,
                 }
             }
@@ -888,6 +1021,7 @@ impl Service {
                 Response {
                     status: 204,
                     body: json!({}),
+                    response_headers: Default::default(),
                     consistency_index: None,
                 }
             }
@@ -1225,6 +1359,7 @@ impl Service {
         original_now: u64,
     ) -> Response {
         erase_json(&mut response.body);
+        response.response_headers.clear();
         response.consistency_index = None;
         if self
             .audit_event(
@@ -1245,6 +1380,7 @@ impl Service {
     }
     fn sdk_delivery_capsule_lost(&mut self, mut response: Response) -> Response {
         erase_json(&mut response.body);
+        response.response_headers.clear();
         response.consistency_index = None;
         crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
         self.recovery_required = true;
@@ -1325,6 +1461,7 @@ impl Service {
                 Response {
                     status: 204,
                     body: json!({}),
+                    response_headers: Default::default(),
                     consistency_index: None,
                 }
             };
@@ -1334,18 +1471,29 @@ impl Service {
             .any(|key| response.get(key).is_none_or(|v| !v.is_null()))
             || response
                 .get("redirect")
-                .is_none_or(|v| v.as_str() != Some(""))
-            || response
-                .get("headers")
-                .is_some_and(|v| !v.is_null() && v.as_object().is_none_or(|m| !m.is_empty()));
+                .is_none_or(|v| v.as_str() != Some(""));
         if unsupported {
             erase_json(&mut response);
             plan.control.retire();
             return Response::error(
                 501,
-                "SDK auth, leases, redirect, wrapping and custom headers are not implemented",
+                "SDK auth, leases, redirect and wrapping are not implemented",
             );
         }
+        let headers = match ResponseHeaders::from_sdk(
+            response.get("headers"),
+            &plan.owner.allowed_response_headers,
+        ) {
+            Ok(headers) => headers,
+            Err(()) => {
+                erase_json(&mut response);
+                plan.control.retire();
+                return Response::error(
+                    501,
+                    "SDK response header value is invalid or exceeds transport bounds",
+                );
+            }
+        };
         let data = response
             .get_mut("data")
             .map(std::mem::take)
@@ -1359,6 +1507,7 @@ impl Service {
             return Response {
                 status: 400,
                 body: json!({"errors":data["errors"]}),
+                response_headers: Default::default(),
                 consistency_index: None,
             };
         }
@@ -1366,7 +1515,9 @@ impl Service {
         if !warnings.is_null() {
             body["warnings"] = warnings;
         }
-        Response::ok(body)
+        let mut response = Response::ok(body);
+        response.response_headers = headers;
+        response
     }
 }
 

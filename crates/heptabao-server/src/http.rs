@@ -2007,6 +2007,9 @@ fn write_response_with_namespace(
     }
     write!(writer, "{retry_after}{index}")?;
     write_standard_headers(writer, namespace)?;
+    if status == response.status {
+        response.response_headers.write(writer)?;
+    }
     writer.write_all(b"\r\n")?;
     if !head && !no_body {
         if chunked {
@@ -2120,6 +2123,7 @@ mod tests {
                 &mut output,
                 Response {
                     status,
+                    response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_ocsp_response":encoded}),
                 },
@@ -2136,6 +2140,7 @@ mod tests {
                 &mut invalid,
                 Response {
                     status,
+                    response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_ocsp_response":encoded,"extra":true}),
                 },
@@ -2161,6 +2166,7 @@ mod tests {
         ] {
             let response = || Response {
                 status: 200,
+                response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"__heptabao_pki_certificate":encoded,"format":format}),
             };
@@ -2194,6 +2200,7 @@ mod tests {
                 &mut wire,
                 Response {
                     status: 200,
+                    response_headers: Default::default(),
                     consistency_index: None,
                     body,
                 },
@@ -2215,6 +2222,7 @@ mod tests {
                 &mut wire,
                 Response {
                     status: 204,
+                    response_headers: Default::default(),
                     consistency_index: None,
                     body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
                 },
@@ -2238,6 +2246,7 @@ mod tests {
         let encoded = base64::engine::general_purpose::STANDARD.encode(der);
         let response = || Response {
             status: 200,
+            response_headers: Default::default(),
             consistency_index: None,
             body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
         };
@@ -2260,6 +2269,7 @@ mod tests {
             &mut rejected,
             Response {
                 status: 200,
+                response_headers: Default::default(),
                 consistency_index: None,
                 body: json!({"__heptabao_pki_crl":encoded,"pem":"text/html"}),
             },
@@ -2839,6 +2849,7 @@ mod service_lock_deadline_tests {
                     assert_eq!(crate::request_deadline::current(), Some(deadline));
                     *value = result + 1;
                     Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,
                         body: json!({"data":{"completed":true}}),
@@ -2901,6 +2912,7 @@ mod service_lock_deadline_tests {
                     worker_finished.store(true, Ordering::Release);
                     *value = observed;
                     Response {
+                        response_headers: Default::default(),
                         consistency_index: None,
                         status: 200,
                         body: json!({"data":{"completed":true}}),
