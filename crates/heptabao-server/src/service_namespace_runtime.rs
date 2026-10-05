@@ -278,9 +278,13 @@ impl ClosedAuthAdmission {
             .closed_auth_context(&current.auth, &self.parcel.actual)
             .map_err(|error| Response::error(error.status, &error.message))
     }
-    pub(super) fn validate_actor(&self, current: &State, now: u64) -> Result<(), Response> {
+    pub(super) fn validate_actor(
+        &self,
+        current: &State,
+        time: AuthorityTime,
+    ) -> Result<(), Response> {
         self.current_auth(current)?
-            .validate_closed_actor(self.actor()?, now)
+            .validate_closed_actor_observed(self.actor()?, time)
             .map_err(|error| Response::error(error.status, &error.message))
     }
     pub(super) fn authorize(
@@ -290,7 +294,7 @@ impl ClosedAuthAdmission {
         method: &str,
         path: &str,
         body: &Value,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<(), Response> {
         self.current_auth(current)?
             .authorize_request_parameters_observed(
@@ -299,7 +303,7 @@ impl ClosedAuthAdmission {
                 method,
                 path,
                 body,
-                AuthorityTime::Coarse(now),
+                time,
             )
             .map_err(|error| Response::error(error.status, &error.message))
     }
@@ -693,6 +697,7 @@ impl Runtime {
         })
     }
 
+    #[cfg(test)]
     pub(super) fn closed_auth_attempt(
         &self,
         state: &State,
@@ -702,13 +707,33 @@ impl Runtime {
         now: u64,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<ClosedAuthAdmission, Response> {
+        self.closed_auth_attempt_observed(
+            state,
+            actual,
+            root_key,
+            raw,
+            AuthorityTime::Coarse(now),
+            origin_peer,
+        )
+    }
+
+    pub(super) fn closed_auth_attempt_observed(
+        &self,
+        state: &State,
+        actual: &str,
+        root_key: &[u8; 32],
+        raw: &str,
+        time: AuthorityTime,
+        origin_peer: Option<std::net::IpAddr>,
+    ) -> Result<ClosedAuthAdmission, Response> {
         let mut parcel = self.closed_inherited_parcel(state, actual, root_key)?;
+        let now = time.seconds();
         let clock_changed = parcel.private.auth.is_wrapping_token(raw)
             && parcel.private.auth.advance_wrapping_clock(now);
         let principal = parcel
             .private
             .auth
-            .authenticate_from_observed(raw, AuthorityTime::Coarse(now), origin_peer)
+            .authenticate_from_observed(raw, time, origin_peer)
             .map_err(|error| Response::error(error.status, &error.message))
             .and_then(|actor| {
                 if actor.namespace() != actual {

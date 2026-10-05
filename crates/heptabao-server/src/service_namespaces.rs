@@ -928,6 +928,13 @@ impl State {
         self.namespaces.adopt_legacy(&self.cluster_id, paths)
     }
 
+    fn namespace_has_only_local_cleanup(&self, path: &str) -> bool {
+        self.auth.namespace_has_only_local_token_owners(path)
+            && self.engines.namespace_has_only_local_kv_owners(path)
+            && self.database.namespace_is_empty(path)
+            && self.namespaces.workflows.namespace_is_empty(path)
+    }
+
     fn namespace_payload_is_empty(&self, path: &str) -> bool {
         self.auth.namespace_is_empty(path)
             && self.engines.namespace_is_empty(path)
@@ -1422,7 +1429,16 @@ impl Service {
                     // Terminal observation of an absent namespace is read-only.
                     return Response::ok(json!({"data": null}));
                 }
-                if !state.namespace_payload_is_empty(&target) {
+                if !state.auth.namespace_batch_retirement_safe() {
+                    return Response::error(
+                        409,
+                        "namespace deletion requires stateless batch incarnation retirement",
+                    );
+                }
+                if !state.namespace_payload_is_empty(&target)
+                    && (!state.namespace_has_only_local_cleanup(&target)
+                        || !self.namespace_runtime.is_loaded(&target))
+                {
                     return Response::error(
                         409,
                         "namespace contains runtime state; owned cleanup is required before deletion",
@@ -1509,10 +1525,9 @@ impl Service {
                     return error;
                 }
                 self.state = Some(state);
-                // Native deletion acknowledges the accepted cleanup. This scoped
-                // empty-owner case is already durably removed; callers still
-                // observe absence (or repeat DELETE with null data) to confirm.
-                // No asynchronous cleanup of populated namespaces is claimed.
+                // Native acknowledgement follows the actual loaded-key closure,
+                // typed local owner removal and durable retirement. Provider
+                // effects remain behind their existing cleanup transactions.
                 Response::ok(json!({"data": {"status": "in-progress"}}))
             }
             _ => Response::error(405, "unsupported namespace method"),

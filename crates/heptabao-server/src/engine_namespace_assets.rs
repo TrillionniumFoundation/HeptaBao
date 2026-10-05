@@ -20,6 +20,23 @@ impl NamespaceAssets {
 }
 
 impl EngineState {
+    /// This predicate authorizes no removal. The caller must close the actual
+    /// loaded key, partition its record graph, retire exact opaque cells and
+    /// publish the namespace incarnation tombstone in the same transaction.
+    pub(crate) fn namespace_has_only_local_kv_owners(&self, actual: &str) -> bool {
+        !actual.is_empty()
+            && self.namespaces.get(actual).is_none_or(|state| {
+                state.identity.is_pristine()
+                    && state.external_keys.is_empty()
+                    && state.mounts.values().all(|mount| {
+                        matches!(
+                            mount.backend,
+                            Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_)
+                        )
+                    })
+            })
+    }
+
     pub(crate) fn detach_namespace(
         &mut self,
         namespace: &str,

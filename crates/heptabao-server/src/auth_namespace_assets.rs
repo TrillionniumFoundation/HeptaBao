@@ -48,6 +48,114 @@ impl NamespaceAssets {
 }
 
 impl AuthState {
+    /// Stateless batch claims currently bind a namespace path, not its actual
+    /// incarnation. Retire neither an empty nor populated namespace after any
+    /// observed batch signing; leave global keys and siblings unchanged.
+    pub(crate) fn namespace_batch_retirement_safe(&self) -> bool {
+        self.batch_authority
+            .as_ref()
+            .is_none_or(BatchKeyAuthority::has_no_issued_claims)
+    }
+
+    /// Local Token API cleanup is only admitted under the Service's genuine
+    /// loaded namespace owner. Provider authentication, wrapped deliveries and
+    /// cross-namespace descendants require their existing cleanup transactions.
+    pub(crate) fn namespace_has_only_local_token_owners(&self, actual: &str) -> bool {
+        if actual.is_empty() {
+            return false;
+        }
+        let owned = self
+            .namespace_token_verifiers(actual)
+            .into_iter()
+            .collect::<BTreeSet<_>>();
+        if self.tokens.iter().any(|(id, token)| {
+            (owned.contains(id)
+                && (token.root
+                    || token.entity_id.is_some()
+                    || token.wrapping.is_some()
+                    || !matches!(
+                        token.auth_provenance,
+                        Some(TokenAuthProvenance::TokenApi { .. })
+                    )))
+                || (token.namespace != actual
+                    && token
+                        .parent
+                        .as_ref()
+                        .is_some_and(|parent| owned.contains(parent)))
+        }) {
+            return false;
+        }
+        let mut remaining = self.clone();
+        remaining.tokens.retain(|id, _| !owned.contains(id));
+        remaining.policies.remove(actual);
+        remaining.token_roles.remove(actual);
+        remaining.namespace_is_empty(actual)
+    }
+
+    /// Typed fixture of a genuine stored Token API lease; never available to
+    /// production or serialized input, and never changes the issuer flag.
+    #[cfg(test)]
+    pub(crate) fn install_namespace_precise_lease_for_test(
+        &mut self,
+        actual: &str,
+        bearer: &str,
+        issued_at: Timestamp,
+        expires_at: Timestamp,
+    ) -> Result<(), AuthError> {
+        use super::token_precision::{DurationNanos, ServicePrecision};
+        let grant = expires_at
+            .duration_since_epoch()
+            .checked_sub(issued_at.duration_since_epoch())
+            .and_then(|span| u64::try_from(span.as_nanos()).ok())
+            .ok_or_else(|| err(503, "invalid precise namespace fixture interval"))?;
+        let grant = DurationNanos::checked(grant).map_err(|_| err(503, "precise fixture grant"))?;
+        let token = self
+            .tokens
+            .get_mut(&hash(bearer))
+            .ok_or_else(|| err(503, "genuine fixture token missing"))?;
+        if actual.is_empty()
+            || token.namespace != actual
+            || token.public_origin.is_none()
+            || token.wrapping.is_some()
+            || issued_at.seconds() != token.created_at
+            || !matches!(
+                token.auth_provenance,
+                Some(TokenAuthProvenance::TokenApi { .. })
+            )
+        {
+            return Err(err(
+                503,
+                "genuine namespace Token API fixture owner rejected",
+            ));
+        }
+        token.token_api_precision = Some(ServicePrecision {
+            issued_at,
+            grant_started_at: issued_at,
+            expires_at: Some(expires_at),
+            last_renewed_at: None,
+            previous_grant: grant,
+            creation_grant: grant,
+            requested_period: DurationNanos::checked(0).map_err(|_| err(503, "fixture period"))?,
+            requested_explicit_max: DurationNanos::checked(0)
+                .map_err(|_| err(503, "fixture max"))?,
+        });
+        token.expires_at = Some(
+            expires_at
+                .ceil_seconds()
+                .map_err(|_| err(503, "fixture expiry"))?,
+        );
+        token.token_api_lease_ttl = Some(grant.ceil_seconds());
+        token.auth_provenance = Some(TokenAuthProvenance::TokenApi {
+            issued_creation_ttl: Some(grant.public_seconds()),
+        });
+        self.token_api_precision_state = true;
+        self.token_api_observed_at = Some(
+            self.token_api_observed_at
+                .map_or(issued_at, |at| at.max(issued_at)),
+        );
+        self.validate_system_lease_defaults()
+    }
+
     /// Stored verifiers identify a candidate owner only; no token backing leaves it.
     pub(crate) fn namespace_token_verifiers(&self, actual: &str) -> Vec<String> {
         self.tokens
@@ -75,15 +183,15 @@ impl AuthState {
         Ok(context)
     }
 
-    pub(crate) fn validate_closed_actor(
+    pub(crate) fn validate_closed_actor_observed(
         &self,
         actor: &Principal,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<(), AuthError> {
         if actor.entity_id().is_some() {
             return Err(err(503, "closed namespace identity owner is not available"));
         }
-        self.check_principal(actor, actor.namespace(), now)
+        self.check_principal_observed(actor, actor.namespace(), time)
             .map(|_| ())
     }
 
@@ -235,6 +343,78 @@ impl AuthState {
 mod tests {
     use super::*;
     type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+    #[test]
+    fn closed_namespace_actor_preserves_fractional_expiry_after_full_partition() -> TestResult {
+        use super::super::token_precision::{DurationNanos, ServicePrecision};
+        let (mut state, root) = AuthState::bootstrap(100)?;
+        state.initialize_fresh_namespace_auth("custody")?;
+        let root_actor = state.authenticate(&root, 100)?;
+        let issued = state
+            .handle(
+                Some(&root_actor),
+                "custody",
+                "POST",
+                "auth/token/create",
+                &json!({"policies":["default"],"ttl":"2s"}),
+                100,
+            )?
+            .ok_or("issued token")?;
+        let bearer = issued.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("actual bearer")?;
+        let issued_at = Timestamp::checked(100, 200_000_000)?;
+        let expires_at = Timestamp::checked(100, 700_000_000)?;
+        let grant = DurationNanos::checked(500_000_000)?;
+        state.token_api_precision_state = true;
+        state.token_api_observed_at = Some(issued_at);
+        let token = state
+            .tokens
+            .get_mut(&hash(bearer))
+            .ok_or("actual issued token")?;
+        token.token_api_precision = Some(ServicePrecision {
+            issued_at,
+            grant_started_at: issued_at,
+            expires_at: Some(expires_at),
+            last_renewed_at: None,
+            previous_grant: grant,
+            creation_grant: grant,
+            requested_period: DurationNanos::checked(0)?,
+            requested_explicit_max: DurationNanos::checked(0)?,
+        });
+        token.expires_at = Some(101);
+        token.token_api_lease_ttl = Some(1);
+        token.auth_provenance = Some(TokenAuthProvenance::TokenApi {
+            issued_creation_ttl: Some(0),
+        });
+        state.validate_system_lease_defaults()?;
+        let assets = state.detach_namespace("custody")?;
+        let bytes = crate::secret_serde::to_vec(&assets, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| "full private namespace owner")?;
+        let restored: NamespaceAssets = serde_json::from_slice(&bytes)?;
+        let mut private = state.clone();
+        private.attach_namespace("custody", restored)?;
+        private.validate_system_lease_defaults()?;
+        let live = AuthorityTime::Precise(Timestamp::checked(100, 600_000_000)?);
+        let actor = private.authenticate_from_observed(bearer, live, None)?;
+        let context = private.closed_auth_context(&state, "custody")?;
+        context.validate_closed_actor_observed(&actor, live)?;
+        context.validate_closed_actor_observed(&actor, AuthorityTime::Precise(expires_at))?;
+        assert!(
+            context
+                .validate_closed_actor_observed(&actor, AuthorityTime::Coarse(100))
+                .is_err()
+        );
+        assert!(
+            context
+                .validate_closed_actor_observed(
+                    &actor,
+                    AuthorityTime::Precise(Timestamp::checked(100, 700_000_001)?)
+                )
+                .is_err()
+        );
+        assert!(state.namespace_is_empty("custody"));
+        Ok(())
+    }
     #[test]
     fn namespace_auth_partition_covers_all_typed_maps_and_retains_root_authority() -> TestResult {
         let (mut state, root) = AuthState::bootstrap(100)?;

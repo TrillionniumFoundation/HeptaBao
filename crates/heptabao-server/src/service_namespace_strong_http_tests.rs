@@ -2380,3 +2380,410 @@ fn public_origin_independent_assets_restore_exact_stamp_and_empty_map_after_real
     );
     Ok(())
 }
+
+fn closed_precise_wire(
+    service: &mut Service,
+    method: &str,
+    path: &str,
+    namespace: &str,
+    token: &str,
+    body: Value,
+    clock: RequestClock,
+) -> TestResult<Response> {
+    let body = if method == "HELP" {
+        json!({"__heptabao_http_help_request":{"path":path,"query":"","wire_method":"HELP"}})
+    } else {
+        body
+    };
+    let execution = service.begin_at_mode_precise(
+        RequestDispatch {
+            method,
+            path,
+            namespace,
+            token,
+            body,
+            now: 100,
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        clock,
+    );
+    Ok(service.finish_synchronous_request(execution))
+}
+
+fn precise_closed_actor_fixture(
+    service: &mut Service,
+    root_token: &str,
+    namespace: &str,
+    parent: &str,
+    uses: u32,
+    deadline_nanos: u32,
+) -> TestResult<zeroize::Zeroizing<String>> {
+    let actor = closed_auth_fixture(service, root_token, namespace, parent, uses, "2s")?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    candidate.auth.install_namespace_precise_lease_for_test(
+        namespace,
+        &actor,
+        crate::auth::token_precision::Timestamp::checked(100, 100_000_000)?,
+        crate::auth::token_precision::Timestamp::checked(100, deadline_nanos)?,
+    )?;
+    candidate.schema = candidate.writer_schema();
+    candidate
+        .validate_format()
+        .map_err(|_| "typed precise fixture format")?;
+    service
+        .commit_state(&mut candidate)
+        .map_err(|_| "real precise fixture commit")?;
+    service.state = Some(candidate);
+    let relative = namespace.rsplit('/').next().ok_or("relative namespace")?;
+    assert_eq!(
+        closed_precise_wire(
+            service,
+            "POST",
+            &format!("sys/namespaces/{relative}/seal"),
+            parent,
+            root_token,
+            json!({}),
+            RequestClock::anchored(
+                std::time::Duration::new(100, 120_000_000),
+                std::time::Instant::now()
+            )?
+        )?
+        .status,
+        204
+    );
+    assert!(!service.namespace_runtime.is_loaded(namespace));
+    Ok(actor)
+}
+
+#[test]
+fn closed_auth_precise_real_reopen_consumes_actual_finite_owner_without_key_slot() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, root_token) = bootstrap_unmounted(&mut service)?;
+    let actor = precise_closed_actor_fixture(
+        &mut service,
+        &root_token,
+        "precise-reopen",
+        "",
+        1,
+        950_000_000,
+    )?;
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let coarse = wire(
+        &mut service,
+        "HELP",
+        "auth/token/lookup-self",
+        "",
+        &actor,
+        json!({}),
+    );
+    assert!(coarse.status >= 400 && coarse.body.get("data").is_none());
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation,
+        "coarse observation cannot consume precise authority"
+    );
+    let first = closed_precise_wire(
+        &mut service,
+        "HELP",
+        "auth/token/lookup-self",
+        "",
+        &actor,
+        json!({}),
+        RequestClock::anchored(
+            std::time::Duration::new(100, 200_000_000),
+            std::time::Instant::now(),
+        )?,
+    )?;
+    assert_eq!(
+        first.status, 404,
+        "authenticated closed self retains actual unloaded route response"
+    );
+    assert!(first.body.get("data").is_none());
+    assert!(
+        service.durable.as_ref().ok_or("durable")?.generation() > generation,
+        "finite use is committed in the genuine closed owner"
+    );
+    assert!(!service.namespace_runtime.is_loaded("precise-reopen"));
+    assert_eq!(
+        closed_precise_wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "",
+            &actor,
+            json!({}),
+            RequestClock::anchored(
+                std::time::Duration::new(100, 250_000_000),
+                std::time::Instant::now()
+            )?
+        )?
+        .status,
+        403
+    );
+    Ok(())
+}
+
+#[test]
+fn closed_auth_precise_post_commit_fractional_expiry_delivers_no_metadata_or_refund() -> TestResult
+{
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap_unmounted(&mut service)?;
+    let actor = precise_closed_actor_fixture(
+        &mut service,
+        &root_token,
+        "precise-late",
+        "",
+        1,
+        700_000_000,
+    )?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let started = std::time::Instant::now();
+    let response = {
+        let _delay = external_pki::PublicationDelayScope::until(
+            started + std::time::Duration::from_millis(600),
+        );
+        closed_precise_wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "",
+            &actor,
+            json!({}),
+            RequestClock::anchored(std::time::Duration::new(100, 200_000_000), started)?,
+        )?
+    };
+    assert!(
+        response.status >= 400
+            && response.body.get("data").is_none()
+            && response.body.get("id").is_none(),
+        "reobservation of original ingress clock crosses exact expiry after publication"
+    );
+    assert!(service.durable.as_ref().ok_or("durable")?.generation() > generation);
+    assert!(!service.namespace_runtime.is_loaded("precise-late"));
+    let state = service.state.as_ref().ok_or("state")?;
+    let root_key = service.barrier_key.as_ref().ok_or("root key")?;
+    let admission = service
+        .namespace_runtime
+        .closed_auth_attempt_observed(
+            state,
+            "precise-late",
+            root_key,
+            &actor,
+            AuthorityTime::Precise(crate::auth::token_precision::Timestamp::checked(
+                100,
+                200_000_000,
+            )?),
+            None,
+        )
+        .map_err(|_| "actual closed parcel")?;
+    assert!(
+        admission.actor().is_err(),
+        "late failed delivery does not refund consumed use or retained floor"
+    );
+    Ok(())
+}
+
+#[test]
+fn closed_auth_precise_missing_independent_parent_and_retired_binding_stay_closed() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap_unmounted(&mut service)?;
+    let shares = create(&mut service, "", "precise-parent", &root_token)?;
+    unseal(&mut service, "", "precise-parent", &root_token, &shares);
+    let actor = precise_closed_actor_fixture(
+        &mut service,
+        &root_token,
+        "precise-parent/child",
+        "precise-parent",
+        2,
+        950_000_000,
+    )?;
+    assert_eq!(
+        closed_precise_wire(
+            &mut service,
+            "POST",
+            "sys/namespaces/precise-parent/seal",
+            "",
+            &root_token,
+            json!({}),
+            RequestClock::anchored(
+                std::time::Duration::new(100, 200_000_000),
+                std::time::Instant::now()
+            )?
+        )?
+        .status,
+        204
+    );
+    let state = service.state.as_ref().ok_or("state")?;
+    let root_key = service.barrier_key.as_ref().ok_or("root key")?;
+    assert!(
+        service
+            .namespace_runtime
+            .closed_auth_attempt_observed(
+                state,
+                "precise-parent/child",
+                root_key,
+                &actor,
+                AuthorityTime::Precise(crate::auth::token_precision::Timestamp::checked(
+                    100,
+                    250_000_000
+                )?),
+                None
+            )
+            .is_err(),
+        "the actual root key cannot replace the closed independent parent"
+    );
+    assert!(!service.namespace_runtime.is_loaded("precise-parent/child"));
+    let retirement_root = Root::new();
+    let mut retirement_service = retirement_root.service()?;
+    let (_, retirement_root_token) = bootstrap_unmounted(&mut retirement_service)?;
+    let retired_actor = precise_closed_actor_fixture(
+        &mut retirement_service,
+        &retirement_root_token,
+        "retired-precise",
+        "",
+        2,
+        950_000_000,
+    )?;
+    // A real root resource request reloads only this actual inherited owner;
+    // then the normal delete transaction seals, retires and commits it.
+    assert_eq!(
+        closed_precise_wire(
+            &mut retirement_service,
+            "GET",
+            "sys/mounts",
+            "retired-precise",
+            &retirement_root_token,
+            json!({}),
+            RequestClock::anchored(
+                std::time::Duration::new(100, 200_000_000),
+                std::time::Instant::now()
+            )?
+        )?
+        .status,
+        200
+    );
+    assert!(
+        retirement_service
+            .namespace_runtime
+            .is_loaded("retired-precise")
+    );
+    assert_eq!(
+        closed_precise_wire(
+            &mut retirement_service,
+            "DELETE",
+            "sys/namespaces/retired-precise",
+            "",
+            &retirement_root_token,
+            json!({}),
+            RequestClock::anchored(
+                std::time::Duration::new(100, 250_000_000),
+                std::time::Instant::now()
+            )?
+        )?
+        .status,
+        200
+    );
+    let state = retirement_service.state.as_ref().ok_or("retired state")?;
+    assert!(!state.namespaces.contains("retired-precise"));
+    let root_key = retirement_service
+        .barrier_key
+        .as_ref()
+        .ok_or("retired root key")?;
+    assert!(
+        retirement_service
+            .namespace_runtime
+            .closed_auth_attempt_observed(
+                state,
+                "retired-precise",
+                root_key,
+                &retired_actor,
+                AuthorityTime::Precise(crate::auth::token_precision::Timestamp::checked(
+                    100,
+                    300_000_000
+                )?),
+                None
+            )
+            .is_err(),
+        "real committed namespace retirement cannot restore an otherwise unexpired exact actor"
+    );
+    assert!(
+        !retirement_service
+            .namespace_runtime
+            .is_loaded("retired-precise")
+    );
+    Ok(())
+}
+
+#[test]
+fn closed_auth_precise_final_gate_preserves_newer_durably_observed_root_floor() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap_unmounted(&mut service)?;
+    let actor = precise_closed_actor_fixture(
+        &mut service,
+        &root_token,
+        "precise-floor",
+        "",
+        2,
+        950_000_000,
+    )?;
+    let state = service.state.as_ref().ok_or("state")?;
+    let root_key = service.barrier_key.as_ref().ok_or("root key")?;
+    let live = AuthorityTime::Precise(crate::auth::token_precision::Timestamp::checked(
+        100,
+        200_000_000,
+    )?);
+    let admission = service
+        .namespace_runtime
+        .closed_auth_attempt_observed(state, "precise-floor", root_key, &actor, live, None)
+        .map_err(|_| "genuine closed admission")?;
+    admission.actor().map_err(|_| "live precise actor")?;
+    admission
+        .validate_actor(state, live)
+        .map_err(|_| "initial gate")?;
+    let mut candidate = admission
+        .candidate(&service.namespace_runtime)
+        .map_err(|_| "actual consumed candidate")?;
+    candidate.schema = candidate.writer_schema();
+    service
+        .commit_state(&mut candidate)
+        .map_err(|_| "actual use commit")?;
+    service.state = Some(candidate);
+    let newer = crate::auth::token_precision::Timestamp::checked(100, 960_000_000)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    assert!(
+        candidate
+            .auth
+            .observe_token_api_time(AuthorityTime::Precise(newer))?
+    );
+    service
+        .commit_state(&mut candidate)
+        .map_err(|_| "actual global floor publication")?;
+    service.state = Some(candidate);
+    let state = service.state.as_ref().ok_or("state")?;
+    assert!(
+        admission.validate_actor(state, live).is_err(),
+        "refresh of current admitted root auth does not resurrect older private time"
+    );
+    let observed = state
+        .auth
+        .token_api_observed_time(live)
+        .exact()
+        .ok_or("exact root floor")?;
+    assert_eq!(observed, newer);
+    assert!(!service.namespace_runtime.is_loaded("precise-floor"));
+    Ok(())
+}

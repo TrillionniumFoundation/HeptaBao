@@ -7,6 +7,15 @@ fn unavailable() -> Response {
     Response::error(503, "closed namespace authentication owner is unavailable")
 }
 
+fn authority_time(request: &RequestView<'_>) -> Result<AuthorityTime, Response> {
+    match request.token_time()? {
+        // Retain historical publication-time fencing without inventing an
+        // exact clock for explicit coarse callers.
+        AuthorityTime::Coarse(now) => Ok(AuthorityTime::Coarse(external_pki::publication_now(now))),
+        AuthorityTime::Precise(at) => Ok(AuthorityTime::Precise(at)),
+    }
+}
+
 impl Service {
     pub(super) fn closed_namespace_token_response(
         &mut self,
@@ -54,12 +63,16 @@ impl Service {
         let Some(root_key) = self.barrier_key.as_ref() else {
             return unavailable();
         };
-        let admission = match self.namespace_runtime.closed_auth_attempt(
+        let time = match authority_time(request) {
+            Ok(time) => time,
+            Err(response) => return response,
+        };
+        let admission = match self.namespace_runtime.closed_auth_attempt_observed(
             admitted,
             actual,
             root_key,
             request.token,
-            request.now,
+            time,
             request.origin_peer,
         ) {
             Ok(admission) => admission,
@@ -81,7 +94,7 @@ impl Service {
                 return Err(unavailable());
             }
             if admission.actor().is_ok() {
-                admission.validate_actor(state, external_pki::publication_now(request.now))?;
+                admission.validate_actor(state, authority_time(request)?)?;
             }
             Ok(())
         };
@@ -169,7 +182,10 @@ impl Service {
             kv_authorization_method(request.method, request.body),
             request.path,
             request.body,
-            external_pki::publication_now(request.now),
+            match authority_time(request) {
+                Ok(time) => time,
+                Err(response) => return response,
+            },
         ) {
             return response;
         }

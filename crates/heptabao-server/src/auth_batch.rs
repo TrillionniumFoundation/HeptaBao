@@ -423,13 +423,19 @@ fn associated_data(authority: BatchAuthorityId, key: BatchKeyId) -> Vec<u8> {
 }
 
 impl BatchKeyAuthority {
-    #[cfg(test)]
-    pub(super) fn is_unused_for_legacy_fixture(&self) -> bool {
+    /// A conservative structural observation of this admitted owner only.
+    /// This is not a lifetime proof across restoration of older same-key owners.
+    pub(super) fn has_no_issued_claims(&self) -> bool {
         self.keys.len() == 1
             && self.keys.iter().all(|key| {
                 key.created_at == key.last_issued_at && key.created_at == key.max_issued_expiry
             })
     }
+    #[cfg(test)]
+    pub(super) fn is_unused_for_legacy_fixture(&self) -> bool {
+        self.has_no_issued_claims()
+    }
+
     pub(crate) fn new(now: u64) -> Result<Self, BatchError> {
         let random = SystemRandom::new();
         let mut authority = [0; AUTHORITY_BYTES];

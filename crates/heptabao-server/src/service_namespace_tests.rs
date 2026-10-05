@@ -1049,3 +1049,525 @@ fn inherited_retirement_requires_a_new_actual_incarnation_before_recreation()
     );
     Ok(())
 }
+
+#[test]
+fn namespace_local_kv_and_token_delete_retires_actual_owner_and_survives_reopen()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, root_token) = bootstrap(&mut service)?;
+    for namespace in ["local-delete", "local-sibling"] {
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                &format!("sys/namespaces/{namespace}"),
+                &root_token,
+                json!({})
+            )
+            .status,
+            200
+        );
+        assert_eq!(
+            service
+                .handle_at(
+                    "POST",
+                    "sys/mounts/kv",
+                    namespace,
+                    &root_token,
+                    json!({"type":"kv", "options":{"version":"1"}}),
+                    100
+                )
+                .status,
+            204
+        );
+        assert_eq!(
+            service
+                .handle_at(
+                    "PUT",
+                    "kv/item",
+                    namespace,
+                    &root_token,
+                    json!({"value":namespace}),
+                    100
+                )
+                .status,
+            204
+        );
+        assert_eq!(
+            service
+                .handle_at("GET", "kv/item", namespace, &root_token, json!({}), 100)
+                .status,
+            200
+        );
+    }
+    let mint = service.handle_at(
+        "POST",
+        "auth/token/create",
+        "local-delete",
+        &root_token,
+        json!({"policies":["default"]}),
+        100,
+    );
+    assert_eq!(mint.status, 200);
+    let child = mint.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("child token")?
+        .to_owned();
+    let accessor = mint.body["auth"]["accessor"]
+        .as_str()
+        .ok_or("child accessor")?
+        .to_owned();
+    assert_eq!(
+        service
+            .handle_at(
+                "GET",
+                "auth/token/lookup-self",
+                "local-delete",
+                &child,
+                json!({}),
+                100
+            )
+            .status,
+        200
+    );
+    // Match the genuine SDK flow: revoke an issued child, retain a real mount
+    // and KV record, then request deletion. A second live local token proves
+    // closure removes its actual encrypted token owner as well.
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "auth/token/revoke-accessor",
+                "local-delete",
+                &root_token,
+                json!({"accessor":accessor}),
+                100
+            )
+            .status,
+        204
+    );
+    let mint = service.handle_at(
+        "POST",
+        "auth/token/create",
+        "local-delete",
+        &root_token,
+        json!({"policies":["default"]}),
+        100,
+    );
+    assert_eq!(mint.status, 200);
+    let live = mint.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("live token")?
+        .to_owned();
+    let stale = service.state.clone().ok_or("state")?;
+    let binding = stale
+        .namespaces
+        .custody_binding(&stale.cluster_id, "local-delete")
+        .map_err(|_| "binding")?;
+    let floor = serde_json::to_value(&stale.auth)?["public_origin_floor"].clone();
+    let clock = serde_json::to_value(&stale.engines)?["kubernetes_artifact_clock"].clone();
+    let deleted = call(
+        &mut service,
+        "DELETE",
+        "sys/namespaces/local-delete",
+        &root_token,
+        json!({}),
+    );
+    assert_eq!(deleted.status, 200);
+    assert_eq!(deleted.body["data"]["status"], "in-progress");
+    assert!(
+        stale.namespace_leases.validate().is_err(),
+        "retained references cannot keep the retired key live"
+    );
+    let retired = service.state.as_ref().ok_or("state")?;
+    assert!(!retired.namespaces.contains("local-delete"));
+    assert!(
+        retired.auth.namespace_is_empty("local-delete")
+            && retired.engines.namespace_is_empty("local-delete")
+    );
+    assert_eq!(
+        serde_json::to_value(&retired.auth)?["public_origin_floor"],
+        floor
+    );
+    assert_eq!(
+        serde_json::to_value(&retired.engines)?["kubernetes_artifact_clock"],
+        clock
+    );
+    assert!(
+        retired
+            .namespaces
+            .retired_custody
+            .get("local-delete")
+            .is_some_and(
+                |tombstone| retired.namespaces.custody_frontiers["local-delete"]
+                    .matches_retirement(tombstone)
+            )
+    );
+    retired
+        .engines
+        .visit_namespace_record_owner_bindings(|owner| {
+            assert_ne!(owner, &binding);
+            Ok(())
+        })?;
+    assert_eq!(
+        service
+            .handle_at(
+                "GET",
+                "kv/item",
+                "local-sibling",
+                &root_token,
+                json!({}),
+                100
+            )
+            .body["data"]["value"],
+        "local-sibling"
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "sys/namespaces/local-delete",
+            &root_token,
+            json!({})
+        )
+        .status,
+        404
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/local-delete",
+            &root_token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_ne!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .namespaces
+            .custody_binding(
+                &service.state.as_ref().ok_or("state")?.cluster_id,
+                "local-delete"
+            )
+            .map_err(|_| "recreated binding")?,
+        binding
+    );
+    assert!(
+        service
+            .handle_at(
+                "GET",
+                "auth/token/lookup-self",
+                "local-delete",
+                &live,
+                json!({}),
+                100
+            )
+            .status
+            >= 400
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/kv",
+                "local-delete",
+                &root_token,
+                json!({"type":"kv", "options":{"version":"1"}}),
+                100
+            )
+            .status,
+        204
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "GET",
+                "kv/item",
+                "local-delete",
+                &root_token,
+                json!({}),
+                100
+            )
+            .status,
+        404
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "GET",
+                "kv/item",
+                "local-sibling",
+                &root_token,
+                json!({}),
+                100
+            )
+            .body["data"]["value"],
+        "local-sibling"
+    );
+    Ok(())
+}
+
+#[test]
+fn namespace_local_delete_does_not_discard_provider_mounts_or_unloaded_custody()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/provider-delete",
+            &root_token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/database",
+                "provider-delete",
+                &root_token,
+                json!({"type":"database"}),
+                100
+            )
+            .status,
+        204
+    );
+    let before = service.state.clone().ok_or("state")?;
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/namespaces/provider-delete",
+            &root_token,
+            json!({})
+        )
+        .status,
+        409
+    );
+    assert_eq!(
+        serde_json::to_value(&service.state.as_ref().ok_or("state")?.engines)?,
+        serde_json::to_value(&before.engines)?
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .namespaces
+            .contains("provider-delete")
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/unloaded-delete",
+            &root_token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                "sys/mounts/kv",
+                "unloaded-delete",
+                &root_token,
+                json!({"type":"kv", "options":{"version":"1"}}),
+                100
+            )
+            .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/unloaded-delete/seal",
+            &root_token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/namespaces/unloaded-delete",
+            &root_token,
+            json!({})
+        )
+        .status,
+        503
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .namespaces
+            .contains("unloaded-delete")
+    );
+    Ok(())
+}
+
+#[test]
+fn namespace_delete_does_not_resurrect_orphan_batch_after_path_recreation()
+-> Result<(), Box<dyn std::error::Error>> {
+    for populated in [false, true] {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, root_token) = bootstrap(&mut service)?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/namespaces/batch-retire",
+                &root_token,
+                json!({})
+            )
+            .status,
+            200
+        );
+        if populated {
+            assert_eq!(
+                service
+                    .handle_at(
+                        "POST",
+                        "sys/mounts/kv",
+                        "batch-retire",
+                        &root_token,
+                        json!({"type":"kv", "options":{"version":"1"}}),
+                        100
+                    )
+                    .status,
+                204
+            );
+            assert_eq!(
+                service
+                    .handle_at(
+                        "PUT",
+                        "kv/item",
+                        "batch-retire",
+                        &root_token,
+                        json!({"secret":"local"}),
+                        100
+                    )
+                    .status,
+                204
+            );
+        }
+        let minted = service.handle_at(
+            "POST",
+            "auth/token/create-orphan",
+            "batch-retire",
+            &root_token,
+            json!({"type":"batch", "policies":["default"], "ttl":"1h"}),
+            100,
+        );
+        assert_eq!(minted.status, 200);
+        let bearer = minted.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("batch token")?
+            .to_owned();
+        let lookup = service.handle_at(
+            "GET",
+            "auth/token/lookup-self",
+            "batch-retire",
+            &bearer,
+            json!({}),
+            100,
+        );
+        assert_eq!(lookup.status, 200);
+        assert_eq!(lookup.body["data"]["orphan"], true);
+        let before = service.state.clone().ok_or("state")?;
+        let binding = before
+            .namespaces
+            .custody_binding(&before.cluster_id, "batch-retire")
+            .map_err(|_| "binding")?;
+        let batch_key_before = crate::crypto::digest(
+            &crate::secret_serde::to_vec(&before.auth, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| "auth owner")?,
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "DELETE",
+                "sys/namespaces/batch-retire",
+                &root_token,
+                json!({})
+            )
+            .status,
+            409
+        );
+        let after = service.state.as_ref().ok_or("state")?;
+        assert_eq!(
+            after
+                .namespaces
+                .custody_binding(&after.cluster_id, "batch-retire")
+                .map_err(|_| "retained binding")?,
+            binding
+        );
+        assert_eq!(
+            crate::crypto::digest(
+                &crate::secret_serde::to_vec(&after.auth, crate::MAX_APPLICATION_STATE_BYTES)
+                    .map_err(|_| "retained auth")?
+            ),
+            batch_key_before
+        );
+        // A standard create after the rejected DELETE is the existing owner,
+        // rather than an incarnation to which the old stateless token can revive.
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/namespaces/batch-retire",
+                &root_token,
+                json!({})
+            )
+            .status,
+            200
+        );
+        let after = service.state.as_ref().ok_or("state")?;
+        assert_eq!(
+            after
+                .namespaces
+                .custody_binding(&after.cluster_id, "batch-retire")
+                .map_err(|_| "same owner")?,
+            binding
+        );
+        assert_eq!(
+            service
+                .handle_at(
+                    "GET",
+                    "auth/token/lookup-self",
+                    "batch-retire",
+                    &bearer,
+                    json!({}),
+                    100
+                )
+                .status,
+            200
+        );
+    }
+    Ok(())
+}
