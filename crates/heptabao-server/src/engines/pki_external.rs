@@ -541,6 +541,7 @@ impl Pki {
                 "serial_number":formatted_serial(&template.serial),"expiration":template.not_after,
                 "key_id":key.key_id,"key_name":key.key_name,"issuer_id":key.issuer_id,"issuer_name":key.issuer_name});
             self.root = Some(RootCa {
+                leaf_not_after_behavior: None,
                 common_name: template.common_name,
                 issuer_id: String::new(),
                 key_id: String::new(),

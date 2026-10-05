@@ -6,6 +6,8 @@ use crate::service::tests::{bootstrap_unmounted, commit_legacy_state_fixture};
 use openssl::{pkey::PKey, x509::X509};
 #[path = "service_pki_external_retired_owner_tests.rs"]
 mod retired_owner_tests;
+#[path = "service_pki_role_time_tests.rs"]
+mod time_policy;
 
 const FIELDS: [&str; 15] = [
     "server_flag",
@@ -105,6 +107,23 @@ fn profile_leaf(response: &Response, issuer: &X509, custom: bool) -> TestResult<
     let pem = response.body["data"]["certificate"]
         .as_str()
         .ok_or("leaf PEM")?;
+    for field in ["certificate", "issuing_ca", "private_key"] {
+        assert!(
+            !response.body["data"][field]
+                .as_str()
+                .ok_or("PEM response field")?
+                .ends_with('\n'),
+            "official issuance PEM response omits final LF"
+        );
+    }
+    assert!(
+        response.body["data"]["ca_chain"]
+            .as_array()
+            .ok_or("actual CA chain")?
+            .iter()
+            .all(|value| value.as_str().is_some_and(|pem| !pem.ends_with('\n'))),
+        "official issuance chain PEM omits final LF"
+    );
     let leaf = X509::from_pem(pem.as_bytes())?;
     let issuer_public = issuer.public_key()?;
     assert!(

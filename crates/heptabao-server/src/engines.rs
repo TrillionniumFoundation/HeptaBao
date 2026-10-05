@@ -761,6 +761,14 @@ impl EngineState {
         pki.fixture_issue_historical_local_leaf(mount, body, owner, now)
     }
 
+    pub(crate) fn has_pki_role_time_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_time_state())
+            })
+        })
+    }
+
     pub(crate) fn has_pki_role_leaf_profile_state(&self) -> bool {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount| {
