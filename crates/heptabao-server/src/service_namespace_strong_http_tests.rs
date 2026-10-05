@@ -406,7 +406,19 @@ fn strong_http_completed_unseal_late_actor_rejects_before_slot_registration() ->
         0,
         "completed but denied unseal clears its private progress"
     );
-    unseal(&mut service, "", "late-unseal", &token, &shares);
+    // Each new root request samples its own real admission clock. The expired
+    // actor's completed attempt never lends its clock, progress or permission.
+    for share in shares.iter().take(2) {
+        let resumed = service.handle_request(ServiceRequest::new(
+            "POST",
+            "sys/namespaces/late-unseal/unseal",
+            "",
+            &token,
+            json!({"key":share.as_str()}),
+        ));
+        assert_eq!(resumed.status, 200, "{}", resumed.body);
+    }
+    assert!(service.namespace_runtime.has_loaded_within("late-unseal"));
     Ok(())
 }
 
