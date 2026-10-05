@@ -5,6 +5,34 @@ use super::*;
 use std::collections::BTreeSet;
 
 impl Service {
+    pub(super) fn pki_identity_values(
+        state: &State,
+        principal: &Principal,
+        namespace: &str,
+        path: &str,
+    ) -> Result<crate::auth::IdentityTemplateValues, Response> {
+        let selectors = state.engines.pki_identity_selectors(namespace, path);
+        let Some(id) = principal.entity_id() else {
+            return Ok(crate::auth::IdentityTemplateValues::default());
+        };
+        if selectors.is_empty() {
+            return Ok(crate::auth::IdentityTemplateValues::default());
+        }
+        let projection = state
+            .engines
+            .identity_projection(namespace, id)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        if projection.disabled {
+            return Err(Response::error(403, "permission denied"));
+        }
+        state
+            .engines
+            .identity_template_values(namespace, &projection, &selectors, |accessor| {
+                state.auth.has_mount_accessor(namespace, accessor)
+            })
+            .map_err(|error| Response::error(error.status, &error.message))
+    }
+
     /// Reobserve the original request/idle clock after a writer or provider wait.
     /// Missing precise authority cannot classify a durable owner as expired.
     pub(super) fn provider_owner_time(
@@ -142,7 +170,20 @@ impl Service {
                 let owner = owner
                     .as_ref()
                     .ok_or_else(|| Response::error(403, "credential issuer is required"))?;
-                engines.handle_service_pki(namespace, method, path, body, owner, now)
+                let principal =
+                    principal.ok_or_else(|| Response::error(403, "missing client token"))?;
+                let values = Self::pki_identity_values(state, principal, namespace, path)?;
+                engines.handle_service_pki_context(
+                    namespace,
+                    method,
+                    path,
+                    body,
+                    crate::engines::PkiRequestContext {
+                        owner: Some(owner),
+                        now,
+                        identity_templates: Some(&values),
+                    },
+                )
             } else {
                 engines.handle_service_ssh(namespace, method, path, body, owner.as_ref(), now)
             }

@@ -32,6 +32,7 @@ mod kv1_records;
 mod kv_versioning;
 #[path = "engine_leases.rs"]
 mod leases;
+pub(crate) use leases::PkiRequestContext;
 #[path = "engine_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
 #[path = "engine_sdk.rs"]
@@ -958,9 +959,10 @@ impl EngineState {
         method: &str,
         path: &str,
         body: &Value,
-        now: u64,
-        owner: Option<&crate::auth::ResolvedLeaseOwner>,
+        context: PkiRequestContext<'_>,
     ) -> Result<Option<ExternalPkiRequest>> {
+        let now = context.now;
+        let owner = context.owner;
         if path.contains('?') {
             return Err(bad("external PKI query parameters are not implemented"));
         }
@@ -991,8 +993,10 @@ impl EngineState {
                 relative,
                 body,
                 mount_path,
-                owner,
-                now.max(self.lease_clock),
+                PkiRequestContext {
+                    now: now.max(self.lease_clock),
+                    ..context
+                },
             )?);
         let Some(template) = template else {
             return Ok(None);

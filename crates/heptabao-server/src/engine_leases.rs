@@ -3,6 +3,12 @@
 use super::*;
 use crate::auth::{LeaseOwner, ResolvedLeaseOwner, ServiceOwnerProfile};
 
+pub(crate) struct PkiRequestContext<'a> {
+    pub(crate) owner: Option<&'a ResolvedLeaseOwner>,
+    pub(crate) now: u64,
+    pub(crate) identity_templates: Option<&'a crate::auth::IdentityTemplateValues>,
+}
+
 impl EngineState {
     fn ssh_mount(&self, namespace: &str, path: &str) -> Option<&str> {
         let state = self.namespaces.get(namespace)?;
@@ -271,6 +277,7 @@ impl EngineState {
         }
         Ok(response)
     }
+    #[cfg(test)]
     pub(crate) fn handle_service_pki(
         &mut self,
         namespace: &str,
@@ -280,6 +287,46 @@ impl EngineState {
         owner: &ResolvedLeaseOwner,
         now: u64,
     ) -> Result<EngineResponse> {
+        self.handle_service_pki_context(
+            namespace,
+            method,
+            path,
+            body,
+            PkiRequestContext {
+                owner: Some(owner),
+                now,
+                identity_templates: None,
+            },
+        )
+    }
+
+    pub(crate) fn pki_identity_selectors(&self, namespace: &str, path: &str) -> BTreeSet<String> {
+        let Some(mount) = self.pki_mount(namespace, path) else {
+            return BTreeSet::new();
+        };
+        let Some(Backend::Pki(engine)) = self
+            .namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(mount))
+            .map(|mount| &mount.backend)
+        else {
+            return BTreeSet::new();
+        };
+        engine.identity_selectors(&path[mount.len()..])
+    }
+
+    pub(crate) fn handle_service_pki_context(
+        &mut self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        context: PkiRequestContext<'_>,
+    ) -> Result<EngineResponse> {
+        let owner = context
+            .owner
+            .ok_or_else(|| error(403, "credential issuer is required"))?;
+        let now = context.now;
         if !write_method(method) {
             return Err(unsupported());
         }
@@ -306,8 +353,17 @@ impl EngineState {
             .owner
             .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
             .map_err(|_| error(403, "credential owner scope mismatch"))?;
-        let response =
-            engine.issue_route(&mount, relative, body, &owner.owner, owner.expires_at, now)?;
+        let response = engine.issue_route(
+            &mount,
+            relative,
+            body,
+            pki::LeafAuthority {
+                owner: &owner.owner,
+                owner_expires: owner.expires_at,
+                now,
+                identity_templates: context.identity_templates,
+            },
+        )?;
         if response.mutated {
             self.namespaces.insert(namespace.into(), candidate);
             self.lease_clock = now;

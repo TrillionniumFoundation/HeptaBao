@@ -403,13 +403,21 @@ impl Service {
         } else {
             None
         };
+        let identity_values =
+            match Self::pki_identity_values(state, &principal, request.namespace, request.path) {
+                Ok(values) => values,
+                Err(cause) => return cause,
+            };
         let plan = match state.engines.prepare_external_pki(
             request.namespace,
             request.method,
             request.path,
             request.body,
-            request.now,
-            owner.as_ref(),
+            crate::engines::PkiRequestContext {
+                owner: owner.as_ref(),
+                now: request.now,
+                identity_templates: Some(&identity_values),
+            },
         ) {
             Ok(Some(plan)) => plan,
             Ok(None) => return Response::error(404, "external PKI route not found"),

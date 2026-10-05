@@ -362,9 +362,10 @@ impl Pki {
         path: &str,
         body: &Value,
         mount: &str,
-        owner: Option<&crate::auth::ResolvedLeaseOwner>,
-        now: u64,
+        context: crate::engines::PkiRequestContext<'_>,
     ) -> Result<Option<ExternalPkiTemplate>> {
+        let owner = context.owner;
+        let now = context.now;
         let Some(key) = self.external.root.as_ref() else {
             return Ok(None);
         };
@@ -403,9 +404,12 @@ impl Pki {
                     sign,
                 },
                 body,
-                &owner.owner,
-                owner.expires_at,
-                now,
+                LeafAuthority {
+                    owner: &owner.owner,
+                    owner_expires: owner.expires_at,
+                    now,
+                    identity_templates: context.identity_templates,
+                },
             )?;
             prepared.path = format!("{mount}{path}");
             prepared.serial = external_serial()?;

@@ -31,6 +31,8 @@ use role_names::RoleNamePolicy;
 mod role_csr;
 #[path = "pki_role_subjects.rs"]
 mod role_subjects;
+#[path = "pki_role_templates.rs"]
+mod role_templates;
 use role_time::RoleTimePolicy;
 #[path = "pki_issuer_time.rs"]
 mod issuer_time;
@@ -905,6 +907,9 @@ impl Pki {
                             "allowed_ip_sans_cidr",
                             "allowed_uri_sans",
                             "no_store",
+                            "allowed_domains_template",
+                            "allowed_uri_sans_template",
+                            "allow_globs_in_identity_templates",
                             "use_csr_common_name",
                             "use_csr_sans",
                             "allowed_serial_numbers",
@@ -1353,9 +1358,12 @@ impl Pki {
                 sign: false,
             },
             body,
-            owner,
-            owner_expires,
-            now,
+            LeafAuthority {
+                owner,
+                owner_expires,
+                now,
+                identity_templates: None,
+            },
         )
     }
 
@@ -1363,10 +1371,14 @@ impl Pki {
         &self,
         route: IssuanceRoute<'_>,
         body: &Value,
-        owner: &LeaseOwner,
-        owner_expires: Option<u64>,
-        now: u64,
+        authority: LeafAuthority<'_>,
     ) -> Result<LeafTemplate> {
+        let LeafAuthority {
+            owner,
+            owner_expires,
+            now,
+            identity_templates,
+        } = authority;
         reject_unknown(
             body,
             &[
@@ -1384,11 +1396,16 @@ impl Pki {
                 "not_after",
             ],
         )?;
-        let role = self
+        let mut role = self
             .roles
             .get(route.role)
             .ok_or_else(|| bad(&format!("unknown role: {}", route.role)))?
             .clone();
+        let declared_uri_patterns = role
+            .role_name_policy
+            .as_ref()
+            .is_some_and(|policy| !policy.allowed_uri_sans.is_empty());
+        role.resolve_identity_templates(identity_templates);
         let csr = if route.sign {
             Some(role_csr::CsrInput::from_request(&role, body)?)
         } else {
@@ -1489,7 +1506,7 @@ impl Pki {
             )));
         }
         if let Some(policy) = names {
-            policy.validate_sans_from(&ip_sans, &uri_sans, sans_from_csr)?;
+            policy.validate_sans_from(&ip_sans, &uri_sans, sans_from_csr, declared_uri_patterns)?;
         } else if !uri_sans.is_empty() {
             return Err(bad(
                 "URI Subject Alternative Names are not allowed in this role, but were provided via the API",
@@ -1613,9 +1630,12 @@ impl Pki {
                 sign: false,
             },
             body,
-            owner,
-            owner_expires,
-            now,
+            LeafAuthority {
+                owner,
+                owner_expires,
+                now,
+                identity_templates: None,
+            },
         )
     }
 
@@ -1624,9 +1644,7 @@ impl Pki {
         mount: &str,
         relative: &str,
         body: &Value,
-        owner: &LeaseOwner,
-        owner_expires: Option<u64>,
-        now: u64,
+        authority: LeafAuthority<'_>,
     ) -> Result<EngineResponse> {
         let route = if let Some(role) = relative.strip_prefix("issue/") {
             IssuanceRoute {
@@ -1662,27 +1680,25 @@ impl Pki {
         if route.role.is_empty() || route.role.contains('/') {
             return Err(not_found());
         }
-        self.issue_owned_route(route, body, owner, owner_expires, now)
+        self.issue_owned_route(route, body, authority)
     }
 
     fn issue_owned_route(
         &mut self,
         route: IssuanceRoute<'_>,
         body: &Value,
-        owner: &LeaseOwner,
-        owner_expires: Option<u64>,
-        now: u64,
+        authority: LeafAuthority<'_>,
     ) -> Result<EngineResponse> {
         if self.profile_route_needs_identity(&route)? {
             // Identity promotion and issuance publish together. Any subsequent
             // error drops this owned clone, preserving direct-call atomicity.
             let mut candidate = self.clone();
             candidate.promote_profile_root_identity(&route)?;
-            let response = candidate.issue_owned_route(route, body, owner, owner_expires, now)?;
+            let response = candidate.issue_owned_route(route, body, authority)?;
             *self = candidate;
             return Ok(response);
         }
-        let prepared = self.prepare_leaf_route(route, body, owner, owner_expires, now)?;
+        let prepared = self.prepare_leaf_route(route, body, authority)?;
         let root = self.selected_issuer(if prepared.local_issuer_id.is_empty() {
             "default"
         } else {
@@ -2350,6 +2366,13 @@ struct IssuanceRoute<'a> {
     role: &'a str,
     explicit_issuer: Option<&'a str>,
     sign: bool,
+}
+
+pub(super) struct LeafAuthority<'a> {
+    pub(super) owner: &'a LeaseOwner,
+    pub(super) owner_expires: Option<u64>,
+    pub(super) now: u64,
+    pub(super) identity_templates: Option<&'a crate::auth::IdentityTemplateValues>,
 }
 
 #[derive(Clone)]

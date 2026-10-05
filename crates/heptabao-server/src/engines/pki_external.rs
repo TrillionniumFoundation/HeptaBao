@@ -801,8 +801,11 @@ mod tests {
                     "common_name":"leaf.example.test","ttl":"10m"
                 }),
                 "legacy/",
-                Some(&owner),
-                100,
+                crate::engines::PkiRequestContext {
+                    owner: Some(&owner),
+                    now: 100,
+                    identity_templates: None,
+                },
             )?
             .ok_or_else(|| bad("actual leaf template"))?;
         // This finite predecessor fixture executes the real old None DER

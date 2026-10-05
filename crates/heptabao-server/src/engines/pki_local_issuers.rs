@@ -960,17 +960,23 @@ mod tests {
             "pki/",
             "issue/web",
             &json!({"common_name":"a.example.test"}),
-            &owner,
-            None,
-            now,
+            LeafAuthority {
+                owner: &owner,
+                owner_expires: None,
+                now,
+                identity_templates: None,
+            },
         )?;
         let b = pki.issue_route(
             "pki/",
             "issuer/root-b/issue/web",
             &json!({"common_name":"b.example.test"}),
-            &owner,
-            None,
-            now,
+            LeafAuthority {
+                owner: &owner,
+                owner_expires: None,
+                now,
+                identity_templates: None,
+            },
         )?;
         for leaf in [&a, &b] {
             assert!(
@@ -1099,9 +1105,12 @@ mod tests {
                 "pki/",
                 "issue/web",
                 &json!({"common_name":"old.example.test"}),
-                &owner,
-                None,
-                now,
+                LeafAuthority {
+                    owner: &owner,
+                    owner_expires: None,
+                    now,
+                    identity_templates: None,
+                },
             )?;
             let serial = normalize_serial(
                 leaf.body["data"]["serial_number"]
