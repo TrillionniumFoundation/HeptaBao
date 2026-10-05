@@ -777,7 +777,13 @@ impl Pki {
             if self.local_crl.is_some() {
                 self.rebuild_local_crls(now, false)?;
             }
-            return Ok(ok(Value::Null, changed));
+            let mut response = ok(Value::Null, changed);
+            if path == "root" {
+                response.body["warnings"] = json!([
+                    "DELETE /root deletes all keys and issuers; prefer the new DELETE /key/:key_ref and DELETE /issuer/:issuer_ref for finer granularity, unless removal of all keys and issuers is desired."
+                ]);
+            }
+            return Ok(response);
         }
         if let Some(route) = self.public_read_route(method, path) {
             return self.handle_public_read(route, body, now);

@@ -768,7 +768,17 @@ mod tests {
             )?;
             let expected = restored.cached_local_crl(restored.local_issuer(reference)?, delta)?;
             if path.ends_with("pem") {
-                assert_eq!(bytes, pem("X509 CRL", expected).as_bytes());
+                assert!(
+                    !bytes.ends_with(b"\n"),
+                    "native raw CRL PEM has no final LF"
+                );
+                assert_eq!(
+                    bytes,
+                    pem("X509 CRL", expected)
+                        .strip_suffix('\n')
+                        .ok_or("independent CRL PEM final LF")?
+                        .as_bytes()
+                );
             } else {
                 assert_eq!(bytes, expected);
             }

@@ -527,10 +527,16 @@ fn external_pki270_public_issuer_and_certificate_shapes_bind_original_public_mat
         json!({}),
     );
     assert!(
-        leaf.body["data"]["issuer_id"] == id
+        leaf.body["data"]
+            .as_object()
+            .ok_or("public certificate shape")?
+            .keys()
+            .map(String::as_str)
+            .collect::<Vec<_>>()
+            == ["certificate", "revocation_time", "revocation_time_rfc3339"]
             && leaf.body["data"]["revocation_time"] == 0
             && leaf.body["data"]["revocation_time_rfc3339"] == "",
-        "live leaf has its original issuer and unrevoked shape"
+        "native certificate shape retains actual signed bytes and unrevoked state"
     );
     for (path, expected) in [
         ("external-ca/ca".to_owned(), ca_der),
@@ -761,5 +767,65 @@ fn external_pki270_public_clock_maintenance_keeps_irreversible_schema66_and_real
         remote.calls()? == provider_entries,
         "public clock safety never enters remote Sign"
     );
+    Ok(())
+}
+
+#[test]
+fn external_pki270_standard_root_delete_warning_public_leaf_and_empty_crl_are_native() -> TestResult
+{
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (_root, mut service, _unseal, admin, serial) = issued_public_fixture(&remote)?;
+    let old = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        "",
+        json!({}),
+    );
+    assert!(old.status == 200, "actual signed predecessor leaf");
+    let before = remote.calls()?;
+    let deleted = call(
+        &mut service,
+        "DELETE",
+        "external-ca/root",
+        &admin,
+        json!({}),
+    );
+    assert!(
+        deleted.status == 200
+            && deleted.body["warnings"]
+                == json!([
+                    "DELETE /root deletes all keys and issuers; prefer the new DELETE /key/:key_ref and DELETE /issuer/:issuer_ref for finer granularity, unless removal of all keys and issuers is desired."
+                ]),
+        "native standard root deletion warning"
+    );
+    let retained = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        "",
+        json!({}),
+    );
+    assert!(
+        retained.status == 200 && retained.body["data"] == old.body["data"],
+        "native original three-field public leaf survives actual issuer deletion"
+    );
+    for (path, pem) in [("external-ca/crl", false), ("external-ca/crl/pem", true)] {
+        let empty = call(&mut service, "GET", path, "", json!({}));
+        assert!(
+            empty.status == 204 && empty.body == json!({"__heptabao_pki_crl":"","pem":pem}),
+            "native deleted root raw CRL response is empty with closed transport type"
+        );
+    }
+    assert!(
+        remote.calls()? == before,
+        "public retirement reads and root deletion never acquire KMS authority"
+    );
+    service
+        .state
+        .as_ref()
+        .ok_or("retired root state")?
+        .validate_format()
+        .map_err(|_| "retired actual issuer graph")?;
     Ok(())
 }

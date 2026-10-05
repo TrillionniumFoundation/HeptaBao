@@ -62,7 +62,7 @@ impl Pki {
         }
         let is_pem = matches!(format, IssuerCrlFormat::Pem);
         let bytes = if is_pem {
-            pem("X509 CRL", der).into_bytes()
+            stored_pem("X509 CRL", der).into_bytes()
         } else {
             der.to_vec()
         };
@@ -284,12 +284,7 @@ impl Pki {
                     ));
                 }
                 let certificate = self.issued.get(&serial).ok_or_else(not_found)?;
-                let mut projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":certificate.revoked_at.map(timestamp).unwrap_or_default()});
-                if !certificate.local_issuer_id.is_empty() {
-                    projection["issuer_id"] = json!(certificate.local_issuer_id);
-                } else if let Some((issuer, _, _)) = self.public_issuer_metadata() {
-                    projection["issuer_id"] = json!(issuer);
-                }
+                let projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":certificate.revoked_at.map(timestamp).unwrap_or_default()});
                 Ok(ok(projection, false))
             }
             PkiPublicRead::RawCertificate(serial, format) => {
@@ -336,7 +331,16 @@ impl Pki {
                 if self.has_public_default_override() {
                     return Err(not_found());
                 }
-                let root = self.root.as_ref().ok_or_else(not_found)?;
+                let Some(root) = self.root.as_ref() else {
+                    if matches!(format, IssuerCrlFormat::Json) {
+                        return Err(not_found());
+                    }
+                    return Ok(EngineResponse {
+                        status: 204,
+                        body: json!({"__heptabao_pki_crl":"","pem":matches!(format,IssuerCrlFormat::Pem)}),
+                        mutated: false,
+                    });
+                };
                 let der = self.cached_local_crl(root, delta)?;
                 if matches!(format, IssuerCrlFormat::Json) {
                     return Ok(ok(

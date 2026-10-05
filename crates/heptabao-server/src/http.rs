@@ -1811,7 +1811,7 @@ fn write_response_with_namespace(
     };
     // Only this closed, bounded CRL transport envelope can select a raw public
     // body. The content types are constants and never come from provider JSON.
-    let raw_crl = if response.status == 200
+    let raw_crl = if matches!(response.status, 200 | 204)
         && response
             .body
             .as_object()
@@ -1827,7 +1827,10 @@ fn write_response_with_namespace(
                     return None;
                 }
                 let bytes = base64.decode(text).ok()?;
-                (bytes.len() <= 512 * 1024 && base64.encode(&bytes) == text).then_some(bytes)
+                (bytes.len() <= 512 * 1024
+                    && base64.encode(&bytes) == text
+                    && (response.status == 200 || bytes.is_empty()))
+                .then_some(bytes)
             })
     } else {
         None
@@ -2169,6 +2172,30 @@ mod tests {
         }
         Ok(())
     }
+    #[test]
+    fn deleted_pki_root_empty_crl_retains_only_closed_raw_content_type() -> io::Result<()> {
+        for (encoded, expected) in [("", "application/pkix-crl"), ("MAA=", "application/json")] {
+            let mut wire = Vec::new();
+            write_response(
+                &mut wire,
+                Response {
+                    status: 204,
+                    consistency_index: None,
+                    body: json!({"__heptabao_pki_crl":encoded,"pem":false}),
+                },
+                false,
+            )?;
+            let head = wire.split(|byte| *byte == b'\n').collect::<Vec<_>>();
+            assert!(
+                head.iter()
+                    .any(|line| line.starts_with(format!("Content-Type: {expected}").as_bytes())),
+                "204 can select CRL MIME only for the canonical empty envelope"
+            );
+            assert!(wire.ends_with(b"\r\n\r\n"), "204 emits no public body");
+        }
+        Ok(())
+    }
+
     #[test]
     fn external_pki_crl_transport_is_bounded_and_has_a_closed_content_type() -> io::Result<()> {
         use base64::Engine as _;
