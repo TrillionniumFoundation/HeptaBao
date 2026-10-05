@@ -2427,8 +2427,8 @@ fn precise_closed_actor_fixture(
     candidate.auth.install_namespace_precise_lease_for_test(
         namespace,
         &actor,
-        crate::auth::token_precision::Timestamp::checked(100, 100_000_000)?,
-        crate::auth::token_precision::Timestamp::checked(100, deadline_nanos)?,
+        crate::auth::Timestamp::checked(100, 100_000_000)?,
+        crate::auth::Timestamp::checked(100, deadline_nanos)?,
     )?;
     candidate.schema = candidate.writer_schema();
     candidate
@@ -2581,10 +2581,7 @@ fn closed_auth_precise_post_commit_fractional_expiry_delivers_no_metadata_or_ref
             "precise-late",
             root_key,
             &actor,
-            AuthorityTime::Precise(crate::auth::token_precision::Timestamp::checked(
-                100,
-                200_000_000,
-            )?),
+            AuthorityTime::Precise(crate::auth::Timestamp::checked(100, 200_000_000)?),
             None,
         )
         .map_err(|_| "actual closed parcel")?;
@@ -2636,10 +2633,7 @@ fn closed_auth_precise_missing_independent_parent_and_retired_binding_stay_close
                 "precise-parent/child",
                 root_key,
                 &actor,
-                AuthorityTime::Precise(crate::auth::token_precision::Timestamp::checked(
-                    100,
-                    250_000_000
-                )?),
+                AuthorityTime::Precise(crate::auth::Timestamp::checked(100, 250_000_000)?),
                 None
             )
             .is_err(),
@@ -2710,10 +2704,7 @@ fn closed_auth_precise_missing_independent_parent_and_retired_binding_stay_close
                 "retired-precise",
                 root_key,
                 &retired_actor,
-                AuthorityTime::Precise(crate::auth::token_precision::Timestamp::checked(
-                    100,
-                    300_000_000
-                )?),
+                AuthorityTime::Precise(crate::auth::Timestamp::checked(100, 300_000_000)?),
                 None
             )
             .is_err(),
@@ -2742,10 +2733,7 @@ fn closed_auth_precise_final_gate_preserves_newer_durably_observed_root_floor() 
     )?;
     let state = service.state.as_ref().ok_or("state")?;
     let root_key = service.barrier_key.as_ref().ok_or("root key")?;
-    let live = AuthorityTime::Precise(crate::auth::token_precision::Timestamp::checked(
-        100,
-        200_000_000,
-    )?);
+    let live = AuthorityTime::Precise(crate::auth::Timestamp::checked(100, 200_000_000)?);
     let admission = service
         .namespace_runtime
         .closed_auth_attempt_observed(state, "precise-floor", root_key, &actor, live, None)
@@ -2762,7 +2750,7 @@ fn closed_auth_precise_final_gate_preserves_newer_durably_observed_root_floor() 
         .commit_state(&mut candidate)
         .map_err(|_| "actual use commit")?;
     service.state = Some(candidate);
-    let newer = crate::auth::token_precision::Timestamp::checked(100, 960_000_000)?;
+    let newer = crate::auth::Timestamp::checked(100, 960_000_000)?;
     let mut candidate = service.state.clone().ok_or("state")?;
     assert!(
         candidate

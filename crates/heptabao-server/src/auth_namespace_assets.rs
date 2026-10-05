@@ -54,7 +54,7 @@ impl AuthState {
     pub(crate) fn namespace_batch_retirement_safe(&self) -> bool {
         self.batch_authority
             .as_ref()
-            .is_none_or(BatchKeyAuthority::has_no_issued_claims)
+            .is_none_or(batch::BatchKeyAuthority::has_no_issued_claims)
     }
 
     /// Local Token API cleanup is only admitted under the Service's genuine
