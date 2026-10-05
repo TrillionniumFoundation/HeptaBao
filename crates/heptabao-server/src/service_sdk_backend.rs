@@ -437,14 +437,23 @@ impl Service {
         } else {
             "update"
         };
-        if let Err(e) = state.auth.authorize_sudo_request(
-            &principal,
-            request.namespace,
-            request.path,
+        let expected = match self.current_state_identity() {
+            Ok(v) => v,
+            Err(e) => return e,
+        };
+        let mut authority = plugin::PluginResponseAuthority::new(
+            principal,
+            &state,
+            request,
             capability,
-            request.now,
-        ) {
-            return Response::error(e.status, &e.message);
+            true,
+            &self.unseal_nonce,
+        );
+        if let Err(error) = self.validate_plugin_response(&mut authority) {
+            return error;
+        }
+        if self.current_state_identity().as_ref().ok() != Some(&expected) {
+            return Response::error(503, "SDK control snapshot changed before admission");
         }
         if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(501, "SDK catalog and mount wrapping is not implemented");
@@ -465,14 +474,6 @@ impl Service {
                 return Response::error(404, "SDK mount not found");
             };
             let host_key = self.sdk_host_key(request.namespace, &actual, &owner);
-            self.pending_sdk_control_authority = Some(plugin::PluginResponseAuthority::new(
-                principal,
-                &state,
-                request,
-                capability,
-                true,
-                &self.unseal_nonce,
-            ));
             if let Err(e) = state.engines.handle(
                 request.namespace,
                 "DELETE",
@@ -483,10 +484,11 @@ impl Service {
                 return Response::error(e.status, &e.message);
             }
             state.schema = state.writer_schema();
-            if let Err(e) = self.commit_state(&mut state) {
+            if let Err(e) = self.commit_sdk_control(&mut state, &mut authority, &expected) {
                 return e;
             }
             self.state = Some(state);
+            self.pending_sdk_control_authority = Some(authority);
             if let Some(control) = self.sdk_hosts.remove(&host_key) {
                 control.retire();
             }
@@ -587,7 +589,7 @@ impl Service {
                 return error;
             }
             state.schema = state.writer_schema();
-            if let Err(e) = self.commit_state(&mut state) {
+            if let Err(e) = self.commit_sdk_control(&mut state, &mut authority, &expected) {
                 return e;
             }
             self.state = Some(state.clone());
@@ -595,7 +597,7 @@ impl Service {
             // A failed external Setup preserves that mount for explicit cleanup.
             return self.stage_sdk_plan(
                 &state,
-                principal,
+                authority,
                 request,
                 StageTarget {
                     mount,
@@ -603,20 +605,11 @@ impl Service {
                     operation: "_mount",
                     path: "",
                 },
-                "update",
             );
         }
         if !request.namespace.is_empty() {
             return Response::error(403, "SDK catalog is root-namespace only");
         }
-        self.pending_sdk_control_authority = Some(plugin::PluginResponseAuthority::new(
-            principal,
-            &state,
-            request,
-            capability,
-            true,
-            &self.unseal_nonce,
-        ));
         if request.path == "sys/plugins/catalog" {
             if !matches!(request.method, "GET" | "HEAD") {
                 return Response::error(405, "catalog listing requires GET");
@@ -628,6 +621,7 @@ impl Service {
                 .iter()
                 .map(|d| json!({"type":"secret","name":d.name,"version":d.version,"builtin":false}))
                 .collect::<Vec<_>>();
+            self.pending_sdk_control_authority = Some(authority);
             return Response::ok(
                 json!({"data":{"secret":names,"auth":self.auth_plugins.keys().collect::<Vec<_>>(),"database":self.database_plugins.keys().collect::<Vec<_>>(),"detailed":detailed}}),
             );
@@ -640,6 +634,7 @@ impl Service {
             if !matches!(request.method, "GET" | "HEAD" | "LIST" | "SCAN") {
                 return Response::error(405, "catalog listing requires GET or LIST");
             }
+            self.pending_sdk_control_authority = Some(authority);
             return Response::ok(
                 json!({"data":{"keys":state.engines.sdk_descriptors().into_iter().map(|d|d.name).collect::<BTreeSet<_>>()}}),
             );
@@ -655,7 +650,7 @@ impl Service {
             .get("version")
             .and_then(Value::as_str)
             .unwrap_or("");
-        match request.method {
+        let response = match request.method {
             "GET" | "HEAD" => {
                 let Some(d) = state.engines.sdk_descriptor(name, version) else {
                     return Response::error(404, "SDK catalog entry not found");
@@ -705,11 +700,19 @@ impl Service {
                         .into(),
                     generation: 1,
                 };
+                if state.namespaces.has_custody_state()
+                    && state.engines.sdk_descriptor(name, version).is_some()
+                {
+                    return Response::error(
+                        409,
+                        "SDK descriptor replacement requires complete independent namespace ownership",
+                    );
+                }
                 if let Err(e) = state.engines.register_sdk_descriptor(d) {
                     return Response::error(e.status, &e.message);
                 }
                 state.schema = state.writer_schema();
-                if let Err(e) = self.commit_state(&mut state) {
+                if let Err(e) = self.commit_sdk_control(&mut state, &mut authority, &expected) {
                     return e;
                 }
                 self.state = Some(state);
@@ -720,11 +723,17 @@ impl Service {
                 }
             }
             "DELETE" => {
+                if state.namespaces.has_custody_state() {
+                    return Response::error(
+                        409,
+                        "SDK descriptor removal requires complete independent namespace ownership",
+                    );
+                }
                 if let Err(e) = state.engines.deregister_sdk_descriptor(name, version) {
                     return Response::error(e.status, &e.message);
                 }
                 state.schema = state.writer_schema();
-                if let Err(e) = self.commit_state(&mut state) {
+                if let Err(e) = self.commit_sdk_control(&mut state, &mut authority, &expected) {
                     return e;
                 }
                 self.state = Some(state);
@@ -735,8 +744,45 @@ impl Service {
                 }
             }
             _ => Response::error(405, "SDK catalog method unsupported"),
-        }
+        };
+        self.pending_sdk_control_authority = Some(authority);
+        response
     }
+    fn commit_sdk_control(
+        &mut self,
+        state: &mut State,
+        authority: &mut plugin::PluginResponseAuthority,
+        expected: &crate::state_record_root::StateIdentity,
+    ) -> Result<(), Response> {
+        self.validate_plugin_response(authority)?;
+        if &self.current_state_identity()? != expected {
+            return Err(Response::error(
+                503,
+                "SDK control snapshot changed before candidate",
+            ));
+        }
+        authority.observe_candidate_time(state)?;
+        self.prepare_sdk_mount_record_root(state)?;
+        state.schema = state.writer_schema();
+        let publication = self.prepare_record_plan(state)?;
+        self.validate_plugin_response(authority)?;
+        if &self.current_state_identity()? != expected {
+            return Err(Response::error(
+                503,
+                "SDK control snapshot changed before publication",
+            ));
+        }
+        self.commit_record_plan_with_before_publish(
+            state,
+            publication,
+            |auth| authority.validate_live_auth(auth),
+            #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+            None,
+        )?;
+        self.state = Some(state.clone());
+        Ok(())
+    }
+
     pub fn install_sdk_backend(&mut self, config: Option<SdkBackendConfig>) -> Result<(), String> {
         if self.state.is_some() {
             return Err("SDK runtime configuration is immutable while unsealed".into());
@@ -801,10 +847,10 @@ impl Service {
             .map_err(|_| SdkBridgeError::Fenced)?;
         self.sdk_binding_gate(plan)?;
         let mut state = self.state.clone().ok_or(SdkBridgeError::Fenced)?;
-        authority
-            .observe_candidate_time(&mut state)
+        let clock_changed = authority
+            .observe_candidate_time_changed(&mut state)
             .map_err(|_| SdkBridgeError::Fenced)?;
-        let (reply, changed) = match op {
+        let (reply, storage_changed) = match op {
             StorageOp::Get(key) => {
                 let entry = state
                     .engines
@@ -848,6 +894,7 @@ impl Service {
                     .map_err(|_| SdkBridgeError::Storage)?,
             ),
         };
+        let changed = storage_changed || clock_changed;
         if changed {
             state.schema = state.writer_schema();
             let publication = self
@@ -919,19 +966,21 @@ impl Service {
         if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(501, "SDK response wrapping is not implemented");
         }
-        if let Err(e) = state.auth.authorize_request(
-            &principal,
-            request.namespace,
-            request.path,
+        let mut authority = plugin::PluginResponseAuthority::new(
+            principal,
+            &state,
+            request,
             capability,
-            request.now,
-        ) {
-            return Response::error(e.status, &e.message);
+            false,
+            &self.unseal_nonce,
+        );
+        if let Err(error) = self.validate_plugin_response(&mut authority) {
+            return error;
         }
         let path = request.path.strip_prefix(&mount).unwrap_or("").to_owned();
         self.stage_sdk_plan(
             &state,
-            principal,
+            authority,
             request,
             StageTarget {
                 mount,
@@ -939,16 +988,14 @@ impl Service {
                 operation,
                 path: &path,
             },
-            capability,
         )
     }
     fn stage_sdk_plan(
         &mut self,
         state: &State,
-        principal: Principal,
+        authority: plugin::PluginResponseAuthority,
         request: &RequestView<'_>,
         target: StageTarget<'_>,
-        capability: &'static str,
     ) -> Response {
         let StageTarget {
             mount,
@@ -999,14 +1046,7 @@ impl Service {
             self.sdk_hosts.insert(key, Arc::clone(&control));
             control
         };
-        let authority = plugin::PluginResponseAuthority::new(
-            principal,
-            state,
-            request,
-            capability,
-            operation == "_mount",
-            &self.unseal_nonce,
-        );
+
         let data = if request.body.is_null() {
             json!({})
         } else {
@@ -1029,22 +1069,80 @@ impl Service {
         });
         Response::error(500, "SDK request was not dispatched")
     }
+    fn sdk_delivery_veto(
+        &mut self,
+        mut response: Response,
+        error: Response,
+        fingerprint: &str,
+        original_now: u64,
+    ) -> Response {
+        erase_json(&mut response.body);
+        response.consistency_index = None;
+        if self
+            .audit_event(
+                "sdk-delivery-veto",
+                fingerprint,
+                original_now,
+                Some(error.status),
+            )
+            .is_err()
+        {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            self.retire_sdk_hosts();
+            return Response::error(503, "SDK delivery veto audit failed; recovery required");
+        }
+        error
+    }
+    fn sdk_delivery_capsule_lost(&mut self, mut response: Response) -> Response {
+        erase_json(&mut response.body);
+        response.consistency_index = None;
+        crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+        self.recovery_required = true;
+        self.ha_activation = None;
+        self.retire_sdk_hosts();
+        Response::error(503, "SDK delivery capsule was lost")
+    }
+    pub(super) fn complete_pending_sdk_control_delivery(
+        &mut self,
+        expected: bool,
+        response: Response,
+        fingerprint: &str,
+    ) -> Response {
+        match (expected, self.pending_sdk_control_authority.take()) {
+            (true, Some(mut authority)) => {
+                if let Err(error) = self.validate_plugin_response(&mut authority) {
+                    return self.sdk_delivery_veto(response, error, fingerprint, authority.now());
+                }
+                response
+            }
+            (false, None) => response,
+            _ => self.sdk_delivery_capsule_lost(response),
+        }
+    }
     pub(super) fn complete_sdk_delivery(
         &mut self,
         plan: &mut Plan,
-        mut response: Response,
+        response: Response,
+        fingerprint: &str,
     ) -> Response {
-        let gate = (|| {
-            let mut authority = plan.authority.lock().map_err(|_| {
-                Response::error(503, "SDK affine authority unavailable after audit")
-            })?;
-            self.validate_plugin_response(&mut authority)?;
-            self.sdk_binding_gate(plan).map_err(bridge_failure)
-        })();
-        if let Err(e) = gate {
-            erase_json(&mut response.body);
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
+        let gate = match plan.authority.lock() {
+            Ok(mut authority) => {
+                let original_now = authority.now();
+                self.validate_plugin_response(&mut authority)
+                    .and_then(|()| self.sdk_binding_gate(plan).map_err(bridge_failure))
+                    .map_err(|error| (error, original_now))
+            }
+            Err(_) => {
+                plan.control.retire();
+                return self.sdk_delivery_capsule_lost(response);
+            }
+        };
+        if let Err((error, original_now)) = gate {
             plan.control.retire();
-            return e;
+            return self.sdk_delivery_veto(response, error, fingerprint, original_now);
         }
         response
     }
@@ -1123,3 +1221,7 @@ impl Service {
         Response::ok(body)
     }
 }
+
+#[cfg(test)]
+#[path = "service_sdk_authority_tests.rs"]
+mod authority_tests;

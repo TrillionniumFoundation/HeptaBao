@@ -81,8 +81,8 @@ const PKI_ROLE_WILDCARD_STATE_SCHEMA: u32 = 85;
 const PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA: u32 = 88;
 const PKI_ROLE_TIME_STATE_SCHEMA: u32 = 89;
 const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
-const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
 const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
+const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
 #[cfg(test)]
 const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ROLE_NAMES_STATE_SCHEMA;
 
@@ -100,8 +100,8 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
                 | PKI_ROLE_TIME_STATE_SCHEMA
                 | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
-                | PKI_ROLE_NAMES_STATE_SCHEMA
                 | SDK_STORAGE_STATE_SCHEMA
+                | PKI_ROLE_NAMES_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -1893,7 +1893,7 @@ impl Service {
                     pending.token_clock,
                     response,
                 );
-                return self.complete_sdk_delivery(&mut plan, response);
+                return self.complete_sdk_delivery(&mut plan, response, &pending.fingerprint);
             }
             (ExternalEffectPlan::PluginKms(plan), ExternalEffectResult::PluginKms(result)) => {
                 self.finalize_plugin_kms(plan, result)
@@ -2408,35 +2408,18 @@ impl Service {
         // mandatory audit. A typed unknown floor outcome attaches to this same
         // request, rather than being reconstructed from the public response.
         self.pending_ordinary_kv_authority = ordinary_kv_authority;
-        self.pending_token_api_authority = token_api_authority;
-        self.pending_help_authority = help_authority;
         #[cfg(target_os = "linux")]
         {
             self.pending_sdk_control_authority = sdk_control;
         }
-        let mut response = self.audit_completed_response(&fingerprint, now, token_clock, response);
+        self.pending_token_api_authority = token_api_authority;
+        self.pending_help_authority = help_authority;
+        let response = self.audit_completed_response(&fingerprint, now, token_clock, response);
         #[cfg(target_os = "linux")]
-        match (
-            sdk_control_present,
-            self.pending_sdk_control_authority.take(),
-        ) {
-            (true, Some(mut authority)) => {
-                if let Err(error) = self.validate_plugin_response(&mut authority) {
-                    erase_json(&mut response.body);
-                    response.consistency_index = None;
-                    return RequestExecution::Complete(error);
-                }
-            }
-            (false, None) => {}
-            _ => {
-                erase_json(&mut response.body);
-                response.consistency_index = None;
-                return RequestExecution::Complete(Response::error(
-                    503,
-                    "SDK control delivery capsule unavailable",
-                ));
-            }
-        }
+        let mut response =
+            self.complete_pending_sdk_control_delivery(sdk_control_present, response, &fingerprint);
+        #[cfg(not(target_os = "linux"))]
+        let mut response = response;
         let response = match (
             ordinary_kv_expected,
             self.pending_ordinary_kv_authority.take(),

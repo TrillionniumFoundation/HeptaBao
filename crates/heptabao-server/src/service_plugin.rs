@@ -252,6 +252,18 @@ impl PluginResponseAuthority {
         }
     }
 
+    #[cfg(target_os = "linux")]
+    pub(super) fn observe_candidate_time_changed(
+        &self,
+        state: &mut State,
+    ) -> Result<bool, Response> {
+        let time = state.auth.token_api_observed_time(self.token_time()?);
+        state
+            .auth
+            .observe_token_api_time(time)
+            .map_err(|error| Response::error(error.status, &error.message))
+    }
+
     pub(super) fn observe_candidate_time(
         &self,
         state: &mut State,
