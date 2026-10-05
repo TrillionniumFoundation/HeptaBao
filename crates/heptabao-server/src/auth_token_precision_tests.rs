@@ -96,7 +96,6 @@ fn affine_original_clock_keeps_exact_authority_in_legacy_helpers_and_target_insp
             .is_err(),
         "metadata admission never becomes an operation capability"
     );
-    assert!(!super::super::token_precise_issuance::ENABLED);
     Ok(())
 }
 

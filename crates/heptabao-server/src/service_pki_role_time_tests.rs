@@ -356,7 +356,9 @@ fn pki_time89_actual88_backup_record_and_final_floor_survive_last_owner_tidy() -
         predecessor
             .validate_publication_schema(Some(&retired))
             .is_err()
-            && service.prepare_record_plan(&mut predecessor.clone()).is_err()
+            && service
+                .prepare_record_plan(&mut predecessor.clone())
+                .is_err()
             && service.commit_state(&mut predecessor.clone()).is_err()
             && service.prepare_snapshot_restore(&old88).is_err(),
         "original authenticated88 cannot replace retired89 through ordinary gates"

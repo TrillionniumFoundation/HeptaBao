@@ -90,13 +90,24 @@ fn setup_with_historical_token(
         let principal = candidate.auth.authenticate(&root_token, now)?;
         let response = candidate
             .auth
-            .handle(Some(&principal), "", "POST", "auth/token/create", &body, now)?
+            .handle(
+                Some(&principal),
+                "",
+                "POST",
+                "auth/token/create",
+                &body,
+                now,
+            )?
             .ok_or("historical token route")?;
         assert_eq!(response.status, 200);
         assert!(response.mutated);
         assert!(candidate.auth.has_public_origin_state());
-        candidate.auth.omit_unwrapped_public_origin_for_legacy_fixture();
-        candidate.validate_format().map_err(|_| "historical token format")?;
+        candidate
+            .auth
+            .omit_unwrapped_public_origin_for_legacy_fixture();
+        candidate
+            .validate_format()
+            .map_err(|_| "historical token format")?;
         crate::service::tests::commit_legacy_state_fixture(&mut service, &candidate)
             .map_err(|_| "publish ordinary historical token fixture")?;
         service.state = Some(candidate);
@@ -297,8 +308,18 @@ fn acl_parameter_state_requires_schema58_and_survives_reopen() -> TestResult {
 #[test]
 fn acl_schema58_reopens_under_schema59_and_promotes_only_on_mutation() -> TestResult {
     let (root, mut service, key, root_token, token) = setup_with_historical_token(true)?;
-    assert_eq!(service.state.as_ref().ok_or("ordinary predecessor")?.schema, CURRENT_STATE_SCHEMA);
-    assert!(!service.state.as_ref().ok_or("ordinary predecessor")?.auth.has_public_origin_state());
+    assert_eq!(
+        service.state.as_ref().ok_or("ordinary predecessor")?.schema,
+        CURRENT_STATE_SCHEMA
+    );
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("ordinary predecessor")?
+            .auth
+            .has_public_origin_state()
+    );
     let mut legacy = service.state.clone().ok_or("state")?;
     legacy
         .auth

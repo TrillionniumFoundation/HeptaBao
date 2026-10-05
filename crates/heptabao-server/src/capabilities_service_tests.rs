@@ -292,7 +292,6 @@ fn capabilities_path_and_selector_bounds_reject_without_state_change() -> TestRe
         json!({"paths":[]}),
         json!({"paths":["a","a"]}),
         json!({"path":"a","paths":["a"]}),
-        json!({"paths":["a"],"token":root}),
         json!({"paths":[3]}),
         json!({"paths":["../outside"]}),
         json!({"paths":["secret/*"]}),
@@ -304,6 +303,14 @@ fn capabilities_path_and_selector_bounds_reject_without_state_change() -> TestRe
             400
         );
     }
+    let self_response = call(
+        &mut s,
+        &root,
+        "sys/capabilities-self",
+        json!({"paths":["a"],"token":"not-the-bearer"}),
+    );
+    assert_eq!(self_response.status, 200);
+    assert_eq!(self_response.body["capabilities"], json!(["root"]));
     assert_eq!(before, snapshot(&s)?);
     Ok(())
 }
