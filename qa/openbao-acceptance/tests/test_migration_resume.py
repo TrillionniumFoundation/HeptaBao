@@ -143,6 +143,60 @@ class AppendPrefixTests(unittest.TestCase):
         target.values = [copy.deepcopy(record["versions"][0]["data"])]
         return target, record
 
+    def test_new_key_in_append_import_owns_intent_and_resumes_lost_ack(self):
+        target, record = FaultTarget("after_effect"), fixture_record()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "cp"
+            with self.assertRaisesRegex(BaoError, "outcome_unknown"):
+                append_existing_record(target, "secret", record, Checkpoint(path, {}))
+            self.assertEqual(len(target.values), 1)
+            self.assertEqual(append_existing_record(target, "secret", record, Checkpoint(path, {})),
+                             "copied_and_verified")
+            self.assertEqual(target.writes, 2)
+            self.assertEqual(append_existing_record(target, "secret", record, Checkpoint(path, {})),
+                             "already_verified")
+            self.assertEqual(target.writes, 2)
+
+    def test_new_key_uncertain_write_is_not_reissued(self):
+        target, record = FaultTarget("before_effect"), fixture_record()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "cp"
+            with self.assertRaisesRegex(BaoError, "outcome_unknown"):
+                append_existing_record(target, "secret", record, Checkpoint(path, {}))
+            with self.assertRaisesRegex(BaoError, "authoritative_reconciliation"):
+                append_existing_record(target, "secret", record, Checkpoint(path, {}))
+            self.assertEqual(target.writes, 1)
+
+    def test_corrupt_null_intent_cannot_be_reseeded_as_new_key_or_verified_prefix(self):
+        for existing in (False, True):
+            with self.subTest(existing=existing), tempfile.TemporaryDirectory() as directory:
+                target, record = self.existing() if existing else (FaultTarget(), fixture_record())
+                cp = Checkpoint(Path(directory) / "cp", {})
+                cp.state["objects"][digest(record["key"])] = None
+                cp.save()
+                with self.assertRaisesRegex(BaoError, "admission_mismatch"):
+                    append_existing_record(target, "secret", record, Checkpoint(cp.filename, {}))
+                self.assertEqual(target.writes, 0)
+                self.assertIsNone(cp.state["objects"][digest(record["key"])])
+
+    def test_new_key_racing_creator_is_rejected_without_owning_external_data(self):
+        record = fixture_record()
+        class RacingTarget(FaultTarget):
+            reads = 0
+            def request(self, method, path, payload=None):
+                if method == "GET" and "/metadata/" in path:
+                    self.reads += 1
+                    if self.reads == 2:
+                        self.meta = copy.deepcopy(record["source_metadata"])
+                return super().request(method, path, payload)
+        target = RacingTarget()
+        with tempfile.TemporaryDirectory() as directory:
+            cp = Checkpoint(Path(directory) / "cp", {})
+            with self.assertRaisesRegex(BaoError, "without_owned_checkpoint"):
+                append_existing_record(target, "secret", record, cp)
+            self.assertEqual(cp.state["objects"], {})
+            self.assertEqual(target.writes, 0)
+
     def test_verified_prefix_appends_only_missing_version_and_repeats_read_only(self):
         target, record = self.existing()
         with tempfile.TemporaryDirectory() as directory:
