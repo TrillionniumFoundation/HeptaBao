@@ -418,7 +418,7 @@ mod tests {
         )
         .map_err(|_| "actual protected V5 reopen")?;
         assert!(
-            persisted.schema == NAMESPACE_CUSTODY_STATE_SCHEMA
+            persisted.schema == AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
                 && persisted.engines.record_root() == closed.engines.record_root()
                 && persisted
                     .auth
