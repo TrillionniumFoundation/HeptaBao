@@ -5,7 +5,7 @@ use super::*;
 use std::collections::BTreeSet;
 
 impl Service {
-    #[cfg(test)]
+    #[cfg(all(test, target_os = "linux"))]
     pub(super) fn reconcile_lease_owners(state: &mut State, now: u64) -> Result<bool, Response> {
         Self::reconcile_lease_owners_observed(state, AuthorityTime::Coarse(now))
     }

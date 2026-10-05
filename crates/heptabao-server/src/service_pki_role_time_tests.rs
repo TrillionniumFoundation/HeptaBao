@@ -292,7 +292,7 @@ fn pki_time89_actual88_backup_record_and_final_floor_survive_last_owner_tidy() -
         .prepare_snapshot_restore(&old88)
         .map_err(|_| "prepared original88")?;
     let old_plan = service
-        .prepare_record_plan(&predecessor)
+        .prepare_record_plan(&mut predecessor.clone())
         .map_err(|_| "original88 record plan")?;
     assert!(
         call(
@@ -356,8 +356,8 @@ fn pki_time89_actual88_backup_record_and_final_floor_survive_last_owner_tidy() -
         predecessor
             .validate_publication_schema(Some(&retired))
             .is_err()
-            && service.prepare_record_plan(&predecessor).is_err()
-            && service.commit_state(&predecessor).is_err()
+            && service.prepare_record_plan(&mut predecessor.clone()).is_err()
+            && service.commit_state(&mut predecessor.clone()).is_err()
             && service.prepare_snapshot_restore(&old88).is_err(),
         "original authenticated88 cannot replace retired89 through ordinary gates"
     );
@@ -434,7 +434,7 @@ fn pki_time89_received_actual88_to89_records_persist_and_reopen() -> TestResult 
         "captured actual88 record predecessor"
     );
     let old_plan = service
-        .prepare_record_plan(&predecessor)
+        .prepare_record_plan(&mut predecessor.clone())
         .map_err(|_| "captured88 plan")?;
     let mut received = predecessor.clone();
     let response = received
@@ -458,7 +458,7 @@ fn pki_time89_received_actual88_to89_records_persist_and_reopen() -> TestResult 
         "complete received time owner graph requires89"
     );
     let plan = service
-        .prepare_record_plan(&received)
+        .prepare_record_plan(&mut received)
         .map_err(|_| "received89 plan")?;
     service
         .install_received_record_state(received, plan)
