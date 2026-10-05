@@ -296,7 +296,11 @@ fn ocsp_http_actual_mount_raw_media_control_fallback_and_disabled_priority() -> 
             204
         );
     }
-    for query in ["", "?limit=2", "?list=false"] {
+    for (query, ignored) in [
+        ("", None),
+        ("?limit=2", Some("limit")),
+        ("?list=false", Some("list")),
+    ] {
         let response = wire(
             &mut service,
             "GET",
@@ -308,8 +312,24 @@ fn ocsp_http_actual_mount_raw_media_control_fallback_and_disabled_priority() -> 
         )?;
         assert_eq!(response.status, 200);
         assert_eq!(response.body["data"], sentinel);
+        assert_eq!(
+            response
+                .body
+                .get("warnings")
+                .cloned()
+                .unwrap_or(Value::Null),
+            ignored.map_or(Value::Null, |key| json!([format!(
+                "Endpoint ignored these unrecognized parameters: [{key}]"
+            )]))
+        );
     }
-    for query in ["foo=bar", "limit=2&limit=3", "limit=%GG"] {
+    for (query, ignored) in [
+        ("foo=bar", Some("foo")),
+        ("limit=2&limit=3", Some("limit")),
+        ("limit=%GG", None),
+        ("foo=a&limit=2&foo=b", Some("foo limit")),
+        ("path=unrelated&help=false", None),
+    ] {
         let read = wire(
             &mut service,
             "GET",
@@ -321,6 +341,12 @@ fn ocsp_http_actual_mount_raw_media_control_fallback_and_disabled_priority() -> 
         )?;
         assert_eq!(read.status, 200);
         assert_eq!(read.body["data"], sentinel);
+        assert_eq!(
+            read.body.get("warnings").cloned().unwrap_or(Value::Null),
+            ignored.map_or(Value::Null, |keys| json!([format!(
+                "Endpoint ignored these unrecognized parameters: [{keys}]"
+            )]))
+        );
     }
     assert_eq!(
         wire(

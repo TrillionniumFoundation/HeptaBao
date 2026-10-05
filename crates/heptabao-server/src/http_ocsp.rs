@@ -248,6 +248,26 @@ pub(super) fn url_query(query: &str) -> BTreeMap<String, Vec<String>> {
     values
 }
 
+/// Called only for a successful read at the synchronized actual KV1 owner.
+/// The pinned passthrough route declares only its captured `path` field.
+/// Values and private carrier-shaped user data never become warning selectors.
+pub(crate) fn kv1_read_ignored_parameter_warning(body: &Value) -> Option<Value> {
+    let mut keys = body
+        .as_object()?
+        .keys()
+        .filter(|key| key.as_str() != "path")
+        .map(String::as_str)
+        .collect::<Vec<_>>();
+    keys.sort_unstable();
+    keys.dedup();
+    (!keys.is_empty()).then(|| {
+        json!([format!(
+            "Endpoint ignored these unrecognized parameters: [{}]",
+            keys.join(" ")
+        )])
+    })
+}
+
 fn kv_query<'a>(wire_method: &'a str, query: &str) -> Result<(&'a str, CarrierBody), Response> {
     let mut values = url_query(query);
     let method = if wire_method == "GET" {

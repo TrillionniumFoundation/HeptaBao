@@ -3577,6 +3577,9 @@ impl Service {
                 .map_err(|_| Response::error(503, "secret lease defaults unavailable"))?;
             response["lease_duration"] = json!(ttl);
             response["renewable"] = json!(false);
+            if let Some(warning) = crate::http::ocsp::kv1_read_ignored_parameter_warning(body) {
+                response["warnings"] = warning;
+            }
         }
         Ok(())
     }
