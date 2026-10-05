@@ -2411,6 +2411,77 @@ impl AuthState {
         Ok((state, raw))
     }
 
+    pub(crate) fn validate_token_api_delivery_target(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        path: &str,
+        body: &Value,
+        time: AuthorityTime,
+    ) -> Result<(), AuthError> {
+        let time = self.principal_token_api_time(actor, time)?;
+        let operation = path
+            .strip_prefix("auth/token/")
+            .ok_or_else(|| bad("invalid token delivery path"))?;
+        self.check_principal_observed(actor, namespace, time)?;
+        match operation {
+            "lookup-self" | "renew-self" => {
+                if operation == "renew-self" {
+                    actor.require_service("batch tokens cannot be renewed")?;
+                }
+                // The original affine admission owns a consumed final use;
+                // late delivery never authenticates or decrements it again.
+                self.check_principal_observed(actor, namespace, time)?;
+            }
+            "lookup" | "renew" => {
+                let implicit_self = operation == "lookup"
+                    && body
+                        .get("token")
+                        .is_none_or(|value| value.is_null() || value.as_str() == Some(""));
+                if implicit_self {
+                    self.check_principal_observed(actor, namespace, time)?;
+                } else if hash(string_field(body, "token")?) == actor.digest {
+                    let target = self.check_principal_observed(actor, namespace, time)?;
+                    if target.namespace() != namespace {
+                        return Err(denied());
+                    }
+                } else if operation == "lookup" {
+                    let raw = string_field(body, "token")?;
+                    self.inspect_raw_target_observed(raw, namespace, time)?
+                        .view_observed(self, time)?;
+                } else {
+                    let id = self.target_token_observed(namespace, body, false, time)?;
+                    self.active_token_observed(&id, time, false)?;
+                }
+            }
+            "lookup-accessor" | "renew-accessor" => {
+                let accessor = string_field(body, "accessor")?;
+                if actor
+                    .service_token()
+                    .is_some_and(|token| token.accessor == accessor)
+                {
+                    let target = self.check_principal_observed(actor, namespace, time)?;
+                    if target.namespace() != namespace {
+                        return Err(denied());
+                    }
+                } else {
+                    let id = self.target_token_observed(namespace, body, true, time)?;
+                    self.active_token_observed(&id, time, operation == "lookup-accessor")?;
+                }
+            }
+            "accessors" | "tidy" => {
+                self.authorize_request_observed(actor, namespace, path, "sudo", time)?;
+            }
+            "create" | "create-orphan" => {}
+            operation
+                if operation.starts_with("create/")
+                    || operation == "roles"
+                    || operation.starts_with("roles/") => {}
+            _ => return Err(bad("unsupported token delivery target")),
+        }
+        Ok(())
+    }
+
     fn principal_token_api_time(
         &self,
         actor: &Principal,

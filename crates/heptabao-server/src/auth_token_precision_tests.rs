@@ -1011,3 +1011,181 @@ fn original_actor_clock_rejects_expired_target_and_keeps_wrapping_whole_owner() 
     );
     Ok(())
 }
+
+#[test]
+fn token_api_final_target_guard_uses_actual_scope_and_retains_finite_admission() -> TestResult {
+    let (mut state, root) = setup()?;
+    let raw = service(&mut state, &root, 1)?;
+    precise_service(&mut state, &raw)?;
+    let clock = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+    let mut actor = state.authenticate_from_observed(
+        &raw,
+        AuthorityTime::Precise(clock.observed_at()?),
+        None,
+    )?;
+    actor.bind_request_clock(Some(clock))?;
+    let accessor = state
+        .tokens
+        .get(&hash(&raw))
+        .ok_or("target")?
+        .accessor
+        .clone();
+    assert_eq!(
+        state
+            .tokens
+            .get(&hash(&raw))
+            .ok_or("target")?
+            .uses_remaining,
+        Some(0)
+    );
+    let before = serde_json::to_vec(&state)?;
+    for (path, body) in [
+        ("auth/token/lookup-self", json!({})),
+        ("auth/token/lookup", json!({})),
+        ("auth/token/lookup", json!({"token":raw})),
+        ("auth/token/lookup-accessor", json!({"accessor":accessor})),
+        ("auth/token/renew-self", json!({})),
+    ] {
+        state.validate_token_api_delivery_target(
+            &actor,
+            "",
+            path,
+            &body,
+            AuthorityTime::Coarse(100),
+        )?;
+        assert!(
+            state
+                .validate_token_api_delivery_target(
+                    &actor,
+                    "foreign",
+                    path,
+                    &body,
+                    AuthorityTime::Coarse(100)
+                )
+                .is_err()
+        );
+    }
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
+#[test]
+fn token_api_final_target_guard_rejects_actual_expired_or_missing_target() -> TestResult {
+    let (mut state, mut root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw)?;
+    let accessor = state
+        .tokens
+        .get(&hash(&raw))
+        .ok_or("target")?
+        .accessor
+        .clone();
+    let clock = RequestClock::anchored(
+        Duration::new(100, 200_000_000),
+        Instant::now()
+            .checked_sub(Duration::from_secs(1))
+            .ok_or("original clock")?,
+    )?;
+    root.bind_request_clock(Some(clock))?;
+    let before = serde_json::to_vec(&state)?;
+    for (path, body) in [
+        ("auth/token/lookup", json!({"token":raw})),
+        ("auth/token/lookup-accessor", json!({"accessor":accessor})),
+        ("auth/token/renew", json!({"token":raw})),
+        ("auth/token/renew-accessor", json!({"accessor":accessor})),
+        ("auth/token/lookup", json!({"token":"hvs.absent"})),
+        ("auth/token/lookup-accessor", json!({"accessor":"a.absent"})),
+    ] {
+        assert!(
+            state
+                .validate_token_api_delivery_target(
+                    &root,
+                    "",
+                    path,
+                    &body,
+                    AuthorityTime::Coarse(100)
+                )
+                .is_err()
+        );
+    }
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
+#[test]
+fn token_api_final_target_guard_reobserves_current_floor_and_exact_namespace() -> TestResult {
+    let (mut state, mut root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw)?;
+    let accessor = state
+        .tokens
+        .get(&hash(&raw))
+        .ok_or("target")?
+        .accessor
+        .clone();
+    let root_raw_digest = root.digest.clone();
+    let root_accessor = root.require_service("root service")?.accessor.clone();
+    let clock = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+    root.bind_request_clock(Some(clock))?;
+    for (path, body) in [
+        ("auth/token/lookup", json!({"token":raw})),
+        ("auth/token/lookup-accessor", json!({"accessor":accessor})),
+        ("auth/token/renew", json!({"token":raw})),
+        ("auth/token/renew-accessor", json!({"accessor":accessor})),
+    ] {
+        state.validate_token_api_delivery_target(
+            &root,
+            "",
+            path,
+            &body,
+            AuthorityTime::Coarse(100),
+        )?;
+        assert!(
+            state
+                .validate_token_api_delivery_target(
+                    &root,
+                    "foreign",
+                    path,
+                    &body,
+                    AuthorityTime::Coarse(100)
+                )
+                .is_err()
+        );
+    }
+    // A root actor is allowed to administer another namespace, but an explicit
+    // accessor target still belongs to its actual original namespace.
+    assert!(
+        state
+            .validate_token_api_delivery_target(
+                &root,
+                "foreign",
+                "auth/token/lookup-accessor",
+                &json!({"accessor":root_accessor}),
+                AuthorityTime::Coarse(100)
+            )
+            .is_err()
+    );
+    assert_eq!(root.digest, root_raw_digest);
+    state.observe_token_api_time(AuthorityTime::Precise(timestamp(100, 800_000_000)?))?;
+    let before = serde_json::to_vec(&state)?;
+    for (path, body) in [
+        ("auth/token/lookup", json!({"token":raw})),
+        ("auth/token/lookup-accessor", json!({"accessor":accessor})),
+        ("auth/token/renew", json!({"token":raw})),
+        ("auth/token/renew-accessor", json!({"accessor":accessor})),
+    ] {
+        assert!(
+            state
+                .validate_token_api_delivery_target(
+                    &root,
+                    "",
+                    path,
+                    &body,
+                    AuthorityTime::Coarse(100)
+                )
+                .is_err()
+        );
+    }
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
