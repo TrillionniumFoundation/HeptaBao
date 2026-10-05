@@ -213,12 +213,21 @@ member: {member_dn}
             try:self.proc.wait(timeout=5)
             except subprocess.TimeoutExpired:self.proc.kill();self.proc.wait(timeout=5)
 
+def private_work_parent(path):
+    if path is None:
+        return Path("/var/tmp")
+    path = Path(path)
+    if (not path.is_absolute() or path.is_symlink() or not path.is_dir()
+            or path.resolve() != path or path.stat().st_uid != os.getuid()
+            or path.stat().st_mode & 0o077):
+        raise ValueError("openldap_work_parent_not_private_canonical")
+    return path
+
 def main():
-    p=argparse.ArgumentParser();p.add_argument("--binary",required=True,type=Path);p.add_argument("--output",required=True,type=Path);a=p.parse_args()
-    # Ubuntu's packaged slapd is confined by AppArmor.  Its profile permits
-    # isolated owner-writable state below /var/tmp, while rejecting arbitrary
-    # /tmp config paths, so keep the complete short-lived fixture there.
-    root=Path(tempfile.mkdtemp(prefix="hb-openldap-",dir="/var/tmp"));root.chmod(0o700);ins=Instance(a.binary,root/"candidate");checks=[]
+    p=argparse.ArgumentParser();p.add_argument("--binary",required=True,type=Path);p.add_argument("--output",required=True,type=Path);p.add_argument("--work-parent",type=Path);a=p.parse_args()
+    # Keep the host-installed default permitted by its AppArmor profile.
+    # An explicitly extracted provider can use an owned private data volume.
+    root=Path(tempfile.mkdtemp(prefix="hb-openldap-",dir=private_work_parent(a.work_parent)));root.chmod(0o700);ins=Instance(a.binary,root/"candidate");checks=[]
     binary_sha256=hashlib.sha256(a.binary.read_bytes()).hexdigest()
     source_head=subprocess.run(["git","rev-parse","HEAD"],cwd=ROOT,text=True,
         capture_output=True,check=True).stdout.strip()
