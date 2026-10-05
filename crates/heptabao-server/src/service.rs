@@ -132,6 +132,8 @@ mod ha_activation;
 mod ha_read;
 #[path = "service_ha_received.rs"]
 mod ha_received;
+#[path = "service_help_delivery.rs"]
+mod help_delivery;
 #[path = "service_identity.rs"]
 mod identity;
 #[path = "service_kubernetes_secrets.rs"]
@@ -1047,6 +1049,7 @@ pub struct Service {
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
     pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
     pending_token_api_authority: Option<plugin::PluginResponseAuthority>,
+    pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
     pending_ordinary_kv_commit_notice: Option<ordinary_kv_delivery::OrdinaryKvCommitNoticeCapture>,
     native_snapshot_transport: bool,
     native_snapshot_clock: Option<(std::time::Instant, Duration)>,
@@ -1406,6 +1409,7 @@ impl Service {
             pending_snapshot_transfer: None,
             pending_ordinary_kv_authority: None,
             pending_token_api_authority: None,
+            pending_help_authority: None,
             pending_ordinary_kv_commit_notice: None,
             native_snapshot_transport: false,
             native_snapshot_clock: None,
@@ -2016,6 +2020,7 @@ impl Service {
             || self.pending_snapshot_transfer.is_some()
             || self.pending_ordinary_kv_authority.is_some()
             || self.pending_token_api_authority.is_some()
+            || self.pending_help_authority.is_some()
             || self.pending_ordinary_kv_commit_notice.is_some()
         {
             erase_json(&mut body);
@@ -2256,6 +2261,7 @@ impl Service {
         let snapshot_transfer = self.pending_snapshot_transfer.take();
         let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
         let token_api_authority = self.pending_token_api_authority.take();
+        let help_authority = self.pending_help_authority.take();
         let staged = usize::from(database.is_some())
             + usize::from(database_config.is_some())
             + usize::from(database_rotation.is_some())
@@ -2270,10 +2276,10 @@ impl Service {
             + usize::from(kubernetes_token.is_some())
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
-        if staged > 1
-            || staged != 0 && (ordinary_kv_authority.is_some() || token_api_authority.is_some())
-            || ordinary_kv_authority.is_some() && token_api_authority.is_some()
-        {
+        let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
+            + usize::from(token_api_authority.is_some())
+            + usize::from(help_authority.is_some());
+        if staged > 1 || delivery_capsules > 1 || staged != 0 && delivery_capsules != 0 {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -2314,11 +2320,13 @@ impl Service {
         }
         let ordinary_kv_expected = ordinary_kv_authority.is_some();
         let token_expected = token_api_authority.is_some();
+        let help_expected = help_authority.is_some();
         // Retain the exact moved capsule through terminal-floor publication and
         // mandatory audit. A typed unknown floor outcome attaches to this same
         // request, rather than being reconstructed from the public response.
         self.pending_ordinary_kv_authority = ordinary_kv_authority;
         self.pending_token_api_authority = token_api_authority;
+        self.pending_help_authority = help_authority;
         let mut response = self.audit_completed_response(&fingerprint, now, token_clock, response);
         let response = match (
             ordinary_kv_expected,
@@ -2339,6 +2347,7 @@ impl Service {
         };
         let response =
             self.complete_pending_token_api_delivery(token_expected, response, &fingerprint);
+        let response = self.complete_pending_help_delivery(help_expected, response, &fingerprint);
         RequestExecution::Complete(response)
     }
 
@@ -2925,7 +2934,7 @@ impl Service {
             if resources_unloaded {
                 return namespace_runtime::unloaded_route(path);
             }
-            return help_projection.map_or_else(
+            let response = help_projection.map_or_else(
                 || Response::error(404, "help route not found"),
                 |mut help| {
                     if path == "auth/token/lookup-self"
@@ -2940,6 +2949,18 @@ impl Service {
                     }
                 },
             );
+            if response.status < 300 {
+                let Some(actor) = principal.take() else {
+                    return Response::error(503, "HELP metadata admission unavailable");
+                };
+                self.pending_help_authority = Some(help_delivery::HelpResponseAuthority::opened(
+                    actor,
+                    &admitted,
+                    &request,
+                    &self.unseal_nonce,
+                ));
+            }
+            return response;
         }
         if !mount_metadata
             && let Some(principal) = principal.as_ref()

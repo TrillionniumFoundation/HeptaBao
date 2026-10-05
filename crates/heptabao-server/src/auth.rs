@@ -2411,6 +2411,21 @@ impl AuthState {
         Ok((state, raw))
     }
 
+    /// Validate only the original metadata admission, without a data ACL or
+    /// bearer authentication. Its already-consumed finite use remains owned.
+    pub(crate) fn validate_help_actor_observed(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<(), AuthError> {
+        if time.exact().is_none() && self.has_token_api_precision_state() {
+            return Err(err(503, "trusted precise metadata clock is unavailable"));
+        }
+        self.check_principal_observed(actor, namespace, self.token_api_observed_time(time))
+            .map(|_| ())
+    }
+
     pub(crate) fn validate_token_api_delivery_target(
         &self,
         actor: &Principal,

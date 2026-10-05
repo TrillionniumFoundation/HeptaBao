@@ -162,7 +162,7 @@ impl Service {
             if unloaded {
                 return namespace_runtime::unloaded_route(request.path);
             }
-            return help_body.map_or_else(
+            let response = help_body.map_or_else(
                 || Response::error(404, "help route not found"),
                 |body| {
                     let mut body = body.clone();
@@ -178,6 +178,19 @@ impl Service {
                     }
                 },
             );
+            if response.status < 300 {
+                // End the actor-derived borrow before moving the one affine
+                // closed admission and its private key into the audit capsule.
+                let namespace = namespace.to_owned();
+                self.pending_help_authority = Some(help_delivery::HelpResponseAuthority::closed(
+                    admission,
+                    current,
+                    request,
+                    &namespace,
+                    &activation,
+                ));
+            }
+            return response;
         }
         if let Err(response) = admission.authorize(
             current,

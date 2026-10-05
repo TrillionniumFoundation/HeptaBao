@@ -2778,3 +2778,221 @@ fn closed_auth_precise_final_gate_preserves_newer_durably_observed_root_floor() 
     assert!(!service.namespace_runtime.is_loaded("precise-floor"));
     Ok(())
 }
+
+fn help_delivery_original_admission(
+    service: &mut Service,
+    actor: &str,
+    clock: RequestClock,
+) -> TestResult<Response> {
+    assert!(service.pending_help_authority.is_none());
+    let body = json!({"__heptabao_http_help_request":{
+        "path":"auth/token/lookup-self","query":"","wire_method":"HELP"
+    }});
+    let response = service.handle_inner(RequestView {
+        method: "HELP",
+        path: "auth/token/lookup-self",
+        namespace: "",
+        token: actor,
+        body: &body,
+        now: 100,
+        admission_started: clock.started(),
+        token_clock: Some(clock),
+        allow_forward: true,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    });
+    assert_eq!(response.status, 200, "{}", response.body);
+    assert_eq!(response.body["id"], actor);
+    assert!(service.pending_help_authority.is_some());
+    assert!(service.pending_token_api_authority.is_none());
+    Ok(response)
+}
+
+fn help_delivery_precise_open_actor(
+    service: &mut Service,
+    root_token: &str,
+    ttl: &str,
+) -> TestResult<String> {
+    assert_eq!(
+        call(
+            service,
+            "PUT",
+            "sys/policies/acl/help-denied",
+            root_token,
+            json!({"policy":r#"path "*" { capabilities=["deny"] }"#})
+        )
+        .status,
+        204
+    );
+    let response = closed_precise_wire(
+        service,
+        "POST",
+        "auth/token/create",
+        "",
+        root_token,
+        json!({"ttl":ttl,"num_uses":1,"policies":["help-denied"],"no_default_policy":true}),
+        RequestClock::anchored(
+            std::time::Duration::new(100, 200_000_000),
+            std::time::Instant::now(),
+        )?,
+    )?;
+    assert_eq!(response.status, 200, "{}", response.body);
+    Ok(response.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("actual actor")?
+        .to_owned())
+}
+
+#[test]
+fn help_delivery_final_use_metadata_never_acquires_a_data_acl_or_reauthenticates() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap_unmounted(&mut service)?;
+    let actor = help_delivery_precise_open_actor(&mut service, &root_token, "10m")?;
+    let clock = RequestClock::anchored(
+        std::time::Duration::new(100, 200_000_000),
+        std::time::Instant::now(),
+    )?;
+    let response = help_delivery_original_admission(&mut service, &actor, clock)?;
+    let response =
+        service.audit_completed_response("help-actual-final-use", 100, Some(clock), response);
+    let before = serde_json::to_vec(&service.state.as_ref().ok_or("state")?.auth)?;
+    let response = service.complete_pending_help_delivery(true, response, "help-actual-final-use");
+    assert_eq!(response.status, 200, "{}", response.body);
+    assert_eq!(response.body["id"], actor);
+    assert_eq!(
+        serde_json::to_vec(&service.state.as_ref().ok_or("state")?.auth)?,
+        before
+    );
+    assert!(service.pending_help_authority.is_none());
+    assert_eq!(
+        closed_precise_wire(
+            &mut service,
+            "HELP",
+            "auth/token/lookup-self",
+            "",
+            &actor,
+            json!({}),
+            RequestClock::anchored(
+                std::time::Duration::new(100, 200_000_000),
+                std::time::Instant::now()
+            )?
+        )?
+        .status,
+        403
+    );
+    Ok(())
+}
+
+#[test]
+fn help_delivery_open_actor_expired_after_actual_response_audit_has_no_metadata_or_refund()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap_unmounted(&mut service)?;
+    let actor = help_delivery_precise_open_actor(&mut service, &root_token, "1s")?;
+    let clock = RequestClock::anchored(
+        std::time::Duration::new(100, 200_000_000),
+        std::time::Instant::now(),
+    )?;
+    let response = help_delivery_original_admission(&mut service, &actor, clock)?;
+    let response = service.audit_completed_response_with_receipt(
+        "help-audit-expiry",
+        100,
+        Some(clock),
+        response,
+        || std::thread::sleep(std::time::Duration::from_millis(1100)),
+    );
+    assert_eq!(
+        response.status, 200,
+        "actual mandatory audit returned before final delivery gate"
+    );
+    let before = serde_json::to_vec(&service.state.as_ref().ok_or("state")?.auth)?;
+    let response = service.complete_pending_help_delivery(true, response, "help-audit-expiry");
+    assert_eq!(response.status, 403, "{}", response.body);
+    assert!(response.body.get("id").is_none());
+    assert!(response.body.get("data").is_none());
+    assert!(response.consistency_index.is_none());
+    assert_eq!(
+        serde_json::to_vec(&service.state.as_ref().ok_or("state")?.auth)?,
+        before
+    );
+    let records = std::fs::read_to_string(root.path.join("audit.jsonl"))?;
+    let records = records
+        .lines()
+        .map(serde_json::from_str::<Value>)
+        .collect::<Result<Vec<_>, _>>()?;
+    assert_eq!(
+        records.last().ok_or("veto")?["event"]["kind"],
+        "help-delivery-veto"
+    );
+    assert_eq!(
+        records.iter().rev().nth(1).ok_or("responseaudit")?["event"]["kind"],
+        "response"
+    );
+    Ok(())
+}
+
+#[test]
+fn help_delivery_closed_actor_expired_after_actual_response_audit_keeps_own_key_closed()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap_unmounted(&mut service)?;
+    let actor = precise_closed_actor_fixture(
+        &mut service,
+        &root_token,
+        "precise-help-audit",
+        "",
+        1,
+        700_000_000,
+    )?;
+    let clock = RequestClock::anchored(
+        std::time::Duration::new(100, 200_000_000),
+        std::time::Instant::now(),
+    )?;
+    let response = help_delivery_original_admission(&mut service, &actor, clock)?;
+    let response = service.audit_completed_response_with_receipt(
+        "closed-help-audit-expiry",
+        100,
+        Some(clock),
+        response,
+        || std::thread::sleep(std::time::Duration::from_millis(600)),
+    );
+    assert_eq!(
+        response.status, 200,
+        "actual mandatory audit returned before final closed parcel gate"
+    );
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let response =
+        service.complete_pending_help_delivery(true, response, "closed-help-audit-expiry");
+    assert_eq!(response.status, 403, "{}", response.body);
+    assert!(response.body.get("id").is_none());
+    assert!(response.body.get("data").is_none());
+    assert!(response.consistency_index.is_none());
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    assert!(!service.namespace_runtime.is_loaded("precise-help-audit"));
+    let state = service.state.as_ref().ok_or("state")?;
+    let admission = service
+        .namespace_runtime
+        .closed_auth_attempt_observed(
+            state,
+            "precise-help-audit",
+            service.barrier_key.as_ref().ok_or("rootkey")?,
+            &actor,
+            AuthorityTime::Precise(crate::auth::Timestamp::checked(100, 200_000_000)?),
+            None,
+        )
+        .map_err(|_| "actual closed owner proof")?;
+    assert!(
+        admission.actor().is_err(),
+        "actual consumed finite use never refunded"
+    );
+    assert!(service.pending_help_authority.is_none());
+    Ok(())
+}
