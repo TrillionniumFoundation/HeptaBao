@@ -592,8 +592,11 @@ fn plugin_auth_completion_namespace_custody_seal_cycle_rejects_original_context(
             204
         );
         let closed = service.state.as_ref().ok_or("closed namespace")?;
-        assert!(closed.namespaces.inherited_owner("team").is_some());
-        if !independent {
+        if independent {
+            assert!(closed.namespaces.custody_owner("team").is_some());
+            assert!(closed.namespace_is_sealed("team"));
+        } else {
+            assert!(closed.namespaces.inherited_owner("team").is_some());
             assert!(
                 !closed.namespace_is_sealed("team"),
                 "a serialized boolean is not the inherited key slot"
