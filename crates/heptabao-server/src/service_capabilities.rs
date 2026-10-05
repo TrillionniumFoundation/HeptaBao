@@ -25,7 +25,9 @@ impl Service {
                 .as_object()
                 .ok_or_else(|| Response::error(400, "request must be an object"))?;
             let selector = match path {
-                "sys/capabilities" => Some("token"),
+                // The official Go self client includes token in its body. The
+                // self target is still selected solely from the authenticated actor.
+                "sys/capabilities" | "sys/capabilities-self" => Some("token"),
                 "sys/capabilities-accessor" => Some("accessor"),
                 _ => None,
             };

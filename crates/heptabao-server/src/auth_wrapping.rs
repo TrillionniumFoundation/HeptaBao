@@ -246,7 +246,7 @@ impl AuthState {
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
         validate_namespace(namespace)?;
-        if !matches!(method, "GET" | "POST") {
+        if !matches!(method, "GET" | "POST" | "PUT") {
             return Err(err(405, "method not allowed"));
         }
         reject_unknown(body, &["token"])?;
@@ -301,7 +301,7 @@ impl AuthState {
         ) {
             return Err(err(404, "unsupported wrapping path"));
         }
-        if method != "POST" {
+        if !matches!(method, "POST" | "PUT") {
             return Err(err(405, "method not allowed"));
         }
         let actor = self.permission(principal, namespace, path, "update", now)?;
