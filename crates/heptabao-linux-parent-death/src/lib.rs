@@ -91,4 +91,4 @@ mod tests {
 #[allow(unsafe_code)]
 mod darwin;
 #[cfg(target_os = "macos")]
-pub use darwin::{bind_private_directory, set_owned_file_immutable};
+pub use darwin::{bind_private_directory, inherit_owned_file, set_owned_file_immutable};

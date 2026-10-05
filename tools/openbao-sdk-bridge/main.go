@@ -34,6 +34,7 @@ type entry struct {
 	SealWrap bool   `json:"seal_wrap"`
 }
 type ownedImage struct {
+	FD     int    `json:"fd"`
 	Role   string `json:"role"`
 	Path   string `json:"path"`
 	Device uint64 `json:"device"`
@@ -247,6 +248,17 @@ func (w *wire) ownerContext(timeout time.Duration) (context.Context, context.Can
 }
 
 func run() (outcome error) {
+	admit, cleanup, err := bindLaunchOwnedImages()
+	if err != nil {
+		return err
+	}
+	// Original inherited file ownership is held before waiting for any setup.
+	defer func() { outcome = errors.Join(outcome, cleanup()) }()
+	if len(os.Getenv("HBP_SDK_OWNED_IMAGES")) > 0 {
+		if _, err = fmt.Fprintln(os.Stderr, "HBP_SDK_DARWIN_OWNERSHIP_BOUND_V1"); err != nil {
+			return err
+		}
+	}
 	w := newWire()
 	first, err := w.nextRequest()
 	if err != nil {
@@ -255,13 +267,9 @@ func run() (outcome error) {
 	if first.Kind != "setup" || first.Call != 1 || first.Plugin == "" || first.SocketDir == "" || first.TimeoutMS <= 0 || first.TimeoutMS > 30000 || first.DefaultTTLSeconds < 0 || first.MaxTTLSeconds < first.DefaultTTLSeconds {
 		return errors.New("invalid setup")
 	}
-	cleanup, err := bindOwnedImages(first.Plugin, first.OwnedImages)
-	if err != nil {
+	if err = admit(first); err != nil {
 		return err
 	}
-	// This defer runs after the later client.Kill has held the same plugin's
-	// terminal state. Cleanup failure remains a failing companion result.
-	defer func() { outcome = errors.Join(outcome, cleanup()) }()
 
 	timeout := time.Duration(first.TimeoutMS) * time.Millisecond
 	logger := hclog.New(&hclog.LoggerOptions{Level: hclog.Trace, Output: os.Stderr, JSONFormat: true})

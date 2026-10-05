@@ -237,6 +237,29 @@ impl SdkBackendHost {
         #[cfg(target_os = "macos")]
         heptabao_linux_parent_death::bind_private_directory(&mut command, &socket_directory)
             .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        #[cfg(target_os = "macos")]
+        let owned_images = {
+            let cfd = heptabao_linux_parent_death::inherit_owned_file(
+                &mut command,
+                companion.original_file(),
+            )
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+            let pfd = heptabao_linux_parent_death::inherit_owned_file(
+                &mut command,
+                plugin.original_file(),
+            )
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+            let (cdev, cino, csize) = companion.cleanup_identity();
+            let (pdev, pino, psize) = plugin.cleanup_identity();
+            let images = json!([
+                {"role":"companion","path":companion.descriptor_path(),"fd":cfd,
+                 "device":cdev,"inode":cino,"bytes":csize,"sha256":hex_encode(&config.companion_sha256)},
+                {"role":"plugin","path":plugin.descriptor_path(),"fd":pfd,
+                 "device":pdev,"inode":pino,"bytes":psize,"sha256":hex_encode(&config.plugin_sha256)}
+            ]);
+            command.env("HBP_SDK_OWNED_IMAGES", images.to_string());
+            images
+        };
         let child = command.spawn().map_err(|_| SdkBridgeError::BeforeEntry)?;
         let mut pending = PendingChild(Some(child));
         let child = pending.0.as_mut().ok_or(SdkBridgeError::OutcomeUnknown)?;
@@ -269,16 +292,7 @@ impl SdkBackendHost {
         #[cfg(target_os = "macos")]
         let setup = {
             let mut setup = setup;
-            let (cdev, cino, csize) = host._companion.cleanup_identity();
-            let (pdev, pino, psize) = host._plugin.cleanup_identity();
-            setup["owned_images"] = json!([
-                {"role":"companion","path":host._companion.descriptor_path(),
-                 "device":cdev,"inode":cino,"bytes":csize,
-                 "sha256":hex_encode(&config.companion_sha256)},
-                {"role":"plugin","path":host._plugin.descriptor_path(),
-                 "device":pdev,"inode":pino,"bytes":psize,
-                 "sha256":hex_encode(&config.plugin_sha256)}
-            ]);
+            setup["owned_images"] = owned_images;
             setup
         };
         host.send(&setup, deadline)?;

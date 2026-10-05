@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -106,7 +107,7 @@ func bindOwnedImages(plugin string, images []ownedImage) (func() error, error) {
 	held := []*heldImage{}
 	fail := func(err error) (func() error, error) {
 		for _, h := range held {
-			h.file.Close()
+			err = errors.Join(err, h.cleanup())
 		}
 		return nil, err
 	}
@@ -124,11 +125,20 @@ func bindOwnedImages(plugin string, images []ownedImage) (func() error, error) {
 			return fail(fmt.Errorf("owned image witness"))
 		}
 		seen[w.Role] = true
-		fd, err := syscall.Open(w.Path, syscall.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_CLOEXEC, 0)
-		if err != nil {
-			return fail(err)
+		if w.FD < 3 || w.FD > 1048576 {
+			return fail(fmt.Errorf("owned inherited descriptor"))
 		}
-		h := &heldImage{file: os.NewFile(uintptr(fd), w.Path), witness: w}
+		for _, h := range held {
+			if h.witness.FD == w.FD {
+				return fail(fmt.Errorf("duplicate owned descriptor"))
+			}
+		}
+		file := os.NewFile(uintptr(w.FD), w.Path)
+		if file == nil {
+			return fail(fmt.Errorf("owned descriptor unavailable"))
+		}
+		syscall.CloseOnExec(w.FD)
+		h := &heldImage{file: file, witness: w}
 		held = append(held, h)
 		if err = h.verify(); err != nil {
 			return fail(err)
@@ -141,4 +151,42 @@ func bindOwnedImages(plugin string, images []ownedImage) (func() error, error) {
 		}
 		return out
 	}, nil
+}
+
+func bindLaunchOwnedImages() (func(message) error, func() error, error) {
+	raw := os.Getenv("HBP_SDK_OWNED_IMAGES")
+	if raw == "" || len(raw) > 8192 {
+		return nil, nil, fmt.Errorf("missing owned launch descriptor bootstrap")
+	}
+	var images []ownedImage
+	decoder := json.NewDecoder(strings.NewReader(raw))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&images); err != nil {
+		return nil, nil, err
+	}
+	if decoder.Decode(new(any)) != io.EOF {
+		return nil, nil, fmt.Errorf("trailing owned bootstrap")
+	}
+	plugin := ""
+	for _, w := range images {
+		if w.Role == "plugin" {
+			plugin = w.Path
+		}
+	}
+	cleanup, err := bindOwnedImages(plugin, images)
+	if err != nil {
+		return nil, nil, err
+	}
+	admit := func(first message) error {
+		if first.Plugin != plugin || len(first.OwnedImages) != len(images) {
+			return fmt.Errorf("setup original descriptor binding")
+		}
+		for i, w := range images {
+			if first.OwnedImages[i] != w {
+				return fmt.Errorf("setup changed original descriptor")
+			}
+		}
+		return nil
+	}
+	return admit, cleanup, nil
 }

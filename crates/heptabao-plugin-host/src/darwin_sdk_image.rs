@@ -162,6 +162,9 @@ impl OwnedExecutableImage {
     pub fn descriptor_path(&self) -> &Path {
         &self.path
     }
+    pub fn original_file(&self) -> &File {
+        &self.image
+    }
     pub fn cleanup_identity(&self) -> (u64, u64, u64) {
         self.identity
     }
