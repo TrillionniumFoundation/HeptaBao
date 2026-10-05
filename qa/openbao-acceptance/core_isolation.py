@@ -32,6 +32,29 @@ class ScenarioFailure(Exception):
     """Carries only a fixed scenario ID, never request/response secrets."""
 
 
+def public_http_failure_statuses(cases, side_failures) -> list[dict]:
+    """Project two fixed failure contracts; never serialize a response or error."""
+    expected = {"acl.seed": 200, "mount-discovery270.fixture.data.v2": 200}
+    diagnostics = []
+    for side in ("candidate", "oracle"):
+        rows = cases.get(side, []) if type(cases) is dict else []
+        rows = rows if type(rows) is list else []
+        failure = side_failures.get(side) if type(side_failures) is dict else None
+        for case, status in expected.items():
+            matches = [row for row in rows if type(row) is dict
+                       and type(row.get("case")) is str and row["case"] == case]
+            if not (any(row.get("passed") is False for row in matches)
+                    or (type(failure) is str and failure == case)):
+                continue
+            observed = matches[0].get("status") if len(matches) == 1 else None
+            diagnostics.append({
+                "side": side, "case": case, "expected_status": status,
+                "observed_status": observed if type(observed) is int
+                and 100 <= observed <= 599 else "unknown",
+            })
+    return diagnostics
+
+
 def run_scenarios(client: Client, results: list[dict] | None = None) -> list[dict]:
     results = [] if results is None else results
 
@@ -303,6 +326,8 @@ def main(*, scenario_runner=run_scenarios, restart_runner=None, profile="core-is
         result["finished_at_unix"] = time.time()
         private_write(output, result)
     print(json.dumps({"status": result["status"], "cases_per_side": result.get("case_count_per_side", 0),
+                      "http_failure_statuses": public_http_failure_statuses(
+                          result.get("cases"), result.get("side_failures")),
                       "failure": result.get("safe_failure_code"), "side_failures": result.get("side_failures", {}), "full_openbao_compatibility": False}))
     return 0 if result["status"] == "passed" and result["candidate_binary_unchanged"] else 1
 

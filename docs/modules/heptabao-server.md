@@ -437,8 +437,21 @@ explicit deployment transition, not transport-error negotiation or retry in a
 weaker format. Each response must use its admitted request's format; current
 senders reject legacy responses even while their inbound listener remains dual.
 
-`ha_rolling_upgrade.py` exercises writes and readback through every sender phase,
-then strict receiver retirement, replay retirement and restart. The Rust
+`ha_rolling_upgrade.py` requires the exact base source commit and selects a
+reviewed wire profile before launching processes. The current bounded profiles
+are `55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18` (legacy) and
+`8457a5569a31a41a4cd2f36d06d1f18125e9c88a` (current). Unknown bases fail closed
+and need source review; this is not automatic capability detection. The workflow
+verifies a clean base worktree at the immutable PR base before building, and
+passes that source identity alongside the existing binary digest. A standalone
+caller must establish the same source/build binding; a supplied SHA alone is
+not provenance.
+
+The legacy profile exercises writes and readback through every sender phase,
+then strict receiver retirement. The current profile never enables legacy
+senders or receivers and does not claim to exercise legacy retirement. Both
+profiles retain strict rolling restarts with one-shot writes and all-node
+readback, majority availability, replay retirement and failover. The Rust
 `peer_wire_upgrade` tests enumerate all directed links during each transition,
 preserve the historical omitted-field behavior, reject invalid policy, and
 retain strict legacy and foreign-cluster rejection. Running binary evidence is

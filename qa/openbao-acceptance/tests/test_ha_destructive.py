@@ -3,11 +3,16 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
-SPEC = importlib.util.spec_from_file_location("ha_destructive_under_test", Path(__file__).resolve().parents[1] / "ha_destructive.py")
+FIXTURES = Path(__file__).resolve().parents[1]
+if str(FIXTURES) not in sys.path:
+    sys.path.insert(0, str(FIXTURES))
+SPEC = importlib.util.spec_from_file_location("ha_destructive_under_test", FIXTURES / "ha_destructive.py")
 assert SPEC and SPEC.loader
 HA = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(HA)
@@ -105,6 +110,96 @@ class DestructiveFixtureGuards(unittest.TestCase):
         with self.assertRaises(HA.FixtureError):
             cluster.check("unobserved", False)
         self.assertEqual([], cluster.scenarios)
+
+
+class StartupRejectionObservationTests(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.node = HA.Node.__new__(HA.Node)
+        self.node.root = self.root
+        self.node.process = Mock()
+        self.node.process.wait.return_value = 1
+        self.node.log = Mock()
+        self.node._startup_log_offset = 0
+
+    def test_terminal_rejection_reads_only_the_current_launch(self):
+        old = (HA.MISBOUND_BOOTSTRAP_ERROR + "\n").encode()
+        path = self.root / "process.log"
+        path.write_bytes(old + b"different error\n")
+        self.node._startup_log_offset = len(old)
+        with self.assertRaisesRegex(HA.FixtureError, "unexpected_startup_rejection"):
+            self.node.verify_startup_rejection(HA.MISBOUND_BOOTSTRAP_ERROR)
+        path.write_bytes(old + old)
+        self.node.verify_startup_rejection(HA.MISBOUND_BOOTSTRAP_ERROR)
+
+    def test_missing_launch_identity_and_nonterminal_process_fail(self):
+        self.node._startup_log_offset = None
+        with self.assertRaises(HA.FixtureError):
+            self.node.verify_startup_rejection(HA.MISBOUND_BOOTSTRAP_ERROR)
+        self.node._startup_log_offset = 0
+        self.node.process.wait.side_effect = subprocess.TimeoutExpired("synthetic", 10)
+        with self.assertRaisesRegex(HA.FixtureError, "did_not_exit"):
+            self.node.verify_startup_rejection(HA.MISBOUND_BOOTSTRAP_ERROR)
+
+    def test_wrong_exit_oversized_or_nonterminal_diagnostic_fails(self):
+        expected = (HA.MISBOUND_BOOTSTRAP_ERROR + "\n").encode()
+        for returncode, delta in [(0, expected), (-9, expected),
+                                  (1, b"x" * (64 * 1024) + expected),
+                                  (1, expected + b"later error\n"), (1, b"\xff")]:
+            with self.subTest(returncode=returncode, bytes=len(delta)):
+                (self.root / "process.log").write_bytes(delta)
+                self.node.process.wait.return_value = returncode
+                with self.assertRaises(HA.FixtureError):
+                    self.node.verify_startup_rejection(HA.MISBOUND_BOOTSTRAP_ERROR)
+
+    def test_start_captures_existing_log_offset_before_one_launch(self):
+        prefix = b"previous launch\n"
+        (self.root / "process.log").write_bytes(prefix)
+        self.node.process = None
+        self.node.binary, self.node.ha_config = Path("/synthetic"), self.root / "ha.json"
+        self.node.started_pids = []
+        process = Mock(pid=123)
+        with patch.object(HA.subprocess, "Popen", return_value=process) as launch:
+            self.node.start(wait=False)
+        self.addCleanup(self.node.log.close)
+        launch.assert_called_once()
+        self.assertEqual(self.node._startup_log_offset, len(prefix))
+        self.assertEqual(self.node.started_pids, [123])
+
+    def test_real_terminal_process_is_observed_without_another_launch(self):
+        self.node.log = (self.root / "process.log").open("ab")
+        self.node.process = subprocess.Popen(
+            [sys.executable, "-c", "import sys; print(sys.argv[1]); sys.exit(1)",
+             HA.MISBOUND_BOOTSTRAP_ERROR],
+            stdin=subprocess.DEVNULL, stdout=self.node.log, stderr=self.node.log,
+        )
+        process = self.node.process
+        try:
+            with patch.object(self.node, "start") as start:
+                self.node.verify_startup_rejection(HA.MISBOUND_BOOTSTRAP_ERROR)
+            start.assert_not_called()
+            self.assertIs(self.node.process, process)
+            self.assertEqual(process.returncode, 1)
+        finally:
+            self.node.stop()
+        self.assertIsNone(self.node.process)
+        self.assertIsNone(self.node.log)
+        self.assertIsNone(self.node._startup_log_offset)
+
+    def test_expected_refusal_closes_log_when_process_launch_fails(self):
+        self.node.process = None
+        self.node.log = None
+        self.node.binary, self.node.ha_config = Path("/synthetic"), self.root / "ha.json"
+        self.node.started_pids = []
+        with patch.object(HA.subprocess, "Popen", side_effect=OSError("synthetic launch failure")) as launch, \
+                self.assertRaises(OSError):
+            self.node.expect_startup_rejection(HA.MISBOUND_BOOTSTRAP_ERROR)
+        launch.assert_called_once()
+        self.assertIsNone(self.node.process)
+        self.assertIsNone(self.node.log)
+        self.assertIsNone(self.node._startup_log_offset)
 
 
 if __name__ == "__main__":

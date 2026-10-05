@@ -110,6 +110,7 @@ class Node:
         self.http_port, self.raft_port = selected
         self.process = None
         self.log = None
+        self._startup_log_offset = None
         self.started_pids: list[int] = []
 
     @property
@@ -150,6 +151,7 @@ class Node:
             raise FixtureError("node_already_running")
         # Created inside a fresh owner-only synthetic directory, never an existing log.
         fd = os.open(self.root / "process.log", os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
+        self._startup_log_offset = os.fstat(fd).st_size
         self.log = os.fdopen(fd, "ab")
         command = [str(self.binary), "--config", str(self.root / "server.json")]
         if ha:
@@ -186,25 +188,30 @@ class Node:
         """Require an exact nonzero process rejection before API admission."""
         if self.process is not None:
             raise FixtureError("node_already_running")
-        log_path = self.root / "process.log"
-        before = log_path.stat().st_size if log_path.exists() else 0
-        self.start(wait=False)
         try:
-            try:
-                returncode = self.process.wait(timeout=10)
-            except subprocess.TimeoutExpired as error:
-                raise FixtureError("misbound_cluster_process_did_not_exit") from error
-            if self.log is None:
-                raise FixtureError("startup_rejection_log_unavailable")
-            self.log.flush()
-            with log_path.open("rb") as stream:
-                stream.seek(before)
-                delta = stream.read(64 * 1024 + 1)
-            if len(delta) > 64 * 1024 or not exact_startup_rejection(
-                    returncode, delta, expected_line):
-                raise FixtureError("unexpected_startup_rejection")
+            self.start(wait=False)
+            self.verify_startup_rejection(expected_line)
         finally:
             self.stop()
+
+    def verify_startup_rejection(self, expected_line: str) -> None:
+        """Inspect the current launch only; never start or retry a process."""
+        if self.process is None:
+            raise FixtureError("node_not_running")
+        before = getattr(self, "_startup_log_offset", None)
+        if type(before) is not int or before < 0 or self.log is None:
+            raise FixtureError("startup_rejection_log_unavailable")
+        try:
+            returncode = self.process.wait(timeout=10)
+        except subprocess.TimeoutExpired as error:
+            raise FixtureError("misbound_cluster_process_did_not_exit") from error
+        self.log.flush()
+        with (self.root / "process.log").open("rb") as stream:
+            stream.seek(before)
+            delta = stream.read(64 * 1024 + 1)
+        if len(delta) > 64 * 1024 or not exact_startup_rejection(
+                returncode, delta, expected_line):
+            raise FixtureError("unexpected_startup_rejection")
 
     def stop(self) -> None:
         try:
@@ -217,6 +224,7 @@ class Node:
             if self.log is not None:
                 self.log.close()
                 self.log = None
+            self._startup_log_offset = None
 
 
 class Cluster:

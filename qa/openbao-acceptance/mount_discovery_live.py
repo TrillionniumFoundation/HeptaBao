@@ -18,7 +18,7 @@ import tempfile
 import time
 
 from bao_http import BaoError, Client, private_read, private_write
-from core_isolation import ScenarioFailure
+from core_isolation import ScenarioFailure, public_http_failure_statuses
 from official_openbao_launcher import (
     oracle_cli_environment, pinned_artifact, start_oracle, stop_oracle,
     verify_selected_oracle,
@@ -282,6 +282,8 @@ def main():
                 and result["binary_unchanged"] and result["source_before"] == result["source_after"]
                 and not result["source_after"]["dirty"])
     print(json.dumps({"status": result.get("status"), "checks_per_side": len(result["cases"].get("candidate", [])),
+                      "http_failure_statuses": public_http_failure_statuses(
+                          result.get("cases"), result.get("side_failures")),
                       "side_failures": result["side_failures"], "admitted": admitted, "full_openbao_compatibility": False}))
     return 0 if admitted else 1
 

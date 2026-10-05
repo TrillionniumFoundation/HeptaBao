@@ -399,12 +399,14 @@ jobs:
           git worktree add --detach "$base_dir" "$PR_BASE"
           cleanup() { git worktree remove --force "$base_dir" >/dev/null 2>&1 || true; }
           trap cleanup EXIT
+          test "$(git -C "$base_dir" rev-parse HEAD)" = "$PR_BASE"
+          test -z "$(git -C "$base_dir" status --porcelain=v1 --untracked-files=all)"
           CARGO_TARGET_DIR="$base_target" cargo +1.98.0 build             --locked -p heptabao-server --manifest-path "$base_dir/Cargo.toml"
           base_binary="$base_target/debug/heptabao-server"
           candidate_binary="$PWD/target/debug/heptabao-server"
           base_digest="$(sha256sum "$base_binary" | cut -d ' ' -f 1)"
           candidate_digest="$(sha256sum "$candidate_binary" | cut -d ' ' -f 1)"
-          timeout 480 python qa/openbao-acceptance/ha_rolling_upgrade.py             --base-binary "$base_binary"             --base-sha256 "$base_digest"             --candidate-binary "$candidate_binary"             --candidate-sha256 "$candidate_digest"             --work-dir "$RUNNER_TEMP/heptabao-ha-rolling-upgrade" | tee "$RUNNER_TEMP/heptabao-safe-reports/rolling-upgrade.json"
+          timeout 480 python qa/openbao-acceptance/ha_rolling_upgrade.py             --base-source-commit "$PR_BASE"             --base-binary "$base_binary"             --base-sha256 "$base_digest"             --candidate-binary "$candidate_binary"             --candidate-sha256 "$candidate_digest"             --work-dir "$RUNNER_TEMP/heptabao-ha-rolling-upgrade" | tee "$RUNNER_TEMP/heptabao-safe-reports/rolling-upgrade.json"
           cleanup
           trap - EXIT
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
