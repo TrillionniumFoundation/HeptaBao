@@ -1,11 +1,10 @@
 //! Token API policy resolution; login and mapping policy semantics are separate.
 //!
 //! Pinned OpenBao 2.7.0 token_store.go resolveTokenPolicies and policyutil.go.
+use super::go_print;
 use super::{AuthError, Token, bad};
 use serde_json::Value;
 use std::collections::BTreeSet;
-#[path = "auth_token_go_print.rs"]
-mod go_print;
 
 // Claims use the already resolved Token API policy set. Preserve the API's
 // Unicode and punctuation grammar without changing native login policy names.

@@ -835,7 +835,7 @@ mod tests {
         // Model the previously accepted loss from the original clear_root.
         // No active key, CA or leaf projection survives; original leaf DER stays.
         unknown.root = None;
-        unknown.external = Box::default();
+        *unknown.external = Default::default();
         unknown.validate("", "legacy/", 100)?;
         assert!(
             old.handle_admin("POST", "root/delete", &json!({}), 100)?
