@@ -11,11 +11,23 @@ pub(super) const ROLE_NAME_FIELDS: &[&str] = &[
     "allowed_ip_sans_cidr",
     "allowed_uri_sans",
     "no_store",
+    "allowed_serial_numbers",
+    "allowed_user_ids",
+    "allowed_other_sans",
+    "policy_identifiers",
 ];
 
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct RoleNamePolicy {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub(super) allowed_serial_numbers: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub(super) allowed_user_ids: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub(super) allowed_other_sans: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub(super) policy_identifiers: Vec<String>,
     pub(super) allow_localhost: bool,
     pub(super) require_cn: bool,
     pub(super) enforce_hostnames: bool,
@@ -29,6 +41,10 @@ pub(super) struct RoleNamePolicy {
 impl Default for RoleNamePolicy {
     fn default() -> Self {
         Self {
+            allowed_serial_numbers: Vec::new(),
+            allowed_user_ids: Vec::new(),
+            allowed_other_sans: Vec::new(),
+            policy_identifiers: Vec::new(),
             allow_localhost: true,
             require_cn: true,
             enforce_hostnames: true,
@@ -64,6 +80,18 @@ impl RoleNamePolicy {
                 *target = role_leaf_profile::weak_comma_list(name, value)?;
             }
         }
+        for (name, target) in [
+            ("allowed_serial_numbers", &mut policy.allowed_serial_numbers),
+            ("allowed_user_ids", &mut policy.allowed_user_ids),
+            ("allowed_other_sans", &mut policy.allowed_other_sans),
+        ] {
+            if let Some(value) = body.get(name) {
+                *target = role_leaf_profile::weak_comma_list(name, value)?;
+            }
+        }
+        if let Some(value) = body.get("policy_identifiers") {
+            policy.policy_identifiers = role_subjects::policy_strings(value)?;
+        }
         if policy.cn_validations.is_empty() {
             policy.cn_validations = Self::default().cn_validations;
         }
@@ -78,6 +106,7 @@ impl RoleNamePolicy {
     }
 
     pub(super) fn validate(&self) -> Result<()> {
+        self.validate_subject_policy()?;
         let mut seen = BTreeSet::new();
         for value in &self.cn_validations {
             if !matches!(value.as_str(), "disabled" | "email" | "hostname") {
@@ -122,7 +151,9 @@ impl RoleNamePolicy {
         json!({"allow_localhost":self.allow_localhost,"require_cn":self.require_cn,
             "enforce_hostnames":self.enforce_hostnames,"cn_validations":self.cn_validations,
             "allow_glob_domains":self.allow_glob_domains,"allowed_ip_sans_cidr":self.allowed_ip_sans_cidr,
-            "allowed_uri_sans":self.allowed_uri_sans,"no_store":self.no_store})
+            "allowed_uri_sans":self.allowed_uri_sans,"no_store":self.no_store,
+            "allowed_serial_numbers":self.allowed_serial_numbers,"allowed_user_ids":self.allowed_user_ids,
+            "allowed_other_sans":self.allowed_other_sans,"policy_identifiers":self.policy_identifiers})
     }
 
     pub(super) fn valid_domain_entry(&self, value: &str) -> bool {
@@ -249,7 +280,7 @@ pub(super) fn bounded_name(value: &str) -> bool {
 }
 
 // OpenBao's go-glob uses only '*' and permits it to cross separators.
-fn glob_match(pattern: &str, value: &str) -> bool {
+pub(super) fn glob_match(pattern: &str, value: &str) -> bool {
     let mut remaining = value;
     let mut parts = pattern.split('*');
     let first = parts.next().unwrap_or("");
@@ -321,17 +352,20 @@ impl Cidr {
 
 impl Pki {
     pub(in crate::engines) fn has_role_names_state(&self) -> bool {
-        self.roles
-            .values()
-            .any(|role| role.role_name_policy.is_some())
-            || self.issued.values().any(|issued| {
-                issued.role_names_owned
-                    || issued.role_leaf_profile.as_ref().is_some_and(|evidence| {
-                        evidence.role_name_policy.is_some()
-                            || !evidence.email_sans.is_empty()
-                            || !evidence.uri_sans.is_empty()
-                    })
-            })
-            || self.has_external_role_names_state()
+        self.roles.values().any(|role| {
+            role.role_name_policy.is_some()
+                || role
+                    .role_leaf_profile
+                    .as_ref()
+                    .is_some_and(|profile| profile.leaf_subject_evidence.is_some())
+        }) || self.issued.values().any(|issued| {
+            issued.role_names_owned
+                || issued.role_leaf_profile.as_ref().is_some_and(|evidence| {
+                    evidence.role_name_policy.is_some()
+                        || evidence.profile.leaf_subject_evidence.is_some()
+                        || !evidence.email_sans.is_empty()
+                        || !evidence.uri_sans.is_empty()
+                })
+        }) || self.has_external_role_names_state()
     }
 }

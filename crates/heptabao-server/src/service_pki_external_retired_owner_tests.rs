@@ -266,7 +266,7 @@ fn pki_profile88_external_retirement_same_key_real_ids_mixed_local_rotation_and_
         read_leaf(&mut reopened, &admin, serial, pem);
     }
     assert!(
-        remote.calls()? == before && reopened.state.as_ref().ok_or("reopened")?.schema == 88,
+        remote.calls()? == before && reopened.state.as_ref().ok_or("reopened")?.schema == 93,
         "retired public signatures validate without network or revived private authority"
     );
     Ok(())

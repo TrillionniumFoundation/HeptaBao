@@ -27,6 +27,8 @@ mod role_names;
 #[path = "pki_role_time.rs"]
 mod role_time;
 use role_names::RoleNamePolicy;
+#[path = "pki_role_subjects.rs"]
+mod role_subjects;
 use role_time::RoleTimePolicy;
 #[path = "pki_issuer_time.rs"]
 mod issuer_time;
@@ -897,6 +899,10 @@ impl Pki {
                             "allowed_ip_sans_cidr",
                             "allowed_uri_sans",
                             "no_store",
+                            "allowed_serial_numbers",
+                            "allowed_user_ids",
+                            "allowed_other_sans",
+                            "policy_identifiers",
                         ],
                     )?;
                     let role_result = if method == "PATCH" {
@@ -1030,6 +1036,51 @@ impl Pki {
             || role.allow_any_name
         {
             return Err(bad("historical fixture cannot install a new role owner"));
+        }
+        role.validate()?;
+        self.roles.insert(name.to_owned(), role);
+        Ok(())
+    }
+
+    // Original pre-name profile role wire contract, created before any new
+    // name owner publication. Never create a current role and strip its owner.
+    // The only later migration in these tests is an actual production PATCH.
+    #[cfg(test)]
+    pub(super) fn fixture_insert_pre_names_profile_role(
+        &mut self,
+        name: &str,
+        value: &Value,
+    ) -> Result<()> {
+        valid_name(name)?;
+        if !self.roles.is_empty()
+            || !self.issued.is_empty()
+            || self.has_role_names_state()
+            || self.has_role_time_state()
+            || self.has_external_state()
+        {
+            return Err(bad(
+                "pre-name profile fixture requires an empty actual local role graph",
+            ));
+        }
+        let role: Role = serde_json::from_value(value.clone())
+            .map_err(|_| bad("original pre-name profile role wire contract"))?;
+        if role.role_name_policy.is_some()
+            || role.role_time_policy.is_some()
+            || role.role_leaf_profile.as_ref() != Some(&RoleLeafProfile::default())
+            || role.allow_bare_domains != Some(false)
+            || role.allow_wildcard_certificates != Some(true)
+            || role.allow_any_name
+            || !role.allow_subdomains
+            || !role.allow_ip_sans
+            || role.max_ttl != 3600
+            || role.generate_lease
+            || role.local_key_kind != Some(LocalKeyKind::Ec256)
+            || !role.issuer_ref.is_empty()
+            || role.allowed_domains != BTreeSet::from(["example.test".to_owned()])
+        {
+            return Err(bad(
+                "pre-name fixture requires the complete original profile88 role",
+            ));
         }
         role.validate()?;
         self.roles.insert(name.to_owned(), role);
@@ -1313,6 +1364,9 @@ impl Pki {
                 "alt_names",
                 "ip_sans",
                 "uri_sans",
+                "serial_number",
+                "user_ids",
+                "other_sans",
                 "ttl",
                 "not_before",
                 "not_after",
@@ -1470,7 +1524,17 @@ impl Pki {
                 || body.get("not_before").is_some()
                 || body.get("not_after").is_some(),
             warnings: resolved.warnings,
-            role_leaf_profile: Some(role.effective_leaf_profile()),
+            role_leaf_profile: Some(if let Some(policy) = names {
+                policy.capture_subject(body, role.effective_leaf_profile())?
+            } else {
+                if ["serial_number", "user_ids", "other_sans"]
+                    .iter()
+                    .any(|field| body.get(*field).is_some())
+                {
+                    return Err(bad("historical role has no subject attribute policy"));
+                }
+                role.effective_leaf_profile()
+            }),
             local_issuer_id: if !root.is_external() {
                 root.issuer_id.clone()
             } else {
@@ -1829,6 +1893,9 @@ impl Role {
         }
         if let Some(profile) = &self.role_leaf_profile {
             profile.validate_role_oid_strings()?;
+            if profile.leaf_subject_evidence.is_some() {
+                return Err(bad("role cannot carry captured leaf subject evidence"));
+            }
         }
         if let Some(policy) = &self.role_time_policy {
             policy.validate(self.max_ttl)?;
@@ -2354,7 +2421,7 @@ fn certificate_tbs_with(
         ));
     }
     let subject_der = if let Some(profile) = role_leaf_profile {
-        profile.subject_der(subject_cn)
+        profile.subject_der(subject_cn)?
     } else {
         subject_name_der.map_or_else(|| name(subject_cn), <[u8]>::to_vec)
     };
@@ -2407,7 +2474,25 @@ fn certificate_tbs_with(
             &bit_string(&[usage_byte], unused),
         ));
     }
-    let mut names = Vec::new();
+    let captured_subject =
+        role_leaf_profile.and_then(|profile| profile.leaf_subject_evidence.as_ref());
+    let other_names = captured_subject
+        .map(|subject| subject.other_names_der())
+        .transpose()?
+        .unwrap_or_default();
+    let policies = captured_subject
+        .map(|subject| subject.policies_der())
+        .transpose()?
+        .flatten();
+    let qualified_policy =
+        captured_subject.is_some_and(|subject| subject.policy_uses_extra_extension());
+    if !other_names.is_empty()
+        && !qualified_policy
+        && let Some(policies) = &policies
+    {
+        extensions.push(policies.clone());
+    }
+    let mut names = other_names.clone();
     if !exclude_cn_from_sans
         && (role_leaf_profile.is_none() || !subject_cn.is_empty())
         && (is_ca || !subject_cn.contains('*') || wildcard_dns_san(subject_cn))
@@ -2433,9 +2518,14 @@ fn certificate_tbs_with(
     if !names.is_empty() {
         extensions.push(extension(
             &[0x55, 0x1d, 0x11],
-            subject_der.as_slice() == [0x30, 0],
+            subject_der.as_slice() == [0x30, 0] && other_names.is_empty(),
             &seq(&names),
         ));
+    }
+    if (other_names.is_empty() || qualified_policy)
+        && let Some(policies) = policies
+    {
+        extensions.push(policies);
     }
     let tbs = seq(&[
         context_explicit(0, &integer(&[2])),

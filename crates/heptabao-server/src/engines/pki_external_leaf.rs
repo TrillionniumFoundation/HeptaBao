@@ -48,6 +48,10 @@ impl Pki {
     pub(in crate::engines::pki) fn has_external_role_names_state(&self) -> bool {
         self.external.issued_public.values().any(|leaf| {
             leaf.role_name_policy.is_some()
+                || leaf
+                    .role_leaf_profile
+                    .as_ref()
+                    .is_some_and(|profile| profile.leaf_subject_evidence.is_some())
                 || !leaf.email_sans.is_empty()
                 || !leaf.uri_sans.is_empty()
         })
@@ -221,10 +225,22 @@ fn leaf_tbs(
     leaf_public.validate()?;
     let leaf_bits = leaf_public.subject_key_bits()?;
     let subject_der = prepared.role_leaf_profile.as_ref().map_or_else(
-        || name(&prepared.common_name),
+        || Ok(name(&prepared.common_name)),
         |profile| profile.subject_der(&prepared.common_name),
-    );
-    let mut names = Vec::new();
+    )?;
+    let captured_subject = prepared
+        .role_leaf_profile
+        .as_ref()
+        .and_then(|profile| profile.leaf_subject_evidence.as_ref());
+    let other_names = captured_subject
+        .map(|subject| subject.other_names_der())
+        .transpose()?
+        .unwrap_or_default();
+    let policies = captured_subject
+        .map(|subject| subject.policies_der())
+        .transpose()?
+        .flatten();
+    let mut names = other_names.clone();
     // Keep the historical None encoding; new captured profiles use the same
     // admitted DNS CN projection as the local certificate producer.
     if !prepared.exclude_cn_from_sans
@@ -278,12 +294,25 @@ fn leaf_tbs(
             )]),
         ),
     ];
+    let qualified_policy =
+        captured_subject.is_some_and(|subject| subject.policy_uses_extra_extension());
+    if !other_names.is_empty()
+        && !qualified_policy
+        && let Some(policies) = &policies
+    {
+        extensions.push(policies.clone());
+    }
     if prepared.role_leaf_profile.is_none() || !names.is_empty() {
         extensions.push(extension(
             &[0x55, 0x1d, 0x11],
-            subject_der.as_slice() == [0x30, 0],
+            subject_der.as_slice() == [0x30, 0] && other_names.is_empty(),
             &seq(&names),
         ));
+    }
+    if (other_names.is_empty() || qualified_policy)
+        && let Some(policies) = policies
+    {
+        extensions.push(policies);
     }
     if let Some(profile) = &prepared.role_leaf_profile {
         let mut controlled = profile.leaf_extensions()?;
@@ -784,10 +813,21 @@ impl Pki {
             }
             if let Some(policy) = &projection.role_name_policy {
                 policy.validate()?;
+                policy.validate_sans(&projection.ip_sans, &projection.uri_sans)?;
+                policy.validate_subject_capture(
+                    projection
+                        .role_leaf_profile
+                        .as_ref()
+                        .and_then(|profile| profile.leaf_subject_evidence.as_ref()),
+                )?;
             }
             if issued.role_names_owned != projection.role_name_policy.is_some()
                 || projection.role_name_policy.is_none()
                     && (projection.exclude_cn_from_sans
+                        || projection
+                            .role_leaf_profile
+                            .as_ref()
+                            .is_some_and(|profile| profile.leaf_subject_evidence.is_some())
                         || !projection.email_sans.is_empty()
                         || !projection.uri_sans.is_empty())
                 || projection.email_sans.len() > 33

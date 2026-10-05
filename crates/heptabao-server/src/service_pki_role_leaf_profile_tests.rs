@@ -245,11 +245,12 @@ fn assert_profile_capture(
 ) -> TestResult {
     let state = service.state.as_ref().ok_or("actual active state")?;
     assert!(
-        state.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
-            && state.writer_schema() == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        state.schema == PKI_ROLE_NAMES_STATE_SCHEMA
+            && state.writer_schema() == PKI_ROLE_NAMES_STATE_SCHEMA
             && state.engines.has_pki_role_leaf_profile_state()
+            && state.engines.has_pki_role_names_state()
             && state.validate_format().is_ok(),
-        "actual private owner and signed public evidence protect88"
+        "actual private profile88 evidence and captured name policy protect93"
     );
     let encoded = CarrierBody(serde_json::to_value(&state.engines)?);
     let pki = &encoded.0["namespaces"][""]["mounts"][mount]["backend"]["Pki"];

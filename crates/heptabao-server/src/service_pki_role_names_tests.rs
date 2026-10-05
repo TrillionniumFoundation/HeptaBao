@@ -635,3 +635,343 @@ fn pki_names93_external_uri_signed_owner_retirement_and_no_store_no_orphan_proje
     assert_eq!(reopened.state.as_ref().ok_or("reopen93")?.schema, 93);
     Ok(())
 }
+
+fn extended_fields() -> Value {
+    json!({"allowed_serial_numbers":["client-*"],"allowed_user_ids":["team-*"],
+        "allowed_other_sans":["1.2.3.4;UTF8:role-*"],
+        "policy_identifiers":[r#"{"oid":"1.2.3.4","notice":"actual public policy notice","cps":"https://example.test/cps"}"#]})
+}
+fn extended_request() -> Value {
+    json!({"common_name":"leaf.example.test","serial_number":"client-42","user_ids":["team-42","team-43"],"other_sans":["1.2.3.4;UTF8:role-42"]})
+}
+fn check_extended_der(response: &Response, issuer: &X509) -> TestResult {
+    let cert = signed_leaf(response, issuer)?;
+    let der = cert.to_der()?;
+    let (_, parsed) = X509Certificate::from_der(&der).map_err(|_| "structured subject DER")?;
+    let attributes = parsed
+        .subject()
+        .iter_attributes()
+        .map(|attribute| {
+            attribute
+                .as_str()
+                .map(|value| (attribute.attr_type().to_id_string(), value.to_owned()))
+        })
+        .collect::<std::result::Result<Vec<_>, _>>()
+        .map_err(|_| "structured subject attributes")?;
+    for expected in [
+        ("2.5.4.5", "client-42"),
+        ("0.9.2342.19200300.100.1.1", "team-42"),
+        ("0.9.2342.19200300.100.1.1", "team-43"),
+    ] {
+        assert!(
+            attributes
+                .iter()
+                .any(|(oid, value)| oid == expected.0 && value == expected.1),
+            "independent ASN.1 subject attributes"
+        );
+    }
+    let extension_ids = parsed
+        .extensions()
+        .iter()
+        .map(|extension| extension.oid.to_id_string())
+        .collect::<Vec<_>>();
+    let san_at = extension_ids
+        .iter()
+        .position(|oid| oid == "2.5.29.17")
+        .ok_or("actual SAN")?;
+    let policy_at = extension_ids
+        .iter()
+        .position(|oid| oid == "2.5.29.32")
+        .ok_or("actual policies")?;
+    assert!(
+        san_at < policy_at,
+        "native qualified policy follows the SDK otherName extension"
+    );
+    let other_name = parsed
+        .extensions()
+        .iter()
+        .find_map(|extension| {
+            if let x509_parser::extensions::ParsedExtension::SubjectAlternativeName(san) =
+                extension.parsed_extension()
+            {
+                san.general_names.iter().find_map(|name| {
+                    if let x509_parser::extensions::GeneralName::OtherName(oid, value) = name
+                        && oid.to_id_string() == "1.2.3.4"
+                    {
+                        Some(*value)
+                    } else {
+                        None
+                    }
+                })
+            } else {
+                None
+            }
+        })
+        .ok_or("actual parsed otherName OID")?;
+    assert_eq!(
+        other_name, b"\xa0\x09\x0c\x07role-42",
+        "independent parser retains complete explicit UTF8 otherName value"
+    );
+    // The vendored OpenSSL text printer reports unknown otherName OIDs as
+    // unsupported. Its system CLI counterpart independently decodes this OID
+    // and value in the actual native comparison; compare ASN.1 here instead.
+    let text = String::from_utf8(cert.to_text()?)?
+        .split_whitespace()
+        .collect::<String>();
+    for actual in [
+        "Policy: 1.2.3.4",
+        "CPS: https://example.test/cps",
+        "Explicit Text: actual public policy notice",
+    ] {
+        assert!(
+            text.contains(&actual.split_whitespace().collect::<String>()),
+            "independent public certificate parser requires {actual}"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn pki_names93_real_subject_serial_uid_othername_policy_and_received_tamper_fail_closed()
+-> TestResult {
+    let (root, mut service, unseal, admin, issuer) = local_fixture()?;
+    named_role(&mut service, &admin, extended_fields())?;
+    let leaf = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &admin,
+        extended_request(),
+    );
+    check_extended_der(&leaf, &issuer)?;
+    let serial = leaf.body["data"]["serial_number"]
+        .as_str()
+        .ok_or("serial")?
+        .replace(':', "");
+    let original = service.state.as_ref().ok_or("original")?;
+    original
+        .validate_format()
+        .map_err(|_| "original signed subject capture")?;
+    for field in [
+        "serial_number",
+        "user_ids",
+        "other_sans",
+        "policy_identifiers",
+    ] {
+        let mut altered = CarrierBody(serde_json::to_value(original)?);
+        let captured = &mut altered.0["engines"]["namespaces"][""]["mounts"]["ca/"]["backend"]["Pki"]
+            ["issued"][&serial]["role_leaf_profile"]["profile"]["leaf_subject_evidence"];
+        captured[field] = match field {
+            "serial_number" => json!("client-substituted"),
+            "user_ids" => json!(["team-substituted"]),
+            "other_sans" => json!({"1.2.3.4":["role-substituted"]}),
+            _ => json!(["1.2.3.5"]),
+        };
+        let altered: State = serde_json::from_value(altered.0.clone())?;
+        assert!(
+            altered.validate_format().is_err(),
+            "received {field} cannot relabel actual signed DER"
+        );
+    }
+    drop(service);
+    let mut reopened = root.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let read = call(
+        &mut reopened,
+        "GET",
+        &format!("ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    check_extended_der(&read, &issuer)?;
+    assert_eq!(reopened.state.as_ref().ok_or("reopened")?.schema, 93);
+    Ok(())
+}
+
+#[test]
+fn pki_names93_subject_permission_native_errors_and_invalid_policy_no_publication() -> TestResult {
+    let (_root, mut service, _unseal, admin, _issuer) = local_fixture()?;
+    named_role(&mut service, &admin, json!({}))?;
+    for (inputs, message) in [
+        (
+            json!({"serial_number":"client-42"}),
+            "serial_number client-42 not allowed by this role",
+        ),
+        (
+            json!({"user_ids":["alice"]}),
+            "user_id alice is not allowed by this role",
+        ),
+        (
+            json!({"other_sans":["1.2.3.4;UTF8:role-42"]}),
+            "other SAN OID 1.2.3.4 not allowed by this role",
+        ),
+    ] {
+        let mut request = inputs;
+        request["common_name"] = json!("leaf.example.test");
+        let rejected = call(&mut service, "POST", "ca/issue/time", &admin, request);
+        assert_eq!(rejected.status, 400);
+        assert_eq!(rejected.body["errors"], json!([message]));
+    }
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    let failed = call(
+        &mut service,
+        "PATCH",
+        "ca/roles/time",
+        &admin,
+        json!({"policy_identifiers":["invalid"]}),
+    );
+    assert_eq!(failed.status, 500);
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "preserved identity")?,
+        identity
+    );
+    assert_eq!(
+        call(&mut service, "GET", "ca/roles/time", &admin, json!({})).body["data"]["policy_identifiers"],
+        json!([])
+    );
+    assert_eq!(call(&mut service, "PATCH", "ca/roles/time", &admin,
+        json!({"require_cn":false,"allowed_other_sans":["1.2.3.4;UTF8:role-*"],"policy_identifiers":["1.2.3.4"]})).status,200);
+    let leaf = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &admin,
+        json!({"alt_names":"leaf.example.test","other_sans":["1.2.3.4;UTF8:role-42"]}),
+    );
+    let cert = signed_leaf(&leaf, &_issuer)?;
+    let der = cert.to_der()?;
+    let (_, parsed) = X509Certificate::from_der(&der).map_err(|_| "simple policy otherName DER")?;
+    assert!(parsed.subject().iter_attributes().next().is_none());
+    let ids = parsed
+        .extensions()
+        .iter()
+        .map(|extension| extension.oid.to_id_string())
+        .collect::<Vec<_>>();
+    assert!(
+        ids.iter()
+            .position(|oid| oid == "2.5.29.32")
+            .ok_or("policy")?
+            < ids.iter().position(|oid| oid == "2.5.29.17").ok_or("SAN")?
+    );
+    assert!(
+        !parsed
+            .extensions()
+            .iter()
+            .find(|extension| extension.oid.to_id_string() == "2.5.29.17")
+            .ok_or("SAN")?
+            .critical,
+        "native otherName override remains noncritical with empty subject"
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_names93_external_structured_subject_and_policy_survive_real_signer_retirement() -> TestResult
+{
+    let remote = RemoteTransit::new_kind("ecdsa-p256")?;
+    let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+    let generated = call(
+        &mut service,
+        "POST",
+        "external-ca/root/generate/kms",
+        &admin,
+        body(),
+    );
+    assert_eq!(generated.status, 200);
+    let issuer = X509::from_pem(
+        generated.body["data"]["certificate"]
+            .as_str()
+            .ok_or("CA")?
+            .as_bytes(),
+    )?;
+    let mut role = role_body(&default_profile());
+    role["ttl"] = json!("10m");
+    for (field, value) in extended_fields().as_object().ok_or("fields")? {
+        role[field] = value.clone();
+    }
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/roles/subject",
+            &admin,
+            role
+        )
+        .status,
+        200
+    );
+    let leaf = call(
+        &mut service,
+        "POST",
+        "external-ca/issue/subject",
+        &admin,
+        extended_request(),
+    );
+    check_extended_der(&leaf, &issuer)?;
+    let serial = leaf.body["data"]["serial_number"]
+        .as_str()
+        .ok_or("serial")?
+        .to_owned();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/root/delete",
+            &admin,
+            json!({})
+        )
+        .status,
+        200
+    );
+    let before = remote.calls()?;
+    let read = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    check_extended_der(&read, &issuer)?;
+    assert_eq!(remote.calls()?, before);
+    service
+        .state
+        .as_ref()
+        .ok_or("retired")?
+        .validate_format()
+        .map_err(|_| "retired subject owner")?;
+    drop(service);
+    let mut reopened = root.service()?;
+    reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let read = call(
+        &mut reopened,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    check_extended_der(&read, &issuer)?;
+    Ok(())
+}

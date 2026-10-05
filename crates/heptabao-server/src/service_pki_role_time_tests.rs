@@ -22,6 +22,44 @@ fn timed_role(service: &mut Service, admin: &str, fields: Value) -> TestResult {
     Ok(())
 }
 
+// Authenticated typed old producer input, before the name-policy producer.
+// No current role or header is downgraded. The actual old graph is persisted
+// first; production PATCH then creates time89 and signed-time90 ownership.
+fn historical_profile88_role(service: &mut Service) -> TestResult {
+    let mut original = service
+        .state
+        .as_ref()
+        .ok_or("pre-profile role state")?
+        .clone();
+    assert!(
+        original.schema < 88
+            && !original.engines.has_pki_role_names_state()
+            && !original.engines.has_pki_role_leaf_profile_state()
+    );
+    original.engines.fixture_insert_pre_names_pki_profile_role(
+        "",
+        "ca/",
+        "time",
+        &json!({"allowed_domains":["example.test"],"allow_any_name":false,
+            "allow_bare_domains":false,"allow_wildcard_certificates":true,
+            "allow_subdomains":true,"allow_ip_sans":true,"max_ttl":3600,
+            "generate_lease":false,"local_key_kind":"ec256",
+            "role_leaf_profile":default_profile()}),
+    )?;
+    original.schema = original.writer_schema();
+    assert!(
+        original.schema == 88
+            && original.validate_format().is_ok()
+            && !original.engines.has_pki_role_names_state()
+            && !original.engines.has_pki_role_time_state()
+    );
+    service
+        .commit_state(&mut original)
+        .map_err(|_| "persist original profile88 producer graph")?;
+    service.state = Some(original);
+    Ok(())
+}
+
 fn signed_times(
     response: &Response,
     issuer: &X509,
@@ -94,7 +132,7 @@ fn pki_time89_role_ttl_backdate_cap_warning_and_exact_signed_validity() -> TestR
     );
     let state = service.state.as_ref().ok_or("actual time state")?;
     assert!(
-        state.schema == 89 && state.writer_schema() == 89 && state.validate_format().is_ok(),
+        state.schema == 93 && state.writer_schema() == 93 && state.validate_format().is_ok(),
         "stored role and private signed leaf raise reader89"
     );
     Ok(())
@@ -104,7 +142,7 @@ fn pki_time89_role_ttl_backdate_cap_warning_and_exact_signed_validity() -> TestR
 fn pki_time89_future_request_without_role_policy_binds_private_public_owner_and_reopens()
 -> TestResult {
     let (root, mut service, unseal, admin, issuer) = local_fixture()?;
-    timed_role(&mut service, &admin, json!({}))?;
+    historical_profile88_role(&mut service)?;
     assert!(
         service.state.as_ref().ok_or("ordinary role")?.schema == 88,
         "captured real predecessor88"
@@ -281,7 +319,7 @@ fn pki_time89_request_bounds_role_override_and_ttl_mutual_exclusion() -> TestRes
 #[test]
 fn pki_time89_actual88_backup_record_and_final_floor_survive_last_owner_tidy() -> TestResult {
     let (root, mut service, unseal, admin, issuer) = local_fixture()?;
-    timed_role(&mut service, &admin, json!({}))?;
+    historical_profile88_role(&mut service)?;
     let predecessor = service.state.as_ref().ok_or("original88")?.clone();
     assert!(
         predecessor.schema == 88 && !predecessor.engines.has_pki_role_time_state(),
@@ -429,7 +467,7 @@ fn pki_time89_actual88_backup_record_and_final_floor_survive_last_owner_tidy() -
 #[test]
 fn pki_time89_received_actual88_to89_records_persist_and_reopen() -> TestResult {
     let (root, mut service, unseal, admin, _issuer) = local_fixture()?;
-    timed_role(&mut service, &admin, json!({}))?;
+    historical_profile88_role(&mut service)?;
     let predecessor = service.state.as_ref().ok_or("actual88")?.clone();
     assert!(
         predecessor.schema == 88,
@@ -718,7 +756,7 @@ fn pki_time89_local_issuer_three_modes_bound_order_captured_owner_and_restart() 
     );
     let state = service.state.as_ref().ok_or("actual three-mode state")?;
     assert!(
-        state.schema == 89 && state.validate_format().is_ok(),
+        state.schema == 93 && state.validate_format().is_ok(),
         "captured permit leaf survives issuer policy update"
     );
     let stored = pki_value(&service, "", "ca/")?;
@@ -921,8 +959,8 @@ fn pki_time89_external_permit_owner_survives_real_signer_retirement_and_last_tid
     );
     let state = reopened.state.as_ref().ok_or("retired89 floor")?;
     assert!(
-        state.schema == 89
-            && state.writer_schema() == 89
+        state.schema == 93
+            && state.writer_schema() == 93
             && !state.engines.has_pki_role_time_state()
             && state.validate_format().is_ok(),
         "sticky reader89 survives actual last issuer policy owner removal"
@@ -933,7 +971,19 @@ fn pki_time89_external_permit_owner_survives_real_signer_retirement_and_last_tid
 #[test]
 fn pki_time90_actual89_backup_record_and_final_floor_survive_signed_owner_tidy() -> TestResult {
     let (root, mut service, unseal, admin, issuer) = local_fixture()?;
-    timed_role(&mut service, &admin, json!({"ttl":"10m"}))?;
+    historical_profile88_role(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "PATCH",
+            "ca/roles/time",
+            &admin,
+            json!({"ttl":"10m"})
+        )
+        .status,
+        200,
+        "real historical88 to time89 publication"
+    );
     let predecessor = service.state.as_ref().ok_or("original89")?.clone();
     assert!(
         predecessor.schema == 89 && !predecessor.engines.has_pki_signed_role_time_state(),
@@ -1102,8 +1152,8 @@ fn pki_time90_pre_epoch_signed_der_owner_rejects_both_erasure_and_false_seconds(
     let serial = serial.replace(':', "");
     let state = service.state.as_ref().ok_or("actual signed state")?;
     assert!(
-        state.schema == 90
-            && state.writer_schema() == 90
+        state.schema == 93
+            && state.writer_schema() == 93
             && state.engines.has_pki_signed_role_time_state()
             && state.validate_format().is_ok(),
         "actual signed timestamp owner requires reader90"
@@ -1156,7 +1206,7 @@ fn pki_time90_pre_epoch_signed_der_owner_rejects_both_erasure_and_false_seconds(
     assert!(
         read.status == 200
             && read.body["data"]["certificate"] == pem
-            && reopened.state.as_ref().ok_or("restart")?.schema == 90,
+            && reopened.state.as_ref().ok_or("restart")?.schema == 93,
         "original signed certificate and reader90 persist"
     );
     Ok(())
@@ -1234,8 +1284,14 @@ fn pki_time89_framework_signed_duration_rejection_subsecond_truncation_and_zero_
     );
     signed_times(&leaf, &issuer, 70, 700)?;
     assert!(
-        service.state.as_ref().ok_or("duration state")?.schema == 89,
-        "nonnegative signed certificate does not claim pre-epoch owner90"
+        service.state.as_ref().ok_or("duration state")?.schema == 93
+            && !service
+                .state
+                .as_ref()
+                .ok_or("duration state")?
+                .engines
+                .has_pki_signed_role_time_state(),
+        "current names93 certificate does not claim pre-epoch owner90"
     );
     Ok(())
 }
@@ -1332,7 +1388,7 @@ fn pki_time90_external_pre_epoch_owner_survives_real_signer_retirement_and_last_
     );
     let state = service.state.as_ref().ok_or("actual retired time owner")?;
     assert!(
-        state.schema == 90
+        state.schema == 93
             && state.engines.has_pki_signed_role_time_state()
             && state.validate_format().is_ok(),
         "actual retired beyond-CA leaf validates against original archived issuer"
@@ -1399,8 +1455,8 @@ fn pki_time90_external_pre_epoch_owner_survives_real_signer_retirement_and_last_
     );
     let state = reopened.state.as_ref().ok_or("retired90 floor")?;
     assert!(
-        state.schema == 90
-            && state.writer_schema() == 90
+        state.schema == 93
+            && state.writer_schema() == 93
             && !state.engines.has_pki_role_time_state()
             && !state.engines.has_pki_signed_role_time_state()
             && state.validate_format().is_ok(),

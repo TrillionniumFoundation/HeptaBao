@@ -8,6 +8,8 @@ use super::*;
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct RoleLeafProfile {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) leaf_subject_evidence: Option<role_subjects::LeafSubjectEvidence>,
     pub(super) server_flag: bool,
     pub(super) client_flag: bool,
     pub(super) code_signing_flag: bool,
@@ -28,6 +30,7 @@ pub(super) struct RoleLeafProfile {
 impl Default for RoleLeafProfile {
     fn default() -> Self {
         Self {
+            leaf_subject_evidence: None,
             server_flag: true,
             client_flag: true,
             code_signing_flag: false,
@@ -55,6 +58,9 @@ impl RoleLeafProfile {
     // Role write validation and certificate DER validity are different upstream
     // boundaries. A stored integer-segment OID is not thereby valid ASN.1.
     pub(super) fn validate_role_oid_strings(&self) -> Result<()> {
+        if let Some(subject) = &self.leaf_subject_evidence {
+            subject.validate()?;
+        }
         for value in &self.ext_key_usage_oids {
             parse_oid_integer_segments(value).map_err(|_| {
                 bad(&format!(
@@ -86,7 +92,7 @@ impl RoleLeafProfile {
         })
     }
 
-    pub(super) fn subject_der(&self, common_name: &str) -> Vec<u8> {
+    pub(super) fn subject_der(&self, common_name: &str) -> Result<Vec<u8>> {
         let mut rdns = Vec::new();
         for (last_oid, values) in [
             (6, &self.country),
@@ -114,7 +120,12 @@ impl RoleLeafProfile {
                 name_string(common_name.as_bytes()),
             ])]));
         }
-        seq(&rdns)
+        let base = seq(&rdns);
+        if let Some(evidence) = &self.leaf_subject_evidence {
+            evidence.subject_der(base)
+        } else {
+            Ok(base)
+        }
     }
 
     // This returns the actual three role-controlled extension DER values.
@@ -225,7 +236,7 @@ impl RoleLeafProfile {
     }
 }
 
-fn name_string(value: &[u8]) -> Vec<u8> {
+pub(super) fn name_string(value: &[u8]) -> Vec<u8> {
     let printable = value
         .iter()
         .all(|byte| byte.is_ascii_alphanumeric() || b" '()+,-./:=?".contains(byte));
@@ -239,7 +250,7 @@ fn parse_oid_integer_segments(value: &str) -> std::result::Result<Vec<i64>, ()> 
         .collect()
 }
 
-fn encoded_oid(value: &str) -> Result<Vec<u8>> {
+pub(super) fn encoded_oid(value: &str) -> Result<Vec<u8>> {
     let bad_encoding = || {
         error(
             500,
@@ -345,10 +356,13 @@ impl Pki {
             evidence.profile.validate_role_oid_strings()?;
             if let Some(policy) = &evidence.role_name_policy {
                 policy.validate()?;
+                policy.validate_sans(&evidence.ip_sans, &evidence.uri_sans)?;
+                policy.validate_subject_capture(evidence.profile.leaf_subject_evidence.as_ref())?;
             }
             if issued.role_names_owned != evidence.role_name_policy.is_some()
                 || evidence.role_name_policy.is_none()
                     && (evidence.exclude_cn_from_sans
+                        || evidence.profile.leaf_subject_evidence.is_some()
                         || !evidence.email_sans.is_empty()
                         || !evidence.uri_sans.is_empty())
                 || evidence.email_sans.len() > 33
