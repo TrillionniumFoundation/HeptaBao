@@ -1127,11 +1127,11 @@ mod tests {
             .commit_state(&mut candidate)
             .map_err(|_| "actual schema87 publication")?;
         service.state = Some(candidate);
-        let before = service.state.as_ref().ok_or("state")?;
+        let mut before = service.state.as_ref().ok_or("state")?.clone();
         let plan = service
-            .prepare_record_plan(before)
+            .prepare_record_plan(&mut before)
             .map_err(|_| "actual record plan")?;
-        plan.validate_kubernetes_artifact_owner(before)
+        plan.validate_kubernetes_artifact_owner(&before)
             .map_err(|_| "actual initial Engine owner")?;
         let changed = call(
             &mut service,
@@ -1163,9 +1163,11 @@ mod tests {
         let mut service = directory.service()?;
         let (_key, token) = bootstrap(&mut service)?;
         mount(&mut service, &token);
-        let state = service.state.as_ref().ok_or("state")?;
-        let plan = service.prepare_record_plan(state).map_err(|_| "plan")?;
-        plan.validate_precise_auth_owner(state)
+        let mut state = service.state.as_ref().ok_or("state")?.clone();
+        let plan = service
+            .prepare_record_plan(&mut state)
+            .map_err(|_| "plan")?;
+        plan.validate_precise_auth_owner(&state)
             .map_err(|_| "historical binding")?;
         let digest = service.current_state_digest().map_err(|_| "digest")?;
         let generation = service.durable.as_ref().ok_or("durable")?.generation();

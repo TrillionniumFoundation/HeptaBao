@@ -873,7 +873,7 @@ fn same_epoch_received_state_preserves_pending_observation() -> TestResult {
         100,
     )?;
     let old_nonce = service.unseal_nonce.clone();
-    let received = service.state.clone().ok_or("state")?;
+    let mut received = service.state.clone().ok_or("state")?;
     let plan = service
         .prepare_record_plan(&mut received)
         .map_err(|_| "record plan")?;

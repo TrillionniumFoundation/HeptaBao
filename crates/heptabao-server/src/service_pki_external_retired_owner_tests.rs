@@ -831,6 +831,7 @@ fn pki_profile88_last_external_archive_tidy_preserves_actual85_input_and_sticky8
         .map_err(|_| "actual restore principal")?;
     let input = json!({});
     let request = RequestView {
+        token_clock: None,
         method: "POST",
         path: "sys/storage/raft/snapshot-force",
         namespace: "",

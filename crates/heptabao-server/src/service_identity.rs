@@ -1571,6 +1571,8 @@ mod kubernetes_artifact_floor_tests {
             engines: EngineState::initialized_empty().into(),
             database: database::DatabaseState::default().into(),
             raft_admin: raft_admin::RaftAdminState::default().into(),
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
         };
         current
             .validate_format()
@@ -1588,15 +1590,22 @@ mod kubernetes_artifact_floor_tests {
             json!(["snapshot would downgrade opaque Kubernetes artifact ownership"])
         );
         let mut unknown = current.clone();
-        unknown.schema = 88;
+        unknown.schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
         assert!(unknown.validate_format().is_err());
-        assert_eq!(unknown.writer_schema(), 88);
-        // Namespace81 and precise Token82 are not activated by accepting87.
-        for reserved in [81, 82, 83, 84, 85, 86] {
-            let mut separate = current.clone();
-            separate.schema = reserved;
-            assert!(separate.validate_format().is_err());
-        }
+        assert_eq!(unknown.writer_schema(), MAX_SUPPORTED_STATE_SCHEMA + 1);
+        let mut precise = current.clone();
+        precise.schema = 82;
+        assert!(precise.validate_format().is_err());
+        // The integrated reader admits PKI88 while retaining the prior87 floor.
+        let mut integrated = current.clone();
+        integrated.schema = PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA;
+        assert!(integrated.validate_format().is_ok());
+        assert!(
+            integrated
+                .validate_publication_schema(Some(&current))
+                .is_ok()
+        );
+        assert!(Service::validate_snapshot_protected_floor(&integrated, &current).is_err());
         Ok(())
     }
 }

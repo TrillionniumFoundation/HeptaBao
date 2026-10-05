@@ -2103,6 +2103,7 @@ mod tests {
                 method: "POST",
                 path: "sys/namespaces/plain/seal",
                 namespace: "",
+                token_clock: None,
                 token: &token,
                 body: &json!({}),
                 now: 100,

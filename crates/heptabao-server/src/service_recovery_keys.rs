@@ -2495,8 +2495,9 @@ mod source825_real_recovery_fixture_tests {
             previous: crate::state_record_root::StateIdentity,
             operation: &str,
         ) -> records::RecordPlan {
+            let mut candidate = state.clone();
             let plan = service
-                .prepare_record_plan(state)
+                .prepare_record_plan(&mut candidate)
                 .unwrap_or_else(|_| panic!("actual complete record plan"));
             cluster.processes[0]
                 .lock()

@@ -897,6 +897,8 @@ mod tests {
             engines: EngineState::initialized_empty().into(),
             database: database::DatabaseState::default().into(),
             raft_admin: raft_admin::RaftAdminState::default().into(),
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
         };
         let (credential, _) = RecoveryCredential::generate(
             crypto::digest(state.cluster_id.as_bytes()),

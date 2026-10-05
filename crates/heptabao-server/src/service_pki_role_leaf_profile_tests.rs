@@ -856,6 +856,7 @@ fn pki_profile88_namespace_final_restore_record_gate_and_last_owner_sticky_reope
             .map_err(|_| "actual snapshot principal")?;
         let snapshot_body = json!({});
         let request = RequestView {
+            token_clock: None,
             method: "POST",
             path: "sys/storage/raft/snapshot-force",
             namespace: "",
