@@ -6,6 +6,19 @@ use openssl::{pkey::PKey, x509::X509};
 fn issuer_issue_fixture(
     remote: &RemoteTransit,
 ) -> TestResult<(Root, Service, String, String, String)> {
+    issuer_issue_fixture_with_role(remote, false)
+}
+
+fn issuer_issue_historical_role_fixture(
+    remote: &RemoteTransit,
+) -> TestResult<(Root, Service, String, String, String)> {
+    issuer_issue_fixture_with_role(remote, true)
+}
+
+fn issuer_issue_fixture_with_role(
+    remote: &RemoteTransit,
+    historical_role: bool,
+) -> TestResult<(Root, Service, String, String, String)> {
     let (root, mut service, unseal, admin) = pki_fixture(remote)?;
     let mut named = body();
     named["issuer_name"] = json!("primary");
@@ -21,6 +34,52 @@ fn issuer_issue_fixture(
         .as_str()
         .ok_or("issuer identifier")?
         .to_owned();
+    let prior = service.state.as_ref().ok_or("actual pre-role named root")?;
+    assert!(
+        prior.schema
+            == if prior.engines.has_typed_external_pki_state() {
+                67
+            } else {
+                65
+            }
+            && !prior.engines.has_pki_role_bare_domain_state(),
+        "actual old root floor before role"
+    );
+    if historical_role {
+        // Authenticated typed predecessor fixture; no claim of an old binary.
+        // Publish it before any new-role88 commit, without lowering a protected store.
+        // Clone retains the actual authenticated record runtime. Whole-State
+        // serde would deliberately drop that process-private publication owner.
+        let mut predecessor = prior.clone();
+        predecessor.engines.fixture_insert_historical_pki_role(
+            "",
+            "external-ca/",
+            "leaf",
+            &json!({
+                "allowed_domains":["example.test"],"allow_subdomains":true,
+                "allow_ip_sans":false,"max_ttl":1800,"generate_lease":true
+            }),
+        )?;
+        assert!(
+            predecessor.engines.record_root() == prior.engines.record_root()
+                && predecessor.engines.record_root().is_some(),
+            "historical fixture retains the true admitted record root"
+        );
+        assert!(
+            predecessor.schema == prior.schema
+                && predecessor.writer_schema() == prior.schema
+                && !predecessor.engines.has_pki_role_bare_domain_state()
+                && !predecessor.engines.has_pki_role_any_name_state()
+                && !predecessor.engines.has_pki_role_wildcard_state()
+                && predecessor.validate_format().is_ok(),
+            "genuine historical None role is readable at the original root floor"
+        );
+        service
+            .commit_state(&predecessor)
+            .map_err(|_| "typed historical role fixture publication")?;
+        service.state = Some(predecessor);
+        return Ok((root, service, unseal, admin, id));
+    }
     assert!(
         call(
             &mut service,
@@ -33,6 +92,13 @@ fn issuer_issue_fixture(
         .status
             == 200,
         "original bounded leaf role"
+    );
+    let published = service.state.as_ref().ok_or("actual new named role")?;
+    assert!(
+        published.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && published.engines.has_pki_role_bare_domain_state()
+            && published.engines.has_pki_role_wildcard_state(),
+        "actual API role carries its88 owner"
     );
     Ok((root, service, unseal, admin, id))
 }
@@ -103,8 +169,14 @@ fn external_pki270_issuer_issue_seven_real_kinds_original_paths_private_binding_
         assert!(ca.verify(&public)?, "actual remote root self-signature");
         let prior_schema = service.state.as_ref().ok_or("state")?.schema;
         assert!(
-            prior_schema == if kind == "ed25519" { 65 } else { 67 },
-            "ordinary paths do not activate71"
+            prior_schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+                && service
+                    .state
+                    .as_ref()
+                    .ok_or("new role")?
+                    .engines
+                    .has_pki_role_bare_domain_state(),
+            "ordinary new-role path requires88 before alias publication"
         );
         let mut readbacks = Vec::new();
         for reference in ["default", id.as_str(), "primary"] {
@@ -198,8 +270,11 @@ fn external_pki270_issuer_issue_seven_real_kinds_original_paths_private_binding_
             );
             let state = service.state.as_ref().ok_or("published state")?;
             assert!(
-                state.schema == PKI_ISSUER_PATH_STATE_SCHEMA && state.validate_format().is_ok(),
-                "first alias publication requires71"
+                state.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+                    && state.engines.has_issuer_path_pki_state()
+                    && state.engines.has_pki_role_bare_domain_state()
+                    && state.validate_format().is_ok(),
+                "real alias71 owner and new role88 coexist without lowering either"
             );
             let mut encoded = serde_json::to_value(state)?;
             let pki =
@@ -241,8 +316,9 @@ fn external_pki270_issuer_issue_seven_real_kinds_original_paths_private_binding_
             "encrypted alias-state restart"
         );
         assert!(
-            reopened.state.as_ref().ok_or("reopened state")?.schema == 71,
-            "encrypted restart keeps71"
+            reopened.state.as_ref().ok_or("reopened state")?.schema
+                == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA,
+            "encrypted restart keeps the real alias and new role88 floor"
         );
         for (serial, certificate, lease) in readbacks {
             let read = call(
@@ -471,7 +547,7 @@ fn external_pki270_issuer_issue_final_delivery_clock_withholds_expired_private()
 #[test]
 fn external_pki270_issuer_issue_schema71_active_retired_record_and_snapshot_fences() -> TestResult {
     let remote = RemoteTransit::new_kind("ed25519")?;
-    let (root, mut service, unseal, admin, id) = issuer_issue_fixture(&remote)?;
+    let (root, mut service, unseal, admin, id) = issuer_issue_historical_role_fixture(&remote)?;
     let mut predecessor = service.state.clone().ok_or("predecessor")?;
     predecessor.schema = TRANSIT_BYOK_STATE_SCHEMA;
     service
@@ -558,8 +634,10 @@ fn external_pki270_issuer_issue_schema71_active_retired_record_and_snapshot_fenc
         }
         let state = service.state.as_ref().ok_or("protected state")?;
         assert!(
-            state.schema == 71 && state.writer_schema() == 71 && state.validate_format().is_ok(),
-            "retirement never lowers sticky71"
+            state.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+                && state.writer_schema() == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+                && state.validate_format().is_ok(),
+            "new profile and alias retirement never lower sticky88"
         );
         assert!(
             state.engines.has_issuer_path_pki_state() != retired,
@@ -643,8 +721,9 @@ fn external_pki270_issuer_issue_schema71_active_retired_record_and_snapshot_fenc
         )
         .status
             == 200
-            && reopened.state.as_ref().ok_or("retired reopened")?.schema == 71,
-        "encrypted retired reopen retains71 without any alias graph"
+            && reopened.state.as_ref().ok_or("retired reopened")?.schema
+                == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA,
+        "encrypted retired reopen retains88 without any alias graph"
     );
     Ok(())
 }
@@ -653,7 +732,7 @@ fn external_pki270_issuer_issue_schema71_active_retired_record_and_snapshot_fenc
 fn external_pki270_issuer_issue_all_namespace_retained_predicate_and_closed_grammar() -> TestResult
 {
     let remote = RemoteTransit::new_kind("ed25519")?;
-    let (_root, mut service, _unseal, admin, id) = issuer_issue_fixture(&remote)?;
+    let (_root, mut service, _unseal, admin, id) = issuer_issue_historical_role_fixture(&remote)?;
     let path = format!("external-ca/issuer/{id}/issue/leaf");
     let mut issued = call(&mut service, "POST", &path, &admin, issue_body());
     assert!(issued.status == 200, "real alias graph for predicate test");
@@ -670,7 +749,7 @@ fn external_pki270_issuer_issue_all_namespace_retained_predicate_and_closed_gram
     elsewhere.schema = 70;
     assert!(
         elsewhere.engines.has_issuer_path_pki_state()
-            && elsewhere.writer_schema() == 71
+            && elsewhere.writer_schema() == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
             && elsewhere.validate_format().is_err(),
         "all-namespace scan cannot hide an alias graph behind outer70"
     );

@@ -62,6 +62,10 @@ impl AuthState {
                 .any(|token| token.token_api_lease_ttl.is_some())
     }
 
+    pub(crate) fn secret_default_lease_ttl(&self) -> Result<u64, AuthError> {
+        Ok(self.secret_lease_defaults()?.0)
+    }
+
     /// Actual durable system defaults for a secrets engine's public lease contract.
     pub(crate) fn secret_lease_defaults(&self) -> Result<(u64, u64), AuthError> {
         let defaults = self.system_lease_defaults()?;
@@ -147,7 +151,7 @@ impl AuthState {
             return Err(denied());
         }
         if !token.renewable {
-            return Err(bad("token is not renewable"));
+            return Err(bad("lease is not renewable"));
         }
         let role = token.token_role.as_ref().map(|issued| {
             self.token_roles.get(namespace).and_then(|roles| roles.get(&issued.name)).ok_or_else(|| err(500, &format!("1 error occurred:\n\t* failed to renew entry: original token role {} could not be found, not renewing\n\n",token_policies::quote_policy(&issued.name))))
@@ -193,6 +197,7 @@ impl AuthState {
             body: json!({"auth": {
                 "accessor":token.accessor,"policies":token.policies,"token_policies":token.policies,
                 "entity_id":token.entity_id.as_deref().unwrap_or(""),
+                "orphan":token.parent.is_none(),"num_uses":token.uses_remaining.unwrap_or(0),
                 "lease_duration":expires_at-now,"renewable":true,"token_type":"service"
             }}),
         };

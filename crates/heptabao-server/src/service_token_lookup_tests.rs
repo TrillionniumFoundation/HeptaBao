@@ -142,3 +142,44 @@ fn wrapped_token_lookup_keeps_the_echo_inside_the_one_use_response()
     );
     Ok(())
 }
+
+#[test]
+fn retained_expired_token_api_renewal_reaches_offline_classification_without_mutation()
+-> Result<(), Box<dyn std::error::Error>> {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let issued = service.handle_at(
+        "POST",
+        "auth/token/create",
+        "",
+        &token,
+        json!({"policies":["default"], "ttl":"1s"}),
+        100,
+    );
+    assert_eq!(issued.status, 200);
+    let child = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("child")?;
+    let accessor = issued.body["auth"]["accessor"].as_str().ok_or("accessor")?;
+    let before = service.current_state_digest().map_err(|_| "digest")?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    for (path, body) in [
+        ("auth/token/renew", json!({"token":child})),
+        ("auth/token/renew-accessor", json!({"accessor":accessor})),
+    ] {
+        let reply = service.handle_at("POST", path, "", &token, body, 101);
+        assert_eq!(reply.status, 400);
+        assert_eq!(reply.body["errors"], json!(["token not found"]));
+        assert!(reply.body.get("auth").is_none());
+    }
+    assert_eq!(
+        service.current_state_digest().map_err(|_| "digest")?,
+        before
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    Ok(())
+}

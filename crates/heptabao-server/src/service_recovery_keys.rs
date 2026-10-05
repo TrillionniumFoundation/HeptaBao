@@ -2,8 +2,74 @@
 //! The encrypted Auth owner commits the authority switch; seal.json never does.
 use super::*;
 use crate::auth::{RecoveryAttempt, RecoveryCommitIntent, RecoveryCredential, RecoveryDelivery};
+use crate::state_record_root::StateIdentity;
 
 pub(super) struct AdmittedRecoverySeal(pub(super) Option<SealMetadata>);
+#[derive(Clone, Copy)]
+enum HaRecoveryIndexFailurePhase {
+    BeforeIndexPublication,
+    LocalIntegrityOrPublication,
+}
+struct HaRecoveryIndexAdmissionFailure {
+    response: Response,
+    phase: HaRecoveryIndexFailurePhase,
+    index_readback: Option<Box<ReadbackRecoveryIndexPublication>>,
+}
+impl From<Response> for HaRecoveryIndexAdmissionFailure {
+    fn from(response: Response) -> Self {
+        Self {
+            response,
+            phase: HaRecoveryIndexFailurePhase::LocalIntegrityOrPublication,
+            index_readback: None,
+        }
+    }
+}
+#[derive(Clone, Copy)]
+enum HaRecoveryIndexOwnerContext {
+    Published,
+    Unchanged,
+}
+
+/// Distinct evidence for a write that returned Ok and an exact no-write index.
+/// These variants are minted only in the production index publication path.
+enum LocalRecoveryIndexPublication {
+    KnownWritten {
+        source: SealMetadata,
+        target: SealMetadata,
+    },
+    KnownUnchanged {
+        seal: SealMetadata,
+    },
+}
+/// This intermediate proof adds exact readback and a successful fresh
+/// quorum/own-applied observation of a changed identity. It is not retention
+/// authority, and cannot represent a failed or unknown write outcome.
+pub(super) struct ReadbackRecoveryIndexPublication {
+    publication: LocalRecoveryIndexPublication,
+    observed: StateIdentity,
+    witness: heptabao_raft_runtime::ApplicationReadWitness,
+}
+impl ReadbackRecoveryIndexPublication {
+    pub(super) fn source(&self) -> &SealMetadata {
+        match &self.publication {
+            LocalRecoveryIndexPublication::KnownWritten { source, .. } => source,
+            LocalRecoveryIndexPublication::KnownUnchanged { seal } => seal,
+        }
+    }
+    pub(super) fn target(&self) -> &SealMetadata {
+        match &self.publication {
+            LocalRecoveryIndexPublication::KnownWritten { target, .. } => target,
+            LocalRecoveryIndexPublication::KnownUnchanged { seal } => seal,
+        }
+    }
+    pub(super) fn observed(&self) -> StateIdentity {
+        self.observed
+    }
+    pub(super) fn witness(&self) -> &heptabao_raft_runtime::ApplicationReadWitness {
+        &self.witness
+    }
+}
+
 // No public caller can construct legacy authority or activate it through request data.
 enum RecoveryAuthorization<'a> {
     Sudo(&'a Principal),
@@ -140,6 +206,364 @@ fn legacy_recovery_admission(
     legacy_recovery_path(path).ok_or_else(|| Response::error(404, "unknown legacy recovery path"))
 }
 impl Service {
+    /// Raft authenticates the protected credential. The local public index is
+    /// derived under that exact applied identity and retains this node's blob.
+    pub(super) fn admit_ha_recovery_seal(
+        &self,
+        state: &State,
+        deadline: Option<std::time::Instant>,
+    ) -> Result<AdmittedRecoverySeal, Response> {
+        self.admit_ha_recovery_seal_with_phase(state, deadline, None)
+            .map_err(|failure| failure.response)
+    }
+
+    fn admit_ha_recovery_seal_with_phase(
+        &self,
+        state: &State,
+        deadline: Option<std::time::Instant>,
+        completed: Option<&ha_received::CompletedLocalPublication<'_>>,
+    ) -> Result<AdmittedRecoverySeal, HaRecoveryIndexAdmissionFailure> {
+        let mut phase = HaRecoveryIndexFailurePhase::LocalIntegrityOrPublication;
+        let mut index_readback = None;
+        let result: Result<AdmittedRecoverySeal, Response> = (|| {
+            live(deadline)?;
+            let admitted = self
+                .state
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "HA recovery state is not admitted"))?;
+            if owner_store::serialize_owner(admitted)
+                .map_err(state_serialization_error)?
+                .as_slice()
+                != owner_store::serialize_owner(state)
+                    .map_err(state_serialization_error)?
+                    .as_slice()
+            {
+                return Err(Response::error(
+                    503,
+                    "HA recovery candidate is not the admitted state",
+                ));
+            }
+            let identity = self.current_state_identity()?;
+            self.verify_ha_state_identity(identity).inspect_err(|_| {
+                phase = HaRecoveryIndexFailurePhase::BeforeIndexPublication;
+                eprintln!("heptabao-ha-index: stage=before_index_identity");
+            })?;
+            state
+                .auth
+                .validate_recovery_credential(&state.cluster_id)
+                .map_err(|_| Response::error(503, "invalid HA protected recovery credential"))?;
+            let current = self
+                .seal
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "HA node-local seal is absent"))?;
+            current
+                .validate()
+                .map_err(|_| Response::error(503, "invalid HA node-local seal"))?;
+            if load_seal_metadata(&self.data_dir).ok().flatten().as_ref() != Some(current) {
+                return Err(Response::error(503, "HA node-local public seal changed"));
+            }
+            if !current.is_wrapper() {
+                if state.auth.has_recovery_state() {
+                    return Err(Response::error(
+                        503,
+                        "HA recovery requires a local Wrapper seal",
+                    ));
+                }
+                return Ok(AdmittedRecoverySeal(Some(current.clone())));
+            }
+            if load_seal_metadata(&self.data_dir).ok().flatten().as_ref() != Some(current) {
+                return Err(Response::error(503, "HA node-local public seal changed"));
+            }
+            if let Some(intent) = &state.auth.recovery_intent {
+                let credential =
+                    state.auth.recovery_credential.as_ref().ok_or_else(|| {
+                        Response::error(503, "HA recovery intent lacks credential")
+                    })?;
+                intent
+                    .validate(crypto::digest(state.cluster_id.as_bytes()), credential)
+                    .map_err(|_| Response::error(503, "HA recovery intent binding failed"))?;
+                let source = decode_intent_seal(&intent.source_seal)?;
+                let target = decode_intent_seal(&intent.target_seal)?;
+                if !source.is_wrapper()
+                    || !target.is_wrapper()
+                    || !matches_credential(&source, intent.source_credential.as_ref())?
+                    || !matches_credential(&target, Some(credential))?
+                    || !openbao_wrapper::barrier::same_provider_material(&source, &target)
+                        .map_err(|_| Response::error(503, "invalid HA recovery intent provider"))?
+                {
+                    return Err(Response::error(503, "HA recovery intent is inconsistent"));
+                }
+            }
+            let target = match state.auth.recovery_credential.as_ref() {
+                Some(credential) => openbao_wrapper::barrier::seal_with_recovery(
+                    current, credential,
+                )
+                .map_err(|_| Response::error(503, "cannot derive HA node-local recovery index"))?,
+                None if matches_credential(current, None)? => current.clone(),
+                None => {
+                    return Err(Response::error(
+                        503,
+                        "HA credential removal is not supported",
+                    ));
+                }
+            };
+            live(deadline)?;
+            self.verify_ha_state_identity(identity).inspect_err(|_| {
+                phase = HaRecoveryIndexFailurePhase::BeforeIndexPublication;
+                eprintln!("heptabao-ha-index: stage=before_index_identity");
+            })?;
+            // Even a write error may follow a durable publication. Reset the
+            // phase before the attempt; later errors always require a fence.
+            phase = HaRecoveryIndexFailurePhase::LocalIntegrityOrPublication;
+            let publication = self.publish_ha_recovery_index(current, &target, deadline)?;
+            // A generic post-index failure still fences. Only a completed
+            // local owner may distinguish a successful authority observation
+            // of a newer identity from an unavailable/failed ReadIndex.
+            if let Some(completed) = completed {
+                if completed.identity() != identity {
+                    return Err(Response::error(503, "HA completed owner identity differs"));
+                }
+                index_readback = self
+                    .observe_completed_index_publication(publication, completed)?
+                    .map(Box::new);
+                if index_readback.is_some() {
+                    return Err(Response::error(
+                        503,
+                        "HA completed index authority advanced",
+                    ));
+                }
+            } else {
+                self.verify_ha_state_identity(identity).inspect_err(|_| {
+                    eprintln!(
+                        "heptabao-ha-index: stage=post_index_identity write_attempted={}",
+                        current != &target
+                    )
+                })?;
+            }
+            Ok(AdmittedRecoverySeal(Some(target)))
+        })();
+        result.map_err(|response| HaRecoveryIndexAdmissionFailure {
+            response,
+            phase,
+            index_readback,
+        })
+    }
+
+    fn publish_ha_recovery_index(
+        &self,
+        current: &SealMetadata,
+        target: &SealMetadata,
+        deadline: Option<std::time::Instant>,
+    ) -> Result<LocalRecoveryIndexPublication, Response> {
+        live(deadline)?;
+        let publication = if current != target {
+            persist_seal_metadata(&self.data_dir, target).map_err(|_| {
+                Response::error(503, "HA node-local recovery index repair outcome unknown")
+            })?;
+            LocalRecoveryIndexPublication::KnownWritten {
+                source: current.clone(),
+                target: target.clone(),
+            }
+        } else {
+            LocalRecoveryIndexPublication::KnownUnchanged {
+                seal: target.clone(),
+            }
+        };
+        live(deadline)?;
+        if load_seal_metadata(&self.data_dir).ok().flatten().as_ref() != Some(target) {
+            return Err(Response::error(
+                503,
+                "HA node-local recovery index read-back failed",
+            ));
+        }
+        Ok(publication)
+    }
+
+    fn observe_completed_index_publication(
+        &self,
+        publication: LocalRecoveryIndexPublication,
+        completed: &ha_received::CompletedLocalPublication<'_>,
+    ) -> Result<Option<ReadbackRecoveryIndexPublication>, Response> {
+        live(completed.deadline())?;
+        let (observed, witness) = self
+            .ha
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "HA completed authority absent"))?
+            .lock_for_request()
+            .map_err(|_| Response::error(503, "HA completed authority unavailable"))?
+            .application_identity_witness()
+            .map_err(|_| {
+                eprintln!("heptabao-ha-index: stage=post_index_readindex_unavailable");
+                Response::error(503, "HA completed index ReadIndex unavailable")
+            })?;
+        if observed == completed.identity() {
+            return Ok(None);
+        }
+        Ok(Some(ReadbackRecoveryIndexPublication {
+            publication,
+            observed,
+            witness,
+        }))
+    }
+
+    pub(super) fn reconcile_completed_ha_recovery_index(
+        &mut self,
+        completed: &ha_received::CompletedLocalPublication<'_>,
+    ) -> Result<ha_received::HaLocalPublicationProgress, Response> {
+        use ha_received::HaLocalPublicationProgress;
+        let result: Result<(), HaRecoveryIndexAdmissionFailure> = (|| {
+            live(completed.deadline())?;
+            // A completion token cannot mask later actual owner/object damage.
+            // Reject before any possible public-index write under its original bound.
+            completed.verify_local_publication(self)?;
+            self.durable
+                .as_mut()
+                .ok_or_else(|| Response::error(503, "HA local durable owner absent"))?
+                .verify_live_ownership()
+                .map_err(|_| Response::error(503, "HA local durable writer fence lost"))?;
+            let state = self
+                .state
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "HA recovery state absent"))?;
+            let admitted = self.admit_ha_recovery_seal_with_phase(
+                state,
+                completed.deadline(),
+                Some(completed),
+            )?;
+            completed.verify_local_publication(self)?;
+            self.durable
+                .as_mut()
+                .ok_or_else(|| Response::error(503, "HA local durable owner absent"))?
+                .verify_live_ownership()
+                .map_err(|_| Response::error(503, "HA local durable writer fence lost"))?;
+            self.seal = admitted.0;
+            Ok(())
+        })();
+        match result {
+            Ok(()) => Ok(HaLocalPublicationProgress::Current),
+            Err(mut failure) => {
+                if let Some(readback) = failure.index_readback.take() {
+                    return self
+                        .retain_completed_index_readback(completed, *readback)
+                        .map_err(|_| failure.response);
+                }
+                // Only a fresh, fully authenticated strict-newer log proof may
+                // explain this pre-index failure after completed local write.
+                // Unknown outcomes and generic post-index failures still fence;
+                // the separate known-completion proof was handled above.
+                if matches!(
+                    failure.phase,
+                    HaRecoveryIndexFailurePhase::BeforeIndexPublication
+                ) && matches!(
+                    completed.progress(self),
+                    Ok(HaLocalPublicationProgress::Superseded)
+                ) {
+                    Ok(HaLocalPublicationProgress::Superseded)
+                } else {
+                    self.fence_recovery_delivery();
+                    Err(failure.response)
+                }
+            }
+        }
+    }
+
+    fn retain_completed_index_readback(
+        &mut self,
+        completed: &ha_received::CompletedLocalPublication<'_>,
+        readback: ReadbackRecoveryIndexPublication,
+    ) -> Result<ha_received::HaLocalPublicationProgress, Response> {
+        match completed
+            .complete_index_publication(self, readback)
+            .and_then(|known| known.retain_if_superseded(self))
+        {
+            Ok(()) => Ok(ha_received::HaLocalPublicationProgress::Superseded),
+            Err(error) => {
+                self.fence_recovery_delivery();
+                Err(error)
+            }
+        }
+    }
+
+    pub(super) fn reconcile_ha_recovery_index(
+        &mut self,
+        deadline: Option<std::time::Instant>,
+    ) -> Result<(), Response> {
+        self.reconcile_ha_recovery_index_with_context(
+            deadline,
+            HaRecoveryIndexOwnerContext::Published,
+        )
+    }
+
+    pub(super) fn reconcile_unchanged_ha_recovery_index(
+        &mut self,
+        deadline: Option<std::time::Instant>,
+    ) -> Result<(), Response> {
+        self.reconcile_ha_recovery_index_with_context(
+            deadline,
+            HaRecoveryIndexOwnerContext::Unchanged,
+        )
+    }
+
+    fn reconcile_ha_recovery_index_with_context(
+        &mut self,
+        deadline: Option<std::time::Instant>,
+        context: HaRecoveryIndexOwnerContext,
+    ) -> Result<(), Response> {
+        if self.ha.is_none() {
+            return Ok(());
+        }
+        let result: Result<(), HaRecoveryIndexAdmissionFailure> = (|| {
+            self.durable
+                .as_mut()
+                .ok_or_else(|| Response::error(503, "HA local durable owner absent"))?
+                .verify_live_ownership()
+                .map_err(|_| Response::error(503, "HA local durable writer fence lost"))?;
+            let state = self
+                .state
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "HA recovery state absent"))?;
+            let admitted = self.admit_ha_recovery_seal_with_phase(state, deadline, None)?;
+            self.durable
+                .as_mut()
+                .ok_or_else(|| Response::error(503, "HA local durable owner absent"))?
+                .verify_live_ownership()
+                .map_err(|_| Response::error(503, "HA local durable writer fence lost"))?;
+            self.seal = admitted.0;
+            Ok(())
+        })();
+        result.map_err(|failure| {
+            // Only an unchanged local Wrapper owner may wait for a fresh
+            // committed target after an actual ReadIndex failure before any
+            // index publication. Local corruption and every possible write
+            // still permanently fence, as does the published-owner path.
+            let before_publication = matches!(context, HaRecoveryIndexOwnerContext::Unchanged)
+                && matches!(
+                    failure.phase,
+                    HaRecoveryIndexFailurePhase::BeforeIndexPublication
+                );
+            let unchanged_wrapper = before_publication
+                && !self.recovery_required
+                && self.state.is_some()
+                && live(deadline).is_ok()
+                && self.seal.as_ref().is_some_and(|seal| {
+                    seal.is_wrapper()
+                        && seal.validate().is_ok()
+                        && load_seal_metadata(&self.data_dir).ok().flatten().as_ref() == Some(seal)
+                })
+                && self
+                    .durable
+                    .as_mut()
+                    .is_some_and(|durable| durable.verify_live_ownership().is_ok());
+            if unchanged_wrapper {
+                self.ha_activation = None;
+                self.ha_read_cache = None;
+            } else {
+                self.fence_recovery_delivery();
+            }
+            failure.response
+        })
+    }
+
     pub(crate) fn install_recovery_listener_policy(
         &mut self,
         disabled: bool,
@@ -192,6 +616,9 @@ impl Service {
         deadline: Option<std::time::Instant>,
     ) -> Result<AdmittedRecoverySeal, Response> {
         live(deadline)?;
+        if self.ha.is_some() {
+            return self.admit_ha_recovery_seal(state, deadline);
+        }
         let Some(current) = self.seal.as_ref() else {
             if state.auth.has_recovery_state()
                 || !matches!(load_seal_metadata(&self.data_dir), Ok(None))
@@ -255,6 +682,13 @@ impl Service {
                 503,
                 "durable recovery writer fence unavailable",
             ));
+        }
+        if self.ha.is_some() {
+            let identity = self.current_state_identity()?;
+            if let Err(error) = self.verify_ha_state_identity(identity) {
+                self.fence_recovery_delivery();
+                return Err(error);
+            }
         }
         Ok(())
     }
@@ -465,12 +899,7 @@ impl Service {
         if !namespace.is_empty() {
             return Response::error(403, "recovery rekey is root namespace only");
         }
-        if self.ha.is_some() {
-            return Response::error(
-                501,
-                "recovery public-index publication on HA requires its backend consumer",
-            );
-        }
+
         if !self.seal.as_ref().is_some_and(SealMetadata::is_wrapper) {
             return Response::error(400, "recovery rotation requires a Wrapper seal");
         }
@@ -1753,6 +2182,1149 @@ mod source825_real_recovery_fixture_tests {
         );
         close(&c);
     }
+    #[test]
+    #[ignore = "requires admitted genuine PKCS11 provider, fresh owned store and real three-Raft cluster"]
+    fn genuine_wrapper_known_index_completion_and_noop_catchup() {
+        fn commit(
+            cluster: &crate::ha::snapshot_test_support::Cluster,
+            state: &State,
+            previous: [u8; 32],
+            operation: &str,
+        ) -> [u8; 32] {
+            let bytes = owner_store::serialize_owner(state).expect("actual owner bytes");
+            let binding = Service::prepare_initial_owner_plan(state, &bytes, operation)
+                .unwrap_or_else(|_| panic!("actual owner plan"))
+                .publication_binding(operation, &bytes)
+                .expect("actual owner binding");
+            cluster.processes[0]
+                .lock()
+                .expect("actual HA")
+                .commit_state_with_owner_binding(operation, previous, &bytes, binding)
+                .expect("actual committed owner");
+            crypto::digest(&bytes)
+        }
+        #[derive(Clone, Copy, PartialEq, Eq)]
+        enum Outcome {
+            Catchup,
+            QuorumUnavailable,
+            Expired,
+            SealReadbackChanged,
+            DurableReadbackChanged,
+            WriteUnknown,
+        }
+        for (name, unchanged, outcome) in [
+            ("known-written-C", false, Outcome::Catchup),
+            ("known-unchanged-D", true, Outcome::Catchup),
+            (
+                "known-written-unavailable",
+                false,
+                Outcome::QuorumUnavailable,
+            ),
+            ("known-unchanged-expired", true, Outcome::Expired),
+            (
+                "known-written-seal-readback",
+                false,
+                Outcome::SealReadbackChanged,
+            ),
+            (
+                "known-unchanged-durable-readback",
+                true,
+                Outcome::DurableReadbackChanged,
+            ),
+            (
+                "known-written-outcome-unknown",
+                false,
+                Outcome::WriteUnknown,
+            ),
+        ] {
+            let mut case = start(name);
+            let (nonce, share) = pending_final(&mut case);
+            let actor = principal(&case);
+            let encoded = decode_key_material(&share).expect("actual recovery fragment");
+            let service = case.service.as_mut().expect("actual Wrapper service");
+            let cut = service
+                .fixture_commit_owner_before_public_repair(&actor, &nonce, &encoded, now(), None)
+                .unwrap_or_else(|_| panic!("actual old and new quorum B checkpoint"));
+            let b = cut.committed;
+            let target = cut.target_public;
+            let cluster = crate::ha::snapshot_test_support::Cluster::new(
+                &case.root.join("real-raft"),
+                &b.cluster_id,
+            )
+            .expect("actual three OpenRaft nodes");
+            let b_identity = commit(&cluster, &b, [0; 32], "actual-known-index-B");
+            service.ha = Some(Arc::clone(&cluster.processes[1]));
+            let _original_scope = crate::request_deadline::RequestDeadlineScope::enter(
+                Instant::now() + Duration::from_secs(15),
+            );
+            if unchanged {
+                let admitted = service
+                    .admit_ha_recovery_seal(&b, crate::request_deadline::current())
+                    .unwrap_or_else(|_| panic!("actual initial B index repair"));
+                service.seal = admitted.0;
+                assert!(service.seal.as_ref() == Some(&target));
+            }
+            let committed = cluster.processes[1]
+                .lock()
+                .expect("actual follower")
+                .latest_committed_state()
+                .expect("actual own applied B")
+                .expect("actual B exists");
+            assert_eq!(committed.digest, b_identity);
+            let receipt = service
+                .receive_materialized_ha_state(&committed)
+                .unwrap_or_else(|_| panic!("actual B admission"));
+            receipt
+                .before_publication(service)
+                .unwrap_or_else(|_| panic!("actual B before publication"));
+            let bytes = owner_store::serialize_owner(&b).expect("actual B bytes");
+            let operation = receipt
+                .operation_id()
+                .unwrap_or_else(|_| panic!("fresh B event"));
+            let plan = Service::prepare_initial_owner_plan(&b, &bytes, &operation)
+                .unwrap_or_else(|_| panic!("actual local B owner plan"));
+            Service::persist_owner_state_batch(
+                service.durable.as_mut().expect("actual durable writer"),
+                &b,
+                &bytes,
+                &operation,
+                b.schema,
+                b.replay_epoch,
+                OwnerBatchInput {
+                    options: PersistOwnerStateOptions {
+                        compact_before_entry: true,
+                        allow_epoch_catchup: true,
+                        reuse: OwnerReuseHint::default(),
+                    },
+                    prepared_plan: Some(plan),
+                },
+            )
+            .expect("actual typed local B publication");
+            let completed = receipt
+                .after_publication(service)
+                .unwrap_or_else(|_| panic!("actual B typed readback"));
+            let source = service.seal.clone().expect("actual source seal");
+            if outcome == Outcome::WriteUnknown {
+                fs::set_permissions(&service.data_dir, fs::Permissions::from_mode(0o500))
+                    .expect("actual owned write denial");
+                let denied = service.reconcile_completed_ha_recovery_index(&completed);
+                fs::set_permissions(&service.data_dir, fs::Permissions::from_mode(0o700))
+                    .expect("restore private cleanup permissions");
+                assert!(denied.is_err());
+                let denied = denied.expect_err("actual failed publication");
+                assert_eq!(
+                    denied.body["errors"][0], "HA node-local recovery index repair outcome unknown",
+                    "write denial must reach the actual index write attempt"
+                );
+                assert!(service.recovery_required && service.durable.is_none());
+                close(&case);
+                continue;
+            }
+            // The production publication helper performs a real write/Ok or
+            // the distinct no-write branch, then exact readback. Commit C/D
+            // only after that natural checkpoint; no role/digest mirror hook.
+            let publication = service
+                .publish_ha_recovery_index(&source, &target, completed.deadline())
+                .unwrap_or_else(|_| panic!("actual index publication/readback"));
+            assert_eq!(source == target, unchanged);
+            let generation_b = service
+                .durable
+                .as_ref()
+                .expect("actual B writer")
+                .generation();
+            let stored_b = service
+                .durable
+                .as_ref()
+                .expect("actual B writer")
+                .get("system", "state")
+                .expect("actual B readback");
+            let mut c = b.clone();
+            c.auth.recovery_intent = None;
+            c.replay_epoch += 1;
+            let c_identity = commit(&cluster, &c, b_identity, "actual-known-index-C");
+            if unchanged {
+                let mut d = c.clone();
+                d.replay_epoch += 1;
+                d.engines
+                    .handle(
+                        "",
+                        "POST",
+                        "sys/mounts/known-index-D",
+                        &json!({"type":"kv"}),
+                        100,
+                    )
+                    .expect("actual complete D owner");
+                commit(&cluster, &d, c_identity, "actual-known-index-D");
+            }
+            let observed = service
+                .observe_completed_index_publication(publication, &completed)
+                .unwrap_or_else(|_| panic!("actual fresh Changed ReadIndex"))
+                .expect("actual changed identity");
+            match outcome {
+                Outcome::QuorumUnavailable => cluster.isolate_all_peers(true),
+                Outcome::SealReadbackChanged => {
+                    persist_seal_metadata(&service.data_dir, &source)
+                        .expect("actual index corruption");
+                }
+                Outcome::DurableReadbackChanged => {
+                    service
+                        .durable
+                        .as_mut()
+                        .expect("actual owned B writer")
+                        .put(
+                            PutRequest::new(
+                                "actual-negative",
+                                "system",
+                                "actual-known-index-corruption",
+                                "state",
+                                crypto::digest(b"actual-invalid-root"),
+                                Secret::new(b"actual-invalid-root".to_vec())
+                                    .expect("negative value"),
+                            )
+                            .expect("actual corruption request"),
+                        )
+                        .expect("actual durable root replacement");
+                    assert_eq!(
+                        service
+                            .durable
+                            .as_ref()
+                            .expect("actual corrupted B writer")
+                            .get("system", "state")
+                            .expect("actual replaced root readback"),
+                        Some(Secret::new(b"actual-invalid-root".to_vec()).expect("invalid root"))
+                    );
+                }
+                _ => {}
+            }
+            let _negative_scope = match outcome {
+                Outcome::Expired => Some(crate::request_deadline::RequestDeadlineScope::enter(
+                    Instant::now() - Duration::from_millis(1),
+                )),
+                Outcome::QuorumUnavailable => {
+                    Some(crate::request_deadline::RequestDeadlineScope::enter(
+                        Instant::now() + Duration::from_millis(250),
+                    ))
+                }
+                _ => None,
+            };
+            let retained = service.retain_completed_index_readback(&completed, observed);
+            if outcome == Outcome::Catchup {
+                assert_eq!(
+                    retained.unwrap_or_else(|_| panic!("actual known-completed catchup")),
+                    ha_received::HaLocalPublicationProgress::Superseded
+                );
+                assert!(!service.recovery_required);
+                assert!(service.ha_activation.is_none() && service.ha_read_cache.is_none());
+                assert!(service.seal.as_ref() == Some(&target));
+                assert_eq!(
+                    service
+                        .durable
+                        .as_ref()
+                        .expect("actual retained B")
+                        .generation(),
+                    generation_b
+                );
+                assert_eq!(
+                    service
+                        .durable
+                        .as_ref()
+                        .expect("actual retained B")
+                        .get("system", "state")
+                        .expect("B unchanged"),
+                    stored_b
+                );
+                assert_eq!(
+                    service
+                        .handle_at("GET", "sys/health", "", "", json!({}), now())
+                        .status,
+                    503
+                );
+                service
+                    .sync_from_ha()
+                    .unwrap_or_else(|_| panic!("next actual owned C/D pass"));
+                assert!(!service.recovery_required);
+                assert!(
+                    service
+                        .verify_ha_state_identity(
+                            service
+                                .current_state_identity()
+                                .unwrap_or_else(|_| panic!("current C/D"))
+                        )
+                        .is_ok()
+                );
+            } else {
+                assert!(retained.is_err());
+                assert!(service.recovery_required && service.durable.is_none());
+                assert!(service.state.is_none() && service.barrier_key.is_none());
+                assert!(service.ha_activation.is_none() && service.ha_read_cache.is_none());
+            }
+            drop(_negative_scope);
+            cluster.isolate_all_peers(false);
+            close(&case);
+        }
+    }
+
+    #[test]
+    #[ignore = "requires admitted genuine PKCS11 provider, actual durable graph and real three-Raft cluster"]
+    fn genuine_wrapper_existing_complete_readonly_catchup() {
+        fn commit_materialized(
+            cluster: &crate::ha::snapshot_test_support::Cluster,
+            state: &State,
+            previous: [u8; 32],
+            operation: &str,
+        ) -> [u8; 32] {
+            let bytes = owner_store::serialize_owner(state).expect("actual owner bytes");
+            let binding = Service::prepare_initial_owner_plan(state, &bytes, operation)
+                .unwrap_or_else(|_| panic!("actual owner plan"))
+                .publication_binding(operation, &bytes)
+                .expect("actual owner binding");
+            cluster.processes[0]
+                .lock()
+                .expect("actual HA")
+                .commit_state_with_owner_binding(operation, previous, &bytes, binding)
+                .expect("actual committed owner");
+            crypto::digest(&bytes)
+        }
+        fn commit_records(
+            service: &Service,
+            cluster: &crate::ha::snapshot_test_support::Cluster,
+            state: &State,
+            previous: crate::state_record_root::StateIdentity,
+            operation: &str,
+        ) -> records::RecordPlan {
+            let plan = service
+                .prepare_record_plan(state)
+                .unwrap_or_else(|_| panic!("actual complete record plan"));
+            cluster.processes[0]
+                .lock()
+                .expect("actual leader")
+                .commit_record_state(operation, &previous, &plan.bytes, &plan.objects)
+                .expect("actual committed record graph");
+            plan
+        }
+        fn overwrite(service: &mut Service, resource: &str) {
+            service
+                .durable
+                .as_mut()
+                .expect("actual owned writer")
+                .put(
+                    PutRequest::new(
+                        "actual-existing-negative",
+                        "system",
+                        "actual-existing-negative-write",
+                        resource,
+                        crypto::digest(b"actual-invalid-object"),
+                        Secret::new(b"actual-invalid-object".to_vec()).expect("invalid bytes"),
+                    )
+                    .expect("actual corruption request"),
+                )
+                .expect("actual durable write");
+            assert_eq!(
+                service
+                    .durable
+                    .as_ref()
+                    .expect("actual written store")
+                    .get("system", resource)
+                    .expect("actual readback"),
+                Some(Secret::new(b"actual-invalid-object".to_vec()).expect("invalid bytes"))
+            );
+        }
+        #[derive(Clone, Copy, PartialEq, Eq)]
+        enum Outcome {
+            Current,
+            Catchup,
+            GenerationChanged,
+            SealChanged,
+            MemoryCredentialChanged,
+            DurableKindChanged,
+            RecordObjectChanged,
+            Expired,
+            QuorumUnavailable,
+        }
+        for (name, record, outcome) in [
+            ("existing-materialized-current", false, Outcome::Current),
+            ("existing-record-current", true, Outcome::Current),
+            ("existing-materialized-C", false, Outcome::Catchup),
+            ("existing-record-D", true, Outcome::Catchup),
+            (
+                "existing-generation-changed",
+                false,
+                Outcome::GenerationChanged,
+            ),
+            ("existing-seal-index-changed", false, Outcome::SealChanged),
+            (
+                "existing-memory-credential-changed",
+                false,
+                Outcome::MemoryCredentialChanged,
+            ),
+            (
+                "existing-durable-kind-changed",
+                false,
+                Outcome::DurableKindChanged,
+            ),
+            (
+                "existing-record-object-changed",
+                true,
+                Outcome::RecordObjectChanged,
+            ),
+            ("existing-original-expired", false, Outcome::Expired),
+            (
+                "existing-quorum-unavailable",
+                true,
+                Outcome::QuorumUnavailable,
+            ),
+        ] {
+            eprintln!("actual-existing-complete-case: {name}");
+            let mut case = start(name);
+            let (nonce, share) = pending_final(&mut case);
+            let actor = principal(&case);
+            let encoded = decode_key_material(&share).expect("actual recovery fragment");
+            let service = case.service.as_mut().expect("actual Wrapper service");
+            let cut = service
+                .fixture_commit_owner_before_public_repair(&actor, &nonce, &encoded, now(), None)
+                .unwrap_or_else(|_| panic!("actual protected B checkpoint"));
+            let mut b = cut.committed;
+            let source = cut.source_public;
+            let target = cut.target_public;
+            let cluster = crate::ha::snapshot_test_support::Cluster::new(
+                &case.root.join("real-raft"),
+                &b.cluster_id,
+            )
+            .expect("actual three OpenRaft nodes");
+            let b_digest = commit_materialized(&cluster, &b, [0; 32], "actual-existing-B");
+            service.ha = Some(Arc::clone(&cluster.processes[1]));
+            let setup_scope = crate::request_deadline::RequestDeadlineScope::enter(
+                Instant::now() + Duration::from_secs(15),
+            );
+            // Complete the real earlier A-to-B index write before constructing
+            // the readonly token. No token or generation mirror repairs it.
+            let admitted = service
+                .admit_ha_recovery_seal(&b, crate::request_deadline::current())
+                .unwrap_or_else(|_| panic!("actual B index repair"));
+            service.seal = admitted.0;
+            assert!(service.seal.as_ref() == Some(&target));
+            if record {
+                b.engines = b
+                    .engines
+                    .migrate_kv1_records(crate::state_records::AddressKey::from_bytes(
+                        crypto::random().expect("actual address key"),
+                    ))
+                    .expect("actual KV1 graph migration")
+                    .into();
+                let plan = commit_records(
+                    service,
+                    &cluster,
+                    &b,
+                    crate::state_record_root::StateIdentity::Legacy(b_digest),
+                    "actual-existing-record-B",
+                );
+                service
+                    .persist_record_plan_local(&plan, "actual-existing-record-local-B", true)
+                    .unwrap_or_else(|_| panic!("actual local record B publication"));
+                service.record_root = Some(plan.root);
+                service.state_digest = Some(plan.identity.digest());
+                service.state = Some(b.clone());
+            }
+            // B repair/migration was an earlier, naturally completed request.
+            // The new readonly admission starts only after that full B exists.
+            // Capture and all C/D observations below share this one deadline.
+            drop(setup_scope);
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                Instant::now() + Duration::from_secs(15),
+            );
+            let generation = service
+                .durable
+                .as_ref()
+                .expect("actual complete B")
+                .generation();
+            let publication = service
+                .durable
+                .as_ref()
+                .expect("actual complete B")
+                .get("system", "state")
+                .expect("actual B root");
+            let index_bytes =
+                fs::read(service.data_dir.join("seal.json")).expect("actual public B index bytes");
+            if outcome == Outcome::Current {
+                service
+                    .sync_from_ha()
+                    .unwrap_or_else(|_| panic!("actual unchanged caller admission"));
+                assert_eq!(
+                    service
+                        .durable
+                        .as_ref()
+                        .expect("actual retained B")
+                        .generation(),
+                    generation
+                );
+                assert_eq!(
+                    service
+                        .durable
+                        .as_ref()
+                        .expect("actual retained B")
+                        .get("system", "state")
+                        .expect("actual root unchanged"),
+                    publication
+                );
+                assert_eq!(
+                    fs::read(service.data_dir.join("seal.json")).expect("actual index unchanged"),
+                    index_bytes
+                );
+                close(&case);
+                continue;
+            }
+            let local = service
+                .capture_existing_ha_publication()
+                .unwrap_or_else(|_| panic!("actual full readonly local B proof"));
+            let committed = cluster.processes[1]
+                .lock()
+                .expect("actual follower")
+                .latest_committed_state_if_changed(None)
+                .expect("actual own applied B");
+            let materialized;
+            let received_records;
+            let receipt = match committed {
+                crate::ha::CommittedStateRead::Materialized(committed) => {
+                    materialized = service
+                        .receive_materialized_ha_state(&committed)
+                        .unwrap_or_else(|_| panic!("actual typed materialized B receipt"));
+                    &materialized
+                }
+                crate::ha::CommittedStateRead::Records(committed) => {
+                    received_records = service
+                        .receive_ha_records(
+                            service.ha.as_ref().expect("actual follower"),
+                            &committed,
+                        )
+                        .unwrap_or_else(|_| panic!("actual complete record B receipt"));
+                    received_records.owner()
+                }
+                _ => panic!("actual B publication absent"),
+            };
+            local
+                .after_received(receipt, service)
+                .unwrap_or_else(|_| panic!("actual readonly B plus independent receipt"));
+            assert_eq!(
+                service
+                    .durable
+                    .as_ref()
+                    .expect("actual retained B")
+                    .generation(),
+                generation
+            );
+            let previous = service
+                .current_state_identity()
+                .unwrap_or_else(|_| panic!("actual B identity"));
+            let mut c = b.clone();
+            c.auth.recovery_intent = None;
+            c.replay_epoch += 1;
+            if record {
+                let plan =
+                    commit_records(service, &cluster, &c, previous, "actual-existing-record-C");
+                let mut d = c.clone();
+                d.replay_epoch += 1;
+                d.engines
+                    .handle(
+                        "",
+                        "POST",
+                        "sys/mounts/existing-D",
+                        &json!({"type":"kv"}),
+                        100,
+                    )
+                    .expect("actual D owner change");
+                commit_records(
+                    service,
+                    &cluster,
+                    &d,
+                    plan.identity,
+                    "actual-existing-record-D",
+                );
+            } else {
+                commit_materialized(&cluster, &c, b_digest, "actual-existing-C");
+            }
+            match outcome {
+                Outcome::GenerationChanged => {
+                    overwrite(service, "actual-unrelated-generation-change")
+                }
+                Outcome::SealChanged => {
+                    persist_seal_metadata(&service.data_dir, &source)
+                        .expect("actual changed B index");
+                }
+                Outcome::MemoryCredentialChanged => {
+                    let (credential, _) = crate::auth::RecoveryCredential::generate(
+                        crypto::digest(b.cluster_id.as_bytes()),
+                        b.auth
+                            .recovery_credential
+                            .as_ref()
+                            .expect("actual B credential")
+                            .generation(),
+                        5,
+                        3,
+                    )
+                    .expect("actual different protected credential");
+                    service
+                        .state
+                        .as_mut()
+                        .expect("actual B memory")
+                        .auth
+                        .recovery_credential = Some(credential);
+                }
+                Outcome::DurableKindChanged => {
+                    let mut other = b.clone();
+                    other.engines = other
+                        .engines
+                        .migrate_kv1_records(crate::state_records::AddressKey::from_bytes(
+                            crypto::random().expect("actual key"),
+                        ))
+                        .expect("actual other durable kind")
+                        .into();
+                    let plan = service
+                        .prepare_record_plan(&other)
+                        .unwrap_or_else(|_| panic!("actual other graph"));
+                    service
+                        .persist_record_plan_local(&plan, "actual-existing-negative-kind", true)
+                        .unwrap_or_else(|_| panic!("actual root kind replacement"));
+                    assert!(
+                        records::decode_root(
+                            service
+                                .durable
+                                .as_ref()
+                                .expect("actual changed kind")
+                                .get("system", "state")
+                                .expect("actual root")
+                                .expect("actual root exists")
+                                .expose()
+                        )
+                        .unwrap_or_else(|_| panic!("actual root codec"))
+                        .is_some()
+                    );
+                }
+                Outcome::RecordObjectChanged => {
+                    let resource = service.record_root.as_ref().expect("actual graph").owners[0]
+                        .chunks[0]
+                        .resource();
+                    overwrite(service, &resource);
+                }
+                Outcome::QuorumUnavailable => cluster.isolate_all_peers(true),
+                _ => {}
+            }
+            let _negative = match outcome {
+                Outcome::Expired => Some(crate::request_deadline::RequestDeadlineScope::enter(
+                    Instant::now() - Duration::from_millis(1),
+                )),
+                Outcome::QuorumUnavailable => {
+                    Some(crate::request_deadline::RequestDeadlineScope::enter(
+                        Instant::now() + Duration::from_millis(250),
+                    ))
+                }
+                _ => None,
+            };
+            let result = service.reconcile_existing_ha_publication(&local, receipt);
+            assert!(result.is_err());
+            if outcome == Outcome::Catchup {
+                assert_eq!(result.expect_err("actual bounded catchup").status, 503);
+                assert!(!service.recovery_required);
+                assert!(service.ha_activation.is_none() && service.ha_read_cache.is_none());
+                assert!(service.seal.as_ref() == Some(&target));
+                assert_eq!(
+                    service
+                        .durable
+                        .as_ref()
+                        .expect("actual retained B")
+                        .generation(),
+                    generation
+                );
+                assert_eq!(
+                    service
+                        .durable
+                        .as_ref()
+                        .expect("actual retained B")
+                        .get("system", "state")
+                        .expect("actual B unchanged"),
+                    publication
+                );
+                assert_eq!(
+                    fs::read(service.data_dir.join("seal.json")).expect("actual B index unchanged"),
+                    index_bytes
+                );
+                assert_eq!(
+                    service
+                        .handle_at("GET", "sys/health", "", "", json!({}), now())
+                        .status,
+                    503
+                );
+                service
+                    .sync_from_ha()
+                    .unwrap_or_else(|_| panic!("actual next owned C/D pass"));
+                assert!(!service.recovery_required);
+                assert!(
+                    service
+                        .verify_ha_state_identity(
+                            service
+                                .current_state_identity()
+                                .unwrap_or_else(|_| panic!("actual current C/D"))
+                        )
+                        .is_ok()
+                );
+            } else {
+                assert!(service.recovery_required && service.durable.is_none());
+                assert!(service.state.is_none() && service.barrier_key.is_none());
+                assert!(service.ha_activation.is_none() && service.ha_read_cache.is_none());
+            }
+            drop(_negative);
+            cluster.isolate_all_peers(false);
+            close(&case);
+        }
+    }
+
+    #[test]
+    #[ignore = "requires admitted genuine PKCS11 provider, real durable corruption and actual three-Raft quorum"]
+    fn genuine_wrapper_existing_constructor_rejects_preexisting_bad_durable_graph() {
+        for (name, record_object) in [
+            ("constructor-preexisting-durable-kind", false),
+            ("constructor-preexisting-record-object", true),
+        ] {
+            eprintln!("actual-existing-constructor-case: {name}");
+            let mut case = start(name);
+            let (nonce, share) = pending_final(&mut case);
+            let actor = principal(&case);
+            let encoded = decode_key_material(&share).expect("actual recovery fragment");
+            let service = case.service.as_mut().expect("actual Wrapper service");
+            let cut = service
+                .fixture_commit_owner_before_public_repair(&actor, &nonce, &encoded, now(), None)
+                .unwrap_or_else(|_| panic!("actual protected B checkpoint"));
+            let mut b = cut.committed;
+            let target = cut.target_public;
+            let cluster = crate::ha::snapshot_test_support::Cluster::new(
+                &case.root.join("real-raft"),
+                &b.cluster_id,
+            )
+            .expect("actual three OpenRaft nodes");
+            let bytes = owner_store::serialize_owner(&b).expect("actual B owner bytes");
+            let binding = Service::prepare_initial_owner_plan(&b, &bytes, "actual-constructor-B")
+                .unwrap_or_else(|_| panic!("actual owner plan"))
+                .publication_binding("actual-constructor-B", &bytes)
+                .expect("actual binding");
+            cluster.processes[0]
+                .lock()
+                .expect("actual leader")
+                .commit_state_with_owner_binding("actual-constructor-B", [0; 32], &bytes, binding)
+                .expect("actual committed B");
+            service.ha = Some(Arc::clone(&cluster.processes[1]));
+            {
+                let _setup = crate::request_deadline::RequestDeadlineScope::enter(
+                    Instant::now() + Duration::from_secs(15),
+                );
+                let admitted = service
+                    .admit_ha_recovery_seal(&b, crate::request_deadline::current())
+                    .unwrap_or_else(|_| panic!("actual earlier B index repair"));
+                service.seal = admitted.0;
+                assert!(service.seal.as_ref() == Some(&target));
+                if record_object {
+                    b.engines = b
+                        .engines
+                        .migrate_kv1_records(crate::state_records::AddressKey::from_bytes(
+                            crypto::random().expect("actual key"),
+                        ))
+                        .expect("actual earlier graph migration")
+                        .into();
+                    let plan = service
+                        .prepare_record_plan(&b)
+                        .unwrap_or_else(|_| panic!("actual complete B graph"));
+                    cluster.processes[0]
+                        .lock()
+                        .expect("actual leader")
+                        .commit_record_state(
+                            "actual-constructor-record-B",
+                            &crate::state_record_root::StateIdentity::Legacy(crypto::digest(
+                                &bytes,
+                            )),
+                            &plan.bytes,
+                            &plan.objects,
+                        )
+                        .expect("actual committed record B");
+                    service
+                        .persist_record_plan_local(&plan, "actual-constructor-record-local-B", true)
+                        .unwrap_or_else(|_| panic!("actual local graph B"));
+                    service.record_root = Some(plan.root);
+                    service.state_digest = Some(plan.identity.digest());
+                    service.state = Some(b.clone());
+                }
+            }
+            let before = service
+                .durable
+                .as_ref()
+                .expect("actual B writer")
+                .generation();
+            let expected = service
+                .current_state_identity()
+                .unwrap_or_else(|_| panic!("actual warm B"));
+            let public = fs::read(service.data_dir.join("seal.json")).expect("actual B index");
+            if record_object {
+                let resource = service.record_root.as_ref().expect("actual graph").owners[0].chunks
+                    [0]
+                .resource();
+                service
+                    .durable
+                    .as_mut()
+                    .expect("actual writer")
+                    .put(
+                        PutRequest::new(
+                            "actual-constructor-negative",
+                            "system",
+                            "actual-constructor-negative-write",
+                            &resource,
+                            crypto::digest(b"actual-invalid-object"),
+                            Secret::new(b"actual-invalid-object".to_vec()).expect("invalid object"),
+                        )
+                        .expect("actual corruption request"),
+                    )
+                    .expect("actual object replacement");
+                assert_eq!(
+                    service
+                        .durable
+                        .as_ref()
+                        .expect("actual changed graph")
+                        .get("system", &resource)
+                        .expect("actual replaced object"),
+                    Some(Secret::new(b"actual-invalid-object".to_vec()).expect("invalid object"))
+                );
+            } else {
+                let mut replacement = b.clone();
+                replacement.engines = replacement
+                    .engines
+                    .migrate_kv1_records(crate::state_records::AddressKey::from_bytes(
+                        crypto::random().expect("actual key"),
+                    ))
+                    .expect("actual other durable kind")
+                    .into();
+                let plan = service
+                    .prepare_record_plan(&replacement)
+                    .unwrap_or_else(|_| panic!("actual replacement graph"));
+                service
+                    .persist_record_plan_local(&plan, "actual-constructor-other-kind", true)
+                    .unwrap_or_else(|_| panic!("actual root kind replacement"));
+                assert!(
+                    records::decode_root(
+                        service
+                            .durable
+                            .as_ref()
+                            .expect("actual replaced kind")
+                            .get("system", "state")
+                            .expect("actual root")
+                            .expect("actual root exists")
+                            .expose()
+                    )
+                    .unwrap_or_else(|_| panic!("actual Records root codec"))
+                    .is_some()
+                );
+            }
+            // Freshly captured generation already includes the actual bad
+            // write. A stale-generation comparison cannot reject this fixture.
+            let current = service
+                .durable
+                .as_ref()
+                .expect("actual current writer")
+                .generation();
+            assert!(current > before);
+            service
+                .durable
+                .as_mut()
+                .expect("actual live current writer")
+                .verify_live_ownership()
+                .expect("actual current-generation ownership");
+            assert!(
+                !service
+                    .durable
+                    .as_ref()
+                    .expect("actual current store")
+                    .recovery_required()
+            );
+            assert!(
+                service
+                    .current_state_identity()
+                    .unwrap_or_else(|_| panic!("warm B unchanged"))
+                    == expected
+            );
+            assert_eq!(
+                fs::read(service.data_dir.join("seal.json")).expect("actual index unchanged"),
+                public
+            );
+            let _admission = crate::request_deadline::RequestDeadlineScope::enter(
+                Instant::now() + Duration::from_secs(15),
+            );
+            assert!(
+                cluster.processes[1]
+                    .lock()
+                    .expect("actual follower")
+                    .application_identity_witness()
+                    .expect("genuine B quorum witness")
+                    .0
+                    == expected
+            );
+            assert!(service.capture_existing_ha_publication().is_err());
+            assert!(service.recovery_required && service.durable.is_none());
+            assert!(service.state.is_none() && service.barrier_key.is_none());
+            assert!(service.ha_activation.is_none() && service.ha_read_cache.is_none());
+            save(&case.root.join("constructor-rejection-original.json"),
+                &serde_json::to_vec(&json!({"passed":true,"generation_before":before,
+                    "actual_generation_captured":current,"actual_live_ownership_before_capture":true,
+                    "original_admission_budget_seconds":15,"permanent_fence":true,
+                    "qualification_transferred":false})).expect("public negative evidence"));
+            close(&case);
+        }
+    }
+
+    #[test]
+    #[ignore = "requires admitted genuine PKCS11 provider, real durable corruption and actual three-Raft quorum"]
+    fn genuine_wrapper_completed_publication_rejects_after_write_corrupt_graph() {
+        for (name, record_object) in [
+            ("completed-afterwrite-owner-object", false),
+            ("completed-afterwrite-record-object", true),
+        ] {
+            eprintln!("actual-completed-deep-readback-case: {name}");
+            let mut case = start(name);
+            let (nonce, share) = pending_final(&mut case);
+            let actor = principal(&case);
+            let encoded = decode_key_material(&share).expect("actual recovery fragment");
+            let service = case.service.as_mut().expect("actual Wrapper service");
+            let cut = service
+                .fixture_commit_owner_before_public_repair(&actor, &nonce, &encoded, now(), None)
+                .unwrap_or_else(|_| panic!("actual protected B checkpoint"));
+            let mut b = cut.committed;
+            let target = cut.target_public;
+            let cluster = crate::ha::snapshot_test_support::Cluster::new(
+                &case.root.join("real-raft"),
+                &b.cluster_id,
+            )
+            .expect("actual three OpenRaft nodes");
+            let bytes = owner_store::serialize_owner(&b).expect("actual B owner bytes");
+            let binding = Service::prepare_initial_owner_plan(&b, &bytes, "actual-constructor-B")
+                .unwrap_or_else(|_| panic!("actual owner plan"))
+                .publication_binding("actual-constructor-B", &bytes)
+                .expect("actual binding");
+            cluster.processes[0]
+                .lock()
+                .expect("actual leader")
+                .commit_state_with_owner_binding("actual-constructor-B", [0; 32], &bytes, binding)
+                .expect("actual committed B");
+            service.ha = Some(Arc::clone(&cluster.processes[1]));
+            {
+                let _setup = crate::request_deadline::RequestDeadlineScope::enter(
+                    Instant::now() + Duration::from_secs(15),
+                );
+                let admitted = service
+                    .admit_ha_recovery_seal(&b, crate::request_deadline::current())
+                    .unwrap_or_else(|_| panic!("actual earlier B index repair"));
+                service.seal = admitted.0;
+                assert!(service.seal.as_ref() == Some(&target));
+                if record_object {
+                    b.engines = b
+                        .engines
+                        .migrate_kv1_records(crate::state_records::AddressKey::from_bytes(
+                            crypto::random().expect("actual key"),
+                        ))
+                        .expect("actual earlier graph migration")
+                        .into();
+                    let plan = service
+                        .prepare_record_plan(&b)
+                        .unwrap_or_else(|_| panic!("actual complete B graph"));
+                    cluster.processes[0]
+                        .lock()
+                        .expect("actual leader")
+                        .commit_record_state(
+                            "actual-constructor-record-B",
+                            &crate::state_record_root::StateIdentity::Legacy(crypto::digest(
+                                &bytes,
+                            )),
+                            &plan.bytes,
+                            &plan.objects,
+                        )
+                        .expect("actual committed record B");
+                    service
+                        .persist_record_plan_local(&plan, "actual-constructor-record-local-B", true)
+                        .unwrap_or_else(|_| panic!("actual local graph B"));
+                    service.record_root = Some(plan.root);
+                    service.state_digest = Some(plan.identity.digest());
+                    service.state = Some(b.clone());
+                }
+            }
+            let _admission = crate::request_deadline::RequestDeadlineScope::enter(
+                Instant::now() + Duration::from_secs(15),
+            );
+            let observed = cluster.processes[1]
+                .lock()
+                .expect("actual follower")
+                .latest_committed_state_if_changed(None)
+                .expect("actual full B quorum read");
+            let (materialized, records_receipt) = match observed {
+                crate::ha::CommittedStateRead::Materialized(committed) => (
+                    Some(
+                        service
+                            .receive_materialized_ha_state(&committed)
+                            .unwrap_or_else(|_| panic!("actual materialized B receipt")),
+                    ),
+                    None,
+                ),
+                crate::ha::CommittedStateRead::Records(committed) => (
+                    None,
+                    Some(
+                        service
+                            .receive_ha_records(&Arc::clone(&cluster.processes[1]), &committed)
+                            .unwrap_or_else(|_| panic!("actual record B receipt")),
+                    ),
+                ),
+                _ => panic!("actual B publication must exist"),
+            };
+            let receipt = materialized.as_ref().unwrap_or_else(|| {
+                records_receipt
+                    .as_ref()
+                    .expect("actual record receipt")
+                    .owner()
+            });
+            let completed = receipt
+                .after_publication(service)
+                .unwrap_or_else(|_| panic!("actual good full local B completion"));
+            let root_before = service
+                .durable
+                .as_ref()
+                .expect("actual writer")
+                .get("system", "state")
+                .expect("actual root read");
+            let before = service
+                .durable
+                .as_ref()
+                .expect("actual B writer")
+                .generation();
+            let expected = service
+                .current_state_identity()
+                .unwrap_or_else(|_| panic!("actual warm B"));
+            let public = fs::read(service.data_dir.join("seal.json")).expect("actual B index");
+            let resource = if record_object {
+                service.record_root.as_ref().expect("actual graph").owners[0].chunks[0].resource()
+            } else {
+                owner_store::decode_manifest(root_before.as_ref().expect("actual V4 root").expose())
+                    .expect("actual V4 codec")
+                    .expect("actual V4 manifest")
+                    .unique_chunk_resources()
+                    .expect("actual V4 chunks")
+                    .into_iter()
+                    .next()
+                    .expect("actual V4 owner chunk")
+            };
+            service
+                .durable
+                .as_mut()
+                .expect("actual writer")
+                .put(
+                    PutRequest::new(
+                        "actual-completed-negative",
+                        "system",
+                        "actual-completed-negative-write",
+                        &resource,
+                        crypto::digest(b"actual-invalid-object"),
+                        Secret::new(b"actual-invalid-object".to_vec()).expect("invalid object"),
+                    )
+                    .expect("actual corruption request"),
+                )
+                .expect("actual object replacement");
+            assert_eq!(
+                service
+                    .durable
+                    .as_ref()
+                    .expect("actual changed graph")
+                    .get("system", &resource)
+                    .expect("actual replaced object"),
+                Some(Secret::new(b"actual-invalid-object".to_vec()).expect("invalid object"))
+            );
+            assert_eq!(
+                service
+                    .durable
+                    .as_ref()
+                    .expect("actual root unchanged")
+                    .get("system", "state")
+                    .expect("actual root read"),
+                root_before
+            );
+            assert!(
+                Service::load_state_from_durable(
+                    service.durable.as_ref().expect("actual bad full graph")
+                )
+                .is_err()
+            );
+            // Freshly captured generation already includes the actual bad
+            // write. A stale-generation comparison cannot reject this fixture.
+            let current = service
+                .durable
+                .as_ref()
+                .expect("actual current writer")
+                .generation();
+            assert!(current > before);
+            service
+                .durable
+                .as_mut()
+                .expect("actual live current writer")
+                .verify_live_ownership()
+                .expect("actual current-generation ownership");
+            assert!(
+                !service
+                    .durable
+                    .as_ref()
+                    .expect("actual current store")
+                    .recovery_required()
+            );
+            assert!(
+                service
+                    .current_state_identity()
+                    .unwrap_or_else(|_| panic!("warm B unchanged"))
+                    == expected
+            );
+            assert_eq!(
+                fs::read(service.data_dir.join("seal.json")).expect("actual index unchanged"),
+                public
+            );
+            assert!(
+                cluster.processes[1]
+                    .lock()
+                    .expect("actual follower")
+                    .application_identity_witness()
+                    .expect("genuine B quorum witness")
+                    .0
+                    == expected
+            );
+            assert!(
+                receipt.after_publication(service).is_err(),
+                "a completed token must read every actual current-generation owner/object"
+            );
+            assert!(
+                completed.progress(service).is_err(),
+                "a previously constructed token must revalidate the actual complete graph"
+            );
+            assert!(
+                service
+                    .reconcile_completed_ha_recovery_index(&completed)
+                    .is_err(),
+                "actual corrupt graph must reject index publication before any index write"
+            );
+            assert!(service.recovery_required && service.durable.is_none());
+            assert!(service.state.is_none() && service.barrier_key.is_none());
+            assert!(service.ha_activation.is_none() && service.ha_read_cache.is_none());
+            assert_eq!(
+                fs::read(service.data_dir.join("seal.json")).expect("index unchanged"),
+                public
+            );
+            save(&case.root.join("completed-deep-readback-original.json"),
+                &serde_json::to_vec(&json!({"passed":true,"generation_before":before,
+                    "actual_generation_after_corruption":current,"actual_live_ownership":true,
+                    "actual_root_unchanged":true,"actual_deep_loader_rejected":true,
+                    "fresh_completed_constructor_rejected":true,
+                    "old_completed_progress_rejected":true,"actual_index_caller_permanent_fence":true,
+                    "original_admission_budget_seconds":15,"index_unchanged":true,
+                    "qualification_transferred":false})).expect("public negative evidence"));
+            close(&case);
+        }
+    }
+
     fn native_race(name: &str, isolate_floor: bool) {
         let mut c = start(name);
         let (nonce, share) = pending_final(&mut c);
@@ -1855,5 +3427,88 @@ mod source825_real_recovery_fixture_tests {
     #[ignore = "requires authenticated native archive; isolates only the final protected floor"]
     fn genuine_native_restore_same_schema_old_auth_protected_floor() {
         native_race("native-same-schema-old-auth", true);
+    }
+}
+
+#[cfg(test)]
+mod ha_index_phase_tests {
+    use super::*;
+    use crate::service::tests::{Root, bootstrap_unmounted};
+
+    type TestResult = Result<(), Box<dyn std::error::Error>>;
+
+    fn local_files(root: &Path) -> Result<BTreeMap<PathBuf, Vec<u8>>, std::io::Error> {
+        let mut files = BTreeMap::new();
+        for entry in fs::read_dir(root)? {
+            let entry = entry?;
+            if entry.file_type()?.is_file() {
+                files.insert(entry.path(), fs::read(entry.path())?);
+            }
+        }
+        Ok(files)
+    }
+
+    #[test]
+    fn real_raft_identity_advance_is_pre_index_publication_and_shamir_still_fences() -> TestResult {
+        let root = Root::new();
+        let mut service = root.service()?;
+        bootstrap_unmounted(&mut service)?;
+        let current = service.state.as_ref().ok_or("state")?.clone();
+        let cluster = crate::ha::snapshot_test_support::Cluster::new(
+            &root.path.join("raft"),
+            &current.cluster_id,
+        )?;
+        service.ha = Some(Arc::clone(&cluster.processes[0]));
+        service.sync_from_ha().map_err(|_| "anchor")?;
+        let previous = service.current_state_digest().map_err(|_| "base")?;
+        let mut advanced = current.clone();
+        advanced.engines.handle(
+            "",
+            "POST",
+            "sys/mounts/actual-advanced",
+            &json!({"type":"kv","options":{"version":"1"}}),
+            100,
+        )?;
+        let bytes = owner_store::serialize_owner(&advanced)?;
+        assert_ne!(crypto::digest(&bytes), previous);
+        let operation = "actual-raft-identity-advance";
+        let binding = Service::prepare_initial_owner_plan(&advanced, &bytes, operation)
+            .map_err(|_| "owner plan")?
+            .publication_binding(operation, &bytes)?;
+        cluster.processes[0]
+            .lock()
+            .map_err(|_| "HA")?
+            .commit_state_with_owner_binding(operation, previous, &bytes, binding)?;
+        let before = local_files(&root.path)?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let failure = match service.admit_ha_recovery_seal_with_phase(&current, None, None) {
+            Err(failure) => failure,
+            Ok(_) => return Err("stale identity admitted".into()),
+        };
+        assert!(matches!(
+            failure.phase,
+            HaRecoveryIndexFailurePhase::BeforeIndexPublication
+        ));
+        assert_eq!(failure.response.status, 503);
+        assert_eq!(
+            failure.response.body["errors"][0],
+            "HA recovery application identity is not current"
+        );
+        assert_eq!(local_files(&root.path)?, before);
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert_eq!(
+            owner_store::serialize_owner(service.state.as_ref().ok_or("state")?)?,
+            owner_store::serialize_owner(&current)?
+        );
+        assert!(!service.recovery_required);
+        // Shamir retains its existing policy even on an unchanged local owner.
+        assert!(service.reconcile_unchanged_ha_recovery_index(None).is_err());
+        assert!(service.recovery_required);
+        assert!(service.state.is_none());
+        assert_eq!(local_files(&root.path)?, before);
+        Ok(())
     }
 }

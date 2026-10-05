@@ -364,8 +364,11 @@ fn external_pki270_all_six_remote_keys_root_leaf_crl_encrypted_restart_and_schem
         }
         let retained = service.state.as_ref().ok_or("typed retained state")?;
         assert!(
-            retained.schema == 67 && retained.validate_format().is_ok(),
-            "all typed consumption state validates at67"
+            retained.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+                && retained.engines.has_typed_external_pki_state()
+                && retained.engines.has_pki_role_bare_domain_state()
+                && retained.validate_format().is_ok(),
+            "real typed key and new role validate together at88"
         );
         let encoded = zeroize::Zeroizing::new(serde_json::to_vec(retained)?);
         assert!(
@@ -395,8 +398,8 @@ fn external_pki270_all_six_remote_keys_root_leaf_crl_encrypted_restart_and_schem
                 .as_ref()
                 .ok_or("typed reopened state")?
                 .schema
-                == 67,
-            "typed restart sticky67"
+                == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA,
+            "typed key and new role retain88 on encrypted restart"
         );
         let read = call(
             &mut reopened,
@@ -431,9 +434,10 @@ fn external_pki270_all_six_remote_keys_root_leaf_crl_encrypted_restart_and_schem
         let retired = reopened.state.as_ref().ok_or("retired typed state")?;
         assert!(
             !retired.engines.has_typed_external_pki_state()
-                && retired.schema == 67
-                && retired.writer_schema() == 67,
-            "retired typed state keeps67"
+                && retired.engines.has_pki_role_bare_domain_state()
+                && retired.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+                && retired.writer_schema() == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA,
+            "retired typed key retains the real role and sticky88"
         );
         let mut lowered = retired.clone();
         lowered.schema = 66;
@@ -473,7 +477,7 @@ fn external_pki270_all_six_remote_keys_root_leaf_crl_encrypted_restart_and_schem
                 .as_ref()
                 .ok_or("retired reopen")?
                 .schema
-                == 67,
+                == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA,
             "retirement cannot lower writer format on restart"
         );
     }

@@ -574,6 +574,10 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
             root_certificate.tbs_certificate.as_ref(),
             root_certificate.signature_value.data.as_ref(),
         )?;
+        assert!(
+            service.state.as_ref().ok_or("pre-role state")?.schema == LOCAL_PKI_CRL_STATE_SCHEMA,
+            "actual local CRL ownership precedes new role permissions"
+        );
         assert!(call(&mut service,"POST","local-ca/roles/leaf",&admin,json!({"allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"30m","generate_lease":true,"key_type":key_type,"key_bits":key_bits})).status==200,"typed leaf role");
         let issued = call(
             &mut service,
@@ -614,8 +618,14 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
         let crl = current_crl(&mut service, &admin)?;
         verify_local_crl(&root_spki, &crl, 1)?;
         assert!(
-            service.state.as_ref().ok_or("state")?.schema == LOCAL_PKI_CRL_STATE_SCHEMA,
-            "local root identifiers require the protected reader floor for every key kind"
+            service.state.as_ref().ok_or("state")?.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+                && service
+                    .state
+                    .as_ref()
+                    .ok_or("state")?
+                    .engines
+                    .has_pki_role_bare_domain_state(),
+            "new role permission retains its higher floor alongside local CRL ownership"
         );
         drop(service);
         let mut reopened = root.service()?;
@@ -632,8 +642,9 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
             "actual encrypted restart unseal"
         );
         assert!(
-            reopened.state.as_ref().ok_or("reopened state")?.schema == LOCAL_PKI_CRL_STATE_SCHEMA,
-            "reopened reader floor"
+            reopened.state.as_ref().ok_or("reopened state")?.schema
+                == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA,
+            "encrypted reopen retains the actual new role permission floor"
         );
         verify_local_crl(&root_spki, &current_crl(&mut reopened, &admin)?, 1)?;
         let next = call(
@@ -1034,8 +1045,20 @@ fn external_issuer_default_rsa_and_mldsa_subjects_are_real_and_bound() -> TestRe
     }
     assert!(
         service.state.as_ref().ok_or("external typed state")?.schema
-            == LOCAL_TYPED_PKI_STATE_SCHEMA,
-        "external typed subject requires72"
+            == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && service
+                .state
+                .as_ref()
+                .ok_or("external typed state")?
+                .engines
+                .has_local_typed_pki_state()
+            && service
+                .state
+                .as_ref()
+                .ok_or("external typed state")?
+                .engines
+                .has_pki_role_bare_domain_state(),
+        "actual external typed subjects and new role permissions retain the highest owner floor"
     );
     drop(service);
     let mut reopened = root.service()?;
@@ -1058,8 +1081,8 @@ fn external_issuer_default_rsa_and_mldsa_subjects_are_real_and_bound() -> TestRe
             .as_ref()
             .ok_or("external reopened state")?
             .schema
-            == LOCAL_TYPED_PKI_STATE_SCHEMA,
-        "external typed subjects retain floor"
+            == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA,
+        "encrypted reopen retains actual typed subjects and their new role permission floor"
     );
     Ok(())
 }
@@ -1109,6 +1132,10 @@ fn local_crl_idle_maintenance_commits_signed_delta_and_survives_clock_rollback_r
         .status
             == 200,
         "actual automatic CRL policy"
+    );
+    assert!(
+        service.state.as_ref().ok_or("pre-role CRL state")?.schema == LOCAL_PKI_CRL_STATE_SCHEMA,
+        "actual cached CRL owner has its original floor before role creation"
     );
     assert!(
         call(
@@ -1176,8 +1203,21 @@ fn local_crl_idle_maintenance_commits_signed_delta_and_survives_clock_rollback_r
         "unchanged revocations allocate no new CRL"
     );
     assert!(
-        service.state.as_ref().ok_or("committed state")?.schema == LOCAL_PKI_CRL_STATE_SCHEMA,
-        "idle signed cache retains reader floor"
+        service.state.as_ref().ok_or("committed state")?.schema
+            == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && service
+                .state
+                .as_ref()
+                .ok_or("committed state")?
+                .engines
+                .has_local_pki_crl_state()
+            && service
+                .state
+                .as_ref()
+                .ok_or("committed state")?
+                .engines
+                .has_pki_role_bare_domain_state(),
+        "idle signed cache retains both actual CRL and new role permission owners"
     );
     drop(service);
     let mut reopened = root.service()?;
@@ -1478,8 +1518,10 @@ fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -
     let retired = service.state.as_ref().ok_or("retired")?;
     assert!(
         !retired.engines.has_local_pki_multi_issuer_state()
-            && retired.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA,
-        "retirement retains schema78"
+            && !retired.engines.has_pki_role_bare_domain_state()
+            && !retired.engines.has_pki_role_wildcard_state()
+            && retired.writer_schema() == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA,
+        "retirement retains the highest actual role permission floor"
     );
     assert!(
         !retired.engines.has_local_pki_crl_state(),
@@ -1489,6 +1531,9 @@ fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -
         LOCAL_PKI_IDENTIFIER_STATE_SCHEMA,
         LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA,
         LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA,
+        LOCAL_PKI_CRL_STATE_SCHEMA,
+        PKI_ROLE_ANY_NAME_STATE_SCHEMA,
+        PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA,
     ] {
         let mut older = retired.clone();
         older.schema = schema;

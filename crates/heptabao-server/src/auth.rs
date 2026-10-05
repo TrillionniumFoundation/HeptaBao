@@ -62,6 +62,8 @@ mod acl;
 mod acl_template;
 #[path = "auth_acl_wrapping.rs"]
 mod acl_wrapping;
+#[path = "auth_default_policy.rs"]
+mod default_policy;
 pub(crate) use acl_template::parse_selector as parse_identity_selector;
 pub(crate) use acl_template::{IdentitySelector, IdentityTemplateValues, TemplateField};
 #[path = "auth_approle_renewal.rs"]
@@ -1569,6 +1571,11 @@ fn bad(message: &str) -> AuthError {
 fn denied() -> AuthError {
     err(403, "permission denied")
 }
+fn acl_denied() -> AuthError {
+    // Core wraps a policy decision in its permission-denied multierror. Keep
+    // credential, identity and admission failures on their distinct paths.
+    err(403, "1 error occurred:\n\t* permission denied\n\n")
+}
 fn response(data: Value, mutated: bool) -> AuthResponse {
     AuthResponse {
         approle_secret_consumption: None,
@@ -2603,7 +2610,7 @@ impl AuthState {
         {
             Ok(())
         } else {
-            Err(denied())
+            Err(acl_denied())
         }
     }
 
@@ -2678,13 +2685,11 @@ impl AuthState {
             return Ok(());
         }
         if !self.wrapping_policy_allows(principal, namespace, path, token.policies())? {
-            return Err(denied());
+            return Err(acl_denied());
         }
         if !matches!(method, "GET" | "HEAD" | "POST" | "PUT" | "PATCH") {
             return Ok(());
         }
-        let empty_parameters = acl::ParameterMap::new();
-        let empty_required = BTreeSet::new();
         let mut decision = acl::Decision::default();
         for policy_name in token.policies().iter().chain(&principal.identity_policies) {
             if let Some(policy) = self
@@ -2707,12 +2712,17 @@ impl AuthState {
                     );
                 }
             } else if policy_name == "default" {
-                for (pattern, _) in acl::DEFAULT_RULES {
+                for rule in &default_policy::compiled()?.rules {
+                    let Some(rendered) =
+                        acl_template::render(&rule.path, &principal.identity_templates)?
+                    else {
+                        continue;
+                    };
                     decision.consider_parameters(
-                        pattern,
-                        &empty_parameters,
-                        &empty_parameters,
-                        &empty_required,
+                        &rendered,
+                        &rule.allowed_parameters,
+                        &rule.denied_parameters,
+                        &rule.required_parameters,
                         path,
                     );
                 }
@@ -2721,7 +2731,7 @@ impl AuthState {
         if decision.parameters_allowed(body) {
             Ok(())
         } else {
-            Err(denied())
+            Err(acl_denied())
         }
     }
 
@@ -2754,8 +2764,17 @@ impl AuthState {
                     );
                 }
             } else if policy_name == "default" {
-                for (pattern, capabilities) in acl::DEFAULT_RULES {
-                    decision.consider(pattern, capabilities.iter().copied(), path, capability);
+                for rule in &default_policy::compiled()?.rules {
+                    let Some(rendered) = acl_template::render(&rule.path, identity_templates)?
+                    else {
+                        continue;
+                    };
+                    decision.consider(
+                        &rendered,
+                        rule.capabilities.iter().map(String::as_str),
+                        path,
+                        capability,
+                    );
                 }
             }
         }
@@ -3996,6 +4015,7 @@ impl AuthState {
         token.auth_mount = Some(plan.mount.clone());
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             metadata: None,
             mount: plan.mount,
             alias: alias.into(),
@@ -4506,6 +4526,7 @@ impl AuthState {
         });
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             metadata: None,
             mount: plan.mount.clone(),
             alias: plan.name.clone(),
@@ -4833,6 +4854,7 @@ impl AuthState {
         });
         let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
         response.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             metadata: None,
             mount: plan.mount,
             alias: plan.username,
@@ -4956,6 +4978,7 @@ impl AuthState {
                 // count, while the self-contained batch has no use counter.
                 response.body["auth"]["num_uses"] = json!(role.token_num_uses);
                 response.login_identity = Some(LoginIdentity {
+                    token_api_alias: false,
                     metadata: None,
                     mount: mount.into(),
                     alias: certificate_identity_alias(attributes.as_ref(), role_name),
@@ -4984,6 +5007,7 @@ impl AuthState {
             });
             let (token_id, token, mut response) = Self::prepare_issue(token, now)?;
             response.login_identity = Some(LoginIdentity {
+                token_api_alias: false,
                 metadata: None,
                 mount: mount.into(),
                 alias: certificate_identity_alias(attributes.as_ref(), role_name),
@@ -5433,6 +5457,7 @@ impl AuthState {
                 response.body["warnings"] = json!([warning]);
             }
             response.login_identity = Some(LoginIdentity {
+                token_api_alias: false,
                 metadata: Some(metadata),
                 mount: mount.into(),
                 alias: verified.alias,
@@ -6719,6 +6744,7 @@ impl AuthState {
             }
             if let Some(alias) = entity_alias {
                 response.login_identity = Some(LoginIdentity {
+                    token_api_alias: true,
                     mount: "token".into(),
                     alias,
                     metadata: None,
@@ -6789,6 +6815,7 @@ impl AuthState {
         }
         if let Some(alias) = entity_alias {
             response.login_identity = Some(LoginIdentity {
+                token_api_alias: true,
                 mount: "token".into(),
                 alias,
                 metadata: None,
@@ -6806,13 +6833,14 @@ impl AuthState {
         body: &Value,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
+        let legacy = path == "sys/policy" || path.starts_with("sys/policy/");
         let suffix = path
             .strip_prefix("sys/policies/acl")
             .or_else(|| path.strip_prefix("sys/policy"))
             .ok_or_else(|| bad("invalid policy route"))?;
         let name = suffix.strip_prefix('/').unwrap_or(suffix);
         let capability = match method {
-            "GET" if name.is_empty() => "list",
+            "GET" if name.is_empty() && legacy => "list",
             "GET" => "read",
             "LIST" => "list",
             "DELETE" => "delete",
@@ -6821,6 +6849,9 @@ impl AuthState {
         };
         let actor = self.permission(principal, namespace, path, capability, now)?;
         if name.is_empty() {
+            if method == "GET" && !legacy {
+                return Err(err(405, "1 error occurred:\n\t* unsupported operation\n\n"));
+            }
             if capability != "list" {
                 return Err(bad("policy name required"));
             }
@@ -6830,10 +6861,17 @@ impl AuthState {
                 .map(|p| p.keys().cloned().collect())
                 .unwrap_or_default();
             keys.insert("default".into());
+            keys.remove("root");
+            let mut keys: Vec<String> = keys.into_iter().collect();
             if namespace.is_empty() {
-                keys.insert("root".into());
+                keys.push("root".into());
             }
-            return Ok(response(json!({"keys": keys, "policies": keys}), false));
+            let data = if legacy {
+                json!({"keys": keys, "policies": keys})
+            } else {
+                json!({"keys": keys})
+            };
+            return Ok(response(data, false));
         }
         if !valid_name(name) {
             return Err(bad("invalid policy name"));
@@ -6849,12 +6887,20 @@ impl AuthState {
             {
                 Some(policy) => policy.source.clone(),
                 None if name == "default" => default_policy_source(),
-                None => return Err(err(404, "policy not found")),
+                None => {
+                    return Ok(AuthResponse {
+                        status: 404,
+                        body: json!({"errors": []}),
+                        ..empty(false)
+                    });
+                }
             };
-            return Ok(response(
-                json!({"name": name, "policy": source, "rules": source}),
-                false,
-            ));
+            let data = if legacy {
+                json!({"name": name, "rules": source})
+            } else {
+                json!({"name": name, "policy": source})
+            };
+            return Ok(response(data, false));
         }
         self.authorize_request(actor, namespace, path, "sudo", now)?;
         if capability == "delete" {
@@ -7496,6 +7542,7 @@ impl AuthState {
         userpass_no_default::omit_empty_token_policies(&mut response);
         response.body["auth"]["metadata"] = json!({"username":name});
         response.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             metadata: None,
             mount: mount.into(),
             alias: name.into(),
@@ -7993,6 +8040,7 @@ impl AuthState {
         issued.body["auth"]["metadata"] = json!(metadata.0);
         issued.approle_secret_consumption = credential_consumption.map(Box::new);
         issued.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             metadata: Some(metadata.take()),
             mount: mount.into(),
             alias: role_id.into(),
@@ -8239,17 +8287,7 @@ fn token_info(token: &Token, now: u64) -> Value {
 }
 
 fn default_policy_source() -> String {
-    acl::DEFAULT_RULES
-        .iter()
-        .map(|(path, caps)| {
-            let caps = caps
-                .iter()
-                .map(|cap| format!("\"{cap}\""))
-                .collect::<Vec<_>>()
-                .join(", ");
-            format!("path \"{path}\" {{ capabilities = [{caps}] }}\n")
-        })
-        .collect()
+    default_policy::SOURCE.to_owned()
 }
 
 fn path_matches(pattern: &str, path: &str) -> bool {
@@ -8989,3 +9027,7 @@ mod cert_ttl_tests;
 #[cfg(test)]
 #[path = "auth_cert_metadata_tests.rs"]
 mod cert_metadata_tests;
+
+#[cfg(test)]
+#[path = "auth_token_renew_target_tests.rs"]
+mod token_renew_target_tests;

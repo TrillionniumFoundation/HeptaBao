@@ -6,12 +6,53 @@ use std::collections::BTreeMap;
 
 const MARKER: &str = "__heptabao_token_number_fields";
 const INVALID: &str = "invalid request-local token number carrier";
-const FIELDS: [&str; 4] = ["policies", "no_default_policy", "no_parent", "renewable"];
+const CREATE_FIELDS: &[&str] = &["policies", "no_default_policy", "no_parent", "renewable"];
+const ROLE_FIELDS: &[&str] = &[
+    "orphan",
+    "renewable",
+    "token_no_default_policy",
+    "token_num_uses",
+    "token_period",
+    "period",
+    "token_explicit_max_ttl",
+    "explicit_max_ttl",
+    "allowed_policies",
+    "disallowed_policies",
+    "allowed_policies_glob",
+    "disallowed_policies_glob",
+    "allowed_entity_aliases",
+    "token_bound_cidrs",
+    "bound_cidrs",
+    "path_suffix",
+];
+
+fn fields(path: &str) -> &'static [&'static str] {
+    if path.starts_with("auth/token/roles/") {
+        ROLE_FIELDS
+    } else {
+        CREATE_FIELDS
+    }
+}
+
+fn array_field(field: &str) -> bool {
+    matches!(
+        field,
+        "policies"
+            | "allowed_policies"
+            | "disallowed_policies"
+            | "allowed_policies_glob"
+            | "disallowed_policies_glob"
+            | "allowed_entity_aliases"
+            | "token_bound_cidrs"
+            | "bound_cidrs"
+    )
+}
 
 pub(crate) fn eligible(method: &str, path: &str) -> bool {
     matches!(method, "POST" | "PUT")
         && (matches!(path, "auth/token/create" | "auth/token/create-orphan")
-            || path.starts_with("auth/token/create/"))
+            || path.starts_with("auth/token/create/")
+            || path.starts_with("auth/token/roles/"))
 }
 
 pub(crate) fn transport_body(
@@ -29,10 +70,10 @@ pub(crate) fn transport_body(
         serde_json::from_slice(bytes).map_err(|_| INVALID)?
     };
     let mut numbers = Map::new();
-    for field in FIELDS {
+    for &field in fields(path) {
         if let Some(raw) = raw.get(field)
             && let Some(value) = body.get(field)
-            && let Some(spelling) = capture(raw, value, field == "policies")?
+            && let Some(spelling) = capture(raw, value, array_field(field))?
         {
             numbers.insert(field.into(), spelling);
         }
@@ -105,12 +146,12 @@ pub(crate) fn request<'a>(
         .ok_or(INVALID)?;
     if numbers
         .keys()
-        .any(|field| !FIELDS.contains(&field.as_str()))
+        .any(|field| !fields(path).contains(&field.as_str()))
     {
         return Err(INVALID);
     }
-    for field in FIELDS {
-        if !valid_mapping(original.get(field), numbers.get(field), field == "policies") {
+    for &field in fields(path) {
+        if !valid_mapping(original.get(field), numbers.get(field), array_field(field)) {
             return Err(INVALID);
         }
     }

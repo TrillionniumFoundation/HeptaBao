@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::future::Future;
 use std::io::Cursor;
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
 use crate::state_machine::TypeConfig;
@@ -34,6 +35,7 @@ pub enum RaftRpcKind {
     PreVote,
     SnapshotChunk,
     TransferLeader,
+    ReadIndex,
 }
 
 #[derive(Debug)]
@@ -81,6 +83,7 @@ pub struct RemoteNetworkFactory {
     local_id: u64,
     peers: Arc<BTreeSet<u64>>,
     transport: Arc<dyn RaftPeerRpc>,
+    read_sequence: Arc<AtomicU64>,
 }
 
 impl std::fmt::Debug for RemoteNetworkFactory {
@@ -107,11 +110,64 @@ impl RemoteNetworkFactory {
             local_id,
             peers: Arc::new(peers),
             transport,
+            read_sequence: Arc::new(AtomicU64::new(1)),
         })
     }
 
     pub fn local_id(&self) -> u64 {
         self.local_id
+    }
+
+    pub(super) async fn read_index(
+        &self,
+        leader: u64,
+        term: u64,
+        remaining: Duration,
+    ) -> Result<super::follower_read::ReadIndexWitness, RemoteRaftError> {
+        use super::follower_read::{ReadIndexFailure, ReadIndexRequest, ReadIndexWitness};
+        if leader == self.local_id || !self.peers.contains(&leader) || remaining.is_zero() {
+            return Err(RemoteRaftError::InvalidRpc);
+        }
+        let request_id = self
+            .read_sequence
+            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+                value.checked_add(1)
+            })
+            .map_err(|_| RemoteRaftError::InvalidRpc)?;
+        let budget_ms =
+            u64::try_from(remaining.as_millis()).map_err(|_| RemoteRaftError::InvalidRpc)?;
+        if budget_ms == 0 {
+            return Err(RemoteRaftError::Consensus(
+                super::node::READ_INDEX_TIMEOUT.into(),
+            ));
+        }
+        let request = ReadIndexRequest {
+            leader,
+            term,
+            request_id,
+            budget_ms,
+        };
+        let payload = serde_json::to_vec(&request).map_err(|_| RemoteRaftError::InvalidRpc)?;
+        let response = self
+            .transport
+            .exchange(
+                self.local_id,
+                leader,
+                RaftRpcKind::ReadIndex,
+                payload,
+                remaining,
+            )
+            .await?;
+        if response.is_empty() || response.len() > 4096 {
+            return Err(RemoteRaftError::InvalidRpc);
+        }
+        let witness: Result<ReadIndexWitness, ReadIndexFailure> =
+            serde_json::from_slice(&response).map_err(|_| RemoteRaftError::InvalidRpc)?;
+        let witness = witness.map_err(ReadIndexFailure::remote)?;
+        if witness.request_id != request_id || witness.leader != leader || witness.term != term {
+            return Err(RemoteRaftError::InvalidRpc);
+        }
+        Ok(witness)
     }
 
     pub(crate) fn rpc_service(&self, raft: DurableRaft) -> RaftRpcService {
@@ -400,9 +456,9 @@ impl RaftNetworkV2<TypeConfig> for RemoteNetwork {
 
 #[derive(Clone)]
 pub struct RaftRpcService {
-    local_id: u64,
+    pub(super) local_id: u64,
     peers: Arc<BTreeSet<u64>>,
-    raft: DurableRaft,
+    pub(super) raft: DurableRaft,
     incoming_snapshots: Arc<Mutex<BTreeMap<(u64, String), IncomingSnapshot>>>,
 }
 
@@ -432,6 +488,7 @@ impl RaftRpcService {
             return Err(RemoteRaftError::InvalidRpc);
         }
         match kind {
+            RaftRpcKind::ReadIndex => self.handle_read_index(payload).await,
             RaftRpcKind::AppendEntries => {
                 let request =
                     serde_json::from_slice(&payload).map_err(|_| RemoteRaftError::InvalidRpc)?;

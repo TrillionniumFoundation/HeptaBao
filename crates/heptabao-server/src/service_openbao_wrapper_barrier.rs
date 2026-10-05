@@ -289,6 +289,9 @@ mod linux {
         body: PrivateBody,
         response_retrieval: bool,
         publication_deadline: Option<Instant>,
+        pending: Option<super::super::super::wrapper_ha::PendingInitialization>,
+        join: Option<super::super::super::wrapper_ha::JoinAdmission>,
+        join_reply: Option<(String, String, PrivateBody)>,
     }
     pub(crate) struct InitializationCompletion {
         operation: OpenBaoWrapperCompletion,
@@ -369,7 +372,7 @@ mod linux {
                 .as_ref()
                 .is_some_and(|owner| owner.barrier_binding.is_some())
         }
-        fn wrapper_barrier_binding(&self) -> Result<[u8; 32], BridgeError> {
+        pub(in crate::service) fn wrapper_barrier_binding(&self) -> Result<[u8; 32], BridgeError> {
             self.openbao_wrapper_owner
                 .as_ref()
                 .and_then(|owner| owner.barrier_binding)
@@ -378,6 +381,51 @@ mod linux {
         pub(crate) fn prepare_wrapper_barrier_initialization(
             &self,
             body: &Value,
+        ) -> Result<InitializationPlan, Response> {
+            self.prepare_wrapper_barrier_initialization_inner(body, None, None)
+        }
+        pub(in crate::service) fn wrapper_barrier_initialization_claimed(&self) -> bool {
+            self.openbao_wrapper_owner.as_ref().is_none_or(|owner| {
+                owner
+                    .barrier_initialization_claimed
+                    .load(std::sync::atomic::Ordering::Acquire)
+            })
+        }
+        pub(crate) fn prepare_wrapper_barrier_ha_join(
+            &self,
+            method: &str,
+            path: &str,
+            body: &Value,
+        ) -> Result<Option<InitializationPlan>, Response> {
+            if self.ha.is_none()
+                || self.wrapper_barrier_initialization_claimed()
+                || self.initialized()
+                || self.seal.is_some()
+                || self.state.is_some()
+                || self.recovery_required
+                || super::super::super::wrapper_ha::pending_exists(&self.data_dir).unwrap_or(true)
+            {
+                return Ok(None);
+            }
+            let Some(join) = self.prepare_ha_local_join()? else {
+                return Ok(None);
+            };
+            self.prepare_wrapper_barrier_initialization_inner(
+                &serde_json::json!({}),
+                Some(join),
+                Some((
+                    method.to_owned(),
+                    path.to_owned(),
+                    PrivateBody(body.clone()),
+                )),
+            )
+            .map(Some)
+        }
+        fn prepare_wrapper_barrier_initialization_inner(
+            &self,
+            body: &Value,
+            join: Option<super::super::super::wrapper_ha::JoinAdmission>,
+            join_reply: Option<(String, String, PrivateBody)>,
         ) -> Result<InitializationPlan, Response> {
             if self.recovery_required
                 || self.initialized()
@@ -390,25 +438,66 @@ mod linux {
                     "Wrapper initialization requires a fresh sealed store",
                 ));
             }
-            if self.ha.is_some() {
-                return Err(Response::error(
-                    501,
-                    "Wrapper HA initialization requires a supported consumer",
-                ));
+            let pending = if self.ha.is_some()
+                && super::super::super::wrapper_ha::pending_exists(&self.data_dir)
+                    .map_err(|message| Response::error(503, message))?
+            {
+                Some(super::super::super::wrapper_ha::load_pending(
+                    &self.data_dir,
+                )?)
+            } else {
+                None
+            };
+            if self.ha.is_some() && pending.is_none() && join.is_none() {
+                self.ha_initial_cluster()?;
             }
             let response_retrieval = validate_initialization_options(body)?;
             let binding = self
                 .wrapper_barrier_binding()
                 .map_err(|_| Response::error(503, "Wrapper deployment binding unavailable"))?;
-            let key = Zeroizing::new(
+            let key = Zeroizing::new(if pending.is_some() {
+                [0; 32]
+            } else {
                 crypto::random::<32>()
-                    .map_err(|_| Response::error(503, "barrier randomness unavailable"))?,
-            );
-            let operation = self
-                .prepare_openbao_wrapper_operation(WrapperOperation::Encrypt {
+                    .map_err(|_| Response::error(503, "barrier randomness unavailable"))?
+            });
+            let request = if let Some(pending) = &pending {
+                let envelope = Envelope::decode(&pending.seal.wrapped_barrier_key)
+                    .map_err(|message| Response::error(503, message))?;
+                if envelope.binding().ok() != Some(binding)
+                    || envelope.generation() != pending.seal.generation
+                {
+                    return Err(Response::error(
+                        503,
+                        "pending HA Wrapper deployment changed",
+                    ));
+                }
+                let shares = bounded_u8_field(body, "recovery_shares", 0)
+                    .map_err(|message| Response::error(400, message))?;
+                let threshold = bounded_u8_field(body, "recovery_threshold", 0)
+                    .map_err(|message| Response::error(400, message))?;
+                if (shares, threshold)
+                    != (pending.seal.secret_shares, pending.seal.secret_threshold)
+                {
+                    return Err(Response::error(
+                        400,
+                        "HA initialization recovery parameters differ",
+                    ));
+                }
+                WrapperOperation::Decrypt {
+                    blob: envelope
+                        .blob()
+                        .map_err(|message| Response::error(503, message))?,
+                    options: options(binding, pending.seal.generation),
+                }
+            } else {
+                WrapperOperation::Encrypt {
                     plaintext: Zeroizing::new(key.to_vec()),
                     options: options(binding, 1),
-                })
+                }
+            };
+            let operation = self
+                .prepare_openbao_wrapper_operation(request)
                 .map_err(|_| Response::error(503, "Wrapper barrier admission failed"))?;
             // One candidate per owner generation. An abandoned/failed candidate is
             // never automatically retried against the same session.
@@ -435,11 +524,14 @@ mod linux {
                 body: PrivateBody(body.clone()),
                 response_retrieval,
                 publication_deadline,
+                pending,
+                join,
+                join_reply,
             })
         }
         pub(crate) fn finalize_wrapper_barrier_initialization(
             &mut self,
-            plan: InitializationPlan,
+            mut plan: InitializationPlan,
             completion: Result<InitializationCompletion, BridgeError>,
             now: u64,
             fingerprint: &str,
@@ -472,6 +564,46 @@ mod linux {
                 self.fence_openbao_wrapper();
                 return Response::error(503, "Wrapper initialization caller deadline expired");
             }
+            if let Some(pending) = plan.pending.take() {
+                let key = match result {
+                    Ok(WrapperReply::Decrypted(key)) if key.len() == 32 => key,
+                    _ => {
+                        self.fence_wrapper_barrier_delivery();
+                        return Response::error(503, "HA pending Wrapper decryption unavailable");
+                    }
+                };
+                let key = match <[u8; 32]>::try_from(key.as_slice()) {
+                    Ok(key) => Zeroizing::new(key),
+                    Err(_) => {
+                        self.fence_wrapper_barrier_delivery();
+                        return Response::error(503, "HA pending barrier key invalid");
+                    }
+                };
+                if self
+                    .audit_event(
+                        "initialization-response-prepared",
+                        fingerprint,
+                        now,
+                        Some(200),
+                    )
+                    .is_err()
+                {
+                    self.fence_wrapper_barrier_delivery();
+                    return Response::error(503, "HA initialization response audit unavailable");
+                }
+                return match self.finish_pending_ha_initialization(
+                    pending,
+                    &key,
+                    &plan.body.0,
+                    deadline,
+                ) {
+                    Ok(response) => response,
+                    Err(error) => {
+                        self.fence_wrapper_barrier_delivery();
+                        error
+                    }
+                };
+            }
             let envelope = match result {
                 Ok(WrapperReply::Encrypted(blob)) => {
                     Envelope::new(plan.binding, 1, &blob).and_then(|envelope| envelope.encode())
@@ -501,6 +633,17 @@ mod linux {
                 key: Zeroizing::new(*plan.key),
                 deadline,
             };
+            if let Some(join) = plan.join.take() {
+                if let Err(error) = self.finish_ha_local_join(join, material) {
+                    self.fence_wrapper_barrier_delivery();
+                    return error;
+                }
+                let Some((method, path, mut body)) = plan.join_reply.take() else {
+                    self.fence_wrapper_barrier_delivery();
+                    return Response::error(503, "HA local join response binding absent");
+                };
+                return self.handle_at(&method, &path, "", "", std::mem::take(&mut body.0), now);
+            }
             let (mut response, _) = self.initialize_with_wrapper_material(
                 &plan.body.0,
                 now,
@@ -512,6 +655,18 @@ mod linux {
                 self.fence_openbao_wrapper();
                 return response;
             }
+            let initial_ha_identity = if self.ha.is_some() {
+                match self.ha_initial_response_identity(&plan.key) {
+                    Ok(identity) => Some(identity),
+                    Err(error) => {
+                        self.fence_wrapper_barrier_delivery();
+                        super::super::super::erase_json(&mut response.body);
+                        return error;
+                    }
+                }
+            } else {
+                None
+            };
             let expected_seal = self.seal.clone();
             if deadline.is_some_and(|deadline| Instant::now() >= deadline)
                 || load_seal_metadata(&self.data_dir).ok().flatten() != expected_seal
@@ -520,6 +675,11 @@ mod linux {
                     .is_err()
                 || deadline.is_some_and(|deadline| Instant::now() >= deadline)
                 || load_seal_metadata(&self.data_dir).ok().flatten() != expected_seal
+                || initial_ha_identity.is_some_and(|expected| {
+                    self.current_state_identity().ok() != Some(expected)
+                        || self.verify_ha_state_identity(expected).is_err()
+                })
+                || deadline.is_some_and(|deadline| Instant::now() >= deadline)
             {
                 self.fence_wrapper_barrier_delivery();
                 super::super::super::erase_json(&mut response.body);

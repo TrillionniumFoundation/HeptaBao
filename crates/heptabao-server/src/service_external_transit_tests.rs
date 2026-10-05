@@ -744,11 +744,18 @@ impl RemoteTransit {
                     "pki/roles/tls",
                     "",
                     &admin,
-                    json!({"allowed_domains":["external.test"],"max_ttl":"24h"}),
+                    json!({"allowed_domains":["external.test"],"allow_bare_domains":true,"max_ttl":"24h"}),
                     now
                 )
                 .status,
             200
+        );
+        assert!(
+            service
+                .handle_at("GET", "pki/roles/tls", "", &admin, json!({}), now)
+                .body["data"]["allow_bare_domains"]
+                == true,
+            "fixture owns explicit bare-domain permission"
         );
         let leaf = service.handle_at(
             "POST",

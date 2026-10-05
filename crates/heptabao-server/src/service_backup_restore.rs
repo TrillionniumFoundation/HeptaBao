@@ -343,6 +343,38 @@ impl Service {
                 "snapshot would downgrade opaque Kubernetes artifact ownership",
             ));
         }
+        if current.schema >= PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI role leaf profiles",
+            ));
+        }
+        if current.schema >= PKI_ROLE_WILDCARD_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI wildcard ownership",
+            ));
+        }
+        if current.schema >= PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI base-domain ownership",
+            ));
+        }
+        if current.schema >= PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI allow_any_name ownership",
+            ));
+        }
         if current.schema >= TOKEN_ROLE_STATE_SCHEMA && incoming.schema < TOKEN_ROLE_STATE_SCHEMA {
             return Err(Response::error(
                 400,

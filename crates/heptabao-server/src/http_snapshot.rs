@@ -29,6 +29,7 @@ pub(super) struct NativeRequest {
 
 pub(super) enum NativeReply {
     Json(Response),
+    HttpBadRequest,
     File(SnapshotFile),
     Redirect {
         origin: TrustedSnapshotOrigin,
@@ -38,6 +39,11 @@ pub(super) enum NativeReply {
 impl NativeReply {
     pub(super) fn write(self, writer: &mut impl Write, head: bool) -> io::Result<()> {
         match self {
+            // This transport failure has a body even for HEAD, as in Go's HTTP reader.
+            Self::HttpBadRequest => {
+                writer.write_all(b"HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain; charset=utf-8\r\nConnection: close\r\n\r\n400 Bad Request")?;
+                writer.flush()
+            }
             Self::Json(response) => write_response(writer, response, head),
             Self::File(file) => write_file_response(writer, file, head),
             Self::Redirect { origin, target } => {

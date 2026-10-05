@@ -5,7 +5,9 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use crate::state_machine::StateMachine as MemStoreStateMachine;
-use openraft::{Config, Instant, ReadPolicy, SnapshotPolicy, storage::RaftStateMachine};
+#[cfg(test)]
+use openraft::ReadPolicy;
+use openraft::{Config, Instant, SnapshotPolicy, storage::RaftStateMachine};
 use openraft_memstore::ClientRequest;
 use tokio::task::spawn_blocking;
 
@@ -21,14 +23,44 @@ const MAX_APPLICATION_CHUNK_INDEX: u16 = 127;
 // particular, OpenRaft can otherwise wait indefinitely for a new leader's
 // blank entry. This allows the current 5s peer ceiling plus the 2s election
 // ceiling and 1s scheduling margin; it is not an HTTP end-to-end deadline.
-const MAX_READ_INDEX_WAIT: Duration = Duration::from_secs(8);
-const READ_INDEX_TIMEOUT: &str = "linearizable read deadline exceeded";
+pub(super) const MAX_READ_INDEX_WAIT: Duration = Duration::from_secs(8);
+pub(super) const READ_INDEX_TIMEOUT: &str = "linearizable read deadline exceeded";
+
+/// Opaque evidence of a fresh quorum ReadIndex and this runtime instance's
+/// actual applied application observation. Only application_read_witness can
+/// construct it; generation alone and remote applied hints cannot authorize it.
+pub struct ApplicationReadWitness {
+    store: DurableStateMachine,
+    generation: u64,
+    deadline: tokio::time::Instant,
+    leader: u64,
+    term: u64,
+    read_log: openraft::type_config::alias::LogIdOf<crate::state_machine::TypeConfig>,
+    applied_log: openraft::type_config::alias::LogIdOf<crate::state_machine::TypeConfig>,
+}
+
+impl ApplicationReadWitness {
+    /// A later quorum covers a strictly newer applied prefix of the same live
+    /// local store. Application identity and monotonic owners are separately
+    /// authenticated by the application before interpreting supersession.
+    pub fn supersedes(&self, previous: &Self) -> bool {
+        self.store.same_instance(&previous.store)
+            && self.generation > previous.generation
+            && self.read_log.index > previous.applied_log.index
+            && self.read_log.committed_leader_id().term
+                >= previous.applied_log.committed_leader_id().term
+            && self.applied_log >= self.read_log
+            && self.applied_log.committed_leader_id().term
+                >= previous.applied_log.committed_leader_id().term
+    }
+}
 
 pub struct ProcessRaftNode {
     pub(super) id: u64,
     pub(super) raft: DurableRaft,
     pub(super) state_machine: DurableStateMachine,
     rpc_service: RaftRpcService,
+    pub(super) peer_network: RemoteNetworkFactory,
 }
 
 impl std::fmt::Debug for ProcessRaftNode {
@@ -135,6 +167,7 @@ impl ProcessRaftNode {
             raft,
             state_machine,
             rpc_service,
+            peer_network: rpc_factory,
         })
     }
 
@@ -579,35 +612,118 @@ impl ProcessRaftNode {
         if budget.is_zero() || tokio::time::Instant::now() >= deadline {
             return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
         }
-        loop {
-            let result = tokio::time::timeout_at(
-                deadline,
-                self.raft.ensure_linearizable(ReadPolicy::ReadIndex),
+        super::follower_read::ensure_node_read(self, deadline).await
+    }
+
+    /// Return the exact selected root/status alongside a fresh, locally applied
+    /// quorum witness. The original outer ReadIndex deadline bounds both work
+    /// and final observation; no write or retry budget is introduced.
+    pub async fn application_read_witness(
+        &self,
+    ) -> Result<
+        (
+            ApplicationReadWitness,
+            Option<ReplicatedEnvelope>,
+            Option<crate::PublishedRecordRoot>,
+        ),
+        RemoteRaftError,
+    > {
+        let deadline = tokio::time::Instant::now() + MAX_READ_INDEX_WAIT;
+        let deadline = super::read_deadline::current().map_or(deadline, |outer| {
+            deadline.min(tokio::time::Instant::from_std(outer))
+        });
+        let read = super::follower_read::ensure_node_read_witness(self, deadline).await?;
+        let (generation, applied, status, root) = tokio::time::timeout_at(
+            deadline,
+            self.state_machine
+                .application_read_snapshot(PRODUCTION_CLIENT_ID),
+        )
+        .await
+        .map_err(|_| RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()))?;
+        let applied = applied.ok_or_else(|| {
+            RemoteRaftError::Consensus("ReadIndex own applied witness unavailable".into())
+        })?;
+        if tokio::time::Instant::now() >= deadline
+            || applied < read.read_log_id
+            || !super::follower_read::bound(
+                &self.raft,
+                read.leader,
+                read.term,
+                read.leader == self.id,
             )
-            .await;
-            // A ready future can win Tokio's timeout poll even after the clock
-            // has advanced. No completed observation can renew the deadline.
-            if tokio::time::Instant::now() >= deadline {
-                return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
-            }
-            match result {
-                Ok(Ok(_)) => return Ok(()),
-                Ok(Err(openraft::errors::RaftError::APIError(
-                    openraft::errors::LinearizableReadError::QuorumNotEnough(_),
-                ))) => {
-                    // A failed probe grants no authority. Only a new ReadIndex
-                    // can establish quorum and its required applied-log fence.
-                    // Do not retry leadership loss, fatal errors or any write.
-                    let pause = tokio::time::Instant::now() + Duration::from_millis(20);
-                    tokio::time::sleep_until(pause.min(deadline)).await;
-                    if tokio::time::Instant::now() >= deadline {
-                        return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
-                    }
-                }
-                Ok(Err(error)) => return Err(RemoteRaftError::Consensus(error.to_string())),
-                Err(_) => return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into())),
-            }
+        {
+            return Err(RemoteRaftError::Consensus(
+                "ReadIndex application witness is not current".into(),
+            ));
         }
+        let envelope = status
+            .as_deref()
+            .map(ReplicatedEnvelope::decode_status)
+            .transpose()
+            .map_err(|_| {
+                RemoteRaftError::Io("invalid committed application witness envelope".into())
+            })?;
+        // Decoding must not issue a witness after the original bound elapsed
+        // or leadership changed during final observation work.
+        if tokio::time::Instant::now() >= deadline
+            || !super::follower_read::bound(
+                &self.raft,
+                read.leader,
+                read.term,
+                read.leader == self.id,
+            )
+        {
+            return Err(RemoteRaftError::Consensus(
+                "ReadIndex application witness is not current".into(),
+            ));
+        }
+        Ok((
+            ApplicationReadWitness {
+                store: self.state_machine.clone(),
+                generation,
+                deadline,
+                leader: read.leader,
+                term: read.term,
+                read_log: read.read_log_id,
+                applied_log: applied,
+            },
+            envelope,
+            root,
+        ))
+    }
+
+    /// Final application authentication cannot renew a witness's original
+    /// ReadIndex bound. Validate its same live store, generation and term under
+    /// that bound, even if the application has entered a later request scope.
+    pub async fn verify_application_read_witness(
+        &self,
+        witness: &ApplicationReadWitness,
+    ) -> Result<(), RemoteRaftError> {
+        let deadline = super::read_deadline::current().map_or(witness.deadline, |outer| {
+            witness.deadline.min(tokio::time::Instant::from_std(outer))
+        });
+        if !self.state_machine.same_instance(&witness.store)
+            || tokio::time::Instant::now() >= deadline
+        {
+            return Err(RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()));
+        }
+        let generation = tokio::time::timeout_at(deadline, self.state_machine.generation())
+            .await
+            .map_err(|_| RemoteRaftError::Consensus(READ_INDEX_TIMEOUT.into()))?;
+        if tokio::time::Instant::now() >= deadline
+            || generation != witness.generation
+            || !super::follower_read::bound(
+                &self.raft,
+                witness.leader,
+                witness.term,
+                witness.leader == self.id,
+            )
+        {
+            return Err(RemoteRaftError::Consensus(
+                "ReadIndex application witness is not current".into(),
+            ));
+        }
+        Ok(())
     }
 
     pub async fn trigger_snapshot(&self) -> Result<(), RemoteRaftError> {

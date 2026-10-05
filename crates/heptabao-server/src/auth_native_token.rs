@@ -112,6 +112,7 @@ impl AuthState {
         };
         let (id, token, mut issued) = Self::prepare_issue(token, now)?;
         issued.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             mount: scope.mount.into(),
             alias: alias.into(),
             metadata: None,

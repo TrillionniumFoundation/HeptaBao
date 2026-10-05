@@ -46,6 +46,138 @@ fn archive_issuer(state: &mut LocalIssuers, root: &RootCa) -> Result<()> {
 }
 
 impl Pki {
+    pub(super) fn local_pki_identifiers_in_use(&self, issuer: &str, key: &str) -> bool {
+        self.local_key_instances()
+            .any(|root| root.issuer_id == issuer || root.key_id == key)
+            || self.owned_key(key).is_ok()
+            || self
+                .local_issuers
+                .as_ref()
+                .is_some_and(|state| state.retired_issuers.contains_key(issuer))
+    }
+    pub(super) fn legacy_leaf_is_signed_by(root: &RootCa, issued: &IssuedCertificate) -> bool {
+        let Ok(public) = root.local_key().and_then(|key| key.public()) else {
+            return false;
+        };
+        x509_parser::certificate::X509Certificate::from_der(&issued.certificate_der)
+            .ok()
+            .is_some_and(|(rest, cert)| {
+                rest.is_empty()
+                    && cert.signature_value.unused_bits == 0
+                    && cert.signature_algorithm == cert.tbs_certificate.signature
+                    && public
+                        .verify(cert.tbs_certificate.as_ref(), &cert.signature_value.data)
+                        .is_ok_and(|valid| valid)
+            })
+    }
+    pub(super) fn profile_route_needs_identity(&self, route: &IssuanceRoute<'_>) -> Result<bool> {
+        let role = self
+            .roles
+            .get(route.role)
+            .ok_or_else(|| bad(&format!("unknown role: {}", route.role)))?;
+        let reference = route
+            .explicit_issuer
+            .unwrap_or(if role.issuer_ref.is_empty() {
+                "default"
+            } else {
+                &role.issuer_ref
+            });
+        let selected = self.selected_issuer(reference)?;
+        Ok(!selected.is_external() && selected.issuer_id.is_empty())
+    }
+
+    pub(super) fn promote_profile_root_identity(
+        &mut self,
+        route: &IssuanceRoute<'_>,
+    ) -> Result<()> {
+        if !self.profile_route_needs_identity(route)? {
+            return Err(error(503, "PKI profile identity changed"));
+        }
+        let role = self
+            .roles
+            .get(route.role)
+            .ok_or_else(|| bad(&format!("unknown role: {}", route.role)))?;
+        let reference = route
+            .explicit_issuer
+            .unwrap_or(if role.issuer_ref.is_empty() {
+                "default"
+            } else {
+                &role.issuer_ref
+            });
+        let selected = self.selected_issuer(reference)?;
+        let current = self.root.as_ref().ok_or_else(not_found)?;
+        if reference != "default"
+            || current.is_external()
+            || !current.issuer_id.is_empty()
+            || !current.key_id.is_empty()
+            || selected.certificate_der != current.certificate_der
+        {
+            return Err(error(503, "PKI profile identity owner changed"));
+        }
+        current.validate_local_certificate()?;
+        let historical_local = self.verified_unbound_local_leaves(current)?;
+        let issuer_id = random_pki_id()?;
+        let key_id = random_pki_id()?;
+        if issuer_id == key_id
+            || self.external_pki_identifiers_in_use(&issuer_id, &key_id)
+            || self.owned_key(&key_id).is_ok()
+            || self
+                .local_key_instances()
+                .any(|root| root.issuer_id == issuer_id || root.key_id == key_id)
+            || self
+                .local_issuers
+                .as_ref()
+                .is_some_and(|s| s.retired_issuers.contains_key(&issuer_id))
+        {
+            return Err(error(503, "PKI identifier collision"));
+        }
+        let mut promoted = current.clone();
+        promoted.issuer_id = issuer_id.clone();
+        promoted.key_id = key_id.clone();
+        let mut state = self
+            .local_issuers
+            .as_deref()
+            .cloned()
+            .unwrap_or(LocalIssuers {
+                other: BTreeMap::new(),
+                default_follows_latest_issuer: false,
+                default_key_id: key_id,
+                orphan_keys: BTreeMap::new(),
+                certificates: BTreeMap::new(),
+                retired_issuers: BTreeMap::new(),
+            });
+        archive_issuer(&mut state, &promoted)?;
+        for serial in historical_local {
+            if let Some(issued) = self.issued.get_mut(&serial) {
+                issued.local_issuer_id = issuer_id.clone();
+            }
+        }
+        self.root = Some(promoted);
+        self.local_issuers = Some(Box::new(state));
+        self.validate_local_issuers()?;
+        Ok(())
+    }
+
+    pub(super) fn profile_leaf_issuer_evidence(&self, id: &str) -> Result<(&[u8], LocalPublicKey)> {
+        if id.is_empty() {
+            return Err(bad("PKI profile issuer identity missing"));
+        }
+        if let Some(state) = &self.local_issuers
+            && let Some(issuer) = state.retired_issuers.get(id)
+        {
+            return Ok((
+                state
+                    .certificates
+                    .get(&issuer.serial)
+                    .ok_or_else(|| bad("PKI profile archived issuer certificate missing"))?
+                    .as_slice(),
+                issuer.public.clone(),
+            ));
+        }
+        let root = self.local_issuer(id)?;
+        Ok((root.certificate_der.as_slice(), root.local_key()?.public()?))
+    }
+
     pub(super) fn has_archived_local_ca_chain(&self) -> bool {
         self.local_keys().any(|root| root.local_chain.is_some())
             || self.local_issuers.iter().any(|state| {
@@ -146,9 +278,10 @@ impl Pki {
     }
 
     pub(super) fn publish_local_root(&mut self, next: RootCa) -> Result<()> {
-        if self
-            .local_key_instances()
-            .any(|root| root.issuer_id == next.issuer_id)
+        if self.external_pki_identifiers_in_use(&next.issuer_id, &next.key_id)
+            || self
+                .local_key_instances()
+                .any(|root| root.issuer_id == next.issuer_id)
             || self
                 .local_issuers
                 .as_ref()
@@ -184,6 +317,31 @@ impl Pki {
         let restore_default_key =
             self.local_default_key_unset() && self.owned_key(&next.key_id).is_err();
         let new_key = next.key_id.clone();
+        let historical_local = self
+            .root
+            .as_ref()
+            .map(|root| self.verified_unbound_local_leaves(root))
+            .transpose()?
+            .unwrap_or_default();
+        let historical_ids = if self
+            .root
+            .as_ref()
+            .is_some_and(|root| root.issuer_id.is_empty())
+        {
+            let issuer = random_pki_id()?;
+            let key = random_pki_id()?;
+            if issuer == key
+                || issuer == next.issuer_id
+                || key == next.key_id
+                || self.external_pki_identifiers_in_use(&issuer, &key)
+                || self.local_pki_identifiers_in_use(&issuer, &key)
+            {
+                return Err(error(503, "PKI identifier collision"));
+            }
+            Some((issuer, key))
+        } else {
+            None
+        };
         let Some(current) = self.root.as_mut() else {
             if let Some(state) = &mut self.local_issuers {
                 archive_issuer(state, &next)?;
@@ -202,12 +360,7 @@ impl Pki {
         };
         // Historical roots predate issuer IDs. Generate both before changing
         // either field; their original private key and certificate stay owned.
-        if current.issuer_id.is_empty() {
-            let issuer = random_pki_id()?;
-            let key = random_pki_id()?;
-            if issuer == next.issuer_id || key == next.key_id {
-                return Err(error(503, "PKI identifier collision"));
-            }
+        if let Some((issuer, key)) = historical_ids {
             current.issuer_id = issuer;
             current.key_id = key;
         }
@@ -221,8 +374,8 @@ impl Pki {
                 retired_issuers: BTreeMap::new(),
             })
         });
-        for issued in self.issued.values_mut() {
-            if issued.local_issuer_id.is_empty() {
+        for serial in historical_local {
+            if let Some(issued) = self.issued.get_mut(&serial) {
                 issued.local_issuer_id = current.issuer_id.clone();
             }
         }
@@ -251,7 +404,13 @@ impl Pki {
         let Some(state) = &self.local_issuers else {
             return self.validate_local_leaf_associations();
         };
+        // An external default may coexist with retired local public evidence,
+        // never with live local issuer/private-key selection authority.
         if self.root.as_ref().is_some_and(RootCa::is_external)
+            && (!state.other.is_empty()
+                || !state.orphan_keys.is_empty()
+                || !state.default_key_id.is_empty()
+                || self.has_unbound_owned_keys())
             || self.local_roots().count() > MAX_LOCAL_ISSUERS
             || self.local_keys().count() > MAX_ISSUED
             || state.certificates.len() > MAX_ISSUED
@@ -590,27 +749,68 @@ impl Pki {
         Ok(ok(Value::Null, true))
     }
 
+    fn verified_unbound_local_leaves(&self, root: &RootCa) -> Result<BTreeSet<String>> {
+        if root.is_external() {
+            return Err(bad("historical local leaf has no local signer"));
+        }
+        root.validate_local_certificate()?;
+        // This is a timeless cryptographic ownership check, not a request-clock
+        // or lease grant. It validates every external projection/archive before
+        // excluding it from local identity promotion.
+        self.validate_external_consumption(u64::MAX)?;
+        let mut serials = BTreeSet::new();
+        for (serial, issued) in &self.issued {
+            if !issued.local_issuer_id.is_empty() || self.profile_leaf_is_external(serial) {
+                continue;
+            }
+            let verified = Self::legacy_leaf_is_signed_by(root, issued);
+            if verified {
+                serials.insert(serial.clone());
+            } else if issued.role_leaf_profile.is_some() || issued.external_issuer_owner.is_some() {
+                return Err(bad("historical PKI leaf signing authority changed"));
+            }
+            // A pre-profile None leaf with no surviving issuer proof remains
+            // unchanged and unassigned. Its legacy gap never grants this root
+            // ownership, and does not turn root/delete into a false failure.
+        }
+        Ok(serials)
+    }
+
     pub(super) fn promote_default_associations(&mut self) -> Result<()> {
-        let Some(root) = self.root.as_mut().filter(|root| !root.is_external()) else {
+        let Some(root) = self.root.as_ref().filter(|root| !root.is_external()) else {
             return Ok(());
         };
-        if root.issuer_id.is_empty() {
+        let historical_local = self.verified_unbound_local_leaves(root)?;
+        let next_ids = if root.issuer_id.is_empty() {
             let issuer = random_pki_id()?;
             let key = random_pki_id()?;
-            if self.local_issuers.as_ref().is_some_and(|state| {
-                state
-                    .other
-                    .values()
-                    .chain(state.orphan_keys.values())
-                    .any(|root| root.issuer_id == issuer || root.key_id == key)
-            }) {
+            if issuer == key
+                || self.external_pki_identifiers_in_use(&issuer, &key)
+                || self.local_issuers.as_ref().is_some_and(|state| {
+                    state
+                        .other
+                        .values()
+                        .chain(state.orphan_keys.values())
+                        .any(|root| root.issuer_id == issuer || root.key_id == key)
+                        || state.retired_issuers.contains_key(&issuer)
+                })
+            {
                 return Err(error(503, "PKI identifier collision"));
             }
+            Some((issuer, key))
+        } else {
+            None
+        };
+        let root = self
+            .root
+            .as_mut()
+            .ok_or_else(|| bad("local PKI root changed"))?;
+        if let Some((issuer, key)) = next_ids {
             root.issuer_id = issuer;
             root.key_id = key;
         }
-        for issued in self.issued.values_mut() {
-            if issued.local_issuer_id.is_empty() {
+        for serial in historical_local {
+            if let Some(issued) = self.issued.get_mut(&serial) {
                 issued.local_issuer_id = root.issuer_id.clone();
             }
         }

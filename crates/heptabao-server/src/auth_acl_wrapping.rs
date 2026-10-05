@@ -120,8 +120,20 @@ impl AuthState {
                     );
                 }
             } else if name == "default" {
-                for (pattern, _) in acl::DEFAULT_RULES {
-                    decision.consider_wrapping(pattern, Bounds::default(), path);
+                for rule in &default_policy::compiled()?.rules {
+                    let Some(rendered) =
+                        acl_template::render(&rule.path, &principal.identity_templates)?
+                    else {
+                        continue;
+                    };
+                    decision.consider_wrapping(
+                        &rendered,
+                        Bounds {
+                            min: rule.min_wrapping_ttl,
+                            max: rule.max_wrapping_ttl,
+                        },
+                        path,
+                    );
                 }
             }
         }

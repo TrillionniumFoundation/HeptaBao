@@ -695,6 +695,7 @@ impl Service {
                 &step.path,
                 &step.body,
                 None,
+                None,
                 request.now,
                 request.token_clock,
                 request.client_certificates,

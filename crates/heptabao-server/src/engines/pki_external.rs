@@ -9,6 +9,10 @@ pub(crate) use public_key::ExternalPkiPublicKey;
 #[path = "pki_external_leaf.rs"]
 mod leaf;
 use leaf::{ConsumptionMaterial, ConsumptionTemplate, CrlSet, LeafPublic};
+#[path = "pki_external_issuer_archive.rs"]
+mod issuer_archive;
+pub(super) use issuer_archive::ExternalLeafIssuerOwner;
+use issuer_archive::ExternalPublicIssuer;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
@@ -21,6 +25,8 @@ pub(super) struct ExternalState {
     crls: Option<CrlSet>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     issued_public: BTreeMap<String, LeafPublic>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    archived_issuers: BTreeMap<String, ExternalPublicIssuer>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -46,12 +52,16 @@ struct ExternalCsr {
 
 impl ExternalState {
     pub(super) fn is_empty(&self) -> bool {
-        self.root.is_none() && self.intermediate.is_none()
+        self.root.is_none()
+            && self.intermediate.is_none()
+            && self.crls.is_none()
+            && self.issued_public.is_empty()
+            && self.archived_issuers.is_empty()
     }
     pub(super) fn clear_root(&mut self) {
         self.root = None;
         self.crls = None;
-        self.issued_public.clear();
+        // Verified leaf projections and public signer archives survive retirement.
     }
 }
 
@@ -71,6 +81,10 @@ pub(crate) struct ExternalPkiTemplate {
     generated_at: u64,
     consumption: Option<ConsumptionTemplate>,
     bound_public: Option<ExternalPkiPublicKey>,
+    // Process-local capture from the actual validated root. The Service plan
+    // binds this to its namespace, mount incarnation, config, request, state
+    // identity, generation and provider enrollment; publication checks it again.
+    bound_issuer: Option<ExternalPublicIssuer>,
 }
 
 pub(crate) struct ExternalPkiMaterial {
@@ -474,6 +488,7 @@ impl Pki {
             generated_at: now,
             consumption: None,
             bound_public: None,
+            bound_issuer: None,
         }))
     }
 
@@ -511,6 +526,12 @@ impl Pki {
             dns_san: template.dns_san,
         };
         let encoded = signed_der(&material.tbs, &signatures[0], &key.public_key);
+        if key.issuer_id == key.key_id
+            || self.external_pki_identifiers_in_use(&key.issuer_id, &key.key_id)
+            || self.local_pki_identifiers_in_use(&key.issuer_id, &key.key_id)
+        {
+            return Err(error(503, "external PKI identifier collision"));
+        }
         if template.operation == "root" {
             if self.root.is_some() {
                 return Err(bad("PKI root already exists"));
@@ -717,6 +738,159 @@ mod tests {
         assert!(
             altered.validate("", "legacy/", 100).is_err(),
             "SAN semantic substitution rejected"
+        );
+        Ok(())
+    }
+    #[test]
+    fn external_legacy_none_projection_retirement_preserves_real_proof_and_unknown_history()
+    -> Result<()> {
+        let pkcs8 = Ed25519KeyPair::generate_pkcs8(&SystemRandom::new())
+            .map_err(|_| bad("test provider generation"))?;
+        let pair =
+            Ed25519KeyPair::from_pkcs8(pkcs8.as_ref()).map_err(|_| bad("test provider decode"))?;
+        let public: [u8; 32] = pair
+            .public_key()
+            .as_ref()
+            .try_into()
+            .map_err(|_| bad("test public key"))?;
+        let mut pki = Pki::default();
+        let root=pki.prepare_external("POST","root/generate/kms",&json!({
+            "external_key_ref":"provider:fixed","common_name":"legacy-ca.example.test","ttl":"1h"
+        }),100)?.ok_or_else(||bad("actual root template"))?;
+        let material = root.materialize(public)?;
+        let signatures = material
+            .tbs_parts()
+            .map(|tbs| Zeroizing::new(pair.sign(tbs).as_ref().to_vec()))
+            .collect::<Vec<_>>();
+        pki.publish_external(material, &signatures, 100)?;
+        pki.fixture_insert_historical_role(
+            "legacy",
+            &json!({"allowed_domains":["example.test"],
+            "allow_subdomains":true,"allow_ip_sans":false,"max_ttl":3600,"generate_lease":false}),
+        )?;
+        let owner = crate::auth::ResolvedLeaseOwner {
+            owner: LeaseOwner::service(&"a".repeat(43)).map_err(|_| bad("test owner"))?,
+            expires_at: None,
+            entity_id: None,
+        };
+        let mut legacy = pki
+            .prepare_external_consumption(
+                "POST",
+                "issue/legacy",
+                &json!({
+                    "common_name":"leaf.example.test","ttl":"10m"
+                }),
+                "legacy/",
+                Some(&owner),
+                100,
+            )?
+            .ok_or_else(|| bad("actual leaf template"))?;
+        // This finite predecessor fixture executes the real old None DER
+        // producer and actual provider signature, before any typed new owner.
+        let Some(ConsumptionTemplate::Leaf(prepared)) = legacy.consumption.as_mut() else {
+            return Err(bad("leaf fixture"));
+        };
+        prepared.role_leaf_profile = None;
+        let material = legacy.materialize(public)?;
+        let signatures = material
+            .tbs_parts()
+            .map(|tbs| Zeroizing::new(pair.sign(tbs).as_ref().to_vec()))
+            .collect::<Vec<_>>();
+        let response = pki.publish_external(material, &signatures, 100)?;
+        let serial = normalize_serial(
+            response.body["data"]["serial_number"]
+                .as_str()
+                .ok_or_else(|| bad("actual leaf serial"))?,
+        )?;
+        let original_der = pki
+            .issued
+            .get(&serial)
+            .ok_or_else(|| bad("actual old leaf"))?
+            .certificate_der
+            .clone();
+        let mut encoded =
+            serde_json::to_value(&pki).map_err(|_| bad("actual predecessor encode"))?;
+        encoded["issued"][&serial]
+            .as_object_mut()
+            .ok_or_else(|| bad("old leaf object"))?
+            .remove("external_issuer_owner");
+        encoded["external"]["issued_public"][&serial]
+            .as_object_mut()
+            .ok_or_else(|| bad("old projection"))?
+            .remove("issuer_id");
+        encoded["external"]
+            .as_object_mut()
+            .ok_or_else(|| bad("old external state"))?
+            .remove("archived_issuers");
+        let mut old: Pki = serde_json::from_value(encoded).map_err(|_| bad("actual old decode"))?;
+        old.validate("", "legacy/", 100)?;
+        assert!(
+            !old.has_role_leaf_profile_state(),
+            "original None state has no new owner marker"
+        );
+        let mut unknown = old.clone();
+        // Model the previously accepted loss from the original clear_root.
+        // No active key, CA or leaf projection survives; original leaf DER stays.
+        unknown.root = None;
+        unknown.external = Box::default();
+        unknown.validate("", "legacy/", 100)?;
+        assert!(
+            old.handle_admin("POST", "root/delete", &json!({}), 100)?
+                .status
+                == 200,
+            "actual root/delete succeeds for proven historical None projection"
+        );
+        old.validate("", "legacy/", 100)?;
+        let leaf = old
+            .issued
+            .get(&serial)
+            .ok_or_else(|| bad("retired old leaf"))?;
+        assert!(
+            leaf.role_leaf_profile.is_none()
+                && leaf.local_issuer_id.is_empty()
+                && leaf.external_issuer_owner.is_some()
+                && leaf.certificate_der == original_der
+                && old.has_role_leaf_profile_state()
+                && old.external.archived_issuers.len() == 1,
+            "real None DER unchanged, independently proven archive binding requires88"
+        );
+        let bytes = Zeroizing::new(serde_json::to_vec(&old).map_err(|_| bad("retired encode"))?);
+        let reopened: Pki = serde_json::from_slice(&bytes).map_err(|_| bad("retired reopen"))?;
+        reopened.validate("", "legacy/", 100)?;
+        assert!(
+            reopened
+                .issued
+                .get(&serial)
+                .is_some_and(|leaf| leaf.certificate_der == original_der),
+            "retired None exact signed bytes survive typed reopen"
+        );
+        unknown.handle_admin(
+            "POST",
+            "root/generate/internal",
+            &json!({
+                "common_name":"new-local.example.test","key_type":"ec","key_bits":256,"ttl":"1h"
+            }),
+            100,
+        )?;
+        assert!(
+            unknown
+                .handle_admin("POST", "root/delete", &json!({}), 100)?
+                .status
+                == 200,
+            "unknown legacy ownership neither guesses current local identity nor changes deletion success"
+        );
+        unknown.validate("", "legacy/", 100)?;
+        let leaf = unknown
+            .issued
+            .get(&serial)
+            .ok_or_else(|| bad("unknown old leaf"))?;
+        assert!(
+            leaf.local_issuer_id.is_empty()
+                && leaf.external_issuer_owner.is_none()
+                && leaf.role_leaf_profile.is_none()
+                && leaf.certificate_der == original_der
+                && unknown.external.archived_issuers.is_empty(),
+            "unprovable old None history stays explicitly unassigned and is not claimed qualified"
         );
         Ok(())
     }

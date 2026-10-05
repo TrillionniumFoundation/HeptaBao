@@ -18,6 +18,7 @@ fn selector_error() -> ParseError {
         message: "invalid leader query selector",
         empty_errors: true,
         health_head: None,
+        outer_bad_request: false,
     }
 }
 

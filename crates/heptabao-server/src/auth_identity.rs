@@ -3,6 +3,9 @@
 use super::*;
 
 pub(crate) struct LoginIdentity {
+    // Private issuer provenance: only Token API alias issuance sets this.
+    // Neither response JSON nor the request path selects this error contract.
+    pub(crate) token_api_alias: bool,
     pub(crate) mount: String,
     pub(crate) alias: String,
     // Backend-owned data; never inferred from caller-controlled response JSON.

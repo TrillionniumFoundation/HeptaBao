@@ -141,6 +141,60 @@ impl Service {
         self.record_ha_activation(before, verified, verified == before);
     }
 
+    pub(super) fn ha_owned_wrapper_selected(&self) -> bool {
+        #[cfg(target_os = "linux")]
+        {
+            self.ha.is_some() && self.wrapper_barrier_selected()
+        }
+        #[cfg(not(target_os = "linux"))]
+        {
+            false
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    fn maintain_owned_wrapper_ha(&mut self) {
+        if self.recovery_required || self.audit_failed {
+            self.ha_activation = None;
+            return;
+        }
+        if self.state.is_some() {
+            // Includes followers. A changed authority is admitted under its
+            // actual ReadIndex; an unknown local outcome fences future passes.
+            let _ = self.sync_from_ha_with_anchor(false);
+            return;
+        }
+        if self.initialized()
+            || self.seal.is_some()
+            || self.wrapper_barrier_initialization_claimed()
+        {
+            return;
+        }
+        let now = match SystemTime::now().duration_since(UNIX_EPOCH) {
+            Ok(value) => value.as_secs(),
+            Err(_) => return,
+        };
+        let plan = match self.prepare_wrapper_barrier_ha_join("GET", "sys/init", &json!({})) {
+            Ok(Some(plan)) => plan,
+            // Absent is a read-only observation, not an initialization retry.
+            Ok(None) | Err(_) => return,
+        };
+        let fingerprint = self.request_fingerprint("HA-OWNED", "node-local-bootstrap", "", "");
+        if self
+            .audit_event("ha-node-local-bootstrap", &fingerprint, now, None)
+            .is_err()
+        {
+            self.fence_recovery_delivery();
+            return;
+        }
+        let result = plan.execute();
+        let mut response =
+            self.finalize_wrapper_barrier_initialization(plan, result, now, &fingerprint);
+        // A joining node never releases initialization credentials. Its reply
+        // is consumed by this single process-owned work unit, not an HTTP caller.
+        erase_json(&mut response.body);
+    }
+
     fn maintain_ha_activation(&mut self) {
         let current = self.local_activation_key();
         if self
@@ -177,9 +231,20 @@ impl Drop for HaActivationWorker {
         }
     }
 }
-pub(crate) fn start_ha_activation_worker(
+#[cfg(test)]
+fn start_ha_activation_worker(
     service: &Arc<Mutex<Service>>,
 ) -> Result<Option<HaActivationWorker>, String> {
+    start_ha_activation_worker_with_budget(service, Duration::from_secs(1))
+}
+
+pub(crate) fn start_ha_activation_worker_with_budget(
+    service: &Arc<Mutex<Service>>,
+    work_budget: Duration,
+) -> Result<Option<HaActivationWorker>, String> {
+    if work_budget.is_zero() || work_budget > Duration::from_secs(60) {
+        return Err("HA owned work budget is invalid".into());
+    }
     if service
         .lock()
         .map_err(|_| "HA activation writer is unavailable")?
@@ -199,11 +264,23 @@ pub(crate) fn start_ha_activation_worker(
                 let Some(service) = service.upgrade() else {
                     break;
                 };
-                let _scope = crate::request_deadline::RequestDeadlineScope::enter(
-                    std::time::Instant::now()
-                        + crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET,
-                );
+                // The clock starts before the single try-lock. No work is
+                // queued, and no phase refreshes this deployment-owned budget.
+                let started = std::time::Instant::now();
                 if let Ok(mut writer) = service.try_lock() {
+                    let owned_wrapper = writer.ha_owned_wrapper_selected();
+                    let budget = if owned_wrapper {
+                        work_budget
+                    } else {
+                        crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET
+                    };
+                    let _scope =
+                        crate::request_deadline::RequestDeadlineScope::enter(started + budget);
+                    #[cfg(target_os = "linux")]
+                    if owned_wrapper {
+                        writer.maintain_owned_wrapper_ha();
+                        continue;
+                    }
                     writer.maintain_ha_activation();
                 }
             }

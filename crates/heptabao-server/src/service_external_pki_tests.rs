@@ -10,6 +10,11 @@ mod issuer_alias_tests;
 mod issuer_issue_tests;
 #[path = "service_external_pki_leaf_tests.rs"]
 mod leaf_tests;
+#[path = "service_pki_role_any_name_tests.rs"]
+mod role_any_name;
+#[path = "service_pki_role_leaf_profile_tests.rs"]
+mod role_leaf_profile;
+
 #[path = "service_local_pki_tests.rs"]
 mod local_tests;
 #[path = "service_external_pki_public_tests.rs"]
@@ -154,9 +159,49 @@ fn leaf_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, St
             == 200,
         "external root and CRL publication"
     );
-    assert!(call(&mut service,"POST","external-ca/roles/leaf",&admin,json!({
-        "allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"30m","generate_lease":true,"key_type":"ed25519"
-    })).status==200,"bounded Ed25519 leaf role");
+    let prior = service.state.as_ref().ok_or("actual pre-role state")?;
+    let prior_schema = prior.schema;
+    assert!(
+        prior_schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
+            && !prior.engines.has_pki_role_bare_domain_state(),
+        "actual root precedes new role owner"
+    );
+    let role = call(
+        &mut service,
+        "POST",
+        "external-ca/roles/leaf",
+        &admin,
+        json!({
+            "allowed_domains":["example.test"],"allow_subdomains":true,"max_ttl":"30m","generate_lease":true,"key_type":"ed25519"
+        }),
+    );
+    assert!(
+        role.status == 200,
+        "bounded Ed25519 leaf role: status={} errors={:?}",
+        role.status,
+        role.body.get("errors")
+    );
+    let current = service
+        .state
+        .as_ref()
+        .ok_or("actual published role state")?;
+    assert!(
+        current.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && current.engines.has_pki_role_bare_domain_state()
+            && current.engines.has_pki_role_wildcard_state(),
+        "record preflight publishes the real Ed25519 role owner with floor88"
+    );
+    let mut lowered = current.clone();
+    lowered.schema = prior_schema;
+    assert!(
+        lowered.validate_format().is_err()
+            && lowered.validate_publication_schema(Some(current)).is_err(),
+        "original root floor cannot relabel the actual committed role owner"
+    );
+    assert!(
+        service.prepare_record_plan(&lowered).is_err(),
+        "record preflight does not accept a lower reader label"
+    );
     Ok((root, service, unseal, admin))
 }
 
@@ -289,6 +334,16 @@ fn exercise_external_pki270_leaf_crls_with_schema(safe_schema: bool) -> TestResu
         "root metadata plus certificate, full CRL and delta CRL signatures"
     );
     assert!(
+        service.state.as_ref().ok_or("pre-role mixed root")?.schema == expected_schema
+            && !service
+                .state
+                .as_ref()
+                .ok_or("pre-role mixed root")?
+                .engines
+                .has_pki_role_bare_domain_state(),
+        "actual root retains65 or genuine AAD-bound66 before a new role"
+    );
+    assert!(
         call(
             &mut service,
             "POST",
@@ -301,9 +356,16 @@ fn exercise_external_pki270_leaf_crls_with_schema(safe_schema: bool) -> TestResu
             == 200,
         "mixed schema bounded leaf role"
     );
+    let expected_schema = PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA;
     assert!(
-        service.state.as_ref().ok_or("mixed root state")?.schema == expected_schema,
-        "ordinary PKI stays65 and mixed opt-in PKI retains66"
+        service.state.as_ref().ok_or("mixed root state")?.schema == expected_schema
+            && service
+                .state
+                .as_ref()
+                .ok_or("mixed root state")?
+                .engines
+                .has_pki_role_bare_domain_state(),
+        "actual new role carries its distinct88 owner above65 or66"
     );
     let descriptor = call(
         &mut *remote.service.lock().map_err(|_| "remote lock")?,
