@@ -284,7 +284,7 @@ pub(super) fn root_expiration(
     Ok(expiration)
 }
 
-fn rfc3339_seconds(value: &str) -> Result<u64> {
+pub(super) fn rfc3339_seconds(value: &str) -> Result<u64> {
     use openssl::asn1::Asn1Time;
     let invalid = || bad("invalid PKI not_after");
     let bytes = value.as_bytes();

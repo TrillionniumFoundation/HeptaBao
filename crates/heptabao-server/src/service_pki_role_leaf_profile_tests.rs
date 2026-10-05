@@ -6,6 +6,8 @@ use crate::service::tests::{bootstrap_unmounted, commit_legacy_state_fixture};
 use openssl::{pkey::PKey, x509::X509};
 #[path = "service_pki_external_retired_owner_tests.rs"]
 mod retired_owner_tests;
+#[path = "service_pki_role_time_tests.rs"]
+mod time_policy;
 
 const FIELDS: [&str; 15] = [
     "server_flag",

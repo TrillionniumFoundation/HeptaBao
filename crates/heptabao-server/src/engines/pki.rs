@@ -22,6 +22,9 @@ mod public;
 use local_key::{LocalKeyKind, LocalPrivateMaterial, LocalPublicKey};
 #[path = "pki_role_leaf_profile.rs"]
 mod role_leaf_profile;
+#[path = "pki_role_time.rs"]
+mod role_time;
+use role_time::RoleTimePolicy;
 #[path = "pki_root_fields.rs"]
 mod root_fields;
 use role_leaf_profile::{LeafProfilePublicEvidence, RoleLeafProfile};
@@ -205,6 +208,8 @@ impl RootCa {
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 struct Role {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    role_time_policy: Option<RoleTimePolicy>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     role_leaf_profile: Option<RoleLeafProfile>,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     issuer_ref: String,
@@ -234,6 +239,8 @@ fn role_false(value: &bool) -> bool {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub(super) struct IssuedCertificate {
+    #[serde(default, skip_serializing_if = "role_false")]
+    role_time_owned: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     role_leaf_profile: Option<LeafProfilePublicEvidence>,
     #[serde(default, skip_serializing_if = "String::is_empty")]
@@ -821,6 +828,12 @@ impl Pki {
                             "allow_subdomains",
                             "allow_ip_sans",
                             "max_ttl",
+                            "ttl",
+                            "not_before_duration",
+                            "not_before",
+                            "not_before_bound",
+                            "not_after",
+                            "not_after_bound",
                             "generate_lease",
                             "key_type",
                             "key_bits",
@@ -958,7 +971,9 @@ impl Pki {
         valid_name(name)?;
         let role: Role = serde_json::from_value(value.clone())
             .map_err(|_| bad("historical typed role fixture"))?;
-        if role.role_leaf_profile.is_some()
+        if role.role_time_policy.is_some()
+            || role.max_ttl == 0
+            || role.role_leaf_profile.is_some()
             || role.allow_bare_domains.is_some()
             || role.allow_wildcard_certificates.is_some()
             || role.allow_any_name
@@ -974,7 +989,10 @@ impl Pki {
     // It owns the original85 base/wildcard fields but no later leaf profile.
     #[cfg(test)]
     pub(super) fn fixture_promote_historical_role_to85(&mut self, name: &str) -> Result<()> {
-        if !self.issued.is_empty() || self.has_role_leaf_profile_state() {
+        if !self.issued.is_empty()
+            || self.has_role_leaf_profile_state()
+            || self.has_role_time_state()
+        {
             return Err(bad("schema85 role fixture cannot strip signed evidence"));
         }
         let role = self.roles.get_mut(name).ok_or_else(not_found)?;
@@ -1033,7 +1051,9 @@ impl Pki {
         now: u64,
     ) -> Result<EngineResponse> {
         let role = self.roles.get("historical").ok_or_else(not_found)?;
-        if role.role_leaf_profile.is_some()
+        if role.role_time_policy.is_some()
+            || role.max_ttl == 0
+            || role.role_leaf_profile.is_some()
             || role.allow_bare_domains.is_some()
             || role.allow_wildcard_certificates.is_some()
             || role.allow_any_name
@@ -1235,7 +1255,17 @@ impl Pki {
         owner_expires: Option<u64>,
         now: u64,
     ) -> Result<LeafTemplate> {
-        reject_unknown(body, &["common_name", "alt_names", "ip_sans", "ttl"])?;
+        reject_unknown(
+            body,
+            &[
+                "common_name",
+                "alt_names",
+                "ip_sans",
+                "ttl",
+                "not_before",
+                "not_after",
+            ],
+        )?;
         let role = self
             .roles
             .get(route.role)
@@ -1285,13 +1315,26 @@ impl Pki {
         if self.issued.len() >= MAX_ISSUED {
             return Err(error(507, "PKI issued-certificate capacity exhausted"));
         }
-        let requested = ttl_field(body, "ttl", self.default_ttl)?
-            .min(role.max_ttl)
-            .min(self.max_ttl);
-        let owner_limit = owner_expires.unwrap_or(u64::MAX).saturating_sub(now);
-        let root_limit = root.not_after.saturating_sub(now);
-        let ttl = requested.min(owner_limit).min(root_limit);
-        if ttl == 0 {
+        let resolved = role.role_time_policy.clone().unwrap_or_default().resolve(
+            body,
+            role.max_ttl,
+            self.default_ttl,
+            self.max_ttl,
+            now,
+        )?;
+        if resolved.not_after > root.not_after {
+            return Err(bad(&format!(
+                "cannot satisfy request, as TTL would result in notAfter of {} that is beyond the expiration of the CA certificate at {}",
+                timestamp(resolved.not_after),
+                timestamp(root.not_after)
+            )));
+        }
+        role.role_time_policy
+            .clone()
+            .unwrap_or_default()
+            .validate_final_not_after(resolved.not_after)?;
+        let expires = resolved.not_after.min(owner_expires.unwrap_or(u64::MAX));
+        if expires <= now {
             return Err(error(403, "issuer no longer has a live PKI lease window"));
         }
         let serial = random_serial()?;
@@ -1306,6 +1349,11 @@ impl Pki {
             return Err(error(503, "PKI serial collision"));
         }
         Ok(LeafTemplate {
+            role_time_owned: role.role_time_policy.is_some()
+                || role.max_ttl == 0
+                || body.get("not_before").is_some()
+                || body.get("not_after").is_some(),
+            warnings: resolved.warnings,
             role_leaf_profile: Some(role.effective_leaf_profile()),
             local_issuer_id: if !root.is_external() {
                 root.issuer_id.clone()
@@ -1323,10 +1371,8 @@ impl Pki {
             alt_names,
             ip_sans,
             issued: now,
-            not_before: now.saturating_sub(30).max(root.not_before),
-            expires: now
-                .checked_add(ttl)
-                .ok_or_else(|| bad("PKI lease TTL overflow"))?,
+            not_before: resolved.not_before,
+            expires,
         })
     }
 
@@ -1496,16 +1542,20 @@ impl Pki {
             )
         };
         data["not_before"] = json!(prepared.not_before);
-        let response = EngineResponse {
+        let mut response = EngineResponse {
             status: 200,
             body: json!({"request_id":"", "lease_id":if prepared.leased {prepared.lease_id.clone()} else {String::new()},
                 "renewable":false,"lease_duration":if prepared.leased {ttl} else {0},"data":data}),
             mutated: true,
         };
+        if !prepared.warnings.is_empty() {
+            response.body["warnings"] = json!(prepared.warnings);
+        }
         let role_leaf_profile = LeafProfilePublicEvidence::capture(&prepared, leaf_public);
         self.issued.insert(
             prepared.serial.clone(),
             IssuedCertificate {
+                role_time_owned: prepared.role_time_owned,
                 role_leaf_profile,
                 local_issuer_id: prepared.local_issuer_id,
                 external_issuer_owner: None,
@@ -1581,7 +1631,15 @@ impl Role {
         for (name, value) in patch {
             output.insert(name.clone(), value.clone());
         }
-        Self::from_body(&merged)
+        let mut role = Self::from_body(&merged)?;
+        if previous.role_time_policy.is_none()
+            && !role_time::ROLE_TIME_FIELDS
+                .iter()
+                .any(|name| patch.get(*name).is_some())
+        {
+            role.role_time_policy = None;
+        }
+        Ok(role)
     }
     fn from_body(body: &Value) -> Result<Self> {
         let allow_any_name = role_optional_bool(body, "allow_any_name")?.unwrap_or(false);
@@ -1592,7 +1650,13 @@ impl Role {
         {
             return Err(bad("allowed_domains must contain 1..=64 DNS domains"));
         }
+        let max_ttl = ttl_field(body, "max_ttl", 0)?;
+        let time_policy = RoleTimePolicy::from_body(body, max_ttl)?;
         let role = Self {
+            role_time_policy: role_time::ROLE_TIME_FIELDS
+                .iter()
+                .any(|name| body.get(*name).is_some())
+                .then_some(time_policy),
             role_leaf_profile: Some(RoleLeafProfile::from_body(body)?),
             issuer_ref: match body.get("issuer_ref") {
                 None => String::new(),
@@ -1617,7 +1681,7 @@ impl Role {
             ),
             allow_subdomains: role_optional_bool(body, "allow_subdomains")?.unwrap_or(false),
             allow_ip_sans: role_optional_bool(body, "allow_ip_sans")?.unwrap_or(true),
-            max_ttl: ttl_field(body, "max_ttl", DEFAULT_LEAF_TTL)?,
+            max_ttl,
             generate_lease: role_optional_bool(body, "generate_lease")?.unwrap_or(false),
             local_key_kind: match LocalKeyKind::from_body(body)? {
                 LocalKeyKind::Ed25519 => None,
@@ -1631,6 +1695,9 @@ impl Role {
         if let Some(profile) = &self.role_leaf_profile {
             profile.validate_role_oid_strings()?;
         }
+        if let Some(policy) = &self.role_time_policy {
+            policy.validate(self.max_ttl)?;
+        }
         if self.issuer_ref.len() > 128
             || self.issuer_ref.contains('/')
             || self.issuer_ref.chars().any(char::is_control)
@@ -1638,7 +1705,6 @@ impl Role {
             || !self.allow_any_name && self.allowed_domains.is_empty()
             || self.allowed_domains.len() > 64
             || self.allowed_domains.iter().any(|v| !valid_domain(v))
-            || self.max_ttl == 0
             || self.max_ttl > MAX_TTL
         {
             return Err(bad("invalid PKI role"));
@@ -1687,6 +1753,17 @@ impl Role {
                 for (name, value) in fields {
                     descriptor[name] = value.clone();
                 }
+            }
+        }
+        if let Some(fields) = self
+            .role_time_policy
+            .clone()
+            .unwrap_or_default()
+            .descriptor()
+            .as_object()
+        {
+            for (name, value) in fields {
+                descriptor[name] = value.clone();
             }
         }
         descriptor
@@ -2000,6 +2077,8 @@ struct IssuanceRoute<'a> {
 
 #[derive(Clone)]
 struct LeafTemplate {
+    role_time_owned: bool,
+    warnings: Vec<String>,
     role_leaf_profile: Option<RoleLeafProfile>,
     local_issuer_id: String,
     serial: String,

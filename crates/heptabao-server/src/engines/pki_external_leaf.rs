@@ -20,6 +20,8 @@ pub(super) struct ConsumptionMaterial {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct LeafPublic {
+    #[serde(default, skip_serializing_if = "role_false")]
+    pub(super) role_time_owned: bool,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     issuer_id: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -326,7 +328,7 @@ impl Pki {
             }
             prepared.serial = external_serial()?;
             prepared.lease_id = format!("{}/{}", prepared.path, prepared.serial);
-            prepared.not_before = now.saturating_sub(30).max(root.not_before);
+            // Role time policy already owns the actual signed validity.
             ConsumptionTemplate::Leaf(Box::new(prepared))
         } else if path == "revoke" || path == "crl/rotate" {
             if (path == "revoke" && !write_method(method))
@@ -442,7 +444,7 @@ impl Pki {
                 self.admit_external_issuer_archive(&captured_issuer)?;
                 let owner = captured_issuer.owner()?;
                 if !prepared.local_issuer_id.is_empty()
-                    || prepared.not_before < captured_issuer.not_before
+                    || !prepared.role_time_owned && prepared.not_before < captured_issuer.not_before
                     || prepared.expires > captured_issuer.not_after
                 {
                     return Err(bad("external PKI leaf owner or validity changed"));
@@ -454,6 +456,7 @@ impl Pki {
                 }
                 let serial = prepared.serial.clone();
                 let projection = LeafPublic {
+                    role_time_owned: prepared.role_time_owned,
                     issuer_id: captured_issuer.issuer_id.clone(),
                     role_leaf_profile: prepared.role_leaf_profile.clone(),
                     public_key: public,
@@ -704,7 +707,8 @@ impl Pki {
                 issuer
             };
             if !issued.local_issuer_id.is_empty()
-                || projection.not_before > issued.issued
+                || projection.role_time_owned != issued.role_time_owned
+                || !issued.role_time_owned && projection.not_before > issued.issued
                 || issued.issued >= issued.expires
                 || projection.alt_names.len() > 32
                 || projection.ip_sans.len() > 32
@@ -712,7 +716,7 @@ impl Pki {
                     .alt_names
                     .iter()
                     .any(|name| !valid_common_name(name))
-                || projection.not_before < issuer.not_before
+                || !issued.role_time_owned && projection.not_before < issuer.not_before
                 || issued.expires > issuer.not_after
             {
                 return Err(bad("invalid external PKI leaf projection"));
@@ -720,7 +724,8 @@ impl Pki {
             match (&issued.role_leaf_profile, &projection.role_leaf_profile) {
                 (None, None) => {}
                 (Some(evidence), Some(profile))
-                    if evidence.profile == *profile
+                    if evidence.role_time_owned == issued.role_time_owned
+                        && evidence.profile == *profile
                         && evidence.public_key == projection.public_key
                         && evidence.not_before == projection.not_before
                         && evidence.alt_names == projection.alt_names
@@ -728,6 +733,8 @@ impl Pki {
                 _ => return Err(bad("external PKI leaf profile projection differs")),
             }
             let prepared = LeafTemplate {
+                role_time_owned: issued.role_time_owned,
+                warnings: Vec::new(),
                 role_leaf_profile: projection.role_leaf_profile.clone(),
                 local_issuer_id: String::new(),
                 serial: serial.clone(),
