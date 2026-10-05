@@ -20,6 +20,10 @@ import migration_snapshot_live as snapshot
 import official_openbao_launcher as launcher
 import run_official_comparison as comparison
 import transit_migration_live as transit
+import policy_migration_live as policy
+import identity_migration_live as identity
+import ssh_role_migration_live as ssh_role
+import auth_mount_migration_live as auth_mount
 from bao_http import BaoError, private_write, verify_oracle_identity
 
 
@@ -166,6 +170,26 @@ class RunnerSelectionTests(unittest.TestCase):
                                                             "full_format_migration": False}) as run, redirect_stdout(io.StringIO()):
                 self.assertEqual(transit.main(["--binary", "/absent", "--output", str(self.root / "out.json"), *flag]), 0)
                 self.assertEqual(run.call_args.kwargs, {"oracle_version": selected})
+
+    def test_logical_asset_cli_keeps_exact_selected_version_and_default(self):
+        for module in (policy, identity, ssh_role, auth_mount):
+            for version in (None, "2.7.0"):
+                with self.subTest(module=module.__name__, version=version):
+                    flag = [] if version is None else ["--oracle-version", version]
+                    with patch.object(module, "run", return_value={
+                        "status": "synthetic", "count": 0, "full_asset_migration": False,
+                    }) as run, redirect_stdout(io.StringIO()):
+                        self.assertEqual(module.main([
+                            "--binary", "/absent", "--output", str(self.root / "out.json"), *flag,
+                        ]), 0)
+                        self.assertEqual(run.call_args.kwargs, {"oracle_version": version or "2.6.2"})
+
+    def test_logical_asset_cli_rejects_unpinned_version_before_work(self):
+        for module in (policy, identity, ssh_role, auth_mount):
+            with self.subTest(module=module.__name__), patch.object(module, "run") as run, \
+                 redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+                module.main(["--binary", "/absent", "--output", "/absent", "--oracle-version", "latest"])
+            run.assert_not_called()
 
     def test_snapshot_cli_forwards_selected_version_without_relabeling_default(self):
         inspector = self.root / "inspector"
