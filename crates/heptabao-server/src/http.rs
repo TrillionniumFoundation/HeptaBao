@@ -2979,14 +2979,18 @@ mod wrapping_header_tests {
 
     #[test]
     fn health_probe_query_flags_are_parsed_as_booleans() {
-        for (query, key) in [
-            ("standbyok=1", "standbyok"),
-            ("perfstandbyok=true", "perfstandbyok"),
-        ] {
+        for query in ["standbyok=1", "standbyok=true"] {
             let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
             assert!(
                 read_request(&mut request.as_bytes(), Duration::from_secs(1))
-                    .is_ok_and(|r| r.body.0[key] == Value::Bool(true))
+                    .is_ok_and(|r| r.body.0["standbyok"] == Value::Bool(true))
+            );
+        }
+        for query in ["perfstandbyok=true", "perfstandbyok=maybe"] {
+            let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: localhost\r\n\r\n");
+            assert!(
+                read_request(&mut request.as_bytes(), Duration::from_secs(1))
+                    .is_ok_and(|r| r.body.0 == json!({}))
             );
         }
         let request = b"GET /v1/sys/health?standbyok=maybe HTTP/1.1\r\nHost: localhost\r\n\r\n";
@@ -3124,7 +3128,7 @@ mod wrapping_header_tests {
         let parsed = read_request(&mut request.as_slice(), Duration::from_secs(1))
             .map_err(|_| io::Error::other("unused health options incorrectly rejected"))?;
         assert_eq!(parsed.body.0, json!({"standbyok":true}));
-        let request = b"GET /v1/sys/leader?haunhealhty=299 HTTP/1.1\r\nHost: local\r\n\r\n";
+        let request = b"GET /v1/sys/init?haunhealhty=299 HTTP/1.1\r\nHost: local\r\n\r\n";
         assert!(read_request(&mut request.as_slice(), Duration::from_secs(1)).is_err());
         Ok(())
     }

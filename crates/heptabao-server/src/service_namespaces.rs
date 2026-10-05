@@ -1435,10 +1435,8 @@ impl Service {
                         "namespace deletion requires stateless batch incarnation retirement",
                     );
                 }
-                if !state.namespace_payload_is_empty(&target)
-                    && (!state.namespace_has_only_local_cleanup(&target)
-                        || !self.namespace_runtime.is_loaded(&target))
-                {
+                let populated = !state.namespace_payload_is_empty(&target);
+                if populated && !state.namespace_has_only_local_cleanup(&target) {
                     return Response::error(
                         409,
                         "namespace contains runtime state; owned cleanup is required before deletion",
@@ -1449,15 +1447,6 @@ impl Service {
                     Err(error) => return error,
                 };
                 let custody = state.namespaces.custody_owner(&target).cloned();
-                let custody_binding = custody
-                    .as_ref()
-                    .map(|owner| owner.binding().clone())
-                    .or_else(|| {
-                        state
-                            .namespaces
-                            .inherited_owner(&target)
-                            .map(|owner| owner.binding().clone())
-                    });
                 if custody.is_some() && state.namespaces.entries[&target].sealed {
                     return Response::error(
                         503,
@@ -1470,7 +1459,35 @@ impl Service {
                         Err(error) => return error,
                     };
                 }
-                // Pin the exact closed owner produced with its real loaded key.
+                if populated
+                    && state.namespaces.custody_owner(&target).is_none()
+                    && state.namespaces.inherited_owner(&target).is_none()
+                {
+                    // An ordinary namespace has no independent runtime slot.
+                    // Close its actual assets using the existing longest owner
+                    // key before retiring any record or catalog entry.
+                    let Some(root_key) = self.barrier_key.as_ref() else {
+                        return Response::error(503, "actual barrier key is unavailable");
+                    };
+                    state = match self
+                        .namespace_runtime
+                        .inherited_closed_candidate(&state, &target, root_key)
+                    {
+                        Ok(candidate) => candidate,
+                        Err(error) => return error,
+                    };
+                }
+                let custody_binding = state
+                    .namespaces
+                    .custody_owner(&target)
+                    .map(|owner| owner.binding().clone())
+                    .or_else(|| {
+                        state
+                            .namespaces
+                            .inherited_owner(&target)
+                            .map(|owner| owner.binding().clone())
+                    });
+                // Pin the exact closed owner produced with its real owner key.
                 // This floor is private retirement evidence, never a route grant.
                 let retired_floor = custody_binding.as_ref().and_then(|_| {
                     state

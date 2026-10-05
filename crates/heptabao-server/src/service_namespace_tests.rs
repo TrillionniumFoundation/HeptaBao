@@ -1053,21 +1053,49 @@ fn inherited_retirement_requires_a_new_actual_incarnation_before_recreation()
 #[test]
 fn namespace_local_kv_and_token_delete_retires_actual_owner_and_survives_reopen()
 -> Result<(), Box<dyn std::error::Error>> {
+    local_kv_and_token_delete(false)
+}
+
+#[test]
+fn namespace_local_independent_kv_and_token_delete_destroys_retained_loaded_key()
+-> Result<(), Box<dyn std::error::Error>> {
+    local_kv_and_token_delete(true)
+}
+
+fn local_kv_and_token_delete(independent: bool) -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
     let (key, root_token) = bootstrap(&mut service)?;
     for namespace in ["local-delete", "local-sibling"] {
-        assert_eq!(
-            call(
-                &mut service,
-                "POST",
-                &format!("sys/namespaces/{namespace}"),
-                &root_token,
+        let response = call(
+            &mut service,
+            "POST",
+            &format!("sys/namespaces/{namespace}"),
+            &root_token,
+            if independent && namespace == "local-delete" {
+                json!({"seal":"seal \"shamir\" { shares = 1\n threshold = 1 }"})
+            } else {
                 json!({})
-            )
-            .status,
-            200
+            },
         );
+        assert_eq!(response.status, 200);
+        if independent && namespace == "local-delete" {
+            let share = response.body["data"]["key_shares"][0]
+                .as_str()
+                .ok_or("actual namespace share")?;
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "sys/namespaces/local-delete/unseal",
+                    &root_token,
+                    json!({"key":share})
+                )
+                .status,
+                200
+            );
+            assert!(service.namespace_runtime.is_loaded("local-delete"));
+        }
         assert_eq!(
             service
                 .handle_at(
@@ -1160,7 +1188,10 @@ fn namespace_local_kv_and_token_delete_retires_actual_owner_and_survives_reopen(
         .as_str()
         .ok_or("live token")?
         .to_owned();
-    let stale = service.state.clone().ok_or("state")?;
+    let mut stale = service.state.clone().ok_or("state")?;
+    let stale_plan = service
+        .prepare_record_plan(&mut stale)
+        .map_err(|_| "actual stale plan")?;
     let binding = stale
         .namespaces
         .custody_binding(&stale.cluster_id, "local-delete")
@@ -1193,9 +1224,24 @@ fn namespace_local_kv_and_token_delete_retires_actual_owner_and_survives_reopen(
         service.namespace_runtime.is_loaded("local-delete"),
     );
     assert_eq!(deleted.body["data"]["status"], "in-progress");
+    if independent {
+        assert!(
+            stale.namespace_leases.validate().is_err(),
+            "retained references cannot keep the retired independent key live"
+        );
+    }
+    let after_delete = service
+        .current_state_identity()
+        .map_err(|_| "actual retired identity")?;
     assert!(
-        stale.namespace_leases.validate().is_err(),
-        "retained references cannot keep the retired key live"
+        service.commit_record_plan(&stale, stale_plan).is_err(),
+        "a retained pre-retirement plan cannot restore old namespace assets"
+    );
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "identity after stale plan")?,
+        after_delete
     );
     let retired = service.state.as_ref().ok_or("state")?;
     assert!(!retired.namespaces.contains("local-delete"));
