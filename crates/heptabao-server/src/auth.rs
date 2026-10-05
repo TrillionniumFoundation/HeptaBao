@@ -1366,6 +1366,9 @@ enum PrincipalAdmission {
 
 pub(super) struct Principal {
     admission: PrincipalAdmission,
+    // Affine request authority retains the original trusted Service clock.
+    // This field is never serialized into a token or durable owner.
+    request_clock: Option<RequestClock>,
     origin_peer: Option<std::net::IpAddr>,
     identity_policies: BTreeSet<String>,
     identity_templates: IdentityTemplateValues,
@@ -1384,6 +1387,41 @@ impl Drop for Principal {
 }
 
 impl Principal {
+    pub(super) fn bind_request_clock(
+        &mut self,
+        clock: Option<RequestClock>,
+    ) -> Result<(), AuthError> {
+        if self.request_clock.is_some() {
+            return Err(err(503, "request authority clock is already bound"));
+        }
+        if let Some(clock) = clock {
+            clock
+                .observed_at()
+                .map_err(|_| err(503, "trusted request authority clock is unavailable"))?;
+            self.request_clock = Some(clock);
+        }
+        Ok(())
+    }
+
+    fn request_authority_time(&self, time: AuthorityTime) -> Result<AuthorityTime, AuthError> {
+        let Some(clock) = self.request_clock else {
+            // Explicit historical callers do not acquire precision from a
+            // rounded token projection or a caller-supplied integer.
+            return Ok(time);
+        };
+        let clock = clock
+            .with_seconds_floor(time.seconds())
+            .map_err(|_| err(503, "trusted request authority clock is unavailable"))?;
+        let clock = match time {
+            AuthorityTime::Precise(at) => clock.with_timestamp_floor(at),
+            AuthorityTime::Coarse(_) => clock,
+        };
+        clock
+            .observed_at()
+            .map(AuthorityTime::Precise)
+            .map_err(|_| err(503, "trusted request authority clock is unavailable"))
+    }
+
     pub(super) fn namespace(&self) -> &str {
         match &self.credential {
             batch_principal::VerifiedCredential::Service(token) => &token.namespace,
@@ -2468,6 +2506,7 @@ impl AuthState {
     ) -> Principal {
         Principal {
             admission,
+            request_clock: None,
             origin_peer,
             identity_policies: BTreeSet::new(),
             identity_templates: IdentityTemplateValues::default(),
@@ -2552,6 +2591,7 @@ impl AuthState {
         time: AuthorityTime,
     ) -> Result<batch_principal::CheckedCredential<'a>, AuthError> {
         validate_namespace(namespace)?;
+        let time = principal.request_authority_time(time)?;
         let view = match &principal.credential {
             batch_principal::VerifiedCredential::Service(snapshot) => {
                 let token = self.active_token_observed(&principal.digest, time, false)?;

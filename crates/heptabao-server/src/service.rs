@@ -2803,15 +2803,15 @@ impl Service {
         let mut principal = if !authenticate_bearer {
             None
         } else {
+            let time = match request.token_time() {
+                Ok(time) => time,
+                Err(error) => return error,
+            };
             let authenticated = if mount_metadata {
                 admitted
                     .auth
-                    .authenticate_mount_metadata_from(token, now, origin_peer)
+                    .authenticate_mount_metadata_from_observed(token, time, origin_peer)
             } else {
-                let time = match request.token_time() {
-                    Ok(time) => time,
-                    Err(error) => return error,
-                };
                 admitted
                     .auth
                     .authenticate_from_observed(token, time, origin_peer)
@@ -2821,6 +2821,11 @@ impl Service {
                 Err(error) => return Response::error(error.status, &error.message),
             }
         };
+        if let Some(principal) = principal.as_mut()
+            && let Err(error) = principal.bind_request_clock(request.token_clock)
+        {
+            return Response::error(error.status, &error.message);
+        }
         if principal.as_ref().is_some_and(Principal::consumed_use) {
             admitted.schema = admitted.writer_schema();
             if let Err(error) = self.commit_state(&mut admitted) {
@@ -3469,6 +3474,9 @@ impl Service {
             Ok(None) => return None,
             Err(error) => return Some(Response::error(error.status, &error.message)),
         };
+        if let Err(error) = principal.bind_request_clock(request.token_clock) {
+            return Some(Response::error(error.status, &error.message));
+        }
         if let Err(error) = Self::bind_identity_principal(state, &mut principal, request.namespace)
         {
             return Some(error);

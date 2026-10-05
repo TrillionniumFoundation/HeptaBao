@@ -132,14 +132,6 @@ impl Drop for InspectionCredential {
     }
 }
 impl InspectionCredential {
-    pub(super) fn view<'a>(
-        &'a self,
-        auth: &'a AuthState,
-        now: u64,
-    ) -> Result<CheckedCredential<'a>, AuthError> {
-        self.view_observed(auth, AuthorityTime::Coarse(now))
-    }
-
     pub(super) fn view_observed<'a>(
         &'a self,
         auth: &'a AuthState,
@@ -275,6 +267,7 @@ impl AuthState {
             admission: PrincipalAdmission::Operation {
                 finite_use_consumed: false,
             },
+            request_clock: None,
             digest: claims.token_digest().to_owned(),
             credential: VerifiedCredential::Batch(Box::new(claims)),
             origin_peer,
@@ -286,15 +279,6 @@ impl AuthState {
             request_time: time.seconds(),
         })
     }
-    pub(super) fn inspect_raw_target(
-        &self,
-        raw: &str,
-        namespace: &str,
-        now: u64,
-    ) -> Result<InspectionCredential, AuthError> {
-        self.inspect_raw_target_observed(raw, namespace, AuthorityTime::Coarse(now))
-    }
-
     pub(super) fn inspect_raw_target_observed(
         &self,
         raw: &str,
@@ -341,6 +325,7 @@ impl AuthState {
         namespace: &str,
         time: AuthorityTime,
     ) -> Result<ResolvedLeaseOwner, AuthError> {
+        let time = actor.request_authority_time(time)?;
         self.check_principal_observed(actor, namespace, time)?;
         let owner = match &actor.credential {
             VerifiedCredential::Service(_) => {

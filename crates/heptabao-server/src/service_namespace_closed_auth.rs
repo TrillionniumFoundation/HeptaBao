@@ -67,7 +67,7 @@ impl Service {
             Ok(time) => time,
             Err(response) => return response,
         };
-        let admission = match self.namespace_runtime.closed_auth_attempt_observed(
+        let mut admission = match self.namespace_runtime.closed_auth_attempt_observed(
             admitted,
             actual,
             root_key,
@@ -78,6 +78,9 @@ impl Service {
             Ok(admission) => admission,
             Err(response) => return response,
         };
+        if let Err(response) = admission.bind_request_clock(request.token_clock) {
+            return response;
+        }
         let gate = |service: &Self, state: &State| -> Result<(), Response> {
             namespace_runtime::request_live()?;
             if service.recovery_required

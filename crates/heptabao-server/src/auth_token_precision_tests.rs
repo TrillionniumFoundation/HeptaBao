@@ -59,6 +59,100 @@ fn precise_service(state: &mut AuthState, raw: &str) -> TestResult {
     });
     Ok(())
 }
+
+#[test]
+fn affine_original_clock_keeps_exact_authority_in_legacy_helpers_and_target_inspection()
+-> TestResult {
+    let (mut state, mut root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw)?;
+    let clock = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+    let mut actor = state.authenticate_from_observed(
+        &raw,
+        AuthorityTime::Precise(clock.observed_at()?),
+        None,
+    )?;
+    actor.bind_request_clock(Some(clock))?;
+    root.bind_request_clock(Some(clock))?;
+    state.permission(Some(&actor), "", "auth/token/lookup-self", "read", 100)?;
+    state.inspection_target(&actor, "", "sys/capabilities-self", &json!({}), 100)?;
+    state.inspection_target(&root, "", "sys/capabilities", &json!({"token":raw}), 100)?;
+    let owner = state.typed_lease_issuer(&actor, "", 100)?;
+    assert_eq!(owner.precise_expires_at, Some(timestamp(100, 700_000_000)?));
+    let mut metadata = state.authenticate_mount_metadata_from_observed(
+        &raw,
+        AuthorityTime::Precise(clock.observed_at()?),
+        None,
+    )?;
+    metadata.bind_request_clock(Some(clock))?;
+    assert!(
+        state
+            .ui_mount_visible(&metadata, "", "secret/", 100)
+            .is_ok()
+    );
+    assert!(
+        state
+            .authorize_request(&metadata, "", "secret/value", "read", 100)
+            .is_err(),
+        "metadata admission never becomes an operation capability"
+    );
+    assert!(!super::super::token_precise_issuance::ENABLED);
+    Ok(())
+}
+
+#[test]
+fn affine_original_clock_reobserves_expiry_and_cannot_be_replaced_after_admission() -> TestResult {
+    let (mut state, root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw)?;
+    let mut actor = state.authenticate_from_observed(
+        &raw,
+        AuthorityTime::Precise(timestamp(100, 200_000_000)?),
+        None,
+    )?;
+    // A dispatcher stalled after authentication must still observe elapsed
+    // time from its original ingress anchor at every later helper.
+    let original = RequestClock::anchored(
+        Duration::new(100, 200_000_000),
+        Instant::now() - Duration::from_secs(1),
+    )?;
+    actor.bind_request_clock(Some(original))?;
+    let replacement = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+    assert!(actor.bind_request_clock(Some(replacement)).is_err());
+    assert!(actor.bind_request_clock(None).is_err());
+    let before = serde_json::to_vec(&state)?;
+    for time in [
+        AuthorityTime::Coarse(100),
+        AuthorityTime::Precise(timestamp(100, 200_000_000)?),
+    ] {
+        assert!(state.check_principal_observed(&actor, "", time).is_err());
+    }
+    assert!(state.typed_lease_issuer(&actor, "", 100).is_err());
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
+#[test]
+fn affine_clock_does_not_upgrade_unbound_coarse_callers_or_roll_back_durable_floor() -> TestResult {
+    let (mut state, root) = setup()?;
+    let raw = service(&mut state, &root, 0)?;
+    precise_service(&mut state, &raw)?;
+    let mut actor = state.authenticate_from_observed(
+        &raw,
+        AuthorityTime::Precise(timestamp(100, 200_000_000)?),
+        None,
+    )?;
+    assert!(state.check_principal(&actor, "", 100).is_err());
+    let clock = RequestClock::anchored(Duration::new(100, 200_000_000), Instant::now())?;
+    actor.bind_request_clock(Some(clock))?;
+    assert!(state.check_principal(&actor, "", 100).is_ok());
+    state.observe_token_api_time(AuthorityTime::Precise(timestamp(100, 800_000_000)?))?;
+    let before = serde_json::to_vec(&state)?;
+    assert!(state.check_principal(&actor, "", 100).is_err());
+    assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
 #[test]
 fn checked_types_preserve_fraction_and_reject_overflow_or_rollback() -> TestResult {
     assert_eq!(

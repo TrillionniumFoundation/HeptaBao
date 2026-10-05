@@ -247,6 +247,18 @@ pub(super) struct ClosedAuthAdmission {
 }
 
 impl ClosedAuthAdmission {
+    pub(super) fn bind_request_clock(
+        &mut self,
+        clock: Option<RequestClock>,
+    ) -> Result<(), Response> {
+        if let Ok(actor) = self.principal.as_mut() {
+            actor
+                .bind_request_clock(clock)
+                .map_err(|error| Response::error(error.status, &error.message))?;
+        }
+        Ok(())
+    }
+
     pub(super) fn needs_commit(&self) -> bool {
         self.needs_commit
     }
