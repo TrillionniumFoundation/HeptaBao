@@ -155,7 +155,22 @@ fn public_origin_real_meta_and_service_issue_stamp_survive_process_reopen() -> T
     }
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        NAMESPACE_BATCH_STATE_SCHEMA
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .auth
+            .has_public_origin_state()
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .has_namespace_batch_state()
     );
     drop(service);
     let mut service = root.service()?;

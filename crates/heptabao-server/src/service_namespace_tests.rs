@@ -1567,10 +1567,8 @@ fn namespace_delete_does_not_resurrect_orphan_batch_after_path_recreation()
             .namespaces
             .custody_binding(&before.cluster_id, "batch-retire")
             .map_err(|_| "binding")?;
-        let batch_key_before = crate::crypto::digest(
-            &crate::secret_serde::to_vec(&before.auth, crate::MAX_APPLICATION_STATE_BYTES)
-                .map_err(|_| "auth owner")?,
-        );
+        let batch_authority_before =
+            serde_json::to_value(&*before.auth)?["batch_authority"].clone();
         assert_eq!(
             call(
                 &mut service,
@@ -1580,25 +1578,16 @@ fn namespace_delete_does_not_resurrect_orphan_batch_after_path_recreation()
                 json!({})
             )
             .status,
-            409
+            200
         );
-        let after = service.state.as_ref().ok_or("state")?;
-        assert_eq!(
-            after
+        assert!(
+            !service
+                .state
+                .as_ref()
+                .ok_or("state")?
                 .namespaces
-                .custody_binding(&after.cluster_id, "batch-retire")
-                .map_err(|_| "retained binding")?,
-            binding
+                .contains("batch-retire")
         );
-        assert_eq!(
-            crate::crypto::digest(
-                &crate::secret_serde::to_vec(&after.auth, crate::MAX_APPLICATION_STATE_BYTES)
-                    .map_err(|_| "retained auth")?
-            ),
-            batch_key_before
-        );
-        // A standard create after the rejected DELETE is the existing owner,
-        // rather than an incarnation to which the old stateless token can revive.
         assert_eq!(
             call(
                 &mut service,
@@ -1611,12 +1600,17 @@ fn namespace_delete_does_not_resurrect_orphan_batch_after_path_recreation()
             200
         );
         let after = service.state.as_ref().ok_or("state")?;
-        assert_eq!(
-            after
-                .namespaces
-                .custody_binding(&after.cluster_id, "batch-retire")
-                .map_err(|_| "same owner")?,
-            binding
+        let replacement = after
+            .namespaces
+            .custody_binding(&after.cluster_id, "batch-retire")
+            .map_err(|_| "replacement binding")?;
+        assert!(
+            replacement.incarnation() > binding.incarnation(),
+            "actual new incarnation"
+        );
+        assert!(
+            serde_json::to_value(&*after.auth)?["batch_authority"] == batch_authority_before,
+            "global sibling key authority remains unchanged"
         );
         assert_eq!(
             service
@@ -1625,6 +1619,31 @@ fn namespace_delete_does_not_resurrect_orphan_batch_after_path_recreation()
                     "auth/token/lookup-self",
                     "batch-retire",
                     &bearer,
+                    json!({}),
+                    100
+                )
+                .status,
+            403
+        );
+        let new = service.handle_at(
+            "POST",
+            "auth/token/create-orphan",
+            "batch-retire",
+            &root_token,
+            json!({"type":"batch", "policies":["default"], "ttl":"1h"}),
+            100,
+        );
+        assert_eq!(new.status, 200);
+        let new = new.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("new batch")?;
+        assert_eq!(
+            service
+                .handle_at(
+                    "GET",
+                    "auth/token/lookup-self",
+                    "batch-retire",
+                    new,
                     json!({}),
                     100
                 )

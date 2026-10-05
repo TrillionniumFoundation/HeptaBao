@@ -12,6 +12,7 @@ fn batch_owner(
     ttl: u64,
 ) -> std::result::Result<LeaseOwner, Box<dyn std::error::Error>> {
     let claims = BatchClaims {
+        namespace_binding: None,
         token_role: None,
         token_api_precision: None,
         token_api_policy_names: false,

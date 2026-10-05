@@ -898,6 +898,7 @@ mod completion_tests {
             };
             let raw = authority.seal(
                 BatchClaims {
+                    namespace_binding: None,
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,

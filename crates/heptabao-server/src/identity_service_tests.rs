@@ -1358,15 +1358,22 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
     let retired = service.state.clone().ok_or("state")?;
     assert!(!retired.engines.has_aad_bound_convergent_state());
     assert!(
-        retired.schema == NAMESPACE_CUSTODY_STATE_SCHEMA
-            && retired.writer_schema() == NAMESPACE_CUSTODY_STATE_SCHEMA
+        retired.schema == NAMESPACE_BATCH_STATE_SCHEMA
+            && retired.writer_schema() == NAMESPACE_BATCH_STATE_SCHEMA
             && retired.namespaces.has_custody_state()
+            && retired.has_namespace_batch_state()
     );
-    let mut custody_downgrade = retired.clone();
-    custody_downgrade.schema = AAD_BOUND_STATE_SCHEMA;
-    assert!(custody_downgrade.validate_format().is_err());
-    assert!(service.prepare_record_plan(&mut custody_downgrade).is_err());
-    assert!(Service::validate_snapshot_protected_floor(&retired, &custody_downgrade).is_err());
+    for schema in [
+        AAD_BOUND_STATE_SCHEMA,
+        NAMESPACE_CUSTODY_STATE_SCHEMA,
+        NAMESPACE_BATCH_STATE_SCHEMA - 1,
+    ] {
+        let mut custody_downgrade = retired.clone();
+        custody_downgrade.schema = schema;
+        assert!(custody_downgrade.validate_format().is_err());
+        assert!(service.prepare_record_plan(&mut custody_downgrade).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&retired, &custody_downgrade).is_err());
+    }
     for unknown in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
         let mut state = retired.clone();
         state.schema = unknown;
@@ -1398,7 +1405,7 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 204
     );
-    assert!(service.state.as_ref().ok_or("state")?.schema == NAMESPACE_CUSTODY_STATE_SCHEMA);
+    assert!(service.state.as_ref().ok_or("state")?.schema == NAMESPACE_BATCH_STATE_SCHEMA);
     drop(service);
     let mut reopened = fixture.service()?;
     assert!(
@@ -1413,7 +1420,7 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 200
     );
-    assert!(reopened.state.as_ref().ok_or("state")?.schema == NAMESPACE_CUSTODY_STATE_SCHEMA);
+    assert!(reopened.state.as_ref().ok_or("state")?.schema == NAMESPACE_BATCH_STATE_SCHEMA);
     Ok(())
 }
 

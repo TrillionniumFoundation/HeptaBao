@@ -228,6 +228,7 @@ impl AuthState {
             let policy_marker = true;
             self.token_api_batch_policy_state = true;
             let claims = batch::BatchClaims {
+                namespace_binding: None,
                 token_role: issued_role,
                 token_api_precision: Some(BatchPrecision {
                     granted_ttl: granted,

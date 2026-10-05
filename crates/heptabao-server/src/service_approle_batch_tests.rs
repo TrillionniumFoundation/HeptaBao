@@ -575,6 +575,27 @@ fn restricted_secret_credentials(
 
 fn metadata_gate_rejects46(state: &State) -> Result<(), Box<dyn std::error::Error>> {
     let mut state = state.clone();
+    if state.has_namespace_batch_state() {
+        assert_eq!(state.schema, NAMESPACE_BATCH_STATE_SCHEMA);
+        assert!(
+            state.auth.has_approle_metadata()
+                || state.engines.has_approle_login_alias_metadata_state()
+                || state.engines.has_extended_login_alias_metadata_state()
+        );
+        state.schema = NAMESPACE_BATCH_STATE_SCHEMA - 1;
+        let failure = state
+            .validate_format()
+            .err()
+            .ok_or("missing bound batch floor")?;
+        assert_eq!(failure.status, 503);
+        assert_eq!(
+            failure.body["errors"][0],
+            "namespace batch ownership requires matching schema 91 lifecycle"
+        );
+        // The service-token branch below independently retains the original
+        // metadata47 positive/46 negative; actual bound batches require both.
+        return Ok(());
+    }
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     state.schema = 47;
     state

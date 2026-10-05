@@ -47,6 +47,7 @@ fn fixture(parented: bool, identity: bool) -> TestResult<Fixture> {
     let mut keys = BatchKeyAuthority::new(100)?;
     let raw = keys.seal(
         BatchClaims {
+            namespace_binding: None,
             token_role: None,
             token_api_precision: None,
             token_api_policy_names: false,
@@ -729,6 +730,7 @@ fn kube_precise_batch_owner_expires_inside_one_second_and_floor_cannot_replay_it
     let mut keys = BatchKeyAuthority::new(100)?;
     let raw = keys.seal(
         BatchClaims {
+            namespace_binding: None,
             public_origin: None,
             token_role: None,
             token_api_precision: Some(serde_json::from_value(json!({

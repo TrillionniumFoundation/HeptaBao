@@ -313,7 +313,7 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
     assert!(lower.validate_format().is_err());
     assert!(service.commit_state(&mut lower).is_err());
     assert!(Service::validate_snapshot_protected_floor(&active, &lower).is_err());
-    for schema in [81, 82, 86, 87, 92] {
+    for schema in [81, 82, 86, 87, NAMESPACE_BATCH_STATE_SCHEMA, 92] {
         let mut integrated_lower = active.clone();
         integrated_lower.schema = schema;
         assert_eq!(
@@ -330,7 +330,7 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
             "integrated readers cannot relabel a actual profile88 and time89 graph"
         );
     }
-    for schema in [91, MAX_SUPPORTED_STATE_SCHEMA + 1] {
+    for schema in [MAX_SUPPORTED_STATE_SCHEMA + 1] {
         let mut unsupported = active.clone();
         unsupported.schema = schema;
         assert_eq!(
@@ -953,13 +953,13 @@ fn pki_profile_real_owner_schema88_keeps_historical83_84_85_and_retired_fences()
         );
     }
     assert!(
-        [0, 91, MAX_SUPPORTED_STATE_SCHEMA + 1]
+        [0, MAX_SUPPORTED_STATE_SCHEMA + 1]
             .into_iter()
             .all(|schema| !supported_reader_schema(schema))
     );
     assert!(
         (1..=80).all(supported_reader_schema)
-            && [81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 92, 93]
+            && [81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93]
                 .into_iter()
                 .all(supported_reader_schema)
     );

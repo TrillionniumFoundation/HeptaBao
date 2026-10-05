@@ -283,7 +283,7 @@ impl AuthState {
         time: AuthorityTime,
     ) -> Result<(), AuthError> {
         let time = self.token_api_observed_time(time);
-        let Some(pending) = response.pending_batch.take() else {
+        let Some(mut pending) = response.pending_batch.take() else {
             return Ok(());
         };
         let precision = pending.claims.token_api_precision.as_ref();
@@ -335,6 +335,13 @@ impl AuthState {
         if let Some(parent) = pending.claims.parent.as_deref() {
             self.lease_issuer_by_digest_observed(parent, namespace, time)
                 .ok_or_else(denied)?;
+        }
+        // The Service installs its actual global lifecycle before this finalizer.
+        // Historical standalone AuthState issuance remains byte compatible.
+        if let Some(registry) = &self.namespace_batch_registry {
+            pending.claims.namespace_binding = Some(registry.binding(namespace)?);
+        } else if pending.claims.namespace_binding.is_some() {
+            return Err(err(503, "batch binding has no actual namespace registry"));
         }
         let mut authority = match &self.batch_authority {
             Some(authority) => authority.clone(),

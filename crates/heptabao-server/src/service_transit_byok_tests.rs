@@ -338,9 +338,10 @@ fn byok_tenant_imports_encrypted_restart_and_retirement_keep70() -> TestResult {
     let current = service.state.as_ref().ok_or("test_state_missing")?;
     assert!(
         !current.engines.has_transit_byok_state()
-            && current.schema == NAMESPACE_CUSTODY_STATE_SCHEMA
-            && current.namespaces.has_custody_state(),
-        "actual namespace retirement raises custody81 while retaining the older BYOK70 floor"
+            && current.schema == NAMESPACE_BATCH_STATE_SCHEMA
+            && current.namespaces.has_custody_state()
+            && current.has_namespace_batch_state(),
+        "actual namespace retirement carries custody81 and batch91 while retaining the older BYOK70 floor"
     );
     let mut lower = current.clone();
     lower.schema = JWT_PEM_KEYSET_STATE_SCHEMA;

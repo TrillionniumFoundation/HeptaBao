@@ -309,6 +309,7 @@ fn precise_batch_and_persisted_owner_are_authenticated_with_whole_creation_ancho
     assert!(wrong.validate(100, 101).is_err());
     let token = keys.seal(
         batch::BatchClaims {
+            namespace_binding: None,
             token_api_precision: Some(precision),
             token_role: None,
             token_api_policy_names: true,

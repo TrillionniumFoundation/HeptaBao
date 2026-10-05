@@ -81,6 +81,7 @@ const PKI_ROLE_WILDCARD_STATE_SCHEMA: u32 = 85;
 const PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA: u32 = 88;
 const PKI_ROLE_TIME_STATE_SCHEMA: u32 = 89;
 const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
+const NAMESPACE_BATCH_STATE_SCHEMA: u32 = 91;
 const SDK_STORAGE_STATE_SCHEMA: u32 = 92;
 const PKI_ROLE_NAMES_STATE_SCHEMA: u32 = 93;
 #[cfg(test)]
@@ -100,6 +101,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
                 | PKI_ROLE_TIME_STATE_SCHEMA
                 | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+                | NAMESPACE_BATCH_STATE_SCHEMA
                 | SDK_STORAGE_STATE_SCHEMA
                 | PKI_ROLE_NAMES_STATE_SCHEMA
         )
@@ -3580,6 +3582,7 @@ impl Service {
         }
         if admitted.engines.has_kubernetes_opaque_artifact_state()
             || admitted.has_token_api_precision_state()
+            || admitted.has_namespace_batch_state()
             || admitted.engines.has_pki_role_names_state()
             || admitted.engines.has_pki_role_time_state()
             || admitted.engines.has_pki_role_leaf_profile_state()
@@ -4067,6 +4070,7 @@ impl Service {
                     }
                 }
                 let mut engines = state.engines.clone();
+                let mut namespaces = state.namespaces.clone();
                 if response.mutated
                     && method == "DELETE"
                     && let Some(mount) = path.strip_prefix("sys/auth/")
@@ -4090,6 +4094,13 @@ impl Service {
                             }
                             None => AuthorityTime::Coarse(now),
                         };
+                        Self::prepare_identity_batch_namespace(
+                            &mut auth,
+                            &mut namespaces,
+                            &state.cluster_id,
+                            &state.namespace_leases,
+                            &response,
+                        )?;
                         Self::finish_identity_response_observed(
                             &mut auth,
                             &mut engines,
@@ -4106,6 +4117,7 @@ impl Service {
                 if response.mutated {
                     state.auth = auth;
                     state.engines = engines;
+                    state.namespaces = namespaces;
                 }
                 return Response {
                     consistency_index: None,

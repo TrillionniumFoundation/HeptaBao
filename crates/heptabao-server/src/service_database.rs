@@ -4470,6 +4470,81 @@ mod tests {
     }
 
     #[test]
+    fn namespace_batch_database_pending_and_revoked_binding_alone_carries91_floor()
+    -> Result<(), TestFailure> {
+        use crate::auth::BatchKeyAuthority;
+        let directory = super::super::tests::Root::new();
+        let mut service = directory.service().map_err(|_| TestFailure)?;
+        let (_, root) =
+            super::super::tests::bootstrap_unmounted(&mut service).map_err(|_| TestFailure)?;
+        let issued = service.handle_at(
+            "POST",
+            "auth/token/create-orphan",
+            "",
+            &root,
+            json!({"type":"batch","ttl":3600,"policies":["default"]}),
+            100,
+        );
+        assert_eq!(issued.status, 200);
+        let bearer = issued.body["auth"]["client_token"]
+            .as_str()
+            .ok_or(TestFailure)?;
+        let original = service.state.clone().ok_or(TestFailure)?;
+        let auth_wire = serde_json::to_value(&*original.auth).map_err(|_| TestFailure)?;
+        let authority: BatchKeyAuthority =
+            serde_json::from_value(auth_wire["batch_authority"].clone())
+                .map_err(|_| TestFailure)?;
+        let verified = authority.open(bearer, "", 101).map_err(|_| TestFailure)?;
+        assert!(verified.namespace_binding().is_some());
+        let owner = LeaseOwner::from_batch(&verified);
+        let (database, id) = sample()?;
+        let mut retained = original.clone();
+        retained.database = database.into();
+        for phase in [Phase::PendingRevoke, Phase::Revoked] {
+            let lease = retained
+                .database
+                .mount_mut("", "database/")
+                .leases
+                .get_mut(&id)
+                .ok_or(TestFailure)?;
+            lease.provider_id = provider_identity(&retained.cluster_id, "", &id)?;
+            lease.owner = owner.clone();
+            lease.phase = phase;
+            lease.expires = 0;
+            lease.password = None;
+            lease.provider_password = None;
+            lease.request_digest = digest_lease(lease)?;
+            retained.database.validate_scope(&retained.cluster_id)?;
+            assert!(
+                retained
+                    .database
+                    .all_lease_owners()
+                    .contains(&(String::new(), owner.clone()))
+            );
+            retained.schema = retained.writer_schema();
+            retained.validate_format()?;
+            let mut wire = serde_json::to_value(&retained).map_err(|_| TestFailure)?;
+            wire["auth"]
+                .as_object_mut()
+                .ok_or(TestFailure)?
+                .remove("namespace_batch_registry");
+            wire["namespaces"]
+                .as_object_mut()
+                .ok_or(TestFailure)?
+                .remove("batch_lifecycle");
+            let mut missing: State = serde_json::from_value(wire).map_err(|_| TestFailure)?;
+            assert!(missing.has_namespace_batch_state());
+            for schema in [80, NAMESPACE_BATCH_STATE_SCHEMA] {
+                missing.schema = schema;
+                assert!(missing.writer_schema() >= NAMESPACE_BATCH_STATE_SCHEMA);
+                assert!(missing.validate_namespace_batch_state().is_err());
+                assert!(missing.validate_format().is_err());
+            }
+        }
+        Ok(())
+    }
+
+    #[test]
     fn pending_and_revoked_database_batch_owners_remain_scoped_and_enumerated()
     -> Result<(), TestFailure> {
         use crate::auth::{BatchClaims, BatchKeyAuthority};
@@ -4477,6 +4552,7 @@ mod tests {
         let token = authority
             .seal(
                 BatchClaims {
+                    namespace_binding: None,
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
@@ -5163,6 +5239,7 @@ mod tests {
             });
             let raw = authority.seal(
                 BatchClaims {
+                    namespace_binding: None,
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
@@ -5266,6 +5343,7 @@ mod tests {
             let mut authority = BatchKeyAuthority::new(100)?;
             let raw = authority.seal(
                 BatchClaims {
+                    namespace_binding: None,
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
@@ -5376,6 +5454,7 @@ mod tests {
             let mut authority = BatchKeyAuthority::new(100)?;
             let raw = authority.seal(
                 BatchClaims {
+                    namespace_binding: None,
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,

@@ -183,6 +183,8 @@ impl TryFrom<StoredAuthority> for BatchKeyAuthority {
 #[serde(deny_unknown_fields)]
 pub(crate) struct BatchClaims {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) namespace_binding: Option<super::batch_namespace::Binding>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) token_api_precision: Option<super::token_precision::BatchPrecision>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) token_role: Option<super::token_roles::IssuedRole>,
@@ -233,6 +235,9 @@ pub(crate) struct VerifiedBatchClaims {
 }
 
 impl VerifiedBatchClaims {
+    pub(crate) fn namespace_binding(&self) -> Option<&super::batch_namespace::Binding> {
+        self.claims.namespace_binding.as_ref()
+    }
     pub(crate) fn namespace(&self) -> &str {
         &self.claims.namespace
     }
@@ -317,6 +322,13 @@ pub(crate) fn validate_projection(
 
 impl BatchClaims {
     fn validate(&self) -> Result<(), BatchError> {
+        if self
+            .namespace_binding
+            .as_ref()
+            .is_some_and(|binding| binding.validate(&self.namespace).is_err())
+        {
+            return Err(BatchError::InvalidClaims);
+        }
         if let Some(lease) = &self.token_api_precision
             && (!self.token_api_policy_names
                 || lease.validate(self.issued_at, self.expires_at).is_err())

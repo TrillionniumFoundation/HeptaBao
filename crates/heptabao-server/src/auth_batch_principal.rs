@@ -192,6 +192,7 @@ impl AuthState {
         claims: &BatchLeaseClaims,
         namespace: &str,
     ) -> Result<(), AuthError> {
+        self.validate_batch_namespace_owner_structure(claims.namespace_binding(), namespace)?;
         self.batch_authority
             .as_ref()
             .ok_or_else(|| err(503, "missing batch lease key authority"))?
@@ -229,6 +230,7 @@ impl AuthState {
         time: AuthorityTime,
     ) -> Result<(), AuthError> {
         let time = self.token_api_observed_time(time);
+        self.check_batch_namespace_binding(claims.namespace_binding(), namespace)?;
         self.batch_authority
             .as_ref()
             .ok_or_else(denied)?
@@ -377,6 +379,8 @@ impl AuthState {
             });
         }
         let claims = owner.batch_claims()?;
+        self.check_batch_namespace_binding(claims.namespace_binding(), namespace)
+            .ok()?;
         self.batch_authority
             .as_ref()?
             .check_lease_observed(claims, namespace, time)

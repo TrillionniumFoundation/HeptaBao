@@ -1756,13 +1756,9 @@ impl Service {
             Ok(response) => response,
             Err(error) => return Response::error(error.status, &error.message),
         };
-        if let Err(error) = Self::finish_identity_response(
-            &mut state.auth,
-            &mut state.engines,
-            &mut issued,
-            &namespace,
-            now,
-        ) {
+        if let Err(error) =
+            Self::finish_state_identity_response(&mut state, &mut issued, &namespace, now)
+        {
             erase_json(&mut issued.body);
             return error;
         }

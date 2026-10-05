@@ -217,6 +217,9 @@ pub struct AuthState {
     pub(crate) recovery_delivery: Option<RecoveryDelivery>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     batch_authority: Option<batch::BatchKeyAuthority>,
+    /// Global lifecycle evidence stays with the actual root auth owner.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    namespace_batch_registry: Option<batch_namespace::Registry>,
     /// None preserves the historical one-hour inherited default. Fresh state
     /// records native defaults so every namespace and HA peer uses the same policy.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2351,6 +2354,7 @@ impl AuthState {
                     .map_err(|_| err(503, "batch authority unavailable"))?,
             ),
             public_origin_floor: None,
+            namespace_batch_registry: None,
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),
             wrapping_clock: 0,
             tokens: BTreeMap::new(),
@@ -5129,6 +5133,7 @@ impl AuthState {
             if self.cert_uses_batch(scope, role) {
                 let mut response = batch_issuance::PendingBatchGrant::response(
                     batch::BatchClaims {
+                        namespace_binding: None,
                         token_role: None,
                         token_api_precision: None,
                         token_api_policy_names: false,
@@ -5577,6 +5582,7 @@ impl AuthState {
             let mut response = if self.jwt_uses_batch(scope, &role) {
                 batch_issuance::PendingBatchGrant::response(
                     batch::BatchClaims {
+                        namespace_binding: None,
                         token_role: None,
                         token_api_precision: None,
                         token_api_policy_names: false,
@@ -6906,6 +6912,7 @@ impl AuthState {
                 self.token_api_batch_policy_state = true;
             }
             let claims = batch::BatchClaims {
+                namespace_binding: None,
                 token_role: issued_role,
                 token_api_precision: None,
                 token_api_policy_names,
@@ -7697,6 +7704,7 @@ impl AuthState {
                 .then(|| checked_expiry(now, user.token_explicit_max_ttl))
                 .transpose()?;
             let claims = batch::BatchClaims {
+                namespace_binding: None,
                 token_role: None,
                 token_api_precision: None,
                 token_api_policy_names: false,
@@ -8202,6 +8210,7 @@ impl AuthState {
         let mut issued = if self.approle_uses_batch(scope, &role) {
             batch_issuance::PendingBatchGrant::response(
                 batch::BatchClaims {
+                    namespace_binding: None,
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
@@ -9184,6 +9193,8 @@ mod userpass_bcrypt;
 
 #[path = "auth_batch.rs"]
 mod batch;
+#[path = "auth_batch_namespace.rs"]
+pub(crate) mod batch_namespace;
 #[cfg(test)]
 pub(crate) use batch::{BatchClaims, BatchKeyAuthority};
 #[path = "auth_batch_issuance.rs"]

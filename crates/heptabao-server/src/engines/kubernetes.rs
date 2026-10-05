@@ -1788,6 +1788,7 @@ mod owner_tests {
         let mut keys = BatchKeyAuthority::new(100)?;
         let token = keys.seal(
             BatchClaims {
+                namespace_binding: None,
                 token_role: None,
                 token_api_precision: None,
                 token_api_policy_names: false,
