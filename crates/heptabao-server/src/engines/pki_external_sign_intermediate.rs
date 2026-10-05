@@ -235,6 +235,7 @@ impl Pki {
             bound_issuer: Some(issuer),
             imported: None,
             signed_ca: Some(Box::new(prepared)),
+            native_csr_body: None,
         })
     }
     pub(super) fn publish_external_ca_sign(

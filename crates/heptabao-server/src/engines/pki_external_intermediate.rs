@@ -185,6 +185,7 @@ impl Pki {
             bound_public: Some(key.public_key.clone()),
             bound_issuer: None,
             signed_ca: None,
+            native_csr_body: None,
             imported: Some(Box::new(PreparedExternalImport {
                 pending,
                 root,

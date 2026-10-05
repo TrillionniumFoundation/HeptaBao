@@ -105,6 +105,7 @@ pub(crate) struct ExternalPkiTemplate {
     bound_issuer: Option<ExternalPublicIssuer>,
     imported: Option<Box<PreparedExternalImport>>,
     signed_ca: Option<Box<PreparedExternalCaSign>>,
+    native_csr_body: Option<Value>,
 }
 
 pub(crate) struct ExternalPkiMaterial {
@@ -114,6 +115,7 @@ pub(crate) struct ExternalPkiMaterial {
     extra_tbs: Vec<Vec<u8>>,
     root_crls: Option<CrlSet>,
     consumption: Option<ConsumptionMaterial>,
+    native_csr: Option<(Value, LocalPrivateMaterial)>,
 }
 
 fn reference_valid(reference: &str) -> bool {
@@ -298,6 +300,25 @@ impl ExternalPkiTemplate {
     ) -> Result<ExternalPkiMaterial> {
         let public_key = public_key.into();
         public_key.validate()?;
+        if let Some(body) = &self.native_csr_body {
+            // OpenBao 2.7.0 reads the external key's public type, then creates
+            // a fresh locally owned CSR key. It does not ask the provider to
+            // sign this CSR or persist that provider as the new key's owner.
+            let mut body = body.clone();
+            let (key_type, bits) = public_key.native_csr_key_type()?;
+            body["key_type"] = json!(key_type);
+            body["key_bits"] = json!(bits);
+            let material = LocalPrivateMaterial::generate(LocalKeyKind::from_body(&body)?)?;
+            return Ok(ExternalPkiMaterial {
+                template: self,
+                public_key,
+                tbs: Vec::new(),
+                extra_tbs: Vec::new(),
+                root_crls: None,
+                consumption: None,
+                native_csr: Some((body, material)),
+            });
+        }
         if let Some(prepared) = &self.signed_ca {
             if self.bound_public.as_ref() != Some(&public_key) {
                 return Err(error(503, "external CA signing key changed"));
@@ -310,6 +331,7 @@ impl ExternalPkiTemplate {
                 extra_tbs: Vec::new(),
                 root_crls: None,
                 consumption: None,
+                native_csr: None,
             });
         }
         if let Some(imported) = &self.imported {
@@ -326,6 +348,7 @@ impl ExternalPkiTemplate {
                 extra_tbs: parts,
                 root_crls: Some(crls),
                 consumption: None,
+                native_csr: None,
             });
         }
         if self.is_consumption() {
@@ -359,6 +382,7 @@ impl ExternalPkiTemplate {
             extra_tbs,
             root_crls,
             consumption: None,
+            native_csr: None,
         })
     }
 }
@@ -392,7 +416,9 @@ impl ExternalPkiMaterial {
         self.public_key.signature_size_bound()
     }
     pub(crate) fn tbs_parts(&self) -> impl Iterator<Item = &Vec<u8>> {
-        std::iter::once(&self.tbs).chain(self.extra_tbs.iter())
+        std::iter::once(&self.tbs)
+            .chain(self.extra_tbs.iter())
+            .filter(|_| self.native_csr.is_none())
     }
     pub(crate) fn verify_at(&self, index: usize, signature: &[u8]) -> Result<()> {
         let tbs = self
@@ -478,8 +504,10 @@ impl Pki {
     }
 
     pub(in crate::engines) fn external_handles(&self, path: &str) -> bool {
-        matches!(path, "root/generate/kms" | "intermediate/generate/kms")
-            || path == "intermediate/set-signed" && self.external.intermediate.is_some()
+        matches!(
+            path,
+            "root/generate/kms" | "intermediate/generate/kms" | "intermediate/generate/kms-remote"
+        ) || path == "intermediate/set-signed" && self.external.intermediate.is_some()
             || self.external.root.is_some()
                 && (path.starts_with("issue/")
                     || path.starts_with("sign/")
@@ -515,11 +543,21 @@ impl Pki {
             }
             return self.prepare_external_import(body, now).map(Some);
         }
-        if !matches!(path, "root/generate/kms" | "intermediate/generate/kms") {
+        if !matches!(
+            path,
+            "root/generate/kms" | "intermediate/generate/kms" | "intermediate/generate/kms-remote"
+        ) {
             return Ok(None);
         }
         if !write_method(method) {
             return Err(unsupported());
+        }
+        if path == "intermediate/generate/kms"
+            && (body.get("key_type").is_some() || body.get("key_bits").is_some())
+        {
+            return Err(bad(
+                "invalid parameter for the kms/existing path parameter, key_type nor key_bits arguments can be set in this mode",
+            ));
         }
         reject_unknown(
             body,
@@ -548,7 +586,7 @@ impl Pki {
         if operation == "root" {
             self.admit_external_root_generation(body)?;
         }
-        if operation == "intermediate" && self.external.intermediate.is_some() {
+        if path == "intermediate/generate/kms-remote" && self.external.intermediate.is_some() {
             return Err(error(
                 501,
                 "multiple external intermediate keys require a qualified issuer lane",
@@ -587,6 +625,15 @@ impl Pki {
             bound_issuer: None,
             imported: None,
             signed_ca: None,
+            native_csr_body: (path == "intermediate/generate/kms").then(|| {
+                let mut local = body.clone();
+                if let Some(fields) = local.as_object_mut() {
+                    fields.remove("external_key_ref");
+                    fields.remove("ttl");
+                    fields.remove("issuer_name");
+                }
+                local
+            }),
         }))
     }
 
@@ -601,6 +648,9 @@ impl Pki {
         }
         for (index, signature) in signatures.iter().enumerate() {
             material.verify_at(index, signature)?;
+        }
+        if let Some((body, local_key)) = material.native_csr.take() {
+            return self.generate_local_csr_with_material(&body, false, Some(local_key));
         }
         if material.consumption.is_some() {
             return self.publish_consumption(material, signatures, now);

@@ -504,6 +504,7 @@ impl Pki {
             bound_issuer: Some(captured_issuer),
             imported: None,
             signed_ca: None,
+            native_csr_body: None,
         }))
     }
 
@@ -1094,6 +1095,7 @@ impl ExternalPkiTemplate {
             tbs,
             extra_tbs: extra,
             root_crls: None,
+            native_csr: None,
             consumption: Some(ConsumptionMaterial {
                 template: consumption,
                 leaf_pkcs8,

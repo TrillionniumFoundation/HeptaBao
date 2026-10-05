@@ -758,7 +758,7 @@ fn external_pki270_dns_common_name_has_exact_san_and_text_common_name_has_none()
         ("synthetic-preflight-ca.example.test", true),
         ("Synthetic Direct External Root", false),
     ] {
-        for route in ["root/generate/kms", "intermediate/generate/kms"] {
+        for route in ["root/generate/kms", "intermediate/generate/kms-remote"] {
             let remote = RemoteTransit::new_kind("ed25519")?;
             let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
             let response = call(
@@ -840,7 +840,7 @@ fn external_pki270_dns_common_name_has_exact_san_and_text_common_name_has_none()
 
 #[test]
 fn external_pki270_real_remote_root_and_csr_have_bound_public_keys_and_restart() -> TestResult {
-    for route in ["root/generate/kms", "intermediate/generate/kms"] {
+    for route in ["root/generate/kms", "intermediate/generate/kms-remote"] {
         let remote = RemoteTransit::new_kind("ed25519")?;
         let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
         let response = call(

@@ -1401,12 +1401,21 @@ impl Pki {
     }
 
     fn generate_local_csr(&mut self, body: &Value, exported: bool) -> Result<EngineResponse> {
+        self.generate_local_csr_with_material(body, exported, None)
+    }
+
+    pub(super) fn generate_local_csr_with_material(
+        &mut self,
+        body: &Value,
+        exported: bool,
+        prepared: Option<LocalPrivateMaterial>,
+    ) -> Result<EngineResponse> {
         reject_unknown(body, CSR_FIELDS)?;
         let common_name = string(body, "common_name")?;
         if !external::common_name_valid(common_name) {
             return Err(bad("invalid CSR common name"));
         }
-        if self.root.as_ref().is_some_and(RootCa::is_external) {
+        if prepared.is_none() && self.root.as_ref().is_some_and(RootCa::is_external) {
             return Err(bad("local CSR cannot borrow external authority"));
         }
         if self
@@ -1437,7 +1446,16 @@ impl Pki {
         {
             return Err(bad("key name already in use"));
         }
-        let material = LocalPrivateMaterial::generate(LocalKeyKind::from_body(body)?)?;
+        let kind = LocalKeyKind::from_body(body)?;
+        let material = match prepared {
+            Some(material) => {
+                if material.kind() != kind {
+                    return Err(bad("native CSR prepared key type changed"));
+                }
+                material
+            }
+            None => LocalPrivateMaterial::generate(kind)?,
+        };
         let csr = csr_der(&material, &fields, common_name)?;
         let id = random_pki_id()?;
         if self.local_keys().any(|key| key.key_id == id)

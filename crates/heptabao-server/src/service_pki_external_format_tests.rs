@@ -93,7 +93,7 @@ fn pki_external_formats270_real_tls_csr_three_native_shapes_and_verified_origina
         let response = call(
             &mut service,
             "POST",
-            "external-ca/intermediate/generate/kms",
+            "external-ca/intermediate/generate/kms-remote",
             &admin,
             request,
         );

@@ -229,7 +229,7 @@ mod tests {
                 public.signing_input(message)?.len() == expected,
                 "curve-specific digest length bound"
             );
-            for operation in ["root/generate/kms", "intermediate/generate/kms"] {
+            for operation in ["root/generate/kms", "intermediate/generate/kms-remote"] {
                 let mut pki = Pki::default();
                 let template=pki.prepare_external("POST",operation,&json!({"external_key_ref":"provider:fixed","common_name":"synthetic-ca.example.test","ttl":"1h"}),100)?.ok_or_else(|| bad("test template"))?;
                 let material = template.materialize(public.clone())?;
@@ -386,6 +386,21 @@ impl ExternalPkiPublicKey {
             self.maintained_public()?;
         }
         Ok(())
+    }
+
+    pub(super) fn native_csr_key_type(&self) -> Result<(&'static str, u32)> {
+        self.validate()?;
+        match self {
+            Self::Ed25519(_) => Ok(("ed25519", 0)),
+            Self::Asymmetric(public) => match public.kind.as_str() {
+                // The pinned 2.7 producer leaves EC key_bits at its default.
+                "ecdsa-p256" | "ecdsa-p384" | "ecdsa-p521" => Ok(("ec", 256)),
+                "rsa-2048" => Ok(("rsa", 2048)),
+                "rsa-3072" => Ok(("rsa", 3072)),
+                "rsa-4096" => Ok(("rsa", 4096)),
+                _ => Err(invalid_public()),
+            },
+        }
     }
 
     pub(crate) fn is_asymmetric(&self) -> bool {

@@ -36,7 +36,7 @@ fn generate(service: &mut Service, admin: &str) -> TestResult<Response> {
     let response = call(
         service,
         "POST",
-        "external-ca/intermediate/generate/kms",
+        "external-ca/intermediate/generate/kms-remote",
         admin,
         json!({"external_key_ref":"remote:v2","common_name":"child.example.test","key_name":"child"}),
     );
@@ -465,6 +465,267 @@ fn pki_external_intermediate94_selected_parent_grant_revocation_precedes_signing
             .ok_or("unpublished")?
             .engines
             .has_external_pki_signer_history()
+    );
+    Ok(())
+}
+
+// Genuine ca305 ca_util.go::generateCSRBundle and actual R11 seven-SPKI
+// mismatch: the standard kms endpoint owns a fresh local key after metadata.
+#[test]
+fn pki_native_kms_csr_seven_types_local_owner_without_sign_grant_import_and_restart() -> TestResult
+{
+    for kind in [
+        "ed25519",
+        "ecdsa-p256",
+        "ecdsa-p384",
+        "ecdsa-p521",
+        "rsa-2048",
+        "rsa-3072",
+        "rsa-4096",
+    ] {
+        let remote = RemoteTransit::new_kind(kind)?;
+        let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+        let parent = parent(&mut service, &admin)?;
+        let parent_public = certificate(&parent)?.public_key()?;
+        let before = remote.calls()?;
+        let csr = call(
+            &mut service,
+            "POST",
+            "external-ca/intermediate/generate/kms",
+            &admin,
+            json!({"external_key_ref":"remote:v2","common_name":"native-child.example.test","key_name":"native-child"}),
+        );
+        assert_eq!(csr.status, 200, "native CSR public status");
+        assert_eq!(
+            remote.calls()?,
+            before + 1,
+            "metadata only, no remote signature"
+        );
+        let request = X509Req::from_pem(
+            csr.body["data"]["csr"]
+                .as_str()
+                .ok_or("native CSR")?
+                .as_bytes(),
+        )?;
+        let public = request.public_key()?;
+        assert!(request.verify(&public)?);
+        let mut provider = remote.service.lock().map_err(|_| "provider lock")?;
+        let metadata = call(
+            &mut provider,
+            "GET",
+            "transit/keys/remote",
+            &remote.admin,
+            json!({}),
+        );
+        drop(provider);
+        let remote_public = crate::engines::ExternalPkiPublicKey::from_metadata(
+            kind,
+            metadata.body["data"]["keys"]["2"]["public_key"]
+                .as_str()
+                .ok_or("actual remote public")?,
+        )?;
+        assert_ne!(
+            public.public_key_to_der()?,
+            remote_public.spki()?,
+            "new local CSR cannot claim the provider's private key"
+        );
+        if kind.starts_with("ecdsa-") {
+            assert_eq!(public.bits(), 256, "actual native producer default EC size");
+        }
+        assert!(
+            !service
+                .state
+                .as_ref()
+                .ok_or("pending")?
+                .engines
+                .has_external_pki_signer_history()
+        );
+        assert!(
+            service
+                .state
+                .as_ref()
+                .ok_or("pending")?
+                .validate_format()
+                .is_ok()
+        );
+        let signed = sign(&mut service, &admin, &csr)?;
+        let child = certificate(&signed)?;
+        let child_public = child.public_key()?;
+        assert!(child.verify(&parent_public)?);
+        let before = remote.calls()?;
+        assert_eq!(
+            call(
+                &mut service,
+                "DELETE",
+                "sys/external-keys/configs/remote/keys/v2/grants/external-ca",
+                &admin,
+                json!({})
+            )
+            .status,
+            204
+        );
+        let installed = call(
+            &mut service,
+            "POST",
+            "external-ca/intermediate/set-signed",
+            &admin,
+            bundle(&signed, &parent)?,
+        );
+        assert_eq!(
+            installed.status, 200,
+            "public CA import uses its actual local pending owner"
+        );
+        assert_eq!(
+            remote.calls()?,
+            before,
+            "no provider effect or signing grant for a locally owned key"
+        );
+        let issuer = installed.body["data"]["mapping"]
+            .as_object()
+            .ok_or("mapping")?
+            .iter()
+            .find(|(_, k)| **k == csr.body["data"]["key_id"])
+            .map(|(id, _)| id.clone())
+            .ok_or("local imported issuer")?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "external-ca/roles/leaf",
+                &admin,
+                json!({"allow_any_name":true,"key_type":"ed25519","ttl":"10m","max_ttl":"30m"})
+            )
+            .status,
+            200
+        );
+        let leaf = call(
+            &mut service,
+            "POST",
+            &format!("external-ca/issuer/{issuer}/issue/leaf"),
+            &admin,
+            json!({"common_name":"leaf.example.test","ttl":"10m"}),
+        );
+        assert_eq!(leaf.status, 200);
+        assert!(certificate(&leaf)?.verify(&child_public)?);
+        assert!(!certificate(&leaf)?.verify(&parent_public)?);
+        assert_eq!(
+            remote.calls()?,
+            before,
+            "local issuer key signs locally with revoked remote grant"
+        );
+        drop(service);
+        let mut reopened = root.service()?;
+        assert_eq!(
+            call(
+                &mut reopened,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":unseal})
+            )
+            .status,
+            200
+        );
+        let after = call(
+            &mut reopened,
+            "POST",
+            &format!("external-ca/issuer/{issuer}/issue/leaf"),
+            &admin,
+            json!({"common_name":"restart.example.test","ttl":"10m"}),
+        );
+        assert_eq!(
+            after.status, 200,
+            "durable local owner needs no provider enrollment on restart"
+        );
+        assert!(certificate(&after)?.verify(&child_public)?);
+    }
+    Ok(())
+}
+
+#[test]
+fn pki_native_kms_csr_multiple_pending_distinct_keys_and_explicit_types_reject_before_entry()
+-> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (_root, mut service, _unseal, admin) = pki_fixture(&remote)?;
+    let parent = parent(&mut service, &admin)?;
+    let before = remote.calls()?;
+    for field in ["key_type", "key_bits"] {
+        let mut body = json!({"external_key_ref":"remote:v2","common_name":"native.example.test"});
+        body[field] = if field == "key_type" {
+            json!("ed25519")
+        } else {
+            json!(0)
+        };
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "external-ca/intermediate/generate/kms",
+                &admin,
+                body
+            )
+            .status,
+            400
+        );
+    }
+    assert_eq!(remote.calls()?, before);
+    let mut pending = Vec::new();
+    for name in ["first", "second"] {
+        let csr = call(
+            &mut service,
+            "POST",
+            "external-ca/intermediate/generate/kms",
+            &admin,
+            json!({"external_key_ref":"remote:v2","common_name":format!("{name}.example.test"),"key_name":name}),
+        );
+        assert_eq!(csr.status, 200);
+        pending.push(csr);
+    }
+    assert_ne!(
+        pending[0].body["data"]["key_id"],
+        pending[1].body["data"]["key_id"]
+    );
+    let before = remote.calls()?;
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/external-keys/configs/remote/keys/v2/grants/external-ca",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    for csr in pending.iter().rev() {
+        let signed = sign(&mut service, &admin, csr)?;
+        let installed = call(
+            &mut service,
+            "POST",
+            "external-ca/intermediate/set-signed",
+            &admin,
+            bundle(&signed, &parent)?,
+        );
+        assert_eq!(
+            installed.status, 200,
+            "each original pending key owns its matching signed CA"
+        );
+        assert!(
+            installed.body["data"]["mapping"]
+                .as_object()
+                .ok_or("mapping")?
+                .values()
+                .any(|k| *k == csr.body["data"]["key_id"])
+        );
+    }
+    assert_eq!(remote.calls()?, before);
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("installed")?
+            .validate_format()
+            .is_ok()
     );
     Ok(())
 }
