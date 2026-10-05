@@ -530,97 +530,171 @@ fn auth_binding_fixture_in_namespace(
 
 #[test]
 fn plugin_auth_completion_namespace_custody_seal_cycle_rejects_original_context() -> TestResult {
-    let root = Root::new();
-    let mut service = root.service()?;
-    let (_, token) = bootstrap(&mut service)?;
-    assert_eq!(
-        call(
+    for independent in [false, true] {
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (global_key, token) = bootstrap(&mut service)?;
+        let created = call(
             &mut service,
             "POST",
             "sys/namespaces/team",
             &token,
-            json!({})
-        )
-        .status,
-        200
-    );
-    let (old, old_context) = auth_binding_fixture_in_namespace(&mut service, &token, "team")?;
-    assert!(
-        service
-            .validate_plugin_auth_response(&old_context, &old)
-            .is_ok()
-    );
-    let activation = service.unseal_nonce.clone();
-    assert_eq!(
-        call(
-            &mut service,
-            "POST",
-            "sys/namespaces/team/seal",
-            &token,
-            json!({})
-        )
-        .status,
-        204
-    );
-    let closed = service.state.as_ref().ok_or("closed namespace")?;
-    assert!(closed.namespaces.inherited_owner("team").is_some());
-    assert!(
-        !closed.namespace_is_sealed("team"),
-        "a serialized boolean is not the inherited key slot"
-    );
-    assert!(!service.namespace_runtime.is_loaded("team"));
-    let error = service
-        .validate_plugin_auth_response(&old_context, &old)
-        .err()
-        .ok_or("closed context admitted")?;
-    assert_eq!(error.status, 503);
-    assert_eq!(
-        call(
-            &mut service,
-            "POST",
-            "sys/namespaces/team/unseal",
-            &token,
-            json!({})
-        )
-        .status,
-        204
-    );
-    assert_eq!(
-        activation, service.unseal_nonce,
-        "namespace reactivation retains global activation"
-    );
-    assert!(service.namespace_runtime.is_loaded("team"));
-    let error = service
-        .validate_plugin_auth_response(&old_context, &old)
-        .err()
-        .ok_or("original context rebound after namespace reactivation")?;
-    assert_eq!(error.status, 503);
-    let state = service.state.as_ref().ok_or("reopened namespace")?;
-    let request = RequestView {
-        method: "POST",
-        path: "auth/external/login",
-        namespace: "team",
-        token: "",
-        body: &json!({"username":"alice"}),
-        now: 100,
-        admission_started: Instant::now(),
-        token_clock: None,
-        allow_forward: true,
-        enforce_namespace: true,
-        wrap_ttl_seconds: None,
-        origin_peer: None,
-        client_certificates: None,
-    };
-    let fresh_context = PluginAuthResponseContext::new(state, &request, &service.unseal_nonce);
-    let fresh = state
-        .auth
-        .prepare_plugin_auth_login("team", "POST", request.path, request.body, 100)?
-        .ok_or("fresh login plan")?;
-    assert!(
-        service
-            .validate_plugin_auth_response(&fresh_context, &fresh)
-            .is_ok()
-    );
+            if independent {
+                json!({"seal":"seal \"shamir\" { shares = 3\n threshold = 2 }"})
+            } else {
+                json!({})
+            },
+        );
+        assert_eq!(created.status, 200);
+        let shares = if independent {
+            let shares = created.body["data"]["key_shares"]
+                .as_array()
+                .ok_or("actual namespace shares")?
+                .iter()
+                .map(|part| {
+                    part.as_str()
+                        .map(|part| Zeroizing::new(part.to_owned()))
+                        .ok_or("share shape")
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            assert_eq!(shares.len(), 3);
+            for (index, share) in shares.iter().take(2).enumerate() {
+                let response = call(
+                    &mut service,
+                    "POST",
+                    "sys/namespaces/team/unseal",
+                    &token,
+                    json!({"key":share.as_str()}),
+                );
+                assert_eq!(response.status, 200);
+                assert_eq!(response.body["data"]["sealed"], index == 0);
+            }
+            shares
+        } else {
+            Vec::new()
+        };
+        let (old, old_context) = auth_binding_fixture_in_namespace(&mut service, &token, "team")?;
+        assert!(
+            service
+                .validate_plugin_auth_response(&old_context, &old)
+                .is_ok()
+        );
+        let activation = service.unseal_nonce.clone();
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/namespaces/team/seal",
+                &token,
+                json!({})
+            )
+            .status,
+            204
+        );
+        let closed = service.state.as_ref().ok_or("closed namespace")?;
+        assert!(closed.namespaces.inherited_owner("team").is_some());
+        if !independent {
+            assert!(
+                !closed.namespace_is_sealed("team"),
+                "a serialized boolean is not the inherited key slot"
+            );
+        }
+        assert!(!service.namespace_runtime.is_loaded("team"));
+        assert_eq!(
+            service
+                .validate_plugin_auth_response(&old_context, &old)
+                .err()
+                .ok_or("closed context admitted")?
+                .status,
+            503
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/namespaces/team/unseal",
+                &token,
+                json!({})
+            )
+            .status,
+            500,
+            "an empty request cannot restore either owner's key"
+        );
+        if independent {
+            for (index, share) in shares.iter().take(2).enumerate() {
+                let response = call(
+                    &mut service,
+                    "POST",
+                    "sys/namespaces/team/unseal",
+                    &token,
+                    json!({"key":share.as_str()}),
+                );
+                assert_eq!(response.status, 200);
+                assert_eq!(response.body["data"]["sealed"], index == 0);
+            }
+            assert_eq!(
+                activation, service.unseal_nonce,
+                "share restoration retains global activation"
+            );
+        } else {
+            // Ordinary namespaces inherit the global key. Only its real
+            // seal/unseal lifecycle can restore that key after manual closure.
+            assert_eq!(
+                call(&mut service, "POST", "sys/seal", &token, json!({})).status,
+                204
+            );
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "sys/unseal",
+                    "",
+                    json!({"key":global_key})
+                )
+                .status,
+                200
+            );
+            assert_ne!(
+                activation, service.unseal_nonce,
+                "real global recovery changes activation"
+            );
+        }
+        assert!(service.namespace_runtime.is_loaded("team"));
+        assert_eq!(
+            service
+                .validate_plugin_auth_response(&old_context, &old)
+                .err()
+                .ok_or("original context rebound after namespace restoration")?
+                .status,
+            503
+        );
+        let state = service.state.as_ref().ok_or("reopened namespace")?;
+        let request = RequestView {
+            method: "POST",
+            path: "auth/external/login",
+            namespace: "team",
+            token: "",
+            body: &json!({"username":"alice"}),
+            now: 100,
+            admission_started: Instant::now(),
+            token_clock: None,
+            allow_forward: true,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        };
+        let fresh_context = PluginAuthResponseContext::new(state, &request, &service.unseal_nonce);
+        let fresh = state
+            .auth
+            .prepare_plugin_auth_login("team", "POST", request.path, request.body, 100)?
+            .ok_or("fresh login plan")?;
+        assert!(
+            service
+                .validate_plugin_auth_response(&fresh_context, &fresh)
+                .is_ok()
+        );
+    }
     Ok(())
 }
 
