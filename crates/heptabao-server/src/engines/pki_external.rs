@@ -69,6 +69,7 @@ impl ExternalState {
 pub(crate) struct ExternalPkiTemplate {
     pub(crate) reference: String,
     operation: &'static str,
+    output_format: RootOutputFormat,
     common_name: String,
     serial: String,
     not_before: u64,
@@ -466,15 +467,7 @@ impl Pki {
                 "format",
             ],
         )?;
-        if body
-            .get("format")
-            .is_some_and(|value| value.as_str() != Some("pem"))
-        {
-            return Err(error(
-                501,
-                "external PKI format requires a qualified DER/PEM lane",
-            ));
-        }
+        let output_format = RootOutputFormat::from_body(body)?;
         if body
             .get("key_type")
             .is_some_and(|value| value.as_str() != Some("ed25519"))
@@ -510,6 +503,7 @@ impl Pki {
         Ok(Some(ExternalPkiTemplate {
             reference: reference.into(),
             operation,
+            output_format,
             common_name: common_name.into(),
             serial: external_serial()?,
             not_before: now.saturating_sub(30),
@@ -572,7 +566,7 @@ impl Pki {
             if self.root.is_some() {
                 return Err(bad("PKI root already exists"));
             }
-            let certificate = public::stored_pem("CERTIFICATE", &encoded);
+            let certificate = template.output_format.certificate(&encoded);
             let response = json!({"certificate":certificate,"issuing_ca":certificate,
                 "serial_number":formatted_serial(&template.serial),"expiration":template.not_after,
                 "key_id":key.key_id,"key_name":key.key_name,"issuer_id":key.issuer_id,"issuer_name":key.issuer_name});
@@ -592,18 +586,26 @@ impl Pki {
             });
             self.external.root = Some(key);
             self.external.crls = root_crls;
-            Ok(ok(response, true))
+            let mut response = ok(response, true);
+            response.body["warnings"] = json!([
+                "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information."
+            ]);
+            Ok(response)
         } else {
             if self.external.intermediate.is_some() {
                 return Err(bad("external intermediate already exists"));
             }
-            let response = json!({"csr":pem("CERTIFICATE REQUEST", &encoded),"key_id":key.key_id});
+            let response = json!({"csr":template.output_format.public("CERTIFICATE REQUEST", &encoded),"key_id":key.key_id});
             self.external.intermediate = Some(ExternalCsr {
                 key,
                 common_name: template.common_name,
                 csr_der: encoded,
             });
-            Ok(ok(response, true))
+            let mut response = ok(response, true);
+            response.body["warnings"] = json!([
+                "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information. Since this certificate is an intermediate, it might be useful to regenerate this certificate after fixing this problem for the root mount."
+            ]);
+            Ok(response)
         }
     }
 

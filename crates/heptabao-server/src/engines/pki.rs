@@ -87,12 +87,16 @@ impl RootOutputFormat {
     }
 
     fn certificate(self, certificate_der: &[u8]) -> String {
+        self.public("CERTIFICATE", certificate_der)
+    }
+
+    fn public(self, label: &str, der: &[u8]) -> String {
         match self {
-            Self::Der => BASE64.encode(certificate_der),
+            Self::Der => BASE64.encode(der),
             Self::Pem | Self::PemBundle => {
-                // Internal generation never exports the CA private key. Its
-                // bundle is the single self-signed certificate, with no final LF.
-                let mut certificate = pem("CERTIFICATE", certificate_der);
+                // A non-exported root or KMS CSR bundle has only its public
+                // object. The genuine 2.7 output omits exactly its final LF.
+                let mut certificate = pem(label, der);
                 if certificate.ends_with('\n') {
                     certificate.pop();
                 }

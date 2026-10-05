@@ -4,6 +4,8 @@ use super::*;
 use x509_parser::prelude::*;
 #[path = "service_external_pki_asymmetric_tests.rs"]
 mod asymmetric_tests;
+#[path = "service_pki_external_format_tests.rs"]
+mod formats;
 #[path = "service_external_pki_issuer_alias_tests.rs"]
 mod issuer_alias_tests;
 #[path = "service_external_pki_issuer_issue_tests.rs"]

@@ -476,6 +476,7 @@ impl Pki {
         Ok(Some(ExternalPkiTemplate {
             reference: key.reference.clone(),
             operation: "consume",
+            output_format: RootOutputFormat::Pem,
             common_name: root.common_name.clone(),
             serial: String::new(),
             not_before: now,
