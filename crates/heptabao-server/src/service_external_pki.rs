@@ -143,9 +143,17 @@ impl PublicationClock {
     }
 }
 
+struct RelatedPkiLane {
+    request: SecretValue,
+    template: Box<crate::engines::ExternalPkiTemplate>,
+    sign_url: String,
+    metadata_url: String,
+}
+
 pub(super) struct ExternalPkiPlan {
     request: SecretValue,
     template: Box<crate::engines::ExternalPkiTemplate>,
+    related: Vec<RelatedPkiLane>,
     namespace: String,
     mount: String,
     mount_incarnation: u64,
@@ -156,6 +164,11 @@ pub(super) struct ExternalPkiPlan {
     expected_identity: crate::state_record_root::StateIdentity,
     expected_generation: plugin::PublicationGeneration,
     authority: PluginResponseAuthority,
+    // A read-only admission view cannot authorize an effect without the one
+    // original affine Principal and its retained request clock. Rechecking it
+    // stops provider effects when the actor or an actual ancestor expires.
+    // Final publication separately checks the live state identity and authority.
+    admitted_auth: CowOwner<AuthState>,
     deadline: Option<std::time::Instant>,
     publication_clock: PublicationClock,
     // Captured only after our own durable publication. The original provider
@@ -176,6 +189,7 @@ impl Drop for SensitiveJson {
 pub(crate) struct Observation {
     material: Box<crate::engines::ExternalPkiMaterial>,
     signatures: Vec<Zeroizing<Vec<u8>>>,
+    related: Vec<Observation>,
 }
 
 fn unknown() -> Response {
@@ -197,6 +211,33 @@ fn crypto_response(
     }
 }
 
+fn enrolled_pki_routes(
+    outbound: &crate::outbound::Outbound,
+    request: &SecretValue,
+) -> Result<(String, String), Response> {
+    let envelope =
+        SensitiveJson(crate::auth::parse_strict_json(request.expose()).map_err(|_| unknown())?);
+    let sign_url = envelope.0["url"].as_str().ok_or_else(unknown)?;
+    let (origin, key) = sign_url.rsplit_once("/sign/").ok_or_else(unknown)?;
+    let metadata_url = format!("{origin}/keys/{key}");
+    for url in [sign_url, metadata_url.as_str()] {
+        outbound.endpoint(url, "https").map_err(|_| {
+            Response::error(
+                503,
+                "external PKI rejected before entry: HTTPS route is not deployment-enrolled",
+            )
+        })?;
+        outbound
+            .validate_external_transit_tls(
+                url,
+                envelope.0["tls_server_name"].as_str().unwrap_or(""),
+                envelope.0["tls_ca_cert_bytes"].as_str().unwrap_or(""),
+            )
+            .map_err(|message| Response::error(503, message))?;
+    }
+    Ok((sign_url.into(), metadata_url))
+}
+
 impl ExternalPkiPlan {
     fn provider_host_current(&self) -> bool {
         self.provider_binding
@@ -212,13 +253,51 @@ impl ExternalPkiPlan {
     }
 
     fn validate_private_leaf_time(&self) -> Result<(), Response> {
+        self.authority.validate_live_auth(&self.admitted_auth)?;
         let time = self.authority.token_time()?;
         self.template
             .validate_private_leaf_time(time)
             .map_err(Response::from_engine_error)
     }
 
+    fn enrollment_current(&self, outbound: &crate::outbound::Outbound) -> bool {
+        [self.sign_url.as_str(), self.metadata_url.as_str()]
+            .into_iter()
+            .chain(
+                self.related
+                    .iter()
+                    .flat_map(|lane| [lane.sign_url.as_str(), lane.metadata_url.as_str()]),
+            )
+            .all(|url| outbound.same_https_enrollment(&self.outbound, url))
+    }
+
     pub(super) fn execute(&self) -> Result<Observation, Response> {
+        let mut main = self.execute_lane(
+            &self.request,
+            &self.template,
+            &self.sign_url,
+            &self.metadata_url,
+        )?;
+        for lane in &self.related {
+            main.related.push(self.execute_lane(
+                &lane.request,
+                &lane.template,
+                &lane.sign_url,
+                &lane.metadata_url,
+            )?);
+        }
+        Ok(main)
+    }
+
+    fn execute_lane(
+        &self,
+        request: &SecretValue,
+        template: &crate::engines::ExternalPkiTemplate,
+        sign_url: &str,
+        metadata_url: &str,
+    ) -> Result<Observation, Response> {
+        // Every lane borrows the same original response authority, actor clock,
+        // absolute deadline and provider generation. No lane creates a new clock.
         self.validate_private_leaf_time()?;
         let _deadline_scope = self
             .deadline
@@ -235,15 +314,14 @@ impl ExternalPkiPlan {
                 "external PKI rejected before entry: provider host authority changed",
             ));
         }
-        let envelope = SensitiveJson(
-            crate::auth::parse_strict_json(self.request.expose()).map_err(|_| unknown())?,
-        );
+        let envelope =
+            SensitiveJson(crate::auth::parse_strict_json(request.expose()).map_err(|_| unknown())?);
         let token = envelope.0["token"].as_str().ok_or_else(unknown)?;
         let namespace = envelope.0["namespace"].as_str().ok_or_else(unknown)?;
         let version = envelope.0["remote_version"].as_u64().ok_or_else(unknown)?;
         let metadata = crypto_response(
             self.outbound
-                .get_external_transit(&self.metadata_url, token, namespace)
+                .get_external_transit(metadata_url, token, namespace)
                 .map_err(|message| Response::error(503, message))?,
         )?;
         let data = metadata
@@ -264,11 +342,7 @@ impl ExternalPkiPlan {
         // provider rotates; it does not silently bind a fresh issuer to latest.
         if data.get("latest_version").and_then(Value::as_u64) != Some(version) {
             return Err(Response::error(
-                if self.template.is_consumption() {
-                    500
-                } else {
-                    400
-                },
+                if template.is_consumption() { 500 } else { 400 },
                 "external PKI provider version changed",
             ));
         }
@@ -282,9 +356,7 @@ impl ExternalPkiPlan {
             .ok_or_else(unknown)?;
         let public = crate::engines::ExternalPkiPublicKey::from_metadata(kind, public_text)
             .map_err(|cause| Response::error(cause.status, &cause.message))?;
-        let material = self
-            .template
-            .as_ref()
+        let material = template
             .clone()
             .materialize(public)
             .map_err(|cause| Response::error(cause.status, &cause.message))?;
@@ -321,7 +393,7 @@ impl ExternalPkiPlan {
             }
             let signed = crypto_response(
                 self.outbound
-                    .put_external_transit(&self.sign_url, token, namespace, &body.0)
+                    .put_external_transit(sign_url, token, namespace, &body.0)
                     .map_err(|message| Response::error(503, message))?,
             )?;
             let data = signed
@@ -360,6 +432,7 @@ impl ExternalPkiPlan {
         Ok(Observation {
             material: Box::new(material),
             signatures,
+            related: Vec::new(),
         })
     }
 }
@@ -438,32 +511,27 @@ impl Service {
             Ok(None) => return Response::error(404, "external PKI route not found"),
             Err(cause) => return Response::from_engine_error(cause),
         };
-        let envelope = match crate::auth::parse_strict_json(plan.request.expose()) {
-            Ok(value) => SensitiveJson(value),
-            Err(_) => return unknown(),
+        let (sign_url, metadata_url) = match enrolled_pki_routes(&self.outbound, &plan.request) {
+            Ok(routes) => routes,
+            Err(cause) => return cause,
         };
-        let Some(sign_url) = envelope.0["url"].as_str() else {
-            return unknown();
-        };
-        let Some((origin, key)) = sign_url.rsplit_once("/sign/") else {
-            return unknown();
-        };
-        let metadata_url = format!("{origin}/keys/{key}");
-        if self.outbound.endpoint(sign_url, "https").is_err()
-            || self.outbound.endpoint(&metadata_url, "https").is_err()
+        let related = match plan
+            .related
+            .into_iter()
+            .map(|lane| {
+                let (sign_url, metadata_url) = enrolled_pki_routes(&self.outbound, &lane.request)?;
+                Ok(RelatedPkiLane {
+                    request: lane.request,
+                    template: Box::new(lane.template),
+                    sign_url,
+                    metadata_url,
+                })
+            })
+            .collect::<Result<Vec<_>, Response>>()
         {
-            return Response::error(
-                503,
-                "external PKI rejected before entry: HTTPS route is not deployment-enrolled",
-            );
-        }
-        if let Err(message) = self.outbound.validate_external_transit_tls(
-            sign_url,
-            envelope.0["tls_server_name"].as_str().unwrap_or(""),
-            envelope.0["tls_ca_cert_bytes"].as_str().unwrap_or(""),
-        ) {
-            return Response::error(503, message);
-        }
+            Ok(lanes) => lanes,
+            Err(cause) => return cause,
+        };
         let provider_binding = match (
             self.kms_plugins.get("transit"),
             self.kms_keys.get("transit"),
@@ -501,10 +569,11 @@ impl Service {
         self.pending_external_pki = Some(ExternalPkiPlan {
             request: plan.request,
             template: Box::new(plan.template),
+            related,
             namespace: request.namespace.into(),
             mount: plan.mount,
             mount_incarnation: plan.mount_incarnation,
-            sign_url: sign_url.into(),
+            sign_url,
             metadata_url,
             outbound: self.outbound.clone(),
             provider_binding,
@@ -519,6 +588,7 @@ impl Service {
                 &self.unseal_nonce,
             )
             .with_time_floor(state.engines.lease_clock()),
+            admitted_auth: state.auth.clone(),
             deadline: crate::request_deadline::current(),
             publication_clock: PublicationClock::capture(),
             delivery_checkpoint: None,
@@ -535,6 +605,9 @@ impl Service {
             Ok(value) => value,
             Err(cause) => return cause,
         };
+        if observation.related.len() != plan.related.len() {
+            return unknown();
+        }
         if let Err(cause) = self.validate_plugin_response(&mut plan.authority) {
             return cause;
         }
@@ -596,12 +669,7 @@ impl Service {
                     plan.mount_incarnation,
                 )
             })
-            || !self
-                .outbound
-                .same_https_enrollment(&plan.outbound, &plan.sign_url)
-            || !self
-                .outbound
-                .same_https_enrollment(&plan.outbound, &plan.metadata_url)
+            || !plan.enrollment_current(&self.outbound)
         {
             return Response::error(
                 503,
@@ -667,6 +735,19 @@ impl Service {
             Ok(value) => value,
             Err(cause) => return Response::from_engine_error(cause),
         };
+        for related in observation.related {
+            if let Err(cause) = candidate.engines.publish_external_pki(
+                &plan.namespace,
+                &plan.mount,
+                plan.mount_incarnation,
+                *related.material,
+                &related.signatures,
+                now,
+            ) {
+                erase_json(&mut response.body);
+                return Response::from_engine_error(cause);
+            }
+        }
         candidate.schema = candidate.writer_schema();
         if let Err(cause) = candidate.validate_format() {
             erase_json(&mut response.body);
@@ -840,12 +921,7 @@ impl Service {
                     plan.mount_incarnation,
                 )
             })
-            || !self
-                .outbound
-                .same_https_enrollment(&plan.outbound, &plan.sign_url)
-            || !self
-                .outbound
-                .same_https_enrollment(&plan.outbound, &plan.metadata_url)
+            || !plan.enrollment_current(&self.outbound)
             || plan.authority.deadline_expired()
         {
             erase_json(&mut response.body);

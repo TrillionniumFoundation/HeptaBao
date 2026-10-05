@@ -72,6 +72,43 @@ impl Pki {
         )
     }
 
+    pub(in crate::engines) fn prepare_related_external_crls(
+        &self,
+        main: &ExternalPkiTemplate,
+        mount: &str,
+        context: PkiRequestContext<'_>,
+    ) -> Result<Vec<ExternalPkiTemplate>> {
+        if main.operation != "root"
+            && !matches!(main.consumption, Some(ConsumptionTemplate::Crl { .. }))
+        {
+            return Ok(Vec::new());
+        }
+        // Only actual private signers can refresh a CRL. A public archive never
+        // creates a provider reference, and every reference is granted anew by
+        // Engines before any of this request's provider calls can enter.
+        self.external_signers()
+            .filter(|(key, _)| key.issuer_id != main.issuer_id)
+            .map(|(key, _)| {
+                let mut selected = self.clone();
+                selected.select_external_default(&key.issuer_id)?;
+                selected
+                    .prepare_external_consumption(
+                        "GET",
+                        "crl/rotate",
+                        &json!({}),
+                        mount,
+                        PkiRequestContext {
+                            owner: context.owner,
+                            time: context.time,
+                            clock: context.clock,
+                            identity_templates: context.identity_templates,
+                        },
+                    )?
+                    .ok_or_else(|| bad("related external CRL plan missing"))
+            })
+            .collect()
+    }
+
     pub(in crate::engines::pki) fn external_issuer_key(
         &self,
         reference: &str,

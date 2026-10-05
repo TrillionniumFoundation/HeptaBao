@@ -423,9 +423,15 @@ pub(crate) struct ExternalTransitRequest {
     pub(crate) mount_incarnation: u64,
 }
 
+pub(crate) struct ExternalPkiRelatedRequest {
+    pub(crate) request: SecretValue,
+    pub(crate) template: ExternalPkiTemplate,
+}
+
 pub(crate) struct ExternalPkiRequest {
     pub(crate) request: SecretValue,
     pub(crate) template: ExternalPkiTemplate,
+    pub(crate) related: Vec<ExternalPkiRelatedRequest>,
     pub(crate) mount: String,
     pub(crate) mount_incarnation: u64,
 }
@@ -1019,9 +1025,29 @@ impl EngineState {
                     cause
                 }
             })?;
+        let related = engine
+            .prepare_related_external_crls(
+                &template,
+                mount_path,
+                PkiRequestContext { time, ..context },
+            )?
+            .into_iter()
+            .map(|template| {
+                let request = state.external_keys.transit_consumer_request(
+                    &template.reference,
+                    mount_path,
+                    "sign",
+                    SecretJson(
+                        json!({"input":"","prehashed":false,"signature_algorithm":"pkcs1v15"}),
+                    ),
+                )?;
+                Ok(ExternalPkiRelatedRequest { request, template })
+            })
+            .collect::<Result<Vec<_>>>()?;
         Ok(Some(ExternalPkiRequest {
             request,
             template,
+            related,
             mount: mount_path.clone(),
             mount_incarnation: mount.incarnation,
         }))

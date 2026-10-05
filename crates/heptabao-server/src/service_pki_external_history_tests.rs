@@ -97,7 +97,7 @@ fn pki_history94_distinct_real_signers_default_alias_retired_crls_and_encrypted_
         root_request("remote:v3", "second"),
     );
     assert_eq!(second.status, 200);
-    assert_eq!(remote.calls()?, before + 4);
+    assert_eq!(remote.calls()?, before + 7);
     let second_id = second.body["data"]["issuer_id"]
         .as_str()
         .ok_or("second ID")?
@@ -160,9 +160,9 @@ fn pki_history94_distinct_real_signers_default_alias_retired_crls_and_encrypted_
         .status,
         200
     );
-    for (id, public, wrong, revoked) in [
-        (&first_id, &first_public, &second_public, true),
-        (&second_id, &second_public, &first_public, false),
+    for (id, public, wrong, revoked, number) in [
+        (&first_id, &first_public, &second_public, true, 5),
+        (&second_id, &second_public, &first_public, false, 3),
     ] {
         let response = call(
             &mut service,
@@ -181,6 +181,13 @@ fn pki_history94_distinct_real_signers_default_alias_retired_crls_and_encrypted_
         assert!(crl.verify(public)?);
         assert!(!crl.verify(wrong)?);
         assert_eq!(crl.get_revoked().is_some(), revoked);
+        let (_, number_extension) = crl
+            .extension::<openssl::x509::CrlNumber>()?
+            .ok_or("actual signed CRL number")?;
+        assert_eq!(
+            number_extension.to_bn()?.to_dec_str()?.to_string(),
+            number.to_string()
+        );
     }
     assert!(service.prepare_snapshot_restore(&backup).is_err());
     let mut lower = service.state.as_ref().ok_or("current")?.clone();
@@ -310,5 +317,242 @@ fn pki_history94_private_reference_tamper_and_current_grant_revocation_fail_befo
         leaf(&mut service, &admin, "external-ca/issuer/first/issue/leaf").status,
         200
     );
+    Ok(())
+}
+
+#[test]
+fn pki_history94_every_related_grant_is_current_before_root_or_revoke_effects() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (_root, mut service, _unseal, admin) = pki_fixture(&remote)?;
+    let first = call(
+        &mut service,
+        "POST",
+        "external-ca/root/generate/kms",
+        &admin,
+        root_request("remote:v2", "first"),
+    );
+    assert_eq!(first.status, 200);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/roles/leaf",
+            &admin,
+            json!({"allow_any_name":true,"key_type":"ed25519","ttl":"10m","max_ttl":"30m"})
+        )
+        .status,
+        200
+    );
+    let issued = leaf(&mut service, &admin, "external-ca/issue/leaf");
+    assert_eq!(issued.status, 200);
+    second_signer(&remote, &mut service, &admin)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/external-keys/configs/remote/keys/v2/grants/external-ca",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    let before = remote.calls()?;
+    let rejected = call(
+        &mut service,
+        "POST",
+        "external-ca/root/generate/kms",
+        &admin,
+        root_request("remote:v3", "second"),
+    );
+    assert_eq!(rejected.status, 500);
+    assert!(rejected.body.get("data").is_none());
+    assert_eq!(
+        remote.calls()?,
+        before,
+        "old CRL authority is admitted before new root effects"
+    );
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("unchanged private issuer")?
+            .engines
+            .has_external_pki_signer_history()
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/external-keys/configs/remote/keys/v2/grants/external-ca",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/root/generate/kms",
+            &admin,
+            root_request("remote:v3", "second")
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/external-keys/configs/remote/keys/v3/grants/external-ca",
+            &admin,
+            json!({})
+        )
+        .status,
+        204
+    );
+    let original_engines = Zeroizing::new(serde_json::to_vec(
+        &service.state.as_ref().ok_or("current engines")?.engines,
+    )?);
+    let before = remote.calls()?;
+    let rejected = call(
+        &mut service,
+        "POST",
+        "external-ca/revoke",
+        &admin,
+        json!({"serial_number":issued.body["data"]["serial_number"]}),
+    );
+    assert_eq!(rejected.status, 500);
+    assert!(rejected.body.get("data").is_none());
+    assert_eq!(
+        remote.calls()?,
+        before,
+        "all current CRL grants precede every revoke effect"
+    );
+    assert_eq!(
+        &*original_engines,
+        &serde_json::to_vec(&service.state.as_ref().ok_or("unpublished revoke")?.engines)?
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_history94_root_and_crl_main_and_related_metadata_keep_original_private_actor_expiry()
+-> TestResult {
+    use crate::auth::RequestClock;
+    use std::time::{Duration, Instant};
+    for (rotate, cut) in [(false, 1), (false, 5), (true, 1), (true, 4)] {
+        let remote = RemoteTransit::new_kind("ed25519")?;
+        let (_root, mut service, _unseal, admin) = pki_fixture(&remote)?;
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "external-ca/root/generate/kms",
+                &admin,
+                root_request("remote:v2", "first")
+            )
+            .status,
+            200
+        );
+        second_signer(&remote, &mut service, &admin)?;
+        if rotate {
+            assert_eq!(
+                call(
+                    &mut service,
+                    "POST",
+                    "external-ca/root/generate/kms",
+                    &admin,
+                    root_request("remote:v3", "second")
+                )
+                .status,
+                200
+            );
+        }
+        assert_eq!(
+            call(
+                &mut service,
+                "PUT",
+                "sys/policies/acl/history-root",
+                &admin,
+                json!({"policy":r#"path "external-ca/root/generate/kms" { capabilities=["update"] }
+                path "external-ca/crl/rotate" { capabilities=["read"] }"#})
+            )
+            .status,
+            204
+        );
+        let dispatch =
+            |service: &mut Service, method: &str, token: &str, path: &str, body: Value, clock| {
+                service.begin_at_mode_precise(
+                    RequestDispatch {
+                        method,
+                        path,
+                        namespace: "",
+                        token,
+                        body,
+                        now: 100,
+                        allow_forward: true,
+                        enforce_namespace: false,
+                        wrap_ttl_seconds: None,
+                        origin_peer: None,
+                        client_certificates: None,
+                    },
+                    clock,
+                )
+            };
+        let issued = dispatch(
+            &mut service,
+            "POST",
+            &admin,
+            "auth/token/create",
+            json!({"ttl":"2s","policies":["history-root"],"no_default_policy":true}),
+            RequestClock::anchored(Duration::new(100, 250_000_000), Instant::now())?,
+        );
+        let issued = service.finish_synchronous_request(issued);
+        assert_eq!(issued.status, 200);
+        let actor = issued.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("precise actor")?;
+        let clock = RequestClock::anchored(Duration::new(100, 500_000_000), Instant::now())?;
+        let original_engines = Zeroizing::new(serde_json::to_vec(
+            &service.state.as_ref().ok_or("original engines")?.engines,
+        )?);
+        let (method, path, body) = if rotate {
+            ("GET", "external-ca/crl/rotate", json!({}))
+        } else {
+            (
+                "POST",
+                "external-ca/root/generate/kms",
+                root_request("remote:v3", "second"),
+            )
+        };
+        let pending = match dispatch(&mut service, method, actor, path, body, clock) {
+            RequestExecution::External(pending) => *pending,
+            RequestExecution::Complete(response) => {
+                return Err(format!("safe stage status {}", response.status).into());
+            }
+        };
+        let before = remote.calls()?;
+        remote.delay_response_at(before + cut, clock.started() + Duration::from_millis(2100))?;
+        let result = pending.execute();
+        let response = service.finish_external_request(pending, result);
+        assert_eq!(
+            response.status, 403,
+            "original actor expiry: rotate {rotate}, metadata cut {cut}"
+        );
+        assert!(response.body.get("data").is_none());
+        assert_eq!(
+            remote.calls()?,
+            before + cut,
+            "no sign or retry after original private actor expiry"
+        );
+        assert_eq!(
+            &*original_engines,
+            &serde_json::to_vec(&service.state.as_ref().ok_or("no publication")?.engines)?,
+            "all root/CRL publication is atomic"
+        );
+    }
     Ok(())
 }
