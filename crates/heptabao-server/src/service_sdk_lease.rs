@@ -22,10 +22,11 @@ impl Drop for Payload {
         erase_json(&mut self.0);
     }
 }
+#[derive(Clone)]
 pub(super) struct LeaseCall {
-    record: Lease,
-    action: &'static str,
-    increment_ns: u64,
+    pub(super) record: Lease,
+    pub(super) action: &'static str,
+    pub(super) increment_ns: u64,
 }
 impl LeaseCall {
     pub(super) fn request_data(&self) -> Value {
@@ -199,7 +200,14 @@ impl Service {
             Err(e) => return e,
         };
         let Some(record) = state.engines.sdk_lease(request.namespace, id) else {
-            return Response::error(400, "lease not found");
+            return Response::error(
+                400,
+                if action == "lookup" {
+                    "invalid lease"
+                } else {
+                    "lease not found"
+                },
+            );
         };
         if record.cluster != state.cluster_id {
             return Response::error(503, "SDK lease cluster owner rejected");
@@ -279,7 +287,7 @@ impl Service {
         let path = record.path.strip_prefix(&mount).unwrap_or("").to_owned();
         self.stage_sdk_plan(
             &state,
-            authority,
+            authority.into(),
             request,
             StageTarget {
                 mount,
@@ -304,13 +312,27 @@ impl Service {
                 .authority
                 .lock()
                 .map_err(|_| Response::error(503, "SDK affine authority unavailable"))?;
-            self.validate_plugin_response(&mut authority)?;
+            self.validate_sdk_authority(&mut authority)?;
             self.sdk_binding_gate(plan).map_err(bridge_failure)?;
             let mut transaction = plan
                 .transaction
                 .lock()
                 .map_err(|_| Response::error(503, "SDK transaction unavailable"))?;
-            if self.current_state_identity()? != transaction.identity {
+            let lease_call = plan
+                .lease
+                .lock()
+                .map_err(|_| Response::error(503, "SDK registered callback unavailable"))?
+                .clone();
+            let readonly_metadata = matches!(&*authority, expiry::Authority::Client(_))
+                && matches!(plan.operation.as_str(), "read" | "_mount")
+                && !transaction.changed
+                && lease_call.is_none()
+                && response
+                    .as_ref()
+                    .is_none_or(|value| value.get("secret").is_some_and(Value::is_null));
+            let publication_identity = self.current_state_identity()?;
+            let identity_changed = publication_identity != transaction.identity;
+            if identity_changed && !readonly_metadata {
                 return Err(Response::error(
                     503,
                     "SDK transaction snapshot changed before publication",
@@ -320,9 +342,29 @@ impl Service {
                 .state
                 .clone()
                 .ok_or_else(|| Response::error(503, "SDK server sealed"))?;
-            state.engines = transaction.engines.clone();
+            if readonly_metadata {
+                if !state
+                    .engines
+                    .sdk_storage_observations_match(
+                        &transaction.engines,
+                        &plan.namespace,
+                        &plan.mount,
+                        &plan.owner,
+                    )
+                    .map_err(Response::from_engine_error)?
+                {
+                    return Err(Response::error(
+                        503,
+                        "SDK original mount Storage observation changed",
+                    ));
+                }
+                // Preserve the actual current graph, including other mounts'
+                // completed cleanup and the monotone global SDK clock.
+            } else {
+                state.engines = transaction.engines.clone();
+            }
             let changed_clock = authority.observe_candidate_time_changed(&mut state)?;
-            let at = precise(&authority, &state)?;
+            let at = expiry::precise(&authority, &state)?;
             let sdk_clock_changed = state.engines.observe_sdk_lease_clock(at);
             let mut changed = transaction.changed || changed_clock || sdk_clock_changed;
             let mut status = if plan.operation == "read" { 404 } else { 204 };
@@ -373,16 +415,15 @@ impl Service {
                 status = 200;
                 body.0 = json!({"data":data.clone()});
             }
-            let at = if !secret.is_null() || plan.lease.is_some() {
-                let grant_at = precise(&authority, &state)?;
-                // The actual affine clock continues while SDK I/O runs. Bind the
-                // durable floor to the very sample used by this published grant.
+
+            let at = if !secret.is_null() || lease_call.is_some() {
+                let grant_at = expiry::precise(&authority, &state)?;
                 changed |= state.engines.observe_sdk_lease_clock(grant_at);
                 Some(grant_at)
             } else {
                 None
             };
-            if let Some(call) = &plan.lease {
+            if let Some(call) = &lease_call {
                 let current = state
                     .engines
                     .sdk_lease(&plan.namespace, &call.record.id)
@@ -448,7 +489,7 @@ impl Service {
                 let issuer = state
                     .auth
                     .typed_lease_issuer_observed(
-                        authority.principal(),
+                        authority.principal()?,
                         &plan.namespace,
                         AuthorityTime::Precise(at),
                     )
@@ -493,9 +534,9 @@ impl Service {
             if changed {
                 state.schema = state.writer_schema();
                 let publication = self.prepare_record_plan(&mut state)?;
-                self.validate_plugin_response(&mut authority)?;
+                self.validate_sdk_authority(&mut authority)?;
                 self.sdk_binding_gate(plan).map_err(bridge_failure)?;
-                if self.current_state_identity()? != transaction.identity {
+                if self.current_state_identity()? != publication_identity {
                     return Err(Response::error(
                         503,
                         "SDK transaction changed before publication",
@@ -509,10 +550,15 @@ impl Service {
                     None,
                 )?;
                 self.state = Some(state);
+                authority.after_lease_commit(
+                    self.state
+                        .as_ref()
+                        .ok_or_else(|| Response::error(503, "SDK committed state unavailable"))?,
+                )?;
                 transaction.identity = self.current_state_identity()?;
                 transaction.changed = false;
             }
-            self.validate_plugin_response(&mut authority)?;
+            self.validate_sdk_authority(&mut authority)?;
             self.sdk_binding_gate(plan).map_err(bridge_failure)?;
             Ok(Response {
                 status,

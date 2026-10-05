@@ -1104,6 +1104,8 @@ pub struct Service {
     sdk_hosts: BTreeMap<String, Arc<sdk_backend::Control>>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     sdk_migrations: BTreeMap<String, sdk_backend::MigrationStatus>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_cleanup_cursor: Option<(String, String)>,
     pending_plugin_kms: Option<plugin::PluginKmsPlan>,
     pending_external_key: Option<plugin::ExternalKeyPlan>,
     pending_external_transit: Option<external_transit::ExternalTransitPlan>,
@@ -1122,6 +1124,8 @@ pub struct Service {
     snapshot_spool: Option<Arc<crate::snapshot_file::SnapshotSpool>>,
     openldap_in_flight: openldap_secret::OpenLdapFlights,
     openldap_cursor: Option<(String, String, String)>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    lifecycle_sdk_cursor: u8,
     lifecycle_provider_cursor: bool,
     lifecycle_database_rotation_cursor: bool,
     auth_plugins: BTreeMap<String, plugin::SharedAuthPlugin>,
@@ -1476,6 +1480,8 @@ impl Service {
             sdk_hosts: BTreeMap::new(),
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             sdk_migrations: BTreeMap::new(),
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_cleanup_cursor: None,
             pending_plugin_kms: None,
             pending_external_key: None,
             pending_external_transit: None,
@@ -1494,6 +1500,8 @@ impl Service {
             snapshot_spool: None,
             openldap_in_flight: openldap_secret::OpenLdapFlights::default(),
             openldap_cursor: None,
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            lifecycle_sdk_cursor: 0,
             lifecycle_provider_cursor: false,
             lifecycle_database_rotation_cursor: false,
             auth_plugins: BTreeMap::new(),

@@ -317,6 +317,78 @@ impl EngineState {
         }
         Ok(())
     }
+    /// Rebase only a held read response whose complete original mount Storage
+    /// observation still exists. This is equality under the same typed owner,
+    /// never a proof that no Storage was read and never mutation authority.
+    #[cfg(any(test, target_os = "linux", target_os = "macos"))]
+    pub(crate) fn sdk_storage_observations_match(
+        &self,
+        observed: &Self,
+        namespace: &str,
+        mount: &str,
+        owner: &MountOwner,
+    ) -> Result<bool> {
+        self.sdk_owner_gate(namespace, mount, owner)?;
+        observed.sdk_owner_gate(namespace, mount, owner)?;
+        let current = self
+            .records
+            .as_ref()
+            .ok_or_else(|| error(503, "SDK current record root absent"))?;
+        let original = observed
+            .records
+            .as_ref()
+            .ok_or_else(|| error(503, "SDK original record root absent"))?;
+        let scope = Kv1Scope::new(namespace, mount, owner.mount_incarnation)
+            .map_err(kv1_records::record_error)?;
+        let mut cursor = None;
+        let mut count = 0usize;
+        loop {
+            crate::engines::kv_versioning::deadline()?;
+            let fresh = current
+                .index
+                .scan(&scope, "sdk92/", cursor.as_deref(), 256, true)
+                .map_err(kv1_records::record_error)?;
+            let held = original
+                .index
+                .scan(&scope, "sdk92/", cursor.as_deref(), 256, true)
+                .map_err(kv1_records::record_error)?;
+            if fresh.keys != held.keys || fresh.next_after != held.next_after {
+                return Ok(false);
+            }
+            if fresh.next_after.is_some() && (fresh.keys.is_empty() || fresh.next_after == cursor) {
+                return Err(error(503, "SDK observation cursor did not advance"));
+            }
+            for path in &fresh.keys {
+                crate::engines::kv_versioning::deadline()?;
+                count += 1;
+                if count > 10000 {
+                    return Err(error(507, "SDK observation set exceeds bound"));
+                }
+                let key = Kv1Key::new(
+                    namespace,
+                    mount,
+                    owner.mount_incarnation,
+                    &format!("sdk92/{path}"),
+                )
+                .map_err(kv1_records::record_error)?;
+                let actual = current
+                    .index
+                    .get(&key)
+                    .ok_or_else(|| error(503, "SDK current observation missing"))?;
+                let captured = original
+                    .index
+                    .get(&key)
+                    .ok_or_else(|| error(503, "SDK original observation missing"))?;
+                if actual != captured {
+                    return Ok(false);
+                }
+            }
+            cursor = fresh.next_after;
+            if cursor.is_none() {
+                return Ok(true);
+            }
+        }
+    }
     #[cfg(any(test, target_os = "linux", target_os = "macos"))]
     pub(crate) fn sdk_storage_get(
         &self,

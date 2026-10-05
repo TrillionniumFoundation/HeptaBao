@@ -1076,3 +1076,235 @@ fn sdk96_pki97_joint_encrypted_owners_floor_backup_and_reopen() -> TestResult {
     assert!(lowered.validate_publication_schema(Some(retired)).is_err());
     Ok(())
 }
+
+#[test]
+fn sdk96_pending_revoke_intent_reopens_exact_owner_and_storage_before_retry() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let (mut lease, owner) = sdk96_fixture(&mut candidate, &token)?;
+    let original_secret = lease.callback();
+    let original_data = lease.response_data();
+    let original_issuer = lease.issuer.clone();
+    assert!(candidate.engines.has_live_sdk_leases());
+    lease.phase = crate::engines::sdk_lease::Phase::PendingRevoke;
+    candidate.engines.store_sdk_lease(lease.clone())?;
+    assert!(candidate.engines.has_live_sdk_leases());
+    publish(&mut service, candidate)?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &token, json!({})).status,
+        204
+    );
+    drop(service);
+    let mut service = directory.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let state = service.state.as_ref().ok_or("reopened state")?;
+    let recovered = state
+        .engines
+        .sdk_cleanup_candidate(&state.auth, crate::auth::Timestamp::checked(101, 0)?, None)
+        .ok_or("pending cleanup")?;
+    assert_eq!(recovered.id, lease.id);
+    assert!(recovered.issuer == original_issuer);
+    assert_eq!(recovered.callback(), original_secret);
+    assert_eq!(recovered.response_data(), original_data);
+    assert!(recovered.same_backend(&owner));
+    assert!(
+        state
+            .engines
+            .sdk_storage_get("", "sdk_probe/", &owner, "credential-record")?
+            .is_some()
+    );
+    let mut terminal = state.clone();
+    let mut retired = recovered;
+    retired.revoke();
+    terminal.engines.store_sdk_lease(retired)?;
+    terminal
+        .engines
+        .sdk_storage_delete("", "sdk_probe/", &owner, "credential-record")?;
+    publish(&mut service, terminal)?;
+    let state = service.state.as_ref().ok_or("terminal state")?;
+    assert!(
+        state
+            .engines
+            .sdk_cleanup_candidate(&state.auth, crate::auth::Timestamp::checked(500, 0)?, None)
+            .is_none()
+    );
+    assert!(!state.engines.has_live_sdk_leases());
+    Ok(())
+}
+
+#[test]
+fn sdk96_cleanup_cursor_passes_pending_unavailable_owner_without_changing_records() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let (mut first, _) = sdk96_fixture(&mut candidate, &token)?;
+    first.phase = crate::engines::sdk_lease::Phase::PendingRevoke;
+    candidate.engines.store_sdk_lease(first.clone())?;
+    let mut later = first.clone();
+    later.id = "sdk_probe/leased/ffffffff".into();
+    candidate.engines.store_sdk_lease(later.clone())?;
+    publish(&mut service, candidate)?;
+    let state = service.state.as_ref().ok_or("state")?;
+    let identity = service.current_state_identity().map_err(|_| "identity")?;
+    let at = crate::auth::Timestamp::checked(101, 0)?;
+    let skipped = state
+        .engines
+        .sdk_cleanup_candidate(&state.auth, at, None)
+        .ok_or("first")?;
+    assert_eq!(skipped.id, first.id);
+    // The first owner's hidden/busy rejection must not make the set empty.
+    let next = state
+        .engines
+        .sdk_cleanup_candidate(&state.auth, at, Some((&skipped.namespace, &skipped.id)))
+        .ok_or("later")?;
+    assert_eq!(next.id, later.id);
+    let wrapped = state
+        .engines
+        .sdk_cleanup_candidate(&state.auth, at, Some((&next.namespace, &next.id)))
+        .ok_or("wrapped")?;
+    assert_eq!(wrapped.id, first.id);
+    assert_eq!(
+        state
+            .engines
+            .sdk_lease("", &first.id)
+            .ok_or("first retained")?
+            .callback(),
+        first.callback()
+    );
+    assert_eq!(
+        state
+            .engines
+            .sdk_lease("", &later.id)
+            .ok_or("later retained")?
+            .callback(),
+        later.callback()
+    );
+    assert_eq!(
+        service.current_state_identity().map_err(|_| "identity")?,
+        identity
+    );
+    Ok(())
+}
+
+#[test]
+fn sdk96_readonly_observation_preserves_other_mount_cleanup_and_reopens() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (key, token) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let (lease, owner) = sdk96_fixture(&mut candidate, &token)?;
+    let other = mount(&mut candidate, "sdk_other")?;
+    candidate.engines.sdk_storage_put(
+        "",
+        "sdk_other/",
+        &other,
+        entry("credential-record", b"other-live"),
+    )?;
+    publish(&mut service, candidate)?;
+    let original = service.state.clone().ok_or("original")?;
+    let mut current = original.clone();
+    current
+        .engines
+        .sdk_storage_delete("", "sdk_other/", &other, "credential-record")?;
+    current
+        .engines
+        .observe_sdk_lease_clock(crate::auth::Timestamp::checked(103, 17)?);
+    publish(&mut service, current)?;
+    let current = service.state.as_ref().ok_or("current")?;
+    assert!(current.engines.sdk_storage_observations_match(
+        &original.engines,
+        "",
+        "sdk_probe/",
+        &owner
+    )?);
+    assert!(
+        current
+            .engines
+            .sdk_storage_get("", "sdk_other/", &other, "credential-record")?
+            .is_none()
+    );
+    assert_eq!(
+        current
+            .engines
+            .sdk_lease("", &lease.id)
+            .ok_or("captured lease")?
+            .callback(),
+        lease.callback()
+    );
+    assert_eq!(
+        call(&mut service, "PUT", "sys/seal", &token, json!({})).status,
+        204
+    );
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        call(&mut reopened, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    let current = reopened.state.as_ref().ok_or("reopened")?;
+    assert!(current.engines.sdk_storage_observations_match(
+        &original.engines,
+        "",
+        "sdk_probe/",
+        &owner
+    )?);
+    assert!(
+        current
+            .engines
+            .sdk_storage_get("", "sdk_other/", &other, "credential-record")?
+            .is_none()
+    );
+    Ok(())
+}
+
+#[test]
+fn sdk96_readonly_observation_rejects_same_mount_storage_and_retired_incarnation() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let mut candidate = service.state.clone().ok_or("state")?;
+    let (lease, owner) = sdk96_fixture(&mut candidate, &token)?;
+    publish(&mut service, candidate)?;
+    let original = service.state.clone().ok_or("original")?;
+    for key in ["credential-record", "new-list-member"] {
+        let mut changed = original.clone();
+        changed
+            .engines
+            .sdk_storage_put("", "sdk_probe/", &owner, entry(key, b"changed"))?;
+        publish(&mut service, changed)?;
+        assert!(
+            !service
+                .state
+                .as_ref()
+                .ok_or("current")?
+                .engines
+                .sdk_storage_observations_match(&original.engines, "", "sdk_probe/", &owner)?
+        );
+    }
+    let mut retired = original.clone();
+    let mut lease = lease;
+    lease.revoke();
+    retired.engines.store_sdk_lease(lease)?;
+    retired
+        .engines
+        .handle("", "DELETE", "sys/mounts/sdk_probe", &json!({}), 100)?;
+    let replacement = mount(&mut retired, "sdk_probe")?;
+    assert_ne!(owner.mount_incarnation, replacement.mount_incarnation);
+    publish(&mut service, retired)?;
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("current")?
+            .engines
+            .sdk_storage_observations_match(&original.engines, "", "sdk_probe/", &owner)
+            .is_err()
+    );
+    Ok(())
+}

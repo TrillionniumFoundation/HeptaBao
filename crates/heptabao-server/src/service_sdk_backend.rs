@@ -11,6 +11,26 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{self, Receiver, Sender, SyncSender};
 use std::time::{Duration, Instant};
 
+pub(in crate::service) fn writer_before(
+    service: &Arc<Mutex<Service>>,
+    deadline: Instant,
+) -> Result<std::sync::MutexGuard<'_, Service>, Response> {
+    loop {
+        if Instant::now() >= deadline {
+            return Err(Response::error(503, "SDK original writer deadline expired"));
+        }
+        match service.try_lock() {
+            Ok(writer) => return Ok(writer),
+            Err(std::sync::TryLockError::Poisoned(_)) => {
+                return Err(Response::error(503, "SDK writer poisoned"));
+            }
+            Err(std::sync::TryLockError::WouldBlock) => {
+                std::thread::park_timeout(Duration::from_millis(1))
+            }
+        }
+    }
+}
+
 fn timeout_ms() -> u64 {
     5_000
 }
@@ -106,6 +126,10 @@ fn migration_id() -> Result<String, Response> {
     ))
 }
 
+#[path = "service_sdk_expiry.rs"]
+mod expiry;
+#[path = "service_sdk_retirement.rs"]
+mod retirement;
 #[path = "service_sdk_lease.rs"]
 mod secret_lease;
 
@@ -153,6 +177,7 @@ pub(super) struct Control {
     sender: SyncSender<WorkerCommand>,
     busy: Arc<AtomicBool>,
     fenced: Arc<AtomicBool>,
+    retiring: AtomicBool,
 }
 impl Control {
     fn retire(&self) {
@@ -296,6 +321,7 @@ fn start_worker(config: SdkLaunch) -> Result<Arc<Control>, Response> {
         sender,
         busy,
         fenced,
+        retiring: AtomicBool::new(false),
     }))
 }
 
@@ -311,17 +337,21 @@ pub(super) struct Plan {
     owner: MountOwner,
     descriptor: Descriptor,
     control: Arc<Control>,
-    authority: Mutex<plugin::PluginResponseAuthority>,
+    authority: Mutex<expiry::Authority>,
     operation: String,
     path: String,
     data: Value,
-    lease: Option<Box<secret_lease::LeaseCall>>,
+    lease: Mutex<Option<Box<secret_lease::LeaseCall>>>,
+    retirement: Option<Mutex<retirement::Retirement>>,
     transaction: Mutex<StorageTransaction>,
-    deadline: Instant,
+    pub(in crate::service) deadline: Instant,
 }
 impl Drop for Plan {
     fn drop(&mut self) {
         erase_json(&mut self.data);
+        if self.retirement.is_some() {
+            self.control.retiring.store(false, Ordering::Release);
+        }
     }
 }
 
@@ -332,12 +362,32 @@ impl Plan {
         deadline: Instant,
     ) -> Result<Option<Value>, Response> {
         let deadline = deadline.min(self.deadline);
-        if self.control.fenced.load(Ordering::Acquire) || Instant::now() >= deadline {
+        if self.retirement.is_some() {
+            return self.execute_retirement(service, deadline);
+        }
+        self.execute_once(service, deadline)
+    }
+    fn execute_once(
+        &self,
+        service: &Arc<Mutex<Service>>,
+        deadline: Instant,
+    ) -> Result<Option<Value>, Response> {
+        let deadline = deadline.min(self.deadline);
+        if self.control.fenced.load(Ordering::Acquire)
+            || Instant::now() >= deadline
+            || (self.control.retiring.load(Ordering::Acquire) && self.retirement.is_none())
+        {
             return Err(Response::error(
                 503,
                 "SDK owner or original deadline unavailable before entry",
             ));
         }
+        let call = self
+            .lease
+            .lock()
+            .map_err(|_| Response::error(503, "SDK callback owner unavailable"))?
+            .clone();
+        let lease_callback = call.as_ref().map(|call| call.callback()).transpose()?;
         if self
             .control
             .busy
@@ -346,16 +396,31 @@ impl Plan {
         {
             return Err(Response::error(503, "SDK mount is busy before entry"));
         }
+        if self.control.retiring.load(Ordering::Acquire) && self.retirement.is_none() {
+            self.control.busy.store(false, Ordering::Release);
+            return Err(Response::error(
+                503,
+                "SDK mount retirement admitted before effect",
+            ));
+        }
+
         let (events, received) = mpsc::channel();
         let job = WorkerJob {
             operation: self.operation.clone(),
-            path: self.path.clone(),
-            data: self.data.clone(),
-            lease: self
-                .lease
+            path: call.as_ref().map_or_else(
+                || self.path.clone(),
+                |call| {
+                    call.record
+                        .path
+                        .strip_prefix(&self.mount)
+                        .unwrap_or("")
+                        .to_owned()
+                },
+            ),
+            data: call
                 .as_ref()
-                .map(|call| call.callback())
-                .transpose()?,
+                .map_or_else(|| self.data.clone(), |call| call.request_data()),
+            lease: lease_callback,
             deadline,
             events,
         };
@@ -718,6 +783,24 @@ impl Service {
             if self.sdk_migrations.contains_key(&id) {
                 return Response::error(503, "remount migration identity collision");
             }
+            let registered_leases =
+                match state
+                    .engines
+                    .sdk_mount_leases(request.namespace, &actual, &owner)
+                {
+                    Ok(rows) => rows,
+                    Err(error) => return Response::from_engine_error(error),
+                };
+            if !registered_leases.is_empty() {
+                return self.stage_sdk_retirement(
+                    state,
+                    authority,
+                    request,
+                    actual,
+                    owner,
+                    retirement::Action::Remount { to, cas, id },
+                );
+            }
             let host_key = self.sdk_host_key(request.namespace, &actual, &owner);
             if let Err(error) = state.engines.remount(request.namespace, &from, &to, cas) {
                 return Response::error(error.status, &error.message);
@@ -760,6 +843,24 @@ impl Service {
             else {
                 return Response::error(404, "SDK mount not found");
             };
+            let registered_leases =
+                match state
+                    .engines
+                    .sdk_mount_leases(request.namespace, &actual, &owner)
+                {
+                    Ok(rows) => rows,
+                    Err(error) => return Response::from_engine_error(error),
+                };
+            if !registered_leases.is_empty() {
+                return self.stage_sdk_retirement(
+                    state,
+                    authority,
+                    request,
+                    actual,
+                    owner,
+                    retirement::Action::Unmount,
+                );
+            }
             let host_key = self.sdk_host_key(request.namespace, &actual, &owner);
             if let Err(e) = state.engines.handle(
                 request.namespace,
@@ -900,7 +1001,7 @@ impl Service {
             // A failed external Setup preserves that mount for explicit cleanup.
             return self.stage_sdk_plan(
                 &state,
-                authority,
+                authority.into(),
                 request,
                 StageTarget {
                     mount,
@@ -1110,6 +1211,7 @@ impl Service {
         if Instant::now() >= plan.deadline
             || plan.control.fenced.load(Ordering::Acquire)
             || self.recovery_required
+            || (plan.control.retiring.load(Ordering::Acquire) && plan.retirement.is_none())
         {
             return Err(SdkBridgeError::Fenced);
         }
@@ -1149,15 +1251,14 @@ impl Service {
         let _scope =
             crate::request_deadline::RequestDeadlineScope::enter(deadline.min(plan.deadline));
         let mut authority = plan.authority.lock().map_err(|_| SdkBridgeError::Fenced)?;
-        self.validate_plugin_response(&mut authority)
+        self.validate_sdk_authority(&mut authority)
             .map_err(|_| SdkBridgeError::Fenced)?;
         self.sdk_binding_gate(plan)?;
         let mut state = self.state.clone().ok_or(SdkBridgeError::Fenced)?;
         let auth_clock_changed = authority
             .observe_candidate_time_changed(&mut state)
             .map_err(|_| SdkBridgeError::Fenced)?;
-        let observed =
-            secret_lease::precise(&authority, &state).map_err(|_| SdkBridgeError::Fenced)?;
+        let observed = expiry::precise(&authority, &state).map_err(|_| SdkBridgeError::Fenced)?;
         let sdk_clock_changed = state.engines.observe_sdk_lease_clock(observed);
         let clock_changed = auth_clock_changed || sdk_clock_changed;
         let mut transaction = plan
@@ -1223,7 +1324,7 @@ impl Service {
             let publication = self
                 .prepare_record_plan(&mut state)
                 .map_err(|_| SdkBridgeError::Storage)?;
-            self.validate_plugin_response(&mut authority)
+            self.validate_sdk_authority(&mut authority)
                 .map_err(|_| SdkBridgeError::Fenced)?;
             self.sdk_binding_gate(plan)?;
             if self
@@ -1248,7 +1349,7 @@ impl Service {
                 .current_state_identity()
                 .map_err(|_| SdkBridgeError::OutcomeUnknown)?;
         }
-        self.validate_plugin_response(&mut authority).map_err(|_| {
+        self.validate_sdk_authority(&mut authority).map_err(|_| {
             if changed {
                 SdkBridgeError::OutcomeUnknown
             } else {
@@ -1307,7 +1408,7 @@ impl Service {
         let path = request.path.strip_prefix(&mount).unwrap_or("").to_owned();
         self.stage_sdk_plan(
             &state,
-            authority,
+            authority.into(),
             request,
             StageTarget {
                 mount,
@@ -1321,7 +1422,7 @@ impl Service {
     fn stage_sdk_plan(
         &mut self,
         state: &State,
-        authority: plugin::PluginResponseAuthority,
+        mut authority: expiry::Authority,
         request: &RequestView<'_>,
         target: StageTarget<'_>,
     ) -> Response {
@@ -1338,7 +1439,31 @@ impl Service {
         let Some(descriptor) = state.engines.sdk_descriptor(&owner.plugin, &owner.version) else {
             return Response::error(503, "SDK descriptor absent");
         };
+        if let Err(error) = self.validate_sdk_authority(&mut authority) {
+            return error;
+        }
         let key = self.sdk_host_key(request.namespace, &mount, &owner);
+        if self
+            .sdk_hosts
+            .get(&key)
+            .is_some_and(|control| control.fenced.load(Ordering::Acquire))
+        {
+            if self
+                .sdk_hosts
+                .get(&key)
+                .is_some_and(|control| control.busy.load(Ordering::Acquire))
+            {
+                return Response::error(
+                    503,
+                    "SDK retired owner still completing its original invocation",
+                );
+            }
+            // A new independently admitted request retains its own original
+            // capsule. It does not revive the fenced call or retry its effect.
+            if let Some(retired) = self.sdk_hosts.remove(&key) {
+                retired.retire();
+            }
+        }
         let control = if let Some(c) = self.sdk_hosts.get(&key) {
             Arc::clone(c)
         } else {
@@ -1400,7 +1525,8 @@ impl Service {
             operation: operation.into(),
             path,
             data,
-            lease: lease.map(Box::new),
+            lease: Mutex::new(lease.map(Box::new)),
+            retirement: None,
             transaction: Mutex::new(StorageTransaction {
                 engines: state.engines.clone(),
                 identity,
@@ -1474,8 +1600,14 @@ impl Service {
         let gate = match plan.authority.lock() {
             Ok(mut authority) => {
                 let original_now = authority.now();
-                self.validate_plugin_response(&mut authority)
-                    .and_then(|()| self.sdk_binding_gate(plan).map_err(bridge_failure))
+                self.validate_sdk_authority(&mut authority)
+                    .and_then(|()| {
+                        if plan.retirement.is_some() {
+                            self.sdk_retirement_delivery_gate(plan)
+                        } else {
+                            self.sdk_binding_gate(plan).map_err(bridge_failure)
+                        }
+                    })
                     .map_err(|error| (error, original_now))
             }
             Err(_) => {
@@ -1503,7 +1635,7 @@ impl Service {
                 .authority
                 .lock()
                 .map_err(|_| Response::error(503, "SDK affine authority unavailable"))?;
-            self.validate_plugin_response(&mut authority)?;
+            self.validate_sdk_authority(&mut authority)?;
             self.sdk_binding_gate(plan).map_err(bridge_failure)
         })();
         if let Err(e) = gate {
@@ -1512,6 +1644,9 @@ impl Service {
             }
             plan.control.retire();
             return e;
+        }
+        if plan.retirement.is_some() {
+            return self.finalize_sdk_retirement(plan);
         }
         self.finalize_sdk_transaction(plan, value.take())
     }

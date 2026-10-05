@@ -183,7 +183,7 @@ impl Lease {
     }
     pub(crate) fn lookup(&self, at: Timestamp) -> Result<Value> {
         if self.phase != Phase::Active || at >= self.expires {
-            return Err(bad("lease not found"));
+            return Err(bad("invalid lease"));
         }
         Ok(
             json!({"id":self.id,"path":self.path,"issue_time":self.issued.local_rfc3339().map_err(|_|error(503,"SDK public timestamp rejected"))?,"expire_time":self.expires.local_rfc3339().map_err(|_|error(503,"SDK public timestamp rejected"))?,"last_renewal":self.renewed.map(Timestamp::local_rfc3339).transpose().map_err(|_|error(503,"SDK public timestamp rejected"))?,"renewable":self.renewable,"ttl":self.expires.lookup_remaining_seconds(at).map_err(|_|error(503,"SDK lease clock rejected"))?}),
@@ -227,6 +227,85 @@ fn add_ns(at: Timestamp, ns: u64) -> Result<Timestamp> {
     Timestamp::from_wall(end).map_err(|_| bad("SDK lease duration overflow"))
 }
 impl EngineState {
+    pub(crate) fn sdk_mount_leases(
+        &self,
+        namespace: &str,
+        mount: &str,
+        owner: &sdk::MountOwner,
+    ) -> Result<Vec<Lease>> {
+        let rows = self
+            .namespaces
+            .get(namespace)
+            .ok_or_else(not_found)?
+            .sdk_leases
+            .values()
+            .filter(|lease| lease.mount == mount && lease.phase != Phase::Revoked)
+            .cloned()
+            .collect::<Vec<_>>();
+        if rows.iter().any(|lease| !lease.same_backend(owner)) {
+            return Err(error(503, "SDK retirement lease mount owner mismatch"));
+        }
+        Ok(rows)
+    }
+    pub(crate) fn sdk_retired_mount_leases(
+        &self,
+        namespace: &str,
+        mount: &str,
+        owner: &sdk::MountOwner,
+    ) -> Result<Vec<Lease>> {
+        Ok(self
+            .namespaces
+            .get(namespace)
+            .ok_or_else(not_found)?
+            .sdk_leases
+            .values()
+            .filter(|lease| {
+                lease.mount == mount && lease.phase == Phase::Revoked && lease.same_backend(owner)
+            })
+            .cloned()
+            .collect())
+    }
+    pub(crate) fn sdk_cleanup_candidate(
+        &self,
+        auth: &crate::auth::AuthState,
+        at: Timestamp,
+        after: Option<(&str, &str)>,
+    ) -> Option<Lease> {
+        let eligible = |lease: &&Lease| {
+            lease.phase == Phase::PendingRevoke
+                || (lease.phase == Phase::Active
+                    && (at >= lease.expires
+                        || auth
+                            .resolve_lease_owner_observed(
+                                &lease.issuer,
+                                &lease.namespace,
+                                crate::auth::AuthorityTime::Precise(at),
+                            )
+                            .is_none()))
+        };
+        let candidates = || {
+            self.namespaces
+                .values()
+                .flat_map(|ns| ns.sdk_leases.values())
+                .filter(eligible)
+        };
+        // The process cursor carries no authority. It advances before hidden or
+        // busy ownership is tested, so one unavailable lease cannot starve the
+        // next authenticated registered owner. Wrap only this bounded pass.
+        candidates()
+            .find(|lease| {
+                after.is_none_or(|key| (lease.namespace.as_str(), lease.id.as_str()) > key)
+            })
+            .or_else(|| candidates().next())
+            .cloned()
+    }
+    pub(crate) fn has_live_sdk_leases(&self) -> bool {
+        self.namespaces.values().any(|ns| {
+            ns.sdk_leases
+                .values()
+                .any(|lease| lease.phase != Phase::Revoked)
+        })
+    }
     pub(crate) fn sdk_lease_clock_floor(&self) -> Option<Timestamp> {
         self.sdk_lease_clock
     }

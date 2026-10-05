@@ -104,6 +104,8 @@ pub(crate) struct LifecycleWorker {
 }
 
 enum ProviderMaintenance {
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    Sdk(Box<sdk_backend::Plan>),
     Database(Box<database::DatabaseMaintenance>),
     DatabaseRotation(Box<database::DatabaseRotationMaintenance>),
     OpenLdap(Box<openldap_secret::OpenLdapMaintenance>),
@@ -159,7 +161,8 @@ pub(crate) fn start_lifecycle_worker(
     let join = thread::Builder::new()
         .name("heptabao-lifecycle".into())
         .spawn(move || {
-            while let Err(mpsc::RecvTimeoutError::Timeout) = receiver.recv_timeout(interval) {
+            let mut next_interval = interval;
+            while let Err(mpsc::RecvTimeoutError::Timeout) = receiver.recv_timeout(next_interval) {
                 let Some(service) = service.upgrade() else {
                     break;
                 };
@@ -183,29 +186,23 @@ pub(crate) fn start_lifecycle_worker(
                     let Ok(mut writer) = service.try_lock() else {
                         continue;
                     };
+                    // Pending SDK cleanup keeps the same host-owned worker awake;
+                    // every attempt still captures its own native affine clock.
+                    #[cfg(any(target_os = "linux", target_os = "macos"))]
+                    {
+                        next_interval = if writer
+                            .state
+                            .as_ref()
+                            .is_some_and(|state| state.engines.has_live_sdk_leases())
+                        {
+                            interval.min(Duration::from_secs(1))
+                        } else {
+                            interval
+                        };
+                    }
                     if writer.maintain_raft_admin().is_err() {
                         eprintln!("heptabao-lifecycle: autopilot transition pending");
                     }
-                    let prefer_openldap = writer.lifecycle_provider_cursor;
-                    writer.lifecycle_provider_cursor = !prefer_openldap;
-                    let pending = if prefer_openldap {
-                        match writer.prepare_openldap_maintenance_with_clock(now, Some(clock)) {
-                            Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(Box::new(value))),
-                            Ok(None) | Err(_) => prepare_database_provider(&mut writer, now, clock),
-                        }
-                    } else {
-                        match prepare_database_provider(&mut writer, now, clock) {
-                            Some(value) => Some(value),
-                            None => match writer
-                                .prepare_openldap_maintenance_with_clock(now, Some(clock))
-                            {
-                                Ok(Some(value)) => {
-                                    Some(ProviderMaintenance::OpenLdap(Box::new(value)))
-                                }
-                                Ok(None) | Err(_) => None,
-                            },
-                        }
-                    };
                     // Local expiry is deliberately completed before any remote
                     // provider wait. A failed or slow provider cannot suppress it.
                     if writer
@@ -214,6 +211,58 @@ pub(crate) fn start_lifecycle_worker(
                     {
                         eprintln!("heptabao-lifecycle: maintenance unavailable");
                     }
+                    #[cfg(any(target_os = "linux", target_os = "macos"))]
+                    let sdk_preferred = {
+                        writer.lifecycle_sdk_cursor = (writer.lifecycle_sdk_cursor + 1) % 3;
+                        if writer.lifecycle_sdk_cursor == 0 {
+                            writer
+                                .prepare_sdk_expiry(clock)
+                                .ok()
+                                .flatten()
+                                .map(|plan| ProviderMaintenance::Sdk(Box::new(plan)))
+                        } else {
+                            None
+                        }
+                    };
+                    let prefer_openldap = writer.lifecycle_provider_cursor;
+                    writer.lifecycle_provider_cursor = !prefer_openldap;
+                    let mut other = || {
+                        if prefer_openldap {
+                            match writer.prepare_openldap_maintenance_with_clock(now, Some(clock)) {
+                                Ok(Some(value)) => {
+                                    Some(ProviderMaintenance::OpenLdap(Box::new(value)))
+                                }
+                                Ok(None) | Err(_) => {
+                                    prepare_database_provider(&mut writer, now, clock)
+                                }
+                            }
+                        } else {
+                            match prepare_database_provider(&mut writer, now, clock) {
+                                Some(value) => Some(value),
+                                None => match writer
+                                    .prepare_openldap_maintenance_with_clock(now, Some(clock))
+                                {
+                                    Ok(Some(value)) => {
+                                        Some(ProviderMaintenance::OpenLdap(Box::new(value)))
+                                    }
+                                    Ok(None) | Err(_) => None,
+                                },
+                            }
+                        }
+                    };
+                    #[cfg(any(target_os = "linux", target_os = "macos"))]
+                    let pending = match sdk_preferred {
+                        Some(value) => Some(value),
+                        None => other().or_else(|| {
+                            writer
+                                .prepare_sdk_expiry(clock)
+                                .ok()
+                                .flatten()
+                                .map(|plan| ProviderMaintenance::Sdk(Box::new(plan)))
+                        }),
+                    };
+                    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+                    let pending = other();
                     pending
                 };
                 let Some(pending) = pending_provider else {
@@ -221,6 +270,21 @@ pub(crate) fn start_lifecycle_worker(
                 };
                 // No Service writer is held while provider I/O/readback runs.
                 match pending {
+                    #[cfg(any(target_os = "linux", target_os = "macos"))]
+                    ProviderMaintenance::Sdk(plan) => {
+                        let result = plan.execute(&service, plan.deadline);
+                        // An owned SDK attempt retains its exact Plan until the
+                        // Service writer observes and audits its terminal result.
+                        let _scope =
+                            crate::request_deadline::RequestDeadlineScope::enter(plan.deadline);
+                        let Ok(mut writer) = sdk_backend::writer_before(&service, plan.deadline)
+                        else {
+                            continue;
+                        };
+                        if writer.finish_sdk_expiry(*plan, result).is_err() {
+                            eprintln!("heptabao-lifecycle: SDK revoke remains pending");
+                        }
+                    }
                     ProviderMaintenance::Database(pending) => {
                         let result = pending.execute();
                         let Ok(mut writer) = service.try_lock() else {
