@@ -929,3 +929,482 @@ fn pki_time89_external_permit_owner_survives_real_signer_retirement_and_last_tid
     );
     Ok(())
 }
+
+#[test]
+fn pki_time90_actual89_backup_record_and_final_floor_survive_signed_owner_tidy() -> TestResult {
+    let (root, mut service, unseal, admin, issuer) = local_fixture()?;
+    timed_role(&mut service, &admin, json!({"ttl":"10m"}))?;
+    let predecessor = service.state.as_ref().ok_or("original89")?.clone();
+    assert!(
+        predecessor.schema == 89 && !predecessor.engines.has_pki_signed_role_time_state(),
+        "capture actual original89 before mutation"
+    );
+    let old89 = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
+    let mut old_restore = service
+        .prepare_snapshot_restore(&old89)
+        .map_err(|_| "prepared original89")?;
+    let mut predecessor_record = predecessor.clone();
+    let predecessor_record_input: &mut State = &mut predecessor_record;
+    let old_plan = service
+        .prepare_record_plan(predecessor_record_input)
+        .map_err(|_| "original89 record plan")?;
+    assert!(
+        call(
+            &mut service,
+            "PATCH",
+            "ca/roles/time",
+            &admin,
+            json!({"not_before":"1969-12-31T23:59:59Z"})
+        )
+        .status
+            == 200,
+        "actual role signed time upgrade"
+    );
+    let issued = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &admin,
+        json!({"common_name":"leaf.example.test"}),
+    );
+    signed_times(&issued, &issuer, -1, 700)?;
+    assert!(
+        call(&mut service, "DELETE", "ca/roles/time", &admin, json!({})).status == 204,
+        "last role removed"
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("leaf owner")?
+            .engines
+            .has_pki_signed_role_time_state(),
+        "signed private leaf remains the actual last owner"
+    );
+    assert!(
+        service
+            .handle_at(
+                "POST",
+                "ca/tidy",
+                "",
+                &admin,
+                json!({"safety_buffer":"0s"}),
+                701
+            )
+            .status
+            == 204,
+        "actual expired certificate and zero-buffer tidy remove last time owner"
+    );
+    let retired = service.state.as_ref().ok_or("retired90")?.clone();
+    assert!(
+        retired.schema == 90
+            && retired.writer_schema() == 90
+            && !retired.engines.has_pki_signed_role_time_state()
+            && retired.validate_format().is_ok(),
+        "reader90 persists after actual last owner removal"
+    );
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "retired identity")?;
+    let mut record_input_owner = predecessor.clone();
+    let mut commit_input_owner = predecessor.clone();
+    let record_input: &mut State = &mut record_input_owner;
+    let commit_input: &mut State = &mut commit_input_owner;
+    assert!(
+        predecessor
+            .validate_publication_schema(Some(&retired))
+            .is_err()
+            && service.prepare_record_plan(record_input).is_err()
+            && service.commit_state(commit_input).is_err()
+            && service.prepare_snapshot_restore(&old89).is_err(),
+        "original authenticated88 cannot replace retired90 through ordinary gates"
+    );
+    let mut reader = old89.as_slice();
+    assert!(
+        service
+            .prepare_snapshot_restore_from_reader(&mut reader, old89.len() as u64)
+            .is_err(),
+        "original streamed88 backup retains its own real label"
+    );
+    old_restore.fixture_rebind_base_for_protected_floor(identity);
+    let principal = service
+        .state
+        .as_mut()
+        .ok_or("state")?
+        .auth
+        .authenticate_from(&admin, 701, None)
+        .map_err(|_| "actual final restore principal")?;
+    let body = json!({});
+    let request = RequestView {
+        method: "POST",
+        token_clock: None,
+        path: "sys/storage/raft/snapshot-force",
+        namespace: "",
+        token: &admin,
+        body: &body,
+        now: 701,
+        admission_started: std::time::Instant::now(),
+        allow_forward: false,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    };
+    let rejected = service.commit_snapshot_restore(old_restore, &principal, &request);
+    assert!(
+        rejected.status == 400
+            && rejected.body["errors"][0]
+                == "snapshot would downgrade PKI signed role time ownership",
+        "held authenticated actual88 restore reaches final reader90 gate after tidy"
+    );
+    assert!(
+        service
+            .install_received_record_state(predecessor_record, old_plan)
+            .is_err()
+            && service.current_state_identity().map_err(|_| "identity")? == identity,
+        "captured original89 receiver cannot replace actual retired90 graph"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200
+            && reopened.state.as_ref().ok_or("restart")?.schema == 90
+            && reopened.state.as_ref().ok_or("restart")?.writer_schema() == 90,
+        "sticky89 survives encrypted last-owner restart"
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_time90_pre_epoch_signed_der_owner_rejects_both_erasure_and_false_seconds() -> TestResult {
+    let (root, mut service, unseal, admin, issuer) = local_fixture()?;
+    timed_role(
+        &mut service,
+        &admin,
+        json!({"ttl":"10m","not_before":"1969-12-31T23:59:59Z"}),
+    )?;
+    let leaf = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &admin,
+        json!({"common_name":"leaf.example.test"}),
+    );
+    let (serial, pem) = signed_times(&leaf, &issuer, -1, 700)?;
+    let serial = serial.replace(':', "");
+    let state = service.state.as_ref().ok_or("actual signed state")?;
+    assert!(
+        state.schema == 90
+            && state.writer_schema() == 90
+            && state.engines.has_pki_signed_role_time_state()
+            && state.validate_format().is_ok(),
+        "actual signed timestamp owner requires reader90"
+    );
+    let stored = pki_value(&service, "", "ca/")?;
+    assert!(
+        stored.0["issued"][&serial]["signed_role_time_owned"] == true
+            && stored.0["issued"][&serial]["role_leaf_profile"]["signed_role_time_owned"] == true
+            && stored.0["issued"][&serial]["role_leaf_profile"]["not_before"] == -1,
+        "private owner and independent actual signed proof retain pre-epoch value"
+    );
+    for erase in [true, false] {
+        let mut false_state = serde_json::to_value(state)?;
+        let leaf = &mut false_state["engines"]["namespaces"][""]["mounts"]["ca/"]["backend"]["Pki"]
+            ["issued"][&serial];
+        if erase {
+            leaf["signed_role_time_owned"] = json!(false);
+            leaf["role_leaf_profile"]["signed_role_time_owned"] = json!(false);
+        } else {
+            leaf["role_leaf_profile"]["not_before"] = json!(-2);
+        }
+        assert!(
+            serde_json::from_value::<State>(false_state)?
+                .validate_format()
+                .is_err(),
+            "received proof cannot erase signed owner or change timestamp beneath real DER"
+        );
+    }
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "encrypted signed state reopens"
+    );
+    let read = call(
+        &mut reopened,
+        "GET",
+        &format!("ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert!(
+        read.status == 200
+            && read.body["data"]["certificate"] == pem
+            && reopened.state.as_ref().ok_or("restart")?.schema == 90,
+        "original signed certificate and reader90 persist"
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_time89_framework_signed_duration_rejection_subsecond_truncation_and_zero_backdate()
+-> TestResult {
+    let (_root, mut service, _unseal, admin, issuer) = local_fixture()?;
+    timed_role(&mut service, &admin, json!({"ttl":"10m"}))?;
+    for (name, value, error) in [
+        (
+            "not_before_duration",
+            json!("-30s"),
+            "cannot provide negative value '-30'",
+        ),
+        ("ttl", json!("-10m"), "cannot provide negative value '-600'"),
+        (
+            "max_ttl",
+            json!("-1h"),
+            "cannot provide negative value '-3600'",
+        ),
+        (
+            "not_before_duration",
+            json!(-0.5),
+            "time: missing unit in duration \"-0.5\"",
+        ),
+    ] {
+        let before = service
+            .current_state_identity()
+            .map_err(|_| "before rejected signed input")?;
+        let rejected = call(
+            &mut service,
+            "PATCH",
+            "ca/roles/time",
+            &admin,
+            json!({name:value}),
+        );
+        assert!(
+            rejected.status == 400
+                && rejected.body["errors"][0]
+                    == format!(
+                        "Field validation failed: error converting input for field \"{name}\": {error}"
+                    )
+                && service
+                    .current_state_identity()
+                    .map_err(|_| "after rejected input")?
+                    == before,
+            "native invalid duration error preserves original complete state"
+        );
+    }
+    assert!(
+        call(
+            &mut service,
+            "PATCH",
+            "ca/roles/time",
+            &admin,
+            json!({"not_before_duration":"-0.5s"})
+        )
+        .status
+            == 200,
+        "actual negative subsecond truncates to zero"
+    );
+    let role = call(&mut service, "GET", "ca/roles/time", &admin, json!({}));
+    assert!(
+        role.body["data"]["not_before_duration"] == 0,
+        "actual stored zero field"
+    );
+    let leaf = call(
+        &mut service,
+        "POST",
+        "ca/issue/time",
+        &admin,
+        json!({"common_name":"leaf.example.test","ttl":"-0.5s"}),
+    );
+    signed_times(&leaf, &issuer, 70, 700)?;
+    assert!(
+        service.state.as_ref().ok_or("duration state")?.schema == 89,
+        "nonnegative signed certificate does not claim pre-epoch owner90"
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_time90_external_pre_epoch_owner_survives_real_signer_retirement_and_last_tidy() -> TestResult
+{
+    let remote = RemoteTransit::new_kind("ecdsa-p256")?;
+    let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+    let mut ca_body = body();
+    ca_body["ttl"] = json!("10m");
+    let generated = call(
+        &mut service,
+        "POST",
+        "external-ca/root/generate/kms",
+        &admin,
+        ca_body,
+    );
+    assert!(generated.status == 200, "actual external shorter CA");
+    let issuer = X509::from_pem(
+        generated.body["data"]["certificate"]
+            .as_str()
+            .ok_or("actual external CA")?
+            .as_bytes(),
+    )?;
+    let id = generated.body["data"]["issuer_id"]
+        .as_str()
+        .ok_or("actual external CA ID")?;
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            &format!("external-ca/issuer/{id}"),
+            &admin,
+            json!({"leaf_not_after_behavior":"permit"})
+        )
+        .status
+            == 200,
+        "actual external issuer policy"
+    );
+    let mut role = role_body(&default_profile());
+    role["ttl"] = json!("20m");
+    role["not_before"] = json!("1969-12-31T23:59:59Z");
+    assert!(
+        call(&mut service, "POST", "external-ca/roles/time", &admin, role).status == 200,
+        "actual external time role"
+    );
+    let leaf = call(
+        &mut service,
+        "POST",
+        "external-ca/issue/time",
+        &admin,
+        json!({"common_name":"leaf.example.test"}),
+    );
+    let (serial, pem) = signed_times(&leaf, &issuer, -1, 1300)?;
+    let serial = serial.replace(':', "");
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/root/delete",
+            &admin,
+            json!({})
+        )
+        .status
+            == 200,
+        "actual signer retirement retains leaf owner"
+    );
+    let stored = pki_value(&service, "", "external-ca/")?;
+    assert!(
+        stored.0["root"].is_null()
+            && stored.0["issued"][&serial]["signed_role_time_owned"] == true
+            && stored.0["issued"][&serial]["role_leaf_profile"]["signed_role_time_owned"] == true
+            && stored.0["issued"][&serial]["role_leaf_profile"]["not_before"] == -1
+            && stored.0["external"]["issued_public"][&serial]["signed_role_time_owned"] == true
+            && stored.0["external"]["issued_public"][&serial]["not_before"] == -1
+            && stored.0["issued"][&serial]["issuer_not_after_behavior"] == "permit"
+            && stored.0["external"]["issued_public"][&serial]["issuer_not_after_behavior"]
+                == "permit"
+            && stored.0["issued"][&serial]["external_issuer_owner"]["issuer_id"] == id,
+        "retired signer and independently captured time policy remain precisely owned"
+    );
+    let before = remote.calls()?;
+    let read = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert!(
+        read.status == 200 && read.body["data"]["certificate"] == pem && remote.calls()? == before,
+        "historical permit leaf reads actual signed bytes without KMS access"
+    );
+    let state = service.state.as_ref().ok_or("actual retired time owner")?;
+    assert!(
+        state.schema == 90
+            && state.engines.has_pki_signed_role_time_state()
+            && state.validate_format().is_ok(),
+        "actual retired beyond-CA leaf validates against original archived issuer"
+    );
+    let mut altered = serde_json::to_value(state)?;
+    altered["engines"]["namespaces"][""]["mounts"]["external-ca/"]["backend"]["Pki"]["external"]
+        ["issued_public"][&serial]["issuer_not_after_behavior"] = json!("err");
+    assert!(
+        serde_json::from_value::<State>(altered)?
+            .validate_format()
+            .is_err(),
+        "received external projection cannot replace independently captured permit"
+    );
+    drop(service);
+    let mut reopened = root.service()?;
+    assert!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status
+            == 200,
+        "retired original issuer and permit owner reopen encrypted"
+    );
+    let read = call(
+        &mut reopened,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        &admin,
+        json!({}),
+    );
+    assert!(
+        read.status == 200 && read.body["data"]["certificate"] == pem,
+        "retired permit leaf persists"
+    );
+    assert!(
+        call(
+            &mut reopened,
+            "DELETE",
+            "external-ca/roles/time",
+            &admin,
+            json!({})
+        )
+        .status
+            == 204,
+        "last time role removed"
+    );
+    assert!(
+        reopened
+            .handle_at(
+                "POST",
+                "external-ca/tidy",
+                "",
+                &admin,
+                json!({"safety_buffer":"0s"}),
+                1301
+            )
+            .status
+            == 204,
+        "actual expiry removes last retired policy owner"
+    );
+    let state = reopened.state.as_ref().ok_or("retired90 floor")?;
+    assert!(
+        state.schema == 90
+            && state.writer_schema() == 90
+            && !state.engines.has_pki_role_time_state()
+            && !state.engines.has_pki_signed_role_time_state()
+            && state.validate_format().is_ok(),
+        "sticky reader90 survives actual last issuer policy owner removal"
+    );
+    Ok(())
+}

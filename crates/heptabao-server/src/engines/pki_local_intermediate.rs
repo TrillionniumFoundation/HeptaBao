@@ -1586,7 +1586,7 @@ impl Pki {
                 subject_name_der: Some(&fields.subject_der),
                 public_key: &[],
                 authority_key_id: ski.as_deref(),
-                not_before: now.saturating_sub(fields.backdate),
+                not_before: role_time::signed_epoch(now.saturating_sub(fields.backdate))?,
                 not_after: expires,
                 is_ca: true,
                 alt_names: &fields.dns_sans,
@@ -2264,7 +2264,7 @@ mod tests {
         let issued = child.issue(
             "pki/",
             "web",
-            &json!({"common_name":"three.example.test"}),
+            &json!({"common_name":"three.example.test","ttl":"1h"}),
             &owner,
             None,
             NOW + 1,
@@ -2341,7 +2341,7 @@ mod tests {
         let leaf = child.issue(
             "pki/",
             "web",
-            &json!({"common_name":"standalone-leaf.example.test"}),
+            &json!({"common_name":"standalone-leaf.example.test","ttl":"1h"}),
             &owner,
             None,
             NOW + 1,
@@ -2739,7 +2739,7 @@ mod tests {
             let leaf = imported.issue(
                 "pki/",
                 "web",
-                &json!({"common_name":"owned-imported.example.test"}),
+                &json!({"common_name":"owned-imported.example.test","ttl":"1h"}),
                 &owner,
                 None,
                 NOW + 1,

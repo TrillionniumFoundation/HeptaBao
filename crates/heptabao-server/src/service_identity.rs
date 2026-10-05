@@ -28,7 +28,9 @@ impl State {
         if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.engines.has_pki_role_time_state() {
+        let required = if self.engines.has_pki_signed_role_time_state() {
+            PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+        } else if self.engines.has_pki_role_time_state() {
             PKI_ROLE_TIME_STATE_SCHEMA
         } else if self.engines.has_pki_role_leaf_profile_state() {
             PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
@@ -130,6 +132,15 @@ impl State {
             return Err(Response::error(
                 503,
                 "opaque Kubernetes artifact ownership requires schema 87",
+            ));
+        }
+        if self.schema < PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+            && (self.engines.has_pki_signed_role_time_state()
+                || previous.is_some_and(|state| state.schema >= PKI_SIGNED_ROLE_TIME_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI signed role time ownership requires schema 90",
             ));
         }
         if self.schema < PKI_ROLE_TIME_STATE_SCHEMA
@@ -369,6 +380,14 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+            && self.engines.has_pki_signed_role_time_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI signed role time ownership requires schema 90",
             ));
         }
         if self.schema < PKI_ROLE_TIME_STATE_SCHEMA && self.engines.has_pki_role_time_state() {
@@ -1225,6 +1244,7 @@ impl State {
             | PKI_ROLE_WILDCARD_STATE_SCHEMA
             | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
             | PKI_ROLE_TIME_STATE_SCHEMA
+            | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
             | NAMESPACE_CUSTODY_STATE_SCHEMA
             | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(

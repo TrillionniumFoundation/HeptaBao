@@ -278,10 +278,12 @@ pub(super) struct LeafProfilePublicEvidence {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     #[serde(default, skip_serializing_if = "role_false")]
+    pub(super) signed_role_time_owned: bool,
+    #[serde(default, skip_serializing_if = "role_false")]
     pub(super) role_time_owned: bool,
     pub(super) profile: RoleLeafProfile,
     pub(super) public_key: LocalPublicKey,
-    pub(super) not_before: u64,
+    pub(super) not_before: i64,
     pub(super) alt_names: Vec<String>,
     pub(super) ip_sans: Vec<IpAddr>,
 }
@@ -291,6 +293,7 @@ impl LeafProfilePublicEvidence {
         prepared.role_leaf_profile.clone().map(|profile| Self {
             profile,
             issuer_not_after_behavior: prepared.issuer_not_after_behavior,
+            signed_role_time_owned: prepared.signed_role_time_owned,
             role_time_owned: prepared.role_time_owned,
             public_key: public_key.clone(),
             not_before: prepared.not_before,
@@ -329,9 +332,13 @@ impl Pki {
                 self.profile_leaf_issuer_evidence(&issued.local_issuer_id)?;
             evidence.profile.validate_role_oid_strings()?;
             evidence.public_key.validate()?;
-            if evidence.issuer_not_after_behavior != issued.issuer_not_after_behavior
+            if evidence.signed_role_time_owned != issued.signed_role_time_owned
+                || evidence.signed_role_time_owned != (evidence.not_before < 0)
+                || evidence.not_before < 0 && !issued.role_time_owned
+                || evidence.issuer_not_after_behavior != issued.issuer_not_after_behavior
                 || evidence.role_time_owned != issued.role_time_owned
-                || !issued.role_time_owned && evidence.not_before > issued.issued
+                || !issued.role_time_owned
+                    && i128::from(evidence.not_before) > i128::from(issued.issued)
                 || evidence.alt_names.len() > 32
                 || evidence.ip_sans.len() > 32
                 || evidence.alt_names.iter().any(|name| {

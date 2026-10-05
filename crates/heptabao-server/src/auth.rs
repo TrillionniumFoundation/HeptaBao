@@ -103,6 +103,10 @@ mod mount_visibility;
 mod token_policies;
 #[path = "auth_token_roles.rs"]
 mod token_roles;
+
+pub(crate) fn framework_duration_seconds(body: &Value, field: &str) -> Result<u64, AuthError> {
+    token_roles::framework_duration_seconds(body, field)
+}
 use ldap_native::{LdapNativeConfig, LdapNativeUser};
 #[path = "auth_native_token.rs"]
 mod native_token;

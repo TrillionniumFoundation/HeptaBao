@@ -23,15 +23,26 @@ pub(super) struct LeafPublic {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     #[serde(default, skip_serializing_if = "role_false")]
+    pub(super) signed_role_time_owned: bool,
+    #[serde(default, skip_serializing_if = "role_false")]
     pub(super) role_time_owned: bool,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     issuer_id: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     role_leaf_profile: Option<RoleLeafProfile>,
     public_key: LocalPublicKey,
-    not_before: u64,
+    not_before: i64,
     alt_names: Vec<String>,
     ip_sans: Vec<IpAddr>,
+}
+
+impl Pki {
+    pub(in crate::engines::pki) fn has_external_signed_role_time_state(&self) -> bool {
+        self.external
+            .issued_public
+            .values()
+            .any(|leaf| leaf.signed_role_time_owned || leaf.not_before < 0)
+    }
 }
 
 impl LeafPublic {
@@ -257,7 +268,7 @@ fn leaf_tbs(
         } else {
             name(&root.common_name)
         },
-        seq(&[time(prepared.not_before), time(prepared.expires)]),
+        seq(&[time_signed(prepared.not_before), time(prepared.expires)]),
         prepared.role_leaf_profile.as_ref().map_or_else(
             || name(&prepared.common_name),
             |profile| profile.subject_der(&prepared.common_name),
@@ -446,7 +457,8 @@ impl Pki {
                 self.admit_external_issuer_archive(&captured_issuer)?;
                 let owner = captured_issuer.owner()?;
                 if !prepared.local_issuer_id.is_empty()
-                    || !prepared.role_time_owned && prepared.not_before < captured_issuer.not_before
+                    || !prepared.role_time_owned
+                        && i128::from(prepared.not_before) < i128::from(captured_issuer.not_before)
                     || prepared.expires > captured_issuer.not_after
                         && prepared.issuer_not_after_behavior
                             != Some(IssuerLeafNotAfterBehavior::Permit)
@@ -461,6 +473,7 @@ impl Pki {
                 let serial = prepared.serial.clone();
                 let projection = LeafPublic {
                     issuer_not_after_behavior: prepared.issuer_not_after_behavior,
+                    signed_role_time_owned: prepared.signed_role_time_owned,
                     role_time_owned: prepared.role_time_owned,
                     issuer_id: captured_issuer.issuer_id.clone(),
                     role_leaf_profile: prepared.role_leaf_profile.clone(),
@@ -712,9 +725,13 @@ impl Pki {
                 issuer
             };
             if !issued.local_issuer_id.is_empty()
+                || projection.signed_role_time_owned != issued.signed_role_time_owned
+                || projection.signed_role_time_owned != (projection.not_before < 0)
+                || projection.not_before < 0 && !issued.role_time_owned
                 || projection.issuer_not_after_behavior != issued.issuer_not_after_behavior
                 || projection.role_time_owned != issued.role_time_owned
-                || !issued.role_time_owned && projection.not_before > issued.issued
+                || !issued.role_time_owned
+                    && i128::from(projection.not_before) > i128::from(issued.issued)
                 || issued.issued >= issued.expires
                 || projection.alt_names.len() > 32
                 || projection.ip_sans.len() > 32
@@ -722,7 +739,8 @@ impl Pki {
                     .alt_names
                     .iter()
                     .any(|name| !valid_common_name(name))
-                || !issued.role_time_owned && projection.not_before < issuer.not_before
+                || !issued.role_time_owned
+                    && i128::from(projection.not_before) < i128::from(issuer.not_before)
                 || issued.expires > issuer.not_after
                     && issued.issuer_not_after_behavior != Some(IssuerLeafNotAfterBehavior::Permit)
             {
@@ -731,7 +749,9 @@ impl Pki {
             match (&issued.role_leaf_profile, &projection.role_leaf_profile) {
                 (None, None) => {}
                 (Some(evidence), Some(profile))
-                    if evidence.issuer_not_after_behavior == issued.issuer_not_after_behavior
+                    if evidence.signed_role_time_owned == issued.signed_role_time_owned
+                        && evidence.issuer_not_after_behavior
+                            == issued.issuer_not_after_behavior
                         && evidence.role_time_owned == issued.role_time_owned
                         && evidence.profile == *profile
                         && evidence.public_key == projection.public_key
@@ -742,6 +762,7 @@ impl Pki {
             }
             let prepared = LeafTemplate {
                 issuer_not_after_behavior: issued.issuer_not_after_behavior,
+                signed_role_time_owned: issued.signed_role_time_owned,
                 role_time_owned: issued.role_time_owned,
                 warnings: Vec::new(),
                 role_leaf_profile: projection.role_leaf_profile.clone(),

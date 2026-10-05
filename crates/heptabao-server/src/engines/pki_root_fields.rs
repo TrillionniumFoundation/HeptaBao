@@ -285,6 +285,10 @@ pub(super) fn root_expiration(
 }
 
 pub(super) fn rfc3339_seconds(value: &str) -> Result<u64> {
+    u64::try_from(rfc3339_signed_seconds(value)?).map_err(|_| bad("invalid PKI not_after"))
+}
+
+pub(super) fn rfc3339_signed_seconds(value: &str) -> Result<i64> {
     use openssl::asn1::Asn1Time;
     let invalid = || bad("invalid PKI not_after");
     let bytes = value.as_bytes();
@@ -353,8 +357,11 @@ pub(super) fn rfc3339_seconds(value: &str) -> Result<u64> {
     let parsed = Asn1Time::from_str(&stamp).map_err(|_| invalid())?;
     let epoch = Asn1Time::from_unix(0).map_err(|_| invalid())?;
     let diff = epoch.diff(&parsed).map_err(|_| invalid())?;
-    u64::try_from(i64::from(diff.days) * 86400 + i64::from(diff.secs) - offset_seconds)
-        .map_err(|_| invalid())
+    let seconds = i64::from(diff.days) * 86400 + i64::from(diff.secs) - offset_seconds;
+    if !(-62_167_219_200..=253_402_300_799).contains(&seconds) {
+        return Err(invalid());
+    }
+    Ok(seconds)
 }
 
 /// The signed certificate owns the issuer's entire DN. Parsing also works for

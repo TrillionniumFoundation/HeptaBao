@@ -36,7 +36,7 @@ impl Default for RoleTimePolicy {
 }
 
 pub(super) struct ResolvedRoleTime {
-    pub(super) not_before: u64,
+    pub(super) not_before: i64,
     pub(super) not_after: u64,
     pub(super) warnings: Vec<String>,
 }
@@ -52,21 +52,44 @@ fn text_field(body: &Value, name: &str, default: &str) -> Result<String> {
     })
 }
 
-fn role_duration(body: &Value, name: &str, default: u64) -> Result<u64> {
-    match body.get(name) {
-        None => Ok(default),
-        Some(Value::Null) => Ok(0),
-        Some(Value::Number(value)) => value
-            .as_u64()
-            .or_else(|| {
-                value
-                    .as_f64()
-                    .filter(|v| v.is_finite() && *v >= 0.0 && *v < i64::MAX as f64)
-                    .map(|v| v.trunc() as u64)
-            })
-            .ok_or_else(|| bad(&format!("invalid PKI {name}"))),
-        _ => ttl_field(body, name, default),
+pub(super) fn role_duration(body: &Value, name: &str, default: u64) -> Result<u64> {
+    if body.get(name).is_none() {
+        return Ok(default);
     }
+    crate::auth::framework_duration_seconds(body, name)
+        .map_err(|error| bad(&format!("Field validation failed: {}", error.message)))
+}
+
+fn absolute_before(value: &str) -> Result<i64> {
+    root_fields::rfc3339_signed_seconds(value).map_err(|_| bad("invalid PKI not_before"))
+}
+
+pub(super) fn signed_epoch(seconds: u64) -> Result<i64> {
+    i64::try_from(seconds)
+        .ok()
+        .filter(|seconds| *seconds <= 253_402_300_799)
+        .ok_or_else(|| bad("PKI timestamp exceeds supported calendar"))
+}
+
+pub(super) fn signed_timestamp(seconds: i64) -> String {
+    let days = seconds.div_euclid(86400);
+    let z = days + 719468;
+    let era = z.div_euclid(146097);
+    let doe = z - era * 146097;
+    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
+    let mut year = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let day = doy - (153 * mp + 2) / 5 + 1;
+    let month = mp + if mp < 10 { 3 } else { -9 };
+    year += i64::from(month <= 2);
+    let day_seconds = seconds.rem_euclid(86400);
+    format!(
+        "{year:04}-{month:02}-{day:02}T{:02}:{:02}:{:02}Z",
+        day_seconds / 3600,
+        day_seconds / 60 % 60,
+        day_seconds % 60
+    )
 }
 
 fn absolute_time(value: &str, name: &str) -> Result<u64> {
@@ -74,6 +97,11 @@ fn absolute_time(value: &str, name: &str) -> Result<u64> {
 }
 
 impl RoleTimePolicy {
+    fn has_signed_time(&self) -> bool {
+        !self.not_before.is_empty()
+            && absolute_before(&self.not_before).is_ok_and(|before| before < 0)
+    }
+
     pub(super) fn from_body(body: &Value, max_ttl: u64) -> Result<Self> {
         let policy = Self {
             ttl: role_duration(body, "ttl", 0)?,
@@ -128,26 +156,30 @@ impl RoleTimePolicy {
         self.validate(role_max_ttl)?;
         let requested_before = text_field(request, "not_before", "")?;
         let before = if !self.not_before.is_empty() {
-            absolute_time(&self.not_before, "not_before")?
+            absolute_before(&self.not_before)?
         } else if !requested_before.is_empty() {
             if self.not_before_bound == "forbid" {
                 return Err(bad(
                     "not_before_bound is set to forbid. not_before cannot be provided.",
                 ));
             }
-            let before = absolute_time(&requested_before, "not_before")?;
+            let before = absolute_before(&requested_before)?;
             if self.not_before_bound == "duration"
-                && before < now.saturating_sub(self.not_before_duration)
+                && i128::from(before) < i128::from(now.saturating_sub(self.not_before_duration))
             {
                 return Err(bad(&format!(
                     "not_before_bound is set to duration. Cannot satisfy request as it would result in notBefore of {} that is older than the allowed not_before_duration of {}",
-                    timestamp(before),
+                    signed_timestamp(before),
                     go_duration(self.not_before_duration)
                 )));
             }
             before
         } else {
-            now.saturating_sub(self.not_before_duration)
+            signed_epoch(now.saturating_sub(if self.not_before_duration == 0 {
+                30
+            } else {
+                self.not_before_duration
+            }))?
         };
         let requested_after = text_field(request, "not_after", "")?;
         let after_text = if !self.not_after.is_empty() {
@@ -242,6 +274,19 @@ fn go_duration(seconds: u64) -> String {
 }
 
 impl Pki {
+    pub(in crate::engines) fn has_signed_role_time_state(&self) -> bool {
+        self.roles.values().any(|role| {
+            role.role_time_policy
+                .as_ref()
+                .is_some_and(RoleTimePolicy::has_signed_time)
+        }) || self.issued.values().any(|leaf| {
+            leaf.signed_role_time_owned
+                || leaf.role_leaf_profile.as_ref().is_some_and(|evidence| {
+                    evidence.signed_role_time_owned || evidence.not_before < 0
+                })
+        }) || self.has_external_signed_role_time_state()
+    }
+
     pub(in crate::engines) fn has_role_time_state(&self) -> bool {
         self.root
             .iter()

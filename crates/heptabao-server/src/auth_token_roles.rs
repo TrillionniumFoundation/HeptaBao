@@ -7,6 +7,10 @@ mod fields;
 #[path = "auth_token_role_lists.rs"]
 mod lists;
 
+pub(super) fn framework_duration_seconds(body: &Value, field: &str) -> Result<u64, AuthError> {
+    fields::duration(body, field)
+}
+
 const MAX_ROLE_TEXT: usize = 1024 * 1024;
 const MAX_ISSUED_ROLE_PATH: usize = MAX_ROLE_TEXT + 8192 + 64;
 const MAX_ROLE_DURATION: u64 = i64::MAX as u64 / 1_000_000_000;

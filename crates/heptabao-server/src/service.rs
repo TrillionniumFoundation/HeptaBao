@@ -79,8 +79,9 @@ const PKI_ROLE_WILDCARD_STATE_SCHEMA: u32 = 85;
 // Typed role/leaf evidence is admitted only at its explicit protected floor.
 const PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA: u32 = 88;
 const PKI_ROLE_TIME_STATE_SCHEMA: u32 = 89;
+const PKI_SIGNED_ROLE_TIME_STATE_SCHEMA: u32 = 90;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ROLE_TIME_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_SIGNED_ROLE_TIME_STATE_SCHEMA;
 
 // Precise Token API schema 82 remains staged until its provider paths are integrated.
 fn supported_reader_schema(schema: u32) -> bool {
@@ -95,6 +96,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
                 | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
                 | PKI_ROLE_TIME_STATE_SCHEMA
+                | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;

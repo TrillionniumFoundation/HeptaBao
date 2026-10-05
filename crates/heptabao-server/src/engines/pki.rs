@@ -247,6 +247,8 @@ pub(super) struct IssuedCertificate {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     #[serde(default, skip_serializing_if = "role_false")]
+    signed_role_time_owned: bool,
+    #[serde(default, skip_serializing_if = "role_false")]
     role_time_owned: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     role_leaf_profile: Option<LeafProfilePublicEvidence>,
@@ -450,6 +452,8 @@ impl Pki {
                 })
                 || issued.lease_id != format!("{}/{}", issued.path, serial)
                 || issued.issued > clock
+                || issued.signed_role_time_owned && !issued.role_time_owned
+                || issued.role_time_owned && issued.role_leaf_profile.is_none()
                 || issued.issuer_not_after_behavior.is_some() && !issued.role_time_owned
                 || issued.expires <= issued.issued
                 || issued.expires - issued.issued > MAX_TTL
@@ -690,7 +694,7 @@ impl Pki {
                     subject_name_der: Some(&fields.subject_der),
                     public_key: &[],
                     authority_key_id: Some(&key_identifier),
-                    not_before,
+                    not_before: role_time::signed_epoch(not_before)?,
                     not_after,
                     is_ca: true,
                     alt_names: &fields.dns_sans,
@@ -1349,6 +1353,13 @@ impl Pki {
         if expires <= now {
             return Err(error(403, "issuer no longer has a live PKI lease window"));
         }
+        if i128::from(resolved.not_before) > i128::from(expires) {
+            return Err(bad(&format!(
+                "The certificate's Not Before ({}) is later than the certificate's Not After ({})",
+                role_time::signed_timestamp(resolved.not_before),
+                timestamp(expires)
+            )));
+        }
         let serial = random_serial()?;
         let path = if let Some(reference) = route.explicit_issuer {
             format!("{}issuer/{reference}/issue/{}", route.mount, route.role)
@@ -1361,6 +1372,7 @@ impl Pki {
             return Err(error(503, "PKI serial collision"));
         }
         Ok(LeafTemplate {
+            signed_role_time_owned: resolved.not_before < 0,
             issuer_not_after_behavior: root.leaf_not_after_behavior,
             role_time_owned: root.leaf_not_after_behavior.is_some()
                 || role.role_time_policy.is_some()
@@ -1570,6 +1582,7 @@ impl Pki {
             prepared.serial.clone(),
             IssuedCertificate {
                 issuer_not_after_behavior: prepared.issuer_not_after_behavior,
+                signed_role_time_owned: prepared.signed_role_time_owned,
                 role_time_owned: prepared.role_time_owned,
                 role_leaf_profile,
                 local_issuer_id: prepared.local_issuer_id,
@@ -1665,7 +1678,7 @@ impl Role {
         {
             return Err(bad("allowed_domains must contain 1..=64 DNS domains"));
         }
-        let max_ttl = ttl_field(body, "max_ttl", 0)?;
+        let max_ttl = role_time::role_duration(body, "max_ttl", 0)?;
         let time_policy = RoleTimePolicy::from_body(body, max_ttl)?;
         let role = Self {
             role_time_policy: role_time::ROLE_TIME_FIELDS
@@ -2093,6 +2106,7 @@ struct IssuanceRoute<'a> {
 #[derive(Clone)]
 struct LeafTemplate {
     issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
+    signed_role_time_owned: bool,
     role_time_owned: bool,
     warnings: Vec<String>,
     role_leaf_profile: Option<RoleLeafProfile>,
@@ -2108,7 +2122,7 @@ struct LeafTemplate {
     alt_names: Vec<String>,
     ip_sans: Vec<IpAddr>,
     issued: u64,
-    not_before: u64,
+    not_before: i64,
     expires: u64,
 }
 
@@ -2121,7 +2135,7 @@ struct CertificateSpec<'a> {
     subject_name_der: Option<&'a [u8]>,
     public_key: &'a [u8],
     authority_key_id: Option<&'a [u8]>,
-    not_before: u64,
+    not_before: i64,
     not_after: u64,
     is_ca: bool,
     alt_names: &'a [String],
@@ -2293,7 +2307,7 @@ fn certificate_tbs_with(
         integer(&serial_bytes(serial)?),
         signature_algorithm.to_vec(),
         issuer_name_der.map_or_else(|| name(issuer_cn), <[u8]>::to_vec),
-        seq(&[time(not_before), time(not_after)]),
+        seq(&[time_signed(not_before), time(not_after)]),
         if let Some(profile) = role_leaf_profile {
             profile.subject_der(subject_cn)
         } else {
@@ -2323,7 +2337,12 @@ fn name(common_name: &str) -> Vec<u8> {
     ])])])
 }
 fn time(seconds: u64) -> Vec<u8> {
-    let stamp = timestamp(seconds);
+    time_stamp(&timestamp(seconds))
+}
+fn time_signed(seconds: i64) -> Vec<u8> {
+    time_stamp(&role_time::signed_timestamp(seconds))
+}
+fn time_stamp(stamp: &str) -> Vec<u8> {
     let bytes = stamp.as_bytes();
     let year: u32 = stamp[0..4].parse().unwrap_or(2050);
     if (1950..2050).contains(&year) {

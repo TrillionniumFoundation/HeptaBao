@@ -345,6 +345,14 @@ impl Service {
                 "snapshot would downgrade opaque Kubernetes artifact ownership",
             ));
         }
+        if current.schema >= PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+            && incoming.schema < PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI signed role time ownership",
+            ));
+        }
         if current.schema >= PKI_ROLE_TIME_STATE_SCHEMA
             && incoming.schema < PKI_ROLE_TIME_STATE_SCHEMA
         {
