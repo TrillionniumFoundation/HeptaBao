@@ -19,6 +19,8 @@ use ring::digest::SHA256;
 use zeroize::Zeroizing;
 
 mod durable;
+#[cfg(target_os = "linux")]
+pub mod sdk_backend;
 pub use durable::{
     DurableDynamicSecretBroker, DurableReconciliationDecision, PendingPluginInvocation,
     PluginMutationContext,

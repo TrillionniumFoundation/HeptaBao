@@ -1,0 +1,537 @@
+//! Official SDK logical backends through an owned Go AutoMTLS companion.
+//!
+//! The companion's stdio is internal IPC. The plugin receives the unchanged
+//! OpenBao SDK v5 Backend and Storage gRPC protocol. This first adapter supports
+//! secret backend CRUD; catalog, HTTP mounting, leases and auth are separate.
+
+use std::fs::{File, OpenOptions};
+use std::io::{Read, Write};
+use std::os::fd::AsFd;
+use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
+use std::os::unix::process::CommandExt;
+use std::path::{Path, PathBuf};
+use std::process::{Child, ChildStdin, ChildStdout, Stdio};
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
+
+use rustix::fs::OFlags;
+use rustix::process::{Pid, Signal};
+use serde_json::{Value, json};
+use zeroize::Zeroizing;
+
+use crate::OwnedExecutableImage;
+
+const MAX_FRAME: usize = 1024 * 1024;
+const MAX_VALUE: usize = 256 * 1024;
+const MAX_STORAGE_CALLS: usize = 4096;
+
+#[derive(Clone, Eq, PartialEq)]
+pub struct SdkStorageEntry {
+    pub key: String,
+    pub value: Zeroizing<Vec<u8>>,
+    pub seal_wrap: bool,
+}
+impl std::fmt::Debug for SdkStorageEntry {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("SdkStorageEntry([REDACTED])")
+    }
+}
+
+/// The caller supplies a mount-scoped view with its own durable commit policy.
+/// Implementations must observe this same deadline; it is never renewed by IPC.
+pub trait SdkStorage {
+    fn get(
+        &mut self,
+        key: &str,
+        deadline: Instant,
+    ) -> Result<Option<SdkStorageEntry>, SdkBridgeError>;
+    fn put(&mut self, entry: SdkStorageEntry, deadline: Instant) -> Result<(), SdkBridgeError>;
+    fn delete(&mut self, key: &str, deadline: Instant) -> Result<(), SdkBridgeError>;
+    fn list_page(
+        &mut self,
+        prefix: &str,
+        after: &str,
+        limit: i64,
+        deadline: Instant,
+    ) -> Result<Vec<String>, SdkBridgeError>;
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SdkBridgeError {
+    BeforeEntry,
+    OutcomeUnknown,
+    Storage,
+    Backend,
+    Fenced,
+}
+impl std::fmt::Display for SdkBridgeError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "SDK bridge {:?}", self)
+    }
+}
+impl std::error::Error for SdkBridgeError {}
+
+#[derive(Clone)]
+pub struct SdkLaunch {
+    pub companion: PathBuf,
+    pub companion_sha256: [u8; 32],
+    pub plugin: PathBuf,
+    pub plugin_sha256: [u8; 32],
+    pub plugin_args: Vec<String>,
+    pub socket_directory: PathBuf,
+    pub private_log: PathBuf,
+    pub timeout: Duration,
+    pub default_ttl_seconds: u32,
+    pub max_ttl_seconds: u32,
+}
+impl std::fmt::Debug for SdkLaunch {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("SdkLaunch([REDACTED])")
+    }
+}
+
+/// Serial ownership keeps call IDs, storage callbacks and process fate bound.
+pub struct SdkBackendHost {
+    child: Option<Child>,
+    pid: Pid,
+    input: ChildStdin,
+    output: ChildStdout,
+    buffered: Zeroizing<Vec<u8>>,
+    _companion: OwnedExecutableImage,
+    _plugin: OwnedExecutableImage,
+    timeout: Duration,
+    call: u64,
+    storage_rpc: u64,
+    fenced: bool,
+}
+impl std::fmt::Debug for SdkBackendHost {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SdkBackendHost")
+            .field("fenced", &self.fenced)
+            .finish_non_exhaustive()
+    }
+}
+
+impl SdkBackendHost {
+    pub fn launch(
+        config: &SdkLaunch,
+        storage: &mut dyn SdkStorage,
+    ) -> Result<Self, SdkBridgeError> {
+        if config.timeout.is_zero()
+            || config.timeout > Duration::from_secs(30)
+            || config.default_ttl_seconds > config.max_ttl_seconds
+            || config.plugin_args.len() > 64
+            || config
+                .plugin_args
+                .iter()
+                .any(|s| s.len() > 4096 || s.contains('\0'))
+        {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
+        let socket = std::fs::symlink_metadata(&config.socket_directory)
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        if !socket.is_dir() || socket.mode() & 0o077 != 0 || !config.socket_directory.is_absolute()
+        {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
+        let companion = OwnedExecutableImage::open(&config.companion, config.companion_sha256)
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        let plugin = OwnedExecutableImage::open(&config.plugin, config.plugin_sha256)
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        let log = private_log(&config.private_log)?;
+        let deadline = Instant::now() + config.timeout;
+        let child = companion
+            .command()
+            .env_clear()
+            .env("TMPDIR", &config.socket_directory)
+            .process_group(0)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::from(log))
+            .spawn()
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        let mut pending = PendingChild(Some(child));
+        let child = pending.0.as_mut().ok_or(SdkBridgeError::OutcomeUnknown)?;
+        let pid =
+            Pid::from_raw(i32::try_from(child.id()).map_err(|_| SdkBridgeError::OutcomeUnknown)?)
+                .ok_or(SdkBridgeError::OutcomeUnknown)?;
+        let input = child.stdin.take().ok_or(SdkBridgeError::OutcomeUnknown)?;
+        let output = child.stdout.take().ok_or(SdkBridgeError::OutcomeUnknown)?;
+        let mut host = Self {
+            child: pending.0.take(),
+            pid,
+            input,
+            output,
+            buffered: Zeroizing::new(Vec::new()),
+            _companion: companion,
+            _plugin: plugin,
+            timeout: config.timeout,
+            call: 1,
+            storage_rpc: 0,
+            fenced: false,
+        };
+        nonblocking(&host.input)?;
+        nonblocking(&host.output)?;
+        let setup = json!({"version":1,"kind":"setup","call":1,
+            "plugin":host._plugin.descriptor_path(),"args":config.plugin_args,
+            "socket_dir":config.socket_directory,"timeout_ms":config.timeout.as_millis(),
+            "default_ttl_seconds":config.default_ttl_seconds,"max_ttl_seconds":config.max_ttl_seconds});
+        host.send(&setup, deadline)?;
+        let ready = host.exchange(storage, "ready", deadline)?;
+        if ready.get("backend_type").and_then(Value::as_str) != Some("secret") {
+            return Err(SdkBridgeError::OutcomeUnknown);
+        }
+        Ok(host)
+    }
+
+    pub fn handle_request(
+        &mut self,
+        operation: &str,
+        path: &str,
+        data: Value,
+        storage: &mut dyn SdkStorage,
+    ) -> Result<Option<Value>, SdkBridgeError> {
+        if self.fenced {
+            return Err(SdkBridgeError::Fenced);
+        }
+        if !matches!(
+            operation,
+            "read" | "create" | "update" | "patch" | "delete" | "list" | "scan"
+        ) || path.is_empty()
+            || path.len() > 4096
+            || path.contains('\0')
+            || !data.is_object()
+        {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
+        self.call = self.call.checked_add(1).ok_or(SdkBridgeError::Fenced)?;
+        let deadline = Instant::now() + self.timeout;
+        let request = json!({"version":1,"kind":"request","call":self.call,
+            "operation":operation,"path":path,"data":data});
+        let result = (|| {
+            self.send(&request, deadline)?;
+            self.exchange(storage, "result", deadline)
+        })();
+        let result = match result {
+            Ok(v) => v,
+            Err(e) => {
+                self.fenced = true;
+                return Err(e);
+            }
+        };
+        if result
+            .get("error")
+            .and_then(Value::as_str)
+            .is_some_and(|s| !s.is_empty())
+        {
+            return Err(SdkBridgeError::Backend);
+        }
+        let response = result.get("response").ok_or_else(|| {
+            self.fenced = true;
+            SdkBridgeError::OutcomeUnknown
+        })?;
+        if response.is_null() {
+            Ok(None)
+        } else {
+            if !response.is_object()
+                || response.get("auth").is_none_or(|v| !v.is_null())
+                || response.get("secret").is_none_or(|v| !v.is_null())
+            {
+                self.fenced = true;
+                return Err(SdkBridgeError::OutcomeUnknown);
+            }
+            Ok(Some(response.clone()))
+        }
+    }
+
+    /// Cleanup completes the same owned process, without starting another one.
+    pub fn close(&mut self, storage: &mut dyn SdkStorage) -> Result<(), SdkBridgeError> {
+        if self.fenced {
+            return Err(SdkBridgeError::Fenced);
+        }
+        self.call = self.call.checked_add(1).ok_or(SdkBridgeError::Fenced)?;
+        let deadline = Instant::now() + self.timeout;
+        let result = (|| {
+            self.send(
+                &json!({"version":1,"kind":"close","call":self.call}),
+                deadline,
+            )?;
+            self.exchange(storage, "closed", deadline)?;
+            loop {
+                if Instant::now() >= deadline {
+                    return Err(SdkBridgeError::OutcomeUnknown);
+                }
+                let child = self.child.as_mut().ok_or(SdkBridgeError::OutcomeUnknown)?;
+                match child
+                    .try_wait()
+                    .map_err(|_| SdkBridgeError::OutcomeUnknown)?
+                {
+                    Some(status) if status.success() => {
+                        self.child = None;
+                        return Ok(());
+                    }
+                    Some(_) => {
+                        self.child = None;
+                        return Err(SdkBridgeError::OutcomeUnknown);
+                    }
+                    None => pause(deadline),
+                }
+            }
+        })();
+        self.fenced = true;
+        result
+    }
+
+    fn exchange(
+        &mut self,
+        storage: &mut dyn SdkStorage,
+        expected: &str,
+        deadline: Instant,
+    ) -> Result<Value, SdkBridgeError> {
+        for _ in 0..=MAX_STORAGE_CALLS {
+            let message = self.receive(deadline)?;
+            if message.get("version").and_then(Value::as_u64) != Some(1)
+                || message.get("call").and_then(Value::as_u64) != Some(self.call)
+            {
+                return Err(SdkBridgeError::OutcomeUnknown);
+            }
+            let kind = message
+                .get("kind")
+                .and_then(Value::as_str)
+                .ok_or(SdkBridgeError::OutcomeUnknown)?;
+            if kind == expected {
+                return Ok(message);
+            }
+            if kind != "storage" {
+                return Err(SdkBridgeError::OutcomeUnknown);
+            }
+            let rpc = message
+                .get("rpc")
+                .and_then(Value::as_u64)
+                .ok_or(SdkBridgeError::OutcomeUnknown)?;
+            if self.storage_rpc.checked_add(1) != Some(rpc) {
+                return Err(SdkBridgeError::OutcomeUnknown);
+            }
+            self.storage_rpc = rpc;
+            let mut reply = json!({"version":1,"kind":"storage_reply","call":self.call,"rpc":rpc});
+            match storage_callback(storage, &message, deadline) {
+                Ok(value) => {
+                    reply
+                        .as_object_mut()
+                        .ok_or(SdkBridgeError::OutcomeUnknown)?
+                        .extend(
+                            value
+                                .as_object()
+                                .ok_or(SdkBridgeError::OutcomeUnknown)?
+                                .clone(),
+                        );
+                }
+                Err(_) => {
+                    reply["error"] = json!("host storage rejected operation");
+                }
+            }
+            if Instant::now() >= deadline {
+                return Err(SdkBridgeError::OutcomeUnknown);
+            }
+            self.send(&reply, deadline)?;
+        }
+        Err(SdkBridgeError::OutcomeUnknown)
+    }
+
+    fn send(&mut self, value: &Value, deadline: Instant) -> Result<(), SdkBridgeError> {
+        let mut frame =
+            Zeroizing::new(serde_json::to_vec(value).map_err(|_| SdkBridgeError::BeforeEntry)?);
+        if frame.len() > MAX_FRAME {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
+        frame.push(b'\n');
+        let mut offset = 0;
+        while offset < frame.len() {
+            if Instant::now() >= deadline {
+                return Err(SdkBridgeError::OutcomeUnknown);
+            }
+            match self.input.write(&frame[offset..]) {
+                Ok(0) => return Err(SdkBridgeError::OutcomeUnknown),
+                Ok(n) => offset += n,
+                Err(e) if retryable(&e) => pause(deadline),
+                Err(_) => return Err(SdkBridgeError::OutcomeUnknown),
+            }
+        }
+        Ok(())
+    }
+    fn receive(&mut self, deadline: Instant) -> Result<Value, SdkBridgeError> {
+        let mut buffer = Zeroizing::new([0u8; 8192]);
+        loop {
+            if Instant::now() >= deadline {
+                return Err(SdkBridgeError::OutcomeUnknown);
+            }
+            if let Some(end) = self.buffered.iter().position(|b| *b == b'\n') {
+                let message = serde_json::from_slice(&self.buffered[..end])
+                    .map_err(|_| SdkBridgeError::OutcomeUnknown)?;
+                self.buffered.drain(..=end);
+                return Ok(message);
+            }
+            match self.output.read(&mut buffer[..]) {
+                Ok(0) => return Err(SdkBridgeError::OutcomeUnknown),
+                Ok(n) => {
+                    if self.buffered.len() + n > MAX_FRAME + 1 {
+                        return Err(SdkBridgeError::OutcomeUnknown);
+                    }
+                    self.buffered.extend_from_slice(&buffer[..n]);
+                }
+                Err(e) if retryable(&e) => pause(deadline),
+                Err(_) => return Err(SdkBridgeError::OutcomeUnknown),
+            }
+        }
+    }
+}
+
+struct PendingChild(Option<Child>);
+impl Drop for PendingChild {
+    fn drop(&mut self) {
+        if let Some(mut child) = self.0.take() {
+            if let Some(pid) = i32::try_from(child.id()).ok().and_then(Pid::from_raw) {
+                let _ = rustix::process::kill_process_group(pid, Signal::KILL);
+            }
+            let _ = child.kill();
+            reap_owned(child);
+        }
+    }
+}
+
+impl Drop for SdkBackendHost {
+    fn drop(&mut self) {
+        if let Some(mut child) = self.child.take() {
+            let _ = rustix::process::kill_process_group(self.pid, Signal::KILL);
+            let _ = child.kill();
+            reap_owned(child);
+        }
+    }
+}
+fn reap_owned(mut child: Child) {
+    if matches!(child.try_wait(), Ok(Some(_))) {
+        return;
+    }
+    // A failed thread spawn drops its closure. Keep another owner outside that
+    // closure so the exact Child remains recoverable and can still be reaped.
+    let held = Arc::new(Mutex::new(Some(child)));
+    let background = Arc::clone(&held);
+    let result = std::thread::Builder::new()
+        .name("heptabao-sdk-reaper".into())
+        .spawn(move || {
+            let child = background.lock().unwrap_or_else(|p| p.into_inner()).take();
+            if let Some(mut child) = child {
+                let _ = child.wait();
+            }
+        });
+    if result.is_err() {
+        let child = held.lock().unwrap_or_else(|p| p.into_inner()).take();
+        if let Some(mut child) = child {
+            let _ = child.wait();
+        }
+    }
+}
+fn private_log(path: &Path) -> Result<File, SdkBridgeError> {
+    OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .open(path)
+        .map_err(|_| SdkBridgeError::BeforeEntry)
+}
+fn nonblocking(fd: &impl AsFd) -> Result<(), SdkBridgeError> {
+    let flags = rustix::fs::fcntl_getfl(fd).map_err(|_| SdkBridgeError::OutcomeUnknown)?;
+    rustix::fs::fcntl_setfl(fd, flags | OFlags::NONBLOCK)
+        .map_err(|_| SdkBridgeError::OutcomeUnknown)
+}
+fn retryable(e: &std::io::Error) -> bool {
+    matches!(
+        e.kind(),
+        std::io::ErrorKind::WouldBlock | std::io::ErrorKind::Interrupted
+    )
+}
+fn pause(deadline: Instant) {
+    std::thread::sleep(
+        Duration::from_millis(1).min(deadline.saturating_duration_since(Instant::now())),
+    )
+}
+fn text<'a>(m: &'a Value, key: &str) -> Result<&'a str, SdkBridgeError> {
+    m.get(key)
+        .and_then(Value::as_str)
+        .ok_or(SdkBridgeError::Storage)
+}
+fn hex_encode(value: &[u8]) -> String {
+    value.iter().map(|b| format!("{b:02x}")).collect()
+}
+fn hex_decode(value: &str) -> Result<Zeroizing<Vec<u8>>, SdkBridgeError> {
+    if value.len() > MAX_VALUE * 2 || value.len() % 2 != 0 {
+        return Err(SdkBridgeError::Storage);
+    }
+    value
+        .as_bytes()
+        .chunks_exact(2)
+        .map(|c| {
+            std::str::from_utf8(c)
+                .ok()
+                .and_then(|s| u8::from_str_radix(s, 16).ok())
+                .ok_or(SdkBridgeError::Storage)
+        })
+        .collect::<Result<Vec<_>, _>>()
+        .map(Zeroizing::new)
+}
+fn storage_callback(
+    storage: &mut dyn SdkStorage,
+    m: &Value,
+    deadline: Instant,
+) -> Result<Value, SdkBridgeError> {
+    let method = text(m, "method")?;
+    let key = m.get("key").and_then(Value::as_str).unwrap_or("");
+    if key.len() > 4096
+        || key.contains('\0')
+        || (key.is_empty() && !matches!(method, "list" | "list_page"))
+    {
+        return Err(SdkBridgeError::Storage);
+    }
+    if Instant::now() >= deadline {
+        return Err(SdkBridgeError::Storage);
+    }
+    match method {
+        "get" => match storage.get(key, deadline)? {
+            None => Ok(json!({"entry":null})),
+            Some(entry) if entry.key == key && entry.value.len() <= MAX_VALUE => Ok(
+                json!({"entry":{"key":entry.key,"value_hex":hex_encode(&entry.value),"seal_wrap":entry.seal_wrap}}),
+            ),
+            Some(_) => Err(SdkBridgeError::Storage),
+        },
+        "put" => {
+            let e = m.get("entry").ok_or(SdkBridgeError::Storage)?;
+            if text(e, "key")? != key {
+                return Err(SdkBridgeError::Storage);
+            }
+            let entry = SdkStorageEntry {
+                key: key.to_owned(),
+                value: hex_decode(text(e, "value_hex")?)?,
+                seal_wrap: e
+                    .get("seal_wrap")
+                    .and_then(Value::as_bool)
+                    .ok_or(SdkBridgeError::Storage)?,
+            };
+            storage.put(entry, deadline)?;
+            Ok(json!({}))
+        }
+        "delete" => {
+            storage.delete(key, deadline)?;
+            Ok(json!({}))
+        }
+        "list" | "list_page" => {
+            let after = m.get("after").and_then(Value::as_str).unwrap_or("");
+            let limit = m.get("limit").and_then(Value::as_i64).unwrap_or(0);
+            let keys = storage.list_page(key, after, limit, deadline)?;
+            if keys.len() > 10000 || keys.iter().any(|s| s.len() > 4096 || s.contains('\0')) {
+                return Err(SdkBridgeError::Storage);
+            }
+            Ok(json!({"keys":keys}))
+        }
+        _ => Err(SdkBridgeError::Storage),
+    }
+}
