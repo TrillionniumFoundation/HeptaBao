@@ -330,7 +330,7 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
             "integrated readers cannot relabel a actual profile88 and time89 graph"
         );
     }
-    for schema in [MAX_SUPPORTED_STATE_SCHEMA + 1] {
+    for schema in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
         let mut unsupported = active.clone();
         unsupported.schema = schema;
         assert_eq!(
