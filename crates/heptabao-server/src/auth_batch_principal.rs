@@ -106,11 +106,11 @@ impl<'a> CheckedCredential<'a> {
                             .lookup_remaining_seconds(now)
                             .map_err(|_| denied())?
                     );
-                    info["expire_time"] = json!(lease.expires_at.rfc3339());
+                    info["expire_time"] = json!(lease.expires_at.local_rfc3339()?);
                     info["issue_time"] = json!(
                         Timestamp::whole(claims.issued_at())
                             .map_err(|_| denied())?
-                            .rfc3339()
+                            .local_rfc3339()?
                     );
                     info["creation_ttl"] = json!(lease.granted_ttl.public_seconds());
                 }

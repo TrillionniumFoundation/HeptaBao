@@ -268,7 +268,7 @@ impl CreationStamp {
         }
         Self::local_epoch(observed.as_secs(), observed.subsec_nanos()).map(Some)
     }
-    fn local_epoch(seconds: u64, nanoseconds: u32) -> Result<Self, AuthError> {
+    pub(super) fn local_epoch(seconds: u64, nanoseconds: u32) -> Result<Self, AuthError> {
         let seconds_signed =
             i64::try_from(seconds).map_err(|_| err(503, "invalid public creation timestamp"))?;
         let epoch = DateTime::from_timestamp(seconds_signed, nanoseconds)

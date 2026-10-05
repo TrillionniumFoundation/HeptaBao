@@ -8405,7 +8405,7 @@ fn token_info_observed(token: &Token, time: AuthorityTime) -> Result<Value, Auth
     let mut info = token_info(token, time.seconds());
     if let Some(lease) = &token.token_api_precision {
         let now = time.exact().ok_or_else(denied)?;
-        info["issue_time"] = json!(lease.issued_at.rfc3339());
+        info["issue_time"] = json!(lease.issued_at.local_rfc3339()?);
         info["ttl"] = json!(
             lease
                 .expires_at
@@ -8414,14 +8414,14 @@ fn token_info_observed(token: &Token, time: AuthorityTime) -> Result<Value, Auth
                 .map_err(|_| denied())?
                 .unwrap_or(0)
         );
-        info["expire_time"] = json!(lease.expires_at.map(Timestamp::rfc3339));
+        info["expire_time"] = json!(lease.expires_at.map(Timestamp::local_rfc3339).transpose()?);
         info["creation_ttl"] = json!(lease.creation_grant.public_seconds());
         info["explicit_max_ttl"] = json!(lease.requested_explicit_max.public_seconds());
         if !lease.requested_period.is_zero() {
             info["period"] = json!(lease.requested_period.public_seconds());
         }
         if let Some(last) = lease.last_renewed_at {
-            info["last_renewal"] = json!(last.rfc3339());
+            info["last_renewal"] = json!(last.local_rfc3339()?);
             info["last_renewal_time"] = json!(last.seconds());
         }
     }

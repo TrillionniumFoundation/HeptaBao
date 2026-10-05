@@ -397,8 +397,14 @@ fn precise_token_routes_preserve_public_fraction_and_recheck_target_deadline() -
         before,
         None,
     )?;
-    assert_eq!(lookup.body["data"]["issue_time"], "1970-01-01T00:01:40.2Z");
-    assert_eq!(lookup.body["data"]["expire_time"], "1970-01-01T00:01:40.7Z");
+    assert_eq!(
+        public_epoch_nanos(&lookup.body["data"]["issue_time"])?,
+        100_200_000_000
+    );
+    assert_eq!(
+        public_epoch_nanos(&lookup.body["data"]["expire_time"])?,
+        100_700_000_000
+    );
     assert_eq!(lookup.body["data"]["creation_ttl"], 0);
     assert_eq!(lookup.body["data"]["ttl"], 0);
     assert!(
@@ -468,8 +474,8 @@ fn precise_token_routes_preserve_public_fraction_and_recheck_target_deadline() -
         None,
     )?;
     assert_eq!(
-        by_accessor.body["data"]["expire_time"],
-        "1970-01-01T00:01:40.7Z"
+        public_epoch_nanos(&by_accessor.body["data"]["expire_time"])?,
+        100_700_000_000
     );
     assert!(
         state
@@ -512,8 +518,11 @@ fn precise_public_clock_serializes_checked_fraction_without_changing_authority()
         AuthorityTime::Precise(timestamp(100, 600_000_000)?),
     )?;
     assert_eq!(lookup["last_renewal_time"], 100);
-    assert_eq!(lookup["last_renewal"], "1970-01-01T00:01:40.3Z");
-    assert_eq!(lookup["expire_time"], "1970-01-01T00:01:40.8Z");
+    assert_eq!(
+        public_epoch_nanos(&lookup["last_renewal"])?,
+        100_300_000_000
+    );
+    assert_eq!(public_epoch_nanos(&lookup["expire_time"])?, 100_800_000_000);
     assert!(
         super::super::token_info_observed(&state.tokens[&hash(&raw)], AuthorityTime::Coarse(100))
             .is_err()
@@ -1187,5 +1196,89 @@ fn token_api_final_target_guard_reobserves_current_floor_and_exact_namespace() -
         );
     }
     assert_eq!(serde_json::to_vec(&state)?, before);
+    Ok(())
+}
+
+fn public_epoch_nanos(value: &serde_json::Value) -> Result<i64, Box<dyn std::error::Error>> {
+    chrono::DateTime::parse_from_rfc3339(value.as_str().ok_or("public timestamp absent")?)?
+        .timestamp_nanos_opt()
+        .ok_or_else(|| "public timestamp outside exact test epoch".into())
+}
+
+#[test]
+fn precise_local_projection_uses_actual_process_timezone_without_changing_authority() -> TestResult
+{
+    const CHILD: &str = "HEPTABAO_PRIVATE_LOCAL_TIMESTAMP_TEST";
+    if let Ok(zone) = std::env::var(CHILD) {
+        assert_eq!(std::env::var("TZ")?, zone);
+        let (prefix, suffix) = match zone.as_str() {
+            "UTC" => ("1970-01-01T00:", "Z"),
+            "Asia/Shanghai" => ("1970-01-01T08:", "+08:00"),
+            _ => return Err("unrecognized private formatter test timezone".into()),
+        };
+        // The same process exercises the first local-zone observation and its
+        // hot cache. Rendering a backward observation cannot move authority.
+        for _ in 0..4 {
+            for (seconds, nanos, minute_second, fraction) in [
+                (0, 0, "00:00", ""),
+                (0, 1, "00:00", ".000000001"),
+                (100, 123_400_000, "01:40", ".1234"),
+                (99, 800_000_000, "01:39", ".8"),
+                (100, 123_400_000, "01:40", ".1234"),
+            ] {
+                let at = timestamp(seconds, nanos)?;
+                let before = serde_json::to_vec(&at)?;
+                let rendered = at.local_rfc3339()?;
+                assert_eq!(
+                    rendered,
+                    format!("{prefix}{minute_second}{fraction}{suffix}")
+                );
+                assert_eq!(serde_json::to_vec(&at)?, before);
+                assert_eq!(
+                    public_epoch_nanos(&json!(rendered))?,
+                    seconds as i64 * 1_000_000_000 + i64::from(nanos)
+                );
+            }
+        }
+        // A negative private Unix epoch remains invalid rather than becoming a
+        // local wall date that could grant pre-epoch token authority.
+        assert!(
+            serde_json::from_value::<Timestamp>(json!({"seconds":-1,"nanoseconds":0})).is_err()
+        );
+        let (mut state, root) = setup()?;
+        let raw = service(&mut state, &root, 0)?;
+        precise_service(&mut state, &raw)?;
+        let before = serde_json::to_vec(&state)?;
+        let view = super::super::token_info_observed(
+            &state.tokens[&hash(&raw)],
+            AuthorityTime::Precise(timestamp(100, 300_000_000)?),
+        )?;
+        assert_eq!(view["issue_time"], format!("{prefix}01:40.2{suffix}"));
+        assert_eq!(view["expire_time"], format!("{prefix}01:40.7{suffix}"));
+        assert_eq!(serde_json::to_vec(&state)?, before);
+        return Ok(());
+    }
+    let executable = std::env::current_exe()?;
+    for zone in ["UTC", "Asia/Shanghai"] {
+        // The environment belongs to an isolated actual child. Parallel tests
+        // never mutate this process's timezone or a shared chrono cache.
+        let output = std::process::Command::new(&executable)
+            .arg("--exact")
+            .arg("auth::token_precision::tests::precise_local_projection_uses_actual_process_timezone_without_changing_authority")
+            .arg("--nocapture")
+            .env("TZ", zone)
+            .env(CHILD, zone)
+            .output()?;
+        assert!(
+            output.status.success(),
+            "actual {zone} formatter child failed: {} {}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(
+            String::from_utf8_lossy(&output.stdout).contains("1 passed; 0 failed"),
+            "the exact formatter child test must actually run"
+        );
+    }
     Ok(())
 }
