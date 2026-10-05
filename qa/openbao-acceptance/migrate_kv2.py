@@ -256,6 +256,91 @@ def verify_target(client, mount, record, expected_count):
     return meta
 
 
+def custom_metadata_plan(record, entry):
+    """Validate an explicit, owned metadata-only transition; never infer ownership."""
+    plan = entry.get("custom_metadata_update") if isinstance(entry, dict) else None
+    if plan is None:
+        if isinstance(entry, dict) and "custom_metadata_update" in entry:
+            raise BaoError("custom_metadata_checkpoint_invalid")
+        return None
+    settings = record["target_metadata"]
+    if (not isinstance(plan, dict)
+            or plan.get("phase") not in ("planned", "inflight", "complete")
+            or set(plan) != ({"phase", "before"} if plan["phase"] == "planned"
+                             else {"phase", "before", "intent_metadata"})
+            or not isinstance(plan.get("before"), dict)
+            or set(plan["before"]) != set(settings)
+            or any(plan["before"][key] != settings[key] for key in settings if key != "custom_metadata")
+            or not isinstance(plan["before"].get("custom_metadata"), dict)
+            or any(not isinstance(k, str) or not isinstance(v, str)
+                   for k, v in plan["before"]["custom_metadata"].items())
+            or plan["before"]["custom_metadata"] == settings["custom_metadata"]):
+        raise BaoError("custom_metadata_checkpoint_invalid")
+    if plan["phase"] != "planned":
+        if entry.get("phase") != "complete" or entry.get("completed_version") != len(record["versions"]):
+            raise BaoError("custom_metadata_intent_invalid")
+        intent = plan["intent_metadata"]
+        if (not isinstance(intent, dict) or not settings_match(intent, plan["before"])
+                or active_history(intent) != len(record["versions"])
+                or type(intent.get("current_metadata_version")) is not int
+                or not 0 <= intent["current_metadata_version"] < 2**63 - 1):
+            raise BaoError("custom_metadata_intent_invalid")
+    return plan
+
+
+def transfer_settings(record, entry):
+    plan = custom_metadata_plan(record, entry)
+    if plan is not None and plan["phase"] == "inflight":
+        raise BaoError("custom_metadata_inflight_requires_owned_reconciliation")
+    return plan["before"] if plan is not None and plan["phase"] == "planned" else record["target_metadata"]
+
+
+def metadata_update_preserves_history(observed, intent):
+    # OpenBao may update the object update timestamp. Every version timestamp,
+    # state, ordinal, retention field and other object field remains bound.
+    omitted = {"custom_metadata", "updated_time", "current_metadata_version"}
+    return (type(observed.get("current_metadata_version")) is int
+            and observed["current_metadata_version"] == intent["current_metadata_version"] + 1
+            and {k: v for k, v in observed.items() if k not in omitted}
+                == {k: v for k, v in intent.items() if k not in omitted})
+
+
+def reconcile_custom_metadata(target, mount, record, checkpoint):
+    entry = checkpoint.state["objects"][digest(record["key"])]
+    plan = custom_metadata_plan(record, entry)
+    if plan is None or plan["phase"] == "complete":
+        return False
+    settings = record["target_metadata"]
+    observed = verify_target(target, mount, record, len(record["versions"]))
+    if read_metadata(target, mount, record["key"]) != observed:
+        raise BaoError("custom_metadata_owner_changed_during_readback")
+    if plan["phase"] == "planned":
+        if entry["phase"] != "complete" or not settings_match(observed, plan["before"]):
+            raise BaoError("custom_metadata_owner_changed_before_entry")
+        metadata_version = observed.get("current_metadata_version")
+        if type(metadata_version) is not int or not 0 <= metadata_version < 2**63 - 1:
+            raise BaoError("target_metadata_cas_version_required")
+        plan["intent_metadata"] = observed
+        plan["phase"] = "inflight"
+        checkpoint.save()  # Durable intent before the real metadata request.
+        expect(target.request("POST", api(mount, "metadata", record["key"]),
+                              {"custom_metadata": settings["custom_metadata"], "metadata_cas": metadata_version}), (204,))
+        observed = verify_target(target, mount, record, len(record["versions"]))
+        if read_metadata(target, mount, record["key"]) != observed:
+            raise BaoError("custom_metadata_owner_changed_during_readback")
+    if observed == plan["intent_metadata"]:
+        # A request whose acknowledgement was lost can still enter later.
+        # Seeing the old metadata is never permission to retry its effect.
+        raise BaoError("ambiguous_custom_metadata_requires_authoritative_reconciliation")
+    if not metadata_update_preserves_history(observed, plan["intent_metadata"]):
+        raise BaoError("custom_metadata_update_changed_history_or_owner")
+    if not settings_match(observed, settings):
+        raise BaoError("custom_metadata_update_conflicts_with_owned_intent")
+    plan["phase"] = "complete"
+    checkpoint.save()
+    return True
+
+
 def transfer_record(target, mount, record, checkpoint, *, new_object_admission=None):
     """Resume a committed-but-unacknowledged CAS using exact durable readback.
 
@@ -270,7 +355,7 @@ def transfer_record(target, mount, record, checkpoint, *, new_object_admission=N
     entry = checkpoint.state["objects"].get(object_id)
     data_path = api(mount, "data", record["key"])
     metadata_path = api(mount, "metadata", record["key"])
-    settings = record["target_metadata"]
+    settings = transfer_settings(record, entry)
     if object_id not in checkpoint.state["objects"]:
         if read_metadata(target, mount, record["key"], absent_ok=True) is not None:
             raise BaoError("target_object_exists_without_owned_checkpoint")
@@ -342,7 +427,7 @@ def transfer_record(target, mount, record, checkpoint, *, new_object_admission=N
 
 
 
-def verified_existing_prefix(target, mount, record):
+def verified_existing_prefix(target, mount, record, *, allow_custom_metadata_update=False):
     """Read-only admission for explicit append import; never truncate or overwrite.
 
     Existing readable versions must be an exact prefix, with identical selected
@@ -354,7 +439,15 @@ def verified_existing_prefix(target, mount, record):
     count = active_history(before)
     if count > len(record["versions"]):
         raise BaoError("append_target_is_ahead_of_frozen_source")
-    if not settings_match(before, record["target_metadata"]):
+    selected = {key: before.get(key) or {} if key == "custom_metadata" else before.get(key)
+                for key in record["target_metadata"]}
+    expected = record["target_metadata"]
+    if allow_custom_metadata_update:
+        expected = {**expected, "custom_metadata": selected["custom_metadata"]}
+    if (not settings_match(before, expected)
+            or not isinstance(selected["custom_metadata"], dict)
+            or any(not isinstance(k, str) or not isinstance(v, str)
+                   for k, v in selected["custom_metadata"].items())):
         raise BaoError("append_target_metadata_mismatch")
     maximum = before.get("max_versions")
     if type(maximum) is not int or maximum < len(record["versions"]):
@@ -365,7 +458,7 @@ def verified_existing_prefix(target, mount, record):
     return count
 
 
-def append_existing_record(target, mount, record, checkpoint):
+def append_existing_record(target, mount, record, checkpoint, *, allow_custom_metadata_update=False):
     """Explicit existing-prefix import with the same durable CAS/reconcile path.
 
     Normal transfer_record still refuses an unowned existing destination. Only
@@ -381,19 +474,41 @@ def append_existing_record(target, mount, record, checkpoint):
             # A concurrent creator is never adopted as a historical prefix.
             return transfer_record(target, mount, record, checkpoint,
                                    new_object_admission=APPEND_NEW_ADMISSION)
-        count = verified_existing_prefix(target, mount, record)
+        before = read_metadata(target, mount, record["key"])
+        count = verified_existing_prefix(target, mount, record,
+                                         allow_custom_metadata_update=allow_custom_metadata_update)
+        if read_metadata(target, mount, record["key"]) != before:
+            raise BaoError("append_target_changed_during_metadata_admission")
         checkpoint.state["objects"][object_id] = {
             "source_digest": digest(record), "completed_version": count,
             "phase": "copying", "admission": APPEND_PREFIX_ADMISSION,
             "original_prefix_versions": count,
         }
-        checkpoint.save()  # Own the verified prefix before any append effect.
+        if not settings_match(before, record["target_metadata"]):
+            checkpoint.state["objects"][object_id]["custom_metadata_update"] = {
+                "phase": "planned",
+                "before": {key: before.get(key) or {} if key == "custom_metadata" else before.get(key)
+                           for key in record["target_metadata"]},
+            }
+        checkpoint.save()  # Own the verified prefix and metadata transition before effects.
     elif isinstance(entry, dict) and entry.get("admission") == APPEND_NEW_ADMISSION:
         return transfer_record(target, mount, record, checkpoint,
                                new_object_admission=APPEND_NEW_ADMISSION)
     elif not isinstance(entry, dict) or entry.get("admission") != APPEND_PREFIX_ADMISSION:
         raise BaoError("append_checkpoint_admission_mismatch")
-    return transfer_record(target, mount, record, checkpoint)
+    entry = checkpoint.state["objects"][object_id]
+    if not isinstance(entry, dict) or entry.get("source_digest") != digest(record):
+        raise BaoError("checkpoint_object_or_source_changed")
+    plan = custom_metadata_plan(record, entry)
+    if plan is not None and not allow_custom_metadata_update:
+        raise BaoError("custom_metadata_update_requires_explicit_opt_in")
+    reconciled = False
+    if plan is not None and plan["phase"] == "inflight":
+        reconciled = reconcile_custom_metadata(target, mount, record, checkpoint)
+    outcome = transfer_record(target, mount, record, checkpoint)
+    if reconcile_custom_metadata(target, mount, record, checkpoint) or reconciled:
+        return "copied_and_verified"
+    return outcome
 
 
 def main(argv=None):
@@ -412,6 +527,8 @@ def main(argv=None):
     parser.add_argument("--allow-plaintext-export", action="store_true")
     parser.add_argument("--append-verified-prefix", action="store_true",
                         help="import only: admit identical existing history prefixes and new absent keys; never overwrite a prefix")
+    parser.add_argument("--allow-custom-metadata-update", action="store_true",
+                        help="append import only: reconcile an owned custom-metadata change after all versions verify")
     args = parser.parse_args(argv)
     result = {"schema": "heptabao.kv2-transfer-result.v1", "status": "failed", "mode": "apply" if args.apply else "dry_run",
               "action": args.action, "objects_checked": 0, "objects_copied": 0, "objects_already_verified": 0,
@@ -420,6 +537,8 @@ def main(argv=None):
               "scope": "contiguous_readable_active_versions_1_to_n_and_selected_metadata"}
     code = 2
     try:
+        if args.allow_custom_metadata_update and not args.append_verified_prefix:
+            raise BaoError("custom_metadata_update_requires_append_import")
         if args.append_verified_prefix and args.action != "import":
             raise BaoError("append_verified_prefix_requires_offline_import")
         result["target_admission"] = "verified_existing_prefix_or_new_owned_object" if args.append_verified_prefix else "new_owned_object"
@@ -503,6 +622,8 @@ def main(argv=None):
         if args.append_verified_prefix:
             # Preserve the existing prefix checkpoint binding across tool upgrades.
             binding["target_admission"] = APPEND_PREFIX_ADMISSION
+        if args.allow_custom_metadata_update:
+            binding["custom_metadata_update"] = "owned-custom-metadata-only-v1"
         checkpoint = lock = None
         exported = []
         try:
@@ -520,7 +641,10 @@ def main(argv=None):
                             raise BaoError("export_size_limit_use_direct_transfer")
                 elif args.apply:
                     copier = append_existing_record if args.append_verified_prefix else transfer_record
-                    outcome = copier(target, args.target_mount, record, checkpoint)
+                    outcome = (copier(target, args.target_mount, record, checkpoint,
+                                      allow_custom_metadata_update=args.allow_custom_metadata_update)
+                               if args.append_verified_prefix
+                               else copier(target, args.target_mount, record, checkpoint))
                     result["objects_already_verified" if outcome == "already_verified" else "objects_copied"] += 1
                     if source and read_metadata(source, args.source_mount, key) != record["source_metadata"]:
                         raise BaoError("source_changed_after_copy_target_not_cut_over")
@@ -533,7 +657,8 @@ def main(argv=None):
                         if existing is None:
                             result["new_absent_objects"] = result.get("new_absent_objects", 0) + 1
                         else:
-                            verified_existing_prefix(target, args.target_mount, record)
+                            verified_existing_prefix(target, args.target_mount, record,
+                                                     allow_custom_metadata_update=args.allow_custom_metadata_update)
                             result["verified_prefix_objects"] = result.get("verified_prefix_objects", 0) + 1
             if args.action == "export" and args.apply:
                 private_write(args.export_file, {"schema": SCHEMA, "source_identity": source_identity,

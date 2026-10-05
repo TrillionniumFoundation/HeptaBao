@@ -30,7 +30,13 @@ class FaultTarget:
         if "/metadata/" in path:
             if method == "GET":
                 return Response(404, {"errors": ["synthetic missing"]}) if self.meta is None else Response(200, {"data": copy.deepcopy(self.meta)})
-            self.meta = {**copy.deepcopy(payload), "current_version": 0, "versions": {}}
+            previous = self.meta or {"current_version": 0, "versions": {}, "current_metadata_version": 0}
+            metadata_version = previous.get("current_metadata_version", 0)
+            if ((previous.get("metadata_cas_required") and "metadata_cas" not in payload)
+                    or ("metadata_cas" in payload and payload["metadata_cas"] != metadata_version)):
+                return Response(400, {"errors": ["synthetic metadata CAS"]})
+            selected = {key: copy.deepcopy(value) for key, value in payload.items() if key != "metadata_cas"}
+            self.meta = {**previous, **selected, "current_metadata_version": metadata_version + 1}
             return Response(204, {})
         if method == "GET":
             version = int(path.split("?version=")[1])
@@ -279,3 +285,160 @@ class AppendPrefixTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CustomMetadataTarget(FaultTarget):
+    def __init__(self, metadata_fault=None):
+        super().__init__()
+        self.metadata_fault, self.metadata_writes = metadata_fault, 0
+
+    def request(self, method, path, payload=None):
+        if method == "POST" and "/metadata/" in path:
+            self.metadata_writes += 1
+            if self.metadata_fault == "before_effect":
+                self.metadata_fault = None
+                raise BaoError("transport_outcome_unknown")
+            response = super().request(method, path, payload)
+            if self.metadata_fault == "after_effect":
+                self.metadata_fault = None
+                raise BaoError("transport_outcome_unknown")
+            return response
+        return super().request(method, path, payload)
+
+
+class CustomMetadataAppendTests(unittest.TestCase):
+    def existing(self, fault=None):
+        target, record = CustomMetadataTarget(fault), fixture_record()
+        target.meta = copy.deepcopy(record["source_metadata"])
+        target.meta["current_metadata_version"] = 3
+        target.meta["metadata_cas_required"] = True
+        target.meta["versions"]["1"]["created_time"] = "2026-09-23T19:00:07.123456789Z"
+        target.meta["current_version"] = 1
+        del target.meta["versions"]["2"]
+        target.values = [copy.deepcopy(record["versions"][0]["data"])]
+        record["source_metadata"]["custom_metadata"] = {"classification": "post-cutover"}
+        record["target_metadata"]["custom_metadata"] = {"classification": "post-cutover"}
+        return target, record
+
+    def append(self, target, record, checkpoint):
+        return append_existing_record(target, "secret", record, checkpoint,
+                                      allow_custom_metadata_update=True)
+
+    def test_custom_metadata_requires_explicit_opt_in_before_any_effect(self):
+        target, record = self.existing()
+        with tempfile.TemporaryDirectory() as directory:
+            cp = Checkpoint(Path(directory) / "cp", {})
+            with self.assertRaisesRegex(BaoError, "metadata_mismatch"):
+                append_existing_record(target, "secret", record, cp)
+            self.assertEqual(cp.state["objects"], {})
+        self.assertEqual((target.writes, target.metadata_writes), (0, 0))
+
+    def test_owned_metadata_update_preserves_prefix_and_repeats_read_only(self):
+        target, record = self.existing()
+        original = copy.deepcopy(target.meta["versions"]["1"])
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "cp"
+            self.assertEqual(self.append(target, record, Checkpoint(path, {})), "copied_and_verified")
+            self.assertEqual(target.meta["versions"]["1"], original)
+            self.assertEqual(target.meta["custom_metadata"], record["target_metadata"]["custom_metadata"])
+            self.assertEqual(self.append(target, record, Checkpoint(path, {})), "already_verified")
+        self.assertEqual((target.writes, target.metadata_writes), (1, 1))
+
+    def test_metadata_committed_before_lost_ack_is_reconciled_after_checkpoint_reopen(self):
+        target, record = self.existing("after_effect")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "cp"
+            with self.assertRaisesRegex(BaoError, "outcome_unknown"):
+                self.append(target, record, Checkpoint(path, {}))
+            self.assertEqual(target.meta["custom_metadata"], record["target_metadata"]["custom_metadata"])
+            cp = Checkpoint(path, {})
+            self.assertEqual(cp.state["objects"][digest(record["key"])]["custom_metadata_update"]["phase"], "inflight")
+            self.assertEqual(self.append(target, record, cp), "copied_and_verified")
+            self.assertEqual(self.append(target, record, Checkpoint(path, {})), "already_verified")
+        self.assertEqual((target.writes, target.metadata_writes), (1, 1))
+
+    def test_old_metadata_after_unknown_request_is_never_reissued(self):
+        target, record = self.existing("before_effect")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "cp"
+            with self.assertRaisesRegex(BaoError, "outcome_unknown"):
+                self.append(target, record, Checkpoint(path, {}))
+            with self.assertRaisesRegex(BaoError, "authoritative_reconciliation"):
+                self.append(target, record, Checkpoint(path, {}))
+        self.assertEqual((target.writes, target.metadata_writes), (1, 1))
+
+    def test_late_effect_is_read_back_without_reissuing_unknown_metadata_request(self):
+        target, record = self.existing("before_effect")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "cp"
+            with self.assertRaises(BaoError):
+                self.append(target, record, Checkpoint(path, {}))
+            target.meta["custom_metadata"] = copy.deepcopy(record["target_metadata"]["custom_metadata"])
+            target.meta["current_metadata_version"] += 1
+            self.assertEqual(self.append(target, record, Checkpoint(path, {})), "copied_and_verified")
+        self.assertEqual((target.writes, target.metadata_writes), (1, 1))
+
+    def test_opt_in_cannot_change_retention_or_cas_policy(self):
+        for field, value in (("max_versions", 8), ("cas_required", False), ("delete_version_after", "1s")):
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as directory:
+                target, record = self.existing()
+                target.meta[field] = value
+                cp = Checkpoint(Path(directory) / "cp", {})
+                with self.assertRaisesRegex(BaoError, "metadata_mismatch"):
+                    self.append(target, record, cp)
+                self.assertEqual(cp.state["objects"], {})
+                self.assertEqual((target.writes, target.metadata_writes), (0, 0))
+
+    def test_unknown_metadata_cannot_adopt_changed_history_or_prefix_timestamp(self):
+        for mutation in ("value", "timestamp", "retention", "custom", "metadata_counter"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                target, record = self.existing("after_effect")
+                path = Path(directory) / "cp"
+                with self.assertRaises(BaoError):
+                    self.append(target, record, Checkpoint(path, {}))
+                if mutation == "value":
+                    target.values[0] = {"value": "changed"}
+                elif mutation == "timestamp":
+                    target.meta["versions"]["1"]["created_time"] = "2026-10-06T00:00:00Z"
+                elif mutation == "retention":
+                    target.meta["max_versions"] = 8
+                elif mutation == "custom":
+                    target.meta["custom_metadata"] = {"classification": "unexpected"}
+                else:
+                    target.meta["current_metadata_version"] += 1
+                with self.assertRaises(BaoError):
+                    self.append(target, record, Checkpoint(path, {}))
+                self.assertEqual((target.writes, target.metadata_writes), (1, 1))
+
+    def test_inflight_plan_cannot_be_adopted_without_opt_in_or_by_direct_copy(self):
+        target, record = self.existing("after_effect")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "cp"
+            with self.assertRaises(BaoError):
+                self.append(target, record, Checkpoint(path, {}))
+            with self.assertRaisesRegex(BaoError, "explicit_opt_in"):
+                append_existing_record(target, "secret", record, Checkpoint(path, {}))
+            with self.assertRaisesRegex(BaoError, "owned_reconciliation"):
+                transfer_record(target, "secret", record, Checkpoint(path, {}))
+        self.assertEqual((target.writes, target.metadata_writes), (1, 1))
+
+    def test_changed_export_or_malformed_plan_is_rejected_on_resume(self):
+        for mutation in ("export", "plan", "null_plan"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                target, record = self.existing("after_effect")
+                path = Path(directory) / "cp"
+                with self.assertRaises(BaoError):
+                    self.append(target, record, Checkpoint(path, {}))
+                cp = Checkpoint(path, {})
+                if mutation == "export":
+                    record["source_metadata"]["custom_metadata"] = {"classification": "rebound"}
+                    record["target_metadata"]["custom_metadata"] = {"classification": "rebound"}
+                elif mutation == "plan":
+                    cp.state["objects"][digest(record["key"])]["custom_metadata_update"]["before"]["max_versions"] = 99
+                    cp.save()
+                else:
+                    cp.state["objects"][digest(record["key"])]["custom_metadata_update"] = None
+                    cp.save()
+                with self.assertRaises(BaoError):
+                    self.append(target, record, cp)
+                self.assertEqual((target.writes, target.metadata_writes), (1, 1))
