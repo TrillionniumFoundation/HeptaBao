@@ -1912,11 +1912,12 @@ impl Service {
                 ExternalEffectResult::ExternalPki(result),
             ) => {
                 let response = self.finalize_external_pki(&mut plan, result);
-                let response = self.audit_completed_response(
+                let response = self.audit_external_pki_response(
+                    &mut plan,
                     &pending.fingerprint,
-                    pending.now,
-                    pending.token_clock,
+                    (pending.now, pending.token_clock),
                     response,
+                    || {},
                 );
                 return self.complete_external_pki_delivery(
                     &mut plan,
@@ -1986,13 +1987,40 @@ impl Service {
         fingerprint: &str,
         now: u64,
         token_clock: Option<RequestClock>,
-        mut response: Response,
+        response: Response,
         after_audit: impl FnOnce(),
     ) -> Response {
-        if let Err(cause) = self.persist_terminal_token_clock(token_clock, now) {
-            erase_json(&mut response.body);
-            response = cause;
-        }
+        self.audit_completed_response_with_clock_receipt(
+            fingerprint,
+            (now, token_clock),
+            response,
+            after_audit,
+            false,
+        )
+        .0
+    }
+
+    fn audit_completed_response_with_clock_receipt(
+        &mut self,
+        fingerprint: &str,
+        request_clock: (u64, Option<RequestClock>),
+        mut response: Response,
+        after_audit: impl FnOnce(),
+        retain_clock_receipt: bool,
+    ) -> (Response, Option<token_precision::TerminalClockReceipt>) {
+        let (now, token_clock) = request_clock;
+        let receipt = match self.persist_terminal_token_clock_with_receipt(
+            token_clock,
+            now,
+            retain_clock_receipt,
+        ) {
+            Ok(receipt) => receipt,
+            Err(cause) => {
+                erase_json(&mut response.body);
+                response = cause;
+                None
+            }
+        };
         if self
             .audit_event("response", fingerprint, now, Some(response.status))
             .is_err()
@@ -2005,9 +2033,12 @@ impl Service {
             if self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) {
                 self.fence_wrapper_barrier_delivery();
             }
-            return Response::error(
-                503,
-                "response audit failed; outcome unknown; authoritative recovery required",
+            return (
+                Response::error(
+                    503,
+                    "response audit failed; outcome unknown; authoritative recovery required",
+                ),
+                None,
             );
         }
         self.stamp_consistency_index(&mut response);
@@ -2015,7 +2046,7 @@ impl Service {
             authority.mark_response_audited(fingerprint);
         }
         after_audit();
-        response
+        (response, receipt)
     }
 
     fn begin_at_mode(&mut self, request: RequestDispatch<'_>) -> RequestExecution {

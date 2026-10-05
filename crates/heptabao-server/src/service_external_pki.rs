@@ -703,6 +703,33 @@ impl Service {
         }
     }
 
+    // Only the writer can mint this consumed clock-only receipt. It advances
+    // our own completed publication checkpoint, never the original provider
+    // admission identity/generation or actor clock. An intervening state write
+    // fails the exact predecessor match and stays fenced at final delivery.
+    pub(super) fn audit_external_pki_response(
+        &mut self,
+        plan: &mut ExternalPkiPlan,
+        fingerprint: &str,
+        request_clock: (u64, Option<crate::auth::RequestClock>),
+        response: Response,
+        after_audit: impl FnOnce(),
+    ) -> Response {
+        let (response, receipt) = self.audit_completed_response_with_clock_receipt(
+            fingerprint,
+            request_clock,
+            response,
+            after_audit,
+            true,
+        );
+        if (200..300).contains(&response.status)
+            && let Some(receipt) = receipt
+        {
+            receipt.advance(&mut plan.delivery_checkpoint);
+        }
+        response
+    }
+
     /// The original response audit and consistency stamp may block after the
     /// encrypted commit. Keep the original plan until this last delivery fence:
     /// publication can remain durable while its private response is withheld.
