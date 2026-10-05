@@ -266,7 +266,7 @@ fn pki_ip_sans_require_role_permission_and_are_encoded_as_ip_general_names() -> 
         &root,
         "POST",
         "pki/issue/web-no-ip",
-        json!({"common_name":"api.example.test","ip_sans":["127.0.0.1"]}),
+        json!({"ttl":"1h","common_name":"api.example.test","ip_sans":["127.0.0.1"]}),
         101,
     );
     assert_eq!(denied.status, 400);
@@ -287,7 +287,7 @@ fn pki_ip_sans_require_role_permission_and_are_encoded_as_ip_general_names() -> 
         &root,
         "POST",
         "pki/issue/web-ip",
-        json!({"common_name":"api.example.test","ip_sans":["127.0.0.1","2001:db8::1"]}),
+        json!({"ttl":"1h","common_name":"api.example.test","ip_sans":["127.0.0.1","2001:db8::1"]}),
         101,
     );
     assert_eq!(issued.status, 200);
