@@ -131,7 +131,7 @@ pub struct Config {
     pub plugin_kms: Vec<crate::PluginKmsConfig>,
     #[serde(default)]
     pub plugin_secrets: Vec<crate::PluginSecretConfig>,
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     #[serde(default)]
     pub openbao_sdk: Option<crate::SdkBackendConfig>,
     /// Optional, deployment-owned SDK Wrapper runtime with per-launch AutoMTLS.
@@ -386,7 +386,7 @@ fn serve_inner(
         service.install_database_plugins(config.plugin_database)?;
         service.install_kms_plugins(config.plugin_kms)?;
         service.install_secret_plugins(config.plugin_secrets)?;
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
         service.install_sdk_backend(config.openbao_sdk)?;
         service.install_audit_http_endpoint(config.audit_http_url)?;
         service.install_audit_socket(config.audit_socket)?;

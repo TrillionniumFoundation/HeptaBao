@@ -7,7 +7,9 @@
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::marker::PhantomData;
-use std::os::fd::{AsFd, AsRawFd};
+use std::os::fd::AsFd;
+#[cfg(target_os = "linux")]
+use std::os::fd::AsRawFd;
 use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
 use std::os::unix::process::CommandExt;
 use std::path::{Path, PathBuf};
@@ -174,24 +176,52 @@ impl SdkBackendHost {
         {
             return Err(SdkBridgeError::BeforeEntry);
         }
-        let proc_self =
-            std::fs::read_link("/proc/self").map_err(|_| SdkBridgeError::BeforeEntry)?;
-        if proc_self.components().count() != 1
-            || proc_self
-                .to_str()
-                .is_none_or(|s| s.is_empty() || !s.bytes().all(|b| b.is_ascii_digit()))
-        {
-            return Err(SdkBridgeError::BeforeEntry);
-        }
-        let socket_alias = format!(
-            "/proc/{}/fd/{}",
-            proc_self.display(),
-            socket_directory.as_raw_fd()
-        );
+        #[cfg(target_os = "linux")]
+        let socket_alias = {
+            let proc_self =
+                std::fs::read_link("/proc/self").map_err(|_| SdkBridgeError::BeforeEntry)?;
+            if proc_self.components().count() != 1
+                || proc_self
+                    .to_str()
+                    .is_none_or(|s| s.is_empty() || !s.bytes().all(|b| b.is_ascii_digit()))
+            {
+                return Err(SdkBridgeError::BeforeEntry);
+            }
+            format!(
+                "/proc/{}/fd/{}",
+                proc_self.display(),
+                socket_directory.as_raw_fd()
+            )
+        };
+        #[cfg(target_os = "macos")]
+        let socket_alias = ".".to_owned();
+        #[cfg(target_os = "linux")]
         let companion = OwnedExecutableImage::open(&config.companion, config.companion_sha256)
             .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        #[cfg(target_os = "linux")]
         let plugin = OwnedExecutableImage::open(&config.plugin, config.plugin_sha256)
             .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        #[cfg(target_os = "macos")]
+        let companion = OwnedExecutableImage::open_in(
+            &config.companion,
+            config.companion_sha256,
+            &config.socket_directory,
+        )
+        .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        #[cfg(target_os = "macos")]
+        let plugin = OwnedExecutableImage::open_in(
+            &config.plugin,
+            config.plugin_sha256,
+            &config.socket_directory,
+        )
+        .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        #[cfg(target_os = "macos")]
+        {
+            companion
+                .verify()
+                .map_err(|_| SdkBridgeError::BeforeEntry)?;
+            plugin.verify().map_err(|_| SdkBridgeError::BeforeEntry)?;
+        }
         let log = private_log(&config.private_log)?;
         let deadline = original_deadline.min(Instant::now() + config.timeout);
         let mut command = companion.command();
@@ -202,7 +232,11 @@ impl SdkBackendHost {
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::from(log));
+        #[cfg(target_os = "linux")]
         heptabao_linux_parent_death::bind_owner_death(&mut command);
+        #[cfg(target_os = "macos")]
+        heptabao_linux_parent_death::bind_private_directory(&mut command, &socket_directory)
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
         let child = command.spawn().map_err(|_| SdkBridgeError::BeforeEntry)?;
         let mut pending = PendingChild(Some(child));
         let child = pending.0.as_mut().ok_or(SdkBridgeError::OutcomeUnknown)?;
@@ -232,6 +266,21 @@ impl SdkBackendHost {
             "plugin":host._plugin.descriptor_path(),"args":config.plugin_args,
             "socket_dir":socket_alias,"timeout_ms":config.timeout.as_millis(),
             "default_ttl_seconds":config.default_ttl_seconds,"max_ttl_seconds":config.max_ttl_seconds});
+        #[cfg(target_os = "macos")]
+        let setup = {
+            let mut setup = setup;
+            let (cdev, cino, csize) = host._companion.cleanup_identity();
+            let (pdev, pino, psize) = host._plugin.cleanup_identity();
+            setup["owned_images"] = json!([
+                {"role":"companion","path":host._companion.descriptor_path(),
+                 "device":cdev,"inode":cino,"bytes":csize,
+                 "sha256":hex_encode(&config.companion_sha256)},
+                {"role":"plugin","path":host._plugin.descriptor_path(),
+                 "device":pdev,"inode":pino,"bytes":psize,
+                 "sha256":hex_encode(&config.plugin_sha256)}
+            ]);
+            setup
+        };
         host.send(&setup, deadline)?;
         let ready = host.exchange(storage, "ready", deadline)?;
         if ready.get("backend_type").and_then(Value::as_str) != Some("secret") {

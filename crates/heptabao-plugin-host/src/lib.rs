@@ -19,9 +19,9 @@ use ring::digest::SHA256;
 use zeroize::Zeroizing;
 
 mod durable;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 pub mod sdk_backend;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 pub mod sdk_durable;
 pub use durable::{
     DurableDynamicSecretBroker, DurableReconciliationDecision, PendingPluginInvocation,
@@ -273,6 +273,10 @@ pub struct CommandSandboxRunner;
 mod command_runner;
 #[cfg(target_os = "linux")]
 pub use command_runner::OwnedExecutableImage;
+#[cfg(target_os = "macos")]
+mod darwin_sdk_image;
+#[cfg(target_os = "macos")]
+pub use darwin_sdk_image::OwnedExecutableImage;
 
 // No path-execution fallback: other platforms need equivalent sealed image and
 // nonblocking process I/O backends before this runner may admit any plugin.

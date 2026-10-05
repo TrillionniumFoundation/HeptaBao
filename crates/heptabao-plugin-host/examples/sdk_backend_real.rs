@@ -1,7 +1,7 @@
 //! A real SDK plugin test of the HeptaBao Rust host and a test file storage view.
 //! This does not qualify the server's catalog, HTTP mounting or barrier storage.
-#[cfg(target_os = "linux")]
-mod linux_fixture {
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+mod unix_fixture {
     use std::collections::{BTreeMap, BTreeSet};
     use std::error::Error;
     use std::fs::{File, OpenOptions};
@@ -321,12 +321,12 @@ mod linux_fixture {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    linux_fixture::main()
+    unix_fixture::main()
 }
 
-#[cfg(not(target_os = "linux"))]
+#[cfg(not(any(target_os = "linux", target_os = "macos")))]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    Err("this native SDK fixture requires Linux".into())
+    Err("this native SDK fixture requires Linux or Darwin".into())
 }

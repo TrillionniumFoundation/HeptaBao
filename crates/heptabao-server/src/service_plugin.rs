@@ -252,7 +252,7 @@ impl PluginResponseAuthority {
         }
     }
 
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     pub(super) fn observe_candidate_time_changed(
         &self,
         state: &mut State,
@@ -276,7 +276,7 @@ impl PluginResponseAuthority {
         Ok(time)
     }
 
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     pub(super) fn validate_live_auth(&self, auth: &AuthState) -> Result<(), Response> {
         if self.deadline_expired() {
             return Err(Response::error(

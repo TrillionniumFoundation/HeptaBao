@@ -61,5 +61,5 @@ mod state_records;
 
 mod login_metadata;
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 pub use service::SdkBackendConfig;

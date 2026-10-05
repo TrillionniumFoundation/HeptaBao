@@ -1573,7 +1573,7 @@ mod tests {
 mod schema_tests;
 
 impl Service {
-    #[cfg(any(test, target_os = "linux"))]
+    #[cfg(any(test, target_os = "linux", target_os = "macos"))]
     pub(super) fn prepare_sdk_mount_record_root(&self, state: &mut State) -> Result<(), Response> {
         if state.engines.record_root().is_some() {
             return Ok(());
