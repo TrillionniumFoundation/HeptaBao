@@ -351,3 +351,7 @@ not a completed 2.7.0 denominator. The continuation records wrapping self-discar
 token orphan revocation, explicit standby leader status, and bounded replay
 batches with local-frontier recovery checks. Source presence and a passing
 bounded profile do not grant whole-product compatibility or production authority.
+
+## Current H02 mechanical probe profile
+
+- `docs/plan/HEPTABAO_H02_MECHANICAL_PROBE_V2.md` describes the additive eight-entry 1.71/1.88-floor and 1.99 mechanical lane. Source implementation is not executed evidence or behavioral qualification.

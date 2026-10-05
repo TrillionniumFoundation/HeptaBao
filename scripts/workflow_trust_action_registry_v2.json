@@ -86,6 +86,11 @@
       "path": "evidence/h02-openraft-inmemory/"
     },
     {
+      "file": "h02-probe-sbom-msrv-v2.yml",
+      "location": "workflow.jobs.mechanical.steps[6]",
+      "path": "${{ runner.temp }}/h02-mechanical-v2-evidence/\n${{ runner.temp }}/h02-mechanical-v2-setup/\n"
+    },
+    {
       "file": "h02-probe-sbom-msrv.yml",
       "location": "workflow.jobs.candidate-probe.steps[10]",
       "path": "${{ runner.temp }}/evidence"
