@@ -107,6 +107,23 @@ func factory(ctx context.Context, config *logical.BackendConfig) (logical.Backen
 			return nil, nil
 		},
 	}})
+	// Deliberately swallow a Storage error. The Rust host must preserve an
+	// uncertain mutation and fence independently of this plugin's result.
+	backend.Paths = append(backend.Paths, &framework.Path{Pattern: "uncertain", Callbacks: map[logical.Operation]framework.OperationFunc{
+		logical.UpdateOperation: func(ctx context.Context, request *logical.Request, _ *framework.FieldData) (*logical.Response, error) {
+			_ = request.Storage.Put(ctx, &logical.StorageEntry{Key: "uncertain", Value: []byte("committed-before-lost-ack")})
+			return &logical.Response{Data: map[string]any{"swallowed": true}}, nil
+		},
+	}})
+	backend.Paths = append(backend.Paths, &framework.Path{Pattern: "blocked", Callbacks: map[logical.Operation]framework.OperationFunc{
+		logical.UpdateOperation: func(ctx context.Context, request *logical.Request, _ *framework.FieldData) (*logical.Response, error) {
+			if err := request.Storage.Put(ctx, &logical.StorageEntry{Key: "owner-death", Value: []byte("entered")}); err != nil {
+				return nil, err
+			}
+			// Deliberately ignores context cancellation for the owner-death test.
+			select {}
+		},
+	}})
 	if err := backend.Setup(ctx, config); err != nil {
 		return nil, err
 	}

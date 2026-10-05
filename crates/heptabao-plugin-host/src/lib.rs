@@ -21,6 +21,8 @@ use zeroize::Zeroizing;
 mod durable;
 #[cfg(target_os = "linux")]
 pub mod sdk_backend;
+#[cfg(target_os = "linux")]
+pub mod sdk_durable;
 pub use durable::{
     DurableDynamicSecretBroker, DurableReconciliationDecision, PendingPluginInvocation,
     PluginMutationContext,

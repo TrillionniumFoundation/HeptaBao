@@ -12,8 +12,10 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"runtime"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	hclog "github.com/hashicorp/go-hclog"
@@ -231,6 +233,7 @@ func run() error {
 	timeout := time.Duration(first.TimeoutMS) * time.Millisecond
 	logger := hclog.New(&hclog.LoggerOptions{Level: hclog.Trace, Output: os.Stderr, JSONFormat: true})
 	command := exec.Command(first.Plugin, first.Args...)
+	command.SysProcAttr = &syscall.SysProcAttr{Pdeathsig: syscall.SIGKILL}
 	command.Env = []string{"PATH=/usr/bin:/bin", "TMPDIR=" + first.SocketDir, "PLUGIN_UNIX_SOCKET_DIR=" + first.SocketDir}
 	client := goplugin.NewClient(&goplugin.ClientConfig{
 		HandshakeConfig:  sdkplugin.HandshakeConfig,
@@ -311,6 +314,10 @@ func run() error {
 	}
 }
 func main() {
+	// Linux parent-death follows the thread that starts the plugin. Retain
+	// this ownership thread for the complete companion/plugin lifetime.
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if err := run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

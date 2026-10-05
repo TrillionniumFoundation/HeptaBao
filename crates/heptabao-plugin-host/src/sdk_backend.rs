@@ -6,11 +6,13 @@
 
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
-use std::os::fd::AsFd;
+use std::marker::PhantomData;
+use std::os::fd::{AsFd, AsRawFd};
 use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
 use std::os::unix::process::CommandExt;
 use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, ChildStdout, Stdio};
+use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
@@ -99,6 +101,8 @@ pub struct SdkBackendHost {
     buffered: Zeroizing<Vec<u8>>,
     _companion: OwnedExecutableImage,
     _plugin: OwnedExecutableImage,
+    _socket: File,
+    _thread_owner: PhantomData<Rc<()>>,
     timeout: Duration,
     call: u64,
     storage_rpc: u64,
@@ -113,6 +117,8 @@ impl std::fmt::Debug for SdkBackendHost {
 }
 
 impl SdkBackendHost {
+    /// Launch from a persistent ownership thread. Linux binds owner death to
+    /// the spawning thread; that thread must outlive the host's terminal wait.
     pub fn launch(
         config: &SdkLaunch,
         storage: &mut dyn SdkStorage,
@@ -134,22 +140,50 @@ impl SdkBackendHost {
         {
             return Err(SdkBridgeError::BeforeEntry);
         }
+        // A descriptor alias keeps long caller paths inside Linux's Unix
+        // socket address limit and binds the actual admitted private directory.
+        let mut socket_options = OpenOptions::new();
+        socket_options.read(true).custom_flags(
+            (OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC | OFlags::NONBLOCK)
+                .bits()
+                .try_into()
+                .map_err(|_| SdkBridgeError::BeforeEntry)?,
+        );
+        let socket_directory = socket_options
+            .open(&config.socket_directory)
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        let bound_socket = socket_directory
+            .metadata()
+            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+        if bound_socket.dev() != socket.dev()
+            || bound_socket.ino() != socket.ino()
+            || bound_socket.mode() & 0o077 != 0
+            || !bound_socket.is_dir()
+            || bound_socket.uid() != rustix::process::getuid().as_raw()
+        {
+            return Err(SdkBridgeError::BeforeEntry);
+        }
+        let socket_alias = format!(
+            "/proc/{}/fd/{}",
+            std::process::id(),
+            socket_directory.as_raw_fd()
+        );
         let companion = OwnedExecutableImage::open(&config.companion, config.companion_sha256)
             .map_err(|_| SdkBridgeError::BeforeEntry)?;
         let plugin = OwnedExecutableImage::open(&config.plugin, config.plugin_sha256)
             .map_err(|_| SdkBridgeError::BeforeEntry)?;
         let log = private_log(&config.private_log)?;
         let deadline = Instant::now() + config.timeout;
-        let child = companion
-            .command()
+        let mut command = companion.command();
+        command
             .env_clear()
-            .env("TMPDIR", &config.socket_directory)
+            .env("TMPDIR", &socket_alias)
             .process_group(0)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
-            .stderr(Stdio::from(log))
-            .spawn()
-            .map_err(|_| SdkBridgeError::BeforeEntry)?;
+            .stderr(Stdio::from(log));
+        heptabao_linux_parent_death::bind_owner_death(&mut command);
+        let child = command.spawn().map_err(|_| SdkBridgeError::BeforeEntry)?;
         let mut pending = PendingChild(Some(child));
         let child = pending.0.as_mut().ok_or(SdkBridgeError::OutcomeUnknown)?;
         let pid =
@@ -165,6 +199,8 @@ impl SdkBackendHost {
             buffered: Zeroizing::new(Vec::new()),
             _companion: companion,
             _plugin: plugin,
+            _socket: socket_directory,
+            _thread_owner: PhantomData,
             timeout: config.timeout,
             call: 1,
             storage_rpc: 0,
@@ -174,7 +210,7 @@ impl SdkBackendHost {
         nonblocking(&host.output)?;
         let setup = json!({"version":1,"kind":"setup","call":1,
             "plugin":host._plugin.descriptor_path(),"args":config.plugin_args,
-            "socket_dir":config.socket_directory,"timeout_ms":config.timeout.as_millis(),
+            "socket_dir":socket_alias,"timeout_ms":config.timeout.as_millis(),
             "default_ttl_seconds":config.default_ttl_seconds,"max_ttl_seconds":config.max_ttl_seconds});
         host.send(&setup, deadline)?;
         let ready = host.exchange(storage, "ready", deadline)?;
@@ -326,6 +362,13 @@ impl SdkBackendHost {
                                 .clone(),
                         );
                 }
+                Err(error @ (SdkBridgeError::OutcomeUnknown | SdkBridgeError::Fenced)) => {
+                    // A plugin may swallow a Storage RPC error. An uncertain
+                    // host mutation must therefore terminate this exchange
+                    // and fence the host, regardless of the plugin's result.
+                    self.fenced = true;
+                    return Err(error);
+                }
                 Err(_) => {
                     reply["error"] = json!("host storage rejected operation");
                 }
@@ -464,12 +507,14 @@ fn hex_encode(value: &[u8]) -> String {
     value.iter().map(|b| format!("{b:02x}")).collect()
 }
 fn hex_decode(value: &str) -> Result<Zeroizing<Vec<u8>>, SdkBridgeError> {
-    if value.len() > MAX_VALUE * 2 || value.len() % 2 != 0 {
+    if value.len() > MAX_VALUE * 2 || !value.len().is_multiple_of(2) {
         return Err(SdkBridgeError::Storage);
     }
     value
         .as_bytes()
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|c| {
             std::str::from_utf8(c)
                 .ok()
