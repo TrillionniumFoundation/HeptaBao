@@ -19,6 +19,17 @@ pub(super) struct PreparedExternalImport {
     existing_parents: Vec<String>,
 }
 
+impl PreparedExternalImport {
+    pub(super) fn prepare_initial_crls(
+        &self,
+        now: u64,
+        urls: Option<UrlEntries>,
+    ) -> Result<CrlSet> {
+        CrlSet::empty(now, urls)
+            .with_certificate_issuer(&self.root.certificate_der, &self.root.common_name)
+    }
+}
+
 pub(super) struct ExternalCaIdentity<'a> {
     pub(super) common_name: &'a str,
     pub(super) serial: &'a str,

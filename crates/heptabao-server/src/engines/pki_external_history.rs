@@ -67,6 +67,17 @@ impl Pki {
                     .any(|signer| signer.crls.has_url_state())
             })
     }
+    pub(super) fn external_history_has_full_dn_crls(&self) -> bool {
+        self.external
+            .signer_history
+            .as_ref()
+            .is_some_and(|history| {
+                history
+                    .other
+                    .values()
+                    .any(|signer| signer.crls.has_full_dn(&signer.root.common_name))
+            })
+    }
     pub(in crate::engines) fn has_external_signer_history(&self) -> bool {
         // Some(empty) retains the owner after all private signing keys retire.
         self.external.signer_history.is_some()
@@ -483,7 +494,9 @@ impl Pki {
             .and_then(|h| h.other.get(&key.issuer_id))
             .ok_or_else(not_found)?;
         let crls = &signer.crls;
-        if crls.full.expires <= now
+        if !crls
+            .matches_certificate_issuer(&signer.root.certificate_der, &signer.root.common_name)?
+            || crls.full.expires <= now
             || crls.delta.expires <= now
             || self.issued.iter().any(|(serial, issued)| {
                 issued.expires > now
@@ -539,9 +552,7 @@ impl Pki {
             selected.external.crls = Some(signer.crls.clone());
             selected.validate_external_state()?;
             let issuer = selected.captured_external_issuer()?;
-            signer
-                .crls
-                .validate(&issuer.common_name, &issuer.public_key, clock)?;
+            signer.crls.validate(&issuer, clock)?;
             if signer.crls.full.revoked.iter().any(|(serial, at)| {
                 self.issued.get(serial).is_some_and(|issued| {
                     !self

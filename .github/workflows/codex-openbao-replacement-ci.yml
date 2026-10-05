@@ -685,7 +685,7 @@ jobs:
             --expected-binary-sha256 "$digest" \
             --output "$reports/comparison.json"
 
-      - name: Compare OpenBao 2.7.0 external roots and verify native remote-bound CSRs
+      - name: Compare OpenBao 2.7.0 external roots and native locally owned KMS CSRs
         if: ${{ !cancelled() && steps.runtime_ready.outcome == 'success' && steps.oracle270_ready.outcome == 'success' }}
         shell: bash
         env:

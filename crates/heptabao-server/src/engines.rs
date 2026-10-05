@@ -850,6 +850,26 @@ impl EngineState {
             )
         })
     }
+
+    #[cfg(test)]
+    pub(crate) fn alter_external_crl_issuer_for_test(
+        &mut self,
+        mount: &str,
+        replacement: Option<Vec<u8>>,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut("")
+            .and_then(|state| state.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(pki) = &mut mounted.backend else {
+            return Err(bad("actual PKI fixture mount required"));
+        };
+        pki.alter_external_crl_issuer_for_test(replacement)
+    }
+    pub(crate) fn has_full_dn_crl_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_full_dn_crl_state())))
+    }
     pub(crate) fn has_external_pki_signer_history(&self) -> bool {
         self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_external_signer_history())))
     }

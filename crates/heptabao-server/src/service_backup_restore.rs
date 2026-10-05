@@ -384,6 +384,14 @@ impl Service {
                 "snapshot would downgrade SDK response header ownership",
             ));
         }
+        if current.schema >= EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+            && incoming.schema < EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot restore cannot retire external full-DN CRL semantics",
+            ));
+        }
         if current.schema >= EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
             && incoming.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
         {

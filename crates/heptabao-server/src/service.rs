@@ -88,8 +88,9 @@ const EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA: u32 = 94;
 const SDK_RESPONSE_HEADERS_STATE_SCHEMA: u32 = 95;
 const SDK_SECRET_LEASE_STATE_SCHEMA: u32 = 96;
 const PKI_URLS_STATE_SCHEMA: u32 = 97;
+const EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA: u32 = 98;
 #[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_URLS_STATE_SCHEMA;
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -112,6 +113,7 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | SDK_RESPONSE_HEADERS_STATE_SCHEMA
                 | SDK_SECRET_LEASE_STATE_SCHEMA
                 | PKI_URLS_STATE_SCHEMA
+                | EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA
         )
 }
 const MAX_STATE_BYTES: usize = state_store::MAX_SERIALIZED_STATE_BYTES;
@@ -3666,6 +3668,7 @@ impl Service {
             || admitted.has_namespace_batch_state()
             || admitted.engines.has_pki_url_state()
             || admitted.engines.has_external_pki_signer_history()
+            || admitted.engines.has_full_dn_crl_state()
             || admitted.engines.has_pki_role_names_state()
             || admitted.engines.has_pki_role_time_state()
             || admitted.engines.has_pki_role_leaf_profile_state()

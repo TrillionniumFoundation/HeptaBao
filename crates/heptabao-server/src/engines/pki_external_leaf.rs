@@ -106,6 +106,11 @@ pub(super) struct Crl {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct CrlSet {
+    // Imported CA subjects can contain more than a CommonName. None keeps the
+    // historical CN-only signing template. This effect-only capture is never
+    // persisted; reopened CRLs recover their Name from the original signed DER.
+    #[serde(skip)]
+    issuer_name_der: Option<Vec<u8>>,
     pub(super) full: Crl,
     pub(super) delta: Crl,
 }
@@ -133,14 +138,58 @@ impl CrlSet {
             der: Vec::new(),
         };
         Self {
+            issuer_name_der: None,
             full: crl(number, None, revoked),
             delta: crl(number + 1, Some(number), BTreeMap::new()),
         }
     }
+    pub(super) fn with_certificate_issuer(
+        mut self,
+        certificate: &[u8],
+        common_name: &str,
+    ) -> Result<Self> {
+        let subject = root_fields::certificate_subject(certificate)?;
+        self.issuer_name_der = (subject != name(common_name)).then_some(subject);
+        Ok(self)
+    }
+    fn signed_issuer_name(&self, issuer: &str) -> Result<Vec<u8>> {
+        if let Some(captured) = &self.issuer_name_der {
+            return Ok(captured.clone());
+        }
+        if self.full.der.is_empty() {
+            return Ok(name(issuer));
+        }
+        if self.full.der.len() > 512 * 1024 {
+            return Err(bad("external CRL exceeds bounds"));
+        }
+        use x509_parser::prelude::FromDer;
+        let (trailing, parsed) =
+            x509_parser::prelude::CertificateRevocationList::from_der(&self.full.der)
+                .map_err(|_| bad("invalid external CRL DER"))?;
+        if !trailing.is_empty()
+            || parsed.signature_algorithm != parsed.tbs_cert_list.signature
+            || parsed.signature_value.unused_bits != 0
+        {
+            return Err(bad("invalid complete external CRL signature envelope"));
+        }
+        Ok(parsed.issuer().as_raw().to_vec())
+    }
+    pub(super) fn has_full_dn(&self, issuer: &str) -> bool {
+        self.signed_issuer_name(issuer)
+            .is_ok_and(|actual| actual != name(issuer))
+    }
+    pub(super) fn matches_certificate_issuer(
+        &self,
+        certificate: &[u8],
+        issuer: &str,
+    ) -> Result<bool> {
+        Ok(self.signed_issuer_name(issuer)? == root_fields::certificate_subject(certificate)?)
+    }
     pub(super) fn tbs(&self, issuer: &str, public: &ExternalPkiPublicKey) -> Result<Vec<Vec<u8>>> {
+        let actual = self.signed_issuer_name(issuer)?;
         Ok(vec![
-            crl_tbs(issuer, public, &self.full)?,
-            crl_tbs(issuer, public, &self.delta)?,
+            crl_tbs(issuer, Some(&actual), public, &self.full)?,
+            crl_tbs(issuer, Some(&actual), public, &self.delta)?,
         ])
     }
     pub(super) fn sign(
@@ -163,12 +212,24 @@ impl CrlSet {
         }
         Ok(())
     }
-    pub(super) fn validate(
-        &self,
-        issuer: &str,
-        public: &ExternalPkiPublicKey,
-        clock: u64,
-    ) -> Result<()> {
+    pub(super) fn validate(&self, issuer: &ExternalPublicIssuer, clock: u64) -> Result<()> {
+        issuer.validate()?;
+        if let Some(captured) = &self.issuer_name_der {
+            let actual = root_fields::certificate_subject(&issuer.certificate_der)?;
+            if captured != &actual || actual == name(&issuer.common_name) {
+                return Err(bad(
+                    "external CRL issuer Name differs from its actual certificate",
+                ));
+            }
+        }
+        let effective = self.signed_issuer_name(&issuer.common_name)?;
+        if effective != name(&issuer.common_name)
+            && effective != root_fields::certificate_subject(&issuer.certificate_der)?
+        {
+            return Err(bad(
+                "signed external CRL issuer Name is not owned by its actual certificate",
+            ));
+        }
         if self.full.base.is_some()
             || self.delta.base != Some(self.full.number)
             || self.full.number == 0
@@ -189,7 +250,16 @@ impl CrlSet {
             {
                 return Err(bad("invalid external CRL state"));
             }
-            validate_signed_der(public, &crl_tbs(issuer, public, crl)?, &crl.der)?;
+            validate_signed_der(
+                &issuer.public_key,
+                &crl_tbs(
+                    &issuer.common_name,
+                    Some(&effective),
+                    &issuer.public_key,
+                    crl,
+                )?,
+                &crl.der,
+            )?;
         }
         Ok(())
     }
@@ -210,11 +280,16 @@ fn key_identifier(public: &[u8]) -> Vec<u8> {
         .to_vec()
 }
 
-fn crl_tbs(issuer: &str, public: &ExternalPkiPublicKey, crl: &Crl) -> Result<Vec<u8>> {
+fn crl_tbs(
+    issuer: &str,
+    issuer_name_der: Option<&[u8]>,
+    public: &ExternalPkiPublicKey,
+    crl: &Crl,
+) -> Result<Vec<u8>> {
     let mut parts = vec![
         integer(&[1]),
         public.signature_algorithm(),
-        name(issuer),
+        issuer_name_der.map_or_else(|| name(issuer), <[u8]>::to_vec),
         time(crl.issued),
         time(crl.expires),
     ];
@@ -378,6 +453,25 @@ fn leaf_tbs(
 }
 
 impl Pki {
+    pub(in crate::engines) fn has_full_dn_crl_state(&self) -> bool {
+        self.external.crls.as_ref().is_some_and(|crls| {
+            self.root
+                .as_ref()
+                .is_some_and(|root| crls.has_full_dn(&root.common_name))
+        }) || self.external_history_has_full_dn_crls()
+    }
+    #[cfg(test)]
+    pub(in crate::engines) fn alter_external_crl_issuer_for_test(
+        &mut self,
+        replacement: Option<Vec<u8>>,
+    ) -> Result<()> {
+        self.external
+            .crls
+            .as_mut()
+            .ok_or_else(not_found)?
+            .issuer_name_der = replacement;
+        Ok(())
+    }
     pub(in crate::engines::pki) fn has_external_role_leaf_profile_state(&self) -> bool {
         !self.external.archived_issuers.is_empty()
             || self
@@ -530,12 +624,13 @@ impl Pki {
             }
             ConsumptionTemplate::Crl {
                 revoked,
-                prepared: Box::new(CrlSet::prepare(
-                    number,
-                    now,
-                    entries,
-                    self.capture_urls(&key.issuer_id)?,
-                )),
+                prepared: Box::new(
+                    CrlSet::prepare(number, now, entries, self.capture_urls(&key.issuer_id)?)
+                        .with_certificate_issuer(
+                            &captured_issuer.certificate_der,
+                            &captured_issuer.common_name,
+                        )?,
+                ),
             }
         } else {
             return Ok(None);
@@ -727,7 +822,12 @@ impl Pki {
         // external effect dispatch. Never serve a signed cache that omits a
         // still-valid revoked certificate. An explicit grant-authorized rotate
         // must rebuild it; public reads cannot trigger or retry remote signing.
-        if crls.full.expires <= now
+        let root = self
+            .root
+            .as_ref()
+            .ok_or_else(|| error(503, "external CRL issuer missing"))?;
+        if !crls.matches_certificate_issuer(&root.certificate_der, &root.common_name)?
+            || crls.full.expires <= now
             || crls.delta.expires <= now
             || self.issued.iter().any(|(serial, issued)| {
                 issued.expires > now
@@ -884,7 +984,7 @@ impl Pki {
             let issuer = active
                 .as_ref()
                 .ok_or_else(|| bad("external CRL has no active issuer"))?;
-            crls.validate(&issuer.common_name, &issuer.public_key, clock)?;
+            crls.validate(issuer, clock)?;
             if crls.full.revoked.iter().any(|(serial, at)| {
                 self.issued.get(serial).is_some_and(|issued| {
                     !self.external_leaf_belongs_to_active(serial) || issued.revoked_at != Some(*at)

@@ -19,7 +19,7 @@ import tempfile
 import time
 
 from cryptography import x509
-from cryptography.hazmat.primitives.asymmetric import ed25519
+from cryptography.hazmat.primitives.asymmetric import ec, ed25519
 from cryptography.hazmat.primitives import serialization
 from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
 from official_openbao_launcher import file_digest, pinned_artifact, start_oracle, stop_oracle
@@ -92,7 +92,19 @@ def validate_crypto(data,kind,public):
     expected_public=public.public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw)
     return bool(exact),actual==expected_public,verified is None
 
-def run(binary,rows,*,oracle_contract=False,compare_official_csr=True,include_native_csr=True,observe_provider_signs=False):
+def validate_native_local_csr(data,provider_public):
+    document=x509.load_pem_x509_csr(data["csr"].encode())
+    public=document.public_key()
+    common_name=document.subject.get_attributes_for_oid(x509.NameOID.COMMON_NAME)
+    exact=set(data)=={"csr","key_id"} and bool(re.fullmatch(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}",data.get("key_id","")))
+    exact &= isinstance(public,ed25519.Ed25519PublicKey)
+    exact &= tuple((extension.oid.dotted_string,extension.critical) for extension in document.extensions)==(("2.5.29.17",False),)
+    exact &= len(common_name)==1 and document.extensions.get_extension_for_class(x509.SubjectAlternativeName).value.get_values_for_type(x509.DNSName)==[common_name[0].value]
+    local=public.public_bytes(serialization.Encoding.DER,serialization.PublicFormat.SubjectPublicKeyInfo)
+    remote=provider_public.public_bytes(serialization.Encoding.DER,serialization.PublicFormat.SubjectPublicKeyInfo)
+    return bool(exact),local!=remote,document.is_signature_valid
+
+def run(binary,rows,*,oracle_contract=False,compare_official_csr=True,include_native_csr=True,observe_provider_signs=False,local_csr=False):
     smoke_spec=importlib.util.spec_from_file_location("external_pki_native_smoke",ROOT/"qa/single-node/smoke.py")
     smoke=importlib.util.module_from_spec(smoke_spec);smoke_spec.loader.exec_module(smoke)
     private_root=Path(tempfile.mkdtemp(prefix="heptabao-external-pki270-"));private_root.chmod(0o700)
@@ -162,14 +174,20 @@ def run(binary,rows,*,oracle_contract=False,compare_official_csr=True,include_na
                 t.check(prefix+"generate",response.status==200,response.status)
                 if observe_provider_signs:
                     observed=sign_entries(remote)-before
-                    expected=3 if kind=="root" else 1
+                    expected=3 if kind=="root" else (0 if local_csr else 1)
                     try:t.check(prefix+"provider_sign_exact",observed==expected)
                     finally:rows[-1].update(observed_provider_sign_entries=observed,expected_provider_sign_entries=expected)
                 data=response.body.get("data",{})
-                exact,spki,verified=validate_crypto(data,kind,public)
-                t.check(prefix+"exact_response",exact)
-                t.check(prefix+"actual_signature",verified)
-                t.check(prefix+"spki_matches",spki)
+                if kind=="csr" and local_csr:
+                    exact,spki,verified=validate_native_local_csr(data,public)
+                    t.check(prefix+"exact_response",exact)
+                    t.check(prefix+"actual_self_signature",verified)
+                    t.check(prefix+"local_spki_distinct",spki)
+                else:
+                    exact,spki,verified=validate_crypto(data,kind,public)
+                    t.check(prefix+"exact_response",exact)
+                    t.check(prefix+"actual_signature",verified)
+                    t.check(prefix+"spki_matches",spki)
                 t.check(prefix+"private_key_absent","private_key" not in data)
                 if kind=="root":certificates[side]=data["certificate"]
             t.call(side+".namespace",client,"POST","sys/namespaces/team",200)

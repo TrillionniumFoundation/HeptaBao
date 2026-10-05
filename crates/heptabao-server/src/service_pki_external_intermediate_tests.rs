@@ -1101,3 +1101,233 @@ fn pki_signed_ca_canonical_http_serial_resolves_original_zero_prefix_records_and
     drop(root);
     Ok(())
 }
+
+// The actual genuine full-DN oracle accepts a changed subject with the same CSR
+// SPKI. The original remote key and imported certificate still own every CRL.
+#[test]
+fn pki_full_dn98_remote_import_leaf_full_delta_revoke_capture_and_restart() -> TestResult {
+    for kind in ["ed25519", "rsa-2048"] {
+        let remote = RemoteTransit::new_kind(kind)?;
+        let (root, mut service, unseal, admin) = pki_fixture(&remote)?;
+        let parent = parent(&mut service, &admin)?;
+        let csr = generate(&mut service, &admin)?;
+        let signed = call(
+            &mut service,
+            "POST",
+            "parent/root/sign-intermediate",
+            &admin,
+            json!({"csr":csr.body["data"]["csr"],"use_csr_values":false,"common_name":"renamed-child.example.test","organization":["Actual Full DN Issuer"],"ou":["PKI Proof","Remote Owner"],"country":["CN"],"ttl":"2h","max_path_length":1}),
+        );
+        assert_eq!(signed.status, 200);
+        let child = certificate(&signed)?;
+        let public = child.public_key()?;
+        let parent_public = certificate(&parent)?.public_key()?;
+        assert!(child.verify(&parent_public)?);
+        let request = X509Req::from_pem(
+            csr.body["data"]["csr"]
+                .as_str()
+                .ok_or("actual CSR")?
+                .as_bytes(),
+        )?;
+        assert_eq!(
+            request.public_key()?.public_key_to_der()?,
+            public.public_key_to_der()?
+        );
+        assert_ne!(
+            request.subject_name().to_der()?,
+            child.subject_name().to_der()?
+        );
+        let predecessor = service
+            .state
+            .as_ref()
+            .ok_or("actual pre-full-DN producer")?
+            .clone();
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "external-ca/intermediate/set-signed",
+                &admin,
+                bundle(&signed, &parent)?
+            )
+            .status,
+            200
+        );
+        let owned = service.state.as_ref().ok_or("owned imported signer")?;
+        assert_eq!(owned.schema, 98);
+        owned
+            .validate_format()
+            .map_err(|_| "actual full-DN signer invalid")?;
+        assert!(Service::validate_snapshot_protected_floor(owned, &predecessor).is_err());
+        assert!(
+            !serde_json::to_string(&owned.engines)?.contains("\"issuer_name_der\""),
+            "effect-only Name creates no new durable key"
+        );
+        let mut removed = owned.clone();
+        removed
+            .engines
+            .alter_external_crl_issuer_for_test("external-ca/", None)?;
+        assert!(
+            removed.validate_format().is_ok(),
+            "the original signed DER recovers its Name without a new durable field"
+        );
+        let mut wrong = owned.clone();
+        wrong.engines.alter_external_crl_issuer_for_test(
+            "external-ca/",
+            Some(certificate(&parent)?.subject_name().to_der()?),
+        )?;
+        assert!(
+            wrong.validate_format().is_err(),
+            "parent subject never owns child CRL"
+        );
+        let mut lowered = owned.clone();
+        lowered.schema = 93;
+        assert!(lowered.validate_format().is_err());
+        assert_eq!(lowered.writer_schema(), 98);
+        assert!(
+            lowered
+                .validate_publication_schema(Some(&predecessor))
+                .is_err()
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "external-ca/roles/leaf",
+                &admin,
+                json!({"allow_any_name":true,"key_type":"ed25519","ttl":"10m","max_ttl":"30m"})
+            )
+            .status,
+            200
+        );
+        let leaf = call(
+            &mut service,
+            "POST",
+            "external-ca/issue/leaf",
+            &admin,
+            json!({"common_name":"leaf.example.test","ttl":"10m"}),
+        );
+        assert_eq!(leaf.status, 200);
+        let issued = certificate(&leaf)?;
+        assert_eq!(
+            issued.issuer_name().to_der()?,
+            child.subject_name().to_der()?
+        );
+        assert!(issued.verify(&public)?);
+        assert!(!issued.verify(&parent_public)?);
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "external-ca/revoke",
+                &admin,
+                json!({"serial_number":leaf.body["data"]["serial_number"]})
+            )
+            .status,
+            200
+        );
+        for (path, field) in [
+            ("external-ca/issuer/default/crl", "crl"),
+            ("external-ca/cert/delta-crl", "certificate"),
+        ] {
+            let response = call(&mut service, "GET", path, "", json!({}));
+            assert_eq!(response.status, 200);
+            let crl = X509Crl::from_pem(
+                response.body["data"][field]
+                    .as_str()
+                    .ok_or("actual CRL")?
+                    .as_bytes(),
+            )?;
+            assert_eq!(crl.issuer_name().to_der()?, child.subject_name().to_der()?);
+            assert!(crl.verify(&public)?);
+            assert!(!crl.verify(&parent_public)?);
+            if path.ends_with("default/crl") {
+                assert_eq!(crl.get_revoked().ok_or("actual revoked leaf")?.len(), 1);
+            }
+        }
+        drop(service);
+        let mut reopened = root.service()?;
+        reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+        assert_eq!(
+            call(
+                &mut reopened,
+                "PUT",
+                "sys/unseal",
+                "",
+                json!({"key":unseal})
+            )
+            .status,
+            200
+        );
+        for rotate in [false, true] {
+            if rotate {
+                assert_eq!(
+                    call(
+                        &mut reopened,
+                        "GET",
+                        "external-ca/crl/rotate",
+                        &admin,
+                        json!({})
+                    )
+                    .status,
+                    200
+                );
+            }
+            let response = call(
+                &mut reopened,
+                "GET",
+                "external-ca/issuer/default/crl",
+                "",
+                json!({}),
+            );
+            assert_eq!(response.status, 200);
+            let crl = X509Crl::from_pem(
+                response.body["data"]["crl"]
+                    .as_str()
+                    .ok_or("reopened CRL")?
+                    .as_bytes(),
+            )?;
+            assert_eq!(crl.issuer_name().to_der()?, child.subject_name().to_der()?);
+            assert!(crl.verify(&public)?);
+        }
+        let before = remote.calls()?;
+        assert_eq!(
+            call(
+                &mut reopened,
+                "DELETE",
+                "sys/external-keys/configs/remote/keys/v2/grants/external-ca",
+                &admin,
+                json!({})
+            )
+            .status,
+            204
+        );
+        let denied = call(
+            &mut reopened,
+            "GET",
+            "external-ca/crl/rotate",
+            &admin,
+            json!({}),
+        );
+        assert_eq!(denied.status, 500);
+        assert!(denied.body.get("data").is_none());
+        assert_eq!(remote.calls()?, before);
+        assert_eq!(
+            call(
+                &mut reopened,
+                "DELETE",
+                "sys/mounts/external-ca",
+                &admin,
+                json!({})
+            )
+            .status,
+            204
+        );
+        let retired = reopened.state.as_ref().ok_or("actual full-DN retirement")?;
+        assert!(!retired.engines.has_full_dn_crl_state());
+        assert_eq!(retired.schema, 98);
+        assert_eq!(retired.writer_schema(), 98);
+        assert!(Service::validate_snapshot_protected_floor(retired, &predecessor).is_err());
+    }
+    Ok(())
+}

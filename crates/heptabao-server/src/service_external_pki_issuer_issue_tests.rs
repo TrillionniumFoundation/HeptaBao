@@ -216,25 +216,30 @@ fn external_pki270_issuer_issue_seven_real_kinds_original_paths_private_binding_
                 "lease duration retains actual elapsed time within the final delivery interval"
             );
             let serial = data["serial_number"].as_str().ok_or("serial")?.to_owned();
+            let actual_serial = leaf.serial_number().to_bn()?.to_vec();
+            assert!(
+                !actual_serial.is_empty() && actual_serial.len() <= 20,
+                "actual generated certificate has a bounded unsigned serial"
+            );
+            let canonical_serial = actual_serial
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect::<Vec<_>>()
+                .join(":");
+            assert_eq!(
+                serial, canonical_serial,
+                "public serial is exactly the actually signed certificate's canonical bytes"
+            );
             let groups = serial.split(':').collect::<Vec<_>>();
             assert!(
-                groups.len() == 20
+                groups.len() == actual_serial.len()
                     && groups.iter().all(|group| group.len() == 2
                         && group
                             .bytes()
                             .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())),
-                "external serial is exactly twenty lowercase hexadecimal byte pairs"
+                "canonical serial contains one lowercase hexadecimal pair per actual byte"
             );
             let raw_serial = groups.concat();
-            let certificate_serial = leaf
-                .serial_number()
-                .to_bn()?
-                .to_hex_str()?
-                .to_ascii_lowercase();
-            assert!(
-                certificate_serial.trim_start_matches('0') == raw_serial.trim_start_matches('0'),
-                "maintained certificate serial equals the response serial value"
-            );
             let lease = issued.body["lease_id"]
                 .as_str()
                 .ok_or("lease ID")?

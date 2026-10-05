@@ -345,7 +345,8 @@ impl ExternalPkiTemplate {
             if public_key != imported.pending.key.public_key {
                 return Err(error(503, "external intermediate provider key changed"));
             }
-            let crls = CrlSet::empty(self.generated_at, self.url_entries.clone());
+            let crls =
+                imported.prepare_initial_crls(self.generated_at, self.url_entries.clone())?;
             let mut parts = crls.tbs(&self.common_name, &public_key)?;
             let tbs = parts.remove(0);
             return Ok(ExternalPkiMaterial {
