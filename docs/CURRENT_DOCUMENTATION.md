@@ -4,7 +4,7 @@ Status: `V2.1 / RUNNABLE SINGLE-NODE CANDIDATE UNDER REVIEW`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
-This is the current entry point for all 47 workspace packages. It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
+This is the current entry point for all 48 workspace packages. It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
 
 ## Canonical current truth
 
@@ -41,7 +41,7 @@ Current source authority is the exact Git commit/tree exercised by CI. `planning
 Read `docs/modules/CURRENT_SOURCE_BINDING.md` before using inherited V1.4.7
 source tables; those tables are historical, not current API inventories.
 
-- `docs/modules/README.md` — complete index for all 47 workspace packages.
+- `docs/modules/README.md` — complete index for all 48 workspace packages.
 - `docs/modules/MODULE_DOCUMENTATION_STANDARD_V3.md` — current semantic standard.
 - `planning/HEPTABAO_MODULE_CLOSURE_REGISTRY_V1.yaml` and `docs/module-closure/` —
   one source-bound design, boundary, failure-semantics and acceptance dossier
