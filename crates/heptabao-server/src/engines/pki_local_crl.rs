@@ -600,7 +600,9 @@ mod tests {
             LeafAuthority {
                 owner: &owner,
                 owner_expires: None,
-                now,
+                precise_owner_expires: None,
+                time: crate::auth::AuthorityTime::Coarse(now),
+                clock: None,
                 identity_templates: None,
             },
         )?;

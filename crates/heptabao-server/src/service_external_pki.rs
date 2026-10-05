@@ -211,7 +211,15 @@ impl ExternalPkiPlan {
             })
     }
 
+    fn validate_private_leaf_time(&self) -> Result<(), Response> {
+        let time = self.authority.token_time()?;
+        self.template
+            .validate_private_leaf_time(time)
+            .map_err(Response::from_engine_error)
+    }
+
     pub(super) fn execute(&self) -> Result<Observation, Response> {
+        self.validate_private_leaf_time()?;
         let _deadline_scope = self
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);
@@ -288,8 +296,10 @@ impl ExternalPkiPlan {
                 "external PKI withheld after metadata: deadline or host authority changed; no blind retry",
             ));
         }
+        self.validate_private_leaf_time()?;
         let mut signatures = Vec::with_capacity(material.tbs_parts().count());
         for (index, tbs) in material.tbs_parts().enumerate() {
+            self.validate_private_leaf_time()?;
             if self.authority.deadline_expired() || !self.provider_host_current() {
                 return Err(Response::error(
                     503,
@@ -346,6 +356,7 @@ impl ExternalPkiPlan {
                 .map_err(|cause| Response::error(cause.status, &cause.message))?;
             signatures.push(signature);
         }
+        self.validate_private_leaf_time()?;
         Ok(Observation {
             material: Box::new(material),
             signatures,
@@ -418,7 +429,8 @@ impl Service {
             request.body,
             crate::engines::PkiRequestContext {
                 owner: owner.as_ref(),
-                now: request.now,
+                time,
+                clock: request.token_clock,
                 identity_templates: Some(&identity_values),
             },
         ) {
@@ -603,6 +615,9 @@ impl Service {
                 .map_or(time, |state| state.auth.token_api_observed_time(time)),
             Err(error) => return error,
         };
+        if let Err(cause) = plan.template.validate_private_leaf_time(time) {
+            return Response::from_engine_error(cause);
+        }
         let now = if time.exact().is_some() {
             time.seconds()
         } else {
@@ -822,6 +837,10 @@ impl Service {
                 return error;
             }
         };
+        if let Err(cause) = plan.template.validate_private_leaf_time(time) {
+            erase_json(&mut response.body);
+            return Response::from_engine_error(cause);
+        }
         let now = if time.exact().is_some() {
             time.seconds()
         } else {

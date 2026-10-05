@@ -56,6 +56,10 @@ use local_intermediate::{LocalCaChain, LocalIntermediateState};
 #[path = "pki_local_ocsp.rs"]
 pub(crate) mod local_ocsp;
 
+#[path = "pki_precise_time.rs"]
+pub(in crate::engines) mod precise_time;
+use precise_time::PkiInstant;
+
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;
 const MAX_TTL: u64 = 10 * 365 * 24 * 3600;
@@ -1365,7 +1369,9 @@ impl Pki {
             LeafAuthority {
                 owner,
                 owner_expires,
-                now,
+                precise_owner_expires: None,
+                time: crate::auth::AuthorityTime::Coarse(now),
+                clock: None,
                 identity_templates: None,
             },
         )
@@ -1380,9 +1386,16 @@ impl Pki {
         let LeafAuthority {
             owner,
             owner_expires,
-            now,
+            precise_owner_expires,
+            time,
+            clock,
             identity_templates,
         } = authority;
+        let time = precise_time::observe(time, clock, time.seconds())?;
+        let now = time.seconds();
+        if precise_owner_expires.is_some_and(|end| time.exact().is_none_or(|at| at > end)) {
+            return Err(error(403, "issuer no longer has a live PKI lease window"));
+        }
         reject_unknown(
             body,
             &[
@@ -1519,12 +1532,16 @@ impl Pki {
         if !names.is_some_and(|policy| policy.no_store) && self.issued.len() >= MAX_ISSUED {
             return Err(error(507, "PKI issued-certificate capacity exhausted"));
         }
+        // CSR verification and identity rendering may consume real elapsed time.
+        // Reobserve the original ingress clock immediately at the time producer.
+        let time = precise_time::observe(time, clock, now)?;
+        let now = time.seconds();
         let resolved = role.role_time_policy.clone().unwrap_or_default().resolve(
             body,
             role.max_ttl,
             self.default_ttl,
             self.max_ttl,
-            now,
+            time,
         )?;
         let not_after = root
             .leaf_not_after_behavior
@@ -1534,15 +1551,24 @@ impl Pki {
             .clone()
             .unwrap_or_default()
             .validate_final_not_after(not_after)?;
-        let expires = not_after.min(owner_expires.unwrap_or(u64::MAX));
+        let owner_boundary = precise_owner_expires
+            .map(crate::auth::Timestamp::seconds)
+            .or(owner_expires);
+        let not_after_seconds = not_after.positive_seconds()?;
+        let expires = not_after_seconds.min(owner_boundary.unwrap_or(u64::MAX));
         if expires <= now {
             return Err(error(403, "issuer no longer has a live PKI lease window"));
         }
-        if i128::from(resolved.not_before) > i128::from(expires) {
+        let private_after = if owner_boundary.is_some_and(|end| end < not_after_seconds) {
+            PkiInstant::whole(expires)?
+        } else {
+            not_after
+        };
+        if resolved.not_before > private_after {
             return Err(bad(&format!(
                 "The certificate's Not Before ({}) is later than the certificate's Not After ({})",
-                role_time::signed_timestamp(resolved.not_before),
-                timestamp(expires)
+                resolved.not_before.render(),
+                private_after.render()
             )));
         }
         let serial = random_serial()?;
@@ -1566,7 +1592,7 @@ impl Pki {
             exclude_cn_from_sans,
             email_sans,
             uri_sans,
-            signed_role_time_owned: resolved.not_before < 0,
+            signed_role_time_owned: resolved.not_before.seconds() < 0,
             issuer_not_after_behavior: root.leaf_not_after_behavior,
             role_time_owned: root.leaf_not_after_behavior.is_some()
                 || role.role_time_policy.is_some()
@@ -1611,7 +1637,10 @@ impl Pki {
             alt_names,
             ip_sans,
             issued: now,
-            not_before: resolved.not_before,
+            not_before: resolved.not_before.seconds(),
+            publication_time: time,
+            publication_clock: clock,
+            precise_owner_expires,
             expires,
         })
     }
@@ -1637,7 +1666,9 @@ impl Pki {
             LeafAuthority {
                 owner,
                 owner_expires,
-                now,
+                precise_owner_expires: None,
+                time: crate::auth::AuthorityTime::Coarse(now),
+                clock: None,
                 identity_templates: None,
             },
         )
@@ -1759,6 +1790,7 @@ impl Pki {
         leaf_public: &LocalPublicKey,
         external: bool,
     ) -> Result<EngineResponse> {
+        prepared.validate_publication(prepared.issued)?;
         let root = self.selected_issuer(if prepared.local_issuer_id.is_empty() {
             "default"
         } else {
@@ -2376,7 +2408,9 @@ struct IssuanceRoute<'a> {
 pub(super) struct LeafAuthority<'a> {
     pub(super) owner: &'a LeaseOwner,
     pub(super) owner_expires: Option<u64>,
-    pub(super) now: u64,
+    pub(super) precise_owner_expires: Option<crate::auth::Timestamp>,
+    pub(super) time: crate::auth::AuthorityTime,
+    pub(super) clock: Option<crate::auth::RequestClock>,
     pub(super) identity_templates: Option<&'a crate::auth::IdentityTemplateValues>,
 }
 
@@ -2399,6 +2433,9 @@ struct LeafTemplate {
     lease_id: String,
     owner: LeaseOwner,
     owner_expires: Option<u64>,
+    precise_owner_expires: Option<crate::auth::Timestamp>,
+    publication_time: crate::auth::AuthorityTime,
+    publication_clock: Option<crate::auth::RequestClock>,
     leased: bool,
     common_name: String,
     local_key_kind: LocalKeyKind,
@@ -2407,6 +2444,36 @@ struct LeafTemplate {
     issued: u64,
     not_before: i64,
     expires: u64,
+}
+
+impl LeafTemplate {
+    fn validate_publication(&self, floor: u64) -> Result<()> {
+        self.validate_publication_observed(crate::auth::AuthorityTime::Coarse(floor))
+    }
+    fn validate_publication_observed(&self, time: crate::auth::AuthorityTime) -> Result<()> {
+        let observed = precise_time::observe(
+            self.publication_time,
+            self.publication_clock,
+            time.seconds(),
+        )?;
+        let observed = match (observed.exact(), time.exact()) {
+            (Some(left), Some(right)) => crate::auth::AuthorityTime::Precise(left.max(right)),
+            (None, Some(right)) => crate::auth::AuthorityTime::Precise(right),
+            _ => observed,
+        };
+        if PkiInstant::whole(self.expires)? <= PkiInstant::authority(observed)?
+            || self
+                .precise_owner_expires
+                .is_some_and(|end| observed.exact().is_none_or(|at| at > end))
+            || self.precise_owner_expires.is_none()
+                && self
+                    .owner_expires
+                    .is_some_and(|end| observed.seconds() >= end)
+        {
+            return Err(error(403, "issuer no longer has a live PKI lease window"));
+        }
+        Ok(())
+    }
 }
 
 struct CertificateSpec<'a> {

@@ -367,7 +367,8 @@ impl Pki {
         context: crate::engines::PkiRequestContext<'_>,
     ) -> Result<Option<ExternalPkiTemplate>> {
         let owner = context.owner;
-        let now = context.now;
+        let time = context.observed_time(context.time.seconds())?;
+        let now = time.seconds();
         let Some(key) = self.external.root.as_ref() else {
             return Ok(None);
         };
@@ -409,7 +410,9 @@ impl Pki {
                 LeafAuthority {
                     owner: &owner.owner,
                     owner_expires: owner.expires_at,
-                    now,
+                    precise_owner_expires: owner.precise_expires_at,
+                    time,
+                    clock: context.clock,
                     identity_templates: context.identity_templates,
                 },
             )?;
@@ -521,6 +524,7 @@ impl Pki {
             .ok_or_else(|| bad("external PKI consumption missing"))?;
         match consumption.template {
             ConsumptionTemplate::Leaf(prepared) => {
+                prepared.validate_publication(now)?;
                 if prepared.expires <= now
                     || prepared.owner_expires.is_some_and(|expires| expires <= now)
                 {
@@ -897,6 +901,9 @@ impl Pki {
                 lease_id: issued.lease_id.clone(),
                 owner: issued.owner.clone(),
                 owner_expires: None,
+                precise_owner_expires: None,
+                publication_time: crate::auth::AuthorityTime::Coarse(issued.issued),
+                publication_clock: None,
                 leased: issued.leased,
                 common_name: issued.common_name.clone(),
                 local_key_kind: projection.public_key.kind(),
@@ -935,6 +942,17 @@ impl Pki {
 }
 
 impl ExternalPkiTemplate {
+    pub(crate) fn validate_private_leaf_time(
+        &self,
+        time: crate::auth::AuthorityTime,
+    ) -> Result<()> {
+        match &self.consumption {
+            Some(ConsumptionTemplate::Leaf(prepared)) => {
+                prepared.validate_publication_observed(time)
+            }
+            _ => Ok(()),
+        }
+    }
     pub(crate) fn leaf_lease_window(&self) -> Option<(u64, bool)> {
         match self.consumption.as_ref() {
             Some(ConsumptionTemplate::Leaf(prepared)) => Some((prepared.expires, prepared.leased)),

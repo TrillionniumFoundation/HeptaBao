@@ -961,7 +961,8 @@ impl EngineState {
         body: &Value,
         context: PkiRequestContext<'_>,
     ) -> Result<Option<ExternalPkiRequest>> {
-        let now = context.now;
+        let time = context.observed_time(self.lease_clock)?;
+        let now = time.seconds();
         let owner = context.owner;
         if path.contains('?') {
             return Err(bad("external PKI query parameters are not implemented"));
@@ -993,10 +994,7 @@ impl EngineState {
                 relative,
                 body,
                 mount_path,
-                PkiRequestContext {
-                    now: now.max(self.lease_clock),
-                    ..context
-                },
+                PkiRequestContext { time, ..context },
             )?);
         let Some(template) = template else {
             return Ok(None);

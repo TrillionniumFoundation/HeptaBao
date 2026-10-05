@@ -838,7 +838,8 @@ mod tests {
                 "legacy/",
                 crate::engines::PkiRequestContext {
                     owner: Some(&owner),
-                    now: 100,
+                    time: crate::auth::AuthorityTime::Coarse(100),
+                    clock: None,
                     identity_templates: None,
                 },
             )?

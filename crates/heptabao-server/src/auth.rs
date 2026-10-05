@@ -1410,6 +1410,10 @@ impl Principal {
         Ok(())
     }
 
+    pub(super) fn original_request_clock(&self) -> Option<RequestClock> {
+        self.request_clock
+    }
+
     pub(super) fn request_authority_time(
         &self,
         time: AuthorityTime,

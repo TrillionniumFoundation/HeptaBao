@@ -5,8 +5,14 @@ use crate::auth::{LeaseOwner, ResolvedLeaseOwner, ServiceOwnerProfile};
 
 pub(crate) struct PkiRequestContext<'a> {
     pub(crate) owner: Option<&'a ResolvedLeaseOwner>,
-    pub(crate) now: u64,
+    pub(crate) time: crate::auth::AuthorityTime,
+    pub(crate) clock: Option<crate::auth::RequestClock>,
     pub(crate) identity_templates: Option<&'a crate::auth::IdentityTemplateValues>,
+}
+impl PkiRequestContext<'_> {
+    pub(crate) fn observed_time(&self, floor: u64) -> Result<crate::auth::AuthorityTime> {
+        pki::precise_time::observe(self.time, self.clock, floor)
+    }
 }
 
 impl EngineState {
@@ -294,7 +300,8 @@ impl EngineState {
             body,
             PkiRequestContext {
                 owner: Some(owner),
-                now,
+                time: crate::auth::AuthorityTime::Coarse(now),
+                clock: None,
                 identity_templates: None,
             },
         )
@@ -326,7 +333,8 @@ impl EngineState {
         let owner = context
             .owner
             .ok_or_else(|| error(403, "credential issuer is required"))?;
-        let now = context.now;
+        let time = context.observed_time(self.lease_clock)?;
+        let now = time.seconds();
         if !write_method(method) {
             return Err(unsupported());
         }
@@ -360,13 +368,26 @@ impl EngineState {
             pki::LeafAuthority {
                 owner: &owner.owner,
                 owner_expires: owner.expires_at,
-                now,
+                precise_owner_expires: owner.precise_expires_at,
+                time,
+                clock: context.clock,
                 identity_templates: context.identity_templates,
             },
         )?;
+        let delivered = context.observed_time(now)?;
+        if owner
+            .precise_expires_at
+            .is_some_and(|end| delivered.exact().is_none_or(|at| at > end))
+            || owner.precise_expires_at.is_none()
+                && owner
+                    .expires_at
+                    .is_some_and(|end| delivered.seconds() >= end)
+        {
+            return Err(error(403, "issuer no longer has a live PKI lease window"));
+        }
         if response.mutated {
             self.namespaces.insert(namespace.into(), candidate);
-            self.lease_clock = now;
+            self.lease_clock = delivered.seconds();
         }
         Ok(response)
     }

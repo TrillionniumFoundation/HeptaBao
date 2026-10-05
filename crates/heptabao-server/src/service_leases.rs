@@ -180,7 +180,8 @@ impl Service {
                     body,
                     crate::engines::PkiRequestContext {
                         owner: Some(owner),
-                        now,
+                        time,
+                        clock: principal.original_request_clock(),
                         identity_templates: Some(&values),
                     },
                 )
