@@ -1370,8 +1370,24 @@ fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -
         100,
     );
     assert!(
-        issued.body["data"]["issuing_ca"] == issuer.body["data"]["certificate"],
-        "actual selected public issuer certificate"
+        !issued.body["data"]["issuing_ca"]
+            .as_str()
+            .ok_or("issuance CA PEM")?
+            .ends_with('\n')
+            && issuer.body["data"]["certificate"]
+                .as_str()
+                .ok_or("issuer GET PEM")?
+                .ends_with('\n')
+            && decode_pem(
+                issued.body["data"]["issuing_ca"]
+                    .as_str()
+                    .ok_or("issuance CA PEM")?
+            )? == decode_pem(
+                issuer.body["data"]["certificate"]
+                    .as_str()
+                    .ok_or("issuer GET PEM")?
+            )?,
+        "actual selected issuer DER with distinct native issuance and issuer-GET PEM formatting"
     );
     drop(service);
     let mut service = root.service()?;

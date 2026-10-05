@@ -340,8 +340,9 @@ impl Pki {
             {
                 return Err(bad("invalid PKI profile leaf public evidence"));
             }
-            let (_, issuer_certificate) = X509Certificate::from_der(issuer_der)
-                .map_err(|_| bad("invalid PKI owned issuer DER"))?;
+            let (_, issuer_certificate) =
+                x509_parser::certificate::X509Certificate::from_der(issuer_der)
+                    .map_err(|_| bad("invalid PKI owned issuer DER"))?;
             let issuer_not_after =
                 u64::try_from(issuer_certificate.validity().not_after.timestamp())
                     .map_err(|_| bad("invalid PKI owned issuer expiry"))?;
