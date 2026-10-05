@@ -298,7 +298,7 @@ impl AuthState {
         }
         Ok(())
     }
-    fn store_token(&mut self, id: String, token: Token) -> Option<Token> {
+    pub(super) fn store_token(&mut self, id: String, token: Token) -> Option<Token> {
         if token.has_public_origin() {
             self.public_origin_floor = Some(Floor::V1);
         }
