@@ -26,6 +26,9 @@ use x509_parser::{
 };
 use zeroize::{Zeroize, Zeroizing};
 
+#[path = "auth_namespace_assets.rs"]
+pub(crate) mod namespace_assets;
+
 #[path = "auth_recovery_ceremony.rs"]
 mod recovery_ceremony;
 #[path = "auth_recovery_keys.rs"]
@@ -193,6 +196,9 @@ fn is_default_userpass_lockout_counter_reset(value: &u64) -> bool {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct AuthState {
+    /// Native origin retirement cannot erase its owner floor.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    public_origin_floor: Option<public_origin::Floor>,
     /// Root-owned independent recovery verifier; absent old states stay byte compatible.
     /// The encrypted auth owner is the sole credential authority.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1220,6 +1226,10 @@ struct Token {
     /// Private issuer-owned lease metadata; absent on all historical tokens.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     token_api_precision: Option<token_precision::ServicePrecision>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    public_origin: Option<public_origin::TokenApiOrigin>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    issue_stamp: Option<public_origin::CreationStamp>,
     /// The prior granted lease, used by native Token API renewal when no
     /// increment is requested. None preserves historical one-hour renewal.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1372,6 +1382,13 @@ impl Drop for Principal {
 }
 
 impl Principal {
+    pub(super) fn namespace(&self) -> &str {
+        match &self.credential {
+            batch_principal::VerifiedCredential::Service(token) => &token.namespace,
+            batch_principal::VerifiedCredential::Batch(claims) => claims.namespace(),
+        }
+    }
+
     pub(super) fn is_root(&self) -> bool {
         self.service_token().is_some_and(|token| token.root)
     }
@@ -2286,6 +2303,7 @@ impl AuthState {
                 batch::BatchKeyAuthority::new(now)
                     .map_err(|_| err(503, "batch authority unavailable"))?,
             ),
+            public_origin_floor: None,
             system_lease_defaults: Some(token_ttl::SystemLeaseDefaults::native()),
             wrapping_clock: 0,
             tokens: BTreeMap::new(),
@@ -2315,6 +2333,8 @@ impl AuthState {
         state.initialize_fresh_namespace_auth("")?;
         let token = Token {
             token_api_precision: None,
+            public_origin: None,
+            issue_stamp: None,
             token_api_lease_ttl: None,
             token_role: None,
             bound_cidrs: Vec::new(),
@@ -2822,7 +2842,12 @@ impl AuthState {
         Ok(principal)
     }
 
-    fn prepare_issue(token: Token, now: u64) -> Result<(String, Token, AuthResponse), AuthError> {
+    fn prepare_issue(
+        mut token: Token,
+        now: u64,
+    ) -> Result<(String, Token, AuthResponse), AuthError> {
+        token.issue_stamp = public_origin::CreationStamp::capture(token.created_at)?;
+        token.validate_public_origin()?;
         let raw = Zeroizing::new(random_id("hvs.")?);
         let token_id = hash(&raw);
         let result = AuthResponse {
@@ -2834,7 +2859,7 @@ impl AuthState {
             mutated: true,
             body: json!({"auth": {
                 "client_token": raw.as_str(), "accessor": token.accessor, "policies": token.policies,
-                "token_policies": token.policies, "entity_id": token.entity_id.as_deref().unwrap_or(""), "metadata": {}, "lease_duration": token.expires_at.map(|expiry| expiry.saturating_sub(now)).unwrap_or(0),
+                "token_policies": token.policies, "entity_id": token.entity_id.as_deref().unwrap_or(""), "metadata": token.public_origin.as_ref().map_or_else(|| json!({}), public_origin::TokenApiOrigin::issued_json), "lease_duration": token.expires_at.map(|expiry| expiry.saturating_sub(now)).unwrap_or(0),
                 "renewable": token.renewable, "token_type": "service", "orphan": token.parent.is_none(), "num_uses": token.uses_remaining.unwrap_or(0)
             }}),
         };
@@ -2843,7 +2868,7 @@ impl AuthState {
 
     fn issue(&mut self, token: Token, now: u64) -> Result<AuthResponse, AuthError> {
         let (token_id, token, result) = Self::prepare_issue(token, now)?;
-        self.tokens.insert(token_id, token);
+        self.store_token(token_id, token);
         Ok(result)
     }
 
@@ -4020,7 +4045,7 @@ impl AuthState {
             mount: plan.mount,
             alias: alias.into(),
         });
-        self.tokens.insert(token_id, token);
+        self.store_token(token_id, token);
         Ok(response)
     }
 
@@ -4544,7 +4569,7 @@ impl AuthState {
             enrollment.last_accepted_counter = Some(counter);
         }
         self.users_at_mut(scope).insert(plan.name, user);
-        self.tokens.insert(token_id, token);
+        self.store_token(token_id, token);
         Ok(response)
     }
 
@@ -4859,7 +4884,7 @@ impl AuthState {
             mount: plan.mount,
             alias: plan.username,
         });
-        self.tokens.insert(token_id, token);
+        self.store_token(token_id, token);
         Ok(response)
     }
 
@@ -4961,6 +4986,7 @@ impl AuthState {
                         token_role: None,
                         token_api_precision: None,
                         token_api_policy_names: false,
+                        public_origin: None,
                         namespace: namespace.into(),
                         policies: role.policies.clone(),
                         metadata: metadata.take(),
@@ -5015,7 +5041,7 @@ impl AuthState {
             if let Some(metadata) = cert_metadata::snapshot(&token) {
                 response.body["auth"]["metadata"] = json!(metadata);
             }
-            self.tokens.insert(token_id, token);
+            self.store_token(token_id, token);
             return Ok(response);
         }
         let Some(name) = suffix.strip_prefix("certs/") else {
@@ -5408,6 +5434,7 @@ impl AuthState {
                         token_role: None,
                         token_api_precision: None,
                         token_api_policy_names: false,
+                        public_origin: None,
                         namespace: namespace.into(),
                         policies: role.policies.clone(),
                         metadata: metadata.clone(),
@@ -5424,6 +5451,8 @@ impl AuthState {
             } else {
                 let token = Token {
                     token_api_precision: None,
+                    public_origin: None,
+                    issue_stamp: None,
                     token_api_lease_ttl: None,
                     token_role: None,
                     bound_cidrs: Vec::new(),
@@ -6457,6 +6486,8 @@ impl AuthState {
         force_orphan: bool,
     ) -> Result<AuthResponse, AuthError> {
         let now = time.seconds();
+        // Framework metadata is parsed only after bearer and parameter ACL admission.
+        let metadata = public_origin::MetadataInput::parse(body)?;
         let mut fields = vec![
             "policies",
             "ttl",
@@ -6469,6 +6500,7 @@ impl AuthState {
             "display_name",
             "type",
             "entity_alias",
+            "meta",
         ];
         if token_precise_issuance::ENABLED {
             fields.push("lease");
@@ -6560,6 +6592,7 @@ impl AuthState {
                     no_parent,
                     entity_alias,
                     creation_path,
+                    metadata,
                     requested_renewable,
                     is_sudo,
                     requested_no_parent,
@@ -6709,9 +6742,10 @@ impl AuthState {
                 token_role: issued_role,
                 token_api_precision: None,
                 token_api_policy_names,
+                public_origin: Some(metadata.batch_origin()),
                 namespace: namespace.into(),
                 policies: requested,
-                metadata: BTreeMap::new(),
+                metadata: metadata.map(),
                 display_name: display_name.into(),
                 path: creation_path,
                 bound_cidrs: if let Some(role) = role {
@@ -6755,6 +6789,8 @@ impl AuthState {
         let mut response = self.issue(
             Token {
                 token_api_precision: None,
+                public_origin: Some(public_origin::TokenApiOrigin::new(metadata, creation_path)?),
+                issue_stamp: None,
                 token_api_lease_ttl: expires_at.map(|expiry| expiry - now),
                 token_role: issued_role,
                 bound_cidrs: if expires_at.is_none() {
@@ -7494,6 +7530,7 @@ impl AuthState {
                 token_role: None,
                 token_api_precision: None,
                 token_api_policy_names: false,
+                public_origin: None,
                 namespace: namespace.into(),
                 policies: token_policies,
                 metadata: BTreeMap::from([("username".into(), name.into())]),
@@ -7559,7 +7596,7 @@ impl AuthState {
         user.locked_until = 0;
         self.users_at_mut(scope).insert(name.into(), user);
         if let Some((token_id, token)) = issued_service {
-            self.tokens.insert(token_id, token);
+            self.store_token(token_id, token);
         }
         Ok(response)
     }
@@ -7998,6 +8035,7 @@ impl AuthState {
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
+                    public_origin: None,
                     namespace: namespace.into(),
                     policies: role.policies.clone(),
                     metadata: metadata.0.clone(),
@@ -8166,6 +8204,8 @@ fn login_token(
     }
     Ok(Token {
         token_api_precision: None,
+        public_origin: None,
+        issue_stamp: None,
         token_api_lease_ttl: None,
         token_role: None,
         bound_cidrs: Vec::new(),
@@ -8282,6 +8322,14 @@ fn token_info(token: &Token, now: u64) -> Value {
     }) = &token.auth_provenance
     {
         info["meta"] = json!({"username": username, "policies": policy_metadata});
+    }
+    if let Some(origin) = &token.public_origin {
+        origin.project_lookup(&mut info);
+    }
+    if let Some(stamp) = &token.issue_stamp
+        && let Ok(time) = stamp.render()
+    {
+        info["issue_time"] = json!(time);
     }
     info
 }
@@ -9028,6 +9076,8 @@ mod cert_ttl_tests;
 #[path = "auth_cert_metadata_tests.rs"]
 mod cert_metadata_tests;
 
+#[path = "auth_public_origin.rs"]
+mod public_origin;
 #[cfg(test)]
 #[path = "auth_token_renew_target_tests.rs"]
 mod token_renew_target_tests;

@@ -190,6 +190,8 @@ pub(crate) struct BatchClaims {
     /// Historical native login claims omit this field and retain strict names.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub(crate) token_api_policy_names: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) public_origin: Option<super::public_origin::BatchOrigin>,
     pub(crate) namespace: String,
     pub(crate) policies: BTreeSet<String>,
     pub(crate) metadata: BTreeMap<String, String>,
@@ -236,6 +238,9 @@ impl VerifiedBatchClaims {
     }
     pub(crate) fn policies(&self) -> &BTreeSet<String> {
         &self.claims.policies
+    }
+    pub(super) fn public_origin(&self) -> Option<&super::public_origin::BatchOrigin> {
+        self.claims.public_origin.as_ref()
     }
     pub(crate) fn metadata(&self) -> &BTreeMap<String, String> {
         &self.claims.metadata
@@ -359,6 +364,11 @@ impl BatchClaims {
             || (self.path.starts_with("auth/token/create/") && self.token_role.is_none())
         {
             return Err(BatchError::InvalidClaims);
+        }
+        if let Some(origin) = &self.public_origin {
+            origin
+                .validate(&self.metadata)
+                .map_err(|_| BatchError::InvalidClaims)?;
         }
         super::token_cidrs::validate(&self.bound_cidrs).map_err(|_| BatchError::InvalidClaims)
     }

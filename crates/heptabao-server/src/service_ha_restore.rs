@@ -290,6 +290,7 @@ impl Service {
                 bytes,
                 identity,
                 objects: unique,
+                namespace_leases: namespace_runtime::Leases::default(),
             },
         ))
     }

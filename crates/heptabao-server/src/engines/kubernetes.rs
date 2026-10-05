@@ -1791,6 +1791,7 @@ mod owner_tests {
                 token_role: None,
                 token_api_precision: None,
                 token_api_policy_names: false,
+                public_origin: None,
                 namespace: String::new(),
                 policies: BTreeSet::from(["default".into()]),
                 metadata: BTreeMap::new(),

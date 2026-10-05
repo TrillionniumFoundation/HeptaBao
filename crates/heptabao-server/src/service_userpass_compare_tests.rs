@@ -170,7 +170,7 @@ fn marked_credentials_cannot_hide_under_schema37_at_commit_restore_or_reopen() -
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
     assert_eq!(
         service
-            .commit_state(&downgraded)
+            .commit_state(&mut downgraded)
             .err()
             .ok_or("commit gate")?
             .status,

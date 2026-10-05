@@ -32,6 +32,10 @@ mod kv1_records;
 mod kv_versioning;
 #[path = "engine_leases.rs"]
 mod leases;
+#[path = "engine_namespace_assets.rs"]
+pub(crate) mod namespace_assets;
+#[path = "engine_namespace_record_cells.rs"]
+mod namespace_record_cells;
 pub(crate) mod openldap;
 mod pki;
 pub(crate) use pki::local_ocsp::raw_response as raw_ocsp_response;
@@ -44,6 +48,8 @@ mod transit;
 pub struct EngineState {
     #[serde(skip)]
     records: Option<kv1_records::Runtime>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    namespace_record_owners: BTreeMap<String, namespace_record_cells::Owner>,
     #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
     lease_clock: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1749,6 +1755,16 @@ impl EngineState {
             return Err(error(503, "OpenLDAP mount changed before revoke"));
         };
         engine.stage_revoke(namespace, mount, lease_id)
+    }
+
+    pub(crate) fn retire_namespace_pending_delivery(&mut self, namespace: &str) {
+        if let Some(owner) = self.namespaces.get_mut(namespace) {
+            for mount in owner.mounts.values_mut() {
+                if let Backend::OpenLdap(engine) = &mut mount.backend {
+                    engine.retire_pending_delivery();
+                }
+            }
+        }
     }
 
     pub(crate) fn openldap_lease_authority(

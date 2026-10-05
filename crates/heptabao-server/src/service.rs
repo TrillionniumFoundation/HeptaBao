@@ -69,6 +69,8 @@ const LOCAL_PKI_CRL_STATE_SCHEMA: u32 = 78;
 // Pending local CSR keys and imported intermediate/public chain ownership.
 const LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA: u32 = 79;
 const TOKEN_ROLE_STATE_SCHEMA: u32 = 80;
+const NAMESPACE_CUSTODY_STATE_SCHEMA: u32 = 81;
+const AUTH_PUBLIC_ORIGIN_STATE_SCHEMA: u32 = 86;
 const KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA: u32 =
     crate::engines::kubernetes_artifact::STATE_SCHEMA;
 const PKI_ROLE_ANY_NAME_STATE_SCHEMA: u32 = 83;
@@ -79,13 +81,14 @@ const PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA: u32 = 88;
 #[cfg(test)]
 const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA;
 
-// 81/82/86 belong to unintegrated reader work. Explicit admission keeps
-// these gaps closed when a later protected format is enabled.
+// Precise Token API schema 82 remains staged until its provider paths are integrated.
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
         || matches!(
             schema,
-            PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            NAMESPACE_CUSTODY_STATE_SCHEMA
+                | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+                | PKI_ROLE_ANY_NAME_STATE_SCHEMA
                 | PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
                 | PKI_ROLE_WILDCARD_STATE_SCHEMA
                 | KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
@@ -109,6 +112,11 @@ mod database;
 mod epoch_activation;
 #[path = "service_external_pki.rs"]
 mod external_pki;
+
+/// Read-only access to the original trusted clock scope, never an authority.
+pub(crate) fn public_origin_observation() -> Option<Duration> {
+    external_pki::public_origin_observation()
+}
 #[path = "service_external_transit.rs"]
 mod external_transit;
 #[path = "service_ha_activation.rs"]
@@ -125,6 +133,14 @@ mod kubernetes_secret;
 mod leader;
 #[path = "service_lifecycle.rs"]
 mod lifecycle;
+#[path = "service_namespace_assets.rs"]
+mod namespace_assets;
+#[path = "service_namespace_closed_auth.rs"]
+mod namespace_closed_auth;
+#[path = "service_namespace_config.rs"]
+mod namespace_config;
+#[path = "service_namespace_runtime.rs"]
+mod namespace_runtime;
 #[path = "service_namespaces.rs"]
 mod namespaces;
 #[path = "service_online_auth.rs"]
@@ -445,7 +461,7 @@ where
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct State {
     schema: u32,
@@ -469,6 +485,10 @@ struct State {
         skip_serializing_if = "raft_admin::RaftAdminState::is_default"
     )]
     raft_admin: CowOwner<raft_admin::RaftAdminState>,
+    #[serde(skip)]
+    namespace_protected: Option<Arc<State>>,
+    #[serde(skip)]
+    namespace_leases: namespace_runtime::Leases,
 }
 
 #[derive(Clone, Copy, Default)]
@@ -482,7 +502,10 @@ struct OwnerReuseHint {
 
 impl OwnerReuseHint {
     fn between(previous: Option<&State>, next: &State) -> Self {
-        let Some(previous) = previous else {
+        let Some(previous) = previous.and_then(|state| state.protected_state().ok()) else {
+            return Self::default();
+        };
+        let Ok(next) = next.protected_state() else {
             return Self::default();
         };
         Self {
@@ -1046,6 +1069,7 @@ pub struct Service {
     durable_profile: Option<DurableProfile>,
     durable: Option<DurableService<AeadBarrier>>,
     state: Option<State>,
+    namespace_runtime: namespace_runtime::Runtime,
     state_digest: Option<[u8; 32]>,
     record_root: Option<RecordStateRoot>,
     record_writes_since_gc: u64,
@@ -1403,6 +1427,7 @@ impl Service {
             durable_profile,
             durable: None,
             state: None,
+            namespace_runtime: namespace_runtime::Runtime::default(),
             state_digest: None,
             record_root: None,
             record_writes_since_gc: 0,
@@ -1501,10 +1526,12 @@ impl Service {
             Ok(clock) => clock,
             Err(_) => return Response::error(503, "trusted token clock is unavailable"),
         };
+        let _publication_clock = external_pki::PublicationClockScope::enter(observed, started);
         self.handle_request_clock(request, observed.as_secs(), true, Some(clock))
     }
 
     pub fn handle_request_at(&mut self, request: ServiceRequest<'_>, now: u64) -> Response {
+        let _explicit_clock = external_pki::PublicationClockScope::explicit();
         self.handle_request_clock(request, now, false, None)
     }
 
@@ -1555,6 +1582,7 @@ impl Service {
     pub(crate) fn begin_private_shutdown(&mut self) -> Result<(), &'static str> {
         self.private_shutdown_requested = true;
         self.fence_openbao_wrapper();
+        self.namespace_runtime.clear();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -2517,13 +2545,8 @@ impl Service {
         {
             return Response::error(404, "namespace not found");
         }
-        let namespace_seal_control = path
-            .strip_prefix("sys/namespaces/")
-            .and_then(|suffix| suffix.rsplit_once('/').map(|(_, operation)| operation))
-            .is_some_and(|operation| matches!(operation, "seal" | "unseal" | "seal-status"));
         if enforce_namespace
             && !matches!(path, "sys/health" | "sys/init" | "sys/seal-status")
-            && !namespace_seal_control
             && self
                 .state
                 .as_ref()
@@ -2668,10 +2691,10 @@ impl Service {
             };
             if changed {
                 admitted.schema = admitted.writer_schema();
-                if let Err(error) = self.commit_state(&admitted) {
+                if let Err(error) = self.commit_state(&mut admitted) {
                     return error;
                 }
-                self.state = Some(admitted.clone());
+                admitted = self.install_committed_namespace_view(admitted);
             }
         }
         // HeaderOperation is unsupported by this public responder. A GET to
@@ -2735,10 +2758,10 @@ impl Service {
             && admitted.auth.advance_wrapping_clock(now)
         {
             admitted.schema = admitted.writer_schema();
-            if let Err(error) = self.commit_state(&admitted) {
+            if let Err(error) = self.commit_state(&mut admitted) {
                 return error;
             }
-            self.state = Some(admitted.clone());
+            admitted = self.install_committed_namespace_view(admitted);
         }
         // OpenBao reports an invalid self-unwrapping capability as a wrapping
         // request error, not a generic login failure. Validate its type/scope
@@ -2758,11 +2781,24 @@ impl Service {
         let mount_metadata =
             path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/");
         let public_login = admitted.auth.is_public_login(namespace, method, path);
-        let mut principal = if token.is_empty()
-            || path == "sys/wrapping/lookup"
-            || public_otp_verify
-            || public_login
+        let authenticate_bearer = !token.is_empty()
+            && path != "sys/wrapping/lookup"
+            && !public_otp_verify
+            && !public_login;
+        // The closed ordinary-token slice follows exactly the established
+        // bearer admission classification. MountMetadata retains its separate
+        // non-consuming capability and remains on its original path.
+        if authenticate_bearer
+            && !mount_metadata
+            && let Some(response) = self.closed_namespace_token_response(
+                &admitted,
+                &request,
+                help_projection.as_ref().map(|help| &help.body),
+            )
         {
+            return response;
+        }
+        let mut principal = if !authenticate_bearer {
             None
         } else {
             let authenticated = if mount_metadata {
@@ -2785,14 +2821,47 @@ impl Service {
         };
         if principal.as_ref().is_some_and(Principal::consumed_use) {
             admitted.schema = admitted.writer_schema();
-            if let Err(error) = self.commit_state(&admitted) {
+            if let Err(error) = self.commit_state(&mut admitted) {
                 return error;
             }
-            self.state = Some(admitted.clone());
+            admitted = self.install_committed_namespace_view(admitted);
         }
         if let Some(principal) = principal.as_mut() {
             principal.bind_request_wrapping_ttl(wrap_ttl_seconds);
         }
+        // The original header's namespace/barrier guards remain above. Only
+        // this authenticated request capability selects a self token's actual
+        // context; opaque transport text or a routing hint grants no authority.
+        let token_namespace = if matches!(
+            path,
+            "auth/token/lookup-self" | "auth/token/renew-self" | "auth/token/revoke-self"
+        ) {
+            principal.as_ref().map(|actor| actor.namespace().to_owned())
+        } else {
+            None
+        };
+        let changed_token_namespace = token_namespace
+            .as_deref()
+            .is_some_and(|actual| actual != namespace);
+        let namespace = token_namespace.as_deref().unwrap_or(namespace);
+        let request = RequestView {
+            namespace,
+            ..request
+        };
+        if enforce_namespace && changed_token_namespace && !admitted.namespace_exists(namespace) {
+            return Response::error(404, "namespace not found");
+        }
+        if enforce_namespace && changed_token_namespace && admitted.namespace_is_sealed(namespace) {
+            return Response::error(503, "namespace is sealed");
+        }
+        let namespace_resource_route = namespaces::owns(path)
+            || path == "sys/mounts"
+            || path.starts_with("sys/mounts/")
+            || path.starts_with("auth/")
+            || !path.starts_with("sys/");
+        let resources_unloaded = namespace_resource_route
+            && admitted.namespaces.inherited_owner(namespace).is_some()
+            && !self.namespace_runtime.is_loaded(namespace);
         if let Some(principal) = principal.as_mut()
             && let Err(error) = Self::bind_identity_principal(&admitted, principal, namespace)
         {
@@ -2801,6 +2870,9 @@ impl Service {
         if method == "HELP" {
             if principal.is_none() {
                 return Response::error(403, "missing client token");
+            }
+            if resources_unloaded {
+                return namespace_runtime::unloaded_route(path);
             }
             return help_projection.map_or_else(
                 || Response::error(404, "help route not found"),
@@ -2833,6 +2905,12 @@ impl Service {
             )
         {
             return Response::error(error.status, &error.message);
+        }
+        // Ordinary closure removes the actual resource owners. A valid actor
+        // from another namespace still fails the existing ACL scope check
+        // above; an authorized resource request observes the unloaded router.
+        if resources_unloaded && principal.is_some() {
+            return namespace_runtime::unloaded_route(path);
         }
         // Do not inspect stored provider parameters or disclose candidate
         // validation/existence failures until this exact route is authorized.
@@ -3035,6 +3113,7 @@ impl Service {
                 return Response::error(403, "permission denied");
             }
             self.fence_openbao_wrapper();
+            self.namespace_runtime.clear();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
@@ -3272,6 +3351,7 @@ impl Service {
             || admitted.engines.has_pki_role_wildcard_state()
             || admitted.engines.has_pki_role_bare_domain_state()
             || admitted.engines.has_pki_role_any_name_state()
+            || admitted.auth.has_public_origin_state()
             || admitted.auth.has_token_api_schema80_state()
             || admitted.engines.has_local_pki_intermediate_state()
             || admitted.engines.has_local_pki_crl_state()
@@ -3287,7 +3367,7 @@ impl Service {
             admitted.schema = admitted.writer_schema();
         }
         if admitted.engines.record_root().is_some() {
-            let mut plan = match self.prepare_record_plan(&admitted) {
+            let mut plan = match self.prepare_record_plan(&mut admitted) {
                 Ok(plan) => plan,
                 Err(error) => return error,
             };
@@ -3297,7 +3377,7 @@ impl Service {
             };
             if plan.identity != current {
                 admitted.schema = admitted.writer_schema();
-                plan = match self.prepare_record_plan(&admitted) {
+                plan = match self.prepare_record_plan(&mut admitted) {
                     Ok(plan) => plan,
                     Err(error) => return error,
                 };
@@ -3308,6 +3388,9 @@ impl Service {
                 self.state = Some(admitted);
             }
             return response;
+        }
+        if let Err(error) = self.prepare_namespace_publication(&mut admitted) {
+            return error;
         }
         let serialized_digest = match records::legacy_candidate_digest(&admitted) {
             Ok(digest) => digest,
@@ -3335,7 +3418,7 @@ impl Service {
                     Ok(engines) => engines.into(),
                     Err(error) => return Response::error(error.status, &error.message),
                 };
-                let plan = match self.prepare_record_plan(&admitted) {
+                let plan = match self.prepare_record_plan(&mut admitted) {
                     Ok(plan) => plan,
                     Err(error) => return error,
                 };
@@ -3893,6 +3976,9 @@ impl Service {
         target_replay_epoch: u64,
         options: PersistOwnerStateOptions,
     ) -> Result<owner_store::OwnerWritePlan, ServiceError> {
+        let state = state
+            .protected_state()
+            .map_err(|_| ServiceError::CorruptState)?;
         if bytes.len() > MAX_STATE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
@@ -4098,7 +4184,8 @@ impl Service {
         }
     }
 
-    fn commit_state(&mut self, state: &State) -> Result<(), Response> {
+    fn commit_state(&mut self, state: &mut State) -> Result<(), Response> {
+        self.prepare_namespace_publication(state)?;
         state.validate_format()?;
         if state.engines.record_root().is_some() {
             let plan = self.prepare_record_plan(state)?;
@@ -4117,7 +4204,7 @@ impl Service {
 
     fn commit_state_bytes(
         &mut self,
-        state: &State,
+        state: &mut State,
         bytes: &[u8],
         state_schema: u32,
         target_replay_epoch: u64,
@@ -4135,7 +4222,7 @@ impl Service {
 
     fn commit_state_bytes_with_mode(
         &mut self,
-        state: &State,
+        state: &mut State,
         bytes: &[u8],
         state_schema: u32,
         target_replay_epoch: u64,
@@ -4585,6 +4672,8 @@ impl Service {
             Vec::new()
         };
         let mut state = State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: CURRENT_STATE_SCHEMA,
             cluster_id,
             replay_epoch: 0,
@@ -4876,6 +4965,7 @@ impl Service {
         };
         self.seal = Some(seal);
         self.durable_profile = durable_profile;
+        self.namespace_runtime.clear();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -5060,6 +5150,7 @@ impl Service {
         };
         self.seal = Some(pending.seal);
         self.durable_profile = Some(pending.profile);
+        self.namespace_runtime.clear();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -5341,6 +5432,7 @@ impl Service {
             let wrapped = match crypto::wrap_barrier_key(&key, &seal.associated_data(), &key) {
                 Ok(value) => Zeroizing::new(value),
                 Err(_) => {
+                    self.namespace_runtime.clear();
                     self.state = None;
                     self.ha_activation = None;
                     self.record_root = None;
@@ -5353,6 +5445,7 @@ impl Service {
             };
             seal.wrapped_barrier_key = STANDARD.encode(wrapped.as_slice());
             if persist_seal_metadata(&self.data_dir, &seal).is_err() {
+                self.namespace_runtime.clear();
                 self.state = None;
                 self.ha_activation = None;
                 self.record_root = None;
@@ -5398,6 +5491,7 @@ impl Service {
         }
         self.unseal_shares.clear();
         if self.rotate_unseal_nonce().is_err() {
+            self.namespace_runtime.clear();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
@@ -5425,6 +5519,7 @@ impl Service {
         }
         let wrapper_activation = self.begin_openbao_wrapper_activation();
         self.durable = None;
+        self.namespace_runtime.clear();
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
@@ -5595,6 +5690,10 @@ impl Service {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
+            return Err(error);
+        }
+        if let Err(error) = self.activate_inherited_namespaces(key, deadline) {
+            self.fence_recovery_delivery();
             return Err(error);
         }
         if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
@@ -6205,7 +6304,7 @@ impl Service {
             // In HA mode it is committed by Raft before any node discards its
             // detailed replay ledger. Each node then retires locally immediately
             // before publishing the state batch under the new epoch.
-            if let Err(error) = self.commit_state(&next_state) {
+            if let Err(error) = self.commit_state(&mut next_state) {
                 return error;
             }
             self.state = Some(next_state);
@@ -6758,7 +6857,7 @@ impl Service {
                 .is_leader()
                 .map_err(|_| Response::error(503, "HA role is unavailable"))?;
             if is_leader {
-                let state = self
+                let mut state = self
                     .state
                     .clone()
                     .ok_or_else(|| Response::error(503, "server is sealed"))?;
@@ -6766,7 +6865,7 @@ impl Service {
                     let plan = self.full_existing_record_plan(&state)?;
                     self.commit_record_plan(&state, plan)?;
                 } else {
-                    self.commit_state(&state)?;
+                    self.commit_state(&mut state)?;
                 }
             }
             return Ok(());
@@ -8667,3 +8766,7 @@ mod pki_ocsp_service_tests;
 #[cfg(test)]
 #[path = "service_token_roles_tests.rs"]
 mod token_roles_tests;
+
+#[cfg(test)]
+#[path = "service_public_origin_tests.rs"]
+mod public_origin_tests;

@@ -51,7 +51,9 @@ pub(super) fn commit_legacy_state_fixture(
     fixture: &State,
 ) -> Result<(), Response> {
     fixture.validate_format()?;
-    with_legacy_fixture_predecessor(service, fixture, |service| service.commit_state(fixture))
+    with_legacy_fixture_predecessor(service, fixture, |service| {
+        service.commit_state(&mut fixture.clone())
+    })
 }
 
 // These callers intentionally manufacture authenticated malformed old graphs
@@ -67,7 +69,7 @@ pub(super) fn prepare_rejected_legacy_graph_fixture(
         ));
     }
     with_legacy_fixture_predecessor(service, fixture, |service| {
-        service.prepare_record_plan(fixture)
+        service.prepare_record_plan(&mut fixture.clone())
     })
 }
 
@@ -83,7 +85,7 @@ fn legacy_fixture_constructor_preserves_real_writer_gate_and_rejects_protected_l
     legacy.validate_format().map_err(|_| "legacy format")?;
     assert!(
         service
-            .commit_state(&legacy)
+            .commit_state(&mut legacy)
             .err()
             .is_some_and(|response| response.status == 503),
         "ordinary writer cannot downgrade for fixture setup"

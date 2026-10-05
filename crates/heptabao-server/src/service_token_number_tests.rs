@@ -3,6 +3,225 @@ use super::*;
 
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
+fn metadata_actor(
+    service: &mut Service,
+    root: &str,
+    body: Value,
+) -> Result<Zeroizing<String>, Box<dyn std::error::Error>> {
+    let response = call(
+        service,
+        "POST",
+        "auth/token/create",
+        root,
+        wire_body(&body.to_string())?,
+    );
+    assert_eq!(response.status, 200);
+    Ok(Zeroizing::new(
+        response.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("genuine metadata actor")?
+            .into(),
+    ))
+}
+
+#[test]
+fn token_metadata_weak_decode_follows_auth_acl_then_precedes_creation_rules_and_consumes_real_use()
+-> TestResult {
+    let fixture = Root::new();
+    let mut service = fixture.service()?;
+    let (_, root) = bootstrap(&mut service)?;
+    for (name, policy) in [
+        (
+            "reader-meta",
+            r#"path "auth/token/create" { capabilities = ["update"] }
+path "auth/token/lookup-self" { capabilities = ["read"] }"#,
+        ),
+        (
+            "no-meta-create",
+            r#"path "somewhere-else" { capabilities = ["read"] }"#,
+        ),
+        (
+            "meta-number-acl",
+            r#"path "auth/token/create" {
+ capabilities = ["update", "sudo"]
+ allowed_parameters = { "policies" = [["reader-meta"]] "no_default_policy" = [true] "meta" = [] }
+ denied_parameters = { "meta" = [{ "n" = "1" }] }
+}"#,
+        ),
+    ] {
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                &format!("sys/policies/acl/{name}"),
+                &root,
+                json!({"policy":policy})
+            )
+            .status,
+            204
+        );
+    }
+    let reader = metadata_actor(
+        &mut service,
+        &root,
+        json!({"policies":["reader-meta"],"no_default_policy":true}),
+    )?;
+    let denied = metadata_actor(
+        &mut service,
+        &root,
+        json!({"policies":["no-meta-create"],"no_default_policy":true}),
+    )?;
+    let batch = metadata_actor(
+        &mut service,
+        &root,
+        json!({"policies":["reader-meta"],"no_default_policy":true,"type":"batch","ttl":"1h"}),
+    )?;
+    let malformed = json!({"policies":["default"],"no_default_policy":true,"meta":{"bad":{}}});
+    let field_error = "Field validation failed: error converting input for field \"meta\": decoding failed due to the following error(s):\n\n'[0]' expected type 'string', got unconvertible type 'map[string]interface {}'";
+    for token in ["", "synthetic-invalid-token", denied.as_str()] {
+        let response = call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            token,
+            wire_body(&malformed.to_string())?,
+        );
+        assert_eq!(response.status, 403);
+        assert!(response.body.get("auth").is_none());
+    }
+    for token in [reader.as_str(), batch.as_str()] {
+        let response = call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            token,
+            wire_body(&malformed.to_string())?,
+        );
+        assert_eq!(response.status, 400);
+        assert_eq!(response.body["errors"], json!([field_error]));
+    }
+    for (token, expected) in [
+        (reader.as_str(), "child policies must be subset of parent"),
+        (batch.as_str(), "batch tokens cannot create more tokens"),
+    ] {
+        let response = call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            token,
+            wire_body(r#"{"policies":["default"],"no_default_policy":true,"meta":{"flag":true}}"#)?,
+        );
+        assert_eq!(response.status, 400);
+        assert_eq!(response.body["errors"], json!([expected]));
+    }
+    for invalid in [
+        json!({"type":"invalid"}),
+        json!({"num_uses":-1}),
+        json!({"entity_alias":"unscoped"}),
+        json!({"type":"batch","explicit_max_ttl":"1h"}),
+    ] {
+        let mut body = invalid;
+        body["meta"] = json!({"bad":{}});
+        let response = call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &root,
+            wire_body(&body.to_string())?,
+        );
+        assert_eq!(response.status, 400);
+        assert_eq!(response.body["errors"], json!([field_error]));
+    }
+    let finite = metadata_actor(
+        &mut service,
+        &root,
+        json!({"policies":["reader-meta"],"no_default_policy":true,"num_uses":1}),
+    )?;
+    let response = call(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &finite,
+        wire_body(&malformed.to_string())?,
+    );
+    assert_eq!(response.status, 400);
+    assert_eq!(response.body["errors"], json!([field_error]));
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-self",
+            &finite,
+            json!({})
+        )
+        .status,
+        403
+    );
+
+    // HTTP and HCL numeric types never DeepEqual in the pinned ACL contract.
+    // A denied string map, plus any-value allowance, distinguishes the actual
+    // numeric input from its backend string conversion. Converting before ACL
+    // would deny the numeric positive; the genuine string negative stays 403.
+    let numeric = metadata_actor(
+        &mut service,
+        &root,
+        json!({"policies":["meta-number-acl"],"no_default_policy":true}),
+    )?;
+    let response = call(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &numeric,
+        wire_body(r#"{"policies":["reader-meta"],"no_default_policy":true,"meta":{"n":1}}"#)?,
+    );
+    assert_eq!(response.status, 200);
+    assert_eq!(response.body["auth"]["metadata"], json!({"n":"1"}));
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &numeric,
+            wire_body(r#"{"policies":["reader-meta"],"no_default_policy":true,"meta":{"n":"1"}}"#)?
+        )
+        .status,
+        403
+    );
+
+    let audit_before = service.audit_sequence;
+    for raw in ["1e0", "1.0"] {
+        let response = call(
+            &mut service,
+            "POST",
+            "auth/token/create",
+            &root,
+            wire_body(&format!(
+                "{{\"policies\":[\"default\"],\"no_default_policy\":true,\"meta\":{{\"n\":{raw}}}}}"
+            ))?,
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["auth"]["metadata"], json!({"n":raw}));
+    }
+    let audit = fs::read(fixture.path.join("audit.jsonl"))?;
+    let events = audit
+        .split(|byte| *byte == b'\n')
+        .filter(|line| !line.is_empty())
+        .map(serde_json::from_slice::<AuditRecord>)
+        .collect::<Result<Vec<_>, _>>()?
+        .into_iter()
+        .filter(|record| record.event.sequence > audit_before)
+        .map(|record| record.event)
+        .collect::<Vec<_>>();
+    assert_eq!(events.len(), 4);
+    assert_eq!(events[0].path_digest, events[1].path_digest);
+    assert_eq!(events[2].path_digest, events[3].path_digest);
+    assert_ne!(events[0].path_digest, events[2].path_digest);
+    let audit = String::from_utf8(audit)?;
+    assert!(!audit.contains(root.as_str()) && !audit.contains(reader.as_str()));
+    assert!(!audit.contains("number_fields") && !audit.contains("meta-number-acl"));
+    Ok(())
+}
+
 fn wire_body(input: &str) -> Result<Value, Box<dyn std::error::Error>> {
     wire_body_at("auth/token/create", input)
 }

@@ -171,7 +171,7 @@ fn approle_wrapping_failure_consumes_once_but_discards_identity_token_and_batch_
                 .wrap_response("", "fixture", 60, &json!({"data":{"ok":true}}), 100)?;
         }
         service
-            .commit_state(&fixture)
+            .commit_state(&mut fixture)
             .map_err(|_| "fixture commit")?;
         service.state = Some(fixture);
         let before = without_secret_ids(&service.state.as_ref().ok_or("state")?.auth)?;

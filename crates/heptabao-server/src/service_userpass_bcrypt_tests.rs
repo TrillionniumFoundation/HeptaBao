@@ -100,7 +100,7 @@ fn bcrypt_import_alone_requires38_and_survives_authenticated_reopen_and_backup()
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
     assert_eq!(
         service
-            .commit_state(&downgraded)
+            .commit_state(&mut downgraded)
             .err()
             .ok_or("commit gate")?
             .status,

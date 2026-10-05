@@ -182,6 +182,9 @@ impl Kv1Key {
     pub(crate) fn incarnation(&self) -> u64 {
         self.incarnation
     }
+    pub(crate) fn path(&self) -> &str {
+        &self.path
+    }
     fn probe(scope: &Kv1Scope, path: &str) -> Self {
         Self {
             namespace: scope.namespace.clone(),
@@ -366,6 +369,50 @@ pub(crate) struct KeyPage {
 }
 
 impl Kv1Index {
+    /// Partition actual typed record ownership, re-addressing the private graph
+    /// under its independent namespace authority. Keys/values never pass
+    /// through caller JSON, and the retained graph contains no owned record.
+    pub(crate) fn partition_namespace(
+        &self,
+        namespace: &str,
+        owner_key: Arc<AddressKey>,
+    ) -> Result<(Self, Self)> {
+        if namespace.is_empty() {
+            return Err(RecordError::Invalid);
+        }
+        let mut retained = self.clone();
+        let mut owned = Self::empty(owner_key);
+        self.visit_keys(|key| {
+            if key.namespace() == namespace {
+                let value = self.get(key).ok_or(RecordError::Corrupt)?;
+                owned = owned.edit(key.clone(), Some(value))?.next;
+                retained = retained.edit(key.clone(), None)?.next;
+            }
+            Ok(())
+        })?;
+        Ok((retained, owned))
+    }
+
+    /// A restored graph is first checked completely for namespace ownership
+    /// and collisions; failure cannot partially alter the loaded index.
+    pub(crate) fn merge_namespace(&self, namespace: &str, owned: &Self) -> Result<Self> {
+        if namespace.is_empty() {
+            return Err(RecordError::Invalid);
+        }
+        owned.visit_keys(|key| {
+            if key.namespace() != namespace || self.get(key).is_some() {
+                return Err(RecordError::Corrupt);
+            }
+            Ok(())
+        })?;
+        let mut next = self.clone();
+        owned.visit_keys(|key| {
+            next = next.edit(key.clone(), owned.get(key))?.next;
+            Ok(())
+        })?;
+        Ok(next)
+    }
+
     pub(crate) fn empty(address_key: Arc<AddressKey>) -> Self {
         Self {
             address_key,

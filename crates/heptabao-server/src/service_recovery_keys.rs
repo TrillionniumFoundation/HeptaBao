@@ -660,6 +660,7 @@ impl Service {
     }
     pub(super) fn fence_recovery_delivery(&mut self) {
         self.fence_openbao_wrapper();
+        self.namespace_runtime.clear();
         self.state = None;
         self.state_digest = None;
         self.ha_activation = None;
@@ -700,14 +701,14 @@ impl Service {
     ) -> Result<State, Response> {
         live(deadline)?;
         state.schema = state.writer_schema();
-        if let Err(error) = self.commit_state(&state) {
+        if let Err(error) = self.commit_state(&mut state) {
             if self.recovery_required {
                 self.fence_recovery_delivery();
             }
             return Err(error);
         }
         // commit_state has updated durable/record identity. Install ONLY this committed candidate.
-        self.state = Some(state.clone());
+        state = self.install_committed_namespace_view(state);
         if let Err(error) = live(deadline) {
             self.fence_recovery_delivery();
             return Err(error);
@@ -1180,6 +1181,8 @@ mod tests {
         let (auth, _) =
             AuthState::bootstrap(1).map_err(|_| std::io::Error::other("bootstrap failed"))?;
         let mut state = State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: INDEXED_RECOVERY_WIRE_STATE_SCHEMA,
             cluster_id: "journal-test-cluster".into(),
             replay_epoch: 0,
@@ -2779,7 +2782,7 @@ mod source825_real_recovery_fixture_tests {
                         .expect("actual other durable kind")
                         .into();
                     let plan = service
-                        .prepare_record_plan(&other)
+                        .prepare_record_plan(&mut other)
                         .unwrap_or_else(|_| panic!("actual other graph"));
                     service
                         .persist_record_plan_local(&plan, "actual-existing-negative-kind", true)
@@ -2929,7 +2932,7 @@ mod source825_real_recovery_fixture_tests {
                         .expect("actual earlier graph migration")
                         .into();
                     let plan = service
-                        .prepare_record_plan(&b)
+                        .prepare_record_plan(&mut b)
                         .unwrap_or_else(|_| panic!("actual complete B graph"));
                     cluster.processes[0]
                         .lock()
@@ -2999,7 +3002,7 @@ mod source825_real_recovery_fixture_tests {
                     .expect("actual other durable kind")
                     .into();
                 let plan = service
-                    .prepare_record_plan(&replacement)
+                    .prepare_record_plan(&mut replacement)
                     .unwrap_or_else(|_| panic!("actual replacement graph"));
                 service
                     .persist_record_plan_local(&plan, "actual-constructor-other-kind", true)
@@ -3127,7 +3130,7 @@ mod source825_real_recovery_fixture_tests {
                         .expect("actual earlier graph migration")
                         .into();
                     let plan = service
-                        .prepare_record_plan(&b)
+                        .prepare_record_plan(&mut b)
                         .unwrap_or_else(|_| panic!("actual complete B graph"));
                     cluster.processes[0]
                         .lock()

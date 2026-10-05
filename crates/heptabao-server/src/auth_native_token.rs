@@ -86,6 +86,8 @@ impl AuthState {
         )?;
         let token = Token {
             token_api_precision: None,
+            public_origin: None,
+            issue_stamp: None,
             token_api_lease_ttl: None,
             token_role: None,
             bound_cidrs: authority.bound_cidrs,
@@ -117,7 +119,7 @@ impl AuthState {
             alias: alias.into(),
             metadata: None,
         });
-        self.tokens.insert(id, token);
+        self.store_token(id, token);
         Ok(issued)
     }
 }

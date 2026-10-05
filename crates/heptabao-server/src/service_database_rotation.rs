@@ -1932,7 +1932,7 @@ mod tests {
             );
         state.schema = CURRENT_STATE_SCHEMA;
         response(state.validate_format())?;
-        response(service.commit_state(&state))?;
+        response(service.commit_state(&mut state))?;
         service.state = Some(state);
         Ok((root, service, root_token))
     }
@@ -1979,7 +1979,7 @@ mod tests {
     fn publish(service: &mut Service, mut state: State) -> TestResult {
         state.schema = CURRENT_STATE_SCHEMA;
         response(state.validate_format())?;
-        response(service.commit_state(&state))?;
+        response(service.commit_state(&mut state))?;
         service.state = Some(state);
         Ok(())
     }

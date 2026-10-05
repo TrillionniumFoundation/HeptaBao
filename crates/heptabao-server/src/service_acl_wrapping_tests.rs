@@ -527,10 +527,13 @@ fn acl_wrapping_schema61_is_independent_and_schema60_promotes_only_on_mutation()
     );
     let token = issue(&mut service, &admin, &["persisted"], false, 0)?;
     let state = service.state.as_ref().ok_or("state")?;
-    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
+    assert_eq!(state.schema, AUTH_PUBLIC_ORIGIN_STATE_SCHEMA);
     assert!(state.auth.has_acl_wrapping_ttl_state());
     assert!(!state.auth.has_acl_template_state());
     let mut disguised = state.clone();
+    disguised
+        .auth
+        .omit_unwrapped_public_origin_for_legacy_fixture();
     disguised.schema = 60;
     let rejected = disguised.validate_format().err().ok_or("missing fence")?;
     assert_eq!(

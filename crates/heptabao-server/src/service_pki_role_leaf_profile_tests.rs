@@ -684,7 +684,7 @@ fn pki_profile88_tampered_local_and_external_evidence_is_rejected_without_public
             let mut rejected = original.clone();
             rejected.engines = serde_json::from_slice(&bytes)?;
             assert!(
-                rejected.validate_format().is_err() && service.commit_state(&rejected).is_err(),
+                rejected.validate_format().is_err() && service.commit_state(&mut rejected).is_err(),
                 "signature, captured TBS and actual issuer owner reject tampering"
             );
             assert!(
@@ -729,7 +729,7 @@ fn install_historical85_role(
         "authenticated original85 role shape without later evidence"
     );
     service
-        .commit_state(&predecessor)
+        .commit_state(&mut predecessor)
         .map_err(|_| "actual85 graph publication")?;
     service.state = Some(predecessor.clone());
     Ok(predecessor)
@@ -766,7 +766,7 @@ fn pki_profile88_namespace_final_restore_record_gate_and_last_owner_sticky_reope
             == 204,
         "actual namespaced PKI mount"
     );
-    let predecessor = install_historical85_role(&mut service, "team", "ca/")?;
+    let mut predecessor = install_historical85_role(&mut service, "team", "ca/")?;
     let old85 = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let mut active_restore = Some(
         service
@@ -779,7 +779,7 @@ fn pki_profile88_namespace_final_restore_record_gate_and_last_owner_sticky_reope
             .map_err(|_| "prepare retired actual85")?,
     );
     let old_record = service
-        .prepare_record_plan(&predecessor)
+        .prepare_record_plan(&mut predecessor)
         .map_err(|_| "captured actual85 record plan")?;
     let upgraded = service.handle_at(
         "PATCH",
@@ -821,8 +821,8 @@ fn pki_profile88_namespace_final_restore_record_gate_and_last_owner_sticky_reope
             predecessor
                 .validate_publication_schema(Some(&current))
                 .is_err()
-                && service.prepare_record_plan(&predecessor).is_err()
-                && service.commit_state(&predecessor).is_err(),
+                && service.prepare_record_plan(&mut predecessor).is_err()
+                && service.commit_state(&mut predecessor).is_err(),
             "real85 owner cannot publish over live or retired88"
         );
         assert!(
@@ -931,9 +931,9 @@ fn pki_profile88_received_record_actual85_to88_persists_and_reopens() -> TestRes
             == 204,
         "actual record-backed PKI mount"
     );
-    let predecessor = install_historical85_role(&mut service, "", "ca/")?;
+    let mut predecessor = install_historical85_role(&mut service, "", "ca/")?;
     let old_plan = service
-        .prepare_record_plan(&predecessor)
+        .prepare_record_plan(&mut predecessor)
         .map_err(|_| "real85 record plan")?;
     let mut received = predecessor.clone();
     let result = received
@@ -951,7 +951,7 @@ fn pki_profile88_received_record_actual85_to88_persists_and_reopens() -> TestRes
         "real future88 complete received graph"
     );
     let plan = service
-        .prepare_record_plan(&received)
+        .prepare_record_plan(&mut received)
         .map_err(|_| "captured88 complete records")?;
     service
         .install_received_record_state(received, plan)

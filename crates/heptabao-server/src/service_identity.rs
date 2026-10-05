@@ -32,12 +32,17 @@ impl State {
             PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
         } else if self.engines.has_kubernetes_opaque_artifact_state() {
             KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+        } else if self.auth.has_public_origin_state() {
+            AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
         } else if self.engines.has_pki_role_wildcard_state() {
             PKI_ROLE_WILDCARD_STATE_SCHEMA
         } else if self.engines.has_pki_role_bare_domain_state() {
             PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
         } else if self.engines.has_pki_role_any_name_state() {
             PKI_ROLE_ANY_NAME_STATE_SCHEMA
+        } else if self.namespaces.has_custody_state() || self.engines.has_namespace_record_custody()
+        {
+            NAMESPACE_CUSTODY_STATE_SCHEMA
         } else if self.auth.has_token_api_schema80_state() {
             TOKEN_ROLE_STATE_SCHEMA
         } else if self.engines.has_local_pki_intermediate_state() {
@@ -78,6 +83,21 @@ impl State {
         &self,
         previous: Option<&State>,
     ) -> Result<(), Response> {
+        self.namespace_leases.validate()?;
+        self.protected_state()?
+            .auth
+            .validate_public_origin_state()
+            .map_err(|_| Response::error(503, "invalid public origin protected owner"))?;
+        if let Some(previous) = previous {
+            self.protected_state()?
+                .auth
+                .validate_public_origin_successor(&previous.protected_state()?.auth)
+                .map_err(|_| Response::error(503, "public origin floor cannot retire"))?;
+            self.protected_state()?
+                .namespaces
+                .validate_custody_successor(&previous.protected_state()?.namespaces)?;
+        }
+
         if !supported_reader_schema(self.schema) {
             return Err(Response::error(
                 503,
@@ -144,6 +164,25 @@ impl State {
             return Err(Response::error(
                 503,
                 "PKI allow_any_name ownership requires schema 83",
+            ));
+        }
+        if self.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+            && (self.auth.has_public_origin_state()
+                || previous.is_some_and(|state| state.schema >= AUTH_PUBLIC_ORIGIN_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "native public origin requires schema 86",
+            ));
+        }
+        if self.schema < NAMESPACE_CUSTODY_STATE_SCHEMA
+            && (self.namespaces.has_custody_state()
+                || self.engines.has_namespace_record_custody()
+                || previous.is_some_and(|state| state.schema >= NAMESPACE_CUSTODY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "independent namespace custody requires schema 81",
             ));
         }
         if self.schema < TOKEN_ROLE_STATE_SCHEMA
@@ -300,6 +339,21 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
+        self.auth
+            .validate_public_origin_state()
+            .map_err(|_| Response::error(503, "invalid public origin owner"))?;
+        if self.schema == AUTH_PUBLIC_ORIGIN_STATE_SCHEMA && !self.auth.has_public_origin_state() {
+            return Err(Response::error(
+                503,
+                "public origin retirement floor is missing",
+            ));
+        }
+        if self.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA && self.auth.has_public_origin_state() {
+            return Err(Response::error(
+                503,
+                "native public origin requires schema 86",
+            ));
+        }
         if !supported_reader_schema(self.schema) {
             return Err(Response::error(
                 503,
@@ -351,6 +405,14 @@ impl State {
             return Err(Response::error(
                 503,
                 "Token API precise lease reader requires schema 82",
+            ));
+        }
+        if self.schema < NAMESPACE_CUSTODY_STATE_SCHEMA
+            && (self.namespaces.has_custody_state() || self.engines.has_namespace_record_custody())
+        {
+            return Err(Response::error(
+                503,
+                "independent namespace custody requires schema 81",
             ));
         }
         self.auth
@@ -860,6 +922,16 @@ impl State {
             ));
         }
         self.namespaces.validate(&self.cluster_id)?;
+        self.engines
+            .visit_namespace_record_owner_bindings(|binding| {
+                self.namespaces
+                    .validate_record_custody_binding(binding)
+                    .map_err(|_| crate::engines::EngineError {
+                        status: 503,
+                        message: "namespace record floor binding rejected".into(),
+                    })
+            })
+            .map_err(|_| Response::error(503, "namespace record floor binding rejected"))?;
         if self.schema < 10 && self.auth.has_plugin_auth_state() {
             return Err(Response::error(
                 503,
@@ -1134,7 +1206,9 @@ impl State {
             | PKI_ROLE_ANY_NAME_STATE_SCHEMA
             | PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
             | PKI_ROLE_WILDCARD_STATE_SCHEMA
-            | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA => Ok(()),
+            | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            | NAMESPACE_CUSTODY_STATE_SCHEMA
+            | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
@@ -1319,6 +1393,8 @@ mod recovery_state_tests {
     fn state() -> Result<State, crate::auth::AuthError> {
         let (auth, _) = AuthState::bootstrap(1)?;
         Ok(State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: CURRENT_STATE_SCHEMA,
             cluster_id: "recovery-test-cluster".into(),
             replay_epoch: 0,

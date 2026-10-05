@@ -57,7 +57,7 @@ impl Drop for PublicationDelayScope {
 }
 
 #[cfg(test)]
-fn delay_after_publication_for_test() {
+pub(super) fn delay_after_publication_for_test() {
     if let Some(delay) = POST_PUBLICATION_DELAY.with(Cell::take) {
         std::thread::sleep(match delay {
             PublicationDelay::For(delay) => delay,
@@ -80,6 +80,13 @@ impl PublicationClockScope {
             _thread: PhantomData,
         }
     }
+
+    pub(super) fn explicit() -> Self {
+        Self {
+            previous: PUBLICATION_CLOCK.with(|clock| clock.replace(None)),
+            _thread: PhantomData,
+        }
+    }
 }
 impl Drop for PublicationClockScope {
     fn drop(&mut self) {
@@ -89,6 +96,26 @@ impl Drop for PublicationClockScope {
 
 #[derive(Clone, Copy)]
 struct PublicationClock(Option<(Duration, Instant)>);
+
+/// Reuse the listener's trusted wall-time observation plus its original
+/// monotonic anchor. Explicit-clock embedders without a scope retain exactly
+/// their supplied integer time; no request payload can select this clock.
+pub(super) fn public_origin_observation() -> Option<Duration> {
+    PUBLICATION_CLOCK
+        .with(Cell::get)
+        .and_then(|(unix, started)| unix.checked_add(started.elapsed()))
+}
+
+pub(super) fn publication_now(logical_now: u64) -> u64 {
+    PublicationClock::capture()
+        .0
+        .map_or(logical_now, |(unix, started)| {
+            unix.saturating_add(started.elapsed())
+                .as_secs()
+                .max(logical_now)
+        })
+}
+
 impl PublicationClock {
     fn capture() -> Self {
         Self(PUBLICATION_CLOCK.with(Cell::get))
@@ -619,7 +646,7 @@ impl Service {
             erase_json(&mut response.body);
             return cause;
         }
-        let record_plan = match self.prepare_record_plan(&candidate) {
+        let record_plan = match self.prepare_record_plan(&mut candidate) {
             Ok(value) => value,
             Err(cause) => {
                 erase_json(&mut response.body);

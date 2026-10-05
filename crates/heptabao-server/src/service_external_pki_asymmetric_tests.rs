@@ -14,7 +14,7 @@ fn external_pki270_typed67_active_and_retired_snapshot_floor_and_final_commit() 
     let mut state66 = service.state.clone().ok_or("state")?;
     state66.schema = AAD_BOUND_STATE_SCHEMA;
     service
-        .commit_state(&state66)
+        .commit_state(&mut state66)
         .map_err(|_| "fixture66 publication")?;
     service.state = Some(state66);
     let old66 =

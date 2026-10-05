@@ -97,14 +97,8 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
     }
     if let Some(auth) = body.get_mut("auth").and_then(Value::as_object_mut) {
         auth.entry("mfa_requirement").or_insert(Value::Null);
+        // The credential issuer owns nil versus allocated-empty metadata.
         auth.entry("metadata").or_insert(Value::Null);
-        if auth
-            .get("metadata")
-            .and_then(Value::as_object)
-            .is_some_and(serde_json::Map::is_empty)
-        {
-            auth.insert("metadata".into(), Value::Null);
-        }
         // HTTPAuth marks these two policy collections omitempty. The request
         // local identity projection and effective grant remain unchanged.
         for name in ["identity_policies", "token_policies"] {
@@ -126,13 +120,6 @@ pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path
         data.remove("namespace");
         data.remove("expire_time_unix");
         data.entry("meta").or_insert(Value::Null);
-        if data
-            .get("meta")
-            .and_then(Value::as_object)
-            .is_some_and(serde_json::Map::is_empty)
-        {
-            data.insert("meta".into(), Value::Null);
-        }
         if !data.contains_key("issue_time")
             && let Some(created) = data.get("creation_time").and_then(Value::as_u64)
         {
@@ -244,5 +231,65 @@ mod tests {
         };
         assert_eq!(response.body, raw);
         Ok(())
+    }
+
+    #[test]
+    fn namespace_envelope_preserves_actual_owner_data_and_uses_attempt_uuid() {
+        let data = json!({"path":"owned/", "uuid":"actual-namespace-uuid",
+            "nonce":"actual-runtime-progress", "sealed":true});
+        let mut reply = snapshot::NativeReply::Json(Response {
+            status: 200,
+            consistency_index: None,
+            body: json!({"data":data}),
+        });
+        project(&mut reply, &[0; 16], "sys/namespaces/owned/unseal");
+        let snapshot::NativeReply::Json(response) = reply else {
+            unreachable!();
+        };
+        assert_eq!(response.body["data"], data);
+        assert_eq!(
+            response.body["request_id"],
+            "00000000-0000-4000-8000-000000000000"
+        );
+        assert_eq!(response.body.as_object().map(|body| body.len()), Some(8));
+        assert!(response.body["auth"].is_null());
+    }
+
+    #[test]
+    fn token_envelope_retains_nil_empty_and_public_metadata_without_kv_projection() {
+        for metadata in [
+            Value::Null,
+            json!({}),
+            json!({"public_marker":"actual-input"}),
+        ] {
+            let mut reply = snapshot::NativeReply::Json(Response {
+                status: 200,
+                consistency_index: None,
+                body: json!({"auth":{"metadata":metadata,"policies":["reader"],
+                    "token_policies":["reader"],"identity_policies":[],"lease_duration":3600}}),
+            });
+            project(&mut reply, &[0; 16], "auth/token/create/role");
+            let snapshot::NativeReply::Json(response) = reply else {
+                unreachable!();
+            };
+            assert_eq!(response.body["auth"]["metadata"], metadata);
+            assert_eq!(response.body["auth"]["token_policies"], json!(["reader"]));
+            assert!(response.body["auth"]["mfa_requirement"].is_null());
+            assert!(response.body["auth"].get("identity_policies").is_none());
+        }
+        for path in ["secret/sys/namespaces/value", "secret/auth/token/create"] {
+            let body = json!({"data":{"auth":{"metadata":{},"policies":["userdata"]}}});
+            let mut reply = snapshot::NativeReply::Json(Response {
+                status: 200,
+                consistency_index: None,
+                body: body.clone(),
+            });
+            project(&mut reply, &[0; 16], path);
+            let snapshot::NativeReply::Json(response) = reply else {
+                unreachable!();
+            };
+            assert_eq!(response.body["data"], body["data"]);
+            assert!(response.body["auth"].is_null());
+        }
     }
 }

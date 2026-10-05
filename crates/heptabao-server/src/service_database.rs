@@ -54,6 +54,58 @@ pub(super) struct DatabaseState {
     provider_fence: u64,
 }
 
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct NamespaceAssets {
+    namespace: String,
+    mounts: Option<BTreeMap<String, DatabaseMount>>,
+}
+
+impl DatabaseState {
+    #[cfg(test)]
+    pub(super) fn has_subtractive_cleanup(&self, namespace: &str, id: &str) -> bool {
+        self.mount(namespace, "database/")
+            .and_then(|mount| mount.leases.get(id))
+            .is_some_and(|lease| {
+                lease.phase == Phase::PendingRevoke
+                    && lease.password.is_none()
+                    && lease.provider_password.is_none()
+                    && lease.expires == 0
+            })
+    }
+    pub(super) fn detach_namespace(
+        &mut self,
+        namespace: &str,
+    ) -> Result<NamespaceAssets, Response> {
+        if namespace.is_empty() {
+            return Err(Response::error(
+                503,
+                "root database owner cannot be partitioned",
+            ));
+        }
+        Ok(NamespaceAssets {
+            namespace: namespace.to_owned(),
+            mounts: self.mounts.remove(namespace),
+        })
+    }
+    pub(super) fn attach_namespace(
+        &mut self,
+        actual: &str,
+        assets: NamespaceAssets,
+    ) -> Result<(), Response> {
+        if actual.is_empty() || assets.namespace != actual || self.mounts.contains_key(actual) {
+            return Err(Response::error(
+                503,
+                "namespace database owner binding or collision rejected",
+            ));
+        }
+        if let Some(mounts) = assets.mounts {
+            self.mounts.insert(actual.to_owned(), mounts);
+        }
+        Ok(())
+    }
+}
+
 fn provider_fence_is_zero(value: &u64) -> bool {
     *value == 0
 }
@@ -291,9 +343,11 @@ struct DatabaseLease {
 
 pub(super) struct DatabaseEffectPlan {
     namespace: String,
+    namespace_binding: Option<crate::namespace_custody::Binding>,
     mount: String,
     now: u64,
     started: std::time::Instant,
+    deadline: Option<std::time::Instant>,
     outbound: crate::outbound::Outbound,
     ha: Option<Arc<Mutex<HaProcess>>>,
     plugin: Option<plugin::SharedDatabasePlugin>,
@@ -554,6 +608,12 @@ impl DatabaseBatchEffectPlan {
 }
 
 impl DatabaseEffectPlan {
+    pub(super) fn matches_namespace_binding(
+        &self,
+        binding: &crate::namespace_custody::Binding,
+    ) -> bool {
+        self.namespace_binding.as_ref() == Some(binding) && binding.namespace() == self.namespace
+    }
     fn completed_now(&self) -> u64 {
         std::time::Duration::from_secs(self.now)
             .saturating_add(self.started.elapsed())
@@ -2622,7 +2682,7 @@ impl Service {
     fn publish_database(&mut self, mut state: State) -> Result<(), Response> {
         state.schema = state.writer_schema();
         state.validate_format()?;
-        self.commit_state(&state)?;
+        self.commit_state(&mut state)?;
         self.state = Some(state);
         Ok(())
     }
@@ -2741,9 +2801,15 @@ impl Service {
         }
         Ok(DatabaseEffectPlan {
             namespace: ns.to_owned(),
+            namespace_binding: if ns.is_empty() {
+                None
+            } else {
+                Some(state.namespaces.custody_binding(&state.cluster_id, ns)?)
+            },
             mount: mount.to_owned(),
             now,
             started: std::time::Instant::now(),
+            deadline: crate::request_deadline::current(),
             outbound: self.outbound.clone(),
             ha: self.ha.clone(),
             plugin,
@@ -2858,6 +2924,11 @@ impl Service {
             .and_then(|mount| mount.leases.get(&plan.lease.id))
             .cloned()
         else {
+            if next.namespaces.inherited_owner(&plan.namespace).is_some()
+                && !self.namespace_runtime.is_loaded(&plan.namespace)
+            {
+                self.retain_closed_database_compensation(&next, plan);
+            }
             return post_provider_publication_failure(
                 failure("lease disappeared after provider entry"),
                 &plan.lease.id,
@@ -2946,6 +3017,80 @@ impl Service {
                 .is_some_and(|owner| Self::database_owner_active(state, &owner, &plan.namespace))
     }
 
+    fn retain_closed_database_compensation(&mut self, state: &State, plan: &DatabaseEffectPlan) {
+        let _deadline = plan
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        if self.recovery_required || namespace_runtime::request_live().is_err() {
+            return;
+        }
+        let activation = self.unseal_nonce.clone();
+        let delivery = namespace_runtime::DeliveryBinding::capture(state, &plan.namespace);
+        let Some(key) = self.barrier_key.as_ref() else {
+            return;
+        };
+        let Ok(candidate) =
+            self.namespace_runtime
+                .compensate_closed_database(state, &plan.namespace, key, plan)
+        else {
+            return;
+        };
+        let current = match self.state.as_ref() {
+            Some(current) if self.unseal_nonce == activation && !self.recovery_required => current,
+            _ => return,
+        };
+        if self.namespace_runtime.is_loaded(&plan.namespace)
+            || namespace_runtime::DeliveryBinding::capture(current, &plan.namespace) != delivery
+            || !current
+                .namespaces
+                .custody_binding(&current.cluster_id, &plan.namespace)
+                .is_ok_and(|binding| plan.matches_namespace_binding(&binding))
+            || namespace_runtime::request_live().is_err()
+        {
+            return;
+        }
+        // A failure keeps the already durable intent/fence. This entry point
+        // always withholds credentials and never acknowledges a remote cleanup.
+        let _ = self.publish_database(candidate);
+    }
+
+    pub(super) fn compensate_closed_database_intent(
+        state: &mut State,
+        plan: &DatabaseEffectPlan,
+    ) -> Result<(), Response> {
+        let current = state
+            .database
+            .mount(&plan.namespace, &plan.mount)
+            .and_then(|mount| mount.leases.get(&plan.lease.id))
+            .ok_or_else(|| failure("closed database cleanup intent disappeared"))?;
+        if current.owner != plan.lease.owner
+            || current.provider_id != plan.lease.provider_id
+            || current.username != plan.lease.username
+            || current.db_name != plan.lease.db_name
+            || current.issued != plan.lease.issued
+            || current.max_expires != plan.lease.max_expires
+        {
+            return Err(failure("closed database cleanup owner changed"));
+        }
+        if current.phase == Phase::PendingRevoke
+            && current.seq >= plan.lease.seq
+            && current.password.is_none()
+            && current.provider_password.is_none()
+            && current.expires == 0
+        {
+            return Ok(());
+        }
+        if current.seq != plan.lease.seq
+            || current.request_digest != plan.lease.request_digest
+            || current.phase != plan.lease.phase
+            || current.expires != plan.lease.expires
+            || !matches!(current.phase, Phase::PendingIssue | Phase::PendingRenew)
+        {
+            return Err(failure("closed database cleanup intent changed"));
+        }
+        Self::stage_revoke(state, &plan.namespace, &plan.mount, &plan.lease.id)
+    }
+
     fn reject_database_completion(
         &mut self,
         mut state: State,
@@ -3007,6 +3152,29 @@ impl Service {
         })
     }
 
+    pub(super) fn retire_namespace_pending_database(
+        state: &mut State,
+        namespace: &str,
+    ) -> Result<(), Response> {
+        let pending = state
+            .database
+            .mounts
+            .get(namespace)
+            .into_iter()
+            .flat_map(|mounts| mounts.iter())
+            .flat_map(|(mount, owner)| {
+                owner.leases.iter().filter_map(move |(id, lease)| {
+                    matches!(lease.phase, Phase::PendingIssue | Phase::PendingRenew)
+                        .then_some((mount.clone(), id.clone()))
+                })
+            })
+            .collect::<Vec<_>>();
+        for (mount, id) in pending {
+            Self::stage_revoke(state, namespace, &mount, &id)?;
+        }
+        Ok(())
+    }
+
     fn stage_revoke(state: &mut State, ns: &str, mount: &str, id: &str) -> Result<(), Response> {
         let (phase, seq) = state
             .database
@@ -3034,6 +3202,7 @@ impl Service {
         l.seq = provider_fence;
         l.phase = Phase::PendingRevoke;
         l.password = None;
+        l.provider_password = None;
         l.expires = 0;
         l.request_digest = digest_lease(l)?;
         Ok(())
@@ -4143,6 +4312,7 @@ mod tests {
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::new(),
                     metadata: BTreeMap::new(),
@@ -4733,6 +4903,7 @@ mod tests {
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),
                     metadata: BTreeMap::new(),
@@ -4835,6 +5006,7 @@ mod tests {
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),
                     metadata: BTreeMap::new(),
@@ -4944,6 +5116,7 @@ mod tests {
                     token_role: None,
                     token_api_precision: None,
                     token_api_policy_names: false,
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),
                     metadata: BTreeMap::new(),

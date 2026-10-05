@@ -536,7 +536,7 @@ fn external_pki270_issuer_retirement_keeps_typed_snapshot_floor_and_removes_all_
     let mut ordinary66 = service.state.clone().ok_or("ordinary state")?;
     ordinary66.schema = AAD_BOUND_STATE_SCHEMA;
     service
-        .commit_state(&ordinary66)
+        .commit_state(&mut ordinary66)
         .map_err(|_| "ordinary66 publication")?;
     service.state = Some(ordinary66);
     let old66 =

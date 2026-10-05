@@ -565,7 +565,7 @@ fn native_radius_profile_boundaries_provenance_and_issued_cap_survive_restart() 
     assert!(
         token_info(&s.tokens[&hash(&bearer(&child))], issued + 1)
             .get("meta")
-            .is_none()
+            .is_some_and(Value::is_null)
     );
     let child_token = &s.tokens[&hash(&bearer(&child))];
     assert_eq!(child_token.parent.as_deref(), Some(hash(&raw).as_str()));

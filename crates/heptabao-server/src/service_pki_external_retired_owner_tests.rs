@@ -498,7 +498,7 @@ fn pki_profile88_retired_archive_tamper_closed_received_graph_and_authenticated_
         let mut invalid = original.clone();
         invalid.engines = serde_json::from_slice(&bytes)?;
         assert!(
-            invalid.validate_format().is_err() && service.commit_state(&invalid).is_err(),
+            invalid.validate_format().is_err() && service.commit_state(&mut invalid).is_err(),
             "actual publication also rejects signer-owner tamper"
         );
         assert!(
@@ -717,13 +717,13 @@ fn pki_profile88_last_external_archive_tidy_preserves_actual85_input_and_sticky8
         body(),
     );
     let issuer = root_certificate(&generated)?;
-    let predecessor = install_historical85_role(&mut service, "", "external-ca/")?;
+    let mut predecessor = install_historical85_role(&mut service, "", "external-ca/")?;
     let old85 = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let mut old_restore = service
         .prepare_snapshot_restore(&old85)
         .map_err(|_| "actual85 prepared restore")?;
     let old_plan = service
-        .prepare_record_plan(&predecessor)
+        .prepare_record_plan(&mut predecessor)
         .map_err(|_| "actual85 received plan")?;
     assert_role(
         &call(
@@ -805,7 +805,7 @@ fn pki_profile88_last_external_archive_tidy_preserves_actual85_input_and_sticky8
         lowered.schema = schema;
         assert!(
             lowered.validate_publication_schema(Some(&retired)).is_err()
-                && service.commit_state(&lowered).is_err(),
+                && service.commit_state(&mut lowered).is_err(),
             "lowered-format publication refuses real sticky88"
         );
     }

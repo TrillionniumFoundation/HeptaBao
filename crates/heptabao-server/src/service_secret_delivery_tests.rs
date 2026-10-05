@@ -107,7 +107,7 @@ fn setup(
     state.schema = CURRENT_STATE_SCHEMA;
     state.validate_format().map_err(|_| "fixture format")?;
     service
-        .commit_state(&state)
+        .commit_state(&mut state)
         .map_err(|_| "fixture publication")?;
     service.state = Some(state);
     let policy =

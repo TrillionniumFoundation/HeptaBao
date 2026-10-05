@@ -288,6 +288,100 @@ fn plugin_completion_rechecks_current_namespace_seal() -> TestResult {
 }
 
 #[test]
+fn plugin_namespace_response_frontier_survives_unrelated_write_but_not_share_restore() -> TestResult
+{
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let created = call(
+        &mut service,
+        "POST",
+        "sys/namespaces/team",
+        &token,
+        json!({"seal":"seal \"shamir\" { shares = 3\n threshold = 2 }"}),
+    );
+    assert!(created.status == 200);
+    let shares = created.body["data"]["key_shares"]
+        .as_array()
+        .ok_or("actual shares")?
+        .iter()
+        .map(|value| {
+            value
+                .as_str()
+                .map(|part| Zeroizing::new(part.to_owned()))
+                .ok_or("share shape")
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    for share in shares.iter().take(2) {
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "sys/namespaces/team/unseal",
+                &token,
+                json!({"key":share.as_str()})
+            )
+            .status
+                == 200
+        );
+    }
+    let mut old = admitted(&mut service, &token, "team", false)?;
+    let activation = service.unseal_nonce.clone();
+    assert!(service.validate_plugin_response(&mut old).is_ok());
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "secret/data/unrelated",
+            &token,
+            json!({"data":{"independent-progress":true}})
+        )
+        .status
+            == 200
+    );
+    assert!(
+        service.validate_plugin_response(&mut old).is_ok(),
+        "generation alone is not a manual owner closure"
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team/seal",
+            &token,
+            json!({})
+        )
+        .status
+            == 204
+    );
+    assert!(service.validate_plugin_response(&mut old).is_err());
+    for share in shares.iter().take(2) {
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "sys/namespaces/team/unseal",
+                &token,
+                json!({"key":share.as_str()})
+            )
+            .status
+                == 200
+        );
+    }
+    assert!(
+        service.unseal_nonce == activation,
+        "only child custody changed"
+    );
+    assert!(
+        service.validate_plugin_response(&mut old).is_err(),
+        "actual share restoration cannot revive original response admission"
+    );
+    let mut fresh = admitted(&mut service, &token, "team", false)?;
+    assert!(service.validate_plugin_response(&mut fresh).is_ok());
+    Ok(())
+}
+
+#[test]
 fn plugin_mount_binding_distinguishes_recreated_identical_plugin() -> TestResult {
     let mut engines = EngineState::default();
     let config = json!({"type":"plugin","config":{"plugin_id":"fixture"}});

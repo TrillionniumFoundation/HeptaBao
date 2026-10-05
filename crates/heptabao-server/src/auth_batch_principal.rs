@@ -83,6 +83,12 @@ impl<'a> CheckedCredential<'a> {
                     info["role"] = json!(role.name);
                     info["creation_ttl"] = json!(claims.expires_at() - claims.issued_at());
                 }
+                if let Some(origin) = claims.public_origin() {
+                    info["meta"] = origin.lookup_json(claims.metadata());
+                    if let Some(time) = origin.issue_time(claims.issued_at()) {
+                        info["issue_time"] = json!(time);
+                    }
+                }
                 if !claims.bound_cidrs().is_empty() {
                     info["bound_cidrs"] = json!(claims.bound_cidrs());
                 }

@@ -393,7 +393,7 @@ fn radius_wrapping_or_commit_failure_never_publishes_partial_renewal() -> TestRe
                 )?;
             }
             service
-                .commit_state(&state)
+                .commit_state(&mut state)
                 .map_err(|_| "wrapper fixture commit failed")?;
             service.state = Some(state);
         }
@@ -834,7 +834,7 @@ fn received_epoch_during_authority_sync_rejects_old_observation_and_accepts_fres
     let mut received = service.state.clone().ok_or("state")?;
     received.replay_epoch += 3; // A follower may miss multiple committed epochs.
     let plan = service
-        .prepare_record_plan(&received)
+        .prepare_record_plan(&mut received)
         .map_err(|_| "record plan")?;
     let result = service.revalidate_online_authority_with_sync("", &old_nonce, move |service| {
         service.install_received_record_state(received, plan)
@@ -875,7 +875,7 @@ fn same_epoch_received_state_preserves_pending_observation() -> TestResult {
     let old_nonce = service.unseal_nonce.clone();
     let received = service.state.clone().ok_or("state")?;
     let plan = service
-        .prepare_record_plan(&received)
+        .prepare_record_plan(&mut received)
         .map_err(|_| "record plan")?;
     service
         .revalidate_online_authority_with_sync("", &old_nonce, move |service| {

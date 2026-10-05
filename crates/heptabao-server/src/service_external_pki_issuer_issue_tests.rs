@@ -75,7 +75,7 @@ fn issuer_issue_fixture_with_role(
             "genuine historical None role is readable at the original root floor"
         );
         service
-            .commit_state(&predecessor)
+            .commit_state(&mut predecessor)
             .map_err(|_| "typed historical role fixture publication")?;
         service.state = Some(predecessor);
         return Ok((root, service, unseal, admin, id));
@@ -551,7 +551,7 @@ fn external_pki270_issuer_issue_schema71_active_retired_record_and_snapshot_fenc
     let mut predecessor = service.state.clone().ok_or("predecessor")?;
     predecessor.schema = TRANSIT_BYOK_STATE_SCHEMA;
     service
-        .commit_state(&predecessor)
+        .commit_state(&mut predecessor)
         .map_err(|_| "native codec70 fixture publication")?;
     service.state = Some(predecessor);
     // Authenticated native-codec predecessor input, not evidence of an old binary.
@@ -661,14 +661,14 @@ fn external_pki270_issuer_issue_schema71_active_retired_record_and_snapshot_fenc
             .map_err(|_| "generation")?;
         assert!(
             service
-                .prepare_record_plan(&lower)
+                .prepare_record_plan(&mut lower)
                 .err()
                 .is_some_and(|response| response.status == 503),
             "record preflight rejects downgrade before materialization"
         );
         assert!(
             service
-                .commit_state(&lower)
+                .commit_state(&mut lower)
                 .err()
                 .is_some_and(|response| response.status == 503),
             "direct durable publication rejects downgrade"

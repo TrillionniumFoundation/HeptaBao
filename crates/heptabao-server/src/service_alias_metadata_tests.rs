@@ -223,7 +223,7 @@ fn jwt_disabled_identity_wrapping_and_commit_failures_do_not_publish_backend_met
                     )?;
                 }
                 service
-                    .commit_state(&state)
+                    .commit_state(&mut state)
                     .map_err(|_| "fixture wrapper commit")?;
                 service.state = Some(state);
             }

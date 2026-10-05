@@ -26,6 +26,14 @@ path "acl-param/*" {
 "#;
 
 fn setup() -> TestResult<(Root, Service, String, String, String)> {
+    setup_with_historical_token(false)
+}
+
+// The old ACL input is built before any public-origin-bearing Service write.
+// The ordinary fixture constructor still refuses an activated reader-86 store.
+fn setup_with_historical_token(
+    historical: bool,
+) -> TestResult<(Root, Service, String, String, String)> {
     let root = Root::new();
     let mut service = root.service()?;
     let (key, root_token) = bootstrap(&mut service)?;
@@ -73,13 +81,33 @@ fn setup() -> TestResult<(Root, Service, String, String, String)> {
         CURRENT_STATE_SCHEMA,
         "the first constraint-bearing mutation publishes the current schema"
     );
-    let issued = call(
-        &mut service,
-        "POST",
-        "auth/token/create",
-        &root_token,
-        json!({"policies":["parameter-guard"],"no_default_policy":true,"ttl":"1h"}),
-    );
+    let body = json!({"policies":["parameter-guard"],"no_default_policy":true,"ttl":"1h"});
+    let issued = if historical {
+        let mut candidate = service.state.clone().ok_or("historical state")?;
+        assert_eq!(candidate.schema, CURRENT_STATE_SCHEMA);
+        assert!(!candidate.auth.has_public_origin_state());
+        let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
+        let principal = candidate.auth.authenticate(&root_token, now)?;
+        let response = candidate
+            .auth
+            .handle(Some(&principal), "", "POST", "auth/token/create", &body, now)?
+            .ok_or("historical token route")?;
+        assert_eq!(response.status, 200);
+        assert!(response.mutated);
+        assert!(candidate.auth.has_public_origin_state());
+        candidate.auth.omit_unwrapped_public_origin_for_legacy_fixture();
+        candidate.validate_format().map_err(|_| "historical token format")?;
+        crate::service::tests::commit_legacy_state_fixture(&mut service, &candidate)
+            .map_err(|_| "publish ordinary historical token fixture")?;
+        service.state = Some(candidate);
+        Response {
+            status: response.status,
+            body: response.body.clone(),
+            consistency_index: None,
+        }
+    } else {
+        call(&mut service, "POST", "auth/token/create", &root_token, body)
+    };
     assert_eq!(issued.status, 200);
     let token = issued.body["auth"]["client_token"]
         .as_str()
@@ -230,7 +258,7 @@ fn acl_parameter_state_requires_schema58_and_survives_reopen() -> TestResult {
     let (root, service, key, _root_token, token) = setup()?;
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        CURRENT_STATE_SCHEMA
+        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
     );
     let mut downgraded = service.state.clone().ok_or("state")?;
     downgraded.schema = 57;
@@ -268,8 +296,13 @@ fn acl_parameter_state_requires_schema58_and_survives_reopen() -> TestResult {
 
 #[test]
 fn acl_schema58_reopens_under_schema59_and_promotes_only_on_mutation() -> TestResult {
-    let (root, mut service, key, root_token, token) = setup()?;
+    let (root, mut service, key, root_token, token) = setup_with_historical_token(true)?;
+    assert_eq!(service.state.as_ref().ok_or("ordinary predecessor")?.schema, CURRENT_STATE_SCHEMA);
+    assert!(!service.state.as_ref().ok_or("ordinary predecessor")?.auth.has_public_origin_state());
     let mut legacy = service.state.clone().ok_or("state")?;
+    legacy
+        .auth
+        .omit_unwrapped_public_origin_for_legacy_fixture();
     legacy.schema = 58;
     assert!(legacy.validate_format().is_ok());
     assert!(legacy.auth.has_acl_parameter_state());

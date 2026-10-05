@@ -1028,7 +1028,7 @@ mod tests {
             .migrate_kv1_records(crate::state_records::AddressKey::from_bytes([29; 32]))?
             .into();
         let plan = service
-            .prepare_record_plan(&record_state)
+            .prepare_record_plan(&mut record_state)
             .map_err(|_| "plan")?;
         let root_bytes = plan.bytes.clone();
         let identity = plan.identity;

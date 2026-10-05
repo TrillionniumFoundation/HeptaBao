@@ -50,6 +50,7 @@ fn fixture(parented: bool, identity: bool) -> TestResult<Fixture> {
             token_role: None,
             token_api_precision: None,
             token_api_policy_names: false,
+            public_origin: None,
             namespace: String::new(),
             policies: BTreeSet::from(["default".into()]),
             metadata: BTreeMap::new(),
@@ -107,7 +108,7 @@ fn fixture(parented: bool, identity: bool) -> TestResult<Fixture> {
     };
     state.schema = CURRENT_STATE_SCHEMA;
     state.validate_format().map_err(|_| "validate")?;
-    service.commit_state(&state).map_err(|_| "commit")?;
+    service.commit_state(&mut state).map_err(|_| "commit")?;
     service.state = Some(state);
     let effect = KubernetesTokenEffectPlan::new(
         *plan,
@@ -191,7 +192,9 @@ fn kube_batch_lease_caps_response_only_and_admin_retirement_survives_reopen() ->
         )
         .map_err(|_| "revoke")?;
     assert!(revoke.mutated);
-    service.commit_state(&state).map_err(|_| "commit revoke")?;
+    service
+        .commit_state(&mut state)
+        .map_err(|_| "commit revoke")?;
     service.state = Some(state);
     drop(plan);
     drop(service);
@@ -248,7 +251,7 @@ fn kube_completion_rechecks_parent_and_same_scope_identity_and_keeps_terminal_ob
                 .map_err(|_| "disable")?
                 .ok_or("disable route")?;
             service
-                .commit_state(&state)
+                .commit_state(&mut state)
                 .map_err(|_| "commit identity")?;
             service.state = Some(state);
         } else {
@@ -858,7 +861,7 @@ fn opaque_fixture() -> TestResult<Fixture> {
     assert_eq!(state.schema, KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA);
     state.validate_format().map_err(|_| "opaque state")?;
     service
-        .commit_state(&state)
+        .commit_state(&mut state)
         .map_err(|_| "actual opaque intent publication")?;
     service.state = Some(state);
     Ok((root, service, key, token, plan))
@@ -970,7 +973,7 @@ fn kube_opaque_artifact_durable_registration_and_retirement_preserve_schema_and_
     assert_eq!(retired.status, 204);
     assert!(state.engines.has_kubernetes_opaque_artifact_state());
     service
-        .commit_state(&state)
+        .commit_state(&mut state)
         .map_err(|_| "real retirement publication")?;
     service.state = Some(state);
     let digest = service.current_state_digest().map_err(|_| "digest")?;
@@ -1096,7 +1099,7 @@ fn retire_opaque(service: &mut Service, plan: &KubernetesTokenEffectPlan) -> Tes
     )?;
     assert_eq!(response.status, 204);
     service
-        .commit_state(&state)
+        .commit_state(&mut state)
         .map_err(|_| "actual retirement publication")?;
     service.state = Some(state);
     Ok(())
@@ -1151,6 +1154,16 @@ fn kube_opaque_artifact_retired_config_role_changes_and_compaction_survive_real_
         .ok_or("mount")?;
     retire_opaque(&mut service, &plan)?;
     let retired = service.state.clone().ok_or("retired")?;
+    // The direct engine fixture does not enroll process-level outbound trust.
+    // This call exercises Service's real configuration gate.
+    service.outbound = crate::outbound::Outbound::new(vec![crate::outbound::EndpointConfig {
+        origin: "https://localhost:9443".into(),
+        address: std::net::SocketAddr::from(([127, 0, 0, 1], 9443)),
+        server_name: "localhost".into(),
+        ca_pem: include_str!("testdata/kubernetes-api-ca.pem").into(),
+        path_prefix: "/api/".into(),
+        shared_secret: String::new(),
+    }])?;
     let changed = precise_lifecycle_call(
         &mut service,
         "POST",
@@ -1190,8 +1203,8 @@ fn kube_opaque_artifact_retired_config_role_changes_and_compaction_survive_real_
     let mut forged = serde_json::to_value(service.state.as_ref().ok_or("state")?)?;
     forged["engines"]["namespaces"][""]["mounts"]["kubernetes/"]["backend"]["Kubernetes"]["compacted_opaque"]
         ["count"] = json!(2);
-    let forged: State = serde_json::from_value(forged)?;
-    assert!(service.commit_state(&forged).is_err());
+    let mut forged: State = serde_json::from_value(forged)?;
+    assert!(service.commit_state(&mut forged).is_err());
     assert_eq!(
         service.durable.as_ref().ok_or("durable")?.generation(),
         generation
@@ -1241,7 +1254,7 @@ fn kube_opaque_artifact_actual_unmount_recreate_preserves_epoch_and_last_mount_k
         .ok_or("KV seed")?;
     assert_eq!(seeded.status, 200);
     service
-        .commit_state(&seed)
+        .commit_state(&mut seed)
         .map_err(|_| "seed publication")?;
     service.state = Some(seed);
     let active = service.state.clone().ok_or("active")?;
@@ -1339,9 +1352,9 @@ fn kube_opaque_artifact_actual_unmount_recreate_preserves_epoch_and_last_mount_k
         .as_object_mut()
         .ok_or("epochs")?
         .remove("kubernetes/");
-    let downgraded: State = serde_json::from_value(downgraded)?;
+    let mut downgraded: State = serde_json::from_value(downgraded)?;
     assert!(Service::validate_snapshot_protected_floor(state, &downgraded).is_err());
-    assert!(service.commit_state(&downgraded).is_err());
+    assert!(service.commit_state(&mut downgraded).is_err());
     let recreated = precise_lifecycle_call(
         &mut service,
         "POST",
@@ -1373,8 +1386,8 @@ fn kube_opaque_artifact_actual_unmount_recreate_preserves_epoch_and_last_mount_k
     let old = serde_json::to_value(&active.engines)?;
     resurrected["engines"]["namespaces"][""]["mounts"]["kubernetes/"]["backend"] =
         old["namespaces"][""]["mounts"]["kubernetes/"]["backend"].clone();
-    let resurrected: State = serde_json::from_value(resurrected)?;
-    assert!(service.commit_state(&resurrected).is_err());
+    let mut resurrected: State = serde_json::from_value(resurrected)?;
+    assert!(service.commit_state(&mut resurrected).is_err());
     let digest = service.current_state_digest().map_err(|_| "digest")?;
     drop(service);
     let mut reopened = root.service()?;

@@ -18,6 +18,7 @@ pub(super) struct PreparedCreation<'a> {
     pub(super) no_parent: bool,
     pub(super) entity_alias: Option<String>,
     pub(super) creation_path: String,
+    pub(super) metadata: public_origin::MetadataInput,
     pub(super) requested_renewable: bool,
     pub(super) is_sudo: bool,
     pub(super) requested_no_parent: bool,
@@ -69,6 +70,7 @@ impl AuthState {
             no_parent,
             entity_alias,
             creation_path,
+            metadata,
             requested_renewable,
             is_sudo,
             requested_no_parent,
@@ -232,9 +234,10 @@ impl AuthState {
                     expires_at: deadline,
                 }),
                 token_api_policy_names: policy_marker,
+                public_origin: Some(metadata.batch_origin()),
                 namespace: namespace.into(),
                 policies,
-                metadata: BTreeMap::new(),
+                metadata: metadata.map(),
                 display_name: display_name.into(),
                 path: creation_path,
                 bound_cidrs: cidrs,
@@ -294,6 +297,8 @@ impl AuthState {
             let expires_at = deadline.map(ceil).transpose()?;
             let token = Token {
                 token_api_precision: Some(lease),
+                public_origin: Some(public_origin::TokenApiOrigin::new(metadata, creation_path)?),
+                issue_stamp: None,
                 token_api_lease_ttl: deadline.map(|_| granted.ceil_seconds()),
                 token_role: issued_role,
                 bound_cidrs: cidrs,
@@ -340,6 +345,7 @@ impl AuthState {
         }
         if let Some(alias) = entity_alias {
             response.login_identity = Some(LoginIdentity {
+                token_api_alias: true,
                 mount: "token".into(),
                 alias,
                 metadata: None,

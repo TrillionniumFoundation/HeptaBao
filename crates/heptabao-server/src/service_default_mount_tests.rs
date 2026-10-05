@@ -381,7 +381,7 @@ fn explicit_entries_survive_legacy_codec_and_missing_entries_keep_legacy_default
         .validate_format()
         .map_err(|_| "legacy representation")?;
     service
-        .commit_state(&legacy)
+        .commit_state(&mut legacy)
         .map_err(|_| "historical representation commit")?;
     service.state = Some(legacy);
     drop(service);

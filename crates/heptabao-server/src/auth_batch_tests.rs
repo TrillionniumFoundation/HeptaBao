@@ -7,6 +7,7 @@ fn claims(now: u64, ttl: u64) -> BatchClaims {
         token_role: None,
         token_api_precision: None,
         token_api_policy_names: false,
+        public_origin: None,
         namespace: "team/one".into(),
         policies: BTreeSet::from(["default".into(), "reader".into()]),
         metadata: BTreeMap::from([("username".into(), "alice".into())]),

@@ -95,7 +95,7 @@ fn pending_local_csr_has_encrypted_namespace_reopen_and_sticky_schema79() -> Tes
         assert!(
             older.writer_schema() == LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
                 && older.validate_format().is_err()
-                && service.commit_state(&older).is_err()
+                && service.commit_state(&mut older).is_err()
                 && Service::validate_snapshot_protected_floor(&active, &older).is_err(),
             "older labels cannot omit a pending owned key"
         );
@@ -462,7 +462,7 @@ fn exported_ed_root_requires_sticky_identifier_floor_and_keeps_private_delivery_
     assert!(
         lower.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
             && lower.validate_format().is_err()
-            && service.commit_state(&lower).is_err(),
+            && service.commit_state(&mut lower).is_err(),
         "actual older writer label cannot publish exported identifiers"
     );
     assert!(
@@ -726,7 +726,7 @@ fn extended_root_fields_in_child_namespace_raise_sticky_floor_before_preflight()
     assert!(
         lower.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
             && lower.validate_format().is_err()
-            && service.commit_state(&lower).is_err(),
+            && service.commit_state(&mut lower).is_err(),
         "old identifier-only reader cannot publish extended root fields"
     );
     assert!(
@@ -858,7 +858,7 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
         "active typed material admission under71 denied"
     );
     assert!(
-        service.commit_state(&downgraded).is_err(),
+        service.commit_state(&mut downgraded).is_err(),
         "active publication downgrade denied"
     );
     assert!(
@@ -1324,7 +1324,7 @@ fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -
         assert!(
             older.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
                 && older.validate_format().is_err()
-                && service.commit_state(&older).is_err()
+                && service.commit_state(&mut older).is_err()
                 && Service::validate_snapshot_protected_floor(&active, &older).is_err(),
             "all older local PKI readers reject cached CRL ownership"
         );
@@ -1341,7 +1341,7 @@ fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -
     assert!(
         lower.writer_schema() == LOCAL_PKI_CRL_STATE_SCHEMA
             && lower.validate_format().is_err()
-            && service.commit_state(&lower).is_err(),
+            && service.commit_state(&mut lower).is_err(),
         "old fields-only reader cannot drop issuer ownership"
     );
     assert!(

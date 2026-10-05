@@ -14,8 +14,12 @@ enum Pending {
 }
 
 pub(super) struct Runtime {
-    key: Arc<AddressKey>,
-    index: Kv1Index,
+    pub(super) key: Arc<AddressKey>,
+    pub(super) index: Kv1Index,
+    // Publication always consumes this protected graph. The logical graph may
+    // additionally contain currently loaded independent namespace records.
+    pub(super) protected: Kv1Index,
+    pub(super) loaded_namespaces: BTreeSet<String>,
     // Bookkeeping only, not logical state. Publication clears exactly this
     // root's objects; readers still own their complete immutable graph.
     pending: Mutex<Pending>,
@@ -33,12 +37,14 @@ impl Clone for Runtime {
         Self {
             key: Arc::clone(&self.key),
             index: self.index.clone(),
+            protected: self.protected.clone(),
+            loaded_namespaces: self.loaded_namespaces.clone(),
             pending: Mutex::new(pending),
         }
     }
 }
 
-fn record_error(error_value: RecordError) -> EngineError {
+pub(super) fn record_error(error_value: RecordError) -> EngineError {
     match error_value {
         RecordError::TooLarge => error(507, "KV1 record capacity exhausted"),
         RecordError::Invalid => bad("invalid KV1 record operation"),
@@ -49,19 +55,47 @@ fn record_error(error_value: RecordError) -> EngineError {
 }
 
 impl Runtime {
-    fn new(key: Arc<AddressKey>, index: Kv1Index) -> Self {
+    pub(super) fn with_views(
+        key: Arc<AddressKey>,
+        index: Kv1Index,
+        protected: Kv1Index,
+        loaded_namespaces: BTreeSet<String>,
+        objects: Vec<Arc<StagedObject>>,
+    ) -> Self {
         Self {
             key,
             index,
+            protected,
+            loaded_namespaces,
+            pending: Mutex::new(Pending::Ready(objects)),
+        }
+    }
+    fn new(key: Arc<AddressKey>, index: Kv1Index) -> Self {
+        Self {
+            key,
+            protected: index.clone(),
+            index,
+            loaded_namespaces: BTreeSet::new(),
             pending: Mutex::new(Pending::Ready(Vec::new())),
         }
     }
 
-    fn apply(&mut self, key: Kv1Key, value: Option<&[u8]>) -> Result<bool> {
-        let edit = self.index.edit(key, value).map_err(record_error)?;
+    pub(super) fn apply(&mut self, key: Kv1Key, value: Option<&[u8]>) -> Result<bool> {
+        let loaded = self.loaded_namespaces.contains(key.namespace());
+        let same = self.index.root() == self.protected.root();
+        let edit = self.index.edit(key.clone(), value).map_err(record_error)?;
         if !edit.changed {
             return Ok(false);
         }
+        if loaded {
+            self.index = edit.next;
+            return Ok(true);
+        }
+        let protected_edit = if same {
+            None
+        } else {
+            Some(self.protected.edit(key, value).map_err(record_error)?)
+        };
         let mut pending = self
             .pending
             .lock()
@@ -69,7 +103,13 @@ impl Runtime {
         let Pending::Ready(objects) = &mut *pending else {
             return Err(error(503, "KV1 staging metadata is unavailable"));
         };
-        objects.extend(edit.objects);
+        if let Some(protected_edit) = protected_edit {
+            objects.extend(protected_edit.objects);
+            self.protected = protected_edit.next;
+        } else {
+            objects.extend(edit.objects);
+            self.protected = edit.next.clone();
+        }
         self.index = edit.next;
         Ok(true)
     }
@@ -145,7 +185,9 @@ impl EngineState {
     }
 
     pub(crate) fn record_root(&self) -> Option<Kv1Root> {
-        self.records.as_ref().map(|runtime| runtime.index.root())
+        self.records
+            .as_ref()
+            .map(|runtime| runtime.protected.root())
     }
     pub(crate) fn record_address_key(&self) -> Option<Arc<AddressKey>> {
         self.records
@@ -170,7 +212,7 @@ impl EngineState {
             .as_ref()
             .ok_or_else(|| error(503, "KV1 record root is unavailable"))?;
         runtime
-            .index
+            .protected
             .visit_objects(|object| visitor(object))
             .map_err(record_error)
     }
@@ -195,7 +237,7 @@ impl EngineState {
             .records
             .as_ref()
             .ok_or_else(|| error(503, "KV1 record root is unavailable"))?;
-        if &runtime.index.root() != expected {
+        if &runtime.protected.root() != expected {
             return Err(error(503, "KV1 publication root changed"));
         }
         let mut pending = runtime
@@ -212,6 +254,7 @@ impl EngineState {
     pub(crate) fn owner_metadata_shared_with(&self, previous: &Self) -> bool {
         self.lease_clock == previous.lease_clock
             && self.kubernetes_artifact_clock == previous.kubernetes_artifact_clock
+            && self.namespace_record_owners == previous.namespace_record_owners
             && self.namespaces.len() == previous.namespaces.len()
             && self.namespaces.iter().all(|(name, state)| {
                 previous
@@ -269,7 +312,9 @@ impl EngineState {
         }
         candidate.records = Some(Runtime {
             key,
+            protected: index.clone(),
             index,
+            loaded_namespaces: BTreeSet::new(),
             pending: Mutex::new(Pending::Ready(objects)),
         });
         candidate.validate_record_registry()?;
@@ -316,6 +361,7 @@ impl EngineState {
     }
 
     pub(crate) fn validate_record_registry(&self) -> Result<()> {
+        self.validate_namespace_record_owners()?;
         let Some(runtime) = &self.records else {
             return if self.has_record_kv1() {
                 Err(error(503, "KV1 record root is absent"))
@@ -334,6 +380,10 @@ impl EngineState {
         runtime
             .index
             .visit_keys(|key| {
+                let bytes = runtime.index.get(key).ok_or(RecordError::Corrupt)?;
+                if namespace_record_cells::is_cell(key) {
+                    return self.validate_namespace_record_cell(key, bytes);
+                }
                 let registered = self
                     .namespaces
                     .get(key.namespace())
@@ -344,7 +394,6 @@ impl EngineState {
                 }) {
                     return Err(RecordError::Corrupt);
                 }
-                let bytes = runtime.index.get(key).ok_or(RecordError::Corrupt)?;
                 let value: SecretJson =
                     serde_json::from_slice(bytes).map_err(|_| RecordError::Corrupt)?;
                 if !value.is_object() {
@@ -355,6 +404,22 @@ impl EngineState {
                         .map_err(|_| RecordError::Corrupt)?;
                 if canonical.as_slice() != bytes {
                     return Err(RecordError::Corrupt);
+                }
+                Ok(())
+            })
+            .map_err(record_error)?;
+        runtime
+            .protected
+            .visit_keys(|key| {
+                if runtime.loaded_namespaces.contains(key.namespace()) {
+                    return Err(RecordError::Corrupt);
+                }
+                let bytes = runtime.protected.get(key).ok_or(RecordError::Corrupt)?;
+                if runtime.index.get(key) != Some(bytes) {
+                    return Err(RecordError::Corrupt);
+                }
+                if namespace_record_cells::is_cell(key) {
+                    self.validate_namespace_record_cell(key, bytes)?;
                 }
                 Ok(())
             })

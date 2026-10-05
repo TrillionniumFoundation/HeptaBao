@@ -199,7 +199,7 @@ fn leaf_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, St
         "original root floor cannot relabel the actual committed role owner"
     );
     assert!(
-        service.prepare_record_plan(&lowered).is_err(),
+        service.prepare_record_plan(&mut lowered).is_err(),
         "record preflight does not accept a lower reader label"
     );
     Ok((root, service, unseal, admin))

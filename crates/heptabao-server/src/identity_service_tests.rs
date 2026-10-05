@@ -692,6 +692,8 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
     auth.remove_name_modes_for_legacy_format_test();
     auth.omit_lease_metadata_for_legacy_fixture();
     let state = State {
+        namespace_protected: None,
+        namespace_leases: namespace_runtime::Leases::default(),
         schema: 1,
         cluster_id: "legacy-synthetic".into(),
         replay_epoch: 0,
@@ -773,6 +775,8 @@ fn identity_schema_fences_persisted_radius_state_for_old_readers() -> TestResult
     )?;
     assert_eq!(configured.ok_or("missing config response")?.status, 204);
     let mut state = State {
+        namespace_protected: None,
+        namespace_leases: namespace_runtime::Leases::default(),
         schema: CURRENT_STATE_SCHEMA,
         cluster_id: "radius-schema-test".into(),
         replay_epoch: 0,
@@ -907,6 +911,9 @@ fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestR
             .remove("auth_provenance");
     }
     legacy.auth = serde_json::from_value::<AuthState>(encoded_auth)?.into();
+    legacy
+        .auth
+        .omit_unwrapped_public_origin_for_legacy_fixture();
     // Construct the supported historical implicit engine representation for
     // this schema-one input, without dispatching a current mount publication.
     legacy.engines = EngineState::default().into();
@@ -979,6 +986,8 @@ fn metadata_cas_schema_rejects_downgrade_from_version_or_requirement() -> TestRe
             .handle("", "POST", path, &body, 100)?
             .ok_or("missing engine response")?;
         let mut state = State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: 15,
             cluster_id: "metadata-cas-schema".into(),
             replay_epoch: 0,
@@ -1122,7 +1131,8 @@ fn batch_login_wrapping_capacity_failure_discards_identity_and_key_watermark_tog
             .auth
             .wrap_response("", "fixture", 60, &json!({"data":{"ok":true}}), 100)?;
     }
-    s.commit_state(&candidate).map_err(|_| "fixture commit")?;
+    s.commit_state(&mut candidate)
+        .map_err(|_| "fixture commit")?;
     s.state = Some(candidate);
     let before = s.current_state_digest().map_err(|_| "digest")?;
     let generation = s.durable.as_ref().ok_or("durable")?.generation();
@@ -1326,7 +1336,7 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
     assert!(downgrade.validate_format().is_ok());
     assert!(
         service
-            .prepare_record_plan(&downgrade)
+            .prepare_record_plan(&mut downgrade)
             .err()
             .is_some_and(|response| response.status == 503
                 && response.body["errors"][0] == "AAD-bound convergent keys require schema 66")

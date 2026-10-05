@@ -771,6 +771,7 @@ mod linux {
         }
         pub(in crate::service) fn fence_wrapper_barrier_delivery(&mut self) {
             self.fence_openbao_wrapper();
+            self.namespace_runtime.clear();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;

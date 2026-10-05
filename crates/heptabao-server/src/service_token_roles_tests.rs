@@ -36,7 +36,7 @@ fn token_role_schema80_namespace_reopen_retirement_and_snapshot_floor() -> TestR
     let mut lower = active.clone();
     lower.schema = LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA;
     assert!(lower.validate_format().is_err());
-    assert!(service.commit_state(&lower).is_err());
+    assert!(service.commit_state(&mut lower).is_err());
     assert!(Service::validate_snapshot_protected_floor(&active, &lower).is_err());
     assert!(service.prepare_snapshot_restore(&backup).is_err());
     assert_eq!(

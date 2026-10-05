@@ -293,9 +293,26 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
     lower.schema = TOKEN_ROLE_STATE_SCHEMA;
     assert_eq!(lower.writer_schema(), PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
     assert!(lower.validate_format().is_err());
-    assert!(service.commit_state(&lower).is_err());
+    assert!(service.commit_state(&mut lower).is_err());
     assert!(Service::validate_snapshot_protected_floor(&active, &lower).is_err());
-    for schema in [81, 82, 86, 87, MAX_SUPPORTED_STATE_SCHEMA + 1] {
+    for schema in [81, 86, 87] {
+        let mut integrated_lower = active.clone();
+        integrated_lower.schema = schema;
+        assert_eq!(
+            integrated_lower.writer_schema(),
+            PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA,
+            "supported earlier readers still require the actual profile88 owner"
+        );
+        assert!(
+            integrated_lower.validate_format().is_err()
+                && integrated_lower
+                    .validate_publication_schema(Some(&active))
+                    .is_err()
+                && service.commit_state(&mut integrated_lower).is_err(),
+            "integrated readers cannot relabel a signed profile88 graph"
+        );
+    }
+    for schema in [82, MAX_SUPPORTED_STATE_SCHEMA + 1] {
         let mut unsupported = active.clone();
         unsupported.schema = schema;
         assert_eq!(
@@ -698,7 +715,7 @@ fn pki_role_bare_domain_default_denies_base_and_explicit_permission_reopens() ->
         let mut lower = active.clone();
         lower.schema = label;
         assert_eq!(lower.writer_schema(), PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
-        assert!(lower.validate_format().is_err() && service.commit_state(&lower).is_err());
+        assert!(lower.validate_format().is_err() && service.commit_state(&mut lower).is_err());
         assert!(Service::validate_snapshot_protected_floor(&active, &lower).is_err());
     }
     Ok(())

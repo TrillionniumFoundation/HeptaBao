@@ -42,7 +42,7 @@ fn legacy_owner_write(
         .handle("", "PUT", path, &body, 100)?
         .ok_or("engine route")?;
     service
-        .commit_state(&state)
+        .commit_state(&mut state)
         .map_err(|_| "legacy owner commit")?;
     service.state = Some(state);
     Ok(Response {

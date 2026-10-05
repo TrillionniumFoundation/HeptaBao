@@ -51,7 +51,7 @@ impl Service {
         candidate.schema = candidate.writer_schema();
         // Existing State/RecordPlan publication validates the same current
         // owner and floor. No ReadIndex, audit or provider deadline is renewed.
-        if self.commit_state(&candidate).is_err() {
+        if self.commit_state(&mut candidate).is_err() {
             return Err(Response::error(
                 503,
                 "Token API observation floor was not committed",
