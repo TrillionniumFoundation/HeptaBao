@@ -28,6 +28,11 @@ pub(in crate::engines::pki) struct ExternalLeafIssuerOwner {
 }
 
 impl ExternalPublicIssuer {
+    pub(super) fn ca_chain_der(&self) -> Vec<Vec<u8>> {
+        std::iter::once(self.certificate_der.clone())
+            .chain(self.parents.iter().flatten().cloned())
+            .collect()
+    }
     pub(super) fn has_intermediate_chain(&self) -> bool {
         self.parents.is_some()
     }

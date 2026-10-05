@@ -184,6 +184,7 @@ impl Pki {
             consumption: None,
             bound_public: Some(key.public_key.clone()),
             bound_issuer: None,
+            signed_ca: None,
             imported: Some(Box::new(PreparedExternalImport {
                 pending,
                 root,

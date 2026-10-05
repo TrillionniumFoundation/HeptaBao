@@ -40,6 +40,7 @@ impl LocalRootMetadata {
     }
 }
 
+#[derive(Clone)]
 pub(super) struct RootFields {
     pub(super) subject_der: Vec<u8>,
     pub(super) dns_sans: Vec<String>,

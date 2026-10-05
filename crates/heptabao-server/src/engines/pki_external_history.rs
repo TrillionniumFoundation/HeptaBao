@@ -430,7 +430,9 @@ impl Pki {
             // Validate private reference, exact public key, original signed CA
             // and issuer-specific CRL through the existing cryptographic lane.
             let mut selected = self.clone();
-            selected.external.signer_history = None;
+            // Keep the existing format94 owner marker while validating this
+            // single signer. The validator below does not recurse into history.
+            selected.external.signer_history = Some(Box::default());
             selected.root = Some(signer.root.clone());
             selected.external.root = Some(signer.key.clone());
             selected.external.crls = Some(signer.crls.clone());

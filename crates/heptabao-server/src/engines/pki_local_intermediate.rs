@@ -754,7 +754,9 @@ impl Pki {
                 || cert.validity().not_before.timestamp()
                     > i64::try_from(ca.issued).map_err(invalid)?
                 || self.issued.contains_key(serial)
-                || self.local_issuer_certificate_by_id(&ca.issuer_id)
+                || self
+                    .local_issuer_certificate_by_id(&ca.issuer_id)
+                    .or_else(|| self.external_ca_owner_certificate(&ca.issuer_id))
                     != ca.parents.first().map(Vec::as_slice)
             {
                 return Err(bad("signed CA issuer ownership changed"));
@@ -783,7 +785,12 @@ impl Pki {
             } else {
                 let root = self.selected_issuer(reference)?;
                 let (id, key, name) = if root.is_external() {
-                    self.public_issuer_metadata().ok_or_else(not_found)?
+                    let key = self.external_issuer_key(reference)?;
+                    (
+                        key.issuer_id.as_str(),
+                        key.key_id.as_str(),
+                        key.issuer_name.as_str(),
+                    )
                 } else {
                     (
                         root.issuer_id.as_str(),
@@ -798,7 +805,7 @@ impl Pki {
                     key,
                     name,
                     pem("CERTIFICATE", &root.certificate_der),
-                    root.local_ca_chain_pem(),
+                    self.external_ca_chain_pem(root)?,
                     root.leaf_not_after_behavior.unwrap_or_default(),
                 )
             };
@@ -1859,6 +1866,31 @@ impl Pki {
     }
 }
 
+impl Pki {
+    pub(super) fn has_external_signed_ca_issuer_reference(
+        &self,
+        id: &str,
+        issuer_der: &[u8],
+    ) -> Result<bool> {
+        for ca in self
+            .local_intermediate
+            .iter()
+            .flat_map(|state| state.signed_certificates.values())
+        {
+            if ca.issuer_id == id
+                && ca
+                    .parents
+                    .first()
+                    .is_some_and(|parent| parent == issuer_der)
+            {
+                certificate_signed_by(&ca.certificate_der, issuer_der)?;
+                return Ok(true);
+            }
+        }
+        Ok(false)
+    }
+}
+
 pub(super) type ExternalPublicCaPlan = (String, Vec<u8>, Vec<Vec<u8>>);
 pub(super) type ExternalPublicCaPlans = Vec<ExternalPublicCaPlan>;
 
@@ -1923,6 +1955,48 @@ impl Pki {
                 },
             );
         }
+        Ok(())
+    }
+}
+
+impl Pki {
+    pub(super) fn publish_external_signed_ca(
+        &mut self,
+        certificate_der: Vec<u8>,
+        parents: Vec<Vec<u8>>,
+        issuer_id: String,
+        serial: String,
+        issued: u64,
+        expires: u64,
+    ) -> Result<()> {
+        if self.intermediate_certificate(&serial).is_some()
+            || self.local_certificate(&serial).is_some()
+            || self.issued.contains_key(&serial)
+            || self
+                .local_intermediate
+                .as_ref()
+                .is_some_and(|s| s.signed_certificates.len() >= MAX_ISSUED)
+        {
+            return Err(error(
+                503,
+                "signed CA publication changed or exceeds bounds",
+            ));
+        }
+        validate_chain(&certificate_der, &parents)?;
+        self.local_intermediate
+            .get_or_insert_with(Box::default)
+            .signed_certificates
+            .insert(
+                serial,
+                SignedCa {
+                    certificate_der,
+                    parents,
+                    issuer_id,
+                    issued,
+                    expires,
+                    revoked_at: None,
+                },
+            );
         Ok(())
     }
 }

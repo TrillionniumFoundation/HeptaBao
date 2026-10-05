@@ -19,6 +19,9 @@ use history::ExternalSignerHistory;
 #[path = "pki_external_intermediate.rs"]
 mod intermediate;
 use intermediate::{ExternalIntermediateOwner, PreparedExternalImport};
+#[path = "pki_external_sign_intermediate.rs"]
+mod sign_intermediate;
+use sign_intermediate::PreparedExternalCaSign;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
@@ -101,6 +104,7 @@ pub(crate) struct ExternalPkiTemplate {
     // identity, generation and provider enrollment; publication checks it again.
     bound_issuer: Option<ExternalPublicIssuer>,
     imported: Option<Box<PreparedExternalImport>>,
+    signed_ca: Option<Box<PreparedExternalCaSign>>,
 }
 
 pub(crate) struct ExternalPkiMaterial {
@@ -294,6 +298,20 @@ impl ExternalPkiTemplate {
     ) -> Result<ExternalPkiMaterial> {
         let public_key = public_key.into();
         public_key.validate()?;
+        if let Some(prepared) = &self.signed_ca {
+            if self.bound_public.as_ref() != Some(&public_key) {
+                return Err(error(503, "external CA signing key changed"));
+            }
+            let tbs = prepared.tbs(&public_key)?;
+            return Ok(ExternalPkiMaterial {
+                template: self,
+                public_key,
+                tbs,
+                extra_tbs: Vec::new(),
+                root_crls: None,
+                consumption: None,
+            });
+        }
         if let Some(imported) = &self.imported {
             if public_key != imported.pending.key.public_key {
                 return Err(error(503, "external intermediate provider key changed"));
@@ -467,7 +485,8 @@ impl Pki {
                     || path.starts_with("sign/")
                     || Self::issuer_sign_route(path).is_some()
                     || Self::issuer_issue_route(path).is_some()
-                    || matches!(path, "revoke" | "crl/rotate"))
+                    || matches!(path, "revoke" | "crl/rotate" | "root/sign-intermediate")
+                    || Self::external_sign_intermediate_route(path).is_some())
     }
 
     pub(in crate::engines) fn has_external_state(&self) -> bool {
@@ -481,6 +500,15 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<Option<ExternalPkiTemplate>> {
+        if self.external.root.is_some()
+            && (path == "root/sign-intermediate"
+                || Self::external_sign_intermediate_route(path).is_some())
+        {
+            if !write_method(method) {
+                return Err(unsupported());
+            }
+            return self.prepare_external_ca_sign(path, body, now).map(Some);
+        }
         if path == "intermediate/set-signed" && self.external.intermediate.is_some() {
             if !write_method(method) {
                 return Err(unsupported());
@@ -558,6 +586,7 @@ impl Pki {
             bound_public: None,
             bound_issuer: None,
             imported: None,
+            signed_ca: None,
         }))
     }
 
@@ -575,6 +604,9 @@ impl Pki {
         }
         if material.consumption.is_some() {
             return self.publish_consumption(material, signatures, now);
+        }
+        if material.template.signed_ca.is_some() {
+            return self.publish_external_ca_sign(material, signatures, now);
         }
         if material.template.imported.is_some() {
             return self.publish_external_import(material, signatures, now);

@@ -503,6 +503,7 @@ impl Pki {
             bound_public: Some(key.public_key.clone()),
             bound_issuer: Some(captured_issuer),
             imported: None,
+            signed_ca: None,
         }))
     }
 
@@ -848,6 +849,9 @@ impl Pki {
                 return Err(bad("external PKI archive identity mismatch"));
             }
             issuer.validate()?;
+            if self.has_external_signed_ca_issuer_reference(id, &issuer.certificate_der)? {
+                referenced.insert(id.clone());
+            }
             if self.local_pki_identifiers_in_use(&issuer.issuer_id, &issuer.key_id) {
                 return Err(bad("external PKI archive conflicts with local ownership"));
             }
