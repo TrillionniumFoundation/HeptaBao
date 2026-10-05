@@ -18,6 +18,8 @@ mod nano_delivery;
 mod role_any_name;
 #[path = "service_pki_role_leaf_profile_tests.rs"]
 mod role_leaf_profile;
+#[path = "service_pki_external_history_tests.rs"]
+mod signer_history;
 
 #[path = "service_local_pki_tests.rs"]
 mod local_tests;

@@ -358,6 +358,14 @@ impl Service {
             .auth
             .validate_token_api_clock_floor(Some(&current.auth))
             .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+            && incoming.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade external PKI signer history",
+            ));
+        }
         if current.schema >= PKI_ROLE_NAMES_STATE_SCHEMA
             && incoming.schema < PKI_ROLE_NAMES_STATE_SCHEMA
         {

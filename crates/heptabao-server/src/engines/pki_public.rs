@@ -209,16 +209,7 @@ impl Pki {
             self.local_issuer(reference)?;
             return Ok(());
         }
-        let (id, _, name) = self
-            .public_issuer_metadata()
-            .ok_or_else(|| error(500, "issuer reference is unavailable"))?;
-        if reference == "default" || reference == id || (!name.is_empty() && reference == name) {
-            Ok(())
-        } else {
-            // The pinned public 2.7 alias probe returns 500 for unknown names
-            // and IDs. Never turn an unknown reference into the default issuer.
-            Err(error(500, "issuer reference is unavailable"))
-        }
+        self.external_issuer_key(reference).map(|_| ())
     }
 
     pub(in crate::engines) fn handle_public_read(
@@ -376,12 +367,7 @@ impl Pki {
                         false,
                     ));
                 }
-                let root = self.root.as_ref().ok_or_else(not_found)?;
-                let (issuer, key, name) = self.public_issuer_metadata().ok_or_else(not_found)?;
-                Ok(ok(
-                    json!({"keys":[issuer],"key_info":{issuer:{"is_default":true,"issuer_name":name,"key_id":key,"serial_number":external::formatted_serial(&root.serial)}}}),
-                    false,
-                ))
+                Ok(self.external_issuers_descriptor())
             }
             PkiPublicRead::IssuerCertificate(reference, format) => {
                 if let Some((der, _)) = self.public_imported_ca(reference) {
@@ -415,15 +401,14 @@ impl Pki {
                 }
                 let root = self.selected_issuer(reference)?;
                 let name = if root.is_external() {
-                    self.public_issuer_metadata()
-                        .map_or("", |(_, _, name)| name)
+                    self.external_issuer_key(reference)?.issuer_name.as_str()
                 } else {
                     root.local_fields
                         .as_ref()
                         .map_or("", |fields| fields.issuer_name.as_str())
                 };
                 let issuer = if root.is_external() {
-                    self.public_issuer_metadata().map_or("", |(id, _, _)| id)
+                    self.external_issuer_key(reference)?.issuer_id.as_str()
                 } else {
                     root.issuer_id.as_str()
                 };
@@ -436,8 +421,7 @@ impl Pki {
             PkiPublicRead::IssuerCrl(reference, delta, format) => {
                 let root = self.selected_issuer(reference)?;
                 let owned_der = if root.is_external() {
-                    self.external_crl_der(delta, now)?
-                        .ok_or_else(not_found)?
+                    self.external_issuer_crl_der(reference, delta, now)?
                         .to_vec()
                 } else {
                     self.cached_local_crl(root, delta)?.to_vec()

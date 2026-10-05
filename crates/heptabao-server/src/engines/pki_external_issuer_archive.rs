@@ -110,6 +110,11 @@ impl Pki {
             .any(|existing| existing.issuer_id == issuer || existing.key_id == key)
             || self
                 .external
+                .signer_history
+                .as_ref()
+                .is_some_and(|history| history.identifiers_in_use(issuer, key))
+            || self
+                .external
                 .archived_issuers
                 .values()
                 .any(|existing| existing.issuer_id == issuer || existing.key_id == key)

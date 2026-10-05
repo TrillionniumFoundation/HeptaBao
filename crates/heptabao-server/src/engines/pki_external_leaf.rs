@@ -35,7 +35,7 @@ pub(super) struct LeafPublic {
     #[serde(default, skip_serializing_if = "role_false")]
     pub(super) role_time_owned: bool,
     #[serde(default, skip_serializing_if = "String::is_empty")]
-    issuer_id: String,
+    pub(super) issuer_id: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     role_leaf_profile: Option<RoleLeafProfile>,
     public_key: LocalPublicKey,
@@ -73,19 +73,19 @@ impl LeafPublic {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Crl {
-    number: u64,
+    pub(super) number: u64,
     base: Option<u64>,
     issued: u64,
-    expires: u64,
-    revoked: BTreeMap<String, u64>,
-    der: Vec<u8>,
+    pub(super) expires: u64,
+    pub(super) revoked: BTreeMap<String, u64>,
+    pub(super) der: Vec<u8>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct CrlSet {
-    full: Crl,
-    delta: Crl,
+    pub(super) full: Crl,
+    pub(super) delta: Crl,
 }
 
 impl CrlSet {
@@ -162,7 +162,7 @@ impl CrlSet {
         }
         Ok(())
     }
-    fn selected(&self, delta: bool) -> &Crl {
+    pub(super) fn selected(&self, delta: bool) -> &Crl {
         if delta { &self.delta } else { &self.full }
     }
 }
@@ -369,6 +369,18 @@ impl Pki {
         let owner = context.owner;
         let time = context.observed_time(context.time.seconds())?;
         let now = time.seconds();
+        if self.external.root.is_some()
+            && let Some(selected) = self.external_route_issuer(path, body)?
+            && self
+                .external
+                .root
+                .as_ref()
+                .is_some_and(|key| key.issuer_id != selected)
+        {
+            let mut candidate = self.clone();
+            candidate.select_external_default(&selected)?;
+            return candidate.prepare_external_consumption(method, path, body, mount, context);
+        }
         let Some(key) = self.external.root.as_ref() else {
             return Ok(None);
         };
@@ -403,7 +415,7 @@ impl Pki {
                 IssuanceRoute {
                     mount,
                     role,
-                    explicit_issuer: None,
+                    explicit_issuer: reference,
                     sign,
                 },
                 body,
@@ -499,6 +511,28 @@ impl Pki {
         signatures: &[Zeroizing<Vec<u8>>],
         now: u64,
     ) -> Result<EngineResponse> {
+        if self
+            .external
+            .root
+            .as_ref()
+            .is_some_and(|key| key.issuer_id != material.template.issuer_id)
+        {
+            let original = self
+                .external
+                .root
+                .as_ref()
+                .ok_or_else(|| bad("default missing"))?
+                .issuer_id
+                .clone();
+            let mut candidate = self.clone();
+            candidate
+                .select_external_default(&material.template.issuer_id)
+                .map_err(|_| error(503, "captured external issuer is unavailable"))?;
+            let response = candidate.publish_consumption(material, signatures, now)?;
+            candidate.select_external_default(&original)?;
+            *self = candidate;
+            return Ok(response);
+        }
         let captured_issuer = self.captured_external_issuer()?;
         let active_key = self
             .external
@@ -681,6 +715,39 @@ impl Pki {
         }))
     }
 
+    pub(in crate::engines::pki) fn external_leaf_issuer_reference(
+        &self,
+        serial: &str,
+    ) -> Result<&str> {
+        let leaf = self
+            .external
+            .issued_public
+            .get(serial)
+            .ok_or_else(not_found)?;
+        if leaf.issuer_id.is_empty() {
+            return self
+                .external
+                .root
+                .as_ref()
+                .map(|key| key.issuer_id.as_str())
+                .ok_or_else(not_found);
+        }
+        let issuer = self
+            .external
+            .archived_issuers
+            .get(&leaf.issuer_id)
+            .ok_or_else(|| bad("external leaf issuer archive missing"))?;
+        if self
+            .issued
+            .get(serial)
+            .and_then(|issued| issued.external_issuer_owner.as_ref())
+            != Some(&issuer.owner()?)
+        {
+            return Err(bad("external leaf issuer owner differs"));
+        }
+        Ok(&leaf.issuer_id)
+    }
+
     fn external_leaf_belongs_to_active(&self, serial: &str) -> bool {
         let Some(key) = &self.external.root else {
             return false;
@@ -745,6 +812,7 @@ impl Pki {
     }
 
     pub(in crate::engines::pki) fn validate_external_consumption(&self, clock: u64) -> Result<()> {
+        self.validate_external_signer_history(clock)?;
         let active = self
             .external
             .root

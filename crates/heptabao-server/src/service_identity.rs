@@ -28,7 +28,9 @@ impl State {
         if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.engines.has_pki_role_names_state() {
+        let required = if self.engines.has_external_pki_signer_history() {
+            EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+        } else if self.engines.has_pki_role_names_state() {
             PKI_ROLE_NAMES_STATE_SCHEMA
         } else if self.has_namespace_batch_state() {
             NAMESPACE_BATCH_STATE_SCHEMA
@@ -159,6 +161,16 @@ impl State {
             return Err(Response::error(
                 503,
                 "opaque Kubernetes artifact ownership requires schema 87",
+            ));
+        }
+        if self.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+            && (self.engines.has_external_pki_signer_history()
+                || previous
+                    .is_some_and(|state| state.schema >= EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "external PKI signer history requires schema 94",
             ));
         }
         if self.schema < PKI_ROLE_NAMES_STATE_SCHEMA
@@ -435,6 +447,14 @@ impl State {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
+            && self.engines.has_external_pki_signer_history()
+        {
+            return Err(Response::error(
+                503,
+                "external PKI signer history requires schema 94",
             ));
         }
         if self.schema < PKI_ROLE_NAMES_STATE_SCHEMA && self.engines.has_pki_role_names_state() {
@@ -1308,6 +1328,7 @@ impl State {
             | PKI_ROLE_TIME_STATE_SCHEMA
             | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
             | PKI_ROLE_NAMES_STATE_SCHEMA
+            | EXTERNAL_PKI_SIGNER_HISTORY_STATE_SCHEMA
             | NAMESPACE_BATCH_STATE_SCHEMA
             | SDK_STORAGE_STATE_SCHEMA
             | NAMESPACE_CUSTODY_STATE_SCHEMA

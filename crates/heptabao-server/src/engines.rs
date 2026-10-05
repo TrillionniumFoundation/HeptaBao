@@ -791,6 +791,10 @@ impl EngineState {
         pki.fixture_issue_historical_local_leaf(mount, body, owner, now)
     }
 
+    pub(crate) fn has_external_pki_signer_history(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_external_signer_history())))
+    }
+
     pub(crate) fn has_pki_role_names_state(&self) -> bool {
         self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_names_state())))
     }

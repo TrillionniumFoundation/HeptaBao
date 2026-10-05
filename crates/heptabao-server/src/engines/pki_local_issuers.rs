@@ -230,8 +230,7 @@ impl Pki {
 
     pub(super) fn selected_issuer(&self, reference: &str) -> Result<&RootCa> {
         if self.root.as_ref().is_some_and(RootCa::is_external) {
-            self.require_public_issuer(reference)?;
-            return self.root.as_ref().ok_or_else(not_found);
+            return self.external_issuer_root(reference);
         }
         self.local_issuer(reference)
     }

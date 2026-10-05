@@ -627,6 +627,21 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        if path == "revoke" && self.root.is_none() && self.has_external_signer_history() {
+            if !write_method(method) {
+                return Err(unsupported());
+            }
+            reject_unknown(body, &["serial_number"])?;
+            let serial = normalize_serial(string(body, "serial_number")?)?;
+            self.external_leaf_issuer_reference(&serial)?;
+            let issued = self.issued.get_mut(&serial).ok_or_else(not_found)?;
+            let changed = issued.revoked_at.is_none();
+            let at = *issued.revoked_at.get_or_insert(now.max(issued.issued));
+            return Ok(ok(
+                json!({"revocation_time":at,"revocation_time_rfc3339":timestamp(at),"state":"revoked"}),
+                changed,
+            ));
+        }
         if let Some(response) = self.handle_local_intermediate(method, path, body, now)? {
             return Ok(response);
         }
@@ -658,6 +673,11 @@ impl Pki {
             return Ok(response);
         }
         if path == "config/issuers" {
+            if self.root.as_ref().is_some_and(RootCa::is_external)
+                || self.has_external_signer_history()
+            {
+                return self.external_issuer_config(method, body);
+            }
             return self.local_issuer_config(method, body);
         }
         if matches!(path, "root/generate/internal" | "root/generate/exported") {
@@ -2067,6 +2087,7 @@ impl Role {
             "max_ttl": self.max_ttl,
             "generate_lease": self.generate_lease,
             "key_type": "ed25519",
+            "key_bits": 0,
         });
         if let Some(kind) = self.local_key_kind {
             descriptor["key_type"] = json!(kind.key_type());

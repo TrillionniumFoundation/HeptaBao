@@ -13,6 +13,9 @@ use leaf::{ConsumptionMaterial, ConsumptionTemplate, CrlSet, LeafPublic};
 mod issuer_archive;
 pub(super) use issuer_archive::ExternalLeafIssuerOwner;
 use issuer_archive::ExternalPublicIssuer;
+#[path = "pki_external_history.rs"]
+mod history;
+use history::ExternalSignerHistory;
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
@@ -27,19 +30,21 @@ pub(super) struct ExternalState {
     issued_public: BTreeMap<String, LeafPublic>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     archived_issuers: BTreeMap<String, ExternalPublicIssuer>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    signer_history: Option<Box<ExternalSignerHistory>>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct ExternalKey {
-    reference: String,
-    public_key: ExternalPkiPublicKey,
-    key_id: String,
-    issuer_id: String,
-    key_name: String,
-    issuer_name: String,
+pub(super) struct ExternalKey {
+    pub(super) reference: String,
+    pub(super) public_key: ExternalPkiPublicKey,
+    pub(super) key_id: String,
+    pub(super) issuer_id: String,
+    pub(super) key_name: String,
+    pub(super) issuer_name: String,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    dns_san: bool,
+    pub(super) dns_san: bool,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -57,10 +62,14 @@ impl ExternalState {
             && self.crls.is_none()
             && self.issued_public.is_empty()
             && self.archived_issuers.is_empty()
+            && self.signer_history.is_none()
     }
     pub(super) fn clear_root(&mut self) {
         self.root = None;
         self.crls = None;
+        if let Some(history) = &mut self.signer_history {
+            history.clear_private_signers();
+        }
         // Verified leaf projections and public signer archives survive retirement.
     }
 }
@@ -479,8 +488,8 @@ impl Pki {
         } else {
             "intermediate"
         };
-        if operation == "root" && self.root.is_some() {
-            return Err(bad("PKI root already exists"));
+        if operation == "root" {
+            self.admit_external_root_generation(body)?;
         }
         if operation == "intermediate" && self.external.intermediate.is_some() {
             return Err(error(
@@ -563,14 +572,14 @@ impl Pki {
             return Err(error(503, "external PKI identifier collision"));
         }
         if template.operation == "root" {
-            if self.root.is_some() {
-                return Err(bad("PKI root already exists"));
-            }
+            self.admit_external_root_generation(
+                &json!({"issuer_name":key.issuer_name,"key_name":key.key_name}),
+            )?;
             let certificate = template.output_format.certificate(&encoded);
             let response = json!({"certificate":certificate,"issuing_ca":certificate,
                 "serial_number":formatted_serial(&template.serial),"expiration":template.not_after,
                 "key_id":key.key_id,"key_name":key.key_name,"issuer_id":key.issuer_id,"issuer_name":key.issuer_name});
-            self.root = Some(RootCa {
+            let root = RootCa {
                 leaf_not_after_behavior: None,
                 common_name: template.common_name,
                 issuer_id: String::new(),
@@ -583,9 +592,15 @@ impl Pki {
                 serial: template.serial,
                 not_before: template.not_before,
                 not_after: template.not_after,
-            });
-            self.external.root = Some(key);
-            self.external.crls = root_crls;
+            };
+            self.install_external_root(
+                root,
+                key,
+                root_crls
+                    .take()
+                    .ok_or_else(|| bad("external root CRLs missing"))?,
+                now,
+            )?;
             let mut response = ok(response, true);
             response.body["warnings"] = json!([
                 "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information."
