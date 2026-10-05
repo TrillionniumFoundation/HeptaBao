@@ -2129,6 +2129,7 @@ impl Pki {
                 &material,
                 &child,
                 CertificateSpec {
+                    url_entries: None,
                     serial,
                     issuer_cn: &parent.common_name,
                     subject_cn: "actual signed child",
@@ -2152,11 +2153,11 @@ impl Pki {
             certificate_signed_by(&certificate, &parent.certificate_der)?;
             pki.publish_external_signed_ca(
                 certificate.clone(),
+                None,
                 vec![parent.certificate_der.clone()],
                 parent.issuer_id.clone(),
                 serial.into(),
-                now,
-                now + 3600,
+                (now, now + 3600),
             )?;
         }
         pki.validate("", "parent/", now)?;
@@ -2228,6 +2229,7 @@ mod tests {
             &material,
             &child,
             CertificateSpec {
+                url_entries: None,
                 serial,
                 issuer_cn: &parent.common_name,
                 subject_cn: "actual signed child",
@@ -2255,11 +2257,11 @@ mod tests {
         );
         pki.publish_external_signed_ca(
             certificate.clone(),
+            None,
             vec![parent.certificate_der.clone()],
             parent.issuer_id.clone(),
             serial.into(),
-            NOW,
-            NOW + 3600,
+            (NOW, NOW + 3600),
         )?;
         pki.validate("", "pki/", NOW)?;
         assert_eq!(
