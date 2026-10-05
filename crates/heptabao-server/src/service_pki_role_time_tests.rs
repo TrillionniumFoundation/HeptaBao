@@ -571,6 +571,7 @@ fn pki_time89_local_issuer_three_modes_bound_order_captured_owner_and_restart() 
         .as_str()
         .ok_or("short CA identity")?;
     let route = format!("ca/issuer/{id}");
+    let issue_route = format!("ca/issuer/{id}/issue/time");
     timed_role(&mut service, &admin, json!({"ttl":"20m"}))?;
     for invalid in [json!("invalid"), json!(""), Value::Null] {
         let identity = service
@@ -611,7 +612,7 @@ fn pki_time89_local_issuer_three_modes_bound_order_captured_owner_and_restart() 
     let rejected = call(
         &mut service,
         "POST",
-        "ca/issue/time",
+        &issue_route,
         &admin,
         json!({"common_name":"leaf.example.test"}),
     );
@@ -638,7 +639,7 @@ fn pki_time89_local_issuer_three_modes_bound_order_captured_owner_and_restart() 
     let permitted = call(
         &mut service,
         "POST",
-        "ca/issue/time",
+        &issue_route,
         &admin,
         json!({"common_name":"leaf.example.test"}),
     );
@@ -659,7 +660,7 @@ fn pki_time89_local_issuer_three_modes_bound_order_captured_owner_and_restart() 
     let truncated = call(
         &mut service,
         "POST",
-        "ca/issue/time",
+        &issue_route,
         &admin,
         json!({"common_name":"leaf.example.test"}),
     );
@@ -672,7 +673,7 @@ fn pki_time89_local_issuer_three_modes_bound_order_captured_owner_and_restart() 
     let capped_before_bound = call(
         &mut service,
         "POST",
-        "ca/issue/time",
+        &issue_route,
         &admin,
         json!({"common_name":"leaf.example.test"}),
     );
@@ -693,7 +694,7 @@ fn pki_time89_local_issuer_three_modes_bound_order_captured_owner_and_restart() 
         call(
             &mut service,
             "POST",
-            "ca/issue/time",
+            &issue_route,
             &admin,
             json!({"common_name":"leaf.example.test"})
         )
