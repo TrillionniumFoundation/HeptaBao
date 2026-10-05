@@ -3111,21 +3111,22 @@ mod wrapping_header_tests {
     }
 
     #[test]
-    fn official_go_api_health_compatibility_queries_keep_only_consumed_fields() {
+    fn official_go_api_health_compatibility_queries_keep_only_consumed_fields() -> io::Result<()> {
         let query = "drsecondarycode=299&haunhealhty=299&performancestandbycode=299&removedcode=299&sealedcode=299&standbycode=299&uninitcode=299";
         let request = format!("GET /v1/sys/health?{query} HTTP/1.1\r\nHost: local\r\n\r\n");
         let parsed = read_request(&mut request.as_bytes(), Duration::from_secs(1))
-            .unwrap_or_else(|_| panic!("official Go API health request"));
+            .map_err(|_| io::Error::other("official Go API health request rejected"))?;
         assert_eq!(
             parsed.body.0,
             json!({"sealedcode":299,"standbycode":299,"uninitcode":299})
         );
         let request = b"GET /v1/sys/health?haunhealhty=not-a-code&removedcode=ignored&standbyok=true HTTP/1.1\r\nHost: local\r\n\r\n";
         let parsed = read_request(&mut request.as_slice(), Duration::from_secs(1))
-            .unwrap_or_else(|_| panic!("unused health options do not select a status"));
+            .map_err(|_| io::Error::other("unused health options incorrectly rejected"))?;
         assert_eq!(parsed.body.0, json!({"standbyok":true}));
-        let request = b"GET /v1/secret/value?haunhealhty=299 HTTP/1.1\r\nHost: local\r\n\r\n";
+        let request = b"GET /v1/sys/leader?haunhealhty=299 HTTP/1.1\r\nHost: local\r\n\r\n";
         assert!(read_request(&mut request.as_slice(), Duration::from_secs(1)).is_err());
+        Ok(())
     }
 
     #[test]

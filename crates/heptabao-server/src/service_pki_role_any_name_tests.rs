@@ -897,14 +897,13 @@ fn pki_profile_real_owner_schema88_keeps_historical83_84_85_and_retired_fences()
     assert_eq!(created.body["data"]["allow_wildcard_certificates"], true);
     let active = service.state.as_ref().ok_or("state")?.clone();
     assert!(active.engines.has_pki_role_wildcard_state());
-    assert_eq!(active.schema, PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
+    assert!(active.engines.has_pki_role_leaf_profile_state());
+    assert!(active.engines.has_pki_role_time_state());
+    assert_eq!(active.schema, PKI_ROLE_TIME_STATE_SCHEMA);
     for floor in [80, 83, 84, 85] {
         let mut disguised = active.clone();
         disguised.schema = floor;
-        assert_eq!(
-            disguised.writer_schema(),
-            PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
-        );
+        assert_eq!(disguised.writer_schema(), PKI_ROLE_TIME_STATE_SCHEMA);
         assert_eq!(
             disguised
                 .validate_format()
@@ -936,7 +935,7 @@ fn pki_profile_real_owner_schema88_keeps_historical83_84_85_and_retired_fences()
     );
     assert!(
         (1..=80).all(supported_reader_schema)
-            && [81, 83, 84, 85, 86, 87, 88]
+            && [81, 83, 84, 85, 86, 87, 88, 89]
                 .into_iter()
                 .all(supported_reader_schema)
     );
@@ -948,6 +947,12 @@ fn pki_profile_real_owner_schema88_keeps_historical83_84_85_and_retired_fences()
         .and_then(Value::as_object_mut)
         .ok_or("historical85 role-only fixture")?;
     assert!(role85.remove("role_leaf_profile").is_some());
+    // This independent typed format fixture uses the predecessor's actual
+    // 24-hour maximum and no Time89 policy. It is never a saved backup or
+    // a publication of the current default-max=0 role above.
+    assert_eq!(role85["max_ttl"], json!(0));
+    role85.insert("max_ttl".to_owned(), json!(24 * 3600));
+    role85.remove("role_time_policy");
     let mut historical85 = active.clone();
     historical85.engines = serde_json::from_value(encoded85.clone())?;
     historical85.schema = PKI_ROLE_WILDCARD_STATE_SCHEMA;
@@ -990,7 +995,7 @@ fn pki_profile_real_owner_schema88_keeps_historical83_84_85_and_retired_fences()
     assert_eq!(bytes, serde_json::to_vec(&reopened)?);
     assert!(reopened.validate_format().is_ok());
     // A separate historical83 typed fixture contains genuine AnyName but
-    // neither later optional role owner. It is never committed over schema88.
+    // neither later optional role owner. It is never committed over the current schema89.
     let mut encoded83 = serde_json::to_value(&historical.engines)?;
     let role83 = encoded83
         .pointer_mut("/namespaces//mounts/ca~1/backend/Pki/roles/owner")
@@ -1032,7 +1037,7 @@ fn pki_profile_real_owner_schema88_keeps_historical83_84_85_and_retired_fences()
     );
     assert_eq!(
         service.state.as_ref().ok_or("reopened")?.schema,
-        PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        PKI_ROLE_TIME_STATE_SCHEMA
     );
     assert_eq!(
         call(&mut service, "DELETE", "sys/mounts/ca", &admin, json!({})).status,
@@ -1040,8 +1045,8 @@ fn pki_profile_real_owner_schema88_keeps_historical83_84_85_and_retired_fences()
     );
     let retired = service.state.as_ref().ok_or("retired")?;
     assert!(!retired.engines.has_pki_role_wildcard_state());
-    assert_eq!(retired.schema, PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
-    assert_eq!(retired.writer_schema(), PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
+    assert_eq!(retired.schema, PKI_ROLE_TIME_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), PKI_ROLE_TIME_STATE_SCHEMA);
     let mut lower = retired.clone();
     lower.schema = PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA;
     assert_eq!(

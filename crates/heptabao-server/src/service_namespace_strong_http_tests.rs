@@ -2431,9 +2431,12 @@ fn precise_closed_actor_fixture(
         crate::auth::Timestamp::checked(100, deadline_nanos)?,
     )?;
     candidate.schema = candidate.writer_schema();
-    candidate
-        .validate_format()
-        .map_err(|_| "typed precise fixture format")?;
+    candidate.validate_format().map_err(|error| {
+        format!(
+            "typed precise fixture format rejected: status={} errors={}",
+            error.status, error.body["errors"]
+        )
+    })?;
     service
         .commit_state(&mut candidate)
         .map_err(|_| "real precise fixture commit")?;

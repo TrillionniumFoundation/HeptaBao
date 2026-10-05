@@ -1174,7 +1174,24 @@ fn namespace_local_kv_and_token_delete_retires_actual_owner_and_survives_reopen(
         &root_token,
         json!({}),
     );
-    assert_eq!(deleted.status, 200);
+    assert_eq!(
+        deleted.status,
+        200,
+        "actual DELETE status/body {} ; local auth={} kv={} database={} workflows={} loaded={}",
+        deleted.body,
+        stale
+            .auth
+            .namespace_has_only_local_token_owners("local-delete"),
+        stale
+            .engines
+            .namespace_has_only_local_kv_owners("local-delete"),
+        stale.database.namespace_is_empty("local-delete"),
+        stale
+            .namespaces
+            .workflows
+            .namespace_is_empty("local-delete"),
+        service.namespace_runtime.is_loaded("local-delete"),
+    );
     assert_eq!(deleted.body["data"]["status"], "in-progress");
     assert!(
         stale.namespace_leases.validate().is_err(),

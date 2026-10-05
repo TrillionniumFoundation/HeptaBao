@@ -328,7 +328,7 @@ fn ocsp_http_actual_mount_raw_media_control_fallback_and_disabled_priority() -> 
         ("limit=2&limit=3", Some("limit")),
         ("limit=%GG", None),
         ("foo=a&limit=2&foo=b", Some("foo limit")),
-        ("path=unrelated&help=false", None),
+        ("path=unrelated&help=", None),
     ] {
         let read = wire(
             &mut service,
@@ -348,6 +348,18 @@ fn ocsp_http_actual_mount_raw_media_control_fallback_and_disabled_priority() -> 
             )]))
         );
     }
+    let help = wire(
+        &mut service,
+        "GET",
+        "secret/ocsp/plainkey?path=unrelated&help=false",
+        "",
+        &root,
+        None,
+        &[],
+    )?;
+    assert_eq!(help.status, 200);
+    assert!(help.body.get("help").is_some());
+    assert!(help.body.get("data").is_none());
     assert_eq!(
         wire(
             &mut service,
