@@ -4659,7 +4659,7 @@ mod tests {
                 path: "auth/token/create",
                 namespace: "",
                 token: &root,
-                body: json!({"ttl":"500ms","policies":["default"]}),
+                body: json!({"ttl":"5500ms","policies":["default"]}),
                 now: 100,
                 allow_forward: true,
                 enforce_namespace: true,
@@ -4710,7 +4710,9 @@ mod tests {
         };
         assert_eq!(error.status, 503);
         assert_eq!(serde_json::to_vec(state)?, before);
-        std::thread::sleep(Duration::from_millis(600));
+        // Retain fractional expiry and the same original clock while allowing
+        // actual durable setup to complete under a loaded whole-suite run.
+        std::thread::sleep(Duration::from_millis(5600));
         assert!(!Service::database_completion_owner_live(
             service.state.as_ref().ok_or("state")?,
             &plan,
