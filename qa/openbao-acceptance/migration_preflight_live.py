@@ -17,7 +17,8 @@ import tempfile
 
 from bao_http import BaoError, Client, SafeArgumentParser, private_read, private_write
 from core_isolation import ROOT, ScenarioFailure, file_hash
-from official_openbao_launcher import start_oracle, stop_oracle, BINARY_SHA256
+from official_openbao_launcher import (SUPPORTED_VERSIONS, VERSION, start_oracle,
+                                      stop_oracle, verify_selected_oracle)
 import migration_preflight as preflight
 
 
@@ -25,6 +26,7 @@ def main() -> int:
     parser = SafeArgumentParser(description=__doc__)
     parser.add_argument('--binary', required=True)
     parser.add_argument('--output', required=True)
+    parser.add_argument('--oracle-version', choices=SUPPORTED_VERSIONS, default=VERSION)
     args = parser.parse_args()
     output = Path(args.output).absolute()
     preflight.require_private_new_output(output)
@@ -36,7 +38,8 @@ def main() -> int:
               'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
               'source_tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=ROOT,text=True).strip(),
               'source_worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
-              'candidate_binary_sha256':file_hash(binary), 'oracle_binary_sha256':BINARY_SHA256,
+              'candidate_binary_sha256':file_hash(binary), 'oracle_binary_sha256':None,
+              'selected_oracle_version':args.oracle_version, 'official_openbao_version':None,
               'runner_sha256':file_hash(Path(__file__)), 'synthetic_only':True,
               'full_format_migration':False, 'migration_authority':False, 'independent_admission':False}
 
@@ -47,15 +50,20 @@ def main() -> int:
     try:
         spec = importlib.util.spec_from_file_location('preflight_smoke',ROOT/'qa/single-node/smoke.py')
         smoke = importlib.util.module_from_spec(spec); spec.loader.exec_module(smoke)
+        with socket.socket() as sock:
+            sock.bind(('127.0.0.1',0)); port=sock.getsockname()[1]
+        oracle = start_oracle(port, version=args.oracle_version)
+        reference = Client(oracle['address'],oracle['ca_file'],private_read(oracle['token_file']).decode().strip())
+        identity = verify_selected_oracle(oracle, reference.health(), version=args.oracle_version)
+        report['official_openbao_version'] = identity['version']
+        report['oracle_binary_sha256'] = identity['binary_sha256']
+        report['oracle_storage_backend'] = identity['storage']
+        report['oracle_archive_sha256'] = identity['artifact_sha256']
         instance = smoke.Instance(binary, root/'candidate'); instance.start()
         status, init = instance.call('POST','sys/init',{'secret_shares':1,'secret_threshold':1})
         check('init',status==200)
         instance.token = init['root_token']
         check('unseal',instance.call('POST','sys/unseal',{'key':init['keys_base64'][0]})[0]==200)
-        with socket.socket() as sock:
-            sock.bind(('127.0.0.1',0)); port=sock.getsockname()[1]
-        oracle = start_oracle(port)
-        reference = Client(oracle['address'],oracle['ca_file'],private_read(oracle['token_file']).decode().strip())
         check('synthetic_transit_mount',reference.request('POST','/v1/sys/mounts/preflight-transit',{'type':'transit'}).status==204)
         # Only the fixture registers this mount; the collector cannot create it.
         before_mounts = reference.request('GET','/v1/sys/mounts').body['data']
