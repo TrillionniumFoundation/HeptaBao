@@ -397,6 +397,7 @@ pub(super) struct PluginAuthPlan {
 struct PluginAuthResponseContext {
     namespace: String,
     namespace_incarnation: Option<u64>,
+    namespace_delivery_binding: namespace_runtime::DeliveryBinding,
     cluster_id: String,
     activation_nonce: String,
     deadline: Option<std::time::Instant>,
@@ -407,6 +408,10 @@ impl PluginAuthResponseContext {
         Self {
             namespace: request.namespace.to_owned(),
             namespace_incarnation: state.namespaces.incarnation(request.namespace),
+            namespace_delivery_binding: namespace_runtime::DeliveryBinding::capture(
+                state,
+                request.namespace,
+            ),
             cluster_id: state.cluster_id.clone(),
             activation_nonce: activation_nonce.to_owned(),
             deadline: crate::request_deadline::current(),
@@ -1690,6 +1695,13 @@ impl Service {
         if state.cluster_id != context.cluster_id
             || state.namespaces.incarnation(&context.namespace) != context.namespace_incarnation
             || binding.namespace() != context.namespace
+            || (state
+                .namespaces
+                .inherited_owner(&context.namespace)
+                .is_some()
+                && !self.namespace_runtime.is_loaded(&context.namespace))
+            || namespace_runtime::DeliveryBinding::capture(state, &context.namespace)
+                != context.namespace_delivery_binding
         {
             return Err(Response::error(
                 503,

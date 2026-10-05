@@ -480,24 +480,34 @@ fn auth_binding_fixture(
     service: &mut Service,
     root_token: &str,
 ) -> TestResult<(crate::auth::PluginAuthLoginPlan, PluginAuthResponseContext)> {
+    auth_binding_fixture_in_namespace(service, root_token, "")
+}
+
+fn auth_binding_fixture_in_namespace(
+    service: &mut Service,
+    root_token: &str,
+    namespace: &str,
+) -> TestResult<(crate::auth::PluginAuthLoginPlan, PluginAuthResponseContext)> {
     assert_eq!(
-        call(
-            service,
-            "POST",
-            "sys/auth/external",
-            root_token,
-            json!({"type":"plugin"})
-        )
-        .status,
+        service
+            .handle_at(
+                "POST",
+                "sys/auth/external",
+                namespace,
+                root_token,
+                json!({"type":"plugin"}),
+                100,
+            )
+            .status,
         204
     );
-    assert_eq!(call(service, "POST", "auth/external/config", root_token,
-        json!({"plugin_id":"fixture", "policies":["default"], "token_ttl":2, "token_max_ttl":60})).status, 204);
+    assert_eq!(service.handle_at("POST", "auth/external/config", namespace, root_token,
+        json!({"plugin_id":"fixture", "policies":["default"], "token_ttl":2, "token_max_ttl":60}), 100).status, 204);
     let body = json!({"username":"alice"});
     let request = RequestView {
         method: "POST",
         path: "auth/external/login",
-        namespace: "",
+        namespace,
         token: "",
         body: &body,
         now: 100,
@@ -512,10 +522,106 @@ fn auth_binding_fixture(
     let state = service.state.as_ref().ok_or("state")?;
     let plan = state
         .auth
-        .prepare_plugin_auth_login("", "POST", request.path, &body, 100)?
+        .prepare_plugin_auth_login(namespace, "POST", request.path, &body, 100)?
         .ok_or("login plan")?;
     let context = PluginAuthResponseContext::new(state, &request, &service.unseal_nonce);
     Ok((plan, context))
+}
+
+#[test]
+fn plugin_auth_completion_namespace_custody_seal_cycle_rejects_original_context() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team",
+            &token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    let (old, old_context) = auth_binding_fixture_in_namespace(&mut service, &token, "team")?;
+    assert!(
+        service
+            .validate_plugin_auth_response(&old_context, &old)
+            .is_ok()
+    );
+    let activation = service.unseal_nonce.clone();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team/seal",
+            &token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    let closed = service.state.as_ref().ok_or("closed namespace")?;
+    assert!(closed.namespaces.inherited_owner("team").is_some());
+    assert!(
+        !closed.namespace_is_sealed("team"),
+        "a serialized boolean is not the inherited key slot"
+    );
+    assert!(!service.namespace_runtime.is_loaded("team"));
+    let error = service
+        .validate_plugin_auth_response(&old_context, &old)
+        .err()
+        .ok_or("closed context admitted")?;
+    assert_eq!(error.status, 503);
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team/unseal",
+            &token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        activation, service.unseal_nonce,
+        "namespace reactivation retains global activation"
+    );
+    assert!(service.namespace_runtime.is_loaded("team"));
+    let error = service
+        .validate_plugin_auth_response(&old_context, &old)
+        .err()
+        .ok_or("original context rebound after namespace reactivation")?;
+    assert_eq!(error.status, 503);
+    let state = service.state.as_ref().ok_or("reopened namespace")?;
+    let request = RequestView {
+        method: "POST",
+        path: "auth/external/login",
+        namespace: "team",
+        token: "",
+        body: &json!({"username":"alice"}),
+        now: 100,
+        admission_started: Instant::now(),
+        token_clock: None,
+        allow_forward: true,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    };
+    let fresh_context = PluginAuthResponseContext::new(state, &request, &service.unseal_nonce);
+    let fresh = state
+        .auth
+        .prepare_plugin_auth_login("team", "POST", request.path, request.body, 100)?
+        .ok_or("fresh login plan")?;
+    assert!(
+        service
+            .validate_plugin_auth_response(&fresh_context, &fresh)
+            .is_ok()
+    );
+    Ok(())
 }
 
 #[test]

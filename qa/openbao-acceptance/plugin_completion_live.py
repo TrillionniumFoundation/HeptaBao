@@ -25,7 +25,7 @@ CASES = (
     "secret_final_use", "secret_batch", "secret_identity_disabled", "secret_identity_group_revoked",
     "kms_revoke", "kms_policy", "kms_expiry", "kms_seal", "kms_seal_cycle", "kms_final_use", "kms_identity_disabled", "kms_identity_group_revoked",
     "auth_current", "auth_unrelated_write", "auth_delayed_ttl", "auth_seal",
-    "auth_seal_cycle", "auth_namespace_seal", "auth_config_change", "auth_mount_recreate",
+    "auth_seal_cycle", "auth_namespace_seal", "auth_namespace_seal_cycle", "auth_config_change", "auth_mount_recreate",
 )
 
 
@@ -94,7 +94,7 @@ def identity_requester(instance):
 def check_auth_case(binary, root, case):
     instance, entered, release, count = configure(binary, root / case, "auth")
     pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-    namespace = "team" if case == "auth_namespace_seal" else ""
+    namespace = "team" if case in ("auth_namespace_seal", "auth_namespace_seal_cycle") else ""
     try:
         instance.start()
         status, initialized = instance.call("POST", "sys/init", {"secret_shares": 1, "secret_threshold": 1})
@@ -120,8 +120,10 @@ def check_auth_case(binary, root, case):
             require(instance.call("POST", "sys/seal", {})[0] == 204, "auth_global_seal")
             if case == "auth_seal_cycle":
                 require(instance.call("POST", "sys/unseal", {"key": key})[0] == 200, "auth_new_activation")
-        elif case == "auth_namespace_seal":
+        elif case in ("auth_namespace_seal", "auth_namespace_seal_cycle"):
             require(instance.call("POST", "sys/namespaces/team/seal", {})[0] == 204, "auth_namespace_seal")
+            if case == "auth_namespace_seal_cycle":
+                require(instance.call("POST", "sys/namespaces/team/unseal", {})[0] == 204, "auth_namespace_reactivation")
         elif case == "auth_config_change":
             config = dict(config, token_ttl="20m")
             require(instance.call("POST", "auth/external/config", config)[0] == 204, "auth_config_replaced")
