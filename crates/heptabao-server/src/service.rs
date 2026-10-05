@@ -1079,6 +1079,8 @@ pub struct Service {
     sdk_configuration: Option<sdk_backend::SdkBackendConfig>,
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     sdk_hosts: BTreeMap<String, Arc<sdk_backend::Control>>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    sdk_migrations: BTreeMap<String, sdk_backend::MigrationStatus>,
     pending_plugin_kms: Option<plugin::PluginKmsPlan>,
     pending_external_key: Option<plugin::ExternalKeyPlan>,
     pending_external_transit: Option<external_transit::ExternalTransitPlan>,
@@ -1447,6 +1449,8 @@ impl Service {
             sdk_configuration: None,
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             sdk_hosts: BTreeMap::new(),
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            sdk_migrations: BTreeMap::new(),
             pending_plugin_kms: None,
             pending_external_key: None,
             pending_external_transit: None,

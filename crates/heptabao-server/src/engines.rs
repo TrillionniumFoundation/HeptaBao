@@ -2204,6 +2204,10 @@ impl EngineState {
             .cloned()
             .ok_or_else(not_found)?;
         require_mount_revision(cas_revision, current.revision)?;
+        let sdk_owner = candidate.sdk_owners.get(&from_name).cloned();
+        if sdk_owner.is_some() {
+            self.validate_sdk_state()?;
+        }
         if candidate.mounts.keys().any(|existing| {
             existing != &from_name
                 && (existing.starts_with(&to_name) || to_name.starts_with(existing))
@@ -2225,7 +2229,7 @@ impl EngineState {
         candidate.mount_epochs.insert(from_name, old_next);
         let revision = moved.revision;
         let incarnation = moved.incarnation;
-        if matches!(current.backend, Backend::Kv1Records) {
+        if matches!(current.backend, Backend::Kv1Records) || sdk_owner.is_some() {
             self.remount_record_kv1(
                 namespace,
                 &format!("{from}/"),
@@ -2233,6 +2237,11 @@ impl EngineState {
                 &to_name,
                 incarnation,
             )?;
+        }
+        if let Some(mut owner) = sdk_owner {
+            owner.mount_incarnation = incarnation;
+            candidate.sdk_owners.remove(&format!("{from}/"));
+            candidate.sdk_owners.insert(to_name.clone(), owner);
         }
         candidate.mounts.insert(to_name, moved);
         self.namespaces.insert(namespace.into(), candidate);

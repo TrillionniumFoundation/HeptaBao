@@ -55,6 +55,32 @@ fn checksum(text: &str) -> Result<[u8; 32], Response> {
     Ok(out)
 }
 
+/// Status is bounded process-local metadata. It carries no mutation authority.
+/// Namespace incarnation and the original typed custody chain prevent ABA.
+pub(super) struct MigrationStatus {
+    namespace: String,
+    namespace_incarnation: Option<u64>,
+    namespace_binding: namespace_runtime::DeliveryBinding,
+    cluster: String,
+    from: String,
+    to: String,
+}
+fn migration_id() -> Result<String, Response> {
+    let mut bytes = crypto::random::<16>()
+        .map_err(|_| Response::error(503, "remount identity entropy unavailable"))?;
+    bytes[6] = (bytes[6] & 15) | 64;
+    bytes[8] = (bytes[8] & 63) | 128;
+    let text = hex(&bytes);
+    Ok(format!(
+        "{}-{}-{}-{}-{}",
+        &text[..8],
+        &text[8..12],
+        &text[12..16],
+        &text[16..20],
+        &text[20..]
+    ))
+}
+
 struct StageTarget<'a> {
     mount: String,
     owner: MountOwner,
@@ -375,6 +401,24 @@ fn bridge_failure(e: SdkBridgeError) -> Response {
 
 impl Service {
     pub(super) fn sdk_control_handles(&self, state: &State, request: &RequestView<'_>) -> bool {
+        if request.path.starts_with("sys/remount/status/") {
+            return self.sdk_configuration.is_some() || state.engines.has_sdk_state();
+        }
+        if request.path == "sys/remount" {
+            let from = request
+                .body
+                .get("from")
+                .and_then(Value::as_str)
+                .unwrap_or("");
+            let from = format!("{}/", from.trim_end_matches('/'));
+            if state
+                .engines
+                .sdk_mount_binding(request.namespace, &from)
+                .is_some_and(|(actual, _)| actual == from)
+            {
+                return true;
+            }
+        }
         if request.method == "DELETE" && request.path.starts_with("sys/mounts/") {
             let mount = format!(
                 "{}/",
@@ -446,7 +490,7 @@ impl Service {
             &state,
             request,
             capability,
-            true,
+            !request.path.starts_with("sys/remount/status/"),
             &self.unseal_nonce,
         );
         if let Err(error) = self.validate_plugin_response(&mut authority) {
@@ -457,6 +501,110 @@ impl Service {
         }
         if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
             return Response::error(501, "SDK catalog and mount wrapping is not implemented");
+        }
+        if let Some(id) = request.path.strip_prefix("sys/remount/status/") {
+            if !matches!(request.method, "GET" | "HEAD") {
+                return Response::error(405, "remount status requires GET");
+            }
+            let Some(info) = self.sdk_migrations.get(id).filter(|info| {
+                info.namespace == request.namespace
+                    && info.cluster == state.cluster_id
+                    && info.namespace_incarnation == state.namespaces.incarnation(request.namespace)
+                    && info.namespace_binding
+                        == namespace_runtime::DeliveryBinding::capture(&state, request.namespace)
+            }) else {
+                return Response::error(404, "remount migration not found");
+            };
+            let response = Response::ok(json!({"data":{"migration_id":id,
+                "migration_info":{"source_mount":info.from,"target_mount":info.to,"status":"success"}}}));
+            self.pending_sdk_control_authority = Some(authority);
+            return response;
+        }
+        if request.path == "sys/remount" {
+            if !matches!(request.method, "POST" | "PUT") {
+                return Response::error(405, "remount requires POST or PUT");
+            }
+            let Some(object) = request.body.as_object() else {
+                return Response::error(400, "remount requires a JSON object");
+            };
+            if object
+                .keys()
+                .any(|key| !matches!(key.as_str(), "from" | "to" | "cas_revision"))
+            {
+                return Response::error(400, "unsupported remount parameter");
+            }
+            let Some(from) = object.get("from").and_then(Value::as_str) else {
+                return Response::error(400, "remount from is required");
+            };
+            let Some(to) = object.get("to").and_then(Value::as_str) else {
+                return Response::error(400, "remount to is required");
+            };
+            if from.starts_with('/')
+                || to.starts_with('/')
+                || from.starts_with("auth/")
+                || to.starts_with("auth/")
+            {
+                return Response::error(400, "SDK remount requires relative secret mount paths");
+            }
+            for reserved in ["sys/", "identity/", "cubbyhole/"] {
+                if from.starts_with(reserved) || to.starts_with(reserved) {
+                    return Response::error(400, "remount cannot relocate reserved system paths");
+                }
+            }
+            let cas = match object.get("cas_revision") {
+                Some(value) => match value.as_u64() {
+                    Some(value) => Some(value),
+                    None => {
+                        return Response::error(400, "cas_revision must be a nonnegative integer");
+                    }
+                },
+                None => None,
+            };
+            let from = format!("{}/", from.trim_end_matches('/'));
+            let to = format!("{}/", to.trim_end_matches('/'));
+            let Some((actual, owner)) = state
+                .engines
+                .sdk_mount_binding(request.namespace, &from)
+                .filter(|(actual, _)| actual == &from)
+            else {
+                return Response::error(404, "SDK source mount not found");
+            };
+            if self.sdk_migrations.len() >= 128 {
+                return Response::error(507, "remount migration status capacity exhausted");
+            }
+            let id = match migration_id() {
+                Ok(id) => id,
+                Err(error) => return error,
+            };
+            if self.sdk_migrations.contains_key(&id) {
+                return Response::error(503, "remount migration identity collision");
+            }
+            let host_key = self.sdk_host_key(request.namespace, &actual, &owner);
+            if let Err(error) = state.engines.remount(request.namespace, &from, &to, cas) {
+                return Response::error(error.status, &error.message);
+            }
+            state.schema = state.writer_schema();
+            if let Err(error) = self.commit_sdk_control(&mut state, &mut authority, &expected) {
+                return error;
+            }
+            let info = MigrationStatus {
+                namespace: request.namespace.into(),
+                namespace_incarnation: state.namespaces.incarnation(request.namespace),
+                namespace_binding: namespace_runtime::DeliveryBinding::capture(
+                    &state,
+                    request.namespace,
+                ),
+                cluster: state.cluster_id.clone(),
+                from,
+                to,
+            };
+            self.sdk_migrations.insert(id.clone(), info);
+            self.state = Some(state);
+            self.pending_sdk_control_authority = Some(authority);
+            if let Some(control) = self.sdk_hosts.remove(&host_key) {
+                control.retire();
+            }
+            return Response::ok(json!({"migration_id":id,"data":{"migration_id":id}}));
         }
         if request.method == "DELETE" && request.path.starts_with("sys/mounts/") {
             let mount = format!(
