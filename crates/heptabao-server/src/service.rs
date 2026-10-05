@@ -74,6 +74,7 @@ const PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA: u32 = 84;
 const PKI_ROLE_WILDCARD_STATE_SCHEMA: u32 = 85;
 // Typed role/leaf evidence is admitted only at its explicit protected floor.
 const PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA: u32 = 88;
+#[cfg(test)]
 const MAX_SUPPORTED_STATE_SCHEMA: u32 = PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA;
 
 // 81/82/86/87 belong to unintegrated reader work. Explicit admission keeps
