@@ -464,8 +464,8 @@ fn pki_new_default_identifiers_require_schema75_and_reject_legacy_labels() -> Te
     assert!(state.engines.has_local_pki_crl_state());
     assert!(state.engines.has_pki_role_bare_domain_state());
     assert!(state.engines.has_pki_role_wildcard_state());
-    assert_eq!(state.schema, PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
-    assert_eq!(state.writer_schema(), PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
+    assert_eq!(state.schema, PKI_ROLE_NAMES_STATE_SCHEMA);
+    assert_eq!(state.writer_schema(), PKI_ROLE_NAMES_STATE_SCHEMA);
     assert!(state.validate_format().is_ok());
     // Isolate the historical identifier floor from the CRL cache now created
     // by a real root. The production state above must retain the current floor.
@@ -476,27 +476,29 @@ fn pki_new_default_identifiers_require_schema75_and_reject_legacy_labels() -> Te
         .ok_or("identifier-only PKI projection")?
         .remove("local_crl");
     // This separate historical format fixture predates the real new API
-    // role owner proved above. Never relabel the live schema88 state as75.
+    // role owner proved above. Never relabel the live schema93 state as75.
     let historical_roles = encoded
         .pointer_mut("/namespaces//mounts/pki~1/backend/Pki/roles")
         .and_then(Value::as_object_mut)
         .ok_or("historical identifier role fixture")?;
-    for role in historical_roles.values_mut() {
-        assert_eq!(role["allow_bare_domains"], json!(false));
-        role.as_object_mut()
-            .ok_or("historical role object")?
-            .remove("allow_bare_domains");
-        assert_eq!(role["allow_wildcard_certificates"], json!(true));
-        role.as_object_mut()
-            .ok_or("historical wildcard-free role")?
-            .remove("allow_wildcard_certificates");
-        assert!(
-            role.as_object_mut()
-                .ok_or("historical role profile")?
-                .remove("role_leaf_profile")
-                .is_some()
-        );
-    }
+    assert_eq!(historical_roles.len(), 1);
+    assert!(historical_roles.contains_key("web"));
+    // The complete original typed75 role input has no later owner fields.
+    // Construct it independently; the current Some names93 role is untouched.
+    historical_roles.insert(
+        "web".into(),
+        json!({
+            "allowed_domains":["example.test"],"allow_subdomains":true,
+            "allow_ip_sans":true,"max_ttl":7200,"generate_lease":true,
+            "local_key_kind":"rsa2048"
+        }),
+    );
+    let mut current_disguised = state.clone();
+    current_disguised.schema = LOCAL_PKI_IDENTIFIER_STATE_SCHEMA;
+    assert!(
+        current_disguised.validate_format().is_err(),
+        "live names93 cannot be read as75"
+    );
     let mut state = state.clone();
     state.engines = serde_json::from_value(encoded)?;
     assert!(!state.engines.has_pki_role_bare_domain_state());
@@ -539,8 +541,8 @@ fn pki_default_shape_remains_readable_as_schema57_without_new_fields() -> TestRe
     assert!(!state.engines.has_pki_extension_state());
     assert!(state.engines.has_pki_role_bare_domain_state());
     assert!(state.engines.has_pki_role_wildcard_state());
-    assert_eq!(state.schema, PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
-    assert_eq!(state.writer_schema(), PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA);
+    assert_eq!(state.schema, PKI_ROLE_NAMES_STATE_SCHEMA);
+    assert_eq!(state.writer_schema(), PKI_ROLE_NAMES_STATE_SCHEMA);
     let mut encoded = serde_json::to_value(&state.engines)?;
     encoded
         .pointer_mut("/namespaces//mounts/pki~1/backend/Pki")
@@ -559,22 +561,23 @@ fn pki_default_shape_remains_readable_as_schema57_without_new_fields() -> TestRe
         .pointer_mut("/namespaces//mounts/pki~1/backend/Pki/roles")
         .and_then(Value::as_object_mut)
         .ok_or("historical default role fixture")?;
-    for role in historical_roles.values_mut() {
-        assert_eq!(role["allow_bare_domains"], json!(false));
-        role.as_object_mut()
-            .ok_or("historical role object")?
-            .remove("allow_bare_domains");
-        assert_eq!(role["allow_wildcard_certificates"], json!(true));
-        role.as_object_mut()
-            .ok_or("historical wildcard-free role")?
-            .remove("allow_wildcard_certificates");
-        assert!(
-            role.as_object_mut()
-                .ok_or("historical role profile")?
-                .remove("role_leaf_profile")
-                .is_some()
-        );
-    }
+    assert_eq!(historical_roles.len(), 1);
+    assert!(historical_roles.contains_key("web"));
+    // This is the original Ed25519/None role wire input, not the new role
+    // with protected fields removed. The live current role remains names93.
+    historical_roles.insert(
+        "web".into(),
+        json!({
+            "allowed_domains":["example.test"],"allow_subdomains":true,
+            "allow_ip_sans":true,"max_ttl":7200,"generate_lease":true
+        }),
+    );
+    let mut current_disguised = state.clone();
+    current_disguised.schema = 57;
+    assert!(
+        current_disguised.validate_format().is_err(),
+        "live names93 cannot be read as57"
+    );
     let text = Zeroizing::new(encoded.to_string());
     assert!(!text.contains("\"cluster_path\""));
     assert!(!text.contains("\"aia_path\""));

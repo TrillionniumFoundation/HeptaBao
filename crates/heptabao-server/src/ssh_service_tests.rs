@@ -911,8 +911,8 @@ fn coarse_owner_maintenance_cannot_destroy_a_live_precise_ssh_lease() -> TestRes
 }
 
 fn install_precise_root_for_clock_test(state: &mut State) -> TestResult {
-    // This isolated pre-activation fixture is constructed inside cfg(test),
-    // never from a bearer/body. Schema82 publication remains disabled.
+    // This isolated precise fixture is constructed inside cfg(test),
+    // never from a bearer/body. Its original observed floor is retained.
     let mut auth = serde_json::to_value(&state.auth)?;
     let issuer = auth["tokens"]
         .as_object_mut()
@@ -946,8 +946,10 @@ fn terminal_clock_commit_failure_erases_a_successful_private_response() -> TestR
     let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
     let digest = service.current_state_digest().map_err(|_| "state digest")?;
     let clock = RequestClock::anchored(Duration::new(100, 800000000), std::time::Instant::now())?;
-    // The staged precision reader/writer is deliberately still disabled.
-    // Even a handler's already prepared success cannot bypass that commit gate.
+    // Force a real publication capacity failure while advancing the original
+    // precision observation floor. An already prepared credential must be
+    // erased, and neither the in-memory state nor durable digest may advance.
+    service.state_capacity = 1;
     let response = service.audit_completed_response(
         "terminal-floor-test",
         100,
