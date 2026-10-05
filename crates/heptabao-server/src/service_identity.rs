@@ -1656,7 +1656,15 @@ mod kubernetes_artifact_floor_tests {
         assert_eq!(unknown.writer_schema(), MAX_SUPPORTED_STATE_SCHEMA + 1);
         let mut precise = current.clone();
         precise.schema = 82;
-        assert!(precise.validate_format().is_err());
+        assert!(
+            precise.validate_format().is_ok(),
+            "explicit reader82 admits a historical whole-second graph"
+        );
+        assert!(
+            precise.validate_publication_schema(Some(&current)).is_err(),
+            "an admitted reader82 shape cannot overwrite the actual retired87 floor"
+        );
+        assert!(Service::validate_snapshot_protected_floor(&current, &precise).is_err());
         // The integrated reader admits PKI88 while retaining the prior87 floor.
         let mut integrated = current.clone();
         integrated.schema = PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA;

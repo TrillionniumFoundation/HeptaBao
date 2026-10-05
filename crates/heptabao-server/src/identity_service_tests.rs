@@ -1286,9 +1286,29 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 204
     );
-    // The existing empty engine-owner cleanup policy still refuses this used
-    // namespace. Deleting a fresh empty namespace exercises the successful
-    // namespace candidate path after all safe material has been removed.
+    // First prove the original retired66 fence before publishing the newer
+    // namespace custody81 retirement owner. No owner is stripped or relabelled.
+    let retired66 = service
+        .state
+        .clone()
+        .ok_or("real last transit owner removed")?;
+    assert!(
+        !retired66.engines.has_aad_bound_convergent_state()
+            && retired66.schema == AAD_BOUND_STATE_SCHEMA
+            && retired66.writer_schema() == AAD_BOUND_STATE_SCHEMA
+    );
+    let mut downgrade = retired66.clone();
+    downgrade.schema = CURRENT_STATE_SCHEMA;
+    assert!(downgrade.validate_format().is_ok());
+    assert!(
+        service
+            .prepare_record_plan(&mut downgrade)
+            .err()
+            .is_some_and(|response| response.status == 503
+                && response.body["errors"][0] == "AAD-bound convergent keys require schema 66")
+    );
+    // Once its private transit mount is actually removed, the remaining
+    // local namespace graph retires without lowering the protected reader66.
     assert!(
         call(
             &mut service,
@@ -1299,7 +1319,17 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
             json!({})
         )
         .status
-            == 409
+            == 200
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("retired tenant state")?
+            .namespaces
+            .incarnation("tenant")
+            .is_none(),
+        "actual tenant metadata is retired after its last private engine owner was removed"
     );
     assert!(
         call(
@@ -1328,19 +1358,15 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
     let retired = service.state.clone().ok_or("state")?;
     assert!(!retired.engines.has_aad_bound_convergent_state());
     assert!(
-        retired.schema == AAD_BOUND_STATE_SCHEMA
-            && retired.writer_schema() == AAD_BOUND_STATE_SCHEMA
+        retired.schema == NAMESPACE_CUSTODY_STATE_SCHEMA
+            && retired.writer_schema() == NAMESPACE_CUSTODY_STATE_SCHEMA
+            && retired.namespaces.has_custody_state()
     );
-    let mut downgrade = retired.clone();
-    downgrade.schema = CURRENT_STATE_SCHEMA;
-    assert!(downgrade.validate_format().is_ok());
-    assert!(
-        service
-            .prepare_record_plan(&mut downgrade)
-            .err()
-            .is_some_and(|response| response.status == 503
-                && response.body["errors"][0] == "AAD-bound convergent keys require schema 66")
-    );
+    let mut custody_downgrade = retired.clone();
+    custody_downgrade.schema = AAD_BOUND_STATE_SCHEMA;
+    assert!(custody_downgrade.validate_format().is_err());
+    assert!(service.prepare_record_plan(&mut custody_downgrade).is_err());
+    assert!(Service::validate_snapshot_protected_floor(&retired, &custody_downgrade).is_err());
     for unknown in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
         let mut state = retired.clone();
         state.schema = unknown;
@@ -1372,7 +1398,7 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 204
     );
-    assert!(service.state.as_ref().ok_or("state")?.schema == AAD_BOUND_STATE_SCHEMA);
+    assert!(service.state.as_ref().ok_or("state")?.schema == NAMESPACE_CUSTODY_STATE_SCHEMA);
     drop(service);
     let mut reopened = fixture.service()?;
     assert!(
@@ -1387,7 +1413,7 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 200
     );
-    assert!(reopened.state.as_ref().ok_or("state")?.schema == AAD_BOUND_STATE_SCHEMA);
+    assert!(reopened.state.as_ref().ok_or("state")?.schema == NAMESPACE_CUSTODY_STATE_SCHEMA);
     Ok(())
 }
 

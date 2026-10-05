@@ -160,7 +160,15 @@ fn public_origin_real_meta_and_service_issue_stamp_survive_process_reopen() -> T
     drop(service);
     let mut service = root.service()?;
     assert_eq!(
-        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        realtime(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            "",
+            json!({"key":key})
+        )
+        .status,
         200
     );
     for (namespace, actor, metadata, stamp) in samples {
@@ -238,7 +246,15 @@ fn public_origin_real_wrapper_stamp_and_relative_creation_path_survive_reopen() 
     drop(service);
     let mut service = root.service()?;
     assert_eq!(
-        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        realtime(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            "",
+            json!({"key":key})
+        )
+        .status,
         200
     );
     for (namespace, path, wrapper, stamp) in samples {
@@ -380,7 +396,15 @@ fn public_origin_floor_is_sticky_after_retirement_and_rejects_old_snapshot_witho
     drop(service);
     let mut service = root.service()?;
     assert_eq!(
-        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        realtime(
+            &mut service,
+            "POST",
+            "sys/unseal",
+            "",
+            "",
+            json!({"key":key})
+        )
+        .status,
         200
     );
     assert_eq!(

@@ -337,14 +337,6 @@ impl Service {
             .auth
             .validate_token_api_clock_floor(Some(&current.auth))
             .map_err(|error| Response::error(400, &error.message))?;
-        if current.schema >= TOKEN_API_PRECISION_STATE_SCHEMA
-            && incoming.schema < TOKEN_API_PRECISION_STATE_SCHEMA
-        {
-            return Err(Response::error(
-                400,
-                "snapshot would downgrade Token API precise ownership",
-            ));
-        }
         if current.schema >= PKI_ROLE_NAMES_STATE_SCHEMA
             && incoming.schema < PKI_ROLE_NAMES_STATE_SCHEMA
         {
@@ -359,6 +351,14 @@ impl Service {
             return Err(Response::error(
                 400,
                 "snapshot would downgrade opaque Kubernetes artifact ownership",
+            ));
+        }
+        if current.schema >= TOKEN_API_PRECISION_STATE_SCHEMA
+            && incoming.schema < TOKEN_API_PRECISION_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade Token API precise ownership",
             ));
         }
         if current.schema >= PKI_SIGNED_ROLE_TIME_STATE_SCHEMA

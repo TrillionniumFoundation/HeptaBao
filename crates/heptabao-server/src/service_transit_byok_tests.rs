@@ -262,7 +262,22 @@ fn byok_tenant_imports_encrypted_restart_and_retirement_keep70() -> TestResult {
         .status
             == 204
     );
-    let before_rejected_namespace_delete = service
+    let retired70 = service
+        .state
+        .as_ref()
+        .ok_or("actual last BYOK mount retired")?
+        .clone();
+    assert!(
+        !retired70.engines.has_transit_byok_state()
+            && retired70.schema == TRANSIT_BYOK_STATE_SCHEMA
+    );
+    let mut lower69 = retired70.clone();
+    lower69.schema = JWT_PEM_KEYSET_STATE_SCHEMA;
+    assert!(
+        service.commit_state(&mut lower69).is_err(),
+        "the actual retired70 owner cannot publish69 before namespace retirement"
+    );
+    let before_owned_namespace_delete = service
         .current_state_identity()
         .map_err(|_| "test_identity_failed")?;
     assert!(
@@ -275,15 +290,25 @@ fn byok_tenant_imports_encrypted_restart_and_retirement_keep70() -> TestResult {
             json!({})
         )
         .status
-            == 409,
-        "existing conservative namespace owner fence is preserved"
+            == 200,
+        "the cleaned local namespace owner can retire without resurrecting a BYOK key"
     );
     assert!(
         service
             .current_state_identity()
             .map_err(|_| "test_identity_failed")?
-            == before_rejected_namespace_delete,
-        "rejected populated namespace deletion preserves authoritative identity"
+            != before_owned_namespace_delete,
+        "actual namespace retirement publishes a new authoritative identity"
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("retired team state")?
+            .namespaces
+            .incarnation("team")
+            .is_none(),
+        "actual cleaned tenant is absent"
     );
     assert!(
         call(
@@ -312,8 +337,10 @@ fn byok_tenant_imports_encrypted_restart_and_retirement_keep70() -> TestResult {
     );
     let current = service.state.as_ref().ok_or("test_state_missing")?;
     assert!(
-        !current.engines.has_transit_byok_state() && current.schema == TRANSIT_BYOK_STATE_SCHEMA,
-        "retired tenant custody keeps the reader floor sticky"
+        !current.engines.has_transit_byok_state()
+            && current.schema == NAMESPACE_CUSTODY_STATE_SCHEMA
+            && current.namespaces.has_custody_state(),
+        "actual namespace retirement raises custody81 while retaining the older BYOK70 floor"
     );
     let mut lower = current.clone();
     lower.schema = JWT_PEM_KEYSET_STATE_SCHEMA;

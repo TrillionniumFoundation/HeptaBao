@@ -95,10 +95,10 @@ fn issuer_issue_fixture_with_role(
     );
     let published = service.state.as_ref().ok_or("actual new named role")?;
     assert!(
-        published.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        published.schema == PKI_ROLE_NAMES_STATE_SCHEMA
             && published.engines.has_pki_role_bare_domain_state()
             && published.engines.has_pki_role_wildcard_state(),
-        "actual API role carries its88 owner"
+        "actual API role carries its93 name owner"
     );
     Ok((root, service, unseal, admin, id))
 }
@@ -169,7 +169,7 @@ fn external_pki270_issuer_issue_seven_real_kinds_original_paths_private_binding_
         assert!(ca.verify(&public)?, "actual remote root self-signature");
         let prior_schema = service.state.as_ref().ok_or("state")?.schema;
         assert!(
-            prior_schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            prior_schema == PKI_ROLE_NAMES_STATE_SCHEMA
                 && service
                     .state
                     .as_ref()
@@ -270,7 +270,7 @@ fn external_pki270_issuer_issue_seven_real_kinds_original_paths_private_binding_
             );
             let state = service.state.as_ref().ok_or("published state")?;
             assert!(
-                state.schema == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+                state.schema == PKI_ROLE_NAMES_STATE_SCHEMA
                     && state.engines.has_issuer_path_pki_state()
                     && state.engines.has_pki_role_bare_domain_state()
                     && state.validate_format().is_ok(),
@@ -317,7 +317,7 @@ fn external_pki270_issuer_issue_seven_real_kinds_original_paths_private_binding_
         );
         assert!(
             reopened.state.as_ref().ok_or("reopened state")?.schema
-                == PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA,
+                == PKI_ROLE_NAMES_STATE_SCHEMA,
             "encrypted restart keeps the real alias and new role88 floor"
         );
         for (serial, certificate, lease) in readbacks {

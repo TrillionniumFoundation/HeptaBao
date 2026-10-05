@@ -260,6 +260,13 @@ fn pristine_namespace_fence_retains_mount_identity_and_registry_ownership()
             .status,
         204
     );
+    let old_incarnation = service
+        .state
+        .as_ref()
+        .ok_or("mounted state")?
+        .namespaces
+        .incarnation("mounted")
+        .ok_or("actual mounted incarnation")?;
     assert_eq!(
         call(
             &mut service,
@@ -269,24 +276,50 @@ fn pristine_namespace_fence_retains_mount_identity_and_registry_ownership()
             json!({})
         )
         .status,
-        409
+        200,
+        "the actual local KV owner can retire through owned namespace cleanup"
     );
-    assert_eq!(
+    assert!(
         service
-            .handle_at("DELETE", "sys/mounts/kv", "mounted", &token, json!({}), 100)
-            .status,
-        204
+            .state
+            .as_ref()
+            .ok_or("retired mounted state")?
+            .namespaces
+            .incarnation("mounted")
+            .is_none()
     );
     assert_eq!(
         call(
             &mut service,
-            "DELETE",
+            "GET",
             "sys/namespaces/mounted",
             &token,
             json!({})
         )
         .status,
-        409
+        404
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/mounted",
+            &token,
+            json!({})
+        )
+        .status,
+        200
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("recreated mounted state")?
+            .namespaces
+            .incarnation("mounted")
+            .ok_or("recreated incarnation")?
+            > old_incarnation,
+        "recreation never adopts the retired mount incarnation"
     );
     let entity = service.handle_at(
         "POST",

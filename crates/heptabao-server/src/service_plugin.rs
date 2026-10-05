@@ -131,6 +131,7 @@ pub(super) struct PluginResponseAuthority {
     principal: Principal,
     namespace: String,
     namespace_incarnation: Option<u64>,
+    namespace_catalog_required: bool,
     namespace_delivery_binding: namespace_runtime::DeliveryBinding,
     activation_nonce: String,
     cluster_id: String,
@@ -159,7 +160,7 @@ impl PluginResponseAuthority {
         if self.deadline_expired()
             || activation != self.activation_nonce
             || state.cluster_id != self.cluster_id
-            || !state.namespace_exists(&self.namespace)
+            || self.namespace_catalog_required && !state.namespace_exists(&self.namespace)
             || state.namespace_is_sealed(&self.namespace)
             || state.namespaces.incarnation(&self.namespace) != self.namespace_incarnation
             || namespace_runtime::DeliveryBinding::capture(state, &self.namespace)
@@ -209,6 +210,7 @@ impl PluginResponseAuthority {
             principal,
             namespace: request.namespace.to_owned(),
             namespace_incarnation: state.namespaces.incarnation(request.namespace),
+            namespace_catalog_required: request.enforce_namespace,
             namespace_delivery_binding: namespace_runtime::DeliveryBinding::capture(
                 state,
                 request.namespace,
@@ -1485,7 +1487,7 @@ impl Service {
         if self.recovery_required
             || self.unseal_nonce != authority.activation_nonce
             || state.cluster_id != authority.cluster_id
-            || !state.namespace_exists(&authority.namespace)
+            || authority.namespace_catalog_required && !state.namespace_exists(&authority.namespace)
             || state.namespace_is_sealed(&authority.namespace)
             || (state
                 .namespaces

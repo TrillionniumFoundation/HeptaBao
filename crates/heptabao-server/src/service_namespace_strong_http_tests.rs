@@ -344,7 +344,13 @@ fn strong_http_completed_unseal_late_actor_rejects_before_slot_registration() ->
     let deadline = started + std::time::Duration::from_secs(30);
     let _original = crate::request_deadline::RequestDeadlineScope::enter(deadline);
     let mut state = service.state.clone().ok_or("state")?;
-    let principal = state.auth.authenticate(&actor, now)?;
+    let clock = RequestClock::anchored(observed, started)?;
+    let mut principal = state.auth.authenticate_from_observed(
+        &actor,
+        AuthorityTime::Precise(clock.observed_at()?),
+        None,
+    )?;
+    principal.bind_request_clock(Some(clock))?;
     let binding = state
         .namespaces
         .custody_binding(&state.cluster_id, "late-unseal")
@@ -356,7 +362,7 @@ fn strong_http_completed_unseal_late_actor_rejects_before_slot_registration() ->
         method: "POST",
         path: "sys/namespaces/late-unseal/unseal",
         namespace: "",
-        token_clock: None,
+        token_clock: Some(clock),
         token: &actor,
         body: &body,
         now,
