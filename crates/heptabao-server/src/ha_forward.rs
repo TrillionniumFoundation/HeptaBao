@@ -709,7 +709,7 @@ fn validate_request_fields(
         || method.len() > MAX_METHOD_BYTES
         || !matches!(
             method,
-            "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD"
+            "GET" | "POST" | "PUT" | "DELETE" | "LIST" | "SCAN" | "PATCH" | "HEAD" | "HELP"
         )
         || path.is_empty()
         || path.len() > MAX_PATH_BYTES

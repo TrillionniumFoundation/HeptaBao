@@ -312,7 +312,7 @@ fn mount_metadata_capability_cannot_authorize_data_even_for_the_root_actor()
     let state = service.state.as_ref().ok_or("state")?;
     let metadata = state
         .auth
-        .authenticate_mount_metadata_from(&admin, 100, None)
+        .authenticate_mount_metadata_from_observed(&admin, AuthorityTime::Coarse(100), None)
         .map_err(|_| "metadata authentication")?;
     assert!(!metadata.consumed_use());
     assert!(

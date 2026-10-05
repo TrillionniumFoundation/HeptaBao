@@ -20,9 +20,34 @@ mod local_key;
 #[path = "pki_public.rs"]
 mod public;
 use local_key::{LocalKeyKind, LocalPrivateMaterial, LocalPublicKey};
+#[path = "pki_role_leaf_profile.rs"]
+mod role_leaf_profile;
+#[path = "pki_role_names.rs"]
+mod role_names;
+#[path = "pki_role_time.rs"]
+mod role_time;
+use role_names::RoleNamePolicy;
+#[path = "pki_role_subjects.rs"]
+mod role_subjects;
+use role_time::RoleTimePolicy;
+#[path = "pki_issuer_time.rs"]
+mod issuer_time;
+use issuer_time::IssuerLeafNotAfterBehavior;
 #[path = "pki_root_fields.rs"]
 mod root_fields;
+use role_leaf_profile::{LeafProfilePublicEvidence, RoleLeafProfile};
 use root_fields::{LocalRootMetadata, RootFields};
+#[path = "pki_local_issuers.rs"]
+mod local_issuers;
+use local_issuers::LocalIssuers;
+#[path = "pki_local_crl.rs"]
+mod local_crl;
+use local_crl::LocalCrlState;
+#[path = "pki_local_intermediate.rs"]
+mod local_intermediate;
+use local_intermediate::{LocalCaChain, LocalIntermediateState};
+#[path = "pki_local_ocsp.rs"]
+pub(crate) mod local_ocsp;
 
 const MAX_ROLES: usize = 256;
 const MAX_ISSUED: usize = 4096;
@@ -129,6 +154,12 @@ pub(super) struct Pki {
     #[serde(default, skip_serializing_if = "AcmeConfig::is_default")]
     acme: Box<AcmeConfig>,
     root: Option<RootCa>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_issuers: Option<Box<LocalIssuers>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_crl: Option<Box<LocalCrlState>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_intermediate: Option<Box<LocalIntermediateState>>,
     #[serde(default, skip_serializing_if = "external::ExternalState::is_empty")]
     external: Box<external::ExternalState>,
     roles: BTreeMap<String, Role>,
@@ -137,6 +168,8 @@ pub(super) struct Pki {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct RootCa {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    leaf_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
     common_name: String,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     issuer_id: String,
@@ -147,6 +180,8 @@ struct RootCa {
     pkcs8: Vec<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     local_material: Option<LocalPrivateMaterial>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_chain: Option<Box<LocalCaChain>>,
     certificate_der: Vec<u8>,
     serial: String,
     not_before: u64,
@@ -182,7 +217,25 @@ impl RootCa {
 
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 struct Role {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    role_name_policy: Option<RoleNamePolicy>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    role_time_policy: Option<RoleTimePolicy>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    role_leaf_profile: Option<RoleLeafProfile>,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    issuer_ref: String,
     allowed_domains: BTreeSet<String>,
+    #[serde(default, skip_serializing_if = "role_false")]
+    allow_any_name: bool,
+    // None is the historical candidate contract; new API creates store their
+    // explicit effective value so an older reader cannot silently widen it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    allow_bare_domains: Option<bool>,
+    // None is the historical candidate contract. A new API role explicitly
+    // owns its wildcard choice, including the official default true.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    allow_wildcard_certificates: Option<bool>,
     allow_subdomains: bool,
     #[serde(default)]
     allow_ip_sans: bool,
@@ -192,8 +245,26 @@ struct Role {
     local_key_kind: Option<LocalKeyKind>,
 }
 
+fn role_false(value: &bool) -> bool {
+    !*value
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 pub(super) struct IssuedCertificate {
+    #[serde(default, skip_serializing_if = "role_false")]
+    role_names_owned: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
+    #[serde(default, skip_serializing_if = "role_false")]
+    signed_role_time_owned: bool,
+    #[serde(default, skip_serializing_if = "role_false")]
+    role_time_owned: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    role_leaf_profile: Option<LeafProfilePublicEvidence>,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    local_issuer_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    external_issuer_owner: Option<external::ExternalLeafIssuerOwner>,
     #[serde(default)]
     pub(super) leased: bool,
     pub(super) lease_id: String,
@@ -203,6 +274,10 @@ pub(super) struct IssuedCertificate {
     pub(super) expires: u64,
     pub(super) revoked_at: Option<u64>,
     common_name: String,
+    // A real leaf producer captures wildcard CN/SAN ownership before its
+    // typed template is consumed. Historical false stays omitted byte-for-byte.
+    #[serde(default, skip_serializing_if = "role_false")]
+    wildcard_names: bool,
     certificate_der: Vec<u8>,
 }
 
@@ -228,6 +303,9 @@ impl Default for Pki {
             aia_path: String::new(),
             acme: Box::new(AcmeConfig::default()),
             root: None,
+            local_issuers: None,
+            local_crl: None,
+            local_intermediate: None,
             external: Box::default(),
             roles: BTreeMap::new(),
             issued: BTreeMap::new(),
@@ -253,6 +331,26 @@ impl Pki {
         self.default_ttl = default;
         self.max_ttl = max;
         Ok(())
+    }
+
+    pub(in crate::engines) fn has_role_wildcard_state(&self) -> bool {
+        self.roles
+            .values()
+            .any(|role| role.allow_wildcard_certificates.is_some())
+            || self
+                .issued
+                .values()
+                .any(|issued| issued.wildcard_names || issued.common_name.contains('*'))
+    }
+
+    pub(in crate::engines) fn has_role_bare_domain_state(&self) -> bool {
+        self.roles
+            .values()
+            .any(|role| role.allow_bare_domains.is_some())
+    }
+
+    pub(in crate::engines) fn has_role_any_name_state(&self) -> bool {
+        self.roles.values().any(|role| role.allow_any_name)
     }
 
     pub(super) fn has_extension_state(&self) -> bool {
@@ -306,12 +404,13 @@ impl Pki {
                 || root.certificate_der.is_empty()
                 || root.certificate_der.len() > 64 * 1024
                 || root.not_before >= root.not_after
-                || root.not_after - root.not_before
-                    > if root.local_fields.is_some() {
-                        MAX_TTL * 2
-                    } else {
-                        MAX_TTL + 120
-                    }
+                || root.local_chain.is_none()
+                    && root.not_after - root.not_before
+                        > if root.local_fields.is_some() {
+                            MAX_TTL * 2
+                        } else {
+                            MAX_TTL + 120
+                        }
                 || serial_bytes(&root.serial).is_err()
                 || !valid_pki_id(&root.issuer_id)
                 || !valid_pki_id(&root.key_id)
@@ -325,16 +424,14 @@ impl Pki {
                     return Err(bad("invalid local PKI root field ownership"));
                 }
             }
-            if root.local_material.is_some() {
-                let material = root.local_key()?;
-                material
-                    .public()?
-                    .validate_certificate(&root.certificate_der)?;
-            } else if !root.is_external() {
-                Ed25519KeyPair::from_pkcs8(&root.pkcs8).map_err(|_| bad("invalid PKI root key"))?;
+            if !root.is_external() {
+                root.validate_local_certificate()?;
             }
         }
         self.validate_external_state()?;
+        self.validate_local_issuers()?;
+        self.validate_profile_local_leaves()?;
+        self.validate_local_intermediate(clock)?;
         self.validate_external_consumption(clock)?;
         for (name, role) in &self.roles {
             valid_name(name)?;
@@ -343,8 +440,19 @@ impl Pki {
         let prefix = format!("{mount}issue/");
         let mut leases = BTreeSet::new();
         for (serial, issued) in &self.issued {
-            if serial_bytes(serial).is_err()
-                || !valid_common_name(&issued.common_name)
+            if (!issued.local_issuer_id.is_empty() && !valid_pki_id(&issued.local_issuer_id))
+                || serial_bytes(serial).is_err()
+                || !(if issued.role_names_owned {
+                    role_names::bounded_subject(&issued.common_name)
+                } else {
+                    valid_common_name(&issued.common_name)
+                })
+                || issued.role_names_owned
+                    && issued
+                        .role_leaf_profile
+                        .as_ref()
+                        .is_none_or(|evidence| evidence.role_name_policy.is_none())
+                || issued.common_name.contains('*') && !issued.wildcard_names
                 || issued
                     .owner
                     .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
@@ -362,6 +470,9 @@ impl Pki {
                 })
                 || issued.lease_id != format!("{}/{}", issued.path, serial)
                 || issued.issued > clock
+                || issued.signed_role_time_owned && !issued.role_time_owned
+                || issued.role_time_owned && issued.role_leaf_profile.is_none()
+                || issued.issuer_not_after_behavior.is_some() && !issued.role_time_owned
                 || issued.expires <= issued.issued
                 || issued.expires - issued.issued > MAX_TTL
                 || issued
@@ -374,6 +485,7 @@ impl Pki {
                 return Err(bad("invalid PKI issued-certificate state"));
             }
         }
+        self.validate_local_crls(clock)?;
         Ok(())
     }
 
@@ -422,6 +534,9 @@ impl Pki {
                 changed = true;
             }
         }
+        if changed {
+            self.mark_local_crl_dirty();
+        }
         changed
     }
 
@@ -456,6 +571,7 @@ impl Pki {
             return Ok(false);
         }
         lease.revoked_at = Some(clock.max(lease.issued));
+        self.local_revocation_changed(clock)?;
         Ok(true)
     }
 
@@ -471,6 +587,9 @@ impl Pki {
                 lease.revoked_at = Some(clock.max(lease.issued));
                 changed = true;
             }
+        }
+        if changed {
+            self.mark_local_crl_dirty();
         }
         changed
     }
@@ -489,11 +608,38 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        if let Some(response) = self.handle_local_intermediate(method, path, body, now)? {
+            return Ok(response);
+        }
+        if let Some(response) = self.handle_local_crl(method, path, body, now)? {
+            return Ok(response);
+        }
         if path == "config/cluster" {
             return self.handle_cluster_config(method, body);
         }
         if path == "config/acme" {
             return self.handle_acme_config(method, body);
+        }
+        if path == "keys"
+            && method == "LIST"
+            && !self.root.as_ref().is_some_and(RootCa::is_external)
+        {
+            return self.local_key_list(body);
+        }
+        if path == "certs" && method == "LIST" {
+            return self.certificate_list(body);
+        }
+        if method == "DELETE"
+            && let Some(reference) = path.strip_prefix("issuer/")
+            && !reference.contains('/')
+            && !reference.is_empty()
+        {
+            let response = self.local_issuer_delete(reference, body)?;
+            self.maintain_local_crl(now)?;
+            return Ok(response);
+        }
+        if path == "config/issuers" {
+            return self.local_issuer_config(method, body);
         }
         if matches!(path, "root/generate/internal" | "root/generate/exported") {
             if !write_method(method) {
@@ -541,19 +687,18 @@ impl Pki {
             // values, including an unknown string and null, retain legacy DER.
             let export_pkcs8 = exported
                 && matches!(body.get("private_key_format"), Some(Value::String(value)) if value == "pkcs8");
-            if self.root.is_some() {
-                return Err(bad("PKI root already exists"));
-            }
             let common_name = string(body, "common_name")?;
             // A root subject CN is a distinguished-name value, not a DNS SAN.
             if !external::common_name_valid(common_name) {
                 return Err(bad("invalid PKI common name"));
             }
             let fields = RootFields::from_body(body, common_name)?;
+            self.admit_local_root_names(&fields)?;
             let not_after =
                 root_fields::root_expiration(body, now, self.max_ttl, DEFAULT_ROOT_TTL)?;
             let material = LocalPrivateMaterial::generate(kind)?;
             let public = material.public()?;
+            let key_identifier = root_fields::subject_key_identifier(&public.spki()?)?;
             let serial = random_serial()?;
             let not_before = now.saturating_sub(fields.backdate);
             let certificate_der = certificate_der_local(
@@ -566,7 +711,8 @@ impl Pki {
                     issuer_name_der: Some(&fields.subject_der),
                     subject_name_der: Some(&fields.subject_der),
                     public_key: &[],
-                    not_before,
+                    authority_key_id: Some(&key_identifier),
+                    not_before: role_time::signed_epoch(not_before)?,
                     not_after,
                     is_ca: true,
                     alt_names: &fields.dns_sans,
@@ -575,6 +721,8 @@ impl Pki {
                     uri_sans: &fields.uri_sans,
                     exclude_cn_from_sans: fields.exclude_cn,
                     max_path_length: fields.max_path_length,
+                    permitted_dns_domains: &[],
+                    role_leaf_profile: None,
                 },
             )?;
             let issuing_ca = output_format.certificate(&certificate_der);
@@ -613,28 +761,51 @@ impl Pki {
             } else {
                 (Vec::new(), Some(material))
             };
-            self.root = Some(RootCa {
+            self.publish_local_root(RootCa {
+                leaf_not_after_behavior: None,
                 common_name: common_name.into(),
                 issuer_id,
                 key_id,
                 local_fields: fields.metadata.map(Box::new),
                 pkcs8,
                 local_material,
+                local_chain: None,
                 certificate_der,
                 serial: serial.clone(),
                 not_before,
                 not_after,
-            });
-            return Ok(ok(data, true));
+            })?;
+            self.rebuild_local_crls(now, false)?;
+            // The current local root builder emits no AIA extension. Preserve
+            // the observed warning from the actual certificate it just built.
+            let mut response = ok(data, true);
+            response.body["warnings"] = json!([
+                "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information."
+            ]);
+            return Ok(response);
         }
-        if path == "root/delete" {
-            if !write_method(method) {
+        if path == "root/delete" || path == "root" && method == "DELETE" {
+            if method != "DELETE" && !write_method(method) {
                 return Err(unsupported());
             }
             reject_unknown(body, &[])?;
-            let changed = self.root.take().is_some();
+            let changed = if self.root.as_ref().is_some_and(RootCa::is_external) {
+                self.retire_external_leaf_issuer(now)?;
+                self.root.take().is_some()
+            } else {
+                self.delete_local_roots()?
+            };
             self.external.clear_root();
-            return Ok(empty(changed));
+            if self.local_crl.is_some() {
+                self.rebuild_local_crls(now, false)?;
+            }
+            let mut response = ok(Value::Null, changed);
+            if path == "root" {
+                response.body["warnings"] = json!([
+                    "DELETE /root deletes all keys and issuers; prefer the new DELETE /key/:key_ref and DELETE /issuer/:issuer_ref for finer granularity, unless removal of all keys and issuers is desired."
+                ]);
+            }
+            return Ok(response);
         }
         if let Some(route) = self.public_read_route(method, path) {
             return self.handle_public_read(route, body, now);
@@ -670,34 +841,124 @@ impl Pki {
             match method {
                 "GET" => {
                     reject_unknown(body, &[])?;
-                    let role = self.roles.get(name).ok_or_else(not_found)?;
+                    let Some(role) = self.roles.get(name) else {
+                        return Ok(EngineResponse {
+                            status: 404,
+                            body: json!({"errors":[]}),
+                            mutated: false,
+                        });
+                    };
                     return Ok(ok(role.descriptor(), false));
                 }
                 "DELETE" => {
                     reject_unknown(body, &[])?;
                     return Ok(empty(self.roles.remove(name).is_some()));
                 }
-                "POST" | "PUT" => {
+                "POST" | "PUT" | "PATCH" => {
                     reject_unknown(
                         body,
                         &[
                             "allowed_domains",
+                            "allow_any_name",
+                            "allow_bare_domains",
+                            "allow_wildcard_certificates",
                             "allow_subdomains",
                             "allow_ip_sans",
                             "max_ttl",
+                            "ttl",
+                            "not_before_duration",
+                            "not_before",
+                            "not_before_bound",
+                            "not_after",
+                            "not_after_bound",
                             "generate_lease",
                             "key_type",
                             "key_bits",
+                            "issuer_ref",
+                            "server_flag",
+                            "client_flag",
+                            "code_signing_flag",
+                            "email_protection_flag",
+                            "key_usage",
+                            "ext_key_usage",
+                            "ext_key_usage_oids",
+                            "country",
+                            "province",
+                            "locality",
+                            "street_address",
+                            "postal_code",
+                            "organization",
+                            "ou",
+                            "basic_constraints_valid_for_non_ca",
+                            "allow_token_displayname",
+                            "allow_localhost",
+                            "require_cn",
+                            "enforce_hostnames",
+                            "cn_validations",
+                            "allow_glob_domains",
+                            "allowed_ip_sans_cidr",
+                            "allowed_uri_sans",
+                            "no_store",
+                            "allowed_serial_numbers",
+                            "allowed_user_ids",
+                            "allowed_other_sans",
+                            "policy_identifiers",
                         ],
                     )?;
-                    let role = Role::from_body(body)?;
+                    let role_result = if method == "PATCH" {
+                        let Some(previous) = self.roles.get(name) else {
+                            return Err(bad("Unable to fetch role entry to patch"));
+                        };
+                        Role::from_patch(previous, body)
+                    } else {
+                        Role::from_body(body)
+                    };
+                    let role = match role_result {
+                        Ok(role) => role,
+                        Err(cause) => {
+                            return Ok(EngineResponse {
+                                status: cause.status,
+                                body: json!({"errors":[cause.message]}),
+                                mutated: false,
+                            });
+                        }
+                    };
                     if !self.roles.contains_key(name) && self.roles.len() >= MAX_ROLES {
                         return Err(error(507, "PKI role capacity exhausted"));
                     }
                     let changed = self.roles.get(name) != Some(&role);
+                    let missing_default_issuer =
+                        role.issuer_ref.is_empty() && self.selected_issuer("default").is_err();
+                    let no_store_lease_warning = role
+                        .role_name_policy
+                        .as_ref()
+                        .is_some_and(|policy| policy.no_store)
+                        && role_optional_bool(body, "generate_lease")?.unwrap_or(false);
+                    let generated_lease = role.generate_lease;
                     let response = role.descriptor();
                     self.roles.insert(name.into(), role);
-                    return Ok(ok(response, changed));
+                    let mut result = ok(response, changed);
+                    let mut warnings = Vec::new();
+                    if body.get("allow_token_displayname").is_some() {
+                        warnings.push("Endpoint ignored these unrecognized parameters: [allow_token_displayname]");
+                    }
+                    if missing_default_issuer {
+                        warnings.push(
+                            "Issuing Certificate was set to default, but no default issuing certificate (configurable at /config/issuers) is currently set"
+                        );
+                    }
+                    if no_store_lease_warning {
+                        warnings.push("mutually exclusive values no_store=true and generate_lease=true were both specified; no_store=true takes priority");
+                    }
+                    if generated_lease {
+                        warnings.push(
+                            "it is encouraged to disable generate_lease and rely on PKI's native capabilities when possible; this option can cause instance-wide issues with large numbers of issued certificates"
+                        );
+                    }
+                    if !warnings.is_empty() {
+                        result.body["warnings"] = json!(warnings);
+                    }
+                    return Ok(result);
                 }
                 _ => return Err(unsupported()),
             }
@@ -708,9 +969,32 @@ impl Pki {
             }
             reject_unknown(body, &["serial_number"])?;
             let serial = normalize_serial(string(body, "serial_number")?)?;
-            let changed = self.revoke_lease(&serial, now)?;
+            if let Some(response) = self.revoke_signed_ca(&serial, now)? {
+                return Ok(response);
+            }
+            let cert = self.issued.get(&serial).ok_or_else(not_found)?;
+            if cert.revoked_at.is_none()
+                && cert.expires < now.saturating_add(2)
+                && !self.local_expired_revocation_allowed()
+            {
+                return Ok(EngineResponse {
+                    status: 200,
+                    body: json!({"warnings":["certificate already expired; refusing to add to CRL"]}),
+                    mutated: false,
+                });
+            }
+            let cert = self.issued.get_mut(&serial).ok_or_else(not_found)?;
+            let changed = cert.revoked_at.is_none();
+            if changed {
+                cert.revoked_at = Some(now.max(cert.issued));
+            }
+            let at = cert.revoked_at.unwrap_or(0);
+            if changed {
+                self.local_revocation_changed(now)?;
+            }
             return Ok(ok(
-                json!({"revocation_time": self.issued.get(&serial).and_then(|v| v.revoked_at).unwrap_or(0)}),
+                json!({"revocation_time":at,
+                    "revocation_time_rfc3339":timestamp(at),"state":"revoked"}),
                 changed,
             ));
         }
@@ -727,9 +1011,196 @@ impl Pki {
             self.issued
                 .retain(|_, cert| cert.expires.saturating_add(buffer) > now);
             self.reconcile_external_leaf_projections();
+            if before != self.issued.len() && self.local_crl.is_some() {
+                self.rebuild_local_crls(now, false)?;
+            }
             return Ok(empty(before != self.issued.len()));
         }
         Err(error(404, "PKI path is not implemented"))
+    }
+
+    #[cfg(test)]
+    pub(super) fn fixture_insert_historical_role(
+        &mut self,
+        name: &str,
+        value: &Value,
+    ) -> Result<()> {
+        valid_name(name)?;
+        let role: Role = serde_json::from_value(value.clone())
+            .map_err(|_| bad("historical typed role fixture"))?;
+        if role.role_time_policy.is_some()
+            || role.max_ttl == 0
+            || role.role_leaf_profile.is_some()
+            || role.allow_bare_domains.is_some()
+            || role.allow_wildcard_certificates.is_some()
+            || role.allow_any_name
+        {
+            return Err(bad("historical fixture cannot install a new role owner"));
+        }
+        role.validate()?;
+        self.roles.insert(name.to_owned(), role);
+        Ok(())
+    }
+
+    // Original pre-name profile role wire contract, created before any new
+    // name owner publication. Never create a current role and strip its owner.
+    // The only later migration in these tests is an actual production PATCH.
+    #[cfg(test)]
+    pub(super) fn fixture_insert_pre_names_profile_role(
+        &mut self,
+        name: &str,
+        value: &Value,
+    ) -> Result<()> {
+        valid_name(name)?;
+        if !self.roles.is_empty()
+            || !self.issued.is_empty()
+            || self.has_role_names_state()
+            || self.has_role_time_state()
+            || self.has_external_state()
+        {
+            return Err(bad(
+                "pre-name profile fixture requires an empty actual local role graph",
+            ));
+        }
+        let role: Role = serde_json::from_value(value.clone())
+            .map_err(|_| bad("original pre-name profile role wire contract"))?;
+        if role.role_name_policy.is_some()
+            || role.role_time_policy.is_some()
+            || role.role_leaf_profile.as_ref() != Some(&RoleLeafProfile::default())
+            || role.allow_bare_domains != Some(false)
+            || role.allow_wildcard_certificates != Some(true)
+            || role.allow_any_name
+            || !role.allow_subdomains
+            || !role.allow_ip_sans
+            || role.max_ttl != 3600
+            || role.generate_lease
+            || role.local_key_kind != Some(LocalKeyKind::Ec256)
+            || !role.issuer_ref.is_empty()
+            || role.allowed_domains != BTreeSet::from(["example.test".to_owned()])
+        {
+            return Err(bad(
+                "pre-name fixture requires the complete original profile88 role",
+            ));
+        }
+        role.validate()?;
+        self.roles.insert(name.to_owned(), role);
+        Ok(())
+    }
+
+    // A typed schema85 role-only predecessor input, before any88 publication.
+    // It owns the original85 base/wildcard fields but no later leaf profile.
+    #[cfg(test)]
+    pub(super) fn fixture_promote_historical_role_to85(&mut self, name: &str) -> Result<()> {
+        if !self.issued.is_empty()
+            || self.has_role_leaf_profile_state()
+            || self.has_role_time_state()
+        {
+            return Err(bad("schema85 role fixture cannot strip signed evidence"));
+        }
+        let role = self.roles.get_mut(name).ok_or_else(not_found)?;
+        if role.role_leaf_profile.is_some()
+            || role.allow_any_name
+            || role.allow_bare_domains.is_some()
+            || role.allow_wildcard_certificates.is_some()
+        {
+            return Err(bad("schema85 role fixture requires the original None role"));
+        }
+        role.allow_bare_domains = Some(false);
+        role.allow_wildcard_certificates = Some(true);
+        Ok(())
+    }
+
+    // Test-only historical producer input: preserve the generated Ed25519
+    // private key and actual root DER, omit only later optional owner fields.
+    // This never downgrades a running Service or accepts external ownership.
+    #[cfg(test)]
+    pub(super) fn fixture_prepare_historical_local_root(&mut self) -> Result<()> {
+        if !self.roles.is_empty()
+            || !self.issued.is_empty()
+            || self.local_issuers.is_some()
+            || self.local_intermediate.is_some()
+            || self.has_external_state()
+        {
+            return Err(bad(
+                "historical local root fixture requires an empty local graph",
+            ));
+        }
+        let root = self.root.as_mut().ok_or_else(not_found)?;
+        if root.local_material.is_some()
+            || root.pkcs8.is_empty()
+            || root.local_fields.is_some()
+            || root.local_chain.is_some()
+        {
+            return Err(bad(
+                "historical local root fixture requires original Ed25519 shape",
+            ));
+        }
+        root.issuer_id.clear();
+        root.key_id.clear();
+        self.local_crl = None;
+        Ok(())
+    }
+
+    // Produce real historical None DER under the actual owned local signer.
+    // New production issuance always captures Some; this private test producer
+    // exists to prove that old signed evidence survives the actual migration.
+    #[cfg(test)]
+    pub(super) fn fixture_issue_historical_local_leaf(
+        &mut self,
+        mount: &str,
+        body: &Value,
+        owner: &LeaseOwner,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        let role = self.roles.get("historical").ok_or_else(not_found)?;
+        if role.role_time_policy.is_some()
+            || role.max_ttl == 0
+            || role.role_leaf_profile.is_some()
+            || role.allow_bare_domains.is_some()
+            || role.allow_wildcard_certificates.is_some()
+            || role.allow_any_name
+            || self.has_role_leaf_profile_state()
+            || self.has_external_state()
+            || owner.batch_claims().is_some()
+        {
+            return Err(bad(
+                "historical leaf fixture requires original local role and service owner",
+            ));
+        }
+        let mut prepared = self.prepare_leaf(mount, "historical", body, owner, None, now)?;
+        prepared.role_leaf_profile = None;
+        let root = self.selected_issuer("default")?;
+        let root_pair = root.local_key()?;
+        let leaf = LocalPrivateMaterial::generate(prepared.local_key_kind)?;
+        let leaf_public = leaf.public()?;
+        let issuer_name = root_fields::certificate_subject(&root.certificate_der)?;
+        let authority_key_id = root_fields::certificate_key_identifier(&root.certificate_der)?;
+        let certificate = certificate_der_local(
+            &root_pair,
+            &leaf_public,
+            CertificateSpec {
+                serial: &prepared.serial,
+                issuer_cn: &root.common_name,
+                subject_cn: &prepared.common_name,
+                issuer_name_der: Some(&issuer_name),
+                subject_name_der: None,
+                public_key: &[],
+                authority_key_id: authority_key_id.as_deref(),
+                not_before: prepared.not_before,
+                not_after: prepared.expires,
+                is_ca: false,
+                alt_names: &prepared.alt_names,
+                email_sans: &[],
+                ip_sans: &prepared.ip_sans,
+                uri_sans: &[],
+                exclude_cn_from_sans: false,
+                max_path_length: None,
+                permitted_dns_domains: &[],
+                role_leaf_profile: None,
+            },
+        )?;
+        let private = leaf.private_der()?;
+        self.publish_leaf(prepared, certificate, &private, &leaf_public, false)
     }
 
     fn handle_cluster_config(&mut self, method: &str, body: &Value) -> Result<EngineResponse> {
@@ -865,57 +1336,210 @@ impl Pki {
         owner_expires: Option<u64>,
         now: u64,
     ) -> Result<LeafTemplate> {
-        reject_unknown(body, &["common_name", "alt_names", "ip_sans", "ttl"])?;
-        let root = self
-            .root
-            .as_ref()
-            .ok_or_else(|| error(503, "PKI root is not configured"))?;
+        self.prepare_leaf_route(
+            IssuanceRoute {
+                mount,
+                role: role_name,
+                explicit_issuer: None,
+            },
+            body,
+            owner,
+            owner_expires,
+            now,
+        )
+    }
+
+    fn prepare_leaf_route(
+        &self,
+        route: IssuanceRoute<'_>,
+        body: &Value,
+        owner: &LeaseOwner,
+        owner_expires: Option<u64>,
+        now: u64,
+    ) -> Result<LeafTemplate> {
+        reject_unknown(
+            body,
+            &[
+                "common_name",
+                "alt_names",
+                "ip_sans",
+                "uri_sans",
+                "serial_number",
+                "user_ids",
+                "other_sans",
+                "ttl",
+                "not_before",
+                "not_after",
+            ],
+        )?;
+        let role = self
+            .roles
+            .get(route.role)
+            .ok_or_else(|| bad(&format!("unknown role: {}", route.role)))?
+            .clone();
+        let reference = route.explicit_issuer.unwrap_or({
+            if role.issuer_ref.is_empty() {
+                "default"
+            } else {
+                role.issuer_ref.as_str()
+            }
+        });
+        let root = self.selected_issuer(reference)?;
         if now >= root.not_after {
             return Err(error(503, "PKI root has expired"));
         }
-        let role = self.roles.get(role_name).ok_or_else(not_found)?.clone();
-        let common_name = string(body, "common_name")?;
-        if !valid_common_name(common_name) || !role.allows(common_name) {
-            return Err(error(403, "common name is not allowed by PKI role"));
-        }
-        let alt_names = string_list(body.get("alt_names"))?;
-        if alt_names.len() > 32
-            || alt_names
-                .iter()
-                .any(|name| !valid_common_name(name) || !role.allows(name))
-        {
-            return Err(error(
-                403,
-                "subject alternative name is not allowed by PKI role",
+        let common_name = match body.get("common_name") {
+            None | Some(Value::Null) => "",
+            Some(Value::String(value)) => value,
+            _ => return Err(bad("common_name must be a string")),
+        };
+        let names = role.role_name_policy.as_ref();
+        if common_name.is_empty() && names.is_none_or(|policy| policy.require_cn) {
+            return Err(bad(
+                r#"the common_name field is required, or must be provided in a CSR with "use_csr_common_name" set to true, unless "require_cn" is set to false"#,
             ));
+        }
+        if !common_name.is_empty()
+            && !names.map_or_else(
+                || valid_common_name(common_name) && role.allows(common_name),
+                |policy| policy.allows_common_name(&role, common_name),
+            )
+        {
+            return Err(bad(&format!(
+                "common name {common_name} not allowed by this role"
+            )));
+        }
+        let raw_alt_names = string_list(body.get("alt_names"))?;
+        if raw_alt_names.len() > 32 {
+            return Err(bad("PKI subject alternative name capacity exceeded"));
+        }
+        let mut email_sans = Vec::new();
+        let mut alt_names = Vec::new();
+        for name in raw_alt_names {
+            if names.is_some() && name.contains('@') {
+                email_sans.push(name);
+            } else if (names.is_some() && valid_common_name(&name))
+                || (names.is_none() && (!name.contains('*') || wildcard_dns_san(&name)))
+            {
+                alt_names.push(name);
+            }
+        }
+        for name in alt_names.iter().chain(&email_sans) {
+            if !names.map_or_else(
+                || valid_common_name(name) && role.allows(name),
+                |policy| policy.allows_name(&role, name),
+            ) {
+                return Err(bad(&format!(
+                    "{} {name} not allowed by this role",
+                    if name.contains('@') {
+                        "email address"
+                    } else {
+                        "subject alternate name"
+                    }
+                )));
+            }
+        }
+        if valid_common_name(common_name)
+            && names.is_some_and(|policy| !policy.allows_name(&role, common_name))
+        {
+            return Err(bad(&format!(
+                "subject alternate name {common_name} not allowed by this role"
+            )));
+        }
+        let exclude_cn_from_sans = names.is_some() && !valid_common_name(common_name);
+        if names.is_some() && common_name.contains('@') {
+            email_sans.push(common_name.into());
+        }
+        let uri_sans = string_list(body.get("uri_sans"))?;
+        if uri_sans.len() > 32 {
+            return Err(bad("PKI URI subject alternative name capacity exceeded"));
         }
         let ip_sans = ip_list(body.get("ip_sans"))?;
-        if ip_sans.len() > 32 || !role.allow_ip_sans && !ip_sans.is_empty() {
-            return Err(error(
-                403,
-                "IP subject alternative names are not allowed by PKI role",
+        if ip_sans.len() > 32 {
+            return Err(bad("PKI IP subject alternative name capacity exceeded"));
+        }
+        if !role.allow_ip_sans && !ip_sans.is_empty() {
+            return Err(bad(
+                "IP Subject Alternative Names are not allowed in this role, but was provided via the API",
             ));
         }
-        if self.issued.len() >= MAX_ISSUED {
+        if let Some(policy) = names {
+            policy.validate_sans(&ip_sans, &uri_sans)?;
+        } else if !uri_sans.is_empty() {
+            return Err(bad(
+                "URI Subject Alternative Names are not allowed in this role, but were provided via the API",
+            ));
+        }
+        if !names.is_some_and(|policy| policy.no_store) && self.issued.len() >= MAX_ISSUED {
             return Err(error(507, "PKI issued-certificate capacity exhausted"));
         }
-        let requested = ttl_field(body, "ttl", self.default_ttl)?
-            .min(role.max_ttl)
-            .min(self.max_ttl);
-        let owner_limit = owner_expires.unwrap_or(u64::MAX).saturating_sub(now);
-        let root_limit = root.not_after.saturating_sub(now);
-        let ttl = requested.min(owner_limit).min(root_limit);
-        if ttl == 0 {
+        let resolved = role.role_time_policy.clone().unwrap_or_default().resolve(
+            body,
+            role.max_ttl,
+            self.default_ttl,
+            self.max_ttl,
+            now,
+        )?;
+        let not_after = root
+            .leaf_not_after_behavior
+            .unwrap_or_default()
+            .apply(resolved.not_after, root.not_after)?;
+        role.role_time_policy
+            .clone()
+            .unwrap_or_default()
+            .validate_final_not_after(not_after)?;
+        let expires = not_after.min(owner_expires.unwrap_or(u64::MAX));
+        if expires <= now {
             return Err(error(403, "issuer no longer has a live PKI lease window"));
         }
+        if i128::from(resolved.not_before) > i128::from(expires) {
+            return Err(bad(&format!(
+                "The certificate's Not Before ({}) is later than the certificate's Not After ({})",
+                role_time::signed_timestamp(resolved.not_before),
+                timestamp(expires)
+            )));
+        }
         let serial = random_serial()?;
-        let path = format!("{mount}issue/{role_name}");
+        let path = if let Some(reference) = route.explicit_issuer {
+            format!("{}issuer/{reference}/issue/{}", route.mount, route.role)
+        } else {
+            format!("{}issue/{}", route.mount, route.role)
+        };
         let lease_id = format!("{path}/{serial}");
         if self.issued.contains_key(&serial) || self.issued.values().any(|v| v.lease_id == lease_id)
         {
             return Err(error(503, "PKI serial collision"));
         }
         Ok(LeafTemplate {
+            role_name_policy: role.role_name_policy.clone(),
+            no_store: names.is_some_and(|policy| policy.no_store),
+            exclude_cn_from_sans,
+            email_sans,
+            uri_sans,
+            signed_role_time_owned: resolved.not_before < 0,
+            issuer_not_after_behavior: root.leaf_not_after_behavior,
+            role_time_owned: root.leaf_not_after_behavior.is_some()
+                || role.role_time_policy.is_some()
+                || role.max_ttl == 0
+                || body.get("not_before").is_some()
+                || body.get("not_after").is_some(),
+            warnings: resolved.warnings,
+            role_leaf_profile: Some(if let Some(policy) = names {
+                policy.capture_subject(body, role.effective_leaf_profile())?
+            } else {
+                if ["serial_number", "user_ids", "other_sans"]
+                    .iter()
+                    .any(|field| body.get(*field).is_some())
+                {
+                    return Err(bad("historical role has no subject attribute policy"));
+                }
+                role.effective_leaf_profile()
+            }),
+            local_issuer_id: if !root.is_external() {
+                root.issuer_id.clone()
+            } else {
+                String::new()
+            },
             serial,
             path,
             lease_id,
@@ -927,13 +1551,12 @@ impl Pki {
             alt_names,
             ip_sans,
             issued: now,
-            not_before: now.saturating_sub(60).max(root.not_before),
-            expires: now
-                .checked_add(ttl)
-                .ok_or_else(|| bad("PKI lease TTL overflow"))?,
+            not_before: resolved.not_before,
+            expires,
         })
     }
 
+    #[cfg(test)]
     pub(super) fn issue(
         &mut self,
         mount: &str,
@@ -943,11 +1566,72 @@ impl Pki {
         owner_expires: Option<u64>,
         now: u64,
     ) -> Result<EngineResponse> {
-        let prepared = self.prepare_leaf(mount, role_name, body, owner, owner_expires, now)?;
-        let root = self
-            .root
-            .as_ref()
-            .ok_or_else(|| error(503, "PKI root is not configured"))?;
+        self.issue_owned_route(
+            IssuanceRoute {
+                mount,
+                role: role_name,
+                explicit_issuer: None,
+            },
+            body,
+            owner,
+            owner_expires,
+            now,
+        )
+    }
+
+    pub(super) fn issue_route(
+        &mut self,
+        mount: &str,
+        relative: &str,
+        body: &Value,
+        owner: &LeaseOwner,
+        owner_expires: Option<u64>,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        let route = if let Some(role) = relative.strip_prefix("issue/") {
+            IssuanceRoute {
+                mount,
+                role,
+                explicit_issuer: None,
+            }
+        } else if let Some((reference, role)) = Self::issuer_issue_route(relative) {
+            IssuanceRoute {
+                mount,
+                role,
+                explicit_issuer: Some(reference),
+            }
+        } else {
+            return Err(not_found());
+        };
+        if route.role.is_empty() || route.role.contains('/') {
+            return Err(not_found());
+        }
+        self.issue_owned_route(route, body, owner, owner_expires, now)
+    }
+
+    fn issue_owned_route(
+        &mut self,
+        route: IssuanceRoute<'_>,
+        body: &Value,
+        owner: &LeaseOwner,
+        owner_expires: Option<u64>,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        if self.profile_route_needs_identity(&route)? {
+            // Identity promotion and issuance publish together. Any subsequent
+            // error drops this owned clone, preserving direct-call atomicity.
+            let mut candidate = self.clone();
+            candidate.promote_profile_root_identity(&route)?;
+            let response = candidate.issue_owned_route(route, body, owner, owner_expires, now)?;
+            *self = candidate;
+            return Ok(response);
+        }
+        let prepared = self.prepare_leaf_route(route, body, owner, owner_expires, now)?;
+        let root = self.selected_issuer(if prepared.local_issuer_id.is_empty() {
+            "default"
+        } else {
+            &prepared.local_issuer_id
+        })?;
         if root.is_external() {
             return Err(error(
                 501,
@@ -958,6 +1642,7 @@ impl Pki {
         let leaf_public = leaf.public()?;
         let root_pair = root.local_key()?;
         let issuer_name_der = root_fields::certificate_subject(&root.certificate_der)?;
+        let authority_key_id = root_fields::certificate_key_identifier(&root.certificate_der)?;
         let certificate_der = certificate_der_local(
             &root_pair,
             &leaf_public,
@@ -968,19 +1653,22 @@ impl Pki {
                 issuer_name_der: Some(&issuer_name_der),
                 subject_name_der: None,
                 public_key: &[],
+                authority_key_id: authority_key_id.as_deref(),
                 not_before: prepared.not_before,
                 not_after: prepared.expires,
                 is_ca: false,
                 alt_names: &prepared.alt_names,
-                email_sans: &[],
+                email_sans: &prepared.email_sans,
                 ip_sans: &prepared.ip_sans,
-                uri_sans: &[],
-                exclude_cn_from_sans: false,
+                uri_sans: &prepared.uri_sans,
+                exclude_cn_from_sans: prepared.exclude_cn_from_sans,
                 max_path_length: None,
+                permitted_dns_domains: &[],
+                role_leaf_profile: prepared.role_leaf_profile.as_ref(),
             },
         )?;
         let leaf_pkcs8 = leaf.private_der()?;
-        self.publish_leaf(prepared, certificate_der, &leaf_pkcs8, false)
+        self.publish_leaf(prepared, certificate_der, &leaf_pkcs8, &leaf_public, false)
     }
 
     fn publish_leaf(
@@ -988,30 +1676,27 @@ impl Pki {
         prepared: LeafTemplate,
         certificate_der: Vec<u8>,
         leaf_pkcs8: &[u8],
+        leaf_public: &LocalPublicKey,
         external: bool,
     ) -> Result<EngineResponse> {
-        let root = self
-            .root
-            .as_ref()
-            .ok_or_else(|| error(503, "PKI root is not configured"))?;
+        let root = self.selected_issuer(if prepared.local_issuer_id.is_empty() {
+            "default"
+        } else {
+            &prepared.local_issuer_id
+        })?;
         if self.issued.contains_key(&prepared.serial) || self.issued.len() >= MAX_ISSUED {
             return Err(error(503, "PKI issuance state changed"));
         }
-        let certificate = if external {
-            public::stored_pem("CERTIFICATE", &certificate_der)
-        } else {
-            pem("CERTIFICATE", &certificate_der)
-        };
-        let issuing_ca = if external {
-            public::stored_pem("CERTIFICATE", &root.certificate_der)
-        } else {
-            pem("CERTIFICATE", &root.certificate_der)
-        };
+        if let Some(profile) = &prepared.role_leaf_profile {
+            profile.validate_created_leaf_der(&certificate_der)?;
+        }
+        let certificate = public::stored_pem("CERTIFICATE", &certificate_der);
+        let issuing_ca = public::stored_pem("CERTIFICATE", &root.certificate_der);
         let mut private_key =
-            LocalPrivateMaterial::private_pem(prepared.local_key_kind, leaf_pkcs8)?;
-        // OpenBao's external issuance bundle omits the canonical final LF.
+            LocalPrivateMaterial::private_pem(prepared.local_key_kind, leaf_pkcs8, external)?;
+        // OpenBao's issuance bundle omits the canonical final LF.
         // Remove it in the existing zeroizing response owner, not a new clone.
-        if external && private_key.ends_with('\n') {
+        if private_key.ends_with('\n') {
             private_key.pop();
         }
         let ttl = prepared.expires.saturating_sub(prepared.issued);
@@ -1020,20 +1705,47 @@ impl Pki {
             "private_key":private_key.as_str(), "private_key_type":prepared.local_key_kind.key_type(),
             "serial_number":prepared.serial, "expiration":prepared.expires,
         });
-        if external {
-            data["serial_number"] = json!(external::formatted_serial(&prepared.serial));
-            data["ca_chain"] = json!([issuing_ca]);
-            data["not_before"] = json!(prepared.not_before);
-        }
-        let response = EngineResponse {
+        data["serial_number"] = json!(external::formatted_serial(&prepared.serial));
+        data["ca_chain"] = if external {
+            json!([issuing_ca])
+        } else {
+            json!(
+                root.local_ca_chain_pem()
+                    .into_iter()
+                    .map(|mut pem| {
+                        if pem.ends_with('\n') {
+                            pem.pop();
+                        }
+                        pem
+                    })
+                    .collect::<Vec<_>>()
+            )
+        };
+        data["not_before"] = json!(prepared.not_before);
+        let mut response = EngineResponse {
             status: 200,
             body: json!({"request_id":"", "lease_id":if prepared.leased {prepared.lease_id.clone()} else {String::new()},
                 "renewable":false,"lease_duration":if prepared.leased {ttl} else {0},"data":data}),
             mutated: true,
         };
+        if !prepared.warnings.is_empty() {
+            response.body["warnings"] = json!(prepared.warnings);
+        }
+        if prepared.no_store {
+            response.mutated = false;
+            return Ok(response);
+        }
+        let role_leaf_profile = LeafProfilePublicEvidence::capture(&prepared, leaf_public);
         self.issued.insert(
             prepared.serial.clone(),
             IssuedCertificate {
+                role_names_owned: prepared.role_name_policy.is_some(),
+                issuer_not_after_behavior: prepared.issuer_not_after_behavior,
+                signed_role_time_owned: prepared.signed_role_time_owned,
+                role_time_owned: prepared.role_time_owned,
+                role_leaf_profile,
+                local_issuer_id: prepared.local_issuer_id,
+                external_issuer_owner: None,
                 leased: prepared.leased,
                 lease_id: prepared.lease_id,
                 owner: prepared.owner,
@@ -1041,6 +1753,8 @@ impl Pki {
                 issued: prepared.issued,
                 expires: prepared.expires,
                 revoked_at: None,
+                wildcard_names: prepared.common_name.contains('*')
+                    || prepared.alt_names.iter().any(|name| name.contains('*')),
                 common_name: prepared.common_name,
                 certificate_der,
             },
@@ -1048,58 +1762,123 @@ impl Pki {
         Ok(response)
     }
 
-    fn crl_der(&self, root: &RootCa, now: u64) -> Result<Vec<u8>> {
+    fn crl_der(&self, root: &RootCa, _now: u64) -> Result<Vec<u8>> {
         if root.is_external() {
             return Err(error(
                 501,
                 "external PKI CRL requires a qualified signing lane",
             ));
         }
-        let pair = root.local_key()?;
-        let public = pair.public()?;
-        let algorithm = pair.kind().signature_algorithm();
-        let mut revoked = Vec::new();
-        for (serial, cert) in &self.issued {
-            let Some(at) = cert.revoked_at else { continue };
-            if cert.expires <= now {
-                continue;
-            }
-            revoked.push(seq(&[integer(&serial_bytes(serial)?), time(at)]));
-        }
-        let mut parts = vec![
-            integer(&[1]),
-            algorithm.clone(),
-            root_fields::certificate_subject(&root.certificate_der)?,
-            time(now),
-            time(now.saturating_add(24 * 3600)),
-        ];
-        if !revoked.is_empty() {
-            parts.push(seq(&revoked));
-        }
-        let tbs = seq(&parts);
-        let signature = pair.sign(&tbs)?;
-        if !public.verify(&tbs, &signature)? {
-            return Err(error(503, "local PKI CRL signature failed validation"));
-        }
-        Ok(seq(&[tbs, algorithm, bit_string(&signature, 0)]))
+        Ok(self.cached_local_crl(root, false)?.to_vec())
     }
 }
 
+// Only the public role input uses the framework's weak boolean conversion.
+// Durable Role deserialization still requires actual booleans; request text
+// is never retained as an authority marker or copied into the stored owner.
+fn role_optional_bool(body: &Value, name: &str) -> Result<Option<bool>> {
+    let Some(value) = body.get(name) else {
+        return Ok(None);
+    };
+    let detail = match value {
+        Value::Bool(value) => return Ok(Some(*value)),
+        Value::Null => return Ok(Some(false)),
+        Value::String(value) => match value.as_str() {
+            "1" | "t" | "T" | "TRUE" | "true" | "True" => return Ok(Some(true)),
+            "" | "0" | "f" | "F" | "FALSE" | "false" | "False" => return Ok(Some(false)),
+            _ => "cannot parse value as 'bool': strconv.ParseBool: invalid syntax",
+        },
+        Value::Number(value) => match value.to_string().as_str() {
+            "1" => return Ok(Some(true)),
+            "0" => return Ok(Some(false)),
+            _ => "cannot parse value as 'bool': strconv.ParseBool: invalid syntax",
+        },
+        Value::Array(_) => "expected type 'bool', got unconvertible type '[]interface {}'",
+        Value::Object(_) => {
+            "expected type 'bool', got unconvertible type 'map[string]interface {}'"
+        }
+    };
+    Err(bad(&format!(
+        "Field validation failed: error converting input for field \"{name}\": '' {detail}"
+    )))
+}
+
 impl Role {
+    fn effective_leaf_profile(&self) -> RoleLeafProfile {
+        self.role_leaf_profile.clone().unwrap_or_default()
+    }
+    fn from_patch(previous: &Self, patch: &Value) -> Result<Self> {
+        let mut merged = SecretJson(previous.descriptor());
+        let output = merged
+            .as_object_mut()
+            .ok_or_else(|| bad("invalid stored PKI role"))?;
+        let patch = patch
+            .as_object()
+            .ok_or_else(|| bad("request body must be an object"))?;
+        for (name, value) in patch {
+            output.insert(name.clone(), value.clone());
+        }
+        let mut role = Self::from_body(&merged)?;
+        if previous.role_time_policy.is_none()
+            && !role_time::ROLE_TIME_FIELDS
+                .iter()
+                .any(|name| patch.get(*name).is_some())
+        {
+            role.role_time_policy = None;
+        }
+        if previous.role_name_policy.is_none()
+            && !role_names::ROLE_NAME_FIELDS
+                .iter()
+                .any(|name| patch.get(*name).is_some())
+        {
+            role.role_name_policy = None;
+        }
+        Ok(role)
+    }
     fn from_body(body: &Value) -> Result<Self> {
+        let allow_any_name = role_optional_bool(body, "allow_any_name")?.unwrap_or(false);
+        let names = RoleNamePolicy::from_body(body)?;
         let allowed_domains = string_list(body.get("allowed_domains"))?;
-        if allowed_domains.is_empty()
-            || allowed_domains.len() > 64
-            || allowed_domains.iter().any(|v| !valid_domain(v))
+        if allowed_domains.len() > 64
+            || allowed_domains.iter().any(|v| !names.valid_domain_entry(v))
         {
             return Err(bad("allowed_domains must contain 1..=64 DNS domains"));
         }
+        let max_ttl = role_time::role_duration(body, "max_ttl", 0)?;
+        let time_policy = RoleTimePolicy::from_body(body, max_ttl)?;
         let role = Self {
+            role_name_policy: Some(names.clone()),
+            role_time_policy: role_time::ROLE_TIME_FIELDS
+                .iter()
+                .any(|name| body.get(*name).is_some())
+                .then_some(time_policy),
+            role_leaf_profile: Some(RoleLeafProfile::from_body(body)?),
+            issuer_ref: match body.get("issuer_ref") {
+                None => String::new(),
+                Some(Value::String(value)) if value == "default" => String::new(),
+                Some(Value::String(value))
+                    if !value.is_empty()
+                        && value.len() <= 128
+                        && !value.contains('/')
+                        && !value.chars().any(char::is_control) =>
+                {
+                    value.clone()
+                }
+                _ => return Err(bad("invalid PKI role issuer reference")),
+            },
             allowed_domains: allowed_domains.into_iter().collect(),
-            allow_subdomains: optional_bool(body, "allow_subdomains")?.unwrap_or(false),
-            allow_ip_sans: optional_bool(body, "allow_ip_sans")?.unwrap_or(false),
-            max_ttl: ttl_field(body, "max_ttl", DEFAULT_LEAF_TTL)?,
-            generate_lease: optional_bool(body, "generate_lease")?.unwrap_or(false),
+            allow_any_name,
+            allow_bare_domains: Some(
+                role_optional_bool(body, "allow_bare_domains")?.unwrap_or(false),
+            ),
+            allow_wildcard_certificates: Some(
+                role_optional_bool(body, "allow_wildcard_certificates")?.unwrap_or(true),
+            ),
+            allow_subdomains: role_optional_bool(body, "allow_subdomains")?.unwrap_or(false),
+            allow_ip_sans: role_optional_bool(body, "allow_ip_sans")?.unwrap_or(true),
+            max_ttl,
+            generate_lease: !names.no_store
+                && role_optional_bool(body, "generate_lease")?.unwrap_or(false),
             local_key_kind: match LocalKeyKind::from_body(body)? {
                 LocalKeyKind::Ed25519 => None,
                 kind => Some(kind),
@@ -1109,11 +1888,32 @@ impl Role {
         Ok(role)
     }
     fn validate(&self) -> Result<()> {
-        if self.local_key_kind == Some(LocalKeyKind::Ed25519)
-            || self.allowed_domains.is_empty()
+        if let Some(names) = &self.role_name_policy {
+            names.validate()?;
+        }
+        if let Some(profile) = &self.role_leaf_profile {
+            profile.validate_role_oid_strings()?;
+            if profile.leaf_subject_evidence.is_some() {
+                return Err(bad("role cannot carry captured leaf subject evidence"));
+            }
+        }
+        if let Some(policy) = &self.role_time_policy {
+            policy.validate(self.max_ttl)?;
+        }
+        if self.issuer_ref.len() > 128
+            || self.issuer_ref.contains('/')
+            || self.issuer_ref.chars().any(char::is_control)
+            || self.local_key_kind == Some(LocalKeyKind::Ed25519)
+            || self.role_name_policy.is_none()
+                && !self.allow_any_name
+                && self.allowed_domains.is_empty()
             || self.allowed_domains.len() > 64
-            || self.allowed_domains.iter().any(|v| !valid_domain(v))
-            || self.max_ttl == 0
+            || self.allowed_domains.iter().any(|v| {
+                !self
+                    .role_name_policy
+                    .as_ref()
+                    .map_or_else(|| valid_domain(v), |policy| policy.valid_domain_entry(v))
+            })
             || self.max_ttl > MAX_TTL
         {
             return Err(bad("invalid PKI role"));
@@ -1122,14 +1922,29 @@ impl Role {
     }
     fn allows(&self, name: &str) -> bool {
         let name = name.to_ascii_lowercase();
-        self.allowed_domains.iter().any(|domain| {
-            let domain = domain.to_ascii_lowercase();
-            name == domain || self.allow_subdomains && name.ends_with(&format!(".{domain}"))
-        })
+        let wildcard = wildcard_name(&name);
+        if name.contains('*')
+            && (self.allow_wildcard_certificates != Some(true) || wildcard.is_none())
+        {
+            return false;
+        }
+        self.allow_any_name
+            || self.allowed_domains.iter().any(|domain| {
+                let domain = domain.to_ascii_lowercase();
+                self.allow_bare_domains.unwrap_or(true) && name == domain
+                    || self.allow_subdomains
+                        && (name.ends_with(&format!(".{domain}"))
+                            || wildcard
+                                .is_some_and(|(_, reduced)| reduced.eq_ignore_ascii_case(&domain)))
+            })
     }
     fn descriptor(&self) -> Value {
         let mut descriptor = json!({
+            "issuer_ref": if self.issuer_ref.is_empty() {"default"} else {self.issuer_ref.as_str()},
             "allowed_domains": self.allowed_domains,
+            "allow_any_name": self.allow_any_name,
+            "allow_bare_domains": self.allow_bare_domains.unwrap_or(true),
+            "allow_wildcard_certificates": self.allow_wildcard_certificates.unwrap_or(false),
             "allow_subdomains": self.allow_subdomains,
             "allow_ip_sans": self.allow_ip_sans,
             "max_ttl": self.max_ttl,
@@ -1139,6 +1954,33 @@ impl Role {
         if let Some(kind) = self.local_key_kind {
             descriptor["key_type"] = json!(kind.key_type());
             descriptor["key_bits"] = json!(kind.bits());
+        }
+        {
+            let profile = self.effective_leaf_profile();
+            descriptor["allow_token_displayname"] = json!(false);
+            if let Some(fields) = profile.descriptor_fields().as_object() {
+                for (name, value) in fields {
+                    descriptor[name] = value.clone();
+                }
+            }
+        }
+        if let Some(fields) = self
+            .role_time_policy
+            .clone()
+            .unwrap_or_default()
+            .descriptor()
+            .as_object()
+        {
+            for (name, value) in fields {
+                descriptor[name] = value.clone();
+            }
+        }
+        if let Some(names) = &self.role_name_policy
+            && let Some(fields) = names.descriptor().as_object()
+        {
+            for (name, value) in fields {
+                descriptor[name] = value.clone();
+            }
         }
         descriptor
     }
@@ -1318,8 +2160,34 @@ fn valid_domain(name: &str) -> bool {
                     .all(|c| c.is_ascii_alphanumeric() || c == b'-')
         })
 }
+// RFC6125 wildcard syntax: exactly one star in the leftmost label. Each
+// nonempty part of that label must itself be a DNS label, and all remaining
+// labels remain ordinary DNS names. This does not broaden allowed_domains.
+fn wildcard_name(name: &str) -> Option<(&str, &str)> {
+    let name = name.trim_end_matches('.');
+    if name.is_empty() || name.len() > 253 || name.bytes().filter(|b| *b == b'*').count() != 1 {
+        return None;
+    }
+    let (label, reduced) = name.split_once('.').unwrap_or((name, ""));
+    if label.len() > 63 || !label.contains('*') || !reduced.is_empty() && !valid_domain(reduced) {
+        return None;
+    }
+    let (prefix, suffix) = label.split_once('*')?;
+    if [prefix, suffix]
+        .into_iter()
+        .any(|part| !part.is_empty() && !valid_domain(part))
+    {
+        return None;
+    }
+    Some((label, reduced))
+}
+
+fn wildcard_dns_san(name: &str) -> bool {
+    wildcard_name(name).is_some_and(|(label, reduced)| label == "*" && !reduced.is_empty())
+}
+
 fn valid_common_name(name: &str) -> bool {
-    valid_domain(name)
+    valid_domain(name) || wildcard_name(name).is_some()
 }
 
 fn validate_uri(value: &str, field: &str) -> Result<()> {
@@ -1417,8 +2285,25 @@ fn serial_bytes(value: &str) -> Result<Vec<u8>> {
         .collect()
 }
 
+struct IssuanceRoute<'a> {
+    mount: &'a str,
+    role: &'a str,
+    explicit_issuer: Option<&'a str>,
+}
+
 #[derive(Clone)]
 struct LeafTemplate {
+    role_name_policy: Option<RoleNamePolicy>,
+    no_store: bool,
+    exclude_cn_from_sans: bool,
+    email_sans: Vec<String>,
+    uri_sans: Vec<String>,
+    issuer_not_after_behavior: Option<IssuerLeafNotAfterBehavior>,
+    signed_role_time_owned: bool,
+    role_time_owned: bool,
+    warnings: Vec<String>,
+    role_leaf_profile: Option<RoleLeafProfile>,
+    local_issuer_id: String,
     serial: String,
     path: String,
     lease_id: String,
@@ -1430,18 +2315,20 @@ struct LeafTemplate {
     alt_names: Vec<String>,
     ip_sans: Vec<IpAddr>,
     issued: u64,
-    not_before: u64,
+    not_before: i64,
     expires: u64,
 }
 
 struct CertificateSpec<'a> {
+    role_leaf_profile: Option<&'a RoleLeafProfile>,
     serial: &'a str,
     issuer_cn: &'a str,
     subject_cn: &'a str,
     issuer_name_der: Option<&'a [u8]>,
     subject_name_der: Option<&'a [u8]>,
     public_key: &'a [u8],
-    not_before: u64,
+    authority_key_id: Option<&'a [u8]>,
+    not_before: i64,
     not_after: u64,
     is_ca: bool,
     alt_names: &'a [String],
@@ -1450,6 +2337,7 @@ struct CertificateSpec<'a> {
     uri_sans: &'a [String],
     exclude_cn_from_sans: bool,
     max_path_length: Option<u32>,
+    permitted_dns_domains: &'a [String],
 }
 
 fn certificate_der(signer: &Ed25519KeyPair, spec: CertificateSpec<'_>) -> Result<Vec<u8>> {
@@ -1513,6 +2401,7 @@ fn certificate_tbs_with(
         issuer_name_der,
         subject_name_der,
         public_key: _,
+        authority_key_id,
         not_before,
         not_after,
         is_ca,
@@ -1522,8 +2411,24 @@ fn certificate_tbs_with(
         uri_sans,
         exclude_cn_from_sans,
         max_path_length,
+        permitted_dns_domains,
+        role_leaf_profile,
     } = spec;
-    let mut extensions = Vec::new();
+    if is_ca && role_leaf_profile.is_some() {
+        return Err(error(
+            503,
+            "PKI leaf profile cannot control a CA certificate",
+        ));
+    }
+    let subject_der = if let Some(profile) = role_leaf_profile {
+        profile.subject_der(subject_cn)?
+    } else {
+        subject_name_der.map_or_else(|| name(subject_cn), <[u8]>::to_vec)
+    };
+    let mut extensions = role_leaf_profile
+        .map(RoleLeafProfile::leaf_extensions)
+        .transpose()?
+        .unwrap_or_default();
     let basic = if is_ca {
         let mut fields = vec![boolean(true)];
         if let Some(length) = max_path_length {
@@ -1533,16 +2438,65 @@ fn certificate_tbs_with(
     } else {
         seq(&[])
     };
-    extensions.push(extension(&[0x55, 0x1d, 0x13], true, &basic));
+    if role_leaf_profile.is_none() {
+        extensions.push(extension(&[0x55, 0x1d, 0x13], true, &basic));
+    }
+    if !permitted_dns_domains.is_empty() {
+        let subtrees: Vec<_> = permitted_dns_domains
+            .iter()
+            .map(|domain| seq(&[context_primitive(2, domain.as_bytes())]))
+            .collect();
+        extensions.push(extension(
+            &[0x55, 0x1d, 0x1e],
+            true,
+            &seq(&[der(0xa0, &subtrees.concat())]),
+        ));
+    }
+    let subject_key_id = root_fields::subject_key_identifier(subject_spki)?;
+    extensions.push(extension(
+        &[0x55, 0x1d, 0x0e],
+        false,
+        &octet_string(&subject_key_id),
+    ));
+    if let Some(authority_key_id) = authority_key_id {
+        extensions.push(extension(
+            &[0x55, 0x1d, 0x23],
+            false,
+            &seq(&[context_primitive(0, authority_key_id)]),
+        ));
+    }
     let usage_byte = if is_ca { 0x06 } else { 0x80 };
     let unused = if is_ca { 1 } else { 7 };
-    extensions.push(extension(
-        &[0x55, 0x1d, 0x0f],
-        true,
-        &bit_string(&[usage_byte], unused),
-    ));
-    let mut names = Vec::new();
-    if !exclude_cn_from_sans {
+    if role_leaf_profile.is_none() {
+        extensions.push(extension(
+            &[0x55, 0x1d, 0x0f],
+            true,
+            &bit_string(&[usage_byte], unused),
+        ));
+    }
+    let captured_subject =
+        role_leaf_profile.and_then(|profile| profile.leaf_subject_evidence.as_ref());
+    let other_names = captured_subject
+        .map(|subject| subject.other_names_der())
+        .transpose()?
+        .unwrap_or_default();
+    let policies = captured_subject
+        .map(|subject| subject.policies_der())
+        .transpose()?
+        .flatten();
+    let qualified_policy =
+        captured_subject.is_some_and(|subject| subject.policy_uses_extra_extension());
+    if !other_names.is_empty()
+        && !qualified_policy
+        && let Some(policies) = &policies
+    {
+        extensions.push(policies.clone());
+    }
+    let mut names = other_names.clone();
+    if !exclude_cn_from_sans
+        && (role_leaf_profile.is_none() || !subject_cn.is_empty())
+        && (is_ca || !subject_cn.contains('*') || wildcard_dns_san(subject_cn))
+    {
         names.push(context_primitive(2, subject_cn.as_bytes()));
     }
     for name in alt_names {
@@ -1562,15 +2516,24 @@ fn certificate_tbs_with(
         names.push(context_primitive(6, uri.as_bytes()));
     }
     if !names.is_empty() {
-        extensions.push(extension(&[0x55, 0x1d, 0x11], false, &seq(&names)));
+        extensions.push(extension(
+            &[0x55, 0x1d, 0x11],
+            subject_der.as_slice() == [0x30, 0] && other_names.is_empty(),
+            &seq(&names),
+        ));
+    }
+    if (other_names.is_empty() || qualified_policy)
+        && let Some(policies) = policies
+    {
+        extensions.push(policies);
     }
     let tbs = seq(&[
         context_explicit(0, &integer(&[2])),
         integer(&serial_bytes(serial)?),
         signature_algorithm.to_vec(),
         issuer_name_der.map_or_else(|| name(issuer_cn), <[u8]>::to_vec),
-        seq(&[time(not_before), time(not_after)]),
-        subject_name_der.map_or_else(|| name(subject_cn), <[u8]>::to_vec),
+        seq(&[time_signed(not_before), time(not_after)]),
+        subject_der,
         subject_spki.to_vec(),
         context_explicit(3, &seq(&extensions)),
     ]);
@@ -1595,7 +2558,12 @@ fn name(common_name: &str) -> Vec<u8> {
     ])])])
 }
 fn time(seconds: u64) -> Vec<u8> {
-    let stamp = timestamp(seconds);
+    time_stamp(&timestamp(seconds))
+}
+fn time_signed(seconds: i64) -> Vec<u8> {
+    time_stamp(&role_time::signed_timestamp(seconds))
+}
+fn time_stamp(stamp: &str) -> Vec<u8> {
     let bytes = stamp.as_bytes();
     let year: u32 = stamp[0..4].parse().unwrap_or(2050);
     if (1950..2050).contains(&year) {
@@ -1803,7 +2771,7 @@ mod tests {
             issued.body["data"]["private_key"]
                 .as_str()
                 .unwrap_or("")
-                .contains("BEGIN PRIVATE KEY")
+                .contains("BEGIN RSA PRIVATE KEY")
         );
         let revoked = pki.handle_admin(
             "POST",
@@ -1835,7 +2803,7 @@ mod tests {
         pki.handle_admin(
             "POST",
             "roles/web",
-            &json!({"allowed_domains":["example.test"]}),
+            &json!({"allowed_domains":["example.test"],"allow_ip_sans":false}),
             1_700_000_001,
         )?;
         let denied = pki.issue(
@@ -1848,11 +2816,14 @@ mod tests {
         );
         let denied_status = match denied {
             Ok(_) => {
-                return Err("role without allow_ip_sans unexpectedly issued a certificate".into());
+                return Err(
+                    "role with explicit allow_ip_sans=false unexpectedly issued a certificate"
+                        .into(),
+                );
             }
             Err(error) => error.status,
         };
-        assert_eq!(denied_status, 403);
+        assert_eq!(denied_status, 400);
         pki.handle_admin(
             "POST",
             "roles/web-ip",
@@ -1873,7 +2844,7 @@ mod tests {
         let der = BASE64.decode(
             cert.strip_prefix("-----BEGIN CERTIFICATE-----\n")
                 .ok_or("pem begin")?
-                .strip_suffix("-----END CERTIFICATE-----\n")
+                .strip_suffix("-----END CERTIFICATE-----")
                 .ok_or("pem end")?
                 .lines()
                 .collect::<String>(),
@@ -1965,3 +2936,81 @@ mod tests {
 #[cfg(test)]
 #[path = "pki_root_format_tests.rs"]
 mod root_format_tests;
+
+#[cfg(test)]
+mod bare_domain_legacy_tests {
+    use super::*;
+
+    #[test]
+    fn pki_role_bare_domain_legacy_bytes_keep_actual_historical_permission() -> Result<()> {
+        let legacy = json!({"allowed_domains":["example.test"],"allow_subdomains":false,
+                           "allow_ip_sans":false,"max_ttl":3600,"generate_lease":false});
+        let historical: Role =
+            serde_json::from_value(legacy.clone()).map_err(|_| bad("legacy role fixture"))?;
+        historical.validate()?;
+        assert!(historical.allow_bare_domains.is_none() && historical.allows("example.test"));
+        assert!(
+            serde_json::to_value(&historical).map_err(|_| bad("legacy serialization"))? == legacy,
+            "historical role JSON stays exact and has no fabricated default field"
+        );
+        let current = Role::from_body(&legacy)?;
+        assert!(current.allow_bare_domains == Some(false) && !current.allows("example.test"));
+        let mut body = legacy.clone();
+        body["allow_bare_domains"] = json!(true);
+        let allowed = Role::from_body(&body)?;
+        assert!(allowed.allow_bare_domains == Some(true) && allowed.allows("EXAMPLE.TEST"));
+        for wrong in [json!("not_bool"), json!(2), json!([]), json!({})] {
+            body["allow_bare_domains"] = wrong;
+            assert!(Role::from_body(&body).is_err());
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn pki_wildcard_syntax_and_permission_do_not_relax_historical_roles() -> Result<()> {
+        let legacy = json!({"allowed_domains":["example.test"],"allow_subdomains":true,
+            "allow_ip_sans":false,"max_ttl":3600,"generate_lease":false});
+        let historical: Role =
+            serde_json::from_value(legacy.clone()).map_err(|_| bad("old role"))?;
+        assert!(!historical.allows("*.example.test"));
+        assert_eq!(
+            serde_json::to_value(&historical).map_err(|_| bad("old role bytes"))?,
+            legacy
+        );
+        let current = Role::from_body(&legacy)?;
+        assert_eq!(current.allow_wildcard_certificates, Some(true));
+        for name in [
+            "*.example.test",
+            "f*o.example.test",
+            "*foo.example.test",
+            "foo*.example.test",
+        ] {
+            assert!(valid_common_name(name) && current.allows(name));
+        }
+        for name in [
+            "**.example.test",
+            "a.*.example.test",
+            "f**o.example.test",
+            "-f*.example.test",
+            "f*-o.example.test",
+        ] {
+            assert!(!valid_common_name(name) && !current.allows(name));
+        }
+        assert!(wildcard_dns_san("*.example.test"));
+        assert!(!wildcard_dns_san("f*o.example.test"));
+        let mut body = json!({"allow_any_name":true,"allow_wildcard_certificates":false});
+        let denied = Role::from_body(&body)?;
+        assert!(denied.allows("plain.unlisted.test") && !denied.allows("*.unlisted.test"));
+        body["allow_wildcard_certificates"] = json!("1");
+        assert!(Role::from_body(&body)?.allows("*.unlisted.test"));
+        body["allow_wildcard_certificates"] = json!(2);
+        assert!(Role::from_body(&body).is_err());
+        let mut encoded = serde_json::to_value(&current).map_err(|_| bad("current role bytes"))?;
+        encoded["allow_wildcard_certificates"] = json!("true");
+        assert!(
+            serde_json::from_value::<Role>(encoded).is_err(),
+            "wire coercion never relaxes durable typed bool"
+        );
+        Ok(())
+    }
+}

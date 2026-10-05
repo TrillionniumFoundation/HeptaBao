@@ -42,6 +42,12 @@ fn system_defaults_and_token_grants_each_require_schema_thirty_three()
         .remove("system_lease_defaults");
     let mut grant_only: super::State = serde_json::from_value(value)?;
     grant_only.auth.remove_name_modes_for_legacy_format_test();
+    let mut origin_only = grant_only.clone();
+    // Isolate the older grant format in an independent typed fixture. The
+    // captured current token's public origin retains its actual schema86 fence.
+    grant_only
+        .auth
+        .omit_unwrapped_public_origin_for_legacy_fixture();
     assert_eq!(
         grant_only
             .validate_format()
@@ -55,6 +61,21 @@ fn system_defaults_and_token_grants_each_require_schema_thirty_three()
     grant_only.auth.omit_lease_metadata_for_legacy_fixture();
     grant_only.schema = 32;
     assert!(grant_only.validate_format().is_ok());
+    origin_only.auth.omit_lease_metadata_for_legacy_fixture();
+    assert!(origin_only.auth.has_public_origin_state());
+    let origin_fence = origin_only
+        .validate_format()
+        .err()
+        .ok_or("typed public origin downgraded to schema 32")?;
+    assert_eq!(origin_fence.status, 503);
+    assert_eq!(
+        origin_fence.body["errors"][0],
+        "native public origin requires schema 86"
+    );
+    origin_only
+        .auth
+        .omit_unwrapped_public_origin_for_legacy_fixture();
+    assert!(origin_only.validate_format().is_ok());
     Ok(())
 }
 

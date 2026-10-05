@@ -8,6 +8,7 @@ pub(in crate::engines) enum CertificateFormat {
     Chain,
 }
 pub(in crate::engines) enum PkiPublicRead<'a> {
+    Ocsp(bool, Option<&'a str>),
     Ca,
     Certificate(&'a str),
     RawCa(CertificateFormat),
@@ -15,6 +16,7 @@ pub(in crate::engines) enum PkiPublicRead<'a> {
     Chain,
     FullCrl,
     ExternalCrl(&'a str),
+    LocalCrl(bool, IssuerCrlFormat),
     Issuers,
     DefaultIssuer,
     IssuerCertificate(&'a str, CertificateFormat),
@@ -54,6 +56,26 @@ fn raw_certificate(der: &[u8], format: CertificateFormat) -> Result<EngineRespon
 }
 
 impl Pki {
+    fn local_crl_response(der: &[u8], format: IssuerCrlFormat) -> Result<EngineResponse> {
+        if matches!(format, IssuerCrlFormat::Json) {
+            return Ok(ok(json!({"crl":pem("X509 CRL",der)}), false));
+        }
+        let is_pem = matches!(format, IssuerCrlFormat::Pem);
+        let bytes = if is_pem {
+            stored_pem("X509 CRL", der).into_bytes()
+        } else {
+            der.to_vec()
+        };
+        if bytes.len() > 512 * 1024 {
+            return Err(error(503, "public CRL exceeds bounds"));
+        }
+        Ok(EngineResponse {
+            status: 200,
+            body: json!({"__heptabao_pki_crl":BASE64.encode(bytes),"pem":is_pem}),
+            mutated: false,
+        })
+    }
+
     pub(in crate::engines) fn public_read_route<'a>(
         &self,
         method: &str,
@@ -62,7 +84,18 @@ impl Pki {
         if path.contains('?') {
             return None;
         }
-        if method == "LIST" && path == "issuers" && self.public_issuer_metadata().is_some() {
+        if matches!(method, "POST" | "PUT") && path == "ocsp" {
+            return Some(PkiPublicRead::Ocsp(false, None));
+        }
+        if method == "GET" {
+            if path == "ocsp" {
+                return Some(PkiPublicRead::Ocsp(true, None));
+            }
+            if let Some(suffix) = path.strip_prefix("ocsp/") {
+                return Some(PkiPublicRead::Ocsp(true, Some(suffix)));
+            }
+        }
+        if method == "LIST" && path == "issuers" {
             return Some(PkiPublicRead::Issuers);
         }
         if method != "GET" {
@@ -75,8 +108,26 @@ impl Pki {
             "ca_chain" => Some(PkiPublicRead::RawCa(CertificateFormat::Chain)),
             "cert/ca_chain" => Some(PkiPublicRead::Chain),
             "cert/crl" => Some(PkiPublicRead::FullCrl),
-            "issuer/default/json" if self.public_issuer_metadata().is_some() => {
+            "issuer/default/json"
+                if self.public_issuer_metadata().is_some()
+                    && !self.has_public_default_override() =>
+            {
                 Some(PkiPublicRead::DefaultIssuer)
+            }
+            "cert/delta-crl" if !self.root.as_ref().is_some_and(RootCa::is_external) => {
+                Some(PkiPublicRead::LocalCrl(true, IssuerCrlFormat::Json))
+            }
+            "crl" if !self.root.as_ref().is_some_and(RootCa::is_external) => {
+                Some(PkiPublicRead::LocalCrl(false, IssuerCrlFormat::Der))
+            }
+            "crl/pem" if !self.root.as_ref().is_some_and(RootCa::is_external) => {
+                Some(PkiPublicRead::LocalCrl(false, IssuerCrlFormat::Pem))
+            }
+            "crl/delta" if !self.root.as_ref().is_some_and(RootCa::is_external) => {
+                Some(PkiPublicRead::LocalCrl(true, IssuerCrlFormat::Der))
+            }
+            "crl/delta/pem" if !self.root.as_ref().is_some_and(RootCa::is_external) => {
+                Some(PkiPublicRead::LocalCrl(true, IssuerCrlFormat::Pem))
             }
             "cert/delta-crl" | "crl" | "crl/pem" | "crl/delta" | "crl/delta/pem"
                 if self.root.as_ref().is_some_and(|root| root.is_external()) =>
@@ -154,6 +205,10 @@ impl Pki {
     }
 
     pub(in crate::engines::pki) fn require_public_issuer(&self, reference: &str) -> Result<()> {
+        if !self.root.as_ref().is_some_and(RootCa::is_external) {
+            self.local_issuer(reference)?;
+            return Ok(());
+        }
         let (id, _, name) = self
             .public_issuer_metadata()
             .ok_or_else(|| error(500, "issuer reference is unavailable"))?;
@@ -172,9 +227,22 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<EngineResponse> {
+        if let PkiPublicRead::Ocsp(get, suffix) = route {
+            return self.local_ocsp(get, suffix, body, now);
+        }
         reject_unknown(body, &[])?;
         match route {
+            PkiPublicRead::Ocsp(_, _) => Err(bad("invalid OCSP dispatch")),
             PkiPublicRead::Ca => {
+                if let Some((der, _)) = self.public_imported_ca("default") {
+                    return Ok(ok(
+                        json!({"certificate":stored_pem("CERTIFICATE",der),"revocation_time":0,"revocation_time_rfc3339":""}),
+                        false,
+                    ));
+                }
+                if self.has_public_default_override() {
+                    return Err(not_found());
+                }
                 let root = self.root.as_ref().ok_or_else(not_found)?;
                 Ok(ok(
                     json!({"certificate":stored_pem("CERTIFICATE", &root.certificate_der),"revocation_time":0,"revocation_time_rfc3339":""}),
@@ -182,32 +250,73 @@ impl Pki {
                 ))
             }
             PkiPublicRead::RawCa(format) => {
+                if let Some((der, chain)) = self.public_imported_ca("default") {
+                    if matches!(format, CertificateFormat::Chain) {
+                        return Ok(EngineResponse {
+                            status: 200,
+                            body: json!({"__heptabao_pki_certificate":BASE64.encode(chain.join("\n").as_bytes()),"format":"chain"}),
+                            mutated: false,
+                        });
+                    }
+                    return raw_certificate(der, format);
+                }
+                if self.has_public_default_override() {
+                    return Err(not_found());
+                }
                 let root = self.root.as_ref().ok_or_else(not_found)?;
+                if matches!(format, CertificateFormat::Chain) && root.local_chain.is_some() {
+                    let bytes = root.local_ca_chain_pem().join("\n").into_bytes();
+                    return Ok(EngineResponse {
+                        status: 200,
+                        body: json!({"__heptabao_pki_certificate":BASE64.encode(bytes),"format":"chain"}),
+                        mutated: false,
+                    });
+                }
                 raw_certificate(&root.certificate_der, format)
             }
             PkiPublicRead::Certificate(serial) => {
                 let serial = normalize_serial(serial)?;
-                let certificate = self.issued.get(&serial).ok_or_else(not_found)?;
-                let mut projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":certificate.revoked_at.map(timestamp).unwrap_or_default()});
-                if let Some((issuer, _, _)) = self.public_issuer_metadata() {
-                    projection["issuer_id"] = json!(issuer);
+                if let Some(der) = self.local_certificate(&serial) {
+                    let revoked_at = self.signed_ca_revocation_time(&serial);
+                    return Ok(ok(
+                        json!({"certificate":stored_pem("CERTIFICATE",der),"revocation_time":revoked_at.unwrap_or(0),"revocation_time_rfc3339":revoked_at.map(timestamp).unwrap_or_default()}),
+                        false,
+                    ));
                 }
+                let certificate = self.issued.get(&serial).ok_or_else(not_found)?;
+                let projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":certificate.revoked_at.map(timestamp).unwrap_or_default()});
                 Ok(ok(projection, false))
             }
             PkiPublicRead::RawCertificate(serial, format) => {
                 let serial = normalize_serial(serial)?;
+                if let Some(der) = self.local_certificate(&serial) {
+                    return raw_certificate(der, format);
+                }
                 let certificate = self.issued.get(&serial).ok_or_else(not_found)?;
                 raw_certificate(&certificate.certificate_der, format)
             }
             PkiPublicRead::Chain => {
+                if let Some((_, chain)) = self.public_imported_ca("default") {
+                    let certificate = chain.join("\n").trim_end().to_owned();
+                    return Ok(ok(
+                        json!({"ca_chain":certificate,"certificate":certificate,"revocation_time":0,"revocation_time_rfc3339":""}),
+                        false,
+                    ));
+                }
+                if self.has_public_default_override() {
+                    return Err(not_found());
+                }
                 let root = self.root.as_ref().ok_or_else(not_found)?;
-                let certificate = stored_pem("CERTIFICATE", &root.certificate_der);
+                let certificate = root.local_ca_chain_pem().join("\n").trim_end().to_owned();
                 Ok(ok(
                     json!({"ca_chain":certificate,"certificate":certificate,"revocation_time":0,"revocation_time_rfc3339":""}),
                     false,
                 ))
             }
             PkiPublicRead::FullCrl => {
+                if self.has_public_default_override() {
+                    return Err(not_found());
+                }
                 if let Some(response) = self.external_crl_read("cert/crl", now)? {
                     return Ok(response);
                 }
@@ -218,10 +327,55 @@ impl Pki {
                     false,
                 ))
             }
+            PkiPublicRead::LocalCrl(delta, format) => {
+                if self.has_public_default_override() {
+                    return Err(not_found());
+                }
+                let Some(root) = self.root.as_ref() else {
+                    if matches!(format, IssuerCrlFormat::Json) {
+                        return Err(not_found());
+                    }
+                    return Ok(EngineResponse {
+                        status: 204,
+                        body: json!({"__heptabao_pki_crl":"","pem":matches!(format,IssuerCrlFormat::Pem)}),
+                        mutated: false,
+                    });
+                };
+                let der = self.cached_local_crl(root, delta)?;
+                if matches!(format, IssuerCrlFormat::Json) {
+                    return Ok(ok(
+                        json!({"certificate":stored_pem("X509 CRL",der),"revocation_time":0,"revocation_time_rfc3339":""}),
+                        false,
+                    ));
+                }
+                Self::local_crl_response(der, format)
+            }
             PkiPublicRead::ExternalCrl(path) => {
                 self.external_crl_read(path, now)?.ok_or_else(not_found)
             }
             PkiPublicRead::Issuers => {
+                if !self.root.as_ref().is_some_and(RootCa::is_external) {
+                    let mut info = serde_json::Map::new();
+                    for root in self.local_roots() {
+                        let name = root
+                            .local_fields
+                            .as_ref()
+                            .map_or("", |fields| fields.issuer_name.as_str());
+                        info.insert(root.issuer_id.clone(),json!({"is_default":self.selected_local_issuer_id()==root.issuer_id,"issuer_name":name,"key_id":root.key_id,"serial_number":external::formatted_serial(&root.serial)}));
+                    }
+                    self.append_public_issuers(&mut info)?;
+                    if info.is_empty() {
+                        return Ok(EngineResponse {
+                            status: 404,
+                            body: json!({"errors":[]}),
+                            mutated: false,
+                        });
+                    }
+                    return Ok(ok(
+                        json!({"keys":info.keys().collect::<Vec<_>>(),"key_info":info}),
+                        false,
+                    ));
+                }
                 let root = self.root.as_ref().ok_or_else(not_found)?;
                 let (issuer, key, name) = self.public_issuer_metadata().ok_or_else(not_found)?;
                 Ok(ok(
@@ -230,8 +384,10 @@ impl Pki {
                 ))
             }
             PkiPublicRead::IssuerCertificate(reference, format) => {
-                self.require_public_issuer(reference)?;
-                let root = self.root.as_ref().ok_or_else(not_found)?;
+                if let Some((der, _)) = self.public_imported_ca(reference) {
+                    return raw_certificate(der, format);
+                }
+                let root = self.selected_issuer(reference)?;
                 if root.certificate_der.len() > 64 * 1024 {
                     return Err(error(503, "public certificate exceeds bounds"));
                 }
@@ -251,12 +407,42 @@ impl Pki {
                 }
             }
             PkiPublicRead::IssuerJson(reference) => {
-                self.require_public_issuer(reference)?;
-                self.handle_public_read(PkiPublicRead::DefaultIssuer, body, now)
+                if let Some((der, chain)) = self.public_imported_ca(reference) {
+                    return Ok(ok(
+                        json!({"certificate":pem("CERTIFICATE",der),"ca_chain":chain,"issuer_id":self.imported_ca_id(reference).ok_or_else(not_found)?,"issuer_name":""}),
+                        false,
+                    ));
+                }
+                let root = self.selected_issuer(reference)?;
+                let name = if root.is_external() {
+                    self.public_issuer_metadata()
+                        .map_or("", |(_, _, name)| name)
+                } else {
+                    root.local_fields
+                        .as_ref()
+                        .map_or("", |fields| fields.issuer_name.as_str())
+                };
+                let issuer = if root.is_external() {
+                    self.public_issuer_metadata().map_or("", |(id, _, _)| id)
+                } else {
+                    root.issuer_id.as_str()
+                };
+                let certificate = pem("CERTIFICATE", &root.certificate_der);
+                Ok(ok(
+                    json!({"certificate":certificate,"ca_chain":root.local_ca_chain_pem(),"issuer_id":issuer,"issuer_name":name}),
+                    false,
+                ))
             }
             PkiPublicRead::IssuerCrl(reference, delta, format) => {
-                self.require_public_issuer(reference)?;
-                let der = self.external_crl_der(delta, now)?.ok_or_else(not_found)?;
+                let root = self.selected_issuer(reference)?;
+                let owned_der = if root.is_external() {
+                    self.external_crl_der(delta, now)?
+                        .ok_or_else(not_found)?
+                        .to_vec()
+                } else {
+                    self.cached_local_crl(root, delta)?.to_vec()
+                };
+                let der = owned_der.as_slice();
                 match format {
                     IssuerCrlFormat::Json => Ok(ok(json!({"crl":pem("X509 CRL",der)}), false)),
                     IssuerCrlFormat::Der | IssuerCrlFormat::Pem => {
@@ -282,7 +468,7 @@ impl Pki {
                 let (issuer, _, name) = self.public_issuer_metadata().ok_or_else(not_found)?;
                 let certificate = pem("CERTIFICATE", &root.certificate_der);
                 Ok(ok(
-                    json!({"certificate":certificate,"ca_chain":[certificate],"issuer_id":issuer,"issuer_name":name}),
+                    json!({"certificate":certificate,"ca_chain":root.local_ca_chain_pem(),"issuer_id":issuer,"issuer_name":name}),
                     false,
                 ))
             }

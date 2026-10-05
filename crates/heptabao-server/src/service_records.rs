@@ -15,6 +15,59 @@ pub(super) struct RecordPlan {
     pub bytes: Zeroizing<Vec<u8>>,
     pub identity: StateIdentity,
     pub objects: Vec<Arc<StagedObject>>,
+    pub namespace_leases: namespace_runtime::Leases,
+}
+
+impl RecordPlan {
+    fn validate_kubernetes_artifact_owner(&self, state: &State) -> Result<(), Response> {
+        if state.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            && !state.engines.has_kubernetes_opaque_artifact_state()
+        {
+            return Ok(());
+        }
+        // Compare the prepared protected owner, including independent namespace
+        // custody, with the exact authenticated record graph being published.
+        let protected = state.protected_state()?;
+        let bytes =
+            owner_store::serialize_owner(&protected.engines).map_err(state_serialization_error)?;
+        let owner = self
+            .root
+            .owners
+            .iter()
+            .find(|owner| owner.name == "engines")
+            .ok_or_else(unavailable)?;
+        let digest = state_record_root::digest_owner(&self.root.address_key(), "engines", &bytes)
+            .map_err(root_error)?;
+        if owner.total_bytes != bytes.len() as u64 || owner.digest != digest {
+            return Err(unavailable());
+        }
+        Ok(())
+    }
+
+    fn validate_precise_auth_owner(&self, state: &State) -> Result<(), Response> {
+        self.validate_kubernetes_artifact_owner(state)?;
+        if !state.has_token_api_precision_state() {
+            return Ok(());
+        }
+        // Bind the private floor and every precise issuer field to the exact
+        // authenticated Auth owner carried by this plan, including old plans
+        // paired with a newer in-memory State. No floor is trusted as metadata.
+        let protected = state.protected_state()?;
+        let bytes =
+            owner_store::serialize_owner(&protected.auth).map_err(state_serialization_error)?;
+        let owner = self
+            .root
+            .owners
+            .iter()
+            .find(|owner| owner.name == "auth")
+            .ok_or_else(unavailable)?;
+        let digest = state_record_root::digest_owner(&self.root.address_key(), "auth", &bytes)
+            .map_err(root_error)?;
+        if owner.total_bytes != bytes.len() as u64 || owner.digest != digest {
+            return Err(unavailable());
+        }
+        Ok(())
+    }
 }
 
 /// Keep the first occurrence in child-first order, but reject an ID that hides
@@ -90,6 +143,7 @@ pub(super) fn existing_plan(root: RecordStateRoot) -> Result<RecordPlan, Respons
         bytes,
         identity,
         objects: Vec::new(),
+        namespace_leases: namespace_runtime::Leases::default(),
     })
 }
 
@@ -211,6 +265,8 @@ impl Service {
             .map(|owner| owner_bytes(root, owner, reader))
             .collect::<Result<Vec<_>, _>>()?;
         let mut state = State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: root.state_schema,
             cluster_id: root.cluster_id.clone(),
             replay_epoch: root.replay_epoch,
@@ -244,8 +300,11 @@ impl Service {
         Ok(state)
     }
 
-    pub(super) fn prepare_record_plan(&self, state: &State) -> Result<RecordPlan, Response> {
+    pub(super) fn prepare_record_plan(&self, state: &mut State) -> Result<RecordPlan, Response> {
+        self.prepare_namespace_publication(state)?;
         state.validate_publication_schema(self.state.as_ref())?;
+        let namespace_leases = state.namespace_leases.clone();
+        let state = state.protected_state()?;
         let key = state.engines.record_address_key().ok_or_else(unavailable)?;
         let kv1 = state.engines.record_root().ok_or_else(unavailable)?;
         let reuse = OwnerReuseHint::between(self.state.as_ref(), state);
@@ -341,6 +400,7 @@ impl Service {
             bytes,
             identity,
             objects,
+            namespace_leases,
         })
     }
 
@@ -434,8 +494,11 @@ impl Service {
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         mut restore_fault: Option<crate::fixture_native_restore::NativeRestoreFaultContext>,
     ) -> Result<(), Response> {
+        plan.namespace_leases.validate()?;
+        state.namespace_leases.validate()?;
         state.validate_publication_schema(self.state.as_ref())?;
         state.validate_format()?;
+        plan.validate_precise_auth_owner(state)?;
         if state.schema != plan.root.state_schema
             || state.cluster_id != plan.root.cluster_id
             || state.replay_epoch != plan.root.replay_epoch
@@ -632,7 +695,12 @@ impl Service {
         }
         match result {
             Ok(()) => Ok(()),
-            Err(ServiceError::OutcomeUnknown { recovery_reference }) => {
+            Err(
+                ref error @ ServiceError::OutcomeUnknown {
+                    ref recovery_reference,
+                },
+            ) => {
+                self.capture_ordinary_kv_outcome_unknown(error, true);
                 crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
@@ -742,8 +810,47 @@ impl Service {
         committed: crate::ha::CommittedRecordState,
     ) -> Result<(), Response> {
         if self.current_state_identity()? == committed.identity {
+            if self.seal.as_ref().is_some_and(SealMetadata::is_wrapper) {
+                let local = self.capture_existing_ha_publication()?;
+                let received = self.receive_ha_records(ha, &committed)?;
+                self.reconcile_existing_ha_publication(&local, received.owner())?;
+            } else {
+                self.reconcile_unchanged_ha_recovery_index(crate::request_deadline::current())?;
+            }
             return self.cache_verified_ha_records(&committed);
         }
+        let received = self.receive_ha_records(ha, &committed)?;
+        match self.install_committed_ha_records(received) {
+            Ok(ha_received::HaLocalPublicationProgress::Current) => {}
+            Ok(ha_received::HaLocalPublicationProgress::Superseded) => {
+                return Err(Response::error(
+                    503,
+                    "HA local publication is catching up to a newer committed target",
+                ));
+            }
+            Err(error) => {
+                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+                self.recovery_required = true;
+                self.ha_activation = None;
+                self.ha_read_cache = None;
+                return Err(Self::ha_committed_local_failure(error));
+            }
+        }
+        if let Err(error) = self.cache_verified_ha_records(&committed) {
+            eprintln!("heptabao-ha-completed: stage=after_index_records_cache");
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Err(error);
+        }
+        self.recovery_required = false;
+        Ok(())
+    }
+
+    pub(super) fn materialize_committed_ha_records(
+        ha: &Arc<Mutex<HaProcess>>,
+        committed: &crate::ha::CommittedRecordState,
+    ) -> Result<(State, RecordPlan), Response> {
         struct HaReader<'a> {
             ha: &'a HaProcess,
             root: &'a RecordStateRoot,
@@ -799,37 +906,44 @@ impl Service {
             bytes: committed.root_bytes.clone(),
             identity: committed.identity,
             objects,
+            namespace_leases: namespace_runtime::Leases::default(),
         };
-        self.install_received_record_state(state, plan)?;
-        if let Err(error) = self.cache_verified_ha_records(&committed) {
-            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
-            self.recovery_required = true;
-            self.ha_activation = None;
-            return Err(error);
-        }
-        self.recovery_required = false;
-        Ok(())
+        Ok((state, plan))
     }
 
     // The caller has authenticated the complete committed graph. Keep local
     // publication and activation installation together, including HA catch-up
     // across more than one missed epoch.
+    #[cfg(test)]
     pub(super) fn install_received_record_state(
         &mut self,
         state: State,
         plan: RecordPlan,
     ) -> Result<(), Response> {
-        if state.auth.has_recovery_state()
+        if self.ha.is_some()
+            || state.auth.has_recovery_state()
             || self
                 .state
                 .as_ref()
                 .is_some_and(|state| state.auth.has_recovery_state())
         {
-            self.fence_recovery_delivery();
             return Err(Response::error(
                 503,
-                "HA recovery state requires a backend-bound public-index consumer",
+                "test receiver cannot admit HA Recovery authority",
             ));
+        }
+        if let Err(error) = state
+            .auth
+            .validate_token_api_clock_floor(self.state.as_ref().map(|state| &*state.auth))
+            .map_err(|error| Response::error(503, &error.message))
+            .and_then(|()| plan.validate_precise_auth_owner(&state))
+            .and_then(|()| state.validate_publication_schema(self.state.as_ref()))
+        {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            self.ha_read_cache = None;
+            return Err(Self::ha_committed_local_failure(error));
         }
         // Raft already owns this state; a local limit is not a pre-entry rejection.
         if let Err(error) = self.validate_loaded_capacity(&state, Some(&plan.root)) {
@@ -858,6 +972,7 @@ impl Service {
         self.record_root = Some(plan.root);
         self.state_digest = Some(plan.identity.digest());
         self.state = Some(state);
+        self.reconcile_ha_recovery_index(crate::request_deadline::current())?;
         self.install_epoch_activation(activation);
         self.record_writes_since_gc = 64;
         Ok(())
@@ -1000,6 +1115,81 @@ mod tests {
         );
     }
     #[test]
+    fn kube_opaque_artifact_record_owner_rejects_old_plan_after_actual_mount_revision_commit()
+    -> TestResult {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (_key, token) = bootstrap(&mut service)?;
+        mount(&mut service, &token);
+        let mut candidate = service.state.as_ref().ok_or("state")?.clone();
+        candidate.schema = KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA;
+        service
+            .commit_state(&mut candidate)
+            .map_err(|_| "actual schema87 publication")?;
+        service.state = Some(candidate);
+        let mut before = service.state.as_ref().ok_or("state")?.clone();
+        let plan = service
+            .prepare_record_plan(&mut before)
+            .map_err(|_| "actual record plan")?;
+        plan.validate_kubernetes_artifact_owner(&before)
+            .map_err(|_| "actual initial Engine owner")?;
+        let changed = call(
+            &mut service,
+            "POST",
+            "sys/mounts/records/tune",
+            &token,
+            json!({"description":"actual protected owner revision"}),
+        );
+        assert_eq!(changed.status, 204, "{}", changed.body);
+        let state = service.state.as_ref().ok_or("current state")?.clone();
+        assert!(plan.validate_kubernetes_artifact_owner(&state).is_err());
+        let digest = service.current_state_digest().map_err(|_| "digest")?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        assert!(service.commit_record_plan(&state, plan).is_err());
+        assert_eq!(
+            service.current_state_digest().map_err(|_| "digest")?,
+            digest
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn old_record_plan_cannot_publish_a_newer_private_observation_floor() -> TestResult {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (_key, token) = bootstrap(&mut service)?;
+        mount(&mut service, &token);
+        let mut state = service.state.as_ref().ok_or("state")?.clone();
+        let plan = service
+            .prepare_record_plan(&mut state)
+            .map_err(|_| "plan")?;
+        plan.validate_precise_auth_owner(&state)
+            .map_err(|_| "historical binding")?;
+        let digest = service.current_state_digest().map_err(|_| "digest")?;
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let mut newer = state.clone();
+        let mut auth = serde_json::to_value(&newer.auth)?;
+        auth["token_api_precision_state"] = json!(true);
+        auth["token_api_observed_at"] = json!({"seconds":100,"nanoseconds":800000000});
+        newer.auth = serde_json::from_value(auth)?;
+        newer.auth.validate_system_lease_defaults()?;
+        assert!(plan.validate_precise_auth_owner(&newer).is_err());
+        assert_eq!(
+            service.current_state_digest().map_err(|_| "digest")?,
+            digest
+        );
+        assert_eq!(
+            service.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        Ok(())
+    }
+
+    #[test]
     fn object_dedup_preserves_order_and_rejects_reference_or_byte_conflicts() -> TestResult {
         let key = crate::state_records::AddressKey::from_bytes([71; 32]);
         let first = StagedObject::owner_chunk(&key, b"first")?;
@@ -1039,7 +1229,7 @@ mod tests {
         let mut next = service.state.clone().ok_or("state")?;
         next.engines
             .handle("", "PUT", "records/shared", &json!({"value":"kept"}), 100)?;
-        let mut plan = service.prepare_record_plan(&next).map_err(|_| "plan")?;
+        let mut plan = service.prepare_record_plan(&mut next).map_err(|_| "plan")?;
         assert!(!plan.objects.is_empty());
         assert!(plan.objects.len() < heptabao_durable_service::MAX_ATOMIC_MUTATIONS / 2);
         let duplicates = plan.objects.clone();
@@ -1113,17 +1303,17 @@ mod tests {
             service.durable.as_ref().ok_or("durable")?.generation(),
             count
         );
-        let state = service.state.as_ref().ok_or("state")?;
+        let mut state = service.state.clone().ok_or("state")?;
         assert!(state.engines.record_objects()?.is_empty());
         assert!(
             service
-                .prepare_record_plan(state)
+                .prepare_record_plan(&mut state)
                 .map_err(|_| "delta")?
                 .objects
                 .is_empty()
         );
         let anchor = service
-            .full_existing_record_plan(state)
+            .full_existing_record_plan(&state)
             .map_err(|_| "anchor")?;
         assert!(!anchor.objects.is_empty());
         struct AnchorReader(BTreeMap<ObjectId, Arc<StagedObject>>);
@@ -1184,7 +1374,7 @@ mod tests {
             )?;
         }
         service
-            .commit_state(&candidate)
+            .commit_state(&mut candidate)
             .map_err(|_| "publish graph")?;
         service.state = Some(candidate);
         let previous = service.record_root.clone().ok_or("root")?;
@@ -1196,7 +1386,7 @@ mod tests {
             &json!({"payload":"small replacement"}),
             100,
         )?;
-        let plan = service.prepare_record_plan(&next).map_err(|_| "plan")?;
+        let plan = service.prepare_record_plan(&mut next).map_err(|_| "plan")?;
         assert_eq!(plan.root.owners, previous.owners);
         assert!(
             plan.objects.len() <= 8,
@@ -1239,7 +1429,7 @@ mod tests {
                 100,
             )?;
         }
-        let plan = service.prepare_record_plan(&next).map_err(|_| "plan")?;
+        let plan = service.prepare_record_plan(&mut next).map_err(|_| "plan")?;
         assert!(plan.objects.len() > heptabao_durable_service::MAX_ATOMIC_MUTATIONS);
         let first = plan
             .objects

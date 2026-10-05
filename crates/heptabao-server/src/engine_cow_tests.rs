@@ -39,7 +39,9 @@ fn fixed_legacy_mounts_and_payloads_keep_identical_serialized_bytes() -> TestRes
         };
         let mut state = EngineState {
             records: None,
+            namespace_record_owners: BTreeMap::new(),
             lease_clock: 0,
+            kubernetes_artifact_clock: None,
             namespaces: BTreeMap::from([("".into(), CowNamespace(Arc::new(namespace)))]),
         };
         let path = if bytes == LEGACY_KV1 {

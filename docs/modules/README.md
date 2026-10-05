@@ -2,7 +2,7 @@
 
 Current executable ownership and route/test mapping: `docs/modules/CURRENT_RUNTIME_MAP.md` and `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md`. Ten packages are in the current server runtime dependency closure; the remaining guides describe separate models, contracts, prototypes and tools.
 
-Current status: `V2.1 / 47 WORKSPACE PACKAGES`
+Current status: `V2.1 / 48 WORKSPACE PACKAGES`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
@@ -41,6 +41,7 @@ Run `python scripts/validate_module_closure.py` to check the closed set.
 | `heptabao-kms-contracts` | provider-neutral KMS lifecycle and outcomes | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-kms-contracts.md` |
 | `heptabao-kv-engine` | versioned KV secrets engine | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-kv-engine.md` |
 | `heptabao-lease` | lease lifecycle | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-lease.md` |
+| `heptabao-linux-parent-death` | fixed Linux provider owner-thread death binding | V2 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-linux-parent-death.md` |
 | `heptabao-migration` | migration writer authority | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-migration.md` |
 | `heptabao-mount-router` | namespace scoped mount routing | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-mount-router.md` |
 | `heptabao-namespace` | hierarchical namespace isolation | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-namespace.md` |

@@ -196,7 +196,9 @@ impl RaftPeerRpc for MutualTlsRaftRpc {
         let target_node = self.peers.get(&target).cloned();
         let transport = self.transport.clone();
         let inflight = self.inflight.clone();
-        let emit_legacy_peer_v1 = self.emit_legacy_peer_v1;
+        // ReadIndex did not exist in legacy peer frames. Its authority witness
+        // always carries the authenticated current cluster binding.
+        let emit_legacy_peer_v1 = self.emit_legacy_peer_v1 && kind != RaftRpcKind::ReadIndex;
         Box::pin(async move {
             if source != local_id || source == target || timeout.is_zero() {
                 return Err(RemoteRaftError::InvalidRpc);
@@ -749,6 +751,7 @@ impl HaProcess {
                         let service = rpc_service.clone();
                         let ids = &ids_by_node;
                         let handle = &runtime_handle;
+                        let inbound_read_deadline = Instant::now() + timeout;
                         let result = serve_one_mtls_peer_frame(
                             &listener,
                             server_tls.clone(),
@@ -825,9 +828,32 @@ impl HaProcess {
                                     );
                                 }
                                 let legacy_v1 = request.legacy_v1;
-                                let payload = handle
-                                    .block_on(service.handle(source, request.kind, request.payload))
-                                    .map_err(map_remote_service_error)?;
+                                // ReadIndex waits on quorum. Charge it against
+                                // the same bounded application slots as forwarding,
+                                // leaving independent workers for consensus RPCs.
+                                let _read_slot =
+                                    if request.kind == RaftRpcKind::ReadIndex {
+                                        Some(forward_slots.clone().try_acquire_owned().map_err(
+                                            |_| heptabao_ha_service::HaError::WriterBusy,
+                                        )?)
+                                    } else {
+                                        None
+                                    };
+                                let payload = if request.kind == RaftRpcKind::ReadIndex {
+                                    handle.block_on(
+                                        heptabao_raft_runtime::with_read_index_deadline(
+                                            inbound_read_deadline,
+                                            service.handle(source, request.kind, request.payload),
+                                        ),
+                                    )
+                                } else {
+                                    handle.block_on(service.handle(
+                                        source,
+                                        request.kind,
+                                        request.payload,
+                                    ))
+                                }
+                                .map_err(map_remote_service_error)?;
                                 let response = RaftWireFrame {
                                     cluster_id: listener_cluster_id.clone(),
                                     role: RAFT_FRAME_RESPONSE,
@@ -1511,6 +1537,69 @@ impl HaProcess {
         }
     }
 
+    /// Authenticate the exact application kind/root observed under the runtime's
+    /// opaque quorum/own-applied proof. Complete object materialization remains
+    /// mandatory before an application uses this proof for supersession.
+    pub(crate) fn application_identity_witness(
+        &self,
+    ) -> Result<
+        (
+            crate::state_record_root::StateIdentity,
+            heptabao_raft_runtime::ApplicationReadWitness,
+        ),
+        String,
+    > {
+        use crate::state_record_root::StateIdentity;
+        let node = self.node.as_ref().ok_or("HA process is shut down")?;
+        let (witness, envelope, record) = self
+            .block_on_read(node.application_read_witness())
+            .map_err(|error| error.to_string())?;
+        let identity = if let Some(published) = record {
+            let envelope = published.envelope();
+            let CommittedStateDescriptor::RecordsV5(decoded) = self
+                .codec
+                .open_committed_descriptor(
+                    envelope.operation_id(),
+                    envelope.digest(),
+                    envelope.sealed(),
+                )
+                .map_err(|error| error.to_string())?
+            else {
+                return Err("application witness kind mismatch".into());
+            };
+            if decoded.base != published.base()
+                || decoded
+                    .root
+                    .references()
+                    .map(crate::ha_state::runtime_reference)
+                    .collect::<Vec<_>>()
+                    != published.direct_refs()
+                || decoded.root.cluster_id != self.cluster_id
+            {
+                return Err("application witness record root mismatch".into());
+            }
+            StateIdentity::RecordsV5(envelope.digest())
+        } else {
+            let envelope = envelope.ok_or("application witness is absent")?;
+            if matches!(
+                self.codec
+                    .open_committed_descriptor(
+                        envelope.operation_id(),
+                        envelope.digest(),
+                        envelope.sealed()
+                    )
+                    .map_err(|error| error.to_string())?,
+                CommittedStateDescriptor::RecordsV5(_)
+            ) {
+                return Err("application witness kind mismatch".into());
+            }
+            StateIdentity::Legacy(envelope.digest())
+        };
+        self.block_on_read(node.verify_application_read_witness(&witness))
+            .map_err(|error| error.to_string())?;
+        Ok((identity, witness))
+    }
+
     pub(crate) fn latest_committed_state_if_changed(
         &self,
         known: Option<&ValidatedReadCursor>,
@@ -2149,7 +2238,10 @@ fn encode_legacy_raft_frame_for_transition(
         || frame.target == 0
         || frame.source == frame.target
         || !matches!(frame.role, RAFT_FRAME_REQUEST | RAFT_FRAME_RESPONSE)
-        || frame.kind == RaftRpcKind::TransferLeader
+        || matches!(
+            frame.kind,
+            RaftRpcKind::TransferLeader | RaftRpcKind::ReadIndex
+        )
         || frame.payload.is_empty()
     {
         return Err(RemoteRaftError::InvalidRpc);
@@ -2206,7 +2298,7 @@ fn decode_legacy_raft_frame_for_transition(
     if source == 0
         || target == 0
         || source == target
-        || kind == RaftRpcKind::TransferLeader
+        || matches!(kind, RaftRpcKind::TransferLeader | RaftRpcKind::ReadIndex)
         || length == 0
         || encoded.len()
             != LEGACY_RAFT_FRAME_HEADER_BYTES
@@ -2277,6 +2369,7 @@ fn kind_tag(kind: RaftRpcKind) -> u8 {
         RaftRpcKind::PreVote => 3,
         RaftRpcKind::SnapshotChunk => 4,
         RaftRpcKind::TransferLeader => 5,
+        RaftRpcKind::ReadIndex => 6,
     }
 }
 
@@ -2287,6 +2380,7 @@ fn decode_kind(value: u8) -> Result<RaftRpcKind, RemoteRaftError> {
         3 => Ok(RaftRpcKind::PreVote),
         4 => Ok(RaftRpcKind::SnapshotChunk),
         5 => Ok(RaftRpcKind::TransferLeader),
+        6 => Ok(RaftRpcKind::ReadIndex),
         _ => Err(RemoteRaftError::InvalidRpc),
     }
 }
@@ -2917,6 +3011,7 @@ mod tests {
             RaftRpcKind::PreVote,
             RaftRpcKind::SnapshotChunk,
             RaftRpcKind::TransferLeader,
+            RaftRpcKind::ReadIndex,
         ] {
             let encoded = encode_raft_frame(RaftWireFrame {
                 cluster_id: "cluster-a".into(),
@@ -2935,7 +3030,7 @@ mod tests {
             assert_eq!(decoded.kind, kind);
             assert_eq!(decoded.payload, b"bounded-raft-rpc");
         }
-        assert!(decode_kind(6).is_err());
+        assert!(decode_kind(7).is_err());
         Ok(())
     }
 

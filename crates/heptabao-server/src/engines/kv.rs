@@ -205,7 +205,7 @@ fn list_map_keys<T>(
         Some(Value::String(text)) if text.is_empty() => 0,
         Some(value) => value
             .as_i64()
-            .or_else(|| value.as_str().and_then(|text| text.parse::<i64>().ok()))
+            .or_else(|| value.as_str().and_then(wire_integer_text))
             .ok_or_else(|| bad("limit must be a signed integer"))?,
     };
     if recursive {
@@ -464,8 +464,13 @@ impl Kv2 {
         subkeys: bool,
     ) -> Result<EngineResponse> {
         let entry = self.entries.get(resource).ok_or_else(not_found)?;
-        let selected = optional_u64(body, "version")?
-            .filter(|v| *v != 0)
+        // FieldData coercion follows ACL admission. The logical query keeps
+        // strings/arrays for policy allowed/denied_parameters checks above.
+        let selected = body
+            .get("version")
+            .map(wire_version)
+            .transpose()?
+            .flatten()
             .unwrap_or(entry.current_version);
         let version = entry.versions.get(&selected).ok_or_else(not_found)?;
         let metadata = version.metadata(selected, &entry.custom_metadata);

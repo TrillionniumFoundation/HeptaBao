@@ -403,6 +403,20 @@ impl OpenLdap {
             .collect()
     }
 
+    /// A namespace closure revokes the original Add admission. Persist that
+    /// subtractive obligation before its complete owner moves into ciphertext.
+    /// Already delivered Active leases retain their original lifecycle.
+    pub(crate) fn retire_pending_delivery(&mut self) -> bool {
+        let mut changed = false;
+        for lease in self.leases.values_mut() {
+            if lease.phase == Phase::PendingIssue {
+                lease.phase = Phase::PendingRevoke;
+                changed = true;
+            }
+        }
+        changed
+    }
+
     /// Reconstruct an external effect solely from the durable lease intent.
     /// This is used after restart when the process-local pending plan was lost.
     pub(crate) fn prepare_effect(

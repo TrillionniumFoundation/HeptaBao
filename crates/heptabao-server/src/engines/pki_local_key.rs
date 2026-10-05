@@ -336,6 +336,71 @@ impl LocalPrivateMaterial {
         Ok(material)
     }
 
+    pub(super) fn import_der(label: &str, bytes: &[u8]) -> Result<Self> {
+        if bytes.is_empty() || bytes.len() > 64 * 1024 {
+            return Err(bad("PKI imported private key exceeds bounds"));
+        }
+        let document = ml_dsa::pkcs8::SecretDocument::try_from(bytes)
+            .map_err(|_| bad("invalid bounded PKI private key DER"))?;
+        let bytes = document.as_bytes();
+        if label == "PRIVATE KEY" {
+            for kind in [
+                LocalKeyKind::Mldsa44,
+                LocalKeyKind::Mldsa65,
+                LocalKeyKind::Mldsa87,
+            ] {
+                if let Ok(material) = mldsa_dispatch!(kind, mldsa_import_pkcs8, bytes) {
+                    material.public()?;
+                    return Ok(material);
+                }
+            }
+        }
+        let key = match label {
+            "PRIVATE KEY" => PKey::private_key_from_pkcs8(bytes),
+            "RSA PRIVATE KEY" => Rsa::private_key_from_der(bytes).and_then(PKey::from_rsa),
+            "EC PRIVATE KEY" => EcKey::private_key_from_der(bytes).and_then(PKey::from_ec_key),
+            _ => return Err(bad("unsupported PKI private key PEM label")),
+        }
+        .map_err(|_| bad("invalid unencrypted PKI private key"))?;
+        let public = LocalPublicKey::from_spki(&key.public_key_to_der().map_err(crypto_failure)?)?;
+        let kind = public.kind();
+        let canonical = if kind == LocalKeyKind::Ed25519 {
+            let seed = Zeroizing::new(key.raw_private_key().map_err(crypto_failure)?);
+            let public_bytes = key.raw_public_key().map_err(crypto_failure)?;
+            Ed25519KeyPair::from_seed_and_public_key(seed.as_slice(), &public_bytes)
+                .map_err(|_| bad("invalid imported Ed25519 key pair"))?;
+            // Store the same RFC 5958 v2 grammar used by the owned ring path,
+            // including its actual derived public key. Temporary seed-bearing
+            // DER allocations retain explicit erasing owners.
+            let seed_value = Zeroizing::new(octet_string(seed.as_slice()));
+            let private_field = Zeroizing::new(octet_string(seed_value.as_slice()));
+            let mut content = Zeroizing::new(Vec::new());
+            content.extend_from_slice(&integer(&[1]));
+            content.extend_from_slice(&algorithm_ed25519());
+            content.extend_from_slice(private_field.as_slice());
+            let mut bit_value = vec![0];
+            bit_value.extend_from_slice(&public_bytes);
+            content.extend_from_slice(&context_primitive(1, &bit_value));
+            Zeroizing::new(der(0x30, content.as_slice()))
+        } else {
+            Zeroizing::new(key.private_key_to_pkcs8().map_err(crypto_failure)?)
+        };
+        let material = Self::Pkcs8 {
+            kind,
+            der: canonical.to_vec(),
+        };
+        let actual = material.public()?;
+        if actual != public
+            || !actual.verify(
+                b"heptabao-owned-PKI-key-import",
+                &material.sign(b"heptabao-owned-PKI-key-import")?,
+            )?
+        {
+            return Err(bad("imported PKI key ownership verification failed"));
+        }
+        Ok(material)
+    }
+
     fn maintained_private(&self) -> Result<PKey<Private>> {
         let Self::Pkcs8 { kind, der } = self else {
             return Err(invalid_key());
@@ -474,7 +539,11 @@ impl LocalPrivateMaterial {
         Ok((Zeroizing::new(bytes), label))
     }
 
-    pub(super) fn private_pem(kind: LocalKeyKind, bytes: &[u8]) -> Result<Zeroizing<String>> {
+    pub(super) fn private_pem(
+        kind: LocalKeyKind,
+        bytes: &[u8],
+        pkcs8: bool,
+    ) -> Result<Zeroizing<String>> {
         if kind == LocalKeyKind::Ed25519 {
             return leaf_private_key_pem(bytes);
         }
@@ -487,19 +556,81 @@ impl LocalPrivateMaterial {
             }
         };
         material.public()?;
-        let encoded = material.private_der()?;
+        let (encoded, label) = material.root_export_der(pkcs8)?;
         let base64 = Zeroizing::new(BASE64.encode(encoded.as_slice()));
-        let mut pem = Zeroizing::new(String::from("-----BEGIN PRIVATE KEY-----\n"));
+        let mut pem = Zeroizing::new(String::from("-----BEGIN "));
+        pem.push_str(label);
+        pem.push_str("-----\n");
         for chunk in base64.as_bytes().chunks(64) {
             pem.push_str(std::str::from_utf8(chunk).map_err(crypto_failure)?);
             pem.push('\n');
         }
-        pem.push_str("-----END PRIVATE KEY-----\n");
+        pem.push_str("-----END ");
+        pem.push_str(label);
+        pem.push_str("-----\n");
         Ok(pem)
     }
 }
 
 impl LocalPublicKey {
+    /// Decode the maintained key representation from the actual CSR/certificate
+    /// SPKI. Key kind is never inferred from a caller supplied label.
+    pub(super) fn from_spki(bytes: &[u8]) -> Result<Self> {
+        if bytes.is_empty() || bytes.len() > MAX_PUBLIC_DER {
+            return Err(invalid_key());
+        }
+        let (rest, info) = SubjectPublicKeyInfo::from_der(bytes).map_err(crypto_failure)?;
+        if !rest.is_empty() || info.subject_public_key.unused_bits != 0 {
+            return Err(invalid_key());
+        }
+        let algorithm = info.algorithm.algorithm.to_id_string();
+        let kind = match algorithm.as_str() {
+            "1.3.101.112" => {
+                let public = info
+                    .subject_public_key
+                    .data
+                    .as_ref()
+                    .try_into()
+                    .map_err(|_| invalid_key())?;
+                let value = Self::Ed25519(public);
+                if value.spki()? != bytes {
+                    return Err(invalid_key());
+                }
+                return Ok(value);
+            }
+            "2.16.840.1.101.3.4.3.17" => LocalKeyKind::Mldsa44,
+            "2.16.840.1.101.3.4.3.18" => LocalKeyKind::Mldsa65,
+            "2.16.840.1.101.3.4.3.19" => LocalKeyKind::Mldsa87,
+            _ => {
+                let key = PKey::public_key_from_der(bytes).map_err(crypto_failure)?;
+                match key.id() {
+                    Id::RSA => match key.bits() {
+                        2048 => LocalKeyKind::Rsa2048,
+                        3072 => LocalKeyKind::Rsa3072,
+                        4096 => LocalKeyKind::Rsa4096,
+                        _ => return Err(invalid_key()),
+                    },
+                    Id::EC => match key.ec_key().map_err(crypto_failure)?.group().curve_name() {
+                        Some(Nid::SECP224R1) => LocalKeyKind::Ec224,
+                        Some(Nid::X9_62_PRIME256V1) => LocalKeyKind::Ec256,
+                        Some(Nid::SECP384R1) => LocalKeyKind::Ec384,
+                        Some(Nid::SECP521R1) => LocalKeyKind::Ec521,
+                        _ => return Err(invalid_key()),
+                    },
+                    _ => return Err(invalid_key()),
+                }
+            }
+        };
+        let public = Self::Typed(LocalPublicDer {
+            kind,
+            spki_der: bytes.to_vec(),
+        });
+        public.validate()?;
+        if public.spki()? != bytes {
+            return Err(invalid_key());
+        }
+        Ok(public)
+    }
     pub(super) fn kind(&self) -> LocalKeyKind {
         match self {
             Self::Ed25519(_) => LocalKeyKind::Ed25519,

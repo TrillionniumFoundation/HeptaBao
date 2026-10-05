@@ -155,7 +155,7 @@ fn pki_issue_persists_encrypted_and_lease_revoke_publishes_crl() -> TestResult {
     let certificate = text(&issued.body, "/data/certificate")?;
     let der = pem_der(&certificate, "CERTIFICATE")?;
     assert_eq!(der.first(), Some(&0x30));
-    assert!(pem_der(&private_key, "PRIVATE KEY")?.len() > 32);
+    assert!(pem_der(&private_key, "RSA PRIVATE KEY")?.len() > 32);
     assert_eq!(
         call(
             &mut s,
@@ -254,15 +254,22 @@ fn pki_ip_sans_require_role_permission_and_are_encoded_as_ip_general_names() -> 
     let mut s = f.service()?;
     let (root, _) = start(&mut s)?;
     install(&mut s, &root);
+    assert_eq!(
+        call(&mut s, &root, "GET", "pki/roles/web", json!({}), 101).body["data"]["allow_ip_sans"],
+        true,
+        "real new-role IP default remains independent of explicit denial"
+    );
+    assert_eq!(call(&mut s, &root, "POST", "pki/roles/web-no-ip",
+        json!({"allowed_domains":["example.test"],"allow_subdomains":true,"allow_ip_sans":false}), 101).status, 200);
     let denied = call(
         &mut s,
         &root,
         "POST",
-        "pki/issue/web",
+        "pki/issue/web-no-ip",
         json!({"common_name":"api.example.test","ip_sans":["127.0.0.1"]}),
         101,
     );
-    assert_eq!(denied.status, 403);
+    assert_eq!(denied.status, 400);
     assert_eq!(
         call(
             &mut s,
@@ -454,7 +461,51 @@ fn pki_new_default_identifiers_require_schema75_and_reject_legacy_labels() -> Te
     assert_eq!(role.body["data"]["key_bits"], 2048);
     let state = s.state.as_ref().ok_or("state")?;
     assert!(state.engines.has_local_typed_pki_state());
-    assert_eq!(state.schema, LOCAL_PKI_IDENTIFIER_STATE_SCHEMA);
+    assert!(state.engines.has_local_pki_crl_state());
+    assert!(state.engines.has_pki_role_bare_domain_state());
+    assert!(state.engines.has_pki_role_wildcard_state());
+    assert_eq!(state.schema, PKI_ROLE_NAMES_STATE_SCHEMA);
+    assert_eq!(state.writer_schema(), PKI_ROLE_NAMES_STATE_SCHEMA);
+    assert!(state.validate_format().is_ok());
+    // Isolate the historical identifier floor from the CRL cache now created
+    // by a real root. The production state above must retain the current floor.
+    let mut encoded = serde_json::to_value(&state.engines)?;
+    encoded
+        .pointer_mut("/namespaces//mounts/pki~1/backend/Pki")
+        .and_then(Value::as_object_mut)
+        .ok_or("identifier-only PKI projection")?
+        .remove("local_crl");
+    // This separate historical format fixture predates the real new API
+    // role owner proved above. Never relabel the live schema93 state as75.
+    let historical_roles = encoded
+        .pointer_mut("/namespaces//mounts/pki~1/backend/Pki/roles")
+        .and_then(Value::as_object_mut)
+        .ok_or("historical identifier role fixture")?;
+    assert_eq!(historical_roles.len(), 1);
+    assert!(historical_roles.contains_key("web"));
+    // The complete original typed75 role input has no later owner fields.
+    // Construct it independently; the current Some names93 role is untouched.
+    historical_roles.insert(
+        "web".into(),
+        json!({
+            "allowed_domains":["example.test"],"allow_subdomains":true,
+            "allow_ip_sans":true,"max_ttl":7200,"generate_lease":true,
+            "local_key_kind":"rsa2048"
+        }),
+    );
+    let mut current_disguised = state.clone();
+    current_disguised.schema = LOCAL_PKI_IDENTIFIER_STATE_SCHEMA;
+    assert!(
+        current_disguised.validate_format().is_err(),
+        "live names93 cannot be read as75"
+    );
+    let mut state = state.clone();
+    state.engines = serde_json::from_value(encoded)?;
+    assert!(!state.engines.has_pki_role_bare_domain_state());
+    assert!(!state.engines.has_pki_role_wildcard_state());
+    state.schema = LOCAL_PKI_IDENTIFIER_STATE_SCHEMA;
+    assert!(state.engines.has_local_pki_identifier_state());
+    assert!(!state.engines.has_local_pki_crl_state());
     assert_eq!(state.writer_schema(), LOCAL_PKI_IDENTIFIER_STATE_SCHEMA);
     assert!(state.validate_format().is_ok());
     for schema in [
@@ -488,20 +539,55 @@ fn pki_default_shape_remains_readable_as_schema57_without_new_fields() -> TestRe
     let state = s.state.as_ref().ok_or("state")?;
     assert!(!state.engines.has_local_typed_pki_state());
     assert!(!state.engines.has_pki_extension_state());
+    assert!(state.engines.has_pki_role_bare_domain_state());
+    assert!(state.engines.has_pki_role_wildcard_state());
+    assert_eq!(state.schema, PKI_ROLE_NAMES_STATE_SCHEMA);
+    assert_eq!(state.writer_schema(), PKI_ROLE_NAMES_STATE_SCHEMA);
     let mut encoded = serde_json::to_value(&state.engines)?;
+    encoded
+        .pointer_mut("/namespaces//mounts/pki~1/backend/Pki")
+        .and_then(Value::as_object_mut)
+        .ok_or("legacy PKI projection")?
+        .remove("local_crl");
     let legacy_root = encoded
         .pointer_mut("/namespaces//mounts/pki~1/backend/Pki/root")
         .and_then(Value::as_object_mut)
         .ok_or("legacy root projection")?;
     legacy_root.remove("issuer_id");
     legacy_root.remove("key_id");
+    // The explicit old typed-role format has no schema84 or85 owner field.
+    // Keep the actual new-role state above, and test57 only on this fixture.
+    let historical_roles = encoded
+        .pointer_mut("/namespaces//mounts/pki~1/backend/Pki/roles")
+        .and_then(Value::as_object_mut)
+        .ok_or("historical default role fixture")?;
+    assert_eq!(historical_roles.len(), 1);
+    assert!(historical_roles.contains_key("web"));
+    // This is the original Ed25519/None role wire input, not the new role
+    // with protected fields removed. The live current role remains names93.
+    historical_roles.insert(
+        "web".into(),
+        json!({
+            "allowed_domains":["example.test"],"allow_subdomains":true,
+            "allow_ip_sans":true,"max_ttl":7200,"generate_lease":true
+        }),
+    );
+    let mut current_disguised = state.clone();
+    current_disguised.schema = 57;
+    assert!(
+        current_disguised.validate_format().is_err(),
+        "live names93 cannot be read as57"
+    );
     let text = Zeroizing::new(encoded.to_string());
     assert!(!text.contains("\"cluster_path\""));
     assert!(!text.contains("\"aia_path\""));
     assert!(!text.contains("\"acme\""));
     let mut legacy = state.clone();
     legacy.engines = serde_json::from_value(encoded)?;
+    assert!(!legacy.engines.has_pki_role_bare_domain_state());
+    assert!(!legacy.engines.has_pki_role_wildcard_state());
     assert!(!legacy.engines.has_local_pki_identifier_state());
+    assert!(!legacy.engines.has_local_pki_crl_state());
     legacy.schema = 57;
     assert!(legacy.validate_format().is_ok());
     let bytes = serde_json::to_vec(&legacy)?;

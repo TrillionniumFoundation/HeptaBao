@@ -695,11 +695,12 @@ impl AuthState {
             "config_revision": config_revision,
         });
         response.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             metadata: Some(metadata),
             mount: plan.mount,
             alias: token.display_name.clone(),
         });
-        self.tokens.insert(token_id, token);
+        self.store_token(token_id, token);
         Ok(response)
     }
 }

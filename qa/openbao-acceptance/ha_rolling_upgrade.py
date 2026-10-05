@@ -28,6 +28,7 @@ from ha_destructive import Cluster, FixtureError, MISBOUND_BOOTSTRAP_ERROR, Node
 BASE_WIRE_PROFILES = {
     "55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18": "legacy-v1",
     "421c19794fa4f772edb9cde7dcc0db68362c1717": "strict-current",
+    "8c1e43718c30ce5185c55b258c0460bd48936a2a": "strict-current",
 }
 
 
@@ -115,8 +116,8 @@ class RollingUpgradeCluster(Cluster):
             checked_binary(wrong.binary, self.candidate_digest)
             return super().assert_misbound_rejection(wrong)
         # A recent pinned base already enforces startup marker admission; an
-        # older base may defer refusal until unseal. Admit only the exact strict
-        # rejection or the legacy contract below, never an arbitrary early exit.
+        # older base may defer refusal until unseal. A strict profile must use
+        # the exact startup rejection; only legacy-v1 may use the HTTP contract.
         checked_binary(wrong.binary, self.base_digest)
         log_path = wrong.root / "process.log"
         before = log_path.stat().st_size if log_path.exists() else 0
@@ -141,6 +142,8 @@ class RollingUpgradeCluster(Cluster):
                 return
             if running_digest(wrong) != self.base_digest:
                 raise FixtureError("rolling_upgrade_base_binary_changed")
+            if self.base_wire_profile != "legacy-v1":
+                raise FixtureError("rolling_upgrade_strict_base_started_with_misbound_cluster")
             status, denied = wrong.call(
                 "POST", "sys/unseal", {"key": self.unseal_key}
             )

@@ -29,7 +29,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** portable repository-relative source SHA-256 `4347f8e2e59c1a886c52098e367c55ce9c48041f0f73edf3d110dd353e51f119`; manifest SHA-256 `01ff4f6fd366388129bf4694d126102e209898a924f65f8fd957029c06168a6f`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `7999855a8b526131d9c153680cd1f2c2c83d3f873b8de184703327ea8fb67027`; manifest SHA-256 `01ff4f6fd366388129bf4694d126102e209898a924f65f8fd957029c06168a6f`.
 - **Named executable anchor:** `create_append_replay_and_reopen_round_trip` in `crates/heptabao-single-node-journal/src/lib.rs`.
 - **Required command:** `cargo +1.99.0 test --locked -p heptabao-single-node-journal` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.

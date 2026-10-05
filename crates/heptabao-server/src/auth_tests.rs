@@ -3592,12 +3592,9 @@ fn jwt_service_persists_tokens_and_allows_assertion_reuse_across_reopen() {
         .as_str()
         .unwrap()
         .to_owned();
-    assert_eq!(
-        service
-            .handle_at("GET", "secret/data/app", "team", &raw, json!({}), 1051)
-            .body["data"]["data"]["value"],
-        "synthetic-jwt-secret"
-    );
+    let read = service.handle_at("GET", "secret/data/app", "team", &raw, json!({}), 1051);
+    assert_eq!(read.status, 200, "{}", read.body);
+    assert_eq!(read.body["data"]["data"]["value"], "synthetic-jwt-secret");
     drop(service);
     let mut service = make_service();
     assert_eq!(
@@ -4015,3 +4012,205 @@ fn hcl_parameter_value_recursion_is_bounded_before_tree_construction() {
 
 #[path = "auth_token_revoke_orphan_tests.rs"]
 mod token_revoke_orphan_tests;
+
+#[test]
+fn policy_collection_modern_method_root_last_and_missing_are_readonly() {
+    let (mut state, _, root) = setup();
+    for name in ["alpha", "zulu"] {
+        put_policy(
+            &mut state,
+            &root,
+            "",
+            name,
+            json!("path \"fixture\" { capabilities = [\"read\"] }"),
+        );
+    }
+    let before = serde_json::to_vec(&state).unwrap();
+    let error = state
+        .handle(Some(&root), "", "GET", "sys/policies/acl", &json!({}), 100)
+        .err()
+        .unwrap();
+    assert_eq!(error.status, 405);
+    assert_eq!(
+        error.message,
+        "1 error occurred:\n\t* unsupported operation\n\n"
+    );
+    let modern = call(
+        &mut state,
+        &root,
+        "",
+        "LIST",
+        "sys/policies/acl",
+        json!({}),
+        100,
+    );
+    assert_eq!(
+        modern.body["data"],
+        json!({"keys":["alpha","default","zulu","root"]})
+    );
+    let legacy = call(&mut state, &root, "", "GET", "sys/policy", json!({}), 100);
+    assert_eq!(legacy.body["data"]["keys"], modern.body["data"]["keys"]);
+    assert_eq!(legacy.body["data"]["policies"], modern.body["data"]["keys"]);
+    let missing = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/policies/acl/absent",
+        json!({}),
+        100,
+    );
+    assert_eq!(missing.status, 404);
+    assert_eq!(missing.body, json!({"errors":[]}));
+    let modern = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/policies/acl/alpha",
+        json!({}),
+        100,
+    );
+    let legacy = call(
+        &mut state,
+        &root,
+        "",
+        "GET",
+        "sys/policy/alpha",
+        json!({}),
+        100,
+    );
+    assert_eq!(modern.body["data"]["policy"], legacy.body["data"]["rules"]);
+    assert!(modern.body["data"].get("rules").is_none());
+    assert!(legacy.body["data"].get("policy").is_none());
+    assert_eq!(serde_json::to_vec(&state).unwrap(), before);
+}
+
+#[test]
+fn default_policy_complete_grants_and_request_identity_are_authoritative() {
+    let (state, _, _) = setup();
+    let policies = BTreeSet::from(["default".to_owned()]);
+    let none = BTreeSet::new();
+    let mut identity = IdentityTemplateValues::default();
+    identity.insert("identity.entity.id", "actual-request-entity-id");
+    identity.insert("identity.entity.name", "actual-request-entity-name");
+    for (path, capability) in [
+        ("sys/tools/hash", "update"),
+        ("sys/tools/hash/sha2-256", "update"),
+        ("sys/leases/renew", "update"),
+        ("sys/leases/lookup", "update"),
+        ("sys/internal/ui/resultant-acl", "read"),
+        ("identity/oidc/provider/example/authorize", "read"),
+        ("identity/oidc/provider/example/authorize", "update"),
+        ("identity/entity/id/actual-request-entity-id", "read"),
+        ("identity/entity/name/actual-request-entity-name", "read"),
+    ] {
+        assert!(
+            state
+                .policy_allows("", path, capability, &policies, &none, &identity)
+                .unwrap()
+        );
+    }
+    for (path, capability) in [
+        ("identity/entity/id/another-entity", "read"),
+        ("identity/entity/name/another-name", "read"),
+        ("sys/tools/hash", "read"),
+        ("sys/wrapping/lookup", "read"),
+        ("identity/oidc/provider/a/b/authorize", "read"),
+        ("sys/leases/revoke", "update"),
+    ] {
+        assert!(
+            !state
+                .policy_allows("", path, capability, &policies, &none, &identity)
+                .unwrap()
+        );
+    }
+    assert!(
+        !state
+            .policy_allows(
+                "",
+                "identity/entity/id/actual-request-entity-id",
+                "read",
+                &policies,
+                &none,
+                &IdentityTemplateValues::default()
+            )
+            .unwrap()
+    );
+    assert!(
+        !state
+            .policy_allows("", "sys/tools/hash", "update", &none, &none, &identity)
+            .unwrap()
+    );
+}
+
+#[test]
+fn default_policy_override_and_specific_deny_survive_reopen() {
+    let (mut state, _, root) = setup();
+    let defaults = BTreeSet::from(["default".to_owned()]);
+    let identity = IdentityTemplateValues::default();
+    put_policy(
+        &mut state,
+        &root,
+        "",
+        "deny-hash",
+        json!("path \"sys/tools/hash/sha2-256\" { capabilities = [\"deny\"] }"),
+    );
+    let combined = BTreeSet::from(["default".to_owned(), "deny-hash".to_owned()]);
+    assert!(
+        !state
+            .policy_allows(
+                "",
+                "sys/tools/hash/sha2-256",
+                "update",
+                &combined,
+                &BTreeSet::new(),
+                &identity
+            )
+            .unwrap()
+    );
+    assert!(
+        state
+            .policy_allows(
+                "",
+                "sys/tools/hash/sha2-512",
+                "update",
+                &combined,
+                &BTreeSet::new(),
+                &identity
+            )
+            .unwrap()
+    );
+    put_policy(
+        &mut state,
+        &root,
+        "",
+        "default",
+        json!("path \"custom-only\" { capabilities = [\"read\"] }"),
+    );
+    let reopened: AuthState = serde_json::from_slice(&serde_json::to_vec(&state).unwrap()).unwrap();
+    assert!(
+        !reopened
+            .policy_allows(
+                "",
+                "sys/tools/hash",
+                "update",
+                &defaults,
+                &BTreeSet::new(),
+                &identity
+            )
+            .unwrap()
+    );
+    assert!(
+        reopened
+            .policy_allows(
+                "",
+                "custom-only",
+                "read",
+                &defaults,
+                &BTreeSet::new(),
+                &identity
+            )
+            .unwrap()
+    );
+}

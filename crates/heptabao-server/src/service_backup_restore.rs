@@ -148,6 +148,8 @@ impl Service {
             let database = Self::load_owner_bytes(resources, &manifest, "database")?;
             let raft_admin = Self::load_owner_bytes(resources, &manifest, "raft_admin")?;
             let state = State {
+                namespace_protected: None,
+                namespace_leases: namespace_runtime::Leases::default(),
                 schema: manifest.state_schema(),
                 cluster_id: manifest.cluster_id().to_owned(),
                 replay_epoch: manifest.replay_epoch(),
@@ -327,6 +329,129 @@ impl Service {
         current: &State,
         incoming: &State,
     ) -> Result<(), Response> {
+        incoming
+            .engines
+            .validate_kubernetes_artifact_clock(Some(&current.engines))
+            .map_err(|error| Response::error(400, &error.message))?;
+        incoming
+            .auth
+            .validate_token_api_clock_floor(Some(&current.auth))
+            .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= PKI_ROLE_NAMES_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_NAMES_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI role name ownership",
+            ));
+        }
+        if current.schema >= KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            && incoming.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade opaque Kubernetes artifact ownership",
+            ));
+        }
+        if current.schema >= TOKEN_API_PRECISION_STATE_SCHEMA
+            && incoming.schema < TOKEN_API_PRECISION_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade Token API precise ownership",
+            ));
+        }
+        if current.schema >= PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+            && incoming.schema < PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI signed role time ownership",
+            ));
+        }
+        if current.schema >= PKI_ROLE_TIME_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_TIME_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI role time ownership",
+            ));
+        }
+        if current.schema >= PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI role leaf profiles",
+            ));
+        }
+        if current.schema >= PKI_ROLE_WILDCARD_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI wildcard ownership",
+            ));
+        }
+        if current.schema >= PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI base-domain ownership",
+            ));
+        }
+        if current.schema >= PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            && incoming.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI allow_any_name ownership",
+            ));
+        }
+        if current.schema >= AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+            && incoming.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade public origin ownership",
+            ));
+        }
+        incoming
+            .protected_state()?
+            .auth
+            .validate_public_origin_successor(&current.protected_state()?.auth)
+            .map_err(|_| Response::error(400, "snapshot would retire public origin ownership"))?;
+        if current.schema >= TOKEN_ROLE_STATE_SCHEMA && incoming.schema < TOKEN_ROLE_STATE_SCHEMA {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade Token API role ownership",
+            ));
+        }
+        if current.schema >= LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            && incoming.schema < LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade local PKI intermediate ownership",
+            ));
+        }
+        if current.schema >= LOCAL_PKI_CRL_STATE_SCHEMA
+            && incoming.schema < LOCAL_PKI_CRL_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade local PKI CRL state",
+            ));
+        }
+        if current.schema >= LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            && incoming.schema < LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade local PKI issuer ownership",
+            ));
+        }
         if current.schema >= LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
             && incoming.schema < LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
         {
@@ -580,7 +705,7 @@ mod tests;
 // Requires the real native parser's affine VerifiedNativeRestore. The final
 // share is submitted through the ordinary recovery HTTP dispatch on Service.
 // No JSON backup is relabeled as a native archive and no state is overwritten.
-#[cfg(test)]
+#[cfg(all(test, target_os = "linux"))]
 impl Service {
     #[allow(clippy::too_many_arguments)] // Keep the fixture's real restore and recovery inputs explicit.
     pub(super) fn fixture_native_restore_after_real_recovery_commit(

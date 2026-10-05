@@ -1,5 +1,5 @@
-//! Explicit Wrapper barrier consumer proposal. No local-unseal fallback.
-//! This first opt-in profile omits recovery-key, rekey, migration and PG init.
+//! Explicit Wrapper barrier consumer with durable Recovery authority.
+//! Filesystem and PostgreSQL consumers retain the genuine provider binding.
 
 use std::fmt;
 use std::path::Path;
@@ -163,7 +163,7 @@ pub(crate) fn configuration_binding(
 pub(in crate::service) struct PreparedMaterial {
     pub(in crate::service) seal: SealMetadata,
     pub(in crate::service) key: Zeroizing<[u8; 32]>,
-    pub(in crate::service) deadline: Instant,
+    pub(in crate::service) deadline: Option<Instant>,
 }
 
 /// Admit deferred zero recovery or the implemented positive own-wire configuration.
@@ -269,6 +269,13 @@ mod linux {
     use heptabao_openbao_grpc::protocol::wrapping::RpcOptions;
     use std::sync::Mutex;
 
+    fn tighten_deadline(original: Option<Instant>, later: Option<Instant>) -> Option<Instant> {
+        match (original, later) {
+            (Some(original), Some(later)) => Some(original.min(later)),
+            (original, later) => original.or(later),
+        }
+    }
+
     struct PrivateBody(Value);
     impl Drop for PrivateBody {
         fn drop(&mut self) {
@@ -281,42 +288,71 @@ mod linux {
         binding: [u8; 32],
         body: PrivateBody,
         response_retrieval: bool,
-        deadline: Instant,
+        publication_deadline: Option<Instant>,
+        pending: Option<super::super::super::wrapper_ha::PendingInitialization>,
+        join: Option<super::super::super::wrapper_ha::JoinAdmission>,
+        join_reply: Option<(String, String, PrivateBody)>,
+    }
+    pub(crate) struct InitializationCompletion {
+        operation: OpenBaoWrapperCompletion,
+        publication_deadline: Option<Instant>,
+    }
+    #[cfg(test)]
+    impl InitializationCompletion {
+        pub(in crate::service) fn fixture_deadlines(&self) -> (Instant, Option<Instant>, bool) {
+            (
+                self.operation.deadline,
+                self.publication_deadline,
+                matches!(&self.operation.result, Ok(WrapperReply::Encrypted(_))),
+            )
+        }
     }
     impl InitializationPlan {
-        pub(crate) fn deadline(&self) -> Instant {
-            self.deadline
+        pub(crate) fn execute(&self) -> Result<InitializationCompletion, BridgeError> {
+            self.execute_with_deadline(None)
         }
         pub(crate) fn execute_before(
             &self,
             deadline: Instant,
-        ) -> Result<OpenBaoWrapperCompletion, BridgeError> {
+        ) -> Result<InitializationCompletion, BridgeError> {
+            self.execute_with_deadline(Some(deadline))
+        }
+        fn execute_with_deadline(
+            &self,
+            deadline: Option<Instant>,
+        ) -> Result<InitializationCompletion, BridgeError> {
             let mut operation = self
                 .operation
                 .lock()
                 .map_err(|_| BridgeError::LifecycleDenied)?
                 .take()
                 .ok_or(BridgeError::BeforeDispatch)?;
-            operation.deadline = operation.deadline.min(deadline);
-            Ok(operation.execute())
+            let publication_deadline = tighten_deadline(self.publication_deadline, deadline);
+            if let Some(deadline) = publication_deadline {
+                operation.deadline = operation.deadline.min(deadline);
+            }
+            Ok(InitializationCompletion {
+                operation: operation.execute(),
+                publication_deadline,
+            })
         }
     }
     pub(crate) struct ActivationPlan {
         operation: OpenBaoWrapperOperationPlan,
         seal: SealMetadata,
-        deadline: Instant,
+        publication_deadline: Option<Instant>,
     }
     pub(crate) struct ActivationCompletion {
         operation: OpenBaoWrapperCompletion,
         seal: SealMetadata,
-        deadline: Instant,
+        publication_deadline: Option<Instant>,
     }
     impl ActivationPlan {
         pub(crate) fn execute(self) -> ActivationCompletion {
             ActivationCompletion {
                 operation: self.operation.execute(),
                 seal: self.seal,
-                deadline: self.deadline,
+                publication_deadline: self.publication_deadline,
             }
         }
     }
@@ -336,7 +372,7 @@ mod linux {
                 .as_ref()
                 .is_some_and(|owner| owner.barrier_binding.is_some())
         }
-        fn wrapper_barrier_binding(&self) -> Result<[u8; 32], BridgeError> {
+        pub(in crate::service) fn wrapper_barrier_binding(&self) -> Result<[u8; 32], BridgeError> {
             self.openbao_wrapper_owner
                 .as_ref()
                 .and_then(|owner| owner.barrier_binding)
@@ -345,6 +381,51 @@ mod linux {
         pub(crate) fn prepare_wrapper_barrier_initialization(
             &self,
             body: &Value,
+        ) -> Result<InitializationPlan, Response> {
+            self.prepare_wrapper_barrier_initialization_inner(body, None, None)
+        }
+        pub(in crate::service) fn wrapper_barrier_initialization_claimed(&self) -> bool {
+            self.openbao_wrapper_owner.as_ref().is_none_or(|owner| {
+                owner
+                    .barrier_initialization_claimed
+                    .load(std::sync::atomic::Ordering::Acquire)
+            })
+        }
+        pub(crate) fn prepare_wrapper_barrier_ha_join(
+            &self,
+            method: &str,
+            path: &str,
+            body: &Value,
+        ) -> Result<Option<InitializationPlan>, Response> {
+            if self.ha.is_none()
+                || self.wrapper_barrier_initialization_claimed()
+                || self.initialized()
+                || self.seal.is_some()
+                || self.state.is_some()
+                || self.recovery_required
+                || super::super::super::wrapper_ha::pending_exists(&self.data_dir).unwrap_or(true)
+            {
+                return Ok(None);
+            }
+            let Some(join) = self.prepare_ha_local_join()? else {
+                return Ok(None);
+            };
+            self.prepare_wrapper_barrier_initialization_inner(
+                &serde_json::json!({}),
+                Some(join),
+                Some((
+                    method.to_owned(),
+                    path.to_owned(),
+                    PrivateBody(body.clone()),
+                )),
+            )
+            .map(Some)
+        }
+        fn prepare_wrapper_barrier_initialization_inner(
+            &self,
+            body: &Value,
+            join: Option<super::super::super::wrapper_ha::JoinAdmission>,
+            join_reply: Option<(String, String, PrivateBody)>,
         ) -> Result<InitializationPlan, Response> {
             if self.recovery_required
                 || self.initialized()
@@ -357,25 +438,66 @@ mod linux {
                     "Wrapper initialization requires a fresh sealed store",
                 ));
             }
-            if self.ha.is_some() || self.postgres_durable.is_some() {
-                return Err(Response::error(
-                    501,
-                    "Wrapper HA/PostgreSQL initialization requires a supported consumer",
-                ));
+            let pending = if self.ha.is_some()
+                && super::super::super::wrapper_ha::pending_exists(&self.data_dir)
+                    .map_err(|message| Response::error(503, message))?
+            {
+                Some(super::super::super::wrapper_ha::load_pending(
+                    &self.data_dir,
+                )?)
+            } else {
+                None
+            };
+            if self.ha.is_some() && pending.is_none() && join.is_none() {
+                self.ha_initial_cluster()?;
             }
             let response_retrieval = validate_initialization_options(body)?;
             let binding = self
                 .wrapper_barrier_binding()
                 .map_err(|_| Response::error(503, "Wrapper deployment binding unavailable"))?;
-            let key = Zeroizing::new(
+            let key = Zeroizing::new(if pending.is_some() {
+                [0; 32]
+            } else {
                 crypto::random::<32>()
-                    .map_err(|_| Response::error(503, "barrier randomness unavailable"))?,
-            );
-            let operation = self
-                .prepare_openbao_wrapper_operation(WrapperOperation::Encrypt {
+                    .map_err(|_| Response::error(503, "barrier randomness unavailable"))?
+            });
+            let request = if let Some(pending) = &pending {
+                let envelope = Envelope::decode(&pending.seal.wrapped_barrier_key)
+                    .map_err(|message| Response::error(503, message))?;
+                if envelope.binding().ok() != Some(binding)
+                    || envelope.generation() != pending.seal.generation
+                {
+                    return Err(Response::error(
+                        503,
+                        "pending HA Wrapper deployment changed",
+                    ));
+                }
+                let shares = bounded_u8_field(body, "recovery_shares", 0)
+                    .map_err(|message| Response::error(400, message))?;
+                let threshold = bounded_u8_field(body, "recovery_threshold", 0)
+                    .map_err(|message| Response::error(400, message))?;
+                if (shares, threshold)
+                    != (pending.seal.secret_shares, pending.seal.secret_threshold)
+                {
+                    return Err(Response::error(
+                        400,
+                        "HA initialization recovery parameters differ",
+                    ));
+                }
+                WrapperOperation::Decrypt {
+                    blob: envelope
+                        .blob()
+                        .map_err(|message| Response::error(503, message))?,
+                    options: options(binding, pending.seal.generation),
+                }
+            } else {
+                WrapperOperation::Encrypt {
                     plaintext: Zeroizing::new(key.to_vec()),
                     options: options(binding, 1),
-                })
+                }
+            };
+            let operation = self
+                .prepare_openbao_wrapper_operation(request)
                 .map_err(|_| Response::error(503, "Wrapper barrier admission failed"))?;
             // One candidate per owner generation. An abandoned/failed candidate is
             // never automatically retried against the same session.
@@ -391,20 +513,26 @@ mod linux {
                     "Wrapper initialization already claimed for this owner",
                 ));
             }
-            let deadline = operation.deadline;
+            // The provider RPC remains bounded by its own timeout. Persistence
+            // and activation retain the caller's original request deadline;
+            // synchronous callers without one do not acquire a new clock.
+            let publication_deadline = crate::request_deadline::current();
             Ok(InitializationPlan {
                 operation: Mutex::new(Some(operation)),
                 key,
                 binding,
                 body: PrivateBody(body.clone()),
                 response_retrieval,
-                deadline,
+                publication_deadline,
+                pending,
+                join,
+                join_reply,
             })
         }
         pub(crate) fn finalize_wrapper_barrier_initialization(
             &mut self,
-            plan: InitializationPlan,
-            completion: Result<OpenBaoWrapperCompletion, BridgeError>,
+            mut plan: InitializationPlan,
+            completion: Result<InitializationCompletion, BridgeError>,
             now: u64,
             fingerprint: &str,
         ) -> Response {
@@ -418,14 +546,64 @@ mod linux {
                 self.fence_openbao_wrapper();
                 return Response::error(503, "Wrapper initialization owner or store changed");
             }
-            // The HTTP executor may tighten the prepared deadline. Its actual
-            // completion retains that effective deadline for every later gate.
-            let deadline = completion
-                .as_ref()
-                .map_or(plan.deadline, |completion| completion.deadline)
-                .min(plan.deadline);
-            let result =
-                completion.and_then(|completion| self.finish_openbao_wrapper_operation(completion));
+            // The executor can only shorten the original caller deadline. The
+            // RPC completion still independently enforces its provider timeout.
+            let deadline = tighten_deadline(
+                completion
+                    .as_ref()
+                    .ok()
+                    .and_then(|completion| completion.publication_deadline),
+                tighten_deadline(
+                    plan.publication_deadline,
+                    crate::request_deadline::current(),
+                ),
+            );
+            let result = completion
+                .and_then(|completion| self.finish_openbao_wrapper_operation(completion.operation));
+            if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
+                self.fence_openbao_wrapper();
+                return Response::error(503, "Wrapper initialization caller deadline expired");
+            }
+            if let Some(pending) = plan.pending.take() {
+                let key = match result {
+                    Ok(WrapperReply::Decrypted(key)) if key.len() == 32 => key,
+                    _ => {
+                        self.fence_wrapper_barrier_delivery();
+                        return Response::error(503, "HA pending Wrapper decryption unavailable");
+                    }
+                };
+                let key = match <[u8; 32]>::try_from(key.as_slice()) {
+                    Ok(key) => Zeroizing::new(key),
+                    Err(_) => {
+                        self.fence_wrapper_barrier_delivery();
+                        return Response::error(503, "HA pending barrier key invalid");
+                    }
+                };
+                if self
+                    .audit_event(
+                        "initialization-response-prepared",
+                        fingerprint,
+                        now,
+                        Some(200),
+                    )
+                    .is_err()
+                {
+                    self.fence_wrapper_barrier_delivery();
+                    return Response::error(503, "HA initialization response audit unavailable");
+                }
+                return match self.finish_pending_ha_initialization(
+                    pending,
+                    &key,
+                    &plan.body.0,
+                    deadline,
+                ) {
+                    Ok(response) => response,
+                    Err(error) => {
+                        self.fence_wrapper_barrier_delivery();
+                        error
+                    }
+                };
+            }
             let envelope = match result {
                 Ok(WrapperReply::Encrypted(blob)) => {
                     Envelope::new(plan.binding, 1, &blob).and_then(|envelope| envelope.encode())
@@ -455,25 +633,53 @@ mod linux {
                 key: Zeroizing::new(*plan.key),
                 deadline,
             };
+            if let Some(join) = plan.join.take() {
+                if let Err(error) = self.finish_ha_local_join(join, material) {
+                    self.fence_wrapper_barrier_delivery();
+                    return error;
+                }
+                let Some((method, path, mut body)) = plan.join_reply.take() else {
+                    self.fence_wrapper_barrier_delivery();
+                    return Response::error(503, "HA local join response binding absent");
+                };
+                return self.handle_at(&method, &path, "", "", std::mem::take(&mut body.0), now);
+            }
             let (mut response, _) = self.initialize_with_wrapper_material(
                 &plan.body.0,
                 now,
                 fingerprint,
-                |_, _| Err(super::super::super::BackendError::Unsupported),
+                super::super::super::Service::import_postgres_initialization,
                 Some(material),
             );
             if response.status != 200 {
                 self.fence_openbao_wrapper();
                 return response;
             }
+            let initial_ha_identity = if self.ha.is_some() {
+                match self.ha_initial_response_identity(&plan.key) {
+                    Ok(identity) => Some(identity),
+                    Err(error) => {
+                        self.fence_wrapper_barrier_delivery();
+                        super::super::super::erase_json(&mut response.body);
+                        return error;
+                    }
+                }
+            } else {
+                None
+            };
             let expected_seal = self.seal.clone();
-            if Instant::now() >= deadline
+            if deadline.is_some_and(|deadline| Instant::now() >= deadline)
                 || load_seal_metadata(&self.data_dir).ok().flatten() != expected_seal
                 || self
-                    .activate_barrier_with_deadline(&plan.key, Some(deadline))
+                    .activate_barrier_with_deadline(&plan.key, deadline)
                     .is_err()
-                || Instant::now() >= deadline
+                || deadline.is_some_and(|deadline| Instant::now() >= deadline)
                 || load_seal_metadata(&self.data_dir).ok().flatten() != expected_seal
+                || initial_ha_identity.is_some_and(|expected| {
+                    self.current_state_identity().ok() != Some(expected)
+                        || self.verify_ha_state_identity(expected).is_err()
+                })
+                || deadline.is_some_and(|deadline| Instant::now() >= deadline)
             {
                 self.fence_wrapper_barrier_delivery();
                 super::super::super::erase_json(&mut response.body);
@@ -509,11 +715,11 @@ mod linux {
                     options: options(binding, seal.generation),
                 })
                 .map_err(|_| "Wrapper startup admission failed")?;
-            let deadline = operation.deadline;
+            let publication_deadline = crate::request_deadline::current();
             Ok(Some(ActivationPlan {
                 operation,
                 seal: seal.clone(),
-                deadline,
+                publication_deadline,
             }))
         }
         pub(crate) fn finish_wrapper_barrier_activation(
@@ -539,19 +745,22 @@ mod linux {
                 <[u8; 32]>::try_from(key.as_slice())
                     .map_err(|_| "Wrapper barrier key length invalid")?,
             );
-            if Instant::now() >= completion.deadline {
+            let deadline = tighten_deadline(
+                completion.publication_deadline,
+                crate::request_deadline::current(),
+            );
+            if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
                 self.fence_wrapper_barrier_delivery();
                 return Err("Wrapper activation deadline expired".into());
             }
-            let admitted =
-                match self.activate_barrier_with_deadline(&key, Some(completion.deadline)) {
-                    Ok(admitted) => admitted,
-                    Err(_) => {
-                        self.fence_wrapper_barrier_delivery();
-                        return Err("Wrapper private recovery admission failed".into());
-                    }
-                };
-            if Instant::now() >= completion.deadline
+            let admitted = match self.activate_barrier_with_deadline(&key, deadline) {
+                Ok(admitted) => admitted,
+                Err(_) => {
+                    self.fence_wrapper_barrier_delivery();
+                    return Err("Wrapper private recovery admission failed".into());
+                }
+            };
+            if deadline.is_some_and(|deadline| Instant::now() >= deadline)
                 || load_seal_metadata(&self.data_dir).ok().flatten() != admitted.0
                 || !admitted.0.as_ref().is_some_and(SealMetadata::is_wrapper)
             {
@@ -562,6 +771,7 @@ mod linux {
         }
         pub(in crate::service) fn fence_wrapper_barrier_delivery(&mut self) {
             self.fence_openbao_wrapper();
+            self.namespace_runtime.clear();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
@@ -574,7 +784,7 @@ mod linux {
     }
 }
 #[cfg(target_os = "linux")]
-pub(crate) use linux::InitializationPlan;
+pub(crate) use linux::{InitializationCompletion, InitializationPlan};
 
 #[cfg(test)]
 mod tests {

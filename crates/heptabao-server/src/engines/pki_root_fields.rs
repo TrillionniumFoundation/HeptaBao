@@ -284,7 +284,11 @@ pub(super) fn root_expiration(
     Ok(expiration)
 }
 
-fn rfc3339_seconds(value: &str) -> Result<u64> {
+pub(super) fn rfc3339_seconds(value: &str) -> Result<u64> {
+    u64::try_from(rfc3339_signed_seconds(value)?).map_err(|_| bad("invalid PKI not_after"))
+}
+
+pub(super) fn rfc3339_signed_seconds(value: &str) -> Result<i64> {
     use openssl::asn1::Asn1Time;
     let invalid = || bad("invalid PKI not_after");
     let bytes = value.as_bytes();
@@ -353,8 +357,11 @@ fn rfc3339_seconds(value: &str) -> Result<u64> {
     let parsed = Asn1Time::from_str(&stamp).map_err(|_| invalid())?;
     let epoch = Asn1Time::from_unix(0).map_err(|_| invalid())?;
     let diff = epoch.diff(&parsed).map_err(|_| invalid())?;
-    u64::try_from(i64::from(diff.days) * 86400 + i64::from(diff.secs) - offset_seconds)
-        .map_err(|_| invalid())
+    let seconds = i64::from(diff.days) * 86400 + i64::from(diff.secs) - offset_seconds;
+    if !(-62_167_219_200..=253_402_300_799).contains(&seconds) {
+        return Err(invalid());
+    }
+    Ok(seconds)
 }
 
 /// The signed certificate owns the issuer's entire DN. Parsing also works for
@@ -366,6 +373,38 @@ pub(super) fn certificate_subject(der: &[u8]) -> Result<Vec<u8>> {
         return Err(error(503, "invalid PKI issuer certificate"));
     }
     Ok(cert.subject().as_raw().to_vec())
+}
+
+/// RFC 5280 method 1, also used by the pinned OpenBao certutil implementation.
+/// SHA-1 identifies the public key bits; signing authority still requires the
+/// owned certificate, actual key binding and full signature verification.
+pub(super) fn subject_key_identifier(spki: &[u8]) -> Result<[u8; 20]> {
+    let (rest, public) = x509_parser::x509::SubjectPublicKeyInfo::from_der(spki)
+        .map_err(|_| error(503, "invalid PKI key identifier input"))?;
+    if !rest.is_empty() || public.subject_public_key.unused_bits != 0 {
+        return Err(error(503, "invalid PKI key identifier input"));
+    }
+    Ok(openssl::sha::sha1(public.subject_public_key.data.as_ref()))
+}
+
+pub(super) fn certificate_key_identifier(der: &[u8]) -> Result<Option<Vec<u8>>> {
+    let (rest, cert) =
+        X509Certificate::from_der(der).map_err(|_| error(503, "invalid PKI issuer certificate"))?;
+    if !rest.is_empty() {
+        return Err(error(503, "invalid PKI issuer certificate"));
+    }
+    let mut identifier = None;
+    for extension in cert.extensions() {
+        if let x509_parser::extensions::ParsedExtension::SubjectKeyIdentifier(key) =
+            extension.parsed_extension()
+        {
+            if identifier.is_some() || key.0.is_empty() || key.0.len() > 64 {
+                return Err(error(503, "invalid PKI issuer key identifier"));
+            }
+            identifier = Some(key.0.to_vec());
+        }
+    }
+    Ok(identifier)
 }
 
 #[cfg(test)]
@@ -576,7 +615,7 @@ mod tests {
                 .ok_or("leaf serial")?;
             let der = &reopened
                 .issued
-                .get(serial)
+                .get(&normalize_serial(serial)?)
                 .ok_or("stored leaf")?
                 .certificate_der;
             let (_, leaf) = X509Certificate::from_der(der)?;

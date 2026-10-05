@@ -606,7 +606,9 @@ mod tests {
         let nonce = service.unseal_nonce.clone();
         let mut received = service.state.clone().ok_or("state")?;
         received.replay_epoch += 3;
-        let plan = service.prepare_record_plan(&received).map_err(|_| "plan")?;
+        let plan = service
+            .prepare_record_plan(&mut received)
+            .map_err(|_| "plan")?;
         let original_limit = service.opaque_owner_capacity;
         service.opaque_owner_capacity = 1;
         let error = service
@@ -632,7 +634,7 @@ mod tests {
         assert_eq!(service.unseal_nonce, nonce);
         service.opaque_owner_capacity = original_limit;
         let plan = service
-            .prepare_record_plan(&received)
+            .prepare_record_plan(&mut received)
             .map_err(|_| "retry plan")?;
         service
             .install_received_record_state(received, plan)

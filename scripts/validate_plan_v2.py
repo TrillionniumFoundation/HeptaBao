@@ -324,7 +324,7 @@ def validate_evidence_schemas() -> None:
 
 
 def reviewed_public_pem_spans(relative: str, text: str) -> set[int]:
-    """Permit only the six reviewed non-secret source uses, never an entire file.
+    """Permit only the five reviewed non-secret source uses, never an entire file.
 
     Each complete literal/expression must occur exactly once at its known site.
     Header-only construction/assertions contain no key body; the two negative
@@ -335,15 +335,16 @@ def reviewed_public_pem_spans(relative: str, text: str) -> set[int]:
     header = "-----BEGIN " + "PRIVATE KEY-----"
     footer = "-----END " + "PRIVATE KEY-----"
     contexts = {
-        "crates/heptabao-server/src/service_local_pki_tests.rs": (
-            fr'text.starts_with("{header}\n")',
-        ),
         "crates/heptabao-server/src/engines/pki_local_key_tests.rs": (
             fr'private.starts_with("{header}")',
             fr'pem.starts_with("{header}\n")',
         ),
-        "crates/heptabao-server/src/engines/pki_local_key.rs": (
-            fr'Zeroizing::new(String::from("{header}\n"))',
+        "crates/heptabao-server/src/engines/pki_local_intermediate.rs": (
+            'assert!(\n'
+            '                response.body["data"]["private_key"]\n'
+            '                    .as_str()\n'
+            f'                    .is_some_and(|v| v.starts_with("{header}"))\n'
+            '            );',
         ),
         "crates/heptabao-server/src/service_external_key_native_tests.rs": (
             fr'"{{}}\n{header}\nMAA=\n{footer}"',

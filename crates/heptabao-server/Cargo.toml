@@ -11,6 +11,7 @@ fixture-native-restore-faults = ["rustix/net", "rustix/process"]
 fixture-capacity-limit = []
 
 [dependencies]
+chrono = { version = "=0.4.45", default-features = false, features = ["clock", "std"] }
 bcrypt = { path = "../../vendor/bcrypt-0.19.3", version = "=0.19.3", default-features = false, features = ["std", "zeroize"] }
 # Feature-unify bcrypt's cipher so its expanded key schedule is cleared on Drop.
 blowfish = { version = "=0.10.0", default-features = false, features = ["zeroize"] }
@@ -25,7 +26,7 @@ heptabao-plugin-host = { path = "../heptabao-plugin-host" }
 heptabao-openbao-grpc = { path = "../heptabao-openbao-grpc" }
 heptabao-kms-contracts = { path = "../heptabao-kms-contracts" }
 serde = { version = "=1.0.229", features = ["derive"] }
-serde_json = "=1.0.151"
+serde_json = { version = "=1.0.151", features = ["raw_value"] }
 ring = "=0.17.14"
 base64 = "=0.22.1"
 qrcode = { path = "../../vendor/qrcode-0.14.1", default-features = false }
@@ -44,13 +45,19 @@ rustls-native-certs = "=0.8.2"
 x509-parser = { version = "=0.18.1", default-features = false }
 zeroize = "=1.8.1"
 futures = "=0.3.34"
-tokio = { version = "=1.53.1", default-features = false, features = ["rt-multi-thread", "sync", "time"] }
+tokio = { version = "=1.53.1", default-features = false, features = ["rt-multi-thread", "sync", "time", "net", "io-util"] }
+tokio-rustls = { version = "=0.26.6", default-features = false, features = ["ring", "tls12"] }
+h2 = "=0.4.19"
+http = "=1.5.0"
+bytes = "=1.12.1"
 openssl = { version = "=0.10.81", default-features = false, features = ["aws-lc"] }
+mime = "=0.3.17"
 # Maintained safe AES-KWP API; OAEP continues through the existing OpenSSL/AWS-LC bridge.
 aws-lc-rs = { version = "=1.17.1", default-features = false, features = ["non-fips"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 cross-krb5 = { version = "=0.5.0", default-features = false }
+heptabao-linux-parent-death = { path = "../heptabao-linux-parent-death" }
 
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.189"

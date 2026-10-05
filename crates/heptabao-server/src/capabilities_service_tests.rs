@@ -292,7 +292,6 @@ fn capabilities_path_and_selector_bounds_reject_without_state_change() -> TestRe
         json!({"paths":[]}),
         json!({"paths":["a","a"]}),
         json!({"path":"a","paths":["a"]}),
-        json!({"paths":["a"],"token":root}),
         json!({"paths":[3]}),
         json!({"paths":["../outside"]}),
         json!({"paths":["secret/*"]}),
@@ -304,6 +303,14 @@ fn capabilities_path_and_selector_bounds_reject_without_state_change() -> TestRe
             400
         );
     }
+    let self_response = call(
+        &mut s,
+        &root,
+        "sys/capabilities-self",
+        json!({"paths":["a"],"token":"not-the-bearer"}),
+    );
+    assert_eq!(self_response.status, 200);
+    assert_eq!(self_response.body["capabilities"], json!(["root"]));
     assert_eq!(before, snapshot(&s)?);
     Ok(())
 }
@@ -478,6 +485,70 @@ fn capabilities_cannot_read_other_namespace_tokens_even_with_root_selector() -> 
         )
         .status,
         200
+    );
+    Ok(())
+}
+
+#[test]
+fn capabilities_self_official_go_token_field_cannot_select_another_principal() -> TestResult {
+    let fixture = Fixture::new()?;
+    let mut service = fixture.service()?;
+    let (root, _) = start(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            &root,
+            "sys/policies/acl/sdk-reader",
+            json!({"policy":
+        "path \"secret/data/item\" { capabilities = [\"read\"] }"})
+        )
+        .status,
+        204
+    );
+    let (token, _) = create_token(
+        &mut service,
+        &root,
+        json!({"policies":["default","sdk-reader"]}),
+    )?;
+    for ignored in [token.as_str(), root.as_str(), "not-a-client-token"] {
+        let response = call(
+            &mut service,
+            &token,
+            "sys/capabilities-self",
+            json!({"path":"secret/data/item","token":ignored}),
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["capabilities"], json!(["read"]));
+    }
+    assert_eq!(
+        call(
+            &mut service,
+            "",
+            "sys/capabilities-self",
+            json!({"path":"secret/data/item","token":root})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            &token,
+            "sys/capabilities",
+            json!({"path":"secret/data/item","token":root})
+        )
+        .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            &token,
+            "secret/data/item",
+            json!({"data":{"value":"unauthorized"}})
+        )
+        .status,
+        403
     );
     Ok(())
 }

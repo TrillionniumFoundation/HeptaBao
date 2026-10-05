@@ -107,7 +107,7 @@ fn setup(
     state.schema = CURRENT_STATE_SCHEMA;
     state.validate_format().map_err(|_| "fixture format")?;
     service
-        .commit_state(&state)
+        .commit_state(&mut state)
         .map_err(|_| "fixture publication")?;
     service.state = Some(state);
     let policy =
@@ -180,6 +180,7 @@ fn observed(pending: &PendingExternalRequest) -> TestResult<(String, ExternalEff
                 token: Zeroizing::new("synthetic-provider-token-no-network".into()),
                 expires_at: 700,
                 audiences: Vec::new(),
+                artifact_lifetime_nanos: None,
             })),
         )),
         ExternalEffectPlan::OpenLdap(plan) => Ok((

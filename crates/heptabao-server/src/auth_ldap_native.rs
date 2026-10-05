@@ -723,9 +723,11 @@ impl AuthState {
         username: &str,
         directory_groups: BTreeSet<String>,
         increment: u64,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<AuthResponse, AuthError> {
-        let token = self.active_token(target, now, false)?;
+        let time = self.token_api_observed_time(time);
+        let now = time.seconds();
+        let token = self.active_token_observed(target, time, false)?;
         let Some(TokenAuthProvenance::LdapNative { alias, .. }) = &token.auth_provenance else {
             return Err(denied());
         };

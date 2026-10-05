@@ -85,7 +85,11 @@ impl AuthState {
             now,
         )?;
         let token = Token {
+            token_api_precision: None,
+            public_origin: None,
+            issue_stamp: None,
             token_api_lease_ttl: None,
+            token_role: None,
             bound_cidrs: authority.bound_cidrs,
             wrapping: None,
             entity_id: None,
@@ -110,11 +114,12 @@ impl AuthState {
         };
         let (id, token, mut issued) = Self::prepare_issue(token, now)?;
         issued.login_identity = Some(LoginIdentity {
+            token_api_alias: false,
             mount: scope.mount.into(),
             alias: alias.into(),
             metadata: None,
         });
-        self.tokens.insert(id, token);
+        self.store_token(id, token);
         Ok(issued)
     }
 }

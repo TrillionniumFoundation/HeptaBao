@@ -4,12 +4,12 @@ This dossier is the independently reviewable design, boundary, failure-semantics
 
 ## Design and state ownership
 
-- **Capability domain:** authenticated HA service routing, peer transport and replay fencing
+- **Capability domain:** authenticated HA service routing, peer transport with portable bounded accepted-socket I/O and replay fencing
 - **Repository state:** `IMPLEMENTED_REVIEW_REQUIRED`.
 - **Source root:** `crates/heptabao-ha-service`; Rust files: `crates/heptabao-ha-service/src/lib.rs`.
 - **Internal dependencies:** none.
 - **Runtime placement:** `yes`. The current runtime map is authoritative for whether this package is in the executable server dependency closure.
-- **Public design surface:** struct `NodeId`; fn `parse`; fn `as_str`; struct `OperationId`; enum `OperationKind`; struct `ClientOperation`; fn `new`; fn `payload`; struct `ClientResult`; fn `new`; fn `payload`; struct `LeaderView`; trait `ConsensusDriver`; trait `ForwardClient`; struct `HaService`; fn `new`; fn `execute`; fn `into_parts`; enum `PeerMessageKind`; struct `PeerEnvelope`; fn `payload`; struct `PeerAuthenticator`; fn `new`; fn `seal`; fn `verify`; struct `PersistentPeerSequences`; fn `open`; fn `accept_incoming`; fn `next_outgoing`; fn `admit_peer_envelope`
+- **Public design surface:** const `RAFT_ALPN_PROTOCOL`; struct `NodeId`; fn `parse`; fn `as_str`; struct `OperationId`; enum `OperationKind`; struct `ClientOperation`; fn `new`; fn `payload`; struct `ClientResult`; fn `new`; fn `payload`; struct `LeaderView`; trait `ConsensusDriver`; trait `ForwardClient`; struct `HaService`; fn `new`; fn `execute`; fn `into_parts`; enum `PeerMessageKind`; struct `PeerEnvelope`; fn `payload`; struct `PeerAuthenticator`; fn `new`; fn `seal`; fn `verify`; struct `PersistentPeerSequences`; fn `open`; fn `accept_incoming`; fn `next_outgoing`
 
 The module owns only the state and transitions described by its source files. It must not silently create an HTTP route, persistence format, authorization decision, external effect, or production guarantee unless that responsibility is visible in the source and in the current runtime map. Cross-module state is passed through typed APIs; callers remain responsible for transaction scope and durable publication where this package has no storage dependency.
 
@@ -29,7 +29,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** portable repository-relative source SHA-256 `4a6356ca015b580c4bcdd2eb5edb70e6ac355f41bd907b7d36136a27cbaa6e70`; manifest SHA-256 `648494a4d8863a0e03dfae35dd284492a1afeccc4a0d0494cf927894b9ce9a16`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `77b17800ec02e1c7b81db92009b5f452ee45b9fdef6ee7ebc3c3fb8053019faa`; manifest SHA-256 `52c49a8c5a1a7686037ab247c62be9a50737d31c81cc5d5f35ea580ed77ca3b6`.
 - **Named executable anchor:** `leader_executes_and_follower_forwards_with_deduplication` in `crates/heptabao-ha-service/src/lib.rs`.
 - **Required command:** `cargo +1.99.0 test --locked -p heptabao-ha-service` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.

@@ -3,6 +3,7 @@
 use super::*;
 use crate::ReplicatedEnvelope;
 use futures::future::BoxFuture;
+use openraft::async_runtime::WatchReceiver;
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::{
     Arc,
@@ -325,21 +326,45 @@ async fn guarded_join_acknowledges_committed_learner_before_replication()
     let node = ProcessRaftNode::create(path.join("1"), 1, factory).await?;
     router.peers.write().await.insert(1, node.rpc_service());
 
+    let mut stage = "initialize_single";
     let result = async {
         node.initialize_single().await?;
-        leader(&node, 1).await?;
+        // Role metrics can precede this elected term's applied blank. Keep
+        // the original 10s setup bound across readiness AND a genuine fresh
+        // quorum/own-applied ReadIndex; metrics alone are never authority.
+        stage = "setup_actual_applied_blank_and_readindex";
+        tokio::time::timeout(Duration::from_secs(10), async {
+            loop {
+                let metrics = node.raft.metrics().borrow_watched().clone();
+                if metrics.current_leader == Some(1)
+                    && metrics.vote.is_committed()
+                    && metrics.last_applied.is_some_and(|applied| {
+                        applied.committed_leader_id().term == metrics.current_term
+                    })
+                {
+                    break;
+                }
+                tokio::time::sleep(Duration::from_millis(20)).await;
+            }
+            node.ensure_linearizable().await
+        })
+        .await
+        .map_err(|_| "leader applied blank and ReadIndex exceeded setup bound")??;
+        stage = "before_membership_observation";
         let before = node.membership_observation().await?;
         let index = before.membership_index.ok_or("initial membership index")?;
 
         // Node 2 has no running process and no registered RPC service. Explicit
         // join must still acknowledge its committed learner membership; catch-up
         // and promotion remain separate observations.
+        stage = "change_membership_guarded";
         let observed = tokio::time::timeout(
             Duration::from_secs(6),
             node.change_membership_guarded(index, 2, "add_learner"),
         )
         .await
         .map_err(|_| "guarded learner join waited for replication")??;
+        stage = "unreplicated_learner_remains_unready";
         assert!(observed.committed);
         assert!(!observed.joint);
         assert!(observed.nodes.contains(&2));
@@ -353,6 +378,20 @@ async fn guarded_join_acknowledges_committed_learner_before_replication()
         Ok::<_, Box<dyn std::error::Error>>(())
     }
     .await;
+    if result.is_err() {
+        let metrics = node.raft.metrics().borrow_watched().clone();
+        eprintln!(
+            "guarded-join-stage={stage} role={:?} leader={:?} term={} committed_vote={} last_applied={:?} last_log={:?} membership={:?} committed_membership={:?}",
+            metrics.state,
+            metrics.current_leader,
+            metrics.current_term,
+            metrics.vote.is_committed(),
+            metrics.last_applied,
+            metrics.last_log_index,
+            metrics.membership_config,
+            metrics.committed_membership_config
+        );
+    }
     router.peers.write().await.clear();
     node.shutdown().await?;
     let _ = std::fs::remove_dir_all(&path);

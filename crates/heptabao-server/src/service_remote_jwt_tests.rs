@@ -269,7 +269,7 @@ fn wrapped_remote_jwt_store_refusal_publishes_no_token_or_key_update() -> TestRe
                 )?;
             }
             service
-                .commit_state(&state)
+                .commit_state(&mut state)
                 .map_err(|_| "wrapper fixture commit")?;
             service.state = Some(state);
         }

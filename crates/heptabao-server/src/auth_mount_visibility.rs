@@ -25,14 +25,15 @@ fn intersects_mount(pattern: &str, mount: &str) -> bool {
 impl AuthState {
     /// The public preflight validates the bearer without consuming its finite
     /// use. This affine capability is explicitly barred from data operations.
-    pub(crate) fn authenticate_mount_metadata_from(
+    pub(crate) fn authenticate_mount_metadata_from_observed(
         &self,
         raw: &str,
-        now: u64,
+        time: AuthorityTime,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Principal, AuthError> {
+        let now = time.seconds();
         if raw.starts_with("hvb.") {
-            let mut principal = self.batch_principal(raw, now, origin_peer)?;
+            let mut principal = self.batch_principal_observed(raw, time, origin_peer)?;
             principal.admission = PrincipalAdmission::MountMetadata;
             return Ok(principal);
         }
@@ -40,7 +41,7 @@ impl AuthState {
             return Err(denied());
         }
         let id = hash(raw);
-        let token = self.active_token(&id, now, true)?;
+        let token = self.active_token_observed(&id, time, true)?;
         token_cidrs::check(&token.bound_cidrs, origin_peer)?;
         Ok(Self::request_principal(
             id,
@@ -91,12 +92,15 @@ impl AuthState {
                         return Ok(true);
                     }
                 }
-            } else if name == "default"
-                && acl::DEFAULT_RULES
-                    .iter()
-                    .any(|(pattern, _)| intersects_mount(pattern, mount))
-            {
-                return Ok(true);
+            } else if name == "default" {
+                for rule in &default_policy::compiled()?.rules {
+                    if let Some(pattern) =
+                        acl_template::render(&rule.path, &principal.identity_templates)?
+                        && intersects_mount(&pattern, mount)
+                    {
+                        return Ok(true);
+                    }
+                }
             }
         }
         Ok(false)

@@ -58,6 +58,10 @@ impl PluginMutationContext {
     pub fn request_id(&self) -> &Id {
         &self.request_id
     }
+
+    pub fn authorization_digest(&self) -> &[u8; 32] {
+        &self.authorization_digest
+    }
 }
 
 impl fmt::Debug for PluginMutationContext {

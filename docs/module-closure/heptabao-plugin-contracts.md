@@ -29,7 +29,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** portable repository-relative source SHA-256 `80c79cf3a09089d79940a62b308161b4464aa4182bc5716be29cf9be8f9c522a`; manifest SHA-256 `f65f8c26ed9b3989b8a2fece8b8bd2913d87697905e05ee6715fc1edbe2e4e02`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `f5edfcf81409e22eb944677d63c599a8ad1c6ba02a8e047abf4e450162065d00`; manifest SHA-256 `f65f8c26ed9b3989b8a2fece8b8bd2913d87697905e05ee6715fc1edbe2e4e02`.
 - **Named executable anchor:** `lifecycle_is_monotonic_after_revocation` in `crates/heptabao-plugin-contracts/src/lib.rs`.
 - **Required command:** `cargo +1.99.0 test --locked -p heptabao-plugin-contracts` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.

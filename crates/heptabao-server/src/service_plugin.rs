@@ -131,6 +131,8 @@ pub(super) struct PluginResponseAuthority {
     principal: Principal,
     namespace: String,
     namespace_incarnation: Option<u64>,
+    namespace_catalog_required: bool,
+    namespace_delivery_binding: namespace_runtime::DeliveryBinding,
     activation_nonce: String,
     cluster_id: String,
     method: String,
@@ -139,11 +141,63 @@ pub(super) struct PluginResponseAuthority {
     capability: &'static str,
     sudo: bool,
     admitted_at: u64,
+    token_clock: Option<RequestClock>,
     started: std::time::Instant,
     deadline: Option<std::time::Instant>,
 }
 
 impl PluginResponseAuthority {
+    pub(super) fn principal(&self) -> &Principal {
+        &self.principal
+    }
+    pub(super) fn check_token_api_candidate(
+        &self,
+        state: &State,
+        auth: &AuthState,
+        activation: &str,
+    ) -> Result<(), Response> {
+        state.namespace_leases.validate()?;
+        if self.deadline_expired()
+            || activation != self.activation_nonce
+            || state.cluster_id != self.cluster_id
+            || self.namespace_catalog_required && !state.namespace_exists(&self.namespace)
+            || state.namespace_is_sealed(&self.namespace)
+            || state.namespaces.incarnation(&self.namespace) != self.namespace_incarnation
+            || namespace_runtime::DeliveryBinding::capture(state, &self.namespace)
+                != self.namespace_delivery_binding
+        {
+            return Err(Response::error(
+                503,
+                "token response owner or deadline changed",
+            ));
+        }
+        let time = auth.token_api_observed_time(self.token_time()?);
+        auth.authorize_request_parameters_observed(
+            &self.principal,
+            &self.namespace,
+            &self.method,
+            &self.path,
+            &self.body,
+            time,
+        )
+        .map_err(|error| Response::error(error.status, &error.message))?;
+        auth.authorize_request_observed(
+            &self.principal,
+            &self.namespace,
+            &self.path,
+            self.capability,
+            time,
+        )
+        .map_err(|error| Response::error(error.status, &error.message))?;
+        auth.validate_token_api_delivery_target(
+            &self.principal,
+            &self.namespace,
+            &self.path,
+            &self.body,
+            time,
+        )
+        .map_err(|error| Response::error(error.status, &error.message))
+    }
     pub(super) fn new(
         principal: Principal,
         state: &State,
@@ -156,6 +210,11 @@ impl PluginResponseAuthority {
             principal,
             namespace: request.namespace.to_owned(),
             namespace_incarnation: state.namespaces.incarnation(request.namespace),
+            namespace_catalog_required: request.enforce_namespace,
+            namespace_delivery_binding: namespace_runtime::DeliveryBinding::capture(
+                state,
+                request.namespace,
+            ),
             activation_nonce: activation_nonce.to_owned(),
             cluster_id: state.cluster_id.clone(),
             method: kv_authorization_method(request.method, request.body).to_owned(),
@@ -164,6 +223,7 @@ impl PluginResponseAuthority {
             capability,
             sudo,
             admitted_at: request.now,
+            token_clock: request.token_clock,
             started: request.admission_started,
             deadline: crate::request_deadline::current(),
         }
@@ -179,6 +239,29 @@ impl PluginResponseAuthority {
         std::time::Duration::from_secs(self.admitted_at)
             .saturating_add(self.started.elapsed())
             .as_secs()
+    }
+
+    pub(super) fn token_time(&self) -> Result<AuthorityTime, Response> {
+        match self.token_clock {
+            Some(clock) => clock
+                .with_seconds_floor(self.admitted_at)
+                .and_then(RequestClock::observed_at)
+                .map(AuthorityTime::Precise)
+                .map_err(|_| Response::error(503, "trusted token clock is unavailable")),
+            None => Ok(AuthorityTime::Coarse(self.now())),
+        }
+    }
+
+    pub(super) fn observe_candidate_time(
+        &self,
+        state: &mut State,
+    ) -> Result<AuthorityTime, Response> {
+        let time = state.auth.token_api_observed_time(self.token_time()?);
+        state
+            .auth
+            .observe_token_api_time(time)
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        Ok(time)
     }
 
     pub(super) fn deadline_expired(&self) -> bool {
@@ -1322,7 +1405,7 @@ impl Service {
                 Err(error) => return Response::error(error.status, &error.message),
             };
         }
-        let record_plan = match self.prepare_record_plan(&candidate) {
+        let record_plan = match self.prepare_record_plan(&mut candidate) {
             Ok(record_plan) => record_plan,
             Err(error) => return error,
         };
@@ -1404,9 +1487,16 @@ impl Service {
         if self.recovery_required
             || self.unseal_nonce != authority.activation_nonce
             || state.cluster_id != authority.cluster_id
-            || !state.namespace_exists(&authority.namespace)
+            || authority.namespace_catalog_required && !state.namespace_exists(&authority.namespace)
             || state.namespace_is_sealed(&authority.namespace)
+            || (state
+                .namespaces
+                .inherited_owner(&authority.namespace)
+                .is_some()
+                && !self.namespace_runtime.is_loaded(&authority.namespace))
             || state.namespaces.incarnation(&authority.namespace) != authority.namespace_incarnation
+            || namespace_runtime::DeliveryBinding::capture(state, &authority.namespace)
+                != authority.namespace_delivery_binding
         {
             return Err(Response::error(
                 503,
@@ -1414,33 +1504,33 @@ impl Service {
             ));
         }
         Self::bind_identity_principal(state, &mut authority.principal, &authority.namespace)?;
-        let now = authority.now();
+        let time = authority.token_time()?;
         state
             .auth
-            .authorize_request_parameters(
+            .authorize_request_parameters_observed(
                 &authority.principal,
                 &authority.namespace,
                 &authority.method,
                 &authority.path,
                 &authority.body,
-                now,
+                time,
             )
             .map_err(|error| Response::error(error.status, &error.message))?;
         let authorized = if authority.sudo {
-            state.auth.authorize_sudo_request(
+            state.auth.authorize_sudo_request_observed(
                 &authority.principal,
                 &authority.namespace,
                 &authority.path,
                 authority.capability,
-                now,
+                time,
             )
         } else {
-            state.auth.authorize_request(
+            state.auth.authorize_request_observed(
                 &authority.principal,
                 &authority.namespace,
                 &authority.path,
                 authority.capability,
-                now,
+                time,
             )
         };
         authorized.map_err(|error| Response::error(error.status, &error.message))?;
@@ -1611,7 +1701,7 @@ impl Service {
             return error;
         }
         state.schema = state.writer_schema();
-        if let Err(error) = self.commit_state(&state) {
+        if let Err(error) = self.commit_state(&mut state) {
             erase_json(&mut issued.body);
             return error;
         }

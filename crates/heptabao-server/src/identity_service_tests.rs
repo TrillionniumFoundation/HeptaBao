@@ -488,18 +488,20 @@ fn identity_live_children_inherit_identity_but_cannot_convert_it_into_token_poli
     let parent = text(&first.body, "/auth/client_token")?;
     let id = text(&first.body, "/auth/entity_id")?;
     update_entity(&mut s, "", &admin, &id, json!({"policies":["reader"]}));
-    assert_eq!(
-        call(
-            &mut s,
-            "",
-            &parent,
-            "POST",
-            "auth/token/create",
-            json!({"policies":["reader"]})
-        )
-        .status,
-        403
+    let rejected = call(
+        &mut s,
+        "",
+        &parent,
+        "POST",
+        "auth/token/create",
+        json!({"policies":["reader"]}),
     );
+    assert_eq!(rejected.status, 400);
+    assert_eq!(
+        rejected.body["errors"],
+        json!(["child policies must be subset of parent"])
+    );
+    assert!(rejected.body.get("auth").is_none());
     let child = call(&mut s, "", &parent, "POST", "auth/token/create", json!({}));
     assert_eq!(child.status, 200);
     assert_eq!(child.body["auth"]["entity_id"], id);
@@ -690,6 +692,8 @@ fn identity_schema_preserves_legacy_canonical_bytes_and_rejects_downgrade() -> T
     auth.remove_name_modes_for_legacy_format_test();
     auth.omit_lease_metadata_for_legacy_fixture();
     let state = State {
+        namespace_protected: None,
+        namespace_leases: namespace_runtime::Leases::default(),
         schema: 1,
         cluster_id: "legacy-synthetic".into(),
         replay_epoch: 0,
@@ -771,6 +775,8 @@ fn identity_schema_fences_persisted_radius_state_for_old_readers() -> TestResult
     )?;
     assert_eq!(configured.ok_or("missing config response")?.status, 204);
     let mut state = State {
+        namespace_protected: None,
+        namespace_leases: namespace_runtime::Leases::default(),
         schema: CURRENT_STATE_SCHEMA,
         cluster_id: "radius-schema-test".into(),
         replay_epoch: 0,
@@ -905,6 +911,9 @@ fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestR
             .remove("auth_provenance");
     }
     legacy.auth = serde_json::from_value::<AuthState>(encoded_auth)?.into();
+    legacy
+        .auth
+        .omit_unwrapped_public_origin_for_legacy_fixture();
     // Construct the supported historical implicit engine representation for
     // this schema-one input, without dispatching a current mount publication.
     legacy.engines = EngineState::default().into();
@@ -977,6 +986,8 @@ fn metadata_cas_schema_rejects_downgrade_from_version_or_requirement() -> TestRe
             .handle("", "POST", path, &body, 100)?
             .ok_or("missing engine response")?;
         let mut state = State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: 15,
             cluster_id: "metadata-cas-schema".into(),
             replay_epoch: 0,
@@ -1120,7 +1131,8 @@ fn batch_login_wrapping_capacity_failure_discards_identity_and_key_watermark_tog
             .auth
             .wrap_response("", "fixture", 60, &json!({"data":{"ok":true}}), 100)?;
     }
-    s.commit_state(&candidate).map_err(|_| "fixture commit")?;
+    s.commit_state(&mut candidate)
+        .map_err(|_| "fixture commit")?;
     s.state = Some(candidate);
     let before = s.current_state_digest().map_err(|_| "digest")?;
     let generation = s.durable.as_ref().ok_or("durable")?.generation();
@@ -1274,9 +1286,29 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 204
     );
-    // The existing empty engine-owner cleanup policy still refuses this used
-    // namespace. Deleting a fresh empty namespace exercises the successful
-    // namespace candidate path after all safe material has been removed.
+    // First prove the original retired66 fence before publishing the newer
+    // namespace custody81 retirement owner. No owner is stripped or relabelled.
+    let retired66 = service
+        .state
+        .clone()
+        .ok_or("real last transit owner removed")?;
+    assert!(
+        !retired66.engines.has_aad_bound_convergent_state()
+            && retired66.schema == AAD_BOUND_STATE_SCHEMA
+            && retired66.writer_schema() == AAD_BOUND_STATE_SCHEMA
+    );
+    let mut downgrade = retired66.clone();
+    downgrade.schema = CURRENT_STATE_SCHEMA;
+    assert!(downgrade.validate_format().is_ok());
+    assert!(
+        service
+            .prepare_record_plan(&mut downgrade)
+            .err()
+            .is_some_and(|response| response.status == 503
+                && response.body["errors"][0] == "AAD-bound convergent keys require schema 66")
+    );
+    // Once its private transit mount is actually removed, the remaining
+    // local namespace graph retires without lowering the protected reader66.
     assert!(
         call(
             &mut service,
@@ -1287,7 +1319,17 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
             json!({})
         )
         .status
-            == 409
+            == 200
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("retired tenant state")?
+            .namespaces
+            .incarnation("tenant")
+            .is_none(),
+        "actual tenant metadata is retired after its last private engine owner was removed"
     );
     assert!(
         call(
@@ -1316,19 +1358,15 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
     let retired = service.state.clone().ok_or("state")?;
     assert!(!retired.engines.has_aad_bound_convergent_state());
     assert!(
-        retired.schema == AAD_BOUND_STATE_SCHEMA
-            && retired.writer_schema() == AAD_BOUND_STATE_SCHEMA
+        retired.schema == NAMESPACE_CUSTODY_STATE_SCHEMA
+            && retired.writer_schema() == NAMESPACE_CUSTODY_STATE_SCHEMA
+            && retired.namespaces.has_custody_state()
     );
-    let mut downgrade = retired.clone();
-    downgrade.schema = CURRENT_STATE_SCHEMA;
-    assert!(downgrade.validate_format().is_ok());
-    assert!(
-        service
-            .prepare_record_plan(&downgrade)
-            .err()
-            .is_some_and(|response| response.status == 503
-                && response.body["errors"][0] == "AAD-bound convergent keys require schema 66")
-    );
+    let mut custody_downgrade = retired.clone();
+    custody_downgrade.schema = AAD_BOUND_STATE_SCHEMA;
+    assert!(custody_downgrade.validate_format().is_err());
+    assert!(service.prepare_record_plan(&mut custody_downgrade).is_err());
+    assert!(Service::validate_snapshot_protected_floor(&retired, &custody_downgrade).is_err());
     for unknown in [0, MAX_SUPPORTED_STATE_SCHEMA + 1, u32::MAX] {
         let mut state = retired.clone();
         state.schema = unknown;
@@ -1360,7 +1398,7 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 204
     );
-    assert!(service.state.as_ref().ok_or("state")?.schema == AAD_BOUND_STATE_SCHEMA);
+    assert!(service.state.as_ref().ok_or("state")?.schema == NAMESPACE_CUSTODY_STATE_SCHEMA);
     drop(service);
     let mut reopened = fixture.service()?;
     assert!(
@@ -1375,7 +1413,7 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         .status
             == 200
     );
-    assert!(reopened.state.as_ref().ok_or("state")?.schema == AAD_BOUND_STATE_SCHEMA);
+    assert!(reopened.state.as_ref().ok_or("state")?.schema == NAMESPACE_CUSTODY_STATE_SCHEMA);
     Ok(())
 }
 

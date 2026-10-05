@@ -557,6 +557,7 @@ impl Service {
                     body: &body,
                     now,
                     admission_started: Instant::now(),
+                    token_clock: None,
                     allow_forward: false,
                     enforce_namespace: true,
                     wrap_ttl_seconds: None,
@@ -593,7 +594,7 @@ mod redirect_tests;
 // HTTP routing. The normal before/stream importer/metadata-check sequence is
 // retained; this private cfg(test) seam returns only the native parser's affine
 // validated candidate just before the writer final commit.
-#[cfg(test)]
+#[cfg(all(test, target_os = "linux"))]
 impl Service {
     pub(super) fn fixture_begin_native_snapshot_upload(
         &mut self,

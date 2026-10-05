@@ -12,6 +12,10 @@ fn batch_owner(
     ttl: u64,
 ) -> std::result::Result<LeaseOwner, Box<dyn std::error::Error>> {
     let claims = BatchClaims {
+        token_role: None,
+        token_api_precision: None,
+        token_api_policy_names: false,
+        public_origin: None,
         namespace: namespace.into(),
         policies: BTreeSet::from(["default".into()]),
         metadata: BTreeMap::new(),
@@ -168,6 +172,7 @@ fn stored_batch_owner_cannot_move_namespaces_or_issue_into_another_mount_scope()
     let issuer = ResolvedLeaseOwner {
         owner,
         expires_at: Some(400),
+        precise_expires_at: None,
         entity_id: None,
     };
     let mut engines = EngineState::default();
@@ -216,6 +221,7 @@ fn retained_revoked_and_nonleased_pki_owners_stay_visible_to_format_validation()
     let issuer = ResolvedLeaseOwner {
         owner: owner.clone(),
         expires_at: Some(now + 300),
+        precise_expires_at: None,
         entity_id: None,
     };
     let mut engines = EngineState::default();
@@ -292,6 +298,7 @@ fn ldap_renewal_caps_current_owner_and_rejects_changes_without_partial_expiry() 
     let mut issuer = ResolvedLeaseOwner {
         owner: owner.clone(),
         expires_at: Some(220),
+        precise_expires_at: None,
         entity_id: None,
     };
     let mut ldap = openldap::OpenLdap::default();

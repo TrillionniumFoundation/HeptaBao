@@ -286,11 +286,12 @@ fn wrapping_token_has_no_general_or_policy_manufactured_authority() -> TestResul
         "auth/token/create",
         json!({"policies":["response-wrapping"],"no_default_policy":true}),
     );
-    let forged = text(&r.body, "/auth/client_token")?;
+    assert_eq!(r.status, 400);
     assert_eq!(
-        call(&mut s, &forged, "sys/wrapping/unwrap", json!({})).status,
-        400
+        r.body["errors"],
+        json!(["cannot assign policy \"response-wrapping\""])
     );
+    assert!(r.body.get("auth").is_none());
     assert_eq!(
         call(&mut s, &root, "sys/wrapping/unwrap", json!({"token":root})).status,
         400
@@ -712,6 +713,65 @@ fn wrapping_270_self_revoke_is_durable_without_releasing_or_revoking_peer() -> T
                 );
             }
         }
+    }
+    Ok(())
+}
+
+#[test]
+fn wrapping_official_go_put_uses_the_same_single_use_lifecycle_as_post() -> TestResult {
+    let fixture = Fixture::new()?;
+    let mut service = fixture.service()?;
+    let (root, _) = start(&mut service)?;
+    for method in ["POST", "PUT"] {
+        let payload = json!({"value":"official-Go-wrapping","method":method});
+        let wrapped = service.handle_request_at(
+            ServiceRequest {
+                method,
+                path: "sys/wrapping/wrap",
+                namespace: "",
+                token: &root,
+                body: payload.clone(),
+                wrap_ttl_seconds: Some(60),
+                origin_peer: None,
+                client_certificates: None,
+            },
+            100,
+        );
+        assert_eq!(wrapped.status, 200);
+        let token = text(&wrapped.body, "/wrap_info/token")?;
+        let lookup = service.handle_at(
+            "PUT",
+            "sys/wrapping/lookup",
+            "",
+            &root,
+            json!({"token":token}),
+            100,
+        );
+        assert_eq!(lookup.status, 200);
+        assert_eq!(lookup.body["data"]["creation_ttl"], 60);
+        let unwrapped = service.handle_at(
+            "PUT",
+            "sys/wrapping/unwrap",
+            "",
+            &root,
+            json!({"token":token}),
+            100,
+        );
+        assert_eq!(unwrapped.status, 200);
+        assert_eq!(unwrapped.body["data"], payload);
+        assert_eq!(
+            service
+                .handle_at(
+                    "PUT",
+                    "sys/wrapping/unwrap",
+                    "",
+                    &root,
+                    json!({"token":token}),
+                    100
+                )
+                .status,
+            400
+        );
     }
     Ok(())
 }

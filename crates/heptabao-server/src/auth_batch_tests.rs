@@ -4,6 +4,10 @@ type TestResult = Result<(), Box<dyn std::error::Error>>;
 
 fn claims(now: u64, ttl: u64) -> BatchClaims {
     BatchClaims {
+        token_role: None,
+        token_api_precision: None,
+        token_api_policy_names: false,
+        public_origin: None,
         namespace: "team/one".into(),
         policies: BTreeSet::from(["default".into(), "reader".into()]),
         metadata: BTreeMap::from([("username".into(), "alice".into())]),
@@ -439,5 +443,85 @@ fn batch_metadata_uses_full_claim_byte_bound_instead_of_arbitrary_field_limits()
         Err(BatchError::Capacity)
     ));
     assert!(before.as_slice() == stored(&authority)?.as_slice());
+    Ok(())
+}
+
+#[test]
+fn authenticated_token_role_marker_requires_exact_issued_path_and_preserves_legacy_claim_bytes()
+-> TestResult {
+    let mut authority = BatchKeyAuthority::new(100)?;
+    let original = claims(100, 300);
+    assert!(serde_json::to_value(&original)?.get("token_role").is_none());
+    let mut owned = original.clone();
+    owned.path = "auth/token/create/batch/v123".into();
+    owned.token_role = Some(super::super::token_roles::IssuedRole {
+        name: "batch".into(),
+        path: owned.path.clone(),
+    });
+    let sealed = authority.seal(owned.clone(), 100)?;
+    let admitted = authority.open(sealed.as_str(), "team/one", 100)?;
+    assert_eq!(
+        admitted.token_role().ok_or("authenticated role")?.name,
+        "batch"
+    );
+    assert_eq!(admitted.path(), "auth/token/create/batch/v123");
+    let before = serde_json::to_vec(&authority)?;
+    for changed in [
+        "auth/token/create/batch-forged/v123",
+        "auth/token/create/batch/",
+    ] {
+        let mut invalid = owned.clone();
+        invalid.path = changed.into();
+        invalid.token_role.as_mut().ok_or("role marker")?.path = changed.into();
+        assert!(authority.seal(invalid, 100).is_err());
+        assert_eq!(serde_json::to_vec(&authority)?, before);
+    }
+    let mut invalid = owned.clone();
+    invalid.token_role = None;
+    assert!(authority.seal(invalid, 100).is_err());
+    assert_eq!(serde_json::to_vec(&authority)?, before);
+    Ok(())
+}
+
+#[test]
+fn token_api_batch_policy_marker_is_authenticated_and_native_login_grammar_stays_strict()
+-> TestResult {
+    let mut authority = BatchKeyAuthority::new(100)?;
+    let original = claims(100, 300);
+    assert!(
+        serde_json::to_value(&original)?
+            .get("token_api_policy_names")
+            .is_none()
+    );
+    let mut native = original.clone();
+    native.policies = BTreeSet::from(["σ".into(), "x,y".into()]);
+    let before = stored(&authority)?;
+    assert!(authority.seal(native.clone(), 100).is_err());
+    native.token_api_policy_names = true;
+    assert!(authority.seal(native.clone(), 100).is_err());
+    assert!(before.as_slice() == stored(&authority)?.as_slice());
+    for path in ["auth/token/create", "auth/token/create-orphan"] {
+        let mut api = native.clone();
+        api.path = path.into();
+        let raw = authority.seal(api.clone(), 100)?;
+        let verified = authority.open(raw.as_str(), "team/one", 100)?;
+        assert_eq!(verified.policies(), &api.policies);
+        api.token_api_policy_names = false;
+        assert!(authority.seal(api, 100).is_err());
+    }
+    let mut role = native;
+    role.token_api_policy_names = false;
+    role.path = "auth/token/create/batch".into();
+    role.token_role = Some(super::super::token_roles::IssuedRole {
+        name: "batch".into(),
+        path: role.path.clone(),
+    });
+    let raw = authority.seal(role.clone(), 100)?;
+    assert_eq!(
+        authority.open(raw.as_str(), "team/one", 100)?.policies(),
+        &role.policies
+    );
+    role.policies.insert("root".into());
+    assert!(authority.seal(role, 100).is_err());
     Ok(())
 }

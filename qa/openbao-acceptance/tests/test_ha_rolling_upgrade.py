@@ -80,6 +80,8 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
 
     def early_exit(self, returncode, delta, *, stale=b"", error="node_exited_during_startup"):
         cluster = self.cluster()
+        cluster.base_source_sha = "8c1e43718c30ce5185c55b258c0460bd48936a2a"
+        cluster.base_wire_profile = upgrade.base_wire_profile_for_source(cluster.base_source_sha)
         cluster.scenarios, cluster.candidate_binary = [], Path("/candidate")
         node = self.base_node()
         log_path = node.root / "process.log"
@@ -102,6 +104,20 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
         node.start.assert_called_once_with()
         node.stop.assert_called_once_with()
         self.assertEqual(cluster.scenarios, ["rolling_upgrade_base_misbound_startup_rejected"])
+
+    def test_owner_strict_base_cannot_qualify_with_late_http_rejection(self):
+        cluster = self.cluster()
+        cluster.base_source_sha = "8c1e43718c30ce5185c55b258c0460bd48936a2a"
+        cluster.base_wire_profile = upgrade.base_wire_profile_for_source(cluster.base_source_sha)
+        cluster.scenarios, cluster.unseal_key = [], "synthetic-unused"
+        cluster.candidate_binary = Path("/candidate")
+        node = self.base_node()
+        node.call.side_effect = [(503, {"errors": ["HA configuration belongs to a different cluster"]}), (503, {"sealed": True})]
+        with patch.object(upgrade, "checked_binary"), patch.object(upgrade, "running_digest", return_value=cluster.base_digest), self.assertRaisesRegex(upgrade.FixtureError, "strict_base_started_with_misbound_cluster"):
+            cluster.assert_misbound_rejection(node)
+        node.call.assert_not_called()
+        node.stop.assert_called_once_with()
+        self.assertEqual(cluster.scenarios, [])
 
     def test_modern_base_rejects_arbitrary_exit_status_or_log(self):
         exact = (upgrade.MISBOUND_BOOTSTRAP_ERROR + "\n").encode()
@@ -225,15 +241,18 @@ class RollingUpgradeFixtureTests(unittest.TestCase):
 
 
 class BaseWireProfileTests(unittest.TestCase):
-    MODERN = "421c19794fa4f772edb9cde7dcc0db68362c1717"
+    MODERN = "8c1e43718c30ce5185c55b258c0460bd48936a2a"
+    HISTORICAL_MODERN = "421c19794fa4f772edb9cde7dcc0db68362c1717"
     LEGACY = "55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18"
 
     def test_profiles_are_explicit_immutable_sources(self):
-        self.assertEqual(upgrade.base_wire_profile_for_source(self.MODERN), "strict-current")
+        for source in (self.MODERN, self.HISTORICAL_MODERN):
+            with self.subTest(source=source):
+                self.assertEqual(upgrade.base_wire_profile_for_source(source), "strict-current")
         self.assertEqual(upgrade.base_wire_profile_for_source(self.LEGACY), "legacy-v1")
 
     def test_mismatched_profiles_cannot_relax_or_break_known_base(self):
-        for source, requested in [(self.MODERN, "legacy-v1"), (self.LEGACY, "strict-current")]:
+        for source, requested in [(self.MODERN, "legacy-v1"), (self.HISTORICAL_MODERN, "legacy-v1"), (self.LEGACY, "strict-current")]:
             with self.subTest(source=source), self.assertRaisesRegex(upgrade.FixtureError, "profile_mismatch"):
                 upgrade.base_wire_profile_for_source(source, requested)
 
@@ -244,6 +263,7 @@ class BaseWireProfileTests(unittest.TestCase):
 
     def test_upgrade_current_and_legacy_use_distinct_wire_modes(self):
         for source, profile, expected in [(self.MODERN, "strict-current", False),
+                                          (self.HISTORICAL_MODERN, "strict-current", False),
                                           (self.LEGACY, "legacy-v1", True)]:
             with self.subTest(profile=profile), tempfile.TemporaryDirectory() as directory:
                 cluster = upgrade.RollingUpgradeCluster.__new__(upgrade.RollingUpgradeCluster)

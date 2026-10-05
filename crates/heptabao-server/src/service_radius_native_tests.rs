@@ -836,7 +836,7 @@ fn wrapped_radius_login_capacity_and_commit_failure_publish_nothing() -> TestRes
                 )?;
             }
             service
-                .commit_state(&state)
+                .commit_state(&mut state)
                 .map_err(|_| "wrapper fixture commit")?;
             service.state = Some(state);
         }

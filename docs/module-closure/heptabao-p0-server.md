@@ -7,7 +7,7 @@ This dossier is the independently reviewable design, boundary, failure-semantics
 - **Capability domain:** loopback memory server
 - **Repository state:** `INHERITED_IMPLEMENTED`.
 - **Source root:** `crates/heptabao-p0-server`; Rust files: `crates/heptabao-p0-server/src/lib.rs`, `crates/heptabao-p0-server/src/main.rs`.
-- **Internal dependencies:** `heptabao-protocol`.
+- **Internal dependencies:** `heptabao-filesystem-guard`, `heptabao-protocol`.
 - **Runtime placement:** `no/standalone or indirect; verify CURRENT_RUNTIME_MAP`. The current runtime map is authoritative for whether this package is in the executable server dependency closure.
 - **Public design surface:** const `P0_PROFILE`; const `P0_PRODUCTION_SUPPORTED`; const `P0_COMPATIBILITY_CLAIM`; const `P0_AUTHORITY_EFFECT`; struct `DevelopmentCredentials`; fn `new`; trait `AuditSink`; struct `MemoryAuditSink`; fn `with_failure_on`; fn `events`; struct `FileAuditSink`; fn `create_new`; fn `path`; struct `P0Server`; struct `P0Response`; fn `new`; fn `audit`; fn `generation`; fn `handle`; enum `AuditError`; enum `P0Error`
 
@@ -29,7 +29,7 @@ Ordering obligations are source-specific: inspect the public functions and tests
 
 ## Acceptance evidence
 
-- **Source/manifest evidence:** portable repository-relative source SHA-256 `fc94658825adfafa1c785aeaac34c7048e994a99b124f1e88be02859e66e1dc8`; manifest SHA-256 `9aab2dfc3c34a4295478fa867bc246bf7bb97b9daf90d0507062c54677453962`.
+- **Source/manifest evidence:** portable repository-relative source SHA-256 `e7e3df0408f246006026e5b3fceb6e007866f4d53adc7b5ec65b4a9ea3e774e8`; manifest SHA-256 `8b6bd3639a49d84a28c53c898fcb81c26431da0e5955c6920c56aeea94766d17`.
 - **Named executable anchor:** `fresh_server_starts_fail_closed_and_sealed` in `crates/heptabao-p0-server/src/lib.rs`.
 - **Required command:** `cargo +1.99.0 test --locked -p heptabao-p0-server` (must be executed against this exact source tree; historical CI output is not current evidence).
 - **Repository/documentation checks:** `python scripts/validate_module_closure.py`; `python scripts/validate_current_documentation_semantics.py`.

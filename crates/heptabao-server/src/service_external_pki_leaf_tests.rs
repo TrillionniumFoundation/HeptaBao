@@ -1,6 +1,103 @@
 use super::*;
 
 #[test]
+fn external_pki270_original_250ms_deadline_before_entry_never_publishes_or_retries() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (_root, mut service, _unseal, admin) = leaf_fixture(&remote)?;
+    let before = remote.calls()?;
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "original identity")?;
+    let original_deadline = std::time::Instant::now() + std::time::Duration::from_millis(250);
+    let _deadline = crate::request_deadline::RequestDeadlineScope::enter(original_deadline);
+    let pending = match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: "external-ca/issue/leaf",
+        namespace: "",
+        token: &admin,
+        body: json!({"common_name":"leaf.example.test","ttl":"10m"}),
+        now: 100,
+        allow_forward: true,
+        enforce_namespace: false,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    }) {
+        RequestExecution::External(pending) => *pending,
+        RequestExecution::Complete(_) => return Err("original deadline leaf did not stage".into()),
+    };
+    std::thread::sleep(
+        (original_deadline + std::time::Duration::from_millis(20))
+            .saturating_duration_since(std::time::Instant::now()),
+    );
+    let observed = pending.execute();
+    let response = service.finish_external_request(pending, observed);
+    assert!(response.status == 503 && response.body.get("data").is_none());
+    assert!(
+        remote.calls()? == before,
+        "expired admission never enters or retries the real provider"
+    );
+    assert!(
+        service
+            .current_state_identity()
+            .is_ok_and(|current| current == identity),
+        "prepublication expiry leaves the exact encrypted state identity unchanged"
+    );
+    Ok(())
+}
+
+#[test]
+fn external_pki270_original_one_second_leaf_expiry_before_publication_keeps_state() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (_root, mut service, _unseal, admin) = leaf_fixture(&remote)?;
+    let before = remote.calls()?;
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "original expiry identity")?;
+    let started = std::time::Instant::now();
+    let _clock = crate::service::external_pki::PublicationClockScope::enter(
+        std::time::Duration::from_millis(100_750),
+        started,
+    );
+    let pending = match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: "external-ca/issue/leaf",
+        namespace: "",
+        token: &admin,
+        body: json!({"common_name":"leaf.example.test","ttl":"1s"}),
+        now: 100,
+        allow_forward: true,
+        enforce_namespace: false,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    }) {
+        RequestExecution::External(pending) => *pending,
+        RequestExecution::Complete(_) => {
+            return Err("original short validity leaf did not stage".into());
+        }
+    };
+    std::thread::sleep(
+        (started + std::time::Duration::from_millis(300))
+            .saturating_duration_since(std::time::Instant::now()),
+    );
+    let observed = pending.execute();
+    let response = service.finish_external_request(pending, observed);
+    assert!(response.status == 403 && response.body.get("data").is_none());
+    assert!(
+        remote.calls()? == before + 2,
+        "real metadata and signing happen exactly once"
+    );
+    assert!(
+        service
+            .current_state_identity()
+            .is_ok_and(|current| current == identity),
+        "expired real signed observation cannot publish encrypted state"
+    );
+    Ok(())
+}
+
+#[test]
 fn external_pki270_delayed_committed_leaf_never_delivers_expired_private_and_updates_remaining_ttl()
 -> TestResult {
     for outcome in 0..3 {
@@ -8,28 +105,35 @@ fn external_pki270_delayed_committed_leaf_never_delivers_expired_private_and_upd
         let deadline = outcome == 2;
         let remote = RemoteTransit::new_kind("ed25519")?;
         let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
-        let clock = crate::service::external_pki::PublicationClockScope::enter(
-            std::time::Duration::from_millis(if expired { 100_750 } else { 100_250 }),
-            std::time::Instant::now(),
-        );
-        let delay = crate::service::external_pki::PublicationDelayScope::enter(
-            std::time::Duration::from_millis(if expired || deadline { 400 } else { 600 }),
-        );
-        let deadline_scope = deadline.then(|| {
-            crate::request_deadline::RequestDeadlineScope::enter(
-                std::time::Instant::now() + std::time::Duration::from_millis(250),
+        let started = std::time::Instant::now();
+        let original_deadline = started + std::time::Duration::from_secs(30);
+        // Real provider I/O must finish before the intended postcommit cut.
+        // Wait to the fixture's actual expiry/deadline without moving any clock.
+        let delay = if expired {
+            crate::service::external_pki::PublicationDelayScope::until(
+                started + std::time::Duration::from_millis(60_250),
             )
-        });
+        } else if deadline {
+            crate::service::external_pki::PublicationDelayScope::until(
+                original_deadline + std::time::Duration::from_millis(100),
+            )
+        } else {
+            crate::service::external_pki::PublicationDelayScope::enter(
+                std::time::Duration::from_millis(600),
+            )
+        };
+        let deadline_scope = deadline
+            .then(|| crate::request_deadline::RequestDeadlineScope::enter(original_deadline));
         let before = remote.calls()?;
-        let response = call(
+        let (response, lower, upper) = timed_leaf_delivery(
             &mut service,
-            "POST",
-            "external-ca/issue/leaf",
             &admin,
-            json!({"common_name":"leaf.example.test","ttl":if expired {"1s"} else {"10m"}}),
-        );
+            "external-ca/issue/leaf",
+            json!({"common_name":"leaf.example.test","ttl":if expired {"60s"} else {"10m"}}),
+            std::time::Duration::from_millis(if expired { 100_750 } else { 100_250 }),
+            started,
+        )?;
         drop(delay);
-        drop(clock);
         drop(deadline_scope);
         if deadline {
             assert!(
@@ -43,7 +147,10 @@ fn external_pki270_delayed_committed_leaf_never_delivers_expired_private_and_upd
             );
         } else {
             assert!(
-                response.status == 200 && response.body["lease_duration"] == 599,
+                response.status == 200
+                    && response.body["lease_duration"]
+                        .as_u64()
+                        .is_some_and(|ttl| { (lower..=upper).contains(&ttl) && ttl <= 599 }),
                 "remaining certificate TTL is recomputed after delayed publication"
             );
         }
@@ -176,8 +283,12 @@ fn external_pki270_own_publication_checkpoint_rejects_postcommit_grant_aba() -> 
                 .is_ok_and(|identity| identity == checkpoint_identity),
             "ABA restores content while durable generation advances"
         );
-        let response =
-            service.audit_completed_response(&pending.fingerprint, pending.now, response);
+        let response = service.audit_completed_response(
+            &pending.fingerprint,
+            pending.now,
+            pending.token_clock,
+            response,
+        );
         let sequence = service.audit_sequence;
         if fail_veto_audit {
             service.audit_capacity = service.audit.metadata()?.len();
@@ -212,24 +323,23 @@ fn external_pki270_real_leaf_reports_remaining_validity_at_original_subsecond_cl
 {
     let remote = RemoteTransit::new_kind("ed25519")?;
     let (_root, mut service, _unseal, admin) = leaf_fixture(&remote)?;
-    let _scope = crate::service::external_pki::PublicationClockScope::enter(
+    let (leaf, lower, upper) = timed_leaf_delivery(
+        &mut service,
+        &admin,
+        "external-ca/issue/leaf",
+        json!({"common_name":"leaf.example.test","ttl":"10m"}),
         std::time::Duration::from_millis(100_750),
         std::time::Instant::now(),
-    );
-    let leaf = call(
-        &mut service,
-        "POST",
-        "external-ca/issue/leaf",
-        &admin,
-        json!({"common_name":"leaf.example.test","ttl":"10m"}),
-    );
+    )?;
     assert!(
         leaf.status == 200,
         "actual remote-signed leaf under original fractional clock"
     );
     assert!(
-        leaf.body["lease_duration"] == 599,
-        "remaining validity uses nearest whole second"
+        leaf.body["lease_duration"]
+            .as_u64()
+            .is_some_and(|ttl| { (lower..=upper).contains(&ttl) && ttl <= 599 }),
+        "remaining validity includes the admission fraction and actual provider/audit elapsed time"
     );
     assert!(
         leaf.body["data"]["expiration"] == 700,

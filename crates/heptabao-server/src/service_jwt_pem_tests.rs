@@ -501,7 +501,7 @@ fn jwt_pem_namespace_reopen_renew_and_sticky_retirement_keep_existing_authority(
         "retired publication cannot downgrade"
     );
     assert!(
-        service.commit_state(&old).is_err(),
+        service.commit_state(&mut old).is_err(),
         "actual commit rejects retired downgrade"
     );
     Ok(())
@@ -779,6 +779,7 @@ fn jwt_pem_authenticated_snapshot_prepare_and_final_commit_reject_active_retired
         body: &body,
         now: 120,
         admission_started: std::time::Instant::now(),
+        token_clock: None,
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: None,

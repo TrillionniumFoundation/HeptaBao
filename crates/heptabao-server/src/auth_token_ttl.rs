@@ -62,8 +62,19 @@ impl AuthState {
                 .any(|token| token.token_api_lease_ttl.is_some())
     }
 
+    pub(crate) fn secret_default_lease_ttl(&self) -> Result<u64, AuthError> {
+        Ok(self.secret_lease_defaults()?.0)
+    }
+
+    /// Actual durable system defaults for a secrets engine's public lease contract.
+    pub(crate) fn secret_lease_defaults(&self) -> Result<(u64, u64), AuthError> {
+        let defaults = self.system_lease_defaults()?;
+        Ok((defaults.default_ttl, defaults.max_ttl))
+    }
+
     pub(crate) fn validate_system_lease_defaults(&self) -> Result<(), AuthError> {
         self.system_lease_defaults()?;
+        self.validate_token_api_precision_state()?;
         self.validate_token_api_creation_ttl()?;
         for token in self.tokens.values() {
             if let Some(ttl) = token.token_api_lease_ttl
@@ -140,8 +151,19 @@ impl AuthState {
             return Err(denied());
         }
         if !token.renewable {
-            return Err(bad("token is not renewable"));
+            return Err(bad("lease is not renewable"));
         }
+        let role = token.token_role.as_ref().map(|issued| {
+            self.token_roles.get(namespace).and_then(|roles| roles.get(&issued.name)).ok_or_else(|| err(500, &format!("1 error occurred:\n\t* failed to renew entry: original token role {} could not be found, not renewing\n\n",token_policies::quote_policy(&issued.name))))
+        }).transpose()?;
+        let period = role.map_or(token.period, |role| role.effective_period());
+        let explicit_max_expires_at = if let Some(role) = role {
+            (role.explicit_max() > 0)
+                .then(|| checked_expiry(token.created_at, role.explicit_max()))
+                .transpose()?
+        } else {
+            token.max_expires_at
+        };
         let increment = duration(body, "increment", 0)?;
         let expires_at = self.native_token_expiry(
             AuthScope {
@@ -154,10 +176,10 @@ impl AuthState {
                 // keep its former one-hour omitted-increment semantics.
                 ttl: token.token_api_lease_ttl.unwrap_or(LEGACY_DEFAULT_TTL),
                 max_ttl: 0,
-                period: token.period,
+                period,
             },
             token.created_at,
-            token.max_expires_at,
+            explicit_max_expires_at,
             increment,
             now,
         )?;
@@ -165,7 +187,7 @@ impl AuthState {
         let token = self.tokens.get_mut(target).ok_or_else(denied)?;
         token.expires_at = Some(expires_at);
         token.token_api_lease_ttl = Some(expires_at - now);
-        let response = AuthResponse {
+        let mut response = AuthResponse {
             approle_secret_consumption: None,
             pending_batch: None,
             login_identity: None,
@@ -175,9 +197,13 @@ impl AuthState {
             body: json!({"auth": {
                 "accessor":token.accessor,"policies":token.policies,"token_policies":token.policies,
                 "entity_id":token.entity_id.as_deref().unwrap_or(""),
+                "orphan":token.parent.is_none(),"num_uses":token.uses_remaining.unwrap_or(0),
                 "lease_duration":expires_at-now,"renewable":true,"token_type":"service"
             }}),
         };
+        if let Some(origin) = &token.public_origin {
+            response.body["auth"]["metadata"] = origin.issued_json();
+        }
         self.system_lease_defaults.get_or_insert(system_defaults);
         Ok(Some(response))
     }

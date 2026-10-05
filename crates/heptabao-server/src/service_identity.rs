@@ -5,14 +5,61 @@ use super::*;
 use crate::auth::{AuthError, AuthResponse};
 
 impl State {
+    /// Retained/pending/all-namespace owners can carry private batch precision
+    /// even when no corresponding service-token record remains.
+    pub(super) fn has_token_api_precision_state(&self) -> bool {
+        self.auth.has_token_api_precision_state()
+            || self
+                .engines
+                .all_lease_owners()
+                .into_iter()
+                .chain(self.database.all_lease_owners())
+                .any(|(_, owner)| {
+                    owner
+                        .batch_claims()
+                        .is_some_and(|claims| claims.precision().is_some())
+                })
+    }
+
     /// Preserve unknown schemas for admission to reject; never normalize them
     /// into an older supported format. The all-namespace scan also finds safe
     /// material introduced by the current candidate before its first commit.
     pub(super) fn writer_schema(&self) -> u32 {
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.engines.has_local_pki_root_fields_state() {
+        let required = if self.engines.has_pki_role_names_state() {
+            PKI_ROLE_NAMES_STATE_SCHEMA
+        } else if self.engines.has_pki_signed_role_time_state() {
+            PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+        } else if self.engines.has_pki_role_time_state() {
+            PKI_ROLE_TIME_STATE_SCHEMA
+        } else if self.engines.has_pki_role_leaf_profile_state() {
+            PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+        } else if self.engines.has_kubernetes_opaque_artifact_state() {
+            KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+        } else if self.auth.has_public_origin_state() {
+            AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        } else if self.engines.has_pki_role_wildcard_state() {
+            PKI_ROLE_WILDCARD_STATE_SCHEMA
+        } else if self.engines.has_pki_role_bare_domain_state() {
+            PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+        } else if self.engines.has_pki_role_any_name_state() {
+            PKI_ROLE_ANY_NAME_STATE_SCHEMA
+        } else if self.has_token_api_precision_state() {
+            TOKEN_API_PRECISION_STATE_SCHEMA
+        } else if self.namespaces.has_custody_state() || self.engines.has_namespace_record_custody()
+        {
+            NAMESPACE_CUSTODY_STATE_SCHEMA
+        } else if self.auth.has_token_api_schema80_state() {
+            TOKEN_ROLE_STATE_SCHEMA
+        } else if self.engines.has_local_pki_intermediate_state() {
+            LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+        } else if self.engines.has_local_pki_crl_state() {
+            LOCAL_PKI_CRL_STATE_SCHEMA
+        } else if self.engines.has_local_pki_multi_issuer_state() {
+            LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+        } else if self.engines.has_local_pki_root_fields_state() {
             LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
         } else if self.engines.has_local_pki_identifier_state() {
             LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
@@ -44,10 +91,173 @@ impl State {
         &self,
         previous: Option<&State>,
     ) -> Result<(), Response> {
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        self.namespace_leases.validate()?;
+        self.protected_state()?
+            .auth
+            .validate_public_origin_state()
+            .map_err(|_| Response::error(503, "invalid public origin protected owner"))?;
+        if let Some(previous) = previous {
+            self.protected_state()?
+                .auth
+                .validate_public_origin_successor(&previous.protected_state()?.auth)
+                .map_err(|_| Response::error(503, "public origin floor cannot retire"))?;
+            self.protected_state()?
+                .namespaces
+                .validate_custody_successor(&previous.protected_state()?.namespaces)?;
+        }
+
+        if !supported_reader_schema(self.schema) {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        self.engines
+            .validate_kubernetes_artifact_clock(previous.map(|state| &*state.engines))
+            .map_err(|error| Response::error(503, &error.message))?;
+        self.auth
+            .validate_token_api_clock_floor(previous.map(|state| &*state.auth))
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < TOKEN_API_PRECISION_STATE_SCHEMA
+            && (self.has_token_api_precision_state()
+                || previous.is_some_and(|state| {
+                    state.has_token_api_precision_state()
+                        || state.schema >= TOKEN_API_PRECISION_STATE_SCHEMA
+                }))
+        {
+            return Err(Response::error(
+                503,
+                "Token API precise lease publication requires schema 82",
+            ));
+        }
+        if self.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            && (self.engines.has_kubernetes_opaque_artifact_state()
+                || previous
+                    .is_some_and(|state| state.schema >= KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "opaque Kubernetes artifact ownership requires schema 87",
+            ));
+        }
+        if self.schema < PKI_ROLE_NAMES_STATE_SCHEMA
+            && (self.engines.has_pki_role_names_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_NAMES_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI role name ownership requires schema 93",
+            ));
+        }
+        if self.schema < PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+            && (self.engines.has_pki_signed_role_time_state()
+                || previous.is_some_and(|state| state.schema >= PKI_SIGNED_ROLE_TIME_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI signed role time ownership requires schema 90",
+            ));
+        }
+        if self.schema < PKI_ROLE_TIME_STATE_SCHEMA
+            && (self.engines.has_pki_role_time_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_TIME_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI role time ownership requires schema 89",
+            ));
+        }
+        if self.schema < PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && (self.engines.has_pki_role_leaf_profile_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI role leaf profiles require schema 88",
+            ));
+        }
+        if self.schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
+            && (self.engines.has_pki_role_wildcard_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_WILDCARD_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI wildcard ownership requires schema 85",
+            ));
+        }
+        if self.schema < PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            && (self.engines.has_pki_role_bare_domain_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI base-domain ownership requires schema 84",
+            ));
+        }
+        if self.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            && (self.engines.has_pki_role_any_name_state()
+                || previous.is_some_and(|state| state.schema >= PKI_ROLE_ANY_NAME_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI allow_any_name ownership requires schema 83",
+            ));
+        }
+        if self.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+            && (self.auth.has_public_origin_state()
+                || previous.is_some_and(|state| state.schema >= AUTH_PUBLIC_ORIGIN_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "native public origin requires schema 86",
+            ));
+        }
+        if self.schema < NAMESPACE_CUSTODY_STATE_SCHEMA
+            && (self.namespaces.has_custody_state()
+                || self.engines.has_namespace_record_custody()
+                || previous.is_some_and(|state| state.schema >= NAMESPACE_CUSTODY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "independent namespace custody requires schema 81",
+            ));
+        }
+        if self.schema < TOKEN_ROLE_STATE_SCHEMA
+            && (self.auth.has_token_api_schema80_state()
+                || previous.is_some_and(|state| state.schema >= TOKEN_ROLE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "Token API role ownership requires schema 80",
+            ));
+        }
+        if self.schema < LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            && (self.engines.has_local_pki_intermediate_state()
+                || previous
+                    .is_some_and(|state| state.schema >= LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "local PKI intermediate ownership requires schema 79",
+            ));
+        }
+        if self.schema < LOCAL_PKI_CRL_STATE_SCHEMA
+            && (self.engines.has_local_pki_crl_state()
+                || previous.is_some_and(|state| state.schema >= LOCAL_PKI_CRL_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "local PKI CRL state requires schema 78",
+            ));
+        }
+        if self.schema < LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            && (self.engines.has_local_pki_multi_issuer_state()
+                || previous
+                    .is_some_and(|state| state.schema >= LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "local PKI issuer ownership requires schema 77",
             ));
         }
         if self.schema < LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
@@ -155,9 +365,7 @@ impl State {
             ));
         }
         if previous.is_some_and(|state| {
-            state.schema == 0
-                || state.schema > MAX_SUPPORTED_STATE_SCHEMA
-                || self.schema < state.schema
+            !supported_reader_schema(state.schema) || self.schema < state.schema
         }) {
             return Err(Response::error(
                 503,
@@ -168,10 +376,139 @@ impl State {
     }
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
-        if self.schema == 0 || self.schema > MAX_SUPPORTED_STATE_SCHEMA {
+        self.auth
+            .validate_public_origin_state()
+            .map_err(|_| Response::error(503, "invalid public origin owner"))?;
+        if self.schema == AUTH_PUBLIC_ORIGIN_STATE_SCHEMA && !self.auth.has_public_origin_state() {
+            return Err(Response::error(
+                503,
+                "public origin retirement floor is missing",
+            ));
+        }
+        if self.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA && self.auth.has_public_origin_state() {
+            return Err(Response::error(
+                503,
+                "native public origin requires schema 86",
+            ));
+        }
+        if !supported_reader_schema(self.schema) {
             return Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
+            ));
+        }
+        if self.schema < PKI_ROLE_NAMES_STATE_SCHEMA && self.engines.has_pki_role_names_state() {
+            return Err(Response::error(
+                503,
+                "PKI role name ownership requires schema 93",
+            ));
+        }
+        if self.schema < PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+            && self.engines.has_pki_signed_role_time_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI signed role time ownership requires schema 90",
+            ));
+        }
+        if self.schema < PKI_ROLE_TIME_STATE_SCHEMA && self.engines.has_pki_role_time_state() {
+            return Err(Response::error(
+                503,
+                "PKI role time ownership requires schema 89",
+            ));
+        }
+        if self.schema < PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            && self.engines.has_pki_role_leaf_profile_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI role leaf profiles require schema 88",
+            ));
+        }
+        if self.schema < PKI_ROLE_WILDCARD_STATE_SCHEMA
+            && self.engines.has_pki_role_wildcard_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI wildcard ownership requires schema 85",
+            ));
+        }
+        if self.schema < PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            && self.engines.has_pki_role_bare_domain_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI base-domain ownership requires schema 84",
+            ));
+        }
+        if self.schema < PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            && self.engines.has_pki_role_any_name_state()
+        {
+            return Err(Response::error(
+                503,
+                "PKI allow_any_name ownership requires schema 83",
+            ));
+        }
+        self.auth
+            .validate_token_api_precision_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.has_token_api_precision_state() && !self.auth.has_token_api_precision_state() {
+            return Err(Response::error(
+                503,
+                "private precise lease owners require an observation floor",
+            ));
+        }
+        if self.schema < TOKEN_API_PRECISION_STATE_SCHEMA && self.has_token_api_precision_state() {
+            return Err(Response::error(
+                503,
+                "Token API precise lease reader requires schema 82",
+            ));
+        }
+        if self.schema < NAMESPACE_CUSTODY_STATE_SCHEMA
+            && (self.namespaces.has_custody_state() || self.engines.has_namespace_record_custody())
+        {
+            return Err(Response::error(
+                503,
+                "independent namespace custody requires schema 81",
+            ));
+        }
+        self.auth
+            .validate_token_role_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            && self.engines.has_kubernetes_opaque_artifact_state()
+        {
+            return Err(Response::error(
+                503,
+                "opaque Kubernetes artifact ownership requires schema 87",
+            ));
+        }
+        if self.schema < TOKEN_ROLE_STATE_SCHEMA && self.auth.has_token_api_schema80_state() {
+            return Err(Response::error(
+                503,
+                "Token API role ownership requires schema 80",
+            ));
+        }
+        if self.schema < LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            && self.engines.has_local_pki_intermediate_state()
+        {
+            return Err(Response::error(
+                503,
+                "local PKI intermediate ownership requires schema 79",
+            ));
+        }
+        if self.schema < LOCAL_PKI_CRL_STATE_SCHEMA && self.engines.has_local_pki_crl_state() {
+            return Err(Response::error(
+                503,
+                "local PKI CRL state requires schema 78",
+            ));
+        }
+        if self.schema < LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            && self.engines.has_local_pki_multi_issuer_state()
+        {
+            return Err(Response::error(
+                503,
+                "local PKI issuer ownership requires schema 77",
             ));
         }
         if self.schema < LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
@@ -642,6 +979,16 @@ impl State {
             ));
         }
         self.namespaces.validate(&self.cluster_id)?;
+        self.engines
+            .visit_namespace_record_owner_bindings(|binding| {
+                self.namespaces
+                    .validate_record_custody_binding(binding)
+                    .map_err(|_| crate::engines::EngineError {
+                        status: 503,
+                        message: "namespace record floor binding rejected".into(),
+                    })
+            })
+            .map_err(|_| Response::error(503, "namespace record floor binding rejected"))?;
         if self.schema < 10 && self.auth.has_plugin_auth_state() {
             return Err(Response::error(
                 503,
@@ -907,7 +1254,22 @@ impl State {
             | RECOVERY_CREDENTIAL_STATE_SCHEMA
             | INDEXED_RECOVERY_WIRE_STATE_SCHEMA
             | LOCAL_PKI_IDENTIFIER_STATE_SCHEMA
-            | LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA => Ok(()),
+            | LOCAL_PKI_ROOT_FIELDS_STATE_SCHEMA
+            | LOCAL_PKI_MULTI_ISSUER_STATE_SCHEMA
+            | LOCAL_PKI_CRL_STATE_SCHEMA
+            | LOCAL_PKI_INTERMEDIATE_STATE_SCHEMA
+            | TOKEN_ROLE_STATE_SCHEMA
+            | TOKEN_API_PRECISION_STATE_SCHEMA
+            | KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA
+            | PKI_ROLE_ANY_NAME_STATE_SCHEMA
+            | PKI_ROLE_BARE_DOMAIN_STATE_SCHEMA
+            | PKI_ROLE_WILDCARD_STATE_SCHEMA
+            | PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA
+            | PKI_ROLE_TIME_STATE_SCHEMA
+            | PKI_SIGNED_ROLE_TIME_STATE_SCHEMA
+            | PKI_ROLE_NAMES_STATE_SCHEMA
+            | NAMESPACE_CUSTODY_STATE_SCHEMA
+            | AUTH_PUBLIC_ORIGIN_STATE_SCHEMA => Ok(()),
             _ => Err(Response::error(
                 503,
                 "unsupported or downgraded identity state schema",
@@ -954,6 +1316,23 @@ impl Service {
         namespace: &str,
         now: u64,
     ) -> Result<(), Response> {
+        Self::finish_identity_response_observed(
+            auth,
+            engines,
+            response,
+            namespace,
+            now,
+            AuthorityTime::Coarse(now),
+        )
+    }
+    pub(super) fn finish_identity_response_observed(
+        auth: &mut AuthState,
+        engines: &mut EngineState,
+        response: &mut AuthResponse,
+        namespace: &str,
+        now: u64,
+        time: AuthorityTime,
+    ) -> Result<(), Response> {
         let auth_error = |error: AuthError| Response::error(error.status, &error.message);
         if let Some(login) = response.login_identity.take() {
             let accessor = auth
@@ -968,7 +1347,14 @@ impl Service {
                 .bind_login_identity(namespace, &accessor, &login.alias, now)
                 .map_err(|error| Response::error(error.status, &error.message))?;
             if projection.disabled {
-                return Err(Response::error(403, "permission denied"));
+                return Err(Response::error(
+                    403,
+                    if login.token_api_alias {
+                        "entity from given entity alias is disabled"
+                    } else {
+                        "permission denied"
+                    },
+                ));
             }
             auth.bind_issued_entity(response, namespace, &login.mount, &projection.entity_id)
                 .map_err(auth_error)?;
@@ -991,7 +1377,7 @@ impl Service {
                 ));
             }
             return auth
-                .finish_pending_batch(response, namespace, now)
+                .finish_pending_batch_observed(response, namespace, now, time)
                 .map_err(auth_error);
         };
         if let Some(groups) = response.external_groups.take() {
@@ -1027,7 +1413,7 @@ impl Service {
             }
             response.body["auth"]["policies"] = json!(all);
         }
-        auth.finish_pending_batch(response, namespace, now)
+        auth.finish_pending_batch_observed(response, namespace, now, time)
             .map_err(auth_error)
     }
 
@@ -1068,6 +1454,8 @@ mod recovery_state_tests {
     fn state() -> Result<State, crate::auth::AuthError> {
         let (auth, _) = AuthState::bootstrap(1)?;
         Ok(State {
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
             schema: CURRENT_STATE_SCHEMA,
             cluster_id: "recovery-test-cluster".into(),
             replay_epoch: 0,
@@ -1224,6 +1612,69 @@ mod recovery_state_tests {
                 .is_err()
         );
         assert!(Service::validate_snapshot_protected_floor(&canceled, &downgraded).is_err());
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod kubernetes_artifact_floor_tests {
+    use super::*;
+    #[test]
+    fn kube_opaque_artifact_floor_survives_empty_retirement_and_refuses_snapshot_downgrade()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let (auth, _) = AuthState::bootstrap(1).map_err(|_| "bootstrap")?;
+        let current = State {
+            schema: KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA,
+            cluster_id: "opaque-artifact-floor-test".into(),
+            replay_epoch: 0,
+            namespaces: namespaces::NamespaceRegistry::default().into(),
+            auth: auth.into(),
+            engines: EngineState::initialized_empty().into(),
+            database: database::DatabaseState::default().into(),
+            raft_admin: raft_admin::RaftAdminState::default().into(),
+            namespace_protected: None,
+            namespace_leases: namespace_runtime::Leases::default(),
+        };
+        current
+            .validate_format()
+            .map_err(|_| "schema87 supported reader")?;
+        assert_eq!(current.writer_schema(), 87);
+        let mut older = current.clone();
+        older.schema = TOKEN_ROLE_STATE_SCHEMA;
+        assert!(older.validate_publication_schema(Some(&current)).is_err());
+        let rejected = Service::validate_snapshot_protected_floor(&current, &older)
+            .err()
+            .ok_or("missing snapshot rejection")?;
+        assert_eq!(rejected.status, 400);
+        assert_eq!(
+            rejected.body["errors"],
+            json!(["snapshot would downgrade opaque Kubernetes artifact ownership"])
+        );
+        let mut unknown = current.clone();
+        unknown.schema = MAX_SUPPORTED_STATE_SCHEMA + 1;
+        assert!(unknown.validate_format().is_err());
+        assert_eq!(unknown.writer_schema(), MAX_SUPPORTED_STATE_SCHEMA + 1);
+        let mut precise = current.clone();
+        precise.schema = 82;
+        assert!(
+            precise.validate_format().is_ok(),
+            "explicit reader82 admits a historical whole-second graph"
+        );
+        assert!(
+            precise.validate_publication_schema(Some(&current)).is_err(),
+            "an admitted reader82 shape cannot overwrite the actual retired87 floor"
+        );
+        assert!(Service::validate_snapshot_protected_floor(&current, &precise).is_err());
+        // The integrated reader admits PKI88 while retaining the prior87 floor.
+        let mut integrated = current.clone();
+        integrated.schema = PKI_ROLE_LEAF_PROFILE_STATE_SCHEMA;
+        assert!(integrated.validate_format().is_ok());
+        assert!(
+            integrated
+                .validate_publication_schema(Some(&current))
+                .is_ok()
+        );
+        assert!(Service::validate_snapshot_protected_floor(&integrated, &current).is_err());
         Ok(())
     }
 }

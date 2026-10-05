@@ -75,6 +75,10 @@ impl RemoteJwtEffect {
 }
 
 impl OnlineAuthEffectPlan {
+    pub(super) fn is_provider_renewal(&self) -> bool {
+        matches!(&self.effect, OnlineAuthEffect::ProviderRenewal(_))
+    }
+
     pub(super) fn use_realtime_remote_jwt_clock(&mut self) {
         if let OnlineAuthEffect::RemoteJwt(effect) = &mut self.effect {
             effect.completion_clock = RemoteJwtCompletionClock::Realtime;
@@ -96,7 +100,7 @@ pub(super) struct OidcConfigEffect {
 
 pub(super) struct ProviderRenewalEffect {
     plan: ProviderRenewalPlan,
-    actor: Principal,
+    authority: plugin::PluginResponseAuthority,
     echo_token: Option<Zeroizing<String>>,
     path: String,
     wrap_ttl_seconds: Option<u64>,
@@ -200,13 +204,17 @@ impl Service {
         principal: &mut Option<Principal>,
         request: &RequestView<'_>,
     ) -> Option<Response> {
-        let plan = match admitted.auth.prepare_provider_renewal(
+        let time = match request.token_time() {
+            Ok(time) => time,
+            Err(response) => return Some(response),
+        };
+        let plan = match admitted.auth.prepare_provider_renewal_observed(
             principal.as_ref(),
             request.namespace,
             request.method,
             request.path,
             request.body,
-            request.now,
+            time,
         ) {
             Ok(None) => return None,
             Err(error) => return Some(auth_error(error)),
@@ -229,7 +237,15 @@ impl Service {
             login_wrapping: None,
             effect: OnlineAuthEffect::ProviderRenewal(Box::new(ProviderRenewalEffect {
                 plan,
-                actor,
+                authority: plugin::PluginResponseAuthority::new(
+                    actor,
+                    admitted,
+                    request,
+                    "update",
+                    false,
+                    &self.unseal_nonce,
+                )
+                .with_time_floor(request.now),
                 echo_token: match request.path {
                     "auth/token/renew-self" => Some(Zeroizing::new(request.token.to_owned())),
                     "auth/token/renew" => request
@@ -257,25 +273,32 @@ impl Service {
     ) -> Response {
         let ProviderRenewalEffect {
             plan,
-            mut actor,
+            mut authority,
             echo_token,
             path,
             wrap_ttl_seconds,
         } = renewal;
+        // Keep the exact ingress capsule through provider I/O. Rebinding live
+        // identity checks its original Principal without bearer authentication.
+        if let Err(error) = self.validate_plugin_response(&mut authority) {
+            return error;
+        }
         let Some(mut state) = self.state.clone() else {
             return Response::error(503, "provider renewal authority is unavailable");
         };
-        let now = plan.observed_now();
-        if let Err(error) = Self::bind_identity_principal(&state, &mut actor, namespace) {
-            return error;
-        }
-        let mut response = match state
-            .auth
-            .finish_provider_renewal(plan, &actor, observation, now)
-        {
-            Ok(response) => response,
+        let now = match plan.observed_now_for(authority.principal()) {
+            Ok(now) => now.max(state.engines.lease_clock()),
             Err(error) => return auth_error(error),
         };
+        let delivery_target = Zeroizing::new(plan.delivery_target().to_owned());
+        let mut response =
+            match state
+                .auth
+                .finish_provider_renewal(plan, authority.principal(), observation, now)
+            {
+                Ok(response) => response,
+                Err(error) => return auth_error(error),
+            };
         if let Err(error) = Self::finish_identity_response(
             &mut state.auth,
             &mut state.engines,
@@ -301,12 +324,71 @@ impl Service {
                 Err(error) => return auth_error(error),
             };
         }
-        state.schema = state.writer_schema();
-        if let Err(error) = self.commit_state(&state) {
+        if let Err(error) = state.auth.validate_provider_renewal_delivery(
+            authority.principal(),
+            namespace,
+            &path,
+            &delivery_target,
+            now,
+        ) {
+            erase_json(&mut response.body);
+            return auth_error(error);
+        }
+        let checked = authority.observe_candidate_time(&mut state).and_then(|_| {
+            authority.check_token_api_candidate(&state, &state.auth, &self.unseal_nonce)
+        });
+        if let Err(error) = checked {
             erase_json(&mut response.body);
             return error;
         }
+        state.schema = state.writer_schema();
+        let committed = (|| {
+            self.prepare_namespace_publication(&mut state)?;
+            state.validate_format()?;
+            if state.engines.record_root().is_some() {
+                let plan = self.prepare_record_plan(&mut state)?;
+                let activation = self.unseal_nonce.clone();
+                self.commit_record_plan_with_before_publish(
+                    &state,
+                    plan,
+                    |auth| authority.check_token_api_candidate(&state, auth, &activation),
+                    #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
+                    None,
+                )
+            } else {
+                self.commit_state(&mut state)
+            }
+        })();
+        if let Err(error) = committed {
+            erase_json(&mut response.body);
+            return error;
+        }
+        #[cfg(test)]
+        external_pki::delay_after_publication_for_test();
+        if let Err(error) = state.auth.validate_provider_renewal_delivery(
+            authority.principal(),
+            namespace,
+            &path,
+            &delivery_target,
+            now,
+        ) {
+            // Publication is already durable. Keep the actual committed owner
+            // and the consumed admission; deliver no token or wrapped payload.
+            erase_json(&mut response.body);
+            self.state = Some(state);
+            return auth_error(error);
+        }
         self.state = Some(state);
+        if self.pending_token_api_authority.is_some() {
+            erase_json(&mut response.body);
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Response::error(503, "provider renewal delivery capsule is occupied");
+        }
+        // This same moved capsule survives terminal floor publication and
+        // mandatory response audit, then checks the actual final target again.
+        self.pending_token_api_authority = Some(authority);
         Response {
             consistency_index: None,
             status: response.status,
@@ -438,7 +520,7 @@ impl Service {
         // committed before staging and is never rolled back by this shortcut.
         if response.mutated {
             state.schema = state.writer_schema();
-            if let Err(error) = self.commit_state(&state) {
+            if let Err(error) = self.commit_state(&mut state) {
                 erase_json(&mut response.body);
                 return error;
             }
@@ -597,7 +679,7 @@ impl Service {
             state.schema = state.writer_schema();
             // Critical order: one-use session removal is replicated and durable
             // before the global Service writer is released for code exchange.
-            if let Err(error) = self.commit_state(&state) {
+            if let Err(error) = self.commit_state(&mut state) {
                 return Some(error);
             }
             self.state = Some(state);
@@ -743,7 +825,7 @@ impl Service {
             };
             if response.mutated {
                 state.schema = state.writer_schema();
-                if let Err(error) = self.commit_state(&state) {
+                if let Err(error) = self.commit_state(&mut state) {
                     return error;
                 }
                 self.state = Some(state);
@@ -859,7 +941,7 @@ impl Service {
             };
         }
         state.schema = state.writer_schema();
-        if let Err(error) = self.commit_state(&state) {
+        if let Err(error) = self.commit_state(&mut state) {
             erase_json(&mut issued.body);
             if callback {
                 return consumed_oidc_error(Response {
@@ -896,7 +978,7 @@ mod tests {
         state.auth = auth.into();
         state.validate_format().map_err(|_| "invalid test state")?;
         service
-            .commit_state(&state)
+            .commit_state(&mut state)
             .map_err(|_| "test state did not persist")?;
         service.state = Some(state);
         Ok((service, key, callback))

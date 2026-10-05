@@ -628,9 +628,11 @@ impl AuthState {
         target: &str,
         username: &str,
         increment: u64,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<AuthResponse, AuthError> {
-        let token = self.active_token(target, now, false)?;
+        let time = self.token_api_observed_time(time);
+        let now = time.seconds();
+        let token = self.active_token_observed(target, time, false)?;
         let Some(TokenAuthProvenance::RadiusNative {
             policy_metadata, ..
         }) = &token.auth_provenance

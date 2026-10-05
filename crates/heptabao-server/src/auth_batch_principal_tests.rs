@@ -8,6 +8,10 @@ fn peer(last: u8) -> Option<IpAddr> {
 }
 fn claims() -> batch::BatchClaims {
     batch::BatchClaims {
+        token_role: None,
+        token_api_precision: None,
+        token_api_policy_names: false,
+        public_origin: None,
         namespace: String::new(),
         policies: BTreeSet::from(["default".into()]),
         metadata: BTreeMap::from([("username".into(), "alice".into())]),

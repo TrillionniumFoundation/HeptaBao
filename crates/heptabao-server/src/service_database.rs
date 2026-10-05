@@ -54,6 +54,61 @@ pub(super) struct DatabaseState {
     provider_fence: u64,
 }
 
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct NamespaceAssets {
+    namespace: String,
+    mounts: Option<BTreeMap<String, DatabaseMount>>,
+}
+
+impl DatabaseState {
+    pub(super) fn lease_clock(&self) -> u64 {
+        self.clock
+    }
+    #[cfg(test)]
+    pub(super) fn has_subtractive_cleanup(&self, namespace: &str, id: &str) -> bool {
+        self.mount(namespace, "database/")
+            .and_then(|mount| mount.leases.get(id))
+            .is_some_and(|lease| {
+                lease.phase == Phase::PendingRevoke
+                    && lease.password.is_none()
+                    && lease.provider_password.is_none()
+                    && lease.expires == 0
+            })
+    }
+    pub(super) fn detach_namespace(
+        &mut self,
+        namespace: &str,
+    ) -> Result<NamespaceAssets, Response> {
+        if namespace.is_empty() {
+            return Err(Response::error(
+                503,
+                "root database owner cannot be partitioned",
+            ));
+        }
+        Ok(NamespaceAssets {
+            namespace: namespace.to_owned(),
+            mounts: self.mounts.remove(namespace),
+        })
+    }
+    pub(super) fn attach_namespace(
+        &mut self,
+        actual: &str,
+        assets: NamespaceAssets,
+    ) -> Result<(), Response> {
+        if actual.is_empty() || assets.namespace != actual || self.mounts.contains_key(actual) {
+            return Err(Response::error(
+                503,
+                "namespace database owner binding or collision rejected",
+            ));
+        }
+        if let Some(mounts) = assets.mounts {
+            self.mounts.insert(actual.to_owned(), mounts);
+        }
+        Ok(())
+    }
+}
+
 fn provider_fence_is_zero(value: &u64) -> bool {
     *value == 0
 }
@@ -291,9 +346,11 @@ struct DatabaseLease {
 
 pub(super) struct DatabaseEffectPlan {
     namespace: String,
+    namespace_binding: Option<crate::namespace_custody::Binding>,
     mount: String,
     now: u64,
     started: std::time::Instant,
+    deadline: Option<std::time::Instant>,
     outbound: crate::outbound::Outbound,
     ha: Option<Arc<Mutex<HaProcess>>>,
     plugin: Option<plugin::SharedDatabasePlugin>,
@@ -303,6 +360,7 @@ pub(super) struct DatabaseEffectPlan {
     // Request delivery authority is process-local and never persisted/replayed.
     // Maintenance deliberately has none and may only reconcile/clean up effects.
     response_authority: Option<Box<plugin::PluginResponseAuthority>>,
+    token_clock: Option<RequestClock>,
     // Kept through provider execution and local finalization. Dropping an
     // abandoned plan makes its durable intent eligible for maintenance again.
     _in_flight: Arc<()>,
@@ -554,6 +612,12 @@ impl DatabaseBatchEffectPlan {
 }
 
 impl DatabaseEffectPlan {
+    pub(super) fn matches_namespace_binding(
+        &self,
+        binding: &crate::namespace_custody::Binding,
+    ) -> bool {
+        self.namespace_binding.as_ref() == Some(binding) && binding.namespace() == self.namespace
+    }
     fn completed_now(&self) -> u64 {
         std::time::Duration::from_secs(self.now)
             .saturating_add(self.started.elapsed())
@@ -2476,7 +2540,11 @@ impl Service {
                         fields(body, &[])?;
                         let owner = state
                             .auth
-                            .typed_lease_issuer(p, ns, now)
+                            .typed_lease_issuer_observed(
+                                p,
+                                ns,
+                                Self::provider_owner_time(&state, request.token_clock, now)?,
+                            )
                             .map_err(|e| Response::error(e.status, &e.message))?;
                         let role = state
                             .database
@@ -2591,6 +2659,7 @@ impl Service {
         // Include intent publication time as well as unlocked provider I/O.
         if let Some(plan) = &mut self.pending_database_effect {
             plan.started = request.admission_started;
+            plan.token_clock = request.token_clock;
             if plan.lease.phase != Phase::PendingRevoke {
                 let (Some(principal), Some(current)) = (principal.take(), self.state.as_ref())
                 else {
@@ -2615,6 +2684,7 @@ impl Service {
         if let Some(batch) = &mut self.pending_database_batch_effect {
             for plan in &mut batch.plans {
                 plan.started = started;
+                plan.token_clock = request.token_clock;
             }
         }
         execute.unwrap_or_else(|e| e)
@@ -2622,7 +2692,7 @@ impl Service {
     fn publish_database(&mut self, mut state: State) -> Result<(), Response> {
         state.schema = state.writer_schema();
         state.validate_format()?;
-        self.commit_state(&state)?;
+        self.commit_state(&mut state)?;
         self.state = Some(state);
         Ok(())
     }
@@ -2741,9 +2811,15 @@ impl Service {
         }
         Ok(DatabaseEffectPlan {
             namespace: ns.to_owned(),
+            namespace_binding: if ns.is_empty() {
+                None
+            } else {
+                Some(state.namespaces.custody_binding(&state.cluster_id, ns)?)
+            },
             mount: mount.to_owned(),
             now,
             started: std::time::Instant::now(),
+            deadline: crate::request_deadline::current(),
             outbound: self.outbound.clone(),
             ha: self.ha.clone(),
             plugin,
@@ -2751,6 +2827,7 @@ impl Service {
             fence_id: provider_fence_identity(&state.cluster_id)?,
             lease,
             response_authority: None,
+            token_clock: None,
             _in_flight: self.database_in_flight.track(ns, mount, id),
         })
     }
@@ -2785,13 +2862,13 @@ impl Service {
     /// whose ACL, identity, namespace or deadline changed during unlocked I/O.
     pub(super) fn finalize_database_request(
         &mut self,
-        mut plan: DatabaseEffectPlan,
+        plan: &mut DatabaseEffectPlan,
         provider_result: Result<(), Response>,
     ) -> Response {
         let mut authority = plan.response_authority.take();
         let cleanup = plan.lease.phase == Phase::PendingRevoke;
-        self.finalize_database_effect_checked(
-            &plan,
+        let response = self.finalize_database_effect_checked(
+            plan,
             provider_result,
             || plan.completed_now(),
             |service| {
@@ -2805,6 +2882,89 @@ impl Service {
                     .ok_or_else(|| failure("database delivery authority is unavailable"))?;
                 service.validate_plugin_response(authority)
             },
+        );
+        plan.response_authority = authority;
+        response
+    }
+
+    pub(super) fn complete_database_delivery(
+        &mut self,
+        plan: &mut DatabaseEffectPlan,
+        mut response: Response,
+        fingerprint: &str,
+    ) -> Response {
+        if response.status >= 300 || plan.lease.phase == Phase::PendingRevoke {
+            return response;
+        }
+        let checked = plan
+            .response_authority
+            .as_mut()
+            .ok_or_else(|| failure("database delivery authority is unavailable"))
+            .and_then(|authority| self.validate_plugin_response(authority));
+        let state = self.state.clone();
+        let now = state
+            .as_ref()
+            .and_then(|state| {
+                Self::provider_owner_time(
+                    state,
+                    plan.token_clock,
+                    if plan.token_clock.is_some() {
+                        plan.now
+                    } else {
+                        plan.completed_now()
+                    },
+                )
+                .ok()
+            })
+            .map(AuthorityTime::seconds);
+        let same_lease = state.as_ref().is_some_and(|state| {
+            state
+                .database
+                .mount(&plan.namespace, &plan.mount)
+                .and_then(|mount| mount.leases.get(&plan.lease.id))
+                .is_some_and(|current| {
+                    current.phase == Phase::Active
+                        && current.seq == plan.lease.seq
+                        && current.owner == plan.lease.owner
+                        && current.provider_id == plan.lease.provider_id
+                        && current.expires == plan.lease.expires
+                        && current.request_digest == plan.lease.request_digest
+                })
+        });
+        if checked.is_ok()
+            && same_lease
+            && state
+                .as_ref()
+                .zip(now)
+                .is_some_and(|(state, now)| Self::database_completion_owner_live(state, plan, now))
+        {
+            return response;
+        }
+        erase_json(&mut response.body);
+        response.consistency_index = None;
+        if self
+            .audit_event(
+                "database-delivery-veto",
+                fingerprint,
+                now.unwrap_or(plan.now),
+                Some(503),
+            )
+            .is_err()
+        {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return post_provider_publication_failure(
+                failure("database delivery veto audit failed"),
+                &plan.lease.id,
+            );
+        }
+        if same_lease && let Some((state, now)) = state.zip(now) {
+            return self.reject_database_completion(state, plan, now);
+        }
+        post_provider_publication_failure(
+            failure("database final delivery owner changed"),
+            &plan.lease.id,
         )
     }
 
@@ -2858,6 +3018,11 @@ impl Service {
             .and_then(|mount| mount.leases.get(&plan.lease.id))
             .cloned()
         else {
+            if next.namespaces.inherited_owner(&plan.namespace).is_some()
+                && !self.namespace_runtime.is_loaded(&plan.namespace)
+            {
+                self.retain_closed_database_compensation(&next, plan);
+            }
             return post_provider_publication_failure(
                 failure("lease disappeared after provider entry"),
                 &plan.lease.id,
@@ -2874,7 +3039,26 @@ impl Service {
                 &plan.lease.id,
             );
         }
-        let now = completed_now().max(next.database.clock);
+        let coarse_now = completed_now().max(next.database.clock);
+        let time = match Self::provider_owner_time(
+            &next,
+            plan.token_clock,
+            if plan.token_clock.is_some() {
+                plan.now
+            } else {
+                coarse_now
+            },
+        ) {
+            Ok(time) => time,
+            Err(error) => return post_provider_publication_failure(error, &plan.lease.id),
+        };
+        if let Err(error) = next.auth.observe_token_api_time(time) {
+            return post_provider_publication_failure(
+                Response::error(error.status, &error.message),
+                &plan.lease.id,
+            );
+        }
+        let now = time.seconds();
         if current.phase != Phase::PendingRevoke
             && (!delivery_allowed || !Self::database_completion_owner_live(&next, plan, now))
         {
@@ -2921,7 +3105,26 @@ impl Service {
             plan.lease.phase == Phase::PendingRevoke || authorize_delivery(self).is_ok();
         // The authority recheck can perform HA synchronization. Resample lease
         // time after that work, not before another potentially blocking boundary.
-        let now = completed_now().max(now);
+        let coarse_now = completed_now().max(now);
+        let now = match self.state.as_ref().map(|state| {
+            Self::provider_owner_time(
+                state,
+                plan.token_clock,
+                if plan.token_clock.is_some() {
+                    plan.now
+                } else {
+                    coarse_now
+                },
+            )
+        }) {
+            Some(Ok(time)) => time.seconds(),
+            _ => {
+                return post_provider_publication_failure(
+                    failure("provider owner observation unavailable after publication"),
+                    &plan.lease.id,
+                );
+            }
+        };
         if plan.lease.phase != Phase::PendingRevoke {
             let Some(current) = self.state.as_ref() else {
                 return post_provider_publication_failure(
@@ -2937,13 +3140,98 @@ impl Service {
     }
 
     fn database_completion_owner_live(state: &State, plan: &DatabaseEffectPlan, now: u64) -> bool {
-        plan.lease.expires > now
+        let Ok(time) = Self::provider_owner_time(
+            state,
+            plan.token_clock,
+            if plan.token_clock.is_some() {
+                plan.now
+            } else {
+                now
+            },
+        ) else {
+            return false;
+        };
+        plan.lease.expires > time.seconds()
             && state.namespace_exists(&plan.namespace)
             && !state.namespace_is_sealed(&plan.namespace)
             && state
                 .auth
-                .resolve_lease_owner(&plan.lease.owner, &plan.namespace, now)
+                .resolve_lease_owner_observed(&plan.lease.owner, &plan.namespace, time)
                 .is_some_and(|owner| Self::database_owner_active(state, &owner, &plan.namespace))
+    }
+
+    fn retain_closed_database_compensation(&mut self, state: &State, plan: &DatabaseEffectPlan) {
+        let _deadline = plan
+            .deadline
+            .map(crate::request_deadline::RequestDeadlineScope::enter);
+        if self.recovery_required || namespace_runtime::request_live().is_err() {
+            return;
+        }
+        let activation = self.unseal_nonce.clone();
+        let delivery = namespace_runtime::DeliveryBinding::capture(state, &plan.namespace);
+        let Some(key) = self.barrier_key.as_ref() else {
+            return;
+        };
+        let Ok(candidate) =
+            self.namespace_runtime
+                .compensate_closed_database(state, &plan.namespace, key, plan)
+        else {
+            return;
+        };
+        let current = match self.state.as_ref() {
+            Some(current) if self.unseal_nonce == activation && !self.recovery_required => current,
+            _ => return,
+        };
+        if self.namespace_runtime.is_loaded(&plan.namespace)
+            || namespace_runtime::DeliveryBinding::capture(current, &plan.namespace) != delivery
+            || !current
+                .namespaces
+                .custody_binding(&current.cluster_id, &plan.namespace)
+                .is_ok_and(|binding| plan.matches_namespace_binding(&binding))
+            || namespace_runtime::request_live().is_err()
+        {
+            return;
+        }
+        // A failure keeps the already durable intent/fence. This entry point
+        // always withholds credentials and never acknowledges a remote cleanup.
+        let _ = self.publish_database(candidate);
+    }
+
+    pub(super) fn compensate_closed_database_intent(
+        state: &mut State,
+        plan: &DatabaseEffectPlan,
+    ) -> Result<(), Response> {
+        let current = state
+            .database
+            .mount(&plan.namespace, &plan.mount)
+            .and_then(|mount| mount.leases.get(&plan.lease.id))
+            .ok_or_else(|| failure("closed database cleanup intent disappeared"))?;
+        if current.owner != plan.lease.owner
+            || current.provider_id != plan.lease.provider_id
+            || current.username != plan.lease.username
+            || current.db_name != plan.lease.db_name
+            || current.issued != plan.lease.issued
+            || current.max_expires != plan.lease.max_expires
+        {
+            return Err(failure("closed database cleanup owner changed"));
+        }
+        if current.phase == Phase::PendingRevoke
+            && current.seq >= plan.lease.seq
+            && current.password.is_none()
+            && current.provider_password.is_none()
+            && current.expires == 0
+        {
+            return Ok(());
+        }
+        if current.seq != plan.lease.seq
+            || current.request_digest != plan.lease.request_digest
+            || current.phase != plan.lease.phase
+            || current.expires != plan.lease.expires
+            || !matches!(current.phase, Phase::PendingIssue | Phase::PendingRenew)
+        {
+            return Err(failure("closed database cleanup intent changed"));
+        }
+        Self::stage_revoke(state, &plan.namespace, &plan.mount, &plan.lease.id)
     }
 
     fn reject_database_completion(
@@ -3007,6 +3295,29 @@ impl Service {
         })
     }
 
+    pub(super) fn retire_namespace_pending_database(
+        state: &mut State,
+        namespace: &str,
+    ) -> Result<(), Response> {
+        let pending = state
+            .database
+            .mounts
+            .get(namespace)
+            .into_iter()
+            .flat_map(|mounts| mounts.iter())
+            .flat_map(|(mount, owner)| {
+                owner.leases.iter().filter_map(move |(id, lease)| {
+                    matches!(lease.phase, Phase::PendingIssue | Phase::PendingRenew)
+                        .then_some((mount.clone(), id.clone()))
+                })
+            })
+            .collect::<Vec<_>>();
+        for (mount, id) in pending {
+            Self::stage_revoke(state, namespace, &mount, &id)?;
+        }
+        Ok(())
+    }
+
     fn stage_revoke(state: &mut State, ns: &str, mount: &str, id: &str) -> Result<(), Response> {
         let (phase, seq) = state
             .database
@@ -3034,6 +3345,7 @@ impl Service {
         l.seq = provider_fence;
         l.phase = Phase::PendingRevoke;
         l.password = None;
+        l.provider_password = None;
         l.expires = 0;
         l.request_digest = digest_lease(l)?;
         Ok(())
@@ -3202,7 +3514,11 @@ impl Service {
                 && l.expires < l.max_expires
                 && state
                     .auth
-                    .resolve_lease_owner(&l.owner, ns, now)
+                    .resolve_lease_owner_observed(
+                        &l.owner,
+                        ns,
+                        Self::provider_owner_time(&state, request.token_clock, now)?,
+                    )
                     .is_some_and(|owner| Self::database_owner_active(&state, &owner, ns));
             return Ok(Response::ok(
                 json!({"data":{"id":l.id,"ttl":l.expires.saturating_sub(now),"renewable":renewable,"issue_time":l.issued,"expire_time":l.expires,"last_renewal":l.last_renewal,"phase":l.phase}}),
@@ -3214,7 +3530,11 @@ impl Service {
         if operation == "renew" {
             let owner = state
                 .auth
-                .resolve_lease_owner(&l.owner, ns, now)
+                .resolve_lease_owner_observed(
+                    &l.owner,
+                    ns,
+                    Self::provider_owner_time(&state, request.token_clock, now)?,
+                )
                 .ok_or_else(|| Response::error(403, "lease owner expired or revoked"))?;
             if !Self::database_owner_active(&state, &owner, ns)
                 || l.phase != Phase::Active
@@ -3279,9 +3599,17 @@ impl Service {
     /// Stage at most one provider reconciliation while holding the Service
     /// writer. The returned plan owns everything required for remote I/O so the
     /// lifecycle worker can release the writer before provider entry.
+    #[cfg(test)]
     pub(super) fn prepare_database_maintenance(
         &mut self,
         now: u64,
+    ) -> Result<Option<DatabaseMaintenance>, &'static str> {
+        self.prepare_database_maintenance_with_clock(now, None)
+    }
+    pub(super) fn prepare_database_maintenance_with_clock(
+        &mut self,
+        now: u64,
+        clock: Option<RequestClock>,
     ) -> Result<Option<DatabaseMaintenance>, &'static str> {
         let started = std::time::Instant::now();
         if self.state.is_none() || self.recovery_required || self.audit_failed {
@@ -3305,7 +3633,9 @@ impl Service {
         for (ns, mounts) in &state.database.mounts {
             for (mount, m) in mounts {
                 for (id, l) in &m.leases {
-                    let owner = state.auth.resolve_lease_owner(&l.owner, ns, now);
+                    let time = Self::provider_owner_time(state, clock, now)
+                        .map_err(|_| "provider owner time unavailable")?;
+                    let owner = state.auth.resolve_lease_owner_observed(&l.owner, ns, time);
                     let live = owner
                         .as_ref()
                         .is_some_and(|o| Self::database_owner_active(state, o, ns));
@@ -3341,7 +3671,13 @@ impl Service {
         let fingerprint = self.request_fingerprint("INTERNAL", "database/reconcile", &ns, "");
         self.audit_event("provider-request", &fingerprint, now, None)
             .map_err(|_| "provider audit unavailable")?;
-        state.database.clock = now;
+        let time = Self::provider_owner_time(&state, clock, now)
+            .map_err(|_| "provider owner observation unavailable before publication")?;
+        state
+            .auth
+            .observe_token_api_time(time)
+            .map_err(|_| "provider owner observation could not be retained")?;
+        state.database.clock = time.seconds();
         Self::stage_revoke(&mut state, &ns, &mount, &id)
             .map_err(|_| "cannot stage provider revoke")?;
         self.publish_database(state)
@@ -3353,6 +3689,7 @@ impl Service {
             .take()
             .ok_or("provider plan unavailable")?;
         plan.started = started;
+        plan.token_clock = clock;
         Ok(Some(DatabaseMaintenance {
             fingerprint,
             now,
@@ -4140,6 +4477,10 @@ mod tests {
         let token = authority
             .seal(
                 BatchClaims {
+                    token_role: None,
+                    token_api_precision: None,
+                    token_api_policy_names: false,
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::new(),
                     metadata: BTreeMap::new(),
@@ -4303,6 +4644,99 @@ mod tests {
             .database_effect_plan("", "database/", &id, 100)
             .map_err(|_| "plan")?;
         Ok((root, service, key, root_token, plan))
+    }
+
+    #[test]
+    fn database_precise_owner_reobserves_original_clock_and_requires_it_for_maintenance()
+    -> CompletionResult {
+        use super::super::tests::call;
+        let (_files, mut service, _, root, old_plan) = completion_fixture(Phase::PendingIssue)?;
+        let clock =
+            RequestClock::anchored(Duration::new(100, 200_000_000), std::time::Instant::now())?;
+        let execution = service.begin_at_mode_precise(
+            RequestDispatch {
+                method: "POST",
+                path: "auth/token/create",
+                namespace: "",
+                token: &root,
+                body: json!({"ttl":"500ms","policies":["default"]}),
+                now: 100,
+                allow_forward: true,
+                enforce_namespace: true,
+                wrap_ttl_seconds: None,
+                origin_peer: None,
+                client_certificates: None,
+            },
+            clock,
+        );
+        let created = service.finish_synchronous_request(execution);
+        assert_eq!(created.status, 200, "{}", created.body);
+        let raw = created.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("precise owner")?;
+        let mut state = service.state.clone().ok_or("state")?;
+        let mut actor = state.auth.authenticate_from_observed(
+            raw,
+            AuthorityTime::Precise(clock.observed_at()?),
+            None,
+        )?;
+        actor.bind_request_clock(Some(clock))?;
+        let owner = state.auth.typed_lease_issuer_observed(
+            &actor,
+            "",
+            AuthorityTime::Precise(clock.observed_at()?),
+        )?;
+        let lease = state
+            .database
+            .mount_mut("", "database/")
+            .leases
+            .get_mut(&old_plan.lease.id)
+            .ok_or("lease")?;
+        lease.owner = owner.owner;
+        lease.request_digest = digest_lease(lease).map_err(|_| "digest")?;
+        service
+            .publish_database(state)
+            .map_err(|_| "actual publish")?;
+        let mut plan = service
+            .database_effect_plan("", "database/", &old_plan.lease.id, 100)
+            .map_err(|_| "plan")?;
+        plan.token_clock = Some(clock);
+        let state = service.state.as_ref().ok_or("state")?;
+        assert!(Service::database_completion_owner_live(state, &plan, 100));
+        let before = serde_json::to_vec(state)?;
+        let error = match Service::provider_owner_time(state, None, 100) {
+            Err(error) => error,
+            Ok(_) => return Err("missing precise clock accepted".into()),
+        };
+        assert_eq!(error.status, 503);
+        assert_eq!(serde_json::to_vec(state)?, before);
+        std::thread::sleep(Duration::from_millis(600));
+        assert!(!Service::database_completion_owner_live(
+            service.state.as_ref().ok_or("state")?,
+            &plan,
+            100
+        ));
+        drop(plan);
+        drop(old_plan);
+        let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
+        assert!(service.prepare_database_maintenance(100).is_err());
+        assert_eq!(
+            serde_json::to_vec(service.state.as_ref().ok_or("state")?)?,
+            before
+        );
+        // The explicit whole-second API cannot re-enter a precise graph.
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "auth/token/lookup-self",
+                &root,
+                json!({})
+            )
+            .status,
+            503
+        );
+        Ok(())
     }
 
     #[cfg(target_os = "linux")]
@@ -4727,6 +5161,10 @@ mod tests {
             });
             let raw = authority.seal(
                 BatchClaims {
+                    token_role: None,
+                    token_api_precision: None,
+                    token_api_policy_names: false,
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),
                     metadata: BTreeMap::new(),
@@ -4826,6 +5264,10 @@ mod tests {
             let mut authority = BatchKeyAuthority::new(100)?;
             let raw = authority.seal(
                 BatchClaims {
+                    token_role: None,
+                    token_api_precision: None,
+                    token_api_policy_names: false,
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),
                     metadata: BTreeMap::new(),
@@ -4932,6 +5374,10 @@ mod tests {
             let mut authority = BatchKeyAuthority::new(100)?;
             let raw = authority.seal(
                 BatchClaims {
+                    token_role: None,
+                    token_api_precision: None,
+                    token_api_policy_names: false,
+                    public_origin: None,
                     namespace: String::new(),
                     policies: BTreeSet::from(["default".into()]),
                     metadata: BTreeMap::new(),

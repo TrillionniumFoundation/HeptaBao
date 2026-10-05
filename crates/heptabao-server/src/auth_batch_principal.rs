@@ -63,9 +63,10 @@ impl<'a> CheckedCredential<'a> {
     pub(super) fn is_wrapping(&self) -> bool {
         matches!(self, Self::Service(token) if token.wrapping.is_some())
     }
-    pub(super) fn info(&self, now: u64) -> Value {
+    pub(super) fn info_observed(&self, time: AuthorityTime) -> Result<Value, AuthError> {
+        let now = time.seconds();
         match self {
-            Self::Service(token) => token_info(token, now),
+            Self::Service(token) => token_info_observed(token, time),
             Self::Batch(claims) => {
                 let mut info = json!({
                     "accessor":"", "policies":claims.policies(),
@@ -78,10 +79,42 @@ impl<'a> CheckedCredential<'a> {
                     "type":"batch", "namespace":claims.namespace(),
                     "entity_id":claims.entity_id().unwrap_or(""), "meta":claims.metadata()
                 });
+                if let Some(role) = claims.token_role() {
+                    info["role"] = json!(role.name);
+                    info["creation_ttl"] = json!(claims.expires_at() - claims.issued_at());
+                }
+                if let Some(origin) = claims.public_origin() {
+                    // The authenticated Token API origin owns this creation
+                    // grant even when no named token role was selected.
+                    info["creation_ttl"] = json!(claims.expires_at() - claims.issued_at());
+                    if !claims.namespace().is_empty() {
+                        info["namespace_path"] = json!(format!("{}/", claims.namespace()));
+                    }
+                    info["meta"] = origin.lookup_json(claims.metadata());
+                    if let Some(time) = origin.issue_time(claims.issued_at()) {
+                        info["issue_time"] = json!(time);
+                    }
+                }
                 if !claims.bound_cidrs().is_empty() {
                     info["bound_cidrs"] = json!(claims.bound_cidrs());
                 }
-                info
+                if let Some(lease) = claims.precision() {
+                    let now = time.exact().ok_or_else(denied)?;
+                    info["ttl"] = json!(
+                        lease
+                            .expires_at
+                            .lookup_remaining_seconds(now)
+                            .map_err(|_| denied())?
+                    );
+                    info["expire_time"] = json!(lease.expires_at.local_rfc3339()?);
+                    info["issue_time"] = json!(
+                        Timestamp::whole(claims.issued_at())
+                            .map_err(|_| denied())?
+                            .local_rfc3339()?
+                    );
+                    info["creation_ttl"] = json!(lease.granted_ttl.public_seconds());
+                }
+                Ok(info)
             }
         }
     }
@@ -99,17 +132,17 @@ impl Drop for InspectionCredential {
     }
 }
 impl InspectionCredential {
-    pub(super) fn view<'a>(
+    pub(super) fn view_observed<'a>(
         &'a self,
         auth: &'a AuthState,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<CheckedCredential<'a>, AuthError> {
         match self {
             Self::Service(digest) => auth
-                .active_token(digest, now, true)
+                .active_token_observed(digest, time, true)
                 .map(CheckedCredential::Service),
             Self::Batch(claims) => {
-                auth.check_batch_claims(claims, claims.namespace(), now)?;
+                auth.check_batch_claims_observed(claims, claims.namespace(), time)?;
                 Ok(CheckedCredential::Batch(claims))
             }
         }
@@ -138,6 +171,7 @@ impl Principal {
 pub(crate) struct ResolvedLeaseOwner {
     pub(crate) owner: LeaseOwner,
     pub(crate) expires_at: Option<u64>,
+    pub(crate) precise_expires_at: Option<Timestamp>,
     pub(crate) entity_id: Option<String>,
 }
 
@@ -164,38 +198,49 @@ impl AuthState {
             .validate_lease_authority(claims, namespace)
             .map_err(|_| err(503, "invalid batch lease key authority"))
     }
-    fn batch_parent_expiry(
+    fn batch_parent_expiry_observed(
         &self,
         parent: Option<&str>,
         namespace: &str,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<Option<u64>, AuthError> {
         match parent {
             None => Ok(None),
             Some(digest) => self
-                .lease_issuer_by_digest(digest, namespace, now)
+                .lease_issuer_by_digest_observed(digest, namespace, time)
                 .map(|issuer| issuer.expires_at)
                 .ok_or_else(denied),
         }
     }
+    #[cfg(test)]
     pub(super) fn check_batch_claims(
         &self,
         claims: &VerifiedBatchClaims,
         namespace: &str,
         now: u64,
     ) -> Result<(), AuthError> {
+        self.check_batch_claims_observed(claims, namespace, AuthorityTime::Coarse(now))
+    }
+
+    pub(super) fn check_batch_claims_observed(
+        &self,
+        claims: &VerifiedBatchClaims,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<(), AuthError> {
+        let time = self.token_api_observed_time(time);
         self.batch_authority
             .as_ref()
             .ok_or_else(denied)?
-            .check_verified(claims, namespace, now)
+            .check_verified_observed(claims, namespace, time)
             .map_err(|_| denied())?;
-        self.batch_parent_expiry(claims.parent(), namespace, now)?;
+        self.batch_parent_expiry_observed(claims.parent(), namespace, time)?;
         Ok(())
     }
-    pub(super) fn batch_principal(
+    pub(super) fn batch_principal_observed(
         &self,
         raw: &str,
-        now: u64,
+        time: AuthorityTime,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Principal, AuthError> {
         if raw.len() > batch::MAX_BATCH_TOKEN_BYTES {
@@ -205,14 +250,15 @@ impl AuthState {
             .batch_authority
             .as_ref()
             .ok_or_else(denied)?
-            .open_authenticated(raw, now)
+            .open_authenticated_observed(raw, time)
             .map_err(|_| denied())?;
-        self.check_batch_claims(&claims, claims.namespace(), now)?;
+        self.check_batch_claims_observed(&claims, claims.namespace(), time)?;
         token_cidrs::check(claims.bound_cidrs(), origin_peer)?;
         Ok(Principal {
             admission: PrincipalAdmission::Operation {
                 finite_use_consumed: false,
             },
+            request_clock: None,
             digest: claims.token_digest().to_owned(),
             credential: VerifiedCredential::Batch(Box::new(claims)),
             origin_peer,
@@ -221,27 +267,27 @@ impl AuthState {
             wrap_ttl_seconds: None,
             identity_checked: false,
             #[cfg(test)]
-            request_time: now,
+            request_time: time.seconds(),
         })
     }
-    pub(super) fn inspect_raw_target(
+    pub(super) fn inspect_raw_target_observed(
         &self,
         raw: &str,
         namespace: &str,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<InspectionCredential, AuthError> {
         validate_namespace(namespace)?;
         if raw.starts_with("hvb.") {
             if raw.len() > batch::MAX_BATCH_TOKEN_BYTES {
                 return Err(denied());
             }
-            let claims = self
-                .batch_authority
-                .as_ref()
-                .ok_or_else(denied)?
-                .open(raw, namespace, now)
-                .map_err(|_| denied())?;
-            self.check_batch_claims(&claims, namespace, now)?;
+            let authority = self.batch_authority.as_ref().ok_or_else(denied)?;
+            let claims = match time {
+                AuthorityTime::Coarse(now) => authority.open(raw, namespace, now),
+                AuthorityTime::Precise(_) => authority.open_authenticated_observed(raw, time),
+            }
+            .map_err(|_| denied())?;
+            self.check_batch_claims_observed(&claims, namespace, time)?;
             // An administrator inspecting a target is not using its bearer as
             // the request actor. Target CIDRs must not be tested against their IP.
             return Ok(InspectionCredential::Batch(Box::new(claims)));
@@ -250,73 +296,100 @@ impl AuthState {
             return Err(denied());
         }
         let digest = hash(raw);
-        let token = self.active_token(&digest, now, true)?;
+        let token = self.active_token_observed(&digest, time, true)?;
         if token.namespace != namespace {
             return Err(denied());
         }
         Ok(InspectionCredential::Service(digest))
     }
+    #[cfg(test)]
     pub(crate) fn typed_lease_issuer(
         &self,
         actor: &Principal,
         namespace: &str,
         now: u64,
     ) -> Result<ResolvedLeaseOwner, AuthError> {
-        self.check_principal(actor, namespace, now)?;
+        self.typed_lease_issuer_observed(actor, namespace, AuthorityTime::Coarse(now))
+    }
+    pub(crate) fn typed_lease_issuer_observed(
+        &self,
+        actor: &Principal,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Result<ResolvedLeaseOwner, AuthError> {
+        let time = actor.request_authority_time(time)?;
+        self.check_principal_observed(actor, namespace, time)?;
         let owner = match &actor.credential {
             VerifiedCredential::Service(_) => {
                 LeaseOwner::service(&actor.digest).map_err(|_| denied())?
             }
             VerifiedCredential::Batch(claims) => LeaseOwner::from_batch(claims),
         };
-        self.resolve_lease_owner(&owner, namespace, now)
+        self.resolve_lease_owner_observed(&owner, namespace, time)
             .ok_or_else(denied)
     }
     /// The admitted final use may execute Kubernetes TokenRequest, but cannot
     /// release its leased credential. Persistent owner resolution stays strict;
     /// completion retires the observation after that one authorized execution.
-    pub(crate) fn admitted_kubernetes_lease_issuer(
+    pub(crate) fn admitted_kubernetes_lease_issuer_observed(
         &self,
         actor: &Principal,
         namespace: &str,
-        now: u64,
+        time: AuthorityTime,
     ) -> Result<ResolvedLeaseOwner, AuthError> {
-        match self.check_principal(actor, namespace, now)? {
+        match self.check_principal_observed(actor, namespace, time)? {
             CheckedCredential::Service(token) => Ok(ResolvedLeaseOwner {
                 owner: LeaseOwner::service(&actor.digest).map_err(|_| denied())?,
                 expires_at: token.expires_at,
+                precise_expires_at: token
+                    .token_api_precision
+                    .as_ref()
+                    .and_then(|lease| lease.expires_at),
                 entity_id: token.entity_id.clone(),
             }),
-            CheckedCredential::Batch(_) => self.typed_lease_issuer(actor, namespace, now),
+            CheckedCredential::Batch(_) => self.typed_lease_issuer_observed(actor, namespace, time),
         }
     }
+    #[cfg(test)]
     pub(crate) fn resolve_lease_owner(
         &self,
         owner: &LeaseOwner,
         namespace: &str,
         now: u64,
     ) -> Option<ResolvedLeaseOwner> {
+        self.resolve_lease_owner_observed(owner, namespace, AuthorityTime::Coarse(now))
+    }
+
+    pub(crate) fn resolve_lease_owner_observed(
+        &self,
+        owner: &LeaseOwner,
+        namespace: &str,
+        time: AuthorityTime,
+    ) -> Option<ResolvedLeaseOwner> {
+        let time = self.token_api_observed_time(time);
         if let Some(digest) = owner.service_digest() {
-            let issuer = self.lease_issuer_by_digest(digest, namespace, now)?;
+            let issuer = self.lease_issuer_by_digest_observed(digest, namespace, time)?;
             return Some(ResolvedLeaseOwner {
                 owner: owner.clone(),
                 expires_at: issuer.expires_at,
+                precise_expires_at: issuer.precise_expires_at,
                 entity_id: issuer.entity_id,
             });
         }
         let claims = owner.batch_claims()?;
         self.batch_authority
             .as_ref()?
-            .check_lease(claims, namespace, now)
+            .check_lease_observed(claims, namespace, time)
             .ok()?;
         // Parent authority is a live dependency, not the batch lease's TTL cap.
         // Upstream indexes non-orphan batch leases under the service parent for
         // revocation, while the immutable batch claims define maximum expiry.
-        self.batch_parent_expiry(claims.parent(), namespace, now)
+        self.batch_parent_expiry_observed(claims.parent(), namespace, time)
             .ok()?;
         Some(ResolvedLeaseOwner {
             owner: owner.clone(),
             expires_at: Some(claims.expires_at()),
+            precise_expires_at: claims.precision().map(|lease| lease.expires_at),
             entity_id: claims.entity_id().map(str::to_owned),
         })
     }

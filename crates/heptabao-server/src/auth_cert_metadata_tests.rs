@@ -207,7 +207,7 @@ fn cert_token_api_child_and_orphan_do_not_inherit_certificate_snapshot() -> Test
             json!({"token":child}),
             101,
         )?;
-        assert!(lookup.body["data"].get("meta").is_none());
+        assert!(lookup.body["data"].get("meta").is_some_and(Value::is_null));
         let actor = state.authenticate(&child, 101)?;
         let renewal = call(
             &mut state,
@@ -217,7 +217,11 @@ fn cert_token_api_child_and_orphan_do_not_inherit_certificate_snapshot() -> Test
             json!({"increment":120}),
             101,
         )?;
-        assert!(renewal.body["auth"].get("metadata").is_none());
+        assert!(
+            renewal.body["auth"]
+                .get("metadata")
+                .is_some_and(Value::is_null)
+        );
     }
     Ok(())
 }

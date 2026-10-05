@@ -21,6 +21,7 @@ fn request<'a>(token: &'a str, body: &'a Value) -> RequestView<'a> {
         body,
         now: 100,
         admission_started: std::time::Instant::now(),
+        token_clock: None,
         allow_forward: false,
         enforce_namespace: true,
         wrap_ttl_seconds: None,
@@ -259,7 +260,6 @@ fn snapshot_authorization_precedes_decode_and_is_rechecked_before_commit() -> Te
     let root = Root::new();
     let mut service = root.service()?;
     let (_, token) = bootstrap(&mut service)?;
-    let backup = archive(&service)?;
     let issued = call(
         &mut service,
         "POST",
@@ -272,6 +272,9 @@ fn snapshot_authorization_precedes_decode_and_is_rechecked_before_commit() -> Te
         .as_str()
         .ok_or("child")?
         .to_owned();
+    // Same-floor snapshot isolates permission and late recheck behavior. The
+    // dedicated public-origin tests retain rejection of pre-86 snapshots.
+    let backup = archive(&service)?;
     assert_eq!(
         call(
             &mut service,

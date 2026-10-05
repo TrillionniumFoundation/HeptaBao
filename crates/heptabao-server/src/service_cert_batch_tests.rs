@@ -88,7 +88,9 @@ fn cert_batch_identity_denial_and_wrapper_failure_do_not_publish_candidate_owner
                     .auth
                     .wrap_response("", "fixture", 60, &json!({"data":{"ok":true}}), 100)?;
             }
-            service.commit_state(&state).map_err(|_| "fixture commit")?;
+            service
+                .commit_state(&mut state)
+                .map_err(|_| "fixture commit")?;
             service.state = Some(state);
         }
         let before = owners(&service)?;
@@ -257,7 +259,9 @@ fn schema48_token_api_creation_ttl_has_an_independent_reader_fence() -> TestResu
     );
     assert_eq!(issued.status, 200);
     let mut state = service.state.clone().ok_or("state")?;
-    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
+    assert_eq!(state.schema, AUTH_PUBLIC_ORIGIN_STATE_SCHEMA);
+    state.auth.omit_unwrapped_public_origin_for_legacy_fixture();
+    state.schema = CURRENT_STATE_SCHEMA;
     assert!(state.auth.has_token_api_creation_ttl());
     assert!(!state.auth.has_cert_batch_state());
     assert!(state.validate_format().is_ok());

@@ -261,8 +261,8 @@ fn all_local_key_algorithms_sign_verify_and_export_standard_pkcs8() -> TestResul
             "tampered signature rejection"
         );
         let private = material.private_der().map_err(|_| "private encoding")?;
-        let pem =
-            LocalPrivateMaterial::private_pem(kind, &private).map_err(|_| "private export")?;
+        let pem = LocalPrivateMaterial::private_pem(kind, &private, true)
+            .map_err(|_| "private export")?;
         assert!(
             pem.starts_with("-----BEGIN PRIVATE KEY-----\n"),
             "standard PKCS8 label"

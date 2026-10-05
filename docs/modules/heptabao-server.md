@@ -440,8 +440,9 @@ senders reject legacy responses even while their inbound listener remains dual.
 `ha_rolling_upgrade.py` requires `--base-source-sha`, bound in CI to the actual
 clean base worktree and `PR_BASE`, together with the exact base executable digest.
 Only reviewed immutable sources select a wire profile: `55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18`
-selects `legacy-v1`; `421c19794fa4f772edb9cde7dcc0db68362c1717` selects
-`strict-current`. An unknown source or a conflicting explicit `--base-wire-profile`
+selects `legacy-v1`; `421c19794fa4f772edb9cde7dcc0db68362c1717` and
+`8c1e43718c30ce5185c55b258c0460bd48936a2a` select `strict-current`.
+An unknown source or a conflicting explicit `--base-wire-profile`
 fails before cluster launch. The source claim is bound by the CI build, not inferred
 from startup errors or protocol retries. The legacy profile exercises every sender
 phase and receiver retirement above; the strict-current profile keeps both legacy
@@ -1087,5 +1088,112 @@ fields and bundle ordering. Service tests exercise identifier reader floors,
 retirement, real encrypted reopen, rejected restoration and absence of private
 keys from actual audit records. These checks are separate from official-only
 observations and do not establish complete PKI compatibility. Remaining
-signature and constraint options, multiple local issuers, and broader PKI
+signature and constraint options and broader PKI
 lifecycle compatibility still require implementation and actual comparison.
+
+Local PKI issuer management retains each certificate and private key in encrypted
+Service state. The first generated issuer remains the default; an explicit
+`config/issuers` default can select an ID or alias, and
+`default_follows_latest_issuer` selects subsequently generated roots. Roles can
+retain `issuer_ref`; an explicit issuer issuance route overrides that role
+selection. Unknown references fail without substituting another signer. Each
+full local CRL includes only revocations associated with its signing issuer.
+Deleting an issuer retains its key; deleting roots removes issuer/key ownership
+while retaining role and certificate history. These persisted ownership and
+independent default-key fields keep the first key selected through issuer
+default changes and issuer deletion. Local EC/RSA leaf responses use the legacy
+SEC1/PKCS1 encoding; external leaf responses retain their PKCS8 encoding.
+PKI administrative mutations advance the durable monotonic clock so a later
+certificate revocation can be validated after encrypted restart. The official
+`DELETE root` path and the existing `root/delete` alias retain certificate history.
+These ownership and
+history fields require schema 77 before record preflight across all namespaces;
+retirement preserves that writer and snapshot floor. Local leaf responses include
+`ca_chain`, `not_before`, and colon-separated serial numbers. Multi-issuer unit
+and encrypted Service lifecycle tests accompany this implementation; complete
+runtime parity still requires independently executed official-binary comparison,
+while intermediate issuer import and ACME execution remain
+outside this implemented scope.
+
+Generated local roots and leaves include RFC 5280 subject key identifiers computed
+from their actual public key bits. Each new root's authority key identifier refers
+to itself; a leaf refers to its selected signed issuer certificate's subject key
+identifier. Older persisted issuers without that extension remain readable.
+These identifiers do not replace the certificate, owned-key and signature checks.
+
+Local full and delta CRLs are persisted by `engines/pki_local_crl.rs`. Each issuer
+uses one monotonically increasing number sequence. Full rotation captures all
+owned revocations and writes an empty delta with that full number as its base;
+delta rotation signs only revocations added since the full snapshot. Signed DER,
+publication timestamps, numbers, configuration and revocation snapshots survive
+restart. Public PEM/DER and JSON projections read these bytes without signing or
+advancing counters. Actual cached signatures, issuer DN, authority key identifier,
+number/base, timestamps and revocation ownership are validated on state load.
+This state activates schema 78 across every namespace before record preflight.
+Retiring its mount preserves the floor, and older writers and snapshots cannot
+remove that reader requirement. Lease-owner reconciliation and the idle worker
+perform fallible CRL maintenance in the same Service commit transaction before
+public cache projection; a failure returns an error and leaves the previous cache.
+`config/crl` retains the nine official configuration fields. Automatic maintenance
+returns a fallible mutation to the durable engine transaction; errors do not
+publish a replacement cache. The named regression
+`full_delta_numbers_real_signatures_ownership_cached_reads_and_durable_restart`
+checks real signatures, number/base progression, issuer isolation and restart.
+
+
+Local CSR/unbound key and intermediate/public chain ownership requires schema 79 in all
+namespaces. It is discovered before record preflight and stays required after
+its mount is retired. Authenticated snapshots and local writers cannot lower
+that floor. The application label does not grant signing authority: an imported
+CA certificate without a matching owned private key remains a public issuer.
+
+Local `keys/generate/internal`, `keys/generate/exported`, and `keys/import`
+retain actual owned private material without constructing a placeholder CA or
+CSR. `intermediate/generate/existing` signs a fresh CSR with an actual owned
+key selected by identity, name or the independent key default; it does not
+insert another key, replace existing ownership proofs, or rename that key.
+Explicit generation type/bits are refused in this mode. Key GET includes the
+RFC 5280 subject key identifier computed from its real public key; generation,
+import and rename retain their distinct response shapes. CSR responses expose
+the unconfigured AIA warning while configurable AIA remains outside this profile.
+Certificate import matches the actual maintained SPKI against either an
+unbound or already associated owned key. A later key import binds existing
+public issuers without changing their identities. Partial chains retain only
+verified available issuer edges and are rebuilt when a parent is imported.
+Repeated certificates preserve one issuer identity and repeat occurrences in
+the `existing_issuers` projection. A shared key retains one key identity and
+name across all associated issuers. Key deletion refuses while any issuer still
+uses it; deleting a selected unbound key durably clears the independent key
+default instead of choosing another old key. An explicit public issuer default
+persists its real certificate identity without granting signing authority; a
+later matching key import retains that identity. Multi-issuer imports honor
+`default_follows_latest_issuer` only when exactly one new issuer has an owned
+key, and retain the previous default with the official warning when more than
+one does. A public-only import may retain a certificate whose terminal
+self-signature is invalid, as the official API does; every connected chain
+edge is still cryptographically verified, and native owned root certificates
+retain their strong self-signature checks. Configured AIA/issuer overrides and
+bad terminal signatures attached to owned keys remain outside this finite
+profile. These are bounded local features;
+full OpenBao 2.7.0 replacement still requires the remaining protocol, provider,
+HA and independent compatibility qualifications.
+
+Local OCSP reads existing issuer ownership and revocation state without changing
+persisted fields. `engines/pki_local_ocsp.rs` accepts bounded canonical unsigned
+requests, projects the first CertID, and builds closed ResponseData using the
+selected issuer's full DN, public bits, server clock and actual revoked state.
+RSA/ECDSA signatures are verified against the held local public key before
+projection. Foreign issuers receive a default-owned signed Unknown response;
+matched issuers with unrecorded serials receive Good. Signed intermediate CA
+revocations resolve through their authenticated index and exact signing issuer,
+including after restart; another issuer cannot borrow that revocation. Existing CRL configuration
+controls disabling and response expiry; zero expiry omits NextUpdate. Request
+extensions are accepted but never echoed, and signed requests are rejected.
+
+`http_ocsp.rs` handles the opaque standard-base64 GET suffix and raw DER POST
+media while preserving ordinary framing, namespace, mount, size and original
+request-deadline checks. The Service audit fingerprint includes a domain-separated
+HMAC of the request carrier. Only closed canonical response envelopes produce
+OCSP media bytes. Actual signature, parser, transport and Service tests accompany
+this implementation; independently executed HTTP comparison is required for
+runtime compatibility. External signer, Ed25519 and ML-DSA OCSP remain unqualified.

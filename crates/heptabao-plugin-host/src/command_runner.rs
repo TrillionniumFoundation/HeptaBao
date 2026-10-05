@@ -250,6 +250,10 @@ impl OwnedExecutableImage {
     pub fn command(&self) -> Command {
         Command::new(self.0.descriptor_path())
     }
+    /// A parent-owned, immutable image path retained through the child lifetime.
+    pub fn descriptor_path(&self) -> &Path {
+        self.0.descriptor_path()
+    }
     pub fn identity(&self) -> io::Result<(u64, u64)> {
         let metadata = self.0._image.metadata()?;
         Ok((metadata.dev(), metadata.ino()))

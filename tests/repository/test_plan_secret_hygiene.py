@@ -19,9 +19,8 @@ SPEC.loader.exec_module(plan)
 HEADER = "-----BEGIN " + "PRIVATE KEY-----"
 FOOTER = "-----END " + "PRIVATE KEY-----"
 SITES = {
-    "crates/heptabao-server/src/service_local_pki_tests.rs": 1,
     "crates/heptabao-server/src/engines/pki_local_key_tests.rs": 2,
-    "crates/heptabao-server/src/engines/pki_local_key.rs": 1,
+    "crates/heptabao-server/src/engines/pki_local_intermediate.rs": 1,
     "crates/heptabao-server/src/service_external_key_native_tests.rs": 1,
     "crates/heptabao-server/src/outbound_ldap_transport.rs": 1,
 }
@@ -47,8 +46,8 @@ class PlanSecretHygieneTests(unittest.TestCase):
         with patch.object(plan, "ROOT", self.root):
             plan.scan_secret_hygiene()
 
-    def test_current_six_reviewed_public_uses_are_recognized(self):
-        self.assertEqual(sum(SITES.values()), 6)
+    def test_current_five_reviewed_public_uses_are_recognized(self):
+        self.assertEqual(sum(SITES.values()), 5)
         for name, text in self.sources.items():
             self.assertEqual(text.count(HEADER), SITES[name])
             self.assertEqual(len(plan.reviewed_public_pem_spans(name, text)), SITES[name])
@@ -91,22 +90,48 @@ class PlanSecretHygieneTests(unittest.TestCase):
             self.scan()
 
     def test_duplicate_allowed_expression_is_rejected(self):
-        name = "crates/heptabao-server/src/service_local_pki_tests.rs"
-        self.write(name, self.sources[name] + f'\ntext.starts_with("{HEADER}\\n");\n')
+        name = "crates/heptabao-server/src/engines/pki_local_key_tests.rs"
+        self.write(name, self.sources[name] + f'\nprivate.starts_with("{HEADER}");\n')
         with self.assertRaises(plan.ValidationFailure):
             self.scan()
 
     def test_altered_public_expression_is_rejected(self):
-        name = "crates/heptabao-server/src/service_local_pki_tests.rs"
-        self.write(name, self.sources[name].replace("text.starts_with(", "other_call(", 1))
+        name = "crates/heptabao-server/src/engines/pki_local_key_tests.rs"
+        self.write(name, self.sources[name].replace("private.starts_with(", "other_call(", 1))
         with self.assertRaises(plan.ValidationFailure):
             self.scan()
 
     def test_allowed_expression_cannot_be_suffix_of_another_identifier(self):
-        name = "crates/heptabao-server/src/service_local_pki_tests.rs"
-        self.write(name, self.sources[name].replace("text.starts_with(", "other_text.starts_with(", 1))
+        name = "crates/heptabao-server/src/engines/pki_local_key_tests.rs"
+        self.write(name, self.sources[name].replace("private.starts_with(", "other_private.starts_with(", 1))
         with self.assertRaises(plan.ValidationFailure):
             self.scan()
+
+    def test_owner_roundtrip_assertion_requires_its_complete_unique_context(self):
+        name = "crates/heptabao-server/src/engines/pki_local_intermediate.rs"
+        text = self.sources[name]
+        for changed in (
+            text.replace('response.body["data"]["private_key"]', 'response.body["data"]["other_key"]'),
+            text.replace('v.starts_with(', 'other_call(', 1),
+            text + f'\nlet header = "{HEADER}";\n',
+        ):
+            with self.subTest(changed=changed != text):
+                self.assertNotEqual(changed, text)
+                self.write(name, changed)
+                with self.assertRaises(plan.ValidationFailure):
+                    self.scan()
+
+    def test_removed_owner_contexts_do_not_retain_old_allowances(self):
+        removed = {
+            "crates/heptabao-server/src/service_local_pki_tests.rs": f'text.starts_with("{HEADER}\\n")',
+            "crates/heptabao-server/src/engines/pki_local_key.rs": f'Zeroizing::new(String::from("{HEADER}\\n"))',
+        }
+        for name, text in removed.items():
+            with self.subTest(name=name):
+                self.write(name, text)
+                with self.assertRaises(plan.ValidationFailure):
+                    self.scan()
+                (self.root / name).unlink()
 
     def test_negative_fixture_cannot_change_into_a_raw_string_context(self):
         name = "crates/heptabao-server/src/service_external_key_native_tests.rs"
@@ -131,7 +156,7 @@ class PlanSecretHygieneTests(unittest.TestCase):
                 serialization.load_der_private_key(base64.b64decode(payload), password=None)
 
     def test_other_secret_markers_are_still_rejected_in_allowed_files(self):
-        name = "crates/heptabao-server/src/service_local_pki_tests.rs"
+        name = "crates/heptabao-server/src/engines/pki_local_key_tests.rs"
         for marker in ("-----BEGIN OPENSSH " + "PRIVATE KEY-----", "gh" + "p_", "xox" + "b-", "AK" + "IAIOSFODNN7EXAMPLE"):
             with self.subTest(marker=marker):
                 self.write(name, self.sources[name] + "\n" + marker)

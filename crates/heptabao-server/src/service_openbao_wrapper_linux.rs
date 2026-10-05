@@ -566,6 +566,10 @@ pub(super) fn launch_automatic_runtime(
             if let Some((_, file)) = soft_hsm.as_ref() {
                 command.env("SOFTHSM2_CONF", format!("/proc/{}/fd/{}", std::process::id(), file.as_raw_fd()));
             }
+            // This persistent owner thread retains the Child through its actual
+            // terminal wait. Request-thread exit cannot trigger the binding.
+            // The sealed mode-0500 image has no set-ID/capability transition.
+            heptabao_linux_parent_death::bind_owner_death(&mut command);
             lifecycle.authorize_start(generation)?;
             let started = command.spawn().map_err(|_| {
                 set_cleanup(&cleanup, WrapperCleanupState::NotStarted);

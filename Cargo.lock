@@ -1189,6 +1189,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "heptabao-linux-parent-death"
+version = "0.1.0"
+dependencies = [
+ "rustix",
+]
+
+[[package]]
 name = "heptabao-migration"
 version = "0.1.0"
 dependencies = [
@@ -1224,15 +1231,15 @@ dependencies = [
  "base64 0.22.1",
  "hyper-util",
  "openssl",
- "tokio-openssl",
- "tower",
  "prost",
  "rcgen",
  "ring",
  "rustix",
  "tokio",
+ "tokio-openssl",
  "tokio-stream",
  "tonic",
+ "tower",
  "zeroize",
 ]
 
@@ -1286,9 +1293,11 @@ version = "0.1.0"
 dependencies = [
  "heptabao-domain",
  "heptabao-durable-service",
+ "heptabao-linux-parent-death",
  "heptabao-plugin-contracts",
  "ring",
  "rustix",
+ "serde_json",
  "zeroize",
 ]
 
@@ -1376,23 +1385,29 @@ dependencies = [
  "base64 0.22.1",
  "bcrypt",
  "blowfish",
+ "bytes",
  "chacha20poly1305",
+ "chrono",
  "cross-krb5",
  "flate2",
  "futures",
  "getrandom 0.4.3",
+ "h2",
  "heptabao-domain",
  "heptabao-durable-service",
  "heptabao-filesystem-guard",
  "heptabao-ha-service",
  "heptabao-kms-contracts",
+ "heptabao-linux-parent-death",
  "heptabao-openbao-grpc",
  "heptabao-plugin-contracts",
  "heptabao-plugin-host",
  "heptabao-raft-runtime",
  "hmac",
+ "http",
  "libc",
  "md5",
+ "mime",
  "ml-dsa",
  "openssl",
  "qrcode",
@@ -1407,6 +1422,7 @@ dependencies = [
  "sha3",
  "subtle",
  "tokio",
+ "tokio-rustls",
  "x509-parser",
  "zeroize",
 ]
@@ -2815,6 +2831,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio-openssl"
+version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "59df6849caa43bb7567f9a36f863c447d95a11d5903c9cc334ba32576a27eadd"
+dependencies = [
+ "openssl",
+ "openssl-sys",
+ "tokio",
+]
+
+[[package]]
 name = "tokio-rustls"
 version = "0.26.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3338,14 +3365,3 @@ name = "zmij"
 version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
-
-[[package]]
-name = "tokio-openssl"
-version = "0.6.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "59df6849caa43bb7567f9a36f863c447d95a11d5903c9cc334ba32576a27eadd"
-dependencies = [
- "openssl",
- "openssl-sys",
- "tokio",
-]

@@ -37,6 +37,7 @@ impl AuthState {
         body: &Value,
         now: u64,
     ) -> Result<InspectionTarget, AuthError> {
+        let time = actor.request_authority_time(AuthorityTime::Coarse(now))?;
         if route == "sys/capabilities-self" {
             // The authenticated request owns its final-use view. Inspecting it
             // neither mints a second Principal nor consumes a second token use.
@@ -47,9 +48,11 @@ impl AuthState {
             let raw = string_field(body, "token")?;
             if raw.starts_with("hvb.") {
                 let target = self
-                    .inspect_raw_target(raw, namespace, now)
+                    .inspect_raw_target_observed(raw, namespace, time)
                     .map_err(|_| bad("invalid inspection target"))?;
-                return Ok(InspectionTarget::from_checked(&target.view(self, now)?));
+                return Ok(InspectionTarget::from_checked(
+                    &target.view_observed(self, time)?,
+                ));
             }
             if raw.len() > 256 || !raw.starts_with("hvs.") {
                 return Err(bad("invalid token"));
@@ -74,7 +77,7 @@ impl AuthState {
         };
         // Metadata inspection never decrements the target's finite-use count.
         let token = self
-            .active_token(&id, now, true)
+            .active_token_observed(&id, time, true)
             .map_err(|_| bad("invalid inspection target"))?;
         if !token.root && token.namespace != namespace {
             return Err(bad("invalid inspection target"));

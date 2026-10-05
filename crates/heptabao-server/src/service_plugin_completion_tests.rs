@@ -44,6 +44,7 @@ fn admitted_with_body(
         body: &body,
         now: 100,
         admission_started: Instant::now(),
+        token_clock: None,
         allow_forward: true,
         enforce_namespace: true,
         wrap_ttl_seconds: None,
@@ -287,6 +288,100 @@ fn plugin_completion_rechecks_current_namespace_seal() -> TestResult {
 }
 
 #[test]
+fn plugin_namespace_response_frontier_survives_unrelated_write_but_not_share_restore() -> TestResult
+{
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, token) = bootstrap(&mut service)?;
+    let created = call(
+        &mut service,
+        "POST",
+        "sys/namespaces/team",
+        &token,
+        json!({"seal":"seal \"shamir\" { shares = 3\n threshold = 2 }"}),
+    );
+    assert!(created.status == 200);
+    let shares = created.body["data"]["key_shares"]
+        .as_array()
+        .ok_or("actual shares")?
+        .iter()
+        .map(|value| {
+            value
+                .as_str()
+                .map(|part| Zeroizing::new(part.to_owned()))
+                .ok_or("share shape")
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    for share in shares.iter().take(2) {
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "sys/namespaces/team/unseal",
+                &token,
+                json!({"key":share.as_str()})
+            )
+            .status
+                == 200
+        );
+    }
+    let mut old = admitted(&mut service, &token, "team", false)?;
+    let activation = service.unseal_nonce.clone();
+    assert!(service.validate_plugin_response(&mut old).is_ok());
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "secret/data/unrelated",
+            &token,
+            json!({"data":{"independent-progress":true}})
+        )
+        .status
+            == 200
+    );
+    assert!(
+        service.validate_plugin_response(&mut old).is_ok(),
+        "generation alone is not a manual owner closure"
+    );
+    assert!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/team/seal",
+            &token,
+            json!({})
+        )
+        .status
+            == 204
+    );
+    assert!(service.validate_plugin_response(&mut old).is_err());
+    for share in shares.iter().take(2) {
+        assert!(
+            call(
+                &mut service,
+                "POST",
+                "sys/namespaces/team/unseal",
+                &token,
+                json!({"key":share.as_str()})
+            )
+            .status
+                == 200
+        );
+    }
+    assert!(
+        service.unseal_nonce == activation,
+        "only child custody changed"
+    );
+    assert!(
+        service.validate_plugin_response(&mut old).is_err(),
+        "actual share restoration cannot revive original response admission"
+    );
+    let mut fresh = admitted(&mut service, &token, "team", false)?;
+    assert!(service.validate_plugin_response(&mut fresh).is_ok());
+    Ok(())
+}
+
+#[test]
 fn plugin_mount_binding_distinguishes_recreated_identical_plugin() -> TestResult {
     let mut engines = EngineState::default();
     let config = json!({"type":"plugin","config":{"plugin_id":"fixture"}});
@@ -407,6 +502,7 @@ fn auth_binding_fixture(
         body: &body,
         now: 100,
         admission_started: Instant::now(),
+        token_clock: None,
         allow_forward: true,
         enforce_namespace: true,
         wrap_ttl_seconds: None,
@@ -528,5 +624,52 @@ fn plugin_auth_completion_same_config_cannot_rebind_a_recreated_mount() -> TestR
             .validate_plugin_auth_response(&fresh_context, &fresh)
             .is_ok()
     );
+    Ok(())
+}
+
+#[test]
+fn plugin_private_floor_observation_uses_original_clock_without_historical_auth_write() -> TestResult
+{
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, root_token) = bootstrap(&mut service)?;
+    let mut authority = admitted(&mut service, &root_token, "", false)?;
+    let mut candidate = service.state.clone().ok_or("candidate")?;
+    let before = serde_json::to_vec(&candidate.auth)?;
+    let started = Instant::now() - Duration::from_millis(250);
+    let floor = crate::auth::Timestamp::checked(1000, 800000000)?;
+    authority.token_clock = Some(
+        RequestClock::anchored(Duration::new(100, 200000000), started)?.with_timestamp_floor(floor),
+    );
+    assert_eq!(
+        authority
+            .observe_candidate_time(&mut candidate)
+            .map_err(|_| "candidate observation")?
+            .exact(),
+        Some(floor)
+    );
+    assert_eq!(before, serde_json::to_vec(&candidate.auth)?);
+    let mut auth = serde_json::to_value(&candidate.auth)?;
+    auth["token_api_precision_state"] = json!(true);
+    auth["token_api_observed_at"] = serde_json::to_value(floor)?;
+    candidate.auth = serde_json::from_value(auth)?;
+    candidate.auth.validate_system_lease_defaults()?;
+    let before = serde_json::to_vec(&candidate.auth)?;
+    assert_eq!(
+        authority
+            .observe_candidate_time(&mut candidate)
+            .map_err(|_| "candidate observation")?
+            .exact(),
+        Some(floor)
+    );
+    assert_eq!(before, serde_json::to_vec(&candidate.auth)?);
+    assert_eq!(authority.token_clock.ok_or("clock")?.started(), started);
+    authority.token_clock = None;
+    let error = authority
+        .observe_candidate_time(&mut candidate)
+        .err()
+        .ok_or("coarse accepted")?;
+    assert_eq!(error.status, 503);
+    assert_eq!(before, serde_json::to_vec(&candidate.auth)?);
     Ok(())
 }

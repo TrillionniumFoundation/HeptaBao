@@ -292,6 +292,19 @@ fn radius_renewal_schema_fence_rejects_downgrade_and_token_api_provenance_is_dis
     downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 16;
     downgraded.auth.omit_lease_metadata_for_legacy_fixture();
+    assert!(downgraded.auth.has_public_origin_state());
+    let origin_fence = downgraded
+        .validate_format()
+        .err()
+        .ok_or("typed public origin downgraded to schema 16")?;
+    assert_eq!(origin_fence.status, 503);
+    assert_eq!(
+        origin_fence.body["errors"][0],
+        "native public origin requires schema 86"
+    );
+    downgraded
+        .auth
+        .omit_unwrapped_public_origin_for_legacy_fixture();
     assert!(downgraded.validate_format().is_ok());
     Ok(())
 }
@@ -393,7 +406,7 @@ fn radius_wrapping_or_commit_failure_never_publishes_partial_renewal() -> TestRe
                 )?;
             }
             service
-                .commit_state(&state)
+                .commit_state(&mut state)
                 .map_err(|_| "wrapper fixture commit failed")?;
             service.state = Some(state);
         }
@@ -834,7 +847,7 @@ fn received_epoch_during_authority_sync_rejects_old_observation_and_accepts_fres
     let mut received = service.state.clone().ok_or("state")?;
     received.replay_epoch += 3; // A follower may miss multiple committed epochs.
     let plan = service
-        .prepare_record_plan(&received)
+        .prepare_record_plan(&mut received)
         .map_err(|_| "record plan")?;
     let result = service.revalidate_online_authority_with_sync("", &old_nonce, move |service| {
         service.install_received_record_state(received, plan)
@@ -873,9 +886,9 @@ fn same_epoch_received_state_preserves_pending_observation() -> TestResult {
         100,
     )?;
     let old_nonce = service.unseal_nonce.clone();
-    let received = service.state.clone().ok_or("state")?;
+    let mut received = service.state.clone().ok_or("state")?;
     let plan = service
-        .prepare_record_plan(&received)
+        .prepare_record_plan(&mut received)
         .map_err(|_| "record plan")?;
     service
         .revalidate_online_authority_with_sync("", &old_nonce, move |service| {

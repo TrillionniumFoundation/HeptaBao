@@ -195,7 +195,7 @@ fn native_restore_p_release_still_runs_the_original_actor_guard() -> TestResult 
         100,
     )?;
     let plan = service
-        .prepare_record_plan(&candidate)
+        .prepare_record_plan(&mut candidate)
         .map_err(|_| "plan")?;
     let (gate, mut controller) = NativeRestoreFaultGate::test_pair(Phase::BeforeRootPublish)?;
     let context = crate::fixture_native_restore::NativeRestoreFaultContext::new(

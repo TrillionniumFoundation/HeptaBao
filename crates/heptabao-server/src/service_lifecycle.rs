@@ -9,7 +9,15 @@ use std::{
 };
 
 impl Service {
+    #[cfg(test)]
     pub(super) fn maintain_lifetimes_at(&mut self, now: u64) -> Result<bool, &'static str> {
+        self.maintain_lifetimes_with_clock(now, None)
+    }
+    fn maintain_lifetimes_with_clock(
+        &mut self,
+        now: u64,
+        clock: Option<RequestClock>,
+    ) -> Result<bool, &'static str> {
         if self.state.is_none() {
             return Ok(false);
         }
@@ -36,11 +44,25 @@ impl Service {
         if !current.auth.has_live_wrappers()
             && !current.engines.has_live_leases()
             && !current.engines.has_auto_rotate_keys()
+            && !current.engines.has_local_pki_crl_state()
         {
             return Ok(false);
         }
+        // Refresh the original trusted clock after ReadIndex/lock acquisition.
+        // Provider execution below cannot supply or reset this authority time.
+        let time = match clock {
+            Some(clock) => AuthorityTime::Precise(
+                clock
+                    .with_seconds_floor(now)
+                    .and_then(RequestClock::observed_at)
+                    .map_err(|_| "lifecycle precise clock unavailable")?,
+            ),
+            None => AuthorityTime::Coarse(now),
+        };
+        let now = time.seconds();
         let mut next = current.clone();
-        let changed = Self::reconcile_lease_owners(&mut next, now)
+        let changed = Self::reconcile_lease_owners_observed(&mut next, time)
+            .map_err(|_| "lease and PKI CRL maintenance failed")?
             | (next.auth.has_live_wrappers() && next.auth.advance_wrapping_clock(now))
             | next
                 .engines
@@ -53,7 +75,7 @@ impl Service {
         self.audit_event("lifecycle-request", &fingerprint, now, None)
             .map_err(|_| "lifecycle request audit unavailable")?;
         next.schema = next.writer_schema();
-        let result = self.commit_state(&next);
+        let result = self.commit_state(&mut next);
         if result.is_ok() {
             self.state = Some(next);
         }
@@ -86,20 +108,24 @@ enum ProviderMaintenance {
     DatabaseRotation(Box<database::DatabaseRotationMaintenance>),
     OpenLdap(Box<openldap_secret::OpenLdapMaintenance>),
 }
-fn prepare_database_provider(writer: &mut Service, now: u64) -> Option<ProviderMaintenance> {
+fn prepare_database_provider(
+    writer: &mut Service,
+    now: u64,
+    clock: RequestClock,
+) -> Option<ProviderMaintenance> {
     let prefer_rotation = writer.lifecycle_database_rotation_cursor;
     writer.lifecycle_database_rotation_cursor = !prefer_rotation;
     if prefer_rotation {
         match writer.prepare_database_rotation_maintenance(now) {
             Ok(Some(value)) => Some(ProviderMaintenance::DatabaseRotation(Box::new(value))),
             Ok(None) | Err(_) => writer
-                .prepare_database_maintenance(now)
+                .prepare_database_maintenance_with_clock(now, Some(clock))
                 .ok()
                 .flatten()
                 .map(|value| ProviderMaintenance::Database(Box::new(value))),
         }
     } else {
-        match writer.prepare_database_maintenance(now) {
+        match writer.prepare_database_maintenance_with_clock(now, Some(clock)) {
             Ok(Some(value)) => Some(ProviderMaintenance::Database(Box::new(value))),
             Ok(None) | Err(_) => writer
                 .prepare_database_rotation_maintenance(now)
@@ -138,10 +164,14 @@ pub(crate) fn start_lifecycle_worker(
                     break;
                 };
                 // Clock failure is not time zero and may not undo an observed expiry.
-                let Ok(now) = SystemTime::now().duration_since(UNIX_EPOCH) else {
+                let started = std::time::Instant::now();
+                let Ok(wall) = SystemTime::now().duration_since(UNIX_EPOCH) else {
                     continue;
                 };
-                let now = now.as_secs();
+                let Ok(clock) = RequestClock::anchored(wall, started) else {
+                    continue;
+                };
+                let now = wall.as_secs();
                 let pending_provider = {
                     let _read_scope = crate::request_deadline::RequestDeadlineScope::enter(
                         std::time::Instant::now()
@@ -159,14 +189,16 @@ pub(crate) fn start_lifecycle_worker(
                     let prefer_openldap = writer.lifecycle_provider_cursor;
                     writer.lifecycle_provider_cursor = !prefer_openldap;
                     let pending = if prefer_openldap {
-                        match writer.prepare_openldap_maintenance(now) {
+                        match writer.prepare_openldap_maintenance_with_clock(now, Some(clock)) {
                             Ok(Some(value)) => Some(ProviderMaintenance::OpenLdap(Box::new(value))),
-                            Ok(None) | Err(_) => prepare_database_provider(&mut writer, now),
+                            Ok(None) | Err(_) => prepare_database_provider(&mut writer, now, clock),
                         }
                     } else {
-                        match prepare_database_provider(&mut writer, now) {
+                        match prepare_database_provider(&mut writer, now, clock) {
                             Some(value) => Some(value),
-                            None => match writer.prepare_openldap_maintenance(now) {
+                            None => match writer
+                                .prepare_openldap_maintenance_with_clock(now, Some(clock))
+                            {
                                 Ok(Some(value)) => {
                                     Some(ProviderMaintenance::OpenLdap(Box::new(value)))
                                 }
@@ -176,7 +208,10 @@ pub(crate) fn start_lifecycle_worker(
                     };
                     // Local expiry is deliberately completed before any remote
                     // provider wait. A failed or slow provider cannot suppress it.
-                    if writer.maintain_lifetimes_at(now).is_err() {
+                    if writer
+                        .maintain_lifetimes_with_clock(now, Some(clock))
+                        .is_err()
+                    {
                         eprintln!("heptabao-lifecycle: maintenance unavailable");
                     }
                     pending
