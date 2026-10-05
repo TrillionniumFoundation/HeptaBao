@@ -263,6 +263,12 @@ impl State {
         self.auth
             .validate_public_origin_state()
             .map_err(|_| Response::error(503, "invalid public origin owner"))?;
+        if self.schema == AUTH_PUBLIC_ORIGIN_STATE_SCHEMA && !self.auth.has_public_origin_state() {
+            return Err(Response::error(
+                503,
+                "public origin retirement floor is missing",
+            ));
+        }
         if self.schema < AUTH_PUBLIC_ORIGIN_STATE_SCHEMA && self.auth.has_public_origin_state() {
             return Err(Response::error(
                 503,

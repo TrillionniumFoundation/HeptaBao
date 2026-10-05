@@ -87,3 +87,10 @@ Remaining scope includes weak map conversion, historical missing origin facts,
 lease expiry fractional precision, root-init lease issue_time, full namespace
 HCL/PGP/remote effects, closed batch/cross-owner mutation, schemas 82–85 combined
 admission, native HA inherited adoption, and final Linux/mTLS whole-system proof.
+
+
+R38 static review successor additionally requires the typed retired Auth floor
+for exact schema 86 even when no token facts remain and there is no prior live
+state. A genuine mint/revoke plus real-key authenticated received-graph negative
+covers this source invariant; R37 was not compiled or launched and stays an
+unqualified predecessor. This remains proposed test code until actual execution.

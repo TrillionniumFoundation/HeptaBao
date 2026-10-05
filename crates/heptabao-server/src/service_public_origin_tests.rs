@@ -319,6 +319,10 @@ fn public_origin_floor_is_sticky_after_retirement_and_rejects_old_snapshot_witho
     let mut stripped = retired.clone();
     stripped.auth = serde_json::from_value(auth)?;
     assert!(
+        stripped.validate_format().is_err(),
+        "retired floor is mandatory even without previous live state"
+    );
+    assert!(
         stripped
             .validate_publication_schema(Some(&retired))
             .is_err()
@@ -493,6 +497,101 @@ fn public_origin_complete_auth_digest_and_received_graph_reject_malformed_stamp_
     assert_eq!(
         service.current_state_identity().map_err(|_| "identity")?,
         original_identity
+    );
+    Ok(())
+}
+
+#[test]
+fn public_origin_retired_floor_received_without_previous_state_is_rejected_after_actual_mac()
+-> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, admin) = bootstrap_unmounted(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/records",
+            &admin,
+            json!({"type":"kv","options":{"version":"1"}})
+        )
+        .status,
+        204
+    );
+    let issued = realtime(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        "",
+        &admin,
+        json!({"policies":["default"],"no_default_policy":true,"meta":{}}),
+    );
+    let actor = bearer(&issued)?;
+    assert_eq!(
+        realtime(
+            &mut service,
+            "POST",
+            "auth/token/revoke",
+            "",
+            &admin,
+            json!({"token":actor.as_str()})
+        )
+        .status,
+        204
+    );
+    let current = service.state.as_ref().ok_or("retired live state")?;
+    assert_eq!(current.schema, AUTH_PUBLIC_ORIGIN_STATE_SCHEMA);
+    let committed = service.record_root.as_ref().ok_or("committed root")?;
+    let key = committed.address_key();
+    let mut auth: Value = serde_json::to_value(
+        &current
+            .protected_state()
+            .map_err(|_| "protected retired owner")?
+            .auth,
+    )?;
+    assert!(auth["tokens"].as_object().ok_or("retired tokens")?.values().all(|token| token.get("public_origin").is_none() && token.get("issue_stamp").is_none()));
+    assert!(
+        auth.as_object_mut()
+            .ok_or("retired auth")?
+            .remove("public_origin_floor")
+            .is_some()
+    );
+    let typed: AuthState = serde_json::from_value(auth)?;
+    // Facts are genuinely retired. The high schema tag alone cannot hide a
+    // removed typed floor from a fresh received/restore reader without history.
+    assert!(!typed.has_public_origin_state());
+    let bytes = owner_store::serialize_owner(&typed).map_err(|_| "retired malformed owner")?;
+    let mut bad_root = committed.clone();
+    let mut objects = BTreeMap::new();
+    let mut chunks = Vec::new();
+    for chunk in bytes.chunks(crate::state_record_root::OWNER_CHUNK_BYTES) {
+        let object =
+            StagedObject::owner_chunk(&key, chunk).map_err(|_| "real authenticated owner")?;
+        chunks.push(object.reference().clone());
+        objects.insert(object.reference().id, object);
+    }
+    bad_root.owners[1] = crate::state_record_root::OpaqueOwnerRef {
+        name: "auth".into(),
+        total_bytes: bytes.len() as u64,
+        chunks,
+        digest: crate::state_record_root::digest_owner(&key, "auth", &bytes)
+            .map_err(|_| "retired owner digest")?,
+    };
+    let files = artifact_digests(&service)?;
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "retired identity")?;
+    let reader = Overlay {
+        durable: records::DurableReader(service.durable.as_ref().ok_or("durable")?),
+        objects,
+    };
+    assert!(Service::materialize_record_state(&bad_root, &reader).is_err());
+    assert_eq!(artifact_digests(&service)?, files);
+    assert_eq!(
+        service
+            .current_state_identity()
+            .map_err(|_| "unchanged retired identity")?,
+        identity
     );
     Ok(())
 }
