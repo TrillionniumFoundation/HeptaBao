@@ -322,7 +322,9 @@ fn leaf_tbs(
     Ok(seq(&[
         context_explicit(0, &integer(&[2])),
         integer(&serial_bytes(&prepared.serial)?),
-        public.signature_algorithm(),
+        public
+            .leaf_signature(prepared.role_name_policy.as_ref())
+            .algorithm(),
         if prepared.role_leaf_profile.is_some() {
             root_fields::certificate_subject(&root.certificate_der)?
         } else {
@@ -560,9 +562,12 @@ impl Pki {
                     alt_names: prepared.alt_names.clone(),
                     ip_sans: prepared.ip_sans.clone(),
                 };
+                let scheme = material
+                    .public_key
+                    .leaf_signature(prepared.role_name_policy.as_ref());
                 let response = self.publish_leaf(
                     *prepared,
-                    signed_der(&material.tbs, &signatures[0], &material.public_key),
+                    signed_der_with_scheme(&material.tbs, &signatures[0], scheme),
                     &consumption.leaf_pkcs8,
                     &projection.public_key,
                     true,
@@ -901,7 +906,7 @@ impl Pki {
                 not_before: projection.not_before,
                 expires: issued.expires,
             };
-            validate_signed_der(
+            validate_signed_der_with_scheme(
                 &issuer.public_key,
                 &leaf_tbs(
                     issuer,
@@ -910,6 +915,9 @@ impl Pki {
                     &prepared,
                 )?,
                 &issued.certificate_der,
+                issuer
+                    .public_key
+                    .leaf_signature(projection.role_name_policy.as_ref()),
             )?;
         }
         if self

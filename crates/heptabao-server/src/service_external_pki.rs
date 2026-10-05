@@ -301,8 +301,11 @@ impl ExternalPkiPlan {
                 .map_err(|cause| Response::error(cause.status, &cause.message))?;
             let mut body = SensitiveJson(
                 json!({"input":BASE64.encode(input),"key_version":version_key,
-            "prehashed":material.hash_algorithm().is_some(),"signature_algorithm":"pkcs1v15"}),
+            "prehashed":material.hash_algorithm().is_some(),"signature_algorithm":material.signature_algorithm()}),
             );
+            if material.signature_algorithm() == "pss" {
+                body.0["salt_length"] = json!("hash");
+            }
             if let Some(hash) = material.hash_algorithm() {
                 body.0["hash_algorithm"] = json!(hash);
             }

@@ -260,7 +260,7 @@ impl RoleTimePolicy {
     }
 }
 
-fn go_duration(seconds: u64) -> String {
+pub(super) fn go_duration(seconds: u64) -> String {
     let hours = seconds / 3600;
     let minutes = seconds % 3600 / 60;
     let seconds = seconds % 60;

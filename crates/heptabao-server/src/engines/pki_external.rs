@@ -314,11 +314,29 @@ impl ExternalPkiTemplate {
 }
 
 impl ExternalPkiMaterial {
+    fn leaf_signature(&self) -> LeafSignature {
+        let policy =
+            self.consumption
+                .as_ref()
+                .and_then(|consumption| match &consumption.template {
+                    ConsumptionTemplate::Leaf(prepared) => prepared.role_name_policy.as_ref(),
+                    ConsumptionTemplate::Crl { .. } => None,
+                });
+        self.public_key.leaf_signature(policy)
+    }
+    pub(crate) fn signature_algorithm(&self) -> &'static str {
+        if self.leaf_signature().pss() {
+            "pss"
+        } else {
+            "pkcs1v15"
+        }
+    }
     pub(crate) fn signing_input(&self, tbs: &[u8]) -> Result<Vec<u8>> {
-        self.public_key.signing_input(tbs)
+        self.public_key
+            .signing_input_leaf(tbs, self.leaf_signature())
     }
     pub(crate) fn hash_algorithm(&self) -> Option<&'static str> {
-        self.public_key.hash_algorithm()
+        self.leaf_signature().hash_algorithm()
     }
     pub(crate) fn signature_size_bound(&self) -> usize {
         self.public_key.signature_size_bound()
@@ -331,7 +349,11 @@ impl ExternalPkiMaterial {
             .tbs_parts()
             .nth(index)
             .ok_or_else(|| bad("external PKI signature index"))?;
-        if self.public_key.verify(tbs, signature).is_err() {
+        if self
+            .public_key
+            .verify_leaf(tbs, signature, self.leaf_signature())
+            .is_err()
+        {
             return Err(error(
                 503,
                 "external PKI unknown after entry: cryptographic signature mismatch; no blind retry",
@@ -684,6 +706,19 @@ fn validate_signed_der(
     tbs: &[u8],
     document: &[u8],
 ) -> Result<()> {
+    validate_signed_der_with_scheme(public_key, tbs, document, public_key.leaf_signature(None))
+}
+
+fn signed_der_with_scheme(tbs: &[u8], signature: &[u8], scheme: LeafSignature) -> Vec<u8> {
+    seq(&[tbs.to_vec(), scheme.algorithm(), bit_string(signature, 0)])
+}
+
+fn validate_signed_der_with_scheme(
+    public_key: &ExternalPkiPublicKey,
+    tbs: &[u8],
+    document: &[u8],
+    scheme: LeafSignature,
+) -> Result<()> {
     let (tag, fields, rest) = take_der(document)?;
     if tag != 0x30 || !rest.is_empty() {
         return Err(bad("invalid external PKI document"));
@@ -693,7 +728,7 @@ fn validate_signed_der(
         return Err(bad("external PKI TBS mismatch"));
     }
     let (tag, content, fields) = take_der(fields)?;
-    if tag != 0x30 || der(tag, content) != public_key.signature_algorithm() {
+    if tag != 0x30 || der(tag, content) != scheme.algorithm() {
         return Err(bad("external PKI algorithm mismatch"));
     }
     let (tag, bits, rest) = take_der(fields)?;
@@ -703,8 +738,8 @@ fn validate_signed_der(
     if tag != 0x03
         || bits.first() != Some(&0)
         || !rest.is_empty()
-        || signed_der(tbs, signature, public_key) != document
-        || public_key.verify(tbs, signature).is_err()
+        || signed_der_with_scheme(tbs, signature, scheme) != document
+        || public_key.verify_leaf(tbs, signature, scheme).is_err()
     {
         return Err(bad("invalid external PKI document or signature"));
     }

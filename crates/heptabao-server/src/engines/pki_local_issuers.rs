@@ -541,10 +541,26 @@ impl Pki {
             let (rest, cert) =
                 x509_parser::certificate::X509Certificate::from_der(&certificate.certificate_der)
                     .map_err(|_| bad("invalid local PKI leaf certificate"))?;
+            let scheme = LeafSignature::for_key(
+                public.kind(),
+                certificate
+                    .role_leaf_profile
+                    .as_ref()
+                    .and_then(|evidence| evidence.role_name_policy.as_ref()),
+            );
+            let expected_algorithm = scheme.algorithm();
+            let (_, expected_algorithm) =
+                x509_parser::x509::AlgorithmIdentifier::from_der(&expected_algorithm)
+                    .map_err(|_| bad("invalid local PKI leaf signature algorithm"))?;
             if !rest.is_empty()
                 || cert.signature_value.unused_bits != 0
                 || cert.signature_algorithm != cert.tbs_certificate.signature
-                || !public.verify(cert.tbs_certificate.as_ref(), &cert.signature_value.data)?
+                || cert.signature_algorithm != expected_algorithm
+                || !public.verify_leaf(
+                    cert.tbs_certificate.as_ref(),
+                    &cert.signature_value.data,
+                    scheme,
+                )?
             {
                 return Err(bad("local PKI leaf signing authority changed"));
             }

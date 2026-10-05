@@ -3,6 +3,8 @@
 use super::*;
 
 pub(super) const ROLE_NAME_FIELDS: &[&str] = &[
+    "signature_bits",
+    "use_pss",
     "allowed_domains_template",
     "allowed_uri_sans_template",
     "allow_globs_in_identity_templates",
@@ -25,6 +27,10 @@ pub(super) const ROLE_NAME_FIELDS: &[&str] = &[
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct RoleNamePolicy {
+    #[serde(default, skip_serializing_if = "signature_zero")]
+    pub(super) signature_bits: i64,
+    #[serde(default, skip_serializing_if = "role_false")]
+    pub(super) use_pss: bool,
     #[serde(default, skip_serializing_if = "role_false")]
     pub(super) allowed_domains_template: bool,
     #[serde(default, skip_serializing_if = "role_false")]
@@ -62,6 +68,8 @@ pub(super) struct RoleNamePolicy {
 impl Default for RoleNamePolicy {
     fn default() -> Self {
         Self {
+            signature_bits: 0,
+            use_pss: false,
             allowed_domains_template: false,
             allowed_uri_sans_template: false,
             allow_globs_in_identity_templates: false,
@@ -85,8 +93,12 @@ impl Default for RoleNamePolicy {
 
 impl RoleNamePolicy {
     pub(super) fn from_body(body: &Value) -> Result<Self> {
-        let mut policy = Self::default();
+        let mut policy = Self {
+            signature_bits: role_signatures::signature_bits(body)?,
+            ..Self::default()
+        };
         for (name, target) in [
+            ("use_pss", &mut policy.use_pss),
             (
                 "allowed_domains_template",
                 &mut policy.allowed_domains_template,
@@ -188,7 +200,8 @@ impl RoleNamePolicy {
     }
 
     pub(super) fn descriptor(&self) -> Value {
-        json!({"allowed_domains_template":self.allowed_domains_template,
+        json!({"signature_bits":self.signature_bits,"use_pss":self.use_pss,
+            "allowed_domains_template":self.allowed_domains_template,
             "allowed_uri_sans_template":self.allowed_uri_sans_template,
             "allow_globs_in_identity_templates":self.allow_globs_in_identity_templates,
             "use_csr_common_name":self.use_csr_common_name,"use_csr_sans":self.use_csr_sans,"allow_localhost":self.allow_localhost,"require_cn":self.require_cn,
@@ -422,4 +435,8 @@ impl Pki {
                 })
         }) || self.has_external_role_names_state()
     }
+}
+
+fn signature_zero(value: &i64) -> bool {
+    *value == 0
 }

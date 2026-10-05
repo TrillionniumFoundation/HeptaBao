@@ -1,5 +1,7 @@
 //! Native name/SAN/no-store cases and genuine protected format publication.
 use super::*;
+#[path = "service_pki_role_signature_tests.rs"]
+mod signature_policy;
 
 fn named_role(service: &mut Service, admin: &str, extra: Value) -> TestResult {
     timed_role(service, admin, json!({"ttl":"10m"}))?;

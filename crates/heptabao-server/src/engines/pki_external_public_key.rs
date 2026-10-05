@@ -8,7 +8,7 @@ use openssl::{
     nid::Nid,
     pkey::{Id, PKey, Public},
     rsa::Padding,
-    sign::Verifier,
+    sign::{RsaPssSaltlen, Verifier},
 };
 
 const MAX_SPKI: usize = 8192;
@@ -431,15 +431,7 @@ impl ExternalPkiPublicKey {
         }
     }
 
-    pub(crate) fn hash_algorithm(&self) -> Option<&'static str> {
-        match self {
-            Self::Ed25519(_) => None,
-            Self::Asymmetric(public) if public.kind == "ecdsa-p384" => Some("sha2-384"),
-            Self::Asymmetric(public) if public.kind == "ecdsa-p521" => Some("sha2-512"),
-            Self::Asymmetric(_) => Some("sha2-256"),
-        }
-    }
-
+    #[cfg(test)]
     pub(crate) fn signing_input(&self, tbs: &[u8]) -> Result<Vec<u8>> {
         if self.is_asymmetric() {
             self.validate()?;
@@ -466,6 +458,81 @@ impl ExternalPkiPublicKey {
                 oid(&[0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0b]),
                 der(0x05, &[]),
             ]),
+        }
+    }
+
+    pub(in crate::engines::pki) fn leaf_signature(
+        &self,
+        policy: Option<&RoleNamePolicy>,
+    ) -> LeafSignature {
+        let kind = match self {
+            Self::Ed25519(_) => LocalKeyKind::Ed25519,
+            Self::Asymmetric(public) => match public.kind.as_str() {
+                "rsa-2048" => LocalKeyKind::Rsa2048,
+                "rsa-3072" => LocalKeyKind::Rsa3072,
+                "rsa-4096" => LocalKeyKind::Rsa4096,
+                "ecdsa-p384" => LocalKeyKind::Ec384,
+                "ecdsa-p521" => LocalKeyKind::Ec521,
+                _ => LocalKeyKind::Ec256,
+            },
+        };
+        LeafSignature::for_key(kind, policy)
+    }
+
+    pub(in crate::engines::pki) fn signing_input_leaf(
+        &self,
+        tbs: &[u8],
+        scheme: LeafSignature,
+    ) -> Result<Vec<u8>> {
+        self.validate()?;
+        if let Some(digest) = scheme.digest() {
+            hash(digest, tbs)
+                .map(|digest| digest.to_vec())
+                .map_err(|_| invalid_public())
+        } else {
+            Ok(tbs.to_vec())
+        }
+    }
+
+    pub(in crate::engines::pki) fn verify_leaf(
+        &self,
+        tbs: &[u8],
+        signature: &[u8],
+        scheme: LeafSignature,
+    ) -> Result<()> {
+        if signature.is_empty() || signature.len() > self.signature_size_bound() {
+            return Err(invalid_public());
+        }
+        let Some(digest) = scheme.digest() else {
+            return self.verify(tbs, signature);
+        };
+        let key = self.maintained_public()?;
+        if (key.id() == Id::RSA) != matches!(scheme, LeafSignature::Rsa { .. }) {
+            return Err(invalid_public());
+        }
+        let mut verifier = Verifier::new(digest, &key).map_err(|_| invalid_public())?;
+        if key.id() == Id::RSA {
+            verifier
+                .set_rsa_padding(if scheme.pss() {
+                    Padding::PKCS1_PSS
+                } else {
+                    Padding::PKCS1
+                })
+                .map_err(|_| invalid_public())?;
+            if scheme.pss() {
+                verifier
+                    .set_rsa_mgf1_md(digest)
+                    .map_err(|_| invalid_public())?;
+                verifier
+                    .set_rsa_pss_saltlen(RsaPssSaltlen::DIGEST_LENGTH)
+                    .map_err(|_| invalid_public())?;
+            }
+        }
+        verifier.update(tbs).map_err(|_| invalid_public())?;
+        if verifier.verify(signature).map_err(|_| invalid_public())? {
+            Ok(())
+        } else {
+            Err(invalid_public())
         }
     }
 

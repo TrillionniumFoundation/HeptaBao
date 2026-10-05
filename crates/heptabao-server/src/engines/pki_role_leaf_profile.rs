@@ -428,7 +428,8 @@ impl Pki {
                     role_leaf_profile: Some(&evidence.profile),
                 },
                 &evidence.public_key.spki()?,
-                &issuer_public.kind().signature_algorithm(),
+                &LeafSignature::for_key(issuer_public.kind(), evidence.role_name_policy.as_ref())
+                    .algorithm(),
             )?;
             let (rest, certificate) =
                 x509_parser::certificate::X509Certificate::from_der(&issued.certificate_der)
@@ -437,7 +438,14 @@ impl Pki {
                 || certificate.signature_value.unused_bits != 0
                 || certificate.signature_algorithm != certificate.tbs_certificate.signature
                 || certificate.tbs_certificate.as_ref() != expected.as_slice()
-                || !issuer_public.verify(&expected, &certificate.signature_value.data)?
+                || !issuer_public.verify_leaf(
+                    &expected,
+                    &certificate.signature_value.data,
+                    LeafSignature::for_key(
+                        issuer_public.kind(),
+                        evidence.role_name_policy.as_ref(),
+                    ),
+                )?
             {
                 return Err(bad("PKI profile leaf DER and public evidence differ"));
             }

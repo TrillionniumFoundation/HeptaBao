@@ -29,10 +29,13 @@ mod role_time;
 use role_names::RoleNamePolicy;
 #[path = "pki_role_csr.rs"]
 mod role_csr;
+#[path = "pki_role_signatures.rs"]
+mod role_signatures;
 #[path = "pki_role_subjects.rs"]
 mod role_subjects;
 #[path = "pki_role_templates.rs"]
 mod role_templates;
+use role_signatures::LeafSignature;
 use role_time::RoleTimePolicy;
 #[path = "pki_issuer_time.rs"]
 mod issuer_time;
@@ -301,8 +304,8 @@ fn max_pki_ttl() -> u64 {
 impl Default for Pki {
     fn default() -> Self {
         Self {
-            default_ttl: DEFAULT_LEAF_TTL,
-            max_ttl: MAX_TTL,
+            default_ttl: DEFAULT_ROOT_TTL,
+            max_ttl: DEFAULT_ROOT_TTL,
             cluster_path: String::new(),
             aia_path: String::new(),
             acme: Box::new(AcmeConfig::default()),
@@ -702,8 +705,8 @@ impl Pki {
             }
             let fields = RootFields::from_body(body, common_name)?;
             self.admit_local_root_names(&fields)?;
-            let not_after =
-                root_fields::root_expiration(body, now, self.max_ttl, DEFAULT_ROOT_TTL)?;
+            let (not_after, mut warnings) =
+                root_fields::root_expiration_capped(body, now, self.max_ttl, self.default_ttl)?;
             let material = LocalPrivateMaterial::generate(kind)?;
             let public = material.public()?;
             let key_identifier = root_fields::subject_key_identifier(&public.spki()?)?;
@@ -787,9 +790,8 @@ impl Pki {
             // The current local root builder emits no AIA extension. Preserve
             // the observed warning from the actual certificate it just built.
             let mut response = ok(data, true);
-            response.body["warnings"] = json!([
-                "This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information."
-            ]);
+            warnings.push("This mount hasn't configured any authority information access (AIA) fields; this may make it harder for systems to find missing certificates in the chain or to validate revocation status of certificates. Consider updating /config/urls or the newly generated issuer with this information.".into());
+            response.body["warnings"] = json!(warnings);
             return Ok(response);
         }
         if path == "root/delete" || path == "root" && method == "DELETE" {
@@ -910,6 +912,8 @@ impl Pki {
                             "allowed_domains_template",
                             "allowed_uri_sans_template",
                             "allow_globs_in_identity_templates",
+                            "signature_bits",
+                            "use_pss",
                             "use_csr_common_name",
                             "use_csr_sans",
                             "allowed_serial_numbers",
@@ -1719,7 +1723,7 @@ impl Pki {
         let root_pair = root.local_key()?;
         let issuer_name_der = root_fields::certificate_subject(&root.certificate_der)?;
         let authority_key_id = root_fields::certificate_key_identifier(&root.certificate_der)?;
-        let certificate_der = certificate_der_local(
+        let certificate_der = certificate_der_local_with_policy(
             &root_pair,
             &leaf_public,
             CertificateSpec {
@@ -1742,6 +1746,7 @@ impl Pki {
                 permitted_dns_domains: &[],
                 role_leaf_profile: prepared.role_leaf_profile.as_ref(),
             },
+            prepared.role_name_policy.as_ref(),
         )?;
         self.publish_leaf(prepared, certificate_der, &leaf_pkcs8, &leaf_public, false)
     }
@@ -2474,6 +2479,28 @@ fn certificate_der_local(
     Ok(seq(&[tbs, algorithm, bit_string(&signature, 0)]))
 }
 
+fn certificate_der_local_with_policy(
+    signer: &LocalPrivateMaterial,
+    subject: &LocalPublicKey,
+    spec: CertificateSpec<'_>,
+    policy: Option<&RoleNamePolicy>,
+) -> Result<Vec<u8>> {
+    let scheme = LeafSignature::for_key(signer.kind(), policy);
+    if matches!(scheme, LeafSignature::Legacy(_)) {
+        return certificate_der_local(signer, subject, spec);
+    }
+    let algorithm = scheme.algorithm();
+    let tbs = certificate_tbs_with(spec, &subject.spki()?, &algorithm)?;
+    let signature = signer.sign_leaf(&tbs, scheme)?;
+    if !signer.public()?.verify_leaf(&tbs, &signature, scheme)? {
+        return Err(error(
+            503,
+            "local PKI certificate signature failed validation",
+        ));
+    }
+    Ok(seq(&[tbs, algorithm, bit_string(&signature, 0)]))
+}
+
 fn certificate_tbs_with(
     spec: CertificateSpec<'_>,
     subject_spki: &[u8],
@@ -2918,7 +2945,7 @@ mod tests {
         let issued = pki.issue(
             "pki/",
             "web-ip",
-            &json!({"common_name":"api.example.test","ip_sans":["127.0.0.1","2001:db8::1"]}),
+            &json!({"common_name":"api.example.test","ip_sans":["127.0.0.1","2001:db8::1"],"ttl":"1h"}),
             &serde_json::from_value::<LeaseOwner>(json!("a".repeat(43)))?,
             None,
             1_700_000_004,
