@@ -2477,10 +2477,36 @@ fn closed_auth_precise_real_reopen_consumes_actual_finite_owner_without_key_slot
     )?;
     drop(service);
     let mut service = root.service()?;
-    assert_eq!(
-        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
-        200
-    );
+    let reopened = closed_precise_wire(
+        &mut service,
+        "POST",
+        "sys/unseal",
+        "",
+        "",
+        json!({"key":key}),
+        RequestClock::anchored(
+            std::time::Duration::new(100, 150_000_000),
+            std::time::Instant::now(),
+        )?,
+    )?;
+    assert_eq!(reopened.status, 200, "{}", reopened.body);
+    // Real barrier activation restores the inherited owner. Close the same
+    // restored key before the positive closed authentication transaction.
+    assert!(service.namespace_runtime.is_loaded("precise-reopen"));
+    let reclosed = closed_precise_wire(
+        &mut service,
+        "POST",
+        "sys/namespaces/precise-reopen/seal",
+        "",
+        &root_token,
+        json!({}),
+        RequestClock::anchored(
+            std::time::Duration::new(100, 180_000_000),
+            std::time::Instant::now(),
+        )?,
+    )?;
+    assert_eq!(reclosed.status, 204, "{}", reclosed.body);
+    assert!(!service.namespace_runtime.is_loaded("precise-reopen"));
     let generation = service.durable.as_ref().ok_or("durable")?.generation();
     let coarse = wire(
         &mut service,
@@ -2645,7 +2671,7 @@ fn closed_auth_precise_missing_independent_parent_and_retired_binding_stay_close
     assert!(!service.namespace_runtime.is_loaded("precise-parent/child"));
     let retirement_root = Root::new();
     let mut retirement_service = retirement_root.service()?;
-    let (_, retirement_root_token) = bootstrap_unmounted(&mut retirement_service)?;
+    let (retirement_key, retirement_root_token) = bootstrap_unmounted(&mut retirement_service)?;
     let retired_actor = precise_closed_actor_fixture(
         &mut retirement_service,
         &retirement_root_token,
@@ -2654,8 +2680,29 @@ fn closed_auth_precise_missing_independent_parent_and_retired_binding_stay_close
         2,
         950_000_000,
     )?;
-    // A real root resource request reloads only this actual inherited owner;
-    // then the normal delete transaction seals, retires and commits it.
+    // A read cannot open a sealed private owner. Recover the actual persisted
+    // namespace through a fresh Service and real barrier activation, keeping
+    // the original positive root resource read and retirement assertions.
+    drop(retirement_service);
+    let mut retirement_service = retirement_root.service()?;
+    let reopened = closed_precise_wire(
+        &mut retirement_service,
+        "POST",
+        "sys/unseal",
+        "",
+        "",
+        json!({"key":retirement_key}),
+        RequestClock::anchored(
+            std::time::Duration::new(100, 180_000_000),
+            std::time::Instant::now(),
+        )?,
+    )?;
+    assert_eq!(reopened.status, 200, "{}", reopened.body);
+    assert!(
+        retirement_service
+            .namespace_runtime
+            .is_loaded("retired-precise")
+    );
     assert_eq!(
         closed_precise_wire(
             &mut retirement_service,
@@ -2784,13 +2831,22 @@ fn help_delivery_original_admission(
     actor: &str,
     clock: RequestClock,
 ) -> TestResult<Response> {
+    help_delivery_original_route_admission(service, actor, clock, "auth/token/lookup-self")
+}
+
+fn help_delivery_original_route_admission(
+    service: &mut Service,
+    actor: &str,
+    clock: RequestClock,
+    path: &str,
+) -> TestResult<Response> {
     assert!(service.pending_help_authority.is_none());
     let body = json!({"__heptabao_http_help_request":{
-        "path":"auth/token/lookup-self","query":"","wire_method":"HELP"
+        "path":path,"query":"","wire_method":"HELP"
     }});
     let response = service.handle_inner(RequestView {
         method: "HELP",
-        path: "auth/token/lookup-self",
+        path,
         namespace: "",
         token: actor,
         body: &body,
@@ -2804,7 +2860,15 @@ fn help_delivery_original_admission(
         client_certificates: None,
     });
     assert_eq!(response.status, 200, "{}", response.body);
-    assert_eq!(response.body["id"], actor);
+    if path == "auth/token/lookup-self" {
+        assert_eq!(response.body["id"], actor);
+    } else {
+        assert!(
+            response.body["help"]
+                .as_str()
+                .is_some_and(|text| text.contains("mounts"))
+        );
+    }
     assert!(service.pending_help_authority.is_some());
     assert!(service.pending_token_api_authority.is_none());
     Ok(response)
@@ -2953,7 +3017,10 @@ fn help_delivery_closed_actor_expired_after_actual_response_audit_keeps_own_key_
         std::time::Duration::new(100, 200_000_000),
         std::time::Instant::now(),
     )?;
-    let response = help_delivery_original_admission(&mut service, &actor, clock)?;
+    // The self resource remains unloaded (404). Existing system metadata
+    // admits this actor without opening its private key or data owner.
+    let response =
+        help_delivery_original_route_admission(&mut service, &actor, clock, "sys/mounts")?;
     let response = service.audit_completed_response_with_receipt(
         "closed-help-audit-expiry",
         100,
