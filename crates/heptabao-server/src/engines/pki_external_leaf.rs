@@ -325,7 +325,7 @@ fn leaf_tbs(
         public
             .leaf_signature(prepared.role_name_policy.as_ref())
             .algorithm(),
-        if prepared.role_leaf_profile.is_some() {
+        if prepared.role_leaf_profile.is_some() || root.has_intermediate_chain() {
             root_fields::certificate_subject(&root.certificate_der)?
         } else {
             name(&root.common_name)
@@ -502,6 +502,7 @@ impl Pki {
             consumption: Some(consumption),
             bound_public: Some(key.public_key.clone()),
             bound_issuer: Some(captured_issuer),
+            imported: None,
         }))
     }
 

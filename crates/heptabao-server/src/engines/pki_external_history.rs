@@ -61,7 +61,7 @@ impl Pki {
         self.external.signer_history.is_some()
     }
 
-    fn external_signers(&self) -> impl Iterator<Item = (&ExternalKey, &RootCa)> {
+    pub(super) fn external_signers(&self) -> impl Iterator<Item = (&ExternalKey, &RootCa)> {
         self.external.root.iter().zip(self.root.iter()).chain(
             self.external.signer_history.iter().flat_map(|history| {
                 history
@@ -78,7 +78,7 @@ impl Pki {
         mount: &str,
         context: PkiRequestContext<'_>,
     ) -> Result<Vec<ExternalPkiTemplate>> {
-        if main.operation != "root"
+        if !matches!(main.operation, "root" | "import")
             && !matches!(main.consumption, Some(ConsumptionTemplate::Crl { .. }))
         {
             return Ok(Vec::new());

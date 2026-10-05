@@ -112,7 +112,7 @@ fn invalid<T>(_: T) -> EngineError {
     bad("invalid local PKI CSR or CA chain")
 }
 
-fn certificate(bytes: &[u8]) -> Result<X509Certificate<'_>> {
+pub(super) fn certificate(bytes: &[u8]) -> Result<X509Certificate<'_>> {
     if bytes.is_empty() || bytes.len() > 64 * 1024 {
         return Err(bad("CA certificate is outside bounds"));
     }
@@ -134,7 +134,7 @@ fn certificate(bytes: &[u8]) -> Result<X509Certificate<'_>> {
     Ok(cert)
 }
 
-fn certificate_signed_by(bytes: &[u8], parent: &[u8]) -> Result<()> {
+pub(super) fn certificate_signed_by(bytes: &[u8], parent: &[u8]) -> Result<()> {
     let cert = certificate(bytes)?;
     let issuer = certificate(parent)?;
     if cert.issuer() != issuer.subject() {
@@ -179,7 +179,7 @@ fn validate_available_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
     Ok(())
 }
 
-fn validate_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
+pub(super) fn validate_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
     validate_available_chain(leaf, parents)?;
     let terminal = parents.last().map_or(leaf, Vec::as_slice);
     let cert = certificate(terminal)?;
@@ -189,7 +189,7 @@ fn validate_chain(leaf: &[u8], parents: &[Vec<u8>]) -> Result<()> {
     Ok(())
 }
 
-fn available_ca_chain(leaf: &[u8], certificates: &[Vec<u8>]) -> Result<Vec<Vec<u8>>> {
+pub(super) fn available_ca_chain(leaf: &[u8], certificates: &[Vec<u8>]) -> Result<Vec<Vec<u8>>> {
     let mut parents = Vec::new();
     let mut current = leaf;
     let mut seen = BTreeSet::from([crypto_digest(leaf)]);
@@ -260,7 +260,7 @@ pub(super) fn parse_csr(bytes: &[u8]) -> Result<X509CertificationRequest<'_>> {
     Ok(csr)
 }
 
-fn pem_blocks(input: &str, label: &str) -> Result<Vec<Vec<u8>>> {
+pub(super) fn pem_blocks(input: &str, label: &str) -> Result<Vec<Vec<u8>>> {
     if input.len() > MAX_CA_BUNDLE || input.is_empty() {
         return Err(bad("PEM input exceeds bounds"));
     }
@@ -307,7 +307,7 @@ pub(super) fn csr_bytes_from_body(body: &Value) -> Result<Vec<u8>> {
     Ok(values.remove(0))
 }
 
-fn common_name(subject: &x509_parser::x509::X509Name<'_>) -> Result<String> {
+pub(super) fn common_name(subject: &x509_parser::x509::X509Name<'_>) -> Result<String> {
     let value = subject
         .iter_common_name()
         .next()
@@ -1854,6 +1854,74 @@ impl Pki {
             for ca in state.public_issuers.values_mut() {
                 ca.parents = available_ca_chain(&ca.certificate_der, available)?;
             }
+        }
+        Ok(())
+    }
+}
+
+pub(super) type ExternalPublicCaPlan = (String, Vec<u8>, Vec<Vec<u8>>);
+pub(super) type ExternalPublicCaPlans = Vec<ExternalPublicCaPlan>;
+
+impl Pki {
+    pub(super) fn prepare_external_public_parents(
+        &self,
+        objects: &[Vec<u8>],
+        child: &[u8],
+    ) -> Result<(ExternalPublicCaPlans, Vec<String>)> {
+        let mut imported = Vec::new();
+        let mut existing = Vec::new();
+        let mut seen = BTreeSet::new();
+        for der in objects.iter().filter(|der| der.as_slice() != child) {
+            certificate(der)?;
+            if !seen.insert(crypto_digest(der)) {
+                continue;
+            }
+            if let Some((id, _)) = self
+                .local_intermediate
+                .iter()
+                .flat_map(|s| &s.public_issuers)
+                .find(|(_, ca)| ca.certificate_der == *der)
+            {
+                existing.push(id.clone());
+                continue;
+            }
+            if self
+                .local_intermediate
+                .as_ref()
+                .map_or(0, |s| s.public_issuers.len())
+                + imported.len()
+                >= MAX_ISSUED
+            {
+                return Err(error(507, "public CA import capacity exhausted"));
+            }
+            imported.push((
+                random_pki_id()?,
+                der.clone(),
+                available_ca_chain(der, objects)?,
+            ));
+        }
+        Ok((imported, existing))
+    }
+    pub(super) fn publish_external_public_parents(
+        &mut self,
+        objects: &[ExternalPublicCaPlan],
+    ) -> Result<()> {
+        for (id, der, parents) in objects {
+            if !valid_pki_id(id) || id.is_empty() {
+                return Err(bad("invalid public CA import identity"));
+            }
+            validate_chain(der, parents)?;
+            let state = self.local_intermediate.get_or_insert_with(Box::default);
+            if state.public_issuers.contains_key(id) || state.public_issuers.len() >= MAX_ISSUED {
+                return Err(error(503, "public CA import changed before publication"));
+            }
+            state.public_issuers.insert(
+                id.clone(),
+                ImportedCa {
+                    certificate_der: der.clone(),
+                    parents: parents.clone(),
+                },
+            );
         }
         Ok(())
     }

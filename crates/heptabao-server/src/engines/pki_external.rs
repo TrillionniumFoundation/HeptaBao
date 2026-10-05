@@ -16,6 +16,9 @@ use issuer_archive::ExternalPublicIssuer;
 #[path = "pki_external_history.rs"]
 mod history;
 use history::ExternalSignerHistory;
+#[path = "pki_external_intermediate.rs"]
+mod intermediate;
+use intermediate::{ExternalIntermediateOwner, PreparedExternalImport};
 
 #[derive(Clone, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
@@ -45,6 +48,8 @@ pub(super) struct ExternalKey {
     pub(super) issuer_name: String,
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub(super) dns_san: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) intermediate_owner: Option<Box<ExternalIntermediateOwner>>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -95,6 +100,7 @@ pub(crate) struct ExternalPkiTemplate {
     // binds this to its namespace, mount incarnation, config, request, state
     // identity, generation and provider enrollment; publication checks it again.
     bound_issuer: Option<ExternalPublicIssuer>,
+    imported: Option<Box<PreparedExternalImport>>,
 }
 
 pub(crate) struct ExternalPkiMaterial {
@@ -288,6 +294,22 @@ impl ExternalPkiTemplate {
     ) -> Result<ExternalPkiMaterial> {
         let public_key = public_key.into();
         public_key.validate()?;
+        if let Some(imported) = &self.imported {
+            if public_key != imported.pending.key.public_key {
+                return Err(error(503, "external intermediate provider key changed"));
+            }
+            let crls = CrlSet::empty(self.generated_at);
+            let mut parts = crls.tbs(&self.common_name, &public_key)?;
+            let tbs = parts.remove(0);
+            return Ok(ExternalPkiMaterial {
+                template: self,
+                public_key,
+                tbs,
+                extra_tbs: parts,
+                root_crls: Some(crls),
+                consumption: None,
+            });
+        }
         if self.is_consumption() {
             return self.materialize_consumption(public_key);
         }
@@ -439,6 +461,7 @@ impl Pki {
 
     pub(in crate::engines) fn external_handles(&self, path: &str) -> bool {
         matches!(path, "root/generate/kms" | "intermediate/generate/kms")
+            || path == "intermediate/set-signed" && self.external.intermediate.is_some()
             || self.external.root.is_some()
                 && (path.starts_with("issue/")
                     || path.starts_with("sign/")
@@ -458,6 +481,12 @@ impl Pki {
         body: &Value,
         now: u64,
     ) -> Result<Option<ExternalPkiTemplate>> {
+        if path == "intermediate/set-signed" && self.external.intermediate.is_some() {
+            if !write_method(method) {
+                return Err(unsupported());
+            }
+            return self.prepare_external_import(body, now).map(Some);
+        }
         if !matches!(path, "root/generate/kms" | "intermediate/generate/kms") {
             return Ok(None);
         }
@@ -528,6 +557,7 @@ impl Pki {
             consumption: None,
             bound_public: None,
             bound_issuer: None,
+            imported: None,
         }))
     }
 
@@ -546,6 +576,9 @@ impl Pki {
         if material.consumption.is_some() {
             return self.publish_consumption(material, signatures, now);
         }
+        if material.template.imported.is_some() {
+            return self.publish_external_import(material, signatures, now);
+        }
         let mut root_crls = material.root_crls.take();
         if let Some(crls) = root_crls.as_mut() {
             crls.sign(
@@ -563,6 +596,7 @@ impl Pki {
             key_name: template.key_name,
             issuer_name: template.issuer_name,
             dns_san: template.dns_san,
+            intermediate_owner: None,
         };
         let encoded = signed_der(&material.tbs, &signatures[0], &key.public_key);
         if key.issuer_id == key.key_id
@@ -651,26 +685,45 @@ impl Pki {
                 .root
                 .as_ref()
                 .ok_or_else(|| bad("external PKI root missing"))?;
-            if key.dns_san && !valid_domain(&root.common_name) {
+            if key.intermediate_owner.is_some() && self.external.signer_history.is_none() {
+                return Err(bad("external intermediate signer-history owner missing"));
+            }
+            if key.intermediate_owner.is_none() && key.dns_san && !valid_domain(&root.common_name) {
                 return Err(bad("external PKI DNS SAN subject is invalid"));
             }
             if !root.is_external() {
                 return Err(bad("external PKI must not contain local private key"));
             }
-            let tbs = external_root_tbs(
-                ExternalRootSpec {
-                    serial: &root.serial,
-                    issuer_cn: &root.common_name,
-                    subject_cn: &root.common_name,
-                    public_key: &key.public_key,
-                    not_before: root.not_before,
-                    not_after: root.not_after,
-                },
-                key.dns_san,
-            )?;
-            validate_signed_der(&key.public_key, &tbs, &root.certificate_der)?;
+            if let Some(owner) = &key.intermediate_owner {
+                owner.validate(root, key)?;
+            } else {
+                let tbs = external_root_tbs(
+                    ExternalRootSpec {
+                        serial: &root.serial,
+                        issuer_cn: &root.common_name,
+                        subject_cn: &root.common_name,
+                        public_key: &key.public_key,
+                        not_before: root.not_before,
+                        not_after: root.not_after,
+                    },
+                    key.dns_san,
+                )?;
+                validate_signed_der(&key.public_key, &tbs, &root.certificate_der)?;
+            }
+        }
+        if self
+            .external
+            .archived_issuers
+            .values()
+            .any(ExternalPublicIssuer::has_intermediate_chain)
+            && self.external.signer_history.is_none()
+        {
+            return Err(bad("external intermediate public owner floor missing"));
         }
         if let Some(csr) = &self.external.intermediate {
+            if csr.key.intermediate_owner.is_some() {
+                return Err(bad("pending external CSR cannot borrow an imported owner"));
+            }
             validate_key(&csr.key)?;
             if !common_name_valid(&csr.common_name) {
                 return Err(bad("invalid external CSR subject"));

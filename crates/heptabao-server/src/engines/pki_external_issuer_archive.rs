@@ -16,6 +16,8 @@ pub(super) struct ExternalPublicIssuer {
     pub(super) not_after: u64,
     pub(super) certificate_der: Vec<u8>,
     dns_san: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    parents: Option<Vec<Vec<u8>>>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Eq, PartialEq)]
@@ -26,6 +28,9 @@ pub(in crate::engines::pki) struct ExternalLeafIssuerOwner {
 }
 
 impl ExternalPublicIssuer {
+    pub(super) fn has_intermediate_chain(&self) -> bool {
+        self.parents.is_some()
+    }
     pub(super) fn capture(root: &RootCa, key: &ExternalKey) -> Result<Self> {
         if !root.is_external()
             || !root.issuer_id.is_empty()
@@ -47,6 +52,10 @@ impl ExternalPublicIssuer {
             not_after: root.not_after,
             certificate_der: root.certificate_der.clone(),
             dns_san: key.dns_san,
+            parents: key
+                .intermediate_owner
+                .as_ref()
+                .map(|owner| owner.parents.clone()),
         };
         captured.validate()?;
         Ok(captured)
@@ -57,14 +66,27 @@ impl ExternalPublicIssuer {
             || !valid_identifier(&self.key_id)
             || self.issuer_id == self.key_id
             || !common_name_valid(&self.common_name)
-            || self.dns_san && !valid_domain(&self.common_name)
+            || self.parents.is_none() && self.dns_san && !valid_domain(&self.common_name)
             || self.not_before >= self.not_after
-            || self.not_after - self.not_before > MAX_TTL + 120
+            || self.parents.is_none() && self.not_after - self.not_before > MAX_TTL + 120
             || serial_bytes(&self.serial).is_err()
             || self.certificate_der.is_empty()
             || self.certificate_der.len() > 64 * 1024
         {
             return Err(bad("invalid archived external PKI public issuer"));
+        }
+        if let Some(parents) = &self.parents {
+            return intermediate::validate_public_ca(
+                &self.certificate_der,
+                &self.public_key,
+                intermediate::ExternalCaIdentity {
+                    common_name: &self.common_name,
+                    serial: &self.serial,
+                    not_before: self.not_before,
+                    not_after: self.not_after,
+                },
+                parents,
+            );
         }
         let tbs = external_root_tbs(
             ExternalRootSpec {

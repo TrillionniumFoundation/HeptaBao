@@ -255,8 +255,10 @@ impl Pki {
                     return Err(not_found());
                 }
                 let root = self.root.as_ref().ok_or_else(not_found)?;
-                if matches!(format, CertificateFormat::Chain) && root.local_chain.is_some() {
-                    let bytes = root.local_ca_chain_pem().join("\n").into_bytes();
+                if matches!(format, CertificateFormat::Chain)
+                    && (root.local_chain.is_some() || root.is_external())
+                {
+                    let bytes = self.external_ca_chain_pem(root)?.join("\n").into_bytes();
                     return Ok(EngineResponse {
                         status: 200,
                         body: json!({"__heptabao_pki_certificate":BASE64.encode(bytes),"format":"chain"}),
@@ -298,7 +300,11 @@ impl Pki {
                     return Err(not_found());
                 }
                 let root = self.root.as_ref().ok_or_else(not_found)?;
-                let certificate = root.local_ca_chain_pem().join("\n").trim_end().to_owned();
+                let certificate = self
+                    .external_ca_chain_pem(root)?
+                    .join("\n")
+                    .trim_end()
+                    .to_owned();
                 Ok(ok(
                     json!({"ca_chain":certificate,"certificate":certificate,"revocation_time":0,"revocation_time_rfc3339":""}),
                     false,
@@ -414,7 +420,7 @@ impl Pki {
                 };
                 let certificate = pem("CERTIFICATE", &root.certificate_der);
                 Ok(ok(
-                    json!({"certificate":certificate,"ca_chain":root.local_ca_chain_pem(),"issuer_id":issuer,"issuer_name":name}),
+                    json!({"certificate":certificate,"ca_chain":self.external_ca_chain_pem(root)?,"issuer_id":issuer,"issuer_name":name}),
                     false,
                 ))
             }
@@ -452,7 +458,7 @@ impl Pki {
                 let (issuer, _, name) = self.public_issuer_metadata().ok_or_else(not_found)?;
                 let certificate = pem("CERTIFICATE", &root.certificate_der);
                 Ok(ok(
-                    json!({"certificate":certificate,"ca_chain":root.local_ca_chain_pem(),"issuer_id":issuer,"issuer_name":name}),
+                    json!({"certificate":certificate,"ca_chain":self.external_ca_chain_pem(root)?,"issuer_id":issuer,"issuer_name":name}),
                     false,
                 ))
             }

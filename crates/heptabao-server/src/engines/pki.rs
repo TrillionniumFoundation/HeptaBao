@@ -1844,7 +1844,7 @@ impl Pki {
         }
         data["serial_number"] = json!(external::formatted_serial(&prepared.serial));
         data["ca_chain"] = if external {
-            json!([issuing_ca])
+            json!(self.external_ca_chain_pem(root)?)
         } else {
             json!(
                 root.local_ca_chain_pem()
