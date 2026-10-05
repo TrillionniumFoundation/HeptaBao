@@ -55,6 +55,13 @@ fn checksum(text: &str) -> Result<[u8; 32], Response> {
     Ok(out)
 }
 
+struct StageTarget<'a> {
+    mount: String,
+    owner: MountOwner,
+    operation: &'a str,
+    path: &'a str,
+}
+
 enum StorageOp {
     Get(String),
     Put(StorageEntry),
@@ -587,7 +594,16 @@ impl Service {
             // Setup callbacks see the already admitted exact durable mount.
             // A failed external Setup preserves that mount for explicit cleanup.
             return self.stage_sdk_plan(
-                &state, principal, request, mount, owner, "_mount", "", "update",
+                &state,
+                principal,
+                request,
+                StageTarget {
+                    mount,
+                    owner,
+                    operation: "_mount",
+                    path: "",
+                },
+                "update",
             );
         }
         if !request.namespace.is_empty() {
@@ -914,7 +930,16 @@ impl Service {
         }
         let path = request.path.strip_prefix(&mount).unwrap_or("").to_owned();
         self.stage_sdk_plan(
-            &state, principal, request, mount, owner, operation, &path, capability,
+            &state,
+            principal,
+            request,
+            StageTarget {
+                mount,
+                owner,
+                operation,
+                path: &path,
+            },
+            capability,
         )
     }
     fn stage_sdk_plan(
@@ -922,12 +947,15 @@ impl Service {
         state: &State,
         principal: Principal,
         request: &RequestView<'_>,
-        mount: String,
-        owner: MountOwner,
-        operation: &str,
-        path: &str,
+        target: StageTarget<'_>,
         capability: &'static str,
     ) -> Response {
+        let StageTarget {
+            mount,
+            owner,
+            operation,
+            path,
+        } = target;
         let Some(config) = self.sdk_configuration.clone() else {
             return Response::error(503, "SDK runtime is not configured");
         };
@@ -973,7 +1001,7 @@ impl Service {
         };
         let authority = plugin::PluginResponseAuthority::new(
             principal,
-            &state,
+            state,
             request,
             capability,
             operation == "_mount",
@@ -1035,7 +1063,7 @@ impl Service {
                 .lock()
                 .map_err(|_| Response::error(503, "SDK affine authority unavailable"))?;
             self.validate_plugin_response(&mut authority)?;
-            self.sdk_binding_gate(&plan).map_err(bridge_failure)
+            self.sdk_binding_gate(plan).map_err(bridge_failure)
         })();
         if let Err(e) = gate {
             if let Some(v) = &mut value {
