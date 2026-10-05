@@ -2263,13 +2263,25 @@ fn public_origin_independent_assets_restore_exact_stamp_and_empty_map_after_real
     write_marker(&mut service, "", &token);
     let shares = create(&mut service, "", "barrier", &token)?;
     unseal(&mut service, "", "barrier", &token, &shares);
+    assert_eq!(
+        origin_wire(
+            &mut service,
+            "PUT",
+            "sys/policies/acl/public-origin-reader",
+            "barrier",
+            &token,
+            json!({"policy":"path \"*\" { capabilities = [\"create\", \"read\", \"update\", \"delete\", \"list\", \"sudo\", \"patch\"] }"})
+        )
+        .status,
+        204
+    );
     let minted = origin_wire(
         &mut service,
         "POST",
         "auth/token/create",
         "barrier",
         &token,
-        json!({"policies":["default"],"no_default_policy":true,"ttl":"1h","meta":{}}),
+        json!({"policies":["public-origin-reader"],"no_default_policy":true,"ttl":"1h","meta":{}}),
     );
     assert_eq!(
         minted.status,
