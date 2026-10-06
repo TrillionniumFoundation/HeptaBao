@@ -291,7 +291,7 @@ mod tests {
     use super::*;
     use std::net::TcpListener;
     type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
-    fn answer(query: &[u8], records: &[Vec<&str>], truncated: bool) -> Vec<u8> {
+    pub(super) fn answer(query: &[u8], records: &[Vec<&str>], truncated: bool) -> Vec<u8> {
         let mut out = query[..2].to_vec();
         out.extend_from_slice(&(if truncated { 0x8380u16 } else { 0x8180u16 }).to_be_bytes());
         out.extend_from_slice(&1u16.to_be_bytes());
@@ -411,7 +411,10 @@ mod final_deadline_tests {
     -> Result<(), Box<dyn std::error::Error>> {
         let proof = base64::engine::general_purpose::URL_SAFE_NO_PAD
             .encode(crate::crypto::digest(b"token.thumb"));
-        let records = vec!["wrong TXT".to_owned(), proof];
+        let (message, id) = query("_acme-challenge.proof.example")?;
+        let response =
+            super::tests::answer(&message, &[vec!["wrong TXT"], vec![proof.as_str()]], false);
+        let records = parse(&response, id, "_acme-challenge.proof.example")?;
         assert!(
             validate_records(
                 &records,
