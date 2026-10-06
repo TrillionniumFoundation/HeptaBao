@@ -727,16 +727,41 @@ impl WireRejection {
 struct InitializationStage {
     path: PathBuf,
     retain_on_drop: bool,
+    existing_empty: Option<ExclusiveDirectory>,
 }
 
 impl InitializationStage {
     fn create(final_path: &Path) -> Result<Self, io::Error> {
-        if final_path.exists() {
-            return Err(io::Error::new(
-                io::ErrorKind::AlreadyExists,
-                "initialization target already exists",
-            ));
-        }
+        // The native file backend accepts a pre-created empty data directory.
+        // Retain its actual exclusive owner; publication replaces it atomically
+        // only while it is still the same private, empty directory.
+        let existing_empty = match fs::symlink_metadata(final_path) {
+            Ok(metadata) => {
+                if !metadata.is_dir() || metadata.file_type().is_symlink() {
+                    return Err(io::Error::new(
+                        io::ErrorKind::AlreadyExists,
+                        "initialization target is not an empty directory",
+                    ));
+                }
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::PermissionsExt;
+                    if metadata.permissions().mode() & 0o077 != 0 {
+                        return Err(io::Error::other("initialization target is not private"));
+                    }
+                }
+                let held = ExclusiveDirectory::open(final_path).map_err(io::Error::other)?;
+                if held.entries()?.next().transpose()?.is_some() {
+                    return Err(io::Error::new(
+                        io::ErrorKind::AlreadyExists,
+                        "initialization target is not empty",
+                    ));
+                }
+                Some(held)
+            }
+            Err(error) if error.kind() == io::ErrorKind::NotFound => None,
+            Err(error) => return Err(error),
+        };
         let parent = final_path
             .parent()
             .ok_or_else(|| io::Error::other("initialization target has no parent"))?;
@@ -753,10 +778,52 @@ impl InitializationStage {
             builder.mode(0o700);
         }
         builder.create(&path)?;
-        Ok(Self {
+        let stage = Self {
             path,
             retain_on_drop: false,
-        })
+            existing_empty,
+        };
+        stage.verify_existing_target(final_path)?;
+        Ok(stage)
+    }
+
+    fn verify_existing_target(&self, final_path: &Path) -> Result<(), io::Error> {
+        let Some(held) = &self.existing_empty else {
+            return Ok(());
+        };
+        held.verify().map_err(io::Error::other)?;
+        let metadata = fs::symlink_metadata(final_path)?;
+        if held.original_path() != final_path
+            || !metadata.is_dir()
+            || metadata.file_type().is_symlink()
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "initialization target changed",
+            ));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            let prepared = fs::symlink_metadata(&self.path)?;
+            if metadata.dev() != held.identity().device()
+                || metadata.ino() != held.identity().inode()
+                || metadata.uid() != prepared.uid()
+                || metadata.mode() & 0o077 != 0
+            {
+                return Err(io::Error::new(
+                    io::ErrorKind::AlreadyExists,
+                    "initialization target owner changed",
+                ));
+            }
+        }
+        if held.entries()?.next().transpose()?.is_some() {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "initialization target became nonempty",
+            ));
+        }
+        Ok(())
     }
 
     /// Publish the complete prepared candidate before any remote operation.
@@ -768,6 +835,7 @@ impl InitializationStage {
         parent: &ExclusiveDirectory,
     ) -> Result<(), io::Error> {
         verify_initialization_parent(parent)?;
+        self.verify_existing_target(final_path)?;
         let pending = postgres_pending_path(final_path)?;
         if path_present(&pending).map_err(io::Error::other)? {
             return Err(io::Error::new(
@@ -781,6 +849,9 @@ impl InitializationStage {
         parent.rename(source, target)?;
         self.path = pending;
         self.retain_on_drop = true;
+        // The next metadata stage reacquires this empty target under the same
+        // held parent; no remote phase holds a second directory writer lock.
+        self.existing_empty = None;
         parent.sync_all().map_err(io::Error::other)
     }
 
@@ -793,7 +864,8 @@ impl InitializationStage {
         let source = initialization_leaf_name(parent, &self.path)?;
         let target = initialization_leaf_name(parent, final_path)?;
         // Inspect the held directory without following a dangling target link.
-        if parent.entry_exists(target)? {
+        self.verify_existing_target(final_path)?;
+        if self.existing_empty.is_none() && parent.entry_exists(target)? {
             return Err(io::Error::new(
                 io::ErrorKind::AlreadyExists,
                 "initialization target appeared before publication",
@@ -9381,3 +9453,7 @@ mod public_origin_tests;
 #[cfg(test)]
 #[path = "service_sdk_storage_tests.rs"]
 mod sdk_storage_tests;
+
+#[cfg(all(test, unix))]
+#[path = "service_initialization_existing_tests.rs"]
+mod initialization_existing_tests;
