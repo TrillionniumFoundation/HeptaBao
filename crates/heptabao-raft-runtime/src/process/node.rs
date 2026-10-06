@@ -84,6 +84,24 @@ impl ApplicationReadWitness {
                 || (applied.term == prefix.term && applied.node_id == prefix.node))
     }
 
+    /// Cover an earlier atomic application observation with this same live
+    /// store's current quorum proof. The store identity is an in-process Arc
+    /// identity: reopen, another process, or another boot cannot supply it.
+    /// Neither witness is Clone/Serde and neither original deadline is renewed.
+    /// The caller must validate this current witness before using the relation.
+    pub fn covers_application_witness(&self, selected: &Self) -> bool {
+        let now = tokio::time::Instant::now();
+        let outer_live = super::read_deadline::current()
+            .is_none_or(|outer| now < tokio::time::Instant::from_std(outer));
+        outer_live
+            && now < self.deadline
+            && now < selected.deadline
+            && self.store.same_instance(&selected.store)
+            && self.generation >= selected.generation
+            && selected.applied_log >= selected.read_log
+            && self.covers_completed_prefix(&selected.completed_prefix())
+    }
+
     /// A later quorum covers a strictly newer applied prefix of the same live
     /// local store. Application identity and monotonic owners are separately
     /// authenticated by the application before interpreting supersession.

@@ -1407,6 +1407,16 @@ impl HaProcess {
         if let Some(committed) = self.read_record_root_if_present(None)? {
             return match committed {
                 CommittedStateRead::Records(record) if record.identity == expected => Ok(()),
+                CommittedStateRead::Records(record) => {
+                    eprintln!(
+                        "heptabao-prepublication-diagnostic: stage=authenticated_record_selection expected_digest={:02x?} selected_digest={:02x?} selected_generation={:?} selected_schema={}",
+                        expected.digest(),
+                        record.identity.digest(),
+                        record.read_cursor.as_ref().map(|cursor| cursor.generation),
+                        record.root.state_schema
+                    );
+                    Err("HA application state is not converged on the committed identity".into())
+                }
                 _ => Err("HA application state is not converged on the committed identity".into()),
             };
         }
@@ -1762,6 +1772,60 @@ impl HaProcess {
         self.block_on_read(node.verify_application_read_witness(&witness))
             .map_err(|error| error.to_string())?;
         Ok((identity, witness))
+    }
+
+    /// The full RecordsV5 root and opaque applied witness come from the same
+    /// atomic runtime snapshot after quorum ReadIndex. A later current witness
+    /// must cover this one after complete application materialization; requiring
+    /// the selected generation to remain current would reject a lawful commit.
+    pub(crate) fn record_application_witness(
+        &self,
+    ) -> Result<
+        Option<(
+            CommittedRecordState,
+            heptabao_raft_runtime::ApplicationReadWitness,
+        )>,
+        String,
+    > {
+        let node = self.node.as_ref().ok_or("HA process is shut down")?;
+        let (witness, _, record) = self
+            .block_on_read(node.application_read_witness())
+            .map_err(|error| error.to_string())?;
+        let Some(published) = record else {
+            return Ok(None);
+        };
+        let envelope = published.envelope();
+        let CommittedStateDescriptor::RecordsV5(decoded) = self
+            .codec
+            .open_committed_descriptor(
+                envelope.operation_id(),
+                envelope.digest(),
+                envelope.sealed(),
+            )
+            .map_err(|error| error.to_string())?
+        else {
+            return Err("application witness kind mismatch".into());
+        };
+        if decoded.base != published.base()
+            || decoded
+                .root
+                .references()
+                .map(crate::ha_state::runtime_reference)
+                .collect::<Vec<_>>()
+                != published.direct_refs()
+            || decoded.root.cluster_id != self.cluster_id
+        {
+            return Err("application witness record root mismatch".into());
+        }
+        Ok(Some((
+            CommittedRecordState {
+                identity: crate::state_record_root::StateIdentity::RecordsV5(envelope.digest()),
+                root: decoded.root,
+                root_bytes: decoded.bytes,
+                read_cursor: None,
+            },
+            witness,
+        )))
     }
 
     pub(crate) fn latest_committed_state_if_changed(

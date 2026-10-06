@@ -167,6 +167,8 @@ mod kubernetes_secret;
 mod leader;
 #[path = "service_lifecycle.rs"]
 mod lifecycle;
+#[path = "service_local_unseal.rs"]
+mod local_unseal;
 #[path = "service_namespace_assets.rs"]
 mod namespace_assets;
 #[path = "service_namespace_closed_auth.rs"]
@@ -1143,6 +1145,7 @@ pub struct Service {
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
     pending_acme_authority: Option<pki_acme::Authority>,
     acme_nonces: pki_acme::Nonces,
+    pending_local_unseal_completion: Option<local_unseal::LocalUnsealCompletion>,
     pending_ordinary_kv_commit_notice: Option<ordinary_kv_delivery::OrdinaryKvCommitNoticeCapture>,
     native_snapshot_transport: bool,
     native_snapshot_clock: Option<(std::time::Instant, Duration)>,
@@ -1524,6 +1527,7 @@ impl Service {
             pending_help_authority: None,
             pending_acme_authority: None,
             acme_nonces: Default::default(),
+            pending_local_unseal_completion: None,
             pending_ordinary_kv_commit_notice: None,
             native_snapshot_transport: false,
             native_snapshot_clock: None,
@@ -2217,6 +2221,7 @@ impl Service {
             || self.pending_forward_delivery.is_some()
             || self.pending_help_authority.is_some()
             || self.pending_acme_authority.is_some()
+            || self.pending_local_unseal_completion.is_some()
             || self.pending_ordinary_kv_commit_notice.is_some()
         {
             erase_json(&mut body);
@@ -2475,6 +2480,7 @@ impl Service {
         let step_down = self.pending_ha_step_down.take();
         let help_authority = self.pending_help_authority.take();
         let acme_authority = self.pending_acme_authority.take();
+        let local_unseal_completion = self.pending_local_unseal_completion.take();
         let staged = sdk_staged
             + usize::from(database.is_some())
             + usize::from(database_config.is_some())
@@ -2494,6 +2500,7 @@ impl Service {
             + usize::from(token_api_authority.is_some())
             + usize::from(help_authority.is_some())
             + usize::from(acme_authority.is_some())
+            + usize::from(local_unseal_completion.is_some())
             + usize::from(step_down.is_some())
             + usize::from(sdk_control_present);
         if staged > 1 || delivery_capsules > 1 || staged != 0 && delivery_capsules != 0 {
@@ -2538,6 +2545,14 @@ impl Service {
                 token_clock,
                 effect,
             }));
+        }
+        if let Some(completion) = local_unseal_completion {
+            return RequestExecution::Complete(self.complete_local_unseal_response(
+                completion,
+                response,
+                &fingerprint,
+                now,
+            ));
         }
         let ordinary_kv_expected = ordinary_kv_authority.is_some();
         let token_expected = token_api_authority.is_some();
@@ -2731,7 +2746,20 @@ impl Service {
             return self.seal_status();
         }
         if path == "sys/unseal" && matches!(method, "PUT" | "POST") {
-            return self.unseal(body);
+            let original_deadline = crate::request_deadline::current();
+            let response = self.unseal(body);
+            self.capture_local_unseal_completion(&response, token_clock, original_deadline);
+            eprintln!(
+                "HBHA-DIAG-UNSEAL route_status={} state_loaded={} recovery_required={} barrier_loaded={} record_root={} activation={} original_deadline_present={}",
+                response.status,
+                self.state.is_some(),
+                self.recovery_required,
+                self.barrier_key.is_some(),
+                self.record_root.is_some(),
+                self.ha_activation.is_some(),
+                crate::request_deadline::current().is_some()
+            );
+            return response;
         }
         if self.state.is_none() {
             return Response::error(503, "server is sealed");

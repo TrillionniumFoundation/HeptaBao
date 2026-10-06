@@ -652,7 +652,22 @@ impl Service {
                 // original denial; do not label this a committed outcome.
                 return Err(response);
             }
-            if result.is_err() {
+            if let Err(error) = &result {
+                let kind = match error.as_str() {
+                    "record publication requires current leader" => "not_current_leader",
+                    "record publication base conflicts with committed root" => "base_conflict",
+                    "record publication metadata authentication failed" => {
+                        "metadata_authentication"
+                    }
+                    "record publication has no authenticated record root" => {
+                        "missing_authenticated_root"
+                    }
+                    _ => "other",
+                };
+                eprintln!(
+                    "HBHA-DIAG-RECORD-COMMIT kind={kind} error_sha={}",
+                    hex(&crypto::digest(error.as_bytes()))
+                );
                 // Publication may have committed despite a missing response.
                 if activation.is_some() {
                     crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
@@ -871,8 +886,14 @@ impl Service {
         }
         let received = self.receive_ha_records(ha, &committed)?;
         match self.install_committed_ha_records(received) {
-            Ok(ha_received::HaLocalPublicationProgress::Current) => {}
-            Ok(ha_received::HaLocalPublicationProgress::Superseded) => {
+            Ok(ha_received::HaRecordPublicationProgress::Current) => {}
+            Ok(ha_received::HaRecordPublicationProgress::UnpublishedSuperseded) => {
+                return Err(Response::error(
+                    503,
+                    "HA received target advanced before local publication",
+                ));
+            }
+            Ok(ha_received::HaRecordPublicationProgress::CompletedSuperseded) => {
                 return Err(Response::error(
                     503,
                     "HA local publication is catching up to a newer committed target",

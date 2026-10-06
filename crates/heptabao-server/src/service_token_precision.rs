@@ -98,7 +98,31 @@ impl Service {
         } else {
             None
         };
-        if self.commit_state(&mut candidate).is_err() {
+        if let Err(cause) = self.commit_state(&mut candidate) {
+            let message = cause.body["errors"]
+                .as_array()
+                .and_then(|errors| errors.first())
+                .and_then(Value::as_str)
+                .unwrap_or("");
+            let kind = match message {
+                "HA record publication failed; no response released" => {
+                    "record_publication_failure"
+                }
+                "server is sealed" => "sealed",
+                "invalid replay epoch transition" => "replay_epoch",
+                "record state failed authenticated validation" => "record_authentication",
+                _ => "other",
+            };
+            eprintln!(
+                "HBHA-DIAG-TERMINAL-FLOOR kind={kind} status={} error_sha={} state_loaded={} recovery_required={} barrier_loaded={} record_root={} activation={}",
+                cause.status,
+                hex(&crypto::digest(message.as_bytes())),
+                self.state.is_some(),
+                self.recovery_required,
+                self.barrier_key.is_some(),
+                self.record_root.is_some(),
+                self.ha_activation.is_some()
+            );
             return Err(Response::error(
                 503,
                 "Token API observation floor was not committed",

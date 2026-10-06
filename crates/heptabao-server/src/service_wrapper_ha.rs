@@ -373,8 +373,24 @@ impl Service {
         let ha = ha
             .lock_for_request()
             .map_err(|_| unavailable("HA control state is unavailable"))?;
-        ha.ensure_application_identity(identity)
-            .map_err(|_| unavailable("HA recovery application identity is not current"))
+        ha.ensure_application_identity(identity).map_err(|error| {
+            // Observe the existing single check. Do not retry a quorum or expose
+            // private application contents through the public failure response.
+            let kind = if error == "HA application state is not converged on the committed identity" {
+                "authenticated_selection_changed"
+            } else if error.contains("linearizable read deadline exceeded") {
+                "original_readindex_deadline"
+            } else if error.contains("ReadIndex application witness is not current") {
+                "runtime_witness_not_current"
+            } else {
+                "other_failure"
+            };
+            eprintln!(
+                "heptabao-prepublication-diagnostic: stage=verify_application_identity kind={} error_sha={:02x?} expected_digest={:02x?}",
+                kind, crypto::digest(error.as_bytes()), identity.digest()
+            );
+            unavailable("HA recovery application identity is not current")
+        })
     }
 
     pub(super) fn prepare_initial_owner_plan(
