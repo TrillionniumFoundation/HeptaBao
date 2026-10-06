@@ -1057,7 +1057,19 @@ impl pki::Pki {
     }
     // Directory eligibility uses the actual selected issuer. This performs no
     // signature effects and never upgrades a public JWS to Vault authority.
-    pub(super) fn acme_directory_issuer(&self, prefix: &str) -> Result<&pki::RootCa> {
+    fn acme_issuer_with_signing_owner(&self, reference: &str) -> Result<pki::RootCa> {
+        let mut issuer = self.selected_issuer(reference)?.clone();
+        if issuer.is_external() {
+            let key = self.external_issuer_key(reference)?;
+            // The historical external RootCa has empty local identifiers. This
+            // process-local view carries the actual retained typed remote owner;
+            // it never rewrites or relabels that persisted historical RootCa.
+            issuer.issuer_id = key.issuer_id.clone();
+            issuer.key_id = key.key_id.clone();
+        }
+        Ok(issuer)
+    }
+    pub(super) fn acme_directory_issuer(&self, prefix: &str) -> Result<pki::RootCa> {
         let parts: Vec<_> = prefix.split('/').collect();
         let (explicit_issuer, explicit_role) = match parts.as_slice() {
             ["issuer", issuer, "roles", role] => (Some(*issuer), Some(*role)),
@@ -1094,18 +1106,15 @@ impl pki::Pki {
             role.filter(|role| !role.issuer_ref.is_empty())
                 .map_or("default", |role| role.issuer_ref.as_str())
         });
-        let issuer = self.selected_issuer(reference).map_err(|_| {
-            error(
-                400,
-                "the request message was malformed: issuer does not exist",
-            )
-        })?;
-        // Managed issuers retain their actual typed remote signer reference;
-        // they do not carry a local private key id. A public-only imported CA
-        // without that retained signer is still unavailable for ACME issuance.
-        let signing_key = !issuer.key_id.is_empty()
-            || (issuer.is_external() && self.external_issuer_key(&issuer.issuer_id).is_ok());
-        if !signing_key {
+        let issuer = self
+            .acme_issuer_with_signing_owner(reference)
+            .map_err(|_| {
+                error(
+                    400,
+                    "the request message was malformed: issuer does not exist",
+                )
+            })?;
+        if issuer.key_id.is_empty() {
             return Err(error(
                 500,
                 "the server experienced an internal error: issuer missing proper issuance usage or key",
@@ -1114,7 +1123,7 @@ impl pki::Pki {
         if self.acme.allowed_issuers.as_slice() != ["*"] {
             let mut allowed = false;
             for (index, reference) in self.acme.allowed_issuers.iter().enumerate() {
-                let candidate = self.selected_issuer(reference).map_err(|_| error(500,
+                let candidate = self.acme_issuer_with_signing_owner(reference).map_err(|_| error(500,
                     &format!("failed to resolve reference for allowed_issuer entry {index}: unable to find PKI issuer for reference: {reference}")))?;
                 if candidate.issuer_id == issuer.issuer_id {
                     allowed = true;

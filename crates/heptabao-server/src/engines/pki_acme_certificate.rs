@@ -97,7 +97,7 @@ impl ExternalCertificateTemplate {
         let root = pki.external_issuer_root(&self.plan.root.issuer_id)?;
         if key.reference != self.reference
             || key.public_key != self.public
-            || root.key_id != self.plan.root.key_id
+            || key.key_id != self.plan.root.key_id
             || root.certificate_der != self.plan.root.certificate_der
         {
             return Err(error(503, "ACME original external signer owner changed"));
