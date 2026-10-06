@@ -208,19 +208,16 @@ impl Pki {
             })
     }
 
-    pub(in crate::engines) fn revoke_acme_by_operator(
-        &mut self,
-        body: &Value,
+    pub(in crate::engines) fn prepare_acme_operator_revocation(
+        &self,
+        serial: &str,
         context: crate::engines::PkiRequestContext<'_>,
-        before_effect: &mut impl FnMut() -> Result<()>,
-    ) -> Result<Option<EngineResponse>> {
-        reject_unknown(body, &["serial_number"])?;
-        let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
-        let Some(cert) = self.acme_certificate_for_serial(&serial)? else {
+    ) -> Result<Option<Revocation>> {
+        let Some(cert) = self.acme_certificate_for_serial(serial)? else {
             return Ok(None);
         };
-        if let Some(prior) = self.acme_revocation(&serial) {
-            return Ok(Some(ok(prior.descriptor(), false)));
+        if self.acme_revocation(serial).is_some() {
+            return Ok(None);
         }
         let actor = context
             .owner
@@ -263,11 +260,7 @@ impl Pki {
         }
         if cert.expires < at.seconds().saturating_add(2) && !self.local_expired_revocation_allowed()
         {
-            return Ok(Some(EngineResponse {
-                status: 200,
-                body: json!({"warnings":["certificate already expired; refusing to add to CRL"]}),
-                mutated: false,
-            }));
+            return Ok(None);
         }
         let protocol = self
             .acme_protocol
@@ -276,7 +269,7 @@ impl Pki {
         let revoked = Revocation {
             owner: protocol.owner.clone(),
             issuer: cert.issuer.clone(),
-            serial: serial.clone(),
+            serial: serial.to_owned(),
             certificate: cert.der.clone(),
             at,
             proof: Proof::Administrative {
@@ -286,6 +279,34 @@ impl Pki {
             },
         };
         revoked.validate(protocol, at)?;
+        Ok(Some(revoked))
+    }
+
+    pub(in crate::engines) fn revoke_acme_by_operator(
+        &mut self,
+        body: &Value,
+        context: crate::engines::PkiRequestContext<'_>,
+        before_effect: &mut impl FnMut() -> Result<()>,
+    ) -> Result<Option<EngineResponse>> {
+        reject_unknown(body, &["serial_number"])?;
+        let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+        if self.acme_certificate_for_serial(&serial)?.is_none() {
+            return Ok(None);
+        }
+        if let Some(prior) = self.acme_revocation(&serial) {
+            return Ok(Some(ok(prior.descriptor(), false)));
+        }
+        let Some(revoked) = self.prepare_acme_operator_revocation(&serial, context)? else {
+            return Ok(Some(EngineResponse {
+                status: 200,
+                body: json!({"warnings":["certificate already expired; refusing to add to CRL"]}),
+                mutated: false,
+            }));
+        };
+        let at = revoked.at;
+        let actor = context
+            .owner
+            .ok_or_else(|| error(403, "administrative PKI revocation requires actual caller"))?;
         before_effect()?;
         self.local_issuer(&revoked.issuer)?.local_key()?;
         let response = revoked.descriptor();

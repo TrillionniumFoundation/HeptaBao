@@ -8,6 +8,7 @@ pub(super) enum ConsumptionTemplate {
     Leaf(Box<LeafTemplate>),
     Crl {
         revoked: Option<(String, u64)>,
+        acme_revocation: Option<Box<OperatorRevocationPlan>>,
         prepared: Box<CrlSet>,
     },
 }
@@ -16,6 +17,45 @@ pub(super) struct ConsumptionMaterial {
     pub(super) template: ConsumptionTemplate,
     pub(super) leaf_pkcs8: Zeroizing<Vec<u8>>,
     pub(super) leaf_public: Option<LocalPublicKey>,
+}
+
+// Effect-only ownership: this is the original admitted operator, not an ACME
+// account impersonating a Vault principal or a refreshed request clock.
+#[derive(Clone)]
+pub(super) struct OperatorRevocationPlan {
+    revoked: super::acme_revoke::Revocation,
+    clock: Option<crate::auth::RequestClock>,
+}
+impl OperatorRevocationPlan {
+    fn validate(&self, pki: &Pki, now: u64) -> Result<()> {
+        let floor = self
+            .revoked
+            .at
+            .max(Timestamp::whole(now).map_err(|_| bad("invalid operator publication time"))?);
+        let at = self
+            .clock
+            .map(|clock| clock.with_timestamp_floor(floor).observed_at())
+            .transpose()
+            .map_err(|_| error(503, "original operator clock unavailable"))?
+            .unwrap_or(floor);
+        let super::acme_revoke::Proof::Administrative {
+            expires_at,
+            precise_expires_at,
+            ..
+        } = &self.revoked.proof
+        else {
+            return Err(bad("actual administrative PKI owner required"));
+        };
+        if precise_expires_at.is_some_and(|end| at > end)
+            || precise_expires_at.is_none() && expires_at.is_some_and(|end| at.seconds() >= end)
+        {
+            return Err(error(
+                403,
+                "administrative PKI original caller expired before signing",
+            ));
+        }
+        pki.validate_live_acme_revocation(&self.revoked, at, false)
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -574,10 +614,38 @@ impl Pki {
             {
                 return Err(unsupported());
             }
+            let acme_revocation = if path == "revoke" {
+                let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+                if self.acme_certificate_for_serial(&serial)?.is_some() {
+                    let Some(revoked) = self.prepare_acme_operator_revocation(&serial, context)?
+                    else {
+                        // Already revoked and expired records use the original no-effect route.
+                        return Ok(None);
+                    };
+                    Some(Box::new(OperatorRevocationPlan {
+                        revoked,
+                        clock: context.clock,
+                    }))
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            let crl_now = acme_revocation
+                .as_ref()
+                .map_or(now, |plan| now.max(plan.revoked.at.seconds()));
             let revoked = if path == "revoke" {
                 reject_unknown(body, &["serial_number"])?;
                 let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
-                let at = if let Some(issued) = self.issued.get(&serial) {
+                let at = if let Some(plan) = &acme_revocation {
+                    if plan.revoked.issuer != key.issuer_id {
+                        return Err(bad(
+                            "ACME certificate requires its original external issuer",
+                        ));
+                    }
+                    plan.revoked.at.seconds()
+                } else if let Some(issued) = self.issued.get(&serial) {
                     if !self.external_leaf_belongs_to_active(&serial) {
                         return Err(error(
                             501,
@@ -626,12 +694,13 @@ impl Pki {
             }
             ConsumptionTemplate::Crl {
                 revoked,
+                acme_revocation,
                 prepared: Box::new(
-                    CrlSet::prepare(number, now, entries, self.capture_urls(&key.issuer_id)?)
+                    CrlSet::prepare(number, crl_now, entries, self.capture_urls(&key.issuer_id)?)
                         .with_certificate_issuer(
-                            &captured_issuer.certificate_der,
-                            &captured_issuer.common_name,
-                        )?,
+                        &captured_issuer.certificate_der,
+                        &captured_issuer.common_name,
+                    )?,
                 ),
             }
         } else {
@@ -779,14 +848,29 @@ impl Pki {
             }
             ConsumptionTemplate::Crl {
                 revoked,
+                acme_revocation,
                 mut prepared,
             } => {
+                if let Some(plan) = &acme_revocation {
+                    plan.validate(self, now)?;
+                }
                 prepared.sign(
                     &material.template.common_name,
                     &material.public_key,
                     signatures,
                 )?;
-                let response = if let Some((serial, at)) = revoked {
+                let response = if let Some(plan) = acme_revocation {
+                    let response = plan.revoked.descriptor();
+                    let protocol = self
+                        .acme_protocol
+                        .as_mut()
+                        .ok_or_else(|| error(503, "ACME administrative protocol unavailable"))?;
+                    protocol.observe_time(plan.revoked.at);
+                    protocol
+                        .revocations
+                        .insert(plan.revoked.serial.clone(), plan.revoked);
+                    response
+                } else if let Some((serial, at)) = revoked {
                     if let Some(issued) = self.issued.get_mut(&serial) {
                         issued.revoked_at = Some(at);
                     } else {
@@ -802,6 +886,7 @@ impl Pki {
                     json!({"success":true})
                 };
                 self.external.crls = Some(*prepared);
+                self.validate_acme_revocations()?;
                 Ok(ok(response, true))
             }
         }

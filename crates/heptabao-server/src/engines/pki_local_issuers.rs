@@ -894,10 +894,11 @@ impl Pki {
                 continue;
             }
             let acme = self.acme_certificate_for_serial(&key)?;
-            // Native ACME assets have always used a canonical global serial key.
-            // Preserve old Vault/local INTEGER aliases without creating a new
-            // leading-zero alias for a canonically indexed ACME certificate.
-            if acme.is_some() && key != normalized {
+            // Preserve the real historical durable key and its signed INTEGER
+            // spelling. A canonically indexed new certificate cannot acquire a
+            // fabricated leading-zero alias merely because its integer is equal.
+            let canonical = canonical_serial_bytes(&serial_bytes(&key)?);
+            if normalized != key && normalized != canonical {
                 continue;
             }
             let bytes = self.local_certificate(&key).or_else(|| {

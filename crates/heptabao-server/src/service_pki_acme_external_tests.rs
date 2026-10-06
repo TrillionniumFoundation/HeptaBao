@@ -878,10 +878,40 @@ fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() 
             .as_bytes(),
     )?
     .to_der()?;
-    let serial = issued.body["data"]["serial_number"]
+    let delivered_serial = issued.body["data"]["serial_number"]
         .as_str()
         .ok_or("actual serial")?
         .to_owned();
+    let serial_bytes = X509::from_der(&der)?.serial_number().to_bn()?.to_vec();
+    let serial = serial_bytes
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<Vec<_>>()
+        .join(":");
+    assert_eq!(
+        delivered_serial, serial,
+        "public response retains actual signed INTEGER"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            &format!("external-ca/cert/{}", serial.to_ascii_uppercase()),
+            "",
+            json!({})
+        )
+        .status,
+        200
+    );
+    let absent = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/00:{serial}"),
+        "",
+        json!({}),
+    );
+    assert_eq!(absent.status, 404);
+    assert_eq!(absent.body, json!({"errors":[]}));
     let payload = json!({"certificate":URL_SAFE_NO_PAD.encode(&der)});
     let calls = remote.calls()?;
     let denied = order_post(
@@ -977,5 +1007,190 @@ fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() 
         original
     );
     assert_eq!(remote.calls()?, calls + 3);
+    Ok(())
+}
+
+#[test]
+fn pki_acme_external_administrative_operator_revoke_seven_real_signers_and_reopen() -> TestResult {
+    for kind in [
+        "ed25519",
+        "ecdsa-p256",
+        "ecdsa-p384",
+        "ecdsa-p521",
+        "rsa-2048",
+        "rsa-3072",
+        "rsa-4096",
+    ] {
+        let remote = RemoteTransit::new_kind(kind)?;
+        let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
+        setup_remote(&mut service, &admin)?;
+        let (account, jwk) = key()?;
+        let kid = order_account(&mut service, &account, &jwk)?;
+        let domain = "operator.revoke.acme.example.test";
+        let order = ready(&mut service, &admin, &account, &jwk, &kid, domain)?;
+        let (_, raw) = csr(domain)?;
+        assert_eq!(
+            order_post(
+                &mut service,
+                &account,
+                &jwk,
+                &kid,
+                &format!("{order}/finalize"),
+                Some(json!({"csr":URL_SAFE_NO_PAD.encode(&raw)}))
+            )?
+            .status,
+            200
+        );
+        let fetched = order_post(
+            &mut service,
+            &account,
+            &jwk,
+            &kid,
+            &format!("{order}/cert"),
+            None,
+        )?;
+        let chain = X509::stack_from_pem(
+            fetched.body["__heptabao_acme"]
+                .as_str()
+                .ok_or("real chain")?
+                .as_bytes(),
+        )?;
+        let bytes = chain[0].serial_number().to_bn()?.to_vec();
+        let serial = bytes
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<Vec<_>>()
+            .join(":");
+        let before = remote.calls()?;
+        let denied = call(
+            &mut service,
+            "POST",
+            "external-ca/revoke",
+            "",
+            json!({"serial_number":serial}),
+        );
+        assert_eq!(denied.status, 403);
+        assert_eq!(
+            remote.calls()?,
+            before,
+            "unauthenticated caller cannot enter a signing effect"
+        );
+        let revoked = call(
+            &mut service,
+            "POST",
+            "external-ca/revoke",
+            &admin,
+            json!({"serial_number":serial}),
+        );
+        assert_eq!(
+            revoked.status,
+            200,
+            "actual admin remote CRL kind {kind} errors {:?}",
+            revoked.body.get("errors")
+        );
+        assert_eq!(
+            remote.calls()?,
+            before + 3,
+            "one original metadata and full/delta signatures"
+        );
+        let repeated = call(
+            &mut service,
+            "POST",
+            "external-ca/revoke",
+            &admin,
+            json!({"serial_number":serial}),
+        );
+        assert_eq!(repeated.status, 200);
+        assert_eq!(
+            repeated.body, revoked.body,
+            "idempotent native revocation keeps the original timestamp"
+        );
+        assert_eq!(
+            remote.calls()?,
+            before + 3,
+            "idempotent revocation must not re-sign"
+        );
+        let fetched = call(&mut service, "GET", "external-ca/crl", "", json!({}));
+        assert_eq!(fetched.status, 200);
+        let crl_der = BASE64.decode(
+            fetched.body["__heptabao_pki_crl"]
+                .as_str()
+                .ok_or("real CRL")?,
+        )?;
+        let crl = openssl::x509::X509Crl::from_der(&crl_der)?;
+        let issuer = chain[1].public_key()?;
+        assert!(crl.verify(&issuer)?);
+        let wrong = match issuer.id() {
+            openssl::pkey::Id::ED25519 => PKey::generate_ed25519()?,
+            openssl::pkey::Id::EC => PKey::from_ec_key(EcKey::generate(issuer.ec_key()?.group())?)?,
+            openssl::pkey::Id::RSA => {
+                PKey::from_rsa(openssl::rsa::Rsa::generate(issuer.rsa()?.size() * 8)?)?
+            }
+            _ => return Err("actual issuer kind".into()),
+        };
+        assert!(!crl.verify(&wrong).unwrap_or(false));
+        assert!(
+            crl.get_revoked()
+                .ok_or("actual revoked entries")?
+                .iter()
+                .any(|entry| entry
+                    .serial_number()
+                    .to_bn()
+                    .is_ok_and(|value| value.to_vec() == bytes))
+        );
+        let published = call(
+            &mut service,
+            "GET",
+            &format!("external-ca/cert/{serial}"),
+            "",
+            json!({}),
+        );
+        assert_eq!(published.status, 200);
+        assert!(published.body["data"]["issuer_id"].is_string());
+        assert!(
+            published.body["data"]["revocation_time"]
+                .as_u64()
+                .ok_or("real revocation time")?
+                > 0
+        );
+        assert!(
+            service
+                .state
+                .as_ref()
+                .ok_or("actual state")?
+                .validate_format()
+                .is_ok()
+        );
+        let before = remote.calls()?;
+        drop(service);
+        let mut reopened = root.service()?;
+        reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+        assert_eq!(
+            call(
+                &mut reopened,
+                "POST",
+                "sys/unseal",
+                "",
+                json!({"key":unseal})
+            )
+            .status,
+            200
+        );
+        let fetched = call(&mut reopened, "GET", "external-ca/crl", "", json!({}));
+        assert_eq!(fetched.status, 200);
+        assert_eq!(
+            BASE64.decode(
+                fetched.body["__heptabao_pki_crl"]
+                    .as_str()
+                    .ok_or("reopened signed CRL")?
+            )?,
+            crl_der
+        );
+        assert_eq!(
+            remote.calls()?,
+            before,
+            "encrypted original operator proof reopens without signing"
+        );
+    }
     Ok(())
 }

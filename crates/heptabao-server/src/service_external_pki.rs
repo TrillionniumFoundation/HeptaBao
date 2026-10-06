@@ -479,6 +479,9 @@ impl Service {
         let owner = if state
             .engines
             .is_pki_issue_route(request.namespace, request.path)
+            || state
+                .engines
+                .is_pki_acme_operator_revoke_route(request.namespace, request.path)
         {
             match state
                 .auth
@@ -508,6 +511,43 @@ impl Service {
             },
         ) {
             Ok(Some(plan)) => plan,
+            Ok(None)
+                if state
+                    .engines
+                    .is_pki_acme_operator_revoke_route(request.namespace, request.path) =>
+            {
+                // A previously revoked or already expired ACME certificate has
+                // a native no-effect result. Keep the same admitted actor; this
+                // branch cannot enter a new local or provider signing effect.
+                let mut engines = state.engines.clone();
+                return match engines.handle_service_pki_operator_revoke(
+                    request.namespace,
+                    request.method,
+                    request.path,
+                    request.body,
+                    crate::engines::PkiRequestContext {
+                        owner: owner.as_ref(),
+                        time,
+                        clock: request.token_clock,
+                        identity_templates: None,
+                    },
+                    || {
+                        Err(crate::engines::EngineError {
+                            status: 503,
+                            message: "no-effect revocation cannot enter signing".into(),
+                        })
+                    },
+                ) {
+                    Ok(response) if !response.mutated => Response {
+                        response_headers: Default::default(),
+                        consistency_index: None,
+                        status: response.status,
+                        body: response.body,
+                    },
+                    Ok(_) => Response::error(503, "no-effect revocation changed state"),
+                    Err(cause) => Response::from_engine_error(cause),
+                };
+            }
             Ok(None) => return Response::error(404, "external PKI route not found"),
             Err(cause) => return Response::from_engine_error(cause),
         };
