@@ -2975,6 +2975,17 @@ fn mount_registry_remount_cas_and_restart_fence_stale_incarnations()
             json!({"password":"correct horse battery staple"})
         )
         .status,
+        403
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/team/login/alice",
+            &token,
+            json!({"password":"correct horse battery staple"})
+        )
+        .status,
         404
     );
     assert_eq!(
