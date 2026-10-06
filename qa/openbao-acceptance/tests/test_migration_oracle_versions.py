@@ -92,7 +92,7 @@ class SelectedReferenceTests(unittest.TestCase):
             with self.assertRaisesRegex(BaoError, "unsupported_version"):
                 launcher.verify_selected_oracle({}, {}, version="latest")
             read.assert_not_called()
-        with patch.object(launcher, "_platform_key", return_value=("darwin", "arm64")), \
+        with patch.object(launcher, "_platform_key", return_value=("darwin", "amd64")), \
              patch.object(launcher, "private_json") as read:
             with self.assertRaisesRegex(BaoError, "unsupported_platform"):
                 launcher.verify_selected_oracle({}, {}, version="2.7.0")

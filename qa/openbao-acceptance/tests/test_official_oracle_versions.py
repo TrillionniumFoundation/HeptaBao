@@ -49,6 +49,24 @@ class OracleVersionTests(unittest.TestCase):
             "binary_sha256": "9403c2b121e13fe79b3182051320d2096d10519b597ee587e322dab5e359c51e"})
         self.assertNotEqual(launcher.pinned_artifact(version="2.7.0"), launcher.pinned_artifact())
 
+    def test_verified_darwin_release_is_independent_of_linux_and_legacy(self):
+        pin = launcher.pinned_artifact("Darwin", "arm64", version="2.7.0")
+        self.assertEqual(pin, {
+            "artifact_sha256": "cc9f9d4d969bbdeba7ffc8f3f3649d9372446847ffe2e1e618520c038c999641",
+            "binary_sha256": "c242fa4296f642e0e272994b0d7a6c23a4bfebbc36b5accbae554d0a804d60f2"})
+        self.assertNotEqual(pin, launcher.pinned_artifact("Linux", "x86_64", version="2.7.0"))
+        self.assertNotIn(("darwin", "arm64"), launcher.release_artifacts("2.6.2"))
+
+    def test_darwin_validation_checks_exact_inputs_before_any_process(self):
+        with self.archive_fixture(host=("darwin", "arm64")) as (binary, _archive):
+            self.assertEqual(launcher.verify_inputs(version="2.7.0"), binary)
+            binary.write_bytes(b"wrong-platform-binary")
+            with self.assertRaisesRegex(BaoError, "official_oracle_pinned_digest_mismatch"):
+                launcher.verify_inputs(version="2.7.0")
+        with self.archive_fixture(host=("darwin", "arm64"), payload=b"wrong-archive-member"):
+            with self.assertRaisesRegex(BaoError, "official_oracle_binary_not_archive_member"):
+                launcher.verify_inputs(version="2.7.0")
+
     def test_returned_pin_does_not_mutate_registry(self):
         original = launcher.pinned_artifact(version="2.7.0")
         changed = launcher.pinned_artifact(version="2.7.0")
@@ -65,7 +83,7 @@ class OracleVersionTests(unittest.TestCase):
                 process.assert_not_called()
 
     def test_unverified_architecture_is_not_silently_promoted_from_legacy(self):
-        for host in (("darwin", "arm64"), ("linux", "arm64"), ("linux", "s390x")):
+        for host in (("darwin", "amd64"), ("linux", "arm64"), ("linux", "s390x")):
             with self.subTest(host=host), patch.object(launcher, "_platform_key", return_value=host), \
                  patch.object(launcher, "file_digest") as read, patch.object(launcher.subprocess, "Popen") as process:
                 with self.assertRaisesRegex(BaoError, "official_oracle_unsupported_platform"):
@@ -85,7 +103,7 @@ class OracleVersionTests(unittest.TestCase):
             launcher.storage_configuration(root, version="2.7.0", raft_storage="true")
 
     @contextmanager
-    def archive_fixture(self, *, payload=b"synthetic-pinned-binary", duplicate=False, link=False):
+    def archive_fixture(self, *, payload=b"synthetic-pinned-binary", duplicate=False, link=False, host=("linux", "amd64")):
         with tempfile.TemporaryDirectory(prefix="oracle-pin-unit-") as directory:
             root = Path(directory).resolve()
             binary = root / "binary"
@@ -105,7 +123,7 @@ class OracleVersionTests(unittest.TestCase):
                    "binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest()}
             with patch.dict(os.environ, {"HB_ORACLE_BINARY": str(binary), "HB_ORACLE_ARCHIVE": str(archive)}), \
                  patch.object(launcher, "pinned_artifact", return_value=pin), \
-                 patch.object(launcher, "_platform_key", return_value=("linux", "amd64")), \
+                 patch.object(launcher, "_platform_key", return_value=host), \
                  patch.object(launcher.subprocess, "Popen") as process:
                 yield binary, archive
                 process.assert_not_called()

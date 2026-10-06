@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Start only an explicitly version-pinned official OpenBao Linux artifact locally.
+"""Start only an explicitly version-pinned official OpenBao artifact locally.
 
 Set HB_ORACLE_BINARY and HB_ORACLE_ARCHIVE to existing operator-provided files.
 There is no network download, development mode, insecure TLS, or external host.
@@ -39,12 +39,18 @@ PINNED_ARTIFACTS = {
 # Historical 2.6.2 receipts and default callers retain their original pins.
 # A new minor version must supply an independently verified archive AND binary
 # digest; an unverified architecture is deliberately not admitted by this table.
+# Darwin ARM64 2.7.0 archive: official release asset 584227384, primary GitHub
+# sha256 digest. Its unique regular bao member independently matches the binary pin.
 PINNED_RELEASES = {
     VERSION: PINNED_ARTIFACTS,
     "2.7.0": {
         ("linux", "amd64"): {
             "artifact_sha256": "c3ab5de9e778223445487ccbfb16c291bf491642b688f3a3df5aeba23d9b3667",
             "binary_sha256": "9403c2b121e13fe79b3182051320d2096d10519b597ee587e322dab5e359c51e",
+        },
+        ("darwin", "arm64"): {
+            "artifact_sha256": "cc9f9d4d969bbdeba7ffc8f3f3649d9372446847ffe2e1e618520c038c999641",
+            "binary_sha256": "c242fa4296f642e0e272994b0d7a6c23a4bfebbc36b5accbae554d0a804d60f2",
         },
     },
 }
