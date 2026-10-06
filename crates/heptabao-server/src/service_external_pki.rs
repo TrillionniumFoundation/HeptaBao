@@ -171,6 +171,8 @@ pub(super) struct ExternalPkiPlan {
     admitted_auth: CowOwner<AuthState>,
     deadline: Option<std::time::Instant>,
     publication_clock: PublicationClock,
+    wrapping_ttl: Option<u64>,
+    creation_path: String,
     // Captured only after our own durable publication. The original provider
     // stage identity and generation above are never replaced by this checkpoint.
     delivery_checkpoint: Option<(
@@ -470,9 +472,6 @@ impl Service {
         ) {
             return Response::error(cause.status, &cause.message);
         }
-        if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
-            return Response::error(501, "external PKI response wrapping is not implemented");
-        }
         if self.pending_external_pki.is_some() {
             return Response::error(503, "another external PKI generation is pending");
         }
@@ -511,6 +510,12 @@ impl Service {
             },
         ) {
             Ok(Some(plan)) => plan,
+            Ok(None) if request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) => {
+                return Response::error(
+                    501,
+                    "external PKI no-effect response wrapping is not implemented",
+                );
+            }
             Ok(None)
                 if state
                     .engines
@@ -631,6 +636,8 @@ impl Service {
             admitted_auth: state.auth.clone(),
             deadline: crate::request_deadline::current(),
             publication_clock: PublicationClock::capture(),
+            wrapping_ttl: request.wrap_ttl_seconds.filter(|ttl| *ttl > 0),
+            creation_path: request.path.into(),
             delivery_checkpoint: None,
         });
         Response::error(500, "external PKI generation was not dispatched")
@@ -787,6 +794,38 @@ impl Service {
                 erase_json(&mut response.body);
                 return Response::from_engine_error(cause);
             }
+        }
+        if let Some(ttl) = plan.wrapping_ttl {
+            // The original response and private wrapper are one candidate.
+            // The retained actor, provider and final delivery capsule stay held.
+            if let Some((expires, leased)) = plan.template.leaf_lease_window() {
+                let remaining = plan.publication_clock.remaining(expires, now);
+                if remaining.is_zero() {
+                    erase_json(&mut response.body);
+                    return Response::error(403, "external PKI leaf expired before wrapping");
+                }
+                response.body["lease_duration"] = json!(if leased {
+                    PublicationClock::rounded_seconds(remaining)
+                } else {
+                    0
+                });
+            }
+            let mut wrapped = match candidate.auth.wrap_response(
+                &plan.namespace,
+                &plan.creation_path,
+                ttl,
+                &response.body,
+                now,
+            ) {
+                Ok(value) => value,
+                Err(cause) => {
+                    erase_json(&mut response.body);
+                    return Response::error(cause.status, &cause.message);
+                }
+            };
+            erase_json(&mut response.body);
+            response.status = wrapped.status;
+            response.body = std::mem::take(&mut wrapped.body);
         }
         candidate.schema = candidate.writer_schema();
         if let Err(cause) = candidate.validate_format() {
@@ -1023,11 +1062,13 @@ impl Service {
                     "external PKI committed leaf expired before delivery; no blind retry",
                 );
             }
-            response.body["lease_duration"] = json!(if leased {
-                PublicationClock::rounded_seconds(remaining)
-            } else {
-                0
-            });
+            if plan.wrapping_ttl.is_none() {
+                response.body["lease_duration"] = json!(if leased {
+                    PublicationClock::rounded_seconds(remaining)
+                } else {
+                    0
+                });
+            }
         }
         response
     }

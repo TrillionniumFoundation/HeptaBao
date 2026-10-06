@@ -1011,6 +1011,129 @@ fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() 
 }
 
 #[test]
+fn pki_acme_external_wrapped_real_sign_encrypted_reopen_and_single_use_unwrap() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
+    setup_remote(&mut service, &admin)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/roles/wrapped",
+            &admin,
+            json!({"allow_any_name":true,"key_type":"ec","key_bits":256,"max_ttl":"30m"})
+        )
+        .status,
+        200
+    );
+    let (private, raw) = csr("wrapped.sign.acme.example.test")?;
+    let pem = String::from_utf8(X509Req::from_der(&raw)?.to_pem()?)?;
+    let calls = remote.calls()?;
+    let pending = match service.begin_at_mode(RequestDispatch {
+        method: "POST",
+        path: "external-ca/sign/wrapped",
+        namespace: "",
+        token: &admin,
+        body: json!({"csr":pem,"ttl":"10m"}),
+        now: 100,
+        allow_forward: true,
+        enforce_namespace: false,
+        wrap_ttl_seconds: Some(60),
+        origin_peer: None,
+        client_certificates: None,
+    }) {
+        RequestExecution::External(pending) => *pending,
+        RequestExecution::Complete(response) => {
+            return Err(format!("wrapped real sign not staged: status {}", response.status).into());
+        }
+    };
+    let actual = pending.execute();
+    let wrapped = service.finish_external_request(pending, actual);
+    assert_eq!(wrapped.status, 200);
+    assert!(wrapped.body["data"].is_null() && wrapped.body["auth"].is_null());
+    assert_eq!(wrapped.body["lease_duration"], 0);
+    assert_eq!(wrapped.body["wrap_info"]["ttl"], 60);
+    assert_eq!(
+        wrapped.body["wrap_info"]["creation_path"],
+        "external-ca/sign/wrapped"
+    );
+    let bearer = zeroize::Zeroizing::new(
+        wrapped.body["wrap_info"]["token"]
+            .as_str()
+            .ok_or("private wrapping credential")?
+            .to_owned(),
+    );
+    assert_eq!(remote.calls()?, calls + 2, "one metadata and one signature");
+    drop(wrapped);
+    drop(service);
+    let mut reopened = root.service()?;
+    reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let restored = call(
+        &mut reopened,
+        "POST",
+        "sys/wrapping/unwrap",
+        &bearer,
+        json!({}),
+    );
+    assert_eq!(restored.status, 200);
+    assert!(restored.body["wrap_info"].is_null());
+    let certificate = X509::from_pem(
+        restored.body["data"]["certificate"]
+            .as_str()
+            .ok_or("actual public wrapped certificate")?
+            .as_bytes(),
+    )?;
+    let issuer = X509::from_pem(
+        restored.body["data"]["issuing_ca"]
+            .as_str()
+            .ok_or("actual public wrapped issuer")?
+            .as_bytes(),
+    )?;
+    let issuer_key = issuer.public_key()?;
+    let wrong = PKey::generate_ed25519()?;
+    assert!(certificate.verify(&issuer_key)?);
+    assert!(!certificate.verify(&wrong)?);
+    assert_eq!(
+        certificate.public_key()?.public_key_to_der()?,
+        private.public_key_to_der()?
+    );
+    assert_eq!(
+        remote.calls()?,
+        calls + 2,
+        "unwrap only reads the stored public response"
+    );
+    let repeated = call(
+        &mut reopened,
+        "POST",
+        "sys/wrapping/unwrap",
+        &bearer,
+        json!({}),
+    );
+    assert_eq!(repeated.status, 400);
+    assert_eq!(
+        repeated.body,
+        json!({"errors":["wrapping token is not valid or does not exist"]})
+    );
+    assert_eq!(
+        remote.calls()?,
+        calls + 2,
+        "single-use failure never signs again"
+    );
+    Ok(())
+}
+
+#[test]
 fn pki_acme_external_administrative_operator_revoke_seven_real_signers_and_reopen() -> TestResult {
     for kind in [
         "ed25519",
