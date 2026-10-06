@@ -376,7 +376,7 @@ fn diagnostic_unavailable(phase: &'static str, guard: &'static str) -> Response 
     unavailable()
 }
 fn unavailable() -> Response {
-    Response::error(503, "completed HA forwarding authority is unavailable")
+    Response::error(503, "HA leader forwarding failed")
 }
 
 #[cfg(test)]
