@@ -351,12 +351,17 @@ impl Pki {
                     .issued
                     .get(&revoked.serial)
                     .ok_or_else(|| bad("ACME revoked global certificate missing"))?;
+                let issuer = if cert.external_issuer_owner.is_some()
+                    || self.profile_leaf_is_external(&revoked.serial)
+                {
+                    self.external_leaf_issuer_reference(&revoked.serial)?
+                } else {
+                    &cert.local_issuer_id
+                };
                 if cert.certificate_der != revoked.certificate
-                    || cert.local_issuer_id != revoked.issuer
+                    || issuer != revoked.issuer
                     || cert.revoked_at != Some(revoked.at.seconds())
                     || cert.issued > revoked.at.seconds()
-                    || cert.external_issuer_owner.is_some()
-                    || self.profile_leaf_is_external(&revoked.serial)
                 {
                     return Err(bad("ACME global revocation certificate owner rejected"));
                 }
@@ -395,15 +400,13 @@ impl Pki {
                 self.acme_revocation(&serial).is_some(),
             )
         } else if let Some(cert) = self.issued.get(&serial) {
-            if cert.external_issuer_owner.is_some() || self.profile_leaf_is_external(&serial) {
-                return Err(error(
-                    501,
-                    "external ACME revocation requires a qualified provider signing lane",
-                ));
-            }
             (
                 &cert.certificate_der,
-                cert.local_issuer_id.clone(),
+                if cert.external_issuer_owner.is_some() || self.profile_leaf_is_external(&serial) {
+                    self.external_leaf_issuer_reference(&serial)?.to_owned()
+                } else {
+                    cert.local_issuer_id.clone()
+                },
                 cert.revoked_at.is_some(),
             )
         } else {
@@ -505,6 +508,20 @@ impl Pki {
         self.validate_acme_revocations()?;
         Ok(response)
     }
+    pub(in crate::engines) fn mark_acme_external_global_revocation(
+        &mut self,
+        revoked: &Revocation,
+    ) -> Result<()> {
+        if let Some(certificate) = self.issued.get_mut(&revoked.serial) {
+            if certificate.certificate_der != revoked.certificate
+                || certificate.revoked_at.is_some()
+            {
+                return Err(error(503, "ACME original global revocation asset changed"));
+            }
+            certificate.revoked_at = Some(revoked.at.seconds());
+        }
+        Ok(())
+    }
     pub(in crate::engines) fn acme_revocation_requires_external(
         &self,
         revoked: &Revocation,
@@ -524,19 +541,47 @@ impl Pki {
             .as_ref()
             .ok_or_else(|| error(503, "ACME revocation protocol unavailable"))?;
         revoked.validate(protocol, at)?;
-        let certificate = self
-            .acme_certificate_for_serial(&revoked.serial)?
-            .ok_or_else(|| error(503, "ACME original revoked certificate unavailable"))?;
-        if certificate.der != revoked.certificate
-            || certificate.issuer != revoked.issuer
-            || certificate.created > revoked.at
-            || Timestamp::whole(certificate.expires)
-                .map_err(|_| bad("invalid certificate expiry"))?
-                < at
+        let (raw, issuer, created, expires, global_revocation) =
+            if let Some(certificate) = self.acme_certificate_for_serial(&revoked.serial)? {
+                (
+                    certificate.der.as_slice(),
+                    certificate.issuer.clone(),
+                    certificate.created,
+                    certificate.expires,
+                    None,
+                )
+            } else {
+                let certificate = self
+                    .issued
+                    .get(&revoked.serial)
+                    .ok_or_else(|| error(503, "ACME original revoked certificate unavailable"))?;
+                let issuer = if certificate.external_issuer_owner.is_some()
+                    || self.profile_leaf_is_external(&revoked.serial)
+                {
+                    self.external_leaf_issuer_reference(&revoked.serial)?
+                        .to_owned()
+                } else {
+                    certificate.local_issuer_id.clone()
+                };
+                (
+                    certificate.certificate_der.as_slice(),
+                    issuer,
+                    Timestamp::whole(certificate.issued)
+                        .map_err(|_| bad("invalid original issuance time"))?,
+                    certificate.expires,
+                    Some(certificate.revoked_at),
+                )
+            };
+        if raw != revoked.certificate
+            || issuer != revoked.issuer
+            || created > revoked.at
+            || Timestamp::whole(expires).map_err(|_| bad("invalid certificate expiry"))? < at
             || if published {
                 protocol.revocations.get(&revoked.serial) != Some(revoked)
+                    || global_revocation.is_some_and(|value| value != Some(revoked.at.seconds()))
             } else {
                 protocol.revocations.contains_key(&revoked.serial)
+                    || global_revocation.is_some_and(|value| value.is_some())
             }
         {
             return Err(error(503, "ACME original revocation asset changed"));

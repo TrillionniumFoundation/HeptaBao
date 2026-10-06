@@ -171,6 +171,7 @@ impl EngineState {
                 let at = self.observe_acme(end)?;
                 let pki = self.acme_pki_mut(&p.owner)?;
                 p.template.publish(pki, signatures, at)?;
+                pki.mark_acme_external_global_revocation(&p.revocation)?;
                 let body = p.revocation.descriptor();
                 let protocol = pki
                     .acme_protocol

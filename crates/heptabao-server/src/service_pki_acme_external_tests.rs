@@ -841,3 +841,141 @@ fn pki_acme_external_public_account_and_possession_revoke_seven_real_crl_signers
     }
     Ok(())
 }
+
+#[test]
+fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
+    setup_remote(&mut service, &admin)?;
+    let (account, jwk) = key()?;
+    let kid = order_account(&mut service, &account, &jwk)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "external-ca/roles/possession",
+            &admin,
+            json!({"allow_any_name":true,"key_type":"ec","key_bits":256,"max_ttl":"30m"})
+        )
+        .status,
+        200
+    );
+    let (leaf, leaf_jwk) = key()?;
+    let raw = csr_with_key("global.acme.example.test", &leaf)?;
+    let request = X509Req::from_der(&raw)?.to_pem()?;
+    let issued = call(
+        &mut service,
+        "POST",
+        "external-ca/sign/possession",
+        &admin,
+        json!({"csr":String::from_utf8(request)?,"ttl":"10m"}),
+    );
+    assert_eq!(issued.status, 200);
+    let der = X509::from_pem(
+        issued.body["data"]["certificate"]
+            .as_str()
+            .ok_or("actual certificate")?
+            .as_bytes(),
+    )?
+    .to_der()?;
+    let serial = issued.body["data"]["serial_number"]
+        .as_str()
+        .ok_or("actual serial")?
+        .to_owned();
+    let payload = json!({"certificate":URL_SAFE_NO_PAD.encode(&der)});
+    let calls = remote.calls()?;
+    let denied = order_post(
+        &mut service,
+        &account,
+        &jwk,
+        &kid,
+        "revoke-cert",
+        Some(payload.clone()),
+    )?;
+    assert_eq!(denied.status, 400);
+    assert_eq!(
+        remote.calls()?,
+        calls,
+        "account not issued this global token-owned certificate"
+    );
+    let n = nonce(&mut service)?;
+    let signed = signed(
+        &leaf,
+        &leaf_jwk,
+        &n,
+        "https://acme.example.test/v1/external-ca/acme/revoke-cert",
+        None,
+        Some(payload),
+    )?;
+    let revoked = call(
+        &mut service,
+        "POST",
+        "external-ca/acme/revoke-cert",
+        "",
+        signed,
+    );
+    assert_eq!(
+        revoked.status,
+        200,
+        "static errors {:?}",
+        revoked.body.get("errors")
+    );
+    assert_eq!(remote.calls()?, calls + 3);
+    let public = call(
+        &mut service,
+        "GET",
+        &format!("external-ca/cert/{serial}"),
+        "",
+        json!({}),
+    );
+    assert_eq!(public.status, 200);
+    assert!(
+        public.body["data"]["revocation_time"]
+            .as_u64()
+            .is_some_and(|at| at > 0)
+    );
+    assert!(
+        public.body["data"]["issuer_id"]
+            .as_str()
+            .is_some_and(|id| !id.is_empty())
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .validate_format()
+            .is_ok()
+    );
+    let crl = call(&mut service, "GET", "external-ca/crl", "", json!({}));
+    let original = BASE64.decode(
+        crl.body["__heptabao_pki_crl"]
+            .as_str()
+            .ok_or("original CRL")?,
+    )?;
+    drop(service);
+    let mut reopened = root.service()?;
+    reopened.install_outbound_endpoints(vec![remote.endpoint()])?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    let reread = call(&mut reopened, "GET", "external-ca/crl", "", json!({}));
+    assert_eq!(
+        BASE64.decode(
+            reread.body["__heptabao_pki_crl"]
+                .as_str()
+                .ok_or("reopened CRL")?
+        )?,
+        original
+    );
+    assert_eq!(remote.calls()?, calls + 3);
+    Ok(())
+}
