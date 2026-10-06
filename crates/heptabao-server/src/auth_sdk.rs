@@ -272,10 +272,12 @@ impl AuthState {
         }) {
             return Err(err(409, "mounted SDK Auth descriptor cannot be removed"));
         }
-        Ok(self
-            .sdk_auth_catalog
-            .as_mut()
-            .is_some_and(|catalog| catalog.remove(name, version)))
+        match self.sdk_auth_catalog.as_mut() {
+            None => Ok(false),
+            Some(catalog) => catalog
+                .retire_auth_generation(name, version)
+                .map_err(|error| err(error.status, &error.message)),
+        }
     }
     pub(crate) fn sdk_auth_owned_mount(&self, namespace: &str, mount: &str) -> bool {
         self.plugin_auth_mounts

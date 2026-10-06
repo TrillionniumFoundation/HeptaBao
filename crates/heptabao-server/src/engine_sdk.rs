@@ -123,6 +123,24 @@ impl Catalog {
     pub(crate) fn remove(&mut self, name: &str, version: &str) -> bool {
         self.entries.remove(&catalog_key(name, version)).is_some()
     }
+    /// Auth100 retirement has its own durable epoch cut. Secret catalog
+    /// removal preserves the established Secret family semantics unchanged.
+    pub(crate) fn retire_auth_generation(&mut self, name: &str, version: &str) -> Result<bool> {
+        let key = catalog_key(name, version);
+        if !self.entries.contains_key(&key) {
+            return Ok(false);
+        }
+        let next = self
+            .epochs
+            .get(&key)
+            .copied()
+            .ok_or_else(|| error(503, "SDK Auth catalog epoch absent"))?
+            .checked_add(1)
+            .ok_or_else(|| error(507, "SDK Auth catalog epoch exhausted"))?;
+        self.entries.remove(&key);
+        self.epochs.insert(key, next);
+        Ok(true)
+    }
     pub(crate) fn validate(&self) -> Result<()> {
         if self.entries.len() > 128 || self.epochs.len() > 128 {
             return Err(error(503, "SDK catalog exceeds bound"));

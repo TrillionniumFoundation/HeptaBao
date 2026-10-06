@@ -1118,3 +1118,180 @@ mod error_tests {
         assert!(logical_sdk_error(&json!({"errors":["business"]})).is_none());
     }
 }
+
+#[cfg(test)]
+mod durable_tests {
+    use super::*;
+    use crate::service::tests::{Root, bootstrap, call};
+    type TestResult = Result<(), Box<dyn std::error::Error>>;
+    fn mount(state: &mut State, root: &str) -> Result<Binding, Box<dyn std::error::Error>> {
+        let principal = state.auth.authenticate(root, 100)?;
+        let mounted = state
+            .auth
+            .handle(
+                Some(&principal),
+                "",
+                "POST",
+                "sys/auth/sdk",
+                &json!({"type":"plugin"}),
+                100,
+            )?
+            .ok_or("native auth mount")?;
+        assert_eq!(mounted.status, 204);
+        state.auth.register_sdk_auth_descriptor(Descriptor {
+            name: "auth_probe".into(),
+            version: "v0.0.1".into(),
+            command: "probe".into(),
+            args: vec![],
+            sha256: "a".repeat(64),
+            generation: 1,
+        })?;
+        let descriptor = state
+            .auth
+            .sdk_auth_descriptor("auth_probe", "v0.0.1")
+            .ok_or("descriptor")?;
+        let binding = state.auth.bind_sdk_auth_mount("", "sdk", &descriptor)?;
+        state
+            .auth
+            .observe_sdk_auth_clock(Timestamp::checked(100, 1)?);
+        Ok(binding)
+    }
+    fn publish(
+        service: &mut Service,
+        mut candidate: State,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        candidate.schema = candidate.writer_schema();
+        service
+            .commit_state(&mut candidate)
+            .map_err(|e| format!("actual record commit: {} {}", e.status, e.body))?;
+        service.state = Some(candidate);
+        Ok(())
+    }
+    #[test]
+    fn sdk_auth100_encrypted_cells_clock_only_commit_protected_backup_and_reopen() -> TestResult {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (key, root) = bootstrap(&mut service)?;
+        let old_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+        let mut candidate = service.state.clone().ok_or("state")?;
+        let binding = mount(&mut candidate, &root)?;
+        candidate.auth.sdk_auth_storage_put(
+            &binding,
+            Entry {
+                key: "config".into(),
+                value: Zeroizing::new(b"durable-Auth-owned-config".to_vec()),
+                seal_wrap: true,
+            },
+        )?;
+        publish(&mut service, candidate)?;
+        let original = service.state.clone().ok_or("state")?;
+        assert_eq!(original.schema, SDK_AUTH_STATE_SCHEMA);
+        assert!(service.prepare_snapshot_restore(&old_backup).is_err());
+        for lower in [92, 95, 96, 97, 98, 99] {
+            let mut wrong = original.clone();
+            wrong.schema = lower;
+            assert!(wrong.validate_format().is_err());
+            assert!(service.commit_state(&mut wrong).is_err());
+        }
+        let first_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+        let identity = service
+            .current_state_identity()
+            .map_err(|_| "first identity")?;
+        let mut later = original.clone();
+        let floor = Timestamp::checked(101, 999)?;
+        assert!(later.auth.observe_sdk_auth_clock(floor));
+        publish(&mut service, later)?;
+        assert!(
+            service
+                .current_state_identity()
+                .map_err(|_| "second identity")?
+                != identity
+        );
+        assert!(service.prepare_snapshot_restore(&first_backup).is_err());
+        assert!(
+            Service::validate_snapshot_protected_floor(
+                service.state.as_ref().ok_or("state")?,
+                &original
+            )
+            .is_err()
+        );
+        let fresh = service.durable.as_ref().ok_or("durable")?.export_backup()?;
+        service
+            .prepare_snapshot_restore(&fresh)
+            .map_err(|_| "fresh protected backup")?;
+        assert_eq!(
+            call(&mut service, "PUT", "sys/seal", &root, json!({})).status,
+            204
+        );
+        drop(service);
+        let mut reopened = directory.service()?;
+        assert_eq!(
+            call(&mut reopened, "PUT", "sys/unseal", "", json!({"key":key})).status,
+            200
+        );
+        let actual = reopened.state.as_ref().ok_or("reopened")?;
+        assert_eq!(actual.auth.sdk_auth_clock_floor(), Some(floor));
+        assert_eq!(actual.schema, SDK_AUTH_STATE_SCHEMA);
+        assert_eq!(
+            actual
+                .auth
+                .sdk_auth_storage_get(&binding, "config")?
+                .ok_or("encrypted cell")?
+                .value
+                .as_slice(),
+            b"durable-Auth-owned-config"
+        );
+        Ok(())
+    }
+    #[test]
+    fn sdk_auth100_catalog_retirement_has_independent_epoch_cut_and_sticky_reader() -> TestResult {
+        let directory = Root::new();
+        let mut service = directory.service()?;
+        let (_, root) = bootstrap(&mut service)?;
+        let mut candidate = service.state.clone().ok_or("state")?;
+        let binding = mount(&mut candidate, &root)?;
+        publish(&mut service, candidate)?;
+        let mounted = service.state.clone().ok_or("mounted")?;
+        let before_epoch = mounted.auth.sdk_auth_epoch_floor().ok_or("epoch")?;
+        let mut retired = mounted.clone();
+        let principal = retired.auth.authenticate(&root, 100)?;
+        let removed = retired
+            .auth
+            .handle(
+                Some(&principal),
+                "",
+                "DELETE",
+                "sys/auth/sdk",
+                &json!({}),
+                100,
+            )?
+            .ok_or("native retirement")?;
+        assert_eq!(removed.status, 204);
+        assert!(
+            retired
+                .auth
+                .deregister_sdk_auth_descriptor("auth_probe", "v0.0.1")?
+        );
+        let after_epoch = retired.auth.sdk_auth_epoch_floor().ok_or("retired epoch")?;
+        assert!(after_epoch["auth_probe@v0.0.1"] > before_epoch["auth_probe@v0.0.1"]);
+        // This cut is independent from the observation timestamp: even an equal
+        // clock cannot resurrect the retired descriptor from a prior snapshot.
+        assert!(
+            mounted
+                .auth
+                .validate_sdk_auth_epoch_floor(Some(&after_epoch))
+                .is_err()
+        );
+        assert!(retired.auth.sdk_auth_owner_gate(&binding).is_err());
+        publish(&mut service, retired)?;
+        let retired = service.state.as_ref().ok_or("retired")?;
+        assert_eq!(retired.schema, SDK_AUTH_STATE_SCHEMA);
+        assert!(retired.auth.has_sdk_auth_state());
+        assert!(retired.auth.sdk_auth_descriptors().is_empty());
+        assert!(Service::validate_snapshot_protected_floor(retired, &mounted).is_err());
+        let mut lower = retired.clone();
+        lower.schema = 98;
+        assert!(lower.validate_format().is_err());
+        Ok(())
+    }
+}
