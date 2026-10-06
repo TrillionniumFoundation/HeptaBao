@@ -6,6 +6,26 @@ const MAX_IDENTITY_RECORDS: usize = 4096;
 const MAX_EFFECTIVE_POLICIES: usize = 256;
 
 impl IdentityState {
+    #[cfg(test)]
+    pub(super) fn fixture_rebind_entity_id(&mut self, old: &str, replacement: &str) -> Result<()> {
+        valid_identifier(replacement, "fixture entity id")?;
+        let entity = self.entities.get(old).ok_or_else(not_found)?;
+        if self.entities.contains_key(replacement)
+            || !entity.aliases.is_empty()
+            || !entity.group_ids.is_empty()
+            || !entity.merged_entity_ids.is_empty()
+            || self.entity_names.get(&entity.name).map(String::as_str) != Some(old)
+        {
+            return Err(bad("fixture entity cannot be rebound"));
+        }
+        let mut entity = self.entities.remove(old).ok_or_else(not_found)?;
+        entity.id = replacement.to_owned();
+        self.entity_names
+            .insert(entity.name.clone(), entity.id.clone());
+        self.entities.insert(entity.id.clone(), entity);
+        Ok(())
+    }
+
     // Restrict this validation to alias names and their existing indexes. Other
     // identity authority retains its existing live projection validation.
     pub(crate) fn validate_aliases(&self) -> Result<()> {

@@ -5472,20 +5472,10 @@ mod tests {
             // Identity allocations use independent native random UUIDs.
             let other_id = other.body["data"]["id"].as_str().ok_or("other entity id")?;
             assert_ne!(other_id, entity_id);
-            let mut wire = serde_json::to_value(&state.engines)?;
-            let identity = &mut wire["namespaces"]["other"]["identity"];
-            let mut collision = identity["entities"]
-                .as_object_mut()
-                .ok_or("other entities")?
-                .remove(other_id)
-                .ok_or("other entity")?;
-            collision["id"] = json!(entity_id);
-            identity["entities"]
-                .as_object_mut()
-                .ok_or("other entities")?
-                .insert(entity_id.clone(), collision);
-            identity["entity_names"]["completion-owner"] = json!(entity_id);
-            state.engines = serde_json::from_value(wire)?;
+            state
+                .engines
+                .fixture_rebind_identity_entity_id("other", other_id, &entity_id)
+                .map_err(|_| "fixture collision")?;
             let other = state
                 .engines
                 .handle(
@@ -5531,9 +5521,12 @@ mod tests {
                 .ok_or("lease")?
                 .owner = owner.clone();
             plan.lease.owner = owner;
-            service
-                .publish_database(state)
-                .map_err(|_| "publish admitted batch")?;
+            service.publish_database(state).map_err(|error| {
+                format!(
+                    "publish admitted batch status={} errors={}",
+                    error.status, error.body["errors"]
+                )
+            })?;
             let mut state = service.state.clone().ok_or("state")?;
             let ns = if same_namespace { "" } else { "other" };
             state

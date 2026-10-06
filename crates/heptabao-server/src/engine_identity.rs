@@ -17,6 +17,22 @@ pub(crate) struct IdentityNamespace<'a> {
 }
 
 impl EngineState {
+    /// Construct an existing cross-namespace collision without replacing the
+    /// engine's live record representation. This is not a public Identity API.
+    #[cfg(test)]
+    pub(crate) fn fixture_rebind_identity_entity_id(
+        &mut self,
+        namespace: &str,
+        old: &str,
+        replacement: &str,
+    ) -> Result<()> {
+        self.namespaces
+            .get_mut(namespace)
+            .ok_or_else(|| error(404, "fixture namespace absent"))?
+            .identity
+            .fixture_rebind_entity_id(old, replacement)
+    }
+
     pub(crate) fn identity_template_values(
         &self,
         namespace: &str,
