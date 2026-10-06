@@ -8763,7 +8763,7 @@ fn valid_path(value: &str) -> bool {
             !s.is_empty()
                 && !matches!(s, "." | "..")
                 && s.bytes()
-                    .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_' | b'.' | b':'))
+                    .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_' | b'.' | b':' | b'+'))
         })
 }
 fn hex(bytes: &[u8]) -> String {
