@@ -99,6 +99,44 @@ class ProxyPlatformTests(unittest.TestCase):
             worker.join(timeout=2)
         self.assertFalse(worker.is_alive())
 
+    @unittest.skipUnless(sys.platform == 'darwin', 'Darwin cwd restoration')
+    def test_restore_failure_cleans_owned_inode_and_preserves_replacement(self):
+        real_fchdir = os.fchdir
+        for replace in (False, True):
+            with self.subTest(replace=replace), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                root.chmod(0o700)
+                previous = os.open('.', os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+                listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                replacement = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                calls = []
+
+                with StateDirectory(root, writer=True) as directory:
+                    def fail_restore(fd):
+                        calls.append(fd)
+                        if len(calls) == 2:
+                            if replace:
+                                os.unlink('api.sock', dir_fd=directory.fd)
+                                replacement.bind('api.sock')
+                            raise OSError(5, 'injected restoration failure')
+                        return real_fchdir(fd)
+
+                    try:
+                        with patch.object(proxy.os, 'fchdir', side_effect=fail_restore):
+                            with self.assertRaisesRegex(OSError, 'restoration failure'):
+                                proxy._bind_listener(listener, directory)
+                        self.assertEqual(listener.fileno(), -1)
+                        self.assertEqual((root/'api.sock').exists(), replace)
+                    finally:
+                        # Only the test repairs its own injected cwd failure.
+                        real_fchdir(previous)
+                        os.close(previous)
+                        listener.close()
+                        replacement.close()
+                        if replace and (root/'api.sock').exists():
+                            os.unlink('api.sock', dir_fd=directory.fd)
+
+
 
 if __name__ == '__main__':
     unittest.main()

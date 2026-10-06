@@ -200,12 +200,30 @@ def _bind_listener(listener, directory):
             or threading.active_count() != 1):
         raise BaoError('proxy_macos_binding_requires_single_thread')
     previous = os.open('.', os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+    owned = None
     try:
         os.fchdir(directory.fd)
         listener.bind('api.sock')
+        owned = os.stat('api.sock', dir_fd=directory.fd, follow_symlinks=False)
     finally:
         try:
             os.fchdir(previous)
+        except OSError:
+            # The CLI stops on a failed cwd restoration. Capture the created
+            # inode before restoration so failure cannot strand our listener.
+            listener.close()
+            if owned is not None:
+                try:
+                    current = os.stat('api.sock', dir_fd=directory.fd,
+                                      follow_symlinks=False)
+                    if (stat.S_ISSOCK(current.st_mode)
+                            and (current.st_dev, current.st_ino)
+                            == (owned.st_dev, owned.st_ino)):
+                        os.unlink('api.sock', dir_fd=directory.fd)
+                        os.fsync(directory.fd)
+                except FileNotFoundError:
+                    pass
+            raise
         finally:
             os.close(previous)
 
