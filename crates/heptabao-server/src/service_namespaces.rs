@@ -423,17 +423,12 @@ impl NamespaceRegistry {
         &'a self,
         actual: &'a str,
     ) -> Result<crate::engines::IdentityNamespace<'a>, Response> {
-        let id = if actual.is_empty() {
-            None
-        } else {
-            Some(
-                self.entries
-                    .get(actual)
-                    .ok_or_else(|| Response::error(503, "identity namespace binding is absent"))?
-                    .id
-                    .as_str(),
-            )
-        };
+        // This selects a representation suffix after ingress admission; it
+        // grants no namespace authority. HTTP/forwarded callers still require
+        // catalog membership at the original Service boundary. Trusted native
+        // callers can own historical implicit namespaces without inventing a
+        // catalog ID for them.
+        let id = self.entries.get(actual).map(|entry| entry.id.as_str());
         Ok(crate::engines::IdentityNamespace { path: actual, id })
     }
 

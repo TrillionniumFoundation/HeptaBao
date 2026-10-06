@@ -5468,6 +5468,35 @@ mod tests {
                 )
                 .map_err(|_| "other entity")?
                 .ok_or("other entity route")?;
+            // Model an existing cross-namespace collision explicitly. New
+            // Identity allocations use independent native random UUIDs.
+            let other_id = other.body["data"]["id"].as_str().ok_or("other entity id")?;
+            assert_ne!(other_id, entity_id);
+            let mut wire = serde_json::to_value(&state.engines)?;
+            let identity = &mut wire["namespaces"]["other"]["identity"];
+            let mut collision = identity["entities"]
+                .as_object_mut()
+                .ok_or("other entities")?
+                .remove(other_id)
+                .ok_or("other entity")?;
+            collision["id"] = json!(entity_id);
+            identity["entities"]
+                .as_object_mut()
+                .ok_or("other entities")?
+                .insert(entity_id.clone(), collision);
+            identity["entity_names"]["completion-owner"] = json!(entity_id);
+            state.engines = serde_json::from_value(wire)?;
+            let other = state
+                .engines
+                .handle(
+                    "other",
+                    "GET",
+                    &format!("identity/entity/id/{entity_id}"),
+                    &json!({}),
+                    100,
+                )
+                .map_err(|_| "collision readback")?
+                .ok_or("collision route")?;
             assert_eq!(other.body["data"]["id"], entity_id);
             let mut authority = BatchKeyAuthority::new(100)?;
             let raw = authority.seal(

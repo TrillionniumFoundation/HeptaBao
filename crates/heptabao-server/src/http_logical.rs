@@ -3,7 +3,7 @@
 use super::*;
 
 fn request_id(random: &[u8; 16]) -> String {
-    crate::crypto::uuid_v4_from_bytes(random)
+    crate::crypto::uuid_from_bytes(random)
 }
 
 fn inject_system_data(path: &str) -> bool {

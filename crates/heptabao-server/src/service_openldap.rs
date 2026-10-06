@@ -1457,7 +1457,7 @@ mod completion_tests {
                 .resolve_lease_owner(&plan.inner.owner, "", 100)
                 .ok_or("owner")?;
             let entity_id = owner.entity_id.ok_or("entity id")?;
-            // The same generated entity ID exists in a different namespace.
+            // The fixture models an existing entity ID collision across namespaces.
             // Disabling it must not disable the root namespace's batch owner.
             let other = state
                 .engines
@@ -1470,6 +1470,35 @@ mod completion_tests {
                 )
                 .map_err(|_| "other entity")?
                 .ok_or("other entity route")?;
+            // Model an existing cross-namespace collision explicitly. New
+            // Identity allocations use independent native random UUIDs.
+            let other_id = other.body["data"]["id"].as_str().ok_or("other entity id")?;
+            assert_ne!(other_id, entity_id);
+            let mut wire = serde_json::to_value(&state.engines)?;
+            let identity = &mut wire["namespaces"]["other"]["identity"];
+            let mut collision = identity["entities"]
+                .as_object_mut()
+                .ok_or("other entities")?
+                .remove(other_id)
+                .ok_or("other entity")?;
+            collision["id"] = json!(entity_id);
+            identity["entities"]
+                .as_object_mut()
+                .ok_or("other entities")?
+                .insert(entity_id.clone(), collision);
+            identity["entity_names"]["completion-owner"] = json!(entity_id);
+            state.engines = serde_json::from_value(wire)?;
+            let other = state
+                .engines
+                .handle(
+                    "other",
+                    "GET",
+                    &format!("identity/entity/id/{entity_id}"),
+                    &json!({}),
+                    100,
+                )
+                .map_err(|_| "collision readback")?
+                .ok_or("collision route")?;
             assert_eq!(other.body["data"]["id"], entity_id);
             let ns = if same_namespace { "" } else { "other" };
             state
