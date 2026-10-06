@@ -1100,7 +1100,12 @@ impl pki::Pki {
                 "the request message was malformed: issuer does not exist",
             )
         })?;
-        if issuer.key_id.is_empty() {
+        // Managed issuers retain their actual typed remote signer reference;
+        // they do not carry a local private key id. A public-only imported CA
+        // without that retained signer is still unavailable for ACME issuance.
+        let signing_key = !issuer.key_id.is_empty()
+            || (issuer.is_external() && self.external_issuer_key(&issuer.issuer_id).is_ok());
+        if !signing_key {
             return Err(error(
                 500,
                 "the server experienced an internal error: issuer missing proper issuance usage or key",
