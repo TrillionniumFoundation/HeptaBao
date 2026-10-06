@@ -393,7 +393,7 @@ impl UnchangedShamirLocalOwner {
             .durable
             .as_mut()
             .ok_or_else(rejected)?
-            .verify_live_ownership()
+            .verify_negative_current_publication()
             .map_err(|_| rejected())?;
         let durable = service.durable.as_ref().ok_or_else(rejected)?;
         if durable.recovery_required() || durable.generation() != self.generation {

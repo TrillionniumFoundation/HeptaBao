@@ -3,7 +3,7 @@
 use super::acme_jws::{Jwk, VerifiedJws};
 use super::acme_state::{AccountStatus, Binding, Protocol};
 use super::*;
-use crate::auth::{RequestClock, Timestamp};
+use crate::auth::{LeaseOwner, RequestClock, Timestamp};
 use openssl::pkey::PKey;
 
 pub(crate) struct Request<'a> {
@@ -17,8 +17,18 @@ pub(crate) struct Request<'a> {
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", deny_unknown_fields)]
 pub(crate) enum Proof {
-    Account { account: String, thumbprint: String },
-    Possession { jwk: Jwk },
+    Account {
+        account: String,
+        thumbprint: String,
+    },
+    Possession {
+        jwk: Jwk,
+    },
+    Administrative {
+        issuer: LeaseOwner,
+        expires_at: Option<u64>,
+        precise_expires_at: Option<Timestamp>,
+    },
 }
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -129,6 +139,31 @@ impl Revocation {
                     return Err(bad("ACME revocation certificate account rejected"));
                 }
             }
+            Proof::Administrative {
+                issuer,
+                expires_at,
+                precise_expires_at,
+            } => {
+                issuer
+                    .validate_scope(
+                        &protocol.owner.namespace,
+                        crate::auth::ServiceOwnerProfile::DigestAlphabet,
+                    )
+                    .map_err(|_| bad("ACME administrative revocation owner rejected"))?;
+                if precise_expires_at
+                    .is_some_and(|end| *expires_at != end.ceil_seconds().ok() || self.at > end)
+                    || precise_expires_at.is_none()
+                        && expires_at.is_some_and(|end| self.at.seconds() >= end)
+                    || issuer.batch_claims().is_some_and(|claims| {
+                        self.at.seconds() < claims.issued_at()
+                            || self.at.seconds() > claims.expires_at()
+                    })
+                {
+                    return Err(bad(
+                        "ACME administrative revocation original actor window rejected",
+                    ));
+                }
+            }
             Proof::Possession { jwk } => {
                 let public = PKey::public_key_from_der(cert.public_key().raw)
                     .map_err(|_| bad("invalid ACME revoked public key"))?;
@@ -161,6 +196,135 @@ impl Pki {
     pub(super) fn acme_revocation(&self, serial: &str) -> Option<&Revocation> {
         self.acme_protocol.as_ref()?.revocations.get(serial)
     }
+    pub(super) fn acme_administrative_revocation_owners(
+        &self,
+    ) -> impl Iterator<Item = &LeaseOwner> {
+        self.acme_protocol
+            .iter()
+            .flat_map(|p| p.revocations.values())
+            .filter_map(|r| match &r.proof {
+                Proof::Administrative { issuer, .. } => Some(issuer),
+                _ => None,
+            })
+    }
+
+    pub(in crate::engines) fn revoke_acme_by_operator(
+        &mut self,
+        body: &Value,
+        context: crate::engines::PkiRequestContext<'_>,
+        before_effect: &mut impl FnMut() -> Result<()>,
+    ) -> Result<Option<EngineResponse>> {
+        reject_unknown(body, &["serial_number"])?;
+        let serial = self.resolve_certificate_serial(string(body, "serial_number")?)?;
+        let Some(cert) = self.acme_certificate_for_serial(&serial)? else {
+            return Ok(None);
+        };
+        if let Some(prior) = self.acme_revocation(&serial) {
+            return Ok(Some(ok(prior.descriptor(), false)));
+        }
+        let actor = context
+            .owner
+            .ok_or_else(|| error(403, "administrative PKI revocation requires actual caller"))?;
+        let observed = context.observed_time(0)?;
+        let at = observed
+            .exact()
+            .or_else(|| Timestamp::whole(observed.seconds()).ok())
+            .ok_or_else(|| {
+                error(
+                    503,
+                    "administrative ACME revocation original clock unavailable",
+                )
+            })?;
+        let floor = self
+            .acme_protocol
+            .as_ref()
+            .ok_or_else(|| error(503, "ACME administrative protocol unavailable"))?
+            .clock
+            .max(at);
+        let at = context
+            .clock
+            .map(|c| c.with_timestamp_floor(floor).observed_at())
+            .transpose()
+            .map_err(|_| {
+                error(
+                    503,
+                    "administrative ACME revocation original clock unavailable",
+                )
+            })?
+            .unwrap_or(floor);
+        if actor.precise_expires_at.is_some_and(|end| at > end)
+            || actor.precise_expires_at.is_none()
+                && actor.expires_at.is_some_and(|end| at.seconds() >= end)
+        {
+            return Err(error(
+                403,
+                "administrative PKI original caller expired before signing",
+            ));
+        }
+        if cert.expires < at.seconds().saturating_add(2) && !self.local_expired_revocation_allowed()
+        {
+            return Ok(Some(EngineResponse {
+                status: 200,
+                body: json!({"warnings":["certificate already expired; refusing to add to CRL"]}),
+                mutated: false,
+            }));
+        }
+        let protocol = self
+            .acme_protocol
+            .as_ref()
+            .ok_or_else(|| error(503, "ACME administrative protocol unavailable"))?;
+        let revoked = Revocation {
+            owner: protocol.owner.clone(),
+            issuer: cert.issuer.clone(),
+            serial: serial.clone(),
+            certificate: cert.der.clone(),
+            at,
+            proof: Proof::Administrative {
+                issuer: actor.owner.clone(),
+                expires_at: actor.expires_at,
+                precise_expires_at: actor.precise_expires_at,
+            },
+        };
+        revoked.validate(protocol, at)?;
+        before_effect()?;
+        self.local_issuer(&revoked.issuer)?.local_key()?;
+        let response = revoked.descriptor();
+        let protocol = self
+            .acme_protocol
+            .as_mut()
+            .ok_or_else(|| error(503, "ACME administrative protocol unavailable"))?;
+        protocol.observe_time(at);
+        protocol.revocations.insert(serial, revoked);
+        self.local_revocation_changed_guarded(at.seconds(), &mut || {
+            before_effect()?;
+            let observed = context
+                .clock
+                .map(|c| c.with_timestamp_floor(at).observed_at())
+                .transpose()
+                .map_err(|_| {
+                    error(
+                        503,
+                        "administrative ACME revocation original clock unavailable",
+                    )
+                })?
+                .unwrap_or(at);
+            if actor.precise_expires_at.is_some_and(|end| observed > end)
+                || actor.precise_expires_at.is_none()
+                    && actor
+                        .expires_at
+                        .is_some_and(|end| observed.seconds() >= end)
+            {
+                return Err(error(
+                    403,
+                    "administrative PKI original caller expired before signing",
+                ));
+            }
+            Ok(())
+        })?;
+        self.validate_acme_revocations()?;
+        Ok(Some(ok(response, true)))
+    }
+
     pub(super) fn acme_revoked_for_issuer(&self, issuer: &str) -> BTreeMap<String, u64> {
         self.acme_protocol
             .iter()
@@ -207,7 +371,7 @@ impl Pki {
         account: Option<&str>,
         at: Timestamp,
         clock: Option<RequestClock>,
-        before_effect: impl FnOnce() -> Result<()>,
+        mut before_effect: impl FnMut() -> Result<()>,
     ) -> Result<Value> {
         if key.thumbprint()? != proof.key_thumbprint() {
             return Err(error(401, "the client lacks sufficient authorization"));
@@ -326,7 +490,7 @@ impl Pki {
             .ok_or_else(|| error(503, "ACME revocation protocol unavailable"))?;
         protocol.observe_time(at);
         protocol.revocations.insert(serial, revoked);
-        self.local_revocation_changed(at.seconds())?;
+        self.local_revocation_changed_guarded(at.seconds(), &mut before_effect)?;
         self.validate_acme_revocations()?;
         Ok(response)
     }

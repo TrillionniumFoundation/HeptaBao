@@ -591,7 +591,10 @@ impl Pki {
     }
 
     pub(super) fn all_owners(&self) -> impl Iterator<Item = &LeaseOwner> {
-        self.issued.values().map(|issued| &issued.owner)
+        self.issued
+            .values()
+            .map(|issued| &issued.owner)
+            .chain(self.acme_administrative_revocation_owners())
     }
 
     pub(super) fn reconcile(

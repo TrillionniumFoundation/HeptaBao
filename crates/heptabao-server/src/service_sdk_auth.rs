@@ -65,6 +65,13 @@ impl Admission {
         Ok(())
     }
 }
+/// This terminal classification is used only after the original admitted
+/// credential operation has passed its current owned Storage gates. It carries
+/// no authentication authority and can never issue a token.
+enum AdmittedTerminal {
+    Data,
+    UnexpectedAuth,
+}
 struct Transaction {
     auth: CowOwner<AuthState>,
     identity: crate::state_record_root::StateIdentity,
@@ -1174,6 +1181,7 @@ impl Service {
             .clone()
             .ok_or_else(|| Response::error(503, "SDK Auth current state unavailable"))?;
         transaction.identity = self.current_state_identity()?;
+        let mut admitted_terminal = AdmittedTerminal::Data;
         if let Some(admission) = &plan.admission {
             let original = admission.storage.lock().map_err(|_| {
                 Response::error(503, "SDK admitted Storage observation unavailable")
@@ -1182,14 +1190,14 @@ impl Service {
                 .auth
                 .merge_sdk_auth_storage(&plan.binding, &original, &transaction.auth)
                 .map_err(auth_error)?;
-            if value.is_some_and(|value| {
-                value.get("auth").is_some_and(|v| !v.is_null())
-                    || value.get("secret").is_some_and(|v| !v.is_null())
-            }) {
+            if value.is_some_and(|value| value.get("secret").is_some_and(|v| !v.is_null())) {
                 return Err(Response::error(
                     501,
-                    "SDK admitted Auth or Secret response not implemented",
+                    "SDK admitted Secret response not implemented",
                 ));
+            }
+            if value.is_some_and(|value| value.get("auth").is_some_and(|v| !v.is_null())) {
+                admitted_terminal = AdmittedTerminal::UnexpectedAuth;
             }
         } else {
             candidate.auth = transaction.auth.clone();
@@ -1234,6 +1242,12 @@ impl Service {
                 .capture_sdk_auth_paths(&plan.binding, paths)
                 .map_err(auth_error)?;
             empty_response()
+        } else if matches!(admitted_terminal, AdmittedTerminal::UnexpectedAuth) {
+            // OpenBao v2.7.0 request_handling.go:1592..1603 rejects Auth from a
+            // non-token authenticated request after the actual backend callback.
+            // Keep its already admitted Storage effect under the same publication
+            // gates, while rejecting the Auth without invoking the native issuer.
+            Response::error(500, "1 error occurred:\n\t* internal error\n\n")
         } else if let Some(auth) = value
             .and_then(|value| value.get("auth"))
             .filter(|value| !value.is_null())

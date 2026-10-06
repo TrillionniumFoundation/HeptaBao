@@ -406,7 +406,7 @@ impl EngineState {
         &mut self,
         view: &AcmeView,
         request: pki::acme_revoke::Request<'_>,
-        before_effect: impl FnOnce() -> Result<()>,
+        before_effect: impl FnMut() -> Result<()>,
     ) -> Result<(u16, Value, Option<String>)> {
         let pki::acme_revoke::Request {
             key,
@@ -436,14 +436,9 @@ impl EngineState {
             .map_err(|_| error(503, "ACME original revocation clock unavailable"))?
             .unwrap_or(at.max(floor));
         let at = self.observe_acme(at)?;
-        let body = self.acme_pki_mut(&view.owner)?.acme_revoke_certificate(
-            key,
-            proof,
-            account,
-            at,
-            clock,
-            before_effect,
-        )?;
+        let mut candidate = self.acme_pki(&view.owner)?.clone();
+        let body =
+            candidate.acme_revoke_certificate(key, proof, account, at, clock, before_effect)?;
         let end = clock
             .map(|c| c.with_timestamp_floor(at).observed_at())
             .transpose()
@@ -452,6 +447,7 @@ impl EngineState {
         self.observe_acme(end)?;
         // The actual CRL was signed at the original observed time. Its existing
         // global lease-clock validator must retain that same publication floor.
+        *self.acme_pki_mut(&view.owner)? = candidate;
         self.lease_clock = self.lease_clock.max(end.seconds());
         Ok((200, body, None))
     }

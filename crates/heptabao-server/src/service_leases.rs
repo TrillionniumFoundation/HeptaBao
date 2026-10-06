@@ -166,6 +166,32 @@ impl Service {
             let mut engines = state.engines.clone();
             let mut response = if path.starts_with("sys/leases/") {
                 engines.handle_lease_admin_observed(namespace, method, path, body, time)
+            } else if engines.is_pki_acme_operator_revoke_route(namespace, path) {
+                let owner = owner
+                    .as_ref()
+                    .ok_or_else(|| Response::error(403, "administrative PKI caller required"))?;
+                let principal =
+                    principal.ok_or_else(|| Response::error(403, "missing client token"))?;
+                engines.handle_service_pki_operator_revoke(
+                    namespace,
+                    method,
+                    path,
+                    body,
+                    crate::engines::PkiRequestContext {
+                        owner: Some(owner),
+                        time,
+                        clock: principal.original_request_clock(),
+                        identity_templates: None,
+                    },
+                    || {
+                        super::namespace_runtime::request_live().map_err(|_| {
+                            crate::engines::EngineError {
+                                status: 503,
+                                message: "administrative PKI original request expired".into(),
+                            }
+                        })
+                    },
+                )
             } else if engines.is_pki_issue_route(namespace, path) {
                 let owner = owner
                     .as_ref()

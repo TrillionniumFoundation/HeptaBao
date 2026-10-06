@@ -367,7 +367,11 @@ impl Service {
             Err(error) => return Some(error),
         };
         let mut authority = Authority::capture(admitted, &view, request, &self.unseal_nonce, None);
-        let mut response = if !view.enabled {
+        // Bao 2.7 advertises keyChange and exempts it from token ACLs, but
+        // registers no handler. The unsupported route does not redeem JWS.
+        let mut response = if view.endpoint == "key-change" {
+            Response::error(404, "unsupported path")
+        } else if !view.enabled {
             wire(404, None, false, Default::default())
         } else if let Err(error) = admitted.engines.acme_directory_gate(&view) {
             engine_problem(error)

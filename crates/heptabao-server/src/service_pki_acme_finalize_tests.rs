@@ -763,3 +763,308 @@ fn pki_acme99_revoke_account_and_leaf_possession_actual_crl_reopen_and_rollback(
     );
     Ok(())
 }
+
+#[test]
+fn pki_acme99_actual_vault_acl_revoke_retains_operator_without_public_principal() -> TestResult {
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (unseal, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let (account_key, jwk) = key()?;
+    let kid = order_account(&mut service, &account_key, &jwk)?;
+    let domain = "operator.revoke-proof.example";
+    let order = ready(&mut service, &admin, &account_key, &jwk, &kid, domain)?;
+    let (_, csr) = csr(domain)?;
+    let finalized = order_post(
+        &mut service,
+        &account_key,
+        &jwk,
+        &kid,
+        &format!("{order}/finalize"),
+        Some(json!({"csr":URL_SAFE_NO_PAD.encode(csr)})),
+    )?;
+    assert_eq!(finalized.status, 200);
+    let fetched = order_post(
+        &mut service,
+        &account_key,
+        &jwk,
+        &kid,
+        &format!("{order}/cert"),
+        None,
+    )?;
+    assert_eq!(fetched.status, 200);
+    let encoded = fetched.body["__heptabao_acme"]
+        .as_str()
+        .ok_or("actual certificate chain")?;
+    let certificates = X509::stack_from_pem(encoded.as_bytes())?;
+    let serial = certificates[0]
+        .serial_number()
+        .to_bn()?
+        .to_hex_str()?
+        .to_string()
+        .to_lowercase();
+    let serial = serial
+        .as_bytes()
+        .chunks(2)
+        .map(|b| std::str::from_utf8(b))
+        .collect::<Result<Vec<_>, _>>()?
+        .join(":");
+    let before = service.state.as_ref().ok_or("state")?.clone();
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "acmeca/revoke",
+            "",
+            json!({"serial_number":serial})
+        )
+        .status,
+        403
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .validate_acme_successor(Some(&before.engines), |_| false)
+            .is_ok()
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/policies/acl/acme-revoker",
+            &admin,
+            json!({"policy":"path \"acmeca/revoke\" { capabilities = [\"update\"] }"})
+        )
+        .status,
+        204
+    );
+    let issued = call(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        &admin,
+        json!({"policies":["acme-revoker"],"no_default_policy":true,"ttl":"30m"}),
+    );
+    assert_eq!(issued.status, 200);
+    let actor = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("actual revocation actor")?
+        .to_owned();
+    let revoked = call(
+        &mut service,
+        "POST",
+        "acmeca/revoke",
+        &actor,
+        json!({"serial_number":serial}),
+    );
+    assert_eq!(revoked.status, 200, "{:?}", revoked.body.get("errors"));
+    assert_eq!(revoked.body["data"]["state"], "revoked");
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "acmeca/revoke",
+            &actor,
+            json!({"serial_number":serial})
+        )
+        .body["data"],
+        revoked.body["data"]
+    );
+    let public_route = format!("acmeca/cert/{serial}");
+    let public = call(&mut service, "GET", &public_route, "", json!({}));
+    assert_eq!(
+        public.body["data"]["revocation_time_rfc3339"],
+        revoked.body["data"]["revocation_time_rfc3339"]
+    );
+    let crl = call(&mut service, "GET", "acmeca/crl", "", json!({}));
+    assert_eq!(crl.status, 200);
+    let der = base64::engine::general_purpose::STANDARD
+        .decode(crl.body["__heptabao_pki_crl"].as_str().ok_or("CRL")?)?;
+    let crl = openssl::x509::X509Crl::from_der(&der)?;
+    let issuer_public = certificates[1].public_key()?;
+    assert!(crl.verify(&issuer_public)?);
+    assert!(crl.get_revoked().ok_or("revoked entries")?.iter().any(|r| {
+        r.serial_number().to_bn().is_ok_and(|r| {
+            certificates[0]
+                .serial_number()
+                .to_bn()
+                .is_ok_and(|s| r == s)
+        })
+    }));
+    let graph = serde_json::to_value(&service.state.as_ref().ok_or("state")?.engines)?;
+    let pki = &graph["namespaces"][""]["mounts"]["acmeca/"]["backend"]["Pki"];
+    assert!(
+        pki["issued"].as_object().is_none_or(|v| v.is_empty()),
+        "public ACME certificate never becomes a Vault issued lease"
+    );
+    assert_eq!(
+        pki["acme_protocol"]["revocations"][serial.replace(':', "")]["proof"]["kind"],
+        "Administrative"
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "auth/token/revoke",
+            &admin,
+            json!({"token":actor})
+        )
+        .status,
+        204
+    );
+    drop(service);
+    let mut reopened = directory.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "POST",
+            "sys/unseal",
+            "",
+            json!({"key":unseal})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(&mut reopened, "GET", &public_route, "", json!({})).body,
+        public.body
+    );
+    Ok(())
+}
+
+#[test]
+fn pki_acme99_operator_original_two_second_actor_expires_before_actual_crl_sign() -> TestResult {
+    use crate::auth::{AuthorityTime, RequestClock};
+    let directory = Root::new();
+    let mut service = directory.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let (key, jwk) = key()?;
+    let kid = order_account(&mut service, &key, &jwk)?;
+    let domain = "deadline.operator-revoke.example";
+    let order = ready(&mut service, &admin, &key, &jwk, &kid, domain)?;
+    let (_, csr) = csr(domain)?;
+    assert_eq!(
+        order_post(
+            &mut service,
+            &key,
+            &jwk,
+            &kid,
+            &format!("{order}/finalize"),
+            Some(json!({"csr":URL_SAFE_NO_PAD.encode(csr)}))
+        )?
+        .status,
+        200
+    );
+    let fetched = order_post(
+        &mut service,
+        &key,
+        &jwk,
+        &kid,
+        &format!("{order}/cert"),
+        None,
+    )?;
+    let certificates = X509::stack_from_pem(
+        fetched.body["__heptabao_acme"]
+            .as_str()
+            .ok_or("actual PEM")?
+            .as_bytes(),
+    )?;
+    let serial = certificates[0]
+        .serial_number()
+        .to_bn()?
+        .to_hex_str()?
+        .to_string()
+        .to_lowercase();
+    let state = service.state.as_ref().ok_or("state")?;
+    let base = state.engines.lease_clock().max(100).max(
+        state
+            .auth
+            .terminal_token_clock_floor()
+            .map_or(0, |at| at.ceil_seconds().unwrap_or(at.seconds())),
+    );
+    let issue_clock =
+        RequestClock::anchored(Duration::new(base, 250_000_000), std::time::Instant::now())?;
+    let execution = service.begin_at_mode_precise(
+        RequestDispatch {
+            method: "POST",
+            path: "auth/token/create",
+            namespace: "",
+            token: &admin,
+            body: json!({"ttl":"2s","policies":["root"],"no_default_policy":true}),
+            now: base,
+            allow_forward: true,
+            enforce_namespace: false,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        issue_clock,
+    );
+    let response = service.finish_synchronous_request(execution);
+    assert_eq!(response.status, 200);
+    let actor = response.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("actual actor")?
+        .to_owned();
+    let clock =
+        RequestClock::anchored(Duration::new(base, 500_000_000), std::time::Instant::now())?;
+    let state = service.state.as_mut().ok_or("state")?;
+    let time = AuthorityTime::Precise(clock.observed_at()?);
+    let principal = state.auth.authenticate_from_observed(&actor, time, None)?;
+    state
+        .auth
+        .authorize_request_observed(&principal, "", "acmeca/revoke", "update", time)?;
+    let owner = state
+        .auth
+        .typed_lease_issuer_observed(&principal, "", time)?;
+    let expiry = owner
+        .precise_expires_at
+        .ok_or("actual precise two-second actor")?;
+    assert_eq!(expiry.seconds(), base + 2);
+    assert!(expiry < crate::auth::Timestamp::checked(base + 2, 500_000_000)?);
+    let original = serde_json::to_value(&state.engines)?;
+    let mut candidate = state.engines.clone();
+    let mut guard_calls = 0;
+    let result = candidate.handle_service_pki_operator_revoke(
+        "",
+        "POST",
+        "acmeca/revoke",
+        &json!({"serial_number":serial}),
+        crate::engines::PkiRequestContext {
+            owner: Some(&owner),
+            time,
+            clock: Some(clock),
+            identity_templates: None,
+        },
+        || {
+            guard_calls += 1;
+            if guard_calls == 1 {
+                std::thread::sleep(Duration::from_millis(2100));
+            }
+            Ok(())
+        },
+    );
+    assert!(result.is_err());
+    let rejected = result.err().ok_or("actual expiry rejection")?;
+    assert_eq!(rejected.status, 403);
+    assert_eq!(
+        rejected.message,
+        "administrative PKI original caller expired before signing"
+    );
+    assert_eq!(
+        guard_calls, 2,
+        "the actual TBS guard observes the same actor after metadata delay"
+    );
+    assert!(clock.observed_at()? > expiry);
+    assert_eq!(
+        serde_json::to_value(&candidate)?,
+        original,
+        "no revocation receipt or new signed CRL installs after private actor expiry"
+    );
+    assert_eq!(serde_json::to_value(&state.engines)?, original);
+    Ok(())
+}

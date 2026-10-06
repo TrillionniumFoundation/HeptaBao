@@ -206,8 +206,7 @@ fn crl_tbs(root: &RootCa, snapshot: &CrlSnapshot) -> Result<Vec<u8>> {
     Ok(seq(&parts))
 }
 
-fn sign_snapshot(
-    root: &RootCa,
+fn prepare_snapshot(
     revoked: BTreeMap<String, u64>,
     number: u64,
     base: Option<u64>,
@@ -215,7 +214,7 @@ fn sign_snapshot(
     expiry: u64,
     url_entries: Option<UrlEntries>,
 ) -> Result<CrlSnapshot> {
-    let mut snapshot = CrlSnapshot {
+    let snapshot = CrlSnapshot {
         url_entries,
         number,
         base,
@@ -229,8 +228,18 @@ fn sign_snapshot(
     if snapshot.next_update > 253_402_300_799 {
         return Err(bad("CRL time exceeds X.509 bounds"));
     }
+    Ok(snapshot)
+}
+fn sign_prepared_snapshot(
+    root: &RootCa,
+    mut snapshot: CrlSnapshot,
+    before_sign: &mut impl FnMut() -> Result<()>,
+) -> Result<CrlSnapshot> {
     let pair = root.local_key()?;
     let tbs = crl_tbs(root, &snapshot)?;
+    // Metadata/TBS work cannot consume the accepted actor or request window
+    // and still enter a signature with renewed authority.
+    before_sign()?;
     let signature = pair.sign(&tbs)?;
     if !pair.public()?.verify(&tbs, &signature)? {
         return Err(error(503, "local PKI CRL signature failed validation"));
@@ -304,6 +313,14 @@ impl Pki {
     }
 
     pub(super) fn rebuild_local_crls(&mut self, now: u64, delta: bool) -> Result<bool> {
+        self.rebuild_local_crls_guarded(now, delta, &mut || Ok(()))
+    }
+    fn rebuild_local_crls_guarded(
+        &mut self,
+        now: u64,
+        delta: bool,
+        before_sign: &mut impl FnMut() -> Result<()>,
+    ) -> Result<bool> {
         if self.root.as_ref().is_some_and(RootCa::is_external) {
             return Ok(false);
         }
@@ -329,14 +346,17 @@ impl Pki {
                     .filter(|(serial, at)| previous.full.revoked.get(serial) != Some(at))
                     .collect();
                 let number = next_number(previous.last_number)?;
-                previous.delta = sign_snapshot(
+                previous.delta = sign_prepared_snapshot(
                     root,
-                    pending,
-                    number,
-                    Some(previous.full.number),
-                    now,
-                    expiry,
-                    None,
+                    prepare_snapshot(
+                        pending,
+                        number,
+                        Some(previous.full.number),
+                        now,
+                        expiry,
+                        None,
+                    )?,
+                    before_sign,
                 )?;
                 previous.last_number = number;
             } else {
@@ -346,23 +366,29 @@ impl Pki {
                         .map_or(0, |previous| previous.last_number),
                 )?;
                 let delta_number = next_number(full_number)?;
-                let full = sign_snapshot(
+                let full = sign_prepared_snapshot(
                     root,
-                    revoked,
-                    full_number,
-                    None,
-                    now,
-                    expiry,
-                    self.capture_urls(&root.issuer_id)?,
+                    prepare_snapshot(
+                        revoked,
+                        full_number,
+                        None,
+                        now,
+                        expiry,
+                        self.capture_urls(&root.issuer_id)?,
+                    )?,
+                    before_sign,
                 )?;
-                let delta = sign_snapshot(
+                let delta = sign_prepared_snapshot(
                     root,
-                    BTreeMap::new(),
-                    delta_number,
-                    Some(full_number),
-                    now,
-                    expiry,
-                    None,
+                    prepare_snapshot(
+                        BTreeMap::new(),
+                        delta_number,
+                        Some(full_number),
+                        now,
+                        expiry,
+                        None,
+                    )?,
+                    before_sign,
                 )?;
                 next.issuers.insert(
                     key,
@@ -501,6 +527,18 @@ impl Pki {
             return Ok(Some(ok(json!({"success":true}), true)));
         }
         Ok(None)
+    }
+
+    pub(super) fn local_revocation_changed_guarded(
+        &mut self,
+        now: u64,
+        before_sign: &mut impl FnMut() -> Result<()>,
+    ) -> Result<()> {
+        self.mark_local_crl_dirty();
+        if !self.local_crl_config().auto_rebuild {
+            self.rebuild_local_crls_guarded(now, false, before_sign)?;
+        }
+        Ok(())
     }
 
     pub(super) fn local_revocation_changed(&mut self, now: u64) -> Result<()> {

@@ -49,8 +49,17 @@ impl EngineState {
                 || pki::Pki::issuer_sign_route(relative).is_some()
         })
     }
+    pub(crate) fn is_pki_acme_operator_revoke_route(&self, namespace: &str, path: &str) -> bool {
+        self.pki_mount(namespace, path).is_some_and(|mount| {
+            &path[mount.len()..] == "revoke" && self.namespaces.get(namespace)
+                .and_then(|state|state.mounts.get(mount))
+                .is_some_and(|mount| matches!(&mount.backend, Backend::Pki(pki) if pki.acme_protocol.is_some()))
+        })
+    }
     pub(crate) fn is_lease_service_route(&self, namespace: &str, path: &str) -> bool {
-        self.is_ssh_service_route(namespace, path) || self.is_pki_issue_route(namespace, path)
+        self.is_ssh_service_route(namespace, path)
+            || self.is_pki_issue_route(namespace, path)
+            || self.is_pki_acme_operator_revoke_route(namespace, path)
     }
     pub(crate) fn is_ssh_verification(&self, namespace: &str, method: &str, path: &str) -> bool {
         write_method(method)
@@ -320,6 +329,82 @@ impl EngineState {
             return BTreeSet::new();
         };
         engine.identity_selectors(&path[mount.len()..])
+    }
+
+    pub(crate) fn handle_service_pki_operator_revoke(
+        &mut self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        context: PkiRequestContext<'_>,
+        mut before_effect: impl FnMut() -> Result<()>,
+    ) -> Result<EngineResponse> {
+        if !write_method(method) {
+            return Err(unsupported());
+        }
+        let actor = context
+            .owner
+            .ok_or_else(|| error(403, "administrative PKI caller required"))?;
+        actor
+            .owner
+            .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
+            .map_err(|_| error(403, "administrative PKI caller namespace rejected"))?;
+        let mount = self
+            .pki_mount(namespace, path)
+            .ok_or_else(not_found)?
+            .to_owned();
+        if &path[mount.len()..] != "revoke" {
+            return Err(not_found());
+        }
+        let time = context.observed_time(self.lease_clock)?;
+        let mut candidate = self
+            .namespaces
+            .get(namespace)
+            .ok_or_else(not_found)?
+            .clone();
+        let Backend::Pki(engine) = &mut candidate
+            .mounts
+            .get_mut(&mount)
+            .ok_or_else(not_found)?
+            .backend
+        else {
+            return Err(not_found());
+        };
+        let response = match engine.revoke_acme_by_operator(
+            body,
+            PkiRequestContext { time, ..context },
+            &mut before_effect,
+        )? {
+            Some(response) => response,
+            None => {
+                before_effect()?;
+                engine.handle_admin(method, "revoke", body, time.seconds())?
+            }
+        };
+        let delivered = context.observed_time(
+            time.seconds().max(
+                engine
+                    .acme_protocol
+                    .as_ref()
+                    .map_or(0, |p| p.clock.seconds()),
+            ),
+        )?;
+        if actor
+            .precise_expires_at
+            .is_some_and(|end| delivered.exact().is_none_or(|at| at > end))
+            || actor.precise_expires_at.is_none()
+                && actor
+                    .expires_at
+                    .is_some_and(|end| delivered.seconds() >= end)
+        {
+            return Err(error(403, "administrative PKI caller no longer live"));
+        }
+        if response.mutated {
+            self.namespaces.insert(namespace.into(), candidate);
+            self.lease_clock = self.lease_clock.max(delivered.seconds());
+        }
+        Ok(response)
     }
 
     pub(crate) fn handle_service_pki_context(

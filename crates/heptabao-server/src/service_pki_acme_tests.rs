@@ -1652,3 +1652,57 @@ mod eab_tests;
 
 #[path = "service_pki_acme_finalize_tests.rs"]
 mod finalize_tests;
+
+#[test]
+fn pki_acme99_advertised_key_change_native404_does_not_redeem_jws() -> TestResult {
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (_, admin) = bootstrap(&mut service)?;
+    setup(&mut service, &admin)?;
+    let (key, jwk) = key()?;
+    let initial_nonce = nonce(&mut service)?;
+    let signed_body = signed(
+        &key,
+        &jwk,
+        &initial_nonce,
+        "https://acme.example.test/v1/acmeca/acme/key-change",
+        None,
+        Some(json!({})),
+    )?;
+    let original = service.state.as_ref().ok_or("state")?.engines.clone();
+    for (method, body) in [
+        ("GET", json!({})),
+        ("POST", json!({})),
+        ("POST", json!({"protected":"","payload":"","signature":""})),
+        ("POST", signed_body),
+    ] {
+        let response = call(&mut service, method, "acmeca/acme/key-change", "", body);
+        assert_eq!(response.status, 404);
+        assert_eq!(response.body, json!({"errors":["unsupported path"]}));
+        assert!(response.response_headers.is_empty());
+    }
+    assert_eq!(
+        serde_json::to_value(&service.state.as_ref().ok_or("state")?.engines)?,
+        serde_json::to_value(&original)?
+    );
+    let new_account = signed(
+        &key,
+        &jwk,
+        &initial_nonce,
+        "https://acme.example.test/v1/acmeca/acme/new-account",
+        None,
+        Some(json!({"termsOfServiceAgreed":true})),
+    )?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "acmeca/acme/new-account",
+            "",
+            new_account
+        )
+        .status,
+        201
+    );
+    Ok(())
+}
