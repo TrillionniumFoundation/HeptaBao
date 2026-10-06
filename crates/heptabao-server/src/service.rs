@@ -167,6 +167,10 @@ mod identity;
 mod kubernetes_secret;
 #[path = "service_leader.rs"]
 mod leader;
+#[path = "service_legacy_immutable_kv.rs"]
+mod legacy_immutable_kv;
+#[path = "service_legacy_upgrade_wire.rs"]
+pub(crate) mod legacy_upgrade_wire;
 #[path = "service_lifecycle.rs"]
 mod lifecycle;
 #[path = "service_local_unseal.rs"]
@@ -2877,6 +2881,10 @@ impl Service {
                 if !allow_forward {
                     return Response::error(503, "forwarded request reached a standby node");
                 }
+                if let Some(response) = self.legacy_immutable_kv_response(&request, Arc::clone(&ha))
+                {
+                    return response;
+                }
                 self.pending_forward_delivery =
                     Some(forward_delivery::PendingForwardDelivery::Rejected);
                 let forwarded = match ha.lock_for_request() {
@@ -4003,6 +4011,17 @@ impl Service {
         match classify_request_effect(method, before_digest, serialized_digest) {
             RequestEffectClass::PureRead => {}
             RequestEffectClass::DurableMutation | RequestEffectClass::SideEffectingRead => {
+                match self.commit_legacy_upgrade_kv(&mut admitted, &request) {
+                    Ok(true) => {
+                        self.state = Some(admitted);
+                        return response;
+                    }
+                    Ok(false) => {}
+                    Err(error) => {
+                        erase_json(&mut response.body);
+                        return error;
+                    }
+                }
                 if admitted.schema != admitted.writer_schema() {
                     admitted.schema = admitted.writer_schema();
                 }

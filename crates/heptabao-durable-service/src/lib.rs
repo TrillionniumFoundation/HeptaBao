@@ -34,7 +34,7 @@ mod restore_transaction;
 pub use prepared_restore::{PreparedRestore, PreparedRestoreMetadata};
 mod capacity;
 mod immutable_publication;
-pub use capacity::CapacityStatus;
+pub use capacity::{BatchPublication, CapacityStatus};
 pub use immutable_publication::{ImmutablePublication, ImmutablePublicationCapacity};
 mod backend;
 pub use backend::{

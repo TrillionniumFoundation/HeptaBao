@@ -13,6 +13,17 @@ pub struct CapacityStatus {
     pub recovery_required: bool,
 }
 
+/// A single exact durable mutation set. This carries no credential authority;
+/// the caller retains its original admission in the before-publication closure.
+pub struct BatchPublication {
+    pub replay_epoch: u64,
+    pub principal: String,
+    pub namespace: String,
+    pub request_id: String,
+    pub authorization_digest: [u8; 32],
+    pub mutations: Vec<(String, Option<Secret>)>,
+}
+
 struct AtomicBatchRequest {
     replay_epoch: u64,
     principal: String,
@@ -115,6 +126,29 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         )
     }
 
+    /// Run the same atomic batch policy, including at most one pre-entry
+    /// compaction. The original closure is retained across that compaction and
+    /// runs after sealing/capacity, immediately before the first journal append.
+    pub fn apply_batch_before_publish(
+        &mut self,
+        request: BatchPublication,
+        mut before_publish: impl FnMut() -> Result<(), ServiceError>,
+    ) -> Result<MutationOutcome, ServiceError> {
+        self.apply_batch_with_policy_and_gate(
+            AtomicBatchRequest {
+                replay_epoch: request.replay_epoch,
+                principal: request.principal,
+                namespace: request.namespace,
+                request_id: request.request_id,
+                authorization_digest: request.authorization_digest,
+                mutations: request.mutations,
+            },
+            Failpoint::None,
+            true,
+            &mut before_publish,
+        )
+    }
+
     #[cfg(test)]
     fn apply_batch_with_failpoint(
         &mut self,
@@ -141,9 +175,21 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
 
     fn apply_batch_with_policy(
         &mut self,
+        request: AtomicBatchRequest,
+        failpoint: Failpoint,
+        compact_before_entry: bool,
+    ) -> Result<MutationOutcome, ServiceError> {
+        self.apply_batch_with_policy_and_gate(request, failpoint, compact_before_entry, &mut || {
+            Ok(())
+        })
+    }
+
+    fn apply_batch_with_policy_and_gate(
+        &mut self,
         mut request: AtomicBatchRequest,
         failpoint: Failpoint,
         compact_before_entry: bool,
+        before_publish: &mut dyn FnMut() -> Result<(), ServiceError>,
     ) -> Result<MutationOutcome, ServiceError> {
         validate_identifier(&request.principal)?;
         validate_namespace(&request.namespace)?;
@@ -203,6 +249,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             if existing.binding_digest != binding_digest {
                 return Err(ServiceError::RequestBindingConflict);
             }
+            before_publish()?;
             return Ok(MutationOutcome::Duplicate {
                 generation: existing.generation,
                 recovery_reference: existing.recovery_reference.clone(),
@@ -297,10 +344,17 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         {
             if compact_before_entry {
                 self.compact()?;
-                return self.apply_batch_with_policy(request, failpoint, false);
+                return self.apply_batch_with_policy_and_gate(
+                    request,
+                    failpoint,
+                    false,
+                    before_publish,
+                );
             }
             return Err(ServiceError::JournalCapacityExhausted);
         }
+
+        before_publish()?;
 
         self.unresolved = true;
         let result = (|| {

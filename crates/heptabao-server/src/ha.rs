@@ -1,3 +1,6 @@
+#[path = "ha_legacy_upgrade.rs"]
+mod legacy_upgrade;
+pub(crate) use legacy_upgrade::LegacyCommitError;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 use std::fs::{self, OpenOptions};
@@ -963,6 +966,28 @@ impl HaProcess {
             false
         };
         let bootstrap_admission = Some(bootstrap_admission);
+        // Explicit legacy receiver/sender transition on this actual durable
+        // process reopen. Never triggered by health or a business request.
+        // Failure conveys no activation: ordinary service gates still require
+        // their own live quorum, current graph, actor and original clock.
+        if existing && config.allow_legacy_peer_v1 && emit_legacy_peer_v1 {
+            let upgrade_started = Instant::now();
+            let deadline = upgrade_started + Duration::from_secs(8);
+            let observed = runtime.block_on(node.campaign_for_legacy_upgrade_before(deadline));
+            match observed {
+                Ok(observed) => eprintln!(
+                    "heptabao-ha-legacy-upgrade: outcome=current-read-index leader={:?} term={} applied={:?} elapsed_ms={}",
+                    observed.leader,
+                    observed.term,
+                    observed.applied_index,
+                    upgrade_started.elapsed().as_millis(),
+                ),
+                Err(_) => eprintln!(
+                    "heptabao-ha-legacy-upgrade: outcome=unavailable elapsed_ms={}",
+                    upgrade_started.elapsed().as_millis(),
+                ),
+            }
+        }
 
         Ok(Self {
             record_commits_since_gc: AtomicU64::new(0),
@@ -984,6 +1009,15 @@ impl HaProcess {
             forward_handler,
             listener: Some(listener_pool),
         })
+    }
+
+    pub(crate) fn emits_legacy_peer_v1(&self) -> bool {
+        self.emit_legacy_peer_v1
+    }
+
+    #[cfg(test)]
+    pub(crate) fn set_legacy_peer_v1_for_test(&mut self, enabled: bool) {
+        self.emit_legacy_peer_v1 = enabled;
     }
 
     pub(crate) fn forward_timeout(&self) -> Duration {

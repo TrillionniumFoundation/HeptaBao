@@ -605,3 +605,23 @@ impl Pki {
         Ok(body)
     }
 }
+
+impl Pki {
+    pub(super) fn acme_certificates(&self) -> impl Iterator<Item = &Certificate> {
+        self.acme_protocol
+            .iter()
+            .flat_map(|protocol| protocol.orders.values())
+            .filter_map(|order| order.certificate.as_ref())
+    }
+
+    pub(super) fn acme_certificate_for_serial(&self, serial: &str) -> Result<Option<&Certificate>> {
+        let mut matches = self
+            .acme_certificates()
+            .filter(|cert| cert.serial == serial);
+        let found = matches.next();
+        if matches.next().is_some() {
+            return Err(bad("certificate serial is ambiguous"));
+        }
+        Ok(found)
+    }
+}

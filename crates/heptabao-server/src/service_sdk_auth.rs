@@ -911,7 +911,7 @@ impl Service {
             Err(error) => return auth_error(error),
         };
         let admission =
-            if operation == "update" && path == "config" && renewal.is_none() && caller.is_some() {
+            if renewal.is_none() && caller.is_some() && matches!(operation, "read" | "update") {
                 let Some(authority) = caller.take() else {
                     return Response::error(503, "SDK admitted actual caller unavailable");
                 };

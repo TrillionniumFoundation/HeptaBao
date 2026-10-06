@@ -15,6 +15,17 @@ struct OrdinaryKvRequestBinding {
     activation_nonce: String,
 }
 
+// Only the actual legacy proposal/commit branches produce this negative
+// observation. It is not completion authority and never releases a KV body.
+pub(super) enum LegacyUpgradePublicationFailure {
+    ProposalUncertain,
+    CommittedLocalIncomplete,
+}
+struct LegacyUpgradeFailureNotice {
+    binding: OrdinaryKvRequestBinding,
+    failure: LegacyUpgradePublicationFailure,
+}
+
 struct IndeterminateCommitNotice {
     binding: OrdinaryKvRequestBinding,
     error: &'static str,
@@ -53,7 +64,9 @@ pub(super) struct OrdinaryKvAuthority {
     started: std::time::Instant,
     deadline: Option<std::time::Instant>,
     indeterminate_commit: Option<IndeterminateCommitNotice>,
+    legacy_upgrade_failure: Option<LegacyUpgradeFailureNotice>,
     audited_fingerprint: Option<String>,
+    legacy_replica: Option<Box<legacy_immutable_kv::LegacyReplicaRead>>,
 }
 
 impl Drop for OrdinaryKvAuthority {
@@ -97,10 +110,16 @@ impl OrdinaryKvAuthority {
             started: request.admission_started,
             deadline: crate::request_deadline::current(),
             indeterminate_commit: None,
+            legacy_upgrade_failure: None,
             audited_fingerprint: None,
+            legacy_replica: None,
         };
         authority.check(state, &state.auth, activation_nonce)?;
         Ok(authority)
+    }
+
+    pub(super) fn bind_legacy_replica(&mut self, replica: legacy_immutable_kv::LegacyReplicaRead) {
+        self.legacy_replica = Some(Box::new(replica));
     }
 
     fn request_binding(&self) -> OrdinaryKvRequestBinding {
@@ -211,6 +230,18 @@ impl OrdinaryKvAuthority {
 }
 
 impl Service {
+    pub(super) fn capture_legacy_upgrade_publication_failure(
+        &mut self,
+        failure: LegacyUpgradePublicationFailure,
+    ) {
+        if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
+            authority.legacy_upgrade_failure = Some(LegacyUpgradeFailureNotice {
+                binding: authority.request_binding(),
+                failure,
+            });
+        }
+    }
+
     pub(super) fn capture_ordinary_kv_outcome_unknown(
         &mut self,
         error: &ServiceError,
@@ -319,6 +350,34 @@ impl Service {
         mut response: Response,
         fingerprint: &str,
     ) -> Response {
+        if let Some(notice) = authority.legacy_upgrade_failure.take() {
+            erase_json(&mut response.body);
+            response.response_headers = Default::default();
+            response.consistency_index = None;
+            let message = if notice.binding != authority.request_binding()
+                || authority.audited_fingerprint.as_deref() != Some(fingerprint)
+            {
+                "ordinary KV publication failure notice was not audited"
+            } else {
+                match notice.failure {
+                    LegacyUpgradePublicationFailure::ProposalUncertain => {
+                        "HA publication outcome unknown; reopen and reconcile; do not blindly retry"
+                    }
+                    LegacyUpgradePublicationFailure::CommittedLocalIncomplete => {
+                        "HA state committed but local persistence incomplete; authoritative reconciliation required"
+                    }
+                }
+            };
+            // Retain only the original typed negative effect observation after
+            // mandatory audit. Expiry/fencing can never turn it into success or
+            // relabel an already proposed/committed effect as safe to retry.
+            return Response {
+                status: 503,
+                body: json!({"errors":[message],"recovery_required":true,"retry_allowed":false}),
+                response_headers: Default::default(),
+                consistency_index: None,
+            };
+        }
         if let Some(notice) = authority.indeterminate_commit.take() {
             erase_json(&mut response.body);
             response.consistency_index = None;
@@ -356,6 +415,11 @@ impl Service {
             if self.recovery_required {
                 return Err(Response::error(503, "ordinary KV delivery is fenced"));
             }
+            if let Some(replica) = authority.legacy_replica.as_ref() {
+                replica.check(self)?;
+            }
+            // All quorum/durable work precedes this final observation of the
+            // original affine Actor/Clock and current ACL/namespace/mount owner.
             let state = self
                 .state
                 .as_ref()

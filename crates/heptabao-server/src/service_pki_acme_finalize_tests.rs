@@ -186,6 +186,71 @@ fn pki_acme99_finalize_actual_dns_csr_signature_chain_encrypted_reopen_and_rollb
         .to_owned();
     let chain = X509::stack_from_pem(pem.as_bytes())?;
     assert_eq!(chain.len(), 2);
+    let actual_serial = chain[0]
+        .serial_number()
+        .to_bn()?
+        .to_vec()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<Vec<_>>()
+        .join(":");
+    let public_route = format!("acmeca/cert/{actual_serial}");
+    let public_read = call(&mut service, "GET", &public_route, "", json!({}));
+    assert_eq!(
+        public_read.status, 200,
+        "actual DER serial is public without a Vault token"
+    );
+    let public_pem = public_read.body["data"]["certificate"]
+        .as_str()
+        .ok_or("public PKI certificate")?;
+    assert_eq!(
+        X509::from_pem(public_pem.as_bytes())?.to_der()?,
+        chain[0].to_der()?
+    );
+    assert!(!public_pem.ends_with('\n'));
+    assert_eq!(public_read.body["data"]["revocation_time"], 0);
+    {
+        let alias = actual_serial.to_uppercase();
+        let alias_read = call(
+            &mut service,
+            "GET",
+            &format!("acmeca/cert/{alias}"),
+            "",
+            json!({}),
+        );
+        assert_eq!(alias_read.status, 200);
+        assert_eq!(
+            alias_read.body, public_read.body,
+            "alias derives only from actual signed INTEGER"
+        );
+    }
+    let absent_alias = call(
+        &mut service,
+        "GET",
+        &format!("acmeca/cert/00:{actual_serial}"),
+        "",
+        json!({}),
+    );
+    assert_eq!(
+        absent_alias.status, 404,
+        "native canonical ACME key does not accept a leading-zero alias"
+    );
+    assert_eq!(absent_alias.body, json!({"errors":[]}));
+    let raw_read = call(
+        &mut service,
+        "GET",
+        &format!("{public_route}/raw"),
+        "",
+        json!({}),
+    );
+    assert_eq!(raw_read.status, 200);
+    let encoded = raw_read.body["__heptabao_pki_certificate"]
+        .as_str()
+        .ok_or("raw public DER")?;
+    assert_eq!(
+        base64::engine::general_purpose::STANDARD.decode(encoded)?,
+        chain[0].to_der()?
+    );
     let issuer_key = chain[1].public_key()?;
     assert!(chain[0].verify(&issuer_key)?);
     assert_eq!(
@@ -260,6 +325,12 @@ fn pki_acme99_finalize_actual_dns_csr_signature_chain_encrypted_reopen_and_rollb
         )
         .status,
         200
+    );
+    let reopened_public = call(&mut reopened, "GET", &public_route, "", json!({}));
+    assert_eq!(reopened_public.status, 200);
+    assert_eq!(
+        reopened_public.body, public_read.body,
+        "encrypted reopen preserves the public ACME certificate asset"
     );
     assert_eq!(
         order_post(&mut reopened, &account_key, &jwk, &kid, &cert_path, None)?.body["__heptabao_acme"],

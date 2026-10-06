@@ -884,6 +884,7 @@ impl Pki {
         let mut keys = self.issued.keys().cloned().collect::<BTreeSet<_>>();
         keys.extend(self.local_roots().map(|root| root.serial.clone()));
         keys.extend(self.signed_ca_serials().cloned());
+        keys.extend(self.acme_certificates().map(|cert| cert.serial.clone()));
         if let Some(state) = &self.local_issuers {
             keys.extend(state.certificates.keys().cloned());
         }
@@ -892,13 +893,23 @@ impl Pki {
             if integer(&serial_bytes(&key)?) != wanted {
                 continue;
             }
-            let bytes = self
-                .local_certificate(&key)
-                .or_else(|| {
-                    self.issued
-                        .get(&key)
-                        .map(|leaf| leaf.certificate_der.as_slice())
-                })
+            let acme = self.acme_certificate_for_serial(&key)?;
+            // Native ACME assets have always used a canonical global serial key.
+            // Preserve old Vault/local INTEGER aliases without creating a new
+            // leading-zero alias for a canonically indexed ACME certificate.
+            if acme.is_some() && key != normalized {
+                continue;
+            }
+            let bytes = self.local_certificate(&key).or_else(|| {
+                self.issued
+                    .get(&key)
+                    .map(|leaf| leaf.certificate_der.as_slice())
+            });
+            if bytes.is_some() && acme.is_some() {
+                return Err(bad("certificate serial is ambiguous"));
+            }
+            let bytes = bytes
+                .or_else(|| acme.map(|cert| cert.der.as_slice()))
                 .ok_or_else(|| bad("certificate serial index has no signed material"))?;
             let (rest, certificate) = x509_parser::parse_x509_certificate(bytes)
                 .map_err(|_| bad("invalid indexed certificate DER"))?;
@@ -939,6 +950,7 @@ impl Pki {
         let mut serials = self.issued.keys().cloned().collect::<BTreeSet<_>>();
         serials.extend(self.local_roots().map(|root| root.serial.clone()));
         serials.extend(self.signed_ca_serials().cloned());
+        serials.extend(self.acme_certificates().map(|cert| cert.serial.clone()));
         if let Some(state) = &self.local_issuers {
             serials.extend(state.certificates.keys().cloned());
         }

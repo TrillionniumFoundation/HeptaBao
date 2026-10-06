@@ -9,6 +9,10 @@ mod read_deadline;
 mod rpc_observation;
 pub use read_deadline::with_read_index_deadline;
 mod snapshot;
+mod upgrade_campaign;
+
+#[cfg(test)]
+mod upgrade_campaign_tests;
 
 pub use network::{
     RaftPeerRpc, RaftRpcKind, RaftRpcService, RemoteNetworkFactory, RemoteRaftError,

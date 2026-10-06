@@ -276,7 +276,19 @@ impl Pki {
                         false,
                     ));
                 }
-                let certificate = self.issued.get(&serial).ok_or_else(not_found)?;
+                if let Some(cert) = self.acme_certificate_for_serial(&serial)? {
+                    return Ok(ok(
+                        json!({"certificate":stored_pem("CERTIFICATE", &cert.der),"revocation_time":0,"revocation_time_rfc3339":""}),
+                        false,
+                    ));
+                }
+                let Some(certificate) = self.issued.get(&serial) else {
+                    return Ok(EngineResponse {
+                        status: 404,
+                        body: json!({"errors":[]}),
+                        mutated: false,
+                    });
+                };
                 let projection = json!({"certificate":stored_pem("CERTIFICATE", &certificate.certificate_der),"revocation_time":certificate.revoked_at.unwrap_or(0),"revocation_time_rfc3339":certificate.revoked_at.map(timestamp).unwrap_or_default()});
                 Ok(ok(projection, false))
             }
@@ -284,6 +296,9 @@ impl Pki {
                 let serial = self.resolve_certificate_serial(serial)?;
                 if let Some(der) = self.local_certificate(&serial) {
                     return raw_certificate(der, format);
+                }
+                if let Some(cert) = self.acme_certificate_for_serial(&serial)? {
+                    return raw_certificate(&cert.der, format);
                 }
                 let certificate = self.issued.get(&serial).ok_or_else(not_found)?;
                 raw_certificate(&certificate.certificate_der, format)

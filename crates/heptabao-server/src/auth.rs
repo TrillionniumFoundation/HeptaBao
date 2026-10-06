@@ -2614,6 +2614,26 @@ impl AuthState {
         self.authenticate_read_only_from_observed(raw, AuthorityTime::Coarse(now), origin_peer)
     }
 
+    // Structural routing eligibility only. This does not authenticate, create
+    // a Principal, consume a use or release a response.
+    pub(super) fn legacy_immutable_token_is_non_consuming(&self, raw: &str) -> bool {
+        if raw.len() > 256 || !raw.starts_with("hvs.") {
+            return false;
+        }
+        self.tokens.get(&hash(raw)).is_some_and(|token| {
+            token.uses_remaining.is_none()
+                && token.wrapping.is_none()
+                && token.token_api_precision.is_none()
+                && token.auth_mount.is_none()
+                && token.entity_id.is_none()
+                && match token.auth_provenance.as_ref() {
+                    Some(TokenAuthProvenance::TokenApi { .. }) => true,
+                    None => token.root && token.parent.is_none(),
+                    _ => false,
+                }
+        })
+    }
+
     pub(super) fn authenticate_read_only_from_observed(
         &self,
         raw: &str,

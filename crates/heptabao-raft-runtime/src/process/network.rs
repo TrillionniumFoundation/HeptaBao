@@ -114,6 +114,10 @@ impl RemoteNetworkFactory {
         })
     }
 
+    pub(super) fn enrolled_peer_ids(&self) -> &BTreeSet<u64> {
+        &self.peers
+    }
+
     pub fn local_id(&self) -> u64 {
         self.local_id
     }

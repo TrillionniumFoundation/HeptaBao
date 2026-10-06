@@ -283,7 +283,7 @@ impl Leases {
         }
         Ok(())
     }
-    fn is_empty(&self) -> bool {
+    pub(super) fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 }
