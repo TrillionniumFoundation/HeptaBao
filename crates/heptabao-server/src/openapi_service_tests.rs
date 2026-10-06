@@ -259,7 +259,7 @@ fn openapi_uses_actual_mounts_after_remount_disable_and_restart()
             .get("/auth/team/accounts/login/{username}")
             .is_none()
     );
-    let expected = disabled.body;
+    let expected = disabled.body.clone();
     drop(service);
     let mut service = root.service()?;
     assert_eq!(

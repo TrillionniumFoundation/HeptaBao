@@ -1073,14 +1073,18 @@ fn batch_login_identity_wrapping_and_reopen_publish_one_transaction_without_serv
     let mut s = f.service()?;
     let (admin, key) = bootstrap(&mut s)?;
     create_batch_user(&mut s, &admin);
-    // Unseal schedules GC. V4->V5 publication leaves its first collection due.
-    // Physical generations include GC; this counter counts published roots and
-    // resets only when GC completes, so two AuthState publications would yield 2.
-    assert!(s.record_writes_since_gc >= 64);
+    // The explicit auth mount setup completes activation GC before login.
+    // Count actual published roots from that setup; two AuthState publications
+    // would advance this counter twice, even though physical generations include GC.
+    let published_before = s.record_writes_since_gc;
+    assert!(
+        published_before < 64,
+        "actual fixture must complete activation GC before observing login"
+    );
     let before = s.durable.as_ref().ok_or("durable")?.generation();
     let wrapped = batch_userpass_login(&mut s, Some(60));
     assert_eq!(wrapped.status, 200);
-    assert_eq!(s.record_writes_since_gc, 1);
+    assert_eq!(s.record_writes_since_gc, published_before + 1);
     assert!(s.durable.as_ref().ok_or("durable")?.generation() > before);
     assert!(wrapped.body.get("auth").is_none_or(Value::is_null));
     let wrapper = text(&wrapped.body, "/wrap_info/token")?;
