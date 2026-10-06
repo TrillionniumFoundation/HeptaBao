@@ -300,7 +300,7 @@ fn start_worker_typed(
                         )?);
                     }
                     if job.operation == "_mount" {
-                        return if family==SdkBackendType::Auth {
+                        return if family==heptabao_plugin_host::sdk_backend::SdkBackendType::Auth {
                             Ok(Some(json!({"auth_paths":host.as_ref().ok_or(SdkBridgeError::Fenced)?.auth_special_paths().ok_or(SdkBridgeError::Fenced)?})))
                         } else {Ok(None)};
                     }
