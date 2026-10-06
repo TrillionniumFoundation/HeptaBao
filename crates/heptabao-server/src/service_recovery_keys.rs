@@ -455,7 +455,7 @@ impl Service {
                     failure.phase,
                     HaRecoveryIndexFailurePhase::BeforeIndexPublication
                 ) && matches!(
-                    completed.progress(self),
+                    completed.publication_progress(self),
                     Ok(HaLocalPublicationProgress::Superseded)
                 ) {
                     Ok(HaLocalPublicationProgress::Superseded)

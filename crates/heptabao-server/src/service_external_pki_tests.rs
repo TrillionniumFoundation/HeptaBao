@@ -42,19 +42,29 @@ fn timed_leaf_delivery(
     started: std::time::Instant,
 ) -> TestResult<(Response, u64, u64)> {
     let _clock = crate::service::external_pki::PublicationClockScope::enter(unix, started);
-    let pending = match service.begin_at_mode(RequestDispatch {
-        method: "POST",
-        path,
-        namespace: "",
-        token,
-        body,
-        now: 100,
-        allow_forward: true,
-        enforce_namespace: false,
-        wrap_ttl_seconds: None,
-        origin_peer: None,
-        client_certificates: None,
-    }) {
+    let admitted_floor = service
+        .state
+        .as_ref()
+        .ok_or("observer admitted state")?
+        .engines
+        .lease_clock()
+        .max(100);
+    let pending = match service.begin_at_mode_started(
+        RequestDispatch {
+            method: "POST",
+            path,
+            namespace: "",
+            token,
+            body,
+            now: 100,
+            allow_forward: true,
+            enforce_namespace: false,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        },
+        started,
+    ) {
         RequestExecution::External(pending) => *pending,
         RequestExecution::Complete(_) => return Err("real timed leaf did not stage".into()),
     };
@@ -80,19 +90,26 @@ fn timed_leaf_delivery(
         response,
     );
     let before = started.elapsed();
+    // This explicit historical caller has no precise Token clock. Its actual
+    // authority retains the durable Engine floor and the original caller start.
+    let observed_floor =
+        |elapsed: std::time::Duration| -> u64 { admitted_floor.saturating_add(elapsed.as_secs()) };
+    let floor_before = observed_floor(before);
     let response =
         service.complete_external_pki_delivery(&mut plan, response, &pending.fingerprint);
     let after = started.elapsed();
-    let nearest_remaining = |elapsed: std::time::Duration| -> u64 {
-        let remaining = (u128::from(expiration) * 1_000_000_000)
-            .saturating_sub(unix.as_nanos().saturating_add(elapsed.as_nanos()));
+    let floor_after = observed_floor(after);
+    let nearest_remaining = |elapsed: std::time::Duration, logical_floor: u64| -> u64 {
+        let remaining = (u128::from(expiration) * 1_000_000_000).saturating_sub(
+            unix.as_nanos()
+                .saturating_add(elapsed.as_nanos())
+                .max(u128::from(logical_floor) * 1_000_000_000),
+        );
         ((remaining + 500_000_000) / 1_000_000_000) as u64
     };
-    Ok((
-        response,
-        nearest_remaining(after),
-        nearest_remaining(before),
-    ))
+    let lower = nearest_remaining(after, floor_after);
+    let upper = nearest_remaining(before, floor_before);
+    Ok((response, lower, upper))
 }
 
 fn pki_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, String)> {
@@ -1626,3 +1643,59 @@ fn external_pki270_optional_provider_host_sign_capability_disable_and_revoke_fen
 
 #[path = "service_pki_urls_tests.rs"]
 mod urls97;
+
+#[test]
+fn external_pki270_real_durable_domain_floor_bounds_final_leaf_ttl() -> TestResult {
+    let remote = RemoteTransit::new_kind("ed25519")?;
+    let (_root, mut service, _unseal, admin) = leaf_fixture(&remote)?;
+    let mut precursor = service.handle_at(
+        "POST",
+        "external-ca/issue/leaf",
+        "",
+        &admin,
+        json!({"common_name":"precursor.example.test","ttl":"10m"}),
+        105,
+    );
+    assert_eq!(
+        precursor.status, 200,
+        "actual external signature and encrypted publication advance domain floor"
+    );
+    erase_json(&mut precursor.body);
+    let floor = service
+        .state
+        .as_ref()
+        .ok_or("actual durable domain")?
+        .engines
+        .lease_clock();
+    assert!(
+        floor >= 105,
+        "actual signed leaf publishes durable domain clock"
+    );
+    let started = std::time::Instant::now();
+    let (response, lower, upper) = timed_leaf_delivery(
+        &mut service,
+        &admin,
+        "external-ca/issue/leaf",
+        json!({"common_name":"floor.example.test","ttl":"10m"}),
+        std::time::Duration::from_secs(100),
+        started,
+    )?;
+    let ttl = response.body["lease_duration"].as_u64().ok_or("TTL")?;
+    let expiration = response.body["data"]["expiration"]
+        .as_u64()
+        .ok_or("expiry")?;
+    let legacy_lower = ((u128::from(expiration) * 1_000_000_000).saturating_sub(
+        std::time::Duration::from_secs(100).as_nanos() + started.elapsed().as_nanos(),
+    ) + 500_000_000)
+        / 1_000_000_000;
+    eprintln!(
+        "PKI_TTL_REGRESSION_SAFE renewable={} ttl={} lower={} upper={} actual_durable_domain_floor={} old_observer_lower={}",
+        response.body["renewable"], ttl, lower, upper, floor, legacy_lower
+    );
+    assert!(response.body["renewable"] == false && (lower..=upper).contains(&ttl) && ttl <= 600);
+    assert!(
+        legacy_lower > u128::from(upper),
+        "old observer would reject the legal shorter TTL from real durable floor"
+    );
+    Ok(())
+}

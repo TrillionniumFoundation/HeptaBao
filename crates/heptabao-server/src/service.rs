@@ -7489,7 +7489,7 @@ impl Service {
             let completed = received.after_publication(self)?;
             self.state = Some(received.state().clone());
             self.state_digest = Some(committed.digest);
-            let progress = completed.progress(self)?;
+            let progress = completed.publication_progress(self)?;
             if progress == ha_received::HaLocalPublicationProgress::Superseded {
                 return Ok(progress);
             }

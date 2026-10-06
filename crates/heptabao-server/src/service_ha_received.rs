@@ -16,6 +16,86 @@ pub(super) struct ReceivedHaState {
     deadline: Option<Instant>,
     publication: ReceivedPublication,
     source_witness: Option<ApplicationReadWitness>,
+    shamir_owner: Option<ShamirLocalPublicationOwner>,
+}
+
+/// Private admission of this exact local Shamir instance. It is neither wire
+/// metadata nor a Wrapper recovery-index owner, and grants no response delivery.
+struct ShamirLocalPublicationOwner {
+    ha: Arc<Mutex<crate::ha::HaProcess>>,
+    seal: SealMetadata,
+    unseal_nonce: Zeroizing<String>,
+    barrier_digest: [u8; 32],
+    deadline: Instant,
+}
+impl ShamirLocalPublicationOwner {
+    fn capture(
+        service: &Service,
+        state: &State,
+        deadline: Option<Instant>,
+    ) -> Result<Option<Self>, Response> {
+        let Some(deadline) = deadline else {
+            return Ok(None);
+        };
+        let seal = service.seal.as_ref().ok_or_else(rejected)?;
+        if seal.is_wrapper() || state.auth.has_recovery_state() {
+            return Ok(None);
+        }
+        seal.validate().map_err(|_| rejected())?;
+        if seal.schema != 1 || service.openbao_wrapper_owner.is_some() {
+            return Err(rejected());
+        }
+        let key = service.barrier_key.as_ref().ok_or_else(rejected)?;
+        let ha = service.ha.as_ref().ok_or_else(rejected)?;
+        live(Some(deadline))?;
+        Ok(Some(Self {
+            ha: Arc::clone(ha),
+            seal: seal.clone(),
+            unseal_nonce: Zeroizing::new(service.unseal_nonce.clone()),
+            barrier_digest: crypto::digest(key.as_slice()),
+            deadline,
+        }))
+    }
+
+    fn verify(&self, receipt: &ReceivedHaState, service: &mut Service) -> Result<(), Response> {
+        live(Some(self.deadline))?;
+        if receipt.deadline != Some(self.deadline)
+            || receipt.state.auth.has_recovery_state()
+            || service.recovery_required
+            || service.openbao_wrapper_owner.is_some()
+            || self.seal.schema != 1
+            || service.seal.as_ref() != Some(&self.seal)
+            || receipt.seal.as_ref() != Some(&self.seal)
+            || service.unseal_nonce != *self.unseal_nonce
+            || service
+                .ha
+                .as_ref()
+                .is_none_or(|ha| !Arc::ptr_eq(ha, &self.ha))
+            || service
+                .barrier_key
+                .as_ref()
+                .is_none_or(|key| crypto::digest(key.as_slice()) != self.barrier_digest)
+            || service.current_state_identity()? != receipt.identity
+            || owner_store::serialize_owner(service.state.as_ref().ok_or_else(rejected)?)
+                .map_err(state_serialization_error)?
+                .as_slice()
+                != owner_store::serialize_owner(&receipt.state)
+                    .map_err(state_serialization_error)?
+                    .as_slice()
+        {
+            return Err(rejected());
+        }
+        self.seal.validate().map_err(|_| rejected())?;
+        receipt.verify_local_seal(service)?;
+        receipt.verify_local_publication(service)?;
+        service
+            .durable
+            .as_mut()
+            .ok_or_else(rejected)?
+            .verify_live_ownership()
+            .map_err(|_| rejected())?;
+        live(Some(self.deadline))
+    }
 }
 
 enum ReceivedPublication {
@@ -223,7 +303,10 @@ pub(super) enum HaLocalPublicationProgress {
 
 // This proof never installs or writes the newer target. The next owned pass
 // obtains its own current receipt and admits the complete newer publication.
-struct SupersedingHaTarget;
+struct SupersedingHaTarget {
+    identity: StateIdentity,
+    prefix: heptabao_raft_runtime::CommittedApplicationPrefix,
+}
 
 impl CompletedLocalPublication<'_> {
     pub(super) fn identity(&self) -> StateIdentity {
@@ -317,7 +400,56 @@ impl CompletedLocalPublication<'_> {
             return Err(rejected());
         }
         live(self.receipt.deadline)?;
-        Ok(SupersedingHaTarget)
+        Ok(SupersedingHaTarget {
+            identity,
+            prefix: witness.completed_prefix(),
+        })
+    }
+
+    /// Known local Shamir completion can be retained only as a temporary
+    /// synchronization rejection. It never supplies Wrapper index authority,
+    /// actor admission, an old response body, or another publication attempt.
+    pub(super) fn publication_progress(
+        &self,
+        service: &mut Service,
+    ) -> Result<HaLocalPublicationProgress, Response> {
+        let Some(owner) = self.receipt.shamir_owner.as_ref() else {
+            return self.progress(service);
+        };
+        owner.verify(self.receipt, service)?;
+        let (identity, _) = owner
+            .ha
+            .lock_for_request()
+            .map_err(|_| rejected())?
+            .application_identity_witness()
+            .map_err(|_| rejected())?;
+        let progress = if identity == self.receipt.identity {
+            HaLocalPublicationProgress::Current
+        } else {
+            let target = self.superseding_target(service)?;
+            // This is the actual authenticated complete C/D target and its
+            // same-store quorum/applied witness, never a naked index comparison.
+            eprintln!(
+                "heptabao-ha-shamir-completed: source_prefix={:?} target_prefix={:?} received_digest={:02x?} target_digest={:02x?}",
+                self.receipt
+                    .source_witness
+                    .as_ref()
+                    .ok_or_else(rejected)?
+                    .completed_prefix(),
+                target.prefix,
+                self.receipt.identity.digest(),
+                target.identity.digest()
+            );
+            HaLocalPublicationProgress::Superseded
+        };
+        // A remembered newer target cannot mask subsequent local key, slot,
+        // durable owner or object damage while that proof was being obtained.
+        owner.verify(self.receipt, service)?;
+        if progress == HaLocalPublicationProgress::Superseded {
+            service.ha_activation = None;
+            service.ha_read_cache = None;
+        }
+        Ok(progress)
     }
 
     pub(super) fn progress(
@@ -536,6 +668,7 @@ impl ReceivedHaState {
         if durable.recovery_required() || service.recovery_required {
             return Err(rejected());
         }
+        let shamir_owner = ShamirLocalPublicationOwner::capture(service, &state, deadline)?;
         let token = Self {
             state,
             identity,
@@ -545,6 +678,7 @@ impl ReceivedHaState {
             deadline,
             publication,
             source_witness: Some(witness),
+            shamir_owner,
         };
         token.verify_local_seal(service)?;
         live(deadline)?;
@@ -774,7 +908,7 @@ impl Service {
     ) -> Result<(), Response> {
         let result = (|| {
             let completed = local.after_received(receipt, self)?;
-            let progress = completed.progress(self)?;
+            let progress = completed.publication_progress(self)?;
             if progress == HaLocalPublicationProgress::Superseded {
                 return Ok(progress);
             }
@@ -859,7 +993,7 @@ impl Service {
         self.record_root = Some(received.plan.root);
         self.state_digest = Some(received.owner.identity.digest());
         self.state = Some(received.owner.state.clone());
-        if completed.progress(self)? == HaLocalPublicationProgress::Superseded {
+        if completed.publication_progress(self)? == HaLocalPublicationProgress::Superseded {
             return Ok(HaLocalPublicationProgress::Superseded);
         }
         if self.reconcile_completed_ha_recovery_index(&completed)?
@@ -1000,6 +1134,7 @@ mod tests {
             seal: service.seal.clone(),
             deadline: None,
             source_witness: None,
+            shamir_owner: None,
             publication: ReceivedPublication::Materialized {
                 owner_manifest_digest: Some(manifest.canonical_digest()?),
             },
@@ -1111,6 +1246,7 @@ mod tests {
             seal: service.seal.clone(),
             deadline: None,
             source_witness: None,
+            shamir_owner: None,
             publication: ReceivedPublication::Materialized {
                 owner_manifest_digest: Some(binding.owner_manifest_digest()),
             },
@@ -1294,6 +1430,224 @@ mod tests {
             assert_eq!(fs::read(path)?, bytes);
         }
         Ok(())
+    }
+
+    fn actual_shamir_completion_case(case: &str) -> TestResult {
+        fn commit(
+            cluster: &crate::ha::snapshot_test_support::Cluster,
+            state: &State,
+            previous: [u8; 32],
+            operation: &str,
+        ) -> Result<[u8; 32], Box<dyn std::error::Error>> {
+            let bytes = owner_store::serialize_owner(state)?;
+            let binding = Service::prepare_initial_owner_plan(state, &bytes, operation)
+                .map_err(|_| "owner plan")?
+                .publication_binding(operation, &bytes)?;
+            cluster.processes[0]
+                .lock()
+                .map_err(|_| "HA")?
+                .commit_state_with_owner_binding(operation, previous, &bytes, binding)?;
+            Ok(crypto::digest(&bytes))
+        }
+        let root = Root::new();
+        let mut service = root.service()?;
+        crate::service::tests::bootstrap_unmounted(&mut service)?;
+        let a = service.state.clone().ok_or("A")?;
+        let cluster =
+            crate::ha::snapshot_test_support::Cluster::new(&root.path.join("raft"), &a.cluster_id)?;
+        service.ha = Some(Arc::clone(&cluster.processes[0]));
+        service.sync_from_ha().map_err(|_| "actual anchor")?;
+        service.ha = Some(Arc::clone(&cluster.processes[1]));
+        let _admitted = crate::request_deadline::RequestDeadlineScope::enter(
+            Instant::now() + Duration::from_secs(15),
+        );
+        let mut b = a.clone();
+        b.engines.handle(
+            "",
+            "POST",
+            "sys/mounts/owned-shamir-b",
+            &json!({"type":"kv"}),
+            100,
+        )?;
+        let a_identity = service.current_state_digest().map_err(|_| "A identity")?;
+        let b_identity = commit(&cluster, &b, a_identity, "owned-shamir-B")?;
+        let committed = cluster.processes[1]
+            .lock()
+            .map_err(|_| "HA")?
+            .latest_committed_state()?
+            .ok_or("actual B")?;
+        assert_eq!(committed.digest, b_identity);
+        let receipt = service
+            .receive_materialized_ha_state(&committed)
+            .map_err(|_| "B admission")?;
+        assert!(receipt.shamir_owner.is_some());
+        receipt
+            .before_publication(&mut service)
+            .map_err(|_| "B before")?;
+        let bytes = owner_store::serialize_owner(&b)?;
+        let operation = receipt.operation_id().map_err(|_| "actual operation")?;
+        let plan =
+            Service::prepare_initial_owner_plan(&b, &bytes, &operation).map_err(|_| "B plan")?;
+        Service::persist_owner_state_batch(
+            service.durable.as_mut().ok_or("durable")?,
+            &b,
+            &bytes,
+            &operation,
+            b.schema,
+            b.replay_epoch,
+            OwnerBatchInput {
+                options: PersistOwnerStateOptions {
+                    compact_before_entry: true,
+                    allow_epoch_catchup: true,
+                    reuse: OwnerReuseHint::default(),
+                },
+                prepared_plan: Some(plan),
+            },
+        )?;
+        let completed = receipt
+            .after_publication(&mut service)
+            .map_err(|_| "actual encrypted B readback")?;
+        // Match the production materialized install after actual publication.
+        service.record_root = None;
+        service.state_digest = Some(b_identity);
+        service.state = Some(b.clone());
+        let generation = service.durable.as_ref().ok_or("durable")?.generation();
+        let stored_b = service
+            .durable
+            .as_ref()
+            .ok_or("durable")?
+            .get("system", "state")?;
+        let mut c = b.clone();
+        c.replay_epoch += 1;
+        c.engines.handle(
+            "",
+            "POST",
+            "sys/mounts/owned-shamir-c",
+            &json!({"type":"kv"}),
+            100,
+        )?;
+        let c_identity = commit(&cluster, &c, b_identity, "owned-shamir-C")?;
+        assert_ne!(b_identity, c_identity);
+        // The legacy Wrapper-only API still cannot mint Shamir retention.
+        assert!(completed.progress(&mut service).is_err());
+        match case {
+            "known_completed" => {
+                assert_eq!(
+                    completed
+                        .publication_progress(&mut service)
+                        .map_err(|_| "actual owned Shamir newer prefix")?,
+                    HaLocalPublicationProgress::Superseded
+                );
+                assert!(!service.recovery_required);
+                assert!(service.ha_activation.is_none());
+                assert!(service.ha_read_cache.is_none());
+                assert_eq!(
+                    service.current_state_identity().map_err(|_| "local B")?,
+                    receipt.identity
+                );
+                assert_eq!(
+                    service.durable.as_ref().ok_or("durable")?.generation(),
+                    generation
+                );
+                assert_eq!(
+                    service
+                        .durable
+                        .as_ref()
+                        .ok_or("durable")?
+                        .get("system", "state")?,
+                    stored_b
+                );
+                // Retention grants no response and does not replay B. A new
+                // independent request must synchronize and authenticate C.
+                service
+                    .sync_from_ha()
+                    .map_err(|_| "next independent sync C")?;
+                assert_eq!(
+                    service.current_state_digest().map_err(|_| "current C")?,
+                    c_identity
+                );
+                assert!(!service.recovery_required);
+                let (loaded, _, _) =
+                    Service::load_state_from_durable(service.durable.as_ref().ok_or("durable")?)
+                        .map_err(|_| "actual encrypted C")?;
+                assert_eq!(
+                    owner_store::serialize_owner(&loaded)?.as_slice(),
+                    owner_store::serialize_owner(&c)?.as_slice()
+                );
+            }
+            "binding_and_damage" => {
+                service.unseal_nonce.push('x');
+                assert!(completed.publication_progress(&mut service).is_err());
+                service.unseal_nonce.pop();
+                service.barrier_key.as_mut().ok_or("key")?[0] ^= 1;
+                assert!(completed.publication_progress(&mut service).is_err());
+                service.barrier_key.as_mut().ok_or("key")?[0] ^= 1;
+                service.ha = Some(Arc::clone(&cluster.processes[0]));
+                assert!(completed.publication_progress(&mut service).is_err());
+                service.ha = Some(Arc::clone(&cluster.processes[1]));
+                service
+                    .durable
+                    .as_mut()
+                    .ok_or("durable")?
+                    .put(PutRequest::new(
+                        "owned-shamir-negative",
+                        "system",
+                        "actual-damaged-publication",
+                        "state",
+                        crypto::digest(b"invalid-local-publication"),
+                        Secret::new(b"invalid-local-publication".to_vec())?,
+                    )?)?;
+                assert!(completed.publication_progress(&mut service).is_err());
+            }
+            "quorum_and_deadline" => {
+                cluster.isolate_all_peers(true);
+                {
+                    let _bounded = crate::request_deadline::RequestDeadlineScope::enter(
+                        Instant::now() + Duration::from_millis(250),
+                    );
+                    assert!(completed.publication_progress(&mut service).is_err());
+                }
+                cluster.isolate_all_peers(false);
+                {
+                    let _expired = crate::request_deadline::RequestDeadlineScope::enter(
+                        Instant::now() - Duration::from_millis(1),
+                    );
+                    assert!(completed.publication_progress(&mut service).is_err());
+                }
+                assert_eq!(
+                    service.durable.as_ref().ok_or("durable")?.generation(),
+                    generation
+                );
+                assert_eq!(
+                    service
+                        .durable
+                        .as_ref()
+                        .ok_or("durable")?
+                        .get("system", "state")?,
+                    stored_b
+                );
+            }
+            _ => return Err("unknown actual Shamir test case".into()),
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn real_raft_owned_shamir_completed_publication_retains_only_for_next_independent_sync()
+    -> TestResult {
+        actual_shamir_completion_case("known_completed")
+    }
+
+    #[test]
+    fn real_raft_owned_shamir_completed_publication_rejects_changed_binding_and_local_damage()
+    -> TestResult {
+        actual_shamir_completion_case("binding_and_damage")
+    }
+
+    #[test]
+    fn real_raft_owned_shamir_completed_publication_cannot_bypass_lost_quorum_or_original_deadline()
+    -> TestResult {
+        actual_shamir_completion_case("quorum_and_deadline")
     }
 
     #[test]
