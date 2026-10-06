@@ -3126,6 +3126,11 @@ impl Service {
                 Err(error) => return Response::error(error.status, &error.message),
             }
         };
+        // Only an actually mounted SDK/native public path admits an anonymous
+        // auth request. Retirement does not disclose a route before admission.
+        if path.starts_with("auth/") && !public_login && principal.is_none() {
+            return Response::error(403, "permission denied");
+        }
         if let Some(principal) = principal.as_mut()
             && let Err(error) = principal.bind_request_clock(request.token_clock)
         {
