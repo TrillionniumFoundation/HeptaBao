@@ -121,7 +121,7 @@ impl AuthState {
                 "SDK Auth original observation floor cannot decrease",
             ));
         }
-        if self.sdk_auth_catalog.is_some() && self.sdk_auth_clock.is_none() {
+        if self.sdk_auth_catalog.is_some() != self.sdk_auth_clock.is_some() {
             return Err(err(503, "SDK Auth original observation floor absent"));
         }
         Ok(())
@@ -171,6 +171,29 @@ impl AuthState {
                     .descriptor
                     .validate()
                     .map_err(|_| err(503, "SDK Auth saved issuer rejected"))?;
+                validate_namespace(&origin.binding.namespace)?;
+                if origin.binding.mount.is_empty()
+                    || origin.binding.mount.len() > 512
+                    || origin
+                        .binding
+                        .mount
+                        .split('/')
+                        .any(|part| !valid_name(part))
+                    || origin.binding.owner.kind != "plugin"
+                    || origin.binding.owner.revision == 0
+                    || origin
+                        .binding
+                        .owner
+                        .accessor
+                        .as_ref()
+                        .is_none_or(|accessor| accessor.is_empty())
+                    || serde_json::to_vec(&origin.internal_data)
+                        .map_err(|_| bad("SDK Auth internal data rejected"))?
+                        .len()
+                        > 256 * 1024
+                {
+                    return Err(err(503, "SDK Auth saved native mount owner rejected"));
+                }
                 if token.namespace != origin.binding.namespace
                     || token.auth_mount.as_ref() != Some(&origin.binding.mount)
                     || token.renewable
@@ -605,8 +628,8 @@ impl AuthState {
         if policies.contains("root") {
             return Err(denied());
         }
-        let ttl = object.get("lease").and_then(Value::as_u64).unwrap_or(0);
-        let max = object.get("max_ttl").and_then(Value::as_u64).unwrap_or(0);
+        let ttl = sdk_natural(object, "lease")?;
+        let max = sdk_natural(object, "max_ttl")?;
         let (default, mount_max) = self.auth_mount_lease_defaults(AuthScope {
             namespace: &binding.namespace,
             mount: &binding.mount,
@@ -630,7 +653,7 @@ impl AuthState {
         if ttl.is_zero() {
             return Err(bad("SDK Auth positive lease required"));
         }
-        let uses = object.get("num_uses").and_then(Value::as_u64).unwrap_or(0);
+        let uses = sdk_natural(object, "num_uses")?;
         let metadata = match object.get("metadata").filter(|v| !v.is_null()) {
             None => BTreeMap::new(),
             Some(v) => serde_json::from_value::<BTreeMap<String, String>>(v.clone())
@@ -638,6 +661,14 @@ impl AuthState {
         };
         if !crate::login_metadata::within_limit(&metadata) {
             return Err(err(413, "SDK Auth metadata exceeds bound"));
+        }
+        let internal_data = object.get("internal_data").cloned().unwrap_or(Value::Null);
+        if serde_json::to_vec(&internal_data)
+            .map_err(|_| bad("SDK Auth internal data rejected"))?
+            .len()
+            > 256 * 1024
+        {
+            return Err(err(413, "SDK Auth internal data exceeds bound"));
         }
         let at = clock
             .observed_at()
@@ -692,7 +723,7 @@ impl AuthState {
                 lease,
                 maximum,
                 metadata: metadata.clone(),
-                internal_data: object.get("internal_data").cloned().unwrap_or(Value::Null),
+                internal_data,
             }),
         });
         let (id, token, mut response) = Self::prepare_issue(token, now)?;
@@ -707,5 +738,200 @@ impl AuthState {
         self.observe_sdk_auth_clock(at);
         self.store_token(id, token);
         Ok(response)
+    }
+}
+
+fn sdk_natural(object: &serde_json::Map<String, Value>, name: &str) -> Result<u64, AuthError> {
+    match object.get(name) {
+        None => Ok(0),
+        Some(value) => value
+            .as_u64()
+            .ok_or_else(|| bad("SDK Auth nonnegative integer field required")),
+    }
+}
+#[cfg(test)]
+mod sdk_auth100_tests {
+    use super::*;
+    type TestResult = Result<(), Box<dyn std::error::Error>>;
+    fn setup() -> Result<(AuthState, Binding, RequestClock), Box<dyn std::error::Error>> {
+        let (mut auth, root) = AuthState::bootstrap(100)?;
+        let principal = auth.authenticate(&root, 100)?;
+        let mounted = auth
+            .handle(
+                Some(&principal),
+                "",
+                "POST",
+                "sys/auth/sdk",
+                &json!({"type":"plugin"}),
+                100,
+            )?
+            .ok_or("native mount")?;
+        assert_eq!(mounted.status, 204);
+        auth.register_sdk_auth_descriptor(Descriptor {
+            name: "auth_probe".into(),
+            version: "v0.0.1".into(),
+            command: "probe".into(),
+            args: vec!["--serve".into()],
+            sha256: "a".repeat(64),
+            generation: 1,
+        })?;
+        let descriptor = auth
+            .sdk_auth_descriptor("auth_probe", "v0.0.1")
+            .ok_or("actual descriptor")?;
+        let binding = auth.bind_sdk_auth_mount("", "sdk", &descriptor)?;
+        let clock = RequestClock::anchored(
+            std::time::Duration::new(100, 100_000_000),
+            std::time::Instant::now(),
+        )?;
+        auth.observe_sdk_auth_clock(clock.observed_at()?);
+        auth.validate_sdk_auth_state()?;
+        Ok((auth, binding, clock))
+    }
+    fn issue(
+        auth: &mut AuthState,
+        binding: &Binding,
+        clock: RequestClock,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let response=auth.finish_sdk_auth_login(binding,&json!({"alias":{"name":"alice"},"lease":1_000_000_000u64,"max_ttl":2_000_000_000u64,"num_uses":2,"client_token":"plugin-forged-token","accessor":"plugin-forged-accessor","metadata":{"provider":"actual-SDK270"}}),clock)?;
+        let raw = response.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("native token")?
+            .to_owned();
+        assert!(raw.starts_with("hvs."));
+        assert_ne!(raw, "plugin-forged-token");
+        assert_ne!(
+            response.body["auth"]["accessor"],
+            json!("plugin-forged-accessor")
+        );
+        auth.validate_sdk_auth_state()?;
+        Ok(raw)
+    }
+    #[test]
+    fn sdk_auth100_precise_issued_token_expires_on_original_running_clock_without_new_admission()
+    -> TestResult {
+        let (mut auth, binding, clock) = setup()?;
+        let raw = issue(&mut auth, &binding, clock)?;
+        auth.sdk_auth_issued_live(&raw, clock)?;
+        let remaining = auth.tokens.get(&hash(&raw)).ok_or("token")?.uses_remaining;
+        std::thread::sleep(std::time::Duration::from_millis(1100));
+        assert!(auth.sdk_auth_issued_live(&raw, clock).is_err());
+        assert_eq!(
+            auth.tokens
+                .get(&hash(&raw))
+                .ok_or("retained token")?
+                .uses_remaining,
+            remaining
+        );
+        Ok(())
+    }
+    #[test]
+    fn sdk_auth100_saved_owner_clock_and_catalog_epoch_tampering_fail_closed() -> TestResult {
+        let (mut auth, binding, clock) = setup()?;
+        let raw = issue(&mut auth, &binding, clock)?;
+        let original = auth.clone();
+        let floor = original.sdk_auth_epoch_floor().ok_or("epoch")?;
+        for field in ["floor", "catalog", "native_mount", "generation"] {
+            let mut altered = original.clone();
+            match field {
+                "floor" => altered.sdk_auth_clock = Some(Timestamp::checked(99, 0)?),
+                "catalog" => altered.sdk_auth_catalog = None,
+                "native_mount" => {
+                    if let Some(TokenAuthProvenance::Sdk { origin }) = &mut altered
+                        .tokens
+                        .get_mut(&hash(&raw))
+                        .ok_or("token")?
+                        .auth_provenance
+                    {
+                        origin.binding.owner.revision = 0
+                    }
+                }
+                _ => {
+                    if let Some(TokenAuthProvenance::Sdk { origin }) = &mut altered
+                        .tokens
+                        .get_mut(&hash(&raw))
+                        .ok_or("token")?
+                        .auth_provenance
+                    {
+                        origin.binding.descriptor.generation += 1
+                    }
+                }
+            }
+            assert!(altered.validate_sdk_auth_state().is_err());
+        }
+        let mut retired = original.clone();
+        retired.plugin_auth_mounts.clear();
+        retired.tokens.retain(|_, token| {
+            !matches!(token.auth_provenance, Some(TokenAuthProvenance::Sdk { .. }))
+        });
+        retired.deregister_sdk_auth_descriptor("auth_probe", "v0.0.1")?;
+        retired.validate_sdk_auth_epoch_floor(Some(&floor))?;
+        retired.validate_sdk_auth_state()?;
+        assert!(retired.has_sdk_auth_state());
+        assert!(retired.sdk_auth_catalog.is_some());
+        assert!(retired.sdk_auth_owner_gate(&binding).is_err());
+        Ok(())
+    }
+    #[test]
+    fn sdk_auth100_storage_exact_native_owner_list_and_replacement_are_bound() -> TestResult {
+        let (mut auth, binding, _) = setup()?;
+        auth.sdk_auth_storage_put(
+            &binding,
+            Entry {
+                key: "nested/item".into(),
+                value: Zeroizing::new(b"actual-owner-cell".to_vec()),
+                seal_wrap: true,
+            },
+        )?;
+        let reopened: AuthState = serde_json::from_slice(&serde_json::to_vec(&auth)?)?;
+        reopened.validate_sdk_auth_state()?;
+        assert_eq!(
+            reopened
+                .sdk_auth_storage_get(&binding, "nested/item")?
+                .ok_or("cell")?
+                .value
+                .as_slice(),
+            b"actual-owner-cell"
+        );
+        let mut foreign = binding.clone();
+        foreign.owner.revision += 1;
+        assert!(
+            reopened
+                .sdk_auth_storage_get(&foreign, "nested/item")
+                .is_err()
+        );
+        assert!(
+            reopened
+                .sdk_auth_storage_list(&foreign, "", "", 10)
+                .is_err()
+        );
+        let mut backwards = reopened.clone();
+        backwards.sdk_auth_clock = Some(Timestamp::checked(99, 0)?);
+        assert!(backwards.validate_sdk_auth_clock(Some(&reopened)).is_err());
+        assert_eq!(
+            auth.sdk_auth_storage_get(&binding, "nested/item")?
+                .ok_or("retained cell")?
+                .value
+                .as_slice(),
+            b"actual-owner-cell"
+        );
+        Ok(())
+    }
+    #[test]
+    fn sdk_auth100_absent_legacy_fields_remain_absent_and_invalid_duration_never_mints_token()
+    -> TestResult {
+        let (legacy, _) = AuthState::bootstrap(100)?;
+        let bytes = serde_json::to_vec(&legacy)?;
+        let value: Value = serde_json::from_slice(&bytes)?;
+        assert!(value.get("sdk_auth_catalog").is_none());
+        assert!(value.get("sdk_auth_clock").is_none());
+        let (mut auth, binding, clock) = setup()?;
+        let before = auth.tokens.len();
+        for field in ["lease", "max_ttl", "num_uses"] {
+            let mut value = json!({"alias":{"name":"alice"},"lease":1_000_000_000u64,"max_ttl":2_000_000_000u64,"num_uses":2});
+            value[field] = json!(-1);
+            assert!(auth.finish_sdk_auth_login(&binding, &value, clock).is_err());
+            assert_eq!(auth.tokens.len(), before);
+        }
+        Ok(())
     }
 }
