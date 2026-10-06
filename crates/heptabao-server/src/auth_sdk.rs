@@ -3,6 +3,9 @@
 //! No value in this module is a Principal or an authentication admission.
 use super::*;
 use crate::engines::sdk::{Catalog, Descriptor};
+#[path = "auth_sdk_renew.rs"]
+mod renewal;
+pub(crate) use renewal::RenewalTarget;
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Cell {
@@ -328,7 +331,8 @@ impl AuthState {
                 }
                 if token.namespace != origin.binding.namespace
                     || token.auth_mount.as_ref() != Some(&origin.binding.mount)
-                    || token.renewable
+                    || token.renewable && origin.renewal.is_none()
+                    || origin.renewal.as_ref().is_some_and(|r| !r.valid())
                     || token.root
                     || token.policies.contains("root")
                     || self.sdk_auth_catalog.as_ref().is_none_or(|c| {
@@ -645,6 +649,8 @@ pub(super) struct TokenOrigin {
     maximum: Timestamp,
     metadata: BTreeMap<String, String>,
     internal_data: Value,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    renewal: Option<renewal::RenewalOwner>,
 }
 impl Drop for TokenOrigin {
     fn drop(&mut self) {
@@ -695,6 +701,7 @@ impl AuthState {
     pub(crate) fn finish_sdk_auth_login(
         &mut self,
         binding: &Binding,
+        path: &str,
         value: &Value,
         clock: RequestClock,
     ) -> Result<AuthResponse, AuthError> {
@@ -702,13 +709,13 @@ impl AuthState {
         let object = value
             .as_object()
             .ok_or_else(|| bad("SDK Auth response requires object"))?;
+        let renewable = object.get("renewable").map_or(Ok(false), |v| {
+            v.as_bool()
+                .ok_or_else(|| bad("SDK renewable requires bool"))
+        })?;
         let unsupported = object
-            .get("renewable")
-            .and_then(Value::as_bool)
-            .unwrap_or(false)
-            || object
-                .get("period")
-                .is_some_and(|v| v.as_i64().unwrap_or(-1) != 0)
+            .get("period")
+            .is_some_and(|v| v.as_i64().unwrap_or(-1) != 0)
             || object
                 .get("explicit_max_ttl")
                 .is_some_and(|v| v.as_i64().unwrap_or(-1) != 0)
@@ -724,7 +731,7 @@ impl AuthState {
         if unsupported {
             return Err(err(
                 501,
-                "SDK Auth renewal, period, batch, group and CIDR responses are not implemented",
+                "SDK Auth period, batch, group and CIDR responses are not implemented",
             ));
         }
         let alias = object
@@ -830,7 +837,7 @@ impl AuthState {
             now,
         )?;
         token.auth_mount = Some(binding.mount.clone());
-        token.renewable = false;
+        token.renewable = renewable;
         token.expires_at = Some(
             end.ceil_seconds()
                 .map_err(|_| bad("SDK Auth expiry projection"))?,
@@ -859,6 +866,11 @@ impl AuthState {
                 maximum,
                 metadata: metadata.clone(),
                 internal_data,
+                renewal: if renewable {
+                    Some(renewal::RenewalOwner::new(path)?)
+                } else {
+                    None
+                },
             }),
         });
         let (id, token, mut response) = Self::prepare_issue(token, now)?;
@@ -927,7 +939,7 @@ mod sdk_auth100_tests {
         binding: &Binding,
         clock: RequestClock,
     ) -> Result<String, Box<dyn std::error::Error>> {
-        let response=auth.finish_sdk_auth_login(binding,&json!({"alias":{"name":"alice"},"lease":1_000_000_000u64,"max_ttl":2_000_000_000u64,"num_uses":2,"client_token":"plugin-forged-token","accessor":"plugin-forged-accessor","metadata":{"provider":"actual-SDK270"}}),clock)?;
+        let response=auth.finish_sdk_auth_login(binding,"login",&json!({"alias":{"name":"alice"},"lease":1_000_000_000u64,"max_ttl":2_000_000_000u64,"num_uses":2,"client_token":"plugin-forged-token","accessor":"plugin-forged-accessor","metadata":{"provider":"actual-SDK270"}}),clock)?;
         let raw = response.body["auth"]["client_token"]
             .as_str()
             .ok_or("native token")?
@@ -1064,9 +1076,121 @@ mod sdk_auth100_tests {
         for field in ["lease", "max_ttl", "num_uses"] {
             let mut value = json!({"alias":{"name":"alice"},"lease":1_000_000_000u64,"max_ttl":2_000_000_000u64,"num_uses":2});
             value[field] = json!(-1);
-            assert!(auth.finish_sdk_auth_login(&binding, &value, clock).is_err());
+            assert!(
+                auth.finish_sdk_auth_login(&binding, "login", &value, clock)
+                    .is_err()
+            );
             assert_eq!(auth.tokens.len(), before);
         }
+        Ok(())
+    }
+    fn renewable_issue(
+        auth: &mut AuthState,
+        binding: &Binding,
+        clock: RequestClock,
+        ttl: u64,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let response=auth.finish_sdk_auth_login(binding,"login",&json!({"alias":{"name":"alice"},"lease":ttl,"max_ttl":120_000_000_000u64,"renewable":true,"num_uses":2,"internal_data":{"count":0},"metadata":{"provider":"actual-sdk-renewal270"}}),clock)?;
+        Ok(response.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("native bearer")?
+            .to_owned())
+    }
+    #[test]
+    fn sdk_auth100_renewal_preserves_native_identity_finite_uses_and_reopens_typed_origin()
+    -> TestResult {
+        let (mut auth, binding, clock) = setup()?;
+        let raw = renewable_issue(&mut auth, &binding, clock, 30_000_000_000)?;
+        let actor = auth.authenticate_from_observed(
+            &raw,
+            AuthorityTime::Precise(clock.observed_at()?),
+            None,
+        )?;
+        let mut target = auth.prepare_sdk_renewal(
+            &actor,
+            "",
+            "auth/token/renew-self",
+            &json!({"increment":40}),
+            &raw,
+            clock,
+        )?;
+        let (mut input, issue, increment) = target.input(&auth, clock)?;
+        assert_eq!(input["client_token"], json!(""));
+        assert!(issue > 0);
+        assert_eq!(increment, 40_000_000_000);
+        let original = auth.tokens[&hash(&raw)].clone();
+        input["internal_data"]["count"] = json!(1);
+        input["client_token"] = json!("plugin-forged");
+        input["accessor"] = json!("plugin-forged");
+        input["num_uses"] = json!(999);
+        let renewed = auth.finish_sdk_renewal(&target, &input, clock)?;
+        assert_eq!(renewed.body["auth"]["client_token"], json!(raw));
+        assert_eq!(renewed.body["auth"]["lease_duration"], json!(40));
+        let current = &auth.tokens[&hash(&raw)];
+        assert_eq!(current.accessor, original.accessor);
+        assert_eq!(current.created_at, original.created_at);
+        assert_eq!(current.uses_remaining, original.uses_remaining);
+        assert_eq!(current.policies, original.policies);
+        assert!(auth.sdk_renewal_gate(&target, clock).is_err());
+        auth.sdk_renewal_published(&mut target)?;
+        auth.sdk_renewal_gate(&target, clock)?;
+        auth.validate_sdk_auth_state()?;
+        let reopened: AuthState = serde_json::from_slice(&serde_json::to_vec(&auth)?)?;
+        reopened.validate_sdk_auth_state()?;
+        let (again, _, _) = target.input(&reopened, clock)?;
+        assert_eq!(again["internal_data"]["count"], json!(1));
+        Ok(())
+    }
+    #[test]
+    fn sdk_auth100_renewal_original_expiry_is_not_extended_by_candidate_grant() -> TestResult {
+        let (mut auth, binding, clock) = setup()?;
+        let raw = renewable_issue(&mut auth, &binding, clock, 1_000_000_000)?;
+        let actor = auth.authenticate_from_observed(
+            &raw,
+            AuthorityTime::Precise(clock.observed_at()?),
+            None,
+        )?;
+        let mut target = auth.prepare_sdk_renewal(
+            &actor,
+            "",
+            "auth/token/renew-self",
+            &json!({"increment":60}),
+            &raw,
+            clock,
+        )?;
+        let (input, _, _) = target.input(&auth, clock)?;
+        auth.finish_sdk_renewal(&target, &input, clock)?;
+        auth.sdk_renewal_published(&mut target)?;
+        std::thread::sleep(std::time::Duration::from_millis(1100));
+        assert!(auth.sdk_auth_issued_live(&raw, clock).is_ok());
+        assert!(auth.sdk_renewal_gate(&target, clock).is_err());
+        Ok(())
+    }
+    #[test]
+    fn sdk_auth100_renewal_target_revoke_or_mount_retirement_withholds_callback() -> TestResult {
+        let (mut auth, binding, clock) = setup()?;
+        let raw = renewable_issue(&mut auth, &binding, clock, 30_000_000_000)?;
+        let actor = auth.authenticate_from_observed(
+            &raw,
+            AuthorityTime::Precise(clock.observed_at()?),
+            None,
+        )?;
+        let target =
+            auth.prepare_sdk_renewal(&actor, "", "auth/token/renew-self", &json!({}), &raw, clock)?;
+        let mut retired = auth.clone();
+        retired.plugin_auth_mounts.clear();
+        assert!(target.input(&retired, clock).is_err());
+        let mut revoked = auth.clone();
+        revoked.revoke(&hash(&raw));
+        assert!(target.input(&revoked, clock).is_err());
+        let mut altered = auth.clone();
+        altered
+            .tokens
+            .get_mut(&hash(&raw))
+            .ok_or("token")?
+            .policies
+            .insert("root".into());
+        assert!(target.input(&altered, clock).is_err());
         Ok(())
     }
 }

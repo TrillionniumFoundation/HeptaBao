@@ -164,6 +164,7 @@ impl AuthState {
                     | TokenAuthProvenance::RadiusNative { .. }
                     | TokenAuthProvenance::Ldap { .. }
                     | TokenAuthProvenance::LdapNative { .. }
+                    | TokenAuthProvenance::Sdk { .. }
             )
         ) {
             return Err(err(

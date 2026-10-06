@@ -2,7 +2,7 @@
 //! encrypted auth owner. Plugin JSON never becomes a Principal or bearer.
 use super::*;
 use crate::auth::Timestamp;
-use crate::auth::sdk::{Binding, Entry, Paths};
+use crate::auth::sdk::{Binding, Entry, Paths, RenewalTarget};
 use heptabao_plugin_host::sdk_backend::SdkBackendType;
 
 struct Context {
@@ -22,6 +22,7 @@ struct StageTarget<'a> {
     operation: &'a str,
     path: &'a str,
     deadline: Instant,
+    renewal: Option<RenewalTarget>,
 }
 struct Transaction {
     auth: CowOwner<AuthState>,
@@ -38,6 +39,7 @@ pub(in crate::service) struct Plan {
     path: String,
     data: Value,
     deadline: Instant,
+    renewal: Mutex<Option<Box<RenewalTarget>>>,
 }
 impl Drop for Plan {
     fn drop(&mut self) {
@@ -57,6 +59,26 @@ impl Plan {
                 "SDK Auth original owner or deadline unavailable",
             ));
         }
+        let auth = self
+            .renewal
+            .lock()
+            .map_err(|_| Response::error(503, "SDK renewal target unavailable"))?
+            .as_ref()
+            .map(|target| {
+                let transaction = self
+                    .transaction
+                    .lock()
+                    .map_err(|_| Response::error(503, "SDK renewal transaction unavailable"))?;
+                let (auth, issue_time_ns, increment_ns) = target
+                    .input(&transaction.auth, self.context.clock)
+                    .map_err(auth_error)?;
+                Ok(Box::new(SdkAuthCallback {
+                    auth,
+                    issue_time_ns,
+                    increment_ns,
+                }))
+            })
+            .transpose()?;
         if self
             .control
             .busy
@@ -71,6 +93,7 @@ impl Plan {
             path: self.path.clone(),
             data: self.data.clone(),
             lease: None,
+            auth,
             expected_auth_paths: if self.operation == "_mount" {
                 None
             } else {
@@ -156,6 +179,19 @@ impl Plan {
             caller.validate_live_auth(auth)?;
         }
         self.time(auth)?;
+        self.live_target(auth)?;
+        Ok(())
+    }
+    fn live_target(&self, auth: &AuthState) -> Result<(), Response> {
+        if let Some(target) = self
+            .renewal
+            .lock()
+            .map_err(|_| Response::error(503, "SDK renewal target unavailable"))?
+            .as_ref()
+        {
+            auth.sdk_renewal_gate(target, self.context.clock)
+                .map_err(auth_error)?;
+        }
         Ok(())
     }
 }
@@ -216,6 +252,13 @@ impl Service {
                 return state.auth.sdk_auth_descriptor(name, version).is_some();
             }
         }
+        if state
+            .auth
+            .sdk_renewal_binding(request.namespace, request.path, request.body, request.token)
+            .is_some()
+        {
+            return true;
+        }
         matches!(
             state.auth.sdk_auth_binding(request.namespace, request.path),
             Ok(Some(_)) | Err(_)
@@ -243,7 +286,24 @@ impl Service {
         let catalog = request.path == "sys/plugins/catalog/auth"
             || request.path.starts_with("sys/plugins/catalog/auth/");
         let control = catalog || request.path.starts_with("sys/auth/");
-        let relative = if control {
+        let renewing = matches!(
+            request.path,
+            "auth/token/renew-self" | "auth/token/renew" | "auth/token/renew-accessor"
+        );
+        if renewing && !matches!(request.method, "POST" | "PUT") {
+            return Response::error(405, "SDK token renewal requires POST or PUT");
+        }
+        let relative = if renewing {
+            match state.auth.sdk_renewal_binding(
+                request.namespace,
+                request.path,
+                request.body,
+                request.token,
+            ) {
+                Some(binding) => Some(binding),
+                None => return Response::error(403, "SDK renewal target unavailable"),
+            }
+        } else if control {
             None
         } else {
             match state.auth.sdk_auth_binding(request.namespace, request.path) {
@@ -252,14 +312,14 @@ impl Service {
                 Err(e) => return auth_error(e),
             }
         };
-        let path_policy = match relative.as_ref() {
+        let path_policy = match relative.as_ref().filter(|_| !renewing) {
             Some(binding) => match state.auth.sdk_auth_paths(binding) {
                 Ok(paths) => Some(paths.unwrap_or_else(Paths::legacy)),
                 Err(error) => return auth_error(error),
             },
             None => None,
         };
-        let relative_path = relative.as_ref().and_then(|binding| {
+        let relative_path = relative.as_ref().filter(|_| !renewing).and_then(|binding| {
             request
                 .path
                 .strip_prefix(&format!("auth/{}/", binding.mount))
@@ -314,6 +374,24 @@ impl Service {
         if self.current_state_identity().as_ref().ok() != Some(&expected) {
             return Response::error(503, "SDK Auth original root changed during admission sync");
         }
+        let renewal = if renewing {
+            let Some(authority) = caller.as_ref() else {
+                return Response::error(403, "SDK renewal original caller absent");
+            };
+            match state.auth.prepare_sdk_renewal(
+                authority.principal(),
+                request.namespace,
+                request.path,
+                request.body,
+                request.token,
+                clock,
+            ) {
+                Ok(target) => Some(target),
+                Err(error) => return auth_error(error),
+            }
+        } else {
+            None
+        };
         // The captured route snapshot must be current after original ACL sync.
         // No candidate may overwrite a newer root after unlocked admission.
         let context = Context {
@@ -644,12 +722,32 @@ impl Service {
                     operation: "_mount",
                     path: "",
                     deadline,
+                    renewal: None,
                 },
             );
         }
         let Some(binding) = relative else {
             return Response::error(503, "SDK Auth actual mount binding absent");
         };
+        if let Some(renewal) = renewal {
+            let path = renewal.path().to_owned();
+            if renewal.binding() != &binding {
+                return Response::error(503, "SDK renewal issuer changed during admission");
+            }
+            return self.stage_sdk_auth(
+                &state,
+                request,
+                StageTarget {
+                    binding,
+                    caller,
+                    context,
+                    operation: "renew",
+                    path: &path,
+                    deadline,
+                    renewal: Some(renewal),
+                },
+            );
+        }
         let operation = match request.method {
             "GET" | "HEAD" => "read",
             "LIST" | "SCAN" => "list",
@@ -669,6 +767,7 @@ impl Service {
                 operation,
                 path,
                 deadline,
+                renewal: None,
             },
         )
     }
@@ -698,6 +797,7 @@ impl Service {
             operation,
             path,
             deadline,
+            renewal,
         } = target;
         let Some(config) = self.sdk_configuration.clone() else {
             return Response::error(503, "SDK Auth runtime absent");
@@ -780,6 +880,7 @@ impl Service {
             path: path.into(),
             data: request.body.clone(),
             deadline,
+            renewal: Mutex::new(renewal.map(Box::new)),
         });
         Response::error(500, "SDK Auth invocation was not dispatched")
     }
@@ -861,6 +962,7 @@ impl Service {
             .sdk_auth_owner_gate(&plan.binding)
             .map_err(auth_error)?;
         plan.time(&state.auth)?;
+        plan.live_target(&state.auth)?;
         if Instant::now() >= plan.deadline {
             return Err(Response::error(503, "SDK Auth original deadline expired"));
         }
@@ -994,7 +1096,35 @@ impl Service {
         candidate.auth = transaction.auth.clone();
         let at = plan.time(&candidate.auth)?;
         candidate.auth.observe_sdk_auth_clock(at);
-        let mut response = if plan.operation == "_mount" {
+        let mut response = if plan.operation == "renew" {
+            let renewal = plan
+                .renewal
+                .lock()
+                .map_err(|_| Response::error(503, "SDK renewal target unavailable"))?;
+            let target = renewal
+                .as_ref()
+                .ok_or_else(|| Response::error(503, "SDK renewal typed issuer absent"))?;
+            let auth = value
+                .and_then(|v| v.get("auth"))
+                .filter(|v| v.is_object())
+                .ok_or_else(|| Response::error(400, "SDK Auth renewal did not return Auth"))?;
+            if value
+                .and_then(|v| v.get("secret"))
+                .is_some_and(|v| !v.is_null())
+            {
+                return Err(Response::error(501, "SDK Auth renewal Secret rejected"));
+            }
+            let mut renewed = candidate
+                .auth
+                .finish_sdk_renewal(target, auth, plan.context.clock)
+                .map_err(auth_error)?;
+            Response {
+                status: renewed.status,
+                body: std::mem::take(&mut renewed.body),
+                response_headers: Default::default(),
+                consistency_index: None,
+            }
+        } else if plan.operation == "_mount" {
             let metadata = value
                 .and_then(|value| value.get("auth_paths"))
                 .ok_or_else(|| Response::error(503, "SDK owned Setup metadata missing"))?;
@@ -1019,7 +1149,7 @@ impl Service {
             }
             let mut issued = candidate
                 .auth
-                .finish_sdk_auth_login(&plan.binding, auth, plan.context.clock)
+                .finish_sdk_auth_login(&plan.binding, &plan.path, auth, plan.context.clock)
                 .map_err(auth_error)?;
             Self::finish_identity_response_observed(
                 &mut candidate.auth,
@@ -1080,6 +1210,19 @@ impl Service {
                 None,
             )?;
             self.state = Some(candidate);
+            if let Some(target) = plan
+                .renewal
+                .lock()
+                .map_err(|_| Response::error(503, "SDK renewal target unavailable"))?
+                .as_mut()
+            {
+                self.state
+                    .as_ref()
+                    .ok_or_else(|| Response::error(503, "SDK published renewal owner absent"))?
+                    .auth
+                    .sdk_renewal_published(target)
+                    .map_err(auth_error)?;
+            }
             transaction.identity = self.current_state_identity()?;
             self.sdk_auth_gate(plan)?;
             Ok(())
@@ -1104,12 +1247,23 @@ impl Service {
                 .and_then(|auth| auth.get("client_token"))
                 .and_then(Value::as_str)
             {
-                self.state
+                let auth = &self
+                    .state
                     .as_ref()
                     .ok_or_else(|| Response::error(503, "SDK Auth issued owner unavailable"))?
-                    .auth
-                    .sdk_auth_issued_live(raw, plan.context.clock)
-                    .map_err(auth_error)?;
+                    .auth;
+                let renewal = plan
+                    .renewal
+                    .lock()
+                    .map_err(|_| Response::error(503, "SDK renewal target unavailable"))?;
+                if let Some(target) = renewal.as_ref() {
+                    target
+                        .response_gate(auth, raw, plan.context.clock)
+                        .map_err(auth_error)?;
+                } else {
+                    auth.sdk_auth_issued_live(raw, plan.context.clock)
+                        .map_err(auth_error)?;
+                }
             }
             if Instant::now() >= plan.deadline {
                 return Err(Response::error(

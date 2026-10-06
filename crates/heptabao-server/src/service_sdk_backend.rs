@@ -3,8 +3,8 @@
 use super::*;
 use crate::engines::sdk::{Descriptor, MountOwner, StorageEntry};
 use heptabao_plugin_host::sdk_backend::{
-    SdkBackendHost, SdkBridgeError, SdkLaunch, SdkLeaseCallback, SdkLogicalRequest, SdkStorage,
-    SdkStorageEntry,
+    SdkAuthCallback, SdkBackendHost, SdkBridgeError, SdkLaunch, SdkLeaseCallback,
+    SdkLogicalRequest, SdkStorage, SdkStorageEntry,
 };
 use std::collections::BTreeSet;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -163,6 +163,7 @@ struct WorkerJob {
     path: String,
     data: Value,
     lease: Option<SdkLeaseCallback>,
+    auth: Option<Box<SdkAuthCallback>>,
     expected_auth_paths: Option<Value>,
     deadline: Instant,
     events: Sender<Event>,
@@ -316,6 +317,7 @@ fn start_worker_typed(
                                 path: &job.path,
                                 data: std::mem::take(&mut job.data),
                                 lease: job.lease.take(),
+                                auth: job.auth.take().map(|auth| *auth),
                             },
                             &mut view,
                             job.deadline,
@@ -440,6 +442,7 @@ impl Plan {
                 .as_ref()
                 .map_or_else(|| self.data.clone(), |call| call.request_data()),
             lease: lease_callback,
+            auth: None,
             expected_auth_paths: None,
             deadline,
             events,

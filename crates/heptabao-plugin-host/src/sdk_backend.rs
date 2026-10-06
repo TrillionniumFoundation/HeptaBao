@@ -46,11 +46,28 @@ impl Drop for SdkLeaseCallback {
         wipe_json(&mut self.secret);
     }
 }
+/// Input-only original issuer metadata. It is never a Principal or an admission.
+pub struct SdkAuthCallback {
+    pub auth: Value,
+    pub issue_time_ns: u64,
+    pub increment_ns: u64,
+}
+impl std::fmt::Debug for SdkAuthCallback {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("SdkAuthCallback([REDACTED])")
+    }
+}
+impl Drop for SdkAuthCallback {
+    fn drop(&mut self) {
+        wipe_json(&mut self.auth);
+    }
+}
 pub struct SdkLogicalRequest<'a> {
     pub operation: &'a str,
     pub path: &'a str,
     pub data: Value,
     pub lease: Option<SdkLeaseCallback>,
+    pub auth: Option<SdkAuthCallback>,
 }
 impl std::fmt::Debug for SdkLogicalRequest<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -442,6 +459,7 @@ impl SdkBackendHost {
                 path,
                 data,
                 lease: None,
+                auth: None,
             },
             storage,
             original_deadline,
@@ -462,18 +480,27 @@ impl SdkBackendHost {
         if self.fenced {
             return Err(SdkBridgeError::Fenced);
         }
-        let operation_valid = match &logical.lease {
-            None => matches!(
+        let operation_valid = match (&logical.lease, &logical.auth) {
+            (None, Some(auth)) => {
+                self.backend_type == SdkBackendType::Auth
+                    && operation == "renew"
+                    && auth.auth.is_object()
+                    && auth.issue_time_ns > 0
+                    && auth.issue_time_ns <= i64::MAX as u64
+                    && auth.increment_ns <= i64::MAX as u64
+            }
+            (None, None) => matches!(
                 operation,
                 "read" | "create" | "update" | "patch" | "delete" | "list" | "scan"
             ),
-            Some(lease) => {
+            (Some(lease), None) => {
                 matches!(operation, "renew" | "revoke")
                     && lease.secret.is_object()
                     && lease.issue_time_ns > 0
                     && lease.issue_time_ns <= i64::MAX as u64
                     && lease.increment_ns <= i64::MAX as u64
             }
+            (Some(_), Some(_)) => false,
         };
         if !operation_valid
             || path.is_empty()
@@ -492,6 +519,11 @@ impl SdkBackendHost {
             request["secret"] = std::mem::take(&mut lease.secret);
             request["issue_time_ns"] = json!(lease.issue_time_ns);
             request["increment_ns"] = json!(lease.increment_ns);
+        }
+        if let Some(mut auth) = logical.auth.take() {
+            request["auth"] = std::mem::take(&mut auth.auth);
+            request["issue_time_ns"] = json!(auth.issue_time_ns);
+            request["increment_ns"] = json!(auth.increment_ns);
         }
         let result = (|| {
             self.send(&request, deadline)?;
