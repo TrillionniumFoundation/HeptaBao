@@ -93,6 +93,8 @@ const EXTERNAL_PKI_FULL_DN_CRL_STATE_SCHEMA: u32 = 98;
 const PKI_ACME_ACCOUNT_STATE_SCHEMA: u32 = 99;
 #[path = "service_pki_acme.rs"]
 mod pki_acme;
+#[path = "service_pki_acme_external.rs"]
+mod pki_acme_external;
 const SDK_AUTH_STATE_SCHEMA: u32 = 100;
 const SDK_ACCEPTED_SECRET_STATE_SCHEMA: u32 = 101;
 #[path = "service_pki_acme_eab.rs"]
@@ -1034,6 +1036,7 @@ enum ExternalEffectPlan {
     ExternalKey(plugin::ExternalKeyPlan),
     ExternalTransit(external_transit::ExternalTransitPlan),
     ExternalPki(external_pki::ExternalPkiPlan),
+    AcmeExternal(Box<pki_acme_external::Plan>),
     KubernetesToken(Box<kubernetes_secret::KubernetesTokenEffectPlan>),
     OpenLdap(openldap_secret::OpenLdapEffectPlan),
     SnapshotTransfer(Box<snapshot_transfer::SnapshotTransferPlan>),
@@ -1057,6 +1060,7 @@ pub(crate) enum ExternalEffectResult {
     ExternalKey(Result<(), Response>),
     ExternalTransit(Result<external_transit::Observation, Response>),
     ExternalPki(Result<external_pki::Observation, Response>),
+    AcmeExternal(Result<zeroize::Zeroizing<Vec<u8>>, Response>),
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
     OpenLdap(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
@@ -1156,6 +1160,9 @@ impl PendingExternalRequest {
             ExternalEffectPlan::ExternalPki(plan) => {
                 ExternalEffectResult::ExternalPki(plan.execute())
             }
+            ExternalEffectPlan::AcmeExternal(plan) => {
+                ExternalEffectResult::AcmeExternal(plan.execute())
+            }
             ExternalEffectPlan::KubernetesToken(plan) => {
                 ExternalEffectResult::KubernetesToken(plan.execute())
             }
@@ -1224,6 +1231,7 @@ pub struct Service {
     pending_external_key: Option<plugin::ExternalKeyPlan>,
     pending_external_transit: Option<external_transit::ExternalTransitPlan>,
     pending_external_pki: Option<external_pki::ExternalPkiPlan>,
+    pending_acme_external: Option<pki_acme_external::Plan>,
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
@@ -1606,6 +1614,7 @@ impl Service {
             pending_external_key: None,
             pending_external_transit: None,
             pending_external_pki: None,
+            pending_acme_external: None,
             pending_kubernetes_token: None,
             pending_openldap_effect: None,
             pending_snapshot_transfer: None,
@@ -2082,6 +2091,20 @@ impl Service {
                 ExternalEffectResult::ExternalTransit(result),
             ) => self.finalize_external_transit(plan, result),
             (
+                ExternalEffectPlan::AcmeExternal(mut plan),
+                ExternalEffectResult::AcmeExternal(result),
+            ) => {
+                let response = self.finalize_acme_external(&mut plan, result);
+                self.pending_acme_authority = plan.authority.take();
+                let response = self.audit_completed_response(
+                    &pending.fingerprint,
+                    pending.now,
+                    pending.token_clock,
+                    response,
+                );
+                return self.complete_pending_acme_delivery(true, response, &pending.fingerprint);
+            }
+            (
                 ExternalEffectPlan::ExternalPki(mut plan),
                 ExternalEffectResult::ExternalPki(result),
             ) => {
@@ -2301,6 +2324,7 @@ impl Service {
             || self.pending_external_key.is_some()
             || self.pending_external_transit.is_some()
             || self.pending_external_pki.is_some()
+            || self.pending_acme_external.is_some()
             || self.pending_kubernetes_token.is_some()
             || self.pending_openldap_effect.is_some()
             || self.pending_snapshot_transfer.is_some()
@@ -2561,6 +2585,7 @@ impl Service {
         let external_key = self.pending_external_key.take();
         let external_transit = self.pending_external_transit.take();
         let external_pki = self.pending_external_pki.take();
+        let acme_external = self.pending_acme_external.take();
         let kubernetes_token = self.pending_kubernetes_token.take();
         let openldap = self.pending_openldap_effect.take();
         let snapshot_transfer = self.pending_snapshot_transfer.take();
@@ -2582,6 +2607,7 @@ impl Service {
             + usize::from(external_key.is_some())
             + usize::from(external_transit.is_some())
             + usize::from(external_pki.is_some())
+            + usize::from(acme_external.is_some())
             + usize::from(kubernetes_token.is_some())
             + usize::from(openldap.is_some())
             + usize::from(snapshot_transfer.is_some());
@@ -2616,6 +2642,7 @@ impl Service {
             .or_else(|| external_key.map(ExternalEffectPlan::ExternalKey))
             .or_else(|| external_transit.map(ExternalEffectPlan::ExternalTransit))
             .or_else(|| external_pki.map(ExternalEffectPlan::ExternalPki))
+            .or_else(|| acme_external.map(|plan| ExternalEffectPlan::AcmeExternal(Box::new(plan))))
             .or_else(|| {
                 kubernetes_token.map(|plan| ExternalEffectPlan::KubernetesToken(Box::new(plan)))
             })

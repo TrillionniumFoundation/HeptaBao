@@ -6,6 +6,7 @@ pub(crate) use pki::acme_jws::{Jwk as AcmeJwk, ParsedJws as AcmeParsedJws};
 pub(crate) use pki::acme_state::Binding as AcmeBinding;
 use pki::acme_state::{Account, AccountStatus, Protocol};
 
+#[derive(Clone)]
 pub(crate) struct AcmeView {
     pub owner: AcmeBinding,
     pub directory: String,
@@ -1056,7 +1057,23 @@ impl pki::Pki {
     }
     // Directory eligibility uses the actual selected issuer. This performs no
     // signature effects and never upgrades a public JWS to Vault authority.
-    pub(super) fn acme_directory_issuer(&self, prefix: &str) -> Result<&pki::RootCa> {
+    fn acme_issuer_with_signing_owner(&self, reference: &str) -> Result<pki::RootCa> {
+        let mut issuer = self.selected_issuer(reference)?.clone();
+        if issuer.is_external()
+            && let Ok(key) = self.external_issuer_key(reference)
+            && self
+                .external_issuer_root(reference)
+                .is_ok_and(|owned| owned.certificate_der == issuer.certificate_der)
+        {
+            // The historical external RootCa has empty local identifiers. This
+            // process-local view carries the actual retained typed remote owner;
+            // it never rewrites or relabels that persisted historical RootCa.
+            issuer.issuer_id = key.issuer_id.clone();
+            issuer.key_id = key.key_id.clone();
+        }
+        Ok(issuer)
+    }
+    pub(super) fn acme_directory_issuer(&self, prefix: &str) -> Result<pki::RootCa> {
         let parts: Vec<_> = prefix.split('/').collect();
         let (explicit_issuer, explicit_role) = match parts.as_slice() {
             ["issuer", issuer, "roles", role] => (Some(*issuer), Some(*role)),
@@ -1093,12 +1110,14 @@ impl pki::Pki {
             role.filter(|role| !role.issuer_ref.is_empty())
                 .map_or("default", |role| role.issuer_ref.as_str())
         });
-        let issuer = self.selected_issuer(reference).map_err(|_| {
-            error(
-                400,
-                "the request message was malformed: issuer does not exist",
-            )
-        })?;
+        let issuer = self
+            .acme_issuer_with_signing_owner(reference)
+            .map_err(|_| {
+                error(
+                    400,
+                    "the request message was malformed: issuer does not exist",
+                )
+            })?;
         if issuer.key_id.is_empty() {
             return Err(error(
                 500,
@@ -1108,7 +1127,7 @@ impl pki::Pki {
         if self.acme.allowed_issuers.as_slice() != ["*"] {
             let mut allowed = false;
             for (index, reference) in self.acme.allowed_issuers.iter().enumerate() {
-                let candidate = self.selected_issuer(reference).map_err(|_| error(500,
+                let candidate = self.acme_issuer_with_signing_owner(reference).map_err(|_| error(500,
                     &format!("failed to resolve reference for allowed_issuer entry {index}: unable to find PKI issuer for reference: {reference}")))?;
                 if candidate.issuer_id == issuer.issuer_id {
                     allowed = true;
@@ -1196,5 +1215,252 @@ impl EngineState {
             return Ok(json!({"warnings":[format!("No key id found with id: {id}")]}));
         }
         Err(error(405, "unsupported operation"))
+    }
+}
+
+// An admitted public JWS/order plan owns no Vault token authority. It carries
+// only this original immutable order, CSR-derived TBS and a held provider request.
+pub(crate) struct AcmeExternalFinalize {
+    pub(crate) owner: AcmeBinding,
+    pub(crate) request: SecretValue,
+    pub(crate) template: pki::acme_certificate::ExternalCertificateTemplate,
+    order: pki::acme_orders::Order,
+    base: String,
+    clock: Option<crate::auth::RequestClock>,
+}
+impl AcmeExternalFinalize {
+    pub(crate) fn validate_before_effect(
+        &self,
+        engines: &EngineState,
+        at: Timestamp,
+    ) -> Result<()> {
+        let at = engines.acme_observed_time(at).max(
+            Timestamp::whole(engines.lease_clock)
+                .map_err(|_| error(503, "ACME durable signing floor unavailable"))?,
+        );
+        let mounted = engines.acme_pki(&self.owner)?;
+        let protocol = mounted
+            .acme_protocol
+            .as_ref()
+            .ok_or_else(|| error(503, "ACME external order owner unavailable"))?;
+        if protocol.orders.get(&self.order.id) != Some(&self.order)
+            || self.order.status(protocol, at) != "ready"
+            || !protocol
+                .accounts
+                .get(&self.order.account)
+                .is_some_and(|account| {
+                    account.status == AccountStatus::Valid
+                        && account.thumbprint == self.order.account_thumbprint
+                })
+        {
+            return Err(error(403, "the client lacks sufficient authorization"));
+        }
+        self.template.validate_time(at)?;
+        self.template.validate_issuer(mounted)?;
+        let namespace = engines
+            .namespaces
+            .get(&self.owner.namespace)
+            .ok_or_else(|| error(503, "ACME external namespace owner unavailable"))?;
+        let request = namespace.external_keys.transit_consumer_request(
+            &self.template.reference,
+            &self.owner.mount,
+            "sign",
+            SecretJson(json!({"input":"","prehashed":false,"signature_algorithm":"pkcs1v15"})),
+        )?;
+        if request.expose() != self.request.expose() {
+            return Err(error(
+                503,
+                "ACME external signing grant or provider binding changed",
+            ));
+        }
+        Ok(())
+    }
+}
+impl EngineState {
+    pub(crate) fn prepare_acme_external_finalize(
+        &self,
+        view: &AcmeView,
+        proof: &pki::acme_jws::VerifiedJws,
+        kid: Option<&str>,
+        at: Timestamp,
+        clock: Option<crate::auth::RequestClock>,
+    ) -> Result<Option<AcmeExternalFinalize>> {
+        let Some((id, "finalize")) = view
+            .endpoint
+            .strip_prefix("order/")
+            .and_then(|rest| rest.split_once('/'))
+        else {
+            return Ok(None);
+        };
+        let mounted = self.acme_pki(&view.owner)?;
+        let prefix = view
+            .directory
+            .trim_end_matches("acme/")
+            .trim_end_matches('/');
+        if !mounted.acme_directory_issuer(prefix)?.is_external() {
+            return Ok(None);
+        }
+        let account = kid
+            .and_then(|kid| kid.rsplit('/').next())
+            .filter(|id| !id.is_empty())
+            .ok_or_else(|| bad("ACME order operation requires kid"))?;
+        let key = self.acme_account_key(
+            view,
+            kid.ok_or_else(|| bad("ACME order operation requires kid"))?,
+        )?;
+        if key.thumbprint()? != proof.key_thumbprint() {
+            return Err(error(401, "the client lacks sufficient authorization"));
+        }
+        let protocol = mounted
+            .acme_protocol
+            .as_ref()
+            .ok_or_else(|| error(503, "ACME order owner unavailable"))?;
+        let order = protocol
+            .orders
+            .get(id)
+            .filter(|order| order.account == account && order.directory == view.directory)
+            .ok_or_else(|| bad("order does not exist: the request message was malformed"))?
+            .clone();
+        let at = self.acme_observed_time(at).max(
+            Timestamp::whole(self.lease_clock)
+                .map_err(|_| error(503, "ACME durable signing floor unavailable"))?,
+        );
+        let empty = json!({});
+        let raw = pki::acme_certificate::parse_payload(proof.payload().unwrap_or(&empty))?;
+        let status = order.status(protocol, at);
+        if status != "ready" {
+            return Err(pki::acme_certificate::order_not_ready(status, "ready"));
+        }
+        let template = mounted
+            .acme_prepare_external_certificate(&order, &raw, at, clock)?
+            .ok_or_else(|| error(503, "ACME original external signer changed"))?;
+        let namespace = self
+            .namespaces
+            .get(&view.owner.namespace)
+            .ok_or_else(|| error(503, "ACME external namespace owner unavailable"))?;
+        let request = namespace.external_keys.transit_consumer_request(
+            &template.reference,
+            &view.owner.mount,
+            "sign",
+            SecretJson(json!({"input":"","prehashed":false,"signature_algorithm":"pkcs1v15"})),
+        )?;
+        let plan = AcmeExternalFinalize {
+            owner: view.owner.clone(),
+            request,
+            template,
+            order,
+            base: view.base.clone(),
+            clock,
+        };
+        plan.validate_before_effect(self, at)?;
+        Ok(Some(plan))
+    }
+    pub(crate) fn publish_acme_external_finalize(
+        &mut self,
+        plan: AcmeExternalFinalize,
+        signature: &[u8],
+        at: Timestamp,
+    ) -> Result<(Value, String, AcmeExternalDelivery)> {
+        plan.validate_before_effect(self, at)?;
+        let at = self.acme_observed_time(at);
+        let certificate = plan
+            .template
+            .finish(signature, self.acme_pki(&plan.owner)?, at)?;
+        let at = plan
+            .clock
+            .map(|clock| clock.with_timestamp_floor(at).observed_at())
+            .transpose()
+            .map_err(|_| error(503, "ACME original external signing clock unavailable"))?
+            .unwrap_or(at);
+        let at = self.observe_acme(at)?;
+        let delivery = AcmeExternalDelivery {
+            owner: plan.owner.clone(),
+            original: plan.order.clone(),
+            certificate: certificate.clone(),
+        };
+        let mounted = self.acme_pki_mut(&plan.owner)?;
+        let protocol = mounted
+            .acme_protocol
+            .as_mut()
+            .ok_or_else(|| error(503, "ACME external order owner unavailable"))?;
+        protocol.observe_time(at);
+        if plan.order.status(protocol, at) != "ready"
+            || !protocol
+                .accounts
+                .get(&plan.order.account)
+                .is_some_and(|account| {
+                    account.status == AccountStatus::Valid
+                        && account.thumbprint == plan.order.account_thumbprint
+                })
+        {
+            return Err(error(403, "the client lacks sufficient authorization"));
+        }
+        let order = protocol
+            .orders
+            .get_mut(&plan.order.id)
+            .filter(|order| **order == plan.order)
+            .ok_or_else(|| {
+                error(
+                    503,
+                    "ACME order owner changed before certificate publication",
+                )
+            })?;
+        order.certificate = Some(certificate);
+        protocol.validate()?;
+        let order = protocol
+            .orders
+            .get(&plan.order.id)
+            .ok_or_else(|| error(503, "ACME external completed order unavailable"))?;
+        let body = order.descriptor(protocol, &plan.base, at);
+        let issuer = delivery.certificate.issuer.clone();
+        mounted.archive_external_acme_issuer(&issuer)?;
+        mounted.validate_acme_certificates()?;
+        self.lease_clock = self.lease_clock.max(at.seconds());
+        Ok((
+            body,
+            format!("{}order/{}", plan.base, plan.order.id),
+            delivery,
+        ))
+    }
+}
+
+pub(crate) struct AcmeExternalDelivery {
+    owner: AcmeBinding,
+    original: pki::acme_orders::Order,
+    certificate: pki::acme_certificate::Certificate,
+}
+impl AcmeExternalDelivery {
+    pub(crate) fn validate(&self, engines: &EngineState, at: Timestamp) -> Result<()> {
+        let at = engines.acme_observed_time(at).max(
+            Timestamp::whole(engines.lease_clock)
+                .map_err(|_| error(503, "ACME delivery signing floor unavailable"))?,
+        );
+        let mounted = engines.acme_pki(&self.owner)?;
+        let protocol = mounted
+            .acme_protocol
+            .as_ref()
+            .ok_or_else(|| error(503, "ACME external delivery owner unavailable"))?;
+        let current = protocol
+            .orders
+            .get(&self.original.id)
+            .ok_or_else(|| error(503, "ACME external completed order unavailable"))?;
+        let mut expected = self.original.clone();
+        expected.certificate = Some(self.certificate.clone());
+        if current != &expected
+            || self.original.status(protocol, at) != "ready"
+            || !protocol
+                .accounts
+                .get(&self.original.account)
+                .is_some_and(|account| {
+                    account.status == AccountStatus::Valid
+                        && account.thumbprint == self.original.account_thumbprint
+                })
+            || at
+                >= Timestamp::whole(self.certificate.expires)
+                    .map_err(|_| error(503, "ACME original certificate expiry unavailable"))?
+        {
+            return Err(error(403, "the client lacks sufficient authorization"));
+        }
+        mounted.validate_acme_certificates()
     }
 }

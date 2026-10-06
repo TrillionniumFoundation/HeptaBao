@@ -94,6 +94,8 @@ pub(super) struct Authority {
     nonce: Option<String>,
     nonce_deadline: Option<(Timestamp, std::time::Instant)>,
     operator: Option<plugin::PluginResponseAuthority>,
+    external_delivery: Option<crate::engines::AcmeExternalDelivery>,
+    external_provider: Option<super::pki_acme_external::ProviderReceipt>,
 }
 impl Drop for Authority {
     fn drop(&mut self) {
@@ -126,6 +128,8 @@ impl Authority {
             nonce,
             nonce_deadline: None,
             operator: None,
+            external_delivery: None,
+            external_provider: None,
         }
     }
     pub(super) fn with_operator(mut self, operator: plugin::PluginResponseAuthority) -> Self {
@@ -143,6 +147,21 @@ impl Authority {
             Some(operator) => operator.validate_live_auth(auth),
             None => Ok(()),
         }
+    }
+    pub(super) fn bind_external_delivery(
+        &mut self,
+        delivery: crate::engines::AcmeExternalDelivery,
+    ) {
+        self.external_delivery = Some(delivery);
+    }
+    pub(super) fn bind_external_provider(
+        &mut self,
+        provider: super::pki_acme_external::ProviderReceipt,
+    ) {
+        self.external_provider = Some(provider);
+    }
+    pub(super) fn deadline(&self) -> Option<std::time::Instant> {
+        self.deadline
     }
     pub(super) fn observed_at(&self) -> Result<Timestamp, Response> {
         match self.clock {
@@ -201,6 +220,11 @@ impl Authority {
             ));
         }
         let at = self.observed_at()?;
+        if let Some(delivery) = &self.external_delivery {
+            delivery
+                .validate(&state.engines, at)
+                .map_err(Response::from_engine_error)?;
+        }
         if self.nonce_deadline.is_some_and(|(expires, monotonic)| {
             at > expires || std::time::Instant::now() > monotonic
         }) {
@@ -234,6 +258,54 @@ impl Authority {
         self.fingerprint = view.fingerprint;
         self.check_state(state)
     }
+    fn hold_provider_for_delivery(
+        &self,
+    ) -> Result<Option<super::pki_acme_external::DeliveryHostGuard<'_>>, Response> {
+        match &self.external_provider {
+            Some(provider) => provider.hold_for_delivery(),
+            None => Ok(None),
+        }
+    }
+    fn check_held_delivery(
+        &self,
+        service: &Service,
+        held: Option<&super::pki_acme_external::DeliveryHostGuard<'_>>,
+    ) -> Result<(), Response> {
+        if service.recovery_required || service.unseal_nonce != self.activation {
+            return Err(Response::error(
+                503,
+                "ACME response authority expired or changed",
+            ));
+        }
+        if let Some(provider) = &self.external_provider {
+            provider.check_held(service, held)?;
+        } else if held.is_some() {
+            return Err(Response::error(
+                503,
+                "ACME delivery signer authority mismatch",
+            ));
+        }
+        // HA synchronization already completed under the original check. The
+        // Service writer owns this state; the independently shared provider is
+        // now locked through these final checks, any veto audit, and return.
+        let state = service
+            .state
+            .as_ref()
+            .ok_or_else(|| Response::error(503, "ACME response state unavailable"))?;
+        self.check_state(state)?;
+        let at = self.observed_at()?;
+        if let Some(nonce) = &self.nonce
+            && service.acme_nonces.0.get(nonce).is_none_or(|grant| {
+                grant.expires < at
+                    || std::time::Instant::now() > grant.monotonic
+                    || grant.owner != self.owner
+                    || grant.activation != self.activation
+            })
+        {
+            return Err(Response::error(503, "ACME nonce expired before delivery"));
+        }
+        namespace_runtime::request_live()
+    }
     pub(super) fn check(&self, service: &mut Service) -> Result<(), Response> {
         let _scope = self
             .deadline
@@ -251,6 +323,9 @@ impl Authority {
         }
         if service.ha.is_some() {
             service.sync_from_ha_with_anchor(false)?;
+        }
+        if let Some(provider) = &self.external_provider {
+            provider.check(service)?;
         }
         let state = service
             .state
@@ -272,7 +347,12 @@ impl Authority {
     }
 }
 
-fn wire(status: u16, body: Option<Value>, problem: bool, headers: ResponseHeaders) -> Response {
+pub(super) fn wire(
+    status: u16,
+    body: Option<Value>,
+    problem: bool,
+    headers: ResponseHeaders,
+) -> Response {
     Response {
         status,
         body: json!({"__heptabao_acme":body,"media":if problem {"problem"} else if body.is_none() {"empty"} else {"json"}}),
@@ -366,7 +446,13 @@ impl Service {
             Ok(identity) => identity,
             Err(error) => return Some(error),
         };
-        let mut authority = Authority::capture(admitted, &view, request, &self.unseal_nonce, None);
+        let mut authority = Some(Authority::capture(
+            admitted,
+            &view,
+            request,
+            &self.unseal_nonce,
+            None,
+        ));
         // Bao 2.7 advertises keyChange and exempts it from token ACLs, but
         // registers no handler. The unsupported route does not redeem JWS.
         let mut response = if view.endpoint == "key-change" {
@@ -421,7 +507,7 @@ impl Service {
             if request.method != "POST" {
                 Response::error(405, "unsupported operation")
             } else {
-                self.acme_signed_account(request, admitted, &view)
+                self.acme_signed_account(request, admitted, &view, &mut authority)
             }
         } else if view
             .endpoint
@@ -439,6 +525,15 @@ impl Service {
                 "serverInternal",
                 "ACME order, challenge and certificate operation is not implemented",
             )
+        };
+        if self.pending_acme_external.is_some() {
+            return Some(response);
+        }
+        let Some(mut authority) = authority else {
+            return Some(Response::error(
+                503,
+                "ACME original response authority was lost",
+            ));
         };
         let mut issued_nonce = None;
         // The genuine wrapper adds nonce metadata only after a successful
@@ -553,6 +648,7 @@ impl Service {
         request: &RequestView<'_>,
         admitted: &mut State,
         view: &AcmeView,
+        authority: &mut Option<Authority>,
     ) -> Response {
         let parsed = match AcmeParsedJws::parse(request.body) {
             Ok(parsed) => parsed,
@@ -604,6 +700,17 @@ impl Service {
         };
         if let Err(error) = namespace_runtime::request_live() {
             return error;
+        }
+        match admitted.engines.prepare_acme_external_finalize(
+            view,
+            &verified,
+            kid.as_deref(),
+            at,
+            request.token_clock,
+        ) {
+            Ok(Some(plan)) => return self.stage_acme_external(admitted, view, authority, plan),
+            Ok(None) => {}
+            Err(error) => return engine_problem(error),
         }
         let result = if view.endpoint == "new-account" || view.endpoint.starts_with("account/") {
             admitted
@@ -673,11 +780,51 @@ impl Service {
             Err(error) => engine_problem(error),
         }
     }
+    pub(super) fn decorate_acme_external_success(
+        &mut self,
+        authority: &mut Authority,
+        state: &mut State,
+        view: &AcmeView,
+        response: &mut Response,
+    ) -> Result<(), Response> {
+        let at = authority.observed_at()?;
+        let at = state
+            .engines
+            .acme_activate_nonce_owner(&view.owner, at)
+            .map_err(Response::from_engine_error)?;
+        let nonce = self.acme_nonces.mint(&view.owner, &self.unseal_nonce, at)?;
+        let headers = json!({"Replay-Nonce":[nonce],"Link":[format!("<{}directory>;rel=\"index\"",view.base)]});
+        response
+            .response_headers
+            .append_from_sdk(Some(&headers), &view.headers)
+            .map_err(|_| Response::error(503, "ACME external response metadata rejected"))?;
+        authority.nonce_deadline = self
+            .acme_nonces
+            .0
+            .get(&nonce)
+            .map(|grant| (grant.expires, grant.monotonic));
+        authority.nonce = Some(nonce);
+        Ok(())
+    }
     pub(super) fn complete_pending_acme_delivery(
+        &mut self,
+        expected: bool,
+        response: Response,
+        fingerprint: &str,
+    ) -> Response {
+        self.complete_pending_acme_delivery_with_held_receipt(
+            expected,
+            response,
+            fingerprint,
+            || {},
+        )
+    }
+    pub(super) fn complete_pending_acme_delivery_with_held_receipt(
         &mut self,
         expected: bool,
         mut response: Response,
         fingerprint: &str,
+        after_hold: impl FnOnce(),
     ) -> Response {
         let authority = match (expected, self.pending_acme_authority.take()) {
             (true, Some(authority)) => authority,
@@ -689,28 +836,45 @@ impl Service {
             }
         };
         if let Err(error) = authority.check(self) {
-            erase_json(&mut response.body);
-            response.response_headers.clear();
-            response.consistency_index = None;
-            if let Some(nonce) = authority.nonce.as_ref() {
-                self.acme_nonces.0.remove(nonce);
-            }
-            if self
-                .audit_event(
-                    "acme-delivery-veto",
-                    fingerprint,
-                    authority.at,
-                    Some(error.status),
-                )
-                .is_err()
-            {
-                self.recovery_required = true;
-                self.ha_activation = None;
-                return Response::error(503, "ACME response veto audit failed");
-            }
-            return error;
+            return self.veto_acme_delivery(&authority, response, fingerprint, error);
+        }
+        let held = match authority.hold_provider_for_delivery() {
+            Ok(held) => held,
+            Err(error) => return self.veto_acme_delivery(&authority, response, fingerprint, error),
+        };
+        after_hold();
+        if let Err(error) = authority.check_held_delivery(self, held.as_ref()) {
+            return self.veto_acme_delivery(&authority, response, fingerprint, error);
         }
         response
+    }
+    fn veto_acme_delivery(
+        &mut self,
+        authority: &Authority,
+        mut response: Response,
+        fingerprint: &str,
+        error: Response,
+    ) -> Response {
+        erase_json(&mut response.body);
+        response.response_headers.clear();
+        response.consistency_index = None;
+        if let Some(nonce) = authority.nonce.as_ref() {
+            self.acme_nonces.0.remove(nonce);
+        }
+        if self
+            .audit_event(
+                "acme-delivery-veto",
+                fingerprint,
+                authority.at,
+                Some(error.status),
+            )
+            .is_err()
+        {
+            self.recovery_required = true;
+            self.ha_activation = None;
+            return Response::error(503, "ACME response veto audit failed");
+        }
+        error
     }
 }
 
@@ -822,6 +986,15 @@ impl ChallengeAttempt {
             self.check(&writer)
                 .map_err(|_| "ACME background owner changed before network proof".to_owned())?;
         }
+        self.execute_port(80)
+    }
+    #[cfg(test)]
+    pub(in crate::service) fn execute_fixture_public_proof(
+        &self,
+        service: &Service,
+    ) -> Result<(), String> {
+        self.check(service)
+            .map_err(|_| "ACME fixture original owner changed before proof".to_owned())?;
         self.execute_port(80)
     }
     fn execute_port(&self, port: u16) -> Result<(), String> {

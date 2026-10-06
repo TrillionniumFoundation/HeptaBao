@@ -924,12 +924,16 @@ impl Pki {
         self.external
             .issued_public
             .retain(|serial, _| self.issued.contains_key(serial));
-        let referenced = self
+        let mut referenced = self
             .external
             .issued_public
             .values()
             .map(|leaf| leaf.issuer_id.clone())
             .collect::<BTreeSet<_>>();
+        referenced.extend(
+            self.acme_certificates()
+                .map(|certificate| certificate.issuer.clone()),
+        );
         // Tidy has already removed the actual issued records. Root retirement
         // does not call this function and cannot discard signer history.
         self.external
@@ -1012,7 +1016,9 @@ impl Pki {
                 return Err(bad("external PKI archive identity mismatch"));
             }
             issuer.validate()?;
-            if self.has_external_signed_ca_issuer_reference(id, &issuer.certificate_der)? {
+            if self.has_external_signed_ca_issuer_reference(id, &issuer.certificate_der)?
+                || self.has_external_acme_issuer_reference(id, &issuer.certificate_der)?
+            {
                 referenced.insert(id.clone());
             }
             if self.local_pki_identifiers_in_use(&issuer.issuer_id, &issuer.key_id) {

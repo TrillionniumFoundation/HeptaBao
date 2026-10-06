@@ -22,6 +22,8 @@ mod role_any_name;
 mod role_leaf_profile;
 #[path = "service_pki_external_history_tests.rs"]
 mod signer_history;
+#[path = "service_pki_acme_external_tests.rs"]
+mod acme_external;
 
 #[path = "service_local_pki_tests.rs"]
 mod local_tests;
