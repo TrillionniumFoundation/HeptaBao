@@ -130,7 +130,9 @@ fn prepare_with_ttl_and_root(
     if ttl == "1s" {
         eprintln!(
             "[Root-completed-forward-actor-entry] precise_before_mint={} original_ttl_one_second=true mint_elapsed_ms={} status={}",
-            precise_before_mint, before_mint.elapsed().as_millis(), minted.status
+            precise_before_mint,
+            before_mint.elapsed().as_millis(),
+            minted.status
         );
     }
     assert_eq!(minted.status, 200, "{}", minted.body);
@@ -187,7 +189,8 @@ fn leader_completion(service: &mut Service, actor: &str) -> TestResult<TestCompl
     let response = native(service, "GET", "secret/data/completion", actor, json!({}));
     eprintln!(
         "[Root-completed-forward-leader-entry] elapsed_ms={} status={}",
-        before_original_leader_request.elapsed().as_millis(), response.status
+        before_original_leader_request.elapsed().as_millis(),
+        response.status
     );
     assert_eq!(response.status, 200, "{}", response.body);
     service.seal_forward_completion(&response);
