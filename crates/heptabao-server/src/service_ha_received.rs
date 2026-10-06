@@ -1237,7 +1237,7 @@ impl Service {
         result
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, target_os = "linux"))]
     pub(super) fn reconcile_existing_ha_publication(
         &mut self,
         local: &ExistingLocalPublication,

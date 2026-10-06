@@ -940,7 +940,7 @@ enum ExternalEffectPlan {
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     SdkBackend(sdk_backend::Plan),
     #[cfg(any(target_os = "linux", target_os = "macos"))]
-    SdkAuth(sdk_backend::auth100::Plan),
+    SdkAuth(Box<sdk_backend::auth100::Plan>),
     PluginKms(plugin::PluginKmsPlan),
     ExternalKey(plugin::ExternalKeyPlan),
     ExternalTransit(external_transit::ExternalTransitPlan),
@@ -2537,7 +2537,7 @@ impl Service {
         #[cfg(any(target_os = "linux", target_os = "macos"))]
         let effect = effect
             .or_else(|| sdk_request.map(ExternalEffectPlan::SdkBackend))
-            .or_else(|| sdk_auth.map(ExternalEffectPlan::SdkAuth));
+            .or_else(|| sdk_auth.map(|plan| ExternalEffectPlan::SdkAuth(Box::new(plan))));
         if let Some(effect) = effect {
             return RequestExecution::External(Box::new(PendingExternalRequest {
                 fingerprint,
