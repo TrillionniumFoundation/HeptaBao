@@ -751,6 +751,15 @@ impl ChallengeAttempt {
                     .min(std::time::Instant::now() + Duration::from_secs(30)),
             );
         }
+        if self.queued.challenge.kind == "tls-alpn-01" && self.queued.dns_resolver.is_empty() {
+            return crate::outbound::verify_tlsalpn01(
+                &self.queued.host,
+                &self.queued.challenge.token,
+                &self.queued.thumbprint,
+                self.deadline
+                    .min(std::time::Instant::now() + Duration::from_secs(30)),
+            );
+        }
         if !self.queued.dns_resolver.is_empty() {
             return Err("ACME explicit DNS resolver transport is not implemented".into());
         }
@@ -863,6 +872,9 @@ impl Service {
             plan.queued.authorization, plan.queued.challenge.kind
         );
         let result = result.map_err(|detail| {
+            if plan.queued.challenge.kind == "tls-alpn-01" {
+                return format!("response received didn't match the challenge's requirements: error validating tls-alpn-01 challenge {id}: {detail}");
+            }
             format!(
                 "response received didn't match the challenge's requirements: error validating {} challenge {id}: {detail}; this may occur if the validation target was misconfigured: check that challenge responses are available at the required locations and retry.", plan.queued.challenge.kind
             )

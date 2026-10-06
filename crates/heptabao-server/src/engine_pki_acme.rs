@@ -516,7 +516,7 @@ impl EngineState {
                             "error submitting challenge for validation: only a single challenge within an authorization can be accepted: the request message was malformed",
                         ));
                     }
-                    if !matches!(kind, "http-01" | "dns-01") {
+                    if !matches!(kind, "http-01" | "dns-01" | "tls-alpn-01") {
                         return Err(error(
                             501,
                             "ACME TLSALPN01 network verification is not implemented",

@@ -94,13 +94,16 @@ impl Service {
     }
 }
 
-/// One host-owned worker, no unbounded queue or detached retry tasks. Drop wakes
-/// and joins it. try_lock avoids waiting behind an active request. A tick only
-/// advances at most one enrolled DB effect, one guarded consensus change and
-/// the existing local expiry pass. Provider failure cannot suppress local expiry.
+/// Two host-owned workers, each with at most one admitted effect and no task queue.
+/// Public ACME network proof cannot block lease cleanup. Drop wakes and joins
+/// both workers. try_lock avoids waiting behind an active request. The lifecycle
+/// worker advances at most one provider effect, consensus administration and
+/// local expiry per tick; the proof worker owns one original ACME attempt.
 pub(crate) struct LifecycleWorker {
     stop: mpsc::Sender<()>,
     join: Option<JoinHandle<()>>,
+    acme_stop: mpsc::Sender<()>,
+    acme_join: Option<JoinHandle<()>>,
 }
 
 pub(super) enum ProviderMaintenance {
@@ -159,15 +162,19 @@ fn prepare_sdk_provider(writer: &mut Service, clock: RequestClock) -> Option<Pro
         .map(|plan| ProviderMaintenance::Sdk(Box::new(plan)))
 }
 
-pub(super) fn prepare_provider_maintenance(
+fn prepare_provider_maintenance(
     writer: &mut Service,
     now: u64,
     clock: RequestClock,
     generic_deadline: std::time::Instant,
+    include_acme: bool,
 ) -> Option<ProviderMaintenance> {
     let prefer_acme = writer.lifecycle_acme_preferred;
     writer.lifecycle_acme_preferred = !prefer_acme;
-    if prefer_acme && let Ok(Some(plan)) = writer.prepare_acme_maintenance(clock) {
+    if include_acme
+        && prefer_acme
+        && let Ok(Some(plan)) = writer.prepare_acme_maintenance(clock)
+    {
         return Some(ProviderMaintenance::Acme(Box::new(plan)));
     }
     #[cfg(any(target_os = "linux", target_os = "macos"))]
@@ -206,6 +213,9 @@ pub(super) fn prepare_provider_maintenance(
     #[cfg(not(any(target_os = "linux", target_os = "macos")))]
     let pending = other();
     pending.or_else(|| {
+        if !include_acme {
+            return None;
+        }
         writer
             .prepare_acme_maintenance(clock)
             .ok()
@@ -217,7 +227,11 @@ pub(super) fn prepare_provider_maintenance(
 impl Drop for LifecycleWorker {
     fn drop(&mut self) {
         let _ = self.stop.send(());
+        let _ = self.acme_stop.send(());
         if let Some(join) = self.join.take() {
+            let _ = join.join();
+        }
+        if let Some(join) = self.acme_join.take() {
             let _ = join.join();
         }
     }
@@ -233,6 +247,7 @@ pub(crate) fn start_lifecycle_worker(
         return Err("lifecycle interval exceeds bounds".into());
     }
     let service = Arc::downgrade(service);
+    let acme_service = service.clone();
     let (stop, receiver) = mpsc::channel();
     let join = thread::Builder::new()
         .name("heptabao-lifecycle".into())
@@ -288,7 +303,9 @@ pub(crate) fn start_lifecycle_worker(
                             eprintln!("heptabao-lifecycle: maintenance unavailable");
                         }
                     }
-                    prepare_provider_maintenance(&mut writer, now, clock, generic_deadline)
+                    // ACME admission happens only on the independent public-proof
+                    // worker. Never create and discard an ACME or SDK Plan here.
+                    prepare_provider_maintenance(&mut writer, now, clock, generic_deadline, false)
                 };
                 let Some(pending) = pending_provider else {
                     continue;
@@ -362,8 +379,62 @@ pub(crate) fn start_lifecycle_worker(
             }
         })
         .map_err(|_| "cannot start lifecycle worker")?;
+    let (acme_stop, acme_receiver) = mpsc::channel();
+    let acme_join = thread::Builder::new()
+        .name("heptabao-acme-proof".into())
+        .spawn(move || {
+            while let Err(mpsc::RecvTimeoutError::Timeout) =
+                acme_receiver.recv_timeout(interval.min(Duration::from_secs(1)))
+            {
+                let Some(service) = acme_service.upgrade() else {
+                    break;
+                };
+                let started = std::time::Instant::now();
+                let Ok(wall) = SystemTime::now().duration_since(UNIX_EPOCH) else {
+                    continue;
+                };
+                let Ok(clock) = RequestClock::anchored(wall, started) else {
+                    continue;
+                };
+                let plan = {
+                    let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                        started + crate::request_deadline::IDLE_MAINTENANCE_READ_BUDGET,
+                    );
+                    let Ok(mut writer) = service.try_lock() else {
+                        continue;
+                    };
+                    match writer.prepare_acme_maintenance(clock) {
+                        Ok(Some(plan)) => plan,
+                        Ok(None) | Err(_) => continue,
+                    }
+                };
+                // Move the one admitted Plan with its original affine clock,
+                // deadline, attempt identity and queue owner through I/O and
+                // publication. There is no detached task or authority refresh.
+                let result = plan.execute(&service);
+                if acme_receiver.try_recv().is_ok() {
+                    break;
+                }
+                let Ok(mut writer) = service.try_lock() else {
+                    continue;
+                };
+                if writer.finish_acme_maintenance(plan, result).is_err() {
+                    eprintln!("heptabao-acme-proof: verification remains pending");
+                }
+            }
+        });
+    let acme_join = match acme_join {
+        Ok(value) => value,
+        Err(_) => {
+            let _ = stop.send(());
+            let _ = join.join();
+            return Err("cannot start ACME proof worker".into());
+        }
+    };
     Ok(Some(LifecycleWorker {
         stop,
         join: Some(join),
+        acme_stop,
+        acme_join: Some(acme_join),
     }))
 }
