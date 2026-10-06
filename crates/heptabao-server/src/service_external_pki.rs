@@ -798,6 +798,13 @@ impl Service {
         if let Some(ttl) = plan.wrapping_ttl {
             // The original response and private wrapper are one candidate.
             // The retained actor, provider and final delivery capsule stay held.
+            // Completion may run after the listener's scope has left the thread.
+            // Re-enter only its retained wall/monotonic anchor for the public
+            // creation stamp; this does not renew any private authority or TTL.
+            let _origin_scope = match plan.publication_clock.0 {
+                Some((unix, started)) => PublicationClockScope::enter(unix, started),
+                None => PublicationClockScope::explicit(),
+            };
             if let Some((expires, leased)) = plan.template.leaf_lease_window() {
                 let remaining = plan.publication_clock.remaining(expires, now);
                 if remaining.is_zero() {

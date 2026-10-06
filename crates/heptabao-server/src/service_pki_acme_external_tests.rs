@@ -1029,26 +1029,36 @@ fn pki_acme_external_wrapped_real_sign_encrypted_reopen_and_single_use_unwrap() 
     let (private, raw) = csr("wrapped.sign.acme.example.test")?;
     let pem = String::from_utf8(X509Req::from_der(&raw)?.to_pem()?)?;
     let calls = remote.calls()?;
-    let pending = match service.begin_at_mode(RequestDispatch {
-        method: "POST",
-        path: "external-ca/sign/wrapped",
-        namespace: "",
-        token: &admin,
-        body: json!({"csr":pem,"ttl":"10m"}),
-        now: 100,
-        allow_forward: true,
-        enforce_namespace: false,
-        wrap_ttl_seconds: Some(60),
-        origin_peer: None,
-        client_certificates: None,
-    }) {
+    let started = std::time::Instant::now();
+    let wall = Duration::from_millis(100_500);
+    let original_clock = RequestClock::anchored(wall, started)?;
+    let origin = external_pki::PublicationClockScope::enter(wall, started);
+    let pending = match service.begin_at_mode_precise(
+        RequestDispatch {
+            method: "POST",
+            path: "external-ca/sign/wrapped",
+            namespace: "",
+            token: &admin,
+            body: json!({"csr":pem,"ttl":"10m"}),
+            now: 100,
+            allow_forward: true,
+            enforce_namespace: false,
+            wrap_ttl_seconds: Some(60),
+            origin_peer: None,
+            client_certificates: None,
+        },
+        original_clock,
+    ) {
         RequestExecution::External(pending) => *pending,
         RequestExecution::Complete(response) => {
             return Err(format!("wrapped real sign not staged: status {}", response.status).into());
         }
     };
+    drop(origin);
     let actual = pending.execute();
+    let before = wall + started.elapsed();
     let wrapped = service.finish_external_request(pending, actual);
+    let after = wall + started.elapsed();
     assert_eq!(wrapped.status, 200);
     assert!(wrapped.body["data"].is_null() && wrapped.body["auth"].is_null());
     assert_eq!(wrapped.body["lease_duration"], 0);
@@ -1057,6 +1067,17 @@ fn pki_acme_external_wrapped_real_sign_encrypted_reopen_and_single_use_unwrap() 
         wrapped.body["wrap_info"]["creation_path"],
         "external-ca/sign/wrapped"
     );
+    let stamp = chrono::DateTime::parse_from_rfc3339(
+        wrapped.body["wrap_info"]["creation_time"]
+            .as_str()
+            .ok_or("actual precise wrapper creation stamp")?,
+    )?;
+    let actual_stamp = Duration::new(
+        u64::try_from(stamp.timestamp())?,
+        stamp.timestamp_subsec_nanos(),
+    );
+    assert!(before <= actual_stamp && actual_stamp <= after);
+    assert_ne!(stamp.timestamp_subsec_nanos(), 0);
     let bearer = zeroize::Zeroizing::new(
         wrapped.body["wrap_info"]["token"]
             .as_str()
