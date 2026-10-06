@@ -161,7 +161,10 @@ impl Pki {
             .ok_or_else(|| error(500, "issuer reference is unavailable"))
     }
 
-    pub(in crate::engines::pki) fn select_external_default(&mut self, reference: &str) -> Result<()> {
+    pub(in crate::engines::pki) fn select_external_default(
+        &mut self,
+        reference: &str,
+    ) -> Result<()> {
         let id = self.external_issuer_key(reference)?.issuer_id.clone();
         if self
             .external
