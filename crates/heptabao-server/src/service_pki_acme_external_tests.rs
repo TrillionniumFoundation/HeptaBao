@@ -204,8 +204,17 @@ fn ready(
         .prepare_acme_maintenance(maintenance_clock(101)?)
         .map_err(|_| "proof plan")?
         .ok_or("queued proof")?;
+    let token = fetched.body["__heptabao_acme"]["challenges"]
+        .as_array()
+        .ok_or("public challenges")?
+        .iter()
+        .find(|challenge| challenge["type"] == "dns-01")
+        .ok_or("public DNS challenge")?["token"]
+        .as_str()
+        .ok_or("public DNS token")?;
+    let thumbprint = URL_SAFE_NO_PAD.encode(crate::crypto::digest(&serde_json::to_vec(jwk)?));
     let proof = URL_SAFE_NO_PAD.encode(crate::crypto::digest(
-        format!("{}.{}", plan.queued.challenge.token, plan.queued.thumbprint).as_bytes(),
+        format!("{token}.{thumbprint}").as_bytes(),
     ));
     let thread = std::thread::spawn(move || -> std::io::Result<()> {
         let mut query = vec![0; 2048];
@@ -221,7 +230,7 @@ fn ready(
         socket.send_to(&response, peer)?;
         Ok(())
     });
-    let result = plan.execute_port(80);
+    let result = plan.execute_fixture_public_proof(service);
     thread.join().map_err(|_| "DNS responder")??;
     assert!(result.is_ok(), "{result:?}");
     service

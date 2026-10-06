@@ -898,6 +898,15 @@ impl ChallengeAttempt {
         }
         self.execute_port(80)
     }
+    #[cfg(test)]
+    pub(in crate::service) fn execute_fixture_public_proof(
+        &self,
+        service: &Service,
+    ) -> Result<(), String> {
+        self.check(service)
+            .map_err(|_| "ACME fixture original owner changed before proof".to_owned())?;
+        self.execute_port(80)
+    }
     fn execute_port(&self, port: u16) -> Result<(), String> {
         self.observed()
             .map_err(|_| "ACME background attempt deadline expired".to_owned())?;
