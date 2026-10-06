@@ -120,7 +120,7 @@ impl ExternalCertificateTemplate {
         self.validate_time(at)?;
         self.validate_issuer(pki)?;
         self.public.verify_leaf(&self.tbs, signature, self.scheme)?;
-        let der = signed_der_with_scheme(&self.tbs, signature, self.scheme);
+        let der = external::signed_der_with_scheme(&self.tbs, signature, self.scheme);
         let certificate = self.plan.into_certificate(der)?;
         pki.validate_acme_certificate(&certificate)?;
         Ok(certificate)

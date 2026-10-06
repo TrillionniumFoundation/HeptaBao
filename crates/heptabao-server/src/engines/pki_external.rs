@@ -888,7 +888,7 @@ fn validate_signed_der(
     validate_signed_der_with_scheme(public_key, tbs, document, public_key.leaf_signature(None))
 }
 
-fn signed_der_with_scheme(tbs: &[u8], signature: &[u8], scheme: LeafSignature) -> Vec<u8> {
+pub(in crate::engines::pki) fn signed_der_with_scheme(tbs: &[u8], signature: &[u8], scheme: LeafSignature) -> Vec<u8> {
     seq(&[tbs.to_vec(), scheme.algorithm(), bit_string(signature, 0)])
 }
 
