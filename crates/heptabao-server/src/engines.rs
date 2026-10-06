@@ -2508,6 +2508,27 @@ impl EngineState {
         body: &Value,
         now: u64,
     ) -> Result<Option<EngineResponse>> {
+        self.handle_in_identity_namespace(
+            IdentityNamespace {
+                path: namespace,
+                id: None,
+            },
+            method,
+            path,
+            body,
+            now,
+        )
+    }
+
+    pub(crate) fn handle_in_identity_namespace(
+        &mut self,
+        scope: IdentityNamespace<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<EngineResponse>> {
+        let namespace = scope.path;
         let (path, query) = path.split_once('?').unwrap_or((path, ""));
         let path = path.trim_start_matches('/');
         let mut params = SecretJson(body.clone());
@@ -2550,7 +2571,9 @@ impl EngineState {
                 .get(namespace)
                 .map(|state| state.identity.clone())
                 .unwrap_or_default();
+            candidate.set_uuid_namespace(scope.id)?;
             let response = identity::handle(&mut candidate, method, path, &params, now)?;
+            candidate.set_uuid_namespace(None)?;
             if response.mutated {
                 self.namespaces
                     .entry(namespace.into())

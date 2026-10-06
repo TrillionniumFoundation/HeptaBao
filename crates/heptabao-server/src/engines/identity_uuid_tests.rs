@@ -137,3 +137,64 @@ fn identity_uuid_allocation_rejects_rolled_back_frontier_without_mutation() -> R
     );
     Ok(())
 }
+
+#[test]
+fn identity_scoped_uuid_context_is_not_serialized_or_reused_for_root() -> Result<()> {
+    let mut state = IdentityState::default();
+    state.set_uuid_namespace(Some("AbC12"))?;
+    let child = state.bind_login("auth_test", "child", 100)?.entity_id;
+    let (uuid, suffix) = child.rsplit_once('.').ok_or_else(not_found)?;
+    assert!(native_uuid(uuid));
+    assert_eq!(suffix, "AbC12");
+    let encoded = serde_json::to_vec(&state).map_err(|_| bad("serialize identity"))?;
+    let mut reopened: IdentityState =
+        serde_json::from_slice(&encoded).map_err(|_| bad("reopen identity"))?;
+    assert!(reopened.uuid_namespace.is_none());
+    assert_eq!(
+        reopened.bind_login("auth_test", "child", 101)?.entity_id,
+        child
+    );
+    let root = reopened.bind_login("auth_test", "root", 101)?.entity_id;
+    assert!(native_uuid(&root));
+    Ok(())
+}
+
+#[test]
+fn identity_invalid_scope_and_failed_allocation_leave_existing_owner_unchanged() -> Result<()> {
+    let mut state = IdentityState::default();
+    state.bind_login("auth_test", "existing", 100)?;
+    let before = serde_json::to_vec(&state).map_err(|_| bad("serialize identity"))?;
+    for invalid in ["", "other/path", "Ab.C1", "../", "a\nb"] {
+        assert!(state.set_uuid_namespace(Some(invalid)).is_err());
+        assert!(state.uuid_namespace.is_none());
+        assert_eq!(
+            serde_json::to_vec(&state).map_err(|_| bad("serialize identity"))?,
+            before
+        );
+    }
+    let mut engines = EngineState::default();
+    engines.bind_login_identity("", "auth_test", "existing", 100)?;
+    let before = serde_json::to_vec(&engines).map_err(|_| bad("serialize engines"))?;
+    assert!(
+        engines
+            .bind_login_identity_scoped(
+                IdentityNamespace {
+                    path: "",
+                    id: Some("AbC12")
+                },
+                "invalid accessor",
+                "new",
+                100,
+            )
+            .is_err()
+    );
+    assert_eq!(
+        serde_json::to_vec(&engines).map_err(|_| bad("serialize engines"))?,
+        before
+    );
+    let root = engines
+        .bind_login_identity("", "auth_test", "new", 101)?
+        .entity_id;
+    assert!(native_uuid(&root));
+    Ok(())
+}

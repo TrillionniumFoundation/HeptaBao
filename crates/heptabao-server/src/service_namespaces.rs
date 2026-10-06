@@ -419,6 +419,24 @@ impl NamespaceRegistry {
             .max_by_key(|path| path.len())
     }
 
+    pub(super) fn identity_namespace<'a>(
+        &'a self,
+        actual: &'a str,
+    ) -> Result<crate::engines::IdentityNamespace<'a>, Response> {
+        let id = if actual.is_empty() {
+            None
+        } else {
+            Some(
+                self.entries
+                    .get(actual)
+                    .ok_or_else(|| Response::error(503, "identity namespace binding is absent"))?
+                    .id
+                    .as_str(),
+            )
+        };
+        Ok(crate::engines::IdentityNamespace { path: actual, id })
+    }
+
     pub(super) fn custody_binding(
         &self,
         cluster_id: &str,

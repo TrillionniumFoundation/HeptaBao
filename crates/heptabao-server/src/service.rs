@@ -4314,6 +4314,7 @@ impl Service {
                             &mut auth,
                             &mut engines,
                             &mut response,
+                            &namespaces,
                             namespace,
                             now,
                             completion,
@@ -4397,7 +4398,18 @@ impl Service {
         };
         let engine_body = pki_backend_body.as_ref().map_or(body, |carrier| &carrier.0);
         let mut engines = state.engines.clone();
-        match engines.handle(namespace, method, path, engine_body, now) {
+        let identity_scope = if path == "identity" || path.starts_with("identity/") {
+            match state.namespaces.identity_namespace(namespace) {
+                Ok(scope) => scope,
+                Err(error) => return error,
+            }
+        } else {
+            crate::engines::IdentityNamespace {
+                path: namespace,
+                id: None,
+            }
+        };
+        match engines.handle_in_identity_namespace(identity_scope, method, path, engine_body, now) {
             Ok(Some(mut response)) => {
                 if let Err(error) = Self::project_kv1_read_lease(
                     state,

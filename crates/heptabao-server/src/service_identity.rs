@@ -1516,6 +1516,7 @@ impl Service {
         auth: &mut AuthState,
         engines: &mut EngineState,
         response: &mut AuthResponse,
+        namespaces: &NamespaceRegistry,
         namespace: &str,
         now: u64,
     ) -> Result<(), Response> {
@@ -1523,6 +1524,7 @@ impl Service {
             auth,
             engines,
             response,
+            namespaces,
             namespace,
             now,
             AuthorityTime::Coarse(now),
@@ -1532,6 +1534,7 @@ impl Service {
         auth: &mut AuthState,
         engines: &mut EngineState,
         response: &mut AuthResponse,
+        namespaces: &NamespaceRegistry,
         namespace: &str,
         now: u64,
         time: AuthorityTime,
@@ -1547,7 +1550,12 @@ impl Service {
                     .map_err(|error| Response::error(error.status, &error.message))?;
             }
             let projection = engines
-                .bind_login_identity(namespace, &accessor, &login.alias, now)
+                .bind_login_identity_scoped(
+                    namespaces.identity_namespace(namespace)?,
+                    &accessor,
+                    &login.alias,
+                    now,
+                )
                 .map_err(|error| Response::error(error.status, &error.message))?;
             if projection.disabled {
                 return Err(Response::error(

@@ -24,6 +24,10 @@ mod uuid_tests;
 pub(super) struct IdentityState {
     #[serde(default)]
     next_id: u64,
+    /// Per-call representation context selected from the actual namespace registry.
+    /// It is cleared before publication and grants no authority.
+    #[serde(skip)]
+    uuid_namespace: Option<String>,
     #[serde(default)]
     entities: BTreeMap<String, Entity>,
     #[serde(default)]
@@ -1561,6 +1565,16 @@ impl IdentityState {
             && self.group_alias_keys.is_empty()
     }
 
+    pub(super) fn set_uuid_namespace(&mut self, id: Option<&str>) -> Result<()> {
+        if id.is_some_and(|id| {
+            id.is_empty() || id.len() > 128 || !id.bytes().all(|byte| byte.is_ascii_alphanumeric())
+        }) {
+            return Err(error(503, "identity namespace binding is invalid"));
+        }
+        self.uuid_namespace = id.map(str::to_owned);
+        Ok(())
+    }
+
     fn identifier_reserved(&self, id: &str) -> bool {
         self.entities.contains_key(id)
             || self.aliases.contains_key(id)
@@ -1596,7 +1610,11 @@ impl IdentityState {
         }
         let random = crate::crypto::random::<16>()
             .map_err(|_| error(503, "identity identifier randomness unavailable"))?;
-        let id = crate::crypto::uuid_v4_from_bytes(&random);
+        let mut id = crate::crypto::uuid_v4_from_bytes(&random);
+        if let Some(namespace) = &self.uuid_namespace {
+            id.push('.');
+            id.push_str(namespace);
+        }
         if self.identifier_reserved(&id) {
             return Err(error(
                 503,

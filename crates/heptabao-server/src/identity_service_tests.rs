@@ -1615,3 +1615,160 @@ fn identity_lookup_missing_alias_returns204_only_after_authorized_valid_scoped_r
     );
     Ok(())
 }
+
+#[test]
+fn identity_namespace_uuid_native_service_and_encrypted_reopen() -> TestResult {
+    let fixture = Fixture::new()?;
+    let mut service = fixture.service()?;
+    let (admin, key) = bootstrap(&mut service)?;
+    let ns = call(
+        &mut service,
+        "",
+        &admin,
+        "POST",
+        "sys/namespaces/native",
+        json!({}),
+    );
+    assert_eq!(ns.status, 200);
+    let ns_id = text(&ns.body, "/data/id")?;
+    assert_eq!(
+        call(
+            &mut service,
+            "native",
+            &admin,
+            "POST",
+            "sys/auth/userpass",
+            json!({"type":"userpass"})
+        )
+        .status,
+        204
+    );
+    let mounts = call(&mut service, "native", &admin, "GET", "sys/auth", json!({}));
+    let accessor = text(&mounts.body, "/data/userpass~/accessor")
+        .or_else(|_| text(&mounts.body, "/data/userpass~1/accessor"))?;
+    let entity = call(
+        &mut service,
+        "native",
+        &admin,
+        "POST",
+        "identity/entity",
+        json!({"name":"person"}),
+    );
+    assert_eq!(entity.status, 200);
+    let entity_id = text(&entity.body, "/data/id")?;
+    let alias = call(
+        &mut service,
+        "native",
+        &admin,
+        "POST",
+        "identity/entity-alias",
+        json!({"name":"subject","canonical_id":entity_id,"mount_accessor":accessor}),
+    );
+    assert_eq!(alias.status, 200);
+    let group = call(
+        &mut service,
+        "native",
+        &admin,
+        "POST",
+        "identity/group",
+        json!({"name":"external","type":"external"}),
+    );
+    assert_eq!(group.status, 200);
+    let group_id = text(&group.body, "/data/id")?;
+    let group_alias = call(
+        &mut service,
+        "native",
+        &admin,
+        "POST",
+        "identity/group-alias",
+        json!({"name":"group","canonical_id":group_id,"mount_accessor":accessor}),
+    );
+    assert_eq!(group_alias.status, 200);
+    let records = [
+        ("entity", entity),
+        ("entity-alias", alias),
+        ("group", group),
+        ("group-alias", group_alias),
+    ]
+    .into_iter()
+    .map(|(kind, response)| Ok((kind, text(&response.body, "/data/id")?)))
+    .collect::<Result<Vec<_>, Box<dyn std::error::Error>>>()?;
+    for (_, id) in &records {
+        let (uuid, suffix) = id.rsplit_once('.').ok_or("missing namespace suffix")?;
+        assert_eq!(suffix, ns_id);
+        assert_eq!(uuid.len(), 36);
+        assert_eq!(uuid.as_bytes()[14], b'4');
+        assert!(matches!(uuid.as_bytes()[19], b'8' | b'9' | b'a' | b'b'));
+    }
+    assert_eq!(
+        call(
+            &mut service,
+            "native",
+            &admin,
+            "POST",
+            "auth/userpass/users/subject",
+            json!({"password":"synthetic-password"})
+        )
+        .status,
+        204
+    );
+    let login = call(
+        &mut service,
+        "native",
+        "",
+        "POST",
+        "auth/userpass/login/subject",
+        json!({"password":"synthetic-password"}),
+    );
+    assert_eq!(login.status, 200);
+    assert_eq!(login.body["auth"]["entity_id"], entity_id);
+    drop(service);
+    let mut reopened = fixture.service()?;
+    assert_eq!(
+        call(
+            &mut reopened,
+            "",
+            "",
+            "POST",
+            "sys/unseal",
+            json!({"key":key})
+        )
+        .status,
+        200
+    );
+    for (kind, id) in records {
+        let response = call(
+            &mut reopened,
+            "native",
+            &admin,
+            "GET",
+            &format!("identity/{kind}/id/{id}"),
+            json!({}),
+        );
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["data"]["id"], id);
+    }
+    let login = call(
+        &mut reopened,
+        "native",
+        "",
+        "POST",
+        "auth/userpass/login/subject",
+        json!({"password":"synthetic-password"}),
+    );
+    assert_eq!(login.status, 200);
+    assert_eq!(login.body["auth"]["entity_id"], entity_id);
+    let root = call(
+        &mut reopened,
+        "",
+        &admin,
+        "POST",
+        "identity/entity",
+        json!({"name":"root-person"}),
+    );
+    assert_eq!(root.status, 200);
+    let root_id = text(&root.body, "/data/id")?;
+    assert_eq!(root_id.len(), 36);
+    assert!(!root_id.contains('.'));
+    Ok(())
+}

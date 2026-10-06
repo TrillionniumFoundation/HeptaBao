@@ -227,6 +227,7 @@ impl Service {
             &mut state.auth,
             &mut state.engines,
             response,
+            &namespaces,
             namespace,
             now,
         )?;

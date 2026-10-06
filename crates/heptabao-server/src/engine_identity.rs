@@ -9,6 +9,13 @@ pub(crate) struct IdentityProjection {
     pub(crate) disabled: bool,
 }
 
+/// Native identifier representation selected by Service from its existing
+/// namespace catalog. This value is not a request authority or a namespace key.
+pub(crate) struct IdentityNamespace<'a> {
+    pub(crate) path: &'a str,
+    pub(crate) id: Option<&'a str>,
+}
+
 impl EngineState {
     pub(crate) fn identity_template_values(
         &self,
@@ -105,11 +112,37 @@ impl EngineState {
         alias: &str,
         now: u64,
     ) -> Result<IdentityProjection> {
+        self.bind_login_identity_scoped(
+            IdentityNamespace {
+                path: namespace,
+                id: None,
+            },
+            accessor,
+            alias,
+            now,
+        )
+    }
+
+    pub(crate) fn bind_login_identity_scoped(
+        &mut self,
+        scope: IdentityNamespace<'_>,
+        accessor: &str,
+        alias: &str,
+        now: u64,
+    ) -> Result<IdentityProjection> {
+        let mut candidate = self
+            .namespaces
+            .get(scope.path)
+            .map(|state| state.identity.clone())
+            .unwrap_or_default();
+        candidate.set_uuid_namespace(scope.id)?;
+        let projection = candidate.bind_login(accessor, alias, now)?;
+        candidate.set_uuid_namespace(None)?;
         self.namespaces
-            .entry(namespace.to_owned())
+            .entry(scope.path.to_owned())
             .or_default()
-            .identity
-            .bind_login(accessor, alias, now)
+            .identity = candidate;
+        Ok(projection)
     }
 
     /// Only the authenticated AppRole login dispatcher may publish this narrow
