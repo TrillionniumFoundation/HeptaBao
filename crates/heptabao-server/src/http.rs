@@ -1978,8 +1978,9 @@ fn write_response_with_namespace(
     } else {
         "application/json"
     };
-    let raw_body =
-        raw_acme.is_some() || raw_ocsp.is_some() || raw_certificate.is_some() || raw_crl.is_some();
+    // ACME's closed logical JSON carries no explicit native Content-Length.
+    // Certificate/CRL/OCSP producers retain their admitted fixed-length framing.
+    let fixed_raw_body = raw_ocsp.is_some() || raw_certificate.is_some() || raw_crl.is_some();
     let acme_empty = raw_acme.as_ref().is_some_and(|(bytes, _)| bytes.is_empty());
     let acme_no_media = acme_empty && matches!(response.status, 200 | 204);
 
@@ -2095,12 +2096,12 @@ fn write_response_with_namespace(
     // chunked encoding. HEAD has the same small-body length, with no chunks.
     // https://github.com/golang/go/blob/go1.25.1/src/net/http/server.go
     let no_body = status == 204 || status == 304 || (100..200).contains(&status);
-    let chunked = !no_body && !head && !raw_body && bytes.len() > 2048;
+    let chunked = !no_body && !head && !fixed_raw_body && bytes.len() > 2048;
     write!(writer, "HTTP/1.1 {status} {reason}\r\n")?;
     if !acme_no_media {
         write!(writer, "Content-Type: {content_type}\r\n")?;
     }
-    if !no_body && !(head && acme_empty) && (raw_body || bytes.len() <= 2048) {
+    if !no_body && !(head && acme_empty) && (fixed_raw_body || bytes.len() <= 2048) {
         write!(writer, "Content-Length: {}\r\n", bytes.len())?;
     } else if chunked {
         writer.write_all(b"Transfer-Encoding: chunked\r\n")?;
@@ -2137,6 +2138,52 @@ mod ocsp_service_tests;
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn pki_acme99_owned_raw_json_native_chunk_boundary_retains_exact_body() -> io::Result<()> {
+        for length in [2048, 2049] {
+            let payload = json!({"text":"x".repeat(length-11)});
+            let bytes = serde_json::to_vec(&payload)?;
+            assert_eq!(bytes.len(), length);
+            for head in [false, true] {
+                let response = Response {
+                    status: 200,
+                    response_headers: Default::default(),
+                    consistency_index: None,
+                    body: json!({"__heptabao_acme":payload,"media":"json"}),
+                };
+                let mut output = Vec::new();
+                write_response(&mut output, response, head)?;
+                let marker = output
+                    .windows(4)
+                    .position(|w| w == b"\r\n\r\n")
+                    .ok_or_else(|| io::Error::other("missing response framing"))?;
+                let headers = std::str::from_utf8(&output[..marker]).map_err(io::Error::other)?;
+                let body = &output[marker + 4..];
+                assert!(headers.contains("Content-Type: application/json\r\n"));
+                if length == 2048 {
+                    assert!(headers.contains("Content-Length: 2048\r\n"));
+                    assert!(!headers.contains("Transfer-Encoding"));
+                    assert_eq!(body, if head { &[][..] } else { bytes.as_slice() });
+                } else if head {
+                    assert!(
+                        !headers.contains("Content-Length")
+                            && !headers.contains("Transfer-Encoding")
+                    );
+                    assert!(body.is_empty());
+                } else {
+                    assert!(
+                        headers.contains("Transfer-Encoding: chunked\r\n")
+                            && !headers.contains("Content-Length")
+                    );
+                    let mut framed = format!("{:x}\r\n", bytes.len()).into_bytes();
+                    framed.extend_from_slice(&bytes);
+                    framed.extend_from_slice(b"\r\n0\r\n\r\n");
+                    assert_eq!(body, framed);
+                }
+            }
+        }
+        Ok(())
+    }
     #[test]
     fn pki_acme99_untrusted_sdk_data_cannot_select_raw_media_or_empty_body()
     -> Result<(), Box<dyn std::error::Error>> {
