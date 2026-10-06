@@ -49,7 +49,7 @@ impl Paths {
         Ok(paths)
     }
     fn validate(&self) -> Result<(), AuthError> {
-        if !heptabao_plugin_contracts::sdk_paths::valid(&self.root)
+        if !heptabao_plugin_contracts::sdk_paths::valid_root(&self.root)
             || !heptabao_plugin_contracts::sdk_paths::valid(&self.unauthenticated)
         {
             return Err(bad("SDK path policy rejected"));
@@ -60,7 +60,7 @@ impl Paths {
         json!({"Root":self.root,"Unauthenticated":self.unauthenticated,"LocalStorage":[],"SealWrapStorage":[],"WriteForwardedStorage":[]})
     }
     pub(crate) fn is_root(&self, path: &str) -> bool {
-        heptabao_plugin_contracts::sdk_paths::matches(&self.root, path)
+        heptabao_plugin_contracts::sdk_paths::root_matches(&self.root, path)
     }
     pub(crate) fn is_public(&self, path: &str) -> bool {
         !self.is_root(path)
@@ -194,11 +194,11 @@ impl AuthState {
     pub(super) fn sdk_public_path(&self, namespace: &str, path: &str) -> Option<bool> {
         let binding = self.sdk_auth_binding(namespace, path).ok().flatten()?;
         let relative = path.strip_prefix(&format!("auth/{}/", binding.mount))?;
-        let paths = self
-            .sdk_auth_paths(&binding)
-            .ok()
-            .flatten()
-            .unwrap_or_else(Paths::legacy);
+        let paths = match self.sdk_auth_paths(&binding) {
+            Ok(Some(paths)) => paths,
+            Ok(None) => Paths::legacy(),
+            Err(_) => return Some(false),
+        };
         Some(paths.is_public(relative))
     }
     pub(crate) fn sdk_auth_clock_floor(&self) -> Option<Timestamp> {

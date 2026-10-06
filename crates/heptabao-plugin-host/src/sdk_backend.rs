@@ -872,8 +872,11 @@ fn normalized_auth_paths(value: Option<&Value>) -> Option<Value> {
         } else {
             serde_json::from_value(raw.clone()).ok()?
         };
-        if !heptabao_plugin_contracts::sdk_paths::valid(&values)
-            || (!matches!(key, "Root" | "Unauthenticated") && !values.is_empty())
+        if !(if key == "Root" {
+            heptabao_plugin_contracts::sdk_paths::valid_root(&values)
+        } else {
+            heptabao_plugin_contracts::sdk_paths::valid(&values)
+        }) || (!matches!(key, "Root" | "Unauthenticated") && !values.is_empty())
         {
             return None;
         }

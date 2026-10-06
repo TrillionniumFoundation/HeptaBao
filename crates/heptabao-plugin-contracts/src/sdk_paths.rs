@@ -1,70 +1,106 @@
-//! SDK route metadata is policy, never a Principal. Only exact strings,
-//! a trailing prefix star and complete plus segments are accepted.
+//! SDK route metadata is policy, never a Principal. Matching follows the
+//! pinned OpenBao 2.7.0 routing router's distinct Root and Login path trees.
 
-/// Validate bounded SDK path expressions before storing or matching them.
-pub fn valid(patterns: &[String]) -> bool {
+/// Validate bounded literal Root metadata. Plus is a literal character here.
+pub fn valid_root(patterns: &[String]) -> bool {
     patterns.len() <= 128
         && patterns.iter().map(String::len).sum::<usize>() <= 32 * 1024
+        && patterns
+            .iter()
+            .all(|p| p.len() <= 2048 && !p.chars().any(char::is_control))
+}
+
+/// Validate bounded Login expressions using the native router's grammar.
+pub fn valid(patterns: &[String]) -> bool {
+    valid_root(patterns)
         && patterns.iter().all(|pattern| {
-            pattern.len() <= 2048
-                && !pattern.starts_with('/')
-                && !pattern.chars().any(char::is_control)
-                && !pattern.strip_suffix('*').unwrap_or(pattern).contains('*')
+            !pattern.strip_suffix('*').unwrap_or(pattern).contains('*')
+                && !pattern.contains("+*")
                 && pattern
                     .split('/')
                     .all(|part| !part.contains('+') || part == "+")
         })
 }
 
-/// Match SDK exact/prefix/one-segment expressions against a relative API path.
-pub fn matches(patterns: &[String], path: &str) -> bool {
-    patterns.iter().any(|pattern| {
-        let prefix = pattern.ends_with('*');
-        let pattern = if prefix {
-            &pattern[..pattern.len() - 1]
-        } else {
-            pattern.as_str()
-        };
-        let mut expected = pattern.split('/').peekable();
-        let mut actual = path.split('/');
-        while let Some(part) = expected.next() {
-            let Some(value) = actual.next() else {
-                return false;
-            };
-            if part == "+" {
-                if value.is_empty() {
-                    return false;
-                }
-            } else if prefix && expected.peek().is_none() {
-                if !value.starts_with(part) {
-                    return false;
-                }
-            } else if part != value {
-                return false;
-            }
+// Native PathsToRadix inserts duplicate keys in order, and LongestPrefix picks
+// one key. A longer exact entry may deliberately shadow a shorter prefix entry.
+fn radix_match(patterns: &[String], path: &str, ignore_plus: bool) -> Option<bool> {
+    let mut selected: Option<(&str, bool)> = None;
+    for pattern in patterns {
+        if ignore_plus && pattern.contains('+') {
+            continue;
         }
-        prefix || actual.next().is_none()
-    })
+        let prefix = pattern.ends_with('*');
+        let key = pattern.strip_suffix('*').unwrap_or(pattern);
+        if path.starts_with(key) && selected.is_none_or(|(old, _)| key.len() >= old.len()) {
+            selected = Some((key, prefix));
+        }
+    }
+    selected.map(|(key, prefix)| prefix || key == path)
+}
+
+/// Root uses only the literal radix tree: suffix star is a prefix marker.
+pub fn root_matches(patterns: &[String], path: &str) -> bool {
+    radix_match(patterns, path, false).unwrap_or(false)
+}
+
+/// Login checks the radix tree first, then its separate segment wildcard set.
+pub fn matches(patterns: &[String], path: &str) -> bool {
+    if radix_match(patterns, path, true) == Some(true) {
+        return true;
+    }
+    let actual: Vec<_> = path.split('/').collect();
+    patterns
+        .iter()
+        .filter(|pattern| pattern.contains('+'))
+        .any(|pattern| {
+            let prefix = pattern.ends_with('*');
+            let pattern = pattern.strip_suffix('*').unwrap_or(pattern);
+            let expected: Vec<_> = pattern.split('/').collect();
+            actual.len() >= expected.len()
+                && (prefix || actual.len() == expected.len())
+                && expected.iter().enumerate().all(|(i, part)| {
+                    *part == "+"
+                        || *part == actual[i]
+                        || prefix && i + 1 == expected.len() && actual[i].starts_with(part)
+                })
+        })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn sdk_special_path_expressions_do_not_expand_adjacent_plus_or_interior_star() {
+    fn sdk_special_path_expressions_follow_literal_root_and_login_radix_priority() {
         assert!(valid(&[
             "login".into(),
             "public/+/*".into(),
             "status*".into()
         ]));
-        for bad in ["foo+", "foo/+bar", "foo*bar", "/login", "login\n"] {
+        for bad in ["foo+", "foo/+bar", "foo*bar", "foo/+*", "login\n"] {
             assert!(!valid(&[bad.into()]));
         }
+        assert!(valid_root(&["root/+/config".into(), "foo*bar".into()]));
+        assert!(!root_matches(
+            &["root/+/config".into()],
+            "root/alice/config"
+        ));
+        assert!(root_matches(&["root/+/config".into()], "root/+/config"));
+        assert!(matches(&["public/+/*".into()], "public/alice/item"));
+        assert!(matches(&["public/+/*".into()], "public//item"));
+        let shadow = ["root*".into(), "root-exact".into()];
+        assert!(root_matches(&shadow, "root-other"));
+        assert!(!root_matches(&shadow, "root-exact-more"));
+        assert!(!matches(&shadow, "root-exact-more"));
+        assert!(
+            matches(
+                &["root*".into(), "root-exact".into(), "root-+/+".into()],
+                "root-exact-more"
+            ) == false
+        );
+        assert!(!root_matches(&["a*".into(), "a".into()], "ab"));
+        assert!(root_matches(&["a".into(), "a*".into()], "ab"));
         assert!(matches(&["login".into()], "login"));
         assert!(!matches(&["login".into()], "login/extra"));
-        assert!(matches(&["public/+/*".into()], "public/alice/item"));
-        assert!(!matches(&["public/+/*".into()], "public//item"));
-        assert!(matches(&["status*".into()], "status/ready"));
-        assert!(!matches(&["status*".into()], "other/status"));
     }
 }
