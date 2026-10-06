@@ -1516,7 +1516,7 @@ impl Service {
         auth: &mut AuthState,
         engines: &mut EngineState,
         response: &mut AuthResponse,
-        namespaces: &NamespaceRegistry,
+        namespaces: &crate::service::namespaces::NamespaceRegistry,
         namespace: &str,
         now: u64,
     ) -> Result<(), Response> {
@@ -1534,7 +1534,7 @@ impl Service {
         auth: &mut AuthState,
         engines: &mut EngineState,
         response: &mut AuthResponse,
-        namespaces: &NamespaceRegistry,
+        namespaces: &crate::service::namespaces::NamespaceRegistry,
         namespace: &str,
         now: u64,
         time: AuthorityTime,
